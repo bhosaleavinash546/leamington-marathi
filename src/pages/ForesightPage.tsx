@@ -554,10 +554,11 @@ export default function ForesightPage() {
         <div className="relative text-center mb-8">
           {/* The literal horizon: perspective grid floor vanishing behind the title */}
           <div className="hz-horizon-grid" style={{ top: 96 }} aria-hidden="true" />
-          <div className="relative inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gold-500/15 border border-gold-500/25 mb-7">
+          <div className="relative inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gold-500/15 border border-gold-500/25 mb-9">
             <span className="hz-radar" aria-hidden="true" />
             <span className="hz-radar-echo" aria-hidden="true" />
             <span className="hz-orbit" aria-hidden="true"><span className="hz-orbit-sat" /></span>
+            <span className="hz-orbit-outer" aria-hidden="true"><span className="hz-orbit-sat2" /></span>
             <Telescope size={46} className="text-gold-400" />
           </div>
           <h1 className="relative text-4xl font-black mb-3"><span className="hz-title">BrainSpark Horizon</span></h1>

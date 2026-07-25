@@ -173,6 +173,25 @@
   background: #5eead4;
   box-shadow: 0 0 10px 2px rgba(94, 234, 212, 0.7);
 }
+/* Outer observatory-dish orbit: wide, faint, counter-rotating. */
+.hz-orbit-outer {
+  position: absolute;
+  inset: -68px;
+  border-radius: 9999px;
+  border: 1px dashed rgba(245, 158, 11, 0.18);
+  pointer-events: none;
+}
+.hz-orbit-sat2 {
+  position: absolute;
+  top: -2.5px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 9999px;
+  background: rgba(245, 158, 11, 0.9);
+  box-shadow: 0 0 9px 2px rgba(245, 158, 11, 0.5);
+}
 
 /* ── Futurism v2: HUD material ──────────────────────────────────────────────── */
 
@@ -239,6 +258,7 @@
   .hz-stars2 { animation: hz-star-drift 150s linear infinite reverse; }
   .hz-horizon-grid { animation: hz-grid-flow 5s linear infinite; }
   .hz-orbit { animation: hz-orbit-spin 14s linear infinite; }
+  .hz-orbit-outer { animation: hz-orbit-spin 26s linear infinite reverse; }
   .hz-scan-reveal { animation: hz-scan-down 1.1s ease-out forwards; }
   .hz-rail-live { position: relative; overflow: visible; }
   .hz-rail-live::after {
