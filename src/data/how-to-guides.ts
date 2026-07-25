@@ -344,4 +344,45 @@ export const HOW_TO_GUIDES: HowToGuide[] = [
     example:
       'A bonded mixed-material interior trim panel -> a mono-material clip-in panel: fully recyclable, and it deletes the adhesive station from the line.',
   },
+  {
+    id: 'horizon',
+    tool: 'BrainSpark Horizon',
+    tagline:
+      'Predicts which technologies will reshape your part across ICE/MHEV/PHEV/BEV — and when — using a curated technology register positioned by S-curve, diffusion and cost-curve models.',
+    whenToUse:
+      'Reach for Horizon before a sourcing decision or platform study: it tells you whether the technology you are quoting today will still be the right answer in 3, 5 or 8 years.',
+    steps: [
+      {
+        title: 'Open the tool',
+        detail: 'Go to Tools -> Horizon (in the Learn group).',
+      },
+      {
+        title: 'Name your part',
+        detail:
+          'Type the part or assembly the way you would say it — "BEV HV battery", "stator", "headlamps" — or just pick a commodity. Optionally filter to one powertrain.',
+      },
+      {
+        title: 'Click Predict',
+        detail:
+          'The register is matched deterministically: every technology shown carries an automotive TRL, a current adoption share, named production evidence and (where real) a dated regulation.',
+      },
+      {
+        title: 'Read the three horizons',
+        detail:
+          'Horizon 1 is production reality now — quote around it. Horizon 2 is the transition to plan for. Horizon 3 is worth tracking, not committing to. A gold "committed" badge means a regulation or named production programme anchors it; "speculative" means treat with care.',
+      },
+      {
+        title: 'Open the modelled projection',
+        detail:
+          'Each card expands to show adoption and cost-index projections at +3/+5/+8 years. These are labelled models (Bass diffusion, Wright\'s law) seeded from curated data — not measurements.',
+      },
+      {
+        title: 'Use the signals',
+        detail:
+          'With an API key set, an AI analyst briefing and one observable signal-to-watch per key technology are added — each grounded only in the cards on screen.',
+      },
+    ],
+    example:
+      '"EDU stator assembly" -> Horizon 1: 8-layer hairpin/X-pin windings (TRL 9, cost falling); Horizon 2: magnet-free EESM with inductive excitation; Horizon 3: iron-nitride magnets — watch Niron pilot magnets before betting a programme on them.',
+  },
 ];

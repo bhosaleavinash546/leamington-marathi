@@ -208,7 +208,8 @@ export function foresightFor({ query = '', commodity = null, powertrain = null }
   if (usedCommodity) pool = pool.filter((t) => t.commodity === usedCommodity);
 
   let matched = [];
-  if (String(query ?? '').trim()) {
+  const hasQuery = Boolean(String(query ?? '').trim());
+  if (hasQuery) {
     matched = resolveParts(query, pool);
     if (!matched.length && !usedCommodity) {
       // Free text that matched no terms: try the commodity classifier as a net.
@@ -216,6 +217,10 @@ export function foresightFor({ query = '', commodity = null, powertrain = null }
       if (inferred) {
         usedCommodity = inferred;
         pool = register.filter((t) => t.commodity === inferred);
+      } else {
+        // Nothing resolved the query and no commodity was chosen: say so
+        // honestly rather than dumping the whole register.
+        pool = [];
       }
     }
   }

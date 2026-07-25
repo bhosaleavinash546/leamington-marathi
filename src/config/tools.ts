@@ -6,6 +6,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Zap, Lightbulb, Target, Sparkles, GitCompare, Calculator, Box, CircuitBoard,
   Layers, GitMerge, ClipboardList, Store, TrendingUp, HelpCircle, Link2, Database,
+  Telescope,
 } from 'lucide-react';
 
 export type ToolCategory = 'generate' | 'cost' | 'track' | 'learn';
@@ -36,6 +37,7 @@ export const TOOLS: Tool[] = [
   { id: 'vave',        label: 'VAVE Tracker',      route: '/vave-tracker', icon: ClipboardList, category: 'track', description: 'Track approved ideas to realisation' },
   { id: 'marketplace', label: 'Idea Marketplace',  route: '/marketplace',  icon: Store,         category: 'track', description: 'Proven, benchmarked idea library' },
   // ── Learn ───────────────────────────────────────────────────────────────
+  { id: 'horizon',     label: 'Horizon',           route: '/horizon',      icon: Telescope,    category: 'learn', description: 'Predict future technologies for any part' },
   { id: 'trends',      label: 'Trends',            route: '/trends',       icon: TrendingUp,   category: 'learn', description: 'Domain cost trends and levers' },
   { id: 'help',        label: 'Help',              route: '/help',         icon: HelpCircle,   category: 'learn', description: 'How-to guides and FAQs' },
 ];

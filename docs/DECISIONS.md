@@ -54,3 +54,14 @@ Format: decision · why · what would change it.
 13. **Knowledge bases live in `src/data/*.ts`; `kb-pack.json` is generated (`npm run kb:export`).**
     *Why:* one substrate for display and generation; two copies drifted before. *Changes it:*
     a build-time hook could replace the manual export step.
+
+14. **Horizon foresight is deterministic machinery over a curated register, not LLM prediction.**
+    *Why:* "predict future technologies" is exactly where an LLM will hallucinate confident
+    dates; instead the register (`src/data/tech-foresight-register.mjs`) carries curated TRL /
+    adoption / dated regulations with production evidence, and `foresight.mjs` computes phases,
+    horizons, Bass adoption and Wright cost indices from it — the LLM only narrates on the cards
+    it is handed. Confidence tiers (committed/probable/speculative) and integrity tests (high
+    adoption requires evidence; TRL≤5 cannot claim adoption; unresolvable queries return
+    nothing, never the whole register) keep it honest. Projections are labelled "modelled".
+    *Changes it:* an evidence engine (patent velocity, live search) can strengthen the register,
+    but numbers must keep coming from the deterministic cores.

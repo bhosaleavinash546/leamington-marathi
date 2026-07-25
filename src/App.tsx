@@ -42,6 +42,7 @@ const PipelinePage = lazy(() => import('./pages/PipelinePage'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
 const TrizStudioPage = lazy(() => import('./pages/TrizStudioPage'));
 const InnovationStudioPage = lazy(() => import('./pages/InnovationStudioPage'));
+const ForesightPage = lazy(() => import('./pages/ForesightPage'));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -78,6 +79,7 @@ function AnimatedRoutes() {
         <Route path="/legal/:doc" element={<PageTransition><LegalPage /></PageTransition>} />
         <Route path="/triz" element={<ProtectedRoute><PageTransition><TrizStudioPage /></PageTransition></ProtectedRoute>} />
         <Route path="/innovate" element={<ProtectedRoute><PageTransition><InnovationStudioPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/horizon" element={<ProtectedRoute><PageTransition><ForesightPage /></PageTransition></ProtectedRoute>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

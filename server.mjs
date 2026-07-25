@@ -47,6 +47,7 @@ import { registerHarnessRoutes } from './routes/harness.mjs';
 import { registerOrgRoutes } from './routes/orgs.mjs';
 import { registerTrizRoutes } from './routes/triz.mjs';
 import { registerInnovationRoutes } from './routes/innovation.mjs';
+import { registerForesightRoutes } from './routes/foresight.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
 import { aggregateOcctMeshes, analyzeBrep } from './src/services/cad-brep.mjs';
 
@@ -3480,6 +3481,9 @@ registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, 
 // Innovation methods (Value Engineering, DFA, Design-to-Cost, SCAMPER,
 // Morphological, Effects & Trends, Circularity) — structured idea generation.
 registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
+// BrainSpark Horizon: deterministic technology foresight (register + S-curve/
+// Bass/Wright cores) with optional LLM narration on top.
+registerForesightRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
 // PCB → BOM → Cost v2: multi-photo vision BOM, multi-region costing, sensitivity,
 // engine-verified insights.
 registerPcbRoutes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, safeLlmError, db });

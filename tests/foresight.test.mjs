@@ -211,6 +211,15 @@ test('foresightFor: free-text query resolves via matchTerms, falls back to the c
   assert.ok(fb.count >= MIN_PER_COMMODITY);
 });
 
+test('foresightFor: an unresolvable query returns nothing, not the whole register', () => {
+  const r = foresightFor({ query: 'zzz nonsense widget' });
+  assert.equal(r.count, 0);
+  assert.equal(r.matchedByTerms, false);
+  // ...but an explicit commodity keeps its pool even if the free text misses.
+  const withCommodity = foresightFor({ query: 'zzz nonsense widget', commodity: 'Battery' });
+  assert.ok(withCommodity.count >= MIN_PER_COMMODITY);
+});
+
 test('foresightFor: deterministic — same inputs, same output', () => {
   const a = foresightFor({ query: 'battery pack', powertrain: 'BEV' });
   const b = foresightFor({ query: 'battery pack', powertrain: 'BEV' });
