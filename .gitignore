@@ -3,6 +3,6 @@ dist/
 .env
 .env.local
 *.local
-data/
+/data/
 users.json
 .claude/
