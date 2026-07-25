@@ -68,4 +68,52 @@ export async function searchPatents(title, description = '', { max = 5 } = {}, d
   return { configured: true, query, patents };
 }
 
+/**
+ * Patent filing velocity — filings per year matching a query, for the last
+ * `years` FULL calendar years (oldest first). Powers Horizon's evidence layer:
+ * a rising filing count is an observable signal that a technology shift is
+ * accelerating. Counts only — trend classification is foresight.mjs's job
+ * (math for numbers lives in one place).
+ * Unconfigured (no key) returns { configured:false, counts: [] } — callers
+ * degrade honestly, never fabricate a trend.
+ */
+export async function patentVelocity(query, { years = 5 } = {}, deps = {}) {
+  const { fetchImpl = fetch, env = process.env, now = () => Date.now() } = deps;
+  const key = (env.PATENTSVIEW_API_KEY || '').trim();
+  const q = String(query || '').trim();
+  if (!key) return { configured: false, query: q, counts: [] };
+  if (!q) return { configured: true, query: q, counts: [] };
+
+  const cacheKey = `velocity:${q}:${years}`;
+  const cached = _cache.get(cacheKey);
+  if (cached && now() - cached.at < CACHE_TTL_MS) return { configured: true, query: q, counts: cached.results, cached: true };
+
+  const lastFullYear = new Date(now()).getFullYear() - 1;
+  const counts = [];
+  for (let year = lastFullYear - years + 1; year <= lastFullYear; year++) {
+    const body = {
+      q: {
+        _and: [
+          { _gte: { patent_date: `${year}-01-01` } },
+          { _lte: { patent_date: `${year}-12-31` } },
+          { _or: [{ _text_any: { patent_title: q } }, { _text_any: { patent_abstract: q } }] },
+        ],
+      },
+      f: ['patent_id'],
+      o: { size: 1 },
+    };
+    const resp = await fetchImpl(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Api-Key': key },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!resp.ok) throw new Error(`PatentsView ${resp.status}`);
+    const data = await resp.json();
+    counts.push({ year, count: Number(data.total_hits ?? data.total_patent_count ?? 0) });
+  }
+  _cache.set(cacheKey, { at: now(), results: counts });
+  return { configured: true, query: q, counts };
+}
+
 export function __resetPatentCacheForTest() { _cache.clear(); }

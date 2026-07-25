@@ -142,6 +142,27 @@ export function momentumScore(tech, { now = REGISTER_VINTAGE, anchors = REG_ANCH
   return Math.round(trlPts + adoptPts + trendPts + driverPts + regPts + prodPts);
 }
 
+// ── Patent-velocity trend ────────────────────────────────────────────────────
+/**
+ * Classify a patent-filing time series [{ year, count }, ...] (oldest first,
+ * from patent-search.mjs patentVelocity). Compares the mean of the most recent
+ * two years against the two before, with ±15% deadband:
+ *   'accelerating' | 'steady' | 'declining', or null when there is no signal
+ * (fewer than 4 years, or effectively no filings at all).
+ */
+export function patentTrend(counts) {
+  if (!Array.isArray(counts) || counts.length < 4) return null;
+  const vals = counts.map((c) => Number(c.count) || 0);
+  const total = vals.reduce((a, b) => a + b, 0);
+  if (total < 5) return null;                      // a handful of hits is noise, not a trend
+  const recent = (vals[vals.length - 1] + vals[vals.length - 2]) / 2;
+  const prior = (vals[vals.length - 3] + vals[vals.length - 4]) / 2;
+  if (prior === 0) return recent > 0 ? 'accelerating' : null;
+  if (recent > prior * 1.15) return 'accelerating';
+  if (recent < prior * 0.85) return 'declining';
+  return 'steady';
+}
+
 // ── Confidence tiers (honesty architecture) ──────────────────────────────────
 /** committed: anchored to a regulation or named production programme.
  *  probable:  production-ready maturity (TRL ≥ 7) without a hard anchor.

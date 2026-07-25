@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, Radar } from 'lucide-react';
+import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, Radar, FileSearch, ExternalLink, Microscope } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -30,6 +30,21 @@ interface ForesightResult {
   note?: string;
 }
 interface Catalogue { commodities: string[]; powertrains: string[]; technologies: number; vintage: number; }
+interface PatentRef { number: string; title: string; date: string; assignee: string; url: string; }
+interface Evidence {
+  configured: boolean; patents: PatentRef[];
+  velocity: Array<{ year: number; count: number }>;
+  trend: 'accelerating' | 'steady' | 'declining' | null;
+  note: string;
+}
+interface DeepDive {
+  research: {
+    developments: Array<{ finding: string; sourceTitle: string; url: string }>;
+    sourcingImplication: string; risks: string;
+    registerVerdict: 'supports' | 'challenges' | 'mixed';
+  } | null;
+  note: string;
+}
 
 const EXAMPLES = ['BEV HV battery', 'EDU stator assembly', 'Inverter', 'Suspension', 'BIW underbody', 'Headlamps', 'Cockpit display', 'Seats', 'Wiring harness', 'HVAC / heat pump'];
 
@@ -48,8 +63,53 @@ const TREND_LABEL: Record<string, { text: string; cls: string }> = {
   rising: { text: 'cost ↑', cls: 'text-amber-400' },
 };
 
+const VERDICT_STYLE: Record<string, string> = {
+  supports: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300',
+  challenges: 'bg-amber-500/10 border-amber-500/30 text-amber-300',
+  mixed: 'bg-white/5 border-white/15 text-slate-300',
+};
+
 function TechCardView({ c, signal }: { c: TechCard; signal?: string }) {
+  const { token } = useAuth();
   const [open, setOpen] = useState(false);
+  const [evidence, setEvidence] = useState<Evidence | null>(null);
+  const [evLoading, setEvLoading] = useState(false);
+  const [dive, setDive] = useState<DeepDive | null>(null);
+  const [diveLoading, setDiveLoading] = useState(false);
+  const [diveError, setDiveError] = useState('');
+
+  async function loadEvidence() {
+    if (evidence) { setEvidence(null); return; }
+    setEvLoading(true);
+    try {
+      const r = await fetch('/api/foresight/evidence', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ techId: c.id }),
+      });
+      const d = await r.json();
+      if (r.ok) setEvidence(d);
+    } finally { setEvLoading(false); }
+  }
+
+  async function loadDeepDive() {
+    setDiveLoading(true); setDiveError('');
+    try {
+      const apiKey = localStorage.getItem('brainspark_api_key') || undefined;
+      const r = await fetch('/api/foresight/deepdive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ techId: c.id, apiKey }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Deep research failed.');
+      setDive(d);
+    } catch (e) {
+      setDiveError(e instanceof Error ? e.message : 'Deep research failed.');
+    } finally { setDiveLoading(false); }
+  }
+
+  const maxCount = Math.max(1, ...(evidence?.velocity ?? []).map(v => v.count));
   return (
     <div className="bg-navy-900 border border-white/10 rounded-2xl p-4 hover:border-gold-500/25 transition-all">
       <div className="flex items-start justify-between gap-2 mb-1.5">
@@ -80,9 +140,67 @@ function TechCardView({ c, signal }: { c: TechCard; signal?: string }) {
       {signal && <p className="text-teal-300 text-[11px] mb-1 flex items-center gap-1"><Radar size={11} className="shrink-0" /> Watch: {signal}</p>}
       <p className="text-slate-600 text-[11px]">{c.players.join(' · ')}</p>
 
-      <button onClick={() => setOpen(o => !o)} className="mt-2 flex items-center gap-1 text-slate-500 text-[11px] hover:text-slate-300">
-        {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />} {open ? 'Hide' : 'Show'} modelled projection
-      </button>
+      <div className="mt-2 flex flex-wrap items-center gap-3">
+        <button onClick={() => setOpen(o => !o)} className="flex items-center gap-1 text-slate-500 text-[11px] hover:text-slate-300">
+          {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />} {open ? 'Hide' : 'Show'} modelled projection
+        </button>
+        <button onClick={loadEvidence} disabled={evLoading} className="flex items-center gap-1 text-slate-500 text-[11px] hover:text-slate-300 disabled:opacity-50">
+          {evLoading ? <ButtonSpinner size={10} /> : <FileSearch size={12} />} {evidence ? 'Hide' : 'Patent'} evidence
+        </button>
+      </div>
+
+      {evidence && (
+        <div className="mt-2 rounded-lg bg-navy-800/70 border border-white/5 p-3">
+          {!evidence.configured && <p className="text-slate-500 text-[11px]">{evidence.note}</p>}
+          {evidence.configured && (
+            <>
+              <div className="flex items-end gap-1.5 mb-1" title="US patent filings per year matching this technology">
+                {evidence.velocity.map(v => (
+                  <div key={v.year} className="flex flex-col items-center gap-0.5">
+                    <div className="w-6 rounded-sm bg-teal-500/60" style={{ height: `${Math.max(3, (v.count / maxCount) * 34)}px` }} />
+                    <span className="text-slate-600 text-[9px]">{String(v.year).slice(2)}</span>
+                  </div>
+                ))}
+                {evidence.trend && (
+                  <span className={`ml-2 mb-2 px-1.5 py-0.5 rounded border text-[10px] ${evidence.trend === 'accelerating' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : evidence.trend === 'declining' ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' : 'bg-white/5 border-white/15 text-slate-400'}`}>
+                    filings {evidence.trend}
+                  </span>
+                )}
+              </div>
+              {evidence.patents.length > 0 && (
+                <div className="space-y-1 mt-2">
+                  {evidence.patents.map(p => (
+                    <a key={p.number} href={p.url} target="_blank" rel="noreferrer" className="flex items-start gap-1 text-[11px] text-slate-400 hover:text-teal-300">
+                      <ExternalLink size={10} className="shrink-0 mt-0.5" />
+                      <span>US{p.number} · {p.title.slice(0, 70)}{p.title.length > 70 ? '…' : ''} <span className="text-slate-600">({p.assignee}, {p.date.slice(0, 4)})</span></span>
+                    </a>
+                  ))}
+                </div>
+              )}
+              <p className="text-slate-600 text-[10px] mt-1.5">{evidence.note}</p>
+            </>
+          )}
+          <button onClick={loadDeepDive} disabled={diveLoading} className="mt-2 flex items-center gap-1 text-teal-400 text-[11px] hover:text-teal-300 disabled:opacity-50">
+            {diveLoading ? <ButtonSpinner size={10} /> : <Microscope size={12} />} Deep research (AI, cited sources)
+          </button>
+          {diveError && <p className="text-red-400 text-[11px] mt-1">{diveError}</p>}
+          {dive && !dive.research && <p className="text-slate-500 text-[11px] mt-1">{dive.note}</p>}
+          {dive?.research && (
+            <div className="mt-2 space-y-1.5">
+              <span className={`inline-block px-1.5 py-0.5 rounded border text-[10px] ${VERDICT_STYLE[dive.research.registerVerdict]}`}>evidence {dive.research.registerVerdict === 'supports' ? 'supports' : dive.research.registerVerdict === 'challenges' ? 'challenges' : 'is mixed on'} the register position</span>
+              {dive.research.developments.map((d, i) => (
+                <p key={i} className="text-slate-400 text-[11px] leading-relaxed">
+                  {d.finding}{' '}
+                  <a href={d.url} target="_blank" rel="noreferrer" className="text-teal-400 hover:text-teal-300">[{d.sourceTitle.slice(0, 40)}]</a>
+                </p>
+              ))}
+              <p className="text-slate-300 text-[11px]"><span className="text-slate-500">Sourcing:</span> {dive.research.sourcingImplication}</p>
+              <p className="text-amber-300/80 text-[11px]"><span className="text-slate-500">Uncertainty:</span> {dive.research.risks}</p>
+              <p className="text-slate-600 text-[10px]">{dive.note}</p>
+            </div>
+          )}
+        </div>
+      )}
       {open && (
         <div className="mt-2 rounded-lg bg-navy-800/70 border border-white/5 p-3">
           <table className="w-full text-[11px]">

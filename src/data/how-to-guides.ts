@@ -381,6 +381,11 @@ export const HOW_TO_GUIDES: HowToGuide[] = [
         detail:
           'With an API key set, an AI analyst briefing and one observable signal-to-watch per key technology are added — each grounded only in the cards on screen.',
       },
+      {
+        title: 'Pull the evidence',
+        detail:
+          'Each card has a Patent evidence button (filings per year from the US patent corpus, with a deterministic accelerating/steady/declining label) and a Deep research button — an AI synthesis of live search and patent results where every finding must cite a retrieved source; uncited claims are dropped automatically.',
+      },
     ],
     example:
       '"EDU stator assembly" -> Horizon 1: 8-layer hairpin/X-pin windings (TRL 9, cost falling); Horizon 2: magnet-free EESM with inductive excitation; Horizon 3: iron-nitride magnets — watch Niron pilot magnets before betting a programme on them.',

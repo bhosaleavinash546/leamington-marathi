@@ -5,7 +5,7 @@ import {
   REGISTER_VINTAGE, horizonWindows, sCurvePhase, horizonFor,
   bassAdoption, bassTimeFor, projectAdoption,
   wrightCostIndex, TREND_LEARNING, costOutlook,
-  momentumScore, confidenceTier, resolveParts, foresightFor,
+  momentumScore, confidenceTier, resolveParts, foresightFor, patentTrend,
 } from '../foresight.mjs';
 import { FORESIGHT_REGISTER, REG_ANCHORS, MIN_PER_COMMODITY } from '../src/data/tech-foresight-register.mjs';
 import { COMMODITY_KEYS } from '../src/data/commodity-classify.mjs';
@@ -141,6 +141,24 @@ test('costOutlook: falling trends produce sub-1 indices, rising above 1', () => 
   assert.ok(costOutlook(falling, 5) < 1);
   assert.ok(costOutlook(rising, 5) >= 1);
   assert.ok(TREND_LEARNING['falling-fast'] > TREND_LEARNING.falling);
+});
+
+// ── Patent-velocity trend ────────────────────────────────────────────────────
+
+const series = (...counts) => counts.map((count, i) => ({ year: 2021 + i, count }));
+
+test('patentTrend classifies acceleration, decline and steady with a deadband', () => {
+  assert.equal(patentTrend(series(10, 12, 20, 30, 40)), 'accelerating');
+  assert.equal(patentTrend(series(40, 38, 30, 12, 10)), 'declining');
+  assert.equal(patentTrend(series(20, 21, 20, 22, 21)), 'steady');
+});
+
+test('patentTrend refuses to see a trend in noise or thin data', () => {
+  assert.equal(patentTrend(series(0, 0, 0, 1, 1)), null, 'a handful of hits is not a signal');
+  assert.equal(patentTrend(series(10, 20, 30)), null, 'needs at least 4 years');
+  assert.equal(patentTrend([]), null);
+  assert.equal(patentTrend(null), null);
+  assert.equal(patentTrend(series(0, 0, 0, 0, 0)), null);
 });
 
 // ── Momentum + confidence ────────────────────────────────────────────────────

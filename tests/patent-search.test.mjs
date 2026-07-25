@@ -2,7 +2,7 @@
 // TTL cache — all via DI, no network.
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { providerStatus, buildPatentQuery, searchPatents, __resetPatentCacheForTest } from '../patent-search.mjs';
+import { providerStatus, buildPatentQuery, searchPatents, patentVelocity, __resetPatentCacheForTest } from '../patent-search.mjs';
 
 beforeEach(() => __resetPatentCacheForTest());
 
@@ -62,4 +62,49 @@ test('24h cache: second identical query never refetches; API errors throw', asyn
     searchPatents('different query entirely', '', {}, { ...deps, fetchImpl: async () => ({ ok: false, status: 403 }) }),
     /PatentsView 403/,
   );
+});
+
+// ── patentVelocity (Horizon evidence layer) ──────────────────────────────────
+
+test('patentVelocity: no key → configured:false, no counts, no fetch', async () => {
+  let fetched = false;
+  const r = await patentVelocity('axial flux motor', {}, { env: {}, fetchImpl: async () => { fetched = true; } });
+  assert.equal(r.configured, false);
+  assert.deepEqual(r.counts, []);
+  assert.equal(fetched, false);
+});
+
+test('patentVelocity: one count per full year, oldest first, date-bounded queries', async () => {
+  const bodies = [];
+  // "now" = mid-2026 → last full year 2025 → series 2021..2025.
+  const NOW = Date.UTC(2026, 6, 1);
+  const r = await patentVelocity('axial flux motor', { years: 5 }, {
+    env: { PATENTSVIEW_API_KEY: 'k' },
+    now: () => NOW,
+    fetchImpl: async (_url, opts) => {
+      const body = JSON.parse(opts.body);
+      bodies.push(body);
+      const year = Number(body.q._and[0]._gte.patent_date.slice(0, 4));
+      return { ok: true, json: async () => ({ total_hits: (year - 2020) * 10 }) };
+    },
+  });
+  assert.equal(r.configured, true);
+  assert.deepEqual(r.counts.map(c => c.year), [2021, 2022, 2023, 2024, 2025]);
+  assert.deepEqual(r.counts.map(c => c.count), [10, 20, 30, 40, 50]);
+  assert.equal(bodies.length, 5);
+  assert.equal(bodies[0].q._and[0]._gte.patent_date, '2021-01-01');
+  assert.equal(bodies[4].q._and[1]._lte.patent_date, '2025-12-31');
+});
+
+test('patentVelocity: series is cached for 24h per query', async () => {
+  let n = 0;
+  const deps = {
+    env: { PATENTSVIEW_API_KEY: 'k' },
+    now: () => Date.UTC(2026, 0, 15),
+    fetchImpl: async () => { n++; return { ok: true, json: async () => ({ total_hits: 3 }) }; },
+  };
+  await patentVelocity('solid state battery', {}, deps);
+  const second = await patentVelocity('solid state battery', {}, deps);
+  assert.equal(n, 5, 'five year-queries once, then cache');
+  assert.equal(second.cached, true);
 });
