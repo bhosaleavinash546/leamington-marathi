@@ -247,9 +247,11 @@ function techCard(tech, now, anchors) {
  * free-text query / commodity / powertrain, position each on the S-curve and
  * horizon map, and return horizon lanes sorted by momentum.
  */
-export function foresightFor({ query = '', commodity = null, powertrain = null } = {}, { now = REGISTER_VINTAGE, register = FORESIGHT_REGISTER, anchors = REG_ANCHORS } = {}) {
+export function foresightFor({ query = '', commodity = null, powertrain = null, segment = null } = {}, { now = REGISTER_VINTAGE, register = FORESIGHT_REGISTER, anchors = REG_ANCHORS } = {}) {
   let pool = register;
   let usedCommodity = commodity ?? null;
+  // Segment lens first: 'off-road' / 'luxury' narrows every later filter.
+  if (segment) pool = pool.filter((t) => t.segments?.includes(segment));
   if (usedCommodity) pool = pool.filter((t) => t.commodity === usedCommodity);
 
   let matched = [];
@@ -261,7 +263,7 @@ export function foresightFor({ query = '', commodity = null, powertrain = null }
       const inferred = inferCommodityKey(query);
       if (inferred) {
         usedCommodity = inferred;
-        pool = register.filter((t) => t.commodity === inferred);
+        pool = register.filter((t) => t.commodity === inferred && (!segment || t.segments?.includes(segment)));
       } else {
         // Nothing resolved the query and no commodity was chosen: say so
         // honestly rather than dumping the whole register.
@@ -282,6 +284,7 @@ export function foresightFor({ query = '', commodity = null, powertrain = null }
     query: String(query ?? ''),
     commodity: usedCommodity,
     powertrain: powertrain ?? null,
+    segment: segment ?? null,
     matchedByTerms: matched.length > 0,
     count: cards.length,
     windows: horizonWindows(now),

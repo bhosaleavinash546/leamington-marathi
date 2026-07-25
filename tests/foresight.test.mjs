@@ -8,7 +8,7 @@ import {
   momentumScore, confidenceTier, resolveParts, foresightFor, patentTrend,
   inflectionYears,
 } from '../foresight.mjs';
-import { FORESIGHT_REGISTER, REG_ANCHORS, MIN_PER_COMMODITY } from '../src/data/tech-foresight-register.mjs';
+import { FORESIGHT_REGISTER, REG_ANCHORS, MIN_PER_COMMODITY, SEGMENTS, SEGMENT_TAG_IDS, BENCHMARK_VEHICLES } from '../src/data/tech-foresight-register.mjs';
 import { COMMODITY_KEYS } from '../src/data/commodity-classify.mjs';
 
 // ── Register integrity — the curation rules, enforced ────────────────────────
@@ -75,6 +75,9 @@ const COVERAGE_QUERIES = [
   // Electrical / Thermal
   'wiring harness', 'ecu', 'lidar sensor', 'heat pump', 'hvac compressor', 'refrigerant system',
   'charge port', 'digital key',
+  // Off-road & luxury SUV
+  'locking differential', 'transfer case', 'low range gearbox', 'wading', 'terrain response',
+  'tank turn', 'skid plate', 'satellite connectivity', 'air purification', 'suspension preview', 'diff lock',
 ];
 
 test('coverage: every realistic part query resolves to technologies', () => {
@@ -90,6 +93,52 @@ test('coverage: every powertrain type has technologies in every horizon-relevant
   for (const pt of ['ICE', 'MHEV', 'PHEV', 'BEV']) {
     const r = foresightFor({ powertrain: pt });
     assert.ok(r.count >= 15, `${pt}: only ${r.count} technologies`);
+  }
+});
+
+// ── Off-Road & Luxury SUV segment lens ───────────────────────────────────────
+
+test('segments: tag map ids all resolve and tags land on entries', () => {
+  assert.deepEqual(SEGMENTS.sort(), ['luxury', 'off-road']);
+  const ids = new Set(FORESIGHT_REGISTER.map((t) => t.id));
+  for (const [seg, tagIds] of Object.entries(SEGMENT_TAG_IDS)) {
+    for (const id of tagIds) assert.ok(ids.has(id), `${seg}: unknown id ${id}`);
+    assert.equal(new Set(tagIds).size, tagIds.length, `${seg}: duplicate ids`);
+  }
+  for (const t of FORESIGHT_REGISTER) {
+    for (const s of t.segments ?? []) assert.ok(SEGMENTS.includes(s), `${t.id}: bad segment ${s}`);
+  }
+});
+
+test('segments: the off-road and luxury lenses are substantive', () => {
+  const offroad = foresightFor({ segment: 'off-road' });
+  assert.ok(offroad.count >= 15, `off-road: only ${offroad.count}`);
+  const luxury = foresightFor({ segment: 'luxury' });
+  assert.ok(luxury.count >= 15, `luxury: only ${luxury.count}`);
+  for (const c of [...offroad.horizons.H1, ...offroad.horizons.H2, ...offroad.horizons.H3]) {
+    assert.ok(c.segments?.includes('off-road'), `${c.id} leaked into off-road lens`);
+  }
+  // Lens composes with query and powertrain.
+  const q = foresightFor({ query: 'suspension', segment: 'off-road' });
+  assert.ok(q.count >= 2 && q.count < offroad.count);
+  const bev = foresightFor({ segment: 'off-road', powertrain: 'BEV' });
+  assert.ok(bev.count >= 8);
+});
+
+test('benchmarks: curated vehicle set is complete and plausible', () => {
+  assert.ok(BENCHMARK_VEHICLES.length >= 10);
+  const names = BENCHMARK_VEHICLES.map((b) => `${b.brand} ${b.vehicle}`);
+  assert.equal(new Set(names).size, names.length, 'duplicate vehicles');
+  const powertrains = new Set(['ICE', 'MHEV', 'PHEV', 'BEV']);
+  for (const b of BENCHMARK_VEHICLES) {
+    assert.ok(b.year >= 2010 && b.year <= 2026, `${b.vehicle}: year ${b.year}`);
+    assert.ok(b.signature.length >= 2, `${b.vehicle}: thin signature list`);
+    assert.ok(b.watch.length > 10, `${b.vehicle}: missing watch item`);
+    assert.ok(b.powertrains.length >= 1 && b.powertrains.every((p) => powertrains.has(p)), `${b.vehicle}: powertrains`);
+  }
+  // The disruptors that pressure the segment must be represented.
+  for (const brand of ['JLR', 'Mercedes-Benz', 'BYD', 'Rivian']) {
+    assert.ok(BENCHMARK_VEHICLES.some((b) => b.brand === brand), `missing ${brand}`);
   }
 });
 

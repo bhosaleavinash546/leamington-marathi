@@ -1,6 +1,7 @@
 import type { CommodityKey } from './commodity-classify.mjs';
 
 export type Powertrain = 'ICE' | 'MHEV' | 'PHEV' | 'BEV';
+export type Segment = 'off-road' | 'luxury';
 export type CostTrend = 'falling-fast' | 'falling' | 'flat' | 'rising';
 export type Driver = 'cost' | 'regulation' | 'performance' | 'weight' | 'software' | 'sustainability';
 
@@ -27,8 +28,21 @@ export interface ForesightTech {
   players: string[];
   note: string;
   matchTerms: string[];
+  segments?: Segment[];   // cross-cutting lens tags (off-road / luxury)
+}
+
+export interface BenchmarkVehicle {
+  vehicle: string;
+  brand: string;
+  year: number;
+  powertrains: Powertrain[];
+  signature: string[];
+  watch: string;
 }
 
 export const REG_ANCHORS: RegAnchor[];
 export const FORESIGHT_REGISTER: ForesightTech[];
 export const MIN_PER_COMMODITY: number;
+export const SEGMENTS: Segment[];
+export const SEGMENT_TAG_IDS: Record<Segment, string[]>;
+export const BENCHMARK_VEHICLES: BenchmarkVehicle[];

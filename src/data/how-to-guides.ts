@@ -359,7 +359,7 @@ export const HOW_TO_GUIDES: HowToGuide[] = [
       {
         title: 'Name your part',
         detail:
-          'Type the part or assembly the way you would say it — "BEV HV battery", "stator", "headlamps" — or just pick a commodity. Optionally filter to one powertrain.',
+          'Type the part or assembly the way you would say it — "BEV HV battery", "stator", "diff lock" — or just pick a commodity. Optionally filter to one powertrain, or switch on the Off-Road Features & Tech / Luxury Premium SUV segment lens to see the technologies (and the competitor benchmark vehicles) that define our segment.',
       },
       {
         title: 'Click Predict',

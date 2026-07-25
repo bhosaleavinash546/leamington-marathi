@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown } from 'lucide-react';
+import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown, Mountain, Gem } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { exportForesightPdf } from '../services/foresight-report';
@@ -24,6 +24,8 @@ interface TechCard {
 interface HorizonWindow { label: string; from: number; to: number | null; }
 interface ForesightResult {
   query: string; commodity: string | null; powertrain: string | null;
+  segment?: string | null;
+  benchmarks?: BenchmarkVehicle[];
   matchedByTerms: boolean; count: number;
   windows: { H1: HorizonWindow; H2: HorizonWindow; H3: HorizonWindow };
   horizons: { H1: TechCard[]; H2: TechCard[]; H3: TechCard[] };
@@ -32,7 +34,8 @@ interface ForesightResult {
   narrativeNote?: string | null;
   note?: string;
 }
-interface Catalogue { commodities: string[]; powertrains: string[]; technologies: number; vintage: number; }
+interface BenchmarkVehicle { vehicle: string; brand: string; year: number; powertrains: string[]; signature: string[]; watch: string; }
+interface Catalogue { commodities: string[]; powertrains: string[]; segments?: string[]; technologies: number; vintage: number; }
 interface PatentRef { number: string; title: string; date: string; assignee: string; url: string; }
 interface Evidence {
   configured: boolean; patents: PatentRef[];
@@ -363,6 +366,7 @@ export default function ForesightPage() {
   const [query, setQuery] = useState('');
   const [commodity, setCommodity] = useState('');
   const [powertrain, setPowertrain] = useState('');
+  const [segment, setSegment] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<ForesightResult | null>(null);
@@ -420,7 +424,7 @@ export default function ForesightPage() {
     try {
       const r = await fetch('/api/foresight/ledger', {
         method: 'POST', headers: authHeaders,
-        body: JSON.stringify({ query: result.query, commodity: result.commodity || undefined, powertrain: result.powertrain || undefined }),
+        body: JSON.stringify({ query: result.query, commodity: result.commodity || undefined, powertrain: result.powertrain || undefined, segment: result.segment || undefined }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Could not save.');
@@ -450,7 +454,7 @@ export default function ForesightPage() {
     panel?.panel.flatMap(p => p.critiques.filter(cr => cr.techId === techId).map(cr => ({ persona: p.persona, ...cr }))) ?? [];
 
   async function predict() {
-    if (!query.trim() && !commodity) { setError('Type a part or pick a commodity.'); return; }
+    if (!query.trim() && !commodity && !segment) { setError('Type a part, pick a commodity, or choose a segment lens.'); return; }
     if (!token) { setError('Please sign in.'); return; }
     setLoading(true); setError(''); setResult(null);
     setPanel(null); setPanelError(''); setSaveNote('');
@@ -459,7 +463,7 @@ export default function ForesightPage() {
       const r = await fetch('/api/foresight/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ query, commodity: commodity || undefined, powertrain: powertrain || undefined, apiKey }),
+        body: JSON.stringify({ query, commodity: commodity || undefined, powertrain: powertrain || undefined, segment: segment || undefined, apiKey }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Foresight failed.');
@@ -510,6 +514,22 @@ export default function ForesightPage() {
               <option value="">All commodities</option>
               {(catalogue?.commodities ?? []).map(c => <option key={c} value={c}>{c}</option>)}
             </select>
+          </div>
+          {/* Segment lens — the dedicated Off-Road / Luxury SUV category */}
+          <div className="flex flex-wrap items-center gap-2 mt-3">
+            <span className="text-slate-500 text-xs mr-1">Segment:</span>
+            <button onClick={() => setSegment('')}
+              className={`px-2.5 py-1 rounded-full border text-xs transition-colors ${segment === '' ? 'bg-gold-500/15 border-gold-500/40 text-gold-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
+              All vehicles
+            </button>
+            <button onClick={() => setSegment(s => s === 'off-road' ? '' : 'off-road')}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs transition-colors ${segment === 'off-road' ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
+              <Mountain size={12} /> Off-Road Features & Tech
+            </button>
+            <button onClick={() => setSegment(s => s === 'luxury' ? '' : 'luxury')}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs transition-colors ${segment === 'luxury' ? 'bg-violet-500/15 border-violet-500/40 text-violet-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
+              <Gem size={12} /> Luxury / Premium SUV
+            </button>
           </div>
           <div className="flex flex-wrap items-center gap-2 mt-3">
             <span className="text-slate-500 text-xs mr-1">Powertrain:</span>
@@ -644,6 +664,30 @@ export default function ForesightPage() {
               </div>
             )}
             {result.narrativeNote && <p className="text-center text-slate-500 text-xs max-w-xl mx-auto">{result.narrativeNote}</p>}
+
+            {/* Segment benchmark strip — the vehicles defining the bar */}
+            {result.benchmarks && result.benchmarks.length > 0 && (
+              <div className="max-w-6xl mx-auto">
+                <p className="text-slate-500 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Mountain size={12} /> Segment benchmarks — who sets the technology bar (curated evidence, not predictions)
+                </p>
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {result.benchmarks.map(b => (
+                    <div key={`${b.brand}-${b.vehicle}`} className="hz-card shrink-0 w-64 bg-navy-900 border border-white/10 rounded-2xl p-3.5">
+                      <div className="flex items-baseline justify-between gap-2 mb-1">
+                        <h3 className="text-white font-semibold text-sm leading-tight">{b.vehicle}</h3>
+                        <span className="text-slate-500 text-[10px] whitespace-nowrap">{b.year}</span>
+                      </div>
+                      <p className="text-slate-500 text-[11px] mb-1.5">{b.brand} · {b.powertrains.join('/')}</p>
+                      <ul className="space-y-0.5 mb-1.5">
+                        {b.signature.map((s, i) => <li key={i} className="text-slate-400 text-[11px] leading-snug">• {s}</li>)}
+                      </ul>
+                      <p className="text-teal-300/90 text-[11px] leading-snug"><span className="hz-ping-dot mr-1 align-middle" style={{ width: 5, height: 5 }} />Watch: {b.watch}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Regulatory anchors: a timeline, not a chip cloud */}
             {result.anchors.length > 0 && (

@@ -20,8 +20,13 @@ export interface ForesightReportCard {
   confidence: string; regAnchorDetail: ForesightReportAnchor | null;
   projection: { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null } };
 }
+export interface ForesightReportBenchmark {
+  vehicle: string; brand: string; year: number; powertrains: string[]; signature: string[]; watch: string;
+}
 export interface ForesightReportData {
   query: string; commodity: string | null; powertrain: string | null; count: number;
+  segment?: string | null;
+  benchmarks?: ForesightReportBenchmark[];
   windows: Record<'H1' | 'H2' | 'H3', { label: string }>;
   horizons: Record<'H1' | 'H2' | 'H3', ForesightReportCard[]>;
   anchors: ForesightReportAnchor[];
@@ -69,7 +74,8 @@ const HORIZON_TITLE: Record<'H1' | 'H2' | 'H3', string> = {
 export function exportForesightPdf(data: ForesightReportData, panelIn?: ForesightReportPanel | null): void {
   const result: ForesightReportData = deepPdfSafe(data);
   const panel: ForesightReportPanel | null = panelIn ? deepPdfSafe(panelIn) : null;
-  const subject = pdfSafe(result.query || result.commodity || 'Technology landscape') + (result.powertrain ? ` (${result.powertrain})` : '');
+  const segmentLabel = result.segment === 'off-road' ? 'Off-Road Features & Technologies' : result.segment === 'luxury' ? 'Luxury / Premium SUV' : '';
+  const subject = pdfSafe(result.query || result.commodity || segmentLabel || 'Technology landscape') + (result.powertrain ? ` (${result.powertrain})` : '');
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const PW = 210, PH = 297, ML = 14, MR = 14;
@@ -196,6 +202,25 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       doc.text(fitText(doc, `${a.name} — ${a.year} · ${a.region}`, CW), ML, y);
       y += 4.6;
       wrapped(a.effect, 9, [71, 85, 105]);
+      y += 2.5;
+    }
+  }
+
+  // ── Segment benchmarks (off-road / luxury lens) ────────────────────────────
+  if (result.benchmarks?.length) {
+    newPage();
+    sectionHeader(`Segment benchmarks — ${segmentLabel || 'the vehicles setting the technology bar'}`);
+    wrapped('Curated competitor evidence: signature technologies in production today, and the announced move to watch. This is benchmark data, not prediction.', 8.5, GRAY_RGB);
+    y += 2;
+    for (const b of result.benchmarks) {
+      ensure(24);
+      setColor(doc, NAVY_RGB);
+      doc.setFontSize(10.5);
+      doc.setFont('helvetica', 'bold');
+      doc.text(fitText(doc, `${b.vehicle} — ${b.brand} (${b.year}, ${b.powertrains.join('/')})`, CW), ML, y);
+      y += 4.8;
+      for (const s of b.signature) wrapped(`•  ${s}`, 8.5, [51, 65, 85]);
+      wrapped(`Watch: ${b.watch}`, 8.5, TEAL_RGB);
       y += 2.5;
     }
   }

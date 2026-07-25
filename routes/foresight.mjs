@@ -15,7 +15,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { randomUUID } from 'node:crypto';
 import { foresightFor, horizonWindows, patentTrend, projectAdoption, REGISTER_VINTAGE } from '../foresight.mjs';
-import { FORESIGHT_REGISTER, REG_ANCHORS } from '../src/data/tech-foresight-register.mjs';
+import { FORESIGHT_REGISTER, REG_ANCHORS, SEGMENTS, BENCHMARK_VEHICLES } from '../src/data/tech-foresight-register.mjs';
 import { COMMODITY_KEYS } from '../src/data/commodity-classify.mjs';
 import { searchPatents, patentVelocity, buildPatentQuery, providerStatus } from '../patent-search.mjs';
 import { messagesJson } from '../llm-json.mjs';
@@ -115,13 +115,16 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     vintage INTEGER NOT NULL,
     snapshot TEXT NOT NULL
   )`);
+  try { db.exec('ALTER TABLE foresight_ledger ADD COLUMN segment TEXT'); } catch { /* exists */ }
   // Register metadata — powers the Horizon page pickers and the honesty footer.
   app.get('/api/foresight/catalogue', (_req, res) => {
     res.json({
       commodities: COMMODITY_KEYS,
       powertrains: POWERTRAINS,
+      segments: SEGMENTS,
       technologies: FORESIGHT_REGISTER.length,
       anchors: REG_ANCHORS,
+      benchmarks: BENCHMARK_VEHICLES,
       windows: horizonWindows(REGISTER_VINTAGE),
       vintage: REGISTER_VINTAGE,
     });
@@ -131,10 +134,13 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     const query = sanitize(String(req.body?.query || ''), 200).trim();
     const commodity = COMMODITY_KEYS.includes(req.body?.commodity) ? req.body.commodity : null;
     const powertrain = POWERTRAINS.includes(req.body?.powertrain) ? req.body.powertrain : null;
-    if (!query && !commodity) return res.status(400).json({ error: 'Give a part/assembly name (e.g. "BEV HV battery", "stator assembly") or pick a commodity.' });
+    const segment = SEGMENTS.includes(req.body?.segment) ? req.body.segment : null;
+    if (!query && !commodity && !segment) return res.status(400).json({ error: 'Give a part/assembly name (e.g. "BEV HV battery", "diff lock"), pick a commodity, or choose the Off-Road / Luxury segment lens.' });
 
     // ── Step 1: deterministic foresight — the only source of numbers ──
-    const result = foresightFor({ query, commodity, powertrain });
+    const result = foresightFor({ query, commodity, powertrain, segment });
+    // Segment lens active → include the curated competitor benchmark set.
+    if (segment) result.benchmarks = BENCHMARK_VEHICLES;
     if (!result.count) {
       return res.json({ ...result, narrative: null, note: 'No register match for this input — try a commodity or a more common part name. The register only speaks where it has curated evidence; it never guesses.' });
     }
@@ -328,26 +334,27 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     const query = sanitize(String(req.body?.query || ''), 200).trim();
     const commodity = COMMODITY_KEYS.includes(req.body?.commodity) ? req.body.commodity : null;
     const powertrain = POWERTRAINS.includes(req.body?.powertrain) ? req.body.powertrain : null;
-    if (!query && !commodity) return res.status(400).json({ error: 'A ledger entry needs the query or commodity it predicts for.' });
-    const result = foresightFor({ query, commodity, powertrain });
+    const segment = SEGMENTS.includes(req.body?.segment) ? req.body.segment : null;
+    if (!query && !commodity && !segment) return res.status(400).json({ error: 'A ledger entry needs the query, commodity or segment it predicts for.' });
+    const result = foresightFor({ query, commodity, powertrain, segment });
     if (!result.count) return res.status(400).json({ error: 'Nothing to snapshot — this input matches no technologies.' });
     const entry = {
       id: randomUUID(),
       userId: req.user.id,
       createdAt: new Date().toISOString(),
-      query, commodity, powertrain,
+      query, commodity, powertrain, segment,
       vintage: REGISTER_VINTAGE,
       snapshot: JSON.stringify(snapshotCards(result)),
     };
-    db.prepare('INSERT INTO foresight_ledger (id, userId, createdAt, query, commodity, powertrain, vintage, snapshot) VALUES (?,?,?,?,?,?,?,?)')
-      .run(entry.id, entry.userId, entry.createdAt, entry.query, entry.commodity, entry.powertrain, entry.vintage, entry.snapshot);
+    db.prepare('INSERT INTO foresight_ledger (id, userId, createdAt, query, commodity, powertrain, segment, vintage, snapshot) VALUES (?,?,?,?,?,?,?,?,?)')
+      .run(entry.id, entry.userId, entry.createdAt, entry.query, entry.commodity, entry.powertrain, entry.segment, entry.vintage, entry.snapshot);
     res.json({ id: entry.id, createdAt: entry.createdAt, techCount: result.count, note: 'Snapshot stored. Revisit it after the register is re-curated to see drift and score the projections.' });
   });
 
   app.get('/api/foresight/ledger', requireAuth, (req, res) => {
-    const rows = db.prepare('SELECT id, createdAt, query, commodity, powertrain, vintage, snapshot FROM foresight_ledger WHERE userId = ? ORDER BY createdAt DESC LIMIT 50').all(req.user.id);
+    const rows = db.prepare('SELECT id, createdAt, query, commodity, powertrain, segment, vintage, snapshot FROM foresight_ledger WHERE userId = ? ORDER BY createdAt DESC LIMIT 50').all(req.user.id);
     res.json({
-      entries: rows.map((r) => ({ id: r.id, createdAt: r.createdAt, query: r.query, commodity: r.commodity, powertrain: r.powertrain, vintage: r.vintage, techCount: JSON.parse(r.snapshot).length })),
+      entries: rows.map((r) => ({ id: r.id, createdAt: r.createdAt, query: r.query, commodity: r.commodity, powertrain: r.powertrain, segment: r.segment, vintage: r.vintage, techCount: JSON.parse(r.snapshot).length })),
       currentVintage: REGISTER_VINTAGE,
     });
   });
@@ -358,7 +365,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     const row = db.prepare('SELECT * FROM foresight_ledger WHERE id = ? AND userId = ?').get(req.params.id, req.user.id);
     if (!row) return res.status(404).json({ error: 'Ledger entry not found.' });
     const then = JSON.parse(row.snapshot);
-    const now = foresightFor({ query: row.query || '', commodity: row.commodity, powertrain: row.powertrain });
+    const now = foresightFor({ query: row.query || '', commodity: row.commodity, powertrain: row.powertrain, segment: row.segment || null });
     const nowById = new Map([...now.horizons.H1, ...now.horizons.H2, ...now.horizons.H3].map((c) => [c.id, c]));
 
     const yearsElapsed = REGISTER_VINTAGE - row.vintage;
