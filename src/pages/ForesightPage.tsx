@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, Radar, FileSearch, ExternalLink, Microscope } from 'lucide-react';
+import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, Radar, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
+import { exportForesightPdf } from '../services/foresight-report';
 
 // BrainSpark Horizon — technology foresight for any part/commodity across
 // ICE/MHEV/PHEV/BEV. Every number on this page is deterministic (curated
@@ -45,6 +46,23 @@ interface DeepDive {
   } | null;
   note: string;
 }
+interface PanelCritique { techId: string; stance: 'agree' | 'caution' | 'challenge'; note: string; }
+interface PanelResult { panel: Array<{ persona: string; focus: string; critiques: PanelCritique[] }>; note: string; }
+interface LedgerEntry { id: string; createdAt: string; query: string | null; commodity: string | null; powertrain: string | null; vintage: number; techCount: number; }
+interface LedgerRevisit {
+  id: string; createdAt: string; query: string | null; commodity: string | null;
+  thenVintage: number; nowVintage: number; yearsElapsed: number;
+  drift: Array<{
+    id: string; name: string; removed: boolean;
+    trlDelta?: number; adoptionDelta?: number; horizonMoved?: boolean; momentumDelta?: number;
+    projectionError?: number; projectedForNow?: number;
+    then: { trl: number; adoptionPct: number; horizon: string; momentum: number };
+    now: { trl: number; adoptionPct: number; horizon: string; momentum: number } | null;
+  }>;
+  addedTechIds: string[];
+  score: { meanAbsProjectionError: number; scored: number } | null;
+  note: string;
+}
 
 const EXAMPLES = ['BEV HV battery', 'EDU stator assembly', 'Inverter', 'Suspension', 'BIW underbody', 'Headlamps', 'Cockpit display', 'Seats', 'Wiring harness', 'HVAC / heat pump'];
 
@@ -69,7 +87,13 @@ const VERDICT_STYLE: Record<string, string> = {
   mixed: 'bg-white/5 border-white/15 text-slate-300',
 };
 
-function TechCardView({ c, signal }: { c: TechCard; signal?: string }) {
+const STANCE_STYLE: Record<PanelCritique['stance'], string> = {
+  agree: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300',
+  caution: 'bg-amber-500/10 border-amber-500/30 text-amber-300',
+  challenge: 'bg-red-500/10 border-red-500/30 text-red-300',
+};
+
+function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; critiques?: Array<{ persona: string } & PanelCritique> }) {
   const { token } = useAuth();
   const [open, setOpen] = useState(false);
   const [evidence, setEvidence] = useState<Evidence | null>(null);
@@ -139,6 +163,16 @@ function TechCardView({ c, signal }: { c: TechCard; signal?: string }) {
       )}
       {signal && <p className="text-teal-300 text-[11px] mb-1 flex items-center gap-1"><Radar size={11} className="shrink-0" /> Watch: {signal}</p>}
       <p className="text-slate-600 text-[11px]">{c.players.join(' · ')}</p>
+      {critiques && critiques.length > 0 && (
+        <div className="mt-1.5 space-y-1">
+          {critiques.map((cr, i) => (
+            <p key={i} className="text-[11px] leading-snug">
+              <span className={`inline-block px-1.5 py-px mr-1 rounded border text-[10px] ${STANCE_STYLE[cr.stance]}`}>{cr.persona}: {cr.stance}</span>
+              <span className="text-slate-400">{cr.note}</span>
+            </p>
+          ))}
+        </div>
+      )}
 
       <div className="mt-2 flex flex-wrap items-center gap-3">
         <button onClick={() => setOpen(o => !o)} className="flex items-center gap-1 text-slate-500 text-[11px] hover:text-slate-300">
@@ -246,15 +280,84 @@ export default function ForesightPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<ForesightResult | null>(null);
+  const [panel, setPanel] = useState<PanelResult | null>(null);
+  const [panelLoading, setPanelLoading] = useState(false);
+  const [panelError, setPanelError] = useState('');
+  const [ledger, setLedger] = useState<LedgerEntry[] | null>(null);
+  const [ledgerOpen, setLedgerOpen] = useState(false);
+  const [revisit, setRevisit] = useState<LedgerRevisit | null>(null);
+  const [saveNote, setSaveNote] = useState('');
 
   useEffect(() => {
     fetch('/api/foresight/catalogue').then(r => r.json()).then(setCatalogue).catch(() => {});
   }, []);
 
+  const authHeaders = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+
+  async function convenePanel() {
+    if (!result) return;
+    setPanelLoading(true); setPanelError('');
+    try {
+      const cards = [...result.horizons.H1, ...result.horizons.H2, ...result.horizons.H3];
+      const techIds = cards.sort((a, b) => b.momentum - a.momentum).slice(0, 12).map(c => c.id);
+      const apiKey = localStorage.getItem('brainspark_api_key') || undefined;
+      const r = await fetch('/api/foresight/critique', { method: 'POST', headers: authHeaders, body: JSON.stringify({ techIds, apiKey }) });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Panel critique failed.');
+      setPanel(d);
+    } catch (e) {
+      setPanelError(e instanceof Error ? e.message : 'Panel critique failed.');
+    } finally { setPanelLoading(false); }
+  }
+
+  async function loadLedger() {
+    try {
+      const r = await fetch('/api/foresight/ledger', { headers: authHeaders });
+      const d = await r.json();
+      if (r.ok) setLedger(d.entries);
+    } catch { /* list stays stale */ }
+  }
+
+  async function saveToLedger() {
+    if (!result) return;
+    setSaveNote('');
+    try {
+      const r = await fetch('/api/foresight/ledger', {
+        method: 'POST', headers: authHeaders,
+        body: JSON.stringify({ query: result.query, commodity: result.commodity || undefined, powertrain: result.powertrain || undefined }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Could not save.');
+      setSaveNote(`Snapshot of ${d.techCount} positions saved to the ledger.`);
+      setLedgerOpen(true);
+      loadLedger();
+    } catch (e) {
+      setSaveNote(e instanceof Error ? e.message : 'Could not save.');
+    }
+  }
+
+  async function openRevisit(id: string) {
+    try {
+      const r = await fetch(`/api/foresight/ledger/${id}`, { headers: authHeaders });
+      const d = await r.json();
+      if (r.ok) setRevisit(d);
+    } catch { /* leave closed */ }
+  }
+
+  async function deleteEntry(id: string) {
+    await fetch(`/api/foresight/ledger/${id}`, { method: 'DELETE', headers: authHeaders }).catch(() => {});
+    if (revisit?.id === id) setRevisit(null);
+    loadLedger();
+  }
+
+  const critiquesFor = (techId: string) =>
+    panel?.panel.flatMap(p => p.critiques.filter(cr => cr.techId === techId).map(cr => ({ persona: p.persona, ...cr }))) ?? [];
+
   async function predict() {
     if (!query.trim() && !commodity) { setError('Type a part or pick a commodity.'); return; }
     if (!token) { setError('Please sign in.'); return; }
     setLoading(true); setError(''); setResult(null);
+    setPanel(null); setPanelError(''); setSaveNote('');
     try {
       const apiKey = localStorage.getItem('brainspark_api_key') || undefined;
       const r = await fetch('/api/foresight/predict', {
@@ -329,12 +432,94 @@ export default function ForesightPage() {
           </button>
         </div>
 
+        {/* Prediction Ledger — the tool keeps score on itself */}
+        <div className="max-w-4xl mx-auto mb-6">
+          <button onClick={() => { setLedgerOpen(o => !o); if (!ledger) loadLedger(); }}
+            className="flex items-center gap-1.5 text-slate-500 text-xs hover:text-slate-300 mx-auto">
+            {ledgerOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />} <BookMarked size={13} /> Prediction Ledger {ledger ? `(${ledger.length})` : ''}
+          </button>
+          {ledgerOpen && (
+            <div className="mt-3 bg-navy-900 border border-white/10 rounded-2xl p-4">
+              {(!ledger || ledger.length === 0) && <p className="text-slate-500 text-xs">No snapshots yet. Run a prediction and save it — revisiting later shows how the register moved and scores the projections. A foresight tool that never checks its own past predictions is astrology.</p>}
+              {ledger && ledger.length > 0 && (
+                <div className="space-y-2">
+                  {ledger.map(e => (
+                    <div key={e.id} className="flex items-center gap-2 text-xs">
+                      <span className="text-slate-300 flex-1 truncate">{e.query || e.commodity}{e.powertrain ? ` · ${e.powertrain}` : ''}</span>
+                      <span className="text-slate-600">{e.createdAt.slice(0, 10)} · {e.techCount} techs · v{e.vintage}</span>
+                      <button onClick={() => openRevisit(e.id)} className="flex items-center gap-1 px-2 py-0.5 rounded border border-white/10 text-slate-400 hover:text-teal-300 hover:border-teal-500/30" title="Revisit: drift vs today's register">
+                        <RotateCcw size={11} /> Revisit
+                      </button>
+                      <button onClick={() => deleteEntry(e.id)} aria-label="Delete entry" className="p-1 text-slate-600 hover:text-red-400"><Trash2 size={12} /></button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {revisit && (
+                <div className="mt-3 rounded-lg bg-navy-800/70 border border-white/5 p-3">
+                  <p className="text-slate-300 text-xs font-semibold mb-1">
+                    Revisit: {revisit.query || revisit.commodity} — snapshot {revisit.createdAt.slice(0, 10)} (register v{revisit.thenVintage}) vs today (v{revisit.nowVintage})
+                  </p>
+                  {revisit.score && <p className="text-teal-300 text-xs mb-1">Projection score: mean abs error {revisit.score.meanAbsProjectionError} adoption pts over {revisit.score.scored} technologies (lower is better).</p>}
+                  <p className="text-slate-500 text-[11px] mb-2">{revisit.note}</p>
+                  <div className="space-y-1">
+                    {revisit.drift.map(d => (
+                      <p key={d.id} className="text-[11px] text-slate-400">
+                        <span className="text-slate-300">{d.name}</span>{' — '}
+                        {d.removed ? <span className="text-amber-300">removed from register</span> : (
+                          (d.trlDelta || d.adoptionDelta || d.horizonMoved || (d.momentumDelta ?? 0) !== 0)
+                            ? <>
+                                {d.trlDelta ? `TRL ${d.trlDelta > 0 ? '+' : ''}${d.trlDelta} ` : ''}
+                                {d.adoptionDelta ? `adoption ${d.adoptionDelta > 0 ? '+' : ''}${d.adoptionDelta}pt ` : ''}
+                                {d.horizonMoved && d.now ? `horizon ${d.then.horizon}→${d.now.horizon} ` : ''}
+                                {typeof d.projectionError === 'number' ? `· projected ${d.projectedForNow}% vs curated ${d.now?.adoptionPct}% (err ${d.projectionError}pt)` : ''}
+                              </>
+                            : <span className="text-slate-600">unchanged</span>
+                        )}
+                      </p>
+                    ))}
+                    {revisit.addedTechIds.length > 0 && <p className="text-[11px] text-teal-300">New in register since snapshot: {revisit.addedTechIds.join(', ')}</p>}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* Results */}
         {result && result.count === 0 && (
           <p className="text-center text-slate-500 text-sm max-w-xl mx-auto">{result.note}</p>
         )}
         {result && result.count > 0 && (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+            {/* Result actions */}
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <button onClick={convenePanel} disabled={panelLoading || !!panel}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 disabled:opacity-50 text-xs transition-colors">
+                {panelLoading ? <ButtonSpinner size={12} /> : <Users size={13} />} {panel ? 'Panel convened' : 'Convene expert panel (AI)'}
+              </button>
+              <button onClick={saveToLedger}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-teal-500/30 bg-teal-500/10 text-teal-300 hover:bg-teal-500/20 text-xs transition-colors">
+                <BookMarked size={13} /> Save to Prediction Ledger
+              </button>
+              <button onClick={() => result && exportForesightPdf(result, panel)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 text-xs transition-colors">
+                <FileDown size={13} /> Export report (PDF)
+              </button>
+            </div>
+            {panelError && <p className="text-center text-red-400 text-xs">{panelError}</p>}
+            {saveNote && <p className="text-center text-teal-300 text-xs">{saveNote}</p>}
+            {panel && (
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {panel.panel.map(p => (
+                  <span key={p.persona} className="px-2.5 py-1 rounded-lg bg-violet-500/5 border border-violet-500/20 text-violet-300/90 text-xs" title={p.focus}>
+                    {p.persona} · {p.critiques.length} views
+                  </span>
+                ))}
+                <span className="text-slate-600 text-[11px] w-full text-center">{panel.note}</span>
+              </div>
+            )}
+
             {/* Analyst briefing (LLM, grounded) or honest degradation note */}
             {result.narrative?.briefing && (
               <div className="bg-navy-900 border border-gold-500/20 rounded-2xl p-5 max-w-4xl mx-auto">
@@ -368,7 +553,7 @@ export default function ForesightPage() {
                   </div>
                   <div className="space-y-3 mt-2">
                     {result.horizons[lane.key].length === 0 && <p className="text-slate-600 text-xs px-1 py-2">Nothing in this window for this selection.</p>}
-                    {result.horizons[lane.key].map(c => <TechCardView key={c.id} c={c} signal={signalFor(c.id)} />)}
+                    {result.horizons[lane.key].map(c => <TechCardView key={c.id} c={c} signal={signalFor(c.id)} critiques={critiquesFor(c.id)} />)}
                   </div>
                 </div>
               ))}

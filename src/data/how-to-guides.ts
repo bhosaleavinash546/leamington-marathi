@@ -386,6 +386,11 @@ export const HOW_TO_GUIDES: HowToGuide[] = [
         detail:
           'Each card has a Patent evidence button (filings per year from the US patent corpus, with a deterministic accelerating/steady/declining label) and a Deep research button — an AI synthesis of live search and patent results where every finding must cite a retrieved source; uncited claims are dropped automatically.',
       },
+      {
+        title: 'Challenge it, export it, keep score',
+        detail:
+          'Convene the expert panel (three AI sceptics — over-hype, supply-chain, regulatory — who critique timing without changing any position), export the full landscape as a branded PDF report, and save a snapshot to the Prediction Ledger. Revisiting a snapshot later shows exactly how the register moved and scores the old projections — the tool keeps score on itself.',
+      },
     ],
     example:
       '"EDU stator assembly" -> Horizon 1: 8-layer hairpin/X-pin windings (TRL 9, cost falling); Horizon 2: magnet-free EESM with inductive excitation; Horizon 3: iron-nitride magnets — watch Niron pilot magnets before betting a programme on them.',

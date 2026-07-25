@@ -11,4 +11,9 @@ const { exportToPdf, exportRfqPdf } = await import('./export-service.bundle.mjs'
 const { RESULT } = await import('./fixture.mjs');
 exportToPdf(RESULT, 'Powertrain — BEV / MHEV', 'Electric Drive Unit (EDU)');
 exportRfqPdf(RESULT, 'Powertrain — BEV / MHEV', 'Electric Drive Unit (EDU)', RESULT.ideas.slice(0, 5));
+
+const { exportForesightPdf } = await import('./foresight-report.bundle.mjs');
+const { FORESIGHT_RESULT, FORESIGHT_PANEL } = await import('./fixture-foresight.mjs');
+exportForesightPdf(FORESIGHT_RESULT, FORESIGHT_PANEL);
+
 console.log('rendered:', fs.readdirSync('.').filter(f => f.endsWith('.pdf')));

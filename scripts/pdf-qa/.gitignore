@@ -1,2 +1,2 @@
-export-service.bundle.mjs
+*.bundle.mjs
 *.pdf

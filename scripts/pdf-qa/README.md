@@ -9,9 +9,16 @@ bottom. Run after ANY change to src/services/export-service.ts:
 npx esbuild src/services/export-service.ts --bundle --format=esm --platform=node \
   --external:jspdf --external:pptxgenjs --external:exceljs \
   --outfile=scripts/pdf-qa/export-service.bundle.mjs
-sed -i 's/import jsPDF from "jspdf";/import { jsPDF } from "jspdf";/' scripts/pdf-qa/export-service.bundle.mjs
+npx esbuild src/services/foresight-report.ts --bundle --format=esm --platform=node \
+  --external:jspdf \
+  --outfile=scripts/pdf-qa/foresight-report.bundle.mjs
+sed -i 's/import jsPDF from "jspdf";/import { jsPDF } from "jspdf";/' scripts/pdf-qa/*.bundle.mjs
 cd scripts/pdf-qa && node render.mjs && python3 scan.py *.pdf
 ```
+
+Also renders the Horizon foresight report (full 75-card register + hostile
+AI-layer fixture in fixture-foresight.mjs) — run after any change to
+src/services/foresight-report.ts too.
 
 `scan.py` needs `pip install pymupdf`. The bundle + generated PDFs are
 gitignored — only the harness itself is tracked.
