@@ -31,10 +31,10 @@ const RULES = [
   ['Battery', /battery|\bbms\b|\bcell\b|charging|\bhv\b|pack thermal|pack structure|bev architecture/],
   ['Powertrain', /powertrain|engine|exhaust|fuel|hybrid|reev|combustion|\bmhev\b|\bphev\b/],
   ['Chassis', /suspension|brak(e|ing)|steering|knuckle|\bhub\b|wheel|\btyre\b|\btire\b|damper|spring|control arm|wishbone|subframe|chassis|torque vector|\bride\b|off-?road/],
-  ['Interior', /interior|\bseat|cockpit|instrument panel|console|\btrim\b|display|infotainment|hvac|climate/],
-  ['Exterior', /exterior|lighting|\blamp|glazing|sealing|bumper|fascia|grille|closure|\bdoor\b|wheel arch|\baero\b|mirror|wiper|\broof\b/],
+  ['Interior', /interior|\bseat|cockpit|instrument panel|console|\btrim\b|display|infotainment|hvac|climate|visor/],
+  ['Exterior', /exterior|lighting|\blamp|glazing|sealing|bumper|fascia|grille|closure|\bdoor\b|wheel arch|\baero\b|mirror|wiper|washer|\broof\b/],
   ['BIW', /body|biw|pillar|rocker|sill|crash|underbody|floor|structure|front end|load floor|fender|cowl|cross-?member/],
-  ['Electrical', /electrical|harness|wiring|\becu\b|connector|e\/e|electronic|software|\badas\b|sensor|connectivity|\bfuse|domain controller|nvh|cooling/],
+  ['Electrical', /electrical|harness|wiring|\becu\b|connector|e\/e|electronic|software|\badas\b|sensor|connectivity|\bfuse|relay|\busb\b|antenna|domain controller|nvh|cooling/],
 ];
 
 /**

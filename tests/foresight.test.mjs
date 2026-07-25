@@ -128,6 +128,10 @@ const COVERAGE_QUERIES = [
   // SDV / ADAS / software / safety
   'self driving software', 'driver monitoring', 'v2x', 'parking assist', 'ai compute soc',
   'virtual ecu', 'ota subscription', 'digital twin simulation', 'aeb emergency braking', 'imaging radar',
+  // 2026 full-BOM sweep additions (each was a dead-end before F10)
+  'pistons', 'timing chain', 'intercooler', 'muffler', 'spark plug', 'cvt', 'dc-dc converter', 'eps',
+  'evaporator', 'ptc heater', 'radiator', 'condenser', 'cooling fan', 'relay', 'antenna', 'amplifier',
+  'fuel cell stack', 'pyro fuse', '12v battery', 'window regulator', 'door module', 'sun visor', 'washer system',
 ];
 
 test('coverage: every realistic part query resolves to technologies', () => {
