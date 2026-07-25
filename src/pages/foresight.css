@@ -34,9 +34,9 @@
 /* Radar ring around the telescope: a slow conic sweep + expanding echo ring. */
 .hz-radar {
   position: absolute;
-  inset: -14px;
+  inset: -18px;
   border-radius: 9999px;
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.22);
 }
 .hz-radar::before {
   content: '';
@@ -47,7 +47,7 @@
 }
 .hz-radar-echo {
   position: absolute;
-  inset: -14px;
+  inset: -18px;
   border-radius: 9999px;
   border: 1px solid rgba(245, 158, 11, 0.35);
   opacity: 0;
@@ -157,21 +157,21 @@
 /* Orbit ring + satellite around the telescope mark. */
 .hz-orbit {
   position: absolute;
-  inset: -26px;
+  inset: -34px;
   border-radius: 9999px;
-  border: 1px dashed rgba(94, 234, 212, 0.25);
+  border: 1px dashed rgba(94, 234, 212, 0.28);
   pointer-events: none;
 }
 .hz-orbit-sat {
   position: absolute;
-  top: -3px;
+  top: -3.5px;
   left: 50%;
-  width: 5px;
-  height: 5px;
-  margin-left: -2.5px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
   border-radius: 9999px;
   background: #5eead4;
-  box-shadow: 0 0 8px 1px rgba(94, 234, 212, 0.7);
+  box-shadow: 0 0 10px 2px rgba(94, 234, 212, 0.7);
 }
 
 /* ── Futurism v2: HUD material ──────────────────────────────────────────────── */
