@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, Radar, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown } from 'lucide-react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { exportForesightPdf } from '../services/foresight-report';
+import './foresight.css';
 
 // BrainSpark Horizon — technology foresight for any part/commodity across
 // ICE/MHEV/PHEV/BEV. Every number on this page is deterministic (curated
@@ -93,6 +94,49 @@ const STANCE_STYLE: Record<PanelCritique['stance'], string> = {
   challenge: 'bg-red-500/10 border-red-500/30 text-red-300',
 };
 
+// ── Motion-language micro-visuals (deterministic data, drawn not decorated) ──
+
+// Where each S-curve phase sits along the logistic curve.
+const PHASE_POS: Record<string, number> = { research: 0.12, demonstration: 0.32, takeoff: 0.52, growth: 0.72, mainstream: 0.9 };
+const logisticY = (x: number) => 1 / (1 + Math.exp(-9 * (x - 0.5)));
+
+/** Tiny S-curve that draws itself, with a marker at THIS tech's phase. */
+function SCurveSpark({ phase }: { phase: string }) {
+  const W = 78, H = 24, PAD = 3;
+  const pts: string[] = [];
+  for (let i = 0; i <= 26; i++) {
+    const x = i / 26;
+    pts.push(`${(PAD + x * (W - 2 * PAD)).toFixed(1)},${(H - PAD - logisticY(x) * (H - 2 * PAD)).toFixed(1)}`);
+  }
+  const mx = PHASE_POS[phase] ?? 0.5;
+  const cx = PAD + mx * (W - 2 * PAD);
+  const cy = H - PAD - logisticY(mx) * (H - 2 * PAD);
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="shrink-0" aria-label={`S-curve position: ${phase}`} role="img">
+      <polyline points={pts.join(' ')} fill="none" stroke="rgba(148,163,184,0.35)" strokeWidth="1.5" strokeLinecap="round" className="hz-draw" />
+      <circle cx={cx} cy={cy} r="5.5" fill="none" stroke="rgba(245,158,11,0.35)" strokeWidth="1" className="hz-marker" />
+      <circle cx={cx} cy={cy} r="2.8" fill="#f59e0b" className="hz-marker" />
+    </svg>
+  );
+}
+
+/** Modelled adoption path (now → +8y) as a small drawn area chart. */
+function BassSpark({ adoption }: { adoption: Record<string, number> }) {
+  const vals = [adoption.now, adoption.in3, adoption.in5, adoption.in8];
+  const W = 118, H = 32, PAD = 4;
+  const max = Math.max(...vals, 1);
+  const px = (i: number) => PAD + (i / 3) * (W - 2 * PAD);
+  const py = (v: number) => H - PAD - (v / max) * (H - 2 * PAD);
+  const line = vals.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(' ');
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="shrink-0" aria-label="Modelled adoption path" role="img">
+      <polygon points={`${PAD},${H - PAD} ${line} ${W - PAD},${H - PAD}`} fill="rgba(45,212,191,0.12)" />
+      <polyline points={line} fill="none" stroke="#2dd4bf" strokeWidth="1.5" strokeLinecap="round" className="hz-draw" />
+      {vals.map((v, i) => <circle key={i} cx={px(i)} cy={py(v)} r="2" fill="#2dd4bf" className="hz-marker" />)}
+    </svg>
+  );
+}
+
 function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; critiques?: Array<{ persona: string } & PanelCritique> }) {
   const { token } = useAuth();
   const [open, setOpen] = useState(false);
@@ -134,22 +178,31 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
   }
 
   const maxCount = Math.max(1, ...(evidence?.velocity ?? []).map(v => v.count));
+  const reduced = useReducedMotion();
   return (
-    <div className="bg-navy-900 border border-white/10 rounded-2xl p-4 hover:border-gold-500/25 transition-all">
+    <div className="hz-card bg-navy-900 border border-white/10 rounded-2xl p-4 hover:border-gold-500/25">
       <div className="flex items-start justify-between gap-2 mb-1.5">
         <h3 className="text-white font-semibold text-sm leading-snug">{c.name}</h3>
-        <span className={`shrink-0 px-2 py-0.5 rounded-md border text-[10px] font-semibold uppercase tracking-wide ${CONFIDENCE_STYLE[c.confidence]}`}>{c.confidence}</span>
+        <span className={`shrink-0 px-2 py-0.5 rounded-md border text-[10px] font-semibold uppercase tracking-wide ${CONFIDENCE_STYLE[c.confidence]} ${c.confidence === 'committed' ? 'hz-committed' : ''}`}>{c.confidence}</span>
       </div>
-      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] mb-2">
-        <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300">TRL {c.trl}</span>
-        <span className="text-slate-400">{PHASE_LABEL[c.phase] ?? c.phase}</span>
-        <span className={TREND_LABEL[c.costTrend]?.cls ?? 'text-slate-400'}>{TREND_LABEL[c.costTrend]?.text}</span>
-        <span className="text-slate-500">{c.powertrains.join(' · ')}</span>
+      <div className="flex items-end justify-between gap-2 mb-2">
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px]">
+          <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300">TRL {c.trl}</span>
+          <span className="text-slate-400">{PHASE_LABEL[c.phase] ?? c.phase}</span>
+          <span className={TREND_LABEL[c.costTrend]?.cls ?? 'text-slate-400'}>{TREND_LABEL[c.costTrend]?.text}</span>
+          <span className="text-slate-500">{c.powertrains.join(' · ')}</span>
+        </div>
+        <div title={`S-curve position: ${PHASE_LABEL[c.phase] ?? c.phase}`}><SCurveSpark phase={c.phase} /></div>
       </div>
-      {/* Momentum bar — deterministic 0-100 */}
+      {/* Momentum bar — deterministic 0-100, sweeps in from zero */}
       <div className="flex items-center gap-2 mb-2" title="Momentum: maturity + adoption + cost trajectory + drivers + regulation + production evidence">
         <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
-          <div className="h-full rounded-full bg-gradient-to-r from-teal-500 to-gold-400" style={{ width: `${c.momentum}%` }} />
+          <motion.div
+            className="h-full rounded-full bg-gradient-to-r from-teal-500 to-gold-400"
+            initial={reduced ? { width: `${c.momentum}%` } : { width: 0 }}
+            animate={{ width: `${c.momentum}%` }}
+            transition={{ duration: 0.9, delay: 0.25, ease: 'easeOut' }}
+          />
         </div>
         <span className="text-slate-500 text-[10px] w-14 text-right">momentum {c.momentum}</span>
       </div>
@@ -161,7 +214,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
           <Landmark size={11} className="shrink-0" /> {c.regAnchorDetail.name} ({c.regAnchorDetail.year}){c.regPulled ? ' — pulls this forward' : ''}
         </p>
       )}
-      {signal && <p className="text-teal-300 text-[11px] mb-1 flex items-center gap-1"><Radar size={11} className="shrink-0" /> Watch: {signal}</p>}
+      {signal && <p className="text-teal-300 text-[11px] mb-1 flex items-start gap-1.5"><span className="hz-ping-dot mt-1" /> <span>Watch: {signal}</span></p>}
       <p className="text-slate-600 text-[11px]">{c.players.join(' · ')}</p>
       {critiques && critiques.length > 0 && (
         <div className="mt-1.5 space-y-1">
@@ -183,7 +236,9 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
         </button>
       </div>
 
+      <AnimatePresence initial={false}>
       {evidence && (
+        <motion.div key="evidence" initial={reduced ? false : { height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: 'easeOut' }} className="overflow-hidden">
         <div className="mt-2 rounded-lg bg-navy-800/70 border border-white/5 p-3">
           {!evidence.configured && <p className="text-slate-500 text-[11px]">{evidence.note}</p>}
           {evidence.configured && (
@@ -234,9 +289,17 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
             </div>
           )}
         </div>
+        </motion.div>
       )}
+      </AnimatePresence>
+      <AnimatePresence initial={false}>
       {open && (
+        <motion.div key="projection" initial={reduced ? false : { height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: 'easeOut' }} className="overflow-hidden">
         <div className="mt-2 rounded-lg bg-navy-800/70 border border-white/5 p-3">
+          <div className="flex items-center gap-2.5 mb-2">
+            <BassSpark adoption={c.projection.adoption} />
+            <span className="text-slate-600 text-[10px] leading-tight">modelled adoption path<br />now → +8 years</span>
+          </div>
           <table className="w-full text-[11px]">
             <thead>
               <tr className="text-slate-500">
@@ -266,13 +329,24 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
           </table>
           <p className="text-slate-600 text-[10px] mt-1.5">{c.projection.basis}</p>
         </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 }
 
+// The stages the engine actually runs — honest theatre.
+const COMPUTE_STAGES = [
+  'Scanning curated register…',
+  'Positioning S-curves…',
+  'Running Bass diffusion + Wright curves…',
+  'Mapping horizon lanes…',
+];
+
 export default function ForesightPage() {
   const { token } = useAuth();
+  const reduced = useReducedMotion();
   const [catalogue, setCatalogue] = useState<Catalogue | null>(null);
   const [query, setQuery] = useState('');
   const [commodity, setCommodity] = useState('');
@@ -287,10 +361,20 @@ export default function ForesightPage() {
   const [ledgerOpen, setLedgerOpen] = useState(false);
   const [revisit, setRevisit] = useState<LedgerRevisit | null>(null);
   const [saveNote, setSaveNote] = useState('');
+  const [stage, setStage] = useState(0);
 
   useEffect(() => {
     fetch('/api/foresight/catalogue').then(r => r.json()).then(setCatalogue).catch(() => {});
   }, []);
+
+  // Staged "computing the future" loader — advances through the real pipeline
+  // steps while the request runs (reduced-motion users see one static label).
+  useEffect(() => {
+    if (!loading || reduced) return;
+    setStage(0);
+    const t = setInterval(() => setStage(s => Math.min(s + 1, COMPUTE_STAGES.length - 1)), 700);
+    return () => clearInterval(t);
+  }, [loading, reduced]);
 
   const authHeaders = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
@@ -383,14 +467,21 @@ export default function ForesightPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4 relative">
+      {/* Instrument backdrop: engineering grid + drifting aurora, header region only */}
+      <div className="hz-backdrop" style={{ height: 420 }} aria-hidden="true">
+        <div className="hz-glow hz-glow-gold" />
+        <div className="hz-glow hz-glow-teal" />
+      </div>
+      <div className="max-w-6xl mx-auto relative">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/25 mb-4">
+          <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/25 mb-5">
+            <span className="hz-radar" aria-hidden="true" />
+            <span className="hz-radar-echo" aria-hidden="true" />
             <Telescope size={28} className="text-gold-400" />
           </div>
-          <h1 className="text-4xl font-black text-white mb-3">BrainSpark Horizon</h1>
+          <h1 className="text-4xl font-black mb-3"><span className="hz-title">BrainSpark Horizon</span></h1>
           <p className="text-slate-400 max-w-2xl mx-auto">
             Which technologies will reshape this part — and when? A curated register of {catalogue?.technologies ?? '60+'} technologies with automotive TRL, adoption and dated regulations, positioned by <span className="text-white">deterministic S-curve, Bass-diffusion and Wright's-law models</span>. The AI narrates; it never invents a number.
           </p>
@@ -428,8 +519,21 @@ export default function ForesightPage() {
           {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
           <button onClick={predict} disabled={loading}
             className="w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold transition-all">
-            {loading ? <><ButtonSpinner size={16} /> Mapping the horizon…</> : <><Sparkles size={18} /> Predict Future Technologies</>}
+            {loading
+              ? <><ButtonSpinner size={16} /> {reduced ? 'Computing the horizon…' : (
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span key={stage} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }}>
+                      {COMPUTE_STAGES[stage]}
+                    </motion.span>
+                  </AnimatePresence>
+                )}</>
+              : <><Sparkles size={18} /> Predict Future Technologies</>}
           </button>
+          {loading && (
+            <div className="mt-3 h-0.5 rounded-full bg-white/5 overflow-hidden" aria-hidden="true">
+              <div className="h-full w-full hz-scanline bg-gold-500/20" />
+            </div>
+          )}
         </div>
 
         {/* Prediction Ledger — the tool keeps score on itself */}
@@ -529,31 +633,63 @@ export default function ForesightPage() {
             )}
             {result.narrativeNote && <p className="text-center text-slate-500 text-xs max-w-xl mx-auto">{result.narrativeNote}</p>}
 
-            {/* Regulatory anchors in play */}
+            {/* Regulatory anchors: a timeline, not a chip cloud */}
             {result.anchors.length > 0 && (
-              <div className="max-w-4xl mx-auto">
-                <p className="text-slate-500 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5"><Landmark size={12} /> Regulations shaping this landscape (dated commitments, not predictions)</p>
-                <div className="flex flex-wrap gap-2">
-                  {result.anchors.map(a => (
-                    <span key={a.id} title={a.effect} className="px-2.5 py-1 rounded-lg bg-gold-500/5 border border-gold-500/20 text-gold-300/90 text-xs">
-                      {a.name} · {a.year} · {a.region}
-                    </span>
-                  ))}
+              <div className="max-w-5xl mx-auto">
+                <p className="text-slate-500 text-xs uppercase tracking-wider mb-3 flex items-center gap-1.5"><Landmark size={12} /> Regulations shaping this landscape (dated commitments, not predictions)</p>
+                <div className="relative overflow-x-auto pb-1">
+                  <div className="relative flex items-start" style={{ minWidth: `${[...result.anchors].length * 128}px` }}>
+                    <div className="absolute top-[4px] left-6 right-6 h-px bg-gradient-to-r from-gold-500/50 via-gold-500/25 to-transparent" aria-hidden="true" />
+                    {[...result.anchors].sort((a, b) => a.year - b.year).map((a, i) => (
+                      <div key={a.id} title={a.effect} className="relative flex flex-col items-center flex-1 min-w-[128px] px-2">
+                        <span className={`relative w-2.5 h-2.5 rounded-full border border-gold-500/60 ${i === 0 ? 'bg-gold-400 hz-committed' : 'bg-gold-500/30'}`} />
+                        <span className="text-gold-300 text-xs font-bold mt-1.5">{a.year}</span>
+                        <span className="text-slate-400 text-[10px] text-center leading-tight mt-0.5">{a.name}</span>
+                        <span className="text-slate-600 text-[9px] mt-0.5">{a.region}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Three horizon lanes */}
+            {/* The time-road: certainty fades with distance into the future */}
+            <div className="hidden lg:grid grid-cols-3 gap-4 -mb-3 px-2" aria-hidden="true">
+              <div className="flex items-center gap-2 text-[10px]">
+                <span className="text-gold-400 font-bold whitespace-nowrap">{result.windows.H1.label}</span>
+                <div className="flex-1 h-[2px] rounded hz-rail-solid" />
+              </div>
+              <div className="flex items-center gap-2 text-[10px]">
+                <span className="text-teal-400 font-bold whitespace-nowrap">{result.windows.H2.label}</span>
+                <div className="flex-1 h-[2px] rounded hz-rail-mid" />
+              </div>
+              <div className="flex items-center gap-2 text-[10px]">
+                <span className="text-slate-400 font-bold whitespace-nowrap">{result.windows.H3.label}</span>
+                <div className="flex-1 h-[2px] hz-rail-far" />
+                <span className="text-slate-600">future →</span>
+              </div>
+            </div>
+
+            {/* Three horizon lanes — H2 softens, H3 renders "not yet in focus" */}
             <div className="grid lg:grid-cols-3 gap-4 items-start">
               {lanes.map(lane => (
-                <div key={lane.key} className="bg-navy-900/50 border border-white/5 rounded-2xl p-3">
+                <div key={lane.key} className={`bg-navy-900/50 border border-white/5 rounded-2xl p-3 ${lane.key === 'H2' ? 'hz-lane-h2' : ''} ${lane.key === 'H3' ? 'hz-lane-h3' : ''}`}>
                   <div className="px-1 pb-2 mb-1 border-b border-white/5">
                     <h2 className="text-white font-bold text-sm">{lane.title}</h2>
                     <p className="text-slate-500 text-xs">{result.windows[lane.key].label} · {result.horizons[lane.key].length} technologies</p>
                   </div>
                   <div className="space-y-3 mt-2">
                     {result.horizons[lane.key].length === 0 && <p className="text-slate-600 text-xs px-1 py-2">Nothing in this window for this selection.</p>}
-                    {result.horizons[lane.key].map(c => <TechCardView key={c.id} c={c} signal={signalFor(c.id)} critiques={critiquesFor(c.id)} />)}
+                    {result.horizons[lane.key].map((c, i) => (
+                      <motion.div
+                        key={c.id}
+                        initial={reduced ? false : { opacity: 0, y: 18, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ delay: reduced ? 0 : Math.min(i, 8) * 0.08, duration: 0.45, ease: 'easeOut' }}
+                      >
+                        <TechCardView c={c} signal={signalFor(c.id)} critiques={critiquesFor(c.id)} />
+                      </motion.div>
+                    ))}
                   </div>
                 </div>
               ))}

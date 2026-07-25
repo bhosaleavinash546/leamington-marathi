@@ -1,0 +1,162 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   BrainSpark Horizon — motion language (scoped hz- prefix, this page only).
+   Theme: time and uncertainty made visible. Every animation carries meaning:
+   the radar sweep = scanning, the shimmer = the horizon line, ghosted lanes =
+   uncertainty growing with distance, drawn S-curves = position on the curve.
+   All decorative motion sits behind @media (prefers-reduced-motion:
+   no-preference) — reduced-motion users get an instant, static page.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* Instrument backdrop: faint engineering grid + two drifting aurora glows. */
+.hz-backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 90% at 50% 20%, black 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 90% at 50% 20%, black 30%, transparent 75%);
+}
+.hz-glow {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.14;
+}
+.hz-glow-gold { background: #f59e0b; top: -180px; left: 12%; }
+.hz-glow-teal { background: #14b8a6; top: -140px; right: 10%; }
+
+/* Radar ring around the telescope: a slow conic sweep + expanding echo ring. */
+.hz-radar {
+  position: absolute;
+  inset: -14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.hz-radar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, rgba(245, 158, 11, 0.28), transparent 70deg, transparent 360deg);
+}
+.hz-radar-echo {
+  position: absolute;
+  inset: -14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  opacity: 0;
+}
+
+/* Horizon title: a light band travels across the text like a horizon line. */
+.hz-title {
+  background: linear-gradient(100deg, #ffffff 30%, #fcd34d 46%, #5eead4 54%, #ffffff 70%);
+  background-size: 220% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* The time-road under the lane headers: certainty fades with distance. */
+.hz-rail-solid { background: linear-gradient(90deg, rgba(245, 158, 11, 0.75), rgba(245, 158, 11, 0.45)); }
+.hz-rail-mid { background: linear-gradient(90deg, rgba(20, 184, 166, 0.55), rgba(20, 184, 166, 0.3)); }
+.hz-rail-far {
+  background-image: linear-gradient(90deg, rgba(148, 163, 184, 0.5) 55%, transparent 45%);
+  background-size: 12px 100%;
+}
+
+/* Lane ghosting: H2 slightly softened, H3 visibly "not yet in focus". */
+.hz-lane-h2 { opacity: 0.96; }
+.hz-lane-h3 { opacity: 0.92; border-style: dashed !important; }
+.hz-lane-h3 .hz-card { filter: saturate(0.85); }
+
+/* Cards: lift + glow on hover (transition only — cheap). */
+.hz-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.hz-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px -10px rgba(245, 158, 11, 0.22), 0 2px 10px -4px rgba(0, 0, 0, 0.5);
+}
+
+/* Signal-to-watch radar dot. */
+.hz-ping-dot {
+  position: relative;
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #2dd4bf;
+  flex-shrink: 0;
+}
+.hz-ping-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: #2dd4bf;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hz-glow-gold { animation: hz-drift 14s ease-in-out infinite alternate; }
+  .hz-glow-teal { animation: hz-drift 18s ease-in-out infinite alternate-reverse; }
+  .hz-radar::before { animation: hz-sweep 4.5s linear infinite; }
+  .hz-radar-echo { animation: hz-echo 4.5s ease-out infinite; }
+  .hz-title { animation: hz-shimmer 7s ease-in-out infinite; }
+  .hz-committed { animation: hz-pulse-gold 3s ease-in-out infinite; }
+  .hz-ping-dot::after { animation: hz-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite; }
+  .hz-draw {
+    stroke-dasharray: 260;
+    stroke-dashoffset: 260;
+    animation: hz-draw 1.1s ease-out forwards;
+  }
+  .hz-marker { animation: hz-marker-in 0.5s ease-out 0.9s both; }
+  .hz-scanline {
+    background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.7), transparent);
+    background-size: 40% 100%;
+    animation: hz-scan 1.3s ease-in-out infinite;
+  }
+}
+
+@keyframes hz-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(60px, 26px, 0) scale(1.15); }
+}
+@keyframes hz-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes hz-echo {
+  0% { transform: scale(0.7); opacity: 0.5; }
+  70% { transform: scale(1.25); opacity: 0; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+@keyframes hz-shimmer {
+  0%, 100% { background-position: 100% 0; }
+  50% { background-position: 0 0; }
+}
+@keyframes hz-pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  50% { box-shadow: 0 0 10px 1px rgba(245, 158, 11, 0.28); }
+}
+@keyframes hz-ping {
+  0% { transform: scale(1); opacity: 0.7; }
+  75%, 100% { transform: scale(3); opacity: 0; }
+}
+@keyframes hz-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes hz-marker-in {
+  from { opacity: 0; transform: scale(0); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes hz-scan {
+  0% { background-position: -40% 0; }
+  100% { background-position: 140% 0; }
+}
