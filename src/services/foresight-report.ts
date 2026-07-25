@@ -18,7 +18,7 @@ export interface ForesightReportCard {
   costTrend: string; players: string[]; note: string;
   phase: string; horizon: 'H1' | 'H2' | 'H3'; regPulled: boolean; momentum: number;
   confidence: string; regAnchorDetail: ForesightReportAnchor | null;
-  projection: { basis: string; adoption: Record<string, number>; costIndex: Record<string, number> };
+  projection: { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null } };
 }
 export interface ForesightReportData {
   query: string; commodity: string | null; powertrain: string | null; count: number;
@@ -281,6 +281,11 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       adoption.forEach((v, i) => doc.text(v, px[i] + 2, y + 4.6));
       cost.forEach((v, i) => doc.text(v, px[i] + 2, y + 8.7));
       y += 14.5;
+
+      if (c.projection.crossings) {
+        const lbl = (v: number | 'passed' | null) => (v === 'passed' ? 'already passed' : v === null ? 'beyond 15y' : `~${v}`);
+        wrapped(`Modelled to cross 25% ${lbl(c.projection.crossings.cross25)} · 50% ${lbl(c.projection.crossings.cross50)} of the applicable segment`, 8.5, TEAL_RGB);
+      }
 
       const sig = signalFor(c.id);
       if (sig) wrapped(`Signal to watch: ${sig}`, 8.5, TEAL_RGB);

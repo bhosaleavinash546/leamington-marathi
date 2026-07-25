@@ -6,6 +6,7 @@ import {
   bassAdoption, bassTimeFor, projectAdoption,
   wrightCostIndex, TREND_LEARNING, costOutlook,
   momentumScore, confidenceTier, resolveParts, foresightFor, patentTrend,
+  inflectionYears,
 } from '../foresight.mjs';
 import { FORESIGHT_REGISTER, REG_ANCHORS, MIN_PER_COMMODITY } from '../src/data/tech-foresight-register.mjs';
 import { COMMODITY_KEYS } from '../src/data/commodity-classify.mjs';
@@ -44,6 +45,51 @@ test('register: reg anchors are unique, dated and cover every referenced id', ()
   for (const a of REG_ANCHORS) {
     assert.ok(a.year >= 2024 && a.year <= 2040, `${a.id}: implausible year ${a.year}`);
     assert.ok(a.name && a.region && a.effect, `${a.id}: missing fields`);
+  }
+});
+
+test('register: full-vehicle scale after the 2026 re-curation', () => {
+  assert.ok(FORESIGHT_REGISTER.length >= 110, `only ${FORESIGHT_REGISTER.length} entries`);
+});
+
+// The queries a cost engineer actually types — EVERY one must resolve to at
+// least one technology (via matchTerms or the commodity-classifier net).
+// This is the coverage contract: no dead-end searches across ICE/MHEV/PHEV/BEV.
+const COVERAGE_QUERIES = [
+  // Powertrain / ICE
+  'turbocharger', 'exhaust system', 'fuel injector', 'engine water pump', 'cylinder head',
+  'catalytic converter', 'range extender', '48v starter generator',
+  // Battery
+  'hv battery pack', 'battery module', 'bms', 'battery enclosure', 'cell contacting system',
+  'fast charging', 'sodium ion cell',
+  // EDU / Driveline
+  'stator winding', 'rotor magnets', 'inverter power module', 'onboard charger', 'reduction gearbox',
+  'transmission', 'halfshaft', 'differential', 'e-axle',
+  // Chassis
+  'brake disc', 'brake caliper', 'air suspension', 'damper', 'steering rack', 'tyre', 'anti-roll bar',
+  // BIW / Exterior
+  'underbody casting', 'b-pillar', 'rocker sill', 'door handle', 'tailgate', 'headlamp',
+  'grille', 'door mirror', 'windscreen glazing', 'aero wheel',
+  // Interior
+  'seats', 'airbag', 'headliner', 'instrument cluster display', 'hud', 'audio speakers', 'steering wheel',
+  // Electrical / Thermal
+  'wiring harness', 'ecu', 'lidar sensor', 'heat pump', 'hvac compressor', 'refrigerant system',
+  'charge port', 'digital key',
+];
+
+test('coverage: every realistic part query resolves to technologies', () => {
+  const dead = [];
+  for (const q of COVERAGE_QUERIES) {
+    const r = foresightFor({ query: q });
+    if (r.count === 0) dead.push(q);
+  }
+  assert.deepEqual(dead, [], `dead-end queries: ${dead.join(', ')}`);
+});
+
+test('coverage: every powertrain type has technologies in every horizon-relevant commodity', () => {
+  for (const pt of ['ICE', 'MHEV', 'PHEV', 'BEV']) {
+    const r = foresightFor({ powertrain: pt });
+    assert.ok(r.count >= 15, `${pt}: only ${r.count} technologies`);
   }
 });
 
@@ -124,6 +170,31 @@ test('projectAdoption grows from the curated share and clamps at the ceiling', (
   assert.ok(projectAdoption(10, 8) > in5);
   assert.equal(projectAdoption(88, 40), 90);   // saturation, never 100
   assert.ok(projectAdoption(0, 5) > 0);        // 0% seeds rather than dividing by zero
+});
+
+test('inflectionYears: crossing years are honest and ordered', () => {
+  // Low-adoption tech: 25% crossing comes before 50%, both in the future.
+  const low = inflectionYears(2, { now: 2026 });
+  assert.ok(typeof low.cross25 === 'number' && low.cross25 > 2026);
+  assert.ok(typeof low.cross50 === 'number' && low.cross50 > low.cross25);
+  // Already past a threshold → 'passed', never a fake future date.
+  const mid = inflectionYears(30, { now: 2026 });
+  assert.equal(mid.cross25, 'passed');
+  assert.ok(typeof mid.cross50 === 'number');
+  assert.deepEqual(inflectionYears(60, { now: 2026 }), { cross25: 'passed', cross50: 'passed' });
+  // Higher current adoption never crosses LATER than lower adoption.
+  const lower = inflectionYears(1, { now: 2026 });
+  assert.ok(low.cross50 <= lower.cross50);
+});
+
+test('techCard projection carries the crossing years', () => {
+  const r = foresightFor({ commodity: 'Battery' });
+  const all = [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3];
+  for (const c of all) {
+    assert.ok('cross25' in c.projection.crossings && 'cross50' in c.projection.crossings, c.id);
+    const v = c.projection.crossings.cross50;
+    assert.ok(v === null || v === 'passed' || (typeof v === 'number' && v >= REGISTER_VINTAGE), c.id);
+  }
 });
 
 // ── Wright's law ─────────────────────────────────────────────────────────────

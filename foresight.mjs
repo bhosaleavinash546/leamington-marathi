@@ -17,9 +17,11 @@
 import { FORESIGHT_REGISTER, REG_ANCHORS } from './src/data/tech-foresight-register.mjs';
 import { inferCommodityKey } from './src/data/commodity-classify.mjs';
 
-// Register curation vintage — "today" for horizon boundaries (H1 now–2027,
-// H2 2028–2031, H3 2032+). Bump when the register is re-curated.
-export const REGISTER_VINTAGE = 2025;
+// Register curation vintage — "today" for horizon boundaries. Bumped to 2026
+// with the mid-2026 re-curation (Naxtra mass production, Sensify EMB SOP,
+// EQS steer-by-wire, 1000V platforms). Bump again on each re-curation — the
+// Prediction Ledger uses this as its clock.
+export const REGISTER_VINTAGE = 2026;
 
 const H1_SPAN = 2;   // vintage .. vintage+2   → "Now–2027"
 const H2_SPAN = 6;   // vintage+3 .. vintage+6 → "2028–2031"
@@ -94,6 +96,25 @@ export function projectAdoption(currentPct, yearsAhead, { p = BASS_DEFAULTS.p, q
   const t0 = bassTimeFor(F0, { p, q });
   const F1 = bassAdoption(t0 + yearsAhead, { p, q });
   return Math.round(Math.min(F1 * ceilingPct, ceilingPct) * 10) / 10;
+}
+
+/**
+ * The concrete prediction a cost engineer actually wants: the calendar years
+ * when the modelled adoption crosses 25% and 50% of the applicable segment.
+ * Returns { cross25, cross50 } — a year number, 'passed' when the register
+ * already has the tech above that share, or null when the model puts the
+ * crossing beyond now+15y (an honest "not in planning range", not a date).
+ */
+export function inflectionYears(currentPct, { now = REGISTER_VINTAGE, p = BASS_DEFAULTS.p, q = BASS_DEFAULTS.q, ceilingPct = 90 } = {}) {
+  const seeded = Math.max(currentPct, 0.5);
+  const t0 = bassTimeFor(Math.min(seeded / ceilingPct, 0.999), { p, q });
+  const crossing = (thresholdPct) => {
+    if (currentPct >= thresholdPct) return 'passed';
+    const tX = bassTimeFor(Math.min(thresholdPct / ceilingPct, 0.999), { p, q });
+    const years = tX - t0;
+    return years > 15 ? null : Math.round(now + years);
+  };
+  return { cross25: crossing(25), cross50: crossing(50) };
 }
 
 // ── Wright's law ─────────────────────────────────────────────────────────────
@@ -187,7 +208,9 @@ export function resolveParts(query, register = FORESIGHT_REGISTER) {
     let score = 0;
     for (const term of tech.matchTerms) {
       if (q.includes(term)) score += 2;
-      else if (term.split(/\s+/).some((w) => qTokens.has(w))) score += 1;
+      // Multi-word terms need EVERY word present — a lone generic token like
+      // "front" or "air" must not drag in unrelated technologies.
+      else if (term.split(/\s+/).every((w) => qTokens.has(w))) score += 1;
     }
     if (score > 0) scored.push({ tech, score });
   }
@@ -206,6 +229,7 @@ function techCard(tech, now, anchors) {
     adoption[`in${y}`] = projectAdoption(tech.adoptionPct, y);
     costIndex[`in${y}`] = costOutlook(tech, y);
   }
+  const crossings = inflectionYears(tech.adoptionPct, { now });
   return {
     ...tech,
     phase: sCurvePhase(tech.trl, tech.adoptionPct),
@@ -214,7 +238,7 @@ function techCard(tech, now, anchors) {
     momentum: momentumScore(tech, { now, anchors }),
     confidence: confidenceTier(tech),
     regAnchorDetail: anchor,
-    projection: { basis: 'Bass diffusion (p=0.03, q=0.38) + Wright learning by cost trend — modelled, not measured', adoption, costIndex },
+    projection: { basis: 'Bass diffusion (p=0.03, q=0.38) + Wright learning by cost trend — modelled, not measured', adoption, costIndex, crossings },
   };
 }
 

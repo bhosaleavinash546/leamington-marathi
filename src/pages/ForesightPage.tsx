@@ -11,7 +11,8 @@ import './foresight.css';
 // register + S-curve/Bass/Wright cores); the AI writes the briefing only.
 
 interface RegAnchor { id: string; name: string; year: number; region: string; effect: string; }
-interface Projection { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; }
+type Crossing = number | 'passed' | null;
+interface Projection { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: Crossing; cross50: Crossing }; }
 interface TechCard {
   id: string; name: string; commodity: string; powertrains: string[]; replaces: string;
   trl: number; adoptionPct: number; firstProduction?: string; drivers: string[];
@@ -135,6 +136,12 @@ function BassSpark({ adoption }: { adoption: Record<string, number> }) {
       {vals.map((v, i) => <circle key={i} cx={px(i)} cy={py(v)} r="2" fill="#2dd4bf" className="hz-marker" />)}
     </svg>
   );
+}
+
+function crossingLabel(v: Crossing): string {
+  if (v === 'passed') return 'already passed';
+  if (v === null) return 'beyond 15y';
+  return `≈ ${v}`;
 }
 
 function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; critiques?: Array<{ persona: string } & PanelCritique> }) {
@@ -327,6 +334,11 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
               </tr>
             </tbody>
           </table>
+          {c.projection.crossings && (
+            <p className="text-teal-300/90 text-[11px] mt-2">
+              Modelled to cross <span className="font-semibold">25%</span> {crossingLabel(c.projection.crossings.cross25)} · <span className="font-semibold">50%</span> {crossingLabel(c.projection.crossings.cross50)}
+            </p>
+          )}
           <p className="text-slate-600 text-[10px] mt-1.5">{c.projection.basis}</p>
         </div>
         </motion.div>
