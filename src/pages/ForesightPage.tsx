@@ -87,6 +87,56 @@ const TREND_LABEL: Record<string, { text: string; cls: string }> = {
   rising: { text: 'cost ↑', cls: 'text-amber-400' },
 };
 
+/** Instrument-style count-up — numbers compute rather than appear. */
+function TickNumber({ value, duration = 800 }: { value: number; duration?: number }) {
+  const reduced = useReducedMotion();
+  const [n, setN] = useState(reduced ? value : 0);
+  useEffect(() => {
+    if (reduced) { setN(value); return; }
+    let raf = 0;
+    const t0 = performance.now();
+    const step = (t: number) => {
+      const k = Math.min(1, (t - t0) / duration);
+      setN(Math.round(value * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value, reduced, duration]);
+  return <span className="hz-num">{n}</span>;
+}
+
+/** FUI decode effect: text resolves out of glyph noise. */
+const DECODE_GLYPHS = '01<>[]|/=+×·';
+function DecodeText({ text }: { text: string }) {
+  const reduced = useReducedMotion();
+  const [out, setOut] = useState(reduced ? text : '');
+  useEffect(() => {
+    if (reduced) { setOut(text); return; }
+    let raf = 0;
+    const t0 = performance.now();
+    const D = 650;
+    const step = (t: number) => {
+      const k = Math.min(1, (t - t0) / D);
+      const n = Math.floor(text.length * k);
+      let s = text.slice(0, n);
+      if (k < 1) for (let i = 0; i < Math.min(3, text.length - n); i++) s += DECODE_GLYPHS[Math.floor(Math.random() * DECODE_GLYPHS.length)];
+      setOut(s);
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [text, reduced]);
+  return <>{out}</>;
+}
+
+/** Cursor-tracking spotlight position for the card glow. */
+function trackSpot(e: React.MouseEvent<HTMLDivElement>) {
+  const r = e.currentTarget.getBoundingClientRect();
+  e.currentTarget.style.setProperty('--hx', `${e.clientX - r.left}px`);
+  e.currentTarget.style.setProperty('--hy', `${e.clientY - r.top}px`);
+}
+
 const VERDICT_STYLE: Record<string, string> = {
   supports: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300',
   challenges: 'bg-amber-500/10 border-amber-500/30 text-amber-300',
@@ -196,14 +246,15 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
   const maxCount = Math.max(1, ...(evidence?.velocity ?? []).map(v => v.count));
   const reduced = useReducedMotion();
   return (
-    <div className="hz-card bg-navy-900 border border-white/10 rounded-2xl p-4 hover:border-gold-500/25">
+    <div className="hz-card bg-navy-900 border border-white/10 rounded-2xl p-4 hover:border-gold-500/25" onMouseMove={trackSpot}>
+      <div className="hz-spot" aria-hidden="true" />
       <div className="flex items-start justify-between gap-2 mb-1.5">
         <h3 className="text-white font-semibold text-sm leading-snug">{c.name}</h3>
         <span className={`shrink-0 px-2 py-0.5 rounded-md border text-[10px] font-semibold uppercase tracking-wide ${CONFIDENCE_STYLE[c.confidence]} ${c.confidence === 'committed' ? 'hz-committed' : ''}`}>{c.confidence}</span>
       </div>
       <div className="flex items-end justify-between gap-2 mb-2">
         <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px]">
-          <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300">TRL {c.trl}</span>
+          <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300 font-mono hz-num">TRL {c.trl}</span>
           <span className="text-slate-400">{PHASE_LABEL[c.phase] ?? c.phase}</span>
           <span className={TREND_LABEL[c.costTrend]?.cls ?? 'text-slate-400'}>{TREND_LABEL[c.costTrend]?.text}</span>
           <span className="text-slate-500">{c.powertrains.join(' · ')}</span>
@@ -220,7 +271,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
             transition={{ duration: 0.9, delay: 0.25, ease: 'easeOut' }}
           />
         </div>
-        <span className="text-slate-500 text-[10px] w-14 text-right">momentum {c.momentum}</span>
+        <span className="text-slate-500 text-[10px] w-14 text-right font-mono">momentum <TickNumber value={c.momentum} /></span>
       </div>
       <p className="text-slate-400 text-xs leading-relaxed mb-1.5">{c.note}</p>
       <p className="text-slate-500 text-[11px] mb-1"><span className="text-slate-600">Replaces:</span> {c.replaces}</p>
@@ -489,23 +540,29 @@ export default function ForesightPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4 relative">
-      {/* Instrument backdrop: engineering grid + drifting aurora, header region only */}
+    <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4 relative overflow-hidden">
+      {/* Full-page ambience: drifting starfield layers */}
+      <div className="hz-stars" aria-hidden="true" />
+      <div className="hz-stars2" aria-hidden="true" />
+      {/* Instrument backdrop: engineering grid + drifting aurora, header region */}
       <div className="hz-backdrop" style={{ height: 420 }} aria-hidden="true">
         <div className="hz-glow hz-glow-gold" />
         <div className="hz-glow hz-glow-teal" />
       </div>
       <div className="max-w-6xl mx-auto relative">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="relative text-center mb-8">
+          {/* The literal horizon: perspective grid floor vanishing behind the title */}
+          <div className="hz-horizon-grid" style={{ top: 96 }} aria-hidden="true" />
           <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/25 mb-5">
             <span className="hz-radar" aria-hidden="true" />
             <span className="hz-radar-echo" aria-hidden="true" />
+            <span className="hz-orbit" aria-hidden="true"><span className="hz-orbit-sat" /></span>
             <Telescope size={28} className="text-gold-400" />
           </div>
-          <h1 className="text-4xl font-black mb-3"><span className="hz-title">BrainSpark Horizon</span></h1>
-          <p className="text-slate-400 max-w-2xl mx-auto">
-            Which technologies will reshape this part — and when? A curated register of {catalogue?.technologies ?? '60+'} technologies with automotive TRL, adoption and dated regulations, positioned by <span className="text-white">deterministic S-curve, Bass-diffusion and Wright's-law models</span>. The AI narrates; it never invents a number.
+          <h1 className="relative text-4xl font-black mb-3"><span className="hz-title">BrainSpark Horizon</span></h1>
+          <p className="relative text-slate-400 max-w-2xl mx-auto">
+            Which technologies will reshape this part — and when? A curated register of {catalogue ? <TickNumber value={catalogue.technologies} duration={1200} /> : '60+'} technologies with automotive TRL, adoption and dated regulations, positioned by <span className="text-white">deterministic S-curve, Bass-diffusion and Wright's-law models</span>. The AI narrates; it never invents a number.
           </p>
         </div>
 
@@ -637,7 +694,9 @@ export default function ForesightPage() {
           <p className="text-center text-slate-500 text-sm max-w-xl mx-auto">{result.note}</p>
         )}
         {result && result.count > 0 && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="relative space-y-6">
+            {/* Holographic arrival: one scanline sweep per new result */}
+            {!reduced && <div key={`scan|${result.query}|${result.commodity}|${result.segment}|${result.count}`} className="hz-scan-reveal" aria-hidden="true" />}
             {/* Result actions */}
             <div className="flex flex-wrap items-center justify-center gap-2">
               <button onClick={convenePanel} disabled={panelLoading || !!panel}
@@ -722,11 +781,11 @@ export default function ForesightPage() {
             {/* The time-road: certainty fades with distance into the future */}
             <div className="hidden lg:grid grid-cols-3 gap-4 -mb-3 px-2" aria-hidden="true">
               <div className="flex items-center gap-2 text-[10px]">
-                <span className="text-gold-400 font-bold whitespace-nowrap">{result.windows.H1.label}</span>
-                <div className="flex-1 h-[2px] rounded hz-rail-solid" />
+                <span className="text-gold-400 font-bold whitespace-nowrap font-mono">{result.windows.H1.label}</span>
+                <div className="flex-1 h-[2px] rounded hz-rail-solid hz-rail-live" />
               </div>
               <div className="flex items-center gap-2 text-[10px]">
-                <span className="text-teal-400 font-bold whitespace-nowrap">{result.windows.H2.label}</span>
+                <span className="text-teal-400 font-bold whitespace-nowrap font-mono">{result.windows.H2.label}</span>
                 <div className="flex-1 h-[2px] rounded hz-rail-mid" />
               </div>
               <div className="flex items-center gap-2 text-[10px]">
@@ -741,7 +800,7 @@ export default function ForesightPage() {
               {lanes.map(lane => (
                 <div key={lane.key} className={`bg-navy-900/50 border border-white/5 rounded-2xl p-3 ${lane.key === 'H2' ? 'hz-lane-h2' : ''} ${lane.key === 'H3' ? 'hz-lane-h3' : ''}`}>
                   <div className="px-1 pb-2 mb-1 border-b border-white/5">
-                    <h2 className="text-white font-bold text-sm">{lane.title}</h2>
+                    <h2 className="text-white font-bold text-sm"><DecodeText text={lane.title} /></h2>
                     <p className="text-slate-500 text-xs">{result.windows[lane.key].label} · {result.horizons[lane.key].length} technologies</p>
                   </div>
                   <div className="space-y-3 mt-2">
@@ -749,8 +808,8 @@ export default function ForesightPage() {
                     {result.horizons[lane.key].map((c, i) => (
                       <motion.div
                         key={c.id}
-                        initial={reduced ? false : { opacity: 0, y: 18, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        initial={reduced ? false : { opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+                        animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
                         transition={{ delay: reduced ? 0 : Math.min(i, 8) * 0.08, duration: 0.45, ease: 'easeOut' }}
                       >
                         <TechCardView c={c} signal={signalFor(c.id)} critiques={critiquesFor(c.id)} />
