@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown, Mountain, Gem } from 'lucide-react';
+import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown, Mountain, Gem, Cpu } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { exportForesightPdf } from '../services/foresight-report';
@@ -535,6 +535,10 @@ export default function ForesightPage() {
             <button onClick={() => setSegment(s => s === 'luxury' ? '' : 'luxury')}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs transition-colors ${segment === 'luxury' ? 'bg-violet-500/15 border-violet-500/40 text-violet-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
               <Gem size={12} /> Luxury / Premium SUV
+            </button>
+            <button onClick={() => setSegment(s => s === 'software' ? '' : 'software')}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs transition-colors ${segment === 'software' ? 'bg-teal-500/15 border-teal-500/40 text-teal-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
+              <Cpu size={12} /> SDV / ADAS & Software
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-2 mt-3">

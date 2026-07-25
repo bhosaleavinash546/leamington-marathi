@@ -125,6 +125,9 @@ const COVERAGE_QUERIES = [
   // Off-road & luxury SUV
   'locking differential', 'transfer case', 'low range gearbox', 'wading', 'terrain response',
   'tank turn', 'skid plate', 'satellite connectivity', 'air purification', 'suspension preview', 'diff lock',
+  // SDV / ADAS / software / safety
+  'self driving software', 'driver monitoring', 'v2x', 'parking assist', 'ai compute soc',
+  'virtual ecu', 'ota subscription', 'digital twin simulation', 'aeb emergency braking', 'imaging radar',
 ];
 
 test('coverage: every realistic part query resolves to technologies', () => {
@@ -146,7 +149,7 @@ test('coverage: every powertrain type has technologies in every horizon-relevant
 // ── Off-Road & Luxury SUV segment lens ───────────────────────────────────────
 
 test('segments: tag map ids all resolve and tags land on entries', () => {
-  assert.deepEqual(SEGMENTS.sort(), ['luxury', 'off-road']);
+  assert.deepEqual(SEGMENTS.sort(), ['luxury', 'off-road', 'software']);
   const ids = new Set(FORESIGHT_REGISTER.map((t) => t.id));
   for (const [seg, tagIds] of Object.entries(SEGMENT_TAG_IDS)) {
     for (const id of tagIds) assert.ok(ids.has(id), `${seg}: unknown id ${id}`);
@@ -162,6 +165,8 @@ test('segments: the off-road and luxury lenses are substantive', () => {
   assert.ok(offroad.count >= 15, `off-road: only ${offroad.count}`);
   const luxury = foresightFor({ segment: 'luxury' });
   assert.ok(luxury.count >= 15, `luxury: only ${luxury.count}`);
+  const software = foresightFor({ segment: 'software' });
+  assert.ok(software.count >= 20, `software: only ${software.count}`);
   for (const c of [...offroad.horizons.H1, ...offroad.horizons.H2, ...offroad.horizons.H3]) {
     assert.ok(c.segments?.includes('off-road'), `${c.id} leaked into off-road lens`);
   }

@@ -139,8 +139,9 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
 
     // ── Step 1: deterministic foresight — the only source of numbers ──
     const result = foresightFor({ query, commodity, powertrain, segment });
-    // Segment lens active → include the curated competitor benchmark set.
-    if (segment) result.benchmarks = BENCHMARK_VEHICLES;
+    // SUV segment lenses → include the curated competitor benchmark set
+    // (the vehicles are off-road/luxury benchmarks, not software ones).
+    if (segment === 'off-road' || segment === 'luxury') result.benchmarks = BENCHMARK_VEHICLES;
     if (!result.count) {
       return res.json({ ...result, narrative: null, note: 'No register match for this input — try a commodity or a more common part name. The register only speaks where it has curated evidence; it never guesses.' });
     }

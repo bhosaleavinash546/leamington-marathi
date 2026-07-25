@@ -1,7 +1,7 @@
 import type { CommodityKey } from './commodity-classify.mjs';
 
 export type Powertrain = 'ICE' | 'MHEV' | 'PHEV' | 'BEV';
-export type Segment = 'off-road' | 'luxury';
+export type Segment = 'off-road' | 'luxury' | 'software';
 export type CostTrend = 'falling-fast' | 'falling' | 'flat' | 'rising';
 export type Driver = 'cost' | 'regulation' | 'performance' | 'weight' | 'software' | 'sustainability';
 
