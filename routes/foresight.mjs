@@ -235,9 +235,12 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
       const searchResults = [];
       for (const q of queries) {
         const results = await performSearch(q, searchApiKey).catch(() => []);
-        for (const r of results.slice(0, 4)) searchResults.push({ query: q, title: r.title, url: r.url, snippet: r.snippet, source: r.source });
+        // Web text is UNTRUSTED — strip instruction-carrying content before it
+        // can reach a prompt (same discipline as the marketplace corpus).
+        for (const r of results.slice(0, 4)) searchResults.push({ query: q, title: sanitize(String(r.title || ''), 160), url: String(r.url || ''), snippet: sanitize(String(r.snippet || ''), 400), source: sanitize(String(r.source || ''), 60) });
       }
       const patents = await searchPatents(tech.name, '', { max: 3 }).catch(() => ({ patents: [] }));
+      patents.patents = (patents.patents || []).map((p) => ({ ...p, title: sanitize(p.title, 200), snippet: sanitize(p.snippet, 320), assignee: sanitize(p.assignee, 120) }));
 
       if (!searchResults.length && !patents.patents.length) {
         return res.json({ techId: tech.id, research: null, evidence: { searches: [], patents: [] }, note: 'No live evidence could be retrieved right now (search unavailable, patent API unconfigured). Nothing was synthesised — an AI summary without sources would not be evidence.' });

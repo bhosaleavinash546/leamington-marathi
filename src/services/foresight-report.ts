@@ -11,14 +11,14 @@ import jsPDF from 'jspdf';
 import { pdfSafe, deepPdfSafe } from './pdf-safe.mjs';
 import { LOGO_PNG } from './brainspark-logo-png';
 
-export interface ForesightReportAnchor { id: string; name: string; year: number; region: string; effect: string; }
+export interface ForesightReportAnchor { id: string; name: string; year: number; region: string; status?: string; effect: string; }
 export interface ForesightReportCard {
   id: string; name: string; commodity: string; powertrains: string[]; replaces: string;
   trl: number; adoptionPct: number; firstProduction?: string; drivers: string[];
   costTrend: string; players: string[]; note: string;
   phase: string; horizon: 'H1' | 'H2' | 'H3'; regPulled: boolean; momentum: number;
   confidence: string; regAnchorDetail: ForesightReportAnchor | null;
-  projection: { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null } };
+  projection: { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null; band25?: [number | null, number | null] | null; band50?: [number | null, number | null] | null } };
 }
 export interface ForesightReportBenchmark {
   vehicle: string; brand: string; year: number; powertrains: string[]; signature: string[]; watch: string;
@@ -199,7 +199,8 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       setColor(doc, NAVY_RGB);
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
-      doc.text(fitText(doc, `${a.name} — ${a.year} · ${a.region}`, CW), ML, y);
+      const statusNote = a.status === 'proposed' ? '  [PROPOSED - not yet law]' : a.status === 'under-revision' ? '  [UNDER REVISION]' : '';
+      doc.text(fitText(doc, `${a.name} — ${a.year} · ${a.region}${statusNote}`, CW), ML, y);
       y += 4.6;
       wrapped(a.effect, 9, [71, 85, 105]);
       y += 2.5;
@@ -308,8 +309,12 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       y += 14.5;
 
       if (c.projection.crossings) {
-        const lbl = (v: number | 'passed' | null) => (v === 'passed' ? 'already passed' : v === null ? 'beyond 15y' : `~${v}`);
-        wrapped(`Modelled to cross 25% ${lbl(c.projection.crossings.cross25)} · 50% ${lbl(c.projection.crossings.cross50)} of the applicable segment`, 8.5, TEAL_RGB);
+        const lbl = (v: number | 'passed' | null, band?: [number | null, number | null] | null) => {
+          if (v === 'passed') return 'already passed';
+          if (v === null) return 'beyond 15y';
+          return `~${v}${band ? ` (${band[0] ?? '…'}-${band[1] ?? '…'})` : ''}`;
+        };
+        wrapped(`Modelled to cross 25% ${lbl(c.projection.crossings.cross25, c.projection.crossings.band25)} · 50% ${lbl(c.projection.crossings.cross50, c.projection.crossings.band50)} of the applicable segment`, 8.5, TEAL_RGB);
       }
 
       const sig = signalFor(c.id);

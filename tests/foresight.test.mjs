@@ -8,7 +8,7 @@ import {
   momentumScore, confidenceTier, resolveParts, foresightFor, patentTrend,
   inflectionYears,
 } from '../foresight.mjs';
-import { FORESIGHT_REGISTER, REG_ANCHORS, MIN_PER_COMMODITY, SEGMENTS, SEGMENT_TAG_IDS, BENCHMARK_VEHICLES } from '../src/data/tech-foresight-register.mjs';
+import { FORESIGHT_REGISTER, REG_ANCHORS, MIN_PER_COMMODITY, SEGMENTS, SEGMENT_TAG_IDS, BENCHMARK_VEHICLES, ADOPTION_CEILING_IDS } from '../src/data/tech-foresight-register.mjs';
 import { COMMODITY_KEYS } from '../src/data/commodity-classify.mjs';
 
 // ── Register integrity — the curation rules, enforced ────────────────────────
@@ -39,12 +39,59 @@ test('register: every entry is structurally valid', () => {
   }
 });
 
-test('register: reg anchors are unique, dated and cover every referenced id', () => {
+test('register: reg anchors are unique, dated, statused and cover every referenced id', () => {
   const ids = REG_ANCHORS.map((a) => a.id);
   assert.equal(new Set(ids).size, ids.length);
+  const statuses = new Set(['in-force', 'adopted', 'proposed', 'under-revision']);
   for (const a of REG_ANCHORS) {
     assert.ok(a.year >= 2024 && a.year <= 2040, `${a.id}: implausible year ${a.year}`);
     assert.ok(a.name && a.region && a.effect, `${a.id}: missing fields`);
+    assert.ok(statuses.has(a.status), `${a.id}: missing/invalid status`);
+  }
+});
+
+test('audit: ceilings are curated for niche techs and respected by the model', () => {
+  const byId = new Map(FORESIGHT_REGISTER.map((t) => [t.id, t]));
+  for (const id of ADOPTION_CEILING_IDS) {
+    const t = byId.get(id);
+    assert.ok(t, `ceiling for unknown id ${id}`);
+    assert.ok(t.ceiling >= 1 && t.ceiling <= 90, `${id}: ceiling ${t.ceiling}`);
+    assert.ok(t.adoptionPct <= t.ceiling, `${id}: adoption ${t.adoptionPct} above its own ceiling ${t.ceiling}`);
+  }
+  // A hard-capped tech saturates at its ceiling and never "crosses 50%".
+  const r = foresightFor({ query: 'float' });
+  const float = [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3].find((c) => c.id === 'float-mode');
+  assert.ok(float);
+  assert.ok(float.projection.adoption.in8 <= 5, `float-mode in8=${float.projection.adoption.in8} above 5% ceiling`);
+  assert.equal(float.projection.crossings.cross50, null);
+  assert.match(float.projection.basis, /ceiling ~5%/);
+});
+
+test('audit: proposed/under-revision anchors give context but never pull a horizon', () => {
+  const fakeTech = {
+    id: 'fake-pfas-tech', name: 'X', commodity: 'Electrical', powertrains: ['BEV'], replaces: 'y',
+    trl: 6, adoptionPct: 1, drivers: ['regulation'], costTrend: 'flat', players: ['Z'],
+    note: 'n', matchTerms: ['zzz'], regAnchor: 'pfas',
+  };
+  const proposed = { id: 'pfas', name: 'PFAS', year: 2027, region: 'EU', status: 'proposed', effect: 'e' };
+  const rP = foresightFor({}, { register: [fakeTech], anchors: [proposed] });
+  const cP = rP.horizons.H2[0];
+  assert.ok(cP && cP.regPulled === false, 'proposed anchor must not pull');
+  // Same anchor, adopted → pulls one horizon earlier.
+  const rA = foresightFor({}, { register: [fakeTech], anchors: [{ ...proposed, status: 'adopted' }] });
+  const cA = rA.horizons.H1[0];
+  assert.ok(cA && cA.regPulled === true, 'adopted anchor should pull');
+});
+
+test('audit: crossing bands are ordered and only present on real crossings', () => {
+  const r = foresightFor({ commodity: 'EDU' });
+  for (const c of [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3]) {
+    const { cross50, band50 } = c.projection.crossings;
+    if (typeof cross50 === 'number' && band50) {
+      if (typeof band50[0] === 'number') assert.ok(band50[0] <= cross50, `${c.id}: early band after point`);
+      if (typeof band50[1] === 'number') assert.ok(band50[1] >= cross50, `${c.id}: late band before point`);
+    }
+    if (cross50 === 'passed' || cross50 === null) assert.equal(band50, null, `${c.id}: band on non-crossing`);
   }
 });
 
@@ -230,7 +277,7 @@ test('inflectionYears: crossing years are honest and ordered', () => {
   const mid = inflectionYears(30, { now: 2026 });
   assert.equal(mid.cross25, 'passed');
   assert.ok(typeof mid.cross50 === 'number');
-  assert.deepEqual(inflectionYears(60, { now: 2026 }), { cross25: 'passed', cross50: 'passed' });
+  assert.deepEqual(inflectionYears(60, { now: 2026 }), { cross25: 'passed', cross50: 'passed', band25: null, band50: null });
   // Higher current adoption never crosses LATER than lower adoption.
   const lower = inflectionYears(1, { now: 2026 });
   assert.ok(low.cross50 <= lower.cross50);

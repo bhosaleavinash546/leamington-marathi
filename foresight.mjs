@@ -106,15 +106,27 @@ export function projectAdoption(currentPct, yearsAhead, { p = BASS_DEFAULTS.p, q
  * crossing beyond now+15y (an honest "not in planning range", not a date).
  */
 export function inflectionYears(currentPct, { now = REGISTER_VINTAGE, p = BASS_DEFAULTS.p, q = BASS_DEFAULTS.q, ceilingPct = 90 } = {}) {
-  const seeded = Math.max(currentPct, 0.5);
-  const t0 = bassTimeFor(Math.min(seeded / ceilingPct, 0.999), { p, q });
-  const crossing = (thresholdPct) => {
+  const crossing = (thresholdPct, qq) => {
     if (currentPct >= thresholdPct) return 'passed';
-    const tX = bassTimeFor(Math.min(thresholdPct / ceilingPct, 0.999), { p, q });
+    const seeded = Math.max(currentPct, 0.5);
+    const t0 = bassTimeFor(Math.min(seeded / ceilingPct, 0.999), { p, q: qq });
+    const tX = bassTimeFor(Math.min(thresholdPct / ceilingPct, 0.999), { p, q: qq });
     const years = tX - t0;
     return years > 15 ? null : Math.round(now + years);
   };
-  return { cross25: crossing(25), cross50: crossing(50) };
+  // Point estimate at the standard imitation rate, plus an uncertainty band
+  // from q ±25% (2026 audit: a single crossing year is false precision —
+  // diffusion speed is the least certain parameter in the model).
+  const withBand = (thresholdPct) => {
+    const base = crossing(thresholdPct, q);
+    if (base === 'passed' || base === null) return { value: base, band: null };
+    const early = crossing(thresholdPct, q * 1.25);
+    const late = crossing(thresholdPct, q * 0.75);
+    return { value: base, band: [typeof early === 'number' ? early : null, typeof late === 'number' ? late : null] };
+  };
+  const c25 = withBand(25);
+  const c50 = withBand(50);
+  return { cross25: c25.value, cross50: c50.value, band25: c25.band, band50: c50.band };
 }
 
 // ── Wright's law ─────────────────────────────────────────────────────────────
@@ -138,7 +150,7 @@ export const TREND_LEARNING = { 'falling-fast': 0.22, falling: 0.12, flat: 0.03,
 export function costOutlook(tech, yearsAhead) {
   const lr = TREND_LEARNING[tech.costTrend] ?? 0.03;
   const nowPct = Math.max(tech.adoptionPct, 0.5);
-  const futurePct = projectAdoption(tech.adoptionPct, yearsAhead);
+  const futurePct = projectAdoption(tech.adoptionPct, yearsAhead, { ceilingPct: tech.ceiling ?? 90 });
   const multiple = Math.max(futurePct / nowPct, 1);
   return wrightCostIndex(multiple, lr);
 }
@@ -157,7 +169,8 @@ export function momentumScore(tech, { now = REGISTER_VINTAGE, anchors = REG_ANCH
   let regPts = 0;
   if (tech.regAnchor) {
     const a = anchors.find((x) => x.id === tech.regAnchor);
-    regPts = a && a.year <= now + 5 ? 10 : 5;
+    const firm = a && (a.status === 'in-force' || a.status === 'adopted' || a.status === undefined);
+    regPts = !a ? 0 : !firm ? 3 : a.year <= now + 5 ? 10 : 5;   // proposals are weak momentum
   }
   const prodPts = tech.firstProduction ? 10 : 0;
   return Math.round(trlPts + adoptPts + trendPts + driverPts + regPts + prodPts);
@@ -222,14 +235,18 @@ const PROJECTION_YEARS = [3, 5, 8];
 
 function techCard(tech, now, anchors) {
   const anchor = tech.regAnchor ? anchors.find((a) => a.id === tech.regAnchor) ?? null : null;
-  const { horizon, regPulled } = horizonFor(tech.trl, tech.adoptionPct, anchor?.year ?? null, now);
+  // Only law that exists can pull a horizon: proposed / under-revision anchors
+  // are context, not commitments (2026 audit).
+  const pullYear = anchor && (anchor.status === 'in-force' || anchor.status === 'adopted') ? anchor.year : null;
+  const { horizon, regPulled } = horizonFor(tech.trl, tech.adoptionPct, pullYear, now);
+  const ceilingPct = tech.ceiling ?? 90;
   const adoption = { now: tech.adoptionPct };
   const costIndex = { now: 1 };
   for (const y of PROJECTION_YEARS) {
-    adoption[`in${y}`] = projectAdoption(tech.adoptionPct, y);
+    adoption[`in${y}`] = projectAdoption(tech.adoptionPct, y, { ceilingPct });
     costIndex[`in${y}`] = costOutlook(tech, y);
   }
-  const crossings = inflectionYears(tech.adoptionPct, { now });
+  const crossings = inflectionYears(tech.adoptionPct, { now, ceilingPct });
   return {
     ...tech,
     phase: sCurvePhase(tech.trl, tech.adoptionPct),
@@ -238,7 +255,10 @@ function techCard(tech, now, anchors) {
     momentum: momentumScore(tech, { now, anchors }),
     confidence: confidenceTier(tech),
     regAnchorDetail: anchor,
-    projection: { basis: 'Bass diffusion (p=0.03, q=0.38) + Wright learning by cost trend — modelled, not measured', adoption, costIndex, crossings },
+    projection: {
+      basis: `Bass diffusion (p=0.03, q=0.38${ceilingPct !== 90 ? `, segment ceiling ~${ceilingPct}%` : ''}) + Wright learning by cost trend — modelled, not measured`,
+      adoption, costIndex, crossings,
+    },
   };
 }
 

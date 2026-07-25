@@ -65,3 +65,12 @@ Format: decision · why · what would change it.
     nothing, never the whole register) keep it honest. Projections are labelled "modelled".
     *Changes it:* an evidence engine (patent velocity, live search) can strengthen the register,
     but numbers must keep coming from the deterministic cores.
+
+15. **Foresight anchors carry legal status; only real law pulls a horizon (2026 audit).**
+    *Why:* the audit found a proposal (ELV recast) treated as committed law with the wrong
+    bite-year — the exact failure mode a foresight tool must not have. Anchors now carry
+    `in-force | adopted | proposed | under-revision`; proposed/under-revision anchors give
+    context and weak momentum only. Same audit added per-tech adoption ceilings (a 90%
+    default is false precision for niche techs) and ±q uncertainty bands on crossing years
+    (a single year is a point estimate pretending to be a fact). *Changes it:* nothing —
+    these are honesty invariants, now test-enforced.

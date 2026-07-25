@@ -10,9 +10,10 @@ import './foresight.css';
 // ICE/MHEV/PHEV/BEV. Every number on this page is deterministic (curated
 // register + S-curve/Bass/Wright cores); the AI writes the briefing only.
 
-interface RegAnchor { id: string; name: string; year: number; region: string; effect: string; }
+interface RegAnchor { id: string; name: string; year: number; region: string; status?: 'in-force' | 'adopted' | 'proposed' | 'under-revision'; effect: string; }
 type Crossing = number | 'passed' | null;
-interface Projection { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: Crossing; cross50: Crossing }; }
+type CrossingBand = [number | null, number | null] | null;
+interface Projection { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: Crossing; cross50: Crossing; band25?: CrossingBand; band50?: CrossingBand }; }
 interface TechCard {
   id: string; name: string; commodity: string; powertrains: string[]; replaces: string;
   trl: number; adoptionPct: number; firstProduction?: string; drivers: string[];
@@ -141,11 +142,16 @@ function BassSpark({ adoption }: { adoption: Record<string, number> }) {
   );
 }
 
-function crossingLabel(v: Crossing): string {
+function crossingLabel(v: Crossing, band?: CrossingBand): string {
   if (v === 'passed') return 'already passed';
   if (v === null) return 'beyond 15y';
-  return `≈ ${v}`;
+  const range = band ? ` (${band[0] ?? '…'}–${band[1] ?? '…'})` : '';
+  return `≈ ${v}${range}`;
 }
+
+const ANCHOR_STATUS_LABEL: Record<string, string> = {
+  proposed: 'proposed — not yet law', 'under-revision': 'under revision — weakening',
+};
 
 function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; critiques?: Array<{ persona: string } & PanelCritique> }) {
   const { token } = useAuth();
@@ -339,7 +345,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
           </table>
           {c.projection.crossings && (
             <p className="text-teal-300/90 text-[11px] mt-2">
-              Modelled to cross <span className="font-semibold">25%</span> {crossingLabel(c.projection.crossings.cross25)} · <span className="font-semibold">50%</span> {crossingLabel(c.projection.crossings.cross50)}
+              Modelled to cross <span className="font-semibold">25%</span> {crossingLabel(c.projection.crossings.cross25, c.projection.crossings.band25)} · <span className="font-semibold">50%</span> {crossingLabel(c.projection.crossings.cross50, c.projection.crossings.band50)}
             </p>
           )}
           <p className="text-slate-600 text-[10px] mt-1.5">{c.projection.basis}</p>
@@ -701,7 +707,7 @@ export default function ForesightPage() {
                         <span className={`relative w-2.5 h-2.5 rounded-full border border-gold-500/60 ${i === 0 ? 'bg-gold-400 hz-committed' : 'bg-gold-500/30'}`} />
                         <span className="text-gold-300 text-xs font-bold mt-1.5">{a.year}</span>
                         <span className="text-slate-400 text-[10px] text-center leading-tight mt-0.5">{a.name}</span>
-                        <span className="text-slate-600 text-[9px] mt-0.5">{a.region}</span>
+                        <span className="text-slate-600 text-[9px] mt-0.5">{a.region}{a.status && ANCHOR_STATUS_LABEL[a.status] ? ` · ${ANCHOR_STATUS_LABEL[a.status]}` : ''}</span>
                       </div>
                     ))}
                   </div>

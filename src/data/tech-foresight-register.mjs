@@ -20,22 +20,25 @@
 //  • matchTerms: lowercase part-name fragments users actually type.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ── Known regulatory anchors (dates are commitments, not predictions) ────────
+// ── Known regulatory anchors ─────────────────────────────────────────────────
+// status is part of the honesty architecture (2026 audit): 'in-force' and
+// 'adopted' law can pull a technology's horizon; 'proposed' and
+// 'under-revision' anchors are context only — a proposal is not a commitment.
 export const REG_ANCHORS = [
-  { id: 'eu-co2-2030', name: 'EU CO2 fleet targets −55%', year: 2030, region: 'EU', effect: 'Forces BEV mix ≥~60% for volume OEMs; accelerates every electrification technology' },
-  { id: 'eu-ice-2035', name: 'EU 100% zero-emission new cars', year: 2035, region: 'EU', effect: 'Ends new ICE/HEV sales (e-fuel carve-out pending); terminal horizon for ICE-only content' },
-  { id: 'euro7', name: 'Euro 7 (M1)', year: 2027, region: 'EU', effect: 'Adds brake-particulate and tyre-wear limits; first non-exhaust emission regulation' },
-  { id: 'eu-battery-passport', name: 'EU Battery Regulation — digital passport', year: 2027, region: 'EU', effect: 'Battery passport + carbon footprint declaration mandatory for EV batteries' },
-  { id: 'eu-battery-recycled', name: 'EU Battery Regulation — recycled content', year: 2031, region: 'EU', effect: 'Minimum recycled Co/Li/Ni content in new batteries; pulls recycling & design-for-disassembly' },
-  { id: 'eu-elv-recast', name: 'EU ELV Regulation recast', year: 2031, region: 'EU', effect: '~25% recycled plastic in new vehicles (phase-in), design-for-dismantling rules' },
-  { id: 'cbam', name: 'EU CBAM definitive regime', year: 2026, region: 'EU', effect: 'Carbon border price on imported steel/aluminium; favours low-CO2 and secondary metals' },
-  { id: 'gsr2', name: 'EU General Safety Regulation 2', year: 2024, region: 'EU', effect: 'Mandates ISA, AEB, driver monitoring, event recorders on all new vehicles' },
-  { id: 'ncap-2026', name: 'Euro NCAP 2026 protocols', year: 2026, region: 'EU', effect: 'New assisted-driving grading, driver-monitoring emphasis, V2X credit' },
-  { id: 'un-r155', name: 'UNECE R155/R156 cyber & SW updates', year: 2024, region: 'Global (UNECE)', effect: 'Type-approval requires cybersecurity + OTA software-update management systems' },
-  { id: 'china-gb38031', name: 'China GB 38031-2025 battery safety', year: 2026, region: 'China', effect: 'No fire/explosion after thermal runaway — forces cell/pack propagation design worldwide' },
-  { id: 'us-epa-27', name: 'US EPA MY2027-2032 standards', year: 2027, region: 'US', effect: 'Fleet CO2 tightening (under political revision) sustaining hybrid/BEV mix pressure' },
-  { id: 'pfas', name: 'EU PFAS restriction (REACH)', year: 2028, region: 'EU', effect: 'Broad PFAS ban trajectory hits seals, coatings, refrigerants, some battery materials' },
-  { id: 'fgas', name: 'EU F-gas Regulation phase-down', year: 2027, region: 'EU', effect: 'HFC quota cuts push R744 (CO2) and low-GWP refrigerant thermal systems' },
+  { id: 'eu-co2-2030', name: 'EU CO2 fleet targets −55%', year: 2030, region: 'EU', status: 'in-force', effect: 'Forces BEV mix ≥~60% for volume OEMs (2025-27 averaging flexibility granted); accelerates every electrification technology' },
+  { id: 'eu-ice-2035', name: 'EU 100% zero-emission new cars', year: 2035, region: 'EU', status: 'adopted', effect: 'Ends new ICE/HEV sales — adopted law, but the 2026 review clause keeps e-fuel/PHEV carve-outs in play; watch the review outcome' },
+  { id: 'euro7', name: 'Euro 7 (M1)', year: 2027, region: 'EU', status: 'adopted', effect: 'Applies Nov 2026 (new type approvals) / Nov 2027 (all registrations): brake-particulate 3-7 mg/km and tyre-abrasion limits — first non-exhaust emission regulation' },
+  { id: 'eu-battery-passport', name: 'EU Battery Regulation — digital passport', year: 2027, region: 'EU', status: 'adopted', effect: 'Battery passport + carbon footprint declaration mandatory for EV batteries (from Feb 2027)' },
+  { id: 'eu-battery-recycled', name: 'EU Battery Regulation — recycled content', year: 2031, region: 'EU', status: 'adopted', effect: 'Minimum recycled Co/Li/Ni content in new batteries; pulls recycling & design-for-disassembly' },
+  { id: 'eu-elv-recast', name: 'EU ELV Regulation recast', year: 2032, region: 'EU', status: 'adopted', effect: 'Adopted June 2026: staged post-consumer recycled plastic 15% (≈2032) → 20% (≈2034) → 25% (≈2036), design-for-dismantling rules' },
+  { id: 'cbam', name: 'EU CBAM definitive regime', year: 2026, region: 'EU', status: 'in-force', effect: 'Carbon border price on imported steel/aluminium; favours low-CO2 and secondary metals' },
+  { id: 'gsr2', name: 'EU General Safety Regulation 2', year: 2024, region: 'EU', status: 'in-force', effect: 'Mandates ISA, AEB, driver monitoring, event recorders on all new vehicles' },
+  { id: 'ncap-2026', name: 'Euro NCAP 2026 protocols', year: 2026, region: 'EU', status: 'adopted', effect: 'Published protocol (not law): assisted-driving grading, driver-monitoring emphasis, V2X credit — market access via stars, not type approval' },
+  { id: 'un-r155', name: 'UNECE R155/R156 cyber & SW updates', year: 2024, region: 'Global (UNECE)', status: 'in-force', effect: 'Type-approval requires cybersecurity + OTA software-update management systems' },
+  { id: 'china-gb38031', name: 'China GB 38031-2025 battery safety', year: 2026, region: 'China', status: 'in-force', effect: 'No fire/explosion after thermal runaway (applies from July 2026) — forces cell/pack propagation design worldwide' },
+  { id: 'us-epa-27', name: 'US EPA MY2027-2032 standards', year: 2027, region: 'US', status: 'under-revision', effect: 'Finalised 2024 but under active rollback — treat as a WEAKENING anchor; US pressure now comes from CARB states and market economics, not federal CO2' },
+  { id: 'pfas', name: 'EU PFAS restriction (REACH)', year: 2028, region: 'EU', status: 'proposed', effect: 'Universal PFAS restriction still in ECHA process — a trajectory, not law; hits seals, coatings, refrigerants, some battery materials if adopted as drafted' },
+  { id: 'fgas', name: 'EU F-gas Regulation phase-down', year: 2027, region: 'EU', status: 'in-force', effect: 'HFC quota cuts push R744 (CO2) and low-GWP refrigerant thermal systems' },
 ];
 
 // Compact constructor keeps the entries readable.
@@ -128,7 +131,7 @@ export const FORESIGHT_REGISTER = [
   t('mg-structural-castings', 'Magnesium structural castings beyond the CCB', 'BIW', ['BEV'], 'Aluminium castings and steel assemblies', 7, 1, ['weight'], 'flat', ['Meridian', 'Chongqing Millison', 'GM'], 'Mg is 33% lighter than Al; cross-car beams are proven, and Chinese giga-casting lines are now trialling Mg shock towers — corrosion and cost discipline decide.', ['biw', 'magnesium', 'casting', 'cross car beam', 'body'], undefined),
 
   // ═══ INTERIOR ══════════════════════════════════════════════════════════════
-  t('recycled-interior-plastics', 'High-recycled-content interior polymers', 'Interior', ['BEV', 'ICE', 'PHEV', 'MHEV'], 'Virgin PP/ABS trim', 8, 10, ['regulation', 'sustainability'], 'falling', ['BASF', 'Borealis', 'BMW', 'Volvo'], 'ELV recast targets ~25% recycled plastic: interior trim is where the tonnage is — expect PCR grades everywhere.', ['interior', 'trim', 'plastic', 'panel'], { regAnchor: 'eu-elv-recast' }),
+  t('recycled-interior-plastics', 'High-recycled-content interior polymers', 'Interior', ['BEV', 'ICE', 'PHEV', 'MHEV'], 'Virgin PP/ABS trim', 8, 10, ['regulation', 'sustainability'], 'falling', ['BASF', 'Borealis', 'BMW', 'Volvo'], 'ELV recast (adopted 2026) stages post-consumer recycled plastic 15%→25% through the 2030s: interior trim is where the tonnage is — expect PCR grades everywhere.', ['interior', 'trim', 'plastic', 'panel'], { regAnchor: 'eu-elv-recast' }),
   t('leather-free-premium', 'Bio-based / leather-free premium surfaces', 'Interior', ['BEV', 'PHEV'], 'Leather and PVC leatherette', 9, 20, ['sustainability'], 'flat', ['Volvo', 'Polestar', 'BMW', 'Ultrafabrics'], 'Nordico/microfibre/cactus-derived surfaces now premium-positioned; cost parity with mid leather achieved.', ['interior', 'seat', 'upholstery', 'leather', 'surface'], { firstProduction: 'Polestar 2 (2020); Volvo EX30 leather-free (2023)' }),
   t('smart-surfaces', 'Functional smart surfaces (heating, lighting, touch in trim)', 'Interior', ['BEV', 'PHEV'], 'Discrete switches, separate heater mats', 7, 3, ['software', 'cost'], 'falling', ['Yanfeng', 'Antolin', 'Canatu'], 'Printed electronics fold controls/heating/ambient light into IMD trim — deletes switch assemblies.', ['interior', 'trim', 'panel', 'switch', 'surface'], undefined),
   t('zero-gravity-seats', 'Power-articulating lounge/zero-g front seats', 'Interior', ['BEV'], 'Conventional 8-way power seats', 8, 4, ['performance'], 'flat', ['NIO', 'Li Auto', 'Lear', 'Adient'], 'Chinese NEV interior arms race exports to EU premium; heavy/costly — countertrend to decontenting.', ['seat', 'seating', 'interior'], undefined),
@@ -223,6 +226,29 @@ for (const [seg, ids] of Object.entries(SEGMENT_TAGS)) {
 }
 export const SEGMENT_TAG_IDS = SEGMENT_TAGS;   // exported for integrity tests
 
+// ── Adoption ceilings (2026 audit) ───────────────────────────────────────────
+// Bass projections default to a 90% segment ceiling — false precision for
+// technologies that will clearly saturate lower (niche use-cases, premium-only
+// economics, competing architectures). Curated ceiling = honest saturation
+// share of the applicable segment; integrity-tested (ids must exist).
+const ADOPTION_CEILINGS = {
+  'battery-swap': 15, 'na-ion': 25, 'semi-solid': 15, 'immersion-cooling': 15, 'battery-housing-steel': 40,
+  'axial-flux': 20, 'in-wheel-motors': 10, 'speed-reducer-2speed': 15, 'fe-nitride-magnets': 30,
+  'h2-ice': 5, 'efuel-carveout': 3, 'range-extender': 30, 'e-turbo': 25,
+  'air-susp-volume': 35, 'rear-steer': 30, 'active-roll-48v': 25, 'composite-springs': 25,
+  'hydraulic-interlinked': 20, 'preview-suspension': 30, 'ctis': 8, 'cameras-not-mirrors': 15,
+  'e-beam-axle': 30, 'bev-low-range': 20, 'quad-motor-maneuver': 15, 'float-mode': 5,
+  'mg-structural-castings': 10, 'zero-gravity-seats': 25, 'retractable-steering': 20,
+  'wireless-charging': 25, 'satellite-connectivity': 60, 'cabin-purification': 60,
+  'e-lockers': 50, 'e-transfer-lowrange': 45, 'wade-sensing': 40, 'underbody-protection': 50,
+  'terrain-ai': 50, 'transparent-bonnet': 40, 'offroad-crawl': 40,
+};
+for (const [id, ceiling] of Object.entries(ADOPTION_CEILINGS)) {
+  const tech = FORESIGHT_REGISTER.find((x) => x.id === id);
+  if (tech) tech.ceiling = ceiling;
+}
+export const ADOPTION_CEILING_IDS = Object.keys(ADOPTION_CEILINGS);   // for integrity tests
+
 // ── Premium/luxury off-road SUV benchmarks — the vehicles that define the
 //    segment's technology bar today, with the announced move to watch next.
 //    Curated evidence, not predictions; shown when the segment lens is active.
@@ -231,10 +257,10 @@ export const BENCHMARK_VEHICLES = [
   { vehicle: 'Defender OCTA', brand: 'JLR', year: 2024, powertrains: ['MHEV'], signature: ['6D Dynamics hydraulic interlinked suspension', 'Continuously variable twin-valve dampers', '635PS V8 MHEV'], watch: '6D-class suspension cascading into volume Defender/Discovery' },
   { vehicle: 'G 580 with EQ Technology', brand: 'Mercedes-Benz', year: 2024, powertrains: ['BEV'], signature: ['Four motors + per-wheel 2-speed low range', 'Virtual diff locks', 'G-Turn / G-Steering', '850mm wading'], watch: 'Whether virtual lockers win over the mechanical-locks faithful' },
   { vehicle: 'Yangwang U8', brand: 'BYD', year: 2023, powertrains: ['PHEV'], signature: ['DiSus-P hydraulic body control (+150mm)', 'Tank turn', 'Emergency Float Mode (IP68, 30 min)', 'Quad-motor REEV, 1,184hp'], watch: 'U8L exports and DiSus trickling into volume BYD' },
-  { vehicle: 'R1S Gen2 Quad', brand: 'Rivian', year: 2024, powertrains: ['BEV'], signature: ['Quad-motor 1,025hp + Kick Turn', 'Kneel/camp modes', 'RAD off-road assist'], watch: 'R2 cost-down of quad-motor capability' },
+  { vehicle: 'R1S Gen2 Quad', brand: 'Rivian', year: 2025, powertrains: ['BEV'], signature: ['Quad-motor 1,025hp + Kick Turn (OTA, 2025)', 'Kneel/camp modes', 'RAD off-road assist'], watch: 'R2 cost-down of quad-motor capability' },
   { vehicle: 'Escalade IQ', brand: 'Cadillac', year: 2024, powertrains: ['BEV'], signature: ['4-wheel steer + Arrival Mode diagonal drive', '55-inch pillar-to-pillar display', '460-mile pack'], watch: 'Arrival-mode 4WS spreading across Ultium SUVs' },
   { vehicle: 'Hummer EV SUV', brand: 'GMC', year: 2023, powertrains: ['BEV'], signature: ['CrabWalk diagonal steering', 'Extract Mode (+149mm)', 'UltraVision underbody cameras'], watch: 'Which halo features survive the cost-down into mainstream GM trucks' },
-  { vehicle: 'LX 700h', brand: 'Lexus', year: 2024, powertrains: ['MHEV'], signature: ['E-KDSS electronic stabiliser decoupling', 'Hybrid with mechanical low range'], watch: 'E-KDSS-class decoupling vs hydraulic interlink on cost' },
+  { vehicle: 'GX 550 Overtrail', brand: 'Lexus', year: 2023, powertrains: ['ICE', 'MHEV'], signature: ['E-KDSS electronic stabiliser decoupling (standard)', 'Full-time 4WD + crawl control lineage'], watch: 'E-KDSS-class decoupling vs hydraulic interlink on cost' },
   { vehicle: 'Cullinan Series II', brand: 'Rolls-Royce', year: 2024, powertrains: ['ICE'], signature: ['Planar suspension + Flagbearer camera preview', 'Effortless-everywhere tuning'], watch: 'Electric Cullinan positioning' },
   { vehicle: 'Bentayga', brand: 'Bentley', year: 2016, powertrains: ['PHEV', 'ICE'], signature: ['48V eARS pioneer', 'Predictive chassis'], watch: 'Hybrid-only line-up shift and BEV timing' },
   { vehicle: 'M9', brand: 'AITO/Huawei', year: 2023, powertrains: ['BEV', 'PHEV'], signature: ['Huawei ADS + light-projection HUD', 'Satellite calling', 'Purification cabin'], watch: 'The Huawei stack arriving in export markets' },
