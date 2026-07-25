@@ -294,10 +294,14 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
   let selected = matched.length ? matched.map((m) => m.tech) : pool;
   if (powertrain) selected = selected.filter((t) => t.powertrains.includes(powertrain));
 
-  const cards = selected.map((t) => techCard(t, now, anchors));
+  // Term-matched queries rank by RELEVANCE first, then momentum — so "48V
+  // MHEV battery" leads with 48V technologies, not the loudest HV-pack tech
+  // that happened to share the word "battery".
+  const scoreById = new Map(matched.map((m) => [m.tech.id, m.score]));
+  const cards = selected.map((t) => ({ ...techCard(t, now, anchors), matchScore: scoreById.get(t.id) ?? 0 }));
   const horizons = { H1: [], H2: [], H3: [] };
   for (const c of cards) horizons[c.horizon].push(c);
-  for (const k of H_ORDER) horizons[k].sort((a, b) => b.momentum - a.momentum || a.id.localeCompare(b.id));
+  for (const k of H_ORDER) horizons[k].sort((a, b) => (b.matchScore - a.matchScore) || (b.momentum - a.momentum) || a.id.localeCompare(b.id));
 
   const anchorIds = new Set(cards.map((c) => c.regAnchor).filter(Boolean));
   return {

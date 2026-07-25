@@ -414,6 +414,19 @@ test('foresightFor: an unresolvable query returns nothing, not the whole registe
   assert.ok(withCommodity.count >= MIN_PER_COMMODITY);
 });
 
+test('foresightFor: term-matched queries rank by relevance before momentum', () => {
+  // "48V MHEV battery" must lead with the 48V-specific technologies, not the
+  // highest-momentum HV-pack tech that merely shares the word "battery".
+  const r = foresightFor({ query: '48V MHEV battery' });
+  const first = r.horizons.H1[0];
+  assert.equal(first.id, '48v-battery-nextgen', `top hit was ${first.id}`);
+  assert.ok(r.horizons.H1.slice(0, 3).some((c) => c.id === '48v-mhev-decontent'));
+  // Commodity-only queries (no term match) still rank purely by momentum.
+  const c = foresightFor({ commodity: 'EDU' });
+  const ms = c.horizons.H1.map((x) => x.momentum);
+  assert.deepEqual(ms, [...ms].sort((a, b) => b - a));
+});
+
 test('foresightFor: deterministic — same inputs, same output', () => {
   const a = foresightFor({ query: 'battery pack', powertrain: 'BEV' });
   const b = foresightFor({ query: 'battery pack', powertrain: 'BEV' });
