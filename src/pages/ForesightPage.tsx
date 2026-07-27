@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown, Mountain, Gem, Cpu } from 'lucide-react';
+import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown, Mountain, Gem, Cpu, Layers } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { exportForesightPdf } from '../services/foresight-report';
@@ -36,7 +36,12 @@ interface ForesightResult {
   note?: string;
 }
 interface BenchmarkVehicle { vehicle: string; brand: string; year: number; powertrains: string[]; signature: string[]; watch: string; }
-interface Catalogue { commodities: string[]; powertrains: string[]; segments?: string[]; technologies: number; vintage: number; }
+interface Catalogue { commodities: string[]; powertrains: string[]; segments?: string[]; technologies: number; vintage: number; bom?: Record<string, Record<string, string[]>>; }
+interface PartResearch {
+  research: { summary: string; developments: Array<{ finding: string; sourceTitle: string; url: string }>; outlook: string; risks: string } | null;
+  evidence?: { searches: Array<{ title: string; url: string }>; patents: PatentRef[] };
+  note: string;
+}
 interface PatentRef { number: string; title: string; date: string; assignee: string; url: string; }
 interface Evidence {
   configured: boolean; patents: PatentRef[];
@@ -431,6 +436,11 @@ export default function ForesightPage() {
   const [panelLoading, setPanelLoading] = useState(false);
   const [panelError, setPanelError] = useState('');
   const [ledger, setLedger] = useState<LedgerEntry[] | null>(null);
+  const [bomOpen, setBomOpen] = useState(false);
+  const [bomCommodity, setBomCommodity] = useState('');
+  const [partResearch, setPartResearch] = useState<PartResearch | null>(null);
+  const [prLoading, setPrLoading] = useState(false);
+  const [prError, setPrError] = useState('');
   const [ledgerOpen, setLedgerOpen] = useState(false);
   const [revisit, setRevisit] = useState<LedgerRevisit | null>(null);
   const [saveNote, setSaveNote] = useState('');
@@ -510,11 +520,32 @@ export default function ForesightPage() {
   const critiquesFor = (techId: string) =>
     panel?.panel.flatMap(p => p.critiques.filter(cr => cr.techId === techId).map(cr => ({ persona: p.persona, ...cr }))) ?? [];
 
+  async function runPartResearch(q: string) {
+    setPrLoading(true); setPrError('');
+    try {
+      const apiKey = localStorage.getItem('brainspark_api_key') || undefined;
+      const r = await fetch('/api/foresight/research', { method: 'POST', headers: authHeaders, body: JSON.stringify({ query: q, apiKey }) });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Deep research failed.');
+      setPartResearch(d);
+    } catch (e) {
+      setPrError(e instanceof Error ? e.message : 'Deep research failed.');
+    } finally { setPrLoading(false); }
+  }
+
+  function bomPick(part: string) {
+    setQuery(part); setCommodity(''); setBomOpen(false);
+    setTimeout(() => predictRef.current?.(), 0);
+  }
+  const predictRef = { current: null as null | (() => void) };
+  predictRef.current = predict;
+
   async function predict() {
     if (!query.trim() && !commodity && !segment) { setError('Type a part, pick a commodity, or choose a segment lens.'); return; }
     if (!token) { setError('Please sign in.'); return; }
     setLoading(true); setError(''); setResult(null);
     setPanel(null); setPanelError(''); setSaveNote('');
+    setPartResearch(null); setPrError('');
     try {
       const apiKey = localStorage.getItem('brainspark_api_key') || undefined;
       const r = await fetch('/api/foresight/predict', {
@@ -690,9 +721,73 @@ export default function ForesightPage() {
           )}
         </div>
 
+        {/* Full-vehicle BOM browser — every assembly & component, guaranteed to resolve */}
+        <div className="max-w-4xl mx-auto mb-6">
+          <button onClick={() => setBomOpen(o => !o)}
+            className="flex items-center gap-1.5 text-slate-500 text-xs hover:text-slate-300 mx-auto">
+            {bomOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />} <Layers size={13} /> Browse the full vehicle BOM ({catalogue?.bom ? Object.values(catalogue.bom).reduce((a, c) => a + Object.values(c).flat().length, 0) : '270+'} components)
+          </button>
+          {bomOpen && catalogue?.bom && (
+            <div className="mt-3 bg-navy-900 border border-white/10 rounded-2xl p-4">
+              <div className="flex flex-wrap gap-2 mb-3">
+                {Object.keys(catalogue.bom).map(c => (
+                  <button key={c} onClick={() => setBomCommodity(b => b === c ? '' : c)}
+                    className={`px-2.5 py-1 rounded-full border text-xs transition-colors ${bomCommodity === c ? 'bg-gold-500/15 border-gold-500/40 text-gold-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+              {bomCommodity && catalogue.bom[bomCommodity] && (
+                <div className="space-y-3">
+                  {Object.entries(catalogue.bom[bomCommodity]).map(([assembly, parts]) => (
+                    <div key={assembly}>
+                      <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">{assembly}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {parts.map(p => (
+                          <button key={p} onClick={() => bomPick(p)}
+                            className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300 text-[11px] hover:border-teal-500/40 hover:text-teal-300 transition-colors">
+                            {p}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {!bomCommodity && <p className="text-slate-600 text-xs">Pick a commodity — every component chip runs a live prediction. Each of these is test-guaranteed to resolve to technologies.</p>}
+            </div>
+          )}
+        </div>
+
         {/* Results */}
         {result && result.count === 0 && (
-          <p className="text-center text-slate-500 text-sm max-w-xl mx-auto">{result.note}</p>
+          <div className="max-w-xl mx-auto text-center space-y-3">
+            <p className="text-slate-500 text-sm">{result.note}</p>
+            <button onClick={() => runPartResearch(result.query)} disabled={prLoading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-teal-500/30 bg-teal-500/10 text-teal-300 hover:bg-teal-500/20 disabled:opacity-50 text-xs transition-colors">
+              {prLoading ? <ButtonSpinner size={12} /> : <Microscope size={13} />} Run AI deep research on "{result.query}" (live, cited)
+            </button>
+            {prError && <p className="text-red-400 text-xs">{prError}</p>}
+          </div>
+        )}
+        {partResearch && (
+          <div className="max-w-3xl mx-auto mt-4 bg-navy-900 border border-teal-500/20 rounded-2xl p-5 space-y-2">
+            <p className="text-teal-300 text-xs uppercase tracking-wider font-semibold">AI deep research — researched, NOT curated</p>
+            {!partResearch.research && <p className="text-slate-500 text-xs">{partResearch.note}</p>}
+            {partResearch.research && (
+              <>
+                <p className="text-slate-300 text-sm leading-relaxed">{partResearch.research.summary}</p>
+                {partResearch.research.developments.map((d, i) => (
+                  <p key={i} className="text-slate-400 text-xs leading-relaxed">
+                    • {d.finding} <a href={d.url} target="_blank" rel="noreferrer" className="text-teal-400 hover:text-teal-300">[{d.sourceTitle.slice(0, 40)}]</a>
+                  </p>
+                ))}
+                <p className="text-slate-300 text-xs"><span className="text-slate-500">Outlook:</span> {partResearch.research.outlook}</p>
+                <p className="text-amber-300/80 text-xs"><span className="text-slate-500">Uncertainty:</span> {partResearch.research.risks}</p>
+                <p className="text-slate-600 text-[10px]">{partResearch.note}</p>
+              </>
+            )}
+          </div>
         )}
         {result && result.count > 0 && (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="relative space-y-6">

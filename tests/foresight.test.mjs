@@ -216,6 +216,17 @@ test('register: honesty rules — committed claims need evidence, speculative st
   }
 });
 
+// ── Full-vehicle BOM taxonomy: nothing may dead-end ──────────────────────────
+import { BOM_TREE, flattenBom } from '../src/data/vehicle-bom.mjs';
+
+test('BOM: covers the whole vehicle and EVERY component resolves to technologies', () => {
+  const leaves = flattenBom();
+  assert.ok(leaves.length >= 270, `only ${leaves.length} BOM leaves`);
+  assert.deepEqual(Object.keys(BOM_TREE).sort(), [...COMMODITY_KEYS].sort(), 'BOM must span every commodity');
+  const dead = leaves.filter(({ part }) => foresightFor({ query: part }).count === 0);
+  assert.deepEqual(dead.map((d) => d.part), [], `dead BOM components: ${dead.map((d) => d.part).join(', ')}`);
+});
+
 // ── Register self-audit (the tool finds its own weak spots) ──────────────────
 import { auditRegister, auditQueryPrecision } from '../foresight-audit.mjs';
 
