@@ -52,4 +52,13 @@ if (ideation.length === 0) {
 }
 try { row('llm-eval (process metrics)', `recorded · ${age(join(BENCH, 'llm-eval-results.json'))}`); }
 catch { row('llm-eval (process metrics)', 'never run'); }
+
+console.log('\nHorizon foresight register:');
+try {
+  const { auditRegister } = await import('../foresight-audit.mjs');
+  const a = auditRegister();
+  row('Register curation debt', `${a.flaggedCount}/${a.total} entries flagged · China-frontier coverage ${a.chinaCoveragePct}%`);
+  console.log('    → npm run horizon:audit  (worst-first curation inbox)');
+  row('Horizon LLM layer (briefing/panel/deep-dive)', 'NO EVAL HARNESS — unmeasured surface');
+} catch { row('Horizon register audit', 'unavailable'); }
 console.log('');

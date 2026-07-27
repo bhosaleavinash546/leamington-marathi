@@ -18,7 +18,8 @@
     "mobile:android": "npx cap open android",
     "mobile:ios": "npx cap open ios",
     "e2e": "node e2e/smoke.mjs",
-    "test:integration": "node --test tests/http-integration.test.mjs"
+    "test:integration": "node --test tests/http-integration.test.mjs",
+    "horizon:audit": "node scripts/horizon-audit.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",

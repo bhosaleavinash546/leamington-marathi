@@ -31,6 +31,7 @@ node benchmark/ideation-eval.mjs --compare baseline current  # offline metric de
 
 npm run kb:export          # REQUIRED after editing src/data/*-knowledge-base.ts (regenerates kb-pack.json)
 npm run eval:status        # measurement-debt report: which gates/evals have results, what is unmeasured
+npm run horizon:audit      # foresight-register curation inbox (evidence, China-frontier, freshness, precision)
 ```
 
 Operational notes live in `docs/OPERATIONS.md` (incl. automatic DB backups via `db-backup.mjs`, disable with `BRAINSPARK_BACKUPS=0`); architecture decisions in `docs/DECISIONS.md` — add an entry when making a choice that would surprise a newcomer.

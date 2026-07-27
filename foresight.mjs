@@ -220,7 +220,9 @@ export function resolveParts(query, register = FORESIGHT_REGISTER) {
   for (const tech of register) {
     let score = 0;
     for (const term of tech.matchTerms) {
-      if (q.includes(term)) score += 2;
+      // A multi-word exact hit ("electrical steel") is more specific than a
+      // single generic word ("electrical") and must outrank it (2026 audit).
+      if (q.includes(term)) score += term.includes(' ') ? 3 : 2;
       // Multi-word terms need EVERY word present — a lone generic token like
       // "front" or "air" must not drag in unrelated technologies.
       else if (term.split(/\s+/).every((w) => qTokens.has(w))) score += 1;

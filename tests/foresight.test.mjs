@@ -216,6 +216,30 @@ test('register: honesty rules — committed claims need evidence, speculative st
   }
 });
 
+// ── Register self-audit (the tool finds its own weak spots) ──────────────────
+import { auditRegister, auditQueryPrecision } from '../foresight-audit.mjs';
+
+test('self-audit: audits every entry with known flags, worst-first inbox', () => {
+  const a = auditRegister();
+  assert.equal(a.total, FORESIGHT_REGISTER.length);
+  const known = new Set(['no-evidence', 'few-players', 'no-china-frontier', 'stale-evidence', 'thin-matchterms', 'short-note']);
+  for (const e of a.inbox) for (const f of e.flags) assert.ok(known.has(f), f);
+  for (let i = 1; i < a.inbox.length; i++) assert.ok(a.inbox[i - 1].flags.length >= a.inbox[i].flags.length);
+});
+
+test('self-audit regression gates: the register can only get healthier', () => {
+  const a = auditRegister();
+  // Baselines measured July 2026 — future edits must not regress them.
+  assert.ok(a.chinaCoveragePct >= 53, `China-frontier coverage fell to ${a.chinaCoveragePct}%`);
+  assert.ok(a.flaggedCount <= 121, `curation debt grew to ${a.flaggedCount}`);
+  assert.ok((a.byFlag['no-evidence'] ?? 0) <= 21, 'evidence debt grew');
+});
+
+test('self-audit: every coverage query resolves via specific terms, not generic ties', () => {
+  const q = auditQueryPrecision(COVERAGE_QUERIES);
+  assert.deepEqual(q.weak, [], `weak queries: ${JSON.stringify(q.weak)}`);
+});
+
 // ── S-curve + horizons ───────────────────────────────────────────────────────
 
 test('sCurvePhase maps maturity to phases', () => {
