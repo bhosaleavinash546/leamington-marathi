@@ -81,3 +81,23 @@ export function flattenBom() {
   }
   return out;
 }
+
+// ── Analyze-catalog mirror ───────────────────────────────────────────────────
+// The exact 13 systems / 52 subassemblies users know from the Analyze tool,
+// browsable inside Horizon. MIRROR, not source: tests/foresight.test.mjs
+// asserts this matches automotive-catalog.ts exactly — drift fails CI.
+export const ANALYZE_SYSTEMS = {
+  'Body-in-White (BIW)': ['Upper Body Structure', 'Lower Body Structure', 'Front End Module (FEM)', 'Rear End Structure', 'Closures — Doors, Hood, Tailgate', 'Reinforcements & NVH Treatments'],
+  'Chassis & Frame': ['Front Suspension System', 'Rear Suspension System', 'Steering System', 'Braking System', 'Wheels & Tyres'],
+  'Powertrain — ICE': ['Engine Assembly', 'Air Intake System', 'Fuel System', 'Exhaust System', 'Engine Cooling System', 'Forced Induction — Turbocharger'],
+  'Powertrain — BEV / MHEV': ['Battery Pack System', 'Electric Drive Unit (EDU)', 'High-Voltage Distribution System', 'MHEV 48V System'],
+  'Transmission & Driveline': ['ICE Automatic / DCT Transmission', 'Driveline — AWD / 4x4'],
+  'Thermal & HVAC': ['HVAC Core Unit', 'Refrigerant Circuit & Heat Pump', 'Rear HVAC Module'],
+  'Interior Systems': ['Instrument Panel (Dashboard)', 'Seat Systems', 'Door Trim Panels', 'Headliner & Pillar Trims', 'Centre Console'],
+  'Exterior Systems': ['Bumper Systems (F&R)', 'Lighting Systems', 'Exterior Mirrors', 'Glass & Glazing', 'Wiper & Washer System'],
+  'Electrical & Electronics (E/E)': ['Wiring Harness System', 'ECU / E-Architecture', 'Infotainment & Connectivity'],
+  'ADAS & Safety Systems': ['Perception Sensor Suite', 'Airbag & Passive Safety System', 'Seatbelt System'],
+  'Fuel & Emission Systems': ['Fuel Storage & Delivery', 'EVAP (Evaporative Emission Control)', 'NOx Aftertreatment (Diesel / Euro 7)'],
+  'Exterior Trim & Ornamentation': ['Front Grille & Exterior Chrome', 'Badges, Emblems & Decals', 'Wheel Arch & Underbody Protection'],
+  'Advanced Next-Gen Systems': ['800V Charging Architecture', 'Cell-to-Pack / Cell-to-Body (CTP/CTB)', 'Integrated 3-in-1 / 5-in-1 e-Axle', 'Predictive & Intelligent Control Systems'],
+};

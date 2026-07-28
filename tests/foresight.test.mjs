@@ -228,10 +228,13 @@ test('parity: every Analyze system & subassembly resolves in Horizon', () => {
   assert.ok(systems.length >= 13 && subs.length >= 52, `extraction broke: ${systems.length}/${subs.length}`);
   const dead = [...systems, ...subs].filter((n) => foresightFor({ query: n }).count === 0);
   assert.deepEqual(dead, [], `Analyze names with no Horizon answer: ${dead.join(' | ')}`);
+  // The in-Horizon mirror must match the Analyze catalog EXACTLY.
+  assert.deepEqual(Object.keys(ANALYZE_SYSTEMS), systems, 'ANALYZE_SYSTEMS systems drifted from automotive-catalog.ts');
+  assert.deepEqual(Object.values(ANALYZE_SYSTEMS).flat(), subs, 'ANALYZE_SYSTEMS subassemblies drifted from automotive-catalog.ts');
 });
 
 // ── Full-vehicle BOM taxonomy: nothing may dead-end ──────────────────────────
-import { BOM_TREE, flattenBom } from '../src/data/vehicle-bom.mjs';
+import { BOM_TREE, flattenBom, ANALYZE_SYSTEMS } from '../src/data/vehicle-bom.mjs';
 
 test('BOM: covers the whole vehicle and EVERY component resolves to technologies', () => {
   const leaves = flattenBom();

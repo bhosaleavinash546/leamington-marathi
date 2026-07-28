@@ -36,7 +36,7 @@ interface ForesightResult {
   note?: string;
 }
 interface BenchmarkVehicle { vehicle: string; brand: string; year: number; powertrains: string[]; signature: string[]; watch: string; }
-interface Catalogue { commodities: string[]; powertrains: string[]; segments?: string[]; technologies: number; vintage: number; bom?: Record<string, Record<string, string[]>>; }
+interface Catalogue { commodities: string[]; powertrains: string[]; segments?: string[]; technologies: number; vintage: number; bom?: Record<string, Record<string, string[]>>; analyzeSystems?: Record<string, string[]>; }
 interface PartResearch {
   research: { summary: string; developments: Array<{ finding: string; sourceTitle: string; url: string }>; outlook: string; risks: string } | null;
   evidence?: { searches: Array<{ title: string; url: string }>; patents: PatentRef[] };
@@ -438,6 +438,7 @@ export default function ForesightPage() {
   const [ledger, setLedger] = useState<LedgerEntry[] | null>(null);
   const [bomOpen, setBomOpen] = useState(false);
   const [bomCommodity, setBomCommodity] = useState('');
+  const [bomView, setBomView] = useState<'bom' | 'analyze'>('bom');
   const [partResearch, setPartResearch] = useState<PartResearch | null>(null);
   const [prLoading, setPrLoading] = useState(false);
   const [prError, setPrError] = useState('');
@@ -730,6 +731,36 @@ export default function ForesightPage() {
           </button>
           {bomOpen && catalogue?.bom && (
             <div className="mt-3 bg-navy-900 border border-white/10 rounded-2xl p-4">
+              {/* View toggle: Horizon BOM tree vs the exact Analyze catalog */}
+              <div className="flex gap-2 mb-3">
+                <button onClick={() => setBomView('bom')}
+                  className={`px-2.5 py-1 rounded-lg border text-xs transition-colors ${bomView === 'bom' ? 'bg-gold-500/15 border-gold-500/40 text-gold-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
+                  Vehicle BOM tree
+                </button>
+                <button onClick={() => setBomView('analyze')}
+                  className={`px-2.5 py-1 rounded-lg border text-xs transition-colors ${bomView === 'analyze' ? 'bg-teal-500/15 border-teal-500/40 text-teal-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
+                  Analyze systems (13 · 52)
+                </button>
+              </div>
+              {bomView === 'analyze' && catalogue.analyzeSystems && (
+                <div className="space-y-3">
+                  {Object.entries(catalogue.analyzeSystems).map(([sys, subs]) => (
+                    <div key={sys}>
+                      <button onClick={() => bomPick(sys)} className="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-1.5 hover:text-teal-300">{sys}</button>
+                      <div className="flex flex-wrap gap-1.5">
+                        {subs.map(sub => (
+                          <button key={sub} onClick={() => bomPick(sub)}
+                            className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300 text-[11px] hover:border-teal-500/40 hover:text-teal-300 transition-colors">
+                            {sub}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  <p className="text-slate-600 text-[10px]">The exact systems & subassemblies from the Analyze tool — same taxonomy, now with a technology future behind every one (parity is CI-enforced).</p>
+                </div>
+              )}
+              {bomView === 'bom' && (<>
               <div className="flex flex-wrap gap-2 mb-3">
                 {Object.keys(catalogue.bom).map(c => (
                   <button key={c} onClick={() => setBomCommodity(b => b === c ? '' : c)}
@@ -756,6 +787,7 @@ export default function ForesightPage() {
                 </div>
               )}
               {!bomCommodity && <p className="text-slate-600 text-xs">Pick a commodity — every component chip runs a live prediction. Each of these is test-guaranteed to resolve to technologies.</p>}
+              </>)}
             </div>
           )}
         </div>

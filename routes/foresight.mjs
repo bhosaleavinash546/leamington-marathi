@@ -18,7 +18,7 @@ import { foresightFor, horizonWindows, patentTrend, projectAdoption, REGISTER_VI
 import { FORESIGHT_REGISTER, REG_ANCHORS, SEGMENTS, BENCHMARK_VEHICLES } from '../src/data/tech-foresight-register.mjs';
 import { COMMODITY_KEYS } from '../src/data/commodity-classify.mjs';
 import { searchPatents, patentVelocity, buildPatentQuery, providerStatus } from '../patent-search.mjs';
-import { BOM_TREE } from '../src/data/vehicle-bom.mjs';
+import { BOM_TREE, ANALYZE_SYSTEMS } from '../src/data/vehicle-bom.mjs';
 import { messagesJson } from '../llm-json.mjs';
 
 const SMALL_MODEL = process.env.CV_SMALL_MODEL || 'claude-sonnet-5';
@@ -127,6 +127,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
       anchors: REG_ANCHORS,
       benchmarks: BENCHMARK_VEHICLES,
       bom: BOM_TREE,
+      analyzeSystems: ANALYZE_SYSTEMS,
       windows: horizonWindows(REGISTER_VINTAGE),
       vintage: REGISTER_VINTAGE,
     });
