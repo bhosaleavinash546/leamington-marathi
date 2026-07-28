@@ -23,7 +23,7 @@ export interface ForesightReportCard {
   costTrend: string; players: string[]; note: string;
   phase: string; horizon: 'H1' | 'H2' | 'H3'; regPulled: boolean; momentum: number;
   confidence: string; regAnchorDetail: ForesightReportAnchor | null;
-  projection: { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null; band25?: [number | null, number | null] | null; band50?: [number | null, number | null] | null } };
+  projection: { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null; band25?: [number | null, number | null] | null; band50?: [number | null, number | null] | null; share25?: number; share50?: number; ceiling?: number; peakGrowth?: number | 'passed' | null } };
 }
 export interface ForesightReportBenchmark {
   vehicle: string; brand: string; year: number; powertrains: string[]; signature: string[]; watch: string;
@@ -302,6 +302,48 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
     y += 2;
   }
 
+  // ═══ PREDICTION BOARD ══════════════════════════════════════════════════════
+  // Every technology's modelled milestone years on one instrument — the
+  // forward view at a glance, sorted by when each reaches half its ceiling.
+  {
+    const all = [...result.horizons.H1, ...result.horizons.H2, ...result.horizons.H3];
+    if (all.length >= 2) {
+      const sortKey = (v: number | 'passed' | null | undefined) => (v === 'passed' ? 0 : typeof v === 'number' ? v : 9999);
+      const board = [...all].sort((a, b) => sortKey(a.projection.crossings?.cross50) - sortKey(b.projection.crossings?.cross50) || sortKey(a.projection.crossings?.cross25) - sortKey(b.projection.crossings?.cross25));
+      newPage();   // its own instrument page — never flows onto the cover
+      sectionTitle('Prediction board', 'Every technology’s modelled milestones');
+      const yr = (v: number | 'passed' | null | undefined): { s: string; c: RGB } =>
+        v === 'passed' ? { s: 'PASSED', c: P.TEAL } : typeof v === 'number' ? { s: `~${v}`, c: P.GOLD } : { s: '>15Y', c: P.DIM };
+      const bx = [ML, ML + 78, ML + 94, ML + 110, ML + 130, ML + 150, ML + 168];
+      const header = () => {
+        mono(6.6, true); setColor(doc, P.DIM);
+        ['TECHNOLOGY', 'LANE', 'NOW %', 'CEIL %', '1/4 CEIL', '1/2 CEIL', 'PEAK'].forEach((h, i) => doc.text(h, bx[i], y));
+        y += 1.5; setDraw(doc, P.RULE, 0.3); doc.line(ML, y, PW - MR, y); y += 3.6;
+      };
+      header();
+      board.forEach((c, i) => {
+        if (y > 272) { newPage(); header(); }
+        if (i % 2 === 0) { setFill(doc, P.PANEL); doc.rect(ML - 1, y - 3, CW + 2, 4.6, 'F'); }
+        sans(7.8); setColor(doc, P.BODY);
+        doc.text(fitText(doc, c.name, 76), bx[0], y);
+        mono(6.8); setColor(doc, confColor(c.confidence));
+        doc.text(c.horizon, bx[1], y);
+        mono(6.8); setColor(doc, P.MUT);
+        doc.text(String(c.adoptionPct), bx[2], y);
+        doc.text(String(c.projection.crossings?.ceiling ?? 90), bx[3], y);
+        ([c.projection.crossings?.cross25, c.projection.crossings?.cross50, c.projection.crossings?.peakGrowth] as const).forEach((v, k) => {
+          const r = yr(v); mono(6.8, true); setColor(doc, r.c); doc.text(r.s, bx[4 + k], y);
+        });
+        y += 4.6;
+      });
+      mono(6.4); setColor(doc, P.DIM);
+      y += 1;
+      ensure(6);
+      doc.text('MILESTONES ARE SHARES OF EACH TECHNOLOGY’S MODELLED CEILING (BASS DIFFUSION) — MODELLED, NOT MEASURED', ML, y);
+      y += 7;
+    }
+  }
+
   // ═══ HORIZON LANES ═════════════════════════════════════════════════════════
   const signalFor = (id: string) => result.narrative?.signals.find(s => s.techId === id)?.watch;
   const critiquesFor = (id: string) =>
@@ -425,14 +467,16 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       y += 17;
 
       if (c.projection.crossings) {
-        const lbl = (v: number | 'passed' | null, band?: [number | null, number | null] | null) => {
-          if (v === 'passed') return 'ALREADY PASSED';
-          if (v === null) return 'NOT IN 15Y';
+        const x = c.projection.crossings;
+        const lbl = (v: number | 'passed' | null | undefined, band?: [number | null, number | null] | null) => {
+          if (v === 'passed') return 'PASSED';
+          if (v === null || v === undefined) return 'NOT IN 15Y';
           return `~${v}${band ? ` ('${String(band[0] ?? '..').slice(2)}-'${String(band[1] ?? '..').slice(2)})` : ''}`;
         };
         mono(7.4, true); setColor(doc, P.TEAL);
         ensure(6);
-        doc.text(fitText(doc, `CROSSES 25% ${lbl(c.projection.crossings.cross25, c.projection.crossings.band25)}   ·   50% ${lbl(c.projection.crossings.cross50, c.projection.crossings.band50)}`, CW - 6), ML + 3, y);
+        const ceilNote = typeof x.ceiling === 'number' && x.ceiling < 90 ? ` OF ITS ${x.ceiling}% CEILING` : '';
+        doc.text(fitText(doc, `REACHES ${x.share25 ?? 25}% SHARE (1/4${ceilNote ? ' CEIL' : ''}) ${lbl(x.cross25, x.band25)}   ·   ${x.share50 ?? 50}% (1/2) ${lbl(x.cross50, x.band50)}${x.peakGrowth !== undefined ? `   ·   PEAK GROWTH ${lbl(x.peakGrowth)}` : ''}`, CW - 6), ML + 3, y);
         y += 4.6;
       }
 

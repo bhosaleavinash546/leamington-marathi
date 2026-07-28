@@ -74,3 +74,14 @@ Format: decision · why · what would change it.
     default is false precision for niche techs) and ±q uncertainty bands on crossing years
     (a single year is a point estimate pretending to be a fact). *Changes it:* nothing —
     these are honesty invariants, now test-enforced.
+
+16. **Crossing milestones are shares of each technology's OWN ceiling, not of the segment (2026).**
+    *Why:* the old 25%/50%-of-segment thresholds made every technology with a curated ceiling
+    below those bars return "not in range" forever — 32 register entries (20%) had NO future
+    prediction by construction, which users correctly read as "the tool doesn't predict".
+    Milestones are now ¼ and ½ of the modelled ceiling, with the absolute share (`share25`/
+    `share50`) and the ceiling returned alongside so nothing hides behind a percentage-of-a-
+    percentage; a `peakGrowth` year (Bass inflection t* = ln(q/p)/(p+q)) marks when supplier
+    capacity gets tight. Every entry now carries at least one dated forward milestone (0 blind
+    entries, test-enforced). *Changes it:* nothing — display layers must always print the
+    absolute share next to a relative milestone.

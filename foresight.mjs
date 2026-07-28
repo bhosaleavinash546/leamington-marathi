@@ -99,34 +99,55 @@ export function projectAdoption(currentPct, yearsAhead, { p = BASS_DEFAULTS.p, q
 }
 
 /**
- * The concrete prediction a cost engineer actually wants: the calendar years
- * when the modelled adoption crosses 25% and 50% of the applicable segment.
- * Returns { cross25, cross50 } — a year number, 'passed' when the register
- * already has the tech above that share, or null when the model puts the
- * crossing beyond now+15y (an honest "not in planning range", not a date).
+ * The concrete predictions a cost engineer actually wants: the calendar years
+ * when the modelled adoption crosses one quarter and one half OF THE
+ * TECHNOLOGY'S OWN SATURATION CEILING, plus the modelled peak-growth year.
+ *
+ * 2026 fix: crossings used to be measured against a fixed 25%/50% of the whole
+ * segment, so any technology with a curated ceiling below those bars could
+ * NEVER show a future date — one register entry in five returned "not in
+ * range" by construction, which read as "the tool doesn't predict". Milestones
+ * relative to the ceiling give every technology an honest timeline; the
+ * absolute share each milestone represents (share25/share50) and the ceiling
+ * are returned alongside so nothing hides behind a percentage-of-percentage.
+ *
+ * Returns { cross25, cross50, band25, band50, share25, share50, ceiling,
+ * peakGrowth } — years are a number, 'passed' when the register already has
+ * the tech above that share, or null when the model puts the event beyond
+ * now+15y (an honest "not in planning range", not a date).
  */
 export function inflectionYears(currentPct, { now = REGISTER_VINTAGE, p = BASS_DEFAULTS.p, q = BASS_DEFAULTS.q, ceilingPct = 90 } = {}) {
-  const crossing = (thresholdPct, qq) => {
-    if (currentPct >= thresholdPct) return 'passed';
+  const share25 = Math.round(ceilingPct * 25) / 100;
+  const share50 = Math.round(ceilingPct * 50) / 100;
+  const crossing = (sharePct, qq) => {
+    if (currentPct >= sharePct) return 'passed';
     const seeded = Math.max(currentPct, 0.5);
     const t0 = bassTimeFor(Math.min(seeded / ceilingPct, 0.999), { p, q: qq });
-    const tX = bassTimeFor(Math.min(thresholdPct / ceilingPct, 0.999), { p, q: qq });
+    const tX = bassTimeFor(Math.min(sharePct / ceilingPct, 0.999), { p, q: qq });
     const years = tX - t0;
     return years > 15 ? null : Math.round(now + years);
   };
   // Point estimate at the standard imitation rate, plus an uncertainty band
   // from q ±25% (2026 audit: a single crossing year is false precision —
   // diffusion speed is the least certain parameter in the model).
-  const withBand = (thresholdPct) => {
-    const base = crossing(thresholdPct, q);
+  const withBand = (sharePct) => {
+    const base = crossing(sharePct, q);
     if (base === 'passed' || base === null) return { value: base, band: null };
-    const early = crossing(thresholdPct, q * 1.25);
-    const late = crossing(thresholdPct, q * 0.75);
+    const early = crossing(sharePct, q * 1.25);
+    const late = crossing(sharePct, q * 0.75);
     return { value: base, band: [typeof early === 'number' ? early : null, typeof late === 'number' ? late : null] };
   };
-  const c25 = withBand(25);
-  const c50 = withBand(50);
-  return { cross25: c25.value, cross50: c50.value, band25: c25.band, band50: c50.band };
+  const c25 = withBand(share25);
+  const c50 = withBand(share50);
+  // Peak growth: the Bass curve's inflection t* = ln(q/p)/(p+q) is when yearly
+  // adoption gain is fastest — the year supplier capacity gets tight and
+  // late-quoting programmes pay the premium.
+  const seeded = Math.max(currentPct, 0.5);
+  const t0 = bassTimeFor(Math.min(seeded / ceilingPct, 0.999), { p, q });
+  const tStar = Math.log(q / p) / (p + q);
+  const peakYears = tStar - t0;
+  const peakGrowth = peakYears <= 0 ? 'passed' : peakYears > 15 ? null : Math.round(now + peakYears);
+  return { cross25: c25.value, cross50: c50.value, band25: c25.band, band50: c50.band, share25, share50, ceiling: ceilingPct, peakGrowth };
 }
 
 // ── Wright's law ─────────────────────────────────────────────────────────────

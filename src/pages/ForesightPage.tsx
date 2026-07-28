@@ -13,7 +13,7 @@ import './foresight.css';
 interface RegAnchor { id: string; name: string; year: number; region: string; status?: 'in-force' | 'adopted' | 'proposed' | 'under-revision'; effect: string; }
 type Crossing = number | 'passed' | null;
 type CrossingBand = [number | null, number | null] | null;
-interface Projection { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: Crossing; cross50: Crossing; band25?: CrossingBand; band50?: CrossingBand }; }
+interface Projection { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: Crossing; cross50: Crossing; band25?: CrossingBand; band50?: CrossingBand; share25?: number; share50?: number; ceiling?: number; peakGrowth?: Crossing }; }
 interface TechCard {
   id: string; name: string; commodity: string; powertrains: string[]; replaces: string;
   trl: number; adoptionPct: number; firstProduction?: string; drivers: string[];
@@ -401,7 +401,13 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
           </table>
           {c.projection.crossings && (
             <p className="text-teal-300/90 text-[11px] mt-2">
-              Modelled to cross <span className="font-semibold">25%</span> {crossingLabel(c.projection.crossings.cross25, c.projection.crossings.band25)} · <span className="font-semibold">50%</span> {crossingLabel(c.projection.crossings.cross50, c.projection.crossings.band50)}
+              Modelled to reach <span className="font-semibold">{c.projection.crossings.share25 ?? 25}% share</span> {crossingLabel(c.projection.crossings.cross25, c.projection.crossings.band25)} · <span className="font-semibold">{c.projection.crossings.share50 ?? 50}%</span> {crossingLabel(c.projection.crossings.cross50, c.projection.crossings.band50)}
+              {c.projection.crossings.peakGrowth !== undefined && (
+                <> · <span className="text-gold-300/90">peak growth {crossingLabel(c.projection.crossings.peakGrowth)}</span></>
+              )}
+              {typeof c.projection.crossings.ceiling === 'number' && c.projection.crossings.ceiling < 90 && (
+                <span className="text-slate-500"> (milestones = ¼ and ½ of its {c.projection.crossings.ceiling}% ceiling)</span>
+              )}
             </p>
           )}
           <p className="text-slate-600 text-[10px] mt-1.5">{c.projection.basis}</p>

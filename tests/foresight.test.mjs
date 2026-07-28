@@ -58,12 +58,17 @@ test('audit: ceilings are curated for niche techs and respected by the model', (
     assert.ok(t.ceiling >= 1 && t.ceiling <= 90, `${id}: ceiling ${t.ceiling}`);
     assert.ok(t.adoptionPct <= t.ceiling, `${id}: adoption ${t.adoptionPct} above its own ceiling ${t.ceiling}`);
   }
-  // A hard-capped tech saturates at its ceiling and never "crosses 50%".
+  // A hard-capped tech saturates at its ceiling; its milestones are measured
+  // against that ceiling (2026 fix), so even a 5%-ceiling tech gets an honest
+  // timeline instead of a permanent "not in range".
   const r = foresightFor({ query: 'float' });
   const float = [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3].find((c) => c.id === 'float-mode');
   assert.ok(float);
   assert.ok(float.projection.adoption.in8 <= 5, `float-mode in8=${float.projection.adoption.in8} above 5% ceiling`);
-  assert.equal(float.projection.crossings.cross50, null);
+  assert.equal(float.projection.crossings.ceiling, 5);
+  assert.equal(float.projection.crossings.share50, 2.5);
+  const f50 = float.projection.crossings.cross50;
+  assert.ok(f50 === 'passed' || f50 === null || (typeof f50 === 'number' && f50 >= 2026), `float cross50=${f50}`);
   assert.match(float.projection.basis, /ceiling ~5%/);
 });
 
@@ -334,18 +339,38 @@ test('projectAdoption grows from the curated share and clamps at the ceiling', (
 });
 
 test('inflectionYears: crossing years are honest and ordered', () => {
-  // Low-adoption tech: 25% crossing comes before 50%, both in the future.
+  // Low-adoption tech: quarter-ceiling crossing comes before half-ceiling.
   const low = inflectionYears(2, { now: 2026 });
   assert.ok(typeof low.cross25 === 'number' && low.cross25 > 2026);
   assert.ok(typeof low.cross50 === 'number' && low.cross50 > low.cross25);
+  assert.equal(low.share25, 22.5);        // default 90% ceiling → milestones at 22.5 / 45
+  assert.equal(low.share50, 45);
   // Already past a threshold → 'passed', never a fake future date.
   const mid = inflectionYears(30, { now: 2026 });
   assert.equal(mid.cross25, 'passed');
   assert.ok(typeof mid.cross50 === 'number');
-  assert.deepEqual(inflectionYears(60, { now: 2026 }), { cross25: 'passed', cross50: 'passed', band25: null, band50: null });
+  const high = inflectionYears(60, { now: 2026 });
+  assert.equal(high.cross25, 'passed');
+  assert.equal(high.cross50, 'passed');
+  assert.equal(high.band25, null);
+  assert.equal(high.band50, null);
+  assert.equal(high.peakGrowth, 'passed');   // past the Bass inflection already
   // Higher current adoption never crosses LATER than lower adoption.
   const lower = inflectionYears(1, { now: 2026 });
   assert.ok(low.cross50 <= lower.cross50);
+});
+
+test('inflectionYears: ceiling-capped techs get real milestone years (2026 fix)', () => {
+  // Old model: ceiling 20 could never cross 25% of segment → permanent null.
+  // New model: milestones at 5% and 10% absolute share — honest, reachable.
+  const capped = inflectionYears(2, { now: 2026, ceilingPct: 20 });
+  assert.equal(capped.share25, 5);
+  assert.equal(capped.share50, 10);
+  assert.ok(typeof capped.cross25 === 'number' && capped.cross25 > 2026, `cross25=${capped.cross25}`);
+  assert.ok(typeof capped.cross50 === 'number' && capped.cross50 > capped.cross25, `cross50=${capped.cross50}`);
+  // Peak growth is a year, 'passed', or null — and ordered after cross25 when numeric.
+  const pg = capped.peakGrowth;
+  assert.ok(pg === 'passed' || pg === null || (typeof pg === 'number' && pg >= 2026), `peakGrowth=${pg}`);
 });
 
 test('techCard projection carries the crossing years', () => {
