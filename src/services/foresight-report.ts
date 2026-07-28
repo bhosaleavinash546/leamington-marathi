@@ -307,11 +307,54 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
   const critiquesFor = (id: string) =>
     panel?.panel.flatMap(p => p.critiques.filter(c => c.techId === id).map(c => ({ persona: p.persona, ...c }))) ?? [];
 
+  const adoptionVals = (c: ForesightReportCard) =>
+    [c.projection.adoption.now, c.projection.adoption.in3, c.projection.adoption.in5, c.projection.adoption.in8];
+  const SERIES: RGB[] = [P.GOLD, P.TEAL, P.VIOLET, P.EVID, P.REG];
+
+  // Lane overview graph: the lane's leading adoption curves on one instrument.
+  function lanePaths(cards: ForesightReportCard[]) {
+    const top = cards.slice(0, 5);
+    const chX = ML + 3, chW = CW - 6, chH = 34;
+    ensure(chH + 12 + top.length * 4.2);
+    mono(7, true); setColor(doc, P.DIM);
+    doc.text(`MODELLED ADOPTION PATHS -> +8Y  ·  BASS DIFFUSION  ·  TOP ${top.length}`, chX, y);
+    y += 2.5;
+    const chY = y;
+    setFill(doc, P.PANEL); doc.roundedRect(chX, chY, chW, chH, 1.5, 1.5, 'F');
+    setDraw(doc, P.RULE, 0.22);
+    for (let g = 1; g <= 3; g++) doc.line(chX + 4, chY + 3 + ((chH - 8) * g) / 4, chX + chW - 4, chY + 3 + ((chH - 8) * g) / 4);
+    const maxV = Math.max(...top.flatMap(adoptionVals), 10);
+    const X = (yr: number) => chX + 5 + (yr / 8) * (chW - 10);
+    const Y = (v: number) => chY + chH - 5 - (v / maxV) * (chH - 10);
+    top.forEach((c, si) => {
+      const col = SERIES[si % SERIES.length];
+      const pts = [0, 3, 5, 8].map((yr, i) => [X(yr), Y(adoptionVals(c)[i])] as const);
+      setDraw(doc, col, 0.7);
+      for (let i = 1; i < pts.length; i++) doc.line(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1]);
+      setFill(doc, col); doc.circle(pts[3][0], pts[3][1], 0.8, 'F');
+    });
+    mono(5.8); setColor(doc, P.DIM);
+    doc.text('NOW', chX + 4, chY + chH - 1.6);
+    doc.text('+8Y', chX + chW - 4, chY + chH - 1.6, { align: 'right' });
+    doc.text(`${Math.round(maxV)}%`, chX + 4, chY + 4);
+    brackets(chX, chY, chW, chH, P.GOLD, 2.6, 0.4);
+    y = chY + chH + 4.5;
+    top.forEach((c, si) => {
+      const col = SERIES[si % SERIES.length];
+      setFill(doc, col); doc.rect(chX, y - 1.7, 3, 1.4, 'F');
+      sans(7.4); setColor(doc, P.BODY);
+      doc.text(fitText(doc, `${c.name} — ${c.projection.adoption.now}% -> ${c.projection.adoption.in8}% of segment`, chW - 6), chX + 4.5, y);
+      y += 4.2;
+    });
+    y += 3;
+  }
+
   for (const key of ['H1', 'H2', 'H3'] as const) {
     const cards = result.horizons[key];
     newPage();
     sectionTitle(`${result.windows[key].label} · ${cards.length} technologies`, HORIZON_TITLE[key]);
     if (!cards.length) { wrapped('Nothing in this window for this selection.', 9, P.MUT); continue; }
+    if (cards.length >= 2) lanePaths(cards);
     for (const c of cards) {
       ensure(50);
       const cardTop = y - 4;
@@ -339,20 +382,47 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       if (c.regAnchorDetail) wrapped(`Regulation: ${c.regAnchorDetail.name} (${c.regAnchorDetail.year}, ${c.regAnchorDetail.region})${c.regPulled ? ' — pulls this technology forward' : ''}`, 8.3, P.REG, CW - 6, 3.9, 'normal', ML + 3);
       wrapped(`Players: ${c.players.join(', ')}`, 8.3, P.MUT, CW - 6, 3.9, 'normal', ML + 3);
 
-      // projection mini-table
-      ensure(19);
-      const cols = [46, 22, 22, 22, 22];
+      // projection block: numbers table (left) + modelled curves graph (right)
+      ensure(22);
+      const cols = [40, 17, 17, 17, 17];
       const px = cols.map((_, i) => ML + 3 + cols.slice(0, i).reduce((a2, b2) => a2 + b2, 0));
+      const blockW = CW - 6, blockH = 16.5;
       setFill(doc, P.PANEL);
-      doc.roundedRect(ML + 3, y - 3, cols.reduce((a2, b2) => a2 + b2, 0) + 4, 14.5, 1, 1, 'F');
-      mono(6.8, true); setColor(doc, P.DIM);
+      doc.roundedRect(ML + 3, y - 3, blockW, blockH, 1, 1, 'F');
+      mono(6.6, true); setColor(doc, P.DIM);
       ['MODELLED PROJECTION', 'NOW', '+3Y', '+5Y', '+8Y'].forEach((h, i) => doc.text(h, px[i] + 2, y + 0.5));
-      mono(7.2); setColor(doc, P.BODY);
-      const adoption = ['ADOPTION %', String(c.projection.adoption.now), String(c.projection.adoption.in3), String(c.projection.adoption.in5), String(c.projection.adoption.in8)];
-      const cost = ['COST INDEX', c.projection.costIndex.now.toFixed(2), c.projection.costIndex.in3.toFixed(2), c.projection.costIndex.in5.toFixed(2), c.projection.costIndex.in8.toFixed(2)];
+      mono(7); setColor(doc, P.BODY);
+      const aVals = adoptionVals(c);
+      const cVals = [c.projection.costIndex.now, c.projection.costIndex.in3, c.projection.costIndex.in5, c.projection.costIndex.in8];
+      const adoption = ['ADOPTION %', ...aVals.map(String)];
+      const cost = ['COST INDEX', ...cVals.map(v => v.toFixed(2))];
       adoption.forEach((v, i) => doc.text(v, px[i] + 2, y + 4.6));
       cost.forEach((v, i) => doc.text(v, px[i] + 2, y + 8.7));
-      y += 15;
+      // the same numbers, drawn: gold = adoption %, teal = cost index
+      const gx = ML + 3 + 112, gw = blockW - 112 - 3;
+      setFill(doc, P.GOLD); doc.rect(gx, y - 0.6, 2.2, 1.2, 'F');
+      setFill(doc, P.TEAL); doc.rect(gx + 12.5, y - 0.6, 2.2, 1.2, 'F');
+      mono(5.6); setColor(doc, P.DIM);
+      doc.text('AD%', gx + 3.2, y + 0.5); doc.text('CI', gx + 15.7, y + 0.5);
+      const gy0 = y + 2.6, gh = 9.4;
+      setDraw(doc, P.RULE, 0.25); doc.line(gx, gy0 + gh, gx + gw - 10, gy0 + gh);
+      const aMax = Math.max(...aVals, 10);
+      const cMax = Math.max(...cVals, 1.05);
+      const GX = (yr: number) => gx + (yr / 8) * (gw - 12);
+      const AY = (v: number) => gy0 + gh - (v / aMax) * gh;
+      const CY = (v: number) => gy0 + gh - (v / cMax) * gh;
+      ([[aVals, AY, P.GOLD], [cVals, CY, P.TEAL]] as const).forEach(([vals, YFn, col]) => {
+        const pts = [0, 3, 5, 8].map((yr, i) => [GX(yr), YFn(vals[i])] as const);
+        setDraw(doc, col, 0.6);
+        for (let i = 1; i < pts.length; i++) doc.line(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1]);
+        setFill(doc, col); doc.circle(pts[3][0], pts[3][1], 0.7, 'F');
+      });
+      mono(5.6, true);
+      let aLy = AY(aVals[3]) + 0.9, cLy = CY(cVals[3]) + 0.9;
+      if (Math.abs(aLy - cLy) < 2.2) { if (aLy <= cLy) cLy = aLy + 2.2; else aLy = cLy + 2.2; }
+      setColor(doc, P.GOLD); doc.text(`${aVals[3]}%`, GX(8) + 1.6, aLy);
+      setColor(doc, P.TEAL); doc.text(cVals[3].toFixed(2), GX(8) + 1.6, cLy);
+      y += 17;
 
       if (c.projection.crossings) {
         const lbl = (v: number | 'passed' | null, band?: [number | null, number | null] | null) => {
