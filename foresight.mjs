@@ -112,11 +112,12 @@ export function bassTimeFor(F, { p = BASS_DEFAULTS.p, q = BASS_DEFAULTS.q } = {}
  * of the applicable segment (few technologies reach 100%).
  */
 export function projectAdoption(currentPct, yearsAhead, { p = BASS_DEFAULTS.p, q = BASS_DEFAULTS.q, ceilingPct = 90 } = {}) {
+  const ceiling = Math.max(Number(ceilingPct) || 0, 0.1);   // never divide by zero
   const seeded = Math.max(currentPct, 0.5);           // 0% can't be inverted; seed at launch-adjacent share
-  const F0 = Math.min(seeded / ceilingPct, 0.999);
+  const F0 = Math.min(seeded / ceiling, 0.999);
   const t0 = bassTimeFor(F0, { p, q });
   const F1 = bassAdoption(t0 + yearsAhead, { p, q });
-  return Math.round(Math.min(F1 * ceilingPct, ceilingPct) * 10) / 10;
+  return Math.round(Math.min(F1 * ceiling, ceiling) * 10) / 10;
 }
 
 /**
@@ -138,15 +139,23 @@ export function projectAdoption(currentPct, yearsAhead, { p = BASS_DEFAULTS.p, q
  * now+15y (an honest "not in planning range", not a date).
  */
 export function inflectionYears(currentPct, { now = REGISTER_VINTAGE, p = BASS_DEFAULTS.p, q = BASS_DEFAULTS.q, ceilingPct = 90 } = {}) {
-  const share25 = Math.round(ceilingPct * 25) / 100;
-  const share50 = Math.round(ceilingPct * 50) / 100;
+  // A zero/negative ceiling would divide by zero and poison every downstream
+  // year; treat it as the smallest meaningful niche instead of producing NaN.
+  const ceiling = Math.max(Number(ceilingPct) || 0, 0.1);
+  const share25 = Math.round(ceiling * 25) / 100;
+  const share50 = Math.round(ceiling * 50) / 100;
   const crossing = (sharePct, qq) => {
     if (currentPct >= sharePct) return 'passed';
-    const seeded = Math.max(currentPct, 0.5);
-    const t0 = bassTimeFor(Math.min(seeded / ceilingPct, 0.999), { p, q: qq });
-    const tX = bassTimeFor(Math.min(sharePct / ceilingPct, 0.999), { p, q: qq });
+    // The 0.5% seed floor (needed because 0% cannot be inverted on the curve)
+    // must never sit BEYOND the milestone we are solving for — on a very small
+    // ceiling it otherwise made t0 > tX and dated a future milestone in the
+    // PAST (audit 2026: a ceiling-1% candidate reported "reaches 0.25% ~2024").
+    const seeded = Math.min(Math.max(currentPct, 0.5), sharePct);
+    const t0 = bassTimeFor(Math.min(seeded / ceiling, 0.999), { p, q: qq });
+    const tX = bassTimeFor(Math.min(sharePct / ceiling, 0.999), { p, q: qq });
     const years = tX - t0;
-    return years > 15 ? null : Math.round(now + years);
+    if (years > 15) return null;
+    return Math.round(now + Math.max(years, 0));   // never before today
   };
   // Point estimate at the standard imitation rate, plus an uncertainty band
   // from q ±25% (2026 audit: a single crossing year is false precision —
@@ -164,11 +173,11 @@ export function inflectionYears(currentPct, { now = REGISTER_VINTAGE, p = BASS_D
   // adoption gain is fastest — the year supplier capacity gets tight and
   // late-quoting programmes pay the premium.
   const seeded = Math.max(currentPct, 0.5);
-  const t0 = bassTimeFor(Math.min(seeded / ceilingPct, 0.999), { p, q });
+  const t0 = bassTimeFor(Math.min(seeded / ceiling, 0.999), { p, q });
   const tStar = Math.log(q / p) / (p + q);
   const peakYears = tStar - t0;
   const peakGrowth = peakYears <= 0 ? 'passed' : peakYears > 15 ? null : Math.round(now + peakYears);
-  return { cross25: c25.value, cross50: c50.value, band25: c25.band, band50: c50.band, share25, share50, ceiling: ceilingPct, peakGrowth };
+  return { cross25: c25.value, cross50: c50.value, band25: c25.band, band50: c50.band, share25, share50, ceiling, peakGrowth };
 }
 
 // ── Wright's law ─────────────────────────────────────────────────────────────

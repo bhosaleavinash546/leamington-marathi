@@ -97,11 +97,19 @@ const CRITIQUE_SCHEMA = {
 
 // Compact per-tech position stored in the ledger — enough to detect drift and
 // score projections later, small enough to keep forever.
+// Lane semantics changed in the 2026 audit (maturity-based -> decision-timing).
+// Snapshots carry the rule they were taken under so a revisit can tell a real
+// horizon move apart from a change in how horizons are defined — without this,
+// every pre-fix entry reports drift that never happened, and the Ledger is the
+// one thing in this tool that must not lie about its own past.
+const LANE_RULE = 'decision-timing-2026';
+
 function snapshotCards(result) {
   const cards = [...result.horizons.H1, ...result.horizons.H2, ...result.horizons.H3];
   return cards.map((c) => ({
     id: c.id, name: c.name, trl: c.trl, adoptionPct: c.adoptionPct,
     horizon: c.horizon, momentum: c.momentum, confidence: c.confidence,
+    laneRule: LANE_RULE,
     projectedIn3: c.projection.adoption.in3, projectedIn5: c.projection.adoption.in5,
   }));
 }
@@ -155,7 +163,24 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     const researchKey = resolveApiKey(req);
     const deepPref = req.body?.deep;
     const trigger = shouldResearch(result);
-    const wantResearch = deepPref === true || (deepPref !== false && trigger.research);
+    // Research is far more expensive than a deterministic predict (4 web
+    // searches + a patent lookup + an LLM call), so it carries its OWN hourly
+    // budget. Without this, auto-research inherited predict's 60/hr allowance
+    // and silently bypassed the 20/hr cap that /api/foresight/research enforces
+    // for exactly the same work (audit 2026).
+    const researchAllowed = () => {
+      try {
+        const nowMs = Date.now();
+        const row = db.prepare(`
+          INSERT INTO rate_limits (key, count, resetAt) VALUES (@key, 1, @newReset)
+          ON CONFLICT(key) DO UPDATE SET
+            count   = CASE WHEN rate_limits.resetAt < @now THEN 1 ELSE rate_limits.count + 1 END,
+            resetAt = CASE WHEN rate_limits.resetAt < @now THEN @newReset ELSE rate_limits.resetAt END
+          RETURNING count`).get({ key: `${req.ip}_foresight_research`, now: nowMs, newReset: nowMs + 60 * 60 * 1000 });
+        return row.count <= 20;
+      } catch { return true; }   // a limiter fault must never break the endpoint
+    };
+    const wantResearch = (deepPref === true || (deepPref !== false && trigger.research)) && researchAllowed();
     let researched = null;
     if (wantResearch && !researchKey) {
       researched = { candidates: [], evidence: { searches: [], patents: [] }, landscapeNote: null, evidenceGaps: null, trigger: trigger.reason, note: 'The register is thin for this query and forward research needs an Anthropic API key (Settings) — showing curated technologies only rather than guessing.' };
@@ -489,7 +514,11 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
         now: { trl: n.trl, adoptionPct: n.adoptionPct, horizon: n.horizon, momentum: n.momentum, confidence: n.confidence },
         trlDelta: n.trl - t.trl,
         adoptionDelta: Math.round((n.adoptionPct - t.adoptionPct) * 10) / 10,
-        horizonMoved: n.horizon !== t.horizon,
+        // A lane difference is only real drift when both sides were computed
+        // under the same lane rule; otherwise it is a definition change and is
+        // reported as such rather than as a moved technology.
+        horizonMoved: n.horizon !== t.horizon && (t.laneRule ?? null) === LANE_RULE,
+        horizonRuleChanged: n.horizon !== t.horizon && (t.laneRule ?? null) !== LANE_RULE,
         momentumDelta: n.momentum - t.momentum,
       };
       if (scorable) {

@@ -85,6 +85,26 @@ export const CANDIDATE_SCHEMA = {
   required: ['candidates', 'landscapeNote', 'evidenceGaps'],
 };
 
+/**
+ * Retrieved URLs are UNTRUSTED — a compromised or hostile search provider can
+ * return any string. Only http(s) links may reach a rendered `href` or the PDF
+ * (audit 2026: a `javascript:` URL survived cite-or-drop and became a
+ * clickable link). Anything else is treated as no source at all.
+ */
+export function safeUrl(u) {
+  const s = String(u ?? '').trim();
+  if (!s) return '';
+  try {
+    const parsed = new URL(s);
+    return (parsed.protocol === 'http:' || parsed.protocol === 'https:') ? parsed.href : '';
+  } catch { return ''; }
+}
+
+/** Defensive stringify — a hostile object must not throw inside the pipeline. */
+const str = (v, max) => {
+  try { return String(v ?? '').slice(0, max); } catch { return ''; }
+};
+
 const clampInt = (v, lo, hi, dflt) => {
   const n = Math.round(Number(v));
   return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : dflt;
@@ -113,13 +133,13 @@ export function positionCandidates(candidates, { now = REGISTER_VINTAGE } = {}) 
     for (const y of [3, 5, 8]) adoption[`in${y}`] = projectAdoption(adoptionPct, y, { ceilingPct });
     return {
       id: `researched-${i + 1}`,
-      name: String(c.name || '').slice(0, 120),
-      whatItIs: String(c.whatItIs || '').slice(0, 400),
-      replaces: String(c.replaces || '').slice(0, 160),
-      whyItMatters: String(c.whyItMatters || '').slice(0, 240),
-      earliestProduction: String(c.earliestProduction || 'none cited').slice(0, 160),
-      players: (Array.isArray(c.players) ? c.players : []).slice(0, 6).map((p) => String(p).slice(0, 60)),
-      sourceUrl: String(c.sourceUrl || ''),
+      name: str(c.name, 120),
+      whatItIs: str(c.whatItIs, 400),
+      replaces: str(c.replaces, 160),
+      whyItMatters: str(c.whyItMatters, 240),
+      earliestProduction: str(c.earliestProduction, 160) || 'none cited',
+      players: (Array.isArray(c.players) ? c.players : []).slice(0, 6).map((p) => str(p, 60)),
+      sourceUrl: safeUrl(c.sourceUrl),
       trl,
       adoptionPct,
       phase: sCurvePhase(trl, adoptionPct),
@@ -152,22 +172,25 @@ export async function researchFutureTechnologies(query, deps) {
   for (const sq of plan) {
     const hits = await performSearch(sq, searchApiKey).catch(() => []);
     for (const r of (hits || []).slice(0, 4)) {
+      const url = safeUrl(r?.url);
+      if (!url) continue;               // unusable scheme => not a citable source
       searches.push({
         query: sq,
-        title: sanitize(String(r.title || ''), 160),
-        url: String(r.url || ''),
-        snippet: sanitize(String(r.snippet || ''), 400),
-        source: sanitize(String(r.source || ''), 60),
+        title: sanitize(str(r?.title, 160), 160),
+        url,
+        snippet: sanitize(str(r?.snippet, 400), 400),
+        source: sanitize(str(r?.source, 60), 60),
       });
     }
   }
   const patentRes = searchPatents ? await searchPatents(q, '', { max: 4 }).catch(() => ({ patents: [] })) : { patents: [] };
   const patents = (patentRes?.patents || []).map((p) => ({
     ...p,
-    title: sanitize(String(p.title || ''), 200),
-    snippet: sanitize(String(p.snippet || ''), 320),
-    assignee: sanitize(String(p.assignee || ''), 120),
-  }));
+    title: sanitize(str(p?.title, 200), 200),
+    snippet: sanitize(str(p?.snippet, 320), 320),
+    assignee: sanitize(str(p?.assignee, 120), 120),
+    url: safeUrl(p?.url),
+  })).filter((p) => p.url);
 
   if (!searches.length && !patents.length) {
     return {
@@ -201,7 +224,7 @@ export async function researchFutureTechnologies(query, deps) {
 
   // Cite-or-drop, enforced here rather than trusted from the model.
   const allowed = new Set([...searches.map((r) => r.url), ...patents.map((p) => p.url)].filter(Boolean));
-  const cited = (raw?.candidates || []).filter((c) => allowed.has(String(c?.sourceUrl || ''))).slice(0, 6);
+  const cited = (raw?.candidates || []).filter((c) => allowed.has(safeUrl(c?.sourceUrl))).slice(0, 6);
   const dropped = (raw?.candidates || []).length - cited.length;
 
   return {

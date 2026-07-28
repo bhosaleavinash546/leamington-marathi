@@ -623,3 +623,65 @@ test('researchFutureTechnologies: no evidence → nothing synthesised', async ()
   assert.equal(llmCalled, false, 'called the LLM with no evidence to ground it');
   assert.match(out.note, /without sources would be invention/);
 });
+
+// ── Audit 2026: defects found by adversarial probing, locked against regression ──
+
+test('audit: a FUTURE milestone is never dated in the past (tiny ceilings)', () => {
+  // A 0.5% seed floor sitting beyond a small ceiling's milestone made t0 > tX,
+  // producing "reaches 0.25% ~2024" on a 2026 register — a future prediction
+  // dated two years ago, with an inverted uncertainty band to match.
+  for (const ceilingPct of [0.5, 1, 2, 3, 5, 8, 20, 90]) {
+    const r = inflectionYears(0, { now: 2026, ceilingPct });
+    for (const key of ['cross25', 'cross50', 'peakGrowth']) {
+      const v = r[key];
+      if (typeof v === 'number') assert.ok(v >= 2026, `ceiling ${ceilingPct}: ${key}=${v} predates now`);
+    }
+    for (const band of [r.band25, r.band50]) {
+      if (band && typeof band[0] === 'number' && typeof band[1] === 'number') {
+        assert.ok(band[0] <= band[1], `ceiling ${ceilingPct}: inverted band ${JSON.stringify(band)}`);
+      }
+    }
+  }
+});
+
+test('audit: degenerate ceilings cannot produce NaN or divide-by-zero', () => {
+  for (const bad of [0, -5, NaN, undefined, null]) {
+    const r = inflectionYears(1, { now: 2026, ceilingPct: bad });
+    assert.ok(Number.isFinite(r.ceiling) && r.ceiling > 0, `ceiling ${bad} -> ${r.ceiling}`);
+    assert.ok(Number.isFinite(projectAdoption(1, 5, { ceilingPct: bad })), `projectAdoption NaN for ceiling ${bad}`);
+  }
+});
+
+test('audit: only http(s) sources can become citable links', async () => {
+  const { safeUrl, researchFutureTechnologies } = await import('../foresight-research.mjs');
+  for (const hostile of ['javascript:alert(1)', 'data:text/html,<script>x</script>', 'file:///etc/passwd', 'vbscript:x', '', null]) {
+    assert.equal(safeUrl(hostile), '', `hostile scheme survived: ${hostile}`);
+  }
+  assert.equal(safeUrl('https://a.example/x?q=1'), 'https://a.example/x?q=1');
+
+  // End-to-end: a hostile URL from the search provider must not reach a card.
+  const out = await researchFutureTechnologies('air suspension', {
+    performSearch: async () => [{ title: 't', url: 'javascript:alert(1)', snippet: 's', source: 'x' }],
+    searchPatents: async () => ({ patents: [] }),
+    client: {}, model: 'm',
+    messagesJson: async () => ({
+      candidates: [{ name: 'X', whatItIs: 'w', replaces: 'r', trlEstimate: 4, adoptionEstimatePct: 0,
+        ceilingEstimatePct: 20, earliestProduction: 'n', players: ['P'], whyItMatters: 'm', sourceUrl: 'javascript:alert(1)' }],
+      landscapeNote: 'n', evidenceGaps: 'g',
+    }),
+  });
+  assert.equal(out.candidates.length, 0, 'javascript: URL became a citable card');
+  assert.match(out.note, /without sources would be invention/);
+});
+
+test('audit: hostile candidate shapes cannot crash the pipeline', async () => {
+  const { positionCandidates } = await import('../foresight-research.mjs');
+  const evil = { name: { toString() { throw new Error('boom'); } }, players: 'not-an-array',
+    trlEstimate: 'x', adoptionEstimatePct: Infinity, ceilingEstimatePct: -1, sourceUrl: 'https://ok.example/a' };
+  const [c] = positionCandidates([evil]);
+  assert.equal(typeof c.name, 'string');
+  assert.ok(Array.isArray(c.players));
+  assert.ok(c.trl >= 1 && c.trl <= 9, `trl ${c.trl}`);
+  assert.ok(Number.isFinite(c.adoptionPct));
+  assert.equal(positionCandidates(null).length, 0);
+});
