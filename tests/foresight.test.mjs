@@ -216,6 +216,20 @@ test('register: honesty rules — committed claims need evidence, speculative st
   }
 });
 
+// ── Analyze-catalog parity: Horizon must answer for everything Analyze offers ─
+import { readFileSync } from 'node:fs';
+
+test('parity: every Analyze system & subassembly resolves in Horizon', () => {
+  // Read the ACTUAL Analyze catalog so the two tools can never drift apart:
+  // add a subassembly to Analyze and this test forces Horizon to cover it.
+  const src = readFileSync(new URL('../src/data/automotive-catalog.ts', import.meta.url), 'utf8');
+  const systems = [...src.matchAll(/^\s{4}name:\s*'([^']+)'/gm)].map((m) => m[1]);
+  const subs = [...src.matchAll(/^\s{6,8}\{\s*id:\s*'[^']+',\s*name:\s*'([^']+)'/gm)].map((m) => m[1]);
+  assert.ok(systems.length >= 13 && subs.length >= 52, `extraction broke: ${systems.length}/${subs.length}`);
+  const dead = [...systems, ...subs].filter((n) => foresightFor({ query: n }).count === 0);
+  assert.deepEqual(dead, [], `Analyze names with no Horizon answer: ${dead.join(' | ')}`);
+});
+
 // ── Full-vehicle BOM taxonomy: nothing may dead-end ──────────────────────────
 import { BOM_TREE, flattenBom } from '../src/data/vehicle-bom.mjs';
 

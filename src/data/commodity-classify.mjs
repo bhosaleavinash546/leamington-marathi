@@ -29,7 +29,7 @@ const RULES = [
   ['Driveline', /transfer case|differential|half[\s-]?shaft|propeller|prop shaft|driveline|drivetrain|\baxles?\b|cv joint|reduction drive|automatic gearbox|transmission|gearbox/],
   ['EDU', /\be-?motor\b|e-?axle|\bedu\b|inverter|stator|rotor|electric drive|electric powertrain|motor cooling|power electronics|control & sensing|800v|on-board charger|\bobc\b/],
   ['Battery', /battery|\bbms\b|\bcell\b|charging|\bhv\b|pack thermal|pack structure|bev architecture/],
-  ['Powertrain', /powertrain|engine|exhaust|fuel|hybrid|reev|combustion|canister|\bmhev\b|\bphev\b/],
+  ['Powertrain', /powertrain|engine|exhaust|fuel|hybrid|reev|combustion|canister|emission|evap|\bmhev\b|\bphev\b/],
   ['Chassis', /suspension|brak(e|ing)|steering|knuckle|\bhub\b|wheel|\btyre\b|\btire\b|damper|spring|control arm|wishbone|subframe|chassis|torque vector|\bride\b|off-?road/],
   ['Interior', /interior|\bseat|cockpit|instrument panel|console|\btrim\b|display|infotainment|hvac|climate|visor/],
   ['Exterior', /exterior|lighting|\blamp|glazing|sealing|bumper|fascia|grille|closure|\bdoor\b|wheel arch|\baero\b|mirror|wiper|washer|\broof\b/],
