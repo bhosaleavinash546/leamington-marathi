@@ -85,3 +85,26 @@ Format: decision · why · what would change it.
     capacity gets tight. Every entry now carries at least one dated forward milestone (0 blind
     entries, test-enforced). *Changes it:* nothing — display layers must always print the
     absolute share next to a relative milestone.
+
+17. **The horizon lane is WHEN THE DECISION LANDS, not how mature the technology is (2026).**
+    *Why:* the lane rule was pure maturity (`trl >= 8 → H1`), which filed 51 of 130 H1 entries as
+    "adopt / quote now" while they sat at 1-5% adoption — production-proven somewhere, but years
+    from a sourcing decision. That single rule is why a foresight tool read as a catalogue of
+    today: 18 of 30 realistic part queries returned technologies but nothing in a future lane.
+    The lane now comes from the modelled decision year (quarter-ceiling crossing), bounded by a
+    maturity cap (lab-stage work can never be dragged into a near lane) and a scale floor
+    (already at half its ceiling ⇒ H1 regardless). Register lanes went H1 130→94, H2 25→68.
+    *Changes it:* nothing — but note that relevance ranking is now asserted WITHIN a lane, since
+    lanes are the report's organising principle.
+
+18. **Forward research runs inside /predict when the register is thin — walled off from curated data.**
+    *Why:* 169 curated entries cannot cover a 20,000-part vehicle, so half of real queries returned
+    two mainstream technologies and stopped. `foresight-research.mjs` now searches live sources for
+    CANDIDATE FUTURE technologies whenever coverage is thin or no future lane exists, and positions
+    them with the same deterministic cores. The honesty boundary is enforced in code, never in a
+    prompt: candidates never enter the curated `horizons` lanes (own array, own report page, violet
+    not gold); every candidate must cite a retrieved URL or is dropped; TRL/adoption are AI
+    estimates so every projection carries `estimatedInputs: true` and says so; and no retrieved
+    evidence means the LLM is never called at all. *Changes it:* if a future version promotes a
+    researched candidate into the register, it must arrive with curated evidence like any other
+    entry — promotion is a human curation act, not an automatic one.

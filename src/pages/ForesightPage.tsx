@@ -33,7 +33,19 @@ interface ForesightResult {
   anchors: RegAnchor[];
   narrative: { briefing: string; signals: Array<{ techId: string; watch: string }> } | null;
   narrativeNote?: string | null;
+  researched?: ResearchedBlock | null;
   note?: string;
+}
+interface ResearchedCandidate {
+  id: string; name: string; whatItIs: string; replaces: string; whyItMatters: string;
+  earliestProduction: string; players: string[]; sourceUrl: string;
+  trl: number; adoptionPct: number; phase: string; horizon: 'H1' | 'H2' | 'H3';
+  projection: { basis: string; adoption: Record<string, number>; crossings?: { cross25: Crossing; cross50: Crossing; share25?: number; share50?: number; peakGrowth?: Crossing }; estimatedInputs?: boolean };
+}
+interface ResearchedBlock {
+  candidates: ResearchedCandidate[];
+  landscapeNote?: string | null; evidenceGaps?: string | null; trigger?: string; note?: string;
+  evidence?: { searches?: Array<{ title: string; url: string; source?: string }>; patents?: Array<{ title: string; url: string; assignee?: string }> };
 }
 interface BenchmarkVehicle { vehicle: string; brand: string; year: number; powertrains: string[]; signature: string[]; watch: string; }
 interface Catalogue { commodities: string[]; powertrains: string[]; segments?: string[]; technologies: number; vintage: number; bom?: Record<string, Record<string, string[]>>; analyzeSystems?: Record<string, string[]>; }
@@ -675,6 +687,65 @@ export default function ForesightPage() {
             </div>
           )}
         </div>
+
+        {/* Forward research — walled off from the curated lanes on purpose */}
+        {result?.researched && (
+          <div className="max-w-4xl mx-auto mb-8">
+            <div className="rounded-2xl border border-violet-500/30 bg-violet-500/[0.06] p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Microscope size={15} className="text-violet-300" />
+                <h3 className="text-violet-200 font-semibold text-sm">Forward research — AI-researched, not curated</h3>
+                {result.researched.trigger && (
+                  <span className="text-[10px] uppercase tracking-wider text-violet-300/70 border border-violet-500/30 rounded px-1.5 py-0.5">{result.researched.trigger.replace(/-/g, ' ')}</span>
+                )}
+              </div>
+              <p className="text-slate-400 text-[11px] mb-3">
+                The curated register was thin for this query, so the tool searched live sources for what is coming.
+                TRL and adoption below are <span className="text-violet-300">AI estimates</span> — every projection built on them is
+                modelled on estimated inputs, not measured. Uncited claims were dropped in code.
+              </p>
+              {result.researched.landscapeNote && <p className="text-slate-300 text-xs mb-3">{result.researched.landscapeNote}</p>}
+              {result.researched.candidates.length === 0 && (
+                <p className="text-slate-500 text-xs">{result.researched.note}</p>
+              )}
+              <div className="space-y-3">
+                {result.researched.candidates.map(c => (
+                  <div key={c.id} className="rounded-xl border border-white/10 bg-navy-900/60 p-3">
+                    <div className="flex items-start gap-2">
+                      <h4 className="text-slate-100 text-sm font-semibold flex-1">{c.name}</h4>
+                      <span className="text-[9px] uppercase tracking-wider text-violet-300 border border-violet-500/30 rounded px-1.5 py-0.5 shrink-0">AI-researched</span>
+                    </div>
+                    <p className="text-slate-500 text-[10px] font-mono mt-1">
+                      TRL ~{c.trl} (est) · {c.phase} · adoption ~{c.adoptionPct}% (est) · {c.horizon}
+                    </p>
+                    <p className="text-slate-300 text-xs mt-1.5">{c.whatItIs}</p>
+                    {c.replaces && <p className="text-slate-500 text-[11px] mt-1">Replaces: {c.replaces}</p>}
+                    {c.whyItMatters && <p className="text-slate-400 text-[11px] mt-0.5">Cost relevance: {c.whyItMatters}</p>}
+                    {c.earliestProduction && <p className="text-emerald-300/80 text-[11px] mt-0.5">Earliest production cited: {c.earliestProduction}</p>}
+                    {c.players?.length > 0 && <p className="text-slate-500 text-[11px] mt-0.5">Players named: {c.players.join(', ')}</p>}
+                    {c.projection?.crossings && (
+                      <p className="text-violet-300/90 text-[11px] mt-1.5">
+                        Modelled on estimates: {c.projection.crossings.share25 ?? 25}% share {crossingLabel(c.projection.crossings.cross25)} · {c.projection.crossings.share50 ?? 50}% {crossingLabel(c.projection.crossings.cross50)}
+                        {c.projection.crossings.peakGrowth !== undefined && <> · peak growth {crossingLabel(c.projection.crossings.peakGrowth)}</>}
+                      </p>
+                    )}
+                    {c.sourceUrl && (
+                      <a href={c.sourceUrl} target="_blank" rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-teal-300/80 hover:text-teal-300 text-[10px] mt-1.5 break-all">
+                        <ExternalLink size={10} /> {c.sourceUrl}
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {result.researched.evidenceGaps && (
+                <p className="text-slate-500 text-[11px] mt-3">
+                  <span className="text-slate-400">What the evidence did not establish:</span> {result.researched.evidenceGaps}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Prediction Ledger — the tool keeps score on itself */}
         <div className="max-w-4xl mx-auto mb-6">

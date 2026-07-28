@@ -360,6 +360,37 @@ test('inflectionYears: crossing years are honest and ordered', () => {
   assert.ok(low.cross50 <= lower.cross50);
 });
 
+test('horizonFor: the lane follows the decision year, not raw maturity (2026 fix)', () => {
+  // A production-proven technology sitting at 2% adoption is NOT an "adopt now"
+  // decision — this was the bug that made 51 of 130 H1 entries read as today.
+  assert.equal(horizonFor(9, 2, null, 2026, { decisionYear: 2031, ceilingPct: 40 }).horizon, 'H2');
+  assert.equal(horizonFor(9, 2, null, 2026, { decisionYear: 2035, ceilingPct: 40 }).horizon, 'H3');
+  // Already at scale → H1 whatever the curve says next.
+  assert.equal(horizonFor(9, 45, null, 2026, { decisionYear: 2033, ceilingPct: 90 }).horizon, 'H1');
+  assert.equal(horizonFor(9, 60, null, 2026, { decisionYear: 'passed', ceilingPct: 90 }).horizon, 'H1');
+  // Maturity cap: a steep curve cannot drag lab-stage work into a near lane.
+  assert.equal(horizonFor(3, 0, null, 2026, { decisionYear: 2027, ceilingPct: 10 }).horizon, 'H3');
+  assert.equal(horizonFor(5, 0, null, 2026, { decisionYear: 2027, ceilingPct: 10 }).horizon, 'H2');
+  // Beyond planning range → H3, never a fake near lane.
+  assert.equal(horizonFor(8, 1, null, 2026, { decisionYear: null, ceilingPct: 20 }).horizon, 'H1');   // no model supplied → legacy rule
+  // Regulation still pulls at most one lane, and never before its own bucket.
+  const pulled = horizonFor(7, 2, 2027, 2026, { decisionYear: 2034, ceilingPct: 50 });
+  assert.equal(pulled.horizon, 'H2');
+  assert.equal(pulled.regPulled, true);
+});
+
+test('register lanes: the future is actually populated (2026 fix)', () => {
+  // The regression this guards: every technology filed as "now" because TRL>=8.
+  const lanes = { H1: 0, H2: 0, H3: 0 };
+  for (const c of ['Battery', 'EDU', 'Chassis', 'BIW', 'Interior', 'Exterior', 'Electrical', 'Powertrain', 'Driveline']) {
+    const r = foresightFor({ commodity: c });
+    lanes.H1 += r.horizons.H1.length; lanes.H2 += r.horizons.H2.length; lanes.H3 += r.horizons.H3.length;
+  }
+  const future = lanes.H2 + lanes.H3;
+  assert.ok(future >= lanes.H1 * 0.5, `future lanes starved: H1=${lanes.H1} H2=${lanes.H2} H3=${lanes.H3}`);
+  assert.ok(lanes.H3 >= 5, `H3 nearly empty (${lanes.H3}) — the tool must still see past 2032`);
+});
+
 test('inflectionYears: ceiling-capped techs get real milestone years (2026 fix)', () => {
   // Old model: ceiling 20 could never cross 25% of segment → permanent null.
   // New model: milestones at 5% and 10% absolute share — honest, reachable.
@@ -496,12 +527,14 @@ test('foresightFor: an unresolvable query returns nothing, not the whole registe
 });
 
 test('foresightFor: term-matched queries rank by relevance before momentum', () => {
-  // "48V MHEV battery" must lead with the 48V-specific technologies, not the
-  // highest-momentum HV-pack tech that merely shares the word "battery".
+  // "48V MHEV battery" must lead each lane with the 48V-specific technologies,
+  // not a high-momentum HV-pack tech that merely shares the word "battery".
+  // (Lanes follow decision timing since the 2026 fix, so the 48V next-gen pack
+  // at 5% adoption leads H2 while 48V-as-ICE-floor at 30% leads H1 — relevance
+  // is asserted WITHIN a lane, which is how the report is read.)
   const r = foresightFor({ query: '48V MHEV battery' });
-  const first = r.horizons.H1[0];
-  assert.equal(first.id, '48v-battery-nextgen', `top hit was ${first.id}`);
-  assert.ok(r.horizons.H1.slice(0, 3).some((c) => c.id === '48v-mhev-decontent'));
+  assert.equal(r.horizons.H1[0].id, '48v-mhev-decontent', `H1 top was ${r.horizons.H1[0].id}`);
+  assert.equal(r.horizons.H2[0].id, '48v-battery-nextgen', `H2 top was ${r.horizons.H2[0].id}`);
   // Lamination query leads with the lamination technology, not brake rotors.
   const lam = foresightFor({ query: 'stator and rotor lamination' });
   assert.equal(lam.horizons.H1[0].id, 'thin-gauge-lamination', `top hit was ${lam.horizons.H1[0].id}`);
@@ -515,4 +548,78 @@ test('foresightFor: deterministic — same inputs, same output', () => {
   const a = foresightFor({ query: 'battery pack', powertrain: 'BEV' });
   const b = foresightFor({ query: 'battery pack', powertrain: 'BEV' });
   assert.deepEqual(a, b);
+});
+
+// ── Forward research (foresight-research.mjs) ────────────────────────────────
+// All DI'd: a fake search + fake LLM client, so these run offline with no key.
+
+import { shouldResearch, buildResearchPlan, positionCandidates, researchFutureTechnologies } from '../foresight-research.mjs';
+
+test('shouldResearch: fires exactly on the shapes users read as "not predicting"', () => {
+  const rich = { count: 9, horizons: { H1: [1, 2, 3, 4, 5, 6], H2: [1, 2], H3: [1] } };
+  assert.equal(shouldResearch(rich).research, false);
+  // Thin coverage.
+  assert.equal(shouldResearch({ count: 3, horizons: { H1: [1, 2, 3], H2: [], H3: [] } }).research, true);
+  // Plenty of cards but nothing in a future lane.
+  const noFuture = { count: 8, horizons: { H1: [1, 2, 3, 4, 5, 6, 7, 8], H2: [], H3: [] } };
+  assert.equal(shouldResearch(noFuture).research, true);
+  assert.equal(shouldResearch(noFuture).reason, 'no-future-lane');
+  assert.equal(shouldResearch({ count: 0, horizons: { H1: [], H2: [], H3: [] } }).reason, 'no-register-match');
+});
+
+test('buildResearchPlan: queries target what is coming, not what exists', () => {
+  const plan = buildResearchPlan('air suspension', { year: 2026 });
+  assert.ok(plan.length >= 3);
+  assert.ok(plan.every((q) => q.includes('air suspension')));
+  const blob = plan.join(' ').toLowerCase();
+  for (const forward of ['roadmap', 'emerging', 'prototype', 'future']) assert.ok(blob.includes(forward), `plan lacks forward term ${forward}`);
+  assert.deepEqual(buildResearchPlan(''), []);
+});
+
+test('positionCandidates: same deterministic cores, inputs marked as estimates', () => {
+  const [c] = positionCandidates([{
+    name: 'Test tech', whatItIs: 'mechanism', replaces: 'incumbent', trlEstimate: 5,
+    adoptionEstimatePct: 2, ceilingEstimatePct: 30, earliestProduction: 'none cited',
+    players: ['A', 'B'], whyItMatters: 'cost', sourceUrl: 'https://x.example/1',
+  }], { now: 2026 });
+  assert.equal(c.researched, true);
+  assert.equal(c.evidenceUnverified, true);
+  assert.equal(c.projection.estimatedInputs, true);
+  assert.match(c.projection.basis, /ESTIMATED/);
+  assert.ok(['H1', 'H2', 'H3'].includes(c.horizon));
+  assert.equal(c.phase, sCurvePhase(5, 2));
+  // A TRL-5 candidate can never be sold as a near-term decision.
+  assert.notEqual(c.horizon, 'H1');
+  // Adoption claims are capped — an AI "already mainstream" claim is the least
+  // trustworthy thing it can say.
+  const [wild] = positionCandidates([{ name: 'x', trlEstimate: 99, adoptionEstimatePct: 95, ceilingEstimatePct: 200, players: [], sourceUrl: 'u' }]);
+  assert.ok(wild.trl <= 9 && wild.adoptionPct <= 40);
+});
+
+test('researchFutureTechnologies: cite-or-drop is enforced in code, not the prompt', async () => {
+  const performSearch = async () => [{ title: 'Real source', url: 'https://real.example/a', snippet: 'evidence', source: 'x' }];
+  const searchPatents = async () => ({ patents: [] });
+  const fakeJson = async () => ({
+    candidates: [
+      { name: 'Cited tech', whatItIs: 'w', replaces: 'r', trlEstimate: 4, adoptionEstimatePct: 0, ceilingEstimatePct: 20, earliestProduction: 'none cited', players: ['P'], whyItMatters: 'm', sourceUrl: 'https://real.example/a' },
+      { name: 'Hallucinated tech', whatItIs: 'w', replaces: 'r', trlEstimate: 6, adoptionEstimatePct: 5, ceilingEstimatePct: 40, earliestProduction: 'x', players: ['P'], whyItMatters: 'm', sourceUrl: 'https://invented.example/z' },
+    ],
+    landscapeNote: 'note', evidenceGaps: 'gaps',
+  });
+  const out = await researchFutureTechnologies('air suspension', { performSearch, searchPatents, client: {}, messagesJson: fakeJson, model: 'm' });
+  assert.equal(out.candidates.length, 1, 'uncited candidate survived');
+  assert.equal(out.candidates[0].name, 'Cited tech');
+  assert.equal(out.dropped, 1);
+  assert.match(out.note, /NOT CURATED/);
+});
+
+test('researchFutureTechnologies: no evidence → nothing synthesised', async () => {
+  let llmCalled = false;
+  const out = await researchFutureTechnologies('obscure part', {
+    performSearch: async () => [], searchPatents: async () => ({ patents: [] }),
+    client: {}, messagesJson: async () => { llmCalled = true; return { candidates: [] }; }, model: 'm',
+  });
+  assert.equal(out.candidates.length, 0);
+  assert.equal(llmCalled, false, 'called the LLM with no evidence to ground it');
+  assert.match(out.note, /without sources would be invention/);
 });

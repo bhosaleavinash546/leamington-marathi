@@ -28,10 +28,25 @@ export interface ForesightReportCard {
 export interface ForesightReportBenchmark {
   vehicle: string; brand: string; year: number; powertrains: string[]; signature: string[]; watch: string;
 }
+export interface ForesightResearchedCandidate {
+  id: string; name: string; whatItIs: string; replaces: string; whyItMatters: string;
+  earliestProduction: string; players: string[]; sourceUrl: string;
+  trl: number; adoptionPct: number; phase: string; horizon: 'H1' | 'H2' | 'H3';
+  projection: { basis: string; adoption: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null; share25?: number; share50?: number; ceiling?: number; peakGrowth?: number | 'passed' | null }; estimatedInputs?: boolean };
+}
+export interface ForesightReportResearched {
+  candidates: ForesightResearchedCandidate[];
+  landscapeNote?: string | null;
+  evidenceGaps?: string | null;
+  trigger?: string;
+  note?: string;
+  evidence?: { searches?: Array<{ title: string; url: string; source?: string }>; patents?: Array<{ title: string; url: string; assignee?: string }> };
+}
 export interface ForesightReportData {
   query: string; commodity: string | null; powertrain: string | null; count: number;
   segment?: string | null;
   benchmarks?: ForesightReportBenchmark[];
+  researched?: ForesightReportResearched | null;
   windows: Record<'H1' | 'H2' | 'H3', { label: string }>;
   horizons: Record<'H1' | 'H2' | 'H3', ForesightReportCard[]>;
   anchors: ForesightReportAnchor[];
@@ -493,6 +508,55 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       brackets(ML, cardTop, CW, y - cardTop + 1.5, cc, 3, 0.42);
       y += 6.5;
     }
+  }
+
+  // ═══ RESEARCHED CANDIDATES ═════════════════════════════════════════════════
+  // Deliberately walled off from the curated lanes: different page, violet
+  // (not gold/teal) accent, every card stamped AI-RESEARCHED with its source.
+  const rs = result.researched;
+  if (rs && rs.candidates?.length) {
+    newPage();
+    sectionTitle('Forward research', 'AI-researched candidates — NOT curated positions');
+    setFill(doc, P.VIOLET); doc.rect(ML, y - 3.4, CW, 0.6, 'F');
+    y += 2;
+    wrapped('These technologies were found by live search for this query because the curated register was thin here. Their TRL and adoption are AI ESTIMATES, so every projection below is modelled on estimated inputs — not measured positions. Each carries the source it was drawn from; uncited claims were dropped in code. Treat this page as a research lead list, never as a sourcing position.', 8.6, P.MUT, CW, 4, 'italic');
+    y += 2;
+    if (rs.landscapeNote) { wrapped(rs.landscapeNote, 9.2, P.BODY); y += 2; }
+
+    for (const c of rs.candidates) {
+      ensure(46);
+      const cardTop = y - 4;
+      sans(11, 'bold'); setColor(doc, P.INK);
+      doc.text(fitText(doc, c.name, CW - 44), ML + 3, y);
+      mono(6.8, true); setColor(doc, P.VIOLET);
+      doc.text('AI-RESEARCHED', PW - MR - 3, y, { align: 'right' });
+      y += 4.6;
+      mono(6.8); setColor(doc, P.MUT);
+      doc.text(fitText(doc, `TRL ~${c.trl} (est)  ·  ${String(c.phase).toUpperCase()}  ·  ADOPTION ~${c.adoptionPct}% (est)  ·  ${c.horizon}`, CW - 6), ML + 3, y);
+      y += 4.2;
+      wrapped(c.whatItIs, 9, P.BODY, CW - 6, 4.1, 'normal', ML + 3);
+      if (c.replaces) wrapped(`Replaces: ${c.replaces}`, 8.3, P.MUT, CW - 6, 3.9, 'normal', ML + 3);
+      if (c.whyItMatters) wrapped(`Cost relevance: ${c.whyItMatters}`, 8.3, P.BODY, CW - 6, 3.9, 'normal', ML + 3);
+      if (c.earliestProduction) wrapped(`Earliest production cited: ${c.earliestProduction}`, 8.3, P.EVID, CW - 6, 3.9, 'normal', ML + 3);
+      if (c.players?.length) wrapped(`Players named in sources: ${c.players.join(', ')}`, 8.3, P.MUT, CW - 6, 3.9, 'normal', ML + 3);
+      const x = c.projection?.crossings;
+      if (x) {
+        mono(7.2, true); setColor(doc, P.VIOLET); ensure(6);
+        const lbl = (v: number | 'passed' | null | undefined) => (v === 'passed' ? 'PASSED' : typeof v === 'number' ? `~${v}` : '>15Y');
+        doc.text(fitText(doc, `MODELLED ON ESTIMATES: ${x.share25 ?? 25}% SHARE ${lbl(x.cross25)}  ·  ${x.share50 ?? 50}% ${lbl(x.cross50)}  ·  PEAK GROWTH ${lbl(x.peakGrowth)}`, CW - 6), ML + 3, y);
+        y += 4.4;
+      }
+      if (c.sourceUrl) { mono(6.4); setColor(doc, P.DIM); ensure(5); doc.text(fitText(doc, `SOURCE: ${c.sourceUrl}`, CW - 6), ML + 3, y); y += 4.2; }
+      brackets(ML, cardTop, CW, y - cardTop + 1.5, P.VIOLET, 3, 0.42);
+      y += 6;
+    }
+    if (rs.evidenceGaps) { ensure(14); mono(7, true); setColor(doc, P.DIM); doc.text('WHAT THE EVIDENCE DID NOT ESTABLISH', ML, y); y += 4.4; wrapped(rs.evidenceGaps, 8.6, P.MUT); }
+  } else if (rs && rs.note) {
+    newPage();
+    sectionTitle('Forward research', 'Attempted, and honestly empty');
+    wrapped(rs.note, 9.2, P.BODY);
+    y += 2;
+    wrapped('Nothing was synthesised to fill the gap. An empty research page is the correct output when the evidence is not there.', 8.6, P.MUT, CW, 4, 'italic');
   }
 
   // ═══ METHODOLOGY ═══════════════════════════════════════════════════════════

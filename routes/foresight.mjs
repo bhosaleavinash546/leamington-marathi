@@ -20,6 +20,7 @@ import { COMMODITY_KEYS } from '../src/data/commodity-classify.mjs';
 import { searchPatents, patentVelocity, buildPatentQuery, providerStatus } from '../patent-search.mjs';
 import { BOM_TREE, ANALYZE_SYSTEMS } from '../src/data/vehicle-bom.mjs';
 import { messagesJson } from '../llm-json.mjs';
+import { shouldResearch, researchFutureTechnologies } from '../foresight-research.mjs';
 
 const SMALL_MODEL = process.env.CV_SMALL_MODEL || 'claude-sonnet-5';
 const POWERTRAINS = ['ICE', 'MHEV', 'PHEV', 'BEV'];
@@ -145,15 +146,47 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     // SUV segment lenses → include the curated competitor benchmark set
     // (the vehicles are off-road/luxury benchmarks, not software ones).
     if (segment === 'off-road' || segment === 'luxury') result.benchmarks = BENCHMARK_VEHICLES;
-    if (!result.count) {
-      return res.json({ ...result, narrative: null, note: 'No register match for this input — try a commodity or a more common part name. The register only speaks where it has curated evidence; it never guesses.' });
+    // ── Step 2: forward research when the register is too thin to predict ──
+    // The register cannot cover a 20,000-part vehicle, so a thin match used to
+    // end the answer. Now it triggers live research for CANDIDATE FUTURE
+    // technologies — kept strictly separate from the curated lanes, stamped as
+    // AI-researched with estimated inputs. `deep`: true forces it, false
+    // disables it, absent = auto.
+    const researchKey = resolveApiKey(req);
+    const deepPref = req.body?.deep;
+    const trigger = shouldResearch(result);
+    const wantResearch = deepPref === true || (deepPref !== false && trigger.research);
+    let researched = null;
+    if (wantResearch && !researchKey) {
+      researched = { candidates: [], evidence: { searches: [], patents: [] }, landscapeNote: null, evidenceGaps: null, trigger: trigger.reason, note: 'The register is thin for this query and forward research needs an Anthropic API key (Settings) — showing curated technologies only rather than guessing.' };
+    } else if (wantResearch && researchKey) {
+      try {
+        const client = makeAnthropic(researchKey, { userId: req.user?.id, route: '/api/foresight/predict:research' });
+        const out = await researchFutureTechnologies(query || commodity || segment || '', {
+          performSearch, searchPatents, client, messagesJson, model: SMALL_MODEL, sanitize,
+          searchApiKey: typeof req.body?.searchApiKey === 'string' ? req.body.searchApiKey : (process.env.BRAVE_API_KEY || ''),
+          now: REGISTER_VINTAGE,
+        });
+        researched = { ...out, trigger: trigger.reason };
+      } catch {
+        researched = { candidates: [], evidence: { searches: [], patents: [] }, landscapeNote: null, evidenceGaps: null, trigger: trigger.reason, note: 'Forward research failed (search or AI step) — curated foresight is shown in full and nothing was invented to fill the gap.' };
+      }
     }
 
-    // ── Step 2: optional LLM narration on top of the deterministic cards ──
+    if (!result.count) {
+      return res.json({
+        ...result, narrative: null, researched,
+        note: researched?.candidates?.length
+          ? 'No curated register match — the technologies below are AI-RESEARCHED candidates from live sources, not curated positions. Review the sources before using them.'
+          : 'No register match for this input — try a commodity or a more common part name. The register only speaks where it has curated evidence; it never guesses.',
+      });
+    }
+
+    // ── Step 3: optional LLM narration on top of the deterministic cards ──
     let narrative = null;
     let narrativeNote = null;
     const wantNarrative = req.body?.narrate !== false;
-    const key = wantNarrative ? resolveApiKey(req) : null;
+    const key = wantNarrative ? researchKey : null;
     if (wantNarrative && !key) narrativeNote = 'No API key configured — showing the deterministic foresight only. Add a key in Settings for the analyst briefing and signals-to-watch.';
     if (key) {
       try {
@@ -184,7 +217,9 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
       ...result,
       narrative,
       narrativeNote,
-      note: 'Positions come from the curated register (TRL, adoption, dated regulations); projections are Bass/Wright models, labelled as modelled. The AI layer narrates — it never invents a number.',
+      researched,
+      note: 'Positions come from the curated register (TRL, adoption, dated regulations); projections are Bass/Wright models, labelled as modelled. The AI layer narrates — it never invents a number.'
+        + (researched?.candidates?.length ? ' Researched candidates are listed separately and are NOT curated positions.' : ''),
     });
   });
 

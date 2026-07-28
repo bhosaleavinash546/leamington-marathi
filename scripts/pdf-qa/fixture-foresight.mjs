@@ -3,13 +3,34 @@
 // so the WinAnsi sanitizer is exercised on production data), plus an AI layer
 // with deliberately nasty strings.
 import { foresightFor } from '../../foresight.mjs';
+import { positionCandidates } from '../../foresight-research.mjs';
 
 const base = foresightFor({});   // every technology, all lanes
 
 const allCards = [...base.horizons.H1, ...base.horizons.H2, ...base.horizons.H3];
 
+// Researched candidates with hostile prose + a very long URL: the forward
+// research page must wrap and paginate like every other section.
+const RESEARCHED = {
+  candidates: positionCandidates(Array.from({ length: 5 }, (_, i) => ({
+    name: `Researched candidate ${i + 1} — µ-scale ↓ cost architecture with an unusually long technology name`,
+    whatItIs: 'A rotary→linear actuator converts wheel motion ≥ 150 W into recovered charge while the same machine pushes; the mechanism description is deliberately long to stress paragraph wrapping across the card boundary and force pagination in the researched section. '.repeat(2),
+    replaces: 'The incumbent passive part it displaces (≈€40/vehicle content)',
+    trlEstimate: 3 + i, adoptionEstimatePct: i, ceilingEstimatePct: 15 + i * 8,
+    earliestProduction: `Pilot programme ${2028 + i} → limited series`,
+    players: ['Supplier A', 'Supplier B (China)', 'OEM C'],
+    whyItMatters: 'Moves ~€12/vehicle of content from mechanical to electronic sourcing — the cost engineer’s exposure changes commodity.',
+    sourceUrl: `https://example.test/a-deliberately-long-source-url-path/that-should-truncate-cleanly/segment-${i}?q=future+technology+roadmap`,
+  })), { now: 2026 }),
+  landscapeNote: 'The retrieved evidence points ↓ toward electrification of this subsystem, with Chinese suppliers setting the cost floor. '.repeat(3),
+  evidenceGaps: 'No source established volume timing or a €/unit figure; TRL claims come from supplier press material, not measured production data.',
+  trigger: 'thin-register-coverage',
+  note: 'AI-RESEARCHED, NOT CURATED.',
+};
+
 export const FORESIGHT_RESULT = {
   ...base,
+  researched: RESEARCHED,
   query: 'BEV HV battery / EDU — full landscape ↓↑→ "hostile" <query>',
   narrative: {
     briefing: 'Adoption ↑ across phosphate chemistries → pack cost ↓20-30%; the ≈€8/kWh delta between LFP and NMC continues to compress. '.repeat(6),

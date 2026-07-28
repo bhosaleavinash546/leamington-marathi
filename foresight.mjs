@@ -52,13 +52,34 @@ function yearBucket(year, now) {
 const H_ORDER = ['H1', 'H2', 'H3'];
 
 /**
- * Horizon bucket for a technology. Base position comes from maturity; a
- * regulatory anchor can PULL it at most one horizon earlier (a regulation can
- * force investment, but it cannot conjure a TRL-4 technology into production),
- * and never earlier than the bucket the regulation's own bite-year sits in.
+ * Horizon bucket for a technology — WHEN THE DECISION LANDS, not how mature the
+ * technology is (2026 fix).
+ *
+ * The old rule was pure maturity (`trl >= 8 → H1`), which filed 51 of 130 H1
+ * entries as "adopt/quote now" while sitting at 1-5% adoption — technologies
+ * that exist in production somewhere but whose sourcing decision is years out.
+ * That is what made a foresight tool read as a catalogue of today.
+ *
+ * The lane now comes from `decisionYear`: the modelled year the technology
+ * reaches a quarter of its own saturation ceiling — the point it stops being
+ * exotic and starts appearing in competitor quotes. Two guardrails keep it
+ * honest in both directions:
+ *   • maturity cap — a lab-stage technology is never a near-term sourcing
+ *     decision however steep its curve (TRL ≤4 → H3 earliest, ≤6 → H2 earliest);
+ *   • scale floor — anything already at half its ceiling is H1 by definition,
+ *     you are quoting it today whatever the model says next.
+ * Regulatory pull is unchanged: at most one lane earlier, never before the
+ * bucket the regulation's own bite-year sits in.
  */
-export function horizonFor(trl, adoptionPct, regPullYear = null, now = REGISTER_VINTAGE) {
-  const base = (trl >= 8 || adoptionPct >= 10) ? 'H1' : trl >= 6 ? 'H2' : 'H3';
+export function horizonFor(trl, adoptionPct, regPullYear = null, now = REGISTER_VINTAGE, { decisionYear = null, ceilingPct = 90 } = {}) {
+  const maturityFloor = trl >= 7 ? 'H1' : trl >= 5 ? 'H2' : 'H3';   // earliest lane maturity permits
+  const atScale = adoptionPct >= ceilingPct * 0.5;
+  let base;
+  if (atScale || decisionYear === 'passed') base = 'H1';
+  else if (typeof decisionYear === 'number') base = yearBucket(decisionYear, now);
+  else if (decisionYear === null) base = (trl >= 8 || adoptionPct >= 10) ? 'H1' : trl >= 6 ? 'H2' : 'H3';  // no model supplied
+  else base = 'H3';                                                  // model says beyond planning range
+  if (H_ORDER.indexOf(base) < H_ORDER.indexOf(maturityFloor)) base = maturityFloor;
   if (regPullYear == null) return { horizon: base, regPulled: false };
   const regBucket = yearBucket(regPullYear, now);
   const bi = H_ORDER.indexOf(base);
@@ -261,7 +282,6 @@ function techCard(tech, now, anchors) {
   // Only law that exists can pull a horizon: proposed / under-revision anchors
   // are context, not commitments (2026 audit).
   const pullYear = anchor && (anchor.status === 'in-force' || anchor.status === 'adopted') ? anchor.year : null;
-  const { horizon, regPulled } = horizonFor(tech.trl, tech.adoptionPct, pullYear, now);
   const ceilingPct = tech.ceiling ?? 90;
   const adoption = { now: tech.adoptionPct };
   const costIndex = { now: 1 };
@@ -270,6 +290,8 @@ function techCard(tech, now, anchors) {
     costIndex[`in${y}`] = costOutlook(tech, y);
   }
   const crossings = inflectionYears(tech.adoptionPct, { now, ceilingPct });
+  // The lane follows the modelled decision year, not raw maturity (2026 fix).
+  const { horizon, regPulled } = horizonFor(tech.trl, tech.adoptionPct, pullYear, now, { decisionYear: crossings.cross25, ceilingPct });
   return {
     ...tech,
     phase: sCurvePhase(tech.trl, tech.adoptionPct),
