@@ -29,9 +29,14 @@ const CHINA_MARKERS = [
   'byd', 'catl', 'xiaomi', 'huawei', 'nio', 'xpeng', 'li auto', 'geely', 'baowu', 'baosteel',
   'gotion', 'hesai', 'robosense', 'seyond', 'boe', 'sanhua', 'yangwang', 'aito', 'zeekr',
   'baolong', 'hina', 'fuyao', 'seres', 'leapmotor', 'aulton', 'wanxiang', 'highly', 'dongfeng',
-  'gac', 'chery', 'great wall', 'wel ion', 'welion', 'brunp', 'evogo', 'm-hero', 'mengshi',
-  'chinese', 'china', 'horizon robotics', 'momenta', 'baidu', 'jac', 'jmev', 'eve', 'millison',
+  'gac', 'chery', 'great wall', 'welion', 'brunp', 'evogo', 'm-hero', 'mengshi',
+  'horizon robotics', 'momenta', 'baidu', 'jac', 'jmev', 'eve', 'millison',
+  'bwi', 'joyson', 'citic', 'dicastal', 'iray', 'raytron', 'linglong', 'sailun', 'naas',
+  'aiways', 'changan', 'arcfox', 'baic', 'freevoy', 'naxtra', 'shenxing', 'weifu', 'highly',
 ];
+// NOTE (audit #2): generic 'chinese'/'china' markers were REMOVED — clearing
+// the no-china-frontier flag now requires a NAMED entity, because vague
+// "Chinese suppliers…" phrasing was exactly how the gate got gamed.
 
 const yearRe = /(20[12]\d)/g;
 

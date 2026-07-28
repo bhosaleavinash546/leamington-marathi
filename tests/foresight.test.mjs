@@ -240,10 +240,13 @@ test('self-audit: audits every entry with known flags, worst-first inbox', () =>
 
 test('self-audit regression gates: the register can only get healthier', () => {
   const a = auditRegister();
-  // Baselines measured July 2026 — future edits must not regress them.
-  assert.ok(a.chinaCoveragePct >= 53, `China-frontier coverage fell to ${a.chinaCoveragePct}%`);
-  assert.ok(a.flaggedCount <= 121, `curation debt grew to ${a.flaggedCount}`);
-  assert.ok((a.byFlag['no-evidence'] ?? 0) <= 21, 'evidence debt grew');
+  // Re-baselined at audit #2 (July 2026): the China-marker heuristic was
+  // HARDENED to named entities only (generic "Chinese …" no longer clears the
+  // flag — that is how the gate got gamed), so the measured baseline moved.
+  // Future edits must not regress from here.
+  assert.ok(a.chinaCoveragePct >= 51, `China-frontier coverage fell to ${a.chinaCoveragePct}%`);
+  assert.ok(a.flaggedCount <= 129, `curation debt grew to ${a.flaggedCount}`);
+  assert.ok((a.byFlag['no-evidence'] ?? 0) <= 23, 'evidence debt grew');
 });
 
 test('self-audit: every coverage query resolves via specific terms, not generic ties', () => {

@@ -534,14 +534,15 @@ export default function ForesightPage() {
   }
 
   function bomPick(part: string) {
-    setQuery(part); setCommodity(''); setBomOpen(false);
-    setTimeout(() => predictRef.current?.(), 0);
+    setQuery(part);
+    setCommodity('');
+    setBomOpen(false);
+    predict(part);   // explicit query — no stale-closure risk
   }
-  const predictRef = { current: null as null | (() => void) };
-  predictRef.current = predict;
 
-  async function predict() {
-    if (!query.trim() && !commodity && !segment) { setError('Type a part, pick a commodity, or choose a segment lens.'); return; }
+  async function predict(qOverride?: string) {
+    const q = qOverride ?? query;
+    if (!q.trim() && !commodity && !segment) { setError('Type a part, pick a commodity, or choose a segment lens.'); return; }
     if (!token) { setError('Please sign in.'); return; }
     setLoading(true); setError(''); setResult(null);
     setPanel(null); setPanelError(''); setSaveNote('');
@@ -551,7 +552,7 @@ export default function ForesightPage() {
       const r = await fetch('/api/foresight/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ query, commodity: commodity || undefined, powertrain: powertrain || undefined, segment: segment || undefined, apiKey }),
+        body: JSON.stringify({ query: q, commodity: qOverride ? undefined : (commodity || undefined), powertrain: powertrain || undefined, segment: segment || undefined, apiKey }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Foresight failed.');
@@ -648,7 +649,7 @@ export default function ForesightPage() {
             ))}
           </div>
           {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
-          <button onClick={predict} disabled={loading}
+          <button onClick={() => predict()} disabled={loading}
             className="w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold transition-all">
             {loading
               ? <><ButtonSpinner size={16} /> {reduced ? 'Computing the horizon…' : (
