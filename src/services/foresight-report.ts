@@ -1,15 +1,20 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // BrainSpark Horizon — Technology Foresight Report (PDF).
 //
-// Renders the deterministic foresight result (+ optional grounded analyst
-// briefing and panel critique) as a branded A4 report. Same discipline as
-// export-service.ts: deepPdfSafe once up front (WinAnsi), measured truncation,
-// explicit pagination via ensure(), logo on cover + every footer. Verify any
-// change with the pdf-qa harness (scripts/pdf-qa/README.md).
+// The tool's own design language on paper, in two skins: LIGHT (default —
+// print-friendly white canvas, navy ink, deep gold) and DARK (the Horizon
+// screen: navy pages, starfield, gold horizon grid). Both share the FUI
+// furniture — corner brackets, mono instrument labels, status-dot regulatory
+// chips, momentum bars, MODELLED-NOT-MEASURED on every footer.
+// Same discipline as export-service.ts: deepPdfSafe once up front (WinAnsi),
+// measured truncation, explicit pagination via ensure(). Verify any change
+// with the pdf-qa harness (scripts/pdf-qa/README.md) — BOTH themes.
 // ─────────────────────────────────────────────────────────────────────────────
 import jsPDF from 'jspdf';
 import { pdfSafe, deepPdfSafe } from './pdf-safe.mjs';
 import { LOGO_PNG } from './brainspark-logo-png';
+
+export type ReportTheme = 'light' | 'dark';
 
 export interface ForesightReportAnchor { id: string; name: string; year: number; region: string; status?: string; effect: string; }
 export interface ForesightReportCard {
@@ -38,21 +43,49 @@ export interface ForesightReportPanel {
   note: string;
 }
 
-const NAVY_RGB  = [13, 31, 51] as const;
-const GOLD_RGB  = [245, 158, 11] as const;
-const WHITE_RGB = [255, 255, 255] as const;
-const GRAY_RGB  = [100, 116, 139] as const;
-const TEAL_RGB  = [13, 148, 136] as const;
+type RGB = readonly [number, number, number];
 
-const CONF_RGB: Record<string, readonly [number, number, number]> = {
-  committed: GOLD_RGB, probable: TEAL_RGB, speculative: GRAY_RGB,
-};
-const STANCE_RGB: Record<string, readonly [number, number, number]> = {
-  agree: [22, 163, 74], caution: [217, 119, 6], challenge: [220, 38, 38],
-};
+// One Horizon identity, two skins.
+function palette(theme: ReportTheme) {
+  const GOLD: RGB = theme === 'dark' ? [245, 158, 11] : [217, 119, 6];
+  const TEAL: RGB = theme === 'dark' ? [45, 212, 191] : [13, 148, 136];
+  const VIOLET: RGB = theme === 'dark' ? [167, 139, 250] : [109, 40, 217];
+  return theme === 'dark'
+    ? {
+        theme, GOLD, TEAL, VIOLET,
+        PAGE: [13, 31, 51] as RGB,        // navy canvas
+        INK: [255, 255, 255] as RGB,      // headings
+        BODY: [203, 213, 225] as RGB,     // body text
+        MUT: [148, 163, 184] as RGB,
+        DIM: [100, 116, 139] as RGB,
+        PANEL: [21, 48, 79] as RGB,       // table/metric fills
+        RULE: [42, 68, 99] as RGB,
+        EVID: [110, 231, 183] as RGB,     // production-evidence green
+        REG: [252, 211, 77] as RGB,       // regulation line
+        STAR1: [200, 212, 228] as RGB, STAR2: GOLD, STAR3: TEAL, starCount: 42,
+      }
+    : {
+        theme, GOLD, TEAL, VIOLET,
+        PAGE: [255, 255, 255] as RGB,
+        INK: [13, 31, 51] as RGB,
+        BODY: [51, 65, 85] as RGB,
+        MUT: [100, 116, 139] as RGB,
+        DIM: [148, 163, 184] as RGB,
+        PANEL: [242, 246, 251] as RGB,
+        RULE: [215, 224, 236] as RGB,
+        EVID: [4, 120, 87] as RGB,
+        REG: [161, 98, 7] as RGB,
+        STAR1: [203, 213, 225] as RGB, STAR2: [252, 211, 77] as RGB, STAR3: [153, 246, 228] as RGB, starCount: 26,
+      };
+}
+type Palette = ReturnType<typeof palette>;
 
-function setFill(doc: jsPDF, rgb: readonly [number, number, number]) { doc.setFillColor(rgb[0], rgb[1], rgb[2]); }
-function setColor(doc: jsPDF, rgb: readonly [number, number, number]) { doc.setTextColor(rgb[0], rgb[1], rgb[2]); }
+const STANCE_RGB: Record<string, RGB> = { agree: [22, 163, 74], caution: [217, 119, 6], challenge: [220, 38, 38] };
+const STATUS_LABEL: Record<string, string> = { 'in-force': 'IN FORCE', adopted: 'ADOPTED', proposed: 'PROPOSED', 'under-revision': 'UNDER REVISION' };
+
+function setFill(doc: jsPDF, rgb: RGB) { doc.setFillColor(rgb[0], rgb[1], rgb[2]); }
+function setColor(doc: jsPDF, rgb: RGB) { doc.setTextColor(rgb[0], rgb[1], rgb[2]); }
+function setDraw(doc: jsPDF, rgb: RGB, w = 0.3) { doc.setDrawColor(rgb[0], rgb[1], rgb[2]); doc.setLineWidth(w); }
 
 function fitText(doc: jsPDF, text: string, maxWidth: number): string {
   if (doc.getTextWidth(text) <= maxWidth) return text;
@@ -60,21 +93,19 @@ function fitText(doc: jsPDF, text: string, maxWidth: number): string {
   while (t.length > 1 && doc.getTextWidth(t + '…') > maxWidth) t = t.slice(0, -1);
   return t.trimEnd() + '…';
 }
-
-function safeFilename(name: string): string {
-  return name.replace(/[\\/:*?"<>|]/g, '-');
-}
+function safeFilename(name: string): string { return name.replace(/[\\/:*?"<>|]/g, '-'); }
 
 const HORIZON_TITLE: Record<'H1' | 'H2' | 'H3', string> = {
-  H1: 'Horizon 1 — adopt/quote now',
-  H2: 'Horizon 2 — plan the transition',
-  H3: 'Horizon 3 — track, don’t commit',
+  H1: 'HORIZON 1 — ADOPT / QUOTE NOW',
+  H2: 'HORIZON 2 — PLAN THE TRANSITION',
+  H3: 'HORIZON 3 — TRACK, DON’T COMMIT',
 };
 
-export function exportForesightPdf(data: ForesightReportData, panelIn?: ForesightReportPanel | null): void {
+export function exportForesightPdf(data: ForesightReportData, panelIn?: ForesightReportPanel | null, theme: ReportTheme = 'light'): void {
+  const P = palette(theme);
   const result: ForesightReportData = deepPdfSafe(data);
   const panel: ForesightReportPanel | null = panelIn ? deepPdfSafe(panelIn) : null;
-  const segmentLabel = result.segment === 'off-road' ? 'Off-Road Features & Technologies' : result.segment === 'luxury' ? 'Luxury / Premium SUV' : '';
+  const segmentLabel = result.segment === 'off-road' ? 'Off-Road Features & Technologies' : result.segment === 'luxury' ? 'Luxury / Premium SUV' : result.segment === 'software' ? 'SDV / ADAS & Software' : '';
   const subject = pdfSafe(result.query || result.commodity || segmentLabel || 'Technology landscape') + (result.powertrain ? ` (${result.powertrain})` : '');
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -84,173 +115,194 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
   let page = 1;
   let y = 0;
 
-  function addPageNumber() {
-    doc.addImage(LOGO_PNG, 'PNG', ML, PH - 10.2, 5.5, 5.5);
-    setColor(doc, GRAY_RGB);
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`BrainSpark Horizon  |  ${fitText(doc, subject, 90)}  |  Page ${page}`, PW / 2, PH - 6, { align: 'center' });
-  }
+  const mono = (s = 8, b = false) => { doc.setFont('courier', b ? 'bold' : 'normal'); doc.setFontSize(s); };
+  const sans = (s = 9, style: 'normal' | 'bold' | 'italic' = 'normal') => { doc.setFont('helvetica', style); doc.setFontSize(s); };
 
+  // FUI corner brackets — the signature of every Horizon surface.
+  function brackets(x: number, by: number, w: number, h: number, rgb: RGB, len = 3, lw = 0.4) {
+    setDraw(doc, rgb, lw);
+    doc.line(x, by, x + len, by); doc.line(x, by, x, by + len);
+    doc.line(x + w - len, by + h, x + w, by + h); doc.line(x + w, by + h - len, x + w, by + h);
+  }
+  // Subtle deterministic starfield — dense on dark, whisper-light on white.
+  function starfield() {
+    let seed = 97 + page * 13;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let i = 0; i < P.starCount; i++) {
+      const sx = rnd() * PW, sy = rnd() * PH, r = rnd() * 0.3 + 0.1;
+      const c = rnd() < 0.14 ? P.STAR2 : rnd() < 0.24 ? P.STAR3 : P.STAR1;
+      setFill(doc, c); doc.circle(sx, sy, r, 'F');
+    }
+  }
+  // The literal horizon: perspective grid vanishing at yH.
+  function horizonArt(yH: number, strong = false) {
+    const cx = PW / 2;
+    const gridCol: RGB = theme === 'dark'
+      ? (strong ? [163, 108, 16] : [92, 66, 26])
+      : (strong ? [240, 197, 122] : [247, 223, 178]);
+    setDraw(doc, gridCol, 0.28);
+    for (let i = 0; i <= 12; i++) {
+      const xT = cx + (i - 6) * 9, xB = cx + (i - 6) * 42;
+      doc.line(xT, yH, xB, PH);
+    }
+    [4, 10, 18, 29, 44].forEach((d) => { if (yH + d < PH) doc.line(0, yH + d, PW, yH + d); });
+    setDraw(doc, P.GOLD, strong ? 0.55 : 0.4);
+    doc.line(0, yH, PW, yH);
+  }
+  function paintPage(withGrid = false) {
+    setFill(doc, P.PAGE); doc.rect(0, 0, PW, PH, 'F');
+    starfield();
+    if (withGrid) horizonArt(262);
+  }
+  function footer() {
+    mono(7); setColor(doc, P.DIM);
+    doc.text(`BRAINSPARK HORIZON  ·  ${fitText(doc, subject.toUpperCase(), 78)}  ·  ${String(page).padStart(2, '0')}`, ML, PH - 7);
+    setColor(doc, P.GOLD);
+    doc.text('MODELLED, NOT MEASURED', PW - MR, PH - 7, { align: 'right' });
+  }
   function newPage() {
-    doc.addPage();
-    page++;
-    addPageNumber();
-    y = 18;
+    doc.addPage(); page++; paintPage(); footer(); y = 20;
   }
+  function ensure(height: number) { if (y + height > PH - 16) newPage(); }
 
-  function ensure(height: number) {
-    if (y + height > PH - 14) newPage();
+  function sectionTitle(kicker: string, title: string) {
+    ensure(18);
+    mono(8, true); setColor(doc, P.GOLD);
+    doc.text(kicker.toUpperCase(), ML, y);
+    y += 5.5;
+    sans(15, 'bold'); setColor(doc, P.INK);
+    doc.text(fitText(doc, title, CW), ML, y);
+    setDraw(doc, P.RULE, 0.3); doc.line(ML, y + 2.4, PW - MR, y + 2.4);
+    y += 8;
   }
-
-  function sectionHeader(title: string) {
-    ensure(16);
-    setFill(doc, NAVY_RGB);
-    doc.roundedRect(ML, y, CW, 9, 1.5, 1.5, 'F');
-    setFill(doc, GOLD_RGB);
-    doc.rect(ML, y, 1.6, 9, 'F');
-    setColor(doc, WHITE_RGB);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text(title, ML + 5, y + 6.2);
-    y += 13;
-  }
-
-  function wrapped(text: string, size: number, rgb: readonly [number, number, number], width = CW, lineH = 4.2, style: 'normal' | 'bold' | 'italic' = 'normal') {
-    doc.setFontSize(size);
-    doc.setFont('helvetica', style);
+  function wrapped(text: string, size: number, rgb: RGB, width = CW, lineH = 4.2, style: 'normal' | 'bold' | 'italic' = 'normal', x = ML) {
+    sans(size, style);
     const lines: string[] = doc.splitTextToSize(text, width);
     for (const line of lines) {
       ensure(lineH + 2);
-      setColor(doc, rgb);
-      doc.setFontSize(size);
-      doc.setFont('helvetica', style);
-      doc.text(line, ML, y);
+      setColor(doc, rgb); sans(size, style);
+      doc.text(line, x, y);
       y += lineH;
     }
   }
+  const confColor = (c: string): RGB => c === 'committed' ? P.GOLD : c === 'probable' ? P.TEAL : P.MUT;
+  const statusColor = (s?: string): RGB => s === 'in-force' ? P.TEAL : s === 'adopted' ? P.GOLD : s === 'under-revision' ? [248, 113, 113] : P.MUT;
 
-  // ── Cover ──────────────────────────────────────────────────────────────────
-  setFill(doc, NAVY_RGB);
-  doc.rect(0, 0, PW, 128, 'F');
-  setFill(doc, GOLD_RGB);
-  doc.rect(0, 128, PW, 1.2, 'F');
+  // ═══ COVER ═════════════════════════════════════════════════════════════════
+  paintPage();
+  horizonArt(212, true);
+  // orbit + logo tile
+  setDraw(doc, P.TEAL, 0.4); doc.circle(PW / 2, 48, 22);
+  setDraw(doc, P.RULE, 0.3); doc.circle(PW / 2, 48, 28);
+  setFill(doc, P.TEAL); doc.circle(PW / 2 + 22, 48, 0.9, 'F');
+  setFill(doc, P.GOLD); doc.circle(PW / 2 - 19.5, 29, 0.8, 'F');
+  setFill(doc, P.PANEL); doc.roundedRect(PW / 2 - 12, 36, 24, 24, 3.5, 3.5, 'F');
+  brackets(PW / 2 - 12, 36, 24, 24, P.GOLD, 2.8, 0.5);
+  doc.addImage(LOGO_PNG, 'PNG', PW / 2 - 8.5, 39.5, 17, 17);
+  mono(9.5, true); setColor(doc, P.TEAL);
+  doc.text('B R A I N S P A R K', PW / 2, 78, { align: 'center' });
+  sans(38, 'bold'); setColor(doc, P.INK);
+  doc.text('HORIZON', PW / 2, 92, { align: 'center' });
+  sans(13.5); setColor(doc, P.GOLD);
+  doc.text('Technology Foresight Report', PW / 2, 101, { align: 'center' });
+  sans(12); setColor(doc, P.BODY);
+  doc.text(fitText(doc, subject, CW - 20), PW / 2, 111, { align: 'center' });
+  mono(8.5); setColor(doc, P.MUT);
+  doc.text(`GENERATED ${today.toUpperCase()}  ·  ICE / MHEV / PHEV / BEV  ·  ENGINE-COMPUTED`, PW / 2, 118, { align: 'center' });
 
-  doc.addImage(LOGO_PNG, 'PNG', ML, 20, 13, 13);
-  setColor(doc, GOLD_RGB);
-  doc.setFontSize(28);
-  doc.setFont('helvetica', 'bold');
-  doc.text('BrainSpark', ML + 16, 30);
-
-  setColor(doc, WHITE_RGB);
-  doc.setFontSize(18);
-  doc.text('Horizon — Technology Foresight Report', ML, 46);
-
-  setColor(doc, [148, 163, 184]);
-  doc.setFontSize(13);
-  doc.setFont('helvetica', 'normal');
-  doc.text(fitText(doc, subject, CW), ML, 57);
-
-  setColor(doc, [203, 213, 225]);
-  doc.setFontSize(10);
-  doc.text(`Generated: ${today}`, ML, 68);
-  doc.text('Scope: ICE / MHEV / PHEV / BEV', ML, 74);
-
-  const metrics = [
-    { label: 'Technologies', value: String(result.count), rgb: [59, 130, 246] as const },
-    { label: result.windows.H1.label, value: String(result.horizons.H1.length), rgb: [34, 197, 94] as const },
-    { label: result.windows.H2.label, value: String(result.horizons.H2.length), rgb: GOLD_RGB },
-    { label: result.windows.H3.label, value: String(result.horizons.H3.length), rgb: [139, 92, 246] as const },
+  // metric tiles (solid fills read well on both canvases)
+  const metrics: Array<{ label: string; value: string; rgb: RGB }> = [
+    { label: 'TECHNOLOGIES', value: String(result.count), rgb: theme === 'dark' ? P.PANEL : P.INK },
+    { label: result.windows.H1.label.toUpperCase(), value: String(result.horizons.H1.length), rgb: [180, 121, 10] },
+    { label: result.windows.H2.label.toUpperCase(), value: String(result.horizons.H2.length), rgb: [15, 118, 110] },
+    { label: result.windows.H3.label.toUpperCase(), value: String(result.horizons.H3.length), rgb: [91, 33, 182] },
   ];
   const boxW = (CW - 9) / 4;
   metrics.forEach((m, i) => {
-    const bx = ML + i * (boxW + 3);
-    const by = 92;
-    setFill(doc, [30, 41, 59]);
-    doc.roundedRect(bx, by, boxW, 22, 2, 2, 'F');
-    setFill(doc, m.rgb);
-    doc.rect(bx, by, boxW, 1.5, 'F');
-    setColor(doc, m.rgb);
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.text(m.value, bx + boxW / 2, by + 13, { align: 'center' });
-    setColor(doc, [148, 163, 184]);
-    doc.setFontSize(7);
-    doc.setFont('helvetica', 'normal');
-    doc.text(fitText(doc, m.label, boxW - 4), bx + boxW / 2, by + 19, { align: 'center' });
+    const bx = ML + i * (boxW + 3), by = 128;
+    setFill(doc, m.rgb); doc.roundedRect(bx, by, boxW, 22, 1.8, 1.8, 'F');
+    brackets(bx + 1, by + 1, boxW - 2, 20, theme === 'dark' ? P.GOLD : [255, 255, 255], 2.2, 0.35);
+    sans(17, 'bold'); setColor(doc, [255, 255, 255]);
+    doc.text(m.value, bx + boxW / 2, by + 11.5, { align: 'center' });
+    mono(6); setColor(doc, [226, 232, 240]);
+    doc.text(fitText(doc, m.label, boxW - 5), bx + boxW / 2, by + 18, { align: 'center' });
   });
 
-  y = 142;
-  wrapped('How to read this report', 12, NAVY_RGB, CW, 5.5, 'bold');
+  y = 162;
+  wrapped('How to read this report', 12, P.INK, CW, 5.5, 'bold');
   y += 1;
-  wrapped('Every position in this report is deterministic: technologies come from a curated register carrying an automotive TRL (1-9), a current adoption share of the applicable segment, named production evidence and dated regulations. Horizon lanes, S-curve phases, momentum scores and confidence tiers are computed from that register by fixed rules.', 9.5, [51, 65, 85]);
-  y += 2;
-  wrapped('Adoption and cost projections are MODELS (Bass diffusion, Wright’s law) seeded from the curated data — they are labelled as modelled and are not measurements. Where an AI layer contributes (analyst briefing, panel critique), it is grounded in the deterministic cards and clearly marked; it never invents a number.', 9.5, [51, 65, 85]);
-  y += 2;
-  wrapped('Confidence tiers — COMMITTED: anchored to a dated regulation or a named production programme. PROBABLE: production-ready maturity (TRL >= 7) without a hard anchor. SPECULATIVE: earlier than that; treat with care.', 9.5, [51, 65, 85]);
-  addPageNumber();
+  wrapped('Every position is deterministic: technologies come from a curated register carrying an automotive TRL (1-9), a current adoption share, named production evidence and dated regulations. Lanes, S-curve phases, momentum and confidence tiers are computed by fixed rules.', 9, P.BODY);
+  y += 1.5;
+  wrapped('Adoption and cost projections are MODELS (Bass diffusion, Wright’s law) — labelled as modelled, never measurements. AI layers (briefing, panel) are grounded in the computed cards and clearly marked; they never invent a number.', 9, P.BODY);
+  y += 1.5;
+  mono(7.5, true); setColor(doc, P.GOLD); doc.text('CONFIDENCE', ML, y);
+  sans(9); setColor(doc, P.BODY);
+  doc.text('COMMITTED = regulation or named programme   ·   PROBABLE = TRL >= 7   ·   SPECULATIVE = earlier', ML + 26, y);
+  y += 5;
+  mono(7.5, true); setColor(doc, P.GOLD); doc.text('REG STATUS', ML, y);
+  sans(9); setColor(doc, P.BODY);
+  doc.text('teal IN FORCE  ·  gold ADOPTED  ·  grey PROPOSED  ·  red UNDER REVISION — only law can pull a lane', ML + 26, y);
+  footer();
 
-  // ── Regulatory anchors ─────────────────────────────────────────────────────
+  // ═══ REGULATORY ANCHORS ════════════════════════════════════════════════════
   if (result.anchors.length) {
     newPage();
-    sectionHeader('Regulatory anchors in play (dated commitments, not predictions)');
+    sectionTitle('Regulatory radar', 'Dated obligations shaping this landscape');
     for (const a of result.anchors) {
-      ensure(14);
-      setColor(doc, NAVY_RGB);
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
-      const statusNote = a.status === 'proposed' ? '  [PROPOSED - not yet law]' : a.status === 'under-revision' ? '  [UNDER REVISION]' : '';
-      doc.text(fitText(doc, `${a.name} — ${a.year} · ${a.region}${statusNote}`, CW), ML, y);
+      ensure(15);
+      setFill(doc, statusColor(a.status)); doc.circle(ML + 1.4, y - 1.2, 1.15, 'F');
+      sans(10.5, 'bold'); setColor(doc, P.INK);
+      doc.text(fitText(doc, `${a.name} — ${a.year} · ${a.region}`, CW - 34), ML + 5, y);
+      mono(6.5, true); setColor(doc, statusColor(a.status));
+      doc.text(STATUS_LABEL[a.status ?? ''] ?? '', PW - MR, y, { align: 'right' });
       y += 4.6;
-      wrapped(a.effect, 9, [71, 85, 105]);
+      wrapped(a.effect, 8.8, P.MUT, CW - 5, 4, 'normal', ML + 5);
       y += 2.5;
     }
   }
 
-  // ── Segment benchmarks (off-road / luxury lens) ────────────────────────────
+  // ═══ BENCHMARKS ════════════════════════════════════════════════════════════
   if (result.benchmarks?.length) {
     newPage();
-    sectionHeader(`Segment benchmarks — ${segmentLabel || 'the vehicles setting the technology bar'}`);
-    wrapped('Curated competitor evidence: signature technologies in production today, and the announced move to watch. This is benchmark data, not prediction.', 8.5, GRAY_RGB);
+    sectionTitle('Segment benchmarks', segmentLabel || 'The vehicles setting the technology bar');
+    wrapped('Curated competitor evidence: signature production technology and the announced move to watch. Benchmark data, not prediction.', 8.5, P.MUT);
     y += 2;
     for (const b of result.benchmarks) {
       ensure(24);
-      setColor(doc, NAVY_RGB);
-      doc.setFontSize(10.5);
-      doc.setFont('helvetica', 'bold');
-      doc.text(fitText(doc, `${b.vehicle} — ${b.brand} (${b.year}, ${b.powertrains.join('/')})`, CW), ML, y);
+      const cardTop = y - 4;
+      sans(10.5, 'bold'); setColor(doc, P.INK);
+      doc.text(fitText(doc, `${b.vehicle} — ${b.brand} (${b.year}, ${b.powertrains.join('/')})`, CW - 6), ML + 3, y);
       y += 4.8;
-      for (const s of b.signature) wrapped(`•  ${s}`, 8.5, [51, 65, 85]);
-      wrapped(`Watch: ${b.watch}`, 8.5, TEAL_RGB);
-      y += 2.5;
+      for (const s of b.signature) wrapped(`•  ${s}`, 8.5, P.BODY, CW - 6, 4, 'normal', ML + 3);
+      wrapped(`WATCH: ${b.watch}`, 8, P.TEAL, CW - 6, 4, 'italic', ML + 3);
+      brackets(ML, cardTop, CW, y - cardTop + 1.5, P.RULE, 2.6, 0.35);
+      y += 4.5;
     }
   }
 
-  // ── Analyst briefing ───────────────────────────────────────────────────────
+  // ═══ BRIEFING / PANEL ══════════════════════════════════════════════════════
   if (result.narrative?.briefing) {
-    ensure(40);
-    sectionHeader('Analyst briefing (AI-written, grounded in the technology cards)');
-    wrapped(result.narrative.briefing, 9.5, [51, 65, 85]);
-    y += 3;
+    ensure(42);
+    sectionTitle('Analyst briefing', 'AI-written, grounded in the cards below');
+    const bTop = y - 4;
+    wrapped(result.narrative.briefing, 9.3, P.BODY, CW - 6, 4.4, 'normal', ML + 3);
+    brackets(ML, bTop, CW, y - bTop + 1.5, P.TEAL, 2.8, 0.4);
+    y += 5;
   }
-
-  // ── Panel summary ──────────────────────────────────────────────────────────
   if (panel?.panel.some(p => p.critiques.length)) {
-    ensure(30);
-    sectionHeader('Expert panel (AI critique on soft axes — positions unchanged)');
+    ensure(26);
+    sectionTitle('Expert panel', 'AI critique on soft axes — positions unchanged');
     for (const p of panel.panel) {
       ensure(6);
-      setColor(doc, [88, 28, 135]);
-      doc.setFontSize(9.5);
-      doc.setFont('helvetica', 'bold');
-      doc.text(fitText(doc, `${p.persona} — ${p.focus} (${p.critiques.length} views)`, CW), ML, y);
-      y += 4.8;
+      mono(8, true); setColor(doc, P.VIOLET);
+      doc.text(fitText(doc, `${p.persona.toUpperCase()} — ${p.focus} (${p.critiques.length} views)`, CW), ML, y);
+      y += 5;
     }
-    wrapped(panel.note, 8, GRAY_RGB);
-    y += 3;
+    wrapped(panel.note, 8, P.MUT);
+    y += 2;
   }
 
-  // ── Horizon lanes ──────────────────────────────────────────────────────────
+  // ═══ HORIZON LANES ═════════════════════════════════════════════════════════
   const signalFor = (id: string) => result.narrative?.signals.find(s => s.techId === id)?.watch;
   const critiquesFor = (id: string) =>
     panel?.panel.flatMap(p => p.critiques.filter(c => c.techId === id).map(c => ({ persona: p.persona, ...c }))) ?? [];
@@ -258,97 +310,92 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
   for (const key of ['H1', 'H2', 'H3'] as const) {
     const cards = result.horizons[key];
     newPage();
-    sectionHeader(`${HORIZON_TITLE[key]} (${result.windows[key].label} · ${cards.length} technologies)`);
-    if (!cards.length) {
-      wrapped('Nothing in this window for this selection.', 9, GRAY_RGB);
-      continue;
-    }
+    sectionTitle(`${result.windows[key].label} · ${cards.length} technologies`, HORIZON_TITLE[key]);
+    if (!cards.length) { wrapped('Nothing in this window for this selection.', 9, P.MUT); continue; }
     for (const c of cards) {
-      ensure(46);
+      ensure(50);
+      const cardTop = y - 4;
+      const cc = confColor(c.confidence);
 
-      // Title + confidence chip
-      setColor(doc, NAVY_RGB);
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
-      doc.text(fitText(doc, c.name, CW - 34), ML, y);
-      const conf = CONF_RGB[c.confidence] ?? GRAY_RGB;
-      setColor(doc, conf);
-      doc.setFontSize(8);
-      doc.text(c.confidence.toUpperCase(), PW - MR, y, { align: 'right' });
+      sans(11.5, 'bold'); setColor(doc, P.INK);
+      doc.text(fitText(doc, c.name, CW - 40), ML + 3, y);
+      mono(7, true); setColor(doc, cc);
+      doc.text(c.confidence.toUpperCase(), PW - MR - 3, y, { align: 'right' });
       y += 4.8;
 
-      // Badge line
-      setColor(doc, [71, 85, 105]);
-      doc.setFontSize(8.5);
-      doc.setFont('helvetica', 'normal');
-      doc.text(fitText(doc, `TRL ${c.trl}  ·  ${c.phase}  ·  adoption ${c.adoptionPct}%  ·  momentum ${c.momentum}/100  ·  cost trend ${c.costTrend}  ·  ${c.powertrains.join('/')}`, CW), ML, y);
-      y += 4.6;
+      mono(7); setColor(doc, P.MUT);
+      doc.text(fitText(doc, `TRL ${c.trl}  ·  ${c.phase.toUpperCase()}  ·  ADOPTION ${c.adoptionPct}%  ·  ${c.horizon}${c.regPulled ? ' <-REG' : ''}  ·  ${c.costTrend.toUpperCase()}  ·  ${c.powertrains.join('/')}`, CW - 40), ML + 3, y);
+      y += 4;
+      // momentum bar
+      setFill(doc, P.PANEL); doc.rect(ML + 3, y - 1.4, 60, 1.7, 'F');
+      setFill(doc, P.GOLD); doc.rect(ML + 3, y - 1.4, 60 * (c.momentum / 100), 1.7, 'F');
+      mono(6.5); setColor(doc, P.DIM);
+      doc.text(`MOMENTUM ${c.momentum}/100`, ML + 66, y);
+      y += 4.4;
 
-      wrapped(c.note, 9, [51, 65, 85]);
-      wrapped(`Replaces: ${c.replaces}`, 8.5, GRAY_RGB);
-      if (c.firstProduction) wrapped(`Production evidence: ${c.firstProduction}`, 8.5, [22, 101, 82]);
-      if (c.regAnchorDetail) wrapped(`Regulation: ${c.regAnchorDetail.name} (${c.regAnchorDetail.year}, ${c.regAnchorDetail.region})${c.regPulled ? ' — pulls this technology forward' : ''}`, 8.5, [161, 98, 7]);
-      wrapped(`Players: ${c.players.join(', ')}`, 8.5, GRAY_RGB);
+      wrapped(c.note, 9, P.BODY, CW - 6, 4.1, 'normal', ML + 3);
+      wrapped(`Replaces: ${c.replaces}`, 8.3, P.MUT, CW - 6, 3.9, 'normal', ML + 3);
+      if (c.firstProduction) wrapped(`Production evidence: ${c.firstProduction}`, 8.3, P.EVID, CW - 6, 3.9, 'normal', ML + 3);
+      if (c.regAnchorDetail) wrapped(`Regulation: ${c.regAnchorDetail.name} (${c.regAnchorDetail.year}, ${c.regAnchorDetail.region})${c.regPulled ? ' — pulls this technology forward' : ''}`, 8.3, P.REG, CW - 6, 3.9, 'normal', ML + 3);
+      wrapped(`Players: ${c.players.join(', ')}`, 8.3, P.MUT, CW - 6, 3.9, 'normal', ML + 3);
 
-      // Projection mini-table (modelled)
-      ensure(18);
+      // projection mini-table
+      ensure(19);
       const cols = [46, 22, 22, 22, 22];
-      const px = cols.map((_, i) => ML + cols.slice(0, i).reduce((a, b) => a + b, 0));
-      setFill(doc, [241, 245, 249]);
-      doc.roundedRect(ML, y - 3, cols.reduce((a, b) => a + b, 0) + 4, 14.5, 1, 1, 'F');
-      doc.setFontSize(7.5);
-      setColor(doc, GRAY_RGB);
-      doc.setFont('helvetica', 'bold');
-      ['Modelled projection', 'Now', '+3y', '+5y', '+8y'].forEach((h, i) => doc.text(h, px[i] + 2, y + 0.5));
-      doc.setFont('helvetica', 'normal');
-      setColor(doc, [51, 65, 85]);
-      const adoption = ['Adoption %', String(c.projection.adoption.now), String(c.projection.adoption.in3), String(c.projection.adoption.in5), String(c.projection.adoption.in8)];
-      const cost = ['Cost index', c.projection.costIndex.now.toFixed(2), c.projection.costIndex.in3.toFixed(2), c.projection.costIndex.in5.toFixed(2), c.projection.costIndex.in8.toFixed(2)];
+      const px = cols.map((_, i) => ML + 3 + cols.slice(0, i).reduce((a2, b2) => a2 + b2, 0));
+      setFill(doc, P.PANEL);
+      doc.roundedRect(ML + 3, y - 3, cols.reduce((a2, b2) => a2 + b2, 0) + 4, 14.5, 1, 1, 'F');
+      mono(6.8, true); setColor(doc, P.DIM);
+      ['MODELLED PROJECTION', 'NOW', '+3Y', '+5Y', '+8Y'].forEach((h, i) => doc.text(h, px[i] + 2, y + 0.5));
+      mono(7.2); setColor(doc, P.BODY);
+      const adoption = ['ADOPTION %', String(c.projection.adoption.now), String(c.projection.adoption.in3), String(c.projection.adoption.in5), String(c.projection.adoption.in8)];
+      const cost = ['COST INDEX', c.projection.costIndex.now.toFixed(2), c.projection.costIndex.in3.toFixed(2), c.projection.costIndex.in5.toFixed(2), c.projection.costIndex.in8.toFixed(2)];
       adoption.forEach((v, i) => doc.text(v, px[i] + 2, y + 4.6));
       cost.forEach((v, i) => doc.text(v, px[i] + 2, y + 8.7));
-      y += 14.5;
+      y += 15;
 
       if (c.projection.crossings) {
         const lbl = (v: number | 'passed' | null, band?: [number | null, number | null] | null) => {
-          if (v === 'passed') return 'already passed';
-          if (v === null) return 'beyond 15y';
-          return `~${v}${band ? ` (${band[0] ?? '…'}-${band[1] ?? '…'})` : ''}`;
+          if (v === 'passed') return 'ALREADY PASSED';
+          if (v === null) return 'NOT IN 15Y';
+          return `~${v}${band ? ` ('${String(band[0] ?? '..').slice(2)}-'${String(band[1] ?? '..').slice(2)})` : ''}`;
         };
-        wrapped(`Modelled to cross 25% ${lbl(c.projection.crossings.cross25, c.projection.crossings.band25)} · 50% ${lbl(c.projection.crossings.cross50, c.projection.crossings.band50)} of the applicable segment`, 8.5, TEAL_RGB);
+        mono(7.4, true); setColor(doc, P.TEAL);
+        ensure(6);
+        doc.text(fitText(doc, `CROSSES 25% ${lbl(c.projection.crossings.cross25, c.projection.crossings.band25)}   ·   50% ${lbl(c.projection.crossings.cross50, c.projection.crossings.band50)}`, CW - 6), ML + 3, y);
+        y += 4.6;
       }
 
       const sig = signalFor(c.id);
-      if (sig) wrapped(`Signal to watch: ${sig}`, 8.5, TEAL_RGB);
+      if (sig) {
+        ensure(5.5);
+        setFill(doc, P.TEAL); doc.circle(ML + 4.2, y - 1.1, 0.9, 'F');
+        wrapped(`Watch: ${sig}`, 8.3, P.TEAL, CW - 10, 3.9, 'normal', ML + 7);
+      }
       for (const cr of critiquesFor(c.id)) {
-        wrapped(`${cr.persona} [${cr.stance}]: ${cr.note}`, 8.5, STANCE_RGB[cr.stance] ?? GRAY_RGB);
+        wrapped(`${cr.persona} [${cr.stance.toUpperCase()}]: ${cr.note}`, 8.3, STANCE_RGB[cr.stance] ?? P.MUT, CW - 6, 3.9, 'normal', ML + 3);
       }
 
-      y += 4;
-      setFill(doc, [226, 232, 240]);
-      doc.rect(ML, y - 2, CW, 0.3, 'F');
-      y += 3;
+      brackets(ML, cardTop, CW, y - cardTop + 1.5, cc, 3, 0.42);
+      y += 6.5;
     }
   }
 
-  // ── Methodology & honesty ──────────────────────────────────────────────────
+  // ═══ METHODOLOGY ═══════════════════════════════════════════════════════════
   newPage();
-  sectionHeader('Methodology & honesty');
+  sectionTitle('Provenance', 'Methodology & honesty');
   const method = [
-    'Register: curated technology entries with automotive TRL (APC 1-9), current adoption share of the applicable segment, named production programmes, drivers, cost-trend direction, leading players and dated regulatory anchors. Integrity is test-enforced: adoption claims of 15%+ require production or regulatory evidence; TRL <= 5 entries cannot claim meaningful adoption.',
-    'Horizon lanes: base position from maturity (TRL/adoption); a dated regulation can pull a technology at most one horizon earlier, and never earlier than the regulation’s own bite-year window.',
-    'Adoption projection: Bass diffusion (p=0.03, q=0.38, 90% segment ceiling) seeded from the curated current share. Cost index: Wright’s law with learning rates mapped from the curated cost-trend direction. Both are models, not measurements.',
-    'Momentum (0-100): maturity + adoption + cost trajectory + breadth of drivers + regulatory pull + production evidence. Deterministic.',
-    'AI layers (clearly marked): the analyst briefing and signals-to-watch are grounded only in the deterministic cards; the expert panel critiques soft axes (timing, supplier readiness, regulatory risk) without changing any position; deep research findings must cite retrieved sources, and uncited claims are dropped automatically.',
+    'Register: curated technology entries with automotive TRL (APC 1-9), current adoption share, named production programmes, drivers, cost-trend direction, players and dated regulatory anchors. Integrity is CI-enforced — adoption claims of 15%+ require evidence; TRL <= 5 entries cannot claim meaningful adoption.',
+    'Horizon lanes: base position from maturity; only in-force/adopted law can pull a technology one horizon earlier, never past the regulation’s own bite-year window.',
+    'Adoption: Bass diffusion (p=0.03, q=0.38) with per-technology segment ceilings. Cost index: Wright’s law with learning rates mapped from cost-trend direction. Crossing years carry a q+/-25% uncertainty band. All models, not measurements.',
+    'Momentum (0-100): maturity + adoption + cost trajectory + drivers + regulatory pull + production evidence. Deterministic.',
+    'AI layers (clearly marked): briefing and signals grounded only in the computed cards; the expert panel critiques timing without changing any position; research findings must cite retrieved sources or are dropped in code.',
     'This report supports sourcing and platform conversations. Validate against detailed programme studies before commercial commitments.',
   ];
-  for (const m of method) {
-    wrapped(`•  ${m}`, 9, [51, 65, 85]);
-    y += 2;
-  }
-  if (result.note) {
-    y += 2;
-    wrapped(result.note, 8, GRAY_RGB);
-  }
+  for (const m of method) { wrapped(`•  ${m}`, 9, P.BODY); y += 2; }
+  if (result.note) { y += 2; wrapped(result.note, 8, P.MUT); }
+  ensure(30);
+  horizonArt(Math.max(y + 12, 240));
 
-  doc.save(safeFilename(`BrainSpark_Horizon_${subject}_${today}.pdf`));
+  doc.save(safeFilename(`BrainSpark_Horizon_${subject}_${today}_${theme}.pdf`));
 }

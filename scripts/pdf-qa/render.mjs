@@ -14,6 +14,7 @@ exportRfqPdf(RESULT, 'Powertrain — BEV / MHEV', 'Electric Drive Unit (EDU)', R
 
 const { exportForesightPdf } = await import('./foresight-report.bundle.mjs');
 const { FORESIGHT_RESULT, FORESIGHT_PANEL } = await import('./fixture-foresight.mjs');
-exportForesightPdf(FORESIGHT_RESULT, FORESIGHT_PANEL);
+exportForesightPdf(FORESIGHT_RESULT, FORESIGHT_PANEL, 'light');
+exportForesightPdf(FORESIGHT_RESULT, FORESIGHT_PANEL, 'dark');
 
 console.log('rendered:', fs.readdirSync('.').filter(f => f.endsWith('.pdf')));

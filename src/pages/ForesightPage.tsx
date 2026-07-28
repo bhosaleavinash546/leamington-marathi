@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown, Mountain, Gem, Cpu, Layers } from 'lucide-react';
+import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown, Mountain, Gem, Cpu, Layers, Sun, Moon } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { exportForesightPdf } from '../services/foresight-report';
@@ -445,6 +445,7 @@ export default function ForesightPage() {
   const [ledgerOpen, setLedgerOpen] = useState(false);
   const [revisit, setRevisit] = useState<LedgerRevisit | null>(null);
   const [saveNote, setSaveNote] = useState('');
+  const [exportOpen, setExportOpen] = useState(false);
   const [stage, setStage] = useState(0);
 
   useEffect(() => {
@@ -836,10 +837,37 @@ export default function ForesightPage() {
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-teal-500/30 bg-teal-500/10 text-teal-300 hover:bg-teal-500/20 text-xs transition-colors">
                 <BookMarked size={13} /> Save to Prediction Ledger
               </button>
-              <button onClick={() => result && exportForesightPdf(result, panel)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 text-xs transition-colors">
-                <FileDown size={13} /> Export report (PDF)
-              </button>
+              <div className="relative">
+                <button onClick={() => setExportOpen(o => !o)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 text-xs transition-colors">
+                  <FileDown size={13} /> Export report (PDF)
+                </button>
+                <AnimatePresence>
+                  {exportOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 6, scale: 0.96 }}
+                      transition={{ duration: 0.16 }}
+                      className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 w-56 rounded-xl border border-white/15 bg-[#0b1526]/95 backdrop-blur-md shadow-2xl shadow-black/50 p-2">
+                      <p className="px-2 pt-1 pb-2 text-[10px] uppercase tracking-[0.18em] text-slate-400">Report theme</p>
+                      <button
+                        onClick={() => { setExportOpen(false); if (result) exportForesightPdf(result, panel, 'light'); }}
+                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left text-xs text-slate-200 hover:bg-gold-500/10 hover:text-gold-300 transition-colors">
+                        <Sun size={14} className="text-gold-300 shrink-0" />
+                        <span className="flex-1">Light <span className="text-slate-500">— Horizon on white</span></span>
+                        <span className="text-[9px] uppercase tracking-wider text-gold-300/80 border border-gold-500/30 rounded px-1 py-0.5">default</span>
+                      </button>
+                      <button
+                        onClick={() => { setExportOpen(false); if (result) exportForesightPdf(result, panel, 'dark'); }}
+                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left text-xs text-slate-200 hover:bg-teal-500/10 hover:text-teal-300 transition-colors">
+                        <Moon size={14} className="text-teal-300 shrink-0" />
+                        <span className="flex-1">Dark <span className="text-slate-500">— deep-space observatory</span></span>
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
             {panelError && <p className="text-center text-red-400 text-xs">{panelError}</p>}
             {saveNote && <p className="text-center text-teal-300 text-xs">{saveNote}</p>}
