@@ -315,3 +315,91 @@ describe('rules of origin — cumulation and processing', () => {
     expect(r.dutyRatePctApplied).toBe(0);
   });
 });
+
+// ─── Incoterm cost logic ─────────────────────────────────────────────────────
+
+describe('incoterm affects cost (regression: it used to be decorative)', () => {
+  const base = {
+    exWorksCost: 100, commodity: 'road_wheel', originRegion: 'CN',
+    partWeightKg: 9, annualVolume: 50000, asOfDate: '2026-07-29',
+  } as const;
+
+  it('EXW costs MORE than FOB — buyer bears origin inland haulage', () => {
+    const exw = computeLandedCost({ ...base, incoterm: 'EXW' });
+    const fob = computeLandedCost({ ...base, incoterm: 'FOB' });
+    expect(exw.totalLandedCost).toBeGreaterThan(fob.totalLandedCost);
+    expect(exw.adders.some(a => a.key === 'origin-inland')).toBe(true);
+    expect(fob.adders.some(a => a.key === 'origin-inland')).toBe(false);
+  });
+
+  it('origin inland under EXW is DUTIABLE — it raises the customs value', () => {
+    const exw = computeLandedCost({ ...base, incoterm: 'EXW' });
+    const fob = computeLandedCost({ ...base, incoterm: 'FOB' });
+    expect(exw.customsValueCif).toBeGreaterThan(fob.customsValueCif);
+    // and therefore more duty
+    const dExw = exw.adders.find(a => a.key === 'duty')!.amountGbp;
+    const dFob = fob.adders.find(a => a.key === 'duty')!.amountGbp;
+    expect(dExw).toBeGreaterThan(dFob);
+  });
+
+  it('CIF does NOT add a second freight line — that would double-count', () => {
+    const cif = computeLandedCost({ ...base, incoterm: 'CIF' });
+    expect(cif.adders.find(a => a.key === 'freight')!.amountGbp).toBe(0);
+    expect(cif.warnings.join(' ')).toMatch(/already inside the supplier's price/i);
+  });
+
+  it('CIF total is lower than FOB because carriage sits in the seller price', () => {
+    const cif = computeLandedCost({ ...base, incoterm: 'CIF' });
+    const fob = computeLandedCost({ ...base, incoterm: 'FOB' });
+    expect(cif.totalLandedCost).toBeLessThan(fob.totalLandedCost);
+  });
+
+  it('an explicit freight override still wins under CIF', () => {
+    const cif = computeLandedCost({ ...base, incoterm: 'CIF', freightPerPartGbp: 7 });
+    expect(cif.adders.find(a => a.key === 'freight')!.amountGbp).toBe(7);
+  });
+
+  it('all five incoterms now produce distinct-or-justified totals', () => {
+    const totals = (['EXW', 'FOB', 'CIF', 'DAP', 'DDP'] as const)
+      .map(t => computeLandedCost({ ...base, incoterm: t }).totalLandedCost);
+    // EXW > FOB > CIF (=DAP=DDP on cost, they differ in who pays duty)
+    expect(totals[0]).toBeGreaterThan(totals[1]);
+    expect(totals[1]).toBeGreaterThan(totals[2]);
+    expect(new Set(totals).size).toBeGreaterThan(1);   // no longer all identical
+  });
+});
+
+// ─── Duty relief regimes ─────────────────────────────────────────────────────
+
+describe('duty relief opportunities', () => {
+  it('surfaces IP / OPR / RGR when duty is actually payable', () => {
+    const r = computeLandedCost({
+      exWorksCost: 100, commodity: 'road_wheel', originRegion: 'CN',
+      partWeightKg: 9, annualVolume: 50000, asOfDate: '2026-07-29',
+    });
+    const codes = r.reliefOpportunities.map(x => x.code);
+    expect(codes).toEqual(expect.arrayContaining(['IP', 'OPR', 'RGR', 'CW']));
+    for (const rel of r.reliefOpportunities) {
+      expect(rel.verifyUrl).toMatch(/^https:\/\/www\.gov\.uk\//);
+      expect(rel.benefit.length).toBeGreaterThan(20);
+    }
+  });
+
+  it('offers none for a domestic part — there is no duty to relieve', () => {
+    const r = computeLandedCost({
+      exWorksCost: 100, commodity: 'road_wheel', originRegion: 'UK',
+      partWeightKg: 9, annualVolume: 50000,
+    });
+    expect(r.reliefOpportunities).toHaveLength(0);
+  });
+
+  it('offers none when preference already gives 0% and no remedy applies', () => {
+    const r = computeLandedCost({
+      exWorksCost: 100, commodity: 'cast_and_machine', originRegion: 'DE',
+      partWeightKg: 2.8, annualVolume: 60000,
+      nonOriginatingMaterialCost: 5,
+    });
+    expect(r.dutyRatePctApplied).toBe(0);
+    expect(r.reliefOpportunities).toHaveLength(0);
+  });
+});

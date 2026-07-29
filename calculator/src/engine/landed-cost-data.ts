@@ -522,3 +522,113 @@ export function freeAllocationFactor(year: number): number {
   if (year < 2027) return 1;              // no charge before the scheme starts
   return CBAM_FREE_ALLOCATION_FACTOR[year] ?? 0;
 }
+
+/* ─── Incoterm cost responsibilities ──────────────────────────────────────── */
+
+export interface IncotermProfile {
+  /** Buyer bears origin-country inland haulage to the port of export. */
+  buyerBearsOriginInland: boolean;
+  /** Seller's price already includes international freight to the destination. */
+  sellerIncludesMainFreight: boolean;
+  /** Seller's price already includes insurance. */
+  sellerIncludesInsurance: boolean;
+  /** Seller clears import and pays duty (DDP). */
+  sellerPaysImportDuty: boolean;
+  note: string;
+}
+
+/**
+ * Who pays for what, by Incoterm. This drives real money:
+ *
+ *  - Under EXW the buyer collects at the seller's gate, so origin-country
+ *    inland haulage to the port is the BUYER's cost — and because it is
+ *    incurred before the goods leave the exporting country, it forms part of
+ *    the customs value and is therefore DUTIABLE.
+ *  - Under CIF/CFR/DAP the seller has already paid the main freight, so it is
+ *    inside their price. Adding a freight line on top DOUBLE-COUNTS it.
+ *  - Under DDP the seller also pays duty and clearance.
+ */
+export const INCOTERM_PROFILES: Record<string, IncotermProfile> = {
+  EXW: {
+    buyerBearsOriginInland: true, sellerIncludesMainFreight: false,
+    sellerIncludesInsurance: false, sellerPaysImportDuty: false,
+    note: 'Ex Works — buyer collects at the seller\'s premises. Origin inland haulage is a buyer cost AND is dutiable.',
+  },
+  FOB: {
+    buyerBearsOriginInland: false, sellerIncludesMainFreight: false,
+    sellerIncludesInsurance: false, sellerPaysImportDuty: false,
+    note: 'Free On Board — seller delivers to the vessel, so origin inland is already inside their price.',
+  },
+  CIF: {
+    buyerBearsOriginInland: false, sellerIncludesMainFreight: true,
+    sellerIncludesInsurance: true, sellerPaysImportDuty: false,
+    note: 'Cost, Insurance & Freight — seller pays main freight and insurance; both are already in the quoted price.',
+  },
+  DAP: {
+    buyerBearsOriginInland: false, sellerIncludesMainFreight: true,
+    sellerIncludesInsurance: true, sellerPaysImportDuty: false,
+    note: 'Delivered At Place — seller pays carriage to destination; buyer still clears and pays duty.',
+  },
+  DDP: {
+    buyerBearsOriginInland: false, sellerIncludesMainFreight: true,
+    sellerIncludesInsurance: true, sellerPaysImportDuty: true,
+    note: 'Delivered Duty Paid — seller bears freight, clearance AND duty. Compare a DDP quote against TOTAL LANDED, never against ex-works.',
+  },
+};
+
+/** Indicative origin-country inland haulage to port, £/kg. */
+export const ORIGIN_INLAND_GBP_PER_KG: Record<string, number> = {
+  CN: 0.045, VN: 0.045, IN: 0.050, TH: 0.045, MY: 0.045, ID: 0.050,
+  MX: 0.055, BR: 0.060, US: 0.050, JP: 0.040, KR: 0.040,
+  DE: 0.030, PL: 0.030, CZ: 0.030, SK: 0.030, RO: 0.035, HU: 0.030,
+  ES: 0.035, IT: 0.035, FR: 0.030, TR: 0.040, PT: 0.035, MA: 0.040,
+};
+
+/* ─── Duty relief regimes ─────────────────────────────────────────────────── */
+
+export interface DutyReliefRegime {
+  code: string;
+  name: string;
+  whenApplicable: string;
+  benefit: string;
+  verifyUrl: string;
+}
+
+/**
+ * Legitimate reliefs that REDUCE landed cost. Their absence from a model
+ * causes systematic OVERSTATEMENT — the opposite error to a missed duty, and
+ * one that quietly makes offshore sourcing look worse than it is.
+ *
+ * These are surfaced as opportunities to check, never auto-applied: each
+ * requires an authorisation from HMRC and specific record-keeping.
+ */
+export const DUTY_RELIEF_REGIMES: DutyReliefRegime[] = [
+  {
+    code: 'IP',
+    name: 'Inward Processing',
+    whenApplicable: 'Goods imported to be processed and then RE-EXPORTED.',
+    benefit: 'Suspends import duty (and import VAT) on the imported input. For a UK plant that machines imported castings and ships the finished part abroad, this can remove the duty entirely.',
+    verifyUrl: 'https://www.gov.uk/guidance/apply-to-delay-or-pay-less-duty-on-goods-you-import-to-process-or-repair',
+  },
+  {
+    code: 'OPR',
+    name: 'Outward Processing Relief',
+    whenApplicable: 'UK goods sent abroad for processing and returned.',
+    benefit: 'Duty is charged only on the VALUE ADDED overseas, not on the full returned value. Materially relevant where UK material is sent out for coating, machining or heat treatment.',
+    verifyUrl: 'https://www.gov.uk/guidance/apply-to-pay-less-duty-on-goods-you-export-to-process-or-repair',
+  },
+  {
+    code: 'RGR',
+    name: 'Returned Goods Relief',
+    whenApplicable: 'Goods previously exported from the UK and returned unaltered, normally within 3 years.',
+    benefit: 'Full duty relief on return. Applies to warranty returns, rejected shipments and tooling movements.',
+    verifyUrl: 'https://www.gov.uk/guidance/pay-less-import-duty-and-vat-when-re-importing-goods-to-the-uk',
+  },
+  {
+    code: 'CW',
+    name: 'Customs Warehousing',
+    whenApplicable: 'Goods stored before a final destination is decided.',
+    benefit: 'Defers duty until the goods enter free circulation; no duty at all if they are re-exported. A cash-flow and optionality benefit rather than a cost reduction.',
+    verifyUrl: 'https://www.gov.uk/guidance/apply-to-operate-a-customs-warehouse',
+  },
+];

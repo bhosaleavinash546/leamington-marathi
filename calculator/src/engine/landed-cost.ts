@@ -31,6 +31,7 @@ import {
   CBAM_SCHEMES, HIGH_REMEDY_ORIGINS, HS_CANDIDATES, ORIGIN_CARBON_PRICE_GBP_PER_TONNE,
   ORIGIN_PREFERENCES, UK_IMPORT_VAT_PCT, UK_STEEL_MEASURE, cbamSector,
   findTradeRemedies, freeAllocationFactor,
+  INCOTERM_PROFILES, ORIGIN_INLAND_GBP_PER_KG, DUTY_RELIEF_REGIMES,
 } from './landed-cost-data.js';
 import type { CbamScheme, TariffLine, VerificationStatus } from './landed-cost-data.js';
 import { assessOrigin } from './rules-of-origin.js';
@@ -195,6 +196,16 @@ export interface LandedCostResult {
     statement: string;
     declaredValueWouldBe: string;
   };
+
+  /**
+   * Legitimate duty reliefs worth investigating for this flow. Never applied
+   * automatically — each needs an HMRC authorisation — but their absence
+   * from a model causes systematic OVERSTATEMENT of landed cost.
+   */
+  reliefOpportunities: Array<{
+    code: string; name: string; whenApplicable: string;
+    benefit: string; verifyUrl: string;
+  }>;
 }
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
@@ -308,6 +319,7 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
       provenance: ['Domestic route — landed cost differs from ex-works only by inland haulage.'],
       needsVerification: false,
       valuationBasis: VALUATION_BASIS,
+      reliefOpportunities: [],
     };
   }
 
@@ -333,16 +345,53 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
       `volumetric weight and the real freight can be several times this figure — supply volumetricWeightKg.`,
     );
   }
-  const freight = inputs.freightPerPartGbp ?? r2(Math.max(0.03, chargeableKg * freightPerKg(originRegion)));
-  adders.push({
-    key: 'freight', label: `International freight (${originRegion} → UK)`,
-    amountGbp: freight,
-    basis: inputs.freightPerPartGbp !== undefined
-      ? 'user-supplied'
-      : `${chargeableKg.toFixed(2)} kg chargeable × £${freightPerKg(originRegion).toFixed(2)}/kg sea-freight`,
-    status: 'estimate',
-    source: 'Indicative lane rates — replace with contracted freight for a quotable figure.',
-  });
+  // Incoterm decides WHO pays what — and therefore what we may add.
+  const profile = INCOTERM_PROFILES[incoterm] ?? INCOTERM_PROFILES.FOB;
+  provenance.push(`Incoterm ${incoterm}: ${profile.note}`);
+
+  // EXW — buyer collects at the seller's gate, so origin-country inland
+  // haulage to the port is a BUYER cost and is part of the customs value.
+  if (profile.buyerBearsOriginInland) {
+    const originInland = r2(Math.max(0.02, chargeableKg * (ORIGIN_INLAND_GBP_PER_KG[originRegion] ?? 0.045)));
+    adders.push({
+      key: 'origin-inland',
+      label: `Origin inland haulage to port (${originRegion}) — EXW`,
+      amountGbp: originInland,
+      basis: `${chargeableKg.toFixed(2)} kg × £${(ORIGIN_INLAND_GBP_PER_KG[originRegion] ?? 0.045).toFixed(3)}/kg`,
+      status: 'estimate',
+      source: 'Under EXW the buyer bears this, and because it is incurred before export it is DUTIABLE.',
+    });
+  }
+
+  // CIF / DAP / DDP — the seller already paid the main freight, so adding our
+  // own freight line would double-count it.
+  let freight: number;
+  if (profile.sellerIncludesMainFreight && inputs.freightPerPartGbp === undefined) {
+    freight = 0;
+    adders.push({
+      key: 'freight', label: `International freight — already in the ${incoterm} price`,
+      amountGbp: 0,
+      basis: `${incoterm}: seller pays main carriage, so it is inside the quoted ex-works figure`,
+      status: 'estimate',
+      source: profile.note,
+    });
+    warnings.push(
+      `Incoterm ${incoterm}: freight is ALREADY inside the supplier's price, so no separate freight is added. ` +
+      `Ensure the ex-works figure you supplied is the ${incoterm} price, not a true ex-works cost — mixing the two ` +
+      `either double-counts or omits the carriage.`,
+    );
+  } else {
+    freight = inputs.freightPerPartGbp ?? r2(Math.max(0.03, chargeableKg * freightPerKg(originRegion)));
+    adders.push({
+      key: 'freight', label: `International freight (${originRegion} → UK)`,
+      amountGbp: freight,
+      basis: inputs.freightPerPartGbp !== undefined
+        ? 'user-supplied'
+        : `${chargeableKg.toFixed(2)} kg chargeable × £${freightPerKg(originRegion).toFixed(2)}/kg sea-freight`,
+      status: 'estimate',
+      source: 'Indicative lane rates — replace with contracted freight for a quotable figure.',
+    });
+  }
 
   // ── 2. Insurance ─────────────────────────────────────────────────────────
   const insurance = r2((exWorksCost + freight) * insuranceRate);
@@ -378,10 +427,12 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
   }
 
   // ── 4. Customs value — the base duty is charged on ───────────────────────
-  const customsValueCif = r2(exWorksCost + freight + insurance + assistsPerPart);
+  const originInlandInCustomsValue = adders.find(x => x.key === 'origin-inland')?.amountGbp ?? 0;
+  const customsValueCif = r2(exWorksCost + freight + insurance + assistsPerPart + originInlandInCustomsValue);
   provenance.push(
     `Customs value £${customsValueCif.toFixed(2)} = ex-works £${exWorksCost.toFixed(2)} ` +
     `+ freight £${freight.toFixed(2)} + insurance £${insurance.toFixed(2)}` +
+    (originInlandInCustomsValue > 0 ? ` + origin inland £${originInlandInCustomsValue.toFixed(2)}` : '') +
     (assistsPerPart > 0 ? ` + assists £${assistsPerPart.toFixed(2)}` : '') +
     `. Duty is charged on this value, not on ex-works.`,
   );
@@ -636,6 +687,7 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
     origin: originAssessment,
     warnings, provenance, needsVerification,
     valuationBasis: VALUATION_BASIS,
+    reliefOpportunities: dutyPct > 0 || remedies.length > 0 ? DUTY_RELIEF_REGIMES : [],
   };
 }
 
