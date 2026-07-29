@@ -118,7 +118,7 @@ describe('UK-India CETA', () => {
   it('India now carries a preference in the origin table (was MFN-only)', () => {
     const india = ORIGIN_PREFERENCES.find(p => p.region === 'IN')!;
     expect(india.preferentialDutyPct).toBe(0);
-    expect(india.note).toMatch(/ENTERED INTO FORCE 15 July 2026/);
+    expect(india.note).toMatch(/IN FORCE 15 July 2026/);
   });
 });
 
@@ -206,5 +206,60 @@ describe('origin rule data', () => {
       list.push({ from: r.from, until: r.until });
       seen.set(k, list);
     }
+  });
+});
+
+// ─── UK-India CETA — deep detail (India → UK direction) ──────────────────────
+
+describe('UK-India CETA — India to UK imports', () => {
+  it('uses QVC 40% build-down on ex-works (MaxNOM 60%), not the 35% build-up figure', () => {
+    const rule = findOriginRule('UK-India CETA', 'part', '2026-07-29')!;
+    expect(rule.maxNonOriginatingPct).toBe(60);
+    expect(rule.minLocalContentPct).toBe(40);
+    expect(rule.description).toMatch(/build-down/i);
+  });
+
+  it('carries the build-up and FOB alternatives, and the CTC route', () => {
+    const rule = findOriginRule('UK-India CETA', 'part', '2026-07-29')!;
+    const routes = rule.alternativeRoutes!;
+    expect(routes.some(r => /build-up/i.test(r.label) && r.kind === 'QVC')).toBe(true);
+    expect(routes.some(r => /FOB/i.test(r.label) && r.maxNonOriginatingPct === 55)).toBe(true);
+    expect(routes.some(r => r.kind === 'CTC')).toBe(true);
+  });
+
+  it('a 57% non-originating part QUALIFIES on ex-works but would FAIL on the FOB basis', () => {
+    const a = assessOrigin({
+      agreement: 'UK-India CETA', exWorksPrice: 100, nonOriginatingMaterialCost: 57,
+      mfnDutyPct: 4.5, asOfDate: '2026-07-29',
+    });
+    expect(a.qualifies).toBe(true);
+    const fob = a.rule!.alternativeRoutes!.find(r => r.maxNonOriginatingPct === 55)!;
+    expect(57 > fob.maxNonOriginatingPct!).toBe(true);
+  });
+
+  it('when the value test fails it surfaces CTC as a possible rescue, not a flat refusal', () => {
+    const a = assessOrigin({
+      agreement: 'UK-India CETA', exWorksPrice: 100, nonOriginatingMaterialCost: 75,
+      mfnDutyPct: 4.5, customsValueCif: 105, asOfDate: '2026-07-29',
+    });
+    expect(a.qualifies).toBe(false);
+    expect(a.warnings.join(' ')).toMatch(/alternative qualifying route/i);
+    expect(a.notes.join(' ')).toMatch(/Change of Tariff Classification/i);
+    expect(a.notes.join(' ')).toMatch(/ACTION: check the Annex\/PSR/);
+  });
+
+  it('does not offer a stricter alternative as a rescue for an already-failed test', () => {
+    const a = assessOrigin({
+      agreement: 'UK-India CETA', exWorksPrice: 100, nonOriginatingMaterialCost: 75,
+      mfnDutyPct: 4.5, asOfDate: '2026-07-29',
+    });
+    expect(a.notes.join(' ')).not.toMatch(/Build-down on FOB/);
+  });
+
+  it('auto components are recorded as duty-free from day one on the UK side', () => {
+    const india = ORIGIN_PREFERENCES.find(p => p.region === 'IN')!;
+    expect(india.note).toMatch(/AUTO COMPONENTS are a named beneficiary/);
+    expect(india.note).toMatch(/day one/);
+    expect(india.note).toMatch(/99% of tariff lines/);
   });
 });

@@ -268,7 +268,7 @@ export const ORIGIN_PREFERENCES: OriginPreference[] = [
     region: 'IN', country: 'India',
     agreement: 'UK-India CETA', preferentialDutyPct: 0,
     status: 'corroborated',
-    note: 'UK-India CETA ENTERED INTO FORCE 15 July 2026. Preference available subject to CETA rules of origin (substantial transformation / value addition) and a valid origin declaration. Staging applies to some lines — confirm the specific commodity code.',
+    note: 'UK-India CETA IN FORCE 15 July 2026. The UK eliminates tariffs on ~99% of tariff lines for Indian goods, and AUTO COMPONENTS are a named beneficiary sector — duty-free from day one (not staged on the UK side). Conditional on CETA rules of origin (QVC 40% build-down on ex-works, or an Annex 3A product-specific rule) and a valid origin declaration.',
   },
   {
     region: 'MX', country: 'Mexico',

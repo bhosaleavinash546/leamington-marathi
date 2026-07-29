@@ -27,6 +27,19 @@ import type { VerificationStatus } from './landed-cost-data.js';
 
 export type OriginProductType = 'part' | 'vehicle' | 'battery_pack' | 'battery_cell';
 
+/**
+ * Alternative qualifying route. Agreements usually let a product originate by
+ * EITHER a value test OR a tariff-classification change — so failing the value
+ * test does not necessarily mean the part fails origin.
+ */
+export interface AlternativeRoute {
+  kind: 'CTC' | 'QVC' | 'PROCESS';
+  label: string;
+  /** For QVC variants expressed against a different value basis. */
+  maxNonOriginatingPct?: number;
+  note: string;
+}
+
 export interface OriginRule {
   agreement: string;
   productType: OriginProductType;
@@ -41,6 +54,11 @@ export interface OriginRule {
   description: string;
   status: VerificationStatus;
   source: string;
+  /**
+   * Other ways the same product can qualify. When the value test fails, the
+   * engine reports these rather than declaring origin lost outright.
+   */
+  alternativeRoutes?: AlternativeRoute[];
 }
 
 /**
@@ -117,13 +135,33 @@ export const ORIGIN_RULES: OriginRule[] = [
   },
 
   // ── UK-India CETA — IN FORCE from 15 July 2026 ──
+  //
+  // CETA expresses Qualifying Value Content three ways, and the threshold
+  // DIFFERS by method. CostVision computes non-originating value against the
+  // ex-works price, which is the BUILD-DOWN (ex-works) method → QVC 40%,
+  // i.e. MaxNOM 60%. The build-up (35%) and FOB build-down (45%) variants are
+  // carried as alternatives because a part that fails one may pass another.
   {
     agreement: 'UK-India CETA', productType: 'part',
-    maxNonOriginatingPct: 65, minLocalContentPct: 35,
+    maxNonOriginatingPct: 60, minLocalContentPct: 40,
     from: '2026-07-15',
-    description: 'UK-India CETA: substantial transformation — typically change of tariff heading plus ~35% value addition.',
-    status: 'estimate',
-    source: 'CETA in force 15 July 2026; CBIC Customs Tariff (Determination of Origin of Goods) Rules notified 3 July 2026. Confirm the product-specific rule.',
+    description: 'UK-India CETA: Qualifying Value Content 40% on the build-down (ex-works) basis — i.e. non-originating material ≤ 60% of ex-works price.',
+    status: 'corroborated',
+    source: 'CETA in force 15 July 2026. Standard QVC: 35% build-up; build-down 40% (ex-works) or 45% (FOB). Product-specific rules in Annex 3A govern per line.',
+    alternativeRoutes: [
+      {
+        kind: 'QVC', label: 'Build-up method (35% QVC)',
+        note: 'Measures the value of ORIGINATING materials ≥ 35% of ex-works — a different calculation, not simply 100 minus the build-down figure. Can qualify a part that fails build-down.',
+      },
+      {
+        kind: 'QVC', label: 'Build-down on FOB (45% QVC)', maxNonOriginatingPct: 55,
+        note: 'Stricter than the ex-works basis because FOB includes inland freight to the port.',
+      },
+      {
+        kind: 'CTC', label: 'Change of Tariff Classification',
+        note: 'Where the Annex 3A product-specific rule allows CTC, a part failing the value test may STILL originate if the non-originating inputs change tariff heading/subheading through manufacture. Check the PSR for the exact commodity code.',
+      },
+    ],
   },
 
   // ── CPTPP ──
@@ -253,10 +291,27 @@ export function assessOrigin(inputs: OriginAssessmentInputs): OriginAssessment {
   );
 
   if (!qualifies) {
+    const routes = rule.alternativeRoutes ?? [];
     warnings.push(
-      `ORIGIN FAILS: ${nonOriginatingPct.toFixed(1)}% non-originating content exceeds the ${thresholdPct}% limit. ` +
-      `The ${agreement} preference is NOT available — duty of ${mfnDutyPct}% applies, costing £${costOfFailureGbp.toFixed(2)}/part.`,
+      `ORIGIN FAILS the value test: ${nonOriginatingPct.toFixed(1)}% non-originating content exceeds the ${thresholdPct}% limit. ` +
+      `On this basis the ${agreement} preference is NOT available — duty of ${mfnDutyPct}% applies, costing £${costOfFailureGbp.toFixed(2)}/part.` +
+      (routes.length
+        ? ` HOWEVER ${routes.length} alternative qualifying route(s) exist — failing the value test does not automatically mean the part fails origin.`
+        : ''),
     );
+    for (const rt of routes) {
+      // A stricter alternative can't rescue a part that already failed the
+      // looser test, so only surface routes that could actually help.
+      if (rt.maxNonOriginatingPct !== undefined && rt.maxNonOriginatingPct <= thresholdPct) continue;
+      notes.push(`Alternative route — ${rt.label} (${rt.kind}): ${rt.note}`);
+    }
+    const ctc = routes.find(r => r.kind === 'CTC');
+    if (ctc) {
+      notes.push(
+        `ACTION: check the Annex/PSR for this commodity code. If a change-of-tariff-classification rule is available, ` +
+        `the part may still qualify despite the value test — worth £${costOfFailureGbp.toFixed(2)}/part.`,
+      );
+    }
   } else if (headroomPct < 10) {
     warnings.push(
       `Origin qualifies but with only ${headroomPct.toFixed(1)} percentage points of headroom. ` +
