@@ -34,6 +34,8 @@ import {
   INCOTERM_PROFILES, ORIGIN_INLAND_GBP_PER_KG, DUTY_RELIEF_REGIMES,
 } from './landed-cost-data.js';
 import type { CbamScheme, TariffLine, VerificationStatus } from './landed-cost-data.js';
+import { resolveRate } from './tariff-snapshot.js';
+import { assessRateFreshness } from './rate-freshness.js';
 import { assessOrigin } from './rules-of-origin.js';
 import type { OriginAssessment, OriginProductType } from './rules-of-origin.js';
 
@@ -206,6 +208,16 @@ export interface LandedCostResult {
     code: string; name: string; whenApplicable: string;
     benefit: string; verifyUrl: string;
   }>;
+
+  /**
+   * Provenance and age of the duty rate actually used. `blocking: true` means
+   * the figure must not be used commercially.
+   */
+  rateProvenance: {
+    fromSnapshot: boolean;
+    fetchedAt?: string;
+    freshness?: import('./rate-freshness.js').RateFreshness;
+  };
 }
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
@@ -320,6 +332,7 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
       needsVerification: false,
       valuationBasis: VALUATION_BASIS,
       reliefOpportunities: [],
+      rateProvenance: { fromSnapshot: false },
     };
   }
 
@@ -442,6 +455,9 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
     hsCodeOverride: inputs.hsCodeOverride, nonAutomotive: inputs.nonAutomotive,
   });
   let dutyPct = 0;
+  let rateFetchedAt: string | undefined;
+  let rateFromSnapshot = false;
+  let rateFreshness: import('./rate-freshness.js').RateFreshness | undefined;
   let hsCode = '—';
   let hsDescription = 'No commodity code mapped for this commodity';
   let dutyStatus: VerificationStatus = 'estimate';
@@ -456,8 +472,24 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
   } else {
     hsCode = line.hsCode;
     hsDescription = line.description;
-    dutyPct = line.mfnDutyPct;
-    dutyStatus = line.status;
+
+    // A dated snapshot OVERRIDES the built-in default, so verifying the tool is
+    // a data change rather than a code change.
+    const resolved = resolveRate(line.hsCode, line);
+    dutyPct = resolved.mfnDutyPct;
+    dutyStatus = resolved.status;
+    rateFetchedAt = resolved.fetchedAt;
+    rateFromSnapshot = resolved.fromSnapshot;
+
+    const fresh = assessRateFreshness(line.hsCode, resolved.status, resolved.fetchedAt, new Date(asOfDate));
+    rateFreshness = fresh;
+    if (fresh.blocking) warnings.push(fresh.message);
+    else if (fresh.verdict === 'ageing') warnings.push(fresh.message);
+    provenance.push(
+      resolved.fromSnapshot
+        ? `Duty rate from tariff snapshot, fetched ${resolved.fetchedAt}.`
+        : `Duty rate from BUILT-IN DEFAULT — no snapshot entry for ${line.hsCode}. Run scripts/ingest-tariff.ts to verify.`,
+    );
 
     // Preferential origin — TESTED where we have the data, assumed otherwise
     const pref = ORIGIN_PREFERENCES.find(p => p.region === originRegion);
@@ -688,6 +720,7 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
     warnings, provenance, needsVerification,
     valuationBasis: VALUATION_BASIS,
     reliefOpportunities: dutyPct > 0 || remedies.length > 0 ? DUTY_RELIEF_REGIMES : [],
+    rateProvenance: { fromSnapshot: rateFromSnapshot, fetchedAt: rateFetchedAt, freshness: rateFreshness },
   };
 }
 
