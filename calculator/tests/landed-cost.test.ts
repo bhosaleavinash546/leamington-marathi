@@ -232,16 +232,17 @@ describe('classification & origin preference', () => {
     });
     expect(r.dutyRatePctApplied).toBe(0);
     expect(r.preferenceApplied).toMatch(/TCA|Trade & Cooperation/);
-    expect(r.warnings.join(' ')).toMatch(/rules of origin/i);
+    expect(r.warnings.join(' ')).toMatch(/rules[-\s]of[-\s]origin/i);
   });
 
-  it('India defaults to MFN because the agreement status is unverified', () => {
+  it('India carries CETA preference (in force 15 Jul 2026), flagged as assumed until origin is tested', () => {
     const r = computeLandedCost({
       exWorksCost: 100, commodity: 'machining', originRegion: 'IN',
-      partWeightKg: 1, annualVolume: 10000,
+      partWeightKg: 1, annualVolume: 10000, asOfDate: '2026-07-29',
     });
-    expect(r.dutyRatePctApplied).toBe(4.5);
-    expect(r.preferenceApplied).toBeUndefined();
+    expect(r.dutyRatePctApplied).toBe(0);
+    expect(r.preferenceApplied).toBe('UK-India CETA');
+    expect(r.warnings.join(' ')).toMatch(/origin was ASSUMED, not tested/);
   });
 
   it('PCB fab is duty-free under ITA', () => {

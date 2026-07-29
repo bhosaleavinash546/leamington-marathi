@@ -8,6 +8,7 @@ export * from './modules/sheet-metal.js';
 export * from './modules/sheet-metal-hardware.js';
 export * from './landed-cost.js';
 export * from './landed-cost-data.js';
+export * from './rules-of-origin.js';
 export * from './modules/injection-moulding.js';
 export * from './modules/casting.js';
 export * from './modules/forging.js';

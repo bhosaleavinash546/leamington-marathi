@@ -32,6 +32,8 @@ import {
   UK_STEEL_MEASURE, cbamSector,
 } from './landed-cost-data.js';
 import type { CbamScheme, TariffLine, VerificationStatus } from './landed-cost-data.js';
+import { assessOrigin } from './rules-of-origin.js';
+import type { OriginAssessment, OriginProductType } from './rules-of-origin.js';
 
 export type Incoterm = 'EXW' | 'FOB' | 'CIF' | 'DAP' | 'DDP';
 
@@ -81,6 +83,15 @@ export interface LandedCostInputs {
   steelMillProduct?: boolean;
   /** Existing logistics £/part already inside the ex-works stack (double-count guard). */
   exWorksLogisticsPerPart?: number;
+
+  /**
+   * Value of NON-ORIGINATING material in the part (£/part) — material sourced
+   * outside the FTA area. Supplying this switches the preference from an
+   * assumption to a TESTED rules-of-origin qualification.
+   */
+  nonOriginatingMaterialCost?: number;
+  /** Product type for the origin test (EV/battery rules differ sharply from parts). */
+  originProductType?: OriginProductType;
 }
 
 export interface LandedAdder {
@@ -122,6 +133,13 @@ export interface LandedCostResult {
 
   /** Forward-looking lines not yet in force at asOfDate. */
   futureLines: LandedAdder[];
+
+  /**
+   * Rules-of-origin verdict when an FTA preference was available AND
+   * non-originating material cost was supplied. Absent means the preference
+   * was assumed, not tested.
+   */
+  origin?: OriginAssessment;
 
   warnings: string[];
   provenance: string[];
@@ -261,6 +279,7 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
   let hsDescription = 'No commodity code mapped for this commodity';
   let dutyStatus: VerificationStatus = 'estimate';
   let preferenceApplied: string | undefined;
+  let originAssessment: OriginAssessment | undefined;
 
   if (!line) {
     warnings.push(
@@ -273,19 +292,51 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
     dutyPct = line.mfnDutyPct;
     dutyStatus = line.status;
 
-    // Preferential origin
+    // Preferential origin — TESTED where we have the data, assumed otherwise
     const pref = ORIGIN_PREFERENCES.find(p => p.region === originRegion);
     if (pref) {
       provenance.push(`Origin ${pref.country}: ${pref.note}`);
       if (pref.preferentialDutyPct !== undefined && pref.preferentialDutyPct < dutyPct) {
-        dutyPct = pref.preferentialDutyPct;
-        preferenceApplied = pref.agreement;
-        warnings.push(
-          `Preferential rate applied under ${pref.agreement} (${pref.preferentialDutyPct}%). ` +
-          `This is ONLY valid if the product-specific rules of origin are met and a valid origin declaration is held. ` +
-          `Without proof of origin the MFN rate of ${line.mfnDutyPct}% applies.`,
-        );
-        if (pref.status !== 'verified') dutyStatus = 'estimate';
+        const mfnPct = line.mfnDutyPct;
+
+        if (inputs.nonOriginatingMaterialCost !== undefined && pref.agreement) {
+          // Run the actual rules-of-origin test rather than assuming preference.
+          originAssessment = assessOrigin({
+            agreement: pref.agreement,
+            productType: inputs.originProductType ?? 'part',
+            exWorksPrice: exWorksCost,
+            nonOriginatingMaterialCost: inputs.nonOriginatingMaterialCost,
+            mfnDutyPct: mfnPct,
+            preferentialDutyPct: pref.preferentialDutyPct,
+            customsValueCif,
+            asOfDate,
+          });
+          warnings.push(...originAssessment.warnings);
+          provenance.push(...originAssessment.notes);
+
+          if (originAssessment.qualifies === true) {
+            dutyPct = pref.preferentialDutyPct;
+            preferenceApplied = pref.agreement;
+          } else {
+            // Fails or unknown → no preference. This is the safe direction:
+            // over-claiming preference is recoverable duty plus penalties.
+            dutyPct = mfnPct;
+            provenance.push(
+              `Preference NOT applied — origin ${originAssessment.qualifies === false ? 'test failed' : 'could not be established'}. MFN ${mfnPct}% used.`,
+            );
+          }
+          dutyStatus = 'estimate';
+        } else {
+          dutyPct = pref.preferentialDutyPct;
+          preferenceApplied = pref.agreement;
+          warnings.push(
+            `Preferential rate applied under ${pref.agreement} (${pref.preferentialDutyPct}%) — but origin was ASSUMED, not tested. ` +
+            `Supply nonOriginatingMaterialCost to run the rules-of-origin check. ` +
+            `Without proof of origin the MFN rate of ${mfnPct}% applies, a swing of ` +
+            `£${(customsValueCif * ((mfnPct - pref.preferentialDutyPct) / 100)).toFixed(2)}/part.`,
+          );
+          if (pref.status !== 'verified') dutyStatus = 'estimate';
+        }
       }
     } else {
       provenance.push(`No preference record for origin "${originRegion}" — MFN (UK Global Tariff) applied.`);
@@ -404,6 +455,7 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
       note: 'Import VAT is reclaimable as input tax by a VAT-registered importer. Reported for cash-flow only — deliberately EXCLUDED from should-cost.',
     },
     futureLines,
+    origin: originAssessment,
     warnings, provenance, needsVerification,
   };
 }

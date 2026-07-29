@@ -248,13 +248,13 @@ export const ORIGIN_PREFERENCES: OriginPreference[] = [
   },
   {
     region: 'DE', country: 'Germany',
-    agreement: 'UK-EU Trade & Cooperation Agreement', preferentialDutyPct: 0,
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
     status: 'corroborated',
     note: 'Duty-free under the TCA if UK-EU rules of origin are met and a statement on origin is held; otherwise MFN applies.',
   },
   {
     region: 'PL', country: 'Poland',
-    agreement: 'UK-EU Trade & Cooperation Agreement', preferentialDutyPct: 0,
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
     status: 'corroborated',
     note: 'As Germany — TCA preference conditional on rules of origin.',
   },
@@ -266,9 +266,9 @@ export const ORIGIN_PREFERENCES: OriginPreference[] = [
   },
   {
     region: 'IN', country: 'India',
-    agreement: 'UK-India CETA (signed 2025)', preferentialDutyPct: undefined,
-    status: 'estimate',
-    note: 'UK-India agreement signed 2025; staging and entry-into-force must be confirmed before claiming preference. Engine defaults to MFN until verified.',
+    agreement: 'UK-India CETA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'UK-India CETA ENTERED INTO FORCE 15 July 2026. Preference available subject to CETA rules of origin (substantial transformation / value addition) and a valid origin declaration. Staging applies to some lines — confirm the specific commodity code.',
   },
   {
     region: 'MX', country: 'Mexico',
