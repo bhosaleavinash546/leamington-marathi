@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeLandedCost } from '../src/engine/landed-cost.js';
+import { computeLandedCost, selectTariffLine } from '../src/engine/landed-cost.js';
 import {
   TRADE_REMEDIES, HIGH_REMEDY_ORIGINS, findTradeRemedies, freeAllocationFactor,
   ORIGIN_CARBON_PRICE_GBP_PER_TONNE,
@@ -19,26 +19,60 @@ const carbon = (kg: number, cls: string): CarbonEstimate => ({
 // ─── FIX 1: trade remedies ───────────────────────────────────────────────────
 
 describe('anti-dumping / countervailing duties', () => {
-  it('applies the 22.3% ADD on Chinese forged aluminium road wheels ON TOP of MFN', () => {
-    const r = computeLandedCost({
-      exWorksCost: 100, commodity: 'cast_and_machine', originRegion: 'CN',
-      hsCodeOverride: '8708999790', partWeightKg: 9, annualVolume: 50000,
-      asOfDate: '2026-07-29',
+  it('END TO END: a Chinese aluminium road wheel gets the 22.3% ADD in its landed cost', () => {
+    const wheel = computeLandedCost({
+      exWorksCost: 100, commodity: 'road_wheel', originRegion: 'CN',
+      partWeightKg: 9, annualVolume: 50000, asOfDate: '2026-07-29',
     });
-    // control: the generic housing code carries no remedy
-    expect(r.adders.some(a => a.key.startsWith('remedy'))).toBe(false);
-
-    const wheels = findTradeRemedies('8708701000', 'CN', '2026-07-29');
-    expect(wheels).toHaveLength(1);
-    expect(wheels[0].dutyPct).toBe(22.3);
-    expect(wheels[0].measureType).toBe('anti-dumping');
+    const remedy = wheel.adders.find(a => a.key.startsWith('remedy'));
+    expect(remedy, 'ADD must appear as an adder').toBeDefined();
+    expect(remedy!.amountGbp).toBeCloseTo(wheel.customsValueCif * 0.223, 2);
+    // and it must be INSIDE the total, not merely reported
+    expect(wheel.addersTotal).toBeGreaterThan(remedy!.amountGbp);
+    expect(wheel.totalLandedCost).toBeCloseTo(wheel.exWorksCost + wheel.addersTotal, 2);
   });
 
-  it('the remedy is charged on customs value and dwarfs the MFN duty', () => {
-    const cif = 110;
-    const remedy = cif * 0.223;
-    const mfn = cif * 0.045;
-    expect(remedy / mfn).toBeGreaterThan(4);   // ~5x
+  it('the ADD dwarfs the MFN duty on the SAME part (real engine output, not arithmetic)', () => {
+    const wheel = computeLandedCost({
+      exWorksCost: 100, commodity: 'road_wheel', originRegion: 'CN',
+      partWeightKg: 9, annualVolume: 50000, asOfDate: '2026-07-29',
+    });
+    const add = wheel.adders.find(a => a.key.startsWith('remedy'))!.amountGbp;
+    const mfn = wheel.adders.find(a => a.key === 'duty')!.amountGbp;
+    expect(add / mfn).toBeGreaterThan(4);
+  });
+
+  it('the same wheel from a non-remedy origin costs materially less', () => {
+    const cn = computeLandedCost({
+      exWorksCost: 100, commodity: 'road_wheel', originRegion: 'CN',
+      partWeightKg: 9, annualVolume: 50000, asOfDate: '2026-07-29',
+    });
+    const de = computeLandedCost({
+      exWorksCost: 100, commodity: 'road_wheel', originRegion: 'DE',
+      partWeightKg: 9, annualVolume: 50000, asOfDate: '2026-07-29',
+    });
+    expect(de.adders.some(a => a.key.startsWith('remedy'))).toBe(false);
+    expect(cn.totalLandedCost - de.totalLandedCost).toBeGreaterThan(20);
+  });
+
+  it('an hsCodeOverride outside the candidate list is HONOURED, not silently dropped', () => {
+    // Regression: the override used to be discarded, which also defeated
+    // trade-remedy matching so anti-dumping duty could never fire.
+    const r = computeLandedCost({
+      exWorksCost: 100, commodity: 'cast_and_machine', originRegion: 'CN',
+      hsCodeOverride: '8708701000', partWeightKg: 9, annualVolume: 50000,
+      asOfDate: '2026-07-29',
+    });
+    expect(r.hsCode).toBe('8708701000');
+    expect(r.adders.some(a => a.key.startsWith('remedy'))).toBe(true);
+    expect(r.warnings.join(' ')).toMatch(/TRADE REMEDY APPLIES/);
+  });
+
+  it('an inherited rate on an unknown code is flagged as unconfirmed', () => {
+    const line = selectTariffLine('cast_and_machine', { hsCodeOverride: '9999999999' });
+    expect(line!.hsCode).toBe('9999999999');
+    expect(line!.status).toBe('estimate');
+    expect(line!.source).toMatch(/INHERITED/);
   });
 
   it('respects the measure expiry date', () => {

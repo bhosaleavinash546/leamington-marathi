@@ -207,6 +207,28 @@ export const HS_CANDIDATES: Record<string, TariffLine[]> = {
     },
   ],
 
+  road_wheel: [
+    {
+      hsCode: '8708705000',
+      description: 'Road wheels of aluminium, for motor vehicles',
+      mfnDutyPct: 4.5,
+      status: 'estimate',
+      source: 'Heading 8708.70 road wheels; UK band unconfirmed',
+      verifyUrl: `${UK_TARIFF}8708705000`,
+      reviewed: '2026-07-29',
+      notes: 'CRITICAL: Chinese FORGED aluminium road wheels carry a 22.3% anti-dumping duty on top of MFN. Cast wheel duties were revoked — the forged/cast distinction is worth ~22% of customs value.',
+    },
+    {
+      hsCode: '8708701000',
+      description: 'Road wheels for industrial assembly of motor vehicles',
+      mfnDutyPct: 4.5,
+      status: 'estimate',
+      source: 'Heading 8708.70; UK band unconfirmed',
+      verifyUrl: `${UK_TARIFF}8708701000`,
+      reviewed: '2026-07-29',
+    },
+  ],
+
   wiring_harness: [
     {
       hsCode: '8544302000',

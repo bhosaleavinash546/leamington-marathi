@@ -243,6 +243,22 @@ export function selectTariffLine(
   if (opts.hsCodeOverride) {
     const hit = candidates.find(c => c.hsCode === opts.hsCodeOverride);
     if (hit) return hit;
+    // The user's classification outranks our candidate list — they may be
+    // costing a part type we don't carry (road wheels, brake discs...).
+    // SILENTLY DISCARDING the override was a real bug: it also defeated
+    // trade-remedy matching, which is keyed on the commodity code, so an
+    // anti-dumping measure could never fire. Honour the code, and be explicit
+    // that the RATE is inherited and unconfirmed.
+    return {
+      hsCode: opts.hsCodeOverride,
+      description: `User-supplied commodity code (not in CostVision's candidate list for ${commodity})`,
+      mfnDutyPct: candidates[0].mfnDutyPct,
+      status: 'estimate',
+      source: `Duty rate INHERITED from ${candidates[0].hsCode} — it is NOT the published rate for ${opts.hsCodeOverride}.`,
+      verifyUrl: `https://www.trade-tariff.service.gov.uk/commodities/${opts.hsCodeOverride}`,
+      reviewed: candidates[0].reviewed,
+      notes: 'Rate must be confirmed against the official tariff for this specific code before use.',
+    };
   }
   // Non-automotive parts fall back to the material-based classification, which
   // is the SECOND candidate where the two routes diverge.
