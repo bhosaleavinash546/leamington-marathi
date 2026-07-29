@@ -68,7 +68,9 @@
     }
 
     /* ── Layout ── */
-    .auth-wrapper { display: flex; width: 100%; min-height: 100vh; }
+    /* row-reverse: hero (features) sits RIGHT, sign-in form sits LEFT.
+       DOM order unchanged, so the mobile column layout keeps hero on top. */
+    .auth-wrapper { display: flex; flex-direction: row-reverse; width: 100%; min-height: 100vh; }
 
     /* ════════════════════════════════════════════════════════════════
        HERO PANEL
@@ -87,7 +89,7 @@
     .hero-bg {
       position: absolute;
       inset: 0;
-      background: url('/calculator/assets/hero-car-DlaFDrzH.png') center 30% / cover no-repeat;
+      background: url('/calculator/assets/hero-ev-exploded-So--GQL4.jpg') center 45% / cover no-repeat;
       transform: scale(1.06) translateZ(0);
       animation: kenburns 30s ease-in-out infinite alternate;
       will-change: transform;
@@ -107,7 +109,7 @@
           rgba(5,13,26,0.55) 55%,
           rgba(5,13,26,0.20) 80%,
           rgba(5,13,26,0.10) 100%),
-        linear-gradient(to right,
+        linear-gradient(to left,
           transparent 0%,
           transparent 65%,
           rgba(5,13,26,0.60) 85%,
@@ -177,11 +179,11 @@
     .circuit-svg path { stroke-dasharray: 600; stroke-dashoffset: 600; animation: circuit-draw 4s ease forwards; }
     @keyframes circuit-draw { to { stroke-dashoffset: 0; } }
 
-    /* Right-edge seam glow */
+    /* Seam glow on the form-facing edge (hero now sits right → seam on its left) */
     .hero-panel::after {
       content: '';
       position: absolute;
-      right: 0; top: 10%; bottom: 10%;
+      left: 0; top: 10%; bottom: 10%;
       width: 1px;
       background: linear-gradient(to bottom, transparent, rgba(99,102,241,0.4), transparent);
     }
