@@ -214,6 +214,19 @@ export interface OriginAssessmentInputs {
   /** Customs value the duty would be charged on. */
   customsValueCif?: number;
   asOfDate?: string;
+  /**
+   * Material sourced from a CUMULATION PARTNER counts as ORIGINATING even
+   * though it wasn't made in the exporting country. Under the TCA, UK steel
+   * sent to a German supplier is originating — omitting this produces a
+   * false FAIL. Supply as {origin: value} pairs.
+   */
+  materialByOrigin?: Record<string, number>;
+  /**
+   * Operations actually performed in the exporting country. If ALL of them
+   * are "insufficient" (packing, simple painting, simple assembly...), origin
+   * fails regardless of the value test.
+   */
+  operationsPerformed?: string[];
 }
 
 export interface OriginAssessment {
@@ -261,8 +274,26 @@ export function assessOrigin(inputs: OriginAssessmentInputs): OriginAssessment {
   const warnings: string[] = [];
   const notes: string[] = [];
 
+  // ── Bilateral cumulation: reclassify partner-country material as originating
+  let effectiveNonOriginating = nonOriginatingMaterialCost;
+  if (inputs.materialByOrigin) {
+    let cumulated = 0;
+    let nonOrig = 0;
+    for (const [origin, value] of Object.entries(inputs.materialByOrigin)) {
+      if (countsAsOriginating(agreement, origin)) { cumulated += value; }
+      else { nonOrig += value; }
+    }
+    effectiveNonOriginating = nonOrig;
+    if (cumulated > 0) {
+      notes.push(
+        `Cumulation: £${cumulated.toFixed(2)} of material from ${agreement} partner territories counts as ORIGINATING, ` +
+        `so only £${nonOrig.toFixed(2)} is non-originating.`,
+      );
+    }
+  }
+
   const nonOriginatingPct = exWorksPrice > 0
-    ? r2((nonOriginatingMaterialCost / exWorksPrice) * 100)
+    ? r2((effectiveNonOriginating / exWorksPrice) * 100)
     : 0;
 
   const rule = findOriginRule(agreement, productType, asOfDate);
@@ -281,8 +312,29 @@ export function assessOrigin(inputs: OriginAssessmentInputs): OriginAssessment {
   }
 
   const thresholdPct = rule.maxNonOriginatingPct;
-  const qualifies = nonOriginatingPct <= thresholdPct;
+  const passesValueTest = nonOriginatingPct <= thresholdPct;
   const headroomPct = r2(thresholdPct - nonOriginatingPct);
+
+  // ── Insufficient processing OVERRIDES the value test ──
+  // A part can pass MaxNOM comfortably and still fail origin if nothing
+  // substantive was done in the exporting country. This is the false-PASS trap.
+  const insufficient = isInsufficientProcessing(inputs.operationsPerformed);
+  const qualifies = passesValueTest && !insufficient;
+
+  if (insufficient) {
+    warnings.push(
+      `ORIGIN FAILS on INSUFFICIENT PROCESSING: every declared operation ` +
+      `(${(inputs.operationsPerformed ?? []).join(', ')}) is a minimal operation that never confers origin, ` +
+      `regardless of the value test${passesValueTest ? ' — which this part PASSES' : ''}. ` +
+      `Preference is not available; duty ${mfnDutyPct}% applies (£${costOfFailureGbp.toFixed(2)}/part). ` +
+      `A single substantive operation (machining, casting, stamping, welding) would change this.`,
+    );
+  } else if (!inputs.operationsPerformed?.length) {
+    notes.push(
+      'Insufficient-processing test NOT run — declare the operations performed in the exporting country to check it. ' +
+      'Passing the value test alone does not establish origin.',
+    );
+  }
 
   notes.push(`${rule.agreement} rule in force at ${asOfDate}: ${rule.description}`);
   notes.push(
@@ -290,7 +342,7 @@ export function assessOrigin(inputs: OriginAssessmentInputs): OriginAssessment {
     `= ${nonOriginatingPct.toFixed(1)}% vs MaxNOM ${thresholdPct}% → ${qualifies ? 'QUALIFIES' : 'FAILS'}.`,
   );
 
-  if (!qualifies) {
+  if (!passesValueTest) {
     const routes = rule.alternativeRoutes ?? [];
     warnings.push(
       `ORIGIN FAILS the value test: ${nonOriginatingPct.toFixed(1)}% non-originating content exceeds the ${thresholdPct}% limit. ` +
@@ -312,7 +364,7 @@ export function assessOrigin(inputs: OriginAssessmentInputs): OriginAssessment {
         `the part may still qualify despite the value test — worth £${costOfFailureGbp.toFixed(2)}/part.`,
       );
     }
-  } else if (headroomPct < 10) {
+  } else if (headroomPct < 10 && !insufficient) {
     warnings.push(
       `Origin qualifies but with only ${headroomPct.toFixed(1)} percentage points of headroom. ` +
       `A material price rise or a switch to a non-FTA supplier could break qualification — exposure £${costOfFailureGbp.toFixed(2)}/part.`,
@@ -323,6 +375,16 @@ export function assessOrigin(inputs: OriginAssessmentInputs): OriginAssessment {
     warnings.push(
       `The applied rule is ${rule.status.toUpperCase()}. Product-specific rules of origin vary by commodity code — ` +
       `confirm the exact PSR before claiming preference. A wrong claim is recoverable duty plus penalties.`,
+    );
+  }
+
+  // ── De minimis tolerance (rescues a failed CTC, NOT a failed value test) ──
+  const tol = DE_MINIMIS_TOLERANCE_PCT[agreement];
+  if (tol !== undefined && !passesValueTest) {
+    notes.push(
+      `De minimis tolerance under ${agreement} is ~${tol}% of ex-works — note it rescues a failed ` +
+      `CHANGE-OF-CLASSIFICATION rule, NOT a failed value test. It cannot lift this part over the ` +
+      `${thresholdPct}% MaxNOM ceiling.`,
     );
   }
 
@@ -363,3 +425,83 @@ export function originSummary(a: OriginAssessment): string {
   return `${a.agreement} ${verdict}: ${a.nonOriginatingPct.toFixed(1)}% non-originating vs ${a.thresholdPct}% limit ` +
     `(headroom ${a.headroomPct.toFixed(1)} pts)${cliff}`;
 }
+
+/* ─── Insufficient processing ("minimal operations") ──────────────────────── */
+
+/**
+ * Operations that NEVER confer origin, however much value they add.
+ *
+ * This is the trap the value test alone cannot catch: a part can comfortably
+ * pass MaxNOM and still fail origin because the only thing done in the
+ * exporting country was, say, painting and packing. Getting this wrong
+ * produces a FALSE PASS — the dangerous direction, because the preference is
+ * claimed, the goods clear, and the duty is recovered later with penalties.
+ *
+ * List reflects the standard FTA formulation (TCA Art. ORIG.7 and equivalents);
+ * confirm against the specific agreement text for a binding view.
+ */
+export const INSUFFICIENT_OPERATIONS = [
+  'preserving_for_transport',
+  'breaking_up_or_assembly_of_packages',
+  'washing_cleaning_removal_of_dust_oxide_oil_paint',
+  'simple_painting_or_polishing',
+  'simple_cutting_slitting_or_sawing',
+  'sifting_screening_sorting_grading_or_matching',
+  'simple_placing_in_bottles_cans_bags_or_boxes',
+  'affixing_marks_labels_logos',
+  'simple_mixing',
+  'simple_assembly_of_parts',
+  'disassembly',
+  'testing_or_calibration_only',
+] as const;
+
+export type InsufficientOperation = typeof INSUFFICIENT_OPERATIONS[number];
+
+/**
+ * True when EVERY declared operation is on the insufficient list — i.e. nothing
+ * substantive was done in the exporting country, so origin fails regardless of
+ * the value calculation. A single substantive operation (machining, casting,
+ * stamping, welding) rescues it.
+ */
+export function isInsufficientProcessing(operations: string[] | undefined): boolean {
+  if (!operations || operations.length === 0) return false;   // not declared → cannot judge
+  return operations.every(op => (INSUFFICIENT_OPERATIONS as readonly string[]).includes(op));
+}
+
+/* ─── Bilateral cumulation ────────────────────────────────────────────────── */
+
+/**
+ * Partner territories whose materials count as ORIGINATING under each
+ * agreement (bilateral cumulation).
+ *
+ * This matters enormously for a UK OEM: send UK steel to a German presser and
+ * that steel is ORIGINATING for the TCA test. Counting it as non-originating
+ * produces a FALSE FAIL and books duty on a part that is genuinely duty-free.
+ */
+export const CUMULATION_PARTNERS: Record<string, string[]> = {
+  'UK-EU TCA': ['UK', 'GB', 'EU', 'DE', 'PL', 'CZ', 'SK', 'ES', 'IT', 'FR', 'RO', 'HU', 'PT'],
+  'UK-India CETA': ['UK', 'GB', 'IN'],
+  'CPTPP': ['UK', 'GB', 'MX', 'VN', 'JP', 'MY', 'SG', 'AU', 'NZ', 'CA', 'CL', 'PE', 'BN'],
+  'UK-Türkiye FTA': ['UK', 'GB', 'TR'],
+};
+
+/** Does material from `materialOrigin` count as originating under `agreement`? */
+export function countsAsOriginating(agreement: string, materialOrigin: string): boolean {
+  return (CUMULATION_PARTNERS[agreement] ?? []).includes(materialOrigin.toUpperCase());
+}
+
+/* ─── De minimis tolerance ────────────────────────────────────────────────── */
+
+/**
+ * Tolerance for non-originating materials that fail the classification rule,
+ * as a percentage of ex-works price. Commonly ~10%.
+ *
+ * NOTE: the tolerance rescues a failed CTC test, not a failed VALUE test —
+ * you cannot use it to exceed a MaxNOM ceiling. Modelled here so the engine
+ * can say so rather than implying a value-test rescue that does not exist.
+ */
+export const DE_MINIMIS_TOLERANCE_PCT: Record<string, number> = {
+  'UK-EU TCA': 10,
+  'UK-India CETA': 10,
+  'CPTPP': 10,
+};

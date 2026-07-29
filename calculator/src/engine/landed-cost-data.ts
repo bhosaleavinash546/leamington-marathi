@@ -391,3 +391,112 @@ export const UK_STEEL_MEASURE: SteelMeasure = {
  * cash-flow item only.
  */
 export const UK_IMPORT_VAT_PCT = 20;
+
+/* ─── Trade remedies: anti-dumping & countervailing duties ────────────────── */
+
+export type RemedyType = 'anti-dumping' | 'countervailing' | 'safeguard';
+
+export interface TradeRemedyMeasure {
+  measureType: RemedyType;
+  productDescription: string;
+  /** Commodity-code prefixes the measure bites on. */
+  hsPrefixes: string[];
+  /** Origin regions the measure applies to. */
+  originRegions: string[];
+  /** Ad-valorem rate, percent of customs value. Levied ON TOP of MFN. */
+  dutyPct: number;
+  from: string;
+  /** Measures expire — an out-of-date register is worse than none. */
+  expires?: string;
+  status: VerificationStatus;
+  source: string;
+  verifyUrl: string;
+  note: string;
+}
+
+/**
+ * Anti-dumping / countervailing register.
+ *
+ * ⚠️ THIS REGISTER IS NOT EXHAUSTIVE AND CANNOT BE.
+ * The UK Trade Remedies Authority maintains dozens of live measures which
+ * change continuously (new investigations, expiry reviews, company-specific
+ * rates). CostVision holds only a small automotive-relevant subset. The engine
+ * therefore ALWAYS emits a screening warning for imports from high-remedy
+ * origins, whether or not a measure is matched here — an unmatched part must
+ * be read as "not checked", never as "no duty".
+ *
+ * ADD/CVD is charged IN ADDITION to the MFN rate and is frequently several
+ * times larger, so missing one is the most expensive error in landed cost.
+ */
+export const TRADE_REMEDIES: TradeRemedyMeasure[] = [
+  {
+    measureType: 'anti-dumping',
+    productDescription: 'Certain FORGED aluminium road wheels',
+    hsPrefixes: ['87087010', '87087050', '870870'],
+    originRegions: ['CN'],
+    dutyPct: 22.3,
+    from: '2024-02-09',
+    expires: '2027-01-01',
+    status: 'corroborated',
+    source: 'UK Trade Remedies Authority measure on aluminium road wheels from China; forged wheels retained at 22.3%, CAST wheel duties revoked. Expiry review due 2027.',
+    verifyUrl: 'https://www.trade-remedies.service.gov.uk/public/case/TD0013/',
+    note: 'Applies to FORGED wheels only — cast aluminium road wheel duties were revoked. Company-specific rates may differ; check the measure for named exporters.',
+  },
+];
+
+/**
+ * Origins where trade remedies are common enough that every import should be
+ * screened against the live TRA register regardless of our local table.
+ */
+export const HIGH_REMEDY_ORIGINS = ['CN', 'RU', 'BY', 'IR', 'IN', 'TR', 'VN', 'ID', 'TH', 'EG'];
+
+/** Find remedies matching a commodity code + origin at a given date. */
+export function findTradeRemedies(
+  hsCode: string, originRegion: string, asOfDate: string,
+): TradeRemedyMeasure[] {
+  return TRADE_REMEDIES.filter(m =>
+    m.originRegions.includes(originRegion) &&
+    m.hsPrefixes.some(p => hsCode.startsWith(p)) &&
+    m.from <= asOfDate &&
+    (!m.expires || asOfDate < m.expires),
+  );
+}
+
+/* ─── CBAM carbon pricing in origin countries ─────────────────────────────── */
+
+/**
+ * Indicative carbon prices in supplier countries, GBP per tonne CO2e.
+ *
+ * UK CBAM is levied on the GAP between the carbon price already paid in the
+ * country of origin and the UK price — NOT on the full UK price. Ignoring the
+ * deduction overstates CBAM for any supplier in a carbon-priced market.
+ */
+export const ORIGIN_CARBON_PRICE_GBP_PER_TONNE: Record<string, number> = {
+  DE: 55, PL: 55, ES: 55, IT: 55, FR: 55, CZ: 55, SK: 55, HU: 55, RO: 55, PT: 55, // EU ETS
+  UK: 40,
+  CN: 8,     // national ETS — materially lower
+  IN: 3,     // CCTS, early stage
+  TR: 5,
+  KR: 12,
+  JP: 5,
+  US: 0, MX: 0, VN: 0, TH: 0, MY: 0, ID: 0, BR: 0, MA: 0,
+};
+
+/**
+ * UK ETS free allocation still given to domestic producers, expressed as the
+ * fraction of the CBAM charge that is waived. Free allowances phase out over
+ * an indicative nine-year period from 2027, so the effective CBAM charge rises
+ * each year even at a constant carbon price.
+ *
+ * Indicative straight-line schedule — the statutory factors are set in
+ * secondary legislation and MUST be confirmed before commercial use.
+ */
+export const CBAM_FREE_ALLOCATION_FACTOR: Record<number, number> = {
+  2027: 0.90, 2028: 0.80, 2029: 0.70, 2030: 0.60, 2031: 0.50,
+  2032: 0.40, 2033: 0.30, 2034: 0.20, 2035: 0.10, 2036: 0.00,
+};
+
+export function freeAllocationFactor(year: number): number {
+  if (year < 2027) return 1;              // no charge before the scheme starts
+  return CBAM_FREE_ALLOCATION_FACTOR[year] ?? 0;
+}

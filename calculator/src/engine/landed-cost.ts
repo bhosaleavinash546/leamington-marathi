@@ -28,8 +28,9 @@
 
 import type { CarbonEstimate } from './carbon.js';
 import {
-  CBAM_SCHEMES, HS_CANDIDATES, ORIGIN_PREFERENCES, UK_IMPORT_VAT_PCT,
-  UK_STEEL_MEASURE, cbamSector,
+  CBAM_SCHEMES, HIGH_REMEDY_ORIGINS, HS_CANDIDATES, ORIGIN_CARBON_PRICE_GBP_PER_TONNE,
+  ORIGIN_PREFERENCES, UK_IMPORT_VAT_PCT, UK_STEEL_MEASURE, cbamSector,
+  findTradeRemedies, freeAllocationFactor,
 } from './landed-cost-data.js';
 import type { CbamScheme, TariffLine, VerificationStatus } from './landed-cost-data.js';
 import { assessOrigin } from './rules-of-origin.js';
@@ -92,6 +93,43 @@ export interface LandedCostInputs {
   nonOriginatingMaterialCost?: number;
   /** Product type for the origin test (EV/battery rules differ sharply from parts). */
   originProductType?: OriginProductType;
+  /**
+   * Material split by origin territory, e.g. {UK: 5, CN: 12}. Enables BILATERAL
+   * CUMULATION: under the TCA, UK material sent to an EU supplier is
+   * ORIGINATING. Counting it as non-originating causes a false FAIL.
+   */
+  materialByOrigin?: Record<string, number>;
+  /**
+   * Operations performed in the exporting country. If ALL are "insufficient"
+   * (packing, simple painting, simple assembly), origin fails regardless of
+   * the value test — the false-PASS trap.
+   */
+  operationsPerformed?: string[];
+
+  /**
+   * ASSISTS — WTO Valuation Agreement Art.8 additions to the customs value.
+   * Goods, tooling or services supplied by the BUYER to the producer free of
+   * charge or below cost are DUTIABLE and must be declared. For an OEM that
+   * owns its tooling this is routine — and omitting it is both an
+   * understatement of duty and an under-declaration offence.
+   */
+  assists?: {
+    /** Total value of buyer-supplied tooling / dies / moulds. */
+    toolingValueGbp?: number;
+    /** Units to apportion the tooling across. Defaults to annualVolume. */
+    toolingApportionVolume?: number;
+    /** Free-issue material supplied by the buyer, £/part. */
+    freeIssueMaterialPerPartGbp?: number;
+    /** Royalties or licence fees related to the goods, £/part. */
+    royaltiesPerPartGbp?: number;
+  };
+
+  /**
+   * Carbon price already paid in the country of origin, £/tonne CO2e. UK CBAM
+   * is levied on the GAP to the UK price, not the full price. Omit to use the
+   * indicative per-country table.
+   */
+  originCarbonPriceGbpPerTonne?: number;
 }
 
 export interface LandedAdder {
@@ -145,9 +183,42 @@ export interface LandedCostResult {
   provenance: string[];
   /** True when any applied rate is unverified — headline must be caveated. */
   needsVerification: boolean;
+
+  /**
+   * What this number IS and IS NOT. Duty is legally charged on the price
+   * actually paid or payable for the goods; CostVision models what the part
+   * SHOULD cost. The two differ, and this figure must not be used to budget
+   * duty payable on a real supplier invoice.
+   */
+  valuationBasis: {
+    basis: 'modelled-should-cost';
+    statement: string;
+    declaredValueWouldBe: string;
+  };
 }
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
+
+/**
+ * The valuation health-warning attached to every result.
+ *
+ * Customs duty is legally charged on the "price actually paid or payable" for
+ * the goods (transaction value), plus the statutory additions. CostVision
+ * models what the part SHOULD cost to make. Those are different numbers: if a
+ * supplier invoices GBP 50 for a part we should-cost at GBP 41, the real duty
+ * is on 50. This figure is a SOURCING comparator, not a duty budget.
+ */
+const VALUATION_BASIS: LandedCostResult['valuationBasis'] = {
+  basis: 'modelled-should-cost',
+  statement:
+    'Duty here is modelled on CostVision\'s should-cost, NOT on a supplier invoice. ' +
+    'Customs duty is legally charged on the price actually paid or payable (transaction value) ' +
+    'plus statutory additions. Use this for SOURCING COMPARISON, not for duty budgeting or ' +
+    'customs declarations.',
+  declaredValueWouldBe:
+    'The declared customs value would be the agreed purchase price + freight/insurance to the ' +
+    'UK border + dutiable assists (buyer-supplied tooling, free-issue material, royalties).',
+};
 
 /** Indicative sea-freight £/kg by lane (door-to-port, FCL basis). */
 const FREIGHT_GBP_PER_KG: Record<string, number> = {
@@ -220,6 +291,7 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
       warnings: ['Domestic UK supply: no customs duty, CBAM or clearance applies.'],
       provenance: ['Domestic route — landed cost differs from ex-works only by inland haulage.'],
       needsVerification: false,
+      valuationBasis: VALUATION_BASIS,
     };
   }
 
@@ -263,11 +335,39 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
     basis: `${(insuranceRate * 100).toFixed(2)}% of (ex-works + freight)`, status: 'estimate',
   });
 
-  // ── 3. Customs value (CIF) — the base duty is charged on ─────────────────
-  const customsValueCif = r2(exWorksCost + freight + insurance);
+  // ── 3. ASSISTS — WTO Valuation Art.8 additions ───────────────────────────
+  const a = inputs.assists;
+  const toolingPerPart = a?.toolingValueGbp
+    ? r2(a.toolingValueGbp / Math.max(1, a.toolingApportionVolume ?? annualVolume))
+    : 0;
+  const assistsPerPart = r2(
+    toolingPerPart + (a?.freeIssueMaterialPerPartGbp ?? 0) + (a?.royaltiesPerPartGbp ?? 0),
+  );
+  if (assistsPerPart > 0) {
+    provenance.push(
+      `Assists £${assistsPerPart.toFixed(2)}/part added to customs value` +
+      (toolingPerPart > 0
+        ? ` (tooling £${(a!.toolingValueGbp as number).toLocaleString()} ÷ ${(a?.toolingApportionVolume ?? annualVolume).toLocaleString()} units = £${toolingPerPart.toFixed(2)})`
+        : '') + '.',
+    );
+    warnings.push(
+      `Buyer-supplied assists of £${assistsPerPart.toFixed(2)}/part are DUTIABLE under the customs valuation rules ` +
+      `and must be declared on the import entry. Omitting them understates duty and is an under-declaration offence.`,
+    );
+  } else if ((inputs.exWorksLogisticsPerPart ?? 0) >= 0) {
+    provenance.push(
+      'No assists declared. If the buyer supplies tooling, dies, moulds or free-issue material to this supplier, ' +
+      'their apportioned value is dutiable and MUST be added — a common automotive under-declaration.',
+    );
+  }
+
+  // ── 4. Customs value — the base duty is charged on ───────────────────────
+  const customsValueCif = r2(exWorksCost + freight + insurance + assistsPerPart);
   provenance.push(
-    `Customs value (CIF) £${customsValueCif.toFixed(2)} = ex-works £${exWorksCost.toFixed(2)} ` +
-    `+ freight £${freight.toFixed(2)} + insurance £${insurance.toFixed(2)}. Duty is charged on this value, not on ex-works.`,
+    `Customs value £${customsValueCif.toFixed(2)} = ex-works £${exWorksCost.toFixed(2)} ` +
+    `+ freight £${freight.toFixed(2)} + insurance £${insurance.toFixed(2)}` +
+    (assistsPerPart > 0 ? ` + assists £${assistsPerPart.toFixed(2)}` : '') +
+    `. Duty is charged on this value, not on ex-works.`,
   );
 
   // ── 4. Import duty ───────────────────────────────────────────────────────
@@ -310,6 +410,8 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
             preferentialDutyPct: pref.preferentialDutyPct,
             customsValueCif,
             asOfDate,
+            materialByOrigin: inputs.materialByOrigin,
+            operationsPerformed: inputs.operationsPerformed,
           });
           warnings.push(...originAssessment.warnings);
           provenance.push(...originAssessment.notes);
@@ -361,6 +463,42 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
     verifyUrl: line?.verifyUrl,
   });
 
+  // ── Trade remedies (ADD/CVD) — levied ON TOP of MFN ──────────────────────
+  // These routinely dwarf the MFN rate (22.3% vs 4.5% on Chinese forged
+  // aluminium road wheels), so a missed measure is the most expensive error
+  // in landed cost.
+  const remedies = hsCode !== '—' ? findTradeRemedies(hsCode, originRegion, asOfDate) : [];
+  for (const rem of remedies) {
+    const remedyDuty = r2(customsValueCif * (rem.dutyPct / 100));
+    adders.push({
+      key: `remedy-${rem.measureType}`,
+      label: `${rem.measureType === 'anti-dumping' ? 'Anti-dumping' : 'Countervailing'} duty — ${rem.productDescription}`,
+      amountGbp: remedyDuty,
+      basis: `${rem.dutyPct}% × customs value £${customsValueCif.toFixed(2)}`,
+      status: rem.status,
+      source: rem.source,
+      verifyUrl: rem.verifyUrl,
+    });
+    warnings.push(
+      `TRADE REMEDY APPLIES: ${rem.dutyPct}% ${rem.measureType} duty on ${rem.productDescription} from ${originRegion} ` +
+      `— £${remedyDuty.toFixed(2)}/part, ON TOP of the ${dutyPct}% MFN rate. ${rem.note}` +
+      (rem.expires ? ` Measure expires ${rem.expires} — check for an expiry review.` : ''),
+    );
+  }
+
+  // Screening warning — our register is a small subset of the live TRA list,
+  // so "no match" must never be read as "no measure".
+  if (HIGH_REMEDY_ORIGINS.includes(originRegion)) {
+    if (remedies.length === 0) {
+      warnings.push(
+        `TRADE REMEDY NOT CHECKED: imports from ${originRegion} frequently attract anti-dumping or countervailing ` +
+        `duties, which are charged ON TOP of MFN and are often 20-70%. CostVision holds only a small subset of the ` +
+        `UK Trade Remedies Authority register — no match here means NOT CHECKED, not "no duty". ` +
+        `Search the live register before committing: https://www.trade-remedies.service.gov.uk/public/cases/`,
+      );
+    }
+  }
+
   // ── 5. CBAM ──────────────────────────────────────────────────────────────
   const scheme = cbamScheme === 'none' ? null : CBAM_SCHEMES[cbamScheme];
   if (scheme && inputs.carbon) {
@@ -369,13 +507,37 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
       // CBAM bites on the EMBEDDED emissions of the metal, i.e. material
       // production — not the whole part's cradle-to-gate footprint.
       const embeddedTonnes = inputs.carbon.materialKgCO2e / 1000;
-      const cbamCost = r2(embeddedTonnes * scheme.certificatePriceGbpPerTonne);
-      const inForce = asOfDate >= scheme.liveFrom;
+      // UK CBAM is levied on the GAP between the carbon price already paid in
+      // the country of origin and the UK price — not on the full UK price.
+      const originCarbon = inputs.originCarbonPriceGbpPerTonne
+        ?? ORIGIN_CARBON_PRICE_GBP_PER_TONNE[originRegion] ?? 0;
+      const gapPrice = Math.max(0, scheme.certificatePriceGbpPerTonne - originCarbon);
+      // Free allocation still given to UK producers reduces the charge, and
+      // phases out over ~9 years from 2027 — so the effective rate RISES yearly.
+      // For a scheme not yet in force the projection must use the year it
+      // STARTS, otherwise the forward-looking line reads £0.00 and is useless.
+      const inForceNow = asOfDate >= scheme.liveFrom;
+      const year = parseInt((inForceNow ? asOfDate : scheme.liveFrom).slice(0, 4), 10);
+      const freeAlloc = freeAllocationFactor(year);
+      const cbamCost = r2(embeddedTonnes * gapPrice * (1 - freeAlloc));
+      const inForce = inForceNow;
+      provenance.push(
+        `CBAM: ${embeddedTonnes.toFixed(4)} t CO2e × (UK £${scheme.certificatePriceGbpPerTonne} − origin £${originCarbon}) ` +
+        `× (1 − free allocation ${(freeAlloc * 100).toFixed(0)}%) = £${cbamCost.toFixed(2)}.`,
+      );
+      if (originCarbon > 0) {
+        provenance.push(
+          `Origin carbon price £${originCarbon}/t deducted — ${originRegion} operates carbon pricing, so only the gap is chargeable.`,
+        );
+      }
+      if (gapPrice === 0) {
+        provenance.push(`No CBAM liability: the origin carbon price meets or exceeds the UK price.`);
+      }
       const adder: LandedAdder = {
         key: 'cbam',
         label: `${scheme.scheme} CBAM — ${sector.replace('_', '/')} (from ${scheme.liveFrom})`,
         amountGbp: cbamCost,
-        basis: `${inputs.carbon.materialKgCO2e.toFixed(2)} kg CO2e embedded × £${scheme.certificatePriceGbpPerTonne}/t`,
+        basis: `${inputs.carbon.materialKgCO2e.toFixed(2)} kg CO2e × £${gapPrice}/t gap (UK £${scheme.certificatePriceGbpPerTonne} − origin £${originCarbon}) × ${((1 - freeAlloc) * 100).toFixed(0)}% chargeable`,
         status: scheme.status,
         source: scheme.source,
       };
@@ -457,6 +619,7 @@ export function computeLandedCost(inputs: LandedCostInputs): LandedCostResult {
     futureLines,
     origin: originAssessment,
     warnings, provenance, needsVerification,
+    valuationBasis: VALUATION_BASIS,
   };
 }
 

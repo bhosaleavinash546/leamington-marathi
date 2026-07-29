@@ -171,8 +171,10 @@ describe('CBAM', () => {
     });
     const cbam = r.adders.find(a => a.key === 'cbam');
     expect(cbam).toBeDefined();
-    // 24.1 kg = 0.0241 t × £40/t = £0.964
-    expect(cbam!.amountGbp).toBeCloseTo(0.96, 2);
+    // Gap-based, not full price: 0.0241 t × (UK £40 − China £8) × 10% chargeable
+    // in 2027 (90% free allocation) = £0.077. The naive full-price figure of
+    // £0.96 overstated this by >12×.
+    expect(cbam!.amountGbp).toBeCloseTo(0.08, 2);
   });
 
   it('EU CBAM is already in force in 2026 (different date to the UK)', () => {
