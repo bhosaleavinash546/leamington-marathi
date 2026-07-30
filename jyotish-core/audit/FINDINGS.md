@@ -12,11 +12,11 @@ possible.
 |---|---|---|
 | S1 | 3 | **3** — F-001, F-002, F-003 |
 | S2 | 6 | **3** — F-004, F-005, F-006 |
-| S3 | 7 | — |
-| S4 | 8 | 3 — F-021 (F-001), F-017 (F-003), F-024 (F-004) |
+| S3 | 7 | **4** — F-010, F-011, F-012, F-013 |
+| S4 | 10 | 3 — F-021 (F-001), F-017 (F-003), F-024 (F-004) |
 
 **Fixed so far:** F-001, F-002, F-021 (D18); F-005, F-006; F-003, F-017 (D19);
-F-004, F-024 (D20). Before/after values are recorded in `docs/DECISIONS.md` and
+F-004, F-024 (D20); F-010, F-011, F-012, F-013, F-025. Before/after values are recorded in `docs/DECISIONS.md` and
 in each commit message, per CLAUDE.md 11. Everything else below stands unfixed.
 
 **F-023 was found while fixing F-003 and is raised, not fixed** — it needs a
@@ -226,10 +226,10 @@ nadi 0/8, `nadi_exception_same_nakshatra` **fired**. The engine does compute pad
 
 | ID | Finding | Evidence | Fix |
 |---|---|---|---|
-| F-010 | ग्रहस्पष्ट printed in **decimal degrees** (`मिथुन 0.28°`), which AUDIT §6 calls "a dead giveaway" | `render/pdf.py:353` | use `core/angles.py:format_dms`, already written and unused here → `मि. ०°१७′` |
-| F-011 | **Zero** Devanagari numerals in the `mr`/`hi` PDF | 428 Latin digits, 0 Devanagari | port `web/lib/format.ts:toDevanagariNumerals` into `render/pdf.py` |
-| F-012 | दिनमान / रात्रीमान absent from ChartFacts and the sheet | derivable from sunrise/sunset but never printed | emit both, in ghati–pala |
-| F-013 | Namakaran **and** numerology computed, then discarded | `FullReading.namakaran` fully populated; absent from ChartFacts, UI, PDF | emit them; CLAUDE.md §3.6's two substantive uses of `name` are currently dead |
+| F-010 | ~~ग्रहस्पष्ट printed in **decimal degrees**~~ **FIXED** (`मिथुन 0.28°`), which AUDIT §6 calls "a dead giveaway" | `render/pdf.py:353` | use `core/angles.py:format_dms`, already written and unused here → `मि. ०°१७′` |
+| F-011 | ~~**Zero** Devanagari numerals in the `mr`/`hi` PDF~~ **FIXED** | 428 Latin digits, 0 Devanagari | port `web/lib/format.ts:toDevanagariNumerals` into `render/pdf.py` |
+| F-012 | ~~दिनमान / रात्रीमान absent from ChartFacts and the sheet~~ **FIXED** | derivable from sunrise/sunset but never printed | emit both, in ghati–pala |
+| F-013 | ~~Namakaran **and** numerology computed, then discarded~~ **FIXED** | `FullReading.namakaran` fully populated; absent from ChartFacts, UI, PDF | emit them; CLAUDE.md §3.6's two substantive uses of `name` are currently dead |
 | F-014 | Doctrinal provenance reaches the user as **one English sentence in a collapsed `<details>`** | no locale contains शास्त्र/परंपरा/लोकमत as provenance vocabulary | add a translated provenance label per rule; surface it uncollapsed for `strength: weak` rules |
 | F-015 | Disclaimer in a page-bottom `<footer>`, `--muted`, 0.85rem — the exact placement AUDIT §7 names as failing | the code comment quotes "do not bury it" immediately above the `<footer>` | move above the fold on birth-input and result screens |
 | F-016 | Kaal Sarpa reported only as a **dosha**; yoga/dosha never distinguished | `detail.arc` already records `rahu_to_ketu` vs `ketu_to_rahu`, the datum needed | label both readings, or state in `DIVERGENCES.md` that the distinction is refused as school-dependent |
@@ -246,6 +246,8 @@ nadi 0/8, `nadi_exception_same_nakshatra` **fired**. The engine does compute pad
 | F-020 | Raw `% 360.0` rather than `norm360()`, against §4.7's "one wrapper" | `core/timeutil.py:183,188` |
 | F-021 | ~~Sade Sati times published to **microseconds** though known to ±39 s~~ **FIXED** with F-001 — solved to 1e-7 d, reported at whole seconds | `core/doshas/computed.py` |
 | F-022 | Graded drishti piecewise scale carries no citation | `core/chart/aspects.py:88` |
+| F-026 | **NEW.** SVG accessibility text (`<title>`, `<desc>` on each house) carries English ordinals — "1st house, तूळ" — on a Marathi page. Documented in `chart_svg.py` as deliberate on the grounds that a screen reader gets the localised table instead, but a `bhava` namespace already exists and would serve. Raised, not fixed: it needs house labels threaded into `ChartData`, which is wider than this cluster | `render/chart_svg.py:395` |
+| F-025 | **FIXED with the cluster.** Numerology returned `0` for a Devanagari name — both systems value Latin letters only, so for a Marathi-first product nearly every user would have seen a 0 presented as a total. Now `applicable: false` with null totals, and "लागू नाही" on the sheet. Transliterating first would invent a convention CLAUDE.md 11 forbids | `core/name/numerology.py` |
 | F-024 | **FIXED with F-004.** Warning keys rendered as raw Latin machine keys in all three locales — the F-005 defect in a vocabulary that finding did not check. Six keys, now in a `warning` namespace; the gate parses the producers so a seventh cannot ship untranslated. The printed sheet also *triggered* a banner on warnings and then never printed them | `web/components/ConfidenceBanner.tsx`, `render/pdf.py` |
 | F-023 | **NEW.** `SAPTAVARGAJA_POINTS` contains `EXALTED: 30.0`, but exaltation is not a category of the classical Saptavargaja ladder (moolatrikona 45 / own 30 / friend 22.5 / …) — it is rewarded separately by Uchcha bala. As written, a graha in an exaltation sign that is not its own sign is paid 30 rather than its relational value, so exaltation is counted twice. Found while fixing F-003; **raised, not fixed** — removing the row changes Sthana bala for every graha in an exaltation sign and needs a chapter citation this session cannot supply | `core/chart/shadbala.py:65` |
 

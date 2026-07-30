@@ -80,6 +80,23 @@ class NumerologyReading:
     #: Letters that carried no value in this system.
     unmapped: tuple[str, ...]
 
+    @property
+    def applicable(self) -> bool:
+        """Whether this system can read the name at all.
+
+        Both systems assign values to Latin letters, so a name written in
+        Devanagari - which is most names this product will see - has nothing to
+        sum and the totals come out zero. Zero is not a numerology result; it
+        means the question does not apply, and publishing it as a number invites
+        a reader to interpret it (audit F-025).
+
+        Transliterating Devanagari into Latin first would make a number appear,
+        and would be an unsourced convention of exactly the kind CLAUDE.md 11
+        forbids: the schemes disagree, and neither system was ever defined over
+        this script.
+        """
+        return bool(self.letter_values)
+
 
 @dataclass(frozen=True, slots=True)
 class NameNumerology:

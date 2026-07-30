@@ -27,6 +27,7 @@ Devanagari in the PDF and with the web font in the browser.
 from __future__ import annotations
 
 import html
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Final
@@ -65,7 +66,7 @@ class GrahaMark:
     #: Degrees within the sign, printed under the abbreviation on a full sheet.
     deg_in_rashi: float | None = None
 
-    def render_label(self, *, show_degrees: bool) -> str:
+    def render_label(self, *, show_degrees: bool, numerals: Callable[[str], str] = str) -> str:
         """The text drawn in the cell. Markers are appended, never substituted."""
         text = self.label
         if self.retrograde:
@@ -73,7 +74,12 @@ class GrahaMark:
         if self.combust:
             text += " †"  # dagger: combust
         if show_degrees and self.deg_in_rashi is not None:
-            text += f" {self.deg_in_rashi:.0f}°"
+            # `numerals` is injected rather than assumed: this geometry is shared
+            # by the printed sheet and the browser, and the two answer the
+            # CLAUDE.md 7 numeral toggle separately. Latin by default, so the web
+            # is unchanged and only a caller that asks gets Devanagari.
+            degrees = numerals(f"{self.deg_in_rashi:.0f}")
+            text += f" {degrees}°"
         return text
 
 
@@ -222,7 +228,13 @@ def _text(x: float, y: float, content: str, cls: str, anchor: str = "middle") ->
 
 
 def _graha_lines(
-    cell: HouseCell, x: float, y: float, *, show_degrees: bool, line_height: float = 16.0
+    cell: HouseCell,
+    x: float,
+    y: float,
+    *,
+    show_degrees: bool,
+    line_height: float = 16.0,
+    numerals: Callable[[str], str] = str,
 ) -> list[str]:
     """Stacked graha labels, centred on ``(x, y)``.
 
@@ -243,7 +255,11 @@ def _graha_lines(
 
 
 def render_north_indian(
-    data: ChartData, *, show_degrees: bool = False, show_sav: bool = False
+    data: ChartData,
+    *,
+    show_degrees: bool = False,
+    show_sav: bool = False,
+    numerals: Callable[[str], str] = str,
 ) -> str:
     """The North Indian diamond. Fixed houses, rotating signs."""
     polygons = _north_indian_polygons()
@@ -277,10 +293,10 @@ def render_north_indian(
         )
         # The rashi number sits above the grahas: the sign rotates in this layout,
         # so it must be printed rather than inferred from position.
-        parts.append(_text(cx, cy - 14.0, str(cell.rashi), "k-rashi"))
-        parts.extend(_graha_lines(cell, cx, cy + 4.0, show_degrees=show_degrees))
+        parts.append(_text(cx, cy - 14.0, numerals(str(cell.rashi)), "k-rashi"))
+        parts.extend(_graha_lines(cell, cx, cy + 4.0, show_degrees=show_degrees, numerals=numerals))
         if show_sav and cell.sav is not None:
-            parts.append(_text(cx, cy + 22.0, str(cell.sav), "k-sav"))
+            parts.append(_text(cx, cy + 22.0, numerals(str(cell.sav)), "k-sav"))
         if cell.rashi == data.lagna_rashi:
             parts.append(_text(cx, cy - 26.0, "▲", "k-lagna"))
 
@@ -288,7 +304,11 @@ def render_north_indian(
 
 
 def render_south_indian(
-    data: ChartData, *, show_degrees: bool = False, show_sav: bool = False
+    data: ChartData,
+    *,
+    show_degrees: bool = False,
+    show_sav: bool = False,
+    numerals: Callable[[str], str] = str,
 ) -> str:
     """The South Indian square. Fixed signs, rotating houses."""
     cells = _south_indian_cells()
@@ -315,11 +335,17 @@ def render_south_indian(
         )
         # The house number is what rotates here, so it is the printed label.
         if cell is not None:
-            parts.append(_text(x + 5.0, y + 15.0, str(cell.house), "k-rashi", anchor="start"))
-            parts.extend(_graha_lines(cell, cx, cy + 2.0, show_degrees=show_degrees))
+            parts.append(
+                _text(x + 5.0, y + 15.0, numerals(str(cell.house)), "k-rashi", anchor="start")
+            )
+            parts.extend(
+                _graha_lines(cell, cx, cy + 2.0, show_degrees=show_degrees, numerals=numerals)
+            )
             if show_sav and cell.sav is not None:
                 parts.append(
-                    _text(x + width - 5.0, y + height - 6.0, str(cell.sav), "k-sav", "end")
+                    _text(
+                        x + width - 5.0, y + height - 6.0, numerals(str(cell.sav)), "k-sav", "end"
+                    )
                 )
             if rashi == data.lagna_rashi:
                 parts.append(_text(x + width - 8.0, y + 15.0, "▲", "k-lagna", "end"))
@@ -333,11 +359,16 @@ def render(
     *,
     show_degrees: bool = False,
     show_sav: bool = False,
+    numerals: Callable[[str], str] = str,
 ) -> str:
     """Render in the requested style. North Indian is the default (CLAUDE.md 8)."""
     if style is ChartStyle.NORTH_INDIAN:
-        return render_north_indian(data, show_degrees=show_degrees, show_sav=show_sav)
-    return render_south_indian(data, show_degrees=show_degrees, show_sav=show_sav)
+        return render_north_indian(
+            data, show_degrees=show_degrees, show_sav=show_sav, numerals=numerals
+        )
+    return render_south_indian(
+        data, show_degrees=show_degrees, show_sav=show_sav, numerals=numerals
+    )
 
 
 def _document(data: ChartData, parts: list[str], style: ChartStyle) -> str:
@@ -382,7 +413,12 @@ def _ordinal(n: int) -> str:
 # ---------------------------------------------------------------------------
 
 
-def render_table(data: ChartData, *, headers: tuple[str, str, str] | None = None) -> str:
+def render_table(
+    data: ChartData,
+    *,
+    headers: tuple[str, str, str] | None = None,
+    numerals: Callable[[str], str] = str,
+) -> str:
     """A semantic HTML table carrying the same information as the chart.
 
     CLAUDE.md 8 requires this: a diamond of SVG polygons is unreadable to a screen
@@ -394,12 +430,15 @@ def render_table(data: ChartData, *, headers: tuple[str, str, str] | None = None
     house_h, rashi_h, graha_h = headers or ("House", "Rashi", "Grahas")
     rows: list[str] = []
     for cell in sorted(data.cells, key=lambda c: c.house):
-        grahas = ", ".join(g.render_label(show_degrees=True) for g in cell.grahas) or "—"
+        grahas = (
+            ", ".join(g.render_label(show_degrees=True, numerals=numerals) for g in cell.grahas)
+            or "—"
+        )
         lagna = " ▲" if cell.rashi == data.lagna_rashi else ""
         rows.append(
             "<tr>"
-            f'<th scope="row">{cell.house}{lagna}</th>'
-            f"<td>{html.escape(data.rashi_labels.get(cell.rashi, str(cell.rashi)))}</td>"
+            f'<th scope="row">{numerals(str(cell.house))}{lagna}</th>'
+            f"<td>{html.escape(data.rashi_labels.get(cell.rashi, numerals(str(cell.rashi))))}</td>"
             f"<td>{html.escape(grahas)}</td>"
             "</tr>"
         )

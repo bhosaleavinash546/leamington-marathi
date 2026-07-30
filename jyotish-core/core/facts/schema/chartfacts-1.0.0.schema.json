@@ -208,6 +208,16 @@
       ],
       "properties": {
         "hindu_civil_date": { "type": "string", "format": "date" },
+        "day_night_length": {
+          "description": "दिनमान and रात्रीमान - daylight and night length in ghati-pala. Night runs sunset to the next sunrise, since the Hindu day is sunrise-bounded.",
+          "type": "object",
+          "required": ["dinamana", "ratrimana"],
+          "additionalProperties": false,
+          "properties": {
+            "dinamana": { "$ref": "#/$defs/ghatiSpan" },
+            "ratrimana": { "$ref": "#/$defs/ghatiSpan" }
+          }
+        },
         "hindu_date": {
           "type": "object",
           "additionalProperties": false,
@@ -607,12 +617,25 @@
       }
     },
     "numerologyReading": {
+      "description": "Totals are null when `applicable` is false. Both systems value Latin letters only, so a Devanagari name has nothing to sum and a published 0 would read as a result (audit F-025).",
       "type": "object",
       "additionalProperties": false,
-      "required": ["raw_total", "reduced"],
+      "required": ["applicable", "raw_total", "reduced"],
       "properties": {
-        "raw_total": { "type": "integer", "minimum": 0 },
-        "reduced": { "type": "integer", "minimum": 0, "maximum": 33 }
+        "applicable": { "type": "boolean" },
+        "raw_total": { "type": ["integer", "null"], "minimum": 0 },
+        "reduced": { "type": ["integer", "null"], "minimum": 0, "maximum": 33 }
+      }
+    },
+    "ghatiSpan": {
+      "description": "A span in traditional units. Pala is floored, so a dinamana and ratrimana pair need not sum to exactly 60-0; the minutes are exact.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ghati", "pala", "minutes"],
+      "properties": {
+        "ghati": { "type": "integer", "minimum": 0, "maximum": 60 },
+        "pala": { "type": "integer", "minimum": 0, "maximum": 59 },
+        "minutes": { "type": "number", "minimum": 0 }
       }
     }
   }

@@ -1038,3 +1038,145 @@ def test_the_printed_sheet_prints_its_warnings(facts: dict[str, Any]) -> None:
     html = build_sheet_html(polar, "mr")
     term = load_glossary("mr")["warning"]["polar_latitude_sunrise_may_be_undefined"]
     assert term in html, "the sheet triggered a banner but printed no warning text"
+
+
+# ---------------------------------------------------------------------------
+# The patrika cluster: F-010, F-011, F-012, F-013, F-025
+# ---------------------------------------------------------------------------
+
+
+def test_grahaspashta_is_printed_in_rashi_degree_minute(facts: dict[str, Any]) -> None:
+    """Audit F-010. Decimal degrees are what mark a sheet as machine-generated."""
+    import re
+
+    from render.pdf import build_sheet_html
+
+    html = build_sheet_html(facts, "mr")
+    assert re.search(r"[ऀ-ॿ]+\s[०-९]+°[०-९]{2}′", html), "no rashi-degree-minute cell found"
+    # The old form, e.g. "मिथुन 0.28°", must be gone.
+    assert not re.search(r"[ऀ-ॿ]+\s\d+\.\d+°", html)
+
+
+def test_format_dm_carries_a_rounded_sixty_into_the_degree() -> None:
+    """29.9999° must read 30°00′, never 29°60′."""
+    from core.angles import format_dm
+
+    assert format_dm(12.7333) == "12°44′"
+    assert format_dm(29.9999) == "30°00′"
+    assert format_dm(0.2833) == "0°17′"
+
+
+@pytest.mark.parametrize("locale", ["mr", "hi"])
+def test_the_sheet_prints_devanagari_numerals(locale: str, facts: dict[str, Any]) -> None:
+    """Audit F-011. The web had the toggle since Phase 5; the sheet had 0 of them.
+
+    Only the engine version and the evidence keys may stay Latin: both are
+    machine identifiers a reader checks against the engine, and a digit inside
+    ``mars_in_house_7`` is part of the key.
+    """
+    import re
+
+    from render.pdf import build_sheet_html
+
+    html = build_sheet_html(facts, locale)
+    # Visible text only. SVG <title> and <desc> are accessibility text, which
+    # carries English ordinals ("1st house") by a documented decision in
+    # chart_svg.py. Logged as F-026 rather than swept into this assertion: it is
+    # an N5 question, not a numeral one.
+    stripped = re.sub(
+        r"<style.*?</style>|<desc>.*?</desc>|<title[^>]*>.*?</title>", "", html, flags=re.S
+    )
+    visible = re.sub(r"<[^>]+>", " ", stripped)
+    assert len(re.findall(r"[०-९]", visible)) > 100
+    stray = {
+        token
+        for token in re.findall(r"\S*[0-9]\S*", visible)
+        if token != facts["engine_version"] and "_" not in token
+    }
+    assert stray == set(), f"Latin digits left on the {locale} sheet: {sorted(stray)}"
+
+
+def test_the_english_sheet_keeps_latin_numerals(facts: dict[str, Any]) -> None:
+    """The converter is locale-bound, not global."""
+    import re
+
+    from render.pdf import build_sheet_html
+
+    html = build_sheet_html(facts, "en")
+    assert re.search(r"\d", html)
+    assert not re.search(r"[०-९]", html)
+
+
+def test_dinamana_and_ratrimana_are_computed_and_printed(facts: dict[str, Any]) -> None:
+    """Audit F-012. A Marathi sheet prints both beside sunrise and sunset."""
+    from render.pdf import build_sheet_html
+
+    span = facts["panchang"]["day_night_length"]
+    assert span["dinamana"]["ghati"] + span["ratrimana"]["ghati"] in (59, 60)
+    # Night runs to the *next* sunrise, so the pair covers the whole Hindu day.
+    total = span["dinamana"]["minutes"] + span["ratrimana"]["minutes"]
+    assert 1430.0 < total < 1450.0, f"day+night = {total:.1f} min, not ~1440"
+
+    html = build_sheet_html(facts, "mr")
+    assert load_glossary("mr")["panchang"]["dinamana"] in html
+    assert load_glossary("mr")["panchang"]["ratrimana"] in html
+
+
+def test_namakaran_reaches_the_printed_sheet(facts: dict[str, Any]) -> None:
+    """Audit F-013. It was computed and published in ChartFacts, but never shown.
+
+    (The audit register said it was absent from ChartFacts; that was wrong - it
+    sits under `name.namakaran`. What was missing is the rendering.)
+    """
+    from render.pdf import build_sheet_html
+
+    assert facts["name"]["namakaran"]["pada_syllable"]
+    html = build_sheet_html(facts, "mr")
+    ui = load_glossary("mr")["ui"]
+    assert ui["namakaran"] in html
+    assert facts["name"]["namakaran"]["pada_syllable"] in html
+
+
+def test_numerology_reports_inapplicability_rather_than_zero() -> None:
+    """Audit F-025. Both systems value Latin letters only.
+
+    A Devanagari name has nothing to sum, and a published 0 reads as a result -
+    for a Marathi-first product that would be nearly every user. Transliterating
+    first would invent a convention CLAUDE.md 11 forbids.
+    """
+    from render.pdf import build_sheet_html
+
+    devanagari = build_chart_facts(
+        compute_full_reading(
+            BirthData(
+                name="अविनाश",
+                date=dt.date(1990, 6, 15),
+                time=dt.time(14, 32),
+                place=Place("Pune", 18.5204, 73.8567, "Asia/Kolkata", 560.0),
+            ),
+            now=dt.datetime(2026, 7, 30, 12, 0, tzinfo=dt.UTC),
+        )
+    )
+    reading = devanagari["name"]["numerology"]["chaldean"]
+    assert reading["applicable"] is False
+    assert reading["raw_total"] is None and reading["reduced"] is None
+    assert load_glossary("mr")["ui"]["not_applicable_to_script"] in build_sheet_html(
+        devanagari, "mr"
+    )
+
+    latin = build_chart_facts(
+        compute_full_reading(
+            BirthData(
+                name="Avinash",
+                date=dt.date(1990, 6, 15),
+                time=dt.time(14, 32),
+                place=Place("Pune", 18.5204, 73.8567, "Asia/Kolkata", 560.0),
+            ),
+            now=dt.datetime(2026, 7, 30, 12, 0, tzinfo=dt.UTC),
+        )
+    )
+    assert latin["name"]["numerology"]["chaldean"] == {
+        "applicable": True,
+        "raw_total": 22,
+        "reduced": 4,
+    }

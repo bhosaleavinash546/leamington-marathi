@@ -41,8 +41,9 @@ from core.enums import (
 from core.ephemeris.adapter import Ephemeris
 from core.ephemeris.registry import build_ephemeris
 from core.name.namakaran import NamakaranCheck, check_namakaran
-from core.name.numerology import NameNumerology, compute_numerology
+from core.name.numerology import NameNumerology, NumerologyReading, compute_numerology
 from core.panchang.day import BirthMoment, PanchangDay, panchang_for_instant
+from core.panchang.ishtakaal import compute_day_night_length
 from core.rules.engine import RuleMatch, evaluate_rules, load_doshas, load_yogas
 from core.timeutil import iso_utc, jd_from_utc, lmt_offset_seconds, to_utc
 from core.types import ACCURACY_WINDOW_MINUTES, BirthData, InputError
@@ -388,11 +389,31 @@ def _input_block(reading: FullReading) -> dict[str, Any]:
     }
 
 
+def _day_night_block(day: PanchangDay) -> dict[str, Any]:
+    """दिनमान and रात्रीमान in ghati-pala, with minutes alongside."""
+    length = compute_day_night_length(day.lights)
+    return {
+        "dinamana": {
+            "ghati": length.dinamana_ghati,
+            "pala": length.dinamana_pala,
+            "minutes": round(length.dinamana_minutes, 3),
+        },
+        "ratrimana": {
+            "ghati": length.ratrimana_ghati,
+            "pala": length.ratrimana_pala,
+            "minutes": round(length.ratrimana_minutes, 3),
+        },
+    }
+
+
 def _panchang_block(reading: FullReading) -> dict[str, Any]:
     day = reading.panchang
     hd = day.hindu_date
     block: dict[str, Any] = {
         "hindu_civil_date": day.hindu_civil_date.isoformat(),
+        # दिनमान and रात्रीमान. A Marathi sheet prints both beside sunrise and
+        # sunset; night runs to the *next* sunrise, not to midnight (audit F-012).
+        "day_night_length": _day_night_block(day),
         "hindu_date": {
             "shaka_year": hd.shaka_year,
             "month_key": hd.month_key,
@@ -649,19 +670,29 @@ def _dasha_block(timeline: VimshottariTimeline, current: CurrentDasha) -> dict[s
     }
 
 
+def _numerology_reading(reading: NumerologyReading) -> dict[str, Any]:
+    """One system's totals, or nulls where the name is not in Latin script.
+
+    Nulls rather than zeros: both systems value Latin letters only, so a
+    Devanagari name has nothing to sum, and a published 0 reads as a result
+    (audit F-025). ``applicable`` says which it is.
+    """
+    if not reading.applicable:
+        return {"applicable": False, "raw_total": None, "reduced": None}
+    return {
+        "applicable": True,
+        "raw_total": reading.raw_total,
+        "reduced": reading.reduced,
+    }
+
+
 def _name_block(reading: FullReading) -> dict[str, Any]:
     block: dict[str, Any] = {
         "display_name": reading.birth.name,
         "numerology": {
             "is_jyotish": False,
-            "chaldean": {
-                "raw_total": reading.numerology.chaldean.raw_total,
-                "reduced": reading.numerology.chaldean.reduced,
-            },
-            "pythagorean": {
-                "raw_total": reading.numerology.pythagorean.raw_total,
-                "reduced": reading.numerology.pythagorean.reduced,
-            },
+            "chaldean": _numerology_reading(reading.numerology.chaldean),
+            "pythagorean": _numerology_reading(reading.numerology.pythagorean),
         },
     }
     if reading.namakaran is not None:

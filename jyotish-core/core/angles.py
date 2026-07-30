@@ -95,6 +95,26 @@ def dms(deg: float) -> tuple[int, int, float]:
     return d, m, s
 
 
+def format_dm(deg: float) -> str:
+    """Format an angle as ``12°44′`` - degrees and arcminutes, no seconds.
+
+    This is the form a printed patrika uses for ग्रहस्पष्ट. Decimal degrees are
+    what marks a sheet as machine-generated (audit F-010), and arcseconds are
+    below the resolution anyone reads off a chart.
+
+    Uses the prime U+2032 rather than an ASCII apostrophe, because the value is
+    typeset rather than debugged. Minutes are *rounded*, and a rounded 60 carries
+    into the degree so ``29.9999`` reads ``30°00′`` and never ``29°60′``.
+    """
+    d, m, s = dms(deg)
+    if s >= 30.0:
+        m += 1
+    if m == 60:
+        d, m = d + 1, 0
+    sign = "-" if deg < 0 else ""
+    return f"{sign}{d}°{m:02d}\u2032"
+
+
 def format_dms(deg: float, places: int = 0) -> str:
     """Format an angle as ``12°34'56"`` for display and debugging.
 

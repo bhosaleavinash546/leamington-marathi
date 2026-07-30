@@ -60,6 +60,71 @@ class Ishtakaal:
         return f"{self.ghati}-{self.pala}-{self.vipala}"
 
 
+@dataclass(frozen=True, slots=True)
+class DayNightLength:
+    """दिनमान and रात्रीमान - the lengths of daylight and of night.
+
+    A Marathi patrika prints both beside sunrise and sunset, in ghati-pala, and
+    their absence marks a sheet as software-first (audit F-012). They are
+    reported rather than left to the reader to subtract because the Hindu day
+    runs sunrise to sunrise, so night is sunset to the *next* sunrise, which is
+    not what subtracting two times on one calendar date gives.
+    """
+
+    dinamana_ghati: int
+    dinamana_pala: int
+    ratrimana_ghati: int
+    ratrimana_pala: int
+    #: Kept alongside so a UI can print h:mm without reconverting.
+    dinamana_minutes: float
+    ratrimana_minutes: float
+
+    @property
+    def total_minutes(self) -> float:
+        """Day plus night: the whole Hindu day, sunrise to sunrise.
+
+        Stated in minutes rather than ghati because the ghati-pala pairs are each
+        *floored* for display, so 33-6 and 26-54 sum to 59 ghati and 60 pala
+        rather than to a tidy 60-0. The minutes are exact and the invariant lives
+        here; a caller wanting the pair to add up must carry the palas.
+        """
+        return self.dinamana_minutes + self.ratrimana_minutes
+
+
+def _ghati_pala(seconds: float, ghati_seconds: float) -> tuple[int, int]:
+    ghati = int(seconds // ghati_seconds)
+    pala_seconds = ghati_seconds / PALA_PER_GHATI
+    return ghati, int((seconds - ghati * ghati_seconds) // pala_seconds)
+
+
+def compute_day_night_length(
+    lights: DayLights,
+    convention: GhatiConvention = GhatiConvention.FIXED_24_MIN,
+) -> DayNightLength:
+    """दिनमान and रात्रीमान for one Hindu day.
+
+    Night is measured to the *next* sunrise, not to midnight, which is what makes
+    the pair sum to the whole day.
+    """
+    day = (lights.sunset - lights.sunrise).total_seconds()
+    night = (lights.next_sunrise - lights.sunset).total_seconds()
+    if convention is GhatiConvention.FIXED_24_MIN:
+        ghati_seconds = SECONDS_PER_GHATI
+    else:
+        ghati_seconds = (lights.next_sunrise - lights.sunrise).total_seconds() / GHATI_PER_DAY
+
+    dg, dp = _ghati_pala(day, ghati_seconds)
+    ng, np_ = _ghati_pala(night, ghati_seconds)
+    return DayNightLength(
+        dinamana_ghati=dg,
+        dinamana_pala=dp,
+        ratrimana_ghati=ng,
+        ratrimana_pala=np_,
+        dinamana_minutes=day / 60.0,
+        ratrimana_minutes=night / 60.0,
+    )
+
+
 def compute_ishtakaal(
     lights: DayLights,
     when: dt.datetime,

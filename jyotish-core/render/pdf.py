@@ -28,8 +28,10 @@ from pathlib import Path
 from typing import Any, Final
 
 from api.locale import disclaimer, finding_label, load_glossary
+from core.angles import format_dm
 from render.adapter import rashi_chart, varga_chart
 from render.chart_svg import ChartStyle, render, render_table
+from render.numerals import numeral_formatter
 
 FONTS_DIR: Final[Path] = Path(__file__).resolve().parent / "fonts"
 DEVANAGARI_FONT: Final[Path] = FONTS_DIR / "NotoSansDevanagari-Variable.ttf"
@@ -197,25 +199,27 @@ def build_sheet_html(
     from narrative.projection import project
 
     glossary = load_glossary(locale)
+    num = numeral_formatter(locale)
     ui, chart_terms, panchang_terms = glossary["ui"], glossary["chart"], glossary["panchang"]
     has_chart = "chart" in facts
     panchang = project(facts, "panchang")["panchang"]
     hindu = panchang["hindu_date"]
+    born_at = num(facts["input"]["time"]) if facts["input"]["time"] else ui["not_available"]
 
     head = f"""
 <div class="sheet-head">
   <div>
     <h1>{facts["input"]["name"]}</h1>
-    <div>{ui["date_of_birth"]}: {facts["input"]["date"]}
-      &middot; {ui["time_of_birth"]}: {facts["input"]["time"] or ui["not_available"]}
+    <div>{ui["date_of_birth"]}: {num(facts["input"]["date"])}
+      &middot; {ui["time_of_birth"]}: {born_at}
       &middot; {ui["place_of_birth"]}: {facts["input"]["place"]["name"]}</div>
   </div>
   <div class="meta">
-    {panchang_terms["shaka_year"]} {hindu["shaka_year"]}
+    {panchang_terms["shaka_year"]} {num(hindu["shaka_year"])}
       &middot; {glossary["month"].get(hindu["month_display_key"], hindu["month_key"])}
       &middot; {panchang_terms[hindu["paksha"]]}<br>
     {chart_terms["ayanamsa"]}: {facts["ephemeris"]["ayanamsa"]}
-      ({facts["ephemeris"]["ayanamsa_value_deg"]:.4f}°)<br>
+      ({num(f"{facts['ephemeris']['ayanamsa_value_deg']:.4f}")}°)<br>
     engine {facts["engine_version"]} &middot; {facts["authority"]}
   </div>
 </div>
@@ -244,29 +248,37 @@ def build_sheet_html(
 
     charts = ""
     if has_chart:
-        d1 = render(rashi_chart(facts, locale), style, show_degrees=False, show_sav=True)
-        d9 = render(varga_chart(facts, "D9", locale), style)
+        d1 = render(
+            rashi_chart(facts, locale), style, show_degrees=False, show_sav=True, numerals=num
+        )
+        d9 = render(varga_chart(facts, "D9", locale), style, numerals=num)
         # CLAUDE.md 8: "Rashi and Navamsa charts side by side."
         charts = f'<div class="charts"><figure>{d1}</figure><figure>{d9}</figure></div>'
 
     panchang_rows = [
-        (panchang_terms["tithi"], _tithi_line(panchang, glossary, "at_sunrise")),
-        (panchang_terms["nakshatra"], _nak_line(panchang, glossary, "at_sunrise")),
-        (panchang_terms["yoga"], _limb_line(panchang, glossary, "yoga", "at_sunrise")),
-        (panchang_terms["karana"], _limb_line(panchang, glossary, "karana", "at_sunrise")),
+        (panchang_terms["tithi"], _tithi_line(panchang, glossary, "at_sunrise", num)),
+        (panchang_terms["nakshatra"], _nak_line(panchang, glossary, "at_sunrise", num)),
+        (panchang_terms["yoga"], _limb_line(panchang, glossary, "yoga", "at_sunrise", num)),
+        (panchang_terms["karana"], _limb_line(panchang, glossary, "karana", "at_sunrise", num)),
         (panchang_terms["vara"], glossary["vara"].get(panchang["vara"]["key"], "")),
-        (panchang_terms["sunrise"], _local(panchang.get("sunrise_local"))),
-        (panchang_terms["sunset"], _local(panchang.get("sunset_local"))),
+        (panchang_terms["sunrise"], num(_local(panchang.get("sunrise_local")))),
+        (panchang_terms["sunset"], num(_local(panchang.get("sunset_local")))),
         (
             panchang_terms["rahu_kaal"],
-            f"{_local(panchang['rahu_kaal'].get('start_local'))}"
-            f"–{_local(panchang['rahu_kaal'].get('end_local'))}",
+            num(
+                f"{_local(panchang['rahu_kaal'].get('start_local'))}"
+                f"–{_local(panchang['rahu_kaal'].get('end_local'))}"
+            ),
         ),
         (
             panchang_terms["abhijit_muhurta"],
-            f"{_local(panchang['abhijit_muhurta'].get('start_local'))}"
-            f"–{_local(panchang['abhijit_muhurta'].get('end_local'))}",
+            num(
+                f"{_local(panchang['abhijit_muhurta'].get('start_local'))}"
+                f"–{_local(panchang['abhijit_muhurta'].get('end_local'))}"
+            ),
         ),
+        (panchang_terms["dinamana"], _ghati_span(panchang, "dinamana", panchang_terms, num)),
+        (panchang_terms["ratrimana"], _ghati_span(panchang, "ratrimana", panchang_terms, num)),
         (panchang_terms["ritu"], glossary["panchang"].get(panchang["ritu"]["key"], "")),
         (panchang_terms["ayana"], panchang_terms[panchang["ayana"]]),
     ]
@@ -275,7 +287,8 @@ def build_sheet_html(
         panchang_rows.append(
             (
                 panchang_terms["ishtakaal"],
-                f"{ik['ghati']} {panchang_terms['ghati']} {ik['pala']} {panchang_terms['pala']}",
+                f"{num(ik['ghati'])} {panchang_terms['ghati']} "
+                f"{num(ik['pala'])} {panchang_terms['pala']}",
             )
         )
     if panchang.get("tithi_at_birth"):
@@ -283,7 +296,7 @@ def build_sheet_html(
             1,
             (
                 f"{panchang_terms['tithi']} ({ui['time_of_birth']})",
-                _tithi_line(panchang, glossary, "at_birth"),
+                _tithi_line(panchang, glossary, "at_birth", num),
             ),
         )
 
@@ -293,6 +306,8 @@ def build_sheet_html(
         f"{_kv_table('', panchang_rows[: len(panchang_rows) // 2])}"
         f"{_kv_table('', panchang_rows[len(panchang_rows) // 2 :])}</div>"
     )
+
+    sections.append(_name_section(facts, locale))
 
     if has_chart:
         sections.append(f"<h2>{chart_terms['kundali']}</h2>{_graha_table(facts, locale)}")
@@ -305,6 +320,7 @@ def build_sheet_html(
                     chart_terms["rashi_chart"],
                     "ग्रह" if locale in ("mr", "hi") else "Grahas",
                 ),
+                numerals=num,
             )
         )
     if "dasha" in facts:
@@ -331,33 +347,97 @@ def build_sheet_html(
 </html>"""
 
 
-def _tithi_line(panchang: dict[str, Any], glossary: dict[str, Any], which: str) -> str:
+def _tithi_line(
+    panchang: dict[str, Any], glossary: dict[str, Any], which: str, num: Any = str
+) -> str:
     node = panchang.get(f"tithi_{which}")
     if not node:
         return "—"
     name = glossary["tithi"].get(node["key"], node["key"])
-    end = _local(node.get("end_local"))
-    return f"{name} ({end})"
+    return f"{name} ({num(_local(node.get('end_local')))})"
 
 
-def _nak_line(panchang: dict[str, Any], glossary: dict[str, Any], which: str) -> str:
+def _nak_line(
+    panchang: dict[str, Any], glossary: dict[str, Any], which: str, num: Any = str
+) -> str:
     node = panchang.get(f"nakshatra_{which}")
     if not node:
         return "—"
     name = glossary["nakshatra"].get(node["key"], node["key"])
-    return f"{name} {node['pada']} ({_local(node.get('end_local'))})"
+    return f"{name} {num(node['pada'])} ({num(_local(node.get('end_local')))})"
 
 
-def _limb_line(panchang: dict[str, Any], glossary: dict[str, Any], kind: str, which: str) -> str:
+def _limb_line(
+    panchang: dict[str, Any], glossary: dict[str, Any], kind: str, which: str, num: Any = str
+) -> str:
     node = panchang.get(f"{kind}_{which}")
     if not node:
         return "—"
     name = glossary[kind].get(node["key"], node["key"])
-    return f"{name} ({_local(node.get('end_local'))})"
+    return f"{name} ({num(_local(node.get('end_local')))})"
+
+
+def _ghati_span(panchang: dict[str, Any], key: str, terms: dict[str, str], num: Any) -> str:
+    """दिनमान or रात्रीमान in ghati-pala. Empty if the engine did not emit it."""
+    span = panchang.get("day_night_length", {}).get(key)
+    if not span:
+        return ""
+    return f"{num(span['ghati'])} {terms['ghati']} {num(span['pala'])} {terms['pala']}"
+
+
+def _name_section(facts: dict[str, Any], locale: str) -> str:
+    """नामकरण syllables, and numerology in its own clearly-labelled block.
+
+    CLAUDE.md 3.6 gives `name` three honest uses and the engine computed all
+    three; the sheet printed only the first, so the Namakaran check reached
+    ChartFacts and stopped there (audit F-013).
+
+    Numerology is separated and labelled "not Jyotish" because CLAUDE.md 3.6 asks
+    for exactly that, and it prints "not applicable" rather than a total for a
+    Devanagari name - both systems value Latin letters only, so a zero would read
+    as a result (audit F-025).
+    """
+    name_block = facts.get("name")
+    if not name_block:
+        return ""
+    glossary = load_glossary(locale)
+    ui, num = glossary["ui"], numeral_formatter(locale)
+    rows: list[tuple[str, str]] = []
+
+    nk = name_block.get("namakaran")
+    if nk:
+        nak = glossary["nakshatra"].get(nk["nakshatra_key"], nk["nakshatra_key"])
+        rows += [
+            (
+                ui["namakaran_pada_syllable"],
+                f"{nk['pada_syllable']} ({nak} {ui.get('pada', '')} {num(nk['pada'])})".replace(
+                    "  ", " "
+                ),
+            ),
+            (ui["namakaran_syllables"], ", ".join(nk["nakshatra_syllables"])),
+            (ui["namakaran_match"], glossary["common"]["yes" if nk["matches_pada"] else "no"]),
+        ]
+
+    numerology = name_block.get("numerology", {})
+    for system in ("chaldean", "pythagorean"):
+        reading = numerology.get(system)
+        if not reading:
+            continue
+        value = (
+            f"{num(reading['raw_total'])} → {num(reading['reduced'])}"
+            if reading.get("applicable")
+            else ui["not_applicable_to_script"]
+        )
+        rows.append((f"{ui['numerology']} · {system}", value))
+
+    if not rows:
+        return ""
+    return f"<h2>{ui['namakaran']}</h2>{_kv_table('', rows)}"
 
 
 def _graha_table(facts: dict[str, Any], locale: str) -> str:
     glossary = load_glossary(locale)
+    num = numeral_formatter(locale)
     graha_names = glossary["graha"]
     rashi_names = glossary["rashi"]
     nak_names = glossary["nakshatra"]
@@ -373,14 +453,17 @@ def _graha_table(facts: dict[str, Any], locale: str) -> str:
         rows.append(
             "<tr>"
             f'<th scope="row">{graha_names.get(graha["key"], graha["key"])}</th>'
+            # ग्रहस्पष्ट in rashi-degree-minute, which is what a patrika prints.
+            # Decimal degrees are the giveaway that a sheet came out of software
+            # (audit F-010); the formatter has existed in core/angles.py all along.
             f"<td>{rashi_names.get(graha['rashi_key'], graha['rashi_key'])}"
-            f" {graha['deg_in_rashi']:.2f}°</td>"
-            f"<td>{graha['house_whole_sign']}</td>"
-            f"<td>{graha['house_chalit']}</td>"
+            f" {num(format_dm(graha['deg_in_rashi']))}</td>"
+            f"<td>{num(graha['house_whole_sign'])}</td>"
+            f"<td>{num(graha['house_chalit'])}</td>"
             f"<td>{nak_names.get(graha['nakshatra_key'], graha['nakshatra_key'])}"
-            f" {graha['pada']}</td>"
+            f" {num(graha['pada'])}</td>"
             f"<td>{chart_terms.get(graha['dignity'], graha['dignity'])}</td>"
-            f"<td>{'' if bala is None else f'{bala:.2f}'}</td>"
+            f"<td>{'' if bala is None else num(f'{bala:.2f}')}</td>"
             f"<td>{', '.join(markers)}</td>"
             "</tr>"
         )
@@ -406,6 +489,7 @@ def _dasha_table(facts: dict[str, Any], locale: str) -> str:
     from narrative.projection import project
 
     glossary = load_glossary(locale)
+    num = numeral_formatter(locale)
     graha_names, dasha_terms = glossary["graha"], glossary["dasha"]
     dasha = project(facts, "dasha")["dasha"]
 
@@ -413,16 +497,16 @@ def _dasha_table(facts: dict[str, Any], locale: str) -> str:
         (
             dasha_terms.get(level, level),
             f"{graha_names.get(node['lord'], node['lord'])} "
-            f"({_local(node.get('start_local'), 'date')} – "
-            f"{_local(node.get('end_local'), 'date')})",
+            f"({num(_local(node.get('start_local'), 'date'))} – "
+            f"{num(_local(node.get('end_local'), 'date'))})",
         )
         for level, node in dasha["current"].items()
     ]
     timeline_rows = "".join(
         "<tr>"
         f'<th scope="row">{graha_names.get(p["lord"], p["lord"])}</th>'
-        f"<td>{_local(p.get('start_local'), 'date')}</td>"
-        f"<td>{_local(p.get('end_local'), 'date')}</td>"
+        f"<td>{num(_local(p.get('start_local'), 'date'))}</td>"
+        f"<td>{num(_local(p.get('end_local'), 'date'))}</td>"
         "</tr>"
         for p in dasha["timeline"]
     )
