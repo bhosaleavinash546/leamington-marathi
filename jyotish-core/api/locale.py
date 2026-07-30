@@ -42,6 +42,7 @@ GLOSSARY_NAMESPACES: Final[tuple[str, ...]] = (
     "dosha",
     "milan",
     "common",
+    "warning",
     "ui",
     "legal",
 )

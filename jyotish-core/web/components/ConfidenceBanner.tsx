@@ -19,6 +19,7 @@ import type { ChartFacts } from '@/lib/api';
  */
 export function ConfidenceBanner({ facts }: { facts: ChartFacts }) {
   const t = useTranslations('ui');
+  const tWarning = useTranslations('warning');
   const { birth_time, affected_fields, warnings } = facts.confidence;
 
   if (birth_time === 'exact' && warnings.length === 0) return null;
@@ -44,7 +45,15 @@ export function ConfidenceBanner({ facts }: { facts: ChartFacts }) {
         <ul className="banner__list banner__list--warnings">
           {warnings.map((warning) => (
             <li key={warning}>
-              <code>{warning}</code>
+              {/*
+                The sentence, not the key. These rendered as raw Latin
+                machine keys in all three locales until audit F-004 -
+                the F-005 defect in a vocabulary that finding missed.
+                The key stays beside it, as it does for evidence: the
+                reader gets prose, and anyone checking gets the identifier.
+              */}
+              <span>{tWarning.has(warning) ? tWarning(warning) : warning}</span>
+              <code className="banner__key">{warning}</code>
             </li>
           ))}
         </ul>

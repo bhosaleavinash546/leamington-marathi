@@ -229,10 +229,18 @@ def build_sheet_html(
             else ui["birth_time_approximate"]
         )
         items = "".join(f"<li>{f}</li>" for f in facts["confidence"]["affected_fields"])
-        banner = (
-            f'<div class="banner"><strong>{label}</strong>'
-            f"<div>{ui['affected_fields']}:</div><ul>{items}</ul></div>"
+        # The warnings themselves, which this banner previously triggered on and
+        # then did not print - so a pre-1955 birth produced a banner that said
+        # nothing about why (audit F-004). A sheet has no affordance to tap, so the
+        # sentence goes on the page.
+        warning_terms = glossary["warning"]
+        warnings = "".join(
+            f"<li>{warning_terms.get(key, key)}</li>" for key in facts["confidence"]["warnings"]
         )
+        body = f"<div>{ui['affected_fields']}:</div><ul>{items}</ul>" if items else ""
+        if warnings:
+            body += f"<ul>{warnings}</ul>"
+        banner = f'<div class="banner"><strong>{label}</strong>{body}</div>'
 
     charts = ""
     if has_chart:

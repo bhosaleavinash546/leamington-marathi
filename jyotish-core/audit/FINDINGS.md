@@ -11,13 +11,13 @@ possible.
 | Sev | Count | Fixed |
 |---|---|---|
 | S1 | 3 | **3** — F-001, F-002, F-003 |
-| S2 | 6 | 2 — F-005, F-006 |
+| S2 | 6 | **3** — F-004, F-005, F-006 |
 | S3 | 7 | — |
-| S4 | 7 | 2 — F-021 (with F-001), F-017 (with F-003) |
+| S4 | 8 | 3 — F-021 (F-001), F-017 (F-003), F-024 (F-004) |
 
-**Fixed so far:** F-001, F-002, F-021 (one root cause, `docs/DECISIONS.md` D18)
-F-005, F-006, and F-003 + F-017 (`DECISIONS.md` D19). Before/after values are recorded there and in the commit
-message, per CLAUDE.md 11. Everything else below stands unfixed.
+**Fixed so far:** F-001, F-002, F-021 (D18); F-005, F-006; F-003, F-017 (D19);
+F-004, F-024 (D20). Before/after values are recorded in `docs/DECISIONS.md` and
+in each commit message, per CLAUDE.md 11. Everything else below stands unfixed.
 
 **F-023 was found while fixing F-003 and is raised, not fixed** — it needs a
 citation this session cannot supply.
@@ -109,7 +109,7 @@ that the graha is also exalted.
 
 ## S2 — fix before launch
 
-### F-004 · timezone · `core/timeutil.py:143–157`
+### F-004 · timezone · `core/timeutil.py:143–157` · **FIXED**
 
 **Expected** A 1948 Mumbai birth recorded in local clock time resolves at Bombay
 Time, ≈UTC+04:51 (AUDIT §3.4 case 5).
@@ -130,6 +130,15 @@ the API say so. `TimeStandard.LMT` *is* the correct escape hatch (Mumbai LMT
 the §4.1 claim in the docs.
 **Test** Golden case: Mumbai 1948, both standards, assert the 39-minute gap and
 that the warning fires.
+**Outcome** Fixed as a warning, not a correction — the engine cannot know which
+standard a 1948 Bombay record used (the railways ran on IST while the city did
+not), so resolving it silently would swap one wrong answer for another.
+`pre_1955_indian_clock_time_ambiguous` fires when no standard is declared, the
+date is pre-1955, the zone is Indian and LMT differs from IST by ≥ 300 s.
+`ChartFacts.input.lmt_utc_offset_seconds` now travels beside the applied offset so
+the reader sees both readings of their own recorded time. No new `TimeStandard`:
+Bombay Time *was* Bombay's LMT, so `TimeStandard.LMT` already serves and no offset
+needed hard-coding. D20 records the correction to CLAUDE.md 4.1's premise.
 
 ### F-005 · language · `web/components/FindingsList.tsx:37`, `render/pdf.py:449` · **FIXED**
 
@@ -237,6 +246,7 @@ nadi 0/8, `nadi_exception_same_nakshatra` **fired**. The engine does compute pad
 | F-020 | Raw `% 360.0` rather than `norm360()`, against §4.7's "one wrapper" | `core/timeutil.py:183,188` |
 | F-021 | ~~Sade Sati times published to **microseconds** though known to ±39 s~~ **FIXED** with F-001 — solved to 1e-7 d, reported at whole seconds | `core/doshas/computed.py` |
 | F-022 | Graded drishti piecewise scale carries no citation | `core/chart/aspects.py:88` |
+| F-024 | **FIXED with F-004.** Warning keys rendered as raw Latin machine keys in all three locales — the F-005 defect in a vocabulary that finding did not check. Six keys, now in a `warning` namespace; the gate parses the producers so a seventh cannot ship untranslated. The printed sheet also *triggered* a banner on warnings and then never printed them | `web/components/ConfidenceBanner.tsx`, `render/pdf.py` |
 | F-023 | **NEW.** `SAPTAVARGAJA_POINTS` contains `EXALTED: 30.0`, but exaltation is not a category of the classical Saptavargaja ladder (moolatrikona 45 / own 30 / friend 22.5 / …) — it is rewarded separately by Uchcha bala. As written, a graha in an exaltation sign that is not its own sign is paid 30 rather than its relational value, so exaltation is counted twice. Found while fixing F-003; **raised, not fixed** — removing the row changes Sthana bala for every graha in an exaltation sign and needs a chapter citation this session cannot supply | `core/chart/shadbala.py:65` |
 
 ---

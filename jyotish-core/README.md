@@ -32,7 +32,7 @@ authority: दाते पंचांग (Date Panchang)
 cases selected: 62   transcribed: 0   pending: 62
 ```
 
-The engine *is* checked against 739 invariant and unit tests, and against
+The engine *is* checked against 749 invariant and unit tests, and against
 independently known calendar facts (Gudi Padwa 2023/24/25 → Shaka 1945/46/47;
 Adhika Shravana 2023; Adhika Jyeshtha 2018 and 2026; Adhika Ashwina 2020). What is
 outstanding is minute-level agreement with the named authority. See
@@ -56,7 +56,7 @@ python -m tools.facts_dump --name Avinash --date 1990-06-15 --time 14:32 \
 python -m tools.facts_dump --name Avinash --date 1990-06-15 \
     --lat 18.5204 --lon 73.8567 --tz Asia/Kolkata
 
-pytest                              # 739 tests, 62 golden cases pending
+pytest                              # 749 tests, 62 golden cases pending
 pytest -m "not slow"                # skip the Hypothesis sweeps
 python -m tools.locale_audit        # mr/hi/en completeness + divergence check
 python -m tools.narrative_test      # prohibited content, 7 categories x 3 locales
@@ -105,7 +105,7 @@ render/               one SVG geometry, shared by web, PDF and snapshot tests
 web/                  Next.js 15 App Router, next-intl, reads locales/ directly
 docs/                 DECISIONS, PANCHANG_AUTHORITY, SUNRISE_CONVENTION, DIVERGENCES,
                       GOLDEN_FILES, LOCALE_REVIEW
-locales/{mr,hi,en}/   20 namespaces, 327 hand-curated keys per locale
+locales/{mr,hi,en}/   21 namespaces, 333 hand-curated keys per locale
 tests/{unit,invariants,golden}/
 tools/                facts_dump, golden_verify, golden_add, locale_audit, narrative_test
 ```

@@ -44,7 +44,7 @@ from core.name.namakaran import NamakaranCheck, check_namakaran
 from core.name.numerology import NameNumerology, compute_numerology
 from core.panchang.day import BirthMoment, PanchangDay, panchang_for_instant
 from core.rules.engine import RuleMatch, evaluate_rules, load_doshas, load_yogas
-from core.timeutil import iso_utc, jd_from_utc, to_utc
+from core.timeutil import iso_utc, jd_from_utc, lmt_offset_seconds, to_utc
 from core.types import ACCURACY_WINDOW_MINUTES, BirthData, InputError
 from core.version import CHARTFACTS_SCHEMA_VERSION, ENGINE_VERSION
 
@@ -379,6 +379,11 @@ def _input_block(reading: FullReading) -> dict[str, Any]:
         # The offset actually applied, not the zone's current offset - the whole
         # point of CLAUDE.md 4.1.
         "resolved_utc_offset_seconds": reading.applied_offset_seconds,
+        # The local-mean-time offset for this longitude, reported beside the one
+        # actually applied. For a pre-1955 Indian birth the two are the competing
+        # readings of the same recorded clock time, and the reader is entitled to
+        # see the size of the doubt rather than only that it exists (audit F-004).
+        "lmt_utc_offset_seconds": lmt_offset_seconds(birth.place.longitude),
         "birth_utc": iso_utc(reading.birth_utc),
     }
 

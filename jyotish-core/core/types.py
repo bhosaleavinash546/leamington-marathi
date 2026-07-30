@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import datetime as dt
 from dataclasses import dataclass, field, replace
+from typing import Final
 
 from core.enums import (
     CalendarVariant,
@@ -23,6 +24,26 @@ from core.enums import (
 #: day, so sunrise - and therefore vara, headline tithi and Ishtakaal - is
 #: undefined on some dates (CLAUDE.md 3.1).
 POLAR_WARN_LATITUDE = 66.5
+
+#: The IANA zones covering India. Both names denote the same zone; `Asia/Calcutta`
+#: is the older alias and turns up in older records and databases.
+INDIAN_ZONES: Final[frozenset[str]] = frozenset({"Asia/Kolkata", "Asia/Calcutta"})
+
+#: Bombay kept Bombay Time until 1955 and Calcutta kept Calcutta Time until 1948,
+#: so a civil clock time recorded in India before this date may be any of three
+#: standards. From here on IST is the only one in use. See
+#: :attr:`BirthData.pre_1955_clock_time_is_ambiguous` and audit F-004.
+INDIAN_CIVIL_TIME_UNIFIED: Final[dt.date] = dt.date(1955, 1, 1)
+
+#: IST, as a number of seconds. Used only to size the gap against local mean time,
+#: never to convert - conversion goes through `zoneinfo` (CLAUDE.md 2.2).
+IST_OFFSET_SECONDS: Final[int] = 19_800
+
+#: How far local mean time must sit from IST before the pre-1955 ambiguity is
+#: worth reporting. Five minutes is about 1.25 deg of lagna; below that the doubt
+#: cannot move a rashi or a pada and the warning would be noise. At 82.5 deg E -
+#: the IST meridian - the gap is zero and nothing is reported.
+PRE_1955_LMT_GAP_WARN_SECONDS: Final[int] = 300
 
 
 class InputError(ValueError):
@@ -151,7 +172,41 @@ class BirthData:
 
         if is_pre_gregorian_british(self.date):
             out.append("date_precedes_gregorian_adoption_confirm_calendar")
+        if self.pre_1955_clock_time_is_ambiguous:
+            out.append("pre_1955_indian_clock_time_ambiguous")
         return tuple(out)
+
+    @property
+    def pre_1955_clock_time_is_ambiguous(self) -> bool:
+        """Whether a recorded Indian clock time predates a single civil standard.
+
+        CLAUDE.md 4.1 says ``zoneinfo`` with ``Asia/Kolkata`` "handles documented
+        transitions". For the Madras/Calcutta lineage and for wartime DST it does.
+        **For Bombay it cannot**: Bombay kept Bombay Time (~UTC+04:51) until 1955
+        and IANA has no zone for it, because IANA distinguishes places by their
+        post-1970 behaviour and India has been one zone throughout. Asking
+        ``Asia/Kolkata`` for 1948 Mumbai returns +05:30 and is 39 minutes out.
+
+        The engine cannot resolve the ambiguity, and must not pretend to: a 1948
+        Bombay certificate may record Bombay Time *or* IST, since the railways and
+        the government used IST while the city did not. Only whoever holds the
+        record knows. So this reports the doubt rather than silently picking, and
+        ``TimeStandard.LMT`` is the escape hatch - Bombay Time *was* Bombay's local
+        mean time, so the engine already has the right instrument and no offset
+        needs hard-coding (CLAUDE.md 2.2).
+
+        Nothing is flagged once the caller has declared a standard, and nothing is
+        flagged where the gap is immaterial - at 82.5 deg E, the IST meridian, there
+        is no ambiguity to report.
+        """
+        from core.timeutil import lmt_offset_seconds
+
+        if self.time is None or self.time_standard is not TimeStandard.CLOCK_TIME_AS_RECORDED:
+            return False
+        if self.date >= INDIAN_CIVIL_TIME_UNIFIED or self.place.iana_tz not in INDIAN_ZONES:
+            return False
+        gap = abs(lmt_offset_seconds(self.place.longitude) - IST_OFFSET_SECONDS)
+        return gap >= PRE_1955_LMT_GAP_WARN_SECONDS
 
     def with_time(self, new_time: dt.time) -> BirthData:
         """Copy with a substituted clock time, for time-window bound runs."""

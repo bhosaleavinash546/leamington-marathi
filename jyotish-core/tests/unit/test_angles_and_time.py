@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import datetime as dt
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, available_timezones
 
 import pytest
 
@@ -41,6 +41,7 @@ from core.timeutil import (
     to_utc,
     utc_from_jd,
 )
+from core.types import BirthData, Place
 
 # ---------------------------------------------------------------------------
 # Angles
@@ -280,3 +281,99 @@ def test_iso_utc_and_minutes_between() -> None:
     assert iso_utc(when) == "2026-07-30T12:00:00Z"
     assert iso_utc(None) is None
     assert minutes_between(when + dt.timedelta(minutes=7), when) == pytest.approx(7.0)
+
+
+# ---------------------------------------------------------------------------
+# F-004: pre-1955 Indian clock time is ambiguous and tzdata cannot say so
+# ---------------------------------------------------------------------------
+
+
+def test_asia_kolkata_cannot_express_bombay_time() -> None:
+    """Audit F-004. The premise of CLAUDE.md 4.1 is false for Bombay.
+
+    CLAUDE.md 4.1 says ``zoneinfo`` with ``Asia/Kolkata`` "handles documented
+    transitions **if you localise the naive datetime with the historical date**".
+    It does for the Madras/Calcutta lineage and for wartime DST. It cannot for
+    Bombay Time (~UTC+04:51), which Bombay kept until 1955: IANA has no zone for
+    it, because IANA zones distinguish places only by their post-1970 behaviour
+    and all of India has been one zone since.
+
+    Asserted rather than described, because it is the fact the warning exists for.
+    """
+    kolkata = ZoneInfo("Asia/Kolkata")
+    offset = kolkata.utcoffset(dt.datetime(1948, 1, 30, 12, 0))
+    assert offset == dt.timedelta(hours=5, minutes=30)
+
+    indian_zones = {
+        z
+        for z in available_timezones()
+        if z.startswith(("Asia/Ka", "Asia/Ko", "Asia/C", "Asia/M", "Asia/B"))
+    }
+    bombay_capable = {
+        z
+        for z in indian_zones
+        if ZoneInfo(z).utcoffset(dt.datetime(1948, 1, 30, 12, 0))
+        == dt.timedelta(hours=4, minutes=51)
+    }
+    assert bombay_capable == set(), f"a zone does express Bombay Time: {bombay_capable}"
+
+
+def test_wartime_dst_is_reachable_even_though_bombay_time_is_not() -> None:
+    """The other half of CLAUDE.md 4.1, which tzdata *does* handle correctly."""
+    kolkata = ZoneInfo("Asia/Kolkata")
+    assert kolkata.utcoffset(dt.datetime(1943, 6, 1, 12)) == dt.timedelta(hours=6, minutes=30)
+    assert kolkata.utcoffset(dt.datetime(1946, 1, 1, 12)) == dt.timedelta(hours=5, minutes=30)
+
+
+def test_lmt_recovers_bombay_time_to_within_a_minute() -> None:
+    """Why the fix routes to LMT rather than inventing a `bombay_time` standard.
+
+    Bombay Time *was* Bombay's local mean time, so the engine already has the
+    right instrument. Adding a `TimeStandard.BOMBAY_TIME` would mean hard-coding an
+    offset whose exact seconds published sources disagree on - and CLAUDE.md 2.2
+    forbids hand-coded offsets while CLAUDE.md 11 forbids picking a convention
+    silently.
+    """
+    mumbai_lon = 72.8777
+    lmt = lmt_offset_seconds(mumbai_lon)
+    bombay_time = 4 * 3600 + 51 * 60  # the commonly published +04:51
+    assert abs(lmt - bombay_time) < 60, f"LMT {lmt} s vs Bombay Time {bombay_time} s"
+
+
+def test_a_pre_1955_indian_birth_warns_that_its_clock_time_is_ambiguous() -> None:
+    """The warning, and the magnitude it must carry."""
+    mumbai = Place("Mumbai", 19.0760, 72.8777, "Asia/Kolkata", 14.0)
+    birth = BirthData(name="A", date=dt.date(1948, 1, 30), time=dt.time(10, 30), place=mumbai)
+    assert "pre_1955_indian_clock_time_ambiguous" in birth.warnings
+
+    # A modern birth at the same place must not warn.
+    modern = BirthData(name="A", date=dt.date(1990, 6, 15), time=dt.time(10, 30), place=mumbai)
+    assert "pre_1955_indian_clock_time_ambiguous" not in modern.warnings
+
+    # Nor may it fire when the caller has already declared the standard.
+    declared = BirthData(
+        name="A",
+        date=dt.date(1948, 1, 30),
+        time=dt.time(10, 30),
+        place=mumbai,
+        time_standard=TimeStandard.LMT,
+    )
+    assert "pre_1955_indian_clock_time_ambiguous" not in declared.warnings
+
+
+def test_the_two_standards_differ_by_the_39_minutes_the_audit_measured() -> None:
+    """Mumbai 1948: `clock_time_as_recorded` and `lmt` are 39 minutes apart."""
+    mumbai = Place("Mumbai", 19.0760, 72.8777, "Asia/Kolkata", 14.0)
+    naive = dt.datetime(1948, 1, 30, 10, 30)
+    as_recorded, off_a = to_utc(
+        naive,
+        iana_tz=mumbai.iana_tz,
+        longitude_deg=mumbai.longitude,
+        standard=TimeStandard.CLOCK_TIME_AS_RECORDED,
+    )
+    as_lmt, off_b = to_utc(
+        naive, iana_tz=mumbai.iana_tz, longitude_deg=mumbai.longitude, standard=TimeStandard.LMT
+    )
+    gap_minutes = (as_lmt - as_recorded).total_seconds() / 60.0
+    assert 38.0 < gap_minutes < 39.5, f"gap {gap_minutes:.2f} min"
+    assert off_a == 19800 and abs(off_b - (4 * 3600 + 51 * 60)) < 60

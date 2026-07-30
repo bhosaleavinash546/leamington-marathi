@@ -969,3 +969,72 @@ def test_strength_bands_are_localised(locale: str) -> None:
         assert common.get(band), f"{locale} has no term for strength {band!r}"
     if locale in ("mr", "hi"):
         assert all(any("ऀ" <= ch <= "ॿ" for ch in common[b]) for b in ("strong", "moderate", "weak"))
+
+
+# ---------------------------------------------------------------------------
+# F-004: the warning vocabulary reaches the reader as prose, not as keys
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("locale", SUPPORTED_LOCALES)
+def test_every_warning_key_has_a_display_term(locale: str) -> None:
+    """Audit F-004. Warnings render in the same banner as everything else.
+
+    They were shown as raw Latin machine keys in all three locales - the F-005
+    defect in a vocabulary that finding did not cover, which is why the gate now
+    parses the warning producers rather than trusting a hand-kept list.
+    """
+    from tools.locale_audit import warning_keys
+
+    terms = load_glossary(locale)["warning"]
+    missing = [key for key in warning_keys() if not terms.get(key, "").strip()]
+    assert missing == [], f"{locale} has no term for: {missing}"
+    if locale in ("mr", "hi"):
+        assert all(any("ऀ" <= ch <= "ॿ" for ch in terms[k]) for k in warning_keys())
+
+
+def test_a_pre_1955_mumbai_birth_warns_through_the_api(client: TestClient) -> None:
+    """End to end: the condition reaches ChartFacts, with the size of the doubt."""
+    body = client.post(
+        "/v1/chart",
+        json={
+            "name": "Pre-IST",
+            "date": "1948-01-30",
+            "time": "10:30",
+            "place": {
+                "name": "Mumbai",
+                "latitude": 19.0760,
+                "longitude": 72.8777,
+                "iana_tz": "Asia/Kolkata",
+            },
+            "locale": "mr",
+        },
+    ).json()
+    facts = body["facts"]
+    assert "pre_1955_indian_clock_time_ambiguous" in facts["confidence"]["warnings"]
+
+    # Both readings of the same recorded time are published, so the reader can see
+    # the gap rather than only be told one exists.
+    applied = facts["input"]["resolved_utc_offset_seconds"]
+    lmt = facts["input"]["lmt_utc_offset_seconds"]
+    assert applied == 19800
+    assert 38.0 < (applied - lmt) / 60.0 < 39.5, f"gap {(applied - lmt) / 60.0:.2f} min"
+
+    # And the Marathi term exists for it, rather than a Latin key on the page.
+    assert body["glossary"]["warning"]["pre_1955_indian_clock_time_ambiguous"]
+
+
+def test_the_printed_sheet_prints_its_warnings(facts: dict[str, Any]) -> None:
+    """The banner used to fire on warnings and then not print them."""
+    from render.pdf import build_sheet_html
+
+    polar = {
+        **facts,
+        "confidence": {
+            **facts["confidence"],
+            "warnings": ["polar_latitude_sunrise_may_be_undefined"],
+        },
+    }
+    html = build_sheet_html(polar, "mr")
+    term = load_glossary("mr")["warning"]["polar_latitude_sunrise_may_be_undefined"]
+    assert term in html, "the sheet triggered a banner but printed no warning text"

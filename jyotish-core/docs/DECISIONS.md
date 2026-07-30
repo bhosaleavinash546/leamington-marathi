@@ -30,6 +30,7 @@ see which conventions produced a number. Changing any **D-number below marked
 | D17 | Narrative time rendering | Engine projects local times before the prompt | no |
 | D18 | Transit-instant resolution | Solved to 1e-7 d, **reported at whole seconds** | **yes — changed a published value, see below** |
 | D19 | Dignity precedence | **Moolatrikona before exaltation**; exaltation stays whole-sign | **yes — changed a published value, see below** |
+| D20 | Pre-1955 Indian clock time | **Reported as ambiguous, never silently resolved** | no (a warning, not a value) |
 
 ---
 
@@ -461,6 +462,67 @@ for another: a Moon labelled `moolatrikona` no longer tells the reader it is in 
 exaltation sign. `ChartFacts.chart.grahas[].in_exaltation_sign` is therefore
 reported beside the label — a schema addition, and the versioning reasoning under
 D13 applies unchanged.
+
+---
+
+## D20 — Pre-1955 Indian clock time is reported ambiguous, not resolved
+
+**A civil clock time recorded in India before 1955 raises
+`pre_1955_indian_clock_time_ambiguous`, and the engine converts it exactly as
+before.** No value changes; a doubt becomes visible.
+
+### The premise this corrects
+
+CLAUDE.md 4.1 states that `zoneinfo` with `Asia/Kolkata` "handles documented
+transitions **if you localise the naive datetime with the historical date**".
+**That is false for Bombay**, and the audit (F-004) established it by
+enumeration rather than argument:
+
+| period | `Asia/Kolkata` returns |
+|---|---|
+| to 1906 | +05:21:10 (Madras Mean Time) |
+| 1906 – 1941-10-01 | +05:30 |
+| 1941-10-01 – 1942-05-15 | +06:30 (wartime) |
+| 1942-05-15 – 1942-09-01 | +05:30 |
+| 1942-09-01 – 1945-10-15 | +06:30 (wartime) |
+| 1945-10-15 onward | +05:30 |
+
+Wartime DST is therefore handled correctly and CLAUDE.md 4.1 is right about it.
+**Bombay Time (~UTC+04:51) appears nowhere.** Bombay kept it until 1955, and IANA
+has no zone for it — IANA distinguishes places by their post-1970 behaviour, and
+India has been a single zone throughout. A 1948 Mumbai birth localised as
+`clock_time_as_recorded` therefore resolves at +05:30 and is **39 minutes** out,
+which moves the lagna about 9.8° — enough to cross a rashi boundary about a third
+of the time, and enough to change its pada always.
+
+### Why a warning and not a correction
+
+The engine cannot know which standard a record used, and must not pretend to.
+Bombay's railways and government ran on IST while the city did not, so a 1948
+Bombay certificate may legitimately be either. Only whoever holds the record can
+say. Silently applying Bombay Time would replace one wrong answer with another and
+hide the fact that a choice was made.
+
+`TimeStandard.LMT` is the escape hatch, and no new standard was added: **Bombay
+Time was Bombay's local mean time**, so the engine already has the instrument.
+Mumbai's LMT is +04:51:30, within 30 seconds of the published +04:51. Adding a
+`TimeStandard.BOMBAY_TIME` would mean hard-coding an offset whose exact seconds
+sources disagree on — forbidden by CLAUDE.md 2.2, and a convention picked silently
+under CLAUDE.md 11.
+
+### When it fires
+
+All three must hold, so the warning stays rare enough to mean something:
+
+* the caller has **not** declared a standard (`clock_time_as_recorded`);
+* the date is before 1955-01-01 and the zone is Indian;
+* local mean time differs from IST by at least `PRE_1955_LMT_GAP_WARN_SECONDS`
+  (300 s ≈ 1.25° of lagna). At 82.5° E, the IST meridian, the gap is zero and
+  nothing is reported.
+
+`ChartFacts.input.lmt_utc_offset_seconds` now travels beside
+`resolved_utc_offset_seconds`, so the reader sees the two competing readings of
+their own recorded time and the size of the gap, not merely that one exists.
 
 ---
 

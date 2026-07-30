@@ -70,7 +70,7 @@
         "time_standard",
         "place",
         "calendar_variant",
-        "resolved_utc_offset_seconds",
+        "resolved_utc_offset_seconds", "lmt_utc_offset_seconds",
         "birth_utc"
       ],
       "properties": {
@@ -81,6 +81,10 @@
         "time_standard": { "enum": ["clock_time_as_recorded", "lmt", "ist"] },
         "gender": { "enum": ["m", "f", "other", null] },
         "calendar_variant": { "enum": ["amanta", "purnimanta"] },
+        "lmt_utc_offset_seconds": {
+          "description": "Local mean time offset for the birth longitude, in seconds. Reported beside the applied offset so the size of the pre-1955 Indian clock-time ambiguity is visible (audit F-004).",
+          "type": "integer"
+        },
         "resolved_utc_offset_seconds": {
           "description": "The offset ACTUALLY applied at that historical date, not the zone's present-day offset (CLAUDE.md 4.1).",
           "type": ["integer", "null"],

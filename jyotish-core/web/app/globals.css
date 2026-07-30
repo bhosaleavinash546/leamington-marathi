@@ -169,6 +169,7 @@ code {
   padding: 0.8rem 1rem;
 }
 .banner__heading { font-weight: 650; margin: 0 0 0.3rem; }
+.banner__key { display: block; font-size: 0.75rem; color: var(--muted); }
 .banner__label { color: var(--muted); margin: 0.4rem 0 0.2rem; font-size: 0.85rem; }
 .banner__list { margin: 0; padding-inline-start: 1.1rem; font-size: 0.85rem; }
 

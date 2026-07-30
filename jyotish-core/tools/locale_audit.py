@@ -159,6 +159,56 @@ def rule_keys() -> list[str]:
     return sorted(keys)
 
 
+def warning_keys() -> list[str]:
+    """Every warning key the engine can emit, read from the source rather than listed.
+
+    ``BirthData.warnings`` and the geocoder are the two producers. Parsing them
+    means a new warning cannot be added without a term, which is how audit F-004
+    would otherwise have shipped a sixth untranslated key into the one surface
+    F-005 had just cleaned up.
+    """
+    import ast
+
+    root = LOCALES_DIR.parent
+    keys: set[str] = set()
+    for relative, function in (("core/types.py", "warnings"), ("api/routers/geocode.py", None)):
+        tree = ast.parse((root / relative).read_text(encoding="utf-8"))
+        scopes = (
+            [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == function]
+            if function
+            else [tree]
+        )
+        for scope in scopes:
+            keys.update(
+                node.value
+                for node in ast.walk(scope)
+                if isinstance(node, ast.Constant)
+                and isinstance(node.value, str)
+                and node.value.islower()
+                and node.value.count("_") >= 3
+                and node.value.isascii()
+            )
+    return sorted(keys)
+
+
+def audit_warning_coverage(loaded: dict[str, dict[str, dict[str, object]]]) -> list[str]:
+    """Warning keys must be translated too, not only rule keys.
+
+    They reach the reader through the same confidence banner, and before this
+    check they rendered as raw Latin machine keys in all three locales - the
+    F-005 defect in a vocabulary that finding did not cover.
+    """
+    problems: list[str] = []
+    keys = warning_keys()
+    for locale, namespaces in sorted(loaded.items()):
+        terms = namespaces.get("warning", {})
+        for key in keys:
+            value = terms.get(key)
+            if not isinstance(value, str) or not value.strip():
+                problems.append(f"{locale}: warning key {key!r} has no term in 'warning'")
+    return problems
+
+
 def audit_rule_key_coverage(loaded: dict[str, dict[str, dict[str, object]]]) -> list[str]:
     """Every engine-emitted finding key must have a display term in every locale.
 
@@ -278,6 +328,9 @@ def audit() -> list[str]:
 
     # 3c. Every finding key the engine can emit has a term (CLAUDE.md N5).
     problems += audit_rule_key_coverage(loaded)
+
+    # 3d. And every warning key, which reaches the same banner.
+    problems += audit_warning_coverage(loaded)
 
     # 4. Known-divergent terms must actually differ between mr and hi.
     for namespace, key in sorted(KNOWN_DIVERGENT):
