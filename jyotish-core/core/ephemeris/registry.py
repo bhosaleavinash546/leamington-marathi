@@ -21,5 +21,9 @@ def build_ephemeris(
     if provider == "swisseph":
         from core.ephemeris.swisseph_adapter import SwissEphemerisAdapter
 
-        return SwissEphemerisAdapter(ayanamsa=opts.ayanamsa, node_type=opts.node_type)
+        return SwissEphemerisAdapter(
+            ayanamsa=opts.ayanamsa,
+            node_type=opts.node_type,
+            includes_nutation=opts.ayanamsa_includes_nutation,
+        )
     raise EphemerisError(f"unknown ephemeris provider {provider!r}")

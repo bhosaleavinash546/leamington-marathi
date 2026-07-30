@@ -112,6 +112,9 @@ class ProviderInfo:
     #: The provider's own constant for that ayanamsa, pinned so that a
     #: provider-side redefinition is caught as a breaking change (CLAUDE.md 4.5).
     ayanamsa_constant: str
+    #: Whether the ayanamsa is referred to the true (nutated) equinox of date.
+    #: Worth ~12.8 arcseconds and recorded because it moves published values.
+    ayanamsa_includes_nutation: bool = True
 
 
 @runtime_checkable

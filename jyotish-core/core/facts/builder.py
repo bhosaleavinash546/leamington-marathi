@@ -43,7 +43,7 @@ from core.name.namakaran import NamakaranCheck, check_namakaran
 from core.name.numerology import NameNumerology, compute_numerology
 from core.panchang.day import BirthMoment, PanchangDay, panchang_for_instant
 from core.rules.engine import RuleMatch, evaluate_rules, load_doshas, load_yogas
-from core.timeutil import iso_utc, to_utc
+from core.timeutil import iso_utc, jd_from_utc, to_utc
 from core.types import ACCURACY_WINDOW_MINUTES, BirthData, InputError
 from core.version import CHARTFACTS_SCHEMA_VERSION, ENGINE_VERSION
 
@@ -321,7 +321,13 @@ def build_chart_facts(reading: FullReading) -> dict[str, Any]:
             "version": info.version,
             "ayanamsa": info.ayanamsa,
             "ayanamsa_constant": info.ayanamsa_constant,
-            "ayanamsa_value_deg": round(reading.chart.ayanamsa_deg if reading.chart else 0.0, 6),
+            # The ayanamsa depends only on the epoch, so it is well defined even
+            # when there is no chart (an unknown birth time, CLAUDE.md 4.6). It is
+            # then taken at that day's sunrise. Reporting 0.0 would be a wrong
+            # number rather than an absent one, and CLAUDE.md 4.5 requires the value
+            # actually in force to be recorded in output metadata.
+            "ayanamsa_value_deg": round(_ayanamsa_deg(reading), 6),
+            "ayanamsa_includes_nutation": info.ayanamsa_includes_nutation,
             "node_type": birth.options.node_type.value,
             "rise_set_convention": reading.panchang.disc_convention.value,
         },
@@ -343,6 +349,13 @@ def build_chart_facts(reading: FullReading) -> dict[str, Any]:
     if reading.timeline is not None and reading.current_dasha is not None:
         facts["dasha"] = _dasha_block(reading.timeline, reading.current_dasha)
     return facts
+
+
+def _ayanamsa_deg(reading: FullReading) -> float:
+    """The ayanamsa in force, whether or not a chart could be computed."""
+    if reading.chart is not None:
+        return reading.chart.ayanamsa_deg
+    return reading.ephemeris.ayanamsa_deg(jd_from_utc(reading.panchang.lights.sunrise))
 
 
 def _input_block(reading: FullReading) -> dict[str, Any]:

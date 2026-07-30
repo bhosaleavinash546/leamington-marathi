@@ -1,0 +1,78 @@
+{
+  "blocklist": {
+    "death_or_lifespan": [
+      "\\bdeath\\b",
+      "\\bdies?\\b",
+      "\\bdying\\b",
+      "\\bwill die\\b",
+      "\\bpass(es)? away\\b",
+      "\\bdemise\\b",
+      "\\bfatal\\b",
+      "\\blife ?span\\b",
+      "\\byears? (of|to) live\\b",
+      "\\blength of life\\b",
+      "\\bwill not survive\\b"
+    ],
+    "legal_outcome": [
+      "\\bwill win the (case|suit|lawsuit)\\b",
+      "\\bwill lose the (case|suit)\\b",
+      "\\bacquitt(ed|al)\\b",
+      "\\bconvict(ed|ion)\\b",
+      "\\b(jail|prison) (term|sentence)\\b",
+      "\\bimprison(ed|ment)\\b",
+      "\\bvisa will be (granted|refused)\\b"
+    ],
+    "marital_verdict": [
+      "\\bshould not marry\\b",
+      "\\bdo not marry\\b",
+      "\\bavoid this (match|alliance)\\b",
+      "\\bincompatible (match|couple|pair)\\b",
+      "\\bnot suitable for marriage\\b",
+      "\\bperfect match\\b",
+      "\\bideal match\\b",
+      "\\bthe marriage will (fail|succeed)\\b",
+      "\\bcompatibility is \\d+%",
+      "\\bnot compatible\\b"
+    ],
+    "medical_advice": [
+      "\\bstop (taking|your) (medication|medicine|treatment)\\b",
+      "\\bdiscontinue (the )?(medication|treatment)\\b",
+      "\\bavoid (medical )?treatment\\b",
+      "\\bno need (to see|for) a doctor\\b",
+      "\\binstead of (medicine|medication)\\b",
+      "\\bdelay (the )?(surgery|operation|treatment)\\b"
+    ],
+    "medical_diagnosis": [
+      "\\bcancer\\b",
+      "\\btum(ou)?r\\b",
+      "\\bterminal (illness|disease)\\b",
+      "\\bdiagnos(is|ed|e)\\b",
+      "\\bprognosis\\b",
+      "\\bheart attack\\b",
+      "\\bstroke\\b",
+      "\\bdiabet(es|ic)\\b",
+      "\\bwill (fall|become) ill\\b"
+    ],
+    "mental_health_diagnosis": [
+      "\\bdepress(ion|ed)\\b",
+      "\\bschizophreni(a|c)\\b",
+      "\\bbipolar\\b",
+      "\\bpsychosis\\b",
+      "\\bpsychotic\\b",
+      "\\bmental illness\\b",
+      "\\banxiety disorder\\b",
+      "\\bsuicid(e|al)\\b"
+    ],
+    "pregnancy_or_fertility": [
+      "\\bpregnan(t|cy)\\b",
+      "\\bconceiv(e|ing)\\b",
+      "\\bconception\\b",
+      "\\bfertilit(y|ies)\\b",
+      "\\binfertil(e|ity)\\b",
+      "\\bmiscarriage\\b",
+      "\\bIVF\\b",
+      "\\bwill (have|bear) (a )?child(ren)?\\b"
+    ]
+  },
+  "refusal": "The chart does not support a statement on this subject. Please consult an appropriate professional."
+}

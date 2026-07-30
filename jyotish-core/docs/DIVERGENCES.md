@@ -63,6 +63,51 @@ Fixed 24-minute vs proportional (1/60 of sunrise→sunset→sunrise). Up to ~4%
 divergence away from an equinox; on a Pune midsummer day the two differ by about
 one pala per ghati elapsed. Engine uses fixed (D11), and labels which in output.
 
+### O5 — The second implementation is the same library
+
+**Consequence: unknown. This is a gap in the check, not a known error.**
+
+CLAUDE.md 9.4 asks for "a handful of full charts [checked] against a second
+independent implementation". `tests/invariants/test_cross_implementation.py` runs
+three checks per chart over six charts:
+
+1. our sidereal longitudes vs swisseph's own `SEFLG_SIDEREAL` path — a different
+   code path, and the one that found D13;
+2. the ascendant from a closed-form formula written here from spherical
+   trigonometry, independent of the provider's house routine;
+3. the MC from ARMC, likewise closed-form.
+
+Checks 2 and 3 are genuinely independent of the provider. Check 1 is not: it is
+the same C library reached a different way, so it can catch a wiring error — and
+did — but not an error in the Swiss Ephemeris itself.
+
+What is still outstanding is a chart compared against a **separate application**
+(Jagannatha Hora, Maitreya, or a published printed kundali). A never-failing test
+prints this shortfall on every run so it cannot become invisible. Settling it
+needs one full chart from another package, transcribed like a golden case.
+
+### O6 — Offline geocoder is 125 places, not 20,000
+
+**Consequence: a place absent from the seed must be entered by coordinate.**
+
+CLAUDE.md 2.2 asks that "the app must work offline for the top 20k Indian places".
+`api/data/places.json` holds 125 — Maharashtra district and taluka centres, the
+major Indian cities, and the UK diaspora towns. `/v1/places` reports the shortfall
+in `dataset_status()` rather than presenting itself as complete, and
+`TARGET_PLACE_COUNT` names the target in code.
+
+The timezone half of the requirement *is* met offline: `timezonefinder` resolves an
+arbitrary coordinate to an IANA zone with no network, so a birth in an unlisted
+village still gets correct historical offsets (CLAUDE.md 4.1) once its coordinates
+are entered. Settling this is a data task: a GeoNames IN extract filtered to
+population > 500, run through the same schema.
+
+One caveat found while building it: `timezonefinder` returns names like
+`Etc/GMT+4` for ocean coordinates. Those are valid IANA names but fixed offsets in
+disguise — no DST, no historical transitions — which silently defeats CLAUDE.md
+4.1. The endpoint attaches `ocean_or_fixed_offset_zone` as a warning rather than
+accepting them quietly.
+
 ---
 
 ## Accepted divergences
@@ -131,7 +176,21 @@ Saturn/Rahu/Ketu, or a node in the 9th) is the one in widest modern use, and the
 rule carries `strength: weak` to reflect that its provenance is traditional rather
 than textual.
 
-### A10 — Ephemeris is Moshier, not JPL
+### A10 — PDF text extraction reorders Devanagari matras
+
+Not a rendering divergence — a *reading* one. `pypdf` extracts `तिथी` as `तथी` and
+`सूर्योदय` as `सूयार्योदय`: the glyphs are all present in the PDF, but the text layer
+returns them in visual rather than logical order, so a matra that renders before
+its consonant extracts before it too.
+
+This matters only because CLAUDE.md 2.2 asks the pipeline to prove Devanagari
+survived. A naive `"तिथी" in extract_text(pdf)` assertion would fail on a perfectly
+good PDF. `render/pdf.py` therefore checks with `assert_codepoints_present()`,
+which is order-insensitive, and `extract_text`'s docstring records why. The visual
+result is verified separately by `assert_devanagari_coverage()`, which confirms the
+embedded font can draw every codepoint the locale can produce.
+
+### A11 — Ephemeris is Moshier, not JPL
 
 See D7. Sub-arcsecond for the Moon, which is under 0.1 s of tithi-boundary time —
 three orders of magnitude below the reporting resolution. Not a divergence in any

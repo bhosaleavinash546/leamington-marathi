@@ -3,6 +3,11 @@ name: CI
 # The gates in CLAUDE.md 9.7: schema validation, locale completeness,
 # ruff + mypy strict on core/, coverage >= 90% on core/.
 #
+# Phases 4-6 add three more: the prohibited-content validator across all three
+# locales (CLAUDE.md 9.5), the server-side performance budget (CLAUDE.md 11
+# Phase 6: full chart < 200 ms), and the frontend typecheck and build in a `web`
+# job of its own.
+#
 # NOTE: this workflow is inert until jyotish-core/ becomes a repository root.
 # GitHub Actions only reads .github/workflows from the root of a repository, so
 # while this tree lives inside another project the file is documentation. Moving
@@ -38,8 +43,20 @@ jobs:
       - name: Set up Python 3.12
         run: uv python install 3.12
 
+      # Every extra, so the API, narrative and PDF layers are all exercised.
+      # `narrative` brings the Anthropic SDK; no key is set and none is needed -
+      # every narrative test uses the scripted transport.
       - name: Install
-        run: uv pip install --system -e ".[dev]"
+        run: uv pip install --system -e ".[dev,api,narrative,pdf]"
+
+      # WeasyPrint needs the system Pango/Cairo stack. Without it the PDF tests
+      # would skip, and a Devanagari render regression would ship unseen -
+      # exactly the silent failure CLAUDE.md 2.2 names.
+      - name: Install WeasyPrint system libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz0b libffi-dev
 
       # --- gate 1: lint and format -------------------------------------
       - name: ruff check
@@ -48,9 +65,15 @@ jobs:
       - name: ruff format
         run: ruff format --check .
 
-      # --- gate 2: mypy strict on core/ --------------------------------
+      # --- gate 2: mypy strict on core/, api/, narrative/, render/, tools/ ---
       - name: mypy strict
         run: mypy
+
+      # `core/` must import nothing from `api/`, the LLM client or the renderer
+      # (CLAUDE.md 1, 12). Run as its own step so the failure is unmissable
+      # rather than one line in a long test summary.
+      - name: architectural boundaries
+        run: pytest tests/unit/test_boundaries.py -q --no-cov
 
       # --- gate 3: locale completeness (CLAUDE.md 7) -------------------
       # Fails on a missing key in any locale, and on an mr value that is
@@ -58,7 +81,15 @@ jobs:
       - name: locale audit
         run: python -m tools.locale_audit
 
-      # --- gate 4: tests + coverage >= 90% on core/ --------------------
+      # --- gate 4: prohibited content in all three locales (CLAUDE.md 9.5) ---
+      # The `/narrative-test` slash command. Prints the category x locale matrix
+      # with the pattern that caught each sample, so a blocklist that catches by
+      # accident is visible rather than merely green.
+      - name: narrative validator
+        run: python -m tools.narrative_test
+
+      # --- gate 5: tests + coverage >= 90% on core/ --------------------
+      # The threshold is checked against `core/` alone, as CLAUDE.md 9.7 states.
       - name: pytest
         run: >
           pytest
@@ -67,7 +98,16 @@ jobs:
           --cov-fail-under=90
           -p no:randomly
 
-      # --- gate 5: ChartFacts schema validity --------------------------
+      # Reported, not gated: the layers above the engine. A number here that
+      # drops is worth seeing without failing the build on a renderer branch.
+      - name: coverage of api, narrative and render
+        if: always()
+        run: >
+          pytest -q --no-header
+          --cov=api --cov=narrative --cov=render
+          --cov-report=term-missing:skip-covered
+
+      # --- gate 6: ChartFacts schema validity --------------------------
       # The test suite validates the schema, but this runs the real CLI path
       # end to end so a packaging break (missing schema in package_data) is
       # caught too.
@@ -94,3 +134,33 @@ jobs:
       - name: golden transcription status
         if: always()
         run: python -m tools.golden_verify --pending-only
+
+  # The frontend is a separate job: it needs Node rather than Python, and a
+  # TypeScript error should not be reported as an engine failure.
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      # `strict: true` in tsconfig, so this is the frontend's mypy.
+      - name: typecheck
+        run: npm run typecheck
+
+      # The build is a gate in its own right: the locale files are read at build
+      # time (web/lib/messages.ts reads ../locales), so a missing namespace fails
+      # here rather than at runtime in front of a user.
+      - name: build
+        run: npm run build

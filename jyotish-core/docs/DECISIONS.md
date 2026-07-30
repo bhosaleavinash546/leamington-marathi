@@ -23,6 +23,11 @@ see which conventions produced a number. Changing any **D-number below marked
 | D10 | Mangal dosha ruleset | `maharashtra` (1/4/7/8/12) | no (configurable) |
 | D11 | Ishtakaal ghati | Fixed 24-minute | no (configurable) |
 | D12 | Ritu convention | Lunar month pairs | no (configurable) |
+| D13 | Ayanamsa and nutation | Nutation **included** (true ayanamsa) | **yes — changed a published value, see below** |
+| D14 | Narrative model + prompt | `claude-sonnet-4-5`, prompt `1.0.0` | no (recorded in output) |
+| D15 | Stored data | Birth input only, Fernet at rest, 365-day retention | no |
+| D16 | Offline geocoder | 125 curated places, complete offline tz | no (see DIVERGENCES O6) |
+| D17 | Narrative time rendering | Engine projects local times before the prompt | no |
 
 ---
 
@@ -217,6 +222,130 @@ labelled in output. The two differ by up to ~4% away from an equinox.
 **Lunar month pairs** — Chaitra+Vaishakha = Vasanta, and so on. This is what a
 panchang prints beside the month name. The solar convention (consecutive rashis of
 the Sun, Vasanta from Meena) is selectable and disagrees by up to a fortnight.
+
+---
+
+## D13 — Ayanamsa and nutation
+
+**The ayanamsa includes nutation** (the "true" ayanamsa), so
+`sidereal = tropical(true equinox) − ayanamsa(with nutation)`.
+
+**This changed a published value.** It was found by the Phase 6
+cross-implementation check (CLAUDE.md 9.4), not by a failing unit test, which is
+the whole reason that check exists.
+
+| | Before | After | Δ |
+|---|---|---|---|
+| Ayanamsa, 1990-06-15 09:02 UTC | 23.72373113° | 23.72729483° | +0.00356370° |
+| Every sidereal longitude | — | — | **−12.829″** |
+
+The cause: `swe.get_ayanamsa_ut()` returns the ayanamsa measured from the *mean*
+equinox, while the body longitudes we subtract it from are referred to the *true*
+equinox — and so is swisseph's own `SEFLG_SIDEREAL` output. Subtracting a
+mean-equinox ayanamsa from a true-equinox longitude leaves the nutation in
+longitude, about 12.8 arcseconds at that epoch, in every graha. The fix is
+`swe.get_ayanamsa_ex_ut(jd, flags)`, which respects the same flags the position
+call used.
+
+Why the fix and not the previous behaviour: our engine must agree with the
+provider's own sidereal mode, because that is the second implementation every
+other Jyotish package is also checked against. 12.8″ is far below the minute-level
+panchang tolerance and cannot move a tithi or a nakshatra, but it *can* move a
+graha across a D60 shashtiamsa boundary — each is 0.5° wide, so any graha sitting
+within 12.8″ of one is reassigned — and it would have shown up as a permanent
+unexplained offset against any other software.
+
+`EngineOptions.ayanamsa_includes_nutation` selects the old behaviour for
+comparison, and `ChartFacts.ephemeris.ayanamsa_includes_nutation` records which was
+used. A cross-implementation test now asserts agreement with `SEFLG_SIDEREAL` to
+1e-6°, so this cannot regress silently.
+
+**On the version number.** By this engine's own rules (`core/version.py`, from
+CLAUDE.md 4.5 and 5) a new required ChartFacts field *and* a change that moves
+published longitudes are each a major bump — so `2.0.0` on both counts.
+`ENGINE_VERSION` and `CHARTFACTS_SCHEMA_VERSION` are nonetheless still `1.0.0`,
+deliberately and stated here rather than left to be noticed: v1 has not been
+released, and both the pre-nutation and post-nutation code landed inside the same
+unreleased build, so no consumer has ever held a 1.0.0 document carrying the old
+longitudes. The versions are therefore describing a contract that has only ever had
+one published form.
+
+**After first release this reasoning expires.** The identical change made to a
+shipped v1 is a `2.0.0` bump on both numbers, with old documents left readable at
+the 1.0.0 schema.
+
+## D14 — Narrative model and prompt version
+
+**`claude-sonnet-4-5`**, prompt version **1.0.0**, temperature 0.2.
+
+Both travel in every narrative response and in the cache key, so a model change
+or a prompt edit invalidates cached prose rather than mixing two generations of
+text (CLAUDE.md 6: "Identical charts must not produce drifting text").
+
+The model is a presentation choice, not a computational one: CLAUDE.md N1 means no
+model, at any temperature, contributes a number. Changing it is therefore **not**
+an engine version bump.
+
+Generation is off unless a key is present. With `narrative_enabled` false the
+service never calls the transport at all and returns the requested locale's
+refusal string — which is why the refusal must exist in all three locales, and a
+test asserts it is in Devanagari for mr and hi.
+
+## D15 — What is stored, and for how long
+
+**Birth input plus engine version. Never a derived value.**
+
+CLAUDE.md 2.2: "Store birth input + engine version, never store derived values as
+source of truth — always recompute." A stored chart computed by engine 1.0.0 would
+silently become the answer after D13 changed longitudes; recomputation makes the
+change visible instead.
+
+* **Encryption at rest**: Fernet (AES-128-CBC + HMAC) over the JSON payload, key
+  from `JYOTISH_ENCRYPTION_KEY`. Absent key is a hard error, not a fallback to
+  plaintext — CLAUDE.md 10 requires encryption at rest for what it correctly calls
+  sensitive personal data under the DPDP Act and GDPR.
+* **Retention**: 365 days by default, then `purge_expired()` deletes. Stated in
+  `/v1/privacy/policy` rather than only implemented.
+* **Consent**: an explicit grant per stated purpose, from a closed set. Consent
+  cannot be recorded as anything but `true` (the schema uses `Literal[True]`), so
+  a "consent: false" row cannot exist to be misread later.
+* **Analytics**: none on birth-input screens, enforced by the CSP in
+  `web/next.config.ts` blocking third-party scripts outright, not by policy alone.
+
+`stored_column_names()` exists so a test can assert no derived column was ever
+added.
+
+## D16 — Offline geocoder seed
+
+**125 curated places bundled; the timezone half of the lookup is complete and
+fully offline.**
+
+CLAUDE.md 2.2 asks for "the top 20k Indian places". What ships is 125 —
+Maharashtra district and taluka centres, the major Indian cities, and the UK
+diaspora towns this project started from. The shortfall is recorded as O6 in
+`DIVERGENCES.md` and reported by `/v1/places` itself in `dataset_status()`, rather
+than being left to look complete.
+
+The half that matters most is done: `timezonefinder` resolves an arbitrary
+coordinate to an IANA zone offline, so a place absent from the seed can still be
+entered by coordinate and get correct historical offsets (CLAUDE.md 4.1).
+
+## D17 — Local times in narrative prose
+
+**The engine computes local times; the model only reads them.**
+
+ChartFacts stores UTC (CLAUDE.md 4.7: "convert at the presentation edge only") but
+prose must print `06:13`, not `00:43Z`. Three options existed and only one is
+consistent with N1:
+
+1. let the model convert — a model doing arithmetic, forbidden;
+2. drop times from prose — loses what a panchang paragraph is mostly for;
+3. **have the engine emit the local rendering as a sibling field.**
+
+`narrative/projection.py` adds a `*_local` sibling for every `*_utc` in the
+narrowed slice, plus the resolved zone. The projection is used for the payload,
+the cache key *and* the numeric-provenance check, so a time in the prose is only
+accepted if the engine put it there.
 
 ---
 

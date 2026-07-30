@@ -100,6 +100,7 @@ class SwissEphemerisAdapter:
         *,
         ayanamsa: str = "lahiri",
         node_type: NodeType = NodeType.MEAN,
+        includes_nutation: bool = True,
         ephe_path: str | None = None,
     ) -> None:
         if ayanamsa not in AYANAMSA_MODES:
@@ -107,11 +108,14 @@ class SwissEphemerisAdapter:
         self._ayanamsa = ayanamsa
         self._sid_mode, self._sid_const_name = AYANAMSA_MODES[ayanamsa]
         self._node_type = node_type
+        self._includes_nutation = includes_nutation
         self._ephe_path = (
             ephe_path if ephe_path is not None else os.environ.get("JYOTISH_EPHE_PATH")
         )
         self._calc_flags = (swe.FLG_SWIEPH if self._ephe_path else swe.FLG_MOSEPH) | swe.FLG_SPEED
         self._provider = "swisseph_swieph" if self._ephe_path else "swisseph_moshier"
+        # FLG_NONUT refers the ayanamsa to the mean equinox instead of the true one.
+        self._ayanamsa_flags = self._calc_flags | (0 if includes_nutation else swe.FLG_NONUT)
 
     # -- configuration -----------------------------------------------------
 
@@ -127,6 +131,7 @@ class SwissEphemerisAdapter:
             version=str(swe.version),
             ayanamsa=self._ayanamsa,
             ayanamsa_constant=self._sid_const_name,
+            ayanamsa_includes_nutation=self._includes_nutation,
         )
 
     @property
@@ -136,9 +141,18 @@ class SwissEphemerisAdapter:
     # -- longitudes --------------------------------------------------------
 
     def ayanamsa_deg(self, jd_ut: float) -> float:
+        """Ayanamsa in degrees, referred to the configured equinox.
+
+        Uses ``get_ayanamsa_ex_ut`` rather than the older ``get_ayanamsa_ut``: the
+        latter always excludes nutation, which put this engine's own
+        ``tropical - ayanamsa`` conversion 12.8 arcseconds away from the provider's
+        internal ``FLG_SIDEREAL`` result. The cross-implementation test found that;
+        see docs/DECISIONS.md D13.
+        """
         with _SWE_LOCK:
             self._apply_globals()
-            return float(swe.get_ayanamsa_ut(jd_ut))
+            _retflags, value = swe.get_ayanamsa_ex_ut(jd_ut, self._ayanamsa_flags)
+            return float(value)
 
     def position(self, body: Graha, jd_ut: float) -> BodyPosition:
         return self.positions((body,), jd_ut)[body]
@@ -146,7 +160,7 @@ class SwissEphemerisAdapter:
     def positions(self, bodies: tuple[Graha, ...], jd_ut: float) -> dict[Graha, BodyPosition]:
         with _SWE_LOCK:
             self._apply_globals()
-            ayanamsa = float(swe.get_ayanamsa_ut(jd_ut))
+            ayanamsa = self._ayanamsa_locked(jd_ut)
             out: dict[Graha, BodyPosition] = {}
             node_needed = Graha.RAHU in bodies or Graha.KETU in bodies
             node_pos: BodyPosition | None = None
@@ -189,7 +203,7 @@ class SwissEphemerisAdapter:
     def angles(self, jd_ut: float, latitude: float, longitude: float) -> ChartAngles:
         with _SWE_LOCK:
             self._apply_globals()
-            ayanamsa = float(swe.get_ayanamsa_ut(jd_ut))
+            ayanamsa = self._ayanamsa_locked(jd_ut)
             # House system 'E' (equal from ascendant) is requested only because
             # some system must be named; only ascmc is used. Whole-sign and
             # Sripati cusps are derived in core/chart/houses.py, never taken
@@ -202,6 +216,11 @@ class SwissEphemerisAdapter:
                 armc=norm360(float(ascmc[2])),
                 obliquity=obliquity,
             )
+
+    def _ayanamsa_locked(self, jd_ut: float) -> float:
+        """Ayanamsa without re-taking the lock. Callers must already hold it."""
+        _retflags, value = swe.get_ayanamsa_ex_ut(jd_ut, self._ayanamsa_flags)
+        return float(value)
 
     def obliquity_deg(self, jd_ut: float) -> float:
         with _SWE_LOCK:

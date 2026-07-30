@@ -31,6 +31,7 @@
         "ayanamsa",
         "ayanamsa_constant",
         "ayanamsa_value_deg",
+        "ayanamsa_includes_nutation",
         "node_type",
         "rise_set_convention"
       ],
@@ -44,6 +45,10 @@
           "minLength": 1
         },
         "ayanamsa_value_deg": { "type": "number", "minimum": -30, "maximum": 30 },
+        "ayanamsa_includes_nutation": {
+          "description": "Whether the ayanamsa is referred to the true (nutated) equinox of date. Worth ~12.8 arcseconds; recorded because it moves published values (docs/DECISIONS.md D13).",
+          "type": "boolean"
+        },
         "node_type": { "enum": ["mean", "true"] },
         "rise_set_convention": {
           "enum": [

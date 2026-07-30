@@ -1,0 +1,163 @@
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { ConfidenceBanner } from '@/components/ConfidenceBanner';
+import { DashaTree } from '@/components/DashaTree';
+import { FindingsList } from '@/components/FindingsList';
+import { KundaliChart } from '@/components/KundaliChart';
+import { PanchangCard } from '@/components/PanchangCard';
+import { ChartToolbar } from '@/components/ChartToolbar';
+import { ApiError, fetchChart, fetchChartSvg, type BirthInput, type ChartStyle } from '@/lib/api';
+import type { NumeralSystem } from '@/lib/format';
+
+/**
+ * The main kundali view.
+ *
+ * A server component: the chart is fetched and rendered on the server, so the
+ * birth input never sits in a client bundle and the first paint carries the whole
+ * reading. CLAUDE.md 8 wants "Rashi and Navamsa charts side by side on the main
+ * kundali view", which is what the two figures below are.
+ */
+export default async function KundaliPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const { locale } = await params;
+  const query = await searchParams;
+  setRequestLocale(locale);
+
+  const ui = await getTranslations({ locale, namespace: 'ui' });
+  const chartT = await getTranslations({ locale, namespace: 'chart' });
+
+  const one = (key: string): string => {
+    const value = query[key];
+    return Array.isArray(value) ? (value[0] ?? '') : (value ?? '');
+  };
+
+  const time = one('time');
+  const birth: BirthInput = {
+    name: one('name') || '—',
+    date: one('date'),
+    time: time || null,
+    time_accuracy: (time ? one('time_accuracy') || 'exact' : 'unknown') as BirthInput['time_accuracy'],
+    place: {
+      name: one('place'),
+      latitude: Number(one('lat')),
+      longitude: Number(one('lon')),
+      iana_tz: one('tz'),
+    },
+    locale: locale as BirthInput['locale'],
+  };
+
+  const style = (one('style') || 'north_indian') as ChartStyle;
+  const numerals = (one('numerals') || (locale === 'en' ? 'latin' : 'devanagari')) as NumeralSystem;
+
+  let response;
+  try {
+    response = await fetchChart(birth);
+  } catch (error) {
+    const message = error instanceof ApiError ? error.message : String(error);
+    return (
+      <div className="page">
+        {/* An undefined sunrise or a rejected input is explained, not swallowed. */}
+        <h1>{chartT('kundali')}</h1>
+        <p className="error" role="alert">
+          {message}
+        </p>
+      </div>
+    );
+  }
+
+  const { facts } = response;
+  const hasChart = Boolean(facts.chart);
+
+  // Both charts and both accessible tables are rendered server-side by the same
+  // Python module the PDF uses, so the printed and on-screen geometry are identical.
+  const [rashiSvg, rashiTable, navamsaSvg, navamsaTable] = hasChart
+    ? await Promise.all([
+        fetchChartSvg(birth, { style, varga: 'D1', degrees: false }),
+        fetchChartSvg(birth, { style, varga: 'D1', table: true }),
+        fetchChartSvg(birth, { style, varga: 'D9' }),
+        fetchChartSvg(birth, { style, varga: 'D9', table: true }),
+      ])
+    : ['', '', '', ''];
+
+  return (
+    <div className="page">
+      <header className="page__head">
+        <h1>{facts.input.name}</h1>
+        <p className="lede">
+          {facts.input.date}
+          {facts.input.time ? ` · ${facts.input.time}` : ` · ${ui('birth_time_unknown')}`} ·{' '}
+          {facts.input.place.name}
+        </p>
+      </header>
+
+      <ConfidenceBanner facts={facts} />
+
+      <ChartToolbar locale={locale} style={style} numerals={numerals} birth={birth} />
+
+      {hasChart ? (
+        <div className="charts">
+          <KundaliChart svg={rashiSvg} tableHtml={rashiTable} style={style} />
+          <KundaliChart svg={navamsaSvg} tableHtml={navamsaTable} style={style} />
+        </div>
+      ) : (
+        <p className="note">
+          {/* No ascendant means no chart. Said plainly rather than shown empty. */}
+          {ui('birth_time_unknown')} — {chartT('lagna')}, {chartT('house')}: {ui('not_available')}
+        </p>
+      )}
+
+      <PanchangCard facts={facts} numerals={numerals} locale={locale} />
+
+      {facts.dasha ? (
+        <DashaTree
+          timeline={facts.dasha.timeline}
+          current={facts.dasha.current}
+          timeZone={facts.input.place.iana_tz}
+          locale={locale}
+          numerals={numerals}
+        />
+      ) : null}
+
+      <FindingsList yogas={facts.yogas_present ?? []} doshas={facts.doshas ?? []} />
+
+      <section className="card provenance">
+        <h2>{chartT('ayanamsa')}</h2>
+        {/*
+          Provenance is shown, not hidden in a debug panel. A reader comparing this
+          against a printed panchang needs to know which conventions produced it,
+          and CLAUDE.md 2.3 requires the ayanamsa used to be logged in every output.
+        */}
+        <dl className="kv kv--compact">
+          <div className="kv__row">
+            <dt>{chartT('ayanamsa')}</dt>
+            <dd>
+              {facts.ephemeris.ayanamsa} · {facts.ephemeris.ayanamsa_value_deg.toFixed(4)}° ·{' '}
+              <code>{facts.ephemeris.ayanamsa_constant}</code>
+            </dd>
+          </div>
+          <div className="kv__row">
+            <dt>authority</dt>
+            <dd>{facts.authority}</dd>
+          </div>
+          <div className="kv__row">
+            <dt>sunrise</dt>
+            <dd>
+              <code>{facts.ephemeris.rise_set_convention}</code>
+            </dd>
+          </div>
+          <div className="kv__row">
+            <dt>engine</dt>
+            <dd>
+              {facts.engine_version} · schema {facts.schema_version} ·{' '}
+              <code>{facts.ephemeris.provider}</code>
+            </dd>
+          </div>
+        </dl>
+      </section>
+    </div>
+  );
+}

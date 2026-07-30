@@ -20,3 +20,10 @@ coverage.xml
 # Large binaries; fetched locally and pointed at via JYOTISH_EPHE_PATH.
 ephe/
 *.se1
+
+# Frontend (web/)
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.env.local

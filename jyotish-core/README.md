@@ -15,9 +15,9 @@ it receives computed facts as JSON and may only phrase them.
 | 1 | Ephemeris adapter, panchang, Ishtakaal | **done** — golden files scaffolded, **not transcribed** |
 | 2 | Chart engine, vargas, Ashtakavarga, Shadbala, ChartFacts | **done** |
 | 3 | Vimshottari dasha, yoga/dosha rules, Ashtakoot milan | **done** |
-| 4 | FastAPI + narrative layer + validator | not started |
-| 5 | Next.js frontend, SVG charts, PDF | not started (locale files exist) |
-| 6 | Hardening, DPDP/GDPR endpoints, offline geocoder | not started |
+| 4 | FastAPI + narrative layer + validator + caching | **done** |
+| 5 | Next.js frontend, SVG charts, panchang card, dasha tree, PDF | **done** |
+| 6 | Property tests, cross-implementation check, DPDP/GDPR, performance, geocoder | **done** — geocoder seeded at 125 of 20,000 places (O6) |
 
 ### The one thing to know before trusting a number
 
@@ -32,7 +32,7 @@ authority: दाते पंचांग (Date Panchang)
 cases selected: 62   transcribed: 0   pending: 62
 ```
 
-The engine *is* checked against 400-plus invariant and unit tests, and against
+The engine *is* checked against 716 invariant and unit tests, and against
 independently known calendar facts (Gudi Padwa 2023/24/25 → Shaka 1945/46/47;
 Adhika Shravana 2023; Adhika Jyeshtha 2018 and 2026; Adhika Ashwina 2020). What is
 outstanding is minute-level agreement with the named authority. See
@@ -46,7 +46,7 @@ worth up to 3m 50s and moving every sunrise-anchored value together —
 
 ```bash
 uv venv --python 3.12
-uv pip install -e ".[dev]"
+uv pip install -e ".[dev,api,narrative,pdf]"
 
 # A full ChartFacts document, schema-validated
 python -m tools.facts_dump --name Avinash --date 1990-06-15 --time 14:32 \
@@ -56,11 +56,32 @@ python -m tools.facts_dump --name Avinash --date 1990-06-15 --time 14:32 \
 python -m tools.facts_dump --name Avinash --date 1990-06-15 \
     --lat 18.5204 --lon 73.8567 --tz Asia/Kolkata
 
-pytest                              # ~430 tests
+pytest                              # 716 tests, 62 golden cases pending
 pytest -m "not slow"                # skip the Hypothesis sweeps
 python -m tools.locale_audit        # mr/hi/en completeness + divergence check
+python -m tools.narrative_test      # prohibited content, 7 categories x 3 locales
 python -m tools.golden_verify       # per-field delta table vs the authority
 ```
+
+The engine needs none of the extras. `uv pip install -e ".[dev]"` runs `core/` and
+its tests on their own; `[api]` adds FastAPI and the store, `[pdf]` WeasyPrint,
+`[narrative]` the Anthropic SDK. Every narrative test uses a scripted transport, so
+no API key is needed to run the suite — or to run the API, which returns the
+locale's refusal string when generation is off.
+
+### Running it
+
+```bash
+# The API. No key set → /v1/narrative refuses in the requested locale.
+export JYOTISH_ENCRYPTION_KEY=$(python -c \
+    "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
+uvicorn api.main:app --reload            # OpenAPI at /docs
+
+cd web && npm install && npm run dev     # http://localhost:3000/mr
+```
+
+`JYOTISH_ENCRYPTION_KEY` is only needed for the `/v1/privacy` store; its absence is
+a hard error at the point of storing rather than a silent fall back to plaintext.
 
 ## Layout
 
@@ -75,10 +96,17 @@ core/                 the deterministic engine — no FastAPI, no LLM, no locale
   milan/              Ashtakoot Guna Milan, per-koot reasons and exceptions
   name/               Namakaran syllables; numerology (flagged not-Jyotish)
   facts/              the ChartFacts contract + its JSON Schema
+api/                  orchestration only: validate → call engine → assemble ChartFacts
+  routers/            privacy (DPDP/GDPR) and the offline geocoder
+  storage.py          birth input encrypted at rest; never a derived value
+narrative/            ChartFacts → prose. prompt · projection · client · validator · cache
+render/               one SVG geometry, shared by web, PDF and snapshot tests
+  fonts/              Noto Sans Devanagari, self-hosted
+web/                  Next.js 15 App Router, next-intl, reads locales/ directly
 docs/                 DECISIONS, PANCHANG_AUTHORITY, SUNRISE_CONVENTION, DIVERGENCES, GOLDEN_FILES
-locales/{mr,hi,en}/   15 namespaces, 280 hand-curated keys per locale
+locales/{mr,hi,en}/   17 namespaces, 291 hand-curated keys per locale
 tests/{unit,invariants,golden}/
-tools/                facts_dump, golden_verify, golden_add, locale_audit
+tools/                facts_dump, golden_verify, golden_add, locale_audit, narrative_test
 ```
 
 ## Design commitments
@@ -119,17 +147,34 @@ starting-yogini rule and the Yuddha bala winner/loser rule are *refused*, with a
 message naming what needs sourcing, rather than guessed. See
 [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
+**The prose layer cannot invent a number.** Every generated section is validated in
+code, not by trusting the prompt: prohibited subjects (§6.6/6.7) are matched
+against a per-locale blocklist, and *every numeric token in the prose must appear
+in the facts the model was shown*. A fabricated degree, time or dasha date fails
+the section rather than reaching a reader. Local times are computed by the engine
+and handed to the model as data — a timezone conversion is arithmetic, so the model
+does not do it.
+
+**One chart geometry.** `render/chart_svg.py` draws the North Indian diamond once.
+The browser, the PDF and the snapshot tests all consume that output, so the printed
+sheet and the screen cannot drift apart. The diamond ships with a semantic table
+alternative that is always in the DOM, not a toggle.
+
 ## CI gates
 
-Per §9.7 of the spec, all currently green:
+Per §9.7 of the spec, plus the Phase 4–6 additions. All currently green:
 
 | Gate | State |
 |---|---|
-| `ruff check` + `ruff format --check` | clean |
-| `mypy` strict (`core/` + `tools/`) | clean, 47 files |
-| Coverage on `core/` ≥ 90% | **95%** |
+| `ruff check` + `ruff format --check` | clean, 91 files |
+| `mypy` strict (`core` `api` `narrative` `render` `tools`) | clean, 67 files |
+| Architectural boundaries (`core/` imports nothing above it) | clean |
+| Coverage on `core/` ≥ 90% | **95.4%** (94% across all four packages) |
 | ChartFacts JSON Schema validation | valid, and rejects malformed documents |
 | Locale completeness (mr/hi/en) | clean, 23 known-divergent terms asserted distinct |
+| Prohibited-content validator | 21/21 samples rejected, benign prose passes |
+| Full chart server-side < 200 ms | **84 ms** median of 7 (engine + ChartFacts + schema validation) |
+| `web`: `tsc --noEmit` + `next build` | clean, 11 static pages across 3 locales |
 | Golden panchang agreement | **0/62 transcribed — reported, not passed** |
 
 `.github/workflows/ci.yml` is inert while this tree sits inside another
@@ -155,6 +200,16 @@ not a forecast of the future, and it is not a substitute for medical, legal,
 financial or psychological advice. Birth date, time, place and name together are
 sensitive personal data under India's DPDP Act and under GDPR.
 
-The narrative layer's hard content prohibitions (§6.6) and the post-generation
-validator that enforces them are **Phase 4** and are not built. Nothing in this
-repository generates prose yet.
+The hard content prohibitions of §6.6/6.7 are enforced by
+`narrative/validator.py` in code, in all three locales, and gated in CI —
+`python -m tools.narrative_test` prints the category × locale matrix with the
+pattern that caught each sample. Prose is refused, never quietly edited: a
+scrubbed paragraph would hide a prompt regression.
+
+Storage follows §10: birth input only, Fernet-encrypted at rest, explicit consent
+per stated purpose, a 365-day retention policy, and export/delete endpoints under
+`/v1/privacy`. No third-party analytics reach the birth-input screens — the CSP in
+`web/next.config.ts` blocks third-party scripts outright rather than relying on a
+policy statement. Derived values are never stored as source of truth; a chart is
+always recomputed, which is what made the D13 longitude change visible instead of
+frozen into old rows.

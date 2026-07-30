@@ -64,6 +64,36 @@ class EngineOptions:
     """
 
     ayanamsa: str = "lahiri"
+    #: Whether the ayanamsa is measured from the *true* (nutated) equinox of date.
+    #:
+    #: True means the sidereal longitude is referred to the true equinox, which is
+    #: what Swiss Ephemeris' own ``FLG_SIDEREAL`` mode produces and what most
+    #: Vedic software reports. False refers it to the mean equinox instead.
+    #:
+    #: The two differ by the nutation in longitude: ~12.8 arcseconds at the 1990
+    #: epoch, oscillating to about +/-17 arcseconds over the 18.6-year nodal cycle.
+    #:
+    #: Which panchang limbs that moves follows from what each is a function of,
+    #: and it is not uniform (measured for Pune 1990-06-15, pinned by
+    #: ``test_nutation_cancels_in_the_elongation_limbs``):
+    #:
+    #: * **tithi and karana: exactly zero.** Both are functions of the elongation
+    #:   Moon - Sun, and the ayanamsa subtracts from both terms, so it cancels
+    #:   identically. Not "small" - algebraically absent.
+    #: * **nakshatra: ~23 seconds**, being a function of the Moon's longitude alone.
+    #: * **yoga: ~44 seconds**, because it is the *sum* of the two longitudes and so
+    #:   carries twice the shift.
+    #: * **sunrise and every value anchored to it: zero.** Rise times are computed
+    #:   from the Sun's altitude, which no ayanamsa touches.
+    #:
+    #: All are inside the one-minute golden tolerance, so this cannot flip a
+    #: published panchang time - but it can move a graha across a pada or D60
+    #: boundary it sits within 12.8 arcseconds of.
+    #:
+    #: Default True so that this engine's own conversion and the provider's
+    #: internal one agree, which is checked in
+    #: ``tests/invariants/test_cross_implementation.py``. See docs/DECISIONS.md D13.
+    ayanamsa_includes_nutation: bool = True
     node_type: NodeType = NodeType.MEAN
     calendar_variant: CalendarVariant = CalendarVariant.AMANTA
     dasha_year_length: YearLength = YearLength.SOLAR_365_2425

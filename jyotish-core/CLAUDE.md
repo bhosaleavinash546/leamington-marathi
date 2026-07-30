@@ -2,13 +2,24 @@
 
 > This is a **specification**, not a wish list. Where a value is given, it is a requirement, not a suggestion.
 >
-> **Build status.** Phases 0-3 are implemented: the deterministic core (`core/`),
-> its tests, the ChartFacts contract and the docs. Phases 4-6 (FastAPI, the
-> narrative layer, the Next.js frontend, hardening) are not started. Read
+> **Build status.** All six phases are implemented: the deterministic core
+> (`core/`), the FastAPI orchestration layer (`api/`), the narrative layer with
+> its post-generation validator (`narrative/`), the SVG and PDF renderer
+> (`render/`), the Next.js frontend (`web/`), and the Phase 6 hardening. Read
 > `README.md` for what exists and `docs/DECISIONS.md` for every convention
-> chosen. **The 60 golden panchang cases in §9.1 are scaffolded but not
-> transcribed** - see `docs/GOLDEN_FILES.md`; agreement with दाते पंचांग is
-> currently unverified, and the harness reports that rather than passing.
+> chosen.
+>
+> Three things in §12's definition of done are **not** met, each recorded rather
+> than hidden:
+>
+> 1. **The 60 golden panchang cases in §9.1 are scaffolded but not transcribed**
+>    - see `docs/GOLDEN_FILES.md`. Agreement with दाते पंचांग is unverified, and
+>    the harness reports each case as PENDING rather than passing.
+> 2. The §9.4 cross-check compares against the same ephemeris library reached a
+>    different way, not against a separate application - `docs/DIVERGENCES.md` O5.
+>    It nonetheless found a real 12.8-arcsecond error; see D13.
+> 3. The offline geocoder holds 125 places, not §2.2's 20,000 - O6. The timezone
+>    half of that requirement is complete and offline.
 
 ---
 

@@ -1,0 +1,336 @@
+/*
+ * Devanagari-safe layout (CLAUDE.md 1).
+ *
+ * Devanagari is not Latin with different glyphs. Three properties this stylesheet
+ * has to respect, each of which breaks a Latin-tuned design:
+ *
+ * 1. **Taller line boxes.** Matras sit above and below the baseline, so a
+ *    `line-height` tuned for Latin clips them. 1.7 for body text, and never a
+ *    fixed-height row that could crop a conjunct.
+ * 2. **No `text-transform`.** Devanagari has no case. `uppercase` on a mixed-script
+ *    label does nothing to the Devanagari and shouts at the Latin.
+ * 3. **No letter-spacing.** Tracking a Devanagari word breaks the conjuncts apart
+ *    into their component consonants.
+ *
+ * The font is self-hosted (CLAUDE.md 2.2), served from `public/fonts/`, and is the
+ * same file the PDF pipeline embeds — so a glyph that renders on screen renders in
+ * print.
+ */
+
+@font-face {
+  font-family: 'Noto Sans Devanagari';
+  src: url('/fonts/NotoSansDevanagari-Variable.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  --ink: #1c1a17;
+  --muted: #6b6459;
+  --rule: #d8d2c6;
+  --paper: #fbf9f4;
+  --card: #ffffff;
+  --accent: #7a2e1e;
+  --accent-soft: #f3e6e1;
+  --radius: 10px;
+  --gap: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #ece7de;
+    --muted: #a49b8c;
+    --rule: #3a352e;
+    --paper: #16150f;
+    --card: #1e1c16;
+    --accent: #e0a08a;
+    --accent-soft: #2b211c;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html {
+  /* Devanagari needs the extra leading; Latin tolerates it. */
+  line-height: 1.7;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Noto Sans Devanagari', 'Inter', system-ui, sans-serif;
+  font-size: 1rem;
+}
+
+/* Latin pages lead with Inter; Devanagari pages with Noto. Both keep the other
+   as a fallback, because a Marathi page still shows Latin place names and codes. */
+.script-latin body { font-family: 'Inter', system-ui, 'Noto Sans Devanagari', sans-serif; }
+
+h1, h2, h3 {
+  /* No text-transform, no letter-spacing: see the header comment. */
+  line-height: 1.35;
+  margin: 0 0 0.4em;
+  font-weight: 650;
+}
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.15rem; }
+
+code {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.85em;
+  background: var(--accent-soft);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  /* Machine keys are always Latin, so they may be tracked and wrapped freely. */
+  word-break: break-all;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+  z-index: 10;
+  background: var(--card);
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+.page {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.page--form { max-width: 32rem; }
+.page__head { border-bottom: 1px solid var(--rule); padding-bottom: 0.75rem; }
+.lede { color: var(--muted); margin: 0; }
+.fine { color: var(--muted); font-size: 0.85rem; margin: 0; }
+.note {
+  background: var(--accent-soft);
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius);
+  margin: 0;
+}
+.error {
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 0.8rem;
+  border-radius: var(--radius);
+}
+
+/* --- cards ------------------------------------------------------------- */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+}
+.card__head { margin-bottom: 0.6rem; }
+.card__sub { color: var(--muted); margin: 0; font-size: 0.9rem; }
+
+.tag {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 0.05em 0.6em;
+  font-size: 0.8rem;
+}
+.tag--absent { opacity: 0.65; }
+
+.kv { margin: 0; display: grid; gap: 0.15rem; }
+.kv__row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 34%) 1fr;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.kv__row:last-child { border-bottom: 0; }
+.kv dt { color: var(--muted); margin: 0; }
+.kv dd { margin: 0; }
+.kv--compact .kv__row { padding: 0.15rem 0; font-size: 0.9rem; }
+
+/* --- confidence banner ------------------------------------------------- */
+
+.banner {
+  border: 1px solid var(--accent);
+  border-inline-start-width: 4px;
+  background: var(--accent-soft);
+  border-radius: var(--radius);
+  padding: 0.8rem 1rem;
+}
+.banner__heading { font-weight: 650; margin: 0 0 0.3rem; }
+.banner__label { color: var(--muted); margin: 0.4rem 0 0.2rem; font-size: 0.85rem; }
+.banner__list { margin: 0; padding-inline-start: 1.1rem; font-size: 0.85rem; }
+
+/* --- charts ------------------------------------------------------------ */
+
+.charts {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 46rem) {
+  /* CLAUDE.md 8: Rashi and Navamsa side by side on the main view. Stacked below
+     this width — side-by-side diamonds at phone width make the glyphs unreadable. */
+  .charts { grid-template-columns: 1fr 1fr; }
+}
+
+.kundali-figure { margin: 0; }
+.kundali-svg { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); }
+.kundali-svg svg { display: block; width: 100%; height: auto; color: var(--ink); }
+.kundali-svg [data-house] { transition: fill 120ms ease; }
+.kundali-svg [data-house]:hover,
+.kundali-svg [data-house]:focus-visible { fill: var(--accent-soft); outline: none; }
+.kundali-svg [data-house].is-selected { fill: var(--accent-soft); }
+
+.kundali-table-wrap { margin-top: 0.5rem; }
+.kundali-table table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.kundali-table th, .kundali-table td {
+  text-align: start;
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- toolbar ----------------------------------------------------------- */
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
+.toolbar__group { border: 0; margin: 0; padding: 0; display: flex; gap: 0.3rem; align-items: center; }
+.toolbar__group legend {
+  float: inline-start;
+  color: var(--muted);
+  font-size: 0.8rem;
+  padding-inline-end: 0.4rem;
+}
+.toolbar__group button, .toolbar__group a {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  font: inherit;
+}
+.toolbar__group [aria-pressed='true'], .toolbar__group [aria-current='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--paper);
+}
+
+button.primary {
+  background: var(--accent);
+  color: var(--paper);
+  border: 0;
+  border-radius: var(--radius);
+  padding: 0.6rem 1.1rem;
+  font: inherit;
+  cursor: pointer;
+}
+button.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.link-button {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* --- evidence affordance ---------------------------------------------- */
+
+.evidence { margin-top: 0.3rem; font-size: 0.9rem; }
+.evidence > summary { cursor: pointer; color: var(--accent); width: fit-content; }
+.evidence__body {
+  margin-top: 0.4rem;
+  padding: 0.5rem 0.7rem;
+  background: var(--accent-soft);
+  border-radius: var(--radius);
+}
+.evidence__list { margin: 0; padding-inline-start: 1.1rem; display: grid; gap: 0.25rem; }
+.evidence__human { margin-inline-end: 0.4rem; }
+.evidence__meta { color: var(--muted); font-size: 0.85rem; margin: 0.4rem 0 0; }
+
+/* --- findings and dasha ------------------------------------------------ */
+
+.findings { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+.findings__item { border-bottom: 1px solid var(--rule); padding-bottom: 0.6rem; }
+.findings__item:last-child { border-bottom: 0; padding-bottom: 0; }
+.findings__head { margin: 0; display: flex; gap: 0.5rem; align-items: baseline; flex-wrap: wrap; }
+
+.dasha { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.2rem; }
+.dasha--nested { padding-inline-start: 1.1rem; border-inline-start: 1px solid var(--rule); margin-top: 0.3rem; }
+.dasha__node > details > summary { cursor: pointer; padding: 0.2rem 0; }
+.dasha__leaf { padding: 0.2rem 0; }
+.dasha .is-current > details > summary, .dasha__leaf.is-current { font-weight: 650; }
+.today-marker { color: var(--accent); margin-inline-start: 0.5rem; font-size: 0.85rem; }
+.dasha__loading { color: var(--muted); margin: 0.2rem 0; }
+
+/* --- form -------------------------------------------------------------- */
+
+.form { display: grid; gap: 0.9rem; }
+.field { display: grid; gap: 0.25rem; }
+.field > span, .field legend { color: var(--muted); font-size: 0.9rem; }
+.field--group { border: 0; margin: 0; padding: 0; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+input, select {
+  font: inherit;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--card);
+  color: inherit;
+}
+.matches { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.2rem; }
+.matches button {
+  width: 100%;
+  text-align: start;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* --- disclaimer -------------------------------------------------------- */
+
+.disclaimer {
+  border-top: 1px solid var(--rule);
+  padding: 1rem;
+  max-width: 60rem;
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.disclaimer p { margin: 0 0 0.3rem; }
+
+/* --- print ------------------------------------------------------------- */
+
+@media print {
+  /* CLAUDE.md 8: both layouts printable at A4 without reflow. The interactive
+     chrome is dropped and the two charts stay side by side. */
+  .toolbar, .skip-link, .kundali-table-wrap button { display: none; }
+  body { background: #fff; }
+  .card { break-inside: avoid; border-color: #999; }
+  .charts { grid-template-columns: 1fr 1fr; }
+  .evidence[open] > summary { display: none; }
+  .evidence { font-size: 8pt; }
+  @page { size: A4; margin: 14mm; }
+}

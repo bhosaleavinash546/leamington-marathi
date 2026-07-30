@@ -21,8 +21,13 @@ CORE = Path(__file__).resolve().parents[2] / "core"
 #: The one module permitted to import the Swiss Ephemeris binding.
 SWISSEPH_ALLOWLIST = {"core/ephemeris/swisseph_adapter.py"}
 
-#: Import prefixes ``core/`` may never reach for.
+#: Import prefixes ``core/`` may never reach for. The first three are this
+#: repository's own layers: ``core/`` sits below all of them, so an import of any
+#: one is a dependency inversion, not merely a style problem.
 FORBIDDEN_PREFIXES = (
+    "api",
+    "narrative",
+    "render",
     "fastapi",
     "starlette",
     "pydantic",
