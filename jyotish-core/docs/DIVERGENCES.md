@@ -15,6 +15,12 @@ Nothing here is a bug list. A bug is a disagreement with the *named authority*
 
 ## Open questions, highest priority first
 
+> **How to settle these: `docs/UNBLOCKING.md`.** They are blocked on दाते पंचांग
+> but not on the same page, and not on the full 62-case transcription. A yoga
+> end-time settles the ayanamsa on its own; a place-correction table settles the
+> elevation question; only then does a printed sunrise mean one thing.
+> `python -m tools.settle --matrix` reproduces the sensitivities.
+
 ### O1 — Sunrise disc/refraction convention
 
 **Consequence: up to 3m 50s on every sunrise, and with it the headline tithi,

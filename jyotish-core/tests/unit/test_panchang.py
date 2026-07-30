@@ -647,3 +647,64 @@ def test_tithi_anomaly_classification(ephemeris: Ephemeris, pune: Place) -> None
     ordinary = compute_panchang_day(ephemeris, dt.date(2025, 8, 9), pune)
     assert ordinary.tithi_anomaly is TithiAnomaly.NONE
     assert ordinary.anomalous_tithi is None
+
+
+# ---------------------------------------------------------------------------
+# The transcription plan's premise (docs/DIVERGENCES.md, tools/settle.py)
+# ---------------------------------------------------------------------------
+
+
+def test_a_yoga_end_time_discriminates_the_ayanamsa_and_a_tithi_end_time_does_not(
+    pune: Place,
+) -> None:
+    """What each printed value can settle, pinned as arithmetic rather than prose.
+
+    The transcription plan in `tools/settle.py` rests on this: a yoga or nakshatra
+    end-time isolates the ayanamsa because neither depends on sunrise, while a
+    tithi or karana end-time is invariant under the ayanamsa entirely because both
+    are functions of the elongation, from which it cancels.
+
+    If this ever stopped holding, the plan would be sending someone to the wrong
+    page of the almanac.
+    """
+    from core.ephemeris.registry import build_ephemeris
+    from core.panchang.day import compute_panchang_day
+
+    date = dt.date(2024, 6, 21)
+    days = {}
+    for ayanamsa in ("lahiri", "true_chitra"):
+        options = EngineOptions(ayanamsa=ayanamsa)
+        days[ayanamsa] = compute_panchang_day(build_ephemeris(options), date, pune, options)
+
+    def shift(limb: str) -> float:
+        a = getattr(days["lahiri"], f"{limb}_at_sunrise").end_utc
+        b = getattr(days["true_chitra"], f"{limb}_at_sunrise").end_utc
+        return abs((b - a).total_seconds()) / 60.0
+
+    # Exactly zero, not merely small: the ayanamsa cancels in the difference of
+    # two longitudes, so these carry no information about it at all.
+    assert shift("tithi") == 0.0
+    assert shift("karana") == 0.0
+
+    # The yoga is the sum of two longitudes, so it carries the shift twice and is
+    # the sharper discriminator of the two that do move.
+    assert shift("yoga") > shift("nakshatra") > 1.0
+    assert shift("yoga") > 2.0, (
+        f"yoga moves {shift('yoga'):.2f} min; the plan needs it clear of the "
+        "±1 min printing tolerance"
+    )
+
+
+def test_sunrise_carries_no_information_about_the_ayanamsa(pune: Place) -> None:
+    """Which is why a printed sunrise cannot settle F-008, only O1 and F-007."""
+    from core.ephemeris.registry import build_ephemeris
+    from core.panchang.solar import compute_day_lights
+
+    date = dt.date(2024, 6, 21)
+    rises = {
+        compute_day_lights(
+            build_ephemeris(EngineOptions(ayanamsa=a)), date, pune, EngineOptions(ayanamsa=a)
+        ).sunrise
+        for a in ("lahiri", "true_chitra", "raman")
+    }
+    assert len(rises) == 1, "sunrise moved with the ayanamsa; it is an altitude, not a longitude"

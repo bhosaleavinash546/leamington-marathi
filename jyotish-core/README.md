@@ -32,7 +32,7 @@ authority: दाते पंचांग (Date Panchang)
 cases selected: 62   transcribed: 0   pending: 62
 ```
 
-The engine *is* checked against 760 invariant and unit tests, and against
+The engine *is* checked against 762 invariant and unit tests, and against
 independently known calendar facts (Gudi Padwa 2023/24/25 → Shaka 1945/46/47;
 Adhika Shravana 2023; Adhika Jyeshtha 2018 and 2026; Adhika Ashwina 2020). What is
 outstanding is minute-level agreement with the named authority. See
@@ -40,7 +40,9 @@ outstanding is minute-level agreement with the named authority. See
 
 The highest-priority open question is the **sunrise disc/refraction convention**,
 worth up to 3m 50s and moving every sunrise-anchored value together —
-[`docs/SUNRISE_CONVENTION.md`](docs/SUNRISE_CONVENTION.md).
+[`docs/SUNRISE_CONVENTION.md`](docs/SUNRISE_CONVENTION.md). It is not the first
+one to settle, though: [`docs/UNBLOCKING.md`](docs/UNBLOCKING.md) shows which
+single printed value resolves each open question, and in what order.
 
 ## Quick start
 
@@ -56,11 +58,12 @@ python -m tools.facts_dump --name Avinash --date 1990-06-15 --time 14:32 \
 python -m tools.facts_dump --name Avinash --date 1990-06-15 \
     --lat 18.5204 --lon 73.8567 --tz Asia/Kolkata
 
-pytest                              # 760 tests, 62 golden cases pending
+pytest                              # 762 tests, 62 golden cases pending
 pytest -m "not slow"                # skip the Hypothesis sweeps
 python -m tools.locale_audit        # mr/hi/en completeness + divergence check
 python -m tools.narrative_test      # prohibited content, 7 categories x 3 locales
 python -m tools.golden_verify       # per-field delta table vs the authority
+python -m tools.settle --matrix     # which printed value settles which question
 ```
 
 The engine needs none of the extras. `uv pip install -e ".[dev]"` runs `core/` and
@@ -104,10 +107,11 @@ render/               one SVG geometry, shared by web, PDF and snapshot tests
   fonts/              Noto Sans Devanagari, self-hosted
 web/                  Next.js 15 App Router, next-intl, reads locales/ directly
 docs/                 DECISIONS, PANCHANG_AUTHORITY, SUNRISE_CONVENTION, DIVERGENCES,
-                      GOLDEN_FILES, LOCALE_REVIEW
+                      GOLDEN_FILES, LOCALE_REVIEW, UNBLOCKING
 locales/{mr,hi,en}/   21 namespaces, 333 hand-curated keys per locale
 tests/{unit,invariants,golden}/
-tools/                facts_dump, golden_verify, golden_add, locale_audit, narrative_test
+tools/                facts_dump, golden_verify, golden_add, locale_audit,
+                      narrative_test, settle
 ```
 
 ## Design commitments
