@@ -96,15 +96,25 @@ def dms(deg: float) -> tuple[int, int, float]:
 
 
 def format_dm(deg: float) -> str:
-    """Format an angle as ``12°44′`` - degrees and arcminutes, no seconds.
+    """Format an angle as ``12°44'`` - degrees and arcminutes, no seconds.
 
     This is the form a printed patrika uses for ग्रहस्पष्ट. Decimal degrees are
     what marks a sheet as machine-generated (audit F-010), and arcseconds are
     below the resolution anyone reads off a chart.
 
-    Uses the prime U+2032 rather than an ASCII apostrophe, because the value is
-    typeset rather than debugged. Minutes are *rounded*, and a rounded 60 carries
-    into the degree so ``29.9999`` reads ``30°00′`` and never ``29°60′``.
+    The mark is the ASCII apostrophe U+0027, not the typographer's prime U+2032.
+    U+2032 is the better character and this function used to emit it; no font the
+    project ships can draw it. Mukta, Rozha One and IBM Plex Sans Devanagari all
+    lack the glyph, and so does the Noto Sans Devanagari that WeasyPrint embeds -
+    so every degree in the exported PDF's ग्रहस्पष्ट table was a missing-glyph
+    box, and every degree in the web table fell back to whatever face the OS
+    happened to offer, at a different weight. ``format_dms`` below has always
+    used ASCII; this brings the two into line. ``tools/design/subset_fonts.py``
+    now fails if a character the app emits has no glyph, so the next one cannot
+    ship unnoticed.
+
+    Minutes are *rounded*, and a rounded 60 carries into the degree so
+    ``29.9999`` reads ``30°00'`` and never ``29°60'``.
     """
     d, m, s = dms(deg)
     if s >= 30.0:
@@ -112,7 +122,7 @@ def format_dm(deg: float) -> str:
     if m == 60:
         d, m = d + 1, 0
     sign = "-" if deg < 0 else ""
-    return f"{sign}{d}°{m:02d}\u2032"
+    return f"{sign}{d}°{m:02d}'"
 
 
 def format_dms(deg: float, places: int = 0) -> str:

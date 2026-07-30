@@ -10,6 +10,22 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+/**
+ * Rendered per request, not at build time.
+ *
+ * The CSP in `middleware.ts` carries a per-request nonce, and a nonce cannot be
+ * baked into a prerendered page: the build would stamp one value into the HTML
+ * and every later request would arrive with a different one in the header, so
+ * the browser would refuse the App Router's inline scripts and blank the page.
+ * Prerendering and a nonce CSP are mutually exclusive; the CSP wins, because
+ * `KundaliChart` mounts server-generated SVG through `dangerouslySetInnerHTML`
+ * and `'unsafe-inline'` would make that markup executable.
+ *
+ * `generateStaticParams` stays: it is still the list of locales to build routes
+ * for, and it keeps CLAUDE.md N5's three first-class locales in one place.
+ */
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({
   params,
 }: {

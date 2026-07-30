@@ -1052,18 +1052,18 @@ def test_grahaspashta_is_printed_in_rashi_degree_minute(facts: dict[str, Any]) -
     from render.pdf import build_sheet_html
 
     html = build_sheet_html(facts, "mr")
-    assert re.search(r"[ऀ-ॿ]+\s[०-९]+°[०-९]{2}′", html), "no rashi-degree-minute cell found"
+    assert re.search(r"[ऀ-ॿ]+\s[०-९]+°[०-९]{2}'", html), "no rashi-degree-minute cell found"
     # The old form, e.g. "मिथुन 0.28°", must be gone.
     assert not re.search(r"[ऀ-ॿ]+\s\d+\.\d+°", html)
 
 
 def test_format_dm_carries_a_rounded_sixty_into_the_degree() -> None:
-    """29.9999° must read 30°00′, never 29°60′."""
+    """29.9999° must read 30°00', never 29°60'."""
     from core.angles import format_dm
 
-    assert format_dm(12.7333) == "12°44′"
-    assert format_dm(29.9999) == "30°00′"
-    assert format_dm(0.2833) == "0°17′"
+    assert format_dm(12.7333) == "12°44'"
+    assert format_dm(29.9999) == "30°00'"
+    assert format_dm(0.2833) == "0°17'"
 
 
 @pytest.mark.parametrize("locale", ["mr", "hi"])

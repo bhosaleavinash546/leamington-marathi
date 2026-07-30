@@ -606,3 +606,40 @@ raise rather than return a plausible number:
 The period *tables* for Ashtottari (108 y) and Yogini (36 y) are implemented and
 their totals are checked; only the nakshatra mapping is withheld. Supply a sourced
 27-entry table plus a note here and both systems work immediately.
+
+---
+
+## D23 — The web CSP carries a nonce, and the locale routes render per request
+
+DESIGN.md Phase A's standing instruction is "screenshot your work and critique it
+before reporting done". Doing that for the first time found that **every route in
+the app rendered blank in a real browser**, and had done since the frontend was
+built. Nothing caught it because every gate — typecheck, `next build`, the test
+suite — inspects source or server output, and none of them had ever loaded a page.
+
+The cause: `script-src 'self'` with no nonce. The App Router delivers its RSC
+payload as inline `<script>` tags. The browser refused all of them, React hydrated
+against an empty tree, and deleted the server-rendered DOM. The page arrived
+complete and then went blank.
+
+`'unsafe-inline'` is the usual fix and is **not available here**.
+`components/KundaliChart.tsx` mounts server-generated SVG and the accessible table
+through `dangerouslySetInnerHTML`; permitting inline scripts would make any
+`<script>` reaching that markup executable, and the markup is built from user
+input including `name`. The policy has to stay strict.
+
+So the CSP moved from `next.config.ts` to `middleware.ts` and carries a
+per-request nonce. Two consequences, both accepted deliberately:
+
+- **The locale routes are no longer prerendered.** A nonce cannot be baked into a
+  static page: the build would stamp one value into the HTML and every later
+  request would arrive with a different one in the header. `app/[locale]/layout.tsx`
+  and `app/tokens/layout.tsx` are `force-dynamic`. The shells are small and the
+  chart work already happens server-side, so the cost is a render per request
+  rather than a CDN hit — paid to keep a policy that makes the SVG injection safe.
+- **`/api/*` keeps a static policy.** The middleware matcher skips it, and those
+  responses are JSON and SVG fetched by the app rather than navigated to, so they
+  need no nonce — only `default-src 'none'`, which permits nothing to run at all.
+
+`npm run design:screenshot` now performs the check that found this: it fails on a
+page that renders no text or logs a CSP violation.

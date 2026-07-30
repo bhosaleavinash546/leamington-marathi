@@ -1,0 +1,271 @@
+/*
+ * Design tokens — DESIGN.md §2 and §3.
+ *
+ * Every value here is transcribed from the specification, not invented. Where a
+ * token is *not* in DESIGN.md it is marked DERIVED with the reason, so a reviewer
+ * can tell the brief from the interpretation.
+ *
+ * The thesis (DESIGN.md §1) is the printed panchang as artifact: two-colour
+ * letterpress, black on off-white, one saturated red carrying meaning and nothing
+ * else. If a token cannot be traced to that, it should not be here.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* --- colour, light (DESIGN.md §2.1) --------------------------------- */
+  --paper: #f7f3ea;
+  --paper-sunk: #efe9dc;
+  --ink: #16130f;
+  --ink-muted: #5c544a;
+  --rule: #c9bfae;
+  --sindoor: #b3251e;
+  --sindoor-wash: #f2ddd9;
+
+  /* --- graha identity (DESIGN.md §2.1) --------------------------------
+   * Small identity chips and glyph tints only, never large fills: nine colours
+   * as areas is a rainbow, and the two-colour discipline is the whole point.
+   * Colour is never the sole channel — glyph + Devanagari abbreviation + colour.
+   */
+  --graha-sun: #b5502a;
+  --graha-moon: #e8e2d4;
+  --graha-mars: #a6231c;
+  --graha-mercury: #3f6b45;
+  --graha-jupiter: #c08a1e;
+  --graha-venus: #dcdcd2;
+  --graha-saturn: #22303c;
+  --graha-rahu: #6e6a66;
+  --graha-ketu: #7a6448;
+
+  /* DERIVED, and wider than DESIGN.md anticipated.
+   *
+   * §2.1 notes that the Moon and Venus "need --ink outline on light mode". A
+   * measured audit of all nine tokens against both surfaces in both themes
+   * (tools: `npm run audit:contrast`) found six failures of §8's 3:1, not two,
+   * and they are not the same six in each theme:
+   *
+   *   light   moon 1.07  venus 1.14  jupiter 2.52
+   *   dark    saturn 1.28  mars 2.38  mercury 2.81
+   *
+   * Which is unsurprising once stated: a token light enough to read on dark
+   * paper is the one that vanishes on light, and vice versa. So the outline is
+   * applied per theme from the measurement rather than from the note, and the
+   * hues are untouched — this adds no colour to the set. */
+  --graha-outline: var(--ink);
+
+  /* DERIVED. --rule is 1.50:1 on light and 1.43:1 on dark against the worse of
+   * the two surfaces (1.64:1 and 1.53:1 against --paper alone), below §8's 3:1.
+   * That is correct for what it is: a letterpress hairline separating rows of a
+   * table whose structure is already conveyed semantically by <table>/<th
+   * scope>, so it is decoration, not a component identifier. But the same token
+   * would fail as an input border or a focus ring, where 3:1 genuinely applies.
+   * Interactive edges therefore take their own token. See
+   * docs/design/DIRECTION.md, "Where the tokens and the gate disagree". */
+  --rule-interactive: var(--ink-muted);
+
+  /* --- type (DESIGN.md §2.2) ------------------------------------------
+   * Devanagari face chosen first, Latin matched to it — the reverse is the
+   * near-universal mistake §2.2 names.
+   */
+  --font-display: 'Rozha One', Georgia, serif;
+  --font-body: 'Mukta', system-ui, sans-serif;
+  --font-data: 'IBM Plex Sans Devanagari', ui-monospace, monospace;
+
+  --leading-devanagari: 1.7; /* tight line boxes clip matras */
+  --leading-latin: 1.5;
+
+  /* DERIVED. §2.2 asks for "a modular ratio, set once as tokens" without fixing
+   * one. 1.2 (minor third) is chosen because a denser ratio suits a tabular
+   * sheet: the patrika's hierarchy comes from rules and weight, not from size
+   * jumps. Devanagari runs one step larger than Latin at equivalent perceived
+   * size, which --step-deva-bump carries. */
+  --step--1: 0.833rem;
+  --step-0: 1rem;
+  --step-1: 1.2rem;
+  --step-2: 1.44rem;
+  --step-3: 1.728rem;
+  --step-4: 2.074rem;
+  --step-deva-bump: 1.08;
+
+  /* --- space, rule, radius (DESIGN.md §2.3) ---------------------------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  --hairline: 1px; /* 0.5px at 2x, below */
+  --radius-control: 2px; /* the maximum §2.3 permits */
+  --radius-sheet: 0; /* a printed panchang has no rounded corners */
+
+  /* Paper does not float. One shadow token only, for the mobile bottom sheet. */
+  --shadow-sheet: 0 -2px 16px rgb(22 19 15 / 0.18);
+
+  /* --- motion (DESIGN.md §3.2) ----------------------------------------- */
+  --dur-micro: 120ms;
+  --dur-enter: 200ms;
+  --dur-layout: 320ms;
+  --dur-orch: 500ms;
+  --dur-chart-draw: 800ms; /* the one permitted exception, §3.2 */
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* --spring-ui lives in JS (Motion takes an object): stiffness 320, damping 32,
+   * mass 1. Mirrored in web/lib/motion.ts so the two cannot drift. */
+}
+
+/* --- colour, dark (DESIGN.md §2.1) ------------------------------------
+ * "Ink, not cosmos" — the same artifact printed in reverse. Never a starfield.
+ *
+ * The `[data-theme]` selectors are deliberately *not* anchored to `:root`. A
+ * root-only rule cannot express "this subtree is the other theme", which is
+ * exactly what the token sheet needs to show both themes side by side — and
+ * a token that only ever renders at the document root is a token nobody can
+ * put next to its opposite and compare.
+ *
+ * `[data-theme='light']` therefore has to restate the light values rather than
+ * lean on `:root`: under a dark OS preference the root already carries the dark
+ * set, and a light-marked subtree inside it would otherwise inherit dark.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #14120f;
+    --paper-sunk: #1d1a16;
+    --ink: #ede6d8;
+    --ink-muted: #9a9083;
+    --rule: #3a3530;
+    --sindoor: #e05a50; /* lifted for contrast on dark */
+    --sindoor-wash: #2e1a18;
+    --shadow-sheet: 0 -2px 16px rgb(0 0 0 / 0.5);
+  }
+}
+
+[data-theme='dark'] {
+  --paper: #14120f;
+  --paper-sunk: #1d1a16;
+  --ink: #ede6d8;
+  --ink-muted: #9a9083;
+  --rule: #3a3530;
+  --sindoor: #e05a50;
+  --sindoor-wash: #2e1a18;
+  --shadow-sheet: 0 -2px 16px rgb(0 0 0 / 0.5);
+}
+
+[data-theme='light'] {
+  --paper: #f7f3ea;
+  --paper-sunk: #efe9dc;
+  --ink: #16130f;
+  --ink-muted: #5c544a;
+  --rule: #c9bfae;
+  --sindoor: #b3251e;
+  --sindoor-wash: #f2ddd9;
+  --shadow-sheet: 0 -2px 16px rgb(22 19 15 / 0.18);
+}
+
+/* --- reduced motion (DESIGN.md §3.4) ----------------------------------
+ * Not a global `transition: none`. Durations collapse to a single crossfade
+ * length so a transform-based enter becomes an opacity change of the same
+ * perceived weight, and the component code reads the token rather than
+ * branching on the media query in twenty places.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-micro: 0ms;
+    --dur-enter: 120ms;
+    --dur-layout: 120ms;
+    --dur-orch: 120ms;
+    --dur-chart-draw: 0ms;
+    --ease-out: linear;
+    --ease-in: linear;
+    --ease-inout: linear;
+  }
+}
+
+/* --- faces -------------------------------------------------------------
+ * `font-display: block`, never `swap`: the fallback lacks conjuncts, so swap
+ * shows broken glyphs and then reflows violently (DESIGN.md §2.2, §5.4).
+ *
+ * Built by `npm run fonts:subset`. The Devanagari files carry the whole of
+ * U+0900-U+097F plus the joiners — not just the locale corpus — because the
+ * `name` field is arbitrary user Devanagari. The unicode-range says exactly
+ * that and no more: a range claiming coverage the file lacks makes the browser
+ * choose this face and draw a missing-glyph box instead of falling back.
+ *
+ * Three of the five Devanagari faces are inside §9's 90KB; Mukta 400 and 600
+ * are 99.4KB and 102.5KB. That overage is recorded, not hidden — see
+ * docs/design/DIRECTION.md, "Where the tokens and the gate disagree".
+ */
+@font-face {
+  font-family: 'Mukta';
+  src: url('/fonts/mukta-devanagari-400.woff2') format('woff2');
+  unicode-range: U+0900-097F, U+200C-200D;
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Mukta';
+  src: url('/fonts/mukta-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2C60-2C7F;
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Mukta';
+  src: url('/fonts/mukta-devanagari-600.woff2') format('woff2');
+  unicode-range: U+0900-097F, U+200C-200D;
+  font-weight: 600;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Mukta';
+  src: url('/fonts/mukta-latin-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2C60-2C7F;
+  font-weight: 600;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Rozha One';
+  src: url('/fonts/rozha-one-devanagari-400.woff2') format('woff2');
+  unicode-range: U+0900-097F, U+200C-200D;
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Rozha One';
+  src: url('/fonts/rozha-one-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2C60-2C7F;
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Devanagari';
+  src: url('/fonts/plex-deva-devanagari-400.woff2') format('woff2');
+  unicode-range: U+0900-097F, U+200C-200D;
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Devanagari';
+  src: url('/fonts/plex-deva-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2C60-2C7F;
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Devanagari';
+  src: url('/fonts/plex-deva-devanagari-600.woff2') format('woff2');
+  unicode-range: U+0900-097F, U+200C-200D;
+  font-weight: 600;
+  font-display: block;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Devanagari';
+  src: url('/fonts/plex-deva-latin-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2C60-2C7F;
+  font-weight: 600;
+  font-display: block;
+}
