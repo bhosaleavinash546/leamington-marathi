@@ -108,6 +108,27 @@ disguise — no DST, no historical transitions — which silently defeats CLAUDE
 4.1. The endpoint attaches `ocean_or_fixed_offset_zone` as a warning rather than
 accepting them quietly.
 
+### O7 — No locale term has been read by a native Marathi speaker
+
+**Consequence: unknown, and unknowable from inside the repository.**
+
+CLAUDE.md 7 requires terms curated by hand rather than machine-translated. They
+were: every term is written from the classical Sanskrit with Marathi orthography
+applied deliberately, and 35 known mr≠hi divergences are asserted distinct on
+every build. But *written carefully* is not *reviewed*, and the difference is
+exactly the judgment CLAUDE.md 7 is about — whether a term reads right on a
+patrika, and whether the register is the formal one a panchang uses.
+
+This is recorded as an open question rather than a finding because there is no
+evidence of an error; there is an absence of verification. `docs/LOCALE_REVIEW.md`
+carries the per-term checklist, ordered by how much doubt attaches to each, with
+the reasoning behind every judgment call so a reviewer can disagree with the
+reason rather than just the word.
+
+To settle: one Marathi-speaking Jyotish practitioner, one pass over 327 terms.
+Cheaper than any other open question in this file, and the only one that cannot
+be closed by computation.
+
 ---
 
 ## Accepted divergences

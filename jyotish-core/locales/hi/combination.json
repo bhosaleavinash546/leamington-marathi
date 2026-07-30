@@ -10,7 +10,7 @@
   "hamsa": "हंस योग",
   "kemadruma": "केमद्रुम योग",
   "kemadruma_bhanga_kendra_jupiter": "केमद्रुम भंग — गुरु केंद्र में",
-  "kendra_dusthana_lagna_lord": "लग्नेश दुःस्थान में",
+  "lagna_lord_in_dusthana": "लग्नेश दुःस्थान में",
   "malavya": "मालव्य योग",
   "mangal_dosha_cancellation_jupiter_aspect": "मंगल दोष परिहार — गुरु की दृष्टि",
   "mangal_dosha_cancellation_own_sign": "मंगल दोष परिहार — स्वगृही या उच्च मंगल",
@@ -27,5 +27,5 @@
   "shakata_yoga": "शकट योग",
   "shasha": "शश योग",
   "vakri_bala_vriddhi": "वक्री बलवृद्धि",
-  "veshi": "वेशी योग"
+  "veshi": "वेशि योग"
 }

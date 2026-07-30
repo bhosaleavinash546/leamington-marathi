@@ -103,7 +103,8 @@ narrative/            ChartFacts → prose. prompt · projection · client · va
 render/               one SVG geometry, shared by web, PDF and snapshot tests
   fonts/              Noto Sans Devanagari, self-hosted
 web/                  Next.js 15 App Router, next-intl, reads locales/ directly
-docs/                 DECISIONS, PANCHANG_AUTHORITY, SUNRISE_CONVENTION, DIVERGENCES, GOLDEN_FILES
+docs/                 DECISIONS, PANCHANG_AUTHORITY, SUNRISE_CONVENTION, DIVERGENCES,
+                      GOLDEN_FILES, LOCALE_REVIEW
 locales/{mr,hi,en}/   20 namespaces, 327 hand-curated keys per locale
 tests/{unit,invariants,golden}/
 tools/                facts_dump, golden_verify, golden_add, locale_audit, narrative_test
@@ -171,7 +172,7 @@ Per §9.7 of the spec, plus the Phase 4–6 additions. All currently green:
 | Architectural boundaries (`core/` imports nothing above it) | clean |
 | Coverage on `core/` ≥ 90% | **95.4%** (94% across all four packages) |
 | ChartFacts JSON Schema validation | valid, and rejects malformed documents |
-| Locale completeness (mr/hi/en) | clean, 35 known-divergent terms asserted distinct, every rule key covered |
+| Locale completeness (mr/hi/en) | clean, 36 known-divergent terms asserted distinct, every rule key covered |
 | Prohibited-content validator | 21/21 samples rejected, benign prose passes |
 | Full chart server-side < 200 ms | **84 ms** median of 7 (engine + ChartFacts + schema validation) |
 | `web`: `tsc --noEmit` + `next build` | clean, 11 static pages across 3 locales |

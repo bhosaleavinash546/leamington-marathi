@@ -131,8 +131,11 @@ three locales, keyed to the rule keys; point both call sites at them.
 namespaces in all three locales — 36 keys × 3, plus the strength bands, which were
 also rendering raw in English. Dosha names moved out of `milan` so each concept has
 one home. Both call sites now use one resolver, `api.locale.finding_label`.
-**Marathi terms are drafted, not yet reviewed by a native speaker** — see the
-review table in the commit message.
+**Residual, recorded as DIVERGENCES.md O7:** no locale term in this repository has
+been read by a native Marathi speaker. The mechanical finding is closed — nothing
+renders as a Latin key — but *written carefully* is not *reviewed*.
+`docs/LOCALE_REVIEW.md` carries the per-term checklist with the reasoning behind
+each judgment call.
 
 ### F-006 · gate gap · `tools/locale_audit.py` · **FIXED**
 

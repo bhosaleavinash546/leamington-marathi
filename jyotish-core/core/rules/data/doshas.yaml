@@ -99,7 +99,7 @@ rules:
     when:
       within_orb: { grahas: [jupiter, rahu], orb_deg: 10 }
 
-  - key: kendra_dusthana_lagna_lord
+  - key: lagna_lord_in_dusthana
     citation: "Brihat Parashara Hora Shastra, ch. 41 (arishta)"
     strength: weak
     notes: The lagna lord in the 6th, 8th or 12th.

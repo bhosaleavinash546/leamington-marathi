@@ -66,6 +66,7 @@ KNOWN_DIVERGENT: Final[frozenset[tuple[str, str]]] = frozenset(
         ("combination", "kemadruma_bhanga_kendra_jupiter"),  # गुरू केंद्रात / गुरु केंद्र में
         ("combination", "mangal_dosha_cancellation_own_sign"),  # मंगळ / मंगल
         ("combination", "mangal_dosha_cancellation_jupiter_aspect"),  # दृष्टी / दृष्टि
+        ("combination", "veshi"),  # वेशी / वेशि
         ("common", "strong"),  # प्रबळ / प्रबल
         ("common", "yes"),  # होय / हाँ
         ("common", "no"),  # नाही / नहीं
