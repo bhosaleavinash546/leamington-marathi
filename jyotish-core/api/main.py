@@ -58,6 +58,7 @@ from narrative.prompt import SECTIONS, PromptError
 from narrative.service import NarrativeService
 from render.adapter import chart_style_from_string, rashi_chart, varga_chart
 from render.chart_svg import render, render_table
+from render.numerals import Numerals, numeral_formatter
 from render.pdf import PdfError, render_pdf
 
 DESCRIPTION = """\
@@ -226,6 +227,23 @@ def chart(birth: Annotated[BirthInput, Body()]) -> ChartFactsResponse:
     )
 
 
+def _numeral_formatter(locale: str, requested: str | None) -> Numerals:
+    """The numeral system for a rendered chart.
+
+    The locale supplies the default - Devanagari for mr and hi, Latin for en
+    (CLAUDE.md 7) - and an explicit `numerals` query overrides it, so the UI's
+    ०-९ / 0-9 toggle reaches the SVG instead of stopping at the HTML around it.
+    An unrecognised value falls back to the locale default rather than raising:
+    a chart is still readable in the wrong digits, and a 400 here would blank the
+    page over a display preference.
+    """
+    if requested == "latin":
+        return Numerals(devanagari=False)
+    if requested == "devanagari":
+        return Numerals(devanagari=True)
+    return numeral_formatter(locale)
+
+
 @app.post("/v1/chart/svg", tags=["chart"], response_class=Response)
 def chart_svg(
     birth: Annotated[BirthInput, Body()],
@@ -233,6 +251,9 @@ def chart_svg(
     varga: Annotated[str, Query(description="D1 or any emitted varga, e.g. D9")] = "D1",
     degrees: Annotated[bool, Query(description="print degrees in each cell")] = False,
     table: Annotated[bool, Query(description="return the accessible table instead")] = False,
+    numerals: Annotated[
+        str | None, Query(description="devanagari | latin; defaults to the locale's own")
+    ] = None,
 ) -> Response:
     """A rendered kundali. North Indian diamond by default (CLAUDE.md 8).
 
@@ -258,13 +279,29 @@ def chart_svg(
         if varga.upper() == "D1"
         else varga_chart(facts, varga.upper(), birth.locale)
     )
+
+    # House numbers, rashi numbers and the Ashtakavarga totals inside the diamond.
+    # `render` has always taken a converter and this endpoint never passed one, so
+    # every chart printed Latin 1-12 and 26/29/39 on a sheet whose every other
+    # figure was ०-९. The reader sees one table in two numeral systems, which is
+    # exactly the tell CLAUDE.md 7's numeral toggle exists to avoid.
+    numeral = _numeral_formatter(birth.locale, numerals)
+
     if table:
         glossary = load_glossary(birth.locale)["chart"]
         body = render_table(
-            data, headers=(glossary["house"], glossary["rashi_chart"], glossary["kundali"])
+            data,
+            headers=(glossary["house"], glossary["rashi_chart"], glossary["kundali"]),
+            numerals=numeral,
         )
         return Response(content=body, media_type="text/html; charset=utf-8")
-    body = render(data, chart_style, show_degrees=degrees, show_sav=varga.upper() == "D1")
+    body = render(
+        data,
+        chart_style,
+        show_degrees=degrees,
+        show_sav=varga.upper() == "D1",
+        numerals=numeral,
+    )
     return Response(content=body, media_type="image/svg+xml")
 
 

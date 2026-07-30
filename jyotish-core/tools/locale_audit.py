@@ -17,6 +17,7 @@ Run: ``python -m tools.locale_audit``. Exits non-zero on any finding.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Final
@@ -72,6 +73,15 @@ KNOWN_DIVERGENT: Final[frozenset[tuple[str, str]]] = frozenset(
         ("common", "no"),  # नाही / नहीं
         ("dasha", "balance"),  # शिल्लक / शेष
         ("chart", "drishti"),  # दृष्टी / दृष्टि
+        # Added with the patrika sheet (DESIGN.md Phase B). Each is a word
+        # Marathi and Hindi genuinely spell differently, so each is a place a
+        # machine translation would produce Hindi-flavoured Marathi.
+        ("chart", "rashi"),  # रास / राशि - CLAUDE.md 7's own table
+        ("chart", "dignity"),  # स्थिती / स्थिति
+        ("chart", "sunrise_convention"),  # सूर्योदय पद्धत / सूर्योदय पद्धति
+        ("chart", "engine_version"),  # इंजिन आवृत्ती / इंजन संस्करण
+        ("chart", "yogas_present"),  # कुंडलीतील योग / कुंडली के योग
+        ("chart", "graha_spashta"),  # ग्रहस्पष्ट / ग्रह स्पष्ट
     }
 )
 
@@ -189,6 +199,77 @@ def warning_keys() -> list[str]:
                 and node.value.isascii()
             )
     return sorted(keys)
+
+
+#: Namespaces a consumer is allowed not to load, with the reason. ``narrative``
+#: holds the blocklist and refusal string and is server-side only, so the web
+#: bundle must *not* carry it.
+CONSUMER_EXEMPT: Final[dict[str, frozenset[str]]] = {
+    "api/locale.py": frozenset({"narrative"}),
+    "web/lib/messages.ts": frozenset({"narrative"}),
+}
+
+
+def consumer_namespaces() -> dict[str, list[str]]:
+    """What each consumer actually loads, parsed from its source.
+
+    Three lists of namespaces existed - this audit's, ``api/locale.py``'s and
+    ``web/lib/messages.ts``'s - and nothing compared them. The API's was missing
+    ``graha_abbr``, so every chart printed Latin ``Su Me`` on a Marathi sheet; the
+    web's was missing ``combination``, ``dosha``, ``common`` and ``warning``, so
+    yoga names reached the reader as ``kemadruma_bhanga_kendra_jupiter``. Every
+    term was present in ``locales/`` and this audit passed clean throughout,
+    because it checked the files and never asked who read them.
+    """
+    import ast
+
+    root = LOCALES_DIR.parent
+    out: dict[str, list[str]] = {}
+
+    tree = ast.parse((root / "api" / "locale.py").read_text(encoding="utf-8"))
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.AnnAssign)
+            and isinstance(node.target, ast.Name)
+            and node.target.id == "GLOSSARY_NAMESPACES"
+            and isinstance(node.value, ast.Tuple)
+        ):
+            out["api/locale.py"] = [
+                element.value
+                for element in node.value.elts
+                if isinstance(element, ast.Constant) and isinstance(element.value, str)
+            ]
+
+    # The TypeScript side is read with a regex rather than parsed: the array is a
+    # flat list of quoted names, and a TS parser is a heavy dependency for that.
+    source = (root / "web" / "lib" / "messages.ts").read_text(encoding="utf-8")
+    match = re.search(r"export const NAMESPACES\s*=\s*\[(.*?)\]", source, re.DOTALL)
+    if match:
+        out["web/lib/messages.ts"] = re.findall(r"'([a-z_]+)'", match.group(1))
+    return out
+
+
+def audit_consumer_coverage(loaded: dict[str, dict[str, dict[str, object]]]) -> list[str]:
+    """Every namespace on disk must be loaded by every consumer that renders it."""
+    problems: list[str] = []
+    on_disk = set(loaded[REFERENCE_LOCALE])
+    consumers = consumer_namespaces()
+
+    for path in sorted(CONSUMER_EXEMPT):
+        if path not in consumers:
+            problems.append(
+                f"{path}: could not read its namespace list; the audit cannot verify it"
+            )
+            continue
+        declared = set(consumers[path])
+        for namespace in sorted(on_disk - declared - CONSUMER_EXEMPT[path]):
+            problems.append(
+                f"{path}: does not load namespace {namespace!r}, which exists in locales/. "
+                "Its terms will reach the reader as raw keys."
+            )
+        for namespace in sorted(declared - on_disk):
+            problems.append(f"{path}: loads namespace {namespace!r}, which is not in locales/")
+    return problems
 
 
 def audit_warning_coverage(loaded: dict[str, dict[str, dict[str, object]]]) -> list[str]:
@@ -331,6 +412,9 @@ def audit() -> list[str]:
 
     # 3d. And every warning key, which reaches the same banner.
     problems += audit_warning_coverage(loaded)
+
+    # 3e. And every namespace is actually loaded by the code that renders it.
+    problems += audit_consumer_coverage(loaded)
 
     # 4. Known-divergent terms must actually differ between mr and hi.
     for namespace, key in sorted(KNOWN_DIVERGENT):

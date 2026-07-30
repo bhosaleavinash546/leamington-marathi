@@ -26,6 +26,13 @@ GLOSSARY_NAMESPACES: Final[tuple[str, ...]] = (
     "rashi",
     "nakshatra",
     "graha",
+    # The two-akshara chart abbreviations - मं, बु, गु. Their absence from this
+    # tuple is why every kundali, on screen and in the exported PDF, printed
+    # "Su Me Ju Ve" on a Marathi sheet: `render/adapter.py` asks the glossary for
+    # `graha_abbr`, got nothing, and fell back to `key[:2].title()`. The file had
+    # existed in all three locales the whole time. `tools/locale_audit.py` now
+    # fails if a namespace on disk is absent from a consumer's list.
+    "graha_abbr",
     "tithi",
     # The 27 *nitya* yogas of the panchang's fifth limb. Chart yogas are a
     # different vocabulary and live in `combination` - conflating the two is what

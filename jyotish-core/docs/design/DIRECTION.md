@@ -1,7 +1,10 @@
-# DIRECTION — visual direction and the Phase A token system
+# DIRECTION — visual direction, tokens, and the patrika sheet
 
-DESIGN.md §10 Phase A. Read alongside `web/app/tokens.css` (the tokens) and
-`/tokens` (the sheet that renders every one of them in both themes).
+DESIGN.md §10 Phases A and B. Read alongside `web/app/tokens.css` (the tokens),
+`/tokens` (the sheet rendering every one of them in both themes), and
+`web/app/globals.css` (the patrika, written entirely in terms of them).
+
+§§1–7 are Phase A. §8 is Phase B.
 
 Status: tokens committed, sheet built and photographed, contrast and font
 budgets measured. **The page-scan study Phase A opens with has not been done**,
@@ -119,8 +122,10 @@ it out, and all three are load-bearing rather than decorative:
    aesthetic risk §2.2 asks for and it is the strongest differentiator here.
 
 If a future screen uses the display serif for section headings, or tints a
-heading `--sindoor` for emphasis, it has fallen into the banned row. That is the
-specific failure to watch for in Phase B.
+heading `--sindoor` for emphasis, it has fallen into the banned row. That was the
+specific failure to watch for in Phase B, and §8 records that it did not happen:
+Rozha One appears once per sheet, on the name, and every heading is body-face ink
+above a rule.
 
 **Nothing on the sheet animates.** §3.1 bans ambient motion and a token sheet has
 no state change to explain, so the motion tokens are listed as values in a table
@@ -259,3 +264,85 @@ things are not in the specification and are marked `DERIVED` in the file:
 - The font budget (§4.3). Recommendation given, decision deferred to Phase B.
 - Whether one red is enough. §1 says one; question 2 above is what would show it.
 - Phases B–H are separate sessions and none has been started.
+
+---
+
+## 8. Phase B — the patrika sheet
+
+Phase A produced tokens and a sheet to argue with. Phase B is the first screen
+that has to survive a practitioner: *"a practitioner would accept this as a
+patrika."*
+
+Screenshotting the existing page before changing anything is what set the scope.
+It was not close, and the reasons were not the ones a design review would have
+guessed.
+
+### What the screenshot found
+
+**The chart was labelled in Latin.** `Su Me`, `Ju Ve`, `Ke (R)` — on a Marathi
+sheet, in the one element a reader looks at first. Not a design decision: the
+`graha_abbr` namespace was absent from `api/locale.py`'s list, so the renderer's
+lookup returned nothing and fell back to `key[:2].title()`. The same fallback was
+in the exported PDF. See D24; the audit now reads what each consumer loads rather
+than what is on disk.
+
+**Yoga names reached the reader as machine keys** —
+`kemadruma_bhanga_kendra_jupiter`, and `common.shastra` where शास्त्र belonged —
+for the same class of reason on the web side.
+
+**House numbers and Ashtakavarga totals were Latin digits** inside a chart whose
+every other figure was ०–९. `render/chart_svg.py` has always taken a numeral
+converter; the endpoint never passed one.
+
+**There was no ग्रहस्पष्ट table.** The PDF had carried one since Phase 5. The web
+view showed two diamonds and went straight to the panchang, which is the
+difference between a patrika and a picture of one.
+
+**The chart's caption crossed its own border.** Drawn at `CANVAS - 1`, its
+cap-height overlapped the square's edge at `CANVAS - PAD` and its Devanagari
+descenders were clipped by the viewport. It now has a band of its own.
+
+**The arcminute prime, again.** `web/lib/format.ts:formatDegrees` had the same
+U+2032 that `core.angles.format_dm` was fixed for in Phase A, *and* no carry — so
+29.9999 read `29°60'` where the engine read `30°00'`. Two implementations of one
+printed value had drifted in two ways. `tests/unit/test_web_format.py` now runs
+the shipped TypeScript through Node's type stripping and compares it to the
+Python across a sweep, rather than re-implementing it in the test.
+
+### What changed in the design
+
+`globals.css` is written entirely in terms of the Phase A tokens, and the product
+pages load the same faces the token sheet does. Three consequences of §1 did most
+of the work:
+
+- **Cards became blocks.** No panel, no shadow, no border box, no radius — a
+  heading and a full-ink rule, then hairlines between rows. Paper does not float.
+- **Red does one job.** It appears in exactly three places on the sheet: the tithi
+  running at the birth moment, राहूकाळ, and the "आज" marker on the dasha
+  timeline. Each is §1's own list, each is also carried by a label so colour is
+  never the only channel, and none of them pulses — §4.3 calls a pulsing
+  inauspicious-time warning manipulative and it is right.
+- **Nothing animates.** The one transition the stylesheet carried, a 120ms fill
+  on chart house hover, is gone rather than retimed.
+  `tests/unit/test_design_gates.py` fails if a `transition` or `animation`
+  reappears in `globals.css`, which is what keeps Phase C's ordering — "the
+  reduced-motion test passes before any animation is added" — real rather than
+  remembered.
+
+Print is A4 in three pages: the toolbar and skip link drop out, both charts stay
+side by side, `thead` repeats across a page break, and the theme is forced to
+black on white rather than inheriting whichever the screen was in. That forcing
+block is the only place in `globals.css` that hard-codes a colour, and a test
+asserts it is the only one.
+
+### What Phase B did *not* settle
+
+- **The §1 gate is still unmet in the way that matters.** A practitioner has not
+  seen it. Everything above is an argument that the sheet is closer; only a
+  reader who owns a दाते पंचांग can say whether it is a patrika, and the eight
+  questions in §1 are still the questions.
+- **The Marathi is still unreviewed.** Phase B added nine display terms —
+  ग्रहस्पष्ट, स्थिती, रास, सूर्योदय पद्धत among them — chosen the same way as the
+  rest, and carrying the same caveat (`docs/LOCALE_REVIEW.md`, O7). ग्रहस्पष्ट
+  itself is taken from DESIGN.md rather than coined here.
+- **The font budget** from §4.3 is unchanged and still the owner's call.

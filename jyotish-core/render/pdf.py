@@ -310,23 +310,21 @@ def build_sheet_html(
     sections.append(_name_section(facts, locale))
 
     if has_chart:
-        sections.append(f"<h2>{chart_terms['kundali']}</h2>{_graha_table(facts, locale)}")
+        # Headed ग्रहस्पष्ट, not जन्मकुंडली: the table of positions and the sheet
+        # as a whole are different things, and both carried the same heading.
+        sections.append(f"<h2>{chart_terms['graha_spashta']}</h2>{_graha_table(facts, locale)}")
         sections.append(
             f"<h2>{chart_terms['rashi_chart']}</h2>"
             + render_table(
                 rashi_chart(facts, locale),
-                headers=(
-                    chart_terms["house"],
-                    chart_terms["rashi_chart"],
-                    "ग्रह" if locale in ("mr", "hi") else "Grahas",
-                ),
+                headers=(chart_terms["house"], chart_terms["rashi"], chart_terms["graha"]),
                 numerals=num,
             )
         )
     if "dasha" in facts:
         sections.append(f"<h2>{glossary['dasha']['dasha']}</h2>{_dasha_table(facts, locale)}")
     if facts.get("yogas_present") or facts.get("doshas"):
-        sections.append(f"<h2>{chart_terms['kundali']}</h2>{_findings_table(facts, locale)}")
+        sections.append(f"<h2>{chart_terms['yogas_present']}</h2>{_findings_table(facts, locale)}")
     if narrative:
         sections.append(_narrative_section(narrative, glossary))
 
@@ -467,22 +465,24 @@ def _graha_table(facts: dict[str, Any], locale: str) -> str:
             f"<td>{', '.join(markers)}</td>"
             "</tr>"
         )
-    return (
-        f"<table><thead><tr><th>{glossary['graha'].get('sun', 'Graha')[:0] or ''}ग्रह</th>"
-        if locale in ("mr", "hi")
-        else "<table><thead><tr><th>Graha</th>"
-    ) + (
-        f"<th>{chart_terms['rashi_chart']}</th>"
-        f"<th>{chart_terms['house']}</th>"
-        f"<th>{chart_terms['bhava_chalit']}</th>"
-        f"<th>{glossary['panchang']['nakshatra']}</th>"
-        f"<th>{chart_terms['moolatrikona'][:0]}"
-        + ("स्थिती" if locale in ("mr", "hi") else "Dignity")
-        + "</th>"
-        f"<th>{chart_terms['shadbala']}</th>"
-        f"<th></th>"
-        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
+    # Every header comes from the locale files. They used to be built by slicing a
+    # term to the empty string and concatenating a hardcoded Devanagari literal
+    # (`chart_terms['moolatrikona'][:0] + "स्थिती"`), which gave mr and hi
+    # the same word and put two terms beyond the reach of the locale audit. The
+    # `rashi` column also read राशी कुंडली - the name of the *chart*, not of the
+    # sign the degree is measured in.
+    headers = (
+        chart_terms["graha"],
+        chart_terms["rashi"],
+        chart_terms["house"],
+        chart_terms["bhava_chalit"],
+        glossary["panchang"]["nakshatra"],
+        chart_terms["dignity"],
+        chart_terms["shadbala"],
+        "",
     )
+    head = "".join(f"<th>{header}</th>" for header in headers)
+    return f"<table><thead><tr>{head}</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
 
 
 def _dasha_table(facts: dict[str, Any], locale: str) -> str:

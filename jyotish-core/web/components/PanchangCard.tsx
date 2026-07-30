@@ -50,7 +50,7 @@ export function PanchangCard({
     [p('vara'), tVara(panchang.vara.key)],
     [p('sunrise'), time(panchang.sunrise_utc)],
     [p('sunset'), time(panchang.sunset_utc)],
-    [p('rahu_kaal'), n(localRange(panchang.rahu_kaal, tz, locale))],
+    [p('rahu_kaal'), n(localRange(panchang.rahu_kaal, tz, locale))],  // rendered in --sindoor below
     [p('abhijit_muhurta'), n(localRange(panchang.abhijit_muhurta, tz, locale))],
     [p('ritu'), p(panchang.ritu.key)],
     [p('ayana'), p(panchang.ayana)],
@@ -89,7 +89,9 @@ export function PanchangCard({
 
       {panchang.tithi_at_birth && panchang.tithi_at_birth_differs_from_sunrise ? (
         // CLAUDE.md 4.3: both are reported, separately labelled.
-        <p className="note">
+        // DESIGN.md §1 reserves --sindoor for "the currently-active tithi",
+        // among a short list. This is that tithi.
+        <p className="note note--signal">
           {p('tithi')} ({ui('time_of_birth')}): <strong>{tTithi(panchang.tithi_at_birth.key)}</strong>
           {' — '}
           {p('panchang')}: {p('sunrise')} → {p('sunrise')}
@@ -98,7 +100,18 @@ export function PanchangCard({
 
       <dl className="kv">
         {rows.map(([label, value]) => (
-          <div className="kv__row" key={label}>
+          <div
+            className={`kv__row${label === p('rahu_kaal') ? ' kv__row--signal' : ''}`}
+            key={label}
+          >
+            {/*
+              राहूकाळ in --sindoor. DESIGN.md §1 gives red exactly one job —
+              "auspicious/inauspicious periods, the currently-active tithi,
+              festival days, and warnings" — and this is the only inauspicious
+              period on the card. It is a colour *and* a labelled row, never
+              colour alone (§8), and it does not pulse: §4.3 calls a pulsing
+              inauspicious-time warning manipulative, and it is right.
+            */}
             <dt>{label}</dt>
             <dd>{value}</dd>
           </div>

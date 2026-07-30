@@ -4,6 +4,9 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing, isDevanagari } from '@/i18n/routing';
+// Tokens first: `globals.css` is written entirely in terms of them, and a
+// stylesheet that loads after its own variables paints one frame unstyled.
+import '../tokens.css';
 import '../globals.css';
 
 export function generateStaticParams() {

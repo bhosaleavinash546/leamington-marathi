@@ -344,8 +344,15 @@ def test_svg_snapshot_is_stable(facts: dict[str, Any]) -> None:
     )
     assert first == second
     # And the geometry is fixed: these coordinates are what makes A4 printing work.
-    assert 'viewBox="0 0 400 400"' in first
+    #
+    # The viewBox is 400x430, not 400x400: the caption moved out of the square into
+    # a band of its own (`chart_svg.TITLE_BAND`), because at `CANVAS - 1` its
+    # cap-height crossed the square's border and its Devanagari descenders were
+    # clipped by the viewport edge. The *square* is unchanged, which is what A4
+    # printing actually depends on - hence the two assertions below rather than one.
+    assert 'viewBox="0 0 400 430"' in first
     assert "200.0,8.0" in first, "the diamond's top vertex moved"
+    assert "392.0,392.0" in first, "the square's bottom-right corner moved"
 
 
 def test_accessible_table_carries_the_same_data(facts: dict[str, Any]) -> None:

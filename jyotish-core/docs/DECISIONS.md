@@ -643,3 +643,37 @@ per-request nonce. Two consequences, both accepted deliberately:
 
 `npm run design:screenshot` now performs the check that found this: it fails on a
 page that renders no text or logs a CSP violation.
+
+---
+
+## D24 — One list of locale namespaces, and a gate that reads the consumers
+
+Three separate lists of locale namespaces existed and nothing compared them:
+
+| Consumer | Namespaces | Missing | What the reader saw |
+|---|---|---|---|
+| `api/locale.py` | 20 | `graha_abbr` | `Su Me Ju Ve` inside every kundali, on screen and in the PDF |
+| `web/lib/messages.ts` | 16 | `combination`, `dosha`, `common`, `warning` | `kemadruma_bhanga_kendra_jupiter`, `common.shastra` |
+| `tools/locale_audit.py` | 21 files | — | nothing: it passed clean throughout |
+
+Every term was present and correct in `locales/`. The curation work was done; two
+of the three programs that were supposed to read it did not. `render/adapter.py`
+asked the glossary for `graha_abbr`, received nothing and fell back to
+`key[:2].title()`; next-intl, asked for a namespace it had not loaded, returned
+the key path verbatim. Both failures are silent by construction — a missing
+namespace looks exactly like a namespace with nothing in it.
+
+The audit could not have caught this, because it audited the *files*. It now
+parses each consumer's list out of its own source — `GLOSSARY_NAMESPACES` by AST,
+`NAMESPACES` by regex, since a TypeScript parser is a heavy dependency for one
+flat array — and fails if a namespace on disk is absent from either. `narrative`
+is the one declared exemption in both, and for opposite reasons that are worth
+stating: it holds the blocklist and the refusal string, so the API does not need
+it in a chart response and the web bundle must *not* ship it.
+
+This is the F-005/F-006 defect one layer further out. Those findings fixed missing
+*terms*; this one fixes terms that existed and were never loaded.
+
+CLAUDE.md 12 counts "no English-only screens, no machine-translated astrological
+terms" as done. It was not: the chart at the centre of every Marathi page was
+labelled in Latin.

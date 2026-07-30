@@ -283,13 +283,23 @@ export function fetchNarrative(
  */
 export async function fetchChartSvg(
   birth: BirthInput,
-  options: { style?: ChartStyle; varga?: string; degrees?: boolean; table?: boolean } = {},
+  options: {
+    style?: ChartStyle;
+    varga?: string;
+    degrees?: boolean;
+    table?: boolean;
+    /** The ०–९ / 0–9 toggle. Omitted means the locale's own default. */
+    numerals?: string;
+  } = {},
 ): Promise<string> {
   const params = new URLSearchParams();
   if (options.style) params.set('style', options.style);
   if (options.varga) params.set('varga', options.varga);
   if (options.degrees) params.set('degrees', 'true');
   if (options.table) params.set('table', 'true');
+  // Without this the house numbers and Ashtakavarga totals inside the diamond
+  // stayed Latin while every figure around them was Devanagari.
+  if (options.numerals) params.set('numerals', options.numerals);
   const response = await fetch(`${API_BASE}/v1/chart/svg?${params}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

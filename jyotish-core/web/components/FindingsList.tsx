@@ -87,8 +87,11 @@ export function FindingsList({
 
   return (
     <>
-      {render(yogas, chart('kundali'), 'yogas-heading')}
-      {render(doshas, t('mangal_dosha'), 'doshas-heading')}
+      {/* The yoga list was headed जन्मकुंडली — the name of the whole sheet — and
+          the dosha list `t('mangal_dosha')`, a key `milan` does not define, so it
+          rendered as the literal string `milan.mangal_dosha`. */}
+      {render(yogas, chart('yogas_present'), 'yogas-heading')}
+      {render(doshas, chart('doshas_present'), 'doshas-heading')}
     </>
   );
 }

@@ -12,10 +12,25 @@ import path from 'node:path';
  */
 const LOCALES_DIR = path.join(process.cwd(), '..', 'locales');
 
-/** Namespaces the UI needs. `narrative` is server-side only (blocklist). */
+/**
+ * Namespaces the UI needs — every one on disk except `narrative`, which is
+ * server-side only (it holds the blocklist and the refusal string).
+ *
+ * This list was four short: `combination`, `dosha`, `common` and `warning`. The
+ * components looked their keys up correctly and next-intl, finding no namespace,
+ * returned the key path — so a Marathi reader saw
+ * `kemadruma_bhanga_kendra_jupiter` where a yoga name belonged and
+ * `common.shastra` where शास्त्र belonged. The terms were all present in
+ * `locales/`; nothing loaded them.
+ *
+ * `tools/locale_audit.py` now parses this array and fails if a namespace on disk
+ * is missing from it, so the three consumer lists (here, `api/locale.py`, and the
+ * audit itself) cannot drift apart again.
+ */
 export const NAMESPACES = [
   'rashi', 'nakshatra', 'graha', 'graha_abbr', 'tithi', 'yoga', 'karana',
-  'vara', 'month', 'bhava', 'panchang', 'dasha', 'chart', 'milan', 'ui', 'legal',
+  'vara', 'month', 'bhava', 'panchang', 'dasha', 'chart', 'combination',
+  'dosha', 'milan', 'common', 'warning', 'ui', 'legal',
 ] as const;
 
 export type Messages = Record<string, Record<string, string>>;

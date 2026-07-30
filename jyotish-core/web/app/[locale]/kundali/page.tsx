@@ -2,11 +2,12 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { ConfidenceBanner } from '@/components/ConfidenceBanner';
 import { DashaTree } from '@/components/DashaTree';
 import { FindingsList } from '@/components/FindingsList';
+import { GrahaSpashta } from '@/components/GrahaSpashta';
 import { KundaliChart } from '@/components/KundaliChart';
 import { PanchangCard } from '@/components/PanchangCard';
 import { ChartToolbar } from '@/components/ChartToolbar';
 import { ApiError, fetchChart, fetchChartSvg, type BirthInput, type ChartStyle } from '@/lib/api';
-import type { NumeralSystem } from '@/lib/format';
+import { applyNumerals, type NumeralSystem } from '@/lib/format';
 
 /**
  * The main kundali view.
@@ -29,6 +30,7 @@ export default async function KundaliPage({
 
   const ui = await getTranslations({ locale, namespace: 'ui' });
   const chartT = await getTranslations({ locale, namespace: 'chart' });
+  const panchangT = await getTranslations({ locale, namespace: 'panchang' });
 
   const one = (key: string): string => {
     const value = query[key];
@@ -76,10 +78,10 @@ export default async function KundaliPage({
   // Python module the PDF uses, so the printed and on-screen geometry are identical.
   const [rashiSvg, rashiTable, navamsaSvg, navamsaTable] = hasChart
     ? await Promise.all([
-        fetchChartSvg(birth, { style, varga: 'D1', degrees: false }),
-        fetchChartSvg(birth, { style, varga: 'D1', table: true }),
-        fetchChartSvg(birth, { style, varga: 'D9' }),
-        fetchChartSvg(birth, { style, varga: 'D9', table: true }),
+        fetchChartSvg(birth, { style, varga: 'D1', degrees: false, numerals }),
+        fetchChartSvg(birth, { style, varga: 'D1', table: true, numerals }),
+        fetchChartSvg(birth, { style, varga: 'D9', numerals }),
+        fetchChartSvg(birth, { style, varga: 'D9', table: true, numerals }),
       ])
     : ['', '', '', ''];
 
@@ -88,9 +90,11 @@ export default async function KundaliPage({
       <header className="page__head">
         <h1>{facts.input.name}</h1>
         <p className="lede">
-          {facts.input.date}
-          {facts.input.time ? ` · ${facts.input.time}` : ` · ${ui('birth_time_unknown')}`} ·{' '}
-          {facts.input.place.name}
+          {applyNumerals(facts.input.date, numerals)}
+          {facts.input.time
+            ? ` · ${applyNumerals(facts.input.time, numerals)}`
+            : ` · ${ui('birth_time_unknown')}`}{' '}
+          · {facts.input.place.name}
         </p>
       </header>
 
@@ -109,6 +113,8 @@ export default async function KundaliPage({
           {ui('birth_time_unknown')} — {chartT('lagna')}, {chartT('house')}: {ui('not_available')}
         </p>
       )}
+
+      <GrahaSpashta facts={facts} numerals={numerals} />
 
       <PanchangCard facts={facts} numerals={numerals} locale={locale} />
 
@@ -140,17 +146,21 @@ export default async function KundaliPage({
             </dd>
           </div>
           <div className="kv__row">
-            <dt>authority</dt>
-            <dd>{facts.authority}</dd>
+            {/* These three labels were English on every page, including the two
+                that are entirely Devanagari (CLAUDE.md N5). */}
+            <dt>{chartT('reference_panchang')}</dt>
+            {/* The label was English and the value is a machine key. Localising
+                one and not the other reads worse than localising neither. */}
+            <dd>{panchangT.has(facts.authority) ? panchangT(facts.authority) : facts.authority}</dd>
           </div>
           <div className="kv__row">
-            <dt>sunrise</dt>
+            <dt>{chartT('sunrise_convention')}</dt>
             <dd>
               <code>{facts.ephemeris.rise_set_convention}</code>
             </dd>
           </div>
           <div className="kv__row">
-            <dt>engine</dt>
+            <dt>{chartT('engine_version')}</dt>
             <dd>
               {facts.engine_version} · schema {facts.schema_version} ·{' '}
               <code>{facts.ephemeris.provider}</code>

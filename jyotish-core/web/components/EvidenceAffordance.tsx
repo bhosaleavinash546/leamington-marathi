@@ -47,7 +47,6 @@ export function EvidenceAffordance({
       onToggle={(event) => setOpen((event.currentTarget as HTMLDetailsElement).open)}
     >
       <summary aria-controls={id}>
-        <span aria-hidden="true">＊ </span>
         {open ? t('hide_evidence') : t('why')}
       </summary>
       <div id={id} className="evidence__body">

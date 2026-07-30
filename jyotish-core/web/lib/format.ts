@@ -50,11 +50,32 @@ export function localRange(interval: { start_utc: string | null; end_utc: string
   return `${localTime(interval.start_utc, tz, locale)}–${localTime(interval.end_utc, tz, locale)}`;
 }
 
-/** `12°34'` from a degree value the engine supplied. Formatting only. */
+/**
+ * `12°44'` from a degree value the engine supplied. Formatting only.
+ *
+ * Deliberately mirrors `core.angles.format_dm`, and the two things that make it
+ * a mirror rather than a lookalike were both wrong here:
+ *
+ * - **The carry.** Rounding alone renders 29.9999 as `29°60'`. A rounded 60 has
+ *   to carry into the degree, exactly as the Python does.
+ * - **The mark.** The ASCII apostrophe, not the prime U+2032 this used to emit.
+ *   No face the project ships has a glyph for the prime — see
+ *   `docs/design/DIRECTION.md` §5.
+ *
+ * `tests/unit/test_web_format.py` asserts the two implementations agree across a
+ * sweep, because a second implementation of a printed value is only safe while
+ * something proves it is the same implementation.
+ */
 export function formatDegrees(deg: number): string {
-  const whole = Math.trunc(deg);
-  const minutes = Math.round((deg - whole) * 60);
-  return `${whole}°${String(minutes).padStart(2, '0')}′`;
+  const sign = deg < 0 ? '-' : '';
+  const total = Math.abs(deg);
+  let whole = Math.trunc(total);
+  let minutes = Math.round((total - whole) * 60);
+  if (minutes === 60) {
+    whole += 1;
+    minutes = 0;
+  }
+  return `${sign}${whole}°${String(minutes).padStart(2, '0')}'`;
 }
 
 /**

@@ -39,6 +39,14 @@ CANVAS: Final[float] = 400.0
 #: Padding inside the viewbox, leaving room for the chart-style caption.
 PAD: Final[float] = 8.0
 
+#: A band below the square for the chart's own caption.
+#:
+#: The title used to be drawn at ``CANVAS - 1``, one pixel above the bottom of the
+#: viewBox, so its cap-height crossed the square's own border at ``CANVAS - PAD``
+#: and its Devanagari descenders were clipped by the viewport edge. The chart is a
+#: document, and a document's caption sits outside its frame.
+TITLE_BAND: Final[float] = 30.0
+
 #: South Indian sign layout, row-major. ``None`` is one of the four empty centre
 #: cells. Signs run clockwise from Mesha at row 0, column 1.
 SOUTH_INDIAN_GRID: Final[tuple[tuple[int | None, ...], ...]] = (
@@ -385,14 +393,15 @@ def _document(data: ChartData, parts: list[str], style: ChartStyle) -> str:
     )
     body = "\n  ".join(parts)
     return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {CANVAS:.0f} {CANVAS:.0f}" '
+        f'<svg xmlns="http://www.w3.org/2000/svg" '
+        f'viewBox="0 0 {CANVAS:.0f} {CANVAS + TITLE_BAND:.0f}" '
         f'role="img" aria-labelledby="k-title-{style.value}" '
         f'data-chart-style="{style.value}" class="kundali kundali--{style.value}">\n'
         f'  <title id="k-title-{style.value}">{html.escape(data.title)}</title>\n'
         f"  <desc>{html.escape(description)}</desc>\n"
         f"  <style>{_STYLE}</style>\n"
         f"  {body}\n"
-        f"  {_text(CANVAS / 2.0, CANVAS - 1.0, data.title, 'k-title')}\n"
+        f"  {_text(CANVAS / 2.0, CANVAS + TITLE_BAND - 9.0, data.title, 'k-title')}\n"
         f"</svg>"
     )
 

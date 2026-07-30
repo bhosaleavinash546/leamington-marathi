@@ -82,7 +82,7 @@ export function ChartToolbar({
       </fieldset>
 
       <fieldset className="toolbar__group">
-        <legend>locale</legend>
+        <legend>{ui('language')}</legend>
         {(['mr', 'hi', 'en'] as const).map((option) => (
           <a
             key={option}

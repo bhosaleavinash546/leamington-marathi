@@ -1,58 +1,39 @@
 /*
- * Devanagari-safe layout (CLAUDE.md 1).
+ * The patrika sheet (DESIGN.md §10 Phase B).
  *
- * Devanagari is not Latin with different glyphs. Three properties this stylesheet
- * has to respect, each of which breaks a Latin-tuned design:
+ * Every value here comes from `tokens.css`. A literal in this file is a bug in
+ * the token set, not a local exception — the two places that keep a raw value are
+ * marked and say why.
  *
- * 1. **Taller line boxes.** Matras sit above and below the baseline, so a
- *    `line-height` tuned for Latin clips them. 1.7 for body text, and never a
- *    fixed-height row that could crop a conjunct.
- * 2. **No `text-transform`.** Devanagari has no case. `uppercase` on a mixed-script
- *    label does nothing to the Devanagari and shouts at the Latin.
- * 3. **No letter-spacing.** Tracking a Devanagari word breaks the conjuncts apart
+ * The thesis (DESIGN.md §1) is the printed panchang as artifact, and three of its
+ * consequences do most of the work below:
+ *
+ * - **Paper does not float.** No card, no shadow, no fill standing in for depth.
+ *   Blocks are separated by hairline rules and by `--paper-sunk`, which is what
+ *   §2.3 asks for and what a letterpress sheet actually does.
+ * - **Radius 0 on the chart and every table.** 2px is the ceiling and it applies
+ *   to controls only. A printed panchang has no rounded corners.
+ * - **Nothing animates.** Phase B is explicitly "zero animation" and Phase C is
+ *   where motion arrives. The one transition this file used to carry (a 120ms
+ *   fill on chart houses) is gone rather than tuned.
+ *
+ * Devanagari is not Latin with different glyphs, and three rules from the
+ * original stylesheet still hold, now expressed as tokens:
+ *
+ * 1. **Taller line boxes** — `--leading-devanagari`, never a fixed-height row
+ *    that could crop a conjunct.
+ * 2. **No `text-transform`.** Devanagari has no case; `uppercase` does nothing to
+ *    it and shouts at the Latin beside it.
+ * 3. **No `letter-spacing`.** Tracking a Devanagari word breaks its conjuncts
  *    into their component consonants.
- *
- * The font is self-hosted (CLAUDE.md 2.2), served from `public/fonts/`, and is the
- * same file the PDF pipeline embeds — so a glyph that renders on screen renders in
- * print.
  */
 
-@font-face {
-  font-family: 'Noto Sans Devanagari';
-  src: url('/fonts/NotoSansDevanagari-Variable.ttf') format('truetype-variations');
-  font-weight: 100 900;
-  font-display: swap;
+* {
+  box-sizing: border-box;
 }
-
-:root {
-  --ink: #1c1a17;
-  --muted: #6b6459;
-  --rule: #d8d2c6;
-  --paper: #fbf9f4;
-  --card: #ffffff;
-  --accent: #7a2e1e;
-  --accent-soft: #f3e6e1;
-  --radius: 10px;
-  --gap: 1rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ink: #ece7de;
-    --muted: #a49b8c;
-    --rule: #3a352e;
-    --paper: #16150f;
-    --card: #1e1c16;
-    --accent: #e0a08a;
-    --accent-soft: #2b211c;
-  }
-}
-
-* { box-sizing: border-box; }
 
 html {
-  /* Devanagari needs the extra leading; Latin tolerates it. */
-  line-height: 1.7;
+  line-height: var(--leading-devanagari);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -60,29 +41,41 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: 'Noto Sans Devanagari', 'Inter', system-ui, sans-serif;
-  font-size: 1rem;
+  font-family: var(--font-body);
+  font-size: var(--step-0);
 }
 
-/* Latin pages lead with Inter; Devanagari pages with Noto. Both keep the other
-   as a fallback, because a Marathi page still shows Latin place names and codes. */
-.script-latin body { font-family: 'Inter', system-ui, 'Noto Sans Devanagari', sans-serif; }
+/* Latin pages take the Latin leading; the Devanagari faces stay in the stack
+   because a Marathi page still shows Latin place names and machine keys. */
+.script-latin body {
+  line-height: var(--leading-latin);
+}
 
-h1, h2, h3 {
-  /* No text-transform, no letter-spacing: see the header comment. */
+h1,
+h2,
+h3 {
   line-height: 1.35;
   margin: 0 0 0.4em;
-  font-weight: 650;
+  font-weight: 600;
 }
-h1 { font-size: 1.6rem; }
-h2 { font-size: 1.15rem; }
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  font-weight: 400; /* Rozha One is a single-weight display face. */
+}
+h2 {
+  font-size: var(--step-1);
+}
+h3 {
+  font-size: var(--step-0);
+}
 
 code {
-  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-family: var(--font-data);
   font-size: 0.85em;
-  background: var(--accent-soft);
+  background: var(--paper-sunk);
   padding: 0.1em 0.35em;
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   /* Machine keys are always Latin, so they may be tracked and wrapped freely. */
   word-break: break-all;
 }
@@ -92,181 +85,313 @@ code {
   left: -9999px;
 }
 .skip-link:focus {
-  left: 0.5rem;
-  top: 0.5rem;
+  left: var(--space-2);
+  top: var(--space-2);
   z-index: 10;
-  background: var(--card);
-  padding: 0.5rem 0.75rem;
-  border: 2px solid var(--accent);
-  border-radius: var(--radius);
+  background: var(--paper);
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--sindoor);
 }
 
 .page {
   max-width: 60rem;
   margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  padding: var(--space-6) var(--space-4) var(--space-12);
   display: flex;
   flex-direction: column;
-  gap: var(--gap);
+  gap: var(--space-6);
 }
-.page--form { max-width: 32rem; }
-.page__head { border-bottom: 1px solid var(--rule); padding-bottom: 0.75rem; }
-.lede { color: var(--muted); margin: 0; }
-.fine { color: var(--muted); font-size: 0.85rem; margin: 0; }
+.page--form {
+  max-width: 32rem;
+}
+.page__head {
+  border-bottom: var(--hairline) solid var(--ink);
+  padding-bottom: var(--space-3);
+}
+.lede {
+  color: var(--ink-muted);
+  margin: 0;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+.fine {
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+  margin: 0;
+}
 .note {
-  background: var(--accent-soft);
-  padding: 0.6rem 0.8rem;
-  border-radius: var(--radius);
+  background: var(--paper-sunk);
+  padding: var(--space-2) var(--space-3);
   margin: 0;
 }
 .error {
-  border: 1px solid var(--accent);
-  background: var(--accent-soft);
-  padding: 0.8rem;
-  border-radius: var(--radius);
+  border-inline-start: 3px solid var(--sindoor);
+  background: var(--sindoor-wash);
+  padding: var(--space-3);
 }
 
-/* --- cards ------------------------------------------------------------- */
+/* --- sheet blocks ------------------------------------------------------- */
+/* What used to be `.card`. A block on a printed sheet is announced by a rule and
+   a heading, not by a floating panel — so no background, no border box, no
+   radius. `.card` is kept as an alias because several components name it. */
 
-.card {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  padding: 1rem 1.1rem;
+.card,
+.sheet-block {
+  border-top: var(--hairline) solid var(--ink);
+  padding-top: var(--space-3);
 }
-.card__head { margin-bottom: 0.6rem; }
-.card__sub { color: var(--muted); margin: 0; font-size: 0.9rem; }
+.card__head {
+  margin-bottom: var(--space-2);
+}
+.card__sub {
+  color: var(--ink-muted);
+  margin: 0;
+  font-size: var(--step--1);
+}
 
 .tag {
-  background: var(--accent-soft);
-  color: var(--accent);
-  border-radius: 999px;
-  padding: 0.05em 0.6em;
-  font-size: 0.8rem;
+  background: var(--paper-sunk);
+  color: var(--ink-muted);
+  border: var(--hairline) solid var(--rule-interactive);
+  border-radius: var(--radius-control);
+  padding: 0.05em 0.5em;
+  font-size: var(--step--1);
 }
-.tag--absent { opacity: 0.65; }
+.tag--absent {
+  opacity: 0.65;
+}
+/* शास्त्र reads as settled, परंपरा as reported — a border style rather than a
+   colour alone, so the distinction survives greyscale printing. */
+.tag--shastra {
+  border-style: solid;
+}
+.tag--parampara {
+  border-style: dashed;
+  font-style: italic;
+}
 
-.kv { margin: 0; display: grid; gap: 0.15rem; }
+.kv {
+  margin: 0;
+  display: grid;
+}
 .kv__row {
   display: grid;
   grid-template-columns: minmax(8rem, 34%) 1fr;
-  gap: 0.5rem;
-  padding: 0.3rem 0;
-  border-bottom: 1px solid var(--rule);
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+  border-bottom: var(--hairline) solid var(--rule);
 }
-.kv__row:last-child { border-bottom: 0; }
-.kv dt { color: var(--muted); margin: 0; }
-.kv dd { margin: 0; }
-.kv--compact .kv__row { padding: 0.15rem 0; font-size: 0.9rem; }
-
-/* --- confidence banner ------------------------------------------------- */
-
-.banner {
-  border: 1px solid var(--accent);
-  border-inline-start-width: 4px;
-  background: var(--accent-soft);
-  border-radius: var(--radius);
-  padding: 0.8rem 1rem;
+.kv__row:last-child {
+  border-bottom: 0;
 }
-.banner__heading { font-weight: 650; margin: 0 0 0.3rem; }
-.banner__key { display: block; font-size: 0.75rem; color: var(--muted); }
-/* शास्त्र reads as settled, परंपरा as reported - a border rather than a
-   colour alone, so the distinction survives greyscale printing. */
-.tag--shastra { border-style: solid; }
-.tag--parampara { border-style: dashed; font-style: italic; }
-
-/* --- lead disclaimer ---------------------------------------------------- */
-/* CLAUDE.md 10: "Lead with this in the product, do not bury it." Full ink, not
-   --muted, and above the fold: a disclaimer set in the same grey as a footnote
-   is a disclaimer designed not to be read. */
-.lead-disclaimer {
+.kv dt {
+  color: var(--ink-muted);
   margin: 0;
-  padding: 0.6rem 1rem;
-  border-bottom: 1px solid var(--rule);
-  background: var(--surface, #f6f3ec);
-  font-size: 0.9rem;
-  text-align: center;
 }
-@media print { .lead-disclaimer { border-bottom: 0.4pt solid #000; } }
-.banner__label { color: var(--muted); margin: 0.4rem 0 0.2rem; font-size: 0.85rem; }
-.banner__list { margin: 0; padding-inline-start: 1.1rem; font-size: 0.85rem; }
-
-/* --- charts ------------------------------------------------------------ */
-
-.charts {
-  display: grid;
-  gap: var(--gap);
-  grid-template-columns: 1fr;
+.kv dd {
+  margin: 0;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
 }
-@media (min-width: 46rem) {
-  /* CLAUDE.md 8: Rashi and Navamsa side by side on the main view. Stacked below
-     this width — side-by-side diamonds at phone width make the glyphs unreadable. */
-  .charts { grid-template-columns: 1fr 1fr; }
+.kv--compact .kv__row {
+  font-size: var(--step--1);
 }
 
-.kundali-figure { margin: 0; }
-.kundali-svg { background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius); }
-.kundali-svg svg { display: block; width: 100%; height: auto; color: var(--ink); }
-.kundali-svg [data-house] { transition: fill 120ms ease; }
-.kundali-svg [data-house]:hover,
-.kundali-svg [data-house]:focus-visible { fill: var(--accent-soft); outline: none; }
-.kundali-svg [data-house].is-selected { fill: var(--accent-soft); }
+/* --- tables: ग्रहस्पष्ट and the accessible chart alternative --------------
+   Structure comes from rules, never from fills or shadows (§2.3). The header rule
+   is full-ink and the row rules are hairlines, which is the letterpress
+   hierarchy: one strong horizontal, then repetition. */
 
-.kundali-table-wrap { margin-top: 0.5rem; }
-.kundali-table table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-.kundali-table th, .kundali-table td {
+.table-scroll {
+  overflow-x: auto;
+}
+.patrika-table,
+.kundali-table table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 0;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--step--1);
+}
+.patrika-table th,
+.patrika-table td,
+.kundali-table th,
+.kundali-table td {
   text-align: start;
-  padding: 0.3rem 0.5rem;
-  border-bottom: 1px solid var(--rule);
+  padding: var(--space-1) var(--space-2);
+  border-bottom: var(--hairline) solid var(--rule);
+  white-space: nowrap;
 }
+.patrika-table thead th,
+.kundali-table thead th {
+  border-bottom: var(--hairline) solid var(--ink);
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+.patrika-table tbody th {
+  /* The graha name is the row's identity, so it carries the body face and full
+     ink while the figures beside it stay in the data face. */
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+.patrika-table .num {
+  font-variant-numeric: tabular-nums;
+}
+
 .visually-hidden {
   position: absolute;
-  width: 1px; height: 1px;
+  width: 1px;
+  height: 1px;
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
 }
 
+/* --- charts ------------------------------------------------------------ */
+
+.charts {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 46rem) {
+  /* CLAUDE.md 8: Rashi and Navamsa side by side on the main view. Stacked below
+     this width — side-by-side diamonds at phone width make the glyphs unreadable. */
+  .charts {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.kundali-figure {
+  margin: 0;
+}
+.kundali-svg {
+  border: var(--hairline) solid var(--ink);
+  border-radius: 0;
+}
+.kundali-svg svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: var(--ink);
+}
+/* No transition. DESIGN.md Phase B is zero animation, and a hover tint is a
+   state change the fill already communicates. */
+.kundali-svg [data-house]:hover,
+.kundali-svg [data-house]:focus-visible {
+  fill: var(--sindoor-wash);
+  outline: none;
+}
+.kundali-svg [data-house].is-selected {
+  fill: var(--sindoor-wash);
+}
+
+.kundali-table-wrap {
+  margin-top: var(--space-2);
+}
+
+/* --- lead disclaimer ---------------------------------------------------- */
+/* CLAUDE.md 10: "Lead with this in the product, do not bury it." Full ink, not
+   muted, and above the fold: a disclaimer set in the same grey as a footnote is a
+   disclaimer designed not to be read. */
+.lead-disclaimer {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: var(--hairline) solid var(--rule);
+  background: var(--paper-sunk);
+  font-size: var(--step--1);
+  text-align: center;
+}
+
+/* --- confidence banner ------------------------------------------------- */
+
+.banner {
+  border-inline-start: 3px solid var(--sindoor);
+  background: var(--sindoor-wash);
+  padding: var(--space-3) var(--space-4);
+}
+.banner__heading {
+  font-weight: 600;
+  margin: 0 0 var(--space-1);
+}
+.banner__key {
+  display: block;
+  font-size: var(--step--1);
+  color: var(--ink-muted);
+}
+.banner__label {
+  color: var(--ink-muted);
+  margin: var(--space-2) 0 var(--space-1);
+  font-size: var(--step--1);
+}
+.banner__list {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  font-size: var(--step--1);
+}
+
 /* --- toolbar ----------------------------------------------------------- */
 
-.toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
-.toolbar__group { border: 0; margin: 0; padding: 0; display: flex; gap: 0.3rem; align-items: center; }
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: flex-end;
+}
+.toolbar__group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
 .toolbar__group legend {
   float: inline-start;
-  color: var(--muted);
-  font-size: 0.8rem;
-  padding-inline-end: 0.4rem;
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+  padding-inline-end: var(--space-1);
 }
-.toolbar__group button, .toolbar__group a {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  padding: 0.3rem 0.75rem;
+.toolbar__group button,
+.toolbar__group a {
+  background: var(--paper);
+  border: var(--hairline) solid var(--rule-interactive);
+  border-radius: var(--radius-control);
+  padding: var(--space-1) var(--space-3);
   color: inherit;
   text-decoration: none;
   cursor: pointer;
   font: inherit;
 }
-.toolbar__group [aria-pressed='true'], .toolbar__group [aria-current='true'] {
-  background: var(--accent);
-  border-color: var(--accent);
+.toolbar__group [aria-pressed='true'],
+.toolbar__group [aria-current='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
   color: var(--paper);
+}
+:focus-visible {
+  outline: 2px solid var(--sindoor);
+  outline-offset: 2px;
 }
 
 button.primary {
-  background: var(--accent);
+  background: var(--ink);
   color: var(--paper);
-  border: 0;
-  border-radius: var(--radius);
-  padding: 0.6rem 1.1rem;
+  border: var(--hairline) solid var(--ink);
+  border-radius: var(--radius-control);
+  padding: var(--space-2) var(--space-4);
   font: inherit;
   cursor: pointer;
 }
-button.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+button.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .link-button {
   background: none;
   border: 0;
-  color: var(--accent);
+  color: var(--ink);
   font: inherit;
   padding: 0;
   cursor: pointer;
@@ -275,55 +400,139 @@ button.primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* --- evidence affordance ---------------------------------------------- */
 
-.evidence { margin-top: 0.3rem; font-size: 0.9rem; }
-.evidence > summary { cursor: pointer; color: var(--accent); width: fit-content; }
-.evidence__body {
-  margin-top: 0.4rem;
-  padding: 0.5rem 0.7rem;
-  background: var(--accent-soft);
-  border-radius: var(--radius);
+.evidence {
+  margin-top: var(--space-1);
+  font-size: var(--step--1);
 }
-.evidence__list { margin: 0; padding-inline-start: 1.1rem; display: grid; gap: 0.25rem; }
-.evidence__human { margin-inline-end: 0.4rem; }
-.evidence__meta { color: var(--muted); font-size: 0.85rem; margin: 0.4rem 0 0; }
+.evidence > summary {
+  cursor: pointer;
+  width: fit-content;
+  text-decoration: underline;
+}
+.evidence__body {
+  margin-top: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background: var(--paper-sunk);
+}
+.evidence__list {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  display: grid;
+  gap: var(--space-1);
+}
+.evidence__human {
+  margin-inline-end: var(--space-1);
+}
+.evidence__meta {
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+  margin: var(--space-1) 0 0;
+}
 
 /* --- findings and dasha ------------------------------------------------ */
 
-.findings { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
-.findings__item { border-bottom: 1px solid var(--rule); padding-bottom: 0.6rem; }
-.findings__item:last-child { border-bottom: 0; padding-bottom: 0; }
-.findings__head { margin: 0; display: flex; gap: 0.5rem; align-items: baseline; flex-wrap: wrap; }
+.findings {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+.findings__item {
+  border-bottom: var(--hairline) solid var(--rule);
+  padding: var(--space-2) 0;
+}
+.findings__item:last-child {
+  border-bottom: 0;
+}
+.findings__head {
+  margin: 0;
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  flex-wrap: wrap;
+}
 
-.dasha { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.2rem; }
-.dasha--nested { padding-inline-start: 1.1rem; border-inline-start: 1px solid var(--rule); margin-top: 0.3rem; }
-.dasha__node > details > summary { cursor: pointer; padding: 0.2rem 0; }
-.dasha__leaf { padding: 0.2rem 0; }
-.dasha .is-current > details > summary, .dasha__leaf.is-current { font-weight: 650; }
-.today-marker { color: var(--accent); margin-inline-start: 0.5rem; font-size: 0.85rem; }
-.dasha__loading { color: var(--muted); margin: 0.2rem 0; }
+.dasha {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+.dasha--nested {
+  padding-inline-start: var(--space-4);
+  border-inline-start: var(--hairline) solid var(--rule);
+  margin-top: var(--space-1);
+}
+.dasha__node > details > summary {
+  cursor: pointer;
+  padding: var(--space-1) 0;
+}
+.dasha__leaf {
+  padding: var(--space-1) 0;
+}
+.dasha .is-current > details > summary,
+.dasha__leaf.is-current {
+  font-weight: 600;
+}
+/* The one place red carries meaning on this sheet: today. */
+.today-marker {
+  color: var(--sindoor);
+  margin-inline-start: var(--space-2);
+  font-size: var(--step--1);
+}
+.dasha__loading {
+  color: var(--ink-muted);
+  margin: var(--space-1) 0;
+}
 
 /* --- form -------------------------------------------------------------- */
 
-.form { display: grid; gap: 0.9rem; }
-.field { display: grid; gap: 0.25rem; }
-.field > span, .field legend { color: var(--muted); font-size: 0.9rem; }
-.field--group { border: 0; margin: 0; padding: 0; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-input, select {
+.form {
+  display: grid;
+  gap: var(--space-4);
+}
+.field {
+  display: grid;
+  gap: var(--space-1);
+}
+.field > span,
+.field legend {
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+.field--group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+}
+input,
+select {
   font: inherit;
-  padding: 0.5rem 0.6rem;
-  border: 1px solid var(--rule);
-  border-radius: 8px;
-  background: var(--card);
+  padding: var(--space-2);
+  border: var(--hairline) solid var(--rule-interactive);
+  border-radius: var(--radius-control);
+  background: var(--paper);
   color: inherit;
 }
-.matches { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.2rem; }
+.matches {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
 .matches button {
   width: 100%;
   text-align: start;
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 8px;
-  padding: 0.4rem 0.6rem;
+  background: var(--paper);
+  border: var(--hairline) solid var(--rule-interactive);
+  border-radius: var(--radius-control);
+  padding: var(--space-2) var(--space-3);
   font: inherit;
   cursor: pointer;
 }
@@ -331,25 +540,131 @@ input, select {
 /* --- disclaimer -------------------------------------------------------- */
 
 .disclaimer {
-  border-top: 1px solid var(--rule);
-  padding: 1rem;
+  border-top: var(--hairline) solid var(--rule);
+  padding: var(--space-4);
   max-width: 60rem;
   margin: 0 auto;
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--ink-muted);
+  font-size: var(--step--1);
 }
-.disclaimer p { margin: 0 0 0.3rem; }
+.disclaimer p {
+  margin: 0 0 var(--space-1);
+}
 
 /* --- print ------------------------------------------------------------- */
-
+/*
+ * CLAUDE.md 8 and DESIGN.md Phase B: print-clean at A4, both chart layouts,
+ * without reflow.
+ *
+ * The raw values below are the two deliberate exceptions to the tokens-only
+ * rule. Print has no theme to respond to and no dark mode: it is ink on paper,
+ * so the colours are forced to black and white rather than left to whichever
+ * theme the screen happened to be in, and lengths are given in pt and mm because
+ * that is what a printer resolves.
+ */
 @media print {
-  /* CLAUDE.md 8: both layouts printable at A4 without reflow. The interactive
-     chrome is dropped and the two charts stay side by side. */
-  .toolbar, .skip-link, .kundali-table-wrap button { display: none; }
-  body { background: #fff; }
-  .card { break-inside: avoid; border-color: #999; }
-  .charts { grid-template-columns: 1fr 1fr; }
-  .evidence[open] > summary { display: none; }
-  .evidence { font-size: 8pt; }
-  @page { size: A4; margin: 14mm; }
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  :root {
+    --paper: #fff;
+    --paper-sunk: #fff;
+    --ink: #000;
+    --ink-muted: #333;
+    --rule: #999;
+    --rule-interactive: #666;
+    /* Red survives on a colour printer and reads as mid-grey on a mono one,
+       which is why it is never the only channel (§8). */
+    --sindoor: #b3251e;
+    --sindoor-wash: #fff;
+  }
+
+  body {
+    background: #fff;
+    font-size: 9pt;
+  }
+
+  /* Interactive chrome does not exist on paper. */
+  .toolbar,
+  .skip-link,
+  .kundali-table-wrap button {
+    display: none;
+  }
+
+  .page {
+    max-width: none;
+    padding: 0;
+    gap: 6mm;
+  }
+
+  /* Both charts stay side by side at A4 — the whole point of the pair is the
+     comparison, and stacking them costs a page break between them. */
+  .charts {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .card,
+  .sheet-block,
+  .kundali-figure,
+  .banner {
+    break-inside: avoid;
+  }
+  .patrika-table {
+    /* A graha row split across a page break is unreadable; the header repeats
+       instead. */
+    break-inside: auto;
+  }
+  .patrika-table thead {
+    display: table-header-group;
+  }
+  .patrika-table tr {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2 {
+    break-after: avoid;
+  }
+
+  /* An evidence panel the reader opened should print; the disclosure triangle
+     should not. */
+  .evidence[open] > summary {
+    display: none;
+  }
+  .evidence {
+    font-size: 8pt;
+  }
+
+  .lead-disclaimer {
+    border-bottom: 0.4pt solid #000;
+  }
+
+  /* `.page` drops its max-width for print; the footer has to as well, or it
+     centres itself inside a full-bleed page and reads as a stray indent. */
+  .disclaimer {
+    max-width: none;
+    padding: var(--space-4) 0 0;
+  }
+}
+
+/* --- the two-colour signal --------------------------------------------- */
+/*
+ * DESIGN.md §1: "Red carries meaning and *only* meaning — auspicious/
+ * inauspicious periods, the currently-active tithi, festival days, and
+ * warnings. Red is never decoration. If you can remove a red element without
+ * losing information, remove it."
+ *
+ * Three places on this sheet pass that test, and nothing else on it is red:
+ * the tithi running at the birth moment, राहूकाळ, and the "today" marker on the
+ * dasha timeline. Each is also carried by a label, so the colour is
+ * reinforcement rather than the only channel (§8).
+ */
+.note--signal {
+  background: var(--sindoor-wash);
+  border-inline-start: 3px solid var(--sindoor);
+}
+.kv__row--signal dd {
+  color: var(--sindoor);
 }
