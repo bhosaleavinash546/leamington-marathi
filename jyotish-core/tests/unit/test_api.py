@@ -26,7 +26,7 @@ from api.storage import (
     stored_column_names,
 )
 from core.facts.builder import build_chart_facts, compute_full_reading
-from core.types import BirthData, Place
+from core.types import BirthData, EngineOptions, Place
 from render.adapter import rashi_chart, varga_chart
 from render.chart_svg import (
     SOUTH_INDIAN_GRID,
@@ -1180,3 +1180,94 @@ def test_numerology_reports_inapplicability_rather_than_zero() -> None:
         "raw_total": 22,
         "reduced": 4,
     }
+
+
+# ---------------------------------------------------------------------------
+# The honesty trio: F-014, F-015, F-016
+# ---------------------------------------------------------------------------
+
+
+def test_every_rule_declares_its_doctrinal_standing() -> None:
+    """Audit F-014. A rule that does not say cannot have its standing judged."""
+    from core.rules.engine import PROVENANCE_BANDS, load_doshas, load_yogas
+
+    for rule in (*load_yogas(), *load_doshas()):
+        assert rule.provenance in PROVENANCE_BANDS, f"{rule.key}: {rule.provenance!r}"
+
+
+def test_a_rule_without_a_provenance_band_fails_to_load(tmp_path: Any) -> None:
+    """The gate, not just the data: an unannotated rule must fail the build."""
+    from core.rules.engine import RuleError, load_rules
+
+    bad = tmp_path / "bad.yaml"
+    bad.write_text(
+        "rules:\n  - key: nonsense\n    citation: x\n    when: {retrograde: {graha: mars}}\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(RuleError, match="provenance"):
+        load_rules(bad)
+
+
+def test_the_five_traditional_rules_are_labelled_parampara() -> None:
+    """The rules that say "not in the classical samhitas" must not read as shastra."""
+    from core.rules.engine import load_doshas, load_yogas
+
+    bands = {(r.key, r.ruleset): r.provenance for r in (*load_yogas(), *load_doshas())}
+    assert bands[("pitra_dosha", None)] == "parampara"
+    assert bands[("shrapit_dosha", None)] == "parampara"
+    assert bands[("guru_chandal_dosha", None)] == "parampara"
+    assert bands[("mangal_dosha", "north_school")] == "parampara"
+    assert bands[("mangal_dosha", "maharashtra")] == "shastra"
+
+
+@pytest.mark.parametrize("locale", SUPPORTED_LOCALES)
+def test_the_provenance_band_is_readable_in_every_locale(locale: str) -> None:
+    """The whole point of F-014: the signal was English-only and collapsed."""
+    common = load_glossary(locale)["common"]
+    for band in ("shastra", "parampara"):
+        assert common.get(band, "").strip(), f"{locale} has no term for {band}"
+        assert common.get(f"{band}_note", "").strip()
+    if locale in ("mr", "hi"):
+        assert any("ऀ" <= ch <= "ॿ" for ch in common["shastra"])
+        assert any("ऀ" <= ch <= "ॿ" for ch in common["parampara"])
+
+
+def test_provenance_reaches_chartfacts_and_the_printed_sheet(facts: dict[str, Any]) -> None:
+    from render.pdf import build_sheet_html
+
+    findings = [*facts["yogas_present"], *facts["doshas"]]
+    assert findings, "test premise: the chart has findings"
+    assert all(f.get("provenance") in ("shastra", "parampara") for f in findings)
+
+    html = build_sheet_html(facts, "mr")
+    present = {f["provenance"] for f in findings if f.get("present") is not False}
+    for band in present:
+        assert load_glossary("mr")["common"][band] in html
+
+
+def test_kaal_sarpa_refuses_the_yoga_dosha_classification() -> None:
+    """Audit F-016. The schools disagree, so the engine declines to pick.
+
+    It publishes the arc and the completeness - every datum the competing schools
+    key on - and says the classification is not assigned, rather than shipping a
+    finding labelled "dosha" that quietly takes one side.
+    """
+    from core.chart.assemble import compute_chart
+    from core.doshas.computed import kaal_sarpa
+    from core.ephemeris.registry import build_ephemeris
+    from core.panchang.day import panchang_for_instant
+
+    eph = build_ephemeris(EngineOptions())
+    when = dt.datetime(1990, 6, 15, 9, 2, tzinfo=dt.UTC)
+    place = Place("Pune", 18.5204, 73.8567, "Asia/Kolkata", 560.0)
+    day, _moment = panchang_for_instant(eph, dt.date(1990, 6, 15), when, place)
+    chart = compute_chart(eph, when, place, day.lights, day.vara.index)
+
+    finding = kaal_sarpa(chart)
+    if finding.present:
+        assert finding.detail is not None
+        assert finding.detail["classification"] == "not_assigned"
+        assert finding.detail["classification_reason"] == "yoga_vs_dosha_is_school_dependent"
+
+    # And the name a Marathi reader sees does not assert "dosha" either.
+    assert "दोष" not in finding_label("mr", "kaal_sarpa")

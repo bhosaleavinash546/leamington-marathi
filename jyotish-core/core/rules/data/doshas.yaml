@@ -16,6 +16,7 @@ rules:
   - key: mangal_dosha
     ruleset: maharashtra
     citation: "Muhurta Chintamani; Maharashtra usage as printed in Marathi panchangs"
+    provenance: shastra
     strength: moderate
     notes: >
       Mars in the 1st, 4th, 7th, 8th or 12th from the lagna. This is the house set
@@ -28,6 +29,7 @@ rules:
   - key: mangal_dosha
     ruleset: north_school
     citation: "Widely used north-Indian variant (adds the 2nd house)"
+    provenance: parampara
     strength: moderate
     notes: Mars in the 1st, 2nd, 4th, 7th, 8th or 12th from the lagna.
     when:
@@ -36,6 +38,7 @@ rules:
   - key: mangal_dosha
     ruleset: south_school
     citation: "South-Indian variant reckoned from the lagna, Moon and Venus"
+    provenance: parampara
     strength: moderate
     notes: >
       Mars in 1, 2, 4, 7, 8 or 12 counted from the lagna, the Moon *or* Venus. The
@@ -53,6 +56,7 @@ rules:
 
   - key: mangal_dosha_cancellation_own_sign
     citation: "Muhurta Chintamani (parihara)"
+    provenance: shastra
     strength: moderate
     notes: Mars in its own sign or exalted is held to cancel the dosha.
     when:
@@ -60,6 +64,7 @@ rules:
 
   - key: mangal_dosha_cancellation_jupiter_aspect
     citation: "Muhurta Chintamani (parihara)"
+    provenance: shastra
     strength: moderate
     notes: A Jupiter drishti on Mars is held to cancel the dosha.
     when:
@@ -69,6 +74,7 @@ rules:
 
   - key: pitra_dosha
     citation: "Traditional; not in the classical samhitas as a named dosha"
+    provenance: parampara
     strength: weak
     notes: >
       Sun afflicted by Saturn or Rahu, or the 9th house involved with Rahu/Ketu.
@@ -87,6 +93,7 @@ rules:
 
   - key: shrapit_dosha
     citation: "Traditional (Saturn-Rahu conjunction)"
+    provenance: parampara
     strength: moderate
     notes: Saturn and Rahu in the same house.
     when:
@@ -94,6 +101,7 @@ rules:
 
   - key: guru_chandal_dosha
     citation: "Traditional (Jupiter-Rahu conjunction)"
+    provenance: parampara
     strength: moderate
     notes: Jupiter conjunct Rahu, taken within a 10-degree orb rather than by sign.
     when:
@@ -101,6 +109,7 @@ rules:
 
   - key: lagna_lord_in_dusthana
     citation: "Brihat Parashara Hora Shastra, ch. 41 (arishta)"
+    provenance: shastra
     strength: weak
     notes: The lagna lord in the 6th, 8th or 12th.
     when:

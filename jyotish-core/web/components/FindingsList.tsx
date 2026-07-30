@@ -53,6 +53,22 @@ export function FindingsList({
                     {common.has(finding.strength) ? common(finding.strength) : finding.strength}
                   </span>
                 ) : null}
+                {/*
+                  शास्त्र or परंपरा, visible rather than folded into the collapsed
+                  evidence panel. The rule table always knew which a rule was; it
+                  reached the reader only as an English citation behind a
+                  disclosure (audit F-014), so the one signal distinguishing
+                  doctrine from traditional practice was the one they could not
+                  read.
+                */}
+                {finding.provenance ? (
+                  <span
+                    className={`tag tag--${finding.provenance}`}
+                    title={common(`${finding.provenance}_note`)}
+                  >
+                    {common(finding.provenance)}
+                  </span>
+                ) : null}
                 {finding.present === false ? (
                   <span className="tag tag--absent">{t('exception')}</span>
                 ) : null}

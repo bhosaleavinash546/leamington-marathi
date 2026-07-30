@@ -143,7 +143,8 @@ def test_unknown_predicate_is_a_load_error(tmp_path: Any) -> None:
     """A typo in a rule file must fail the build, not silently disable a yoga."""
     bad = tmp_path / "bad.yaml"
     bad.write_text(
-        "rules:\n  - key: nonsense\n    when:\n      graha_in_hous: {graha: sun, houses: [1]}\n",
+        "rules:\n  - key: nonsense\n    provenance: shastra\n"
+        "    when:\n      graha_in_hous: {graha: sun, houses: [1]}\n",
         encoding="utf-8",
     )
     with pytest.raises(RuleError, match="unknown predicate"):
@@ -161,8 +162,8 @@ def test_duplicate_key_and_ruleset_is_a_load_error(tmp_path: Any) -> None:
     bad = tmp_path / "bad.yaml"
     bad.write_text(
         "rules:\n"
-        "  - key: dup\n    when: {retrograde: {graha: mars}}\n"
-        "  - key: dup\n    when: {retrograde: {graha: venus}}\n",
+        "  - key: dup\n    provenance: shastra\n    when: {retrograde: {graha: mars}}\n"
+        "  - key: dup\n    provenance: shastra\n    when: {retrograde: {graha: venus}}\n",
         encoding="utf-8",
     )
     with pytest.raises(RuleError, match="duplicate rule"):

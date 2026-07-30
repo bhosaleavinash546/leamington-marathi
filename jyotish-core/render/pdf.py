@@ -544,6 +544,10 @@ def _findings_table(facts: dict[str, Any], locale: str) -> str:
             "<tr>"
             f'<th scope="row">{label}</th>'
             f"<td>{strength_terms.get(strength, strength or '')}</td>"
+            # शास्त्र or परंपरा on the page, not only in ChartFacts. A printed
+            # sheet has no tooltip, so the distinction has to be a column
+            # (audit F-014).
+            f"<td>{strength_terms.get(finding.get('provenance', ''), '')}</td>"
             f"<td>{f'{milan_terms["ruleset"]}: {ruleset}' if ruleset else ''}</td>"
             f'<td class="evidence">{", ".join(finding["evidence"])}</td>'
             "</tr>"

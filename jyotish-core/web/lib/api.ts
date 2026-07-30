@@ -93,6 +93,7 @@ export interface Finding {
   present?: boolean;
   strength: string | null;
   citation?: string;
+  provenance?: string;
   ruleset: string | null;
   /** The array the "why" affordance exposes (CLAUDE.md 8). */
   evidence: string[];

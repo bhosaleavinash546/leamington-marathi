@@ -68,6 +68,9 @@ class Rule:
     predicate: Mapping[str, Any]
     #: Classical source, recorded so a claim can be traced past this engine.
     citation: str
+    #: Doctrinal standing: a named classical text, or regional practice.
+    #: See :data:`PROVENANCE_BANDS`.
+    provenance: str
     strength: Strength = Strength.MODERATE
     #: For doshas: which school's house set this rule encodes (CLAUDE.md 3.5).
     ruleset: str | None = None
@@ -81,6 +84,8 @@ class RuleMatch:
     key: str
     strength: Strength
     citation: str
+    #: Carried through so the reader sees the rule's standing, not only its text.
+    provenance: str
     ruleset: str | None
     evidence: tuple[str, ...]
 
@@ -371,6 +376,25 @@ def evaluate(predicate: Mapping[str, Any], ctx: RuleContext) -> LeafResult:
     return evaluator(ctx, body)
 
 
+#: Doctrinal standing, reported so a reader can tell a cited rule from a
+#: traditional one. CLAUDE.md 10 distinguishes शास्त्र from परंपरा and the rule
+#: table already knew which was which - it simply never told anyone (audit F-014).
+PROVENANCE_BANDS: Final[frozenset[str]] = frozenset({"shastra", "parampara"})
+
+
+def _provenance(entry: dict[str, Any]) -> str:
+    """The rule's declared band. Required: a rule that does not say is a rule
+    whose standing a reader cannot judge."""
+    band = entry.get("provenance")
+    if band not in PROVENANCE_BANDS:
+        raise RuleError(
+            f"rule {entry.get('key')!r} declares provenance {band!r}; "
+            f"every rule must declare one of {sorted(PROVENANCE_BANDS)} so a reader "
+            "can tell a cited rule from a traditional one (CLAUDE.md 10)"
+        )
+    return str(band)
+
+
 def load_rules(path: Path) -> tuple[Rule, ...]:
     """Load and validate a rule file.
 
@@ -401,6 +425,7 @@ def load_rules(path: Path) -> tuple[Rule, ...]:
             key=key,
             predicate=entry["when"],
             citation=entry.get("citation", ""),
+            provenance=_provenance(entry),
             strength=Strength(entry.get("strength", Strength.MODERATE.value)),
             ruleset=entry.get("ruleset"),
             notes=entry.get("notes", ""),
@@ -451,6 +476,7 @@ def evaluate_rules(
                     key=rule.key,
                     strength=rule.strength,
                     citation=rule.citation,
+                    provenance=rule.provenance,
                     ruleset=rule.ruleset,
                     evidence=tuple(dict.fromkeys(evidence)),  # de-duplicate, keep order
                 )

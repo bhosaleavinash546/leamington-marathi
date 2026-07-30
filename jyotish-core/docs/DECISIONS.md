@@ -32,6 +32,7 @@ see which conventions produced a number. Changing any **D-number below marked
 | D19 | Dignity precedence | **Moolatrikona before exaltation**; exaltation stays whole-sign | **yes — changed a published value, see below** |
 | D20 | Pre-1955 Indian clock time | **Reported as ambiguous, never silently resolved** | no (a warning, not a value) |
 | D21 | Nadi exception | Requires **differing padas**, not a shared nakshatra alone | **yes — changed a published finding** |
+| D22 | Doctrinal provenance | Every rule declares `shastra` or `parampara`, shown to the reader | no (new field) |
 
 ---
 
@@ -563,6 +564,30 @@ quietly make the score pada-dependent.
 Nothing is auto-applied. The exception is still reported *beside* the total and
 never folded into it, because whether a cancellation applies is an interpretive
 judgement and not an arithmetic one (CLAUDE.md 3.5).
+
+---
+
+## D22 — Every rule declares its doctrinal standing
+
+**`provenance: shastra | parampara`, required on every rule and shown beside the
+finding.**
+
+CLAUDE.md 10 asks the product to distinguish शास्त्र from परंपरा, and the rule
+table always knew which was which — 30 rules cite a named classical text with a
+chapter, five say "Traditional" or name a regional variant. But that honesty
+stopped at the YAML. It reached the reader as **one English sentence inside a
+collapsed `<details>`**, so the single signal separating doctrine from popular
+practice was the one a Marathi reader could not read (audit F-014).
+
+The band is now a required field — `load_rules` refuses a rule that omits it,
+because a rule that does not declare its standing is a rule whose standing cannot
+be judged — and it travels into ChartFacts, the finding list and the printed
+sheet, in all three locales. On screen `shastra` takes a solid border and
+`parampara` a dashed italic one, so the distinction survives greyscale printing
+rather than relying on colour.
+
+No rule's *content* changed. What changed is that a reader can now tell, without
+opening anything, that पितृ दोष is परंपरा and मंगळ दोष is शास्त्र.
 
 ---
 

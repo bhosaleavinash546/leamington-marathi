@@ -51,6 +51,7 @@ export default async function LocaleLayout({
           <a className="skip-link" href="#main">
             {locale === 'en' ? 'Skip to content' : 'मुख्य मजकुराकडे'}
           </a>
+          <LeadDisclaimer locale={locale} />
           <main id="main">{children}</main>
           <Disclaimer locale={locale} />
         </NextIntlClientProvider>
@@ -62,7 +63,22 @@ export default async function LocaleLayout({
 /**
  * The persistent disclaimer (CLAUDE.md 10: "Lead with this in the product, do not
  * bury it"). In the layout, so no page can ship without it.
+ *
+ * It used to be *only* this footer - muted, 0.85rem, at the bottom of the page -
+ * which is the exact placement AUDIT.md 7 names as the fail condition, sitting
+ * directly under a code comment quoting "do not bury it" (audit F-015). The one
+ * line that matters most now leads the page in `LeadDisclaimer`, and the full
+ * text still closes it.
  */
+async function LeadDisclaimer({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: 'legal' });
+  return (
+    <p className="lead-disclaimer" role="note">
+      {t('not_a_forecast')}
+    </p>
+  );
+}
+
 async function Disclaimer({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'legal' });
   return (

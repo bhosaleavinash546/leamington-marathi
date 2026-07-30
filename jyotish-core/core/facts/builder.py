@@ -595,6 +595,7 @@ def _match_block(match: RuleMatch) -> dict[str, Any]:
         "key": match.key,
         "strength": match.strength.value,
         "citation": match.citation,
+        "provenance": match.provenance,
         "ruleset": match.ruleset,
         "evidence": list(match.evidence),
     }
@@ -610,6 +611,7 @@ def _dosha_blocks(reading: FullReading) -> list[dict[str, Any]]:
                 "present": ks.present,
                 "strength": ks.strength.value if ks.strength else None,
                 "citation": "Traditional (nodal-arc condition)",
+                "provenance": "parampara",
                 "ruleset": None,
                 "evidence": list(ks.evidence),
                 "detail": ks.detail,
@@ -623,6 +625,7 @@ def _dosha_blocks(reading: FullReading) -> list[dict[str, Any]]:
                 "present": ss.active,
                 "strength": None,
                 "citation": "Traditional (Saturn transit of the 12th, 1st and 2nd from the Moon)",
+                "provenance": "parampara",
                 "ruleset": None,
                 "evidence": [
                     f"saturn_in_rashi_{ss.saturn_rashi}",

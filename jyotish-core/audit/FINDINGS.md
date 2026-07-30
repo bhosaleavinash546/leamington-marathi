@@ -12,11 +12,11 @@ possible.
 |---|---|---|
 | S1 | 3 | **3** — F-001, F-002, F-003 |
 | S2 | 6 | **4** — F-004, F-005, F-006, F-009 |
-| S3 | 7 | **4** — F-010, F-011, F-012, F-013 |
+| S3 | 7 | **7** — F-010 – F-016 |
 | S4 | 10 | 3 — F-021 (F-001), F-017 (F-003), F-024 (F-004) |
 
 **Fixed so far:** F-001, F-002, F-021 (D18); F-005, F-006; F-003, F-017 (D19);
-F-004, F-024 (D20); F-010, F-011, F-012, F-013, F-025; F-009 (D21). Before/after values are recorded in `docs/DECISIONS.md` and
+F-004, F-024 (D20); F-010, F-011, F-012, F-013, F-025; F-009 (D21); F-014 (D22), F-015, F-016. Before/after values are recorded in `docs/DECISIONS.md` and
 in each commit message, per CLAUDE.md 11. Everything else below stands unfixed.
 
 **F-023 was found while fixing F-003 and is raised, not fixed** — it needs a
@@ -234,9 +234,9 @@ through. Identical nakshatra *and* pada no longer cancels the dosha. The koot
 | F-011 | ~~**Zero** Devanagari numerals in the `mr`/`hi` PDF~~ **FIXED** | 428 Latin digits, 0 Devanagari | port `web/lib/format.ts:toDevanagariNumerals` into `render/pdf.py` |
 | F-012 | ~~दिनमान / रात्रीमान absent from ChartFacts and the sheet~~ **FIXED** | derivable from sunrise/sunset but never printed | emit both, in ghati–pala |
 | F-013 | ~~Namakaran **and** numerology computed, then discarded~~ **FIXED** | `FullReading.namakaran` fully populated; absent from ChartFacts, UI, PDF | emit them; CLAUDE.md §3.6's two substantive uses of `name` are currently dead |
-| F-014 | Doctrinal provenance reaches the user as **one English sentence in a collapsed `<details>`** | no locale contains शास्त्र/परंपरा/लोकमत as provenance vocabulary | add a translated provenance label per rule; surface it uncollapsed for `strength: weak` rules |
-| F-015 | Disclaimer in a page-bottom `<footer>`, `--muted`, 0.85rem — the exact placement AUDIT §7 names as failing | the code comment quotes "do not bury it" immediately above the `<footer>` | move above the fold on birth-input and result screens |
-| F-016 | Kaal Sarpa reported only as a **dosha**; yoga/dosha never distinguished | `detail.arc` already records `rahu_to_ketu` vs `ketu_to_rahu`, the datum needed | label both readings, or state in `DIVERGENCES.md` that the distinction is refused as school-dependent |
+| F-014 | ~~Doctrinal provenance reaches the user as **one English sentence in a collapsed `<details>`**~~ **FIXED** | no locale contains शास्त्र/परंपरा/लोकमत as provenance vocabulary | add a translated provenance label per rule; surface it uncollapsed for `strength: weak` rules |
+| F-015 | ~~Disclaimer in a page-bottom `<footer>`, `--muted`, 0.85rem — the exact placement AUDIT §7 names as failing~~ **FIXED** | the code comment quotes "do not bury it" immediately above the `<footer>` | move above the fold on birth-input and result screens |
+| F-016 | ~~Kaal Sarpa reported only as a **dosha**; yoga/dosha never distinguished~~ **FIXED** | `detail.arc` already records `rahu_to_ketu` vs `ketu_to_rahu`, the datum needed | label both readings, or state in `DIVERGENCES.md` that the distinction is refused as school-dependent |
 
 ---
 

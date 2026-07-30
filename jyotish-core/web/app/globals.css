@@ -170,6 +170,24 @@ code {
 }
 .banner__heading { font-weight: 650; margin: 0 0 0.3rem; }
 .banner__key { display: block; font-size: 0.75rem; color: var(--muted); }
+/* शास्त्र reads as settled, परंपरा as reported - a border rather than a
+   colour alone, so the distinction survives greyscale printing. */
+.tag--shastra { border-style: solid; }
+.tag--parampara { border-style: dashed; font-style: italic; }
+
+/* --- lead disclaimer ---------------------------------------------------- */
+/* CLAUDE.md 10: "Lead with this in the product, do not bury it." Full ink, not
+   --muted, and above the fold: a disclaimer set in the same grey as a footnote
+   is a disclaimer designed not to be read. */
+.lead-disclaimer {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface, #f6f3ec);
+  font-size: 0.9rem;
+  text-align: center;
+}
+@media print { .lead-disclaimer { border-bottom: 0.4pt solid #000; } }
 .banner__label { color: var(--muted); margin: 0.4rem 0 0.2rem; font-size: 0.85rem; }
 .banner__list { margin: 0; padding-inline-start: 1.1rem; font-size: 0.85rem; }
 

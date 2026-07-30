@@ -50,7 +50,19 @@ def kaal_sarpa(chart: Chart) -> DoshaFinding:
     * **Partial** - one graha sits at a node's own degree, so it is on the
       boundary rather than inside. Some authorities count this, some do not.
 
-    The engine reports which, and lets the interpretation layer say what it means.
+    **Whether the condition is a yoga or a dosha is refused, not decided.**
+    AUDIT.md 5 asks that the two be distinguished; the schools do not agree on
+    how. Some key it on direction of travel - grahas in the Rahu-to-Ketu arc are
+    moving into the serpent's mouth - some on whether the lagna falls inside the
+    arc, and some hold the yoga/dosha split to be a modern gloss on a condition
+    the classical texts do not name at all.
+
+    So the engine publishes the arc and the completeness, which is every datum
+    those schools key on, and ``classification: "not_assigned"`` with the reason.
+    That is the same refusal as Ashtottari's nakshatra grouping and the Yuddha
+    bala winner (docs/DECISIONS.md, "Conventions this engine refuses to guess"):
+    CLAUDE.md 11 forbids picking a school silently, and a finding labelled
+    "dosha" in the output would be picking one (audit F-016).
     """
     rahu = chart.grahas[Graha.RAHU].point.sid_lon
     positions = {g: chart.grahas[g].point.sid_lon for g in SAPTA_GRAHA}
@@ -70,7 +82,12 @@ def kaal_sarpa(chart: Chart) -> DoshaFinding:
                 "all_seven_grahas_in_rahu_to_ketu_arc",
                 *(f"{g.value}_in_rahu_to_ketu_arc" for g in SAPTA_GRAHA),
             ),
-            detail={"arc": "rahu_to_ketu", "completeness": "complete"},
+            detail={
+                "arc": "rahu_to_ketu",
+                "completeness": "complete",
+                "classification": "not_assigned",
+                "classification_reason": "yoga_vs_dosha_is_school_dependent",
+            },
         )
     if not in_rahu_ketu_arc and not on_boundary:
         return DoshaFinding(
@@ -81,7 +98,12 @@ def kaal_sarpa(chart: Chart) -> DoshaFinding:
                 "all_seven_grahas_in_ketu_to_rahu_arc",
                 *(f"{g.value}_in_ketu_to_rahu_arc" for g in SAPTA_GRAHA),
             ),
-            detail={"arc": "ketu_to_rahu", "completeness": "complete"},
+            detail={
+                "arc": "ketu_to_rahu",
+                "completeness": "complete",
+                "classification": "not_assigned",
+                "classification_reason": "yoga_vs_dosha_is_school_dependent",
+            },
         )
     if on_boundary and not (in_rahu_ketu_arc and in_ketu_rahu_arc):
         return DoshaFinding(
@@ -89,7 +111,12 @@ def kaal_sarpa(chart: Chart) -> DoshaFinding:
             present=True,
             strength=Strength.MODERATE,
             evidence=tuple(f"{g.value}_conjunct_node_boundary" for g in on_boundary),
-            detail={"completeness": "partial", "on_boundary": [g.value for g in on_boundary]},
+            detail={
+                "completeness": "partial",
+                "on_boundary": [g.value for g in on_boundary],
+                "classification": "not_assigned",
+                "classification_reason": "yoga_vs_dosha_is_school_dependent",
+            },
         )
     return DoshaFinding(
         key="kaal_sarpa",

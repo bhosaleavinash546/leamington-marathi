@@ -217,7 +217,23 @@ which is order-insensitive, and `extract_text`'s docstring records why. The visu
 result is verified separately by `assert_devanagari_coverage()`, which confirms the
 embedded font can draw every codepoint the locale can produce.
 
-### A11 — Ephemeris is Moshier, not JPL
+### A11 — Kaal Sarpa's yoga/dosha classification is refused
+
+AUDIT.md §5 asks that the two be distinguished. The schools do not agree how.
+Some key it on direction of travel — grahas in the Rahu→Ketu arc are moving into
+the serpent's mouth; some on whether the lagna falls inside the arc; some hold the
+split to be a modern gloss on a condition the classical texts do not name at all.
+
+The engine therefore publishes the **arc** and the **completeness** — every datum
+those schools key on — plus `classification: "not_assigned"` and the reason. The
+Marathi and Hindi display names read **काळसर्प योग** / **कालसर्प योग**, not
+"दोष", so the output does not take a side it has not earned. Same refusal as
+Ashtottari's nakshatra grouping and the Yuddha bala winner.
+
+Supply a sourced rule and the classification can be filled in without touching
+the geometry.
+
+### A12 — Ephemeris is Moshier, not JPL
 
 See D7. Sub-arcsecond for the Moon, which is under 0.1 s of tithi-boundary time —
 three orders of magnitude below the reporting resolution. Not a divergence in any

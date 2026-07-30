@@ -512,6 +512,10 @@
         "present": { "type": "boolean" },
         "strength": { "enum": ["strong", "moderate", "weak", null] },
         "citation": { "type": "string" },
+        "provenance": {
+          "description": "Doctrinal standing: 'shastra' for a rule from a named classical text, 'parampara' for regional or traditional practice. Reported so a reader can tell one from the other (CLAUDE.md 10, audit F-014).",
+          "enum": ["shastra", "parampara"]
+        },
         "ruleset": { "type": ["string", "null"] },
         "evidence": {
           "type": "array",

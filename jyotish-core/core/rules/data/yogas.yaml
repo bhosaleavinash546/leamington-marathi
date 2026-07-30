@@ -19,6 +19,7 @@ rules:
 
   - key: gajakesari
     citation: "Brihat Parashara Hora Shastra, ch. 36 (Chandra yogas)"
+    provenance: shastra
     strength: strong
     notes: >
       Jupiter in a kendra from the Moon. The stricter reading additionally
@@ -32,6 +33,7 @@ rules:
 
   - key: kemadruma
     citation: "Brihat Parashara Hora Shastra, ch. 36"
+    provenance: shastra
     strength: moderate
     notes: >
       No graha in the 2nd or 12th from the Moon, and none with the Moon. The Sun
@@ -48,6 +50,7 @@ rules:
 
   - key: kemadruma_bhanga_kendra_jupiter
     citation: "Phaladeepika, ch. 6 (cancellation of Kemadruma)"
+    provenance: shastra
     strength: moderate
     notes: Jupiter in a kendra from the lagna cancels Kemadruma.
     when:
@@ -55,6 +58,7 @@ rules:
 
   - key: chandra_mangal
     citation: "Brihat Parashara Hora Shastra, ch. 36"
+    provenance: shastra
     strength: moderate
     notes: Moon and Mars in the same house. Traditionally read as earning capacity.
     when:
@@ -62,6 +66,7 @@ rules:
 
   - key: adhi_yoga
     citation: "Brihat Parashara Hora Shastra, ch. 36"
+    provenance: shastra
     strength: moderate
     notes: Benefics in the 6th, 7th and 8th counted from the Moon.
     when:
@@ -76,6 +81,7 @@ rules:
 
   - key: budha_aditya
     citation: "Brihat Parashara Hora Shastra, ch. 36"
+    provenance: shastra
     strength: moderate
     notes: >
       Sun and Mercury in the same house. Encoded with a not-combust condition on
@@ -89,6 +95,7 @@ rules:
 
   - key: veshi
     citation: "Brihat Jataka, ch. 12"
+    provenance: shastra
     strength: weak
     notes: A graha other than the Moon in the 2nd from the Sun.
     when:
@@ -105,6 +112,7 @@ rules:
 
   - key: ruchaka
     citation: "Brihat Parashara Hora Shastra, ch. 75 (Panchamahapurusha)"
+    provenance: shastra
     strength: strong
     notes: Mars in own sign or exalted, in a kendra.
     when:
@@ -114,6 +122,7 @@ rules:
 
   - key: bhadra
     citation: "Brihat Parashara Hora Shastra, ch. 75"
+    provenance: shastra
     strength: strong
     notes: Mercury in own sign or exalted, in a kendra.
     when:
@@ -123,6 +132,7 @@ rules:
 
   - key: hamsa
     citation: "Brihat Parashara Hora Shastra, ch. 75"
+    provenance: shastra
     strength: strong
     notes: Jupiter in own sign or exalted, in a kendra.
     when:
@@ -132,6 +142,7 @@ rules:
 
   - key: malavya
     citation: "Brihat Parashara Hora Shastra, ch. 75"
+    provenance: shastra
     strength: strong
     notes: Venus in own sign or exalted, in a kendra.
     when:
@@ -141,6 +152,7 @@ rules:
 
   - key: shasha
     citation: "Brihat Parashara Hora Shastra, ch. 75"
+    provenance: shastra
     strength: strong
     notes: Saturn in own sign or exalted, in a kendra.
     when:
@@ -154,48 +166,56 @@ rules:
 
   - key: raja_yoga_kendra_trikona_1_5
     citation: "Brihat Parashara Hora Shastra, ch. 41 (Raja yogas)"
+    provenance: shastra
     strength: strong
     when:
       house_lords_conjunct: { houses: [1, 5] }
 
   - key: raja_yoga_kendra_trikona_1_9
     citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
     strength: strong
     when:
       house_lords_conjunct: { houses: [1, 9] }
 
   - key: raja_yoga_kendra_trikona_4_5
     citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
     strength: strong
     when:
       house_lords_conjunct: { houses: [4, 5] }
 
   - key: raja_yoga_kendra_trikona_4_9
     citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
     strength: strong
     when:
       house_lords_conjunct: { houses: [4, 9] }
 
   - key: raja_yoga_kendra_trikona_7_5
     citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
     strength: strong
     when:
       house_lords_conjunct: { houses: [7, 5] }
 
   - key: raja_yoga_kendra_trikona_7_9
     citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
     strength: strong
     when:
       house_lords_conjunct: { houses: [7, 9] }
 
   - key: raja_yoga_kendra_trikona_10_5
     citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
     strength: strong
     when:
       house_lords_conjunct: { houses: [10, 5] }
 
   - key: raja_yoga_kendra_trikona_10_9
     citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
     strength: strong
     when:
       house_lords_conjunct: { houses: [10, 9] }
@@ -204,6 +224,7 @@ rules:
 
   - key: dhana_yoga_2_11_lords
     citation: "Phaladeepika, ch. 14 (Dhana yogas)"
+    provenance: shastra
     strength: moderate
     notes: Lords of the 2nd and 11th houses conjunct.
     when:
@@ -211,6 +232,7 @@ rules:
 
   - key: amala_yoga
     citation: "Phaladeepika, ch. 6"
+    provenance: shastra
     strength: moderate
     notes: A benefic in the 10th from the lagna or from the Moon.
     when:
@@ -221,6 +243,7 @@ rules:
 
   - key: parvata_yoga
     citation: "Phaladeepika, ch. 6"
+    provenance: shastra
     strength: moderate
     notes: Benefics in kendras with the 6th and 8th houses empty of grahas.
     when:
@@ -235,6 +258,7 @@ rules:
 
   - key: chamara_yoga
     citation: "Phaladeepika, ch. 6"
+    provenance: shastra
     strength: moderate
     notes: The lagna lord exalted in a kendra and aspected by Jupiter.
     when:
@@ -244,6 +268,7 @@ rules:
 
   - key: shakata_yoga
     citation: "Phaladeepika, ch. 6"
+    provenance: shastra
     strength: weak
     notes: >
       Jupiter in the 6th, 8th or 12th from the Moon. Read as fluctuating
@@ -254,6 +279,7 @@ rules:
 
   - key: vakri_bala_vriddhi
     citation: "Uttara Kalamrita, ch. 4 (on vakri grahas)"
+    provenance: shastra
     strength: moderate
     notes: >
       A retrograde (वक्री) graha sitting in its own sign, moolatrikona or
