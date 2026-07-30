@@ -29,6 +29,7 @@ see which conventions produced a number. Changing any **D-number below marked
 | D16 | Offline geocoder | 125 curated places, complete offline tz | no (see DIVERGENCES O6) |
 | D17 | Narrative time rendering | Engine projects local times before the prompt | no |
 | D18 | Transit-instant resolution | Solved to 1e-7 d, **reported at whole seconds** | **yes — changed a published value, see below** |
+| D19 | Dignity precedence | **Moolatrikona before exaltation**; exaltation stays whole-sign | **yes — changed a published value, see below** |
 
 ---
 
@@ -399,6 +400,67 @@ cache on every request and the model was called again: one birth, two requests t
 minutes apart, two LLM calls, two different Marathi paragraphs about the reader's
 Sade Sati. That is now one call and one text. The cache was never wrong — the
 facts were unstable.
+
+---
+
+## D19 — Dignity precedence, and why exaltation stays whole-sign
+
+**Precedence: moolatrikona, exaltation, debilitation, own sign.** Exaltation
+remains a whole *sign*, not a degree.
+
+**This changed a published value.** Found by the 360° audit as F-003.
+
+The classical categories overlap and a single label has to choose. Two grahas
+make the choice bite, and no others can:
+
+| graha | exaltation sign | moolatrikona arc | overlap |
+|---|---|---|---|
+| Moon | Vrishabha | Vrishabha 4–30 | everything above 4° |
+| Mercury | Kanya | Kanya 16–20 | the whole arc |
+
+With exaltation tested first as a whole sign, neither arc could ever be returned,
+so this engine shipped a `MOOLATRIKONA` table with two rows that were **dead
+code**. Moolatrikona now wins, because the arcs are drawn to *exclude* the
+exaltation peak: the Moon's begins at Vrishabha **4** precisely because 0–3 carries
+the parama-uchcha point at 3°. Under the opposite ordering that boundary has no
+effect on anything the engine computes.
+
+### The before/after
+
+Worked chart, 1990-01-08 Pune, Moon at Vrishabha 15.02°:
+
+| | Before | After |
+|---|---|---|
+| dignity label | `exalted` | `moolatrikona` |
+| Saptavargaja bala | 121.875 virupa | **151.875** (+30.0) |
+| Sthana bala | 222.868 | 252.868 |
+| Moon Shadbala total | 548.853 virupa / 9.148 rupa | **578.853 / 9.648** (required 6.0) |
+
+It is a numeric change and not merely a label because `SAPTAVARGAJA_POINTS` pays
+moolatrikona **45** virupas and exaltation **30**. Of the seven vargas, D1 and D9
+both land in Vrishabha for this Moon, so it was 15 short in each.
+
+Affected placements: **Moon in Vrishabha 4°–30° (~7% of charts)** and **Mercury in
+Kanya 16°–20° (~1%)**. No other graha's moolatrikona arc lies inside its
+exaltation sign, so nothing else moves.
+
+### What was rejected, and why
+
+Making the label **degree-based** — reporting `exalted` only at the parama-uchcha
+degree — was the first plan and is wrong. Exaltation is a whole sign in every
+classical source; the degree marks where the graha is *strongest*, which is what
+`uchcha_bala` already scales on. A degree-based label would report the Sun at
+Mesha 25° as un-exalted, an error worse than the one being fixed.
+`test_a_graha_exalted_outside_its_moolatrikona_is_still_exalted` guards against
+re-introducing it.
+
+### Information kept
+
+Moving moolatrikona ahead of exaltation would otherwise trade one information loss
+for another: a Moon labelled `moolatrikona` no longer tells the reader it is in its
+exaltation sign. `ChartFacts.chart.grahas[].in_exaltation_sign` is therefore
+reported beside the label — a schema addition, and the versioning reasoning under
+D13 applies unchanged.
 
 ---
 

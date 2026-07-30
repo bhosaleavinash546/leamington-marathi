@@ -553,3 +553,83 @@ def test_hora_lords_walk_the_chaldean_order(ephemeris: Ephemeris, pune: Place) -
 def test_chart_records_the_ayanamsa_actually_used(chart) -> None:  # type: ignore[no-untyped-def]
     """CLAUDE.md 4.5: record the ayanamsa in output metadata."""
     assert 22.0 < chart.ayanamsa_deg < 25.0, "Lahiri in the late 20th century"
+
+
+# ---------------------------------------------------------------------------
+# F-003: moolatrikona must be reachable for every graha that declares one
+# ---------------------------------------------------------------------------
+
+
+def test_every_declared_moolatrikona_arc_is_reachable() -> None:
+    """Audit F-003. A table row that can never be returned is not a convention.
+
+    The Moon's moolatrikona is Vrishabha 4-30 and Mercury's is Kanya 16-20; both
+    sit inside those grahas' own exaltation signs. With exaltation tested first as
+    a whole sign, neither row could ever be reached, so the engine shipped a
+    MOOLATRIKONA table with two entries that were dead code.
+
+    Whichever precedence a school prefers, the number 4 in "Vrishabha 4-30" is
+    there to exclude the exaltation-peak arc below it. A reading under which the
+    arc never applies makes that boundary meaningless.
+    """
+    from core.chart.dignity import MOOLATRIKONA, positional_dignity
+
+    unreachable = []
+    for graha, (rashi, start, end) in MOOLATRIKONA.items():
+        labels = {
+            positional_dignity(graha, (rashi - 1) * 30.0 + start + i * (end - start) / 10.0)
+            for i in range(10)
+        }
+        if Dignity.MOOLATRIKONA not in labels:
+            unreachable.append((graha.value, sorted(v.value for v in labels)))
+    assert unreachable == [], f"moolatrikona unreachable for: {unreachable}"
+
+
+def test_the_moon_in_vrishabha_scores_moolatrikona_saptavargaja() -> None:
+    """The numeric consequence of F-003, which is why it is not merely a label.
+
+    ``SAPTAVARGAJA_POINTS`` pays moolatrikona 45 virupas and exaltation 30. A Moon
+    reported ``exalted`` where the classical table says moolatrikona is therefore
+    15 virupas short in every varga of the saptavarga that lands in Vrishabha.
+    """
+    from core.chart.dignity import positional_dignity
+    from core.chart.shadbala import SAPTAVARGAJA_POINTS, saptavargaja_bala
+
+    assert SAPTAVARGAJA_POINTS[Dignity.MOOLATRIKONA] == 45.0
+    assert SAPTAVARGAJA_POINTS[Dignity.EXALTED] == 30.0
+
+    from core.chart.shadbala import SAPTAVARGA
+    from core.chart.vargas import varga_rashi
+
+    vrishabha_15 = 30.0 + 15.0  # inside the Moon's moolatrikona arc (Vrishabha 4-30)
+    in_vrishabha = [v for v in SAPTAVARGA if varga_rashi(v, vrishabha_15) == 2]
+    assert in_vrishabha, "test premise: some varga must land back in Vrishabha"
+
+    scored = saptavargaja_bala(Graha.MOON, vrishabha_15, {Graha.MOON: vrishabha_15})
+    others_max = (len(SAPTAVARGA) - len(in_vrishabha)) * 45.0
+    # Each Vrishabha varga must contribute 45, not the 30 an `exalted` label pays.
+    assert scored - others_max <= len(in_vrishabha) * 45.0
+    assert scored >= len(in_vrishabha) * 45.0, (
+        f"saptavargaja {scored}: {len(in_vrishabha)} varga(s) land in Vrishabha and must "
+        f"pay 45 each, not the 30 an 'exalted' label pays"
+    )
+    # The decisive check: the label those vargas resolve to.
+    for varga in in_vrishabha:
+        pseudo = (varga_rashi(varga, vrishabha_15) - 1) * 30.0 + 15.0
+        assert positional_dignity(Graha.MOON, pseudo) is Dignity.MOOLATRIKONA, varga.value
+
+
+def test_a_graha_exalted_outside_its_moolatrikona_is_still_exalted() -> None:
+    """The regression the F-003 fix must not introduce.
+
+    Exaltation is a whole *sign* with a parama-uchcha degree marking the peak - the
+    Sun is uchcha anywhere in Mesha, and 10 deg is where it is strongest, which is
+    what Uchcha bala scales on. Reordering moolatrikona above exaltation must not
+    turn that into a degree test.
+    """
+    from core.chart.dignity import positional_dignity
+
+    for deg in (0.5, 10.0, 25.0, 29.9):
+        assert positional_dignity(Graha.SUN, deg) is Dignity.EXALTED, f"Sun at Mesha {deg}"
+    # Mercury past its moolatrikona arc but still in Kanya: exaltation sign holds.
+    assert positional_dignity(Graha.MERCURY, 150.0 + 25.0) is Dignity.EXALTED

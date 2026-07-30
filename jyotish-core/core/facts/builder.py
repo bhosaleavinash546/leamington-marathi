@@ -25,6 +25,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from core.chart.assemble import Chart, compute_chart, rotate_chart, varga_chart
+from core.chart.dignity import is_in_exaltation_sign
 from core.dasha.vimshottari import (
     CurrentDasha,
     VimshottariTimeline,
@@ -524,6 +525,10 @@ def _graha_block(chart: Chart, graha: Graha) -> dict[str, Any]:
         "stationary": pos.stationary,
         "combust": pos.combust,
         "dignity": pos.dignity.value,
+        # Reported beside the label because the two overlap: a Moon at
+        # Vrishabha 15 deg is labelled moolatrikona and is also in its
+        # exaltation sign (docs/DECISIONS.md D19).
+        "in_exaltation_sign": is_in_exaltation_sign(pos.graha, pos.point.sid_lon),
         "speed_lon_deg_per_day": round(pos.speed_lon, 8),
         "vargas": {v.value: r for v, r in pos.vargas.items()},
     }

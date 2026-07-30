@@ -146,23 +146,56 @@ def natural_relation(of_graha: Graha, toward: Graha) -> Dignity:
 def positional_dignity(graha: Graha, sid_lon: float) -> Dignity:
     """Dignity from position alone, before compound friendship is applied.
 
-    Precedence is exaltation, then moolatrikona, then own sign, then
-    debilitation - so a graha exalted inside its own sign reports ``EXALTED``,
-    which is the stronger and more informative label.
+    **Precedence: moolatrikona, exaltation, debilitation, own sign.** These are not
+    mutually exclusive in the classical tables - they overlap, and a single label
+    has to choose. Two grahas make the choice bite:
+
+    ==========  =================  ==================  ================
+    graha       exaltation sign    moolatrikona arc    overlap
+    ==========  =================  ==================  ================
+    Moon        Vrishabha          Vrishabha 4-30      all but 0-4 deg
+    Mercury     Kanya              Kanya 16-20         the whole arc
+    ==========  =================  ==================  ================
+
+    Moolatrikona is placed first because the arcs are drawn to *exclude* the
+    exaltation peak: the Moon's begins at Vrishabha **4** precisely because 0-3
+    carries the parama-uchcha point at 3 deg. Under the opposite ordering the
+    boundary at 4 has no effect on anything, and this engine shipped a
+    ``MOOLATRIKONA`` table whose Moon and Mercury rows were unreachable dead code
+    (audit F-003, docs/DECISIONS.md D19).
+
+    Exaltation remains a whole *sign*, not a degree. The Sun is uchcha anywhere in
+    Mesha; 10 deg is where it is strongest, and that peak is what
+    :func:`~core.chart.shadbala.uchcha_bala` scales on. Making the label
+    degree-based would report the Sun at Mesha 25 deg as un-exalted, which no
+    school holds.
     """
     if graha not in EXALTATION:
         return Dignity.NEUTRAL  # nodes: no classical exaltation in this engine
     rashi = rashi_of(sid_lon)
     exalt_rashi, _ = EXALTATION[graha]
+    if is_in_moolatrikona(graha, sid_lon):
+        return Dignity.MOOLATRIKONA
     if rashi == exalt_rashi:
         return Dignity.EXALTED
     if rashi == rashi_of(debilitation_longitude(graha)):
         return Dignity.DEBILITATED
-    if is_in_moolatrikona(graha, sid_lon):
-        return Dignity.MOOLATRIKONA
     if rashi in OWN_SIGNS[graha]:
         return Dignity.OWN_SIGN
     return Dignity.NEUTRAL
+
+
+def is_in_exaltation_sign(graha: Graha, sid_lon: float) -> bool:
+    """Whether the graha stands in its exaltation sign, whatever its label.
+
+    Reported alongside :func:`positional_dignity` so that moving moolatrikona ahead
+    of exaltation does not trade one information loss for another: a Moon at
+    Vrishabha 15 deg is labelled ``moolatrikona`` and is *also* in its exaltation
+    sign, and a reader is entitled to both facts.
+    """
+    if graha not in EXALTATION:
+        return False
+    return rashi_of(sid_lon) == EXALTATION[graha][0]
 
 
 def relational_dignity(graha: Graha, sid_lon: float, others: dict[Graha, float]) -> Dignity:

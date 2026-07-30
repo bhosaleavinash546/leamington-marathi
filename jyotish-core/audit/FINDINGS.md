@@ -10,14 +10,17 @@ possible.
 
 | Sev | Count | Fixed |
 |---|---|---|
-| S1 | 3 | 2 — F-001, F-002 |
+| S1 | 3 | **3** — F-001, F-002, F-003 |
 | S2 | 6 | 2 — F-005, F-006 |
 | S3 | 7 | — |
-| S4 | 6 | 1 — F-021, as part of F-001 |
+| S4 | 7 | 2 — F-021 (with F-001), F-017 (with F-003) |
 
 **Fixed so far:** F-001, F-002, F-021 (one root cause, `docs/DECISIONS.md` D18)
-and F-005, F-006. Before/after values are recorded there and in the commit
+F-005, F-006, and F-003 + F-017 (`DECISIONS.md` D19). Before/after values are recorded there and in the commit
 message, per CLAUDE.md 11. Everything else below stands unfixed.
+
+**F-023 was found while fixing F-003 and is raised, not fixed** — it needs a
+citation this session cannot supply.
 
 ---
 
@@ -64,7 +67,7 @@ one LLM call.
 **Outcome** Fixed by F-001. 2 LLM calls → 1; all six sections now hold their
 cache key across a 2-minute gap, asserted.
 
-### F-003 · rule-fidelity + internal inconsistency · `core/chart/dignity.py:157`
+### F-003 · rule-fidelity + internal inconsistency · `core/chart/dignity.py:157` · **FIXED**
 
 **Expected** Moon in Vrishabha 4°–30° is **मूलत्रिकोण**; exaltation is Vrishabha 3°.
 Mercury beyond Kanya 20° is **own sign**.
@@ -85,6 +88,22 @@ whole-sign, delete the Moon/Mercury moolatrikona rows and say why. If degree-bas
 order the tests exaltation-degree → moolatrikona → own sign.
 **Test** Assert every declared moolatrikona arc yields `moolatrikona` for all
 seven grahas.
+**Outcome** Fixed under D19, and **the recommended degree-based route was wrong** —
+recorded here because the register recommended it. Exaltation is a whole *sign* in
+every classical source, with the parama-uchcha degree marking where the graha is
+strongest; that degree is what `uchcha_bala` already scales on. A degree-based
+label would have reported the Sun at Mesha 25° as un-exalted, an error worse than
+the one being fixed. What was actually wrong is the *precedence*: moolatrikona now
+resolves before exaltation, which is the only ordering under which the arcs mean
+anything (the Moon's begins at Vrishabha 4 precisely to exclude the 3° peak).
+
+It was also **a numeric defect, not only a label** — `SAPTAVARGAJA_POINTS` pays
+moolatrikona 45 virupas and exaltation 30. Worked chart 1990-01-08, Moon Vrishabha
+15.02°: Saptavargaja 121.875 → **151.875** (+30.0, from D1 and D9), Sthana
+222.868 → 252.868, Moon total 548.853 → **578.853** virupa = 9.148 → **9.648** rupa.
+Affects Moon in Vrishabha 4–30 (~7% of charts) and Mercury in Kanya 16–20 (~1%).
+`in_exaltation_sign` added to ChartFacts so the new label does not lose the fact
+that the graha is also exalted.
 
 ---
 
@@ -212,12 +231,13 @@ nadi 0/8, `nadi_exception_same_nakshatra` **fired**. The engine does compute pad
 
 | ID | Finding | Location |
 |---|---|---|
-| F-017 | Docstring says precedence is "exaltation, then moolatrikona, then own sign, then debilitation"; code order is exaltation, **debilitation**, moolatrikona, own sign | `core/chart/dignity.py:148` |
+| F-017 | ~~Docstring precedence contradicted the code~~ **FIXED** with F-003 — docstring rewritten to the D19 order, with the overlap table | `core/chart/dignity.py` |
 | F-018 | Docstring table says `120–150 → 60 flat`; code ramps 45→60 | `core/chart/aspects.py:88` |
 | F-019 | Hand-rolled shortest-separation instead of `core.angles.shortest_separation` (numerically equivalent; duplication) | `core/chart/dignity.py:207` |
 | F-020 | Raw `% 360.0` rather than `norm360()`, against §4.7's "one wrapper" | `core/timeutil.py:183,188` |
 | F-021 | ~~Sade Sati times published to **microseconds** though known to ±39 s~~ **FIXED** with F-001 — solved to 1e-7 d, reported at whole seconds | `core/doshas/computed.py` |
 | F-022 | Graded drishti piecewise scale carries no citation | `core/chart/aspects.py:88` |
+| F-023 | **NEW.** `SAPTAVARGAJA_POINTS` contains `EXALTED: 30.0`, but exaltation is not a category of the classical Saptavargaja ladder (moolatrikona 45 / own 30 / friend 22.5 / …) — it is rewarded separately by Uchcha bala. As written, a graha in an exaltation sign that is not its own sign is paid 30 rather than its relational value, so exaltation is counted twice. Found while fixing F-003; **raised, not fixed** — removing the row changes Sthana bala for every graha in an exaltation sign and needs a chapter citation this session cannot supply | `core/chart/shadbala.py:65` |
 
 ---
 

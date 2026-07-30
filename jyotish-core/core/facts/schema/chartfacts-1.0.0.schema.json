@@ -400,6 +400,7 @@
         "key", "sid_lon", "rashi", "rashi_key", "deg_in_rashi", "nakshatra",
         "nakshatra_key", "pada", "nakshatra_lord", "house_whole_sign",
         "house_chalit", "retrograde", "stationary", "combust", "dignity",
+        "in_exaltation_sign",
         "speed_lon_deg_per_day", "vargas"
       ],
       "properties": {
@@ -417,6 +418,10 @@
         "retrograde": { "type": "boolean" },
         "stationary": { "type": "boolean" },
         "combust": { "type": "boolean" },
+        "in_exaltation_sign": {
+          "description": "Whether the graha stands in its exaltation sign, whatever its dignity label. Reported separately because moolatrikona and exaltation overlap for the Moon and Mercury (docs/DECISIONS.md D19).",
+          "type": "boolean"
+        },
         "dignity": {
           "enum": [
             "moolatrikona", "own_sign", "exalted", "debilitated",
