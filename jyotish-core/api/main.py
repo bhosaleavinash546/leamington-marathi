@@ -319,8 +319,10 @@ def milan(request: Annotated[MilanInput, Body()]) -> dict[str, Any]:
     result = compute_milan(
         bride_moon_rashi=_moon(bride_facts)["rashi"],
         bride_moon_nakshatra=_moon(bride_facts)["nakshatra"],
+        bride_moon_pada=_moon(bride_facts)["pada"],
         groom_moon_rashi=_moon(groom_facts)["rashi"],
         groom_moon_nakshatra=_moon(groom_facts)["nakshatra"],
+        groom_moon_pada=_moon(groom_facts)["pada"],
     )
     return {
         "koots": [

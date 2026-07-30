@@ -31,6 +31,7 @@ see which conventions produced a number. Changing any **D-number below marked
 | D18 | Transit-instant resolution | Solved to 1e-7 d, **reported at whole seconds** | **yes — changed a published value, see below** |
 | D19 | Dignity precedence | **Moolatrikona before exaltation**; exaltation stays whole-sign | **yes — changed a published value, see below** |
 | D20 | Pre-1955 Indian clock time | **Reported as ambiguous, never silently resolved** | no (a warning, not a value) |
+| D21 | Nadi exception | Requires **differing padas**, not a shared nakshatra alone | **yes — changed a published finding** |
 
 ---
 
@@ -523,6 +524,45 @@ All three must hold, so the warning stays rare enough to mean something:
 `ChartFacts.input.lmt_utc_offset_seconds` now travels beside
 `resolved_utc_offset_seconds`, so the reader sees the two competing readings of
 their own recorded time and the size of the gap, not merely that one exists.
+
+---
+
+## D21 — The Nadi exception requires differing padas
+
+**`nadi_exception_same_nakshatra` fires only when the two Moon nakshatras match
+*and* the padas differ.** Found by the audit as F-009.
+
+The classical cancellation is "same nakshatra but **different** padas". Firing on
+the shared nakshatra alone inverted it in the one case that matters most: two
+people with the *identical* nakshatra and pada — the strongest form of Nadi dosha
+— were told it was cancelled.
+
+AUDIT.md §5 is blunt about this class of error, and it is right to be: *"An app
+that reports '18/36 — incompatible' without exceptions is doctrinally negligent
+and socially harmful."* The same applies in reverse. Of the two directions to be
+wrong in, cancelling a dosha that classically stands is the one with consequences
+for a family making a decision.
+
+### What changed
+
+`compute_milan` now takes `bride_moon_pada` and `groom_moon_pada`, keyword-only
+like every other argument, and validates them 1–4. The engine already computed the
+Moon's pada — `PointDetail.pada` — so nothing new is calculated; it was simply
+never threaded through. The API passes it from the same ChartFacts it already
+builds.
+
+| pairing | before | after |
+|---|---|---|
+| same nakshatra, same pada | exception fired — **dosha cancelled** | no exception; the dosha stands |
+| same nakshatra, different pada | exception fired | exception fires, now with `differing_padas_<a>_<b>` in the evidence |
+
+The **Nadi koot score is untouched**: nadi is read from the nakshatra's nadi
+group, which a pada does not change. A test pins that, so a later edit cannot
+quietly make the score pada-dependent.
+
+Nothing is auto-applied. The exception is still reported *beside* the total and
+never folded into it, because whether a cancellation applies is an interpretive
+judgement and not an arithmetic one (CLAUDE.md 3.5).
 
 ---
 

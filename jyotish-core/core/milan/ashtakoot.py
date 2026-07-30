@@ -430,22 +430,35 @@ def bhakoot_exceptions(
 
 
 def nadi_exceptions(
-    bride_nakshatra: int, groom_nakshatra: int, bride_rashi: int, groom_rashi: int
+    bride_nakshatra: int,
+    groom_nakshatra: int,
+    bride_rashi: int,
+    groom_rashi: int,
+    bride_pada: int,
+    groom_pada: int,
 ) -> tuple[MilanException, ...]:
     """Classical cancellations of Nadi dosha (CLAUDE.md 3.5).
 
-    * The same nakshatra but different padas - the shared nadi is then held not
-      to bind. Padas are not available to this function, so the weaker form
-      (same nakshatra) is what is reported, and the caller may refine it.
+    * The same nakshatra but **different padas** - the shared nadi is then held
+      not to bind.
     * Different Moon rashis while sharing a nakshatra lord.
+
+    The pada clause is not decoration. Without it the exception fires on a shared
+    nakshatra alone, which cancels the dosha in the one case where it is
+    strongest - the same nakshatra *and* the same pada - and cancelling a marriage
+    dosha that classically stands is the worst direction to be wrong in
+    (audit F-009).
     """
     out: list[MilanException] = []
-    if bride_nakshatra == groom_nakshatra:
+    if bride_nakshatra == groom_nakshatra and bride_pada != groom_pada:
         out.append(
             MilanException(
                 koot="nadi",
                 key="nadi_exception_same_nakshatra",
-                evidence=(f"shared_nakshatra_{NAKSHATRA_KEYS[bride_nakshatra - 1]}",),
+                evidence=(
+                    f"shared_nakshatra_{NAKSHATRA_KEYS[bride_nakshatra - 1]}",
+                    f"differing_padas_{bride_pada}_{groom_pada}",
+                ),
             )
         )
     if bride_rashi != groom_rashi and (bride_nakshatra - 1) % 9 == (groom_nakshatra - 1) % 9:
@@ -471,8 +484,10 @@ def compute_milan(
     *,
     bride_moon_rashi: int,
     bride_moon_nakshatra: int,
+    bride_moon_pada: int,
     groom_moon_rashi: int,
     groom_moon_nakshatra: int,
+    groom_moon_pada: int,
 ) -> GunaMilan:
     """All eight koots for a pair of charts, with reasons and exceptions.
 
@@ -484,6 +499,8 @@ def compute_milan(
         ("groom_moon_rashi", groom_moon_rashi, 12),
         ("bride_moon_nakshatra", bride_moon_nakshatra, 27),
         ("groom_moon_nakshatra", groom_moon_nakshatra, 27),
+        ("bride_moon_pada", bride_moon_pada, 4),
+        ("groom_moon_pada", groom_moon_pada, 4),
     ):
         if not 1 <= value <= limit:
             raise ValueError(f"{name} out of range: {value}")
@@ -509,7 +526,12 @@ def compute_milan(
     if any(k.koot == "nadi" and k.points == 0.0 for k in koots):
         exceptions.extend(
             nadi_exceptions(
-                bride_moon_nakshatra, groom_moon_nakshatra, bride_moon_rashi, groom_moon_rashi
+                bride_moon_nakshatra,
+                groom_moon_nakshatra,
+                bride_moon_rashi,
+                groom_moon_rashi,
+                bride_moon_pada,
+                groom_moon_pada,
             )
         )
 

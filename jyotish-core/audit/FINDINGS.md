@@ -11,12 +11,12 @@ possible.
 | Sev | Count | Fixed |
 |---|---|---|
 | S1 | 3 | **3** — F-001, F-002, F-003 |
-| S2 | 6 | **3** — F-004, F-005, F-006 |
+| S2 | 6 | **4** — F-004, F-005, F-006, F-009 |
 | S3 | 7 | **4** — F-010, F-011, F-012, F-013 |
 | S4 | 10 | 3 — F-021 (F-001), F-017 (F-003), F-024 (F-004) |
 
 **Fixed so far:** F-001, F-002, F-021 (D18); F-005, F-006; F-003, F-017 (D19);
-F-004, F-024 (D20); F-010, F-011, F-012, F-013, F-025. Before/after values are recorded in `docs/DECISIONS.md` and
+F-004, F-024 (D20); F-010, F-011, F-012, F-013, F-025; F-009 (D21). Before/after values are recorded in `docs/DECISIONS.md` and
 in each commit message, per CLAUDE.md 11. Everything else below stands unfixed.
 
 **F-023 was found while fixing F-003 and is raised, not fixed** — it needs a
@@ -209,7 +209,7 @@ unaffected (ayanamsa cancels in the elongation).
 leaves tithi and karana untouched.
 **Fix** Read the almanac's front matter. Nothing else should be tuned first.
 
-### F-009 · rule-fidelity · `core/milan/ashtakoot.py:432`, `470`
+### F-009 · rule-fidelity · `core/milan/ashtakoot.py:432`, `470` · **FIXED**
 
 **Expected** The Nadi exception is "same nakshatra but **different padas**".
 **Actual** Fires on shared nakshatra alone, so it cancels Nadi dosha even when the
@@ -219,6 +219,10 @@ nadi 0/8, `nadi_exception_same_nakshatra` **fired**. The engine does compute pad
 (`PointDetail.pada`); it simply is not threaded through.
 **Fix** Add bride/groom pada parameters and gate the exception on inequality.
 **Test** Same nakshatra, same pada → no exception; different pada → exception.
+**Outcome** Fixed under D21. `compute_milan` takes both padas, keyword-only and
+validated 1–4; the engine already computed them and simply never threaded them
+through. Identical nakshatra *and* pada no longer cancels the dosha. The koot
+*score* is untouched and a test pins that it stays pada-independent.
 
 ---
 

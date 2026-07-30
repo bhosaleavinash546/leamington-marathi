@@ -383,8 +383,10 @@ def test_milan_never_returns_a_bare_total() -> None:
     result = compute_milan(
         bride_moon_rashi=4,
         bride_moon_nakshatra=8,
+        bride_moon_pada=1,
         groom_moon_rashi=7,
         groom_moon_nakshatra=15,
+        groom_moon_pada=3,
     )
     assert len(result.koots) == 8
     assert {k.koot for k in result.koots} == set(KOOT_MAX)
@@ -406,8 +408,10 @@ def test_milan_totals_stay_in_range_across_pairings(
     result = compute_milan(
         bride_moon_rashi=bride_rashi,
         bride_moon_nakshatra=bride_nak,
+        bride_moon_pada=1,
         groom_moon_rashi=groom_rashi,
         groom_moon_nakshatra=groom_nak,
+        groom_moon_pada=3,
     )
     assert 0.0 <= result.total <= MAX_POINTS
 
@@ -426,13 +430,17 @@ def test_identical_charts_score_full_marks_except_nadi() -> None:
     result = compute_milan(
         bride_moon_rashi=4,
         bride_moon_nakshatra=8,
+        bride_moon_pada=2,
         groom_moon_rashi=4,
         groom_moon_nakshatra=8,
+        groom_moon_pada=2,
     )
     assert result.total == pytest.approx(MAX_POINTS - KOOT_MAX["nadi"]) == 28.0
+    # And no Nadi exception: identical nakshatra *and* pada is the strongest form
+    # of the dosha, not a cancelled one (audit F-009).
+    assert not any(e.koot == "nadi" for e in result.exceptions)
     assert result.koot("nadi").points == 0.0
     assert all(k.is_full for k in result.koots if k.koot != "nadi")
-    assert any(e.koot == "nadi" for e in result.exceptions)
 
 
 def test_directional_koots_are_not_symmetric() -> None:
@@ -471,12 +479,14 @@ def test_nadi_koot_and_its_exceptions() -> None:
     result = compute_milan(
         bride_moon_rashi=1,
         bride_moon_nakshatra=1,
+        bride_moon_pada=1,
         groom_moon_rashi=1,
         groom_moon_nakshatra=1,
+        groom_moon_pada=4,
     )
     assert result.koot("nadi").points == 0.0
     assert any(e.koot == "nadi" for e in result.exceptions), (
-        "a same-nakshatra pairing must surface the Nadi exception (CLAUDE.md 3.5)"
+        "same nakshatra with differing padas must surface the Nadi exception (CLAUDE.md 3.5)"
     )
 
 
@@ -486,8 +496,10 @@ def test_bhakoot_exceptions_are_reported_not_folded_in() -> None:
     result = compute_milan(
         bride_moon_rashi=1,
         bride_moon_nakshatra=3,
+        bride_moon_pada=1,
         groom_moon_rashi=8,
         groom_moon_nakshatra=17,
+        groom_moon_pada=1,
     )
     bhakoot = result.koot("bhakoot")
     assert bhakoot.points == 0.0
@@ -541,15 +553,19 @@ def test_milan_rejects_out_of_range_input() -> None:
         compute_milan(
             bride_moon_rashi=13,
             bride_moon_nakshatra=1,
+            bride_moon_pada=1,
             groom_moon_rashi=1,
             groom_moon_nakshatra=1,
+            groom_moon_pada=1,
         )
     with pytest.raises(ValueError, match="groom_moon_nakshatra"):
         compute_milan(
             bride_moon_rashi=1,
             bride_moon_nakshatra=1,
+            bride_moon_pada=1,
             groom_moon_rashi=1,
             groom_moon_nakshatra=28,
+            groom_moon_pada=1,
         )
 
 
@@ -771,3 +787,77 @@ def test_sade_sati_instants_are_reported_at_whole_seconds(
     for label, value in (("exit", state.exit_utc), ("phase_start", state.phase_start_utc)):
         if value is not None:
             assert value.microsecond == 0, f"{label}_utc carries {value.microsecond} us"
+
+
+# ---------------------------------------------------------------------------
+# F-009: the Nadi exception must test the pada, not only the nakshatra
+# ---------------------------------------------------------------------------
+
+
+def test_nadi_exception_needs_a_different_pada() -> None:
+    """Audit F-009. The classical clause is "same nakshatra but *different* padas".
+
+    Firing on a shared nakshatra alone cancels the dosha in the one case where it
+    is strongest - the same nakshatra *and* the same pada - which is the worst
+    direction to be wrong in. AUDIT.md 5 is blunt about this class of error:
+    an app that mishandles the Bhakoot and Nadi exceptions is "doctrinally
+    negligent and socially harmful".
+    """
+    same_pada = compute_milan(
+        bride_moon_rashi=1,
+        bride_moon_nakshatra=1,
+        bride_moon_pada=2,
+        groom_moon_rashi=1,
+        groom_moon_nakshatra=1,
+        groom_moon_pada=2,
+    )
+    keys = {e.key for e in same_pada.exceptions}
+    assert "nadi_exception_same_nakshatra" not in keys, (
+        "the exception fired for an identical nakshatra AND pada, which is the "
+        "strongest form of Nadi dosha, not a cancelled one"
+    )
+
+    different_pada = compute_milan(
+        bride_moon_rashi=1,
+        bride_moon_nakshatra=1,
+        bride_moon_pada=1,
+        groom_moon_rashi=1,
+        groom_moon_nakshatra=1,
+        groom_moon_pada=3,
+    )
+    assert "nadi_exception_same_nakshatra" in {e.key for e in different_pada.exceptions}
+
+
+def test_the_nadi_score_itself_is_unchanged_by_the_pada() -> None:
+    """Only the *exception* is pada-sensitive; the koot score is not.
+
+    Nadi is scored from the nakshatra's nadi group, which a pada does not change.
+    Pinned so a future edit cannot quietly make the score depend on it.
+    """
+    scores = {
+        compute_milan(
+            bride_moon_rashi=1,
+            bride_moon_nakshatra=1,
+            bride_moon_pada=pada,
+            groom_moon_rashi=1,
+            groom_moon_nakshatra=1,
+            groom_moon_pada=4,
+        )
+        .koot("nadi")
+        .points
+        for pada in (1, 2, 3, 4)
+    }
+    assert scores == {0.0}
+
+
+def test_milan_rejects_a_pada_outside_one_to_four() -> None:
+    """Same loud rejection the other inputs get (CLAUDE.md 3.1)."""
+    with pytest.raises(ValueError, match="pada"):
+        compute_milan(
+            bride_moon_rashi=1,
+            bride_moon_nakshatra=1,
+            bride_moon_pada=5,
+            groom_moon_rashi=1,
+            groom_moon_nakshatra=1,
+            groom_moon_pada=1,
+        )
