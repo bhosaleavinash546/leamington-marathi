@@ -10,7 +10,13 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from api.locale import SUPPORTED_LOCALES, disclaimer, load_glossary, term
+from api.locale import (
+    SUPPORTED_LOCALES,
+    disclaimer,
+    finding_label,
+    load_glossary,
+    term,
+)
 from api.main import app
 from api.routers import geocode, privacy
 from api.storage import (
@@ -882,3 +888,84 @@ def test_the_web_and_pdf_fonts_are_the_same_file() -> None:
         "the browser and PDF copies of Noto Sans Devanagari differ. Replace one "
         "with the other so screen and print cannot render a matra differently."
     )
+
+
+# ---------------------------------------------------------------------------
+# F-005 / F-006: every finding the engine emits must have a term in every locale
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("locale", SUPPORTED_LOCALES)
+def test_every_rule_key_has_a_display_term(locale: str) -> None:
+    """Audit F-005. A finding with no term reaches the reader as a Latin key.
+
+    CLAUDE.md N5: all three locales are first-class. This is the assertion whose
+    absence let 29 of 33 rule keys ship untranslated - key parity across locales
+    passed because they were missing from all three equally, so parity had nothing
+    to compare. This check compares against what the *engine emits* instead.
+    """
+    from tools.locale_audit import rule_keys
+
+    missing = [key for key in rule_keys() if finding_label(locale, key) == key]
+    assert missing == [], f"{locale} has no term for: {missing}"
+
+
+@pytest.mark.parametrize("locale", SUPPORTED_LOCALES)
+def test_claude_md_required_namespaces_exist(locale: str) -> None:
+    """CLAUDE.md 7 names ten namespaces. `common` and `dosha` were both absent."""
+    from tools.locale_audit import REQUIRED_NAMESPACES
+
+    glossary = load_glossary(locale)
+    assert set(glossary) >= REQUIRED_NAMESPACES, (
+        f"{locale} missing {sorted(REQUIRED_NAMESPACES - set(glossary))}"
+    )
+
+
+def test_finding_label_searches_namespaces_in_order_then_falls_back_to_the_key() -> None:
+    """Chart yogas live in `combination`, doshas in `dosha`, `milan` is the tail.
+
+    The fallback returns the machine key rather than English: a Latin key on a
+    Marathi page is an obvious bug, whereas an English word mid-sentence is the
+    failure CLAUDE.md N5 forbids and reads as plausible.
+    """
+    assert finding_label("mr", "gajakesari") == "गजकेसरी योग"
+    assert finding_label("mr", "mangal_dosha") == "मंगळ दोष"
+    assert finding_label("hi", "mangal_dosha") == "मंगल दोष"
+    assert finding_label("mr", "no_such_finding_key") == "no_such_finding_key"
+
+
+def test_chart_yogas_and_panchang_yogas_are_separate_vocabularies() -> None:
+    """The bug's root cause, pinned.
+
+    `locales/*/yoga.json` holds the 27 *nitya* yogas of the panchang's fifth limb;
+    chart combinations are a different vocabulary. Resolving findings against the
+    panchang list - or against `milan` - is what produced F-005, so the two sets
+    are asserted disjoint.
+    """
+    from tools.locale_audit import rule_keys
+
+    for locale in SUPPORTED_LOCALES:
+        nitya = set(load_glossary(locale)["yoga"])
+        assert len(nitya) == 27, f"{locale} should have 27 nitya yogas, has {len(nitya)}"
+        assert nitya.isdisjoint(set(rule_keys()))
+
+
+@pytest.mark.parametrize("locale", ["mr", "hi"])
+def test_the_printed_sheet_carries_no_latin_machine_key(facts: dict[str, Any], locale: str) -> None:
+    """Audit F-005 on the patrika, which has no affordance to tap for a better name."""
+    from render.pdf import build_sheet_html
+    from tools.locale_audit import rule_keys
+
+    html = build_sheet_html(facts, locale)
+    leaked = [key for key in rule_keys() if key in html]
+    assert leaked == [], f"{locale} sheet shows raw keys: {leaked}"
+
+
+@pytest.mark.parametrize("locale", SUPPORTED_LOCALES)
+def test_strength_bands_are_localised(locale: str) -> None:
+    """The strength tag beside each finding was rendered raw in English."""
+    common = load_glossary(locale)["common"]
+    for band in ("strong", "moderate", "weak"):
+        assert common.get(band), f"{locale} has no term for strength {band!r}"
+    if locale in ("mr", "hi"):
+        assert all(any("ऀ" <= ch <= "ॿ" for ch in common[b]) for b in ("strong", "moderate", "weak"))

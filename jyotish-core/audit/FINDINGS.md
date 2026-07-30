@@ -11,12 +11,12 @@ possible.
 | Sev | Count | Fixed |
 |---|---|---|
 | S1 | 3 | 2 — F-001, F-002 |
-| S2 | 6 | — |
+| S2 | 6 | 2 — F-005, F-006 |
 | S3 | 7 | — |
 | S4 | 6 | 1 — F-021, as part of F-001 |
 
-**Fixed so far:** F-001, F-002 and F-021 (one root cause), under
-`docs/DECISIONS.md` D18. Before/after values are recorded there and in the commit
+**Fixed so far:** F-001, F-002, F-021 (one root cause, `docs/DECISIONS.md` D18)
+and F-005, F-006. Before/after values are recorded there and in the commit
 message, per CLAUDE.md 11. Everything else below stands unfixed.
 
 ---
@@ -112,7 +112,7 @@ the §4.1 claim in the docs.
 **Test** Golden case: Mumbai 1948, both standards, assert the 39-minute gap and
 that the warning fires.
 
-### F-005 · language · `web/components/FindingsList.tsx:37`, `render/pdf.py:449`
+### F-005 · language · `web/components/FindingsList.tsx:37`, `render/pdf.py:449` · **FIXED**
 
 **Expected** All three locales first-class; no English-only screens (N5).
 **Actual** **29 of 33** chart-yoga/dosha rule keys render as raw Latin
@@ -127,8 +127,14 @@ on screen and on the printed patrika. This is the ten-second credibility failure
 **Fix** Add a `combination` (chart-yoga) namespace and a `dosha` namespace in all
 three locales, keyed to the rule keys; point both call sites at them.
 **Test** Assert every key in `core/rules/data/*.yaml` has a term in every locale.
+**Outcome** Fixed. Added `combination` (chart yogas), `dosha` and `common`
+namespaces in all three locales — 36 keys × 3, plus the strength bands, which were
+also rendering raw in English. Dosha names moved out of `milan` so each concept has
+one home. Both call sites now use one resolver, `api.locale.finding_label`.
+**Marathi terms are drafted, not yet reviewed by a native speaker** — see the
+review table in the commit message.
 
-### F-006 · gate gap · `tools/locale_audit.py`
+### F-006 · gate gap · `tools/locale_audit.py` · **FIXED**
 
 **Expected** The locale gate catches a missing user-visible term.
 **Actual** It passed clean while F-005 was live.
@@ -136,6 +142,11 @@ three locales, keyed to the rule keys; point both call sites at them.
 that an engine-emitted key has a term, nor §7's required namespace list.
 **Fix** Add both checks to `audit()`.
 **Test** The assertion in F-005 *is* the test; wire it into the gate.
+**Outcome** Fixed. `audit_rule_key_coverage()` compares against what the engine
+emits (36 keys, including the three computed outside the YAML) rather than locales
+against each other; `REQUIRED_NAMESPACES` checks CLAUDE.md 7's list. Verified by
+replaying the pre-fix locale state: 36 problems, build would have failed.
+Known-divergent pairs 23 → 35.
 
 ### F-007 · convention, undocumented · `core/ephemeris/swisseph_adapter.py:252`
 

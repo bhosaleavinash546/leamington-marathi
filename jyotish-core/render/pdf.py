@@ -27,7 +27,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Final
 
-from api.locale import disclaimer, load_glossary
+from api.locale import disclaimer, finding_label, load_glossary
 from render.adapter import rashi_chart, varga_chart
 from render.chart_svg import ChartStyle, render, render_table
 
@@ -440,16 +440,18 @@ def _findings_table(facts: dict[str, Any], locale: str) -> str:
     """
     glossary = load_glossary(locale)
     milan_terms = glossary["milan"]
+    strength_terms = glossary["common"]
     rows = []
     for finding in [*facts.get("yogas_present", []), *facts.get("doshas", [])]:
         if finding.get("present") is False:
             continue
-        label = milan_terms.get(finding["key"], finding["key"])
+        label = finding_label(locale, finding["key"])
+        strength = finding.get("strength")
         ruleset = finding.get("ruleset")
         rows.append(
             "<tr>"
             f'<th scope="row">{label}</th>'
-            f"<td>{finding.get('strength') or ''}</td>"
+            f"<td>{strength_terms.get(strength, strength or '')}</td>"
             f"<td>{f'{milan_terms["ruleset"]}: {ruleset}' if ruleset else ''}</td>"
             f'<td class="evidence">{", ".join(finding["evidence"])}</td>'
             "</tr>"

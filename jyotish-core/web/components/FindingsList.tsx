@@ -21,8 +21,22 @@ export function FindingsList({
   yogas: Finding[];
   doshas: Finding[];
 }) {
+  // A finding key may be named in `combination` (chart yogas) or `dosha`, with
+  // `milan` kept as a tail fallback. Looking findings up in `milan` alone left 29
+  // of 33 rule keys reaching the reader as Latin snake_case (audit F-005); the
+  // order here mirrors `api/locale.py:FINDING_NAMESPACES`, and the locale gate
+  // fails the build if a rule key is missing from all three.
+  const tCombination = useTranslations('combination');
+  const tDosha = useTranslations('dosha');
   const t = useTranslations('milan');
+  const common = useTranslations('common');
   const chart = useTranslations('chart');
+
+  const label = (key: string) => {
+    if (tCombination.has(key)) return tCombination(key);
+    if (tDosha.has(key)) return tDosha(key);
+    return t.has(key) ? t(key) : key;
+  };
 
   const render = (findings: Finding[], heading: string, id: string) => {
     if (findings.length === 0) return null;
@@ -33,8 +47,12 @@ export function FindingsList({
           {findings.map((finding) => (
             <li key={`${finding.key}-${finding.ruleset ?? ''}`} className="findings__item">
               <p className="findings__head">
-                <strong>{t.has(finding.key) ? t(finding.key) : finding.key}</strong>
-                {finding.strength ? <span className="tag">{finding.strength}</span> : null}
+                <strong>{label(finding.key)}</strong>
+                {finding.strength ? (
+                  <span className="tag">
+                    {common.has(finding.strength) ? common(finding.strength) : finding.strength}
+                  </span>
+                ) : null}
                 {finding.present === false ? (
                   <span className="tag tag--absent">{t('exception')}</span>
                 ) : null}

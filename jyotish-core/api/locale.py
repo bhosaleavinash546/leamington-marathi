@@ -27,6 +27,9 @@ GLOSSARY_NAMESPACES: Final[tuple[str, ...]] = (
     "nakshatra",
     "graha",
     "tithi",
+    # The 27 *nitya* yogas of the panchang's fifth limb. Chart yogas are a
+    # different vocabulary and live in `combination` - conflating the two is what
+    # left 29 rule keys untranslated (audit F-005).
     "yoga",
     "karana",
     "vara",
@@ -35,10 +38,18 @@ GLOSSARY_NAMESPACES: Final[tuple[str, ...]] = (
     "panchang",
     "dasha",
     "chart",
+    "combination",
+    "dosha",
     "milan",
+    "common",
     "ui",
     "legal",
 )
+
+#: Namespaces a finding key may be named in, in lookup order. A yoga and a dosha
+#: are both "findings" to the UI but come from different rule files, so the label
+#: resolver tries each rather than assuming one.
+FINDING_NAMESPACES: Final[tuple[str, ...]] = ("combination", "dosha", "milan")
 
 
 class LocaleError(ValueError):
@@ -86,3 +97,20 @@ def term(locale: str, namespace: str, key: str) -> str:
     plausible-looking wrong translation.
     """
     return load_glossary(locale).get(namespace, {}).get(key, key)
+
+
+def finding_label(locale: str, key: str) -> str:
+    """Display name for a yoga or dosha key, searched across :data:`FINDING_NAMESPACES`.
+
+    One resolver rather than a namespace guessed at each call site. Before this
+    existed, both the web list and the printed sheet looked findings up in
+    ``milan`` alone, so 29 of 33 rule keys reached the reader as Latin snake_case
+    (audit F-005). ``tools/locale_audit.py`` now fails the build if any rule key
+    is missing from all three namespaces, in any locale.
+    """
+    glossary = load_glossary(locale)
+    for namespace in FINDING_NAMESPACES:
+        found = glossary.get(namespace, {}).get(key)
+        if found:
+            return str(found)
+    return key

@@ -53,12 +53,51 @@ KNOWN_DIVERGENT: Final[frozenset[tuple[str, str]]] = frozenset(
         ("panchang", "amanta"),  # अमांत / अमान्त
         ("panchang", "pala"),  # पळ / पल
         ("milan", "nadi"),  # नाडी / नाड़ी
-        ("milan", "mangal_dosha"),  # मंगळ दोष / मंगल दोष
+        # Doshas and chart combinations. Each of these carries a graha name or a
+        # verbal noun that Marathi and Hindi spell differently, so each is a place
+        # a machine translation would produce Hindi-flavoured Marathi.
+        ("dosha", "mangal_dosha"),  # मंगळ दोष / मंगल दोष
+        ("dosha", "kaal_sarpa"),  # काळसर्प / कालसर्प
+        ("dosha", "shani_sade_sati"),  # शनी साडेसाती / शनि साढ़ेसाती
+        ("dosha", "nadi_dosha"),  # नाडी दोष / नाड़ी दोष
+        ("dosha", "guru_chandal_dosha"),  # गुरू चांडाळ / गुरु चांडाल
+        ("combination", "chandra_mangal"),  # चंद्र-मंगळ / चंद्र-मंगल
+        ("combination", "vakri_bala_vriddhi"),  # बलवृद्धी / बलवृद्धि
+        ("combination", "kemadruma_bhanga_kendra_jupiter"),  # गुरू केंद्रात / गुरु केंद्र में
+        ("combination", "mangal_dosha_cancellation_own_sign"),  # मंगळ / मंगल
+        ("combination", "mangal_dosha_cancellation_jupiter_aspect"),  # दृष्टी / दृष्टि
+        ("common", "strong"),  # प्रबळ / प्रबल
+        ("common", "yes"),  # होय / हाँ
+        ("common", "no"),  # नाही / नहीं
         ("dasha", "balance"),  # शिल्लक / शेष
         ("chart", "drishti"),  # दृष्टी / दृष्टि
     }
 )
 
+
+#: Namespaces CLAUDE.md 7 names explicitly: "Separate namespaces: ``common``,
+#: ``panchang``, ``rashi``, ``nakshatra``, ``graha``, ``yoga``, ``dosha``,
+#: ``dasha``, ``ui``, ``legal``." Checked against the spec rather than against
+#: whatever happens to be on disk - ``common`` and ``dosha`` were both missing and
+#: this audit passed clean regardless (audit F-006).
+REQUIRED_NAMESPACES: Final[frozenset[str]] = frozenset(
+    {
+        "common",
+        "panchang",
+        "rashi",
+        "nakshatra",
+        "graha",
+        "yoga",
+        "dosha",
+        "dasha",
+        "ui",
+        "legal",
+    }
+)
+
+#: Namespaces a yoga or dosha key may be named in, mirroring
+#: ``api/locale.py:FINDING_NAMESPACES``.
+FINDING_NAMESPACES: Final[tuple[str, ...]] = ("combination", "dosha", "milan")
 
 #: ``(namespace, key)`` pairs whose value is structured data rather than a display
 #: string. The blocklist is a ``{category: [regex, ...]}`` map (CLAUDE.md 6:
@@ -99,6 +138,51 @@ def display_strings(namespace: str, entries: dict[str, object]) -> dict[str, str
         if isinstance(value, str):
             out[key] = value
     return out
+
+
+def rule_keys() -> list[str]:
+    """Every yoga/dosha key the engine can emit, read from the rule tables.
+
+    Includes the keys computed outside the YAML - Kaal Sarpa, Sade Sati and Nadi
+    dosha are produced by ``core/doshas/computed.py`` and reach exactly the same
+    place on the page, so a coverage check that skipped them would leave the gap it
+    exists to close.
+    """
+    import yaml
+
+    keys: set[str] = {"kaal_sarpa", "shani_sade_sati", "nadi_dosha"}
+    rules_dir = LOCALES_DIR.parent / "core" / "rules" / "data"
+    for path in sorted(rules_dir.glob("*.yaml")):
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        keys.update(str(rule["key"]) for rule in data.get("rules", []))
+    return sorted(keys)
+
+
+def audit_rule_key_coverage(loaded: dict[str, dict[str, dict[str, object]]]) -> list[str]:
+    """Every engine-emitted finding key must have a display term in every locale.
+
+    This is the check whose absence let audit F-005 ship: parity across locales
+    passed because the keys were missing from *all* of them equally, so 29 of 33
+    rule keys rendered to the reader as Latin snake_case in the UI and on the
+    printed patrika. Key parity alone cannot see that - it compares locales to each
+    other, never to what the engine actually emits.
+    """
+    problems: list[str] = []
+    keys = rule_keys()
+    for locale, namespaces in sorted(loaded.items()):
+        named = {
+            key
+            for namespace in FINDING_NAMESPACES
+            for key, value in namespaces.get(namespace, {}).items()
+            if isinstance(value, str) and value.strip()
+        }
+        for key in keys:
+            if key not in named:
+                problems.append(
+                    f"{locale}: rule key {key!r} has no term in any of "
+                    f"{FINDING_NAMESPACES}; it would render as a Latin machine key"
+                )
+    return problems
 
 
 def audit_blocklists(loaded: dict[str, dict[str, dict[str, object]]]) -> list[str]:
@@ -181,8 +265,18 @@ def audit() -> list[str]:
                 elif not value.strip():
                     problems.append(f"{locale}/{namespace}: empty value for {key!r}")
 
+    # 1b. The namespaces CLAUDE.md 7 requires by name, checked against the spec.
+    for locale in LOCALES:
+        for namespace in sorted(REQUIRED_NAMESPACES - set(loaded[locale])):
+            problems.append(
+                f"{locale}: CLAUDE.md 7 requires a {namespace!r} namespace and there is none"
+            )
+
     # 3b. The prohibited-content blocklists (CLAUDE.md 6.6/6.7).
     problems += audit_blocklists(loaded)
+
+    # 3c. Every finding key the engine can emit has a term (CLAUDE.md N5).
+    problems += audit_rule_key_coverage(loaded)
 
     # 4. Known-divergent terms must actually differ between mr and hi.
     for namespace, key in sorted(KNOWN_DIVERGENT):
