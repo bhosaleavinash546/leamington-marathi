@@ -668,3 +668,58 @@ select {
 .kv__row--signal dd {
   color: var(--sindoor);
 }
+
+/* --- page transitions --------------------------------------------------- */
+/*
+ * DESIGN.md §3.3: "View Transitions API where supported, Motion fallback."
+ *
+ * The browser's default is a crossfade of the whole page — opacity only, which
+ * is what §3.3 permits — so the work here is to put it on the motion tokens
+ * rather than the 250ms UA default, and to switch it off entirely when the
+ * reader has asked for less motion.
+ *
+ * That second rule needs saying explicitly: a view transition is not a CSS
+ * transition and not a Motion animation, so neither the collapsed duration
+ * tokens nor Motion's `reducedMotion="user"` reaches it. Without the block
+ * below, a reader with the preference set would still get a full-page crossfade
+ * on every navigation.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--dur-layout);
+  animation-timing-function: var(--ease-inout);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/*
+ * The fallback crossfade, for browsers without the View Transitions API.
+ * `PageTransition` applies this only in that case; where the API exists the
+ * browser drives the transition and this never mounts.
+ *
+ * Opacity only, and off entirely under reduced motion — §3.4 replaces a
+ * transform-based enter with a crossfade, and this is already the crossfade, so
+ * "reduced" here means "no enter at all" rather than a shorter one.
+ */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.page-enter {
+  animation: page-enter var(--dur-enter) var(--ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none;
+  }
+}

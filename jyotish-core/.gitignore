@@ -24,6 +24,11 @@ ephe/
 # Frontend (web/)
 node_modules/
 .next/
+
+# Playwright run output (DESIGN.md Phase C). The specs are tracked; traces,
+screenshots and the HTML report from a local run are not.
+test-results/
+playwright-report/
 out/
 *.tsbuildinfo
 .env.local

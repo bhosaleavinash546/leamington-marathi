@@ -1,6 +1,7 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useSoftNavigate } from '@/lib/navigation';
 import { useTranslations } from 'next-intl';
 import { API_BASE, type BirthInput, type ChartStyle } from '@/lib/api';
 import type { NumeralSystem } from '@/lib/format';
@@ -26,7 +27,7 @@ export function ChartToolbar({
 }) {
   const ui = useTranslations('ui');
   const chart = useTranslations('chart');
-  const router = useRouter();
+  const navigate = useSoftNavigate();
   const params = useSearchParams();
 
   const withParam = (key: string, value: string) => {
@@ -60,7 +61,7 @@ export function ChartToolbar({
             key={option}
             type="button"
             aria-pressed={style === option}
-            onClick={() => router.push(withParam('style', option))}
+            onClick={() => navigate(withParam('style', option))}
           >
             {chart(option === 'north_indian' ? 'north_indian' : 'south_indian')}
           </button>
@@ -74,7 +75,7 @@ export function ChartToolbar({
             key={option}
             type="button"
             aria-pressed={numerals === option}
-            onClick={() => router.push(withParam('numerals', option))}
+            onClick={() => navigate(withParam('numerals', option))}
           >
             {option === 'devanagari' ? '०–९' : '0–9'}
           </button>

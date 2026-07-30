@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useSoftNavigate } from '@/lib/navigation';
 import { useTranslations } from 'next-intl';
 
 /**
@@ -21,7 +21,7 @@ import { useTranslations } from 'next-intl';
  */
 export function BirthForm({ locale }: { locale: string }) {
   const ui = useTranslations('ui');
-  const router = useRouter();
+  const navigate = useSoftNavigate();
   const [pending, startTransition] = useTransition();
   const [time, setTime] = useState('');
   const [accuracy, setAccuracy] = useState<'exact' | 'approx_15min' | 'approx_1hr'>('exact');
@@ -57,7 +57,7 @@ export function BirthForm({ locale }: { locale: string }) {
       lon: String(place.longitude),
       tz: place.iana_tz,
     });
-    startTransition(() => router.push(`/${locale}/kundali?${search}`));
+    startTransition(() => navigate(`/${locale}/kundali?${search}`));
   }
 
   return (

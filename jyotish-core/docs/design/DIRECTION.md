@@ -1,10 +1,10 @@
-# DIRECTION — visual direction, tokens, and the patrika sheet
+# DIRECTION — visual direction, tokens, the patrika sheet, and motion
 
-DESIGN.md §10 Phases A and B. Read alongside `web/app/tokens.css` (the tokens),
-`/tokens` (the sheet rendering every one of them in both themes), and
+DESIGN.md §10 Phases A, B and C. Read alongside `web/app/tokens.css` (the
+tokens), `/tokens` (the sheet rendering every one of them in both themes), and
 `web/app/globals.css` (the patrika, written entirely in terms of them).
 
-§§1–7 are Phase A. §8 is Phase B.
+§§1–7 are Phase A. §8 is Phase B. §9 is Phase C.
 
 Status: tokens committed, sheet built and photographed, contrast and font
 budgets measured. **The page-scan study Phase A opens with has not been done**,
@@ -346,3 +346,93 @@ asserts it is the only one.
   rest, and carrying the same caveat (`docs/LOCALE_REVIEW.md`, O7). ग्रहस्पष्ट
   itself is taken from DESIGN.md rather than coined here.
 - **The font budget** from §4.3 is unchanged and still the owner's call.
+
+---
+
+## 9. Phase C — the motion foundation
+
+Phase C is plumbing, not animation: the library wired up, the tokens available to
+JavaScript, the page transition, and the `prefers-reduced-motion` path. Its gate
+is unusual and worth honouring literally — *"the reduced-motion test passes
+before any animation is added"* — so the Playwright suite was written first,
+against the motionless Phase B sheet, and the foundation went in underneath it.
+
+### The test almost tested nothing
+
+A reduced-motion test has one failure mode that matters: passing while the
+preference is not actually in effect. A page with no motion satisfies "nothing is
+transformed mid-transition" trivially, and would keep satisfying it if the whole
+reduced-motion path were deleted.
+
+It happened immediately. `reducedMotion: 'reduce'` set as a Playwright project
+`use` option is **silently ignored** in this version — `matchMedia` stayed false
+and the suite ran in full motion while reporting itself as the reduced-motion
+project. `tsc` later confirmed it: `reducedMotion` is not in that version's
+`UseOptions` at all. The suite now calls `page.emulateMedia` explicitly and, more
+importantly, **asserts the precondition before it asserts anything else** — if
+the preference is not live, the test fails rather than passing.
+
+The `full-motion` project exists for the same reason: `motion-is-actually-
+measurable` drives a transform from outside the app and asserts the harness sees
+it. Without that, every assertion in the file is unfalsifiable.
+
+### `LazyMotion` was not enough, measured
+
+§3.3 says "No animation library in the first-paint path" and §9 caps critical-path
+JS at 120KB gzipped. The obvious wiring — `LazyMotion` with a dynamic `features`
+import, in a provider wrapping the layout — broke both:
+
+| | critical path | animation library eager? |
+|---|---|---|
+| provider in the layout | 180.1KB | yes, a 53.1KB chunk |
+| after restructuring | **115.6KB** | no |
+
+`LazyMotion` defers the *features* bundle, not its own core, so importing it in a
+component that wraps every page puts Motion in the eager script set — the rule
+being broken by the mechanism meant to keep it. Nothing failed: the build summary
+reported a plausible "First Load JS" and the pages worked.
+
+Two changes fixed it, and both are now the shape of the foundation:
+
+- **`MotionProvider` imports nothing from `motion`.** It reads the preference with
+  `matchMedia` — six lines — and publishes the resolved tokens through context.
+- **`LazyMotionBoundary` is reached through `next/dynamic`**, so Motion's core is
+  a separate async chunk. Nothing mounts it yet; Phase D's chart draw-in is the
+  first caller. It is wired and measured now so that phase does not rediscover
+  this.
+
+A Playwright test measures `encodedBodySize` of the eagerly executed scripts and
+fails on either condition, so the budget is a gate rather than a memory.
+
+### One deviation, stated
+
+§3.3 asks for "View Transitions API where supported, **Motion fallback**". The
+fallback is CSS here, not Motion. Importing the library into a page-level wrapper
+to run a one-property opacity crossfade is precisely what put 53KB into the
+first-paint path, and the same section forbids that. So the fallback is a
+keyframe in `globals.css`, and Motion stays behind the boundary for the component
+animations of Phase D, where its size buys something.
+
+The browser's own view transition needed explicit handling too: it is neither a
+CSS transition nor a Motion animation, so neither the collapsed duration tokens
+nor Motion's `reducedMotion="user"` reaches it. Without the
+`::view-transition-*` block in `globals.css`, a reader who asked for less motion
+would still get a full-page crossfade on every navigation.
+
+### The Phase B gate moved rather than being deleted
+
+`tests/unit/test_design_gates.py` failed the build if `globals.css` contained a
+`transition` or `animation` — correct for the static sheet, and wrong the moment
+Phase C landed. Deleting it would have been the easy read. It now enforces the
+rules that still hold: no ambient motion (§3.1's "no idle loops"), and no literal
+durations, because a hand-written `300ms` is a duration the reduced-motion media
+query cannot collapse. A third check asserts `lib/motion.ts` still agrees with
+`tokens.css`, since the JS copy exists only because Motion takes numbers where
+CSS takes lengths — verified by perturbing it and watching the gate fail.
+
+### Not done in Phase C
+
+- **No component animates yet.** That is Phase D and E, by design.
+- **No profiling.** §3.3 wants 60fps on a throttled mid-range Android, and there
+  is nothing to profile until something moves. The Playwright viewport here is
+  desktop; a device profile is Phase D's job, not a user-agent string.

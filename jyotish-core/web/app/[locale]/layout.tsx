@@ -4,6 +4,8 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing, isDevanagari } from '@/i18n/routing';
+import { MotionProvider } from '@/components/MotionProvider';
+import { PageTransition } from '@/components/PageTransition';
 // Tokens first: `globals.css` is written entirely in terms of them, and a
 // stylesheet that loads after its own variables paints one frame unstyled.
 import '../tokens.css';
@@ -67,12 +69,21 @@ export default async function LocaleLayout({
     <html lang={locale} className={isDevanagari(locale) ? 'script-devanagari' : 'script-latin'}>
       <body>
         <NextIntlClientProvider>
+          <MotionProvider>
           <a className="skip-link" href="#main">
             {locale === 'en' ? 'Skip to content' : 'मुख्य मजकुराकडे'}
           </a>
           <LeadDisclaimer locale={locale} />
-          <main id="main">{children}</main>
+          {/*
+            The motion foundation (DESIGN.md Phase C). `LazyMotion` keeps the
+            animation features off the first-paint path, and `PageTransition`
+            only does anything where the View Transitions API is missing.
+          */}
+          <main id="main">
+            <PageTransition>{children}</PageTransition>
+          </main>
           <Disclaimer locale={locale} />
+          </MotionProvider>
         </NextIntlClientProvider>
       </body>
     </html>
