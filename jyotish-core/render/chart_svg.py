@@ -216,14 +216,31 @@ def _south_indian_cells() -> dict[int, tuple[Point, float, float]]:
 # Rendering
 # ---------------------------------------------------------------------------
 
+#: ``text { fill: currentColor }`` is load-bearing, not tidiness. SVG text has an
+#: initial ``fill`` of black and does *not* inherit the page's ``color``, so while
+#: the frame and the diagonals followed the theme through ``stroke: currentColor``,
+#: every graha glyph and both chart captions stayed black - invisible on dark
+#: paper, in the one element of the sheet a reader looks at first. Measured 1.12:1
+#: against ``--paper`` in dark mode. Standalone, where the page tokens are out of
+#: scope, ``currentColor`` resolves to black exactly as before.
+#:
+#: The rashi number and the Ashtakavarga total recede behind the graha glyphs, and
+#: they used to do it with ``opacity: 0.55`` and ``0.5`` over that same black fill -
+#: which meant that on dark paper they were a faded black on near-black, and the
+#: recession was total. ``--ink-muted`` is the token that exists for exactly this
+#: (6.15:1 light, 5.52:1 dark): it recedes by hue rather than by dissolving into the
+#: paper, and it holds in both themes. Measured after the change: 6.72:1 light,
+#: 5.96:1 dark. The literal fallback is for the SVG served standalone, where the
+#: page tokens are not in scope.
 _STYLE: Final[str] = """
+text { fill: currentColor; }
 .k-frame { fill: none; stroke: currentColor; stroke-width: 1.6; }
 .k-line  { fill: none; stroke: currentColor; stroke-width: 1.1; }
 .k-house { fill: none; }
-.k-rashi { font-size: 13px; opacity: 0.55; }
+.k-rashi { font-size: 13px; fill: var(--ink-muted, #5c544a); }
 .k-graha { font-size: 15px; }
 .k-lagna { font-size: 13px; font-weight: 700; }
-.k-sav   { font-size: 11px; opacity: 0.5; }
+.k-sav   { font-size: 11px; fill: var(--ink-muted, #5c544a); }
 .k-title { font-size: 15px; font-weight: 600; }
 """.strip()
 
