@@ -1,0 +1,22 @@
+{
+  "affected_fields": "Affected fields",
+  "birth_time_approximate": "Birth time approximate",
+  "birth_time_unknown": "Birth time unknown",
+  "chart_style": "Chart style",
+  "compute": "Compute",
+  "confidence_banner": "Confidence notice",
+  "date_of_birth": "Date of birth",
+  "evidence": "Evidence",
+  "export_pdf": "Export PDF",
+  "hide_evidence": "Hide evidence",
+  "loading": "Loading",
+  "name": "Name",
+  "not_available": "Not available",
+  "numerals_devanagari": "Devanagari numerals",
+  "numerals_latin": "Latin numerals",
+  "place_of_birth": "Place of birth",
+  "screen_reader_table": "Table view",
+  "show_evidence": "Show evidence",
+  "time_of_birth": "Time of birth",
+  "why": "Why?"
+}

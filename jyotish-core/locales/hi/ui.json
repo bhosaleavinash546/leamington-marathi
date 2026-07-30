@@ -1,0 +1,22 @@
+{
+  "affected_fields": "प्रभावित क्षेत्र",
+  "birth_time_approximate": "जन्म समय अनुमानित",
+  "birth_time_unknown": "जन्म समय अज्ञात",
+  "chart_style": "कुंडली शैली",
+  "compute": "गणना करें",
+  "confidence_banner": "विश्वसनीयता सूचना",
+  "date_of_birth": "जन्म तिथि",
+  "evidence": "आधार",
+  "export_pdf": "पीडीएफ निर्यात",
+  "hide_evidence": "आधार छिपाएँ",
+  "loading": "लोड हो रहा है",
+  "name": "नाम",
+  "not_available": "उपलब्ध नहीं",
+  "numerals_devanagari": "देवनागरी अंक",
+  "numerals_latin": "अंग्रेज़ी अंक",
+  "place_of_birth": "जन्म स्थान",
+  "screen_reader_table": "सारणी रूप",
+  "show_evidence": "आधार दिखाएँ",
+  "time_of_birth": "जन्म समय",
+  "why": "क्यों?"
+}

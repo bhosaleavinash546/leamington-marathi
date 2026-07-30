@@ -1,0 +1,605 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jyotish-core.invalid/schema/chartfacts-1.0.0.json",
+  "title": "ChartFacts 1.0.0",
+  "description": "The contract between the deterministic engine and the narrative layer (CLAUDE.md 5). Every 'key' is a stable machine identifier: no Devanagari and no prose appear anywhere in a conforming document. A change to this schema is a major version bump.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "engine_version",
+    "ephemeris",
+    "authority",
+    "input",
+    "confidence",
+    "panchang",
+    "name"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "engine_version": { "$ref": "#/$defs/semver" },
+    "authority": {
+      "description": "The named panchang authority every value is regression-tested against (CLAUDE.md N2, 2.3). Never averaged, never silently switched.",
+      "enum": ["date_panchang", "nirnaysagar", "kalnirnay", "rashtriya_panchang"]
+    },
+    "ephemeris": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "version",
+        "ayanamsa",
+        "ayanamsa_constant",
+        "ayanamsa_value_deg",
+        "node_type",
+        "rise_set_convention"
+      ],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "ayanamsa": { "type": "string", "minLength": 1 },
+        "ayanamsa_constant": {
+          "description": "The provider's own pinned constant name. Recorded so a provider-side redefinition of 'Lahiri' is caught as a breaking change (CLAUDE.md 4.5).",
+          "type": "string",
+          "minLength": 1
+        },
+        "ayanamsa_value_deg": { "type": "number", "minimum": -30, "maximum": 30 },
+        "node_type": { "enum": ["mean", "true"] },
+        "rise_set_convention": {
+          "enum": [
+            "upper_limb_refracted",
+            "disc_centre_no_refraction",
+            "disc_centre_refracted"
+          ]
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "date",
+        "time",
+        "time_accuracy",
+        "time_standard",
+        "place",
+        "calendar_variant",
+        "resolved_utc_offset_seconds",
+        "birth_utc"
+      ],
+      "properties": {
+        "name": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "time": { "type": ["string", "null"] },
+        "time_accuracy": { "enum": ["exact", "approx_15min", "approx_1hr", "unknown"] },
+        "time_standard": { "enum": ["clock_time_as_recorded", "lmt", "ist"] },
+        "gender": { "enum": ["m", "f", "other", null] },
+        "calendar_variant": { "enum": ["amanta", "purnimanta"] },
+        "resolved_utc_offset_seconds": {
+          "description": "The offset ACTUALLY applied at that historical date, not the zone's present-day offset (CLAUDE.md 4.1).",
+          "type": ["integer", "null"],
+          "minimum": -50400,
+          "maximum": 50400
+        },
+        "birth_utc": { "type": ["string", "null"] },
+        "place": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "latitude", "longitude", "elevation_m", "iana_tz"],
+          "properties": {
+            "name": { "type": "string" },
+            "latitude": { "type": "number", "minimum": -90, "maximum": 90 },
+            "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+            "elevation_m": { "type": "number" },
+            "iana_tz": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["birth_time", "affected_fields", "warnings"],
+      "properties": {
+        "birth_time": { "enum": ["exact", "approx_15min", "approx_1hr", "unknown"] },
+        "affected_fields": {
+          "description": "Field paths that changed when the chart was recomputed at the bounds of the stated time window, or that are suppressed outright for an unknown time (CLAUDE.md 4.6).",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "warnings": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "panchang": { "$ref": "#/$defs/panchang" },
+    "chart": { "$ref": "#/$defs/chart" },
+    "dasha": { "$ref": "#/$defs/dasha" },
+    "yogas_present": { "type": "array", "items": { "$ref": "#/$defs/finding" } },
+    "doshas": { "type": "array", "items": { "$ref": "#/$defs/finding" } },
+    "name": { "$ref": "#/$defs/nameBlock" }
+  },
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "key": {
+      "description": "A stable machine identifier. ASCII lower snake case only: no Devanagari, no prose (CLAUDE.md 5).",
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "utcTimestamp": {
+      "type": ["string", "null"],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+    },
+    "rashi": { "type": "integer", "minimum": 1, "maximum": 12 },
+    "house": { "type": "integer", "minimum": 1, "maximum": 12 },
+    "pada": { "type": "integer", "minimum": 1, "maximum": 4 },
+    "grahaKey": {
+      "enum": [
+        "sun", "moon", "mars", "mercury", "jupiter",
+        "venus", "saturn", "rahu", "ketu"
+      ]
+    },
+    "interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_utc", "end_utc"],
+      "properties": {
+        "start_utc": { "$ref": "#/$defs/utcTimestamp" },
+        "end_utc": { "$ref": "#/$defs/utcTimestamp" }
+      }
+    },
+    "limb": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "index", "start_utc", "end_utc"],
+      "properties": {
+        "key": { "$ref": "#/$defs/key" },
+        "index": { "type": "integer", "minimum": 1, "maximum": 60 },
+        "start_utc": { "$ref": "#/$defs/utcTimestamp" },
+        "end_utc": { "$ref": "#/$defs/utcTimestamp" },
+        "paksha": { "enum": ["shukla", "krishna"] },
+        "number_in_paksha": { "type": "integer", "minimum": 1, "maximum": 15 }
+      }
+    },
+    "nakshatraState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "index", "pada", "lord", "fraction_elapsed", "start_utc", "end_utc"],
+      "properties": {
+        "key": { "$ref": "#/$defs/key" },
+        "index": { "type": "integer", "minimum": 1, "maximum": 27 },
+        "pada": { "$ref": "#/$defs/pada" },
+        "lord": { "$ref": "#/$defs/grahaKey" },
+        "fraction_elapsed": { "type": "number", "minimum": 0, "exclusiveMaximum": 1 },
+        "start_utc": { "$ref": "#/$defs/utcTimestamp" },
+        "end_utc": { "$ref": "#/$defs/utcTimestamp" }
+      }
+    },
+    "panchang": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hindu_civil_date",
+        "hindu_date",
+        "vara",
+        "tithi_at_sunrise",
+        "nakshatra_at_sunrise",
+        "yoga_at_sunrise",
+        "karana_at_sunrise",
+        "tithi_anomaly",
+        "sunrise_utc",
+        "sunset_utc",
+        "next_sunrise_utc",
+        "rahu_kaal",
+        "gulika_kaal",
+        "yamaganda",
+        "abhijit_muhurta",
+        "ritu",
+        "ayana",
+        "sun_rashi"
+      ],
+      "properties": {
+        "hindu_civil_date": { "type": "string", "format": "date" },
+        "hindu_date": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "shaka_year", "month_key", "month_display_key", "month_anomaly",
+            "suppressed_month_key", "paksha", "tithi_index", "calendar_variant"
+          ],
+          "properties": {
+            "shaka_year": { "type": "integer" },
+            "month_key": { "$ref": "#/$defs/key" },
+            "month_display_key": { "$ref": "#/$defs/key" },
+            "month_anomaly": { "enum": ["none", "adhika", "kshaya"] },
+            "suppressed_month_key": {
+              "oneOf": [{ "$ref": "#/$defs/key" }, { "type": "null" }]
+            },
+            "paksha": { "enum": ["shukla", "krishna"] },
+            "tithi_index": { "type": "integer", "minimum": 1, "maximum": 30 },
+            "calendar_variant": { "enum": ["amanta", "purnimanta"] }
+          }
+        },
+        "vara": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["key", "index", "lord"],
+          "properties": {
+            "key": { "$ref": "#/$defs/key" },
+            "index": { "type": "integer", "minimum": 0, "maximum": 6 },
+            "lord": { "$ref": "#/$defs/grahaKey" }
+          }
+        },
+        "tithi_at_sunrise": { "$ref": "#/$defs/limb" },
+        "tithi_at_birth": { "$ref": "#/$defs/limb" },
+        "nakshatra_at_sunrise": { "$ref": "#/$defs/nakshatraState" },
+        "nakshatra_at_birth": { "$ref": "#/$defs/nakshatraState" },
+        "yoga_at_sunrise": { "$ref": "#/$defs/limb" },
+        "yoga_at_birth": { "$ref": "#/$defs/limb" },
+        "karana_at_sunrise": { "$ref": "#/$defs/limb" },
+        "karana_at_birth": { "$ref": "#/$defs/limb" },
+        "tithi_at_birth_differs_from_sunrise": { "type": "boolean" },
+        "tithi_anomaly": { "enum": ["none", "kshaya", "vriddhi"] },
+        "anomalous_tithi": {
+          "oneOf": [{ "$ref": "#/$defs/limb" }, { "type": "null" }]
+        },
+        "sunrise_utc": { "$ref": "#/$defs/utcTimestamp" },
+        "sunset_utc": { "$ref": "#/$defs/utcTimestamp" },
+        "next_sunrise_utc": { "$ref": "#/$defs/utcTimestamp" },
+        "moonrise_utc": { "$ref": "#/$defs/utcTimestamp" },
+        "moonset_utc": { "$ref": "#/$defs/utcTimestamp" },
+        "rahu_kaal": { "$ref": "#/$defs/interval" },
+        "gulika_kaal": { "$ref": "#/$defs/interval" },
+        "yamaganda": { "$ref": "#/$defs/interval" },
+        "abhijit_muhurta": { "$ref": "#/$defs/interval" },
+        "ishtakaal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ghati", "pala", "vipala", "convention"],
+          "properties": {
+            "ghati": { "type": "integer", "minimum": 0 },
+            "pala": { "type": "integer", "minimum": 0, "maximum": 59 },
+            "vipala": { "type": "integer", "minimum": 0, "maximum": 59 },
+            "convention": { "enum": ["fixed_24_min", "proportional_dinamana"] }
+          }
+        },
+        "ritu": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["key", "convention"],
+          "properties": {
+            "key": { "$ref": "#/$defs/key" },
+            "convention": { "enum": ["lunar_month_pairs", "solar_rashi_pairs"] }
+          }
+        },
+        "ayana": { "enum": ["uttarayana", "dakshinayana"] },
+        "sun_rashi": { "$ref": "#/$defs/rashi" },
+        "sankrantis_in_month": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["rashi", "when_utc"],
+            "properties": {
+              "rashi": { "$ref": "#/$defs/rashi" },
+              "when_utc": { "$ref": "#/$defs/utcTimestamp" }
+            }
+          }
+        }
+      }
+    },
+    "chart": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lagna", "mc_sid_lon", "house_system", "bhava_chalit",
+        "chandra_lagna_rashi", "surya_lagna_rashi", "grahas",
+        "vargas", "ashtakavarga"
+      ],
+      "properties": {
+        "lagna": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sid_lon", "rashi", "rashi_key", "deg_in_rashi", "nakshatra", "nakshatra_key", "pada"],
+          "properties": {
+            "sid_lon": { "type": "number", "minimum": 0, "exclusiveMaximum": 360 },
+            "rashi": { "$ref": "#/$defs/rashi" },
+            "rashi_key": { "$ref": "#/$defs/key" },
+            "deg_in_rashi": { "type": "number", "minimum": 0, "exclusiveMaximum": 30 },
+            "nakshatra": { "type": "integer", "minimum": 1, "maximum": 27 },
+            "nakshatra_key": { "$ref": "#/$defs/key" },
+            "pada": { "$ref": "#/$defs/pada" }
+          }
+        },
+        "mc_sid_lon": { "type": "number", "minimum": 0, "exclusiveMaximum": 360 },
+        "house_system": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["primary", "secondary"],
+          "properties": {
+            "primary": { "const": "whole_sign" },
+            "secondary": { "const": "sripati" }
+          }
+        },
+        "bhava_chalit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["madhyas", "sandhis"],
+          "properties": {
+            "madhyas": { "type": "array", "minItems": 12, "maxItems": 12, "items": { "type": "number" } },
+            "sandhis": { "type": "array", "minItems": 12, "maxItems": 12, "items": { "type": "number" } }
+          }
+        },
+        "chandra_lagna_rashi": { "$ref": "#/$defs/rashi" },
+        "surya_lagna_rashi": { "$ref": "#/$defs/rashi" },
+        "grahas": {
+          "type": "array",
+          "minItems": 9,
+          "maxItems": 9,
+          "items": { "$ref": "#/$defs/graha" }
+        },
+        "vargas": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["lagna_rashi", "houses"],
+            "properties": {
+              "lagna_rashi": { "$ref": "#/$defs/rashi" },
+              "houses": {
+                "type": "object",
+                "additionalProperties": { "$ref": "#/$defs/house" }
+              }
+            }
+          }
+        },
+        "chandra_kundali_houses": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/house" }
+        },
+        "surya_kundali_houses": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/house" }
+        },
+        "ashtakavarga": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["bhinna", "sarva", "sarva_total"],
+          "properties": {
+            "bhinna": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "minItems": 12,
+                "maxItems": 12,
+                "items": { "type": "integer", "minimum": 0, "maximum": 8 }
+              }
+            },
+            "sarva": {
+              "type": "array",
+              "minItems": 12,
+              "maxItems": 12,
+              "items": { "type": "integer", "minimum": 0, "maximum": 56 }
+            },
+            "sarva_total": {
+              "description": "Invariant: the Sarvashtakavarga always totals 337 (CLAUDE.md 3.3, 9.2).",
+              "const": 337
+            }
+          }
+        }
+      }
+    },
+    "graha": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key", "sid_lon", "rashi", "rashi_key", "deg_in_rashi", "nakshatra",
+        "nakshatra_key", "pada", "nakshatra_lord", "house_whole_sign",
+        "house_chalit", "retrograde", "stationary", "combust", "dignity",
+        "speed_lon_deg_per_day", "vargas"
+      ],
+      "properties": {
+        "key": { "$ref": "#/$defs/grahaKey" },
+        "sid_lon": { "type": "number", "minimum": 0, "exclusiveMaximum": 360 },
+        "rashi": { "$ref": "#/$defs/rashi" },
+        "rashi_key": { "$ref": "#/$defs/key" },
+        "deg_in_rashi": { "type": "number", "minimum": 0, "exclusiveMaximum": 30 },
+        "nakshatra": { "type": "integer", "minimum": 1, "maximum": 27 },
+        "nakshatra_key": { "$ref": "#/$defs/key" },
+        "pada": { "$ref": "#/$defs/pada" },
+        "nakshatra_lord": { "$ref": "#/$defs/grahaKey" },
+        "house_whole_sign": { "$ref": "#/$defs/house" },
+        "house_chalit": { "$ref": "#/$defs/house" },
+        "retrograde": { "type": "boolean" },
+        "stationary": { "type": "boolean" },
+        "combust": { "type": "boolean" },
+        "dignity": {
+          "enum": [
+            "moolatrikona", "own_sign", "exalted", "debilitated",
+            "great_friend", "friend", "neutral", "enemy", "great_enemy"
+          ]
+        },
+        "speed_lon_deg_per_day": { "type": "number" },
+        "vargas": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/rashi" }
+        },
+        "shadbala": { "$ref": "#/$defs/shadbala" }
+      }
+    },
+    "shadbala": {
+      "description": "Components, not just the total (CLAUDE.md 3.3). All values in virupas; 60 virupas = 1 rupa.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sthana", "dig", "kaala", "cheshta", "naisargika", "drik",
+        "total_virupa", "total_rupa", "meets_classical_minimum"
+      ],
+      "properties": {
+        "sthana": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["uchcha", "saptavargaja", "ojayugma", "kendradi", "drekkana", "total"],
+          "properties": {
+            "uchcha": { "type": "number" },
+            "saptavargaja": { "type": "number" },
+            "ojayugma": { "type": "number" },
+            "kendradi": { "type": "number" },
+            "drekkana": { "type": "number" },
+            "total": { "type": "number" }
+          }
+        },
+        "dig": { "type": "number" },
+        "kaala": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "nathonnatha", "paksha", "tribhaga", "varsha_masa_dina_hora",
+            "ayana", "yuddha", "in_planetary_war", "total"
+          ],
+          "properties": {
+            "nathonnatha": { "type": "number" },
+            "paksha": { "type": "number" },
+            "tribhaga": { "type": "number" },
+            "varsha_masa_dina_hora": { "type": "number" },
+            "ayana": { "type": "number" },
+            "yuddha": {
+              "description": "Always 0: the winner/loser rule for planetary war is school-dependent and this engine does not guess it (docs/DIVERGENCES.md).",
+              "type": "number"
+            },
+            "in_planetary_war": { "type": "boolean" },
+            "total": { "type": "number" }
+          }
+        },
+        "cheshta": { "type": "number" },
+        "naisargika": { "type": "number" },
+        "drik": { "type": "number" },
+        "total_virupa": { "type": "number" },
+        "total_rupa": { "type": "number" },
+        "meets_classical_minimum": { "type": ["boolean", "null"] }
+      }
+    },
+    "finding": {
+      "description": "A yoga or dosha with the placements that triggered it. The evidence array is what the narrative layer must cite (CLAUDE.md 6.3) and what the UI's 'why' affordance exposes (CLAUDE.md 8).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "evidence"],
+      "properties": {
+        "key": { "$ref": "#/$defs/key" },
+        "present": { "type": "boolean" },
+        "strength": { "enum": ["strong", "moderate", "weak", null] },
+        "citation": { "type": "string" },
+        "ruleset": { "type": ["string", "null"] },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[a-z0-9_.]+$" }
+        },
+        "detail": { "type": ["object", "null"] }
+      }
+    },
+    "dasha": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system", "year_length", "birth_nakshatra_lord",
+        "birth_nakshatra_fraction_elapsed", "balance_years_at_birth",
+        "current", "timeline"
+      ],
+      "properties": {
+        "system": { "enum": ["vimshottari", "ashtottari", "yogini"] },
+        "year_length": {
+          "description": "Which year definition produced these dates. CLAUDE.md 3.4 calls this the most common silent divergence between two correct kundali apps, so it is never implicit.",
+          "enum": ["savana_360", "solar_365.2425", "sidereal_365.2563"]
+        },
+        "birth_nakshatra_lord": { "$ref": "#/$defs/grahaKey" },
+        "birth_nakshatra_fraction_elapsed": { "type": "number", "minimum": 0, "exclusiveMaximum": 1 },
+        "balance_years_at_birth": { "type": "number", "minimum": 0, "maximum": 20 },
+        "current": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "maha": { "$ref": "#/$defs/dashaLevel" },
+            "antar": { "$ref": "#/$defs/dashaLevel" },
+            "pratyantar": { "$ref": "#/$defs/dashaLevel" },
+            "sookshma": { "$ref": "#/$defs/dashaLevel" }
+          }
+        },
+        "timeline": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["level", "lord", "start_utc", "end_utc"],
+            "properties": {
+              "level": { "type": "integer", "minimum": 1, "maximum": 4 },
+              "lord": { "$ref": "#/$defs/grahaKey" },
+              "start_utc": { "$ref": "#/$defs/utcTimestamp" },
+              "end_utc": { "$ref": "#/$defs/utcTimestamp" }
+            }
+          }
+        }
+      }
+    },
+    "dashaLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lord", "start_utc", "end_utc"],
+      "properties": {
+        "lord": { "$ref": "#/$defs/grahaKey" },
+        "start_utc": { "$ref": "#/$defs/utcTimestamp" },
+        "end_utc": { "$ref": "#/$defs/utcTimestamp" }
+      }
+    },
+    "nameBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["display_name", "numerology"],
+      "properties": {
+        "display_name": { "type": "string" },
+        "namakaran": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "nakshatra_key", "pada", "pada_syllable", "nakshatra_syllables",
+            "name_onset", "matches_pada", "matches_nakshatra", "evidence"
+          ],
+          "properties": {
+            "nakshatra_key": { "$ref": "#/$defs/key" },
+            "pada": { "$ref": "#/$defs/pada" },
+            "pada_syllable": { "type": "string" },
+            "nakshatra_syllables": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": { "type": "string" }
+            },
+            "name_onset": { "type": "string" },
+            "matches_pada": { "type": "boolean" },
+            "matches_nakshatra": { "type": "boolean" },
+            "evidence": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "numerology": {
+          "description": "Not Jyotish (CLAUDE.md 3.6). is_jyotish is constant false so a UI cannot present it as part of the chart by accident.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["is_jyotish", "chaldean", "pythagorean"],
+          "properties": {
+            "is_jyotish": { "const": false },
+            "chaldean": { "$ref": "#/$defs/numerologyReading" },
+            "pythagorean": { "$ref": "#/$defs/numerologyReading" }
+          }
+        }
+      }
+    },
+    "numerologyReading": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw_total", "reduced"],
+      "properties": {
+        "raw_total": { "type": "integer", "minimum": 0 },
+        "reduced": { "type": "integer", "minimum": 0, "maximum": 33 }
+      }
+    }
+  }
+}

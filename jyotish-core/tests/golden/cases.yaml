@@ -1,0 +1,592 @@
+# Golden panchang cases, tested against दाते पंचांग (Date Panchang).
+#
+# STATUS: 0 of 60 cases transcribed. Every `expected` block below is empty, so
+# every case reports PENDING and none of them passes. That is deliberate and it
+# is the honest state of the build: nobody has yet opened the almanac.
+#
+# CLAUDE.md N2 makes one named panchang the reference truth, and CLAUDE.md 11
+# Phase 1 says to stop and report a mismatch rather than tune a constant to force
+# a pass. A case with no transcribed value therefore cannot pass - the harness
+# reports it as pending, and `tools/golden_verify.py` prints what is missing.
+#
+# HOW TO FILL ONE IN
+# ------------------
+# Open the दाते पंचांग page for the case's date, and copy its printed *local*
+# times into that case's `expected` block. Times are IST (or the place's own
+# zone) in 24-hour HH:MM, exactly as printed - do not convert to UTC. Keys use
+# the engine's identifiers from core/enums.py, e.g. tithi_key: panchami.
+#
+# Available fields (omit any the almanac does not print):
+#   times  : sunrise sunset moonrise moonset tithi_end nakshatra_end yoga_end
+#            karana_end rahu_kaal_start rahu_kaal_end abhijit_start abhijit_end
+#   values : tithi_key paksha nakshatra_key nakshatra_pada yoga_key karana_key
+#            vara_key month_key month_anomaly shaka_year tithi_anomaly ritu_key
+#            ayana ishtakaal_ghati ishtakaal_pala
+#
+# Example of a filled case:
+#
+#   - id: ordinary-01-2024-01-26
+#     date: "2024-01-26"
+#     place: pune
+#     tags: [ordinary]
+#     source: "Date Panchang 2023-24, p. 41"
+#     expected:
+#       sunrise: "07:13"
+#       sunset: "18:33"
+#       tithi_key: purnima
+#       tithi_end: "20:36"
+#
+# Any field left out stays pending. Any field filled in is asserted to the
+# minute and will fail the build if the engine disagrees - which is the point.
+#
+# The scenario tags are load-bearing: tests/golden/test_golden_panchang.py
+# asserts that every scenario CLAUDE.md 9.1 names is represented, so this file
+# cannot quietly lose a hard case.
+
+places:
+  # Maharashtra centres, plus two outside it to exercise the timezone and
+  # high-latitude paths. Coordinates are town-centre values; a panchang is
+  # published for a named place, so the coordinate is part of the case.
+  pune:       {name: Pune,        latitude: 18.5204, longitude: 73.8567, iana_tz: Asia/Kolkata, elevation_m: 560}
+  mumbai:     {name: Mumbai,      latitude: 19.0760, longitude: 72.8777, iana_tz: Asia/Kolkata, elevation_m: 14}
+  nagpur:     {name: Nagpur,      latitude: 21.1458, longitude: 79.0882, iana_tz: Asia/Kolkata, elevation_m: 310}
+  kolhapur:   {name: Kolhapur,    latitude: 16.7050, longitude: 74.2433, iana_tz: Asia/Kolkata, elevation_m: 569}
+  nashik:     {name: Nashik,      latitude: 19.9975, longitude: 73.7898, iana_tz: Asia/Kolkata, elevation_m: 584}
+  aurangabad: {name: Chhatrapati Sambhajinagar, latitude: 19.8762, longitude: 75.3433, iana_tz: Asia/Kolkata, elevation_m: 568}
+  solapur:    {name: Solapur,     latitude: 17.6599, longitude: 75.9064, iana_tz: Asia/Kolkata, elevation_m: 457}
+  ratnagiri:  {name: Ratnagiri,   latitude: 16.9902, longitude: 73.3120, iana_tz: Asia/Kolkata, elevation_m: 6}
+  amravati:   {name: Amravati,    latitude: 20.9320, longitude: 77.7523, iana_tz: Asia/Kolkata, elevation_m: 343}
+  london:     {name: London,      latitude: 51.5072, longitude: -0.1276, iana_tz: Europe/London, elevation_m: 11}
+  tromso:     {name: Tromso,      latitude: 69.6492, longitude: 18.9553, iana_tz: Europe/Oslo, elevation_m: 10}
+
+cases:
+  - id: adhika-jyeshtha-2018
+    date: "2018-06-05"
+    place: pune
+    tags: [adhika_month]
+    notes: >
+      Inside Adhika Jyeshtha 1940 Shaka (17 May - 13 June 2018).
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: adhika-ashwina-2020
+    date: "2020-10-05"
+    place: mumbai
+    tags: [adhika_month]
+    notes: >
+      Inside Adhika Ashwina 1942 Shaka - the month that pushed Navratri to
+      October.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: adhika-shravana-2023
+    date: "2023-07-25"
+    place: pune
+    tags: [adhika_month]
+    notes: >
+      Inside Adhika Shravana 1945 Shaka (18 July - 16 August 2023).
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: nija-shravana-2023
+    date: "2023-08-25"
+    place: pune
+    tags: [adhika_month]
+    notes: >
+      Nija Shravana immediately after the adhika month - the pair must
+      name correctly.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: adhika-jyeshtha-2026
+    date: "2026-05-25"
+    place: nashik
+    tags: [adhika_month]
+    notes: >
+      Inside Adhika Jyeshtha 1948 Shaka.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: vriddhi-2018-04-10
+    date: "2018-04-10"
+    place: pune
+    tags: [vriddhi_tithi]
+    notes: >
+      Dashami spans two sunrises - repeated headline tithi.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: vriddhi-2022-06-28
+    date: "2022-06-28"
+    place: mumbai
+    tags: [vriddhi_tithi]
+    notes: >
+      Amavasya vriddhi, which also stresses the month-boundary logic.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: vriddhi-2025-01-18
+    date: "2025-01-18"
+    place: nagpur
+    tags: [vriddhi_tithi]
+    notes: >
+      Panchami vriddhi in Uttarayana.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: vriddhi-2026-07-22
+    date: "2026-07-22"
+    place: pune
+    tags: [vriddhi_tithi]
+    notes: >
+      Navami vriddhi.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: kshaya-2018-12-19
+    date: "2018-12-19"
+    place: pune
+    tags: [kshaya_tithi]
+    notes: >
+      A tithi begins and ends between two sunrises - skipped date.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: kshaya-2019-01-21
+    date: "2019-01-21"
+    place: kolhapur
+    tags: [kshaya_tithi]
+    notes: >
+      Kshaya adjoining Purnima - the case most likely to expose an off-by-
+      one.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: kshaya-2022-01-25
+    date: "2022-01-25"
+    place: solapur
+    tags: [kshaya_tithi]
+    notes: >
+      Saptami kshaya near perihelion, when tithis run shortest.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: kshaya-2023-03-19
+    date: "2023-03-19"
+    place: mumbai
+    tags: [kshaya_tithi]
+    notes: >
+      Dwadashi kshaya.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: solstice-summer-2024
+    date: "2024-06-21"
+    place: pune
+    tags: [summer_solstice]
+    notes: >
+      Longest day: the eight kaal parts are at their widest, ~97 minutes
+      each.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: solstice-summer-2025
+    date: "2025-06-21"
+    place: nagpur
+    tags: [summer_solstice]
+    notes: >
+      Same test at the eastern edge of Maharashtra - sunrise ~35 minutes
+      earlier.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: solstice-winter-2024
+    date: "2024-12-21"
+    place: pune
+    tags: [winter_solstice]
+    notes: >
+      Shortest day: kaal parts at their narrowest, ~85 minutes each.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: solstice-winter-2025
+    date: "2025-12-21"
+    place: ratnagiri
+    tags: [winter_solstice]
+    notes: >
+      Coastal Konkan at the winter solstice.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: predawn-2025-08-05
+    date: "2025-08-05"
+    place: pune
+    tags: [pre_dawn_birth]
+    birth_time: "02:30"
+    notes: >
+      CLAUDE.md 4.2 worked example: belongs to the vara and tithi of the
+      4th.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: predawn-2024-01-15
+    date: "2024-01-15"
+    place: mumbai
+    tags: [pre_dawn_birth]
+    birth_time: "04:55"
+    notes: >
+      Pre-dawn birth minutes before a winter sunrise.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: predawn-2019-11-08
+    date: "2019-11-08"
+    place: aurangabad
+    tags: [pre_dawn_birth]
+    birth_time: "01:05"
+    notes: >
+      Just after midnight - the largest day-roll gap.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: predawn-boundary-2022-03-10
+    date: "2022-03-10"
+    place: pune
+    tags: [pre_dawn_birth]
+    birth_time: "06:40"
+    notes: >
+      Birth within a minute of sunrise: the day roll must not fire.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: highlat-tromso-summer
+    date: "2024-06-21"
+    place: tromso
+    tags: [high_latitude, summer_solstice]
+    notes: >
+      Midnight sun: the Sun never sets, so sunrise and hence vara are
+      undefined. The engine must raise CircumpolarError, not invent a
+      time.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: highlat-tromso-winter
+    date: "2024-12-21"
+    place: tromso
+    tags: [high_latitude, winter_solstice]
+    notes: >
+      Polar night: the converse failure mode.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: highlat-tromso-equinox
+    date: "2024-03-20"
+    place: tromso
+    tags: [high_latitude]
+    notes: >
+      Same place at the equinox, where sunrise does exist - the control
+      case.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: pre1955-1948-01-30
+    date: "1948-01-30"
+    place: pune
+    tags: [pre_1955]
+    birth_time: "17:17"
+    notes: >
+      Pre-1955 date. Asia/Kolkata carried +05:30 from 1945-10-15, so the
+      offset is the same as today - but it must come from tzdata, not from
+      a constant.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: pre1955-1950-06-15
+    date: "1950-06-15"
+    place: mumbai
+    tags: [pre_1955]
+    birth_time: "09:00"
+    notes: >
+      Bombay, five years after the switch away from Bombay Time (+04:51).
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: pre1955-1935-11-20
+    date: "1935-11-20"
+    place: mumbai
+    tags: [pre_1955]
+    birth_time: "12:00"
+    notes: >
+      Bombay Time era. tzdata gives Asia/Kolkata +05:30 from 1906; a birth
+      certificate of this date may record Bombay local mean time instead,
+      which is why time_standard exists (CLAUDE.md 4.1).
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: pre1955-1901-01-01
+    date: "1901-01-01"
+    place: pune
+    tags: [pre_1955]
+    birth_time: "06:00"
+    notes: >
+      Turn of the century - the earliest case in the suite.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: wartime-1943-06-15
+    date: "1943-06-15"
+    place: mumbai
+    tags: [wartime_dst]
+    birth_time: "14:30"
+    notes: >
+      India ran wartime DST from 1942-09-01 to 1945-10-15. The applied
+      offset must be the wartime one, not +05:30.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: wartime-1944-11-20
+    date: "1944-11-20"
+    place: pune
+    tags: [wartime_dst]
+    birth_time: "08:15"
+    notes: >
+      Second wartime-DST case, in the opposite half of the year.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: wartime-1945-10-16
+    date: "1945-10-16"
+    place: nagpur
+    tags: [wartime_dst]
+    birth_time: "10:00"
+    notes: >
+      The day after wartime DST ended - the transition boundary.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-01-2024-01-26
+    date: "2024-01-26"
+    place: pune
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-02-2024-02-14
+    date: "2024-02-14"
+    place: mumbai
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-03-2024-03-25
+    date: "2024-03-25"
+    place: nagpur
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-04-2024-04-09
+    date: "2024-04-09"
+    place: pune
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-05-2024-05-10
+    date: "2024-05-10"
+    place: kolhapur
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-06-2024-06-06
+    date: "2024-06-06"
+    place: nashik
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-07-2024-07-21
+    date: "2024-07-21"
+    place: aurangabad
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-08-2024-08-19
+    date: "2024-08-19"
+    place: solapur
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-09-2024-09-17
+    date: "2024-09-17"
+    place: amravati
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-10-2024-10-31
+    date: "2024-10-31"
+    place: pune
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-11-2024-11-15
+    date: "2024-11-15"
+    place: ratnagiri
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-12-2024-12-11
+    date: "2024-12-11"
+    place: mumbai
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-13-2025-01-14
+    date: "2025-01-14"
+    place: pune
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-14-2025-02-26
+    date: "2025-02-26"
+    place: nagpur
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-15-2025-03-30
+    date: "2025-03-30"
+    place: pune
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-16-2025-04-13
+    date: "2025-04-13"
+    place: kolhapur
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-17-2025-05-12
+    date: "2025-05-12"
+    place: nashik
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-18-2025-06-11
+    date: "2025-06-11"
+    place: mumbai
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-19-2025-07-10
+    date: "2025-07-10"
+    place: aurangabad
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-20-2025-08-09
+    date: "2025-08-09"
+    place: pune
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-21-2025-09-07
+    date: "2025-09-07"
+    place: solapur
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-22-2025-10-21
+    date: "2025-10-21"
+    place: mumbai
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-23-2025-11-05
+    date: "2025-11-05"
+    place: amravati
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-24-2025-12-04
+    date: "2025-12-04"
+    place: pune
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-25-2026-01-03
+    date: "2026-01-03"
+    place: ratnagiri
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-26-2026-02-01
+    date: "2026-02-01"
+    place: nagpur
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-27-2026-03-03
+    date: "2026-03-03"
+    place: pune
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-28-2026-04-02
+    date: "2026-04-02"
+    place: mumbai
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: ordinary-29-2026-05-01
+    date: "2026-05-01"
+    place: nashik
+    tags: [ordinary]
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: diaspora-london-2025-03-30
+    date: "2025-03-30"
+    place: london
+    tags: [diaspora]
+    birth_time: "10:30"
+    notes: >
+      Gudi Padwa observed by a diaspora family in London. Europe/London
+      BST began that morning at 01:00 UTC, so the case also exercises a
+      DST transition.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+
+  - id: diaspora-london-2024-10-27
+    date: "2024-10-27"
+    place: london
+    tags: [diaspora]
+    birth_time: "01:30"
+    notes: >
+      The autumn fold: 01:30 local occurs twice. zoneinfo resolves to the
+      first by default, which the case pins so the choice is visible.
+    source: ""   # TODO: almanac page reference
+    expected: {}
+

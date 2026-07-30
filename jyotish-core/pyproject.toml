@@ -1,0 +1,90 @@
+[project]
+name = "jyotish-core"
+version = "1.0.0"
+description = "Deterministic Jyotish (Vedic astrology) computation engine matched to a named Marathi panchang authority"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "AGPL-3.0-or-later" }
+
+dependencies = [
+    "pyswisseph>=2.10.3.2",
+    "pydantic>=2.9",
+    "PyYAML>=6.0",
+    "tzdata>=2024.1",
+    "timezonefinder>=6.5",
+    "jsonschema>=4.23",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=5.0",
+    "hypothesis>=6.112",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "types-PyYAML>=6.0",
+    "types-jsonschema>=4.23",
+]
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["core*"]
+
+[tool.setuptools.package-data]
+core = ["rules/data/*.yaml", "milan/data/*.yaml", "facts/schema/*.json"]
+
+# ---------------------------------------------------------------------------
+# CI gates (CLAUDE.md section 9.7)
+# ---------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+# CLAUDE.md is the supplied specification and must stay verbatim. Recent ruff
+# versions format Python code blocks inside Markdown, which would silently edit
+# the spec's own `BirthInput` sketch.
+extend-exclude = ["CLAUDE.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]  # ambiguous-unicode: Devanagari is intentional
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+disallow_any_generics = true
+files = ["core", "tools"]
+
+[[tool.mypy.overrides]]
+# pyswisseph ships no stubs. Contained to the adapter by design (CLAUDE.md 2.1).
+module = ["swisseph", "timezonefinder"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+    "golden: regression test against the published panchang authority",
+    "pending_transcription: golden case whose authority values are not yet transcribed",
+    "slow: property/fuzz tests over wide date ranges",
+]
+
+[tool.coverage.run]
+source = ["core"]
+branch = true
+
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "@overload",
+    "\\.\\.\\.",
+]

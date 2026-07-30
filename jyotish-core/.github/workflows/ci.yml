@@ -1,0 +1,96 @@
+name: CI
+
+# The gates in CLAUDE.md 9.7: schema validation, locale completeness,
+# ruff + mypy strict on core/, coverage >= 90% on core/.
+#
+# NOTE: this workflow is inert until jyotish-core/ becomes a repository root.
+# GitHub Actions only reads .github/workflows from the root of a repository, so
+# while this tree lives inside another project the file is documentation. Moving
+# the directory out (see README) activates it unchanged.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned so a tzdata change cannot silently move a historical offset
+  # (CLAUDE.md 4.1) without showing up as a dependency diff.
+  UV_FROZEN: "0"
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Install
+        run: uv pip install --system -e ".[dev]"
+
+      # --- gate 1: lint and format -------------------------------------
+      - name: ruff check
+        run: ruff check .
+
+      - name: ruff format
+        run: ruff format --check .
+
+      # --- gate 2: mypy strict on core/ --------------------------------
+      - name: mypy strict
+        run: mypy
+
+      # --- gate 3: locale completeness (CLAUDE.md 7) -------------------
+      # Fails on a missing key in any locale, and on an mr value that is
+      # byte-identical to its hi value for a known-divergent term.
+      - name: locale audit
+        run: python -m tools.locale_audit
+
+      # --- gate 4: tests + coverage >= 90% on core/ --------------------
+      - name: pytest
+        run: >
+          pytest
+          --cov=core
+          --cov-report=term-missing
+          --cov-fail-under=90
+          -p no:randomly
+
+      # --- gate 5: ChartFacts schema validity --------------------------
+      # The test suite validates the schema, but this runs the real CLI path
+      # end to end so a packaging break (missing schema in package_data) is
+      # caught too.
+      - name: ChartFacts schema round trip
+        run: >
+          python -m tools.facts_dump
+          --name CI --date 1990-06-15 --time 14:32
+          --lat 18.5204 --lon 73.8567 --tz Asia/Kolkata
+          --now 2026-01-01T00:00:00Z
+          --compact > /dev/null
+
+      - name: ChartFacts with unknown birth time
+        run: >
+          python -m tools.facts_dump
+          --name CI --date 1990-06-15
+          --lat 18.5204 --lon 73.8567 --tz Asia/Kolkata
+          --now 2026-01-01T00:00:00Z
+          --compact > /dev/null
+
+      # --- reporting: golden transcription status ----------------------
+      # Never fails. Prints how much of the authority has actually been
+      # transcribed, so 0/62 cannot quietly become invisible
+      # (docs/GOLDEN_FILES.md).
+      - name: golden transcription status
+        if: always()
+        run: python -m tools.golden_verify --pending-only

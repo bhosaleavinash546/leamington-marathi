@@ -1,0 +1,14 @@
+{
+  "data_consent": "Birth date, time, place and name together are sensitive personal data. Storing them needs your consent.",
+  "data_delete": "Delete my data",
+  "data_export": "Export my data",
+  "disclaimer": "This is a traditional Jyotish interpretation, offered for cultural and entertainment purposes.",
+  "not_a_forecast": "This is not a forecast of the future.",
+  "not_financial_advice": "This is not financial advice.",
+  "not_legal_advice": "This is not legal advice.",
+  "not_medical_advice": "This is not medical advice. Consult a doctor about medical matters.",
+  "numerology_not_jyotish": "Numerology is a separate system from Jyotish.",
+  "refusal_prohibited_topic": "The chart does not support a statement on this subject.",
+  "retention": "Retention period",
+  "traditional_interpretation": "Traditional Jyotish interpretation"
+}
