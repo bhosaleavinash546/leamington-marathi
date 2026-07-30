@@ -28,6 +28,7 @@ see which conventions produced a number. Changing any **D-number below marked
 | D15 | Stored data | Birth input only, Fernet at rest, 365-day retention | no |
 | D16 | Offline geocoder | 125 curated places, complete offline tz | no (see DIVERGENCES O6) |
 | D17 | Narrative time rendering | Engine projects local times before the prompt | no |
+| D18 | Transit-instant resolution | Solved to 1e-7 d, **reported at whole seconds** | **yes — changed a published value, see below** |
 
 ---
 
@@ -346,6 +347,58 @@ consistent with N1:
 narrowed slice, plus the resolved zone. The projection is used for the payload,
 the cache key *and* the numeric-provenance check, so a time in the prose is only
 accepted if the engine put it there.
+
+## D18 — Transit-instant resolution
+
+**Saturn crossings are solved to 1e-7 days (8.6 ms) and reported at whole
+seconds.**
+
+**This changed a published value.** Found by the 360° audit as F-001, not by a
+failing test — the previous behaviour satisfied every test the suite had.
+
+| | Before | After |
+|---|---|---|
+| Sade Sati `exit_utc` | 45 distinct values over a 30-day sweep of `now`, spread **38.67 s** (2027-06-02T23:57:55.634752Z .. 23:58:34.306640Z) | **one** value, 2027-06-02T23:58:15Z |
+| Sade Sati `phase_start_utc` | 45 distinct values, spread **38.67 s** (2025-03-29T16:14:21.767592Z .. 16:15:00.439440Z) | **one** value, 2025-03-29T16:14:41Z |
+| Worst residual: Saturn's distance from the target at the reported instant | 0.077610″ | 0.000974″ — 80× tighter |
+| Printed minute | flipped 23:57 / 23:58 and 16:14 / 16:15 with the request | stable |
+
+**Neither published date moved** — 2027-06-02 and 2025-03-29 are unchanged. What
+changed is that the *time* is now a property of Saturn rather than of the clock.
+
+The cause was two defects compounding. `_saturn_crossing` phased its 30-day
+bracketing grid on `jd_from_utc(after)`, where `after` came from the caller's
+`now`; `_bisect_saturn` then stopped once the bracket was under one minute and
+returned its **midpoint**. So the reported instant was the centre of whatever
+bracket the request happened to produce, up to ±30 s from the root.
+
+Two changes, and both are necessary:
+
+1. **Converge.** Tolerance is now `_SATURN_SOLVE_TOL_DAYS = 1e-7` d, three orders
+   of magnitude below the reporting resolution and comfortably above the ~48 µs
+   float64 floor for a Julian Day at this epoch (`JD_FLOAT_RESOLUTION_SECONDS`),
+   so the loop converges instead of grinding against the representation limit.
+2. **Round to the second.** Convergence leaves float noise in the last bits that
+   still differs between differently-positioned brackets, and microsecond output
+   put that noise into the narrative cache key.
+
+Rounding *alone* would not have been a fix, and was rejected for that reason: it
+would have hidden the wobble mid-second and re-exposed it at a second boundary.
+Converging first is what makes rounding safe. The residual failure mode — a true
+crossing within ~9 ms of a half-second — is a 1-second ambiguity roughly once in
+50,000 charts, against 38.67 s always.
+
+Why this is marked breaking: `doshas[].detail.exit_utc` and `phase_start_utc` are
+published fields and their values changed. No schema field was added or removed,
+so `CHARTFACTS_SCHEMA_VERSION` is unaffected; the versioning reasoning recorded
+under D13 applies unchanged.
+
+**Consequence for the reader (audit F-002).** These instants sit in ChartFacts, so
+they were in the narrative cache key. The `doshas` section therefore missed the
+cache on every request and the model was called again: one birth, two requests two
+minutes apart, two LLM calls, two different Marathi paragraphs about the reader's
+Sade Sati. That is now one call and one text. The cache was never wrong — the
+facts were unstable.
 
 ---
 

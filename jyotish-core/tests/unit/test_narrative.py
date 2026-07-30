@@ -562,3 +562,72 @@ def test_narrative_test_cli_reports_no_problems() -> None:
     from tools.narrative_test import run
 
     assert run(verbose=False) == []
+
+
+def test_doshas_section_caches_across_a_later_request(facts: dict[str, Any]) -> None:
+    """Audit F-002. Regenerating prose for an unchanged chart is a trust failure.
+
+    CLAUDE.md 6: "Identical charts must not produce drifting text." The cache was
+    always keyed correctly; the *facts* were unstable, because the Sade Sati
+    transit instants moved with the caller's clock (F-001). The doshas section was
+    the only one affected, and it is the section a Maharashtrian reader scrutinises
+    hardest.
+
+    This test asserts the property the reader cares about - one generation, one
+    text - rather than the cache key, so it keeps holding if the key's inputs
+    change.
+    """
+    import datetime as dt
+
+    from core.facts.builder import build_chart_facts, compute_full_reading
+    from core.types import BirthData, Place
+
+    birth = BirthData(
+        name="Cache",
+        date=dt.date(1990, 6, 15),
+        time=dt.time(14, 32),
+        place=Place("Pune", 18.5204, 73.8567, "Asia/Kolkata", 560.0),
+    )
+    t0 = dt.datetime(2026, 7, 30, 12, 0, tzinfo=dt.UTC)
+    later = build_chart_facts(compute_full_reading(birth, now=t0 + dt.timedelta(minutes=2)))
+
+    client = ScriptedClient(responses=["First generation.", "SECOND, DIFFERENT generation."])
+    service = NarrativeService(client)
+    first = service.generate(facts, "doshas", "en")
+    second = service.generate(later, "doshas", "en")
+
+    assert len(client.calls) == 1, (
+        f"the model was called {len(client.calls)} times for one unchanged chart; "
+        "the reader would see different prose on reload"
+    )
+    assert second.text == first.text
+    assert second.cached is True
+
+
+def test_every_section_cache_key_survives_the_clock_moving(facts: dict[str, Any]) -> None:
+    """No section may key on a quantity that drifts while the chart does not.
+
+    `dasha.current` and the Sade Sati phase legitimately change over *long*
+    intervals - a new sookshma lord really is new information. Two minutes is short
+    enough that nothing about the reading has changed, so every section must hold.
+    """
+    import datetime as dt
+
+    from core.facts.builder import build_chart_facts, compute_full_reading
+    from core.types import BirthData, Place
+
+    birth = BirthData(
+        name="Cache",
+        date=dt.date(1990, 6, 15),
+        time=dt.time(14, 32),
+        place=Place("Pune", 18.5204, 73.8567, "Asia/Kolkata", 560.0),
+    )
+    t0 = dt.datetime(2026, 7, 30, 12, 0, tzinfo=dt.UTC)
+    later = build_chart_facts(compute_full_reading(birth, now=t0 + dt.timedelta(minutes=2)))
+
+    unstable = [
+        section
+        for section in SECTIONS
+        if cache_key(facts, section, "mr") != cache_key(later, section, "mr")
+    ]
+    assert unstable == [], f"sections whose cache key moved with the clock: {unstable}"

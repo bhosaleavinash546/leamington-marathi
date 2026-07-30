@@ -1,23 +1,29 @@
 # FINDINGS
 
-22 findings. Read-only audit: **nothing has been fixed**, per AUDIT.md §0 rule 1.
+22 findings. The audit itself was read-only per AUDIT.md §0 rule 1; remediation
+began only after the register was approved, and each fix is recorded against its
+finding below.
 
 Passes 1 §3.2–3.5 are **BLOCKED** — no दाते पंचांग. No finding below claims a
 panchang value is wrong against the authority, because no such comparison was
 possible.
 
-| Sev | Count |
-|---|---|
-| S1 | 3 |
-| S2 | 6 |
-| S3 | 7 |
-| S4 | 6 |
+| Sev | Count | Fixed |
+|---|---|---|
+| S1 | 3 | 2 — F-001, F-002 |
+| S2 | 6 | — |
+| S3 | 7 | — |
+| S4 | 6 | 1 — F-021, as part of F-001 |
+
+**Fixed so far:** F-001, F-002 and F-021 (one root cause), under
+`docs/DECISIONS.md` D18. Before/after values are recorded there and in the commit
+message, per CLAUDE.md 11. Everything else below stands unfixed.
 
 ---
 
 ## S1 — blocks release
 
-### F-001 · determinism · `core/doshas/computed.py:194–232`
+### F-001 · determinism · `core/doshas/computed.py:194–232` · **FIXED**
 
 **Expected** Sade Sati exit and phase-start are properties of Saturn's transit;
 asking twice returns the same instant.
@@ -32,8 +38,17 @@ returns its **midpoint** — so the answer is a function of when you asked.
 absolute tolerance far below display resolution. Do not merely round the output;
 rounding hides the wobble at 29.5 s and re-exposes it at 30.5 s.
 **Test** Sweep `now` over 30 days and assert a single distinct `exit_utc`.
+**Outcome** Fixed under D18, though not by the route recommended above. Grid
+snapping was dropped in favour of *converging* — tolerance 1/1440 d → 1e-7 d — so
+the returned instant is the root rather than a bracket midpoint, which removes the
+grid dependence at its source instead of stabilising it. Rounding to the second was
+then added on top, which the recommendation warned against on its own; converging
+first is what makes it safe, and the residual case (a true crossing within ~9 ms of
+a half-second) is a 1-second ambiguity roughly once in 50,000 charts against
+38.67 s always. Result: 45 distinct values spanning 38.67 s → **one** value; worst
+residual 0.077610″ → 0.000974″. **Neither published date moved.**
 
-### F-002 · trust · consequence of F-001
+### F-002 · trust · consequence of F-001 · **FIXED**
 
 **Expected** Identical charts do not produce drifting text (CLAUDE.md §6).
 **Actual** The `doshas` section cache key changes on every request, so the
@@ -46,6 +61,8 @@ locale + prompt_version + validator_version)`. The *facts* are unstable (F-001).
 cache exists and works.
 **Test** Generate the `doshas` section twice with `now` 2 minutes apart; assert
 one LLM call.
+**Outcome** Fixed by F-001. 2 LLM calls → 1; all six sections now hold their
+cache key across a 2-minute gap, asserted.
 
 ### F-003 · rule-fidelity + internal inconsistency · `core/chart/dignity.py:157`
 
@@ -185,7 +202,7 @@ nadi 0/8, `nadi_exception_same_nakshatra` **fired**. The engine does compute pad
 | F-018 | Docstring table says `120–150 → 60 flat`; code ramps 45→60 | `core/chart/aspects.py:88` |
 | F-019 | Hand-rolled shortest-separation instead of `core.angles.shortest_separation` (numerically equivalent; duplication) | `core/chart/dignity.py:207` |
 | F-020 | Raw `% 360.0` rather than `norm360()`, against §4.7's "one wrapper" | `core/timeutil.py:183,188` |
-| F-021 | Sade Sati times published to **microseconds** though known to ±39 s — false precision, and the mechanism by which F-002 bites | `core/facts/builder.py:603–604` |
+| F-021 | ~~Sade Sati times published to **microseconds** though known to ±39 s~~ **FIXED** with F-001 — solved to 1e-7 d, reported at whole seconds | `core/doshas/computed.py` |
 | F-022 | Graded drishti piecewise scale carries no citation | `core/chart/aspects.py:88` |
 
 ---

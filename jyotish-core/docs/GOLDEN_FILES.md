@@ -84,6 +84,31 @@ Per CLAUDE.md 11, in this order:
    `DIVERGENCES.md` with the delta.
 5. Add a golden case for every bug you fix (`python -m tools.golden_add`).
 
+## When a bug has no golden case to add
+
+CLAUDE.md 11 says to add a golden case for every bug fixed. That instruction
+assumes the bug is a disagreement with the authority, and not every bug is.
+
+**Audit F-001** (Sade Sati transit instants moving with the caller's clock, fixed
+under `DECISIONS.md` D18) had no authority component at all: the printed *date* was
+never wrong, and no almanac page could have caught a value that was already
+self-inconsistent. Filing it here as a 63rd case with `expected: null` would have
+added nothing but a pending row, and would have diluted the "0 of 62 transcribed"
+count this file exists to keep visible.
+
+Its regression pin is instead a sweep test —
+`test_sade_sati_transit_instants_do_not_depend_on_when_they_are_asked` — which
+recomputes across a full 30-day grid period and asserts a single distinct value.
+That is strictly stronger than a golden case: it checks 103 samples rather than one
+date, and it cannot be satisfied by an engine agreeing with itself.
+
+**What remains authority-checkable, and is not yet covered:** a Sade Sati exit is a
+Saturn ingress into the 3rd rashi from the natal Moon, and दाते पंचांग publishes
+Saturn's rashi ingress dates. Those are not among the `TIME_FIELDS`/`KEY_FIELDS`
+this harness compares, so the engine's Saturn ingress dates are currently
+**unverified against the authority**. Adding a `saturn_ingress` field and a few
+cases would close that gap. Recorded here rather than left implicit.
+
 ## What the first transcribed case will settle
 
 One page is enough to resolve the highest-priority open question. A single printed

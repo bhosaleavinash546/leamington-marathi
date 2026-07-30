@@ -191,6 +191,24 @@ def _saturn_lon(eph: Ephemeris, jd: float) -> float:
     return eph.position(Graha.SATURN, jd).sidereal_lon
 
 
+#: Bisection tolerance in days. 1e-7 d is 8.6 ms - three orders of magnitude
+#: below the second the result is reported at, and well above the ~48 us float64
+#: resolution of a Julian Day at this epoch (``JD_FLOAT_RESOLUTION_SECONDS``), so
+#: the loop converges rather than grinding against the representation floor.
+#:
+#: This constant is why the answer no longer depends on the caller's clock. The
+#: previous 1/1440 d (one minute) tolerance meant the loop stopped while the
+#: bracket was still a minute wide and returned its *midpoint*, so the reported
+#: instant was an artefact of where the bracket began - and the bracket began at
+#: ``now``. See docs/DECISIONS.md D18 and audit/FINDINGS.md F-001.
+_SATURN_SOLVE_TOL_DAYS: Final[float] = 1e-7
+
+#: Coarse bracketing step. Saturn covers ~1 degree in 30 days, so a 30-day probe
+#: cannot step over a crossing, and the step is wide enough that a retrograde loop
+#: (~140 days) is not mistaken for one.
+_SATURN_PROBE_STEP_DAYS: Final[float] = 30.0
+
+
 def _saturn_crossing(eph: Ephemeris, after: dt.datetime, target_deg: float) -> dt.datetime | None:
     """First instant after ``after`` at which Saturn's longitude reaches ``target``.
 
@@ -199,9 +217,27 @@ def _saturn_crossing(eph: Ephemeris, after: dt.datetime, target_deg: float) -> d
     loops mean a Newton step can walk backwards, and its five-month retrograde
     arc is much wider than a 30-day probe, so a coarse bracket then bisect is
     both simpler and safe here.
+
+    **The returned instant is a property of Saturn, not of the request.** Two
+    callers asking on different days about the same crossing get the same answer,
+    which matters because these instants reach ChartFacts and therefore the
+    narrative cache key: an exit date that wobbled by a second regenerated the
+    reader's Sade Sati paragraph on every reload (audit F-002). Two things secure
+    that, and both are needed:
+
+    * bisection runs to :data:`_SATURN_SOLVE_TOL_DAYS`, so the result is the root
+      itself rather than the middle of whatever bracket happened to contain it;
+    * the result is rounded to the whole second it is reported at, which absorbs
+      the residual float noise that a differently-positioned bracket still leaves
+      in the last bits.
+
+    Rounding alone would not have been a fix - it would have hidden the wobble
+    mid-second and re-exposed it at a second boundary. Converging first is what
+    makes the rounding safe, and the two together are what the regression test
+    sweeping ``now`` over a full grid period actually pins.
     """
     jd0 = jd_from_utc(after)
-    step = 30.0
+    step = _SATURN_PROBE_STEP_DAYS
     prev_jd = jd0
     prev = norm360(target_deg - _saturn_lon(eph, jd0))
     # Search at most one full Saturn circuit forward.
@@ -212,22 +248,37 @@ def _saturn_crossing(eph: Ephemeris, after: dt.datetime, target_deg: float) -> d
         # The residual falls toward 0 as Saturn approaches; a wrap past 0 shows
         # up as a jump from a small value to a value close to 360.
         if current > 300.0 and prev < 60.0:
-            return utc_from_jd(_bisect_saturn(eph, prev_jd, jd, target_deg))
+            return _to_second(utc_from_jd(_bisect_saturn(eph, prev_jd, jd, target_deg)))
         prev_jd, prev = jd, current
         jd += step
     return None
 
 
+def _to_second(when: dt.datetime) -> dt.datetime:
+    """Round to the nearest whole second - the resolution these instants are known at.
+
+    Publishing microseconds for a solved root claimed a precision the solver does
+    not have, and put its trailing float noise into the narrative cache key
+    (audit F-021).
+    """
+    return (when + dt.timedelta(microseconds=500_000)).replace(microsecond=0)
+
+
 def _bisect_saturn(eph: Ephemeris, lo: float, hi: float, target_deg: float) -> float:
-    """Refine a bracketed Saturn crossing to under a minute."""
-    for _ in range(60):
+    """Refine a bracketed Saturn crossing to :data:`_SATURN_SOLVE_TOL_DAYS`.
+
+    The iteration cap is a backstop, not the exit condition: halving a 30-day
+    bracket to 1e-7 d needs about 48 steps, so 80 leaves margin without ever
+    letting a pathological bracket spin.
+    """
+    for _ in range(80):
+        if (hi - lo) < _SATURN_SOLVE_TOL_DAYS:
+            break
         mid = (lo + hi) / 2.0
         if norm360(target_deg - _saturn_lon(eph, mid)) < 180.0:
             lo = mid
         else:
             hi = mid
-        if (hi - lo) < 1.0 / 1440.0:
-            break
     return (lo + hi) / 2.0
 
 

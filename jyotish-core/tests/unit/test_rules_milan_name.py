@@ -693,3 +693,81 @@ def test_numerology_strips_accents_and_ignores_punctuation() -> None:
         compute_numerology("Mary-Ann").chaldean.raw_total
         == compute_numerology("MaryAnn").chaldean.raw_total
     )
+
+
+# ---------------------------------------------------------------------------
+# F-001 / F-002: a transit instant must not depend on when it is asked
+# ---------------------------------------------------------------------------
+
+
+def test_sade_sati_transit_instants_do_not_depend_on_when_they_are_asked(
+    ephemeris: Ephemeris, chart: Chart, reference_now: dt.datetime
+) -> None:
+    """Audit F-001. Saturn's crossing is a fact about Saturn, not about the clock.
+
+    Before the fix, ``_saturn_crossing`` phased its 30-day bracket grid on the
+    caller's ``now`` and ``_bisect_saturn`` returned the midpoint of a bracket it
+    stopped narrowing at one minute. The reported exit therefore moved with the
+    request: sweeping ``now`` over one grid period gave a **38.67 second** spread,
+    which straddled a minute boundary, so the same chart printed 23:57 or 23:58
+    depending on the instant it was asked.
+
+    The sweep covers a full 30-day grid period at 7-hour steps, which is what makes
+    it a regression test rather than a coincidence: any residual dependence on the
+    grid phase shows up as more than one distinct value.
+    """
+    exits: set[dt.datetime] = set()
+    phase_starts: set[dt.datetime] = set()
+    for hours in range(0, 30 * 24, 7):
+        state = sade_sati(ephemeris, chart, reference_now + dt.timedelta(hours=hours))
+        if state.exit_utc is not None:
+            exits.add(state.exit_utc)
+        if state.phase_start_utc is not None:
+            phase_starts.add(state.phase_start_utc)
+
+    assert len(exits) == 1, (
+        f"exit_utc took {len(exits)} distinct values over a 30-day sweep of `now`, "
+        f"spanning {(max(exits) - min(exits)).total_seconds():.2f} s: {sorted(exits)}"
+    )
+    assert len(phase_starts) == 1, (
+        f"phase_start_utc took {len(phase_starts)} distinct values, spanning "
+        f"{(max(phase_starts) - min(phase_starts)).total_seconds():.2f} s"
+    )
+
+
+def test_saturn_crossing_converges_far_below_its_reported_resolution(
+    ephemeris: Ephemeris,
+) -> None:
+    """The solved instant must actually be the crossing, not the middle of a bracket.
+
+    Checked against the quantity itself rather than against a remembered date:
+    Saturn's longitude at the returned instant must equal the target. The midpoint
+    of a one-minute bracket sits up to 30 s from the root, which at Saturn's
+    ~0.033 deg/day is up to ~0.04 arcsec of longitude - measured at 0.0057 arcsec
+    before the fix. How far short depended on where the bracket began, which is
+    what made the reported instant a function of the caller's clock.
+    """
+    from core.angles import shortest_separation
+    from core.doshas.computed import _saturn_crossing, _saturn_lon
+    from core.timeutil import jd_from_utc
+
+    target = 300.0  # 0 deg Makara
+    found = _saturn_crossing(ephemeris, dt.datetime(2020, 1, 1, tzinfo=dt.UTC), target)
+    assert found is not None
+    residual = shortest_separation(_saturn_lon(ephemeris, jd_from_utc(found)), target)
+    assert residual < 1e-6, f"Saturn is {residual * 3600:.4f} arcsec from the target"
+
+
+def test_sade_sati_instants_are_reported_at_whole_seconds(
+    ephemeris: Ephemeris, chart: Chart, reference_now: dt.datetime
+) -> None:
+    """Audit F-021. Do not publish microseconds for a solved root.
+
+    Convergence is to well under a second but not to a microsecond, so printing six
+    decimal places claimed a precision the solver does not have - and made the
+    trailing float noise part of the narrative cache key.
+    """
+    state = sade_sati(ephemeris, chart, reference_now)
+    for label, value in (("exit", state.exit_utc), ("phase_start", state.phase_start_utc)):
+        if value is not None:
+            assert value.microsecond == 0, f"{label}_utc carries {value.microsecond} us"
