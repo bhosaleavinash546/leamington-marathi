@@ -245,9 +245,24 @@ text { fill: currentColor; }
 """.strip()
 
 
-def _text(x: float, y: float, content: str, cls: str, anchor: str = "middle") -> str:
+def _text(
+    x: float,
+    y: float,
+    content: str,
+    cls: str,
+    anchor: str = "middle",
+    house: int | None = None,
+) -> str:
+    """One text mark. ``house`` tags it for the draw-in's ordering.
+
+    DESIGN.md §4.1 staggers the graha glyphs "by house order 1->12, never random -
+    the order itself teaches the reading sequence". Document order in the SVG is
+    house order already, but that is an accident of how the cells are emitted; the
+    attribute makes the ordering explicit and survives a change to the loop.
+    """
+    tag = f' data-house="{house}"' if house is not None else ""
     return (
-        f'<text x="{x:.1f}" y="{y:.1f}" class="{cls}" text-anchor="{anchor}">'
+        f'<text x="{x:.1f}" y="{y:.1f}" class="{cls}" text-anchor="{anchor}"{tag}>'
         f"{html.escape(content)}</text>"
     )
 

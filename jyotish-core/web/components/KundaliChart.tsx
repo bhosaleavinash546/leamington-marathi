@@ -3,6 +3,8 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import type { ChartStyle } from '@/lib/api';
+import { drawInChart, markDrawn } from '@/lib/draw-in';
+import { useMotionPreferences } from './MotionProvider';
 
 /**
  * A kundali chart, drawn from server-supplied SVG.
@@ -24,14 +26,21 @@ export function KundaliChart({
   svg,
   tableHtml,
   style,
+  chartId,
   onSelectHouse,
 }: {
   svg: string;
   tableHtml: string;
   style: ChartStyle;
+  /**
+   * Identifies *this chart*, for the draw-in's once-only guard (§4.1). Must not
+   * vary with locale or numeral system: those change the glyphs, not the chart.
+   */
+  chartId: string;
   onSelectHouse?: (house: number) => void;
 }) {
   const t = useTranslations('ui');
+  const { reduced } = useMotionPreferences();
   const containerRef = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<number | null>(null);
   const [showTable, setShowTable] = useState(false);
@@ -72,6 +81,23 @@ export function KundaliChart({
     }
     return () => cleanups.forEach((fn) => fn());
   }, [svg, onSelectHouse]);
+
+  // The draw-in (DESIGN.md §4.1), once per chart. A re-render, a tab return, a
+  // locale switch or a theme switch finds the chart already drawn and leaves it
+  // alone.
+  //
+  // The `reduced` check comes *before* `markDrawn`, and the order is the whole
+  // correctness of it. `MotionProvider` reports `reduced` until it has read the
+  // media query after mount, so this effect always runs once in the reduced
+  // state first. Consuming the guard on that pass spends it on a no-op, and the
+  // real pass a frame later finds it gone — the chart then never draws for
+  // anyone. Claim the guard only when about to actually animate.
+  useEffect(() => {
+    const root = containerRef.current;
+    if (!root || reduced) return;
+    if (!markDrawn(chartId)) return;
+    return drawInChart(root, false);
+  }, [chartId, reduced, svg]);
 
   // Reflect the selection into the markup so CSS can highlight it without a
   // re-render of the SVG string.

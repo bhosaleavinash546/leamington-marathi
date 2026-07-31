@@ -53,6 +53,9 @@ export default async function KundaliPage({
   };
 
   const style = (one('style') || 'north_indian') as ChartStyle;
+  const chartKey = [birth.date, birth.time, birth.place.latitude, birth.place.longitude, style].join(
+    '|',
+  );
   const numerals = (one('numerals') || (locale === 'en' ? 'latin' : 'devanagari')) as NumeralSystem;
 
   let response;
@@ -104,8 +107,23 @@ export default async function KundaliPage({
 
       {hasChart ? (
         <div className="charts">
-          <KundaliChart svg={rashiSvg} tableHtml={rashiTable} style={style} />
-          <KundaliChart svg={navamsaSvg} tableHtml={navamsaTable} style={style} />
+          {/*
+            `chartId` deliberately carries the birth and the varga but not the
+            locale or the numeral system: switching language is not a new chart,
+            and §4.1 forbids replaying the draw-in for it.
+          */}
+          <KundaliChart
+            svg={rashiSvg}
+            tableHtml={rashiTable}
+            style={style}
+            chartId={`${chartKey}:D1`}
+          />
+          <KundaliChart
+            svg={navamsaSvg}
+            tableHtml={navamsaTable}
+            style={style}
+            chartId={`${chartKey}:D9`}
+          />
         </div>
       ) : (
         <p className="note">
