@@ -196,7 +196,7 @@ separate the two unless the almanac's elevation policy is known.
 plains almanac — but say so, and stop threading a parameter that does nothing.
 **Test** Assert sunrise is invariant under elevation, with the reason.
 
-### F-008 · root assumption unverified · `docs/DECISIONS.md` D2/D3
+### F-008 · root assumption unverified · `docs/DECISIONS.md` D2/D3 · **RESOLVED**
 
 **Expected** The authority's ayanamsa read from its own front matter (AUDIT §3).
 **Actual** Asserted, never verified. CLAUDE.md §2.3 marks it `[Likely]`.
@@ -208,6 +208,16 @@ unaffected (ayanamsa cancels in the elongation).
 **Impact** Highest blast radius in the register — ahead of O1, which at least
 leaves tithi and karana untouched.
 **Fix** Read the almanac's front matter. Nothing else should be tuned first.
+**Outcome** Resolved against the owner-supplied दाते पंचांग शक १९४० (2018-19) —
+`audit/live/ALMANAC.md` holds the full evidence. Two independent routes: (1) the
+printed monthly **अयनांश** — २४।०६।४८ (आषाढ कृष्ण) and २४।०६।५० (श्रावण शुक्ल) —
+lands on the engine's `SE_SIDM_LAHIRI` value for its own fortnight to ≤0.5″,
+with the nearest competing family a full arcminute away; (2) the daily
+05:30-IST ग्रहस्पष्ट for 16–17 मे 2018 matches the engine's sidereal longitudes
+to the printed digit for every rigorously-computed body — the Moon to the
+second. Nothing was tuned: the pinned flag was verified, not adjusted.
+Verification is at the almanac's epoch; a 1947 issue would still be the direct
+check for the reference birth's own era (TRACE.md step 5).
 
 ### F-009 · rule-fidelity · `core/milan/ashtakoot.py:432`, `470` · **FIXED**
 
@@ -223,6 +233,32 @@ nadi 0/8, `nadi_exception_same_nakshatra` **fired**. The engine does compute pad
 validated 1–4; the engine already computed them and simply never threaded them
 through. Identical nakshatra *and* pada no longer cancels the dosha. The koot
 *score* is untouched and a test pins that it stays pada-independent.
+
+### F-027 · convention vs authority · `core/types.py` node default · **NEW — owner decision**
+
+**Expected** N2: every published value matches दाते पंचांग. दाते prints राहु
+daily; whichever node it prints is the authority's node.
+**Actual** The engine defaults to the **mean** node — as CLAUDE.md §3.3 itself
+specifies ("Rahu/Ketu default to Mean node") — but दाते पंचांग prints the
+**true** node. The spec conflicts with its own N2 here; that is why this is
+registered rather than fixed.
+**Evidence** `audit/live/ALMANAC.md`: printed राहु 16 मे 2018 **०३।१४।३९**,
+17 मे **०३।१४।३०** — Swiss `TRUE_NODE` gives 03|14|39 and 03|14|30 (exact to
+the printed minute); `MEAN_NODE` gives 03|15|38 and 03|15|35, ~1° away. The
+printed day-to-day motion (−9′/day) is kinematically impossible for the mean
+node (constant −3′11″/day), so this is not a one-day coincidence.
+**Impact** Against the authority, the default sheet's राहु/केतु are wrong by up
+to ~1°40′ (the true-mean oscillation amplitude): wrong nakshatra ~12% of days,
+wrong pada ~50%, wrong rashi when within the oscillation of a boundary; Kaal
+Sarpa borderline cases can flip. Dasha is unaffected (keyed to the Moon).
+The true node is already implemented behind `node_type` and labelled in
+ChartFacts — the question is only the *default*.
+**Fix** Owner decision: flip the default to `true` to honour N2, and amend
+CLAUDE.md §3.3 + `DECISIONS.md` accordingly — or record a documented divergence
+in `DIVERGENCES.md`. Per the standing instruction ("ask before inventing a
+convention"), not changed unilaterally.
+**Test** Once decided: a golden row pinning राहु for 16–17 मे 2018 against the
+printed values.
 
 ---
 
@@ -280,9 +316,10 @@ and timezone fixes come first because everything depends on them."*
 
 | # | Finding | Why here |
 |---|---|---|
-| 1 | **F-008** ayanamsa vs authority | Root of every longitude. Costs one afternoon with the almanac and gates the value of all 62 golden cases |
+| 1 | **F-008** ayanamsa vs authority | ~~Root of every longitude~~ **RESOLVED** against the supplied almanac — verified, not tuned (`audit/live/ALMANAC.md`) |
 | 2 | **F-004** Bombay Time | 39 min → a full sign of lagna. Independent of F-008 and equally foundational |
-| 3 | **F-007** elevation | 3.85 min, confounded with O1; must be settled *before* transcribing sunrise or the comparison is uninterpretable |
+| 3 | **F-007** elevation | 3.85 min, confounded with O1; must be settled *before* transcribing sunrise or the comparison is uninterpretable. The almanac's printed सूर्योदय (Mumbai) + स्थानिक भेद table now make this workable |
+| 3a | **F-027** node type vs authority | दाते prints the **true** node; the engine defaults to mean per CLAUDE.md §3.3 — spec-vs-N2 conflict, needs the owner's call before any golden राहु row can pass |
 | 4 | **F-001 → F-002** Sade Sati determinism | One root cause, two S1 symptoms, contained to one function |
 | 5 | **F-003** dignity labels | 7% of charts, visible in every surface; a school decision plus a reordering |
 | 6 | **F-005 + F-006** Marathi terms and the gate that missed them | Highest visible-credibility return per hour in the register |

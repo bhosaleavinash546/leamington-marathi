@@ -18,7 +18,10 @@ C1 that can be satisfied simultaneously is satisfied:
 - **Adhika month** — the engine places 1947-07-18 → 1947-08-16 inside **अधिक
   श्रावण**; the birth sits on its शुक्ल पौर्णिमा. *Circularity caveat: the
   adhika classification is the engine's own; दाते पंचांग for Shaka 1869 must
-  confirm it, and that confirmation is part of the step-11 check, not assumed.*
+  confirm it, and that confirmation is part of the step-11 check, not assumed.
+  Partially derisked since: the supplied शक १९४० almanac's अधिक ज्येष्ठ 2018
+  headers match `lunar_month_at` exactly (`ALMANAC.md`), so the* logic *is
+  validated at epoch; the 1947* instance *still needs its own page.*
 - **Pre-1955** — the Bombay Time question is live: local mean time for Pune is
   UTC+4:55:26 while the tz database applies +5:30, a 34.6-minute gap the engine
   must surface rather than resolve silently (D20).

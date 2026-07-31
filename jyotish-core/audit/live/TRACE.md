@@ -2,7 +2,9 @@
 
 Reference birth: `REFERENCE_BIRTH.md`. Each step: **input → operation → output →
 external check → verdict**. Session 3 covers steps 1–5 and its gate is step 5;
-steps 6–23 are deliberately not run until it passes (§9).
+steps 6–23 were deliberately not run until it passed. **The gate passed when the
+owner supplied the almanac** (`ALMANAC.md`): step 5 is verified at the almanac's
+epoch, and steps 6–23 are cleared to run in the next session.
 
 Reproduce any engine value here with:
 `POST /v1/chart` with the reference payload (or `fastapi.testclient` against
@@ -82,15 +84,38 @@ Reproduce any engine value here with:
     Spica-at-180° root check in `audit/01-panchang-deltas.md`).
   - Secular sanity: Lahiri's published 1900.0 value plus ~50.3″/yr of accumulation
     lands at ≈23°07′ for 1947.6, matching to the arcminute.
-- **External check:** **दाते पंचांग's printed ayanamsa for Shaka 1869 /
-  1947.** `BLOCKED` — the almanac page is not sourceable from this environment,
-  and standing rule 3 forbids padding the verdict. What settles it: a photograph
-  of the अयनांश line from any 1947 issue (or the nearest printed year, propagated
-  at 50.3″/yr); `docs/UNBLOCKING.md` describes the lookup.
-- **Verdict: BLOCKED.** Per §9 session 3 — "Ayanamsa matches Date Panchang. If
-  not, stop" — **the trace stops here.** Steps 6–23 are not run, because running
-  them before the gate would manufacture the confident, fictional report §9
-  warns about.
+- **External check:** **दाते पंचांग's own printed अयनांश** — the owner supplied
+  a scanned दाते पंचांग for शक १९४० / 2018-19 (`ALMANAC.md`). Two legible
+  monthly values: आषाढ कृष्ण **२४।०६।४८** (engine over that paksha:
+  24°06′46.6″–48.5″), श्रावण शुक्ल **२४।०६।५०** (engine: 48.6″–50.1″). Both
+  inside the engine's own fortnight, matching its value at the paksha close to
+  ≤0.5″; the candidate families sit 1′ (True Chitra), 5′ (KP) and 2°26′ (Raman)
+  away, so the print discriminates decisively. Independently, the almanac's
+  daily 05:30-IST ग्रहस्पष्ट for 16–17 मे 2018 matches the engine's sidereal
+  longitudes to the printed digit for every Moshier-rigorous body — the Moon to
+  the **second**, both days — which could not happen under any other ayanamsa.
+- **Verdict: PASS — verified at the almanac's epoch, propagated by constant
+  identity.** The value the almanac prints is the engine's pinned
+  `SE_SIDM_LAHIRI` (nutation included) — the same single flag that produced
+  23°07′17″ for the 1947 birth instant. What the epoch check cannot do is
+  verify the *1947 print itself*; a Shaka 1869 page remains the direct check,
+  and the secular-sanity figure above stands in until then. The §9 gate —
+  "Ayanamsa matches Date Panchang. If not, stop" — is met: **steps 6–23 may
+  proceed.**
+
+### Step 5a — almanac-epoch corroboration (not part of the numbered trace)
+
+The same almanac spread settles three adjacent conventions, recorded in full in
+`ALMANAC.md`:
+
+- **ग्रहस्पष्ट agreement:** 2 days × 12 columns; every graha the engine models
+  agrees to the printed arcminute (Sun to 2–3″, Moon to 0″).
+- **राहु is the true node** in दाते (matches `TRUE_NODE` to the minute, −9′/day
+  daily motion) while the engine defaults to the mean node → **F-027**, an
+  owner decision, not silently changed.
+- **Month naming:** the almanac's अधिक ज्येष्ठ / निज ज्येष्ठ / आषाढ / श्रावण
+  headers for 2018 match `lunar_month_at` exactly, validating the adhika logic
+  at epoch (the 1947 अधिक श्रावण instance stays open).
 
 ---
 

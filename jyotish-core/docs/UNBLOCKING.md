@@ -1,6 +1,13 @@
 # Unblocking F-007 and F-008: what to look up, and what each value settles
 
-Both findings are blocked on दाते पंचांग. They are **not** blocked on the same
+> **Status update.** The owner supplied a scanned दाते पंचांग (शक १९४०,
+> 2018-19). **Step 1 / F-008 is done** — by route (a), the printed monthly
+> अयनांश, corroborated by the daily 05:30-IST ग्रहस्पष्ट table; evidence in
+> `audit/live/ALMANAC.md`, outcome in `audit/FINDINGS.md` F-008. Step 2
+> (F-007/O1, the sunrise conventions) is now workable from the same scan's
+> printed daily सूर्योदय (Mumbai convention) and is **not yet done**.
+
+Both findings were blocked on दाते पंचांग. They are **not** blocked on the same
 page, and neither needs the full 62-case transcription. This file says exactly
 what to look up first.
 
