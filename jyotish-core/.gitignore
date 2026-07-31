@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Swiss Ephemeris data files, if a user opts into JPL-derived data (DECISIONS.md D7).
+# Large binaries; fetched locally and pointed at via JYOTISH_EPHE_PATH.
+ephe/
+*.se1
+
+# Frontend (web/)
+node_modules/
+.next/
+
+# Playwright run output (DESIGN.md Phase C). The specs are tracked; traces,
+screenshots and the HTML report from a local run are not.
+test-results/
+playwright-report/
+out/
+*.tsbuildinfo
+.env.local

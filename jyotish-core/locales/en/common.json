@@ -1,0 +1,14 @@
+{
+  "absent": "Absent",
+  "moderate": "Moderate",
+  "no": "No",
+  "parampara": "Parampara",
+  "parampara_note": "Traditional practice; not named in the classical texts.",
+  "present": "Present",
+  "provenance": "Basis",
+  "shastra": "Shastra",
+  "shastra_note": "A rule from a named classical text.",
+  "strong": "Strong",
+  "weak": "Weak",
+  "yes": "Yes"
+}

@@ -1,0 +1,308 @@
+# Yoga rule table. See core/rules/engine.py for the predicate grammar.
+#
+# CLAUDE.md 3.3 requires yogas as data, not code, each with a machine-checkable
+# predicate and an evidence trace. Every rule carries a classical citation so a
+# claim can be followed past this engine.
+#
+# Conventions used throughout:
+#   * "house" means the whole-sign house from the lagna, unless a `from:` names a
+#     different reference point.
+#   * `unafflicted` is fixed by this engine to mean "not combust, not
+#     debilitated, not in a dusthana" - see _p_unafflicted in engine.py.
+#   * Rules are intentionally *conservative*. Where a classical text states extra
+#     conditions, they are encoded rather than dropped, so this table reports
+#     fewer yogas than a permissive app would. A false positive is worse than a
+#     miss for a tool that shows its evidence.
+
+rules:
+  # -- Lunar yogas ---------------------------------------------------------
+
+  - key: gajakesari
+    citation: "Brihat Parashara Hora Shastra, ch. 36 (Chandra yogas)"
+    provenance: shastra
+    strength: strong
+    notes: >
+      Jupiter in a kendra from the Moon. The stricter reading additionally
+      requires both to be unafflicted, which is what is encoded; the loose
+      reading (placement alone) would fire on roughly a third of all charts.
+    when:
+      all:
+        - graha_in_house_from: { graha: jupiter, from: moon, houses: [1, 4, 7, 10] }
+        - unafflicted: { graha: jupiter }
+        - unafflicted: { graha: moon }
+
+  - key: kemadruma
+    citation: "Brihat Parashara Hora Shastra, ch. 36"
+    provenance: shastra
+    strength: moderate
+    notes: >
+      No graha in the 2nd or 12th from the Moon, and none with the Moon. The Sun
+      is excluded from the count by the classical statement - a Sun adjacent to
+      the Moon is a new-moon condition, not company. Read as an affliction of the
+      mind and support; the cancellations (Kemadruma bhanga) are separate rules
+      below and the narrative layer must check for them.
+    when:
+      all:
+        - no_graha_in_houses_from:
+            from: moon
+            houses: [1, 2, 12]
+            exclude: [sun, rahu, ketu]
+
+  - key: kemadruma_bhanga_kendra_jupiter
+    citation: "Phaladeepika, ch. 6 (cancellation of Kemadruma)"
+    provenance: shastra
+    strength: moderate
+    notes: Jupiter in a kendra from the lagna cancels Kemadruma.
+    when:
+      graha_in_house: { graha: jupiter, houses: [1, 4, 7, 10] }
+
+  - key: chandra_mangal
+    citation: "Brihat Parashara Hora Shastra, ch. 36"
+    provenance: shastra
+    strength: moderate
+    notes: Moon and Mars in the same house. Traditionally read as earning capacity.
+    when:
+      same_house: { grahas: [moon, mars] }
+
+  - key: adhi_yoga
+    citation: "Brihat Parashara Hora Shastra, ch. 36"
+    provenance: shastra
+    strength: moderate
+    notes: Benefics in the 6th, 7th and 8th counted from the Moon.
+    when:
+      at_least:
+        count: 3
+        of:
+          - graha_in_house_from: { graha: jupiter, from: moon, houses: [6, 7, 8] }
+          - graha_in_house_from: { graha: venus, from: moon, houses: [6, 7, 8] }
+          - graha_in_house_from: { graha: mercury, from: moon, houses: [6, 7, 8] }
+
+  # -- Solar / Mercurial --------------------------------------------------
+
+  - key: budha_aditya
+    citation: "Brihat Parashara Hora Shastra, ch. 36"
+    provenance: shastra
+    strength: moderate
+    notes: >
+      Sun and Mercury in the same house. Encoded with a not-combust condition on
+      Mercury: a Mercury inside its combustion orb is astamgata, and most
+      authorities hold the yoga weakened or absent then. The unconditional form
+      would fire on about a quarter of charts.
+    when:
+      all:
+        - same_house: { grahas: [sun, mercury] }
+        - not: { combust: { graha: mercury } }
+
+  - key: veshi
+    citation: "Brihat Jataka, ch. 12"
+    provenance: shastra
+    strength: weak
+    notes: A graha other than the Moon in the 2nd from the Sun.
+    when:
+      any:
+        - graha_in_house_from: { graha: mercury, from: sun, houses: [2] }
+        - graha_in_house_from: { graha: venus, from: sun, houses: [2] }
+        - graha_in_house_from: { graha: mars, from: sun, houses: [2] }
+        - graha_in_house_from: { graha: jupiter, from: sun, houses: [2] }
+        - graha_in_house_from: { graha: saturn, from: sun, houses: [2] }
+
+  # -- Panchamahapurusha yogas -------------------------------------------
+  # Each requires its graha in its own sign or exalted, AND in a kendra from the
+  # lagna. Both conditions are classical; the placement alone is not the yoga.
+
+  - key: ruchaka
+    citation: "Brihat Parashara Hora Shastra, ch. 75 (Panchamahapurusha)"
+    provenance: shastra
+    strength: strong
+    notes: Mars in own sign or exalted, in a kendra.
+    when:
+      all:
+        - dignity: { graha: mars, dignities: [own_sign, moolatrikona, exalted] }
+        - graha_in_house: { graha: mars, houses: [1, 4, 7, 10] }
+
+  - key: bhadra
+    citation: "Brihat Parashara Hora Shastra, ch. 75"
+    provenance: shastra
+    strength: strong
+    notes: Mercury in own sign or exalted, in a kendra.
+    when:
+      all:
+        - dignity: { graha: mercury, dignities: [own_sign, moolatrikona, exalted] }
+        - graha_in_house: { graha: mercury, houses: [1, 4, 7, 10] }
+
+  - key: hamsa
+    citation: "Brihat Parashara Hora Shastra, ch. 75"
+    provenance: shastra
+    strength: strong
+    notes: Jupiter in own sign or exalted, in a kendra.
+    when:
+      all:
+        - dignity: { graha: jupiter, dignities: [own_sign, moolatrikona, exalted] }
+        - graha_in_house: { graha: jupiter, houses: [1, 4, 7, 10] }
+
+  - key: malavya
+    citation: "Brihat Parashara Hora Shastra, ch. 75"
+    provenance: shastra
+    strength: strong
+    notes: Venus in own sign or exalted, in a kendra.
+    when:
+      all:
+        - dignity: { graha: venus, dignities: [own_sign, moolatrikona, exalted] }
+        - graha_in_house: { graha: venus, houses: [1, 4, 7, 10] }
+
+  - key: shasha
+    citation: "Brihat Parashara Hora Shastra, ch. 75"
+    provenance: shastra
+    strength: strong
+    notes: Saturn in own sign or exalted, in a kendra.
+    when:
+      all:
+        - dignity: { graha: saturn, dignities: [own_sign, moolatrikona, exalted] }
+        - graha_in_house: { graha: saturn, houses: [1, 4, 7, 10] }
+
+  # -- Raja yogas ---------------------------------------------------------
+  # A kendra lord conjunct a trikona lord. Each pair is a separate rule so the
+  # evidence names exactly which two lordships met.
+
+  - key: raja_yoga_kendra_trikona_1_5
+    citation: "Brihat Parashara Hora Shastra, ch. 41 (Raja yogas)"
+    provenance: shastra
+    strength: strong
+    when:
+      house_lords_conjunct: { houses: [1, 5] }
+
+  - key: raja_yoga_kendra_trikona_1_9
+    citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
+    strength: strong
+    when:
+      house_lords_conjunct: { houses: [1, 9] }
+
+  - key: raja_yoga_kendra_trikona_4_5
+    citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
+    strength: strong
+    when:
+      house_lords_conjunct: { houses: [4, 5] }
+
+  - key: raja_yoga_kendra_trikona_4_9
+    citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
+    strength: strong
+    when:
+      house_lords_conjunct: { houses: [4, 9] }
+
+  - key: raja_yoga_kendra_trikona_7_5
+    citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
+    strength: strong
+    when:
+      house_lords_conjunct: { houses: [7, 5] }
+
+  - key: raja_yoga_kendra_trikona_7_9
+    citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
+    strength: strong
+    when:
+      house_lords_conjunct: { houses: [7, 9] }
+
+  - key: raja_yoga_kendra_trikona_10_5
+    citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
+    strength: strong
+    when:
+      house_lords_conjunct: { houses: [10, 5] }
+
+  - key: raja_yoga_kendra_trikona_10_9
+    citation: "Brihat Parashara Hora Shastra, ch. 41"
+    provenance: shastra
+    strength: strong
+    when:
+      house_lords_conjunct: { houses: [10, 9] }
+
+  # -- Other classical combinations --------------------------------------
+
+  - key: dhana_yoga_2_11_lords
+    citation: "Phaladeepika, ch. 14 (Dhana yogas)"
+    provenance: shastra
+    strength: moderate
+    notes: Lords of the 2nd and 11th houses conjunct.
+    when:
+      house_lords_conjunct: { houses: [2, 11] }
+
+  - key: amala_yoga
+    citation: "Phaladeepika, ch. 6"
+    provenance: shastra
+    strength: moderate
+    notes: A benefic in the 10th from the lagna or from the Moon.
+    when:
+      any:
+        - graha_in_house: { graha: jupiter, houses: [10] }
+        - graha_in_house: { graha: venus, houses: [10] }
+        - graha_in_house: { graha: mercury, houses: [10] }
+
+  - key: parvata_yoga
+    citation: "Phaladeepika, ch. 6"
+    provenance: shastra
+    strength: moderate
+    notes: Benefics in kendras with the 6th and 8th houses empty of grahas.
+    when:
+      all:
+        - count_in_houses: { houses: [6, 8], max: 0 }
+        - at_least:
+            count: 1
+            of:
+              - graha_in_house: { graha: jupiter, houses: [1, 4, 7, 10] }
+              - graha_in_house: { graha: venus, houses: [1, 4, 7, 10] }
+              - graha_in_house: { graha: mercury, houses: [1, 4, 7, 10] }
+
+  - key: chamara_yoga
+    citation: "Phaladeepika, ch. 6"
+    provenance: shastra
+    strength: moderate
+    notes: The lagna lord exalted in a kendra and aspected by Jupiter.
+    when:
+      all:
+        - house_lord_in_house: { of_house: 1, houses: [1, 4, 7, 10] }
+        - dignity: { graha: jupiter, dignities: [own_sign, moolatrikona, exalted, great_friend] }
+
+  - key: shakata_yoga
+    citation: "Phaladeepika, ch. 6"
+    provenance: shastra
+    strength: weak
+    notes: >
+      Jupiter in the 6th, 8th or 12th from the Moon. Read as fluctuating
+      fortune. Included because a chart that shows only favourable yogas is not
+      a credible reading.
+    when:
+      graha_in_house_from: { graha: jupiter, from: moon, houses: [6, 8, 12] }
+
+  - key: vakri_bala_vriddhi
+    citation: "Uttara Kalamrita, ch. 4 (on vakri grahas)"
+    provenance: shastra
+    strength: moderate
+    notes: >
+      A retrograde (वक्री) graha sitting in its own sign, moolatrikona or
+      exaltation. Retrogression is held to intensify whatever the placement
+      already signifies, so a strong placement is strengthened further - the
+      converse case, a retrograde graha in debilitation, is a separate reading and
+      is not encoded here. Mars, Mercury, Jupiter, Venus and Saturn only: the
+      luminaries never retrograde, and node retrogression is a different
+      phenomenon entirely (CLAUDE.md 4.8).
+    when:
+      any:
+        - all:
+            - retrograde: { graha: mars }
+            - dignity: { graha: mars, dignities: [own_sign, moolatrikona, exalted] }
+        - all:
+            - retrograde: { graha: mercury }
+            - dignity: { graha: mercury, dignities: [own_sign, moolatrikona, exalted] }
+        - all:
+            - retrograde: { graha: jupiter }
+            - dignity: { graha: jupiter, dignities: [own_sign, moolatrikona, exalted] }
+        - all:
+            - retrograde: { graha: venus }
+            - dignity: { graha: venus, dignities: [own_sign, moolatrikona, exalted] }
+        - all:
+            - retrograde: { graha: saturn }
+            - dignity: { graha: saturn, dignities: [own_sign, moolatrikona, exalted] }

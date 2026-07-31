@@ -1,0 +1,1881 @@
+{
+ "_note": "Seed gazetteer. CLAUDE.md 2.2 asks for a GeoNames extract of India with population > 500 (~20k rows); this is a curated seed of real coordinates for Maharashtra, the major Indian cities and the UK places the Leamington Marathi community needs. The shortfall is reported by GET /v1/places (dataset.note) and recorded in docs/DIVERGENCES.md. Run tools/geonames_import.py with a GeoNames IN.txt to replace this file.",
+ "source": "curated; coordinates from public census and GeoNames values",
+ "places": [
+  {
+   "name": "Mumbai",
+   "names": {
+    "mr": "मुंबई",
+    "hi": "मुंबई",
+    "en": "Mumbai"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.076,
+   "longitude": 72.8777,
+   "elevation_m": 14.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 12442373
+  },
+  {
+   "name": "Pune",
+   "names": {
+    "mr": "पुणे",
+    "hi": "पुणे",
+    "en": "Pune"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 18.5204,
+   "longitude": 73.8567,
+   "elevation_m": 560.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 3124458
+  },
+  {
+   "name": "Nagpur",
+   "names": {
+    "mr": "नागपूर",
+    "hi": "नागपुर",
+    "en": "Nagpur"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 21.1458,
+   "longitude": 79.0882,
+   "elevation_m": 310.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 2405665
+  },
+  {
+   "name": "Thane",
+   "names": {
+    "mr": "ठाणे",
+    "hi": "ठाणे",
+    "en": "Thane"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.2183,
+   "longitude": 72.9781,
+   "elevation_m": 7.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1841488
+  },
+  {
+   "name": "Nashik",
+   "names": {
+    "mr": "नाशिक",
+    "hi": "नासिक",
+    "en": "Nashik"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.9975,
+   "longitude": 73.7898,
+   "elevation_m": 584.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1486053
+  },
+  {
+   "name": "Chhatrapati Sambhajinagar",
+   "names": {
+    "mr": "छत्रपती संभाजीनगर",
+    "hi": "छत्रपति संभाजीनगर",
+    "en": "Chhatrapati Sambhajinagar"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.8762,
+   "longitude": 75.3433,
+   "elevation_m": 568.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1175116
+  },
+  {
+   "name": "Solapur",
+   "names": {
+    "mr": "सोलापूर",
+    "hi": "सोलापुर",
+    "en": "Solapur"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 17.6599,
+   "longitude": 75.9064,
+   "elevation_m": 457.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 951558
+  },
+  {
+   "name": "Kolhapur",
+   "names": {
+    "mr": "कोल्हापूर",
+    "hi": "कोल्हापुर",
+    "en": "Kolhapur"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 16.705,
+   "longitude": 74.2433,
+   "elevation_m": 569.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 549236
+  },
+  {
+   "name": "Amravati",
+   "names": {
+    "mr": "अमरावती",
+    "hi": "अमरावती",
+    "en": "Amravati"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 20.932,
+   "longitude": 77.7523,
+   "elevation_m": 343.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 647057
+  },
+  {
+   "name": "Nanded",
+   "names": {
+    "mr": "नांदेड",
+    "hi": "नांदेड",
+    "en": "Nanded"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.1383,
+   "longitude": 77.321,
+   "elevation_m": 362.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 550564
+  },
+  {
+   "name": "Sangli",
+   "names": {
+    "mr": "सांगली",
+    "hi": "सांगली",
+    "en": "Sangli"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 16.8524,
+   "longitude": 74.5815,
+   "elevation_m": 550.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 502697
+  },
+  {
+   "name": "Jalgaon",
+   "names": {
+    "mr": "जळगाव",
+    "hi": "जलगाँव",
+    "en": "Jalgaon"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 21.0077,
+   "longitude": 75.5626,
+   "elevation_m": 209.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 460468
+  },
+  {
+   "name": "Akola",
+   "names": {
+    "mr": "अकोला",
+    "hi": "अकोला",
+    "en": "Akola"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 20.7002,
+   "longitude": 77.0082,
+   "elevation_m": 282.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 425817
+  },
+  {
+   "name": "Latur",
+   "names": {
+    "mr": "लातूर",
+    "hi": "लातूर",
+    "en": "Latur"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 18.4088,
+   "longitude": 76.5604,
+   "elevation_m": 631.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 382754
+  },
+  {
+   "name": "Ahmednagar",
+   "names": {
+    "mr": "अहमदनगर",
+    "hi": "अहमदनगर",
+    "en": "Ahmednagar"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.0948,
+   "longitude": 74.748,
+   "elevation_m": 649.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 350905
+  },
+  {
+   "name": "Dhule",
+   "names": {
+    "mr": "धुळे",
+    "hi": "धुले",
+    "en": "Dhule"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 20.9042,
+   "longitude": 74.7749,
+   "elevation_m": 258.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 376093
+  },
+  {
+   "name": "Ichalkaranji",
+   "names": {
+    "mr": "इचलकरंजी",
+    "hi": "इचलकरंजी",
+    "en": "Ichalkaranji"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 16.6913,
+   "longitude": 74.4605,
+   "elevation_m": 551.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 287570
+  },
+  {
+   "name": "Chandrapur",
+   "names": {
+    "mr": "चंद्रपूर",
+    "hi": "चंद्रपुर",
+    "en": "Chandrapur"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.9615,
+   "longitude": 79.2961,
+   "elevation_m": 189.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 321036
+  },
+  {
+   "name": "Parbhani",
+   "names": {
+    "mr": "परभणी",
+    "hi": "परभणी",
+    "en": "Parbhani"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.2704,
+   "longitude": 76.7601,
+   "elevation_m": 423.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 307191
+  },
+  {
+   "name": "Jalna",
+   "names": {
+    "mr": "जालना",
+    "hi": "जालना",
+    "en": "Jalna"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.841,
+   "longitude": 75.8864,
+   "elevation_m": 494.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 285577
+  },
+  {
+   "name": "Bhusawal",
+   "names": {
+    "mr": "भुसावळ",
+    "hi": "भुसावल",
+    "en": "Bhusawal"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 21.0436,
+   "longitude": 75.7851,
+   "elevation_m": 209.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 187421
+  },
+  {
+   "name": "Panvel",
+   "names": {
+    "mr": "पनवेल",
+    "hi": "पनवेल",
+    "en": "Panvel"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 18.9894,
+   "longitude": 73.1175,
+   "elevation_m": 12.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 180020
+  },
+  {
+   "name": "Satara",
+   "names": {
+    "mr": "सातारा",
+    "hi": "सतारा",
+    "en": "Satara"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 17.6805,
+   "longitude": 73.9933,
+   "elevation_m": 742.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 120079
+  },
+  {
+   "name": "Beed",
+   "names": {
+    "mr": "बीड",
+    "hi": "बीड",
+    "en": "Beed"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 18.9891,
+   "longitude": 75.7601,
+   "elevation_m": 515.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 146237
+  },
+  {
+   "name": "Yavatmal",
+   "names": {
+    "mr": "यवतमाळ",
+    "hi": "यवतमाल",
+    "en": "Yavatmal"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 20.3888,
+   "longitude": 78.1204,
+   "elevation_m": 445.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 116551
+  },
+  {
+   "name": "Osmanabad",
+   "names": {
+    "mr": "धाराशिव",
+    "hi": "धाराशिव",
+    "en": "Osmanabad"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 18.186,
+   "longitude": 76.0419,
+   "elevation_m": 653.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 111825
+  },
+  {
+   "name": "Nandurbar",
+   "names": {
+    "mr": "नंदुरबार",
+    "hi": "नंदुरबार",
+    "en": "Nandurbar"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 21.3667,
+   "longitude": 74.25,
+   "elevation_m": 208.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 112118
+  },
+  {
+   "name": "Wardha",
+   "names": {
+    "mr": "वर्धा",
+    "hi": "वर्धा",
+    "en": "Wardha"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 20.7453,
+   "longitude": 78.6022,
+   "elevation_m": 242.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 106444
+  },
+  {
+   "name": "Ratnagiri",
+   "names": {
+    "mr": "रत्नागिरी",
+    "hi": "रत्नागिरी",
+    "en": "Ratnagiri"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 16.9902,
+   "longitude": 73.312,
+   "elevation_m": 6.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 76229
+  },
+  {
+   "name": "Sindhudurg",
+   "names": {
+    "mr": "सिंधुदुर्ग",
+    "hi": "सिंधुदुर्ग",
+    "en": "Sindhudurg"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 16.13,
+   "longitude": 73.68,
+   "elevation_m": 20.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 45000
+  },
+  {
+   "name": "Alibag",
+   "names": {
+    "mr": "अलिबाग",
+    "hi": "अलीबाग",
+    "en": "Alibag"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 18.6414,
+   "longitude": 72.8722,
+   "elevation_m": 3.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 19923
+  },
+  {
+   "name": "Baramati",
+   "names": {
+    "mr": "बारामती",
+    "hi": "बारामती",
+    "en": "Baramati"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 18.1514,
+   "longitude": 74.5815,
+   "elevation_m": 538.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 54405
+  },
+  {
+   "name": "Karad",
+   "names": {
+    "mr": "कराड",
+    "hi": "कराड",
+    "en": "Karad"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 17.2896,
+   "longitude": 74.1815,
+   "elevation_m": 562.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 63219
+  },
+  {
+   "name": "Pandharpur",
+   "names": {
+    "mr": "पंढरपूर",
+    "hi": "पंढरपुर",
+    "en": "Pandharpur"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 17.6799,
+   "longitude": 75.33,
+   "elevation_m": 455.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 98923
+  },
+  {
+   "name": "Shirdi",
+   "names": {
+    "mr": "शिर्डी",
+    "hi": "शिरडी",
+    "en": "Shirdi"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.7645,
+   "longitude": 74.4762,
+   "elevation_m": 504.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 36004
+  },
+  {
+   "name": "Nashik Road",
+   "names": {
+    "mr": "नाशिक रोड",
+    "hi": "नासिक रोड",
+    "en": "Nashik Road"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.945,
+   "longitude": 73.835,
+   "elevation_m": 570.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 50000
+  },
+  {
+   "name": "Wai",
+   "names": {
+    "mr": "वाई",
+    "hi": "वाई",
+    "en": "Wai"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 17.95,
+   "longitude": 73.89,
+   "elevation_m": 700.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 34000
+  },
+  {
+   "name": "Mahabaleshwar",
+   "names": {
+    "mr": "महाबळेश्वर",
+    "hi": "महाबलेश्वर",
+    "en": "Mahabaleshwar"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 17.9237,
+   "longitude": 73.6586,
+   "elevation_m": 1353.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 12737
+  },
+  {
+   "name": "Lonavala",
+   "names": {
+    "mr": "लोणावळा",
+    "hi": "लोनावला",
+    "en": "Lonavala"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 18.7546,
+   "longitude": 73.4062,
+   "elevation_m": 622.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 57698
+  },
+  {
+   "name": "Kalyan",
+   "names": {
+    "mr": "कल्याण",
+    "hi": "कल्याण",
+    "en": "Kalyan"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.2437,
+   "longitude": 73.1355,
+   "elevation_m": 10.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1246381
+  },
+  {
+   "name": "Vasai",
+   "names": {
+    "mr": "वसई",
+    "hi": "वसई",
+    "en": "Vasai"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.4259,
+   "longitude": 72.8225,
+   "elevation_m": 7.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1221233
+  },
+  {
+   "name": "Mira-Bhayandar",
+   "names": {
+    "mr": "मीरा-भाईंदर",
+    "hi": "मीरा-भायंदर",
+    "en": "Mira-Bhayandar"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.2952,
+   "longitude": 72.8544,
+   "elevation_m": 7.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 809378
+  },
+  {
+   "name": "Navi Mumbai",
+   "names": {
+    "mr": "नवी मुंबई",
+    "hi": "नवी मुंबई",
+    "en": "Navi Mumbai"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.033,
+   "longitude": 73.0297,
+   "elevation_m": 14.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1119477
+  },
+  {
+   "name": "Pimpri-Chinchwad",
+   "names": {
+    "mr": "पिंपरी-चिंचवड",
+    "hi": "पिंपरी-चिंचवड",
+    "en": "Pimpri-Chinchwad"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 18.6279,
+   "longitude": 73.8009,
+   "elevation_m": 570.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1727692
+  },
+  {
+   "name": "Malegaon",
+   "names": {
+    "mr": "मालेगाव",
+    "hi": "मालेगाँव",
+    "en": "Malegaon"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 20.5537,
+   "longitude": 74.525,
+   "elevation_m": 438.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 471312
+  },
+  {
+   "name": "Gondia",
+   "names": {
+    "mr": "गोंदिया",
+    "hi": "गोंदिया",
+    "en": "Gondia"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 21.4624,
+   "longitude": 80.1961,
+   "elevation_m": 313.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 132821
+  },
+  {
+   "name": "Bhandara",
+   "names": {
+    "mr": "भंडारा",
+    "hi": "भंडारा",
+    "en": "Bhandara"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 21.1667,
+   "longitude": 79.65,
+   "elevation_m": 244.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 93000
+  },
+  {
+   "name": "Buldhana",
+   "names": {
+    "mr": "बुलढाणा",
+    "hi": "बुलढाणा",
+    "en": "Buldhana"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 20.5292,
+   "longitude": 76.1842,
+   "elevation_m": 647.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 67431
+  },
+  {
+   "name": "Washim",
+   "names": {
+    "mr": "वाशीम",
+    "hi": "वाशिम",
+    "en": "Washim"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 20.112,
+   "longitude": 77.133,
+   "elevation_m": 530.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 72020
+  },
+  {
+   "name": "Hingoli",
+   "names": {
+    "mr": "हिंगोली",
+    "hi": "हिंगोली",
+    "en": "Hingoli"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.7167,
+   "longitude": 77.15,
+   "elevation_m": 455.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 53000
+  },
+  {
+   "name": "Gadchiroli",
+   "names": {
+    "mr": "गडचिरोली",
+    "hi": "गडचिरोली",
+    "en": "Gadchiroli"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 20.1809,
+   "longitude": 80.0035,
+   "elevation_m": 215.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 44000
+  },
+  {
+   "name": "Palghar",
+   "names": {
+    "mr": "पालघर",
+    "hi": "पालघर",
+    "en": "Palghar"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 19.6967,
+   "longitude": 72.7656,
+   "elevation_m": 10.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 68930
+  },
+  {
+   "name": "Raigad",
+   "names": {
+    "mr": "रायगड",
+    "hi": "रायगढ़",
+    "en": "Raigad"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 18.5158,
+   "longitude": 73.1822,
+   "elevation_m": 820.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 25000
+  },
+  {
+   "name": "Delhi",
+   "names": {
+    "mr": "दिल्ली",
+    "hi": "दिल्ली",
+    "en": "Delhi"
+   },
+   "state": "Delhi",
+   "country": "IN",
+   "latitude": 28.6139,
+   "longitude": 77.209,
+   "elevation_m": 216.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 16314838
+  },
+  {
+   "name": "New Delhi",
+   "names": {
+    "mr": "नवी दिल्ली",
+    "hi": "नई दिल्ली",
+    "en": "New Delhi"
+   },
+   "state": "Delhi",
+   "country": "IN",
+   "latitude": 28.6139,
+   "longitude": 77.209,
+   "elevation_m": 216.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 257803
+  },
+  {
+   "name": "Bengaluru",
+   "names": {
+    "mr": "बेंगळूरू",
+    "hi": "बेंगलुरु",
+    "en": "Bengaluru"
+   },
+   "state": "Karnataka",
+   "country": "IN",
+   "latitude": 12.9716,
+   "longitude": 77.5946,
+   "elevation_m": 920.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 8443675
+  },
+  {
+   "name": "Hyderabad",
+   "names": {
+    "mr": "हैदराबाद",
+    "hi": "हैदराबाद",
+    "en": "Hyderabad"
+   },
+   "state": "Telangana",
+   "country": "IN",
+   "latitude": 17.385,
+   "longitude": 78.4867,
+   "elevation_m": 542.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 6809970
+  },
+  {
+   "name": "Chennai",
+   "names": {
+    "mr": "चेन्नई",
+    "hi": "चेन्नई",
+    "en": "Chennai"
+   },
+   "state": "Tamil Nadu",
+   "country": "IN",
+   "latitude": 13.0827,
+   "longitude": 80.2707,
+   "elevation_m": 7.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 4646732
+  },
+  {
+   "name": "Kolkata",
+   "names": {
+    "mr": "कोलकाता",
+    "hi": "कोलकाता",
+    "en": "Kolkata"
+   },
+   "state": "West Bengal",
+   "country": "IN",
+   "latitude": 22.5726,
+   "longitude": 88.3639,
+   "elevation_m": 9.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 4496694
+  },
+  {
+   "name": "Ahmedabad",
+   "names": {
+    "mr": "अहमदाबाद",
+    "hi": "अहमदाबाद",
+    "en": "Ahmedabad"
+   },
+   "state": "Gujarat",
+   "country": "IN",
+   "latitude": 23.0225,
+   "longitude": 72.5714,
+   "elevation_m": 53.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 5570585
+  },
+  {
+   "name": "Surat",
+   "names": {
+    "mr": "सुरत",
+    "hi": "सूरत",
+    "en": "Surat"
+   },
+   "state": "Gujarat",
+   "country": "IN",
+   "latitude": 21.1702,
+   "longitude": 72.8311,
+   "elevation_m": 13.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 4467797
+  },
+  {
+   "name": "Jaipur",
+   "names": {
+    "mr": "जयपूर",
+    "hi": "जयपुर",
+    "en": "Jaipur"
+   },
+   "state": "Rajasthan",
+   "country": "IN",
+   "latitude": 26.9124,
+   "longitude": 75.7873,
+   "elevation_m": 431.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 3046163
+  },
+  {
+   "name": "Lucknow",
+   "names": {
+    "mr": "लखनौ",
+    "hi": "लखनऊ",
+    "en": "Lucknow"
+   },
+   "state": "Uttar Pradesh",
+   "country": "IN",
+   "latitude": 26.8467,
+   "longitude": 80.9462,
+   "elevation_m": 123.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 2817105
+  },
+  {
+   "name": "Kanpur",
+   "names": {
+    "mr": "कानपूर",
+    "hi": "कानपुर",
+    "en": "Kanpur"
+   },
+   "state": "Uttar Pradesh",
+   "country": "IN",
+   "latitude": 26.4499,
+   "longitude": 80.3319,
+   "elevation_m": 126.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 2765348
+  },
+  {
+   "name": "Indore",
+   "names": {
+    "mr": "इंदूर",
+    "hi": "इंदौर",
+    "en": "Indore"
+   },
+   "state": "Madhya Pradesh",
+   "country": "IN",
+   "latitude": 22.7196,
+   "longitude": 75.8577,
+   "elevation_m": 553.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1964086
+  },
+  {
+   "name": "Bhopal",
+   "names": {
+    "mr": "भोपाळ",
+    "hi": "भोपाल",
+    "en": "Bhopal"
+   },
+   "state": "Madhya Pradesh",
+   "country": "IN",
+   "latitude": 23.2599,
+   "longitude": 77.4126,
+   "elevation_m": 527.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1798218
+  },
+  {
+   "name": "Patna",
+   "names": {
+    "mr": "पाटणा",
+    "hi": "पटना",
+    "en": "Patna"
+   },
+   "state": "Bihar",
+   "country": "IN",
+   "latitude": 25.5941,
+   "longitude": 85.1376,
+   "elevation_m": 53.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1683200
+  },
+  {
+   "name": "Vadodara",
+   "names": {
+    "mr": "वडोदरा",
+    "hi": "वडोदरा",
+    "en": "Vadodara"
+   },
+   "state": "Gujarat",
+   "country": "IN",
+   "latitude": 22.3072,
+   "longitude": 73.1812,
+   "elevation_m": 39.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1670806
+  },
+  {
+   "name": "Ludhiana",
+   "names": {
+    "mr": "लुधियाना",
+    "hi": "लुधियाना",
+    "en": "Ludhiana"
+   },
+   "state": "Punjab",
+   "country": "IN",
+   "latitude": 30.901,
+   "longitude": 75.8573,
+   "elevation_m": 262.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1613878
+  },
+  {
+   "name": "Agra",
+   "names": {
+    "mr": "आग्रा",
+    "hi": "आगरा",
+    "en": "Agra"
+   },
+   "state": "Uttar Pradesh",
+   "country": "IN",
+   "latitude": 27.1767,
+   "longitude": 78.0081,
+   "elevation_m": 171.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1585704
+  },
+  {
+   "name": "Varanasi",
+   "names": {
+    "mr": "वाराणसी",
+    "hi": "वाराणसी",
+    "en": "Varanasi"
+   },
+   "state": "Uttar Pradesh",
+   "country": "IN",
+   "latitude": 25.3176,
+   "longitude": 82.9739,
+   "elevation_m": 81.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1201815
+  },
+  {
+   "name": "Kochi",
+   "names": {
+    "mr": "कोची",
+    "hi": "कोच्चि",
+    "en": "Kochi"
+   },
+   "state": "Kerala",
+   "country": "IN",
+   "latitude": 9.9312,
+   "longitude": 76.2673,
+   "elevation_m": 7.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 677381
+  },
+  {
+   "name": "Thiruvananthapuram",
+   "names": {
+    "mr": "तिरुवनंतपुरम",
+    "hi": "तिरुवनंतपुरम",
+    "en": "Thiruvananthapuram"
+   },
+   "state": "Kerala",
+   "country": "IN",
+   "latitude": 8.5241,
+   "longitude": 76.9366,
+   "elevation_m": 10.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 957730
+  },
+  {
+   "name": "Coimbatore",
+   "names": {
+    "mr": "कोयंबतूर",
+    "hi": "कोयंबटूर",
+    "en": "Coimbatore"
+   },
+   "state": "Tamil Nadu",
+   "country": "IN",
+   "latitude": 11.0168,
+   "longitude": 76.9558,
+   "elevation_m": 411.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1061447
+  },
+  {
+   "name": "Visakhapatnam",
+   "names": {
+    "mr": "विशाखापट्टणम",
+    "hi": "विशाखापत्तनम",
+    "en": "Visakhapatnam"
+   },
+   "state": "Andhra Pradesh",
+   "country": "IN",
+   "latitude": 17.6868,
+   "longitude": 83.2185,
+   "elevation_m": 45.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1730320
+  },
+  {
+   "name": "Bhubaneswar",
+   "names": {
+    "mr": "भुवनेश्वर",
+    "hi": "भुवनेश्वर",
+    "en": "Bhubaneswar"
+   },
+   "state": "Odisha",
+   "country": "IN",
+   "latitude": 20.2961,
+   "longitude": 85.8245,
+   "elevation_m": 45.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 837737
+  },
+  {
+   "name": "Guwahati",
+   "names": {
+    "mr": "गुवाहाटी",
+    "hi": "गुवाहाटी",
+    "en": "Guwahati"
+   },
+   "state": "Assam",
+   "country": "IN",
+   "latitude": 26.1445,
+   "longitude": 91.7362,
+   "elevation_m": 55.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 957352
+  },
+  {
+   "name": "Chandigarh",
+   "names": {
+    "mr": "चंडीगड",
+    "hi": "चंडीगढ़",
+    "en": "Chandigarh"
+   },
+   "state": "Chandigarh",
+   "country": "IN",
+   "latitude": 30.7333,
+   "longitude": 76.7794,
+   "elevation_m": 321.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 960787
+  },
+  {
+   "name": "Amritsar",
+   "names": {
+    "mr": "अमृतसर",
+    "hi": "अमृतसर",
+    "en": "Amritsar"
+   },
+   "state": "Punjab",
+   "country": "IN",
+   "latitude": 31.634,
+   "longitude": 74.8723,
+   "elevation_m": 234.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1132761
+  },
+  {
+   "name": "Dehradun",
+   "names": {
+    "mr": "देहरादून",
+    "hi": "देहरादून",
+    "en": "Dehradun"
+   },
+   "state": "Uttarakhand",
+   "country": "IN",
+   "latitude": 30.3165,
+   "longitude": 78.0322,
+   "elevation_m": 640.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 578420
+  },
+  {
+   "name": "Raipur",
+   "names": {
+    "mr": "रायपूर",
+    "hi": "रायपुर",
+    "en": "Raipur"
+   },
+   "state": "Chhattisgarh",
+   "country": "IN",
+   "latitude": 21.2514,
+   "longitude": 81.6296,
+   "elevation_m": 298.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1010087
+  },
+  {
+   "name": "Ranchi",
+   "names": {
+    "mr": "रांची",
+    "hi": "रांची",
+    "en": "Ranchi"
+   },
+   "state": "Jharkhand",
+   "country": "IN",
+   "latitude": 23.3441,
+   "longitude": 85.3096,
+   "elevation_m": 651.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1073440
+  },
+  {
+   "name": "Jodhpur",
+   "names": {
+    "mr": "जोधपूर",
+    "hi": "जोधपुर",
+    "en": "Jodhpur"
+   },
+   "state": "Rajasthan",
+   "country": "IN",
+   "latitude": 26.2389,
+   "longitude": 73.0243,
+   "elevation_m": 231.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1033756
+  },
+  {
+   "name": "Udaipur",
+   "names": {
+    "mr": "उदयपूर",
+    "hi": "उदयपुर",
+    "en": "Udaipur"
+   },
+   "state": "Rajasthan",
+   "country": "IN",
+   "latitude": 24.5854,
+   "longitude": 73.7125,
+   "elevation_m": 598.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 451100
+  },
+  {
+   "name": "Mysuru",
+   "names": {
+    "mr": "मैसूर",
+    "hi": "मैसूर",
+    "en": "Mysuru"
+   },
+   "state": "Karnataka",
+   "country": "IN",
+   "latitude": 12.2958,
+   "longitude": 76.6394,
+   "elevation_m": 763.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 893062
+  },
+  {
+   "name": "Mangaluru",
+   "names": {
+    "mr": "मंगळूरू",
+    "hi": "मंगलुरु",
+    "en": "Mangaluru"
+   },
+   "state": "Karnataka",
+   "country": "IN",
+   "latitude": 12.9141,
+   "longitude": 74.856,
+   "elevation_m": 22.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 623841
+  },
+  {
+   "name": "Hubballi",
+   "names": {
+    "mr": "हुबळी",
+    "hi": "हुबली",
+    "en": "Hubballi"
+   },
+   "state": "Karnataka",
+   "country": "IN",
+   "latitude": 15.3647,
+   "longitude": 75.124,
+   "elevation_m": 650.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 943857
+  },
+  {
+   "name": "Belagavi",
+   "names": {
+    "mr": "बेळगाव",
+    "hi": "बेलगाम",
+    "en": "Belagavi"
+   },
+   "state": "Karnataka",
+   "country": "IN",
+   "latitude": 15.8497,
+   "longitude": 74.4977,
+   "elevation_m": 751.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 610350
+  },
+  {
+   "name": "Panaji",
+   "names": {
+    "mr": "पणजी",
+    "hi": "पणजी",
+    "en": "Panaji"
+   },
+   "state": "Goa",
+   "country": "IN",
+   "latitude": 15.4909,
+   "longitude": 73.8278,
+   "elevation_m": 7.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 114405
+  },
+  {
+   "name": "Madgaon",
+   "names": {
+    "mr": "मडगाव",
+    "hi": "मडगाँव",
+    "en": "Madgaon"
+   },
+   "state": "Goa",
+   "country": "IN",
+   "latitude": 15.2993,
+   "longitude": 73.9862,
+   "elevation_m": 10.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 87650
+  },
+  {
+   "name": "Shimla",
+   "names": {
+    "mr": "शिमला",
+    "hi": "शिमला",
+    "en": "Shimla"
+   },
+   "state": "Himachal Pradesh",
+   "country": "IN",
+   "latitude": 31.1048,
+   "longitude": 77.1734,
+   "elevation_m": 2276.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 169578
+  },
+  {
+   "name": "Srinagar",
+   "names": {
+    "mr": "श्रीनगर",
+    "hi": "श्रीनगर",
+    "en": "Srinagar"
+   },
+   "state": "Jammu and Kashmir",
+   "country": "IN",
+   "latitude": 34.0837,
+   "longitude": 74.7973,
+   "elevation_m": 1585.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1180570
+  },
+  {
+   "name": "Jammu",
+   "names": {
+    "mr": "जम्मू",
+    "hi": "जम्मू",
+    "en": "Jammu"
+   },
+   "state": "Jammu and Kashmir",
+   "country": "IN",
+   "latitude": 32.7266,
+   "longitude": 74.857,
+   "elevation_m": 327.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 502197
+  },
+  {
+   "name": "Gwalior",
+   "names": {
+    "mr": "ग्वाल्हेर",
+    "hi": "ग्वालियर",
+    "en": "Gwalior"
+   },
+   "state": "Madhya Pradesh",
+   "country": "IN",
+   "latitude": 26.2183,
+   "longitude": 78.1828,
+   "elevation_m": 197.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1054420
+  },
+  {
+   "name": "Jabalpur",
+   "names": {
+    "mr": "जबलपूर",
+    "hi": "जबलपुर",
+    "en": "Jabalpur"
+   },
+   "state": "Madhya Pradesh",
+   "country": "IN",
+   "latitude": 23.1815,
+   "longitude": 79.9864,
+   "elevation_m": 412.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1055525
+  },
+  {
+   "name": "Allahabad",
+   "names": {
+    "mr": "प्रयागराज",
+    "hi": "प्रयागराज",
+    "en": "Allahabad"
+   },
+   "state": "Uttar Pradesh",
+   "country": "IN",
+   "latitude": 25.4358,
+   "longitude": 81.8463,
+   "elevation_m": 98.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1117094
+  },
+  {
+   "name": "Meerut",
+   "names": {
+    "mr": "मेरठ",
+    "hi": "मेरठ",
+    "en": "Meerut"
+   },
+   "state": "Uttar Pradesh",
+   "country": "IN",
+   "latitude": 28.9845,
+   "longitude": 77.7064,
+   "elevation_m": 224.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1305429
+  },
+  {
+   "name": "Nashik Ozar",
+   "names": {
+    "mr": "ओझर",
+    "hi": "ओझर",
+    "en": "Nashik Ozar"
+   },
+   "state": "Maharashtra",
+   "country": "IN",
+   "latitude": 20.1,
+   "longitude": 73.9333,
+   "elevation_m": 600.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 30000
+  },
+  {
+   "name": "Tirupati",
+   "names": {
+    "mr": "तिरुपती",
+    "hi": "तिरुपति",
+    "en": "Tirupati"
+   },
+   "state": "Andhra Pradesh",
+   "country": "IN",
+   "latitude": 13.6288,
+   "longitude": 79.4192,
+   "elevation_m": 153.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 374260
+  },
+  {
+   "name": "Madurai",
+   "names": {
+    "mr": "मदुरै",
+    "hi": "मदुरै",
+    "en": "Madurai"
+   },
+   "state": "Tamil Nadu",
+   "country": "IN",
+   "latitude": 9.9252,
+   "longitude": 78.1198,
+   "elevation_m": 101.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1017865
+  },
+  {
+   "name": "Tiruchirappalli",
+   "names": {
+    "mr": "तिरुचिरापल्ली",
+    "hi": "तिरुचिरापल्ली",
+    "en": "Tiruchirappalli"
+   },
+   "state": "Tamil Nadu",
+   "country": "IN",
+   "latitude": 10.7905,
+   "longitude": 78.7047,
+   "elevation_m": 88.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 916857
+  },
+  {
+   "name": "Salem",
+   "names": {
+    "mr": "सेलम",
+    "hi": "सेलम",
+    "en": "Salem"
+   },
+   "state": "Tamil Nadu",
+   "country": "IN",
+   "latitude": 11.6643,
+   "longitude": 78.146,
+   "elevation_m": 278.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 829267
+  },
+  {
+   "name": "Vijayawada",
+   "names": {
+    "mr": "विजयवाडा",
+    "hi": "विजयवाड़ा",
+    "en": "Vijayawada"
+   },
+   "state": "Andhra Pradesh",
+   "country": "IN",
+   "latitude": 16.5062,
+   "longitude": 80.648,
+   "elevation_m": 23.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1048240
+  },
+  {
+   "name": "Guntur",
+   "names": {
+    "mr": "गुंटूर",
+    "hi": "गुंटूर",
+    "en": "Guntur"
+   },
+   "state": "Andhra Pradesh",
+   "country": "IN",
+   "latitude": 16.3067,
+   "longitude": 80.4365,
+   "elevation_m": 33.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 743354
+  },
+  {
+   "name": "Warangal",
+   "names": {
+    "mr": "वरंगल",
+    "hi": "वारंगल",
+    "en": "Warangal"
+   },
+   "state": "Telangana",
+   "country": "IN",
+   "latitude": 17.9689,
+   "longitude": 79.5941,
+   "elevation_m": 302.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 811844
+  },
+  {
+   "name": "Aurangabad Bihar",
+   "names": {
+    "mr": "औरंगाबाद",
+    "hi": "औरंगाबाद",
+    "en": "Aurangabad Bihar"
+   },
+   "state": "Bihar",
+   "country": "IN",
+   "latitude": 24.7521,
+   "longitude": 84.3742,
+   "elevation_m": 109.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 102244
+  },
+  {
+   "name": "Kota",
+   "names": {
+    "mr": "कोटा",
+    "hi": "कोटा",
+    "en": "Kota"
+   },
+   "state": "Rajasthan",
+   "country": "IN",
+   "latitude": 25.2138,
+   "longitude": 75.8648,
+   "elevation_m": 271.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1001365
+  },
+  {
+   "name": "Bikaner",
+   "names": {
+    "mr": "बिकानेर",
+    "hi": "बीकानेर",
+    "en": "Bikaner"
+   },
+   "state": "Rajasthan",
+   "country": "IN",
+   "latitude": 28.0229,
+   "longitude": 73.3119,
+   "elevation_m": 242.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 644406
+  },
+  {
+   "name": "Ajmer",
+   "names": {
+    "mr": "अजमेर",
+    "hi": "अजमेर",
+    "en": "Ajmer"
+   },
+   "state": "Rajasthan",
+   "country": "IN",
+   "latitude": 26.4499,
+   "longitude": 74.6399,
+   "elevation_m": 486.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 542580
+  },
+  {
+   "name": "Bareilly",
+   "names": {
+    "mr": "बरेली",
+    "hi": "बरेली",
+    "en": "Bareilly"
+   },
+   "state": "Uttar Pradesh",
+   "country": "IN",
+   "latitude": 28.367,
+   "longitude": 79.4304,
+   "elevation_m": 168.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 903668
+  },
+  {
+   "name": "Aligarh",
+   "names": {
+    "mr": "अलीगड",
+    "hi": "अलीगढ़",
+    "en": "Aligarh"
+   },
+   "state": "Uttar Pradesh",
+   "country": "IN",
+   "latitude": 27.8974,
+   "longitude": 78.088,
+   "elevation_m": 178.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 872575
+  },
+  {
+   "name": "Moradabad",
+   "names": {
+    "mr": "मोरादाबाद",
+    "hi": "मुरादाबाद",
+    "en": "Moradabad"
+   },
+   "state": "Uttar Pradesh",
+   "country": "IN",
+   "latitude": 28.8386,
+   "longitude": 78.7733,
+   "elevation_m": 198.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 887871
+  },
+  {
+   "name": "Gorakhpur",
+   "names": {
+    "mr": "गोरखपूर",
+    "hi": "गोरखपुर",
+    "en": "Gorakhpur"
+   },
+   "state": "Uttar Pradesh",
+   "country": "IN",
+   "latitude": 26.7606,
+   "longitude": 83.3732,
+   "elevation_m": 84.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 671048
+  },
+  {
+   "name": "Siliguri",
+   "names": {
+    "mr": "सिलिगुडी",
+    "hi": "सिलीगुड़ी",
+    "en": "Siliguri"
+   },
+   "state": "West Bengal",
+   "country": "IN",
+   "latitude": 26.7271,
+   "longitude": 88.3953,
+   "elevation_m": 122.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 513264
+  },
+  {
+   "name": "Asansol",
+   "names": {
+    "mr": "आसनसोल",
+    "hi": "आसनसोल",
+    "en": "Asansol"
+   },
+   "state": "West Bengal",
+   "country": "IN",
+   "latitude": 23.6739,
+   "longitude": 86.9524,
+   "elevation_m": 97.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 563917
+  },
+  {
+   "name": "Durgapur",
+   "names": {
+    "mr": "दुर्गापूर",
+    "hi": "दुर्गापुर",
+    "en": "Durgapur"
+   },
+   "state": "West Bengal",
+   "country": "IN",
+   "latitude": 23.5204,
+   "longitude": 87.3119,
+   "elevation_m": 65.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 566937
+  },
+  {
+   "name": "Cuttack",
+   "names": {
+    "mr": "कटक",
+    "hi": "कटक",
+    "en": "Cuttack"
+   },
+   "state": "Odisha",
+   "country": "IN",
+   "latitude": 20.4625,
+   "longitude": 85.883,
+   "elevation_m": 36.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 606007
+  },
+  {
+   "name": "Rajkot",
+   "names": {
+    "mr": "राजकोट",
+    "hi": "राजकोट",
+    "en": "Rajkot"
+   },
+   "state": "Gujarat",
+   "country": "IN",
+   "latitude": 22.3039,
+   "longitude": 70.8022,
+   "elevation_m": 134.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 1286995
+  },
+  {
+   "name": "Bhavnagar",
+   "names": {
+    "mr": "भावनगर",
+    "hi": "भावनगर",
+    "en": "Bhavnagar"
+   },
+   "state": "Gujarat",
+   "country": "IN",
+   "latitude": 21.7645,
+   "longitude": 72.1519,
+   "elevation_m": 24.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 605882
+  },
+  {
+   "name": "Jamnagar",
+   "names": {
+    "mr": "जामनगर",
+    "hi": "जामनगर",
+    "en": "Jamnagar"
+   },
+   "state": "Gujarat",
+   "country": "IN",
+   "latitude": 22.4707,
+   "longitude": 70.0577,
+   "elevation_m": 20.0,
+   "iana_tz": "Asia/Kolkata",
+   "population": 600943
+  },
+  {
+   "name": "Leamington Spa",
+   "names": {
+    "mr": "लेमिंगटन स्पा",
+    "hi": "लेमिंगटन स्पा",
+    "en": "Leamington Spa"
+   },
+   "state": "",
+   "country": "GB",
+   "latitude": 52.2852,
+   "longitude": -1.5201,
+   "elevation_m": 60.0,
+   "iana_tz": "Europe/London",
+   "population": 49575
+  },
+  {
+   "name": "London",
+   "names": {
+    "mr": "लंडन",
+    "hi": "लंदन",
+    "en": "London"
+   },
+   "state": "",
+   "country": "GB",
+   "latitude": 51.5072,
+   "longitude": -0.1276,
+   "elevation_m": 11.0,
+   "iana_tz": "Europe/London",
+   "population": 8908081
+  },
+  {
+   "name": "Birmingham",
+   "names": {
+    "mr": "बर्मिंगहॅम",
+    "hi": "बर्मिंघम",
+    "en": "Birmingham"
+   },
+   "state": "",
+   "country": "GB",
+   "latitude": 52.4862,
+   "longitude": -1.8904,
+   "elevation_m": 140.0,
+   "iana_tz": "Europe/London",
+   "population": 1141374
+  },
+  {
+   "name": "Coventry",
+   "names": {
+    "mr": "कॉव्हेंट्री",
+    "hi": "कोवेंट्री",
+    "en": "Coventry"
+   },
+   "state": "",
+   "country": "GB",
+   "latitude": 52.4068,
+   "longitude": -1.5197,
+   "elevation_m": 80.0,
+   "iana_tz": "Europe/London",
+   "population": 345324
+  },
+  {
+   "name": "Warwick",
+   "names": {
+    "mr": "वॉरविक",
+    "hi": "वारविक",
+    "en": "Warwick"
+   },
+   "state": "",
+   "country": "GB",
+   "latitude": 52.2819,
+   "longitude": -1.5849,
+   "elevation_m": 50.0,
+   "iana_tz": "Europe/London",
+   "population": 31345
+  }
+ ]
+}

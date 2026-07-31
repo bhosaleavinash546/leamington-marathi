@@ -1,0 +1,8 @@
+{
+  "birth_time_approximate_fields_may_vary_within_window": "The birth time is approximate; the fields below can change within that window.",
+  "birth_time_unknown_time_dependent_fields_suppressed": "The birth time is unknown, so lagna, houses, dasha and Ishtakaal are not given.",
+  "date_precedes_gregorian_adoption_confirm_calendar": "This date precedes Gregorian adoption; confirm which calendar the record uses.",
+  "nautical_fixed_offset_zone_unsuitable_for_birth_records": "The zone resolved for this place is a fixed offset, which is unsuitable for a birth record.",
+  "polar_latitude_sunrise_may_be_undefined": "Polar latitude; the Sun does not rise on some dates, so tithi and Ishtakaal are undefined.",
+  "pre_1955_indian_clock_time_ambiguous": "Indian clock time before 1955 is ambiguous - Bombay Time, local mean time and IST differed. Set time_standard if you know which the record uses."
+}

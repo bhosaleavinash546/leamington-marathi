@@ -1,0 +1,116 @@
+# Dosha rule table.
+#
+# CLAUDE.md 3.5: "Mangal / Kuja dosha - support the differing house-set schools
+# (1/4/7/8/12 vs regional variants) as configurable rule sets; state which was
+# applied." Each variant is therefore a separate rule carrying a `ruleset:` tag,
+# and `evaluate_rules(..., ruleset=...)` selects one. The applied ruleset is
+# echoed into ChartFacts so a reader can see which school produced the verdict.
+#
+# CLAUDE.md 6.7 governs how these may be *reported*: a dosha is information with
+# its evidence attached, never a verdict on a marriage. Nothing in this file
+# implies an outcome, and the narrative validator enforces that separately.
+
+rules:
+  # -- Mangal / Kuja dosha, by school -------------------------------------
+
+  - key: mangal_dosha
+    ruleset: maharashtra
+    citation: "Muhurta Chintamani; Maharashtra usage as printed in Marathi panchangs"
+    provenance: shastra
+    strength: moderate
+    notes: >
+      Mars in the 1st, 4th, 7th, 8th or 12th from the lagna. This is the house set
+      in common Maharashtra use and the engine default. Note that the 2nd is
+      absent here and present in the north-Indian set below - that single house is
+      the most consequential difference between the two schools.
+    when:
+      graha_in_house: { graha: mars, houses: [1, 4, 7, 8, 12] }
+
+  - key: mangal_dosha
+    ruleset: north_school
+    citation: "Widely used north-Indian variant (adds the 2nd house)"
+    provenance: parampara
+    strength: moderate
+    notes: Mars in the 1st, 2nd, 4th, 7th, 8th or 12th from the lagna.
+    when:
+      graha_in_house: { graha: mars, houses: [1, 2, 4, 7, 8, 12] }
+
+  - key: mangal_dosha
+    ruleset: south_school
+    citation: "South-Indian variant reckoned from the lagna, Moon and Venus"
+    provenance: parampara
+    strength: moderate
+    notes: >
+      Mars in 1, 2, 4, 7, 8 or 12 counted from the lagna, the Moon *or* Venus. The
+      widest of the three sets, and correspondingly the one that finds the dosha
+      in the largest fraction of charts.
+    when:
+      any:
+        - graha_in_house: { graha: mars, houses: [1, 2, 4, 7, 8, 12] }
+        - graha_in_house_from: { graha: mars, from: moon, houses: [1, 2, 4, 7, 8, 12] }
+        - graha_in_house_from: { graha: mars, from: venus, houses: [1, 2, 4, 7, 8, 12] }
+
+  # -- Mangal dosha cancellations ----------------------------------------
+  # Reported alongside the dosha, never silently applied. Whether a cancellation
+  # removes the dosha is an interpretive judgement, not an arithmetic one.
+
+  - key: mangal_dosha_cancellation_own_sign
+    citation: "Muhurta Chintamani (parihara)"
+    provenance: shastra
+    strength: moderate
+    notes: Mars in its own sign or exalted is held to cancel the dosha.
+    when:
+      dignity: { graha: mars, dignities: [own_sign, moolatrikona, exalted] }
+
+  - key: mangal_dosha_cancellation_jupiter_aspect
+    citation: "Muhurta Chintamani (parihara)"
+    provenance: shastra
+    strength: moderate
+    notes: A Jupiter drishti on Mars is held to cancel the dosha.
+    when:
+      aspects: { graha: jupiter, target: mars, min_strength: 1.0 }
+
+  # -- Pitra dosha -------------------------------------------------------
+
+  - key: pitra_dosha
+    citation: "Traditional; not in the classical samhitas as a named dosha"
+    provenance: parampara
+    strength: weak
+    notes: >
+      Sun afflicted by Saturn or Rahu, or the 9th house involved with Rahu/Ketu.
+      There is no single classical definition; the condition encoded is the one in
+      widest modern use, and its weak strength band reflects that. Recorded in
+      docs/DIVERGENCES.md.
+    when:
+      any:
+        - same_house: { grahas: [sun, rahu] }
+        - same_house: { grahas: [sun, ketu] }
+        - same_house: { grahas: [sun, saturn] }
+        - graha_in_house: { graha: rahu, houses: [9] }
+        - graha_in_house: { graha: ketu, houses: [9] }
+
+  # -- Kendra affliction --------------------------------------------------
+
+  - key: shrapit_dosha
+    citation: "Traditional (Saturn-Rahu conjunction)"
+    provenance: parampara
+    strength: moderate
+    notes: Saturn and Rahu in the same house.
+    when:
+      same_house: { grahas: [saturn, rahu] }
+
+  - key: guru_chandal_dosha
+    citation: "Traditional (Jupiter-Rahu conjunction)"
+    provenance: parampara
+    strength: moderate
+    notes: Jupiter conjunct Rahu, taken within a 10-degree orb rather than by sign.
+    when:
+      within_orb: { grahas: [jupiter, rahu], orb_deg: 10 }
+
+  - key: lagna_lord_in_dusthana
+    citation: "Brihat Parashara Hora Shastra, ch. 41 (arishta)"
+    provenance: shastra
+    strength: weak
+    notes: The lagna lord in the 6th, 8th or 12th.
+    when:
+      house_lord_in_house: { of_house: 1, houses: [6, 8, 12] }

@@ -1,0 +1,557 @@
+# DIRECTION — visual direction, tokens, the patrika sheet, and motion
+
+DESIGN.md §10 Phases A, B and C. Read alongside `web/app/tokens.css` (the
+tokens), `/tokens` (the sheet rendering every one of them in both themes), and
+`web/app/globals.css` (the patrika, written entirely in terms of them).
+
+§§1–7 are Phase A. §8 is Phase B. §9 is Phase C.
+
+Status: tokens committed, sheet built and photographed, contrast and font
+budgets measured. **The page-scan study Phase A opens with has not been done**,
+and could not be from here. That is the first section, not a footnote.
+
+---
+
+## 1. What has not been verified: the दाते पंचांग page
+
+Phase A begins: *"source and study an actual दाते पंचांग page scan and describe
+what you observed."* §1 makes the same point sharply — *"don't reach for a plain
+broadsheet look with hairline rules and zero border-radius and call it
+'panchang-inspired' … go and look at a scan of an actual page before you
+design."*
+
+I have not looked at one. I cannot source or view a page scan in this
+environment, and I will not describe observations I did not make. Every colour,
+measure and rhythm below therefore derives from **DESIGN.md's own description**
+of the artifact — two-colour letterpress, dense numeric columns, Devanagari-first
+type — and not from the artifact. The specification is a good description. It is
+still second-hand, and second-hand is exactly the failure mode §1 names.
+
+Treat the token set as a defensible first proposal, not as a verified match.
+
+### What a reviewer with a real page should check
+
+Concrete enough to be answered in an afternoon with one issue of the almanac.
+Anything that comes back different should move the token, not the page.
+
+| # | Question | Token it would move |
+|---|---|---|
+| 1 | Is the paper warmer or cooler than `#F7F3EA`, and how much does it darken across the gutter? | `--paper`, `--paper-sunk` |
+| 2 | Is the red closer to sindoor `#B3251E` or to a brighter vermilion? Does it shift between the festival column and the warning marks? | `--sindoor`, and whether one red is enough |
+| 3 | Are the rules genuinely hairlines, or do the column rules run heavier than the row rules? | `--hairline`, and whether a second rule weight is needed |
+| 4 | How many type sizes appear on one page? A modular 1.2 assumes roughly six. | the `--step-*` scale, `--step-deva-bump` |
+| 5 | Is the tabular matter set in a serif or a sans? DESIGN.md assigns a sans (IBM Plex Sans Devanagari) to data on a technical-register argument, not on an observed one. | `--font-data` |
+| 6 | Are degrees printed `२४° ०७'`, `२४-०७`, or with the mark omitted? | `core.angles.format_dm` |
+| 7 | Is ग्रहस्पष्ट set with rules on all four sides of every cell, or only horizontals? | the table primitive in Phase B |
+| 8 | Do Devanagari numerals carry the same width as each other in the printed face? Ours do (measured, §5 below); a printed proportional face would change the column strategy. | tabular-figure policy |
+
+Until those are answered the honest claim is: *this is what DESIGN.md's
+description of a panchang implies*, not *this is what दाते पंचांग looks like*.
+
+---
+
+## 2. The direction, stated plainly
+
+The artifact is a **printed sheet**, not a screen with a paper theme. Three
+consequences drive every token:
+
+**Ink is the only material.** There is one shadow token and it exists solely for
+the mobile bottom sheet. Hierarchy comes from rules, weight and the sunk surface.
+Nothing floats, nothing has depth, `--radius-sheet` is `0` and `--radius-control`
+is 2px — the maximum §2.3 permits, and it applies to controls only.
+
+**Red is a word, not a colour.** `--sindoor` marks auspicious and inauspicious
+periods, the active tithi, festival days and warnings. The test in §1 is the
+right one: if removing a red element loses no information, it was decoration. On
+the token sheet, red appears exactly twice — the two signal swatches, and the
+contrast column where it flags a token that needs an outline. That is the
+discipline the product has to keep.
+
+**The Devanagari face was chosen first.** Rozha One for display, Mukta for body,
+IBM Plex Sans Devanagari for data — all three Devanagari-first designs, with
+their own matched Latin. Line-height is 1.7 for Devanagari against 1.5 for Latin
+because tight line boxes clip matras, and the specimen on the sheet is chosen to
+prove it: `कृत्तिका ज्येष्ठा` puts marks above cap-height and below the baseline
+in the same string.
+
+Nine graha colours exist but are rationed. They appear as a 0.9rem chip beside a
+Devanagari abbreviation, never as a fill, never as the only channel.
+
+---
+
+## 3. Reviewed against §1's banned list
+
+Every row, checked against what is actually in `tokens.css` and on the sheet.
+
+| Banned | Present? | Note |
+|---|---|---|
+| Purple/indigo/violet cosmic gradients | No | No gradient of any kind is defined. The palette has no purple. |
+| Twinkling star or particle fields | No | — |
+| Continuously rotating zodiac wheel | No | §3.1's "nothing animates continuously" is a token-level fact: there is no loop or iteration token to reach for. |
+| Glowing/neon/bloom planet orbs | No | Graha colour is a flat 0.9rem square. No blur, no glow token exists. |
+| Glassmorphism, frosted panels, backdrop blur | No | No blur token. `--paper-sunk` does the recessed work. |
+| Crystal balls, tarot, third eyes, mandalas | No | — |
+| Animated ॐ, lotus loaders | No | §4.7 forbids a spinner outright; no loader token. |
+| Faux-Devanagari Latin display fonts | No | The three faces are real Devanagari designs; the Latin is each family's own. |
+| Emoji planets or zodiac emoji | No | Identity is Devanagari abbreviation + colour chip. |
+| Lens flares, bokeh, parallax | No | — |
+| Warm-cream + terracotta + high-contrast-serif | **Nearly** | See below. |
+
+### What changed, and why
+
+**The graha chip.** The first version put the Devanagari abbreviation *inside*
+the coloured chip. Screenshotting it killed the idea. Measured glyph-on-chip
+contrast: Saturn 1.37:1 on light, the Moon 1.04:1 and Venus 1.11:1 on dark. The
+tokens needing an outline to satisfy the *surface* gate were precisely the ones
+whose own glyph vanished — a fill dark enough to read against paper swallows ink
+text, and a fill light enough to read against dark paper swallows light text.
+Colour and glyph are now separate channels: a small chip beside the abbreviation,
+never behind it. Worst abbreviation contrast is now 16.72:1 light and 15.06:1
+dark, and no per-token text-colour table is needed.
+
+**The last banned row is the one to keep watching.** `#F7F3EA` paper with a
+`#B3251E` red and a high-contrast display serif is one lazy step from the
+"warm-cream + terracotta + tasteful serif" default §1 rejects. Three things keep
+it out, and all three are load-bearing rather than decorative:
+
+1. Rozha One is used for the masthead and the patrika title only — it is not a
+   general heading face. On the sheet it appears once.
+2. The red is functional and rationed, not an accent applied to headings.
+3. The type is Devanagari-first and the numerals default to ०–९, which is what
+   the panchang does and what nothing else in the category does. This is the
+   aesthetic risk §2.2 asks for and it is the strongest differentiator here.
+
+If a future screen uses the display serif for section headings, or tints a
+heading `--sindoor` for emphasis, it has fallen into the banned row. That was the
+specific failure to watch for in Phase B, and §8 records that it did not happen:
+Rozha One appears once per sheet, on the name, and every heading is body-face ink
+above a rule.
+
+**Nothing on the sheet animates.** §3.1 bans ambient motion and a token sheet has
+no state change to explain, so the motion tokens are listed as values in a table
+rather than demonstrated. Demonstrating them would itself be decoration.
+
+---
+
+## 4. Where the tokens and the gate disagree
+
+Three places where a measured value fails a stated rule. All three are recorded
+rather than tuned away.
+
+### 4.1 Six graha tokens fail 3:1, not two
+
+§2.1 anticipates that the Moon and Venus "need `--ink` outline on light mode".
+Measuring all nine against both surfaces in both themes (`npm run
+audit:contrast`) found six failures, and not the same six per theme:
+
+```
+light   moon 1.07   venus 1.14   jupiter 2.52
+dark    saturn 1.28  mars 2.38    mercury 2.81
+```
+
+Unsurprising once stated: the token light enough to read on dark paper is the one
+that vanishes on light. The outline is therefore applied **per theme from the
+measurement**, not from the note. No hue changed — this adds no colour to the
+set.
+
+### 4.2 `--rule` fails 3:1 in both themes, and that is correct
+
+1.50:1 on light, 1.43:1 on dark, against the worse of the two surfaces. §8 asks
+3:1 for "UI borders". A letterpress hairline separating rows of a table whose
+structure is already carried by `<table>`/`<th scope>` is decoration, not a
+component identifier, and raising it to 3:1 would give the sheet a gridded,
+spreadsheet look that is the opposite of the direction. The same token would be
+wrong as an input border or a focus ring, where 3:1 genuinely applies, so
+interactive edges take `--rule-interactive` (6.15:1 light, 5.52:1 dark) and the
+audit holds *that* to the gate. `--rule` is the audit's only exemption and it is
+named in the code.
+
+### 4.3 Two faces exceed §9's 90KB budget — owner's call
+
+§9 caps the Devanagari payload at 90KB per face. Measured, after subsetting:
+
+| Face | Size | |
+|---|---|---|
+| Mukta 400 | 99.4KB | over |
+| Mukta 600 | 102.5KB | over |
+| IBM Plex Sans Devanagari 400 / 600 | 80.6 / 82.1KB | within |
+| Rozha One 400 | 73.6KB | within |
+| **Total Devanagari** | **438.3KB across five faces** | |
+
+The overage buys one specific thing: the Devanagari subsets carry the whole of
+U+0900–U+097F rather than only the characters in `locales/`. The `name` field is
+arbitrary user Devanagari, and a corpus-derived subset renders every screen
+correctly and then breaks on the user's own name — the one line they will look at
+first. Corpus-only subsetting saves about 7KB per face and still leaves Mukta
+over budget, so it does not resolve the conflict; it only shrinks it.
+
+Three ways out, none free, all the owner's to pick:
+
+1. **Accept the overage** (current state). 438KB of Devanagari on a mid-range
+   Android over 4G, against §9's implied ~270KB for three faces.
+2. **Drop a weight.** Mukta 600 is the largest single file. Emphasis would come
+   from Plex 600 or from size and rules instead. Saves 102.5KB.
+3. **Drop to two families.** Plex covers body and data within budget; Mukta goes.
+   That contradicts §2.2's face assignment and should not be done on size alone.
+
+Recommendation: (2) — the panchang gets its hierarchy from rules and weight, but
+it does not need two bold Devanagari faces to do it. Deferred to Phase B, when
+there are real components to judge the loss against.
+
+---
+
+## 5. What only a screenshot could find
+
+Phase A's standing instruction — *"screenshot your work and critique it before
+reporting done"* — earned its place. The build was green before any of these were
+visible. `npm run design:screenshot` now automates the check and fails on a page
+that renders no text or logs a CSP violation.
+
+**Every route in the app rendered blank.** `script-src 'self'` with no nonce
+blocks the App Router's inline RSC payload scripts. The server HTML arrived
+complete, React hydrated against an empty tree, and deleted it. This was not new
+in Phase A — it applied to `/mr` and `/mr/kundali` as shipped. `'unsafe-inline'`
+would fix it and is unavailable here: `KundaliChart` mounts server-generated SVG
+through `dangerouslySetInnerHTML`, so an inline `<script>` reaching that markup
+would execute. The CSP now carries a per-request nonce from `middleware.ts`.
+Cost, stated: a nonce cannot be baked into a prerendered page, so the locale
+routes render per request instead of at build time.
+
+**The arcminute prime was in no font the project ships.** `core.angles.format_dm`
+emitted `12°44′` with U+2032. Mukta, Rozha One and IBM Plex Sans Devanagari all
+lack the glyph — and so does the Noto Sans Devanagari that WeasyPrint embeds, so
+every degree in the exported PDF's ग्रहस्पष्ट table was a missing-glyph box.
+`format_dms` in the same module had always used the ASCII apostrophe; `format_dm`
+now matches it. `npm run fonts:subset` fails if a character the app emits has no
+glyph, so the next one cannot ship unseen.
+
+**The token sheet was unreachable.** The locale middleware redirected `/tokens`
+to `/mr/tokens`, which has no route.
+
+**Both themes rendered light.** The dark tokens were scoped to `:root[data-theme]`,
+so a themed subtree — the entire point of a side-by-side sheet — inherited the
+root. The `[data-theme]` selectors are no longer anchored to `:root`, and
+`[data-theme='light']` now restates the light values so a light panel inside a
+dark document works too.
+
+Two things I misread from the screenshot and had to correct by measuring, worth
+recording as method: the dark `--paper` swatch looked white (it is `rgb(20,18,15)`;
+the hairline border misleads at reduced scale), and the Devanagari figures looked
+mis-aligned (all three columns measure identically across rows and across numeral
+systems — 302.2 / 176.3 / 163.4 px — so §5.5's tabular risk does not materialise
+in these faces). Look, then measure; the screenshot finds candidates, not
+verdicts.
+
+---
+
+## 6. Derived tokens — the brief versus the interpretation
+
+Everything in `tokens.css` traceable to DESIGN.md is transcribed verbatim. Four
+things are not in the specification and are marked `DERIVED` in the file:
+
+| Token | Why it exists | Choice |
+|---|---|---|
+| `--step-*`, `--step-deva-bump` | §2.2 asks for "a modular ratio, set once as tokens" without naming one | 1.2 (minor third). A denser ratio suits a tabular sheet; the patrika's hierarchy comes from rules and weight, not size jumps. |
+| `--graha-outline` | §2.1 names two outlined grahas; measurement found six, per theme | `var(--ink)` |
+| `--rule-interactive` | §8's 3:1 applies to interactive edges but not to decorative hairlines, and one token cannot be both | `var(--ink-muted)` |
+| `[data-theme='light']` block | Needed for a subtree to hold the opposite theme | restates the light values |
+
+---
+
+## 7. Open
+
+- The page-scan study (§1). Blocked here; eight specific questions listed.
+- The font budget (§4.3). Recommendation given, decision deferred to Phase B.
+- Whether one red is enough. §1 says one; question 2 above is what would show it.
+- Phases B–H are separate sessions and none has been started.
+
+---
+
+## 8. Phase B — the patrika sheet
+
+Phase A produced tokens and a sheet to argue with. Phase B is the first screen
+that has to survive a practitioner: *"a practitioner would accept this as a
+patrika."*
+
+Screenshotting the existing page before changing anything is what set the scope.
+It was not close, and the reasons were not the ones a design review would have
+guessed.
+
+### What the screenshot found
+
+**The chart was labelled in Latin.** `Su Me`, `Ju Ve`, `Ke (R)` — on a Marathi
+sheet, in the one element a reader looks at first. Not a design decision: the
+`graha_abbr` namespace was absent from `api/locale.py`'s list, so the renderer's
+lookup returned nothing and fell back to `key[:2].title()`. The same fallback was
+in the exported PDF. See D24; the audit now reads what each consumer loads rather
+than what is on disk.
+
+**Yoga names reached the reader as machine keys** —
+`kemadruma_bhanga_kendra_jupiter`, and `common.shastra` where शास्त्र belonged —
+for the same class of reason on the web side.
+
+**House numbers and Ashtakavarga totals were Latin digits** inside a chart whose
+every other figure was ०–९. `render/chart_svg.py` has always taken a numeral
+converter; the endpoint never passed one.
+
+**There was no ग्रहस्पष्ट table.** The PDF had carried one since Phase 5. The web
+view showed two diamonds and went straight to the panchang, which is the
+difference between a patrika and a picture of one.
+
+**The chart's caption crossed its own border.** Drawn at `CANVAS - 1`, its
+cap-height overlapped the square's edge at `CANVAS - PAD` and its Devanagari
+descenders were clipped by the viewport. It now has a band of its own.
+
+**The arcminute prime, again.** `web/lib/format.ts:formatDegrees` had the same
+U+2032 that `core.angles.format_dm` was fixed for in Phase A, *and* no carry — so
+29.9999 read `29°60'` where the engine read `30°00'`. Two implementations of one
+printed value had drifted in two ways. `tests/unit/test_web_format.py` now runs
+the shipped TypeScript through Node's type stripping and compares it to the
+Python across a sweep, rather than re-implementing it in the test.
+
+### What changed in the design
+
+`globals.css` is written entirely in terms of the Phase A tokens, and the product
+pages load the same faces the token sheet does. Three consequences of §1 did most
+of the work:
+
+- **Cards became blocks.** No panel, no shadow, no border box, no radius — a
+  heading and a full-ink rule, then hairlines between rows. Paper does not float.
+- **Red does one job.** It appears in exactly three places on the sheet: the tithi
+  running at the birth moment, राहूकाळ, and the "आज" marker on the dasha
+  timeline. Each is §1's own list, each is also carried by a label so colour is
+  never the only channel, and none of them pulses — §4.3 calls a pulsing
+  inauspicious-time warning manipulative and it is right.
+- **Nothing animates.** The one transition the stylesheet carried, a 120ms fill
+  on chart house hover, is gone rather than retimed.
+  `tests/unit/test_design_gates.py` fails if a `transition` or `animation`
+  reappears in `globals.css`, which is what keeps Phase C's ordering — "the
+  reduced-motion test passes before any animation is added" — real rather than
+  remembered.
+
+Print is A4 in three pages: the toolbar and skip link drop out, both charts stay
+side by side, `thead` repeats across a page break, and the theme is forced to
+black on white rather than inheriting whichever the screen was in. That forcing
+block is the only place in `globals.css` that hard-codes a colour, and a test
+asserts it is the only one.
+
+### What Phase B did *not* settle
+
+- **The §1 gate is still unmet in the way that matters.** A practitioner has not
+  seen it. Everything above is an argument that the sheet is closer; only a
+  reader who owns a दाते पंचांग can say whether it is a patrika, and the eight
+  questions in §1 are still the questions.
+- **The Marathi is still unreviewed.** Phase B added nine display terms —
+  ग्रहस्पष्ट, स्थिती, रास, सूर्योदय पद्धत among them — chosen the same way as the
+  rest, and carrying the same caveat (`docs/LOCALE_REVIEW.md`, O7). ग्रहस्पष्ट
+  itself is taken from DESIGN.md rather than coined here.
+- **The font budget** from §4.3 is unchanged and still the owner's call.
+
+---
+
+## 9. Phase C — the motion foundation
+
+Phase C is plumbing, not animation: the library wired up, the tokens available to
+JavaScript, the page transition, and the `prefers-reduced-motion` path. Its gate
+is unusual and worth honouring literally — *"the reduced-motion test passes
+before any animation is added"* — so the Playwright suite was written first,
+against the motionless Phase B sheet, and the foundation went in underneath it.
+
+### The test almost tested nothing
+
+A reduced-motion test has one failure mode that matters: passing while the
+preference is not actually in effect. A page with no motion satisfies "nothing is
+transformed mid-transition" trivially, and would keep satisfying it if the whole
+reduced-motion path were deleted.
+
+It happened immediately. `reducedMotion: 'reduce'` set as a Playwright project
+`use` option is **silently ignored** in this version — `matchMedia` stayed false
+and the suite ran in full motion while reporting itself as the reduced-motion
+project. `tsc` later confirmed it: `reducedMotion` is not in that version's
+`UseOptions` at all. The suite now calls `page.emulateMedia` explicitly and, more
+importantly, **asserts the precondition before it asserts anything else** — if
+the preference is not live, the test fails rather than passing.
+
+The `full-motion` project exists for the same reason: `motion-is-actually-
+measurable` drives a transform from outside the app and asserts the harness sees
+it. Without that, every assertion in the file is unfalsifiable.
+
+### `LazyMotion` was not enough, measured
+
+§3.3 says "No animation library in the first-paint path" and §9 caps critical-path
+JS at 120KB gzipped. The obvious wiring — `LazyMotion` with a dynamic `features`
+import, in a provider wrapping the layout — broke both:
+
+| | critical path | animation library eager? |
+|---|---|---|
+| provider in the layout | 180.1KB | yes, a 53.1KB chunk |
+| after restructuring | **115.6KB** | no |
+
+`LazyMotion` defers the *features* bundle, not its own core, so importing it in a
+component that wraps every page puts Motion in the eager script set — the rule
+being broken by the mechanism meant to keep it. Nothing failed: the build summary
+reported a plausible "First Load JS" and the pages worked.
+
+Two changes fixed it, and both are now the shape of the foundation:
+
+- **`MotionProvider` imports nothing from `motion`.** It reads the preference with
+  `matchMedia` — six lines — and publishes the resolved tokens through context.
+- **`LazyMotionBoundary` is reached through `next/dynamic`**, so Motion's core is
+  a separate async chunk. Nothing mounts it yet; Phase D's chart draw-in is the
+  first caller. It is wired and measured now so that phase does not rediscover
+  this.
+
+A Playwright test measures `encodedBodySize` of the eagerly executed scripts and
+fails on either condition, so the budget is a gate rather than a memory.
+
+### One deviation, stated
+
+§3.3 asks for "View Transitions API where supported, **Motion fallback**". The
+fallback is CSS here, not Motion. Importing the library into a page-level wrapper
+to run a one-property opacity crossfade is precisely what put 53KB into the
+first-paint path, and the same section forbids that. So the fallback is a
+keyframe in `globals.css`, and Motion stays behind the boundary for the component
+animations of Phase D, where its size buys something.
+
+The browser's own view transition needed explicit handling too: it is neither a
+CSS transition nor a Motion animation, so neither the collapsed duration tokens
+nor Motion's `reducedMotion="user"` reaches it. Without the
+`::view-transition-*` block in `globals.css`, a reader who asked for less motion
+would still get a full-page crossfade on every navigation.
+
+### The Phase B gate moved rather than being deleted
+
+`tests/unit/test_design_gates.py` failed the build if `globals.css` contained a
+`transition` or `animation` — correct for the static sheet, and wrong the moment
+Phase C landed. Deleting it would have been the easy read. It now enforces the
+rules that still hold: no ambient motion (§3.1's "no idle loops"), and no literal
+durations, because a hand-written `300ms` is a duration the reduced-motion media
+query cannot collapse. A third check asserts `lib/motion.ts` still agrees with
+`tokens.css`, since the JS copy exists only because Motion takes numbers where
+CSS takes lengths — verified by perturbing it and watching the gate fail.
+
+### Not done in Phase C
+
+- **No component animates yet.** That is Phase D and E, by design.
+- **No profiling.** §3.3 wants 60fps on a throttled mid-range Android, and there
+  is nothing to profile until something moves. The Playwright viewport here is
+  desktop; a device profile is Phase D's job, not a user-agent string.
+
+---
+
+## 10. Phase D — the chart draws, and the grahas migrate
+
+Two pieces: the draw-in (§4.1) and the राशी ⇄ नवमांश migration (§4.2), the one
+orchestrated moment the spec tells you to spend boldness on.
+
+Both are driven with the Web Animations API against the server-rendered SVG
+rather than by re-authoring the chart in React. `render/chart_svg.py` is the
+single implementation of the diamond geometry and the PDF shares it; a second one
+in JSX would eventually disagree about where house 7 is. §4.2 reaches for Motion's
+shared `layoutId`, which is not available for elements Motion did not render — so
+the same FLIP is done directly, which is what `layoutId` does underneath.
+
+### What the tests caught that review would not have
+
+**The draw-in guard was spent on a no-op.** `MotionProvider` reports `reduced`
+until it has read the media query after mount, so the effect always runs once in
+the reduced state. Claiming the once-only guard on that pass consumed it, and the
+real pass a frame later found it gone — the chart drew for nobody. The `reduced`
+check now precedes the claim.
+
+**A test passed for the wrong reason.** The glyph-ordering test asserted delays
+ascend by house. `data-house` was absent — an edit that silently missed because
+the separator between grahas is a non-breaking space, not a space — so every
+house read as `0`, the sort was a no-op, and document order is ascending anyway.
+It now asserts the attribute is present and in range first. The same nbsp had
+already cost a wasted edit in Phase A; it is worth knowing about.
+
+**The grahas flew to the wrong place.** They were aimed at where D9 sat in the
+two-column layout, and the layout then collapsed to one column underneath them.
+Proper FLIP measures First, applies the layout, measures Last, then plays — the
+component passes the layout change *into* the migration as a callback for exactly
+that reason.
+
+**"Holding still is information" was not achievable as built.** §4.2 says grahas
+whose house is unchanged do not move. Detection compared screen positions, and
+because the D1 and D9 charts sat in different boxes, *every* graha appeared to
+travel. Two changes fixed it: focused, the two charts stack in one grid cell and
+occupy the same box; and the migration is D1 ⇄ D9 only — arriving from "compare"
+is a layout change, not a journey. A held graha now genuinely does not move.
+
+### Deviations and gaps, stated
+
+- **§4.1's timings do not fit its own budget.** 380 + (120 + 220) + 160 +
+  (11 × 40 + 180) lands near 1120ms against `--dur-chart-draw`'s 800ms. The glyph
+  stagger begins as the diagonals finish, overlaps the number fade, and compresses
+  its step if a chart still overruns. A test asserts the ceiling holds.
+- **The trailing hairline in §4.2 is not built.** It is marked optional there, and
+  the standing instruction is to take one accessory off. Nine glyphs in flight is
+  already the boldest thing on the sheet.
+- **No throttled-device profiling.** §3.3 wants 60fps measured on a mid-range
+  Android. Everything animated here is `opacity`, `transform` and
+  `stroke-dashoffset`, which composite without layout, but that is an argument,
+  not a measurement. It remains unmeasured.
+
+---
+
+## 11. Phase E — data motion (partial)
+
+§4.3's panchang arcs and the inauspicious-period day strip are built. §4.4's
+timeline restructure and §4.8's number transitions are **not**, and the section
+ends with what that leaves.
+
+### The arcs needed the engine to say something it never had
+
+§4.3 fills each arc to "the elapsed fraction". `NakshatraState` has carried
+`fraction_elapsed` from the start, because Vimshottari is keyed to it — the tithi,
+yoga and karana had the same quantity and never reported it. Two of the three arcs
+had no value to fill to.
+
+The fix went in the engine, not the component. CLAUDE.md N1 keeps every computed
+number in Python, and `web/lib/format.ts` states the same rule for the web layer:
+these functions format what the engine produced, they never derive one. Computing
+`(birth − start) / (end − start)` in a React component is a small, entirely
+reasonable-looking breach of exactly that, and it is the kind that spreads.
+
+The schema gate then did its job: `fraction_elapsed` was rejected as an
+unexpected property, which is what CLAUDE.md §5 wants a schema for. Per the same
+section — "a schema change is a major version bump" — ChartFacts is now **2.0.0**.
+
+### The reduced-motion test was over-broad, and the arcs proved it
+
+The arc is rotated −90° so it fills from twelve o'clock. That is a static
+attribute: it never changes and moves nothing. The Phase C helper flagged any
+non-identity transform, so three motionless circles read as motion and the
+reduced-motion suite failed.
+
+§3.4 asks that "no element has a non-zero transform **mid-transition**", and
+mid-transition is the operative half. The check now samples transforms twice and
+reports only those that *changed* — it detects movement rather than the presence
+of geometry. The `motion-is-actually-measurable` probe still passes, so the
+loosening did not hollow it out.
+
+### Red, still doing one job
+
+The day strip is the fourth place `--sindoor` appears, and it earns it: §4.3 puts
+Rahu Kaal, Gulika and Yamaganda on a strip as red bands. They fade in once and
+then stop. §4.3 is blunt about why — "a pulsing inauspicious-time warning is
+manipulative" — and `test_no_ambient_motion` fails the build if an infinite
+animation ever appears in the stylesheet. Each band is also a labelled legend
+entry with its times, so the colour is reinforcement and not the channel (§8).
+
+### Not done
+
+- **§4.4's dasha timeline.** The spec wants a horizontal four-level timeline with
+  drill-down `layout` animation, a breadcrumb, momentum scroll, pinch-zoom and
+  snapping. What exists is the Phase 5 collapsible tree with a "today" marker.
+  That is a component rewrite, not a motion pass, and half-building it would be
+  worse than saying so.
+- **§4.8's number transitions.** The 200ms counter roll on values that genuinely
+  change. Nothing on the patrika currently changes a number in place — the
+  numeral toggle is a navigation — so this needs the live-panchang or a
+  recomputing view to be meaningful.
+- **§4.3's live arc.** "For today's panchang, the active arc advances live … at
+  most once per minute." The app shows the panchang of a *birth moment*, which
+  does not advance. The polling path is unwritten and unneeded until a
+  today's-panchang view exists.

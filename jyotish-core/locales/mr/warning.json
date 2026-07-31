@@ -1,0 +1,8 @@
+{
+  "birth_time_approximate_fields_may_vary_within_window": "जन्मवेळ अंदाजे आहे; खालील गोष्टी त्या कालावधीत बदलू शकतात.",
+  "birth_time_unknown_time_dependent_fields_suppressed": "जन्मवेळ अज्ञात असल्याने लग्न, भाव, दशा व इष्टकाल दिलेले नाहीत.",
+  "date_precedes_gregorian_adoption_confirm_calendar": "ही तारीख ग्रेगोरियन दिनदर्शिका स्वीकारण्यापूर्वीची आहे; दिनदर्शिका तपासून घ्या.",
+  "nautical_fixed_offset_zone_unsuitable_for_birth_records": "या ठिकाणासाठी मिळालेला कालविभाग स्थिर आहे; जन्मनोंदीसाठी तो योग्य नाही.",
+  "polar_latitude_sunrise_may_be_undefined": "ध्रुवीय अक्षांश; काही दिवशी सूर्योदय होत नाही, त्यामुळे तिथी व इष्टकाल अनिश्चित.",
+  "pre_1955_indian_clock_time_ambiguous": "१९५५ पूर्वीची भारतीय घड्याळवेळ संदिग्ध आहे — मुंबई वेळ, स्थानिक मध्यम वेळ व भारतीय प्रमाणवेळ वेगळ्या होत्या. नोंद कोणत्या वेळेची आहे हे माहीत असल्यास time_standard द्या."
+}
