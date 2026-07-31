@@ -96,7 +96,7 @@ def graded_drishti_virupa(separation: float) -> float:
     30-60                 rises 0 -> 60 linearly across the 30 degrees
     60-90                 falls 60 -> 15
     90-120                rises 15 -> 45
-    120-150               60 flat
+    120-150               rises 45 -> 60
     150-180               falls 60 -> 0  (the 7th house peak sits at 180)
     ====================  ================================================
 

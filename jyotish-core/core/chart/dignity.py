@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from typing import Final
 
-from core.angles import DEG_PER_RASHI, deg_in_rashi, norm360, rashi_of
+from core.angles import DEG_PER_RASHI, deg_in_rashi, norm360, rashi_of, shortest_separation
 from core.enums import RASHI_LORD, SAPTA_GRAHA, Dignity, Graha
 
 #: Exact exaltation (उच्च) point: (rashi, degrees into it). Debilitation (नीच)
@@ -237,5 +237,5 @@ def is_combust(graha: Graha, sid_lon: float, sun_lon: float, retrograde: bool) -
     orb = COMBUSTION_ORB[graha]
     if retrograde:
         orb = COMBUSTION_ORB_RETROGRADE.get(graha, orb)
-    separation = abs(((sid_lon - sun_lon + 180.0) % 360.0) - 180.0)
+    separation = shortest_separation(sid_lon, sun_lon)
     return separation <= orb

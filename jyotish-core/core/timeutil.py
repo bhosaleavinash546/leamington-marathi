@@ -15,6 +15,7 @@ import datetime as dt
 import math
 from zoneinfo import ZoneInfo
 
+from core.angles import norm360
 from core.enums import TimeStandard
 
 #: Julian Day of the Unix epoch, and of J2000.0.
@@ -180,12 +181,12 @@ def greenwich_mean_sidereal_time_deg(jd_ut: float) -> float:
         + 0.000387933 * t * t
         - (t * t * t) / 38710000.0
     )
-    return theta % 360.0
+    return norm360(theta)
 
 
 def local_mean_sidereal_time_deg(jd_ut: float, longitude_deg: float) -> float:
     """LMST in degrees for an east-positive geographic longitude."""
-    return (greenwich_mean_sidereal_time_deg(jd_ut) + longitude_deg) % 360.0
+    return norm360(greenwich_mean_sidereal_time_deg(jd_ut) + longitude_deg)
 
 
 # ---------------------------------------------------------------------------

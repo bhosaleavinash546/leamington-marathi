@@ -300,9 +300,9 @@ mean-node invariant test now constructs its adapter explicitly. Nothing tuned.
 | ID | Finding | Location |
 |---|---|---|
 | F-017 | ~~Docstring precedence contradicted the code~~ **FIXED** with F-003 — docstring rewritten to the D19 order, with the overlap table | `core/chart/dignity.py` |
-| F-018 | Docstring table says `120–150 → 60 flat`; code ramps 45→60 | `core/chart/aspects.py:88` |
-| F-019 | Hand-rolled shortest-separation instead of `core.angles.shortest_separation` (numerically equivalent; duplication) | `core/chart/dignity.py:207` |
-| F-020 | Raw `% 360.0` rather than `norm360()`, against §4.7's "one wrapper" | `core/timeutil.py:183,188` |
+| F-018 | ~~Docstring table says `120–150 → 60 flat`; code ramps 45→60~~ **FIXED** — docstring now states the 45→60 ramp the code implements; which ramp is *classically* right stays open under F-022 (uncited scale), the code was not touched | `core/chart/aspects.py:88` |
+| F-019 | ~~Hand-rolled shortest-separation~~ **FIXED** — `is_combust` now calls `core.angles.shortest_separation` (numerically identical: both are abs of the ±180-normalised difference; 816 tests unchanged) | `core/chart/dignity.py:207` |
+| F-020 | ~~Raw `% 360.0` rather than `norm360()`~~ **FIXED** — both sidereal-time returns now go through `norm360()`; behaviour identical for finite inputs, §4.7's one-wrapper rule restored | `core/timeutil.py:183,188` |
 | F-021 | ~~Sade Sati times published to **microseconds** though known to ±39 s~~ **FIXED** with F-001 — solved to 1e-7 d, reported at whole seconds | `core/doshas/computed.py` |
 | F-022 | Graded drishti piecewise scale carries no citation | `core/chart/aspects.py:88` |
 | F-026 | **NEW.** SVG accessibility text (`<title>`, `<desc>` on each house) carries English ordinals — "1st house, तूळ" — on a Marathi page. Documented in `chart_svg.py` as deliberate on the grounds that a screen reader gets the localised table instead, but a `bhava` namespace already exists and would serve. Raised, not fixed: it needs house labels threaded into `ChartData`, which is wider than this cluster | `render/chart_svg.py:395` |
