@@ -91,7 +91,7 @@ class BirthInput(BaseModel):
     gender: Gender | None = None
     calendar_variant: CalendarVariant = CalendarVariant.AMANTA
     ayanamsa: str = "lahiri"
-    node_type: NodeType = NodeType.MEAN
+    node_type: NodeType = NodeType.TRUE
     dasha_year_length: YearLength = YearLength.SOLAR_365_2425
     mangal_dosha_ruleset: Literal["maharashtra", "north_school", "south_school"] = "maharashtra"
     locale: LocaleCode = "mr"

@@ -13,7 +13,7 @@ and the physical reason in its message (CLAUDE.md 11, standing instructions).
 
 from __future__ import annotations
 
-ENGINE_VERSION = "1.0.0"
+ENGINE_VERSION = "2.0.0"  # 2.0.0: node default mean → true (F-027) moves राहु/केतु ≤1°40′
 
 # ChartFacts contract version. Independent of ENGINE_VERSION: a schema change
 # is a major bump here and is validated in CI.

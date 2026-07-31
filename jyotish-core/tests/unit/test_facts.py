@@ -134,7 +134,8 @@ def test_provenance_travels_with_the_data(facts: dict[str, Any]) -> None:
     assert ephemeris["ayanamsa"] == "lahiri"
     assert ephemeris["ayanamsa_constant"] == "SE_SIDM_LAHIRI"
     assert 22.0 < ephemeris["ayanamsa_value_deg"] < 25.0
-    assert ephemeris["node_type"] == NodeType.MEAN.value
+    # TRUE since F-027: दाते पंचांग prints the true node (ALMANAC.md).
+    assert ephemeris["node_type"] == NodeType.TRUE.value
     assert ephemeris["rise_set_convention"] == "upper_limb_refracted"
     assert facts["authority"] == "date_panchang"
     assert facts["dasha"]["year_length"] == YearLength.SOLAR_365_2425.value

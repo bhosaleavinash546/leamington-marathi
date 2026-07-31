@@ -14,7 +14,7 @@ see which conventions produced a number. Changing any **D-number below marked
 | D1 | Ephemeris + licence | pyswisseph, AGPL-3.0 | yes |
 | D2 | Panchang authority | दाते पंचांग (Date Panchang) | yes |
 | D3 | Ayanamsa | Lahiri / Chitrapaksha, `SE_SIDM_LAHIRI` | yes |
-| D4 | Lunar node | Mean node | yes |
+| D4 | Lunar node | ~~Mean node~~ **True node** (revised by D25) | yes |
 | D5 | Dasha year length | 365.2425 days (solar) | yes |
 | D6 | Rise/set convention | Upper limb, refracted (−50′) | yes |
 | D7 | Ephemeris data | Moshier (no `.se1` files bundled) | no |
@@ -33,6 +33,9 @@ see which conventions produced a number. Changing any **D-number below marked
 | D20 | Pre-1955 Indian clock time | **Reported as ambiguous, never silently resolved** | no (a warning, not a value) |
 | D21 | Nadi exception | Requires **differing padas**, not a shared nakshatra alone | **yes — changed a published finding** |
 | D22 | Doctrinal provenance | Every rule declares `shastra` or `parampara`, shown to the reader | no (new field) |
+| D23 | Web CSP | Nonce per request, locale routes `force-dynamic` | no |
+| D24 | Locale namespaces | One list, gate reads the consumers | no |
+| D25 | Lunar node default | **True node** — दाते prints the true node (revises D4) | **yes — changed a published value, see below** |
 
 ---
 
@@ -86,7 +89,9 @@ selectable via `EngineOptions.ayanamsa`.
 
 ## D4 — Lunar node
 
-**Mean node**, per CLAUDE.md 3.3.
+**Mean node**, per CLAUDE.md 3.3. **Revised to the True node by D25** — the
+authority prints the true node, and N2 outranks the spec's own default. The
+paragraphs below on derivation and retrogression are unchanged by the revision.
 
 Ketu is *derived* as Rahu + 180°, so the "exactly 180° apart" invariant holds by
 construction and cannot drift (`tests/invariants/`).
@@ -677,3 +682,33 @@ This is the F-005/F-006 defect one layer further out. Those findings fixed missi
 CLAUDE.md 12 counts "no English-only screens, no machine-translated astrological
 terms" as done. It was not: the chart at the centre of every Marathi page was
 labelled in Latin.
+
+## D25 — The default lunar node is the True node (F-027)
+
+**Was:** `NodeType.MEAN` everywhere a default is declared (D4, CLAUDE.md 3.3).
+**Is:** `NodeType.TRUE`. Mean remains selectable via `EngineOptions.node_type`
+and is still labelled in every ChartFacts (`ephemeris.node_type`).
+
+**Why.** दाते पंचांग prints राहु daily, and what it prints is the true node:
+16 मे 2018 **०३।१४।३९** and 17 मे **०३।१४।३०** (audit/live/ALMANAC.md) match
+Swiss `TRUE_NODE` to the printed minute, while the mean node sits ~1° away —
+and the printed −9′/day motion is kinematically impossible for the mean node
+(constant −3′11″/day). N2 makes the almanac the reference truth; where the
+spec's own §3.3 default contradicts it, N2 wins. The owner approved the flip
+("implement all important things", after F-027 was raised for decision).
+
+**Numeric before/after** (2018-05-16 00:00 UT, Lahiri): राहु mean
+03|15|38|15 → true **03|14|39|07** (−59′08″); Ketu moves identically by
+construction. The divergence oscillates with amplitude ≈1°40′; nakshatra
+placement changes on ~12% of days, pada on ~50%.
+
+**Blast radius.** Rahu/Ketu rashi, nakshatra, pada, vargas and Kaal Sarpa
+borderline cases; dasha is untouched (keyed to the Moon). ENGINE_VERSION
+1.0.0 → **2.0.0** (a default changed a published number). The retrogression
+display was already speed-derived (CLAUDE.md 4.8), so a direct-moving राहु
+renders correctly.
+
+**Test.** `tests/golden/test_almanac_grahas.py` pins both printed राहु rows
+(and every other printed body) against **default** options — written first,
+failing under the mean default, passing after the flip with nothing tuned.
+The mean-node invariant test now constructs its adapter explicitly.

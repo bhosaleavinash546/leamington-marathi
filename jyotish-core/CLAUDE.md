@@ -144,7 +144,7 @@ Also required:
 
 - Nirayana longitudes: `sidereal = tropical − ayanamsa`, normalised to [0, 360).
 - **Lagna (ascendant)**: sidereal ascendant from local sidereal time and geographic latitude.
-- Grahas: Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, **Rahu and Ketu**. Rahu/Ketu default to **Mean node**; expose True node as an option and label which is used. Retrogression flag (वक्री) per graha. Combustion (अस्त) flag.
+- Grahas: Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, **Rahu and Ketu**. Rahu/Ketu default to **True node** (revised from Mean by D25: दाते पंचांग prints the true node — see `audit/live/ALMANAC.md`, F-027 — and N2 outranks this default); expose Mean node as an option and label which is used. Retrogression flag (वक्री) per graha. Combustion (अस्त) flag.
 - **Houses: whole-sign (Rashi = Bhava) is the primary model.** Additionally compute a **Bhava Chalit** chart using Sripati cusps. Do **not** use Placidus.
 - **Vargas (divisional charts)**: D1 Rashi, D2 Hora, D3 Drekkana, D4 Chaturthamsa, D7 Saptamsa, **D9 Navamsa** (mandatory — a Marathi kundali sheet always shows Rashi + Navamsa side by side), D10 Dasamsa, D12 Dwadasamsa, D16, D20, D24, D27, D30 Trimsamsa, D40, D45, D60 Shashtiamsa.
 - **Chandra Kundali** (Moon as lagna) and **Surya Kundali**.

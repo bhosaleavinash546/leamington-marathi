@@ -99,7 +99,7 @@ class SwissEphemerisAdapter:
         self,
         *,
         ayanamsa: str = "lahiri",
-        node_type: NodeType = NodeType.MEAN,
+        node_type: NodeType = NodeType.TRUE,
         includes_nutation: bool = True,
         ephe_path: str | None = None,
     ) -> None:

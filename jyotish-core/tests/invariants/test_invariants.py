@@ -78,11 +78,16 @@ def test_all_longitudes_in_range(ephemeris: Ephemeris, when: dt.datetime) -> Non
 
 
 @pytest.mark.parametrize("when", SAMPLE_INSTANTS, ids=lambda w: w.date().isoformat())
-def test_mean_nodes_are_always_retrograde(ephemeris: Ephemeris, when: dt.datetime) -> None:
+def test_mean_nodes_are_always_retrograde(when: dt.datetime) -> None:
     """The mean node regresses uniformly. Its *true* counterpart need not, which is
     why the retrograde flag is derived from speed and never asserted by body
-    (CLAUDE.md 4.8)."""
-    rahu = ephemeris.position(Graha.RAHU, jd_from_utc(when))
+    (CLAUDE.md 4.8). Built explicitly as a mean-node adapter: since F-027 the
+    *default* is the true node, for which this property genuinely does not hold."""
+    from core.enums import NodeType
+    from core.ephemeris.swisseph_adapter import SwissEphemerisAdapter
+
+    mean_node = SwissEphemerisAdapter(node_type=NodeType.MEAN)
+    rahu = mean_node.position(Graha.RAHU, jd_from_utc(when))
     assert rahu.speed_lon < 0.0
 
 

@@ -115,7 +115,7 @@ class EngineOptions:
     #: internal one agree, which is checked in
     #: ``tests/invariants/test_cross_implementation.py``. See docs/DECISIONS.md D13.
     ayanamsa_includes_nutation: bool = True
-    node_type: NodeType = NodeType.MEAN
+    node_type: NodeType = NodeType.TRUE
     calendar_variant: CalendarVariant = CalendarVariant.AMANTA
     dasha_year_length: YearLength = YearLength.SOLAR_365_2425
     #: Solar altitude of the disc reference at rise/set, in degrees. -0.8333

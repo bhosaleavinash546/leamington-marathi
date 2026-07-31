@@ -234,7 +234,7 @@ validated 1–4; the engine already computed them and simply never threaded them
 through. Identical nakshatra *and* pada no longer cancels the dosha. The koot
 *score* is untouched and a test pins that it stays pada-independent.
 
-### F-027 · convention vs authority · `core/types.py` node default · **NEW — owner decision**
+### F-027 · convention vs authority · `core/types.py` node default · **FIXED**
 
 **Expected** N2: every published value matches दाते पंचांग. दाते prints राहु
 daily; whichever node it prints is the authority's node.
@@ -259,6 +259,14 @@ in `DIVERGENCES.md`. Per the standing instruction ("ask before inventing a
 convention"), not changed unilaterally.
 **Test** Once decided: a golden row pinning राहु for 16–17 मे 2018 against the
 printed values.
+**Outcome** Owner approved the flip ("implement all important things"). Fixed
+under D25, failing-test-first: `tests/golden/test_almanac_grahas.py` pins both
+printed राहु rows (and all other printed bodies) against **default** options —
+red under mean (delta ~59′, tolerance 60″), green after flipping
+`EngineOptions.node_type`, the API schema default and the adapter default to
+`TRUE`. Numeric before/after: 2018-05-16 राहु 03|15|38|15 → 03|14|39|07
+(−59′08″). ENGINE_VERSION 1.0.0 → 2.0.0. CLAUDE.md §3.3 amended; the
+mean-node invariant test now constructs its adapter explicitly. Nothing tuned.
 
 ---
 
