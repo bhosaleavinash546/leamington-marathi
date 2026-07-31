@@ -1,13 +1,15 @@
 # Golden panchang files
 
-## Status: 4 of 64 cases transcribed — every transcribed field matches
+## Status: 13 of 72 cases transcribed — every transcribed field matches
 
-The owner supplied a scanned **दाते पंचांग शक १९४० (2018-19)**; transcription
-has begun (`audit/live/ALMANAC.md` records the method and every page used).
-Four cases now carry printed values — 62 pinned fields spanning tithi,
-nakshatra, yoga and karana end-times, Mumbai sunrise/sunset, keys, month
-naming, an adhika month and a printed अहोरात्र vriddhi — and **all 62 match
-the authority**: 59 to the exact printed minute, 3 at ±1 minute (the
+The owner supplied a scanned **दाते पंचांग शक १९४० (2018-19)**, then a
+cleaner two-part rescan; transcription now spans the whole almanac year
+(`audit/live/ALMANAC.md` records the method and every page used). Thirteen
+cases carry printed values — one row per month एप्रिल 2018 → मार्च 2019 at
+the almanac's reference city, plus the adhika-ज्येष्ठ case, a printed
+अहोरात्र vriddhi, a printed stacked-pair kshaya (`kshaya-2019-01-21`), and
+the summer solstice — roughly 180 pinned fields in all, and **every one
+matches the authority**: 5 at ±1 printed minute, the rest exact (the
 authority's drik ganit sits a consistent 30–60 s from Swiss on limb ends, so
 instants near a minute boundary legitimately straddle it; tolerance is the
 printed minute ±1, the same standard as `tools/settle.py`).
@@ -17,15 +19,17 @@ Two harness rules were set with the first real page and are pinned by
 printed minute (दाते prints ०८।५९ for a computed 08:58:57 — truncation would
 fake mismatches), and a 2-minute gap is still a failure.
 
-The remaining 60 cases stay PENDING — including `kshaya-2018-12-19`, whose
-scan page is too blurred to transcribe honestly (noted in the case), and every
-case outside the 2018-19 volume (pre-1955, wartime DST, other years), which
-needs its own year's almanac.
+The remaining 59 cases stay PENDING for two honest reasons: three physical
+pages defeat both scans — book (६६), मार्गशीर्ष शुक्ल, carrying
+`kshaya-2018-12-19` **and** the winter-solstice rows, and the two माघ
+spreads — and every case outside the 2018-19 volume (pre-1955, wartime DST,
+other years) needs its own year's almanac. One sharp photo of book page (६६)
+is the single highest-value item outstanding.
 
 ```
 $ python -m tools.golden_verify
 authority: दाते पंचांग (Date Panchang)
-cases selected: 64   transcribed: 4   pending: 60
+cases selected: 72   transcribed: 13   pending: 59
 ...
 every transcribed field matches the authority to the minute
 ```

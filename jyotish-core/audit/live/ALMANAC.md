@@ -6,6 +6,17 @@ image-only scan (no text layer), pages stored landscape-rotated. This document
 records what the copy contains, how values were transcribed, and every value
 used as evidence, so each claim traces to a page.
 
+> **Clean rescan (second upload).** The owner later supplied the same volume
+> re-photographed in two 44-page parts ("clean scan part 1": cover → आषाढ
+> कृष्ण, book pages up to ४९, with the Pune/Solapur rise-set table at part-1
+> p25; "clean scan part 2": श्रावण शुक्ल (५०) → back matter). Most monthly
+> pages are sharp at the embedded photos' native ~230 dpi and were used for
+> the batch-2 golden transcription below. Three pages defeat both scans:
+> **book (६६) मार्गशीर्ष शुक्ल** (motion-blurred in scan 1, out of focus in
+> scan 2 — carries the 19 डिसेंबर kshaya and both solstice rows), and the two
+> **माघ** spreads (७४–७७), smeared in both. One sharp photo of each would
+> finish those cases.
+
 **What this edition is and is not.** It is the named authority's own
 publication, so it settles *conventions* (ayanamsa family, node type, month
 naming, table formats) at its epoch, 2018-19. It is **not** the 1947 issue: any
@@ -152,18 +163,24 @@ birth remains its own open check (REFERENCE_BIRTH.md).
 1. **F-008 — resolved** (see FINDINGS.md): the ayanamsa family is verified
    against the authority's own print, by two independent routes (printed
    अयनांश; daily longitudes).
-2. **Golden cases — begun.** Four cases transcribed and passing (62 pinned
-   fields, 59 exact / 3 at ±1 printed minute): `almanac-2018-05-16-mumbai`
-   (PDF 33, row १ बु — incl. Mumbai rise/set), `adhika-jyeshtha-2018`
-   (PDF 35, row ६ मं), `vriddhi-2018-04-10` (PDF 29, row १० मं — printed
-   अहोरात्र), `almanac-2019-01-22-mumbai` (PDF 67, row २ मं — past-midnight
-   २७।२६/२६।०३ prints). Observed systematic offset: दाते's limb end-times
+2. **Golden cases — 13 of 72 transcribed, all passing.** Batch 1 (first
+   scan): `almanac-2018-05-16-mumbai` (PDF 33, row १ बु — incl. Mumbai
+   rise/set), `adhika-jyeshtha-2018` (PDF 35, row ६ मं), `vriddhi-2018-04-10`
+   (PDF 29, row १० मं — printed अहोरात्र), `almanac-2019-01-22-mumbai`
+   (PDF 67, row २ मं — past-midnight २७।२६/२६।०३ prints). Batch 2 (clean
+   rescan): one row per month at Mumbai — 20 एप्रि (३४), 21 जून summer
+   solstice (४२), 18 जुलै (४६), 20 ऑग (५०), 15 सप्टें (५४), 15 ऑक्टो (५८),
+   27 नोव्हें (६४, कार्तिक कृष्ण — the शुक्ल page is too faded), 15 मार्च
+   2019 (७८) — plus the **kshaya fill** `kshaya-2019-01-21` from पौष शुक्ल
+   (७०), whose printed stacked pair १५।१०।४६ / १।३१।०x is the almanac's own
+   kshaya notation. Result: ~180 pinned fields, all matching; 5 at ±1 printed
+   minute, the rest exact. Observed systematic offset: दाते's limb end-times
    sit +30–60 s from Swiss (consistent with its रवि printing 2–3″ high), so
    minute-boundary values straddle by one printed minute; the harness
    tolerance is the printed minute ±1 (`tests/golden/loader.py`, reasons in
-   the code). `kshaya-2018-12-19`'s page (PDF 61 / book ६६) is motion-blurred
-   beyond honest transcription — the stacked ११/१२ kshaya row is visible but
-   no digit is readable; that case stays PENDING pending a cleaner photo.
+   the code). Still PENDING for a page reason: `kshaya-2018-12-19` and the
+   winter-solstice rows (book ६६, unreadable in both scans) and any माघ date
+   (७४–७७, smeared in both).
 3. **F-007 / O1 (sunrise conventions) — done** (D26): ten Mumbai rise/set
    values settle disc-centre-refracted; the Pune page settles
    elevation-not-applied. Sections above.

@@ -111,6 +111,187 @@ cases:
       month_anomaly: adhika
       shaka_year: 1940
 
+  # ---- Batch 2: transcribed from the owner's clean two-part rescan
+  # (audit/live/ALMANAC.md "clean scan"). One row per month across the
+  # 2018-19 year, all at the almanac's reference city so rise/set pin too.
+
+  - id: almanac-2018-04-20-mumbai
+    date: "2018-04-20"
+    place: mumbai
+    tags: [ordinary]
+    source: "दाते पंचांग शक १९४०, book page (३४) / clean scan part 1 p31, वैशाख शुक्लपक्ष, इं 20"
+    expected:
+      sunrise: "06:19"
+      sunset: "18:56"
+      tithi_key: panchami
+      paksha: shukla
+      tithi_end: "20:46"
+      nakshatra_key: mrigashira
+      nakshatra_end: "21:15"
+      yoga_key: shobhana
+      yoga_end: "11:11"
+      karana_key: bava
+      karana_end: "09:57"
+      vara_key: shukravara
+      month_key: vaishakha
+      shaka_year: 1940
+
+  - id: almanac-2018-06-21-mumbai
+    date: "2018-06-21"
+    place: mumbai
+    tags: [summer_solstice]
+    notes: >
+      Summer solstice inside निज ज्येष्ठ. The tithi, nakshatra and yoga all end
+      past midnight (२७।१९, २५।२७, २६।०६ printed).
+    source: "दाते पंचांग शक १९४०, book page (४२) / clean scan part 1 p37, ज्येष्ठ शुक्लपक्ष, इं 21"
+    expected:
+      sunrise: "06:03"
+      sunset: "19:17"
+      tithi_key: navami
+      paksha: shukla
+      tithi_end: "03:19"
+      nakshatra_key: hasta
+      nakshatra_end: "01:27"
+      yoga_key: variyan
+      yoga_end: "02:06"
+      karana_key: balava
+      karana_end: "15:31"
+      vara_key: guruvara
+      month_key: jyeshtha
+      shaka_year: 1940
+
+  - id: almanac-2018-07-18-mumbai
+    date: "2018-07-18"
+    place: mumbai
+    tags: [ordinary]
+    source: "दाते पंचांग शक १९४०, book page (४६) / clean scan part 1 p41, आषाढ शुक्लपक्ष, इं 18"
+    expected:
+      sunrise: "06:12"
+      sunset: "19:18"
+      tithi_key: shashthi
+      paksha: shukla
+      tithi_end: "14:37"
+      nakshatra_key: uttara_phalguni
+      nakshatra_end: "08:20"
+      yoga_key: parigha
+      yoga_end: "11:34"
+      karana_key: taitila
+      karana_end: "14:37"
+      vara_key: budhavara
+      month_key: ashadha
+      shaka_year: 1940
+
+  - id: almanac-2018-08-20-mumbai
+    date: "2018-08-20"
+    place: mumbai
+    tags: [ordinary]
+    source: "दाते पंचांग शक १९४०, book page (५०) / clean scan part 2 p1, श्रावण शुक्लपक्ष, इं 20"
+    expected:
+      sunrise: "06:22"
+      sunset: "19:02"
+      tithi_key: dashami
+      paksha: shukla
+      tithi_end: "05:17"
+      nakshatra_key: jyeshtha
+      nakshatra_end: "21:41"
+      yoga_key: vaidhriti
+      yoga_end: "15:15"
+      karana_key: taitila
+      karana_end: "16:13"
+      vara_key: somavara
+      month_key: shravana
+      shaka_year: 1940
+
+  - id: almanac-2018-09-15-mumbai
+    date: "2018-09-15"
+    place: mumbai
+    tags: [ordinary]
+    source: "दाते पंचांग शक १९४०, book page (५४) / clean scan part 2 p5, भाद्रपद शुक्लपक्ष, इं 15"
+    expected:
+      sunrise: "06:27"
+      sunset: "18:40"
+      tithi_key: shashthi
+      paksha: shukla
+      tithi_end: "14:45"
+      nakshatra_key: anuradha
+      nakshatra_end: "02:49"
+      yoga_key: vishkambha
+      yoga_end: "22:54"
+      karana_key: taitila
+      karana_end: "14:45"
+      vara_key: shanivara
+      month_key: bhadrapada
+      shaka_year: 1940
+
+  - id: almanac-2018-10-15-mumbai
+    date: "2018-10-15"
+    place: mumbai
+    tags: [ordinary]
+    notes: >
+      The tithi and its karana end together at ०८।०५ - the boundary the page
+      prints twice, once in each column.
+    source: "दाते पंचांग शक १९४०, book page (५८) / clean scan part 2 p9, आश्विन शुक्लपक्ष, इं 15"
+    expected:
+      sunrise: "06:34"
+      sunset: "18:15"
+      tithi_key: shashthi
+      paksha: shukla
+      tithi_end: "08:05"
+      nakshatra_key: mula
+      nakshatra_end: "15:34"
+      yoga_key: shobhana
+      yoga_end: "07:11"
+      karana_key: taitila
+      karana_end: "08:05"
+      vara_key: somavara
+      month_key: ashwina
+      shaka_year: 1940
+
+  - id: almanac-2018-11-27-mumbai
+    date: "2018-11-27"
+    place: mumbai
+    tags: [ordinary]
+    notes: >
+      कार्तिक कृष्ण row - chosen because the कार्तिक शुक्ल page of the scan is
+      too faded for arcminute-honest digits, and this spread is crisp.
+    source: "दाते पंचांग शक १९४०, book page (६४) / clean scan part 2 p15, कार्तिक कृष्णपक्ष, इं 27"
+    expected:
+      sunrise: "06:54"
+      sunset: "17:58"
+      tithi_key: panchami
+      paksha: krishna
+      tithi_end: "23:09"
+      nakshatra_key: punarvasu
+      nakshatra_end: "09:50"
+      yoga_key: shukla
+      yoga_end: "19:05"
+      karana_key: kaulava
+      karana_end: "12:21"
+      vara_key: mangalavara
+      month_key: kartika
+      shaka_year: 1940
+
+  - id: almanac-2019-03-15-mumbai
+    date: "2019-03-15"
+    place: mumbai
+    tags: [ordinary]
+    source: "दाते पंचांग शक १९४०, book page (७८) / clean scan part 2 p29, फाल्गुन शुक्लपक्ष, इं 15"
+    expected:
+      sunrise: "06:49"
+      sunset: "18:47"
+      tithi_key: navami
+      paksha: shukla
+      tithi_end: "01:45"
+      nakshatra_key: ardra
+      nakshatra_end: "03:44"
+      yoga_key: ayushman
+      yoga_end: "10:11"
+      karana_key: balava
+      karana_end: "14:38"
+      vara_key: shukravara
+      month_key: phalguna
+      shaka_year: 1940
+
   - id: almanac-2019-01-22-mumbai
     date: "2019-01-22"
     place: mumbai
@@ -232,12 +413,13 @@ cases:
     tags: [kshaya_tithi]
     notes: >
       A tithi begins and ends between two sunrises - skipped date. Still
-      PENDING after the 2018-19 scan arrived: its page (book ६६ / scan PDF
-      61, मार्गशीर्ष शुक्ल) is motion-blurred beyond honest transcription.
-      The stacked ११/१२ pair on the 19 डिसेंबर row is visible - the print
-      does show the kshaya - but no क.मि. digit is readable. Needs a cleaner
-      photograph of that one page.
-    source: ""   # book page (६६); scan too blurred, see notes
+      PENDING after BOTH scans: book page (६६), मार्गशीर्ष शुक्ल, is
+      motion-blurred in the first scan and out of focus at small-digit scale
+      in the clean rescan (part 2 p17) - the stacked ११/१२ kshaya pair on
+      the 19 डिसेंबर row is visible in each, but no क.मि. digit survives
+      either photograph. The winter-solstice rows (21-22 डिसेंबर) are on the
+      same unreadable page. Needs one sharp photograph of book page (६६).
+    source: ""   # book page (६६); both scans fail on this page, see notes
     expected: {}
 
   - id: kshaya-2019-01-21
@@ -246,9 +428,25 @@ cases:
     tags: [kshaya_tithi]
     notes: >
       Kshaya adjoining Purnima - the case most likely to expose an off-by-
-      one.
-    source: ""   # TODO: almanac page reference
-    expected: {}
+      one. The printed row is the stacked pair १५।१०।४६ / १।३१।०x - two
+      tithis closing on one civil day, the almanac's own kshaya notation.
+      Sunrise/sunset stay pending: the print is Mumbai's, this case is
+      Kolhapur.
+    source: "दाते पंचांग शक १९४०, book page (७०) / clean scan part 2 p21, पौष शुक्लपक्ष, इं 21"
+    expected:
+      tithi_key: purnima
+      paksha: shukla
+      tithi_end: "10:46"
+      tithi_anomaly: kshaya
+      nakshatra_key: pushya
+      nakshatra_end: "02:27"
+      yoga_key: vishkambha
+      yoga_end: "10:33"
+      karana_key: bava
+      karana_end: "10:46"
+      vara_key: somavara
+      month_key: pausha
+      shaka_year: 1940
 
   - id: kshaya-2022-01-25
     date: "2022-01-25"

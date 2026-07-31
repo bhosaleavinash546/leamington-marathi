@@ -12,11 +12,15 @@
 > Three things in §12's definition of done are **not** met, each recorded rather
 > than hidden:
 >
-> 1. **The golden panchang cases in §9.1 are partially transcribed: 4 of 64**
+> 1. **The golden panchang cases in §9.1 are partially transcribed: 13 of 72**
 >    - see `docs/GOLDEN_FILES.md`. The owner's scanned दाते पंचांग (शक १९४०,
 >    2018-19) settled the ayanamsa, node and sunrise conventions
->    (`audit/live/ALMANAC.md`, D25/D26) and all 62 transcribed fields match;
->    the remaining 60 cases still report PENDING rather than passing.
+>    (`audit/live/ALMANAC.md`, D25/D26); one row per month across the almanac
+>    year is transcribed, including adhika, vriddhi, a printed kshaya pair and
+>    the summer solstice, and **every transcribed field matches**. The
+>    remaining 59 cases report PENDING: three physical pages are unreadable in
+>    both scans (book ६६ and the माघ spreads) and the rest need other years'
+>    almanacs.
 > 2. The §9.4 cross-check compares against the same ephemeris library reached a
 >    different way, not against a separate application - `docs/DIVERGENCES.md` O5.
 >    It nonetheless found a real 12.8-arcsecond error; see D13.
