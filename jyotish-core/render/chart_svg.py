@@ -36,6 +36,10 @@ from typing import Final
 #: markup print at A4 and display in a flex column without reflow.
 CANVAS: Final[float] = 400.0
 
+#: Between two grahas sharing a line. Non-breaking, so a cell never wraps
+#: mid-stellium.
+NBSP: Final[str] = "\u00a0"
+
 #: Padding inside the viewbox, leaving room for the chart-style caption.
 PAD: Final[float] = 8.0
 
@@ -260,11 +264,25 @@ def _text(
     house order already, but that is an accident of how the cells are emitted; the
     attribute makes the ordering explicit and survives a change to the loop.
     """
+    return _markup(x, y, html.escape(content), cls, anchor, house)
+
+
+def _markup(
+    x: float,
+    y: float,
+    inner: str,
+    cls: str,
+    anchor: str = "middle",
+    house: int | None = None,
+) -> str:
+    """As :func:`_text`, but ``inner`` is already-escaped markup.
+
+    The only caller passing markup is :func:`_graha_lines`, which nests one
+    ``<tspan>`` per graha; escaping happens there, per graha, so nothing raw
+    reaches this.
+    """
     tag = f' data-house="{house}"' if house is not None else ""
-    return (
-        f'<text x="{x:.1f}" y="{y:.1f}" class="{cls}" text-anchor="{anchor}"{tag}>'
-        f"{html.escape(content)}</text>"
-    )
+    return f'<text x="{x:.1f}" y="{y:.1f}" class="{cls}" text-anchor="{anchor}"{tag}>{inner}</text>'
 
 
 def _graha_lines(
@@ -289,8 +307,19 @@ def _graha_lines(
     start = y - (len(chunks) - 1) * line_height / 2.0
     out: list[str] = []
     for index, chunk in enumerate(chunks):
-        label = " ".join(g.render_label(show_degrees=show_degrees) for g in chunk)
-        out.append(_text(x, start + index * line_height, label, "k-graha"))
+        # One <tspan> per graha, rather than one joined string.
+        #
+        # The line still lays out as a single anchored <text>, so the printed
+        # geometry is unchanged - but each graha becomes an element the browser
+        # can measure. DESIGN.md §4.2 moves each graha from its D1 house to its
+        # D9 house individually, and a label reading "र बु" is one node with
+        # two grahas in it and no way to send them to different places.
+        spans = f"{NBSP}".join(
+            f'<tspan data-graha="{html.escape(g.key)}">'
+            f"{html.escape(g.render_label(show_degrees=show_degrees))}</tspan>"
+            for g in chunk
+        )
+        out.append(_markup(x, start + index * line_height, spans, "k-graha", house=cell.house))
     return out
 
 

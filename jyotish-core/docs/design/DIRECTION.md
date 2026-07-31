@@ -436,3 +436,59 @@ CSS takes lengths — verified by perturbing it and watching the gate fail.
 - **No profiling.** §3.3 wants 60fps on a throttled mid-range Android, and there
   is nothing to profile until something moves. The Playwright viewport here is
   desktop; a device profile is Phase D's job, not a user-agent string.
+
+---
+
+## 10. Phase D — the chart draws, and the grahas migrate
+
+Two pieces: the draw-in (§4.1) and the राशी ⇄ नवमांश migration (§4.2), the one
+orchestrated moment the spec tells you to spend boldness on.
+
+Both are driven with the Web Animations API against the server-rendered SVG
+rather than by re-authoring the chart in React. `render/chart_svg.py` is the
+single implementation of the diamond geometry and the PDF shares it; a second one
+in JSX would eventually disagree about where house 7 is. §4.2 reaches for Motion's
+shared `layoutId`, which is not available for elements Motion did not render — so
+the same FLIP is done directly, which is what `layoutId` does underneath.
+
+### What the tests caught that review would not have
+
+**The draw-in guard was spent on a no-op.** `MotionProvider` reports `reduced`
+until it has read the media query after mount, so the effect always runs once in
+the reduced state. Claiming the once-only guard on that pass consumed it, and the
+real pass a frame later found it gone — the chart drew for nobody. The `reduced`
+check now precedes the claim.
+
+**A test passed for the wrong reason.** The glyph-ordering test asserted delays
+ascend by house. `data-house` was absent — an edit that silently missed because
+the separator between grahas is a non-breaking space, not a space — so every
+house read as `0`, the sort was a no-op, and document order is ascending anyway.
+It now asserts the attribute is present and in range first. The same nbsp had
+already cost a wasted edit in Phase A; it is worth knowing about.
+
+**The grahas flew to the wrong place.** They were aimed at where D9 sat in the
+two-column layout, and the layout then collapsed to one column underneath them.
+Proper FLIP measures First, applies the layout, measures Last, then plays — the
+component passes the layout change *into* the migration as a callback for exactly
+that reason.
+
+**"Holding still is information" was not achievable as built.** §4.2 says grahas
+whose house is unchanged do not move. Detection compared screen positions, and
+because the D1 and D9 charts sat in different boxes, *every* graha appeared to
+travel. Two changes fixed it: focused, the two charts stack in one grid cell and
+occupy the same box; and the migration is D1 ⇄ D9 only — arriving from "compare"
+is a layout change, not a journey. A held graha now genuinely does not move.
+
+### Deviations and gaps, stated
+
+- **§4.1's timings do not fit its own budget.** 380 + (120 + 220) + 160 +
+  (11 × 40 + 180) lands near 1120ms against `--dur-chart-draw`'s 800ms. The glyph
+  stagger begins as the diagonals finish, overlaps the number fade, and compresses
+  its step if a chart still overruns. A test asserts the ceiling holds.
+- **The trailing hairline in §4.2 is not built.** It is marked optional there, and
+  the standing instruction is to take one accessory off. Nine glyphs in flight is
+  already the boldest thing on the sheet.
+- **No throttled-device profiling.** §3.3 wants 60fps measured on a mid-range
+  Android. Everything animated here is `opacity`, `transform` and
+  `stroke-dashoffset`, which composite without layout, but that is an argument,
+  not a measurement. It remains unmeasured.

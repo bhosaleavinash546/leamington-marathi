@@ -153,6 +153,16 @@ test.describe('chart draw-in', () => {
     expect(charts.length, 'no charts on the page').toBeGreaterThan(0);
     for (const glyphs of charts) {
       expect(glyphs.length, 'no graha glyphs carried a house').toBeGreaterThan(0);
+      // Without this the test passes on a chart where `data-house` is absent
+      // entirely: every house reads as 0, the sort is a no-op, and document
+      // order is already ascending. It did, for one commit.
+      expect(
+        glyphs.every((glyph) => glyph.house >= 1 && glyph.house <= 12),
+        'a graha glyph carries no data-house',
+      ).toBe(true);
+      // Not one element per house: a house holding more than two grahas wraps to
+      // a second line, and both lines carry the same house. That is the stellium
+      // case working, not a labelling bug.
       // §4.1: "Ordered by house, never random — the order itself teaches the
       // reading sequence." Later houses never start earlier.
       for (let i = 1; i < glyphs.length; i += 1) {

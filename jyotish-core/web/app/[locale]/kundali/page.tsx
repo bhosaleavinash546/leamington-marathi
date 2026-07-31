@@ -3,7 +3,7 @@ import { ConfidenceBanner } from '@/components/ConfidenceBanner';
 import { DashaTree } from '@/components/DashaTree';
 import { FindingsList } from '@/components/FindingsList';
 import { GrahaSpashta } from '@/components/GrahaSpashta';
-import { KundaliChart } from '@/components/KundaliChart';
+import { ChartPair } from '@/components/ChartPair';
 import { PanchangCard } from '@/components/PanchangCard';
 import { ChartToolbar } from '@/components/ChartToolbar';
 import { ApiError, fetchChart, fetchChartSvg, type BirthInput, type ChartStyle } from '@/lib/api';
@@ -106,25 +106,19 @@ export default async function KundaliPage({
       <ChartToolbar locale={locale} style={style} numerals={numerals} birth={birth} />
 
       {hasChart ? (
-        <div className="charts">
-          {/*
-            `chartId` deliberately carries the birth and the varga but not the
-            locale or the numeral system: switching language is not a new chart,
-            and §4.1 forbids replaying the draw-in for it.
-          */}
-          <KundaliChart
-            svg={rashiSvg}
-            tableHtml={rashiTable}
-            style={style}
-            chartId={`${chartKey}:D1`}
-          />
-          <KundaliChart
-            svg={navamsaSvg}
-            tableHtml={navamsaTable}
-            style={style}
-            chartId={`${chartKey}:D9`}
-          />
-        </div>
+        /*
+          `chartKey` carries the birth and the varga but not the locale or the
+          numeral system: switching language is not a new chart, and §4.1 forbids
+          replaying the draw-in for it.
+        */
+        <ChartPair
+          rashiSvg={rashiSvg}
+          rashiTable={rashiTable}
+          navamsaSvg={navamsaSvg}
+          navamsaTable={navamsaTable}
+          style={style}
+          chartKey={chartKey}
+        />
       ) : (
         <p className="note">
           {/* No ascendant means no chart. Said plainly rather than shown empty. */}

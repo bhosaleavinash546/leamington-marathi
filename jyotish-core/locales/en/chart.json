@@ -4,6 +4,7 @@
   "bhava_chalit": "Bhava Chalit",
   "chandra_kundali": "Moon chart",
   "combust": "Combust",
+  "compare": "Compare",
   "debilitated": "Debilitated",
   "degree": "Degree",
   "dignity": "Dignity",
@@ -35,6 +36,7 @@
   "south_indian": "South Indian",
   "sunrise_convention": "Sunrise convention",
   "surya_kundali": "Sun chart",
+  "unchanged": "unchanged",
   "varga": "Divisional chart",
   "yogas_present": "Yogas present"
 }

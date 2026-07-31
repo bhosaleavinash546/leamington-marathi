@@ -723,3 +723,59 @@ select {
     animation: none;
   }
 }
+
+/* --- the राशी ⇄ नवमांश migration (§4.2) --------------------------------- */
+/*
+ * The layer the travelling grahas fly in. It sits above the page because a glyph
+ * has to leave one SVG and arrive in another, and nothing inside either document
+ * can cross that boundary.
+ *
+ * `pointer-events: none` throughout: this is a picture of grahas in transit, not
+ * something to click. The real glyphs are hidden only while their clone is in
+ * flight, so the chart is never missing a graha and never showing it twice.
+ */
+.graha-flight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+.graha-flight__glyph {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-body);
+  font-size: 15px; /* matches .k-graha in render/chart_svg.py */
+  color: var(--ink);
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/*
+ * Focused, the two charts occupy the *same* box — stacked in one grid cell, not
+ * one hidden beside the other.
+ *
+ * This is what makes §4.2's "grahas whose house is unchanged do not move" true
+ * rather than aspirational. If D1 and D9 sit in different places, a graha in the
+ * same house in both still has to travel from one box to the other, every graha
+ * appears to move, and the holding — which §4.2 calls information — is lost.
+ *
+ * Not `display: none` on the hidden one: it is measured during a migration, and
+ * a display-none element has no box to measure.
+ */
+.charts--D1,
+.charts--D9 {
+  position: relative;
+  grid-template-columns: 1fr;
+}
+.charts--D1 .charts__slot,
+.charts--D9 .charts__slot {
+  grid-area: 1 / 1;
+}
+.charts--D1 .charts__slot[data-varga='D9'],
+.charts--D9 .charts__slot[data-varga='D1'] {
+  opacity: 0;
+  pointer-events: none;
+}
+.charts__slot {
+  transition: opacity var(--dur-micro) var(--ease-out);
+}
