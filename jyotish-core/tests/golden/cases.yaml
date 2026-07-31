@@ -65,9 +65,77 @@ cases:
     place: pune
     tags: [adhika_month]
     notes: >
-      Inside Adhika Jyeshtha 1940 Shaka (17 May - 13 June 2018).
-    source: ""   # TODO: almanac page reference
-    expected: {}
+      Inside Adhika Jyeshtha 1940 Shaka (17 May - 13 June 2018). Transcribed
+      from the owner's scan (audit/live/ALMANAC.md): row "६ मं" of the krishna
+      spread. Sunrise/sunset stay pending - the almanac prints Mumbai's, this
+      case is Pune.
+    source: "दाते पंचांग शक १९४०, book page (४०) / scan PDF 35, अ. ज्येष्ठ कृष्णपक्ष"
+    expected:
+      tithi_key: shashthi
+      paksha: krishna
+      tithi_end: "09:17"
+      nakshatra_key: dhanishtha
+      nakshatra_end: "17:57"
+      yoga_key: vaidhriti
+      yoga_end: "22:50"
+      karana_key: vanija
+      karana_end: "09:17"
+      vara_key: mangalavara
+      month_key: jyeshtha
+      month_anomaly: adhika
+      shaka_year: 1940
+
+  - id: almanac-2018-05-16-mumbai
+    date: "2018-05-16"
+    place: mumbai
+    tags: [adhika_month]
+    notes: >
+      First day of Adhika Jyeshtha, at the almanac's own reference city so the
+      printed sunrise/sunset pin too (row "१ बु" of the shukla spread). Also
+      the date whose ग्रहस्पष्ट row anchored F-008/F-027.
+    source: "दाते पंचांग शक १९४०, book page (३८) / scan PDF 33, अ. ज्येष्ठ शुक्लपक्ष"
+    expected:
+      sunrise: "06:05"
+      sunset: "19:05"
+      tithi_key: pratipada
+      paksha: shukla
+      tithi_end: "14:28"
+      nakshatra_key: krittika
+      nakshatra_end: "08:59"
+      yoga_key: atiganda
+      yoga_end: "22:38"
+      karana_key: bava
+      karana_end: "14:28"
+      vara_key: budhavara
+      month_key: jyeshtha
+      month_anomaly: adhika
+      shaka_year: 1940
+
+  - id: almanac-2019-01-22-mumbai
+    date: "2019-01-22"
+    place: mumbai
+    tags: [ordinary]
+    notes: >
+      An ordinary पौष कृष्ण day at the reference city (row "२ मं", इं 22).
+      Past-midnight prints - tithi २७।२६, yoga २६।०३ - land as 03:26 and
+      02:03; the moon's सिंह ingress at २३।३२ coincides with the printed
+      आश्लेषा end, an internal consistency check the page itself provides.
+    source: "दाते पंचांग शक १९४०, book page (७२) / scan PDF 67, पौष कृष्णपक्ष"
+    expected:
+      sunrise: "07:16"
+      sunset: "18:25"
+      tithi_key: dwitiya
+      paksha: krishna
+      tithi_end: "03:26"
+      nakshatra_key: ashlesha
+      nakshatra_end: "23:32"
+      yoga_key: ayushman
+      yoga_end: "02:03"
+      karana_key: taitila
+      karana_end: "17:15"
+      vara_key: mangalavara
+      month_key: pausha
+      shaka_year: 1940
 
   - id: adhika-ashwina-2020
     date: "2020-10-05"
@@ -112,9 +180,24 @@ cases:
     place: pune
     tags: [vriddhi_tithi]
     notes: >
-      Dashami spans two sunrises - repeated headline tithi.
-    source: ""   # TODO: almanac page reference
-    expected: {}
+      Dashami spans two sunrises - repeated headline tithi. The printed row
+      ("१० मं") says अहोरात्र in the tithi क.मि. column - the almanac's own
+      vriddhi notation, no end time printed that day - so tithi_end stays
+      unpinned while everything else on the row is.
+    source: "दाते पंचांग शक १९४०, book page (३२) / scan PDF 29, चैत्र कृष्णपक्ष"
+    expected:
+      tithi_key: dashami
+      paksha: krishna
+      tithi_anomaly: vriddhi
+      nakshatra_key: shravana
+      nakshatra_end: "23:25"
+      yoga_key: sadhya
+      yoga_end: "05:29"
+      karana_key: vanija
+      karana_end: "17:41"
+      vara_key: mangalavara
+      month_key: chaitra
+      shaka_year: 1940
 
   - id: vriddhi-2022-06-28
     date: "2022-06-28"
@@ -148,8 +231,13 @@ cases:
     place: pune
     tags: [kshaya_tithi]
     notes: >
-      A tithi begins and ends between two sunrises - skipped date.
-    source: ""   # TODO: almanac page reference
+      A tithi begins and ends between two sunrises - skipped date. Still
+      PENDING after the 2018-19 scan arrived: its page (book ६६ / scan PDF
+      61, मार्गशीर्ष शुक्ल) is motion-blurred beyond honest transcription.
+      The stacked ११/१२ pair on the 19 डिसेंबर row is visible - the print
+      does show the kshaya - but no क.मि. digit is readable. Needs a cleaner
+      photograph of that one page.
+    source: ""   # book page (६६); scan too blurred, see notes
     expected: {}
 
   - id: kshaya-2019-01-21

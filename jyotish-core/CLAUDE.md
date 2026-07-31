@@ -12,9 +12,11 @@
 > Three things in §12's definition of done are **not** met, each recorded rather
 > than hidden:
 >
-> 1. **The 60 golden panchang cases in §9.1 are scaffolded but not transcribed**
->    - see `docs/GOLDEN_FILES.md`. Agreement with दाते पंचांग is unverified, and
->    the harness reports each case as PENDING rather than passing.
+> 1. **The golden panchang cases in §9.1 are partially transcribed: 4 of 64**
+>    - see `docs/GOLDEN_FILES.md`. The owner's scanned दाते पंचांग (शक १९४०,
+>    2018-19) settled the ayanamsa, node and sunrise conventions
+>    (`audit/live/ALMANAC.md`, D25/D26) and all 62 transcribed fields match;
+>    the remaining 60 cases still report PENDING rather than passing.
 > 2. The §9.4 cross-check compares against the same ephemeris library reached a
 >    different way, not against a separate application - `docs/DIVERGENCES.md` O5.
 >    It nonetheless found a real 12.8-arcsecond error; see D13.

@@ -152,9 +152,18 @@ birth remains its own open check (REFERENCE_BIRTH.md).
 1. **F-008 — resolved** (see FINDINGS.md): the ayanamsa family is verified
    against the authority's own print, by two independent routes (printed
    अयनांश; daily longitudes).
-2. **Golden cases** for 2018-19 dates are now ordinary transcription: the
-   monthly left pages carry tithi/nakshatra/yoga/karana end-times to the
-   minute, and the year contains an adhika month (§9.1's hardest requirement).
+2. **Golden cases — begun.** Four cases transcribed and passing (62 pinned
+   fields, 59 exact / 3 at ±1 printed minute): `almanac-2018-05-16-mumbai`
+   (PDF 33, row १ बु — incl. Mumbai rise/set), `adhika-jyeshtha-2018`
+   (PDF 35, row ६ मं), `vriddhi-2018-04-10` (PDF 29, row १० मं — printed
+   अहोरात्र), `almanac-2019-01-22-mumbai` (PDF 67, row २ मं — past-midnight
+   २७।२६/२६।०३ prints). Observed systematic offset: दाते's limb end-times
+   sit +30–60 s from Swiss (consistent with its रवि printing 2–3″ high), so
+   minute-boundary values straddle by one printed minute; the harness
+   tolerance is the printed minute ±1 (`tests/golden/loader.py`, reasons in
+   the code). `kshaya-2018-12-19`'s page (PDF 61 / book ६६) is motion-blurred
+   beyond honest transcription — the stacked ११/१२ kshaya row is visible but
+   no digit is readable; that case stays PENDING pending a cleaner photo.
 3. **F-007 / O1 (sunrise conventions) — done** (D26): ten Mumbai rise/set
    values settle disc-centre-refracted; the Pune page settles
    elevation-not-applied. Sections above.
