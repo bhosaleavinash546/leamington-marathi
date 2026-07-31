@@ -24,6 +24,8 @@ export const DURATION = {
   orch: 500,
   /** The one permitted exception to `orch`: the one-time chart draw-in (§4.1). */
   chartDraw: 800,
+  /** §4.3's panchang arc sweep. Not one of §3.2's five; see tokens.css. */
+  arc: 420,
 } as const;
 
 /**
@@ -62,6 +64,7 @@ export const REDUCED_DURATION = {
   layout: 120,
   orch: 120,
   chartDraw: 0,
+  arc: 0,
 } as const;
 
 export type MotionPreferences = {

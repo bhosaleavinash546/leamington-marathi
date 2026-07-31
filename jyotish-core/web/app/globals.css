@@ -779,3 +779,78 @@ select {
 .charts__slot {
   transition: opacity var(--dur-micro) var(--ease-out);
 }
+
+/* --- panchang arcs and the day strip (§4.3) ----------------------------- */
+
+.limb-arcs {
+  display: flex;
+  gap: var(--space-6);
+  padding: var(--space-2) 0 var(--space-3);
+}
+.limb-arcs__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--step--1);
+  color: var(--ink-muted);
+}
+.limb-arc__track {
+  stroke: var(--rule);
+}
+.limb-arc__fill {
+  stroke: var(--ink);
+  stroke-linecap: butt; /* a printed arc has no rounded ends */
+}
+
+/*
+ * The inauspicious periods on a sunrise-to-sunset strip.
+ *
+ * §4.3: "Bands fade in; they do not pulse. A pulsing inauspicious-time warning
+ * is manipulative." So the band has an enter and nothing else — no infinite
+ * animation exists here, and `test_no_ambient_motion` fails the build if one
+ * appears.
+ */
+.day-strip {
+  padding-bottom: var(--space-3);
+}
+.day-strip__track {
+  position: relative;
+  height: 10px;
+  background: var(--paper-sunk);
+  border: var(--hairline) solid var(--rule);
+}
+.day-strip__band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--sindoor);
+  animation: page-enter var(--dur-enter) var(--ease-out) both;
+}
+.day-strip__legend {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  font-size: var(--step--1);
+  color: var(--ink-muted);
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+.day-strip__legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.day-strip__swatch {
+  width: 0.7em;
+  height: 0.7em;
+  background: var(--sindoor);
+  flex: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .day-strip__band {
+    animation: none;
+  }
+}

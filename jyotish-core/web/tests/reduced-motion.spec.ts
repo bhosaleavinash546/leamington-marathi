@@ -38,38 +38,39 @@ const FLOW = [
 ];
 
 /**
- * Elements carrying a transform that actually moves something.
+ * Elements whose transform is *changing* — the ones actually in transition.
  *
- * `none` and the identity matrix both mean "not moved". A scale or translate of
- * zero magnitude is also not movement, so the check is on the matrix values
- * rather than on the string being non-empty — `matrix(1, 0, 0, 1, 0, 0)` is a
- * transform in the CSSOM and is not motion.
+ * The first version flagged any non-identity transform, which conflated motion
+ * with geometry: the panchang arc is rotated -90° so it fills from twelve
+ * o'clock, a static attribute that never changes and moves nothing. §3.4 asks
+ * that "no element has a non-zero transform mid-transition", and mid-transition
+ * is the operative half. So two samples a few frames apart, and anything whose
+ * transform differs between them is moving.
  */
 async function movedElements(page: Page): Promise<string[]> {
-  return page.evaluate(() => {
-    const moved: string[] = [];
-    for (const element of document.querySelectorAll<HTMLElement>('body *')) {
-      const style = getComputedStyle(element);
-      const transform = style.transform;
-      if (!transform || transform === 'none') continue;
-      const values = transform.match(/-?[\d.]+/g)?.map(Number) ?? [];
-      const isIdentity =
-        values.length === 6 &&
-        values[0] === 1 &&
-        values[1] === 0 &&
-        values[2] === 0 &&
-        values[3] === 1 &&
-        values[4] === 0 &&
-        values[5] === 0;
-      if (isIdentity) continue;
-      const label =
-        element.tagName.toLowerCase() +
-        (element.id ? `#${element.id}` : '') +
-        (element.className ? `.${String(element.className).trim().split(/\s+/).join('.')}` : '');
-      moved.push(`${label} → ${transform}`);
-    }
-    return moved;
-  });
+  const snapshot = () =>
+    page.evaluate(() => {
+      const out: Record<string, string> = {};
+      document.querySelectorAll<HTMLElement>('body *').forEach((element, index) => {
+        const transform = getComputedStyle(element).transform;
+        if (!transform || transform === 'none') return;
+        const label =
+          element.tagName.toLowerCase() +
+          (element.id ? `#${element.id}` : '') +
+          (typeof element.className === 'string' && element.className
+            ? `.${element.className.trim().split(/\s+/).join('.')}`
+            : '');
+        out[`${index}:${label}`] = transform;
+      });
+      return out;
+    });
+
+  const first = await snapshot();
+  await page.waitForTimeout(80);
+  const second = await snapshot();
+  return Object.keys(second)
+    .filter((key) => first[key] !== undefined && first[key] !== second[key])
+    .map((key) => `${key} → ${first[key]} then ${second[key]}`);
 }
 
 /** Anything still easing: a running CSS transition or Web Animation. */

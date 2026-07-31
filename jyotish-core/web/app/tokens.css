@@ -109,6 +109,11 @@
   --dur-layout: 320ms;
   --dur-orch: 500ms;
   --dur-chart-draw: 800ms; /* the one permitted exception, §3.2 */
+  /* DERIVED. §4.3 gives the panchang arc sweep 420ms, which is not one of
+   * §3.2's five durations. It is a token rather than a literal so the
+   * reduced-motion block below can reach it — a hand-written duration is one
+   * the preference cannot collapse. */
+  --dur-arc: 420ms;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
@@ -179,6 +184,7 @@
     --dur-layout: 120ms;
     --dur-orch: 120ms;
     --dur-chart-draw: 0ms;
+    --dur-arc: 0ms;
     --ease-out: linear;
     --ease-in: linear;
     --ease-inout: linear;

@@ -197,3 +197,52 @@ test.describe('chart draw-in under reduced motion', () => {
     expect(faded, 'a glyph was left partly transparent').toBe(0);
   });
 });
+
+test.describe('panchang arcs', () => {
+  test('sweep to the engine-supplied fraction, staggered', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === 'reduced-motion', 'the reduced path is below');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto(PATRIKA);
+    await page.waitForFunction(
+      () => document.querySelectorAll('.limb-arc__fill').length > 0 &&
+        document.querySelectorAll('.limb-arc__fill')[0]!.getAnimations().length > 0,
+      { timeout: 5000 },
+    );
+    const arcs = await page.evaluate(() =>
+      [...document.querySelectorAll('.limb-arc__fill')].map((circle) => {
+        const timing = circle.getAnimations()[0]?.effect?.getComputedTiming();
+        return {
+          delay: Number(timing?.delay ?? -1),
+          duration: Number(timing?.duration ?? -1),
+        };
+      }),
+    );
+    expect(arcs.length, 'no arcs rendered').toBe(3);
+    // §4.3: "420ms, --ease-out, staggered 60ms."
+    for (const arc of arcs) expect(arc.duration).toBe(420);
+    expect(arcs.map((a) => a.delay)).toEqual([0, 60, 120]);
+  });
+
+  test('render at their final value under reduced motion', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'reduced-motion', 'needs the preference forced');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(PATRIKA);
+    await page.waitForSelector('.limb-arc__fill');
+    await page.waitForTimeout(300);
+    // §3.4: "All progress arcs render at their final value." No sweep, and not
+    // left empty either — the offset must be somewhere short of the full
+    // circumference for a limb that has partly run.
+    const arcs = await page.evaluate(() =>
+      [...document.querySelectorAll<SVGCircleElement>('.limb-arc__fill')].map((circle) => ({
+        animations: circle.getAnimations().length,
+        offset: Number(getComputedStyle(circle).strokeDashoffset.replace('px', '')),
+        circumference: Number(getComputedStyle(circle).strokeDasharray.replace('px', '')),
+      })),
+    );
+    expect(arcs.length).toBe(3);
+    for (const arc of arcs) {
+      expect(arc.animations, 'an arc animated under reduced motion').toBe(0);
+      expect(arc.offset).toBeLessThanOrEqual(arc.circumference);
+    }
+  });
+});

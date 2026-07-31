@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://jyotish-core.invalid/schema/chartfacts-1.0.0.json",
+  "$id": "https://jyotish-core.invalid/schema/chartfacts-2.0.0.json",
   "title": "ChartFacts 1.0.0",
   "description": "The contract between the deterministic engine and the narrative layer (CLAUDE.md 5). Every 'key' is a stable machine identifier: no Devanagari and no prose appear anywhere in a conforming document. A change to this schema is a major version bump.",
   "type": "object",
@@ -16,7 +16,7 @@
     "name"
   ],
   "properties": {
-    "schema_version": { "const": "1.0.0" },
+    "schema_version": { "const": "2.0.0" },
     "engine_version": { "$ref": "#/$defs/semver" },
     "authority": {
       "description": "The named panchang authority every value is regression-tested against (CLAUDE.md N2, 2.3). Never averaged, never silently switched.",
@@ -166,7 +166,8 @@
         "start_utc": { "$ref": "#/$defs/utcTimestamp" },
         "end_utc": { "$ref": "#/$defs/utcTimestamp" },
         "paksha": { "enum": ["shukla", "krishna"] },
-        "number_in_paksha": { "type": "integer", "minimum": 1, "maximum": 15 }
+        "number_in_paksha": { "type": "integer", "minimum": 1, "maximum": 15 },
+        "fraction_elapsed": { "type": "number", "minimum": 0, "maximum": 1 }
       }
     },
     "nakshatraState": {

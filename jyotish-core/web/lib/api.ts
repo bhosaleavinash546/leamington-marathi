@@ -43,6 +43,9 @@ export interface Limb {
   index: number;
   start_utc: string | null;
   end_utc: string | null;
+  /** How much of the limb had run at the sampled moment, in [0, 1]. From the
+   *  engine — see ChartFacts schema 2.0.0. */
+  fraction_elapsed?: number;
   paksha?: 'shukla' | 'krishna';
   number_in_paksha?: number;
 }

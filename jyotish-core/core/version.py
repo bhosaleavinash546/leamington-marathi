@@ -17,4 +17,4 @@ ENGINE_VERSION = "1.0.0"
 
 # ChartFacts contract version. Independent of ENGINE_VERSION: a schema change
 # is a major bump here and is validated in CI.
-CHARTFACTS_SCHEMA_VERSION = "1.0.0"
+CHARTFACTS_SCHEMA_VERSION = "2.0.0"

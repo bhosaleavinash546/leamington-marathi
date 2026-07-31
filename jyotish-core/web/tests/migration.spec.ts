@@ -81,8 +81,8 @@ test.describe('D1 to D9 migration', () => {
           .slice(1)
           .map(Number);
         const landing = [
-          parseFloat(clone.style.left) - window.scrollX + dx,
-          parseFloat(clone.style.top) - window.scrollY + dy,
+          parseFloat(clone.style.left) - window.scrollX + (dx ?? 0),
+          parseFloat(clone.style.top) - window.scrollY + (dy ?? 0),
         ];
         const real = document
           .querySelector(`.charts__slot[data-varga="D9"] [data-graha="${key}"]`)!

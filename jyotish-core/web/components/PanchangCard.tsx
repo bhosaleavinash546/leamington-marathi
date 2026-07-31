@@ -1,6 +1,8 @@
 import { useTranslations } from 'next-intl';
 import type { ChartFacts } from '@/lib/api';
 import { applyNumerals, localRange, localTime, type NumeralSystem } from '@/lib/format';
+import { LimbArc } from './LimbArc';
+import { DayStrip } from './DayStrip';
 
 /**
  * The panchang card (CLAUDE.md 8).
@@ -97,6 +99,30 @@ export function PanchangCard({
           {p('panchang')}: {p('sunrise')} → {p('sunrise')}
         </p>
       ) : null}
+
+      {/*
+        The three limbs as arcs (DESIGN.md §4.3), filled to the fraction the
+        engine reports. Tithi, nakshatra and yoga — not karana, which is half a
+        tithi and would make the group read as four equal things.
+      */}
+      <div className="limb-arcs">
+        {(
+          [
+            ['tithi', panchang.tithi_at_sunrise?.fraction_elapsed],
+            ['nakshatra', panchang.nakshatra_at_sunrise?.fraction_elapsed],
+            ['yoga', panchang.yoga_at_sunrise?.fraction_elapsed],
+          ] as const
+        ).map(([key, fraction], index) =>
+          typeof fraction === 'number' ? (
+            <div className="limb-arcs__item" key={key}>
+              <LimbArc fraction={fraction} label={p(key)} index={index} />
+              <span className="limb-arcs__label">{p(key)}</span>
+            </div>
+          ) : null,
+        )}
+      </div>
+
+      <DayStrip facts={facts} numerals={numerals} locale={locale} />
 
       <dl className="kv">
         {rows.map(([label, value]) => (

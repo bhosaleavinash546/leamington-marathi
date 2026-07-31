@@ -425,10 +425,10 @@ def _panchang_block(reading: FullReading) -> dict[str, Any]:
             "calendar_variant": hd.variant.value,
         },
         "vara": {"key": day.vara.key, "index": day.vara.index, "lord": day.vara.lord.value},
-        "tithi_at_sunrise": _limb(day.tithi_at_sunrise),
+        "tithi_at_sunrise": _limb(day.tithi_at_sunrise, day.lights.sunrise),
         "nakshatra_at_sunrise": _nakshatra(day.nakshatra_at_sunrise),
-        "yoga_at_sunrise": _limb(day.yoga_at_sunrise),
-        "karana_at_sunrise": _limb(day.karana_at_sunrise),
+        "yoga_at_sunrise": _limb(day.yoga_at_sunrise, day.lights.sunrise),
+        "karana_at_sunrise": _limb(day.karana_at_sunrise, day.lights.sunrise),
         "tithi_anomaly": day.tithi_anomaly.value,
         "anomalous_tithi": _limb(day.anomalous_tithi) if day.anomalous_tithi else None,
         "sunrise_utc": iso_utc(day.lights.sunrise),
@@ -449,10 +449,10 @@ def _panchang_block(reading: FullReading) -> dict[str, Any]:
     }
     if reading.moment is not None:
         moment = reading.moment
-        block["tithi_at_birth"] = _limb(moment.tithi)
+        block["tithi_at_birth"] = _limb(moment.tithi, moment.when_utc)
         block["nakshatra_at_birth"] = _nakshatra(moment.nakshatra)
-        block["yoga_at_birth"] = _limb(moment.yoga)
-        block["karana_at_birth"] = _limb(moment.karana)
+        block["yoga_at_birth"] = _limb(moment.yoga, moment.when_utc)
+        block["karana_at_birth"] = _limb(moment.karana, moment.when_utc)
         block["tithi_at_birth_differs_from_sunrise"] = moment.differs_from_sunrise
         block["ishtakaal"] = {
             "ghati": moment.ishtakaal.ghati,
@@ -463,13 +463,34 @@ def _panchang_block(reading: FullReading) -> dict[str, Any]:
     return block
 
 
-def _limb(limb: Any) -> dict[str, Any]:
+def _elapsed_fraction(start: dt.datetime, end: dt.datetime, at: dt.datetime) -> float:
+    """How much of a limb had run at ``at``, in [0, 1].
+
+    ``NakshatraState`` has carried ``fraction_elapsed`` from the beginning because
+    Vimshottari is keyed to it (CLAUDE.md 3.4). The other three limbs have the same
+    quantity and never reported it, so a reader could be told a tithi ends at 01:17
+    but not how much of it was already gone - which is the thing a panchang column
+    shows at a glance.
+
+    Clamped rather than asserted: a limb sampled exactly on its own boundary is a
+    real case at sunrise, and a fraction fractionally outside [0, 1] from float
+    noise is not worth refusing a chart over.
+    """
+    span = (end - start).total_seconds()
+    if span <= 0:  # pragma: no cover - a zero-length limb is not physical
+        return 0.0
+    return min(1.0, max(0.0, (at - start).total_seconds() / span))
+
+
+def _limb(limb: Any, at: dt.datetime | None = None) -> dict[str, Any]:
     out = {
         "key": limb.key,
         "index": limb.index,
         "start_utc": iso_utc(limb.start_utc),
         "end_utc": iso_utc(limb.end_utc),
     }
+    if at is not None:
+        out["fraction_elapsed"] = round(_elapsed_fraction(limb.start_utc, limb.end_utc, at), 9)
     if hasattr(limb, "paksha"):
         out["paksha"] = limb.paksha.value
         out["number_in_paksha"] = limb.number_in_paksha

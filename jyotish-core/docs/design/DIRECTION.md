@@ -492,3 +492,66 @@ is a layout change, not a journey. A held graha now genuinely does not move.
   Android. Everything animated here is `opacity`, `transform` and
   `stroke-dashoffset`, which composite without layout, but that is an argument,
   not a measurement. It remains unmeasured.
+
+---
+
+## 11. Phase E — data motion (partial)
+
+§4.3's panchang arcs and the inauspicious-period day strip are built. §4.4's
+timeline restructure and §4.8's number transitions are **not**, and the section
+ends with what that leaves.
+
+### The arcs needed the engine to say something it never had
+
+§4.3 fills each arc to "the elapsed fraction". `NakshatraState` has carried
+`fraction_elapsed` from the start, because Vimshottari is keyed to it — the tithi,
+yoga and karana had the same quantity and never reported it. Two of the three arcs
+had no value to fill to.
+
+The fix went in the engine, not the component. CLAUDE.md N1 keeps every computed
+number in Python, and `web/lib/format.ts` states the same rule for the web layer:
+these functions format what the engine produced, they never derive one. Computing
+`(birth − start) / (end − start)` in a React component is a small, entirely
+reasonable-looking breach of exactly that, and it is the kind that spreads.
+
+The schema gate then did its job: `fraction_elapsed` was rejected as an
+unexpected property, which is what CLAUDE.md §5 wants a schema for. Per the same
+section — "a schema change is a major version bump" — ChartFacts is now **2.0.0**.
+
+### The reduced-motion test was over-broad, and the arcs proved it
+
+The arc is rotated −90° so it fills from twelve o'clock. That is a static
+attribute: it never changes and moves nothing. The Phase C helper flagged any
+non-identity transform, so three motionless circles read as motion and the
+reduced-motion suite failed.
+
+§3.4 asks that "no element has a non-zero transform **mid-transition**", and
+mid-transition is the operative half. The check now samples transforms twice and
+reports only those that *changed* — it detects movement rather than the presence
+of geometry. The `motion-is-actually-measurable` probe still passes, so the
+loosening did not hollow it out.
+
+### Red, still doing one job
+
+The day strip is the fourth place `--sindoor` appears, and it earns it: §4.3 puts
+Rahu Kaal, Gulika and Yamaganda on a strip as red bands. They fade in once and
+then stop. §4.3 is blunt about why — "a pulsing inauspicious-time warning is
+manipulative" — and `test_no_ambient_motion` fails the build if an infinite
+animation ever appears in the stylesheet. Each band is also a labelled legend
+entry with its times, so the colour is reinforcement and not the channel (§8).
+
+### Not done
+
+- **§4.4's dasha timeline.** The spec wants a horizontal four-level timeline with
+  drill-down `layout` animation, a breadcrumb, momentum scroll, pinch-zoom and
+  snapping. What exists is the Phase 5 collapsible tree with a "today" marker.
+  That is a component rewrite, not a motion pass, and half-building it would be
+  worse than saying so.
+- **§4.8's number transitions.** The 200ms counter roll on values that genuinely
+  change. Nothing on the patrika currently changes a number in place — the
+  numeral toggle is a navigation — so this needs the live-panchang or a
+  recomputing view to be meaningful.
+- **§4.3's live arc.** "For today's panchang, the active arc advances live … at
+  most once per minute." The app shows the panchang of a *birth moment*, which
+  does not advance. The polling path is unwritten and unneeded until a
+  today's-panchang view exists.
