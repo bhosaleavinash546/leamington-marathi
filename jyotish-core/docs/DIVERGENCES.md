@@ -21,15 +21,18 @@ Nothing here is a bug list. A bug is a disagreement with the *named authority*
 > elevation question; only then does a printed sunrise mean one thing.
 > `python -m tools.settle --matrix` reproduces the sensitivities.
 
-### O1 — Sunrise disc/refraction convention
+### O1 — Sunrise disc/refraction convention — **RESOLVED (D26)**
 
 **Consequence: up to 3m 50s on every sunrise, and with it the headline tithi,
 nakshatra, yoga, karana, vara boundary, all three kaals, Abhijit and Ishtakaal.**
 
-The engine uses upper-limb-with-refraction. The classical Surya-Siddhanta
-definition is disc-centre-without-refraction. Which Date Panchang uses is not
-established. Full analysis and the resolution procedure in
-`SUNRISE_CONVENTION.md`; decision recorded as D6.
+~~Which Date Panchang uses is not established.~~ Established from the almanac
+itself: दाते prints **disc-centre-with-refraction** times, elevation not
+applied — ten transcribed Mumbai rise/set values all within ±0.9 min, the
+other two candidates ruled out on 6/10 and 10/10 values respectively
+(`audit/live/ALMANAC.md`). The engine default now matches; pinned by
+`tests/golden/test_almanac_suryoday.py`. Full analysis in
+`SUNRISE_CONVENTION.md`; decision recorded as **D26** (revising D6).
 
 ### O2 — Dasha year length
 

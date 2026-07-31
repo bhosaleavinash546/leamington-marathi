@@ -239,7 +239,8 @@ def test_day_lights_are_ordered_and_of_plausible_length(ephemeris: Ephemeris, pu
     assert lights.sunrise < lights.sunset < lights.next_sunrise
     assert 600.0 < lights.day_length_minutes < 900.0
     assert 1430.0 < lights.hindu_day_length_minutes < 1450.0
-    assert lights.convention is DiscConvention.UPPER_LIMB_REFRACTED
+    # disc-centre since D26: दाते's printed rise/set tables (ALMANAC.md).
+    assert lights.convention is DiscConvention.DISC_CENTRE_REFRACTED
 
 
 def test_pre_dawn_birth_rolls_back_one_hindu_day(ephemeris: Ephemeris, pune: Place) -> None:

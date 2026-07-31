@@ -118,10 +118,13 @@ class EngineOptions:
     node_type: NodeType = NodeType.TRUE
     calendar_variant: CalendarVariant = CalendarVariant.AMANTA
     dasha_year_length: YearLength = YearLength.SOLAR_365_2425
-    #: Solar altitude of the disc reference at rise/set, in degrees. -0.8333
-    #: (= -50') is upper-limb-with-standard-refraction, the drik-ganit panchang
-    #: convention. See docs/SUNRISE_CONVENTION.md.
-    rise_set_altitude_deg: float = -50.0 / 60.0
+    #: Solar altitude of the disc reference at rise/set, in degrees. -0.5667
+    #: (= -34') is disc-centre-with-standard-refraction — the convention दाते
+    #: पंचांग's printed rise/set tables follow (D26; all ten transcribed Mumbai
+    #: values within ±0.9 min, upper limb misses six of ten). -50' selects
+    #: upper-limb-refracted, 0 the Surya-Siddhanta disc-centre-no-refraction.
+    #: See docs/SUNRISE_CONVENTION.md.
+    rise_set_altitude_deg: float = -34.0 / 60.0
     #: Refraction is folded into rise_set_altitude_deg above; when True the
     #: adapter additionally applies its own atmospheric model.
     apply_refraction: bool = True

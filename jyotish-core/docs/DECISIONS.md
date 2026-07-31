@@ -16,7 +16,7 @@ see which conventions produced a number. Changing any **D-number below marked
 | D3 | Ayanamsa | Lahiri / Chitrapaksha, `SE_SIDM_LAHIRI` | yes |
 | D4 | Lunar node | ~~Mean node~~ **True node** (revised by D25) | yes |
 | D5 | Dasha year length | 365.2425 days (solar) | yes |
-| D6 | Rise/set convention | Upper limb, refracted (−50′) | yes |
+| D6 | Rise/set convention | ~~Upper limb, refracted (−50′)~~ **Disc centre, refracted (−34′)** (revised by D26) | yes |
 | D7 | Ephemeris data | Moshier (no `.se1` files bundled) | no |
 | D8 | Calendar | Amanta months, Shalivahana Shaka | yes |
 | D9 | House systems | Whole-sign primary, Sripati Chalit secondary | yes |
@@ -36,6 +36,7 @@ see which conventions produced a number. Changing any **D-number below marked
 | D23 | Web CSP | Nonce per request, locale routes `force-dynamic` | no |
 | D24 | Locale namespaces | One list, gate reads the consumers | no |
 | D25 | Lunar node default | **True node** — दाते prints the true node (revises D4) | **yes — changed a published value, see below** |
+| D26 | Rise/set convention | **Disc centre refracted, no elevation dip** — दाते's printed tables (revises D6, settles F-007/O1) | **yes — changed a published value, see below** |
 
 ---
 
@@ -143,11 +144,9 @@ Chosen because it is the common almanac convention, but the classical
 Surya-Siddhanta definition is disc-centre-without-refraction, and drik-ganit
 panchangs do not all follow the almanac. See `SUNRISE_CONVENTION.md`.
 
-> **Outstanding and highest priority.** Which of these three दाते पंचांग uses is
-> **not established**. Because every one of the five limbs is reported *at
-> sunrise*, this single choice shifts the headline tithi, nakshatra, yoga, karana,
-> vara boundary, all three kaals, Abhijit and Ishtakaal together. It is the first
-> thing the golden transcription will settle.
+> **Revised by D26.** The "outstanding and highest priority" question this
+> entry used to carry is settled: दाते पंचांग's own printed tables show it
+> uses **disc-centre-with-refraction**, and the default now follows it.
 
 ## D7 — Ephemeris data files
 
@@ -712,3 +711,36 @@ renders correctly.
 (and every other printed body) against **default** options — written first,
 failing under the mean default, passing after the flip with nothing tuned.
 The mean-node invariant test now constructs its adapter explicitly.
+
+## D26 — Rise/set is disc-centre-refracted, elevation not applied (F-007, O1)
+
+**Was:** upper limb refracted, −50′ (D6), with `elevation_m` accepted but inert
+and undocumented (F-007).
+**Is:** **disc centre with standard refraction, −34′**, and elevation
+*documentedly* not applied. `EngineOptions.rise_set_altitude_deg` default
+−50′ → **−34′**; −50′ and 0 remain selectable and correctly labelled.
+
+**Why.** Settled against the almanac's own printed tables
+(`audit/live/ALMANAC.md`):
+
+* **Mumbai rise/set** (the monthly दि/रउ/रअ columns) — ten values across two
+  seasons: disc-centre-refracted within ±0.9 min on all ten; upper limb
+  beyond the ±1 min print tolerance on six; no-refraction beyond it on all
+  ten. Every transcribed pair passes the page's own उदय + दिनमान = अस्त check.
+* **Elevation** — book page (२८) prints Pune's daily sunrise; Pune sits at
+  560 m, whose horizon dip would pull every value ~3.2 min earlier. The
+  readable cells track the sea-level disc-centre instants instead, so दाते
+  does not apply the dip and the engine's inert `elevation_m` is the correct
+  behaviour, now asserted with its reason rather than threaded silently.
+
+**Numeric before/after** (Mumbai 2018-05-16): sunrise 06:03:42 → **06:04:54**
+(+72 s), sunset 19:06:10 → **19:04:58** (−72 s); the spread scales with season
+and latitude. Every sunrise-anchored quantity moves with it: headline limbs,
+vara boundary, the three kaals, Abhijit, Ishtakaal, kshaya/vriddhi
+classification. Covered by the same ENGINE_VERSION 2.0.0 bump as D25.
+
+**Test.** `tests/golden/test_almanac_suryoday.py` — written first, red under
+the old default on exactly the six discriminating values, green after, plus
+the elevation-invariance assertion with the documented reason. Nothing tuned:
+the constant moved *to* the authority's measured behaviour, with the evidence
+transcribed and page-referenced.

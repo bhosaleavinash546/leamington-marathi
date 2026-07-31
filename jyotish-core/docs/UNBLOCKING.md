@@ -1,11 +1,13 @@
 # Unblocking F-007 and F-008: what to look up, and what each value settles
 
 > **Status update.** The owner supplied a scanned दाते पंचांग (शक १९४०,
-> 2018-19). **Step 1 / F-008 is done** — by route (a), the printed monthly
-> अयनांश, corroborated by the daily 05:30-IST ग्रहस्पष्ट table; evidence in
-> `audit/live/ALMANAC.md`, outcome in `audit/FINDINGS.md` F-008. Step 2
-> (F-007/O1, the sunrise conventions) is now workable from the same scan's
-> printed daily सूर्योदय (Mumbai convention) and is **not yet done**.
+> 2018-19), and **both findings are now resolved** — evidence in
+> `audit/live/ALMANAC.md`. Step 1 / F-008: by route (a), the printed monthly
+> अयनांश, corroborated by the daily 05:30-IST ग्रहस्पष्ट table. Step 2 /
+> F-007 with O1: by route (b) — the Mumbai daily rise/set columns settle
+> disc-centre-refracted (D26), and the Pune year-table (book page २८, 560 m)
+> shows no elevation dip, so elevation is documentedly not applied. Step 3
+> (the golden cases) is unblocked and in progress.
 
 Both findings were blocked on दाते पंचांग. They are **not** blocked on the same
 page, and neither needs the full 62-case transcription. This file says exactly

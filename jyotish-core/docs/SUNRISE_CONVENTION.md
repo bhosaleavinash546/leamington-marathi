@@ -5,13 +5,26 @@ single largest source of minute-level drift versus published panchangs".
 
 ## The engine default
 
-**Upper limb of the solar disc on the true horizon, with standard atmospheric
-refraction.** Geometric altitude of the disc centre at the event: **−50′**
-(34′ mean refraction + 16′ solar semi-diameter). Atmosphere taken as ICAO sea
-level: 1013.25 hPa, 15 °C.
+**Centre of the solar disc on the true horizon, with standard atmospheric
+refraction** — geometric altitude **−34′** — **and no observer-elevation dip**
+(D26). Atmosphere taken as ICAO sea level: 1013.25 hPa, 15 °C.
 
 Recorded in every ChartFacts document as
-`ephemeris.rise_set_convention: "upper_limb_refracted"`.
+`ephemeris.rise_set_convention: "disc_centre_refracted"`.
+
+**This is no longer a guess — it is दाते पंचांग's measured behaviour.** Ten
+printed Mumbai values (5 sunrises + 5 sunsets across मे 2018 and जानेवारी
+2019, `audit/live/ALMANAC.md`) all sit within ±0.9 min of the disc-centre
+instants; the upper-limb convention the engine previously defaulted to misses
+six of the ten by more than the ±1 min print tolerance, and
+disc-centre-without-refraction misses all ten by 2.4–3.4 min. The almanac's
+own Pune table (book page २८, Pune at 560 m) shows no trace of the ~3.2-min
+elevation dip, settling F-007: elevation is not applied. Pinned by
+`tests/golden/test_almanac_suryoday.py` against **default** engine options.
+
+> Historical note: the sections below predate the almanac evidence and are
+> kept because the *spread measurements* in them are still what makes the
+> choice matter. The default they describe as current changed with D26.
 
 ## Why it matters this much
 

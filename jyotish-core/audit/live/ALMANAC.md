@@ -101,6 +101,43 @@ Three deliberate observations, none silently absorbed:
    precision (a 1950s-lineage drik ganit vs modern Swiss); both are ~50× below
    the arcminute the sheet prints for every other body.
 
+### Daily सूर्योदय/सूर्यास्त (Mumbai; monthly दि/रउ/रअ columns)
+
+The monthly left pages carry three narrow columns — **दि**(नमान),
+**र**(वि)**उ**(दय), **र**(वि)**अ**(स्त) — printing the hour once and the
+minutes daily; the TOC footnote and «पंचांग कसे पहावे» (book page २) both
+state these are **Mumbai** times. Every transcribed pair passes the page's own
+consistency check उदय + दिनमान = अस्त exactly.
+
+| date | उदय | अस्त | दिनमान | source page |
+|---|---|---|---|---|
+| 2018-05-16 | ०६:०५ | १९:०५ | १३:०० | PDF 33 (३८) |
+| 2018-05-19 | ०६:०४ | १९:०६ | १३:०२ | PDF 33 (३८) |
+| 2018-05-23 | ०६:०३ | १९:०८ | १३:०५ | PDF 33 (३८) |
+| 2019-01-22 | ०७:१६ | १८:२५ | ११:०९ | PDF 67 (७२) |
+| 2019-01-26 | ०७:१५ | १८:२७ | ११:१२ | PDF 67 (७२) |
+
+Against the three candidate conventions (engine, Mumbai, elevation 14 m):
+**disc-centre-refracted** sits within **±0.9 min on all ten values**;
+upper-limb-refracted misses six of ten beyond the ±1 min print tolerance;
+disc-centre-no-refraction misses all ten by 2.4–3.4 min. This settles **O1**:
+दाते's printed rise/set is the disc-centre-with-refraction instant → D26,
+`tests/golden/test_almanac_suryoday.py`.
+
+### Pune's daily sunrise table and the elevation question (F-007)
+
+Book page (२८) / PDF 25 — «पुण्याचे दैनिक सूर्योदय / सूर्यास्त, सोलापूरचे …»
+— a year table (rows = day of month, columns = months, minutes printed per
+day). The digits are small and several cells are smudged; only clearly
+readable cells were used, and none was admitted into a golden test. What they
+establish: मार्च 8–10 print ५०/४९/४८ (engine sea-level disc-centre 06:49:45,
+06:49:0x, 06:48:2x), एप्रिल 8 prints २५ (engine 06:24:35), जानेवारी 8 prints
+१०/११ (engine 07:10:00) — all tracking the **no-dip** instants to ≈1 min.
+Pune's 560 m would pull every one of these **~3.2 minutes earlier** (मार्च
+would print ४६/४७, जाने ०७); no readable cell does. **Elevation is not
+applied by दाते** → D26's second half, and F-007 closes as a documented
+convention rather than a bug.
+
 ### Month naming at epoch
 
 Page headers name the months **अधिक ज्येष्ठ (मे–जून)**, निज ज्येष्ठ, आषाढ,
@@ -118,8 +155,8 @@ birth remains its own open check (REFERENCE_BIRTH.md).
 2. **Golden cases** for 2018-19 dates are now ordinary transcription: the
    monthly left pages carry tithi/nakshatra/yoga/karana end-times to the
    minute, and the year contains an adhika month (§9.1's hardest requirement).
-3. **F-007 / O1 (sunrise conventions)** — the left pages print daily सूर्योदय
-   (Mumbai convention per the TOC footnote) and राहूकाळ; `tools/settle.py`
-   can now be run against real printed values. Not yet done.
+3. **F-007 / O1 (sunrise conventions) — done** (D26): ten Mumbai rise/set
+   values settle disc-centre-refracted; the Pune page settles
+   elevation-not-applied. Sections above.
 4. A 1947 issue remains the only direct check for the reference birth's own
    almanac page.

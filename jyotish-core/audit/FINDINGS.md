@@ -179,7 +179,7 @@ against each other; `REQUIRED_NAMESPACES` checks CLAUDE.md 7's list. Verified by
 replaying the pre-fix locale state: 36 problems, build would have failed.
 Known-divergent pairs 23 → 35.
 
-### F-007 · convention, undocumented · `core/ephemeris/swisseph_adapter.py:252`
+### F-007 · convention, undocumented · `core/ephemeris/swisseph_adapter.py:252` · **RESOLVED**
 
 **Expected** Either `elevation_m` affects rise/set, or it is documented as inert.
 **Actual** Accepted, range-validated (−500..9000), echoed into ChartFacts, passed
@@ -195,6 +195,17 @@ separate the two unless the almanac's elevation policy is known.
 **Fix** Decide and document. Ignoring elevation is probably right for matching a
 plains almanac — but say so, and stop threading a parameter that does nothing.
 **Test** Assert sunrise is invariant under elevation, with the reason.
+**Outcome** Resolved under D26 with the almanac in hand, together with O1. The
+almanac itself supplied the decisive evidence: book page (२८) prints **Pune's**
+daily sunrise (Pune at 560 m), and the readable cells track the sea-level
+disc-centre-refracted instants — the ~3.2-minute dip that 560 m would produce
+appears in none of them. So दाते does not apply elevation, the engine's inert
+`elevation_m` is the *correct* behaviour, and it is now documented (D26,
+SUNRISE_CONVENTION.md) and asserted with its reason
+(`tests/golden/test_almanac_suryoday.py::test_elevation_does_not_move_rise_set`).
+The same transcription settled O1: rise/set default flipped
+upper-limb-refracted → **disc-centre-refracted** (ten printed Mumbai values,
+all within ±0.9 min; before/after in D26). Same 2.0.0 bump as F-027.
 
 ### F-008 · root assumption unverified · `docs/DECISIONS.md` D2/D3 · **RESOLVED**
 
@@ -326,8 +337,8 @@ and timezone fixes come first because everything depends on them."*
 |---|---|---|
 | 1 | **F-008** ayanamsa vs authority | ~~Root of every longitude~~ **RESOLVED** against the supplied almanac — verified, not tuned (`audit/live/ALMANAC.md`) |
 | 2 | **F-004** Bombay Time | 39 min → a full sign of lagna. Independent of F-008 and equally foundational |
-| 3 | **F-007** elevation | 3.85 min, confounded with O1; must be settled *before* transcribing sunrise or the comparison is uninterpretable. The almanac's printed सूर्योदय (Mumbai) + स्थानिक भेद table now make this workable |
-| 3a | **F-027** node type vs authority | दाते prints the **true** node; the engine defaults to mean per CLAUDE.md §3.3 — spec-vs-N2 conflict, needs the owner's call before any golden राहु row can pass |
+| 3 | **F-007** elevation | ~~confounded with O1~~ **RESOLVED** with O1 under D26 — दाते is disc-centre-refracted, no elevation dip; defaults flipped, pinned by `tests/golden/test_almanac_suryoday.py` |
+| 3a | **F-027** node type vs authority | ~~needs the owner's call~~ **FIXED** under D25 — default flipped to the true node, pinned by `tests/golden/test_almanac_grahas.py` |
 | 4 | **F-001 → F-002** Sade Sati determinism | One root cause, two S1 symptoms, contained to one function |
 | 5 | **F-003** dignity labels | 7% of charts, visible in every surface; a school decision plus a reordering |
 | 6 | **F-005 + F-006** Marathi terms and the gate that missed them | Highest visible-credibility return per hour in the register |
