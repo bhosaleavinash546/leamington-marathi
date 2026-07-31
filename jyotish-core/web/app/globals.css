@@ -854,3 +854,73 @@ select {
     animation: none;
   }
 }
+
+/* --- positioning: masthead, first run, disclosure, empty state ----------- */
+/* REVIEW-360 §1 A2. The home screen leads with what the product is, asks one
+   question on first run, and goes straight into the birth form. */
+
+.tagline {
+  color: var(--ink-muted);
+  margin: var(--space-1) 0 0;
+  max-width: 60ch;
+}
+
+.first-run {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}
+.first-run__question {
+  margin: 0;
+  font-size: var(--step-1);
+}
+.first-run__options {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* A dense section whose heading is also its disclosure. The density mode sets
+   only the default open state (DESIGN.md §6); both readers can toggle it. */
+.disclose > summary {
+  cursor: pointer;
+}
+.disclose > summary h2 {
+  display: inline;
+}
+.disclose[open] > summary {
+  margin-bottom: var(--space-2);
+}
+
+/* The kundali URL without a birth: an invitation to act, not a decoration and
+   not an error (REVIEW-360 §1 A2). */
+.empty-state {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}
+.empty-state h1 {
+  margin: 0;
+}
+.empty-state p {
+  margin: 0;
+  color: var(--ink-muted);
+}
+.button-link {
+  background: var(--ink);
+  color: var(--paper);
+  border: var(--hairline) solid var(--ink);
+  border-radius: var(--radius-control);
+  padding: var(--space-2) var(--space-4);
+  text-decoration: none;
+}
+
+@media print {
+  /* Print is the hand-it-over moment, and a closed <details> prints nothing.
+     CSS cannot force one open, so the practitioner default (everything open)
+     is also the print-safe default; the rule below only removes the disclosure
+     triangle from paper. */
+  .disclose > summary {
+    list-style: none;
+  }
+}

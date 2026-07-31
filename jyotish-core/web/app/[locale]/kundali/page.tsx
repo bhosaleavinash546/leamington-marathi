@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { ConfidenceBanner } from '@/components/ConfidenceBanner';
 import { DashaTree } from '@/components/DashaTree';
@@ -8,6 +9,7 @@ import { PanchangCard } from '@/components/PanchangCard';
 import { ChartToolbar } from '@/components/ChartToolbar';
 import { ApiError, fetchChart, fetchChartSvg, type BirthInput, type ChartStyle } from '@/lib/api';
 import { applyNumerals, type NumeralSystem } from '@/lib/format';
+import { DEFAULT_DENSITY, DENSITY_COOKIE, parseDensity } from '@/lib/density';
 
 /**
  * The main kundali view.
@@ -36,6 +38,28 @@ export default async function KundaliPage({
     const value = query[key];
     return Array.isArray(value) ? (value[0] ?? '') : (value ?? '');
   };
+
+  // A patrika URL without a birth is not an error — nothing went wrong. It is
+  // the empty state, and REVIEW-360 §1 A2 wants it to be an invitation to act.
+  // Sending the empty input to the API instead produced a 422 in engineering
+  // English, which is a dead end wearing an error's clothes.
+  const hasBirth = Boolean(one('date') && one('lat') && one('lon') && one('tz'));
+  if (!hasBirth) {
+    return (
+      <div className="page">
+        <section className="empty-state">
+          <h1>{ui('no_birth_yet')}</h1>
+          <p>{ui('no_birth_body')}</p>
+          <a className="button-link" href={`/${locale}`}>
+            {ui('enter_birth')}
+          </a>
+        </section>
+      </div>
+    );
+  }
+
+  const density =
+    parseDensity((await cookies()).get(DENSITY_COOKIE)?.value) ?? DEFAULT_DENSITY;
 
   const time = one('time');
   const birth: BirthInput = {
@@ -126,7 +150,7 @@ export default async function KundaliPage({
         </p>
       )}
 
-      <GrahaSpashta facts={facts} numerals={numerals} />
+      <GrahaSpashta facts={facts} numerals={numerals} defaultOpen={density === 'practitioner'} />
 
       <PanchangCard facts={facts} numerals={numerals} locale={locale} />
 
@@ -143,8 +167,11 @@ export default async function KundaliPage({
       <FindingsList yogas={facts.yogas_present ?? []} doshas={facts.doshas ?? []} />
 
       <section className="card provenance">
-        <h2>{chartT('ayanamsa')}</h2>
-        {/*
+        <details className="disclose" open={density === 'practitioner'}>
+          <summary>
+            <h2>{chartT('ayanamsa')}</h2>
+          </summary>
+          {/*
           Provenance is shown, not hidden in a debug panel. A reader comparing this
           against a printed panchang needs to know which conventions produced it,
           and CLAUDE.md 2.3 requires the ayanamsa used to be logged in every output.
@@ -178,7 +205,8 @@ export default async function KundaliPage({
               <code>{facts.ephemeris.provider}</code>
             </dd>
           </div>
-        </dl>
+          </dl>
+        </details>
       </section>
     </div>
   );

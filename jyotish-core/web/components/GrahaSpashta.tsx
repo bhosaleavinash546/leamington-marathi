@@ -30,9 +30,16 @@ import { applyNumerals, formatDegrees, type NumeralSystem } from '@/lib/format';
 export function GrahaSpashta({
   facts,
   numerals,
+  defaultOpen = true,
 }: {
   facts: ChartFacts;
   numerals: NumeralSystem;
+  /**
+   * The density mode's default disclosure state (DESIGN.md §6, REVIEW-360 §1
+   * A2): open for the practitioner, closed for the seeker. The table itself is
+   * identical in both — density changes what is unfolded, never what exists.
+   */
+  defaultOpen?: boolean;
 }) {
   const chart = useTranslations('chart');
   const graha = useTranslations('graha');
@@ -48,8 +55,11 @@ export function GrahaSpashta({
 
   return (
     <section className="sheet-block" aria-labelledby="graha-spashta">
-      <h2 id="graha-spashta">{chart('graha_spashta')}</h2>
-      <div className="table-scroll">
+      <details className="disclose" open={defaultOpen}>
+        <summary>
+          <h2 id="graha-spashta">{chart('graha_spashta')}</h2>
+        </summary>
+        <div className="table-scroll">
         <table className="patrika-table patrika-table--graha">
           <thead>
             <tr>
@@ -95,7 +105,8 @@ export function GrahaSpashta({
             })}
           </tbody>
         </table>
-      </div>
+        </div>
+      </details>
     </section>
   );
 }

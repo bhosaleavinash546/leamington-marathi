@@ -82,6 +82,12 @@ KNOWN_DIVERGENT: Final[frozenset[tuple[str, str]]] = frozenset(
         ("chart", "engine_version"),  # इंजिन आवृत्ती / इंजन संस्करण
         ("chart", "yogas_present"),  # कुंडलीतील योग / कुंडली के योग
         ("chart", "graha_spashta"),  # ग्रहस्पष्ट / ग्रह स्पष्ट
+        # REVIEW-360 Workstream A (positioning) strings. Same rule: each is a
+        # word Marathi and Hindi genuinely spell differently.
+        ("ui", "tagline"),  # जन्मपत्रिका / जन्मकुंडली
+        ("ui", "first_run_practitioner"),  # कोष्टके / सारणियाँ
+        ("ui", "no_birth_body"),  # जन्मतारीख द्या / जन्म-तिथि दें
+        ("ui", "enter_birth"),  # तपशील / विवरण
     }
 )
 

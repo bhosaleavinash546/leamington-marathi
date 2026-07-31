@@ -68,3 +68,8 @@ Edit `locales/<locale>/<namespace>.json` directly. The gate will fail if a term 
 emptied, if a known-divergent pair becomes identical, or if a rule key loses its
 term. Update the table above when a group is reviewed — including changing the
 "no" to the reviewer and the date.
+
+> **2026-07-31, Workstream A (positioning).** Nine `ui` strings added — the
+> tagline, the first-run question and answers, and the empty state. Chosen the
+> same way as the rest and carrying the same caveat: no native speaker has
+> reviewed them (O7).
