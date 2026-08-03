@@ -15,12 +15,14 @@ import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-ma
 import { normalizeFieldConfidences } from '../utils/cad-schema.js';
 import { familyFromFilename, proseFamily, promoteHighestConfidence, type MaterialSuggestion } from '../../src/engine/material-family.js';
 import { correctShellWallMm } from '../../src/engine/geometry-sanity.js';
-import { specForCommodity } from '../../src/engine/cost-input-rules/index.js';
+import { specForCommodity, DETERMINISTIC_COMMODITIES } from '../../src/engine/cost-input-rules/index.js';
+import { buildDeterministicAnalysis } from '../../src/engine/cost-input-rules/deterministic.js';
+import { inferCommodity } from '../../src/engine/cost-input-rules/derive/commodity.js';
 import { familyFromMaterialId } from '../../src/engine/cost-input-rules/derive/material.js';
 import { systemForFibreId } from '../../src/engine/cost-input-rules/derive/laminate.js';
 import { renderCommodityRulesPrompt, runCostInputRules } from '../../src/engine/cost-input-rules/engine.js';
 import { applyRuleDecisions } from '../../src/engine/cost-input-rules/apply.js';
-import { RULE_ENGINE_VERSION, type RuleContext } from '../../src/engine/cost-input-rules/types.js';
+import { RULE_ENGINE_VERSION, type RuleContext, type Decision } from '../../src/engine/cost-input-rules/types.js';
 
 const router = Router();
 
@@ -287,11 +289,10 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     return;
   }
 
-  const apiKey = resolveApiKey(req);
-  if (!apiKey) {
-    res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured. Set it in .env or pass as x-api-key header.' });
-    return;
-  }
+  // NOTE: the API-key check used to sit here, above every line below it. That
+  // meant a deterministic run could not happen at all — and, less obviously, a
+  // fully cached analysis could not be served without a key either. It now sits
+  // just above `createAnthropic`, the first line that actually needs one.
 
   // --- Phase 1: Real geometry extraction ---
   let geo: OCCTGeometry;
@@ -433,8 +434,6 @@ router.post('/analyze', analyzeLimiter, upload.fields([
       }
     : preprocessCADFile(content, originalname, size);
 
-  const anthropic = createAnthropic(apiKey);
-
   // --- Phase 3: Stage 1 — Fast commodity pre-selection (Haiku) OR user override ---
   let stage1Selection: Stage1Selection | null = null;
   let selectedCommodity = 'machining'; // fallback
@@ -451,6 +450,10 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   const ovrDensityGcm3  = req.body?.densityGcm3 ? parseFloat(req.body.densityGcm3) : null;
 
   const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
+  const analysisMode = parseAnalysisMode(req.body?.mode);
+  const decisionAnswers = parseDecisionAnswers(
+    typeof req.body?.decisionAnswers === 'string'
+      ? JSON.parse(req.body.decisionAnswers) as unknown : req.body?.decisionAnswers);
 
   const partPhotoBase64 = typeof req.body?.partPhotoBase64 === 'string' ? req.body.partPhotoBase64 : '';
   const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
@@ -468,7 +471,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     Buffer.from(partPhotoBase64),
     ...(drawingUpload ? [drawingUpload.buffer] : []),
     ...renderViews.map(v => Buffer.from(v)),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION })),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION })),
   ]);
   const cached = cadCache.get(cacheKey);
   if (cached) {
@@ -477,14 +480,49 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     return;
   }
 
+  // ── The AI boundary ──────────────────────────────────────────────────────
+  // Everything above is measurement, arithmetic and cache. Only past this line
+  // does a key matter, and only when the mode asks for a model.
+  let anthropic: ReturnType<typeof createAnthropic> | null = null;
+  if (analysisMode !== 'deterministic') {
+    const apiKey = resolveApiKey(req);
+    if (!apiKey) {
+      res.status(400).json({
+        error: 'ANTHROPIC_API_KEY not configured. Set it in .env, pass an x-api-key header, '
+          + "or send mode='deterministic' to cost from the measured geometry alone.",
+      });
+      return;
+    }
+    anthropic = createAnthropic(apiKey);
+  }
+
+  // The deterministic path has no Stage-1 model to ask. `inferCommodity` reads
+  // the same decisive signals `enforceGeometryCommodity` trusts enough to
+  // override a model with, and returns a question everywhere else — because the
+  // fill ladder it otherwise falls back to names two or three routes on every
+  // rung, and reading that as a classifier is what makes a guess look like an
+  // answer.
+  let commodityDecision: Decision | null = null;
+
   if (forcedCommodity) {
     selectedCommodity = forcedCommodity;
     stage1Selection = { primary: forcedCommodity, conf: 1.0, alt: [] };
     console.log(`[CAD] User forced commodity: ${selectedCommodity}`);
+  } else if (analysisMode === 'deterministic') {
+    const verdict = inferCommodity(ruleContextFor(
+      selectedCommodity, geo, originalname, userOverrides, decisionAnswers));
+    if (verdict.commodity) {
+      selectedCommodity = verdict.commodity;
+      stage1Selection = { primary: verdict.commodity, conf: 0.9, alt: [] };
+      console.log(`[CAD] Deterministic commodity: ${selectedCommodity} — ${verdict.basis}`);
+    } else {
+      commodityDecision = verdict.decision!;
+      console.log('[CAD] Deterministic commodity: undecided — asking the engineer');
+    }
   } else {
     try {
       console.log('[CAD] Stage 1: Haiku commodity selection…');
-      const s1Msg = await anthropic.messages.create({
+      const s1Msg = await anthropic!.messages.create({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 256,
         system: 'You are a manufacturing process selector. Given part geometry metrics, select the most likely manufacturing commodity. Return ONLY a JSON object, no prose, no markdown.',
@@ -526,7 +564,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   // --- Phase 4: Stage 2 — Specialist deep analysis (Sonnet) ---
   // The same rules the prompt was rendered from, run again here so their values
   // can be written over the model's reply. One spec, one context, two consumers.
-  const ruleCtx = ruleContextFor(selectedCommodity, geo, originalname, userOverrides);
+  const ruleCtx = ruleContextFor(selectedCommodity, geo, originalname, userOverrides, decisionAnswers);
   const ruleSpec = specForCommodity(selectedCommodity);
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
 
@@ -556,6 +594,48 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   }
 
   let analysis: unknown;
+
+  if (analysisMode === 'deterministic') {
+    // No model, no key, no network. Everything from here is arithmetic on the
+    // measurement plus the rules, which is the whole point of the exercise.
+    const det = ruleSpec
+      ? buildDeterministicAnalysis(ruleSpec, ruleCtx, geo.partName || originalname)
+      : null;
+    if (!det) {
+      res.status(422).json({
+        error: `No deterministic rules exist for '${selectedCommodity}' yet. `
+          + `Converted so far: ${DETERMINISTIC_COMMODITIES.join(', ')}.`,
+        decisions: commodityDecision ? [commodityDecision] : [],
+      });
+      return;
+    }
+    const detPayload = {
+      success: true,
+      analysis: det.analysis,
+      sanityWarnings: runCADSanityChecks(
+        det.analysis as unknown as Parameters<typeof runCADSanityChecks>[0],
+        geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null,
+        buildGeoSanityContext(geo, det.analysis)),
+      ruleOverrides: det.applied,
+      decisions: [...(commodityDecision ? [commodityDecision] : []), ...det.result.decisions],
+      mode: analysisMode,
+      fromCache: false,
+      geometrySource,
+      annualVolume,
+      occtGeometry: geometrySource === 'occt' ? geo : null,
+      stlGeometry,
+      preprocessed: {
+        format: preprocessed.format,
+        partName: preprocessed.partName,
+        boundingBoxEstMm: preprocessed.boundingBoxEstMm,
+        entityStats: preprocessed.entityStats,
+      },
+    };
+    cadCache.set(cacheKey, detPayload);
+    res.json(detPayload);
+    return;
+  }
+
   // Express 4 does NOT catch async throws — an uncaught rejection here killed
   // the whole Node process (empty response to the client, dead server after).
   try {
@@ -564,7 +644,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     // structured outputs here: the full CAD schema has 86 optional params and
     // the API caps structured-output optionals at 24. extractJson + a one-shot
     // repair retry gives us robust parsing without that limit.
-    analysis = await cadAnalyzeJSON(anthropic, deepAnalysis, systemPrompt, userContent);
+    analysis = await cadAnalyzeJSON(anthropic!, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
     normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights);
     // Everything the rules could decide is now written over whatever the model
@@ -604,6 +684,10 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     // What the deterministic rules decided, what the model had said, and what
     // nobody could decide. The report renders this as the provenance trail.
     ruleOverrides,
+    // The AI path has open decisions too — it just answers them itself. Saying
+    // which ones it answered is worth more than hiding that it did.
+    decisions: ruleOverrides?.undecided.length ? ruleSpec ? runCostInputRules(ruleSpec, ruleCtx).decisions : [] : [],
+    mode: analysisMode,
     fromCache: false,
     geometrySource,
     annualVolume,
@@ -1191,12 +1275,41 @@ function withAIMaterial(ctx: RuleContext, analysis: Record<string, unknown>): Ru
   return { ...ctx, answers };
 }
 
+export type AnalysisMode = 'deterministic' | 'ai' | 'both';
+
+/**
+ * Read the requested mode.
+ *
+ * `'ai'` is the default and stays the default until the differential harness
+ * says otherwise — flipping it should be a measured decision, not a preference.
+ */
+export function parseAnalysisMode(raw: unknown): AnalysisMode {
+  return raw === 'deterministic' || raw === 'both' ? raw : 'ai';
+}
+
+/**
+ * Answers an engineer has given to blocking decisions, from the request body.
+ *
+ * Keys are `Decision.id`; values are the chosen `DecisionOption.value`. Anything
+ * that is not a plain string is dropped rather than trusted — this map feeds
+ * straight into the rules.
+ */
+export function parseDecisionAnswers(raw: unknown): Record<string, unknown> {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof v === 'string' && v.length > 0 && v.length < 200) out[k] = v;
+  }
+  return out;
+}
+
 /** Assemble the rule context from what `buildPrompt` already has in scope. */
 export function ruleContextFor(
   commodity: string,
   geo: OCCTGeometry,
   filename: string,
   overrides: Pick<UserOverrides, 'annualVolume' | 'forcedCommodity' | 'forcedMaterial'>,
+  answers: Record<string, unknown> = {},
 ): RuleContext {
   return {
     geo,
@@ -1213,7 +1326,7 @@ export function ruleContextFor(
     assumeLeanings: true,
     annualVolume: overrides.annualVolume,
     filename,
-    answers: answersFromContext(overrides.forcedMaterial, filename),
+    answers: { ...answersFromContext(overrides.forcedMaterial, filename), ...answers },
   };
 }
 
@@ -1581,12 +1694,6 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     return;
   }
 
-  const apiKey = resolveApiKey(req);
-  if (!apiKey) {
-    res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured. Set it in .env or pass as x-api-key header.' });
-    return;
-  }
-
   const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
   const forcedMaterial  = typeof req.body?.material  === 'string' ? req.body.material.trim()  : '';
   const forcedProcess   = typeof req.body?.process   === 'string' ? req.body.process.trim()   : '';
@@ -1601,13 +1708,29 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
 
   const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
-  const anthropic = createAnthropic(apiKey);
+  // This is the route the client posts decision answers back to, so it is the
+  // one that most needs to work without a key.
+  const analysisMode = parseAnalysisMode(req.body?.mode);
+  const decisionAnswers = parseDecisionAnswers(req.body?.decisionAnswers);
+
+  let anthropic: ReturnType<typeof createAnthropic> | null = null;
+  if (analysisMode !== 'deterministic') {
+    const apiKey = resolveApiKey(req);
+    if (!apiKey) {
+      res.status(400).json({
+        error: 'ANTHROPIC_API_KEY not configured. Set it in .env, pass an x-api-key header, '
+          + "or send mode='deterministic' to cost from the measured geometry alone.",
+      });
+      return;
+    }
+    anthropic = createAnthropic(apiKey);
+  }
 
   const deepAnalysis = isDeepReq(req);
   const cacheKey = cadCache.buildKey([
     Buffer.from(JSON.stringify(geo)),
     Buffer.from(partPhotoBase64),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, filename, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION })),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, filename, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION })),
   ]);
   const cached = cadCache.get(cacheKey);
   if (cached) {
@@ -1626,7 +1749,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   } else {
     try {
       console.log('[CAD/reanalyze] Stage 1: Haiku commodity selection from cached geometry…');
-      const s1Msg = await anthropic.messages.create({
+      const s1Msg = await anthropic!.messages.create({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 256,
         system: 'You are a manufacturing process selector. Given part geometry metrics, select the most likely manufacturing commodity. Return ONLY a JSON object, no prose, no markdown.',
@@ -1685,7 +1808,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
 
   // The same rules the prompt was rendered from, run again here so their values
   // can be written over the model's reply. One spec, one context, two consumers.
-  const ruleCtx = ruleContextFor(selectedCommodity, geo, filename, userOverrides);
+  const ruleCtx = ruleContextFor(selectedCommodity, geo, filename, userOverrides, decisionAnswers);
   const ruleSpec = specForCommodity(selectedCommodity);
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
 
@@ -1698,6 +1821,41 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   }
 
   let analysis: unknown;
+
+  if (analysisMode === 'deterministic') {
+    // The route the client posts decision answers to. Re-running the rules with
+    // them is the whole round-trip: no re-upload, no model, no key.
+    const det = ruleSpec
+      ? buildDeterministicAnalysis(ruleSpec, ruleCtx, geo.partName || filename)
+      : null;
+    if (!det) {
+      res.status(422).json({
+        error: `No deterministic rules exist for '${selectedCommodity}' yet. `
+          + `Converted so far: ${DETERMINISTIC_COMMODITIES.join(', ')}.`,
+      });
+      return;
+    }
+    const detPayload = {
+      success: true,
+      analysis: det.analysis,
+      sanityWarnings: runCADSanityChecks(
+        det.analysis as unknown as Parameters<typeof runCADSanityChecks>[0],
+        geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null,
+        buildGeoSanityContext(geo, det.analysis)),
+      ruleOverrides: det.applied,
+      decisions: det.result.decisions,
+      mode: analysisMode,
+      fromCache: false,
+      geometrySource: 'occt' as const,
+      annualVolume,
+      occtGeometry: geo,
+      preprocessed: null,
+    };
+    cadCache.set(cacheKey, detPayload);
+    res.json(detPayload);
+    return;
+  }
+
   // Express 4 does NOT catch async throws — an uncaught rejection here killed
   // the whole Node process (empty response to the client, dead server after).
   try {
@@ -1706,7 +1864,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     // structured outputs here: the full CAD schema has 86 optional params and
     // the API caps structured-output optionals at 24. extractJson + a one-shot
     // repair retry gives us robust parsing without that limit.
-    analysis = await cadAnalyzeJSON(anthropic, deepAnalysis, systemPrompt, userContent);
+    analysis = await cadAnalyzeJSON(anthropic!, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
     normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights);
     // Everything the rules could decide is now written over whatever the model
@@ -1740,6 +1898,10 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     // What the deterministic rules decided, what the model had said, and what
     // nobody could decide. The report renders this as the provenance trail.
     ruleOverrides,
+    // The AI path has open decisions too — it just answers them itself. Saying
+    // which ones it answered is worth more than hiding that it did.
+    decisions: ruleOverrides?.undecided.length ? ruleSpec ? runCostInputRules(ruleSpec, ruleCtx).decisions : [] : [],
+    mode: analysisMode,
     fromCache: false,
     geometrySource: 'occt' as const,
     annualVolume,

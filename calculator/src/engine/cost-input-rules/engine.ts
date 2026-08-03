@@ -42,6 +42,7 @@ export function runCostInputRules(
 ): CostInputRuleResult {
   const suggestions: Record<string, unknown> = {};
   const provenance: Record<string, Decided<unknown>> = {};
+  const byRule: Record<string, Decided<unknown>> = {};
   const fieldConfidences: Record<string, number> = {};
   const decisionsById = new Map<string, Decision>();
   const notes: string[] = [];
@@ -59,6 +60,7 @@ export function runCostInputRules(
 
     if (outcome.ok) {
       setPath(suggestions, rule.path, outcome.decided.value);
+      byRule[rule.path] = outcome.decided;
       if (rule.fieldId) {
         provenance[rule.fieldId] = outcome.decided;
         fieldConfidences[rule.fieldId] = outcome.decided.confidence;
@@ -91,6 +93,7 @@ export function runCostInputRules(
     },
     suggestions,
     provenance,
+    byRule,
     fieldConfidences,
     decisions,
     answers: { ...ctx.answers },

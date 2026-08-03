@@ -6238,6 +6238,12 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
 .input-panel select[data-prov="estimated"] {
   border-left: 3px solid #d97706 !important;
 }
+/* Waiting on a question only a person can answer — see renderCADDecisionsPanel.
+   Empty on purpose, not merely uncertain, so it gets its own colour. */
+.input-panel input[data-prov="needs-decision"],
+.input-panel select[data-prov="needs-decision"] {
+  border-left: 3px solid #dc2626 !important;
+}
 
 /* ── Standalone 3D Viewer page (open-for-analysis) ───────────────────────── */
 .viewer-dropzone {

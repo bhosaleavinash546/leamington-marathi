@@ -217,6 +217,22 @@ let _cadMaterialLocked = false;
 let _cadProcessLocked = false;
 let _cadPinnedMaterialId = '';
 let _cadPinnedSubtype = '';   // hpdc | sand | gravity | investment
+/**
+ * Blocking questions the rule engine could not answer, and what the engineer
+ * said. Same lifecycle as the pins above — cleared on a new file and on Clear,
+ * or last part's answers leak into the next one.
+ */
+interface CADDecision {
+  id: string;
+  kind: string;
+  question: string;
+  why: string;
+  options: Array<{ value: string; label: string; consequence?: string; leaning?: boolean }>;
+  blockedFieldIds: string[];
+  severity: 'blocking' | 'advisory';
+}
+let _cadDecisions: CADDecision[] = [];
+let _cadDecisionAnswers: Record<string, string> = {};
 let cadSanityWarnings: Array<{ code: string; message: string; severity: 'warn' | 'error' }> = [];
 let cadFromCache = false;
 // Provenance for the accuracy harness: 'cad' when the last applied inputs came
@@ -5925,6 +5941,7 @@ function wireCADEvents(): void {
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null;
     _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
+    _cadDecisions = []; _cadDecisionAnswers = {};
     unmountCADViewer();
     document.getElementById('cad-file-info')?.style.setProperty('display', 'none');
     document.getElementById('cad-drop-zone')?.style.setProperty('display', '');
@@ -6016,6 +6033,7 @@ function setCADFile(f: File): void {
   cadFile = f;
   // A new part starts with a clean slate — clear any pins from the previous file.
   _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
+  _cadDecisions = []; _cadDecisionAnswers = {};
   document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
   const cadFileInfo = document.getElementById('cad-file-info');
   if (cadFileInfo) cadFileInfo.style.display = 'flex';
@@ -6150,6 +6168,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
+    _cadDecisions = (data as { decisions?: CADDecision[] }).decisions ?? [];
 
     const partNameEl = el<HTMLInputElement>('part-name');
     if (partNameEl && cadAnalysisResult.partName) partNameEl.value = cadAnalysisResult.partName;
@@ -6232,6 +6251,76 @@ function buildFeatureCostCard(): string {
       <div style="margin-top:6px;font-size:0.72rem;color:var(--text-secondary)">Cost driver: <strong>${escHtml(fc.costliestFeature)}</strong></div>
       ${dfm ? `<div style="margin-top:6px;border-top:1px solid var(--border);padding-top:5px">${dfm}</div>` : ''}
     </div>`;
+}
+
+/**
+ * The questions the geometry could not answer.
+ *
+ * `cadMaterialAmbiguityAsk` has been telling people about the material
+ * ambiguity for months without ever letting them resolve it — it returns an
+ * advisory string and points at a pin control elsewhere on the page. This is
+ * that advisory made answerable, and it finally renders the thing the Decision
+ * type was built to carry: what each option DOES to the cost, beside the option.
+ */
+function renderCADDecisionsPanel(): string {
+  const open = _cadDecisions.filter(d => d.severity === 'blocking');
+  if (!open.length) return '';
+  const answered = open.filter(d => _cadDecisionAnswers[d.id]).length;
+
+  const rows = open.map(d => `
+    <div class="cad-decision" data-decision-id="${escHtml(d.id)}" style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(220,38,38,0.18)">
+      <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">${escHtml(d.question)}</div>
+      <div style="font-size:0.7rem;color:var(--text-secondary);margin:3px 0 6px;line-height:1.5">${escHtml(d.why)}</div>
+      ${d.options.map(o => `
+        <label style="display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:0.72rem;cursor:pointer">
+          <input type="radio" name="dec-${escHtml(d.id)}" value="${escHtml(o.value)}" ${_cadDecisionAnswers[d.id] === o.value ? 'checked' : ''} style="margin-top:2px"/>
+          <span>
+            <span style="font-weight:600;color:var(--text-primary)">${escHtml(o.label)}</span>
+            ${o.consequence ? `<span style="color:var(--text-muted)"> &mdash; ${escHtml(o.consequence)}</span>` : ''}
+            ${o.leaning ? '<span style="color:var(--text-muted);font-style:italic"> (likely)</span>' : ''}
+          </span>
+        </label>`).join('')}
+    </div>`).join('');
+
+  return `<div id="cad-decisions-panel" style="margin-bottom:12px;padding:11px 13px;background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.28);border-left:3px solid #dc2626;border-radius:8px">
+    <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">&#9997;&#65039; ${open.length} question${open.length === 1 ? '' : 's'} only you can answer</div>
+    <div style="font-size:0.7rem;color:var(--text-secondary);margin-top:3px;line-height:1.5">
+      Nothing in the geometry settles these, so the costing is blocked until they are answered.
+      A number derived from a guess here is the single largest documented source of error in this tool.
+    </div>
+    ${rows}
+    <div style="margin-top:11px;display:flex;align-items:center;gap:9px">
+      <button class="btn btn-primary" id="cad-decisions-apply" style="font-size:0.72rem;padding:5px 12px">Apply answers &amp; re-cost</button>
+      <span id="cad-decisions-status" style="font-size:0.7rem;color:var(--text-muted)">${answered}/${open.length} answered</span>
+    </div>
+  </div>`;
+}
+
+/** Read the radios back into the store, then re-run the rules with them. */
+function wireCADDecisionsPanel(): void {
+  const panel = document.getElementById('cad-decisions-panel');
+  if (!panel) return;
+
+  const sync = (): void => {
+    for (const block of Array.from(panel.querySelectorAll<HTMLElement>('.cad-decision'))) {
+      const id = block.dataset.decisionId;
+      const picked = block.querySelector<HTMLInputElement>('input[type=radio]:checked');
+      if (id && picked) _cadDecisionAnswers[id] = picked.value;
+    }
+    const open = _cadDecisions.filter(d => d.severity === 'blocking');
+    const status = document.getElementById('cad-decisions-status');
+    if (status) status.textContent = `${open.filter(d => _cadDecisionAnswers[d.id]).length}/${open.length} answered`;
+  };
+  panel.addEventListener('change', sync);
+  document.getElementById('cad-decisions-apply')?.addEventListener('click', () => {
+    sync();
+    void reanalyzeCAD();
+  });
+}
+
+/** Blocking questions still unanswered — the Calculate gate reads this. */
+function openCADDecisions(): CADDecision[] {
+  return _cadDecisions.filter(d => d.severity === 'blocking' && !_cadDecisionAnswers[d.id]);
 }
 
 function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVolume = 100000): void {
@@ -6333,6 +6422,8 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
         ${sanityHtml ? `<div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);margin-top:8px;text-transform:uppercase;letter-spacing:0.04em">Consistency checks</div><ul style="margin:4px 0 0;padding-left:16px;font-size:0.72rem;color:var(--text-secondary)">${sanityHtml}</ul>` : ''}
       </div>`;
     })()}
+
+    ${renderCADDecisionsPanel()}
 
     ${occtPanel}
 
@@ -6577,6 +6668,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   });
 
   // Wire re-analyse button (uses cached OCCT geometry — no re-upload)
+  wireCADDecisionsPanel();
   document.getElementById('cad-reanalyze-btn')?.addEventListener('click', () => { void reanalyzeCAD(); });
 
   // Live alloy↔process compatibility hint as the engineer picks overrides.
@@ -6666,6 +6758,12 @@ async function reanalyzeCAD(): Promise<void> {
     if (procOvr) body['process']   = procOvr;
     if (cadPartPhotoBase64) { body['partPhotoBase64'] = cadPartPhotoBase64; body['partPhotoMime'] = cadPartPhotoMime; }
     body['deepAnalysis'] = (document.getElementById('cad-deep-analysis') as HTMLInputElement | null)?.checked ?? false;
+    // The answers the engineer just gave. The server re-runs the rules with them
+    // and returns a resolved analysis — the same round-trip the pins use.
+    body['decisionAnswers'] = _cadDecisionAnswers;
+    // With no key there is nothing to ask a model, but the rules still work.
+    // Saying so is better than a 400 the user cannot act on.
+    if (!apiKey) body['mode'] = 'deterministic';
 
     const res = await fetch('/api/cad/reanalyze', {
       method: 'POST',
@@ -6677,6 +6775,7 @@ async function reanalyzeCAD(): Promise<void> {
       success?: boolean;
       analysis?: CADAnalysisResult;
       annualVolume?: number;
+      decisions?: CADDecision[];
       error?: string;
     };
 
@@ -6685,6 +6784,8 @@ async function reanalyzeCAD(): Promise<void> {
     cadAnalysisResult = data.analysis!;
     // Locked grade/process win over anything the AI re-derived — the human decides.
     _applyCadPins(cadAnalysisResult);
+    // What the rules could still not settle after the answers were applied.
+    _cadDecisions = data.decisions ?? [];
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     const resolvedVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
@@ -10388,19 +10489,40 @@ function markAIFilled(element: HTMLInputElement | HTMLSelectElement | null): voi
 }
 
 /** Banner summarising provenance after a CAD auto-fill: how much is measured vs estimated. */
+/**
+ * Red-flag the fields an unanswered question owns.
+ *
+ * The third provenance state, beside measured (green) and estimated (amber).
+ * A field the rules could have filled but did not is materially different from
+ * one they estimated — it is empty on purpose, and the border says which
+ * question would fill it.
+ */
+function markBlockedDecisionFields(): void {
+  for (const d of openCADDecisions()) {
+    for (const fieldId of d.blockedFieldIds) {
+      const elm = document.getElementById(fieldId) as HTMLInputElement | HTMLSelectElement | null;
+      if (!elm) continue;
+      elm.setAttribute('data-prov', 'needs-decision');
+      elm.title = `Waiting on: ${d.question}`;
+    }
+  }
+}
+
 function showCADProvenanceBanner(): void {
   document.getElementById('cad-prov-banner')?.remove();
   const panel = document.querySelector('.input-panel');
   if (!panel) return;
   const measured = panel.querySelectorAll('[data-prov="measured"]').length;
   const estimated = panel.querySelectorAll('[data-prov="estimated"]').length;
-  if (measured + estimated === 0) return;
+  const blocked = panel.querySelectorAll('[data-prov="needs-decision"]').length;
+  if (measured + estimated + blocked === 0) return;
   const div = document.createElement('div');
   div.id = 'cad-prov-banner';
   div.style.cssText = 'margin:8px 0;padding:9px 12px;background:var(--info-bg,#eff6ff);border:1px solid var(--info-border,#bfdbfe);border-radius:8px;font-size:0.74rem;color:var(--text-secondary);display:flex;align-items:center;gap:8px;flex-wrap:wrap';
   div.innerHTML = `<strong style="color:var(--text-primary)">CAD auto-fill:</strong>` +
     `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#16a34a;margin-right:4px"></span>${measured} measured (geometry)</span>` +
     `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#d97706;margin-right:4px"></span>${estimated} AI-estimated — review before calculating</span>` +
+    (blocked ? `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#dc2626;margin-right:4px"></span>${blocked} waiting on a decision</span>` : '') +
     `<button style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:0.9rem;line-height:1" title="Dismiss" onclick="this.parentElement.remove()">&#10005;</button>`;
   const anchor = document.getElementById('commodity-tabs');
   if (anchor?.parentElement) anchor.parentElement.insertBefore(div, anchor.nextSibling);
@@ -11386,7 +11508,8 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
     }
 
     // Surface provenance: how much of this form is measured geometry vs AI guess.
-    showCADProvenanceBanner();
+    markBlockedDecisionFields();
+  showCADProvenanceBanner();
 
     // Keep the 3D model on screen: the CAD form (with its viewer) was just
     // swapped for this commodity form, so remount a compact viewer in the
@@ -13370,6 +13493,27 @@ function collectInput(): UniversalStackInput {
 function compute(): void {
   const errBox = el('validation-errors');
   const warnBox = el('validation-warnings');
+
+  // Blocking questions gate the costing, and they gate it HERE rather than by
+  // disabling the button: `switchCommodity` resets the button's label and
+  // display and the tab wiring reassigns its onclick, so a disabled flag would
+  // need re-applying after every switch. Guarding the handler also covers the
+  // programmatic clicks and the analyse-and-calculate path, which a disabled
+  // attribute would not.
+  const pending = openCADDecisions();
+  if (pending.length) {
+    errBox.style.display = '';
+    errBox.innerHTML = `<strong>${pending.length} question${pending.length === 1 ? '' : 's'} must be answered before this can be costed</strong>`
+      + `<ul style="margin:6px 0 0;padding-left:18px">${pending.map(d =>
+        `<li>${escHtml(d.question)}</li>`).join('')}</ul>`
+      + '<div style="margin-top:6px;font-size:0.72rem">Answer them in the CAD analysis panel above, '
+      + 'then press <em>Apply answers &amp; re-cost</em>.</div>';
+    document.getElementById('validation-warnings')?.style.setProperty('display', 'none');
+    setValidationChip(pending.length);
+    document.getElementById('cad-decisions-panel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
   const calcBtn = el<HTMLButtonElement>('calc-btn');
   const originalLabel = calcBtn.textContent ?? 'Calculate';
   calcBtn.disabled = true;

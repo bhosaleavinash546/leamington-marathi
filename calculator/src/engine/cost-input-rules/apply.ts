@@ -229,10 +229,6 @@ export function applyRuleDecisions(
   if (!ci) return { overridden: [], notWritten: [], undecided: result.decisions.map(d => d.id) };
 
   const flat = flatten(result.suggestions as Record<string, unknown>);
-  // Provenance is keyed by form field id; index it by rule id so a value can be
-  // reported with the basis that produced it.
-  const byRuleId = new Map(
-    Object.values(result.provenance).map(p => [p.ruleId, p] as const));
 
   const overridden: RuleOverride[] = [];
   const notWritten: string[] = [];
@@ -246,7 +242,7 @@ export function applyRuleDecisions(
     const prev = readPath(ci, mapping.to);
     writePath(ci, mapping.to, next);
 
-    const prov = byRuleId.get(rulePath);
+    const prov = result.byRule[rulePath];
     overridden.push({
       field: mapping.to,
       ruleId: rulePath,

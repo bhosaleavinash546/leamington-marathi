@@ -164,6 +164,15 @@ export interface CostInputRuleResult {
   suggestions: Record<string, unknown>;
   /** Keyed by form field id — the provenance trail behind every filled field. */
   provenance: Record<string, Decided<unknown>>;
+  /**
+   * Keyed by rule id — the same trail, for every decided rule.
+   *
+   * `provenance` only covers rules that own a form field, which is most of them
+   * but not all: a cycle time or an operation list is costed and reported
+   * without having a box to sit in. Those were coming through with an empty
+   * basis, which defeats the point of carrying one.
+   */
+  byRule: Record<string, Decided<unknown>>;
   fieldConfidences: Record<string, number>;
   decisions: Decision[];
   answers: Record<string, unknown>;
