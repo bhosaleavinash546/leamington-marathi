@@ -46,6 +46,13 @@ export function thinWallAmbiguity(ctx: RuleContext): ThinWallVerdict {
     return { ambiguous: false, reason: 'answered by the engineer' };
   }
 
+  // Picking the commodity off the tile IS the answer to this question. Asking it
+  // again of someone who just said "injection moulding" is how a good stop turns
+  // into a nuisance nobody reads.
+  if (ctx.commoditySource === 'engineer') {
+    return { ambiguous: false, reason: `the engineer chose ${ctx.commodity}` };
+  }
+
   const wall = g.wallThickness?.meanMm ?? null;
   const fill = g.fillRatio ?? null;
   const thinShell = wall !== null && wall > 0 && wall <= 4 && fill !== null && fill < 0.25;

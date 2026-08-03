@@ -140,7 +140,7 @@ function advise(ctx: RuleContext): { advice: SmAdvice } | { blocked: RuleOutcome
     return {
       blocked: ask({
         id: 'sheetMetal.gauge',
-        kind: 'tolerance_class',
+        kind: 'geometry_gap',
         question: 'What gauge is the sheet?',
         why: 'No bends were detected and no wall thickness could be measured, so the coil '
           + 'gauge is unknown — and it drives the blank weight, the press tonnage and the die.',
@@ -206,7 +206,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const b = blankDims(ctx);
         if (!b) return ask({
-          id: 'sheetMetal.blank', kind: 'tolerance_class',
+          id: 'sheetMetal.blank', kind: 'geometry_gap',
           question: 'What are the blank dimensions?',
           why: 'No bounding box was measured, so the developed blank cannot be derived.',
           options: [{ value: 'enter', label: 'Enter blank length and width' }],
@@ -224,7 +224,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const b = blankDims(ctx);
         if (!b) return ask({
-          id: 'sheetMetal.blank', kind: 'tolerance_class',
+          id: 'sheetMetal.blank', kind: 'geometry_gap',
           question: 'What are the blank dimensions?',
           why: 'No bounding box was measured, so the developed blank cannot be derived.',
           options: [{ value: 'enter', label: 'Enter blank length and width' }],
@@ -325,7 +325,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         if (r.advice.massKg === null) {
           return ask({
-            id: 'sheetMetal.mass', kind: 'material_family',
+            id: 'sheetMetal.mass', kind: 'geometry_gap',
             question: 'What is the part weight?',
             why: 'No volume was measured, so the blank weight cannot be derived.',
             options: [{ value: 'enter', label: 'Enter the net weight' }],

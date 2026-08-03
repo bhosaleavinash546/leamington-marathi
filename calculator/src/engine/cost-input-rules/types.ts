@@ -68,7 +68,11 @@ export interface Decision<V = string> {
   kind:
     | 'material_family' | 'material_grade'
     | 'pressure_tight' | 'tolerance_class' | 'safety_critical'
-    | 'commodity' | 'barrier_wall' | 'joining' | 'ply_count';
+    | 'commodity' | 'barrier_wall' | 'joining' | 'ply_count'
+    /** A container's nominal capacity — a void is not a solid, so it is not measured. */
+    | 'capacity'
+    /** The kernel could not measure something it normally does; type it in. */
+    | 'geometry_gap';
   question: string;
   /** Why geometry cannot answer this. Shown to the engineer so the ask reads as
    *  a limit of physics rather than a limit of the software. */
@@ -92,6 +96,16 @@ export interface RuleContext {
    *  no draft, no tooling estimates — rules must degrade rather than invent. */
   geometryQuality: 'occt' | 'stl' | 'text';
   commodity: string;
+  /**
+   * Did a person choose this commodity, or did we infer it from the shape?
+   *
+   * It decides whether the sheet-metal/plastic stop is worth asking. An engineer
+   * who picked "Injection Moulding" off the tile has already answered it, and
+   * asking again is the decision fatigue that kills throughput. Absent means
+   * inferred — the conservative reading, because that is the case where getting
+   * it wrong has actually cost money.
+   */
+  commoditySource?: 'inferred' | 'engineer';
   annualVolume: number;
   filename: string;
   /** Answers already given, keyed by Decision id. */
