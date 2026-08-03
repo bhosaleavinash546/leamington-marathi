@@ -214,7 +214,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   col(0.65, 2.05, 'WHAT GOES IN', BLUE, ['3D CAD model\n(STEP / IGES / STL)', 'Photo of a PCB', 'Plain description\nor an RFQ sheet', 'Volume + region\n(the engineer types)'], 2.74);
   col(11.0, 1.85, 'WHAT COMES OUT', GREEN, ['8-bucket cost, with\nevery figure traceable', 'Operation list —\nwhat takes the time', 'Confidence band +\n20-country comparison', 'PDF · Excel · PowerPoint\nnegotiation pack'], 2.74);
 
-  node(3.05, 2.68, 2.2, 1.30, BLUE, BLUE_T, 'Geometry kernel', 'OCCT / CadQuery. Volume, walls, holes and faces — measured, never guessed.', I.ruler);
+  node(3.05, 2.68, 2.2, 1.30, BLUE, BLUE_T, 'Geometry kernel', 'OCCT via the OCP bindings. Volume, walls, holes and faces — measured, never guessed.', I.ruler);
   node(3.05, 4.55, 2.2, 1.30, AMBER, AMBER_T, 'Guardrails', 'Nine automatic checks plus autocorrect. Measurements always beat the AI.', I.shield);
   node(8.5, 2.68, 2.2, 1.30, TEAL, TEAL_T, 'Rate library', 'Materials, machines, labour, 20 regions. The only source of money in the tool.', I.coins);
   node(8.5, 4.55, 2.2, 1.30, TEAL, TEAL_T, 'Local database', 'Parts, quotes and real actuals — these feed the learning loop back in.', I.clip);
@@ -514,7 +514,7 @@ partSlide('assets/workflow-deck/part-housing.png',
     { text: 'The same class of engine that sits underneath CATIA, SolidWorks and NX. ', options: { bold: true, color: NAVY } },
     { text: 'It reads the real CAD geometry — the mathematical surfaces, not a picture of them — so a cylinder is genuinely a cylinder with a radius and an axis, not a mesh of triangles that looks round.', options: { color: SLATE } },
   ], { x: 0.75, y: 1.76, w: 5.6, h: 1.0, fontFace: 'Calibri', fontSize: 11, margin: 0, valign: 'top' });
-  s.addText('CostVision uses Open CASCADE (OCCT), driven from Python through CadQuery.',
+  s.addText('CostVision uses Open CASCADE (OCCT), driven from Python through the OCP bindings.',
     { x: 0.75, y: 2.82, w: 5.6, h: 0.34, fontFace: 'Calibri', fontSize: 11, bold: true, color: BLUE, margin: 0, valign: 'top' });
   s.addText('Reads STEP and IGES — the neutral formats every OEM and supplier already exchanges. STL meshes take a separate, simpler path.',
     { x: 0.75, y: 3.2, w: 5.6, h: 0.55, fontFace: 'Calibri', fontSize: 10, italic: true, color: MUTED, margin: 0, valign: 'top' });
@@ -523,7 +523,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addText('IS IT OPEN SOURCE?  YES — AND THAT MATTERS', { x: 7.1, y: 1.44, w: 5.5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: BLUE, charSpacing: 0.6, margin: 0 });
   const lic = [
     ['Open CASCADE (OCCT)', 'LGPL v2.1 + exception', 'the kernel itself'],
-    ['CadQuery + OCP', 'Apache 2.0', 'the Python driver'],
+    ['OCP (cadquery-ocp)', 'Apache 2.0', 'the Python driver'],
     ['three.js', 'MIT', 'the on-screen 3D viewer'],
   ];
   lic.forEach(([n, l, w], i) => {
@@ -560,9 +560,9 @@ partSlide('assets/workflow-deck/part-housing.png',
 
   s.addNotes(
     'I was asked what the geometry kernel actually is, so let me answer that properly, including the commercial question underneath it. ' +
-    'A geometry kernel is the mathematical engine that understands solid shapes. It is the same class of software that sits underneath CATIA, SolidWorks and NX — when you drag a face in CAD, a kernel is doing the maths. Ours is Open CASCADE, usually called OCCT, and we drive it from Python using a library called CadQuery. ' +
+    'A geometry kernel is the mathematical engine that understands solid shapes. It is the same class of software that sits underneath CATIA, SolidWorks and NX — when you drag a face in CAD, a kernel is doing the maths. Ours is Open CASCADE, usually called OCCT, and we drive it from Python through its official bindings, called OCP. Worth being precise: the measurement code calls OCP directly, so there is one fewer library sitting between your CAD file and the number. ' +
     'The important distinction is that it reads the real geometry, not a picture of it. A STEP file describes a cylinder as a genuine mathematical cylinder with a radius and an axis. A mesh file only has triangles that look round. That is why we can say "this is a twelve millimetre bore, forty millimetres deep, and it goes all the way through" with certainty rather than approximation. ' +
-    'Is it open source? Yes, and I want to be transparent about the licences because someone will ask. Open CASCADE is LGPL version two point one with a linking exception, which is what lets us use it in a commercial tool. CadQuery and its bindings are Apache two point zero. The three-D viewer you see on screen is three.js, which is MIT. All permissive, all long-established, all free. ' +
+    'Is it open source? Yes, and I want to be transparent about the licences because someone will ask. Open CASCADE is LGPL version two point one with a linking exception, which is what lets us use it in a commercial tool. The OCP bindings are Apache two point zero. The three-D viewer you see on screen is three.js, which is MIT. All permissive, all long-established, all free. ' +
     'Practically that means three things. There is no per-seat CAD licence to buy for the costing tool. There is no vendor who can change the terms on us. And — this is the one that matters for us — no third party ever sees the model, because the kernel runs as a process on our own server. The CAD file is measured exactly where it sits. ' +
     'How does it actually measure? Four things. It integrates the solid to get an exact volume, then publishes a weight for every candidate density and waits for something to name the material. It walks every cylindrical face to build the hole table — diameter from the exact radius, depth from the surface parameter span, and through-versus-blind by comparing that depth to the bounding box. It ray-casts inside the solid to find true wall thickness, which is the measurement that distinguishes a casting from a machined block. And it classifies every face by surface type, so the flats we will have to mill are counted rather than guessed. ' +
     'And the honest limitation, which I would rather you hear from me. The kernel is exact about what is in the model and completely silent about what is not. It cannot read a tolerance, a surface finish or a material callout unless the CAD file actually carries it. Those still come off the drawing or from our engineer. It measures. It does not interpret.'
