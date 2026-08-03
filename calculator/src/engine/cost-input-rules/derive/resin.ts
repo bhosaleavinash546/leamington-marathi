@@ -132,9 +132,14 @@ export function resinFacts(ctx: RuleContext): ResinFacts {
   const menu = (RESIN_MENUS[ctx.commodity] ?? RESIN_MENUS.injection_moulding)
     .filter(c => lookup(c.id));
 
+  // Any resin in the rate library is a valid answer — the menu exists to make
+  // the question short, not to reject grades that are not on it. The AI path in
+  // particular answers with whatever grade it picked, which is routinely a
+  // sensible resin outside a six-item shortlist.
   const answered = ctx.answers[RESIN_DECISION_ID];
-  if (typeof answered === 'string' && menu.some(c => c.id === answered)) {
-    return factsFor(answered, volumeCm3, 'chosen by the engineer');
+  if (typeof answered === 'string' && lookup(answered)) {
+    return factsFor(answered, volumeCm3,
+      menu.some(c => c.id === answered) ? 'chosen by the engineer' : 'chosen off-menu');
   }
 
   // Separators normalised to spaces first: '_' is a regex word character, so

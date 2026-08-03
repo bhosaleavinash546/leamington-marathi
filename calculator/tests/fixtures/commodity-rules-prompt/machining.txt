@@ -4,14 +4,29 @@
 
 ### context: full
 MACHINING COST INPUT RULES:
-  estimatedCycleTimeHr: 0.268
-  estimatedSetupTimeHr: 2.250
-  Operations: list each distinct setup as a separate operation (roughing, semi-finish, finish, drilling, threading)
-  machineId: choose from mach-vmc3 (3-axis), mach-vmc5 (5-axis), mach-lathe-cnc, mach-drill, mach-grind, mach-haas-vf2
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  materialFamily=aluminium  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
+  netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
+  stockWeightKg=19.907  [320×240×96 mm solid billet in aluminium = 19.907 kg, of which the part is 14% — deterministic, use verbatim]
+  materialUtilization=0.141  [320×240×96 mm solid billet in aluminium = 19.907 kg, of which the part is 14% — deterministic, use verbatim]
+  estimatedCycleTimeHr=0.268  [bottom-up B-rep cutting estimate over 120 faces — deterministic, use verbatim]
+  setupCount=3  [distinct approach directions: +Z, -Z, +X — deterministic, use verbatim]
+  setupTimeHr=2.25  [3 setup(s) × 45 min — deterministic, use verbatim]
+  machineId=mach-vmc3  [3 approach direction(s): 3-axis vertical machining centre — deterministic, use verbatim]
+  operationCount=4  [3 cutting op(s) from the setup analysis + 1 measured drilling op — deterministic, use verbatim]
+  operations=Milling — +Z (40 faces) 0.089 hr on mach-vmc3; Milling — -Z (30 faces) 0.067 hr on mach-vmc3; Milling — +X (20 faces) 0.045 hr on mach-vmc3; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.067 hr on mach-drill  [sums to 0.268 hr — the capped bottom-up cycle, apportioned by face count — deterministic, use verbatim]
 
 ### context: degraded
 MACHINING COST INPUT RULES:
-  estimatedCycleTimeHr: sum of all operation cycle times
-  estimatedSetupTimeHr: 0.75 per setup, estimate from geometry complexity
-  Operations: list each distinct setup as a separate operation (roughing, semi-finish, finish, drilling, threading)
-  machineId: choose from mach-vmc3 (3-axis), mach-vmc5 (5-axis), mach-lathe-cnc, mach-drill, mach-grind, mach-haas-vf2
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  materialFamily: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
+  netWeightKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
+  stockWeightKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
+  materialUtilization: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
+  estimatedCycleTimeHr: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
+  setupCount=1  [no setup analysis available — assuming a single setup — deterministic, use verbatim]
+  setupTimeHr=0.75  [1 setup(s) × 45 min — deterministic, use verbatim]
+  machineId: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
+  operationCount: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
+  operations: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)

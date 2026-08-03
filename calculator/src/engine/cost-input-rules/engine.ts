@@ -112,6 +112,8 @@ export function renderCommodityRulesPrompt(
   ctx: RuleContext,
 ): string {
   const lines: string[] = [spec.header];
+  const body: string[] = [];
+  let anyUndecided = false;
 
   for (const rule of applicable(spec.rules, ctx)) {
     let outcome: RuleOutcome<string | number | boolean>;
@@ -122,18 +124,30 @@ export function renderCommodityRulesPrompt(
     }
 
     if (rule.promptLine) {
-      lines.push(rule.promptLine(outcome, ctx));
+      body.push(rule.promptLine(outcome, ctx));
       continue;
     }
 
     if (outcome.ok) {
       const { value, basis } = outcome.decided;
-      lines.push(`  ${rule.label}=${String(value)}  [${basis} — deterministic, use verbatim]`);
+      body.push(`  ${rule.label}=${String(value)}  [${basis} — deterministic, use verbatim]`);
     } else {
+      anyUndecided = true;
       const opts = outcome.decision.options.map(o => o.label).join(' | ');
-      lines.push(`  ${rule.label}: UNDECIDED — needs "${outcome.decision.question}" (${opts})`);
+      body.push(`  ${rule.label}: UNDECIDED — needs "${outcome.decision.question}" (${opts})`);
     }
   }
 
-  return lines.join('\n');
+  // Say what the two kinds of line mean. Without this the model has no way to
+  // know that half the block is already settled and the other half is the only
+  // part it is actually being asked for — and a computed value it "improves"
+  // is discarded anyway, which is a waste of everyone's tokens.
+  lines.push('  Lines marked deterministic are computed from the measured geometry and will'
+    + ' REPLACE whatever you return for them — restate them, do not re-derive them.');
+  if (anyUndecided) {
+    lines.push('  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles'
+      + ' them. Answer from the drawing, the photo or the part name, and say which you used.');
+  }
+
+  return [...lines, ...body].join('\n');
 }

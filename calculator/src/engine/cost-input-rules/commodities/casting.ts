@@ -24,7 +24,7 @@ import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcom
 import { materialFacts, toCastingAlloyFamily } from '../derive/material.js';
 import {
   pressureTightDecision, toleranceClassDecision, safetyCriticalDecision,
-  answeredBool, answeredToleranceClass,
+  answeredBool, answeredToleranceClass, assumedNote,
   PRESSURE_TIGHT_DECISION_ID, SAFETY_CRITICAL_DECISION_ID, TOLERANCE_CLASS_DECISION_ID,
 } from '../derive/service-context.js';
 
@@ -115,11 +115,20 @@ function advise(ctx: RuleContext): { advice: Advice } | { blocked: RuleOutcome<n
     safetyCritical,
   });
 
+  // Anything assumed rather than answered says so, once, on the reason every
+  // other casting rule quotes.
+  const assumed = [
+    assumedNote(ctx, PRESSURE_TIGHT_DECISION_ID) && 'pressure-tight',
+    assumedNote(ctx, TOLERANCE_CLASS_DECISION_ID) && 'tolerance class',
+    assumedNote(ctx, SAFETY_CRITICAL_DECISION_ID) && 'safety-critical',
+  ].filter(Boolean);
+
   return {
     advice: {
       process: rec.process,
       subtype: toSubtype(rec.process),
-      reason: rec.reason,
+      reason: rec.reason
+        + (assumed.length ? ` [${assumed.join(', ')} assumed — confirm before quoting]` : ''),
       route: rec.processRoute,
     },
   };

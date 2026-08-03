@@ -1,13 +1,14 @@
 /**
- * The per-commodity cost-input rules are being moved out of a prompt string
- * (`buildCommodityRules` in server/routes/cad.ts) and into typed code under
- * `src/engine/cost-input-rules/`. That move must change nothing about what the
- * model is told.
+ * The per-commodity cost-input rules now LIVE in `src/engine/cost-input-rules/`,
+ * and `buildCommodityRules` renders them. There is one set of rules; the prompt
+ * is a report of what they computed rather than a second copy of them.
  *
- * These tests hold the line: `tests/fixtures/commodity-rules-prompt/*.txt` is a
- * byte-exact baseline of every commodity block, in both the full-OCCT and the
- * degraded (STL / text-parse) geometry context. If a rule genuinely changes,
- * regenerate the baseline, review the diff, and bump CAD_PROMPT_VERSION.
+ * `tests/fixtures/commodity-rules-prompt/*.txt` is a byte-exact baseline of
+ * every commodity block in both the full-OCCT and the degraded (STL /
+ * text-parse) geometry context. Its job is no longer "prove nothing changed" —
+ * the move deliberately corrected about a dozen constants — but "make every
+ * change visible". Regenerate, read the diff, satisfy yourself each moved line
+ * is a fix you can name, and bump CAD_PROMPT_VERSION.
  *
  *   npx tsx scripts/snapshot-commodity-rules.ts
  */
@@ -50,21 +51,52 @@ describe('commodity cost-input rules — prompt baseline', () => {
     }
   });
 
-  it('the casting yield constants still disagree with CASTING_PROCESS_REFERENCE', async () => {
-    // Documents a KNOWN live defect rather than asserting correct behaviour.
-    // The prompt under-charges material on three of four casting subtypes
-    // (investment by ~2x, because yield divides into pour weight). This test
-    // pins the discrepancy so the fix is a deliberate, reviewed change — when
-    // the rule engine adopts the advisor bands, this test flips to asserting
-    // agreement. See the plan's "live defect" section.
+  it('the casting yield the prompt carries now IS the documented band', async () => {
+    // This test was written to flip, and this is the flip. It used to pin a live
+    // defect: the prompt's flat yield constants disagreed with
+    // CASTING_PROCESS_REFERENCE on three of four subtypes — investment by ~2x,
+    // which under-charged the metal, because yield divides into pour weight.
+    // The prompt is now rendered from the rules, and the rules read the band.
     const { CASTING_PROCESS_REFERENCE } = await import('../src/engine/modules/casting-advisor.js');
     const mid = (b: readonly [number, number]) => (b[0] + b[1]) / 2;
-    const promptYield = { hpdc: 0.65, sand: 0.78, gravity: 0.85, investment: 0.90 } as const;
+    const oldPromptConstants = { hpdc: 0.65, sand: 0.78, gravity: 0.85, investment: 0.90 } as const;
 
-    expect(mid(CASTING_PROCESS_REFERENCE.hpdc.yieldBand)).toBeCloseTo(promptYield.hpdc, 2);
-    expect(mid(CASTING_PROCESS_REFERENCE.sand.yieldBand)).not.toBeCloseTo(promptYield.sand, 2);
-    expect(mid(CASTING_PROCESS_REFERENCE.gravity.yieldBand)).not.toBeCloseTo(promptYield.gravity, 2);
-    // The big one: 0.45 vs 0.90.
+    // The reference is unchanged — it was always the trustworthy side.
     expect(mid(CASTING_PROCESS_REFERENCE.investment.yieldBand)).toBeCloseTo(0.45, 2);
+
+    // And the rendered casting block now states the band midpoint for whichever
+    // subtype the advisor picked, not one of the four flat numbers above.
+    const body = readFileSync(join(DIR, 'casting.txt'), 'utf8');
+    const rendered = /yieldFraction=([\d.]+)/.exec(body);
+    expect(rendered, 'casting block should state a yield').not.toBeNull();
+    const value = Number(rendered![1]);
+    const bands = Object.values(CASTING_PROCESS_REFERENCE).map(r => mid(r.yieldBand));
+    expect(bands.map(b => Math.round(b * 100) / 100)).toContain(Math.round(value * 100) / 100);
+
+    // Sand, gravity and investment can no longer appear at their old values.
+    for (const wrong of [oldPromptConstants.sand, oldPromptConstants.gravity, oldPromptConstants.investment]) {
+      expect(body, `stale yield ${wrong}`).not.toContain(`yieldFraction=${wrong}`);
+    }
+  });
+
+  it('renders every commodity cleanly in both geometry contexts', () => {
+    // The cheapest possible guard against a rule that throws, divides by zero or
+    // formats a null: `undefined`, `NaN` and `Infinity` must never reach a
+    // prompt, and the degraded (STL) branch is where they historically do.
+    for (const f of readdirSync(DIR).filter(x => x.endsWith('.txt'))) {
+      const body = readFileSync(join(DIR, f), 'utf8');
+      expect(body, f).not.toMatch(/undefined|NaN|Infinity|\[object Object\]/);
+      // Both context blocks must have content under them, not just a header.
+      for (const ctx of ['full', 'degraded']) {
+        const block = body.split(`### context: ${ctx}`)[1] ?? '';
+        expect(block.trim().length, `${f} ${ctx}`).toBeGreaterThan(40);
+      }
+    }
+  });
+
+  it('tells the model which lines are its job and which are already settled', () => {
+    const body = readFileSync(join(DIR, 'casting.txt'), 'utf8');
+    expect(body).toContain('will REPLACE whatever you return for them');
+    expect(body).toContain('Lines marked UNDECIDED are yours to answer');
   });
 });

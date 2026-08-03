@@ -4,24 +4,42 @@
 
 ### context: full
 BLOW MOULDING COST INPUT RULES:
-  material: fuel tanks, jerricans, drums, large industrial tanks/ducts → HDPE / HMW-HDPE (mat-hdpe); household & detergent bottles → HDPE; PET/PP bottles → PET or PP. Do NOT default a hollow tank to PP when HDPE is the correct resin.
-  subtype: "ebm" for hollow extrusions (cans, tanks, ducts, jerricans); "ibm" for small precision bottles (<250ml); "sbm" for PET/PP bottles (>250ml stretch)
-  wallThicknessMm=3.0 (OCCT mean wall — use verbatim)
-  flashWeightKg = partWeightKg × 0.12 (pinch-off + neck trim typical 10–15%)
-  cavities: <250ml→2–4; 250ml–2L→1–2; >2L→1
-  mouldCostGBP: single-cav EBM blow mould Al → 8000–25000; IBM → 15000–40000; SBM → 20000–60000
-  mouldLife: Al EBM → 500000 cycles; steel IBM → 2000000
-  blowTimeSec: 3–8s for bottles; 8–20s for large industrial parts
-  openCloseSec: 4–8s typical
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  wallThicknessMm=3  [ray-cast mean wall over 400 samples — deterministic, use verbatim]
+  materialId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  partVolumeL: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  flashWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  process: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  subtype: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  barrierMultilayer: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  cavities: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  machineId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  coolTimeFactorSPerMm2: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  blowTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  openCloseSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  mouldMaterial: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
 
 ### context: degraded
 BLOW MOULDING COST INPUT RULES:
-  material: fuel tanks, jerricans, drums, large industrial tanks/ducts → HDPE / HMW-HDPE (mat-hdpe); household & detergent bottles → HDPE; PET/PP bottles → PET or PP. Do NOT default a hollow tank to PP when HDPE is the correct resin.
-  subtype: "ebm" for hollow extrusions (cans, tanks, ducts, jerricans); "ibm" for small precision bottles (<250ml); "sbm" for PET/PP bottles (>250ml stretch)
-  wallThicknessMm=2.0 (OCCT mean wall — use verbatim)
-  flashWeightKg = partWeightKg × 0.12 (pinch-off + neck trim typical 10–15%)
-  cavities: <250ml→2–4; 250ml–2L→1–2; >2L→1
-  mouldCostGBP: single-cav EBM blow mould Al → 8000–25000; IBM → 15000–40000; SBM → 20000–60000
-  mouldLife: Al EBM → 500000 cycles; steel IBM → 2000000
-  blowTimeSec: 3–8s for bottles; 8–20s for large industrial parts
-  openCloseSec: 4–8s typical
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  wallThicknessMm: UNDECIDED — needs "What is the nominal wall thickness?" (Enter the nominal wall)
+  materialId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  partVolumeL: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  flashWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  process: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  subtype: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  barrierMultilayer: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  cavities: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  machineId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  coolTimeFactorSPerMm2: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  blowTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  openCloseSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  mouldMaterial: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))

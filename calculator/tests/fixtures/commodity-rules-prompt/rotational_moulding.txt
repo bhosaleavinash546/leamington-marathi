@@ -4,18 +4,36 @@
 
 ### context: full
 ROTATIONAL MOULDING COST INPUT RULES:
-  numArms: 3–4 (standard carousel); 2 (large/complex)
-  partsPerArm: 1 for large parts (>5L); 2–4 for medium; up to 8 for small
-  heatTimeSec: 900–2400s (15–40 min oven time; scales with wall thickness and part volume)
-  coolTimeSec: 600–1800s (10–30 min; forced air or water mist)
-  mouldCostGBP: simple Al mould → 8000–20000; complex with inserts → 20000–60000
-  mouldLife: Al → 3000–10000 cycles; steel → 20000+ cycles
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  materialId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  materialFamily: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  wallThicknessMm=3  [ray-cast mean wall over 400 samples — deterministic, use verbatim]
+  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  heatTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  coolTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  coolingMethod: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  numArms: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  partsPerArm: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  projectedAreaCm2=768  [two largest bounding-box dimensions — deterministic, use verbatim]
+  mouldType: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
 
 ### context: degraded
 ROTATIONAL MOULDING COST INPUT RULES:
-  numArms: 3–4 (standard carousel); 2 (large/complex)
-  partsPerArm: 1 for large parts (>5L); 2–4 for medium; up to 8 for small
-  heatTimeSec: 900–2400s (15–40 min oven time; scales with wall thickness and part volume)
-  coolTimeSec: 600–1800s (10–30 min; forced air or water mist)
-  mouldCostGBP: simple Al mould → 8000–20000; complex with inserts → 20000–60000
-  mouldLife: Al → 3000–10000 cycles; steel → 20000+ cycles
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  materialId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  materialFamily: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  wallThicknessMm: UNDECIDED — needs "What is the wall thickness and the part footprint?" (Enter wall thickness and footprint)
+  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  heatTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  coolTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  coolingMethod: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  numArms: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  partsPerArm: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  projectedAreaCm2=768  [two largest bounding-box dimensions — deterministic, use verbatim]
+  mouldType: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))

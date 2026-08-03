@@ -118,6 +118,18 @@ function massFor(volumeCm3: number, s: LaminateSystem): number {
   return Math.round((volumeCm3 * s.densityKgPerM3) / 1e6 * 10_000) / 10_000;
 }
 
+/**
+ * The system whose fibre a given material id names.
+ *
+ * Lets the AI path answer this question the way it answers the others: the model
+ * picks a material, and the system it belongs to follows. Two systems share the
+ * dry E-glass fabric, so the tie goes to infusion — the more common of the two
+ * and the cheaper tool, which is the conservative side of the guess.
+ */
+export function systemForFibreId(materialId: string): LaminateSystem | null {
+  return LAMINATE_SYSTEMS.find(s => s.fibreId === materialId) ?? null;
+}
+
 /** Resolve the laminate system, or ask. */
 export function laminateFacts(ctx: RuleContext): LaminateFacts {
   const volumeCm3 = ctx.geo.volume?.cm3 ?? 0;

@@ -15,6 +15,12 @@ import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-ma
 import { normalizeFieldConfidences } from '../utils/cad-schema.js';
 import { familyFromFilename, proseFamily, promoteHighestConfidence, type MaterialSuggestion } from '../../src/engine/material-family.js';
 import { correctShellWallMm } from '../../src/engine/geometry-sanity.js';
+import { specForCommodity } from '../../src/engine/cost-input-rules/index.js';
+import { familyFromMaterialId } from '../../src/engine/cost-input-rules/derive/material.js';
+import { systemForFibreId } from '../../src/engine/cost-input-rules/derive/laminate.js';
+import { renderCommodityRulesPrompt, runCostInputRules } from '../../src/engine/cost-input-rules/engine.js';
+import { applyRuleDecisions } from '../../src/engine/cost-input-rules/apply.js';
+import { RULE_ENGINE_VERSION, type RuleContext } from '../../src/engine/cost-input-rules/types.js';
 
 const router = Router();
 
@@ -24,7 +30,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // Bump when the prompt/normalisation logic changes so stale cached analyses (which
 // are keyed on inputs, not prompt content) are invalidated. v2: filename material
 // prior + confidence-inversion promotion.
-const CAD_PROMPT_VERSION = 10;
+const CAD_PROMPT_VERSION = 11;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -462,7 +468,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     Buffer.from(partPhotoBase64),
     ...(drawingUpload ? [drawingUpload.buffer] : []),
     ...renderViews.map(v => Buffer.from(v)),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, promptVersion: CAD_PROMPT_VERSION })),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION })),
   ]);
   const cached = cadCache.get(cacheKey);
   if (cached) {
@@ -518,6 +524,12 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   }
 
   // --- Phase 4: Stage 2 — Specialist deep analysis (Sonnet) ---
+  // The same rules the prompt was rendered from, run again here so their values
+  // can be written over the model's reply. One spec, one context, two consumers.
+  const ruleCtx = ruleContextFor(selectedCommodity, geo, originalname, userOverrides);
+  const ruleSpec = specForCommodity(selectedCommodity);
+  let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
+
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
   const userPrompt = buildPrompt(geo, preprocessed, originalname, selectedCommodity, stage1Selection, userOverrides);
 
@@ -555,6 +567,23 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     analysis = await cadAnalyzeJSON(anthropic, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
     normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights);
+    // Everything the rules could decide is now written over whatever the model
+    // returned. Telling it "use verbatim" was a request; this is the guarantee.
+    if (ruleSpec) {
+      // Re-run with the model's own material answer folded in. The prompt left
+      // that line UNDECIDED precisely so the model would supply the one thing
+      // geometry cannot; now that it has, the engine does the arithmetic
+      // downstream of it rather than trusting the model's.
+      ruleOverrides = applyRuleDecisions(
+        analysis as Parameters<typeof applyRuleDecisions>[0],
+        runCostInputRules(ruleSpec, withAIMaterial(ruleCtx, analysis as Record<string, unknown>)),
+      );
+      const contradicted = ruleOverrides.overridden.filter(o => o.contradicted);
+      if (contradicted.length) {
+        console.log(`[CAD] Rules overrode ${contradicted.length} field(s) the model disagreed with: `
+          + contradicted.map(o => `${o.field} ${String(o.from)}\u2192${String(o.to)}`).join(', '));
+      }
+    }
   } catch (err) {
     respondAIError(res, err);
     return;
@@ -572,6 +601,9 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     success: true,
     analysis,
     sanityWarnings,
+    // What the deterministic rules decided, what the model had said, and what
+    // nobody could decide. The report renders this as the provenance trail.
+    ruleOverrides,
     fromCache: false,
     geometrySource,
     annualVolume,
@@ -981,13 +1013,6 @@ ${pre.summary}`;
   const setupCount = geo.setupAnalysis?.estimatedSetupCount ?? null;
   const undercutCount = geo.draftAnalysis?.undercutFaceCount ?? 0;
 
-  const bb = geo.status === 'success' ? geo.boundingBox! : null;
-  const bbDimsSorted = bb ? [bb.xMm, bb.yMm, bb.zMm].sort((a, b) => b - a) : null;
-  const wallMean = geo.wallThickness?.meanMm ?? null;
-  const wallMin  = geo.wallThickness?.minMm ?? null;
-
-  const ps  = geo.processSpecificEstimates;
-  const tc  = geo.toolingCostEstimates;
   const mfgScore = geo.manufacturabilityScore ?? null;
 
   // Stage 1 selection context for the specialist
@@ -996,7 +1021,7 @@ ${pre.summary}`;
     : '';
 
   // Commodity-specific cost input rules
-  const commodityRules = buildCommodityRules(selectedCommodity, geo, tc, ps, wallMean, wallMin, bbDimsSorted, bb, cncHrs, setupCount, undercutCount, mfgScore);
+  const commodityRules = buildCommodityRules(ruleContextFor(selectedCommodity, geo, filename, overrides));
 
   const baseInstructions = geo.status === 'success'
     ? `IMPORTANT GUIDELINES:
@@ -1085,127 +1110,111 @@ ${buildJSONSchema(selectedCommodity, geo)}`;
 /**
  * Per-commodity cost-input rules, rendered into the specialist prompt.
  *
- * Exported ONLY so `scripts/snapshot-commodity-rules.ts` can capture a
- * byte-exact baseline of every commodity block before these rules are moved
- * into `src/engine/cost-input-rules/`. The baseline is what proves the move
- * changed no behaviour — see tests/commodity-rules-prompt.test.ts.
+ * This used to be a hundred-line switch of prompt text — the rules stated once
+ * here, for the model, and again (differently) in whatever code consumed the
+ * model's reply. It is now a rendering of `src/engine/cost-input-rules/`, the
+ * same specs the deterministic path runs. There is one set of rules, and the
+ * prompt is a report of what they computed rather than a second copy of them.
+ *
+ * Two consequences worth stating:
+ *
+ *  - **The numbers changed.** The specs corrected roughly a dozen constants this
+ *    text used to carry (casting yield on three of four subtypes, forging yield
+ *    and die life, the sheet gauge read off a bend radius, projected area on a
+ *    part not modelled along Z). Each correction is behind a test in
+ *    `tests/cost-input-rules-*.test.ts`.
+ *  - **The block names what nobody can decide.** Where a rule needs an answer
+ *    the geometry cannot give — the material family, the three service flags —
+ *    the line reads `UNDECIDED` and states the question. That is strictly better
+ *    than the old text, which hid the question and let the model quietly guess.
+ *    The model may still propose a value; `applyRuleDecisions` then leaves it
+ *    alone and labels it as the model's.
+ *
+ * Commodities with no spec yet (extrusion, painting, BIW, PCB, harness,
+ * assembly) fall through to the generic block, unchanged.
  */
-export function buildCommodityRules(
-  commodity: string,
-  geo: OCCTGeometry,
-  tc: OCCTGeometry['toolingCostEstimates'],
-  ps: OCCTGeometry['processSpecificEstimates'],
-  wallMean: number | null,
-  wallMin: number | null,
-  bbDimsSorted: number[] | null,
-  bb: { xMm: number; yMm: number; zMm: number } | null,
-  cncHrs: number | null,
-  setupCount: number | null,
-  _undercutCount: number,
-  _mfgScore: number | null,
-): string {
-  switch (commodity) {
-    case 'machining':
-      return `MACHINING COST INPUT RULES:
-  estimatedCycleTimeHr: ${cncHrs !== null ? cncHrs.toFixed(3) : 'sum of all operation cycle times'}
-  estimatedSetupTimeHr: ${setupCount !== null ? ((setupCount * 45) / 60).toFixed(3) : '0.75 per setup, estimate from geometry complexity'}
-  Operations: list each distinct setup as a separate operation (roughing, semi-finish, finish, drilling, threading)
-  machineId: choose from mach-vmc3 (3-axis), mach-vmc5 (5-axis), mach-lathe-cnc, mach-drill, mach-grind, mach-haas-vf2`;
-
-    case 'casting':
-    case 'cast_and_machine': {
-      const hpdcCt = wallMean ? Math.round(45 + wallMean * 3) : 75;
-      return `CASTING COST INPUT RULES:
-  subtype: "hpdc" if Al/Mg and mean_wall<6mm; "sand" if Fe/iron or >8kg or complex cores; "gravity" if Al/Zn 0.5–5kg moderate; "investment" if precision <0.5kg or >40% free-form faces
-  HPDC: cycleTimeHpdcSec=${hpdcCt} (45+3×wall), cavities=1 if >1kg else 2
-        dieMouldCostGBP=${tc ? tc.hpdcDieCostGBP.toFixed(0) : '<1kg→60000/1-3kg→110000/>3kg→180000'} (OCCT parametric — use verbatim), dieMouldLife=150000, yieldFraction=0.65
-  Sand: cycleTimeSandGravHr=${ps ? ps.sandCycleTimeHr.toFixed(3) : '0.5'} (OCCT — use verbatim)
-        dieMouldCostGBP=${tc ? tc.sandPatternCostGBP.toFixed(0) : '6000'} (OCCT — use verbatim), dieMouldLife=8000, yieldFraction=0.78
-  Gravity: cycleTimeSandGravHr=0.08, dieMouldCostGBP=${tc ? tc.gravityMouldCostGBP.toFixed(0) : '22000'} (OCCT — use verbatim), dieMouldLife=50000, yieldFraction=0.85
-  Investment: cycleTimeSandGravHr=0.40, dieMouldCostGBP=12000, dieMouldLife=5000, yieldFraction=0.90
-              (wax≈${ps ? ps.investWaxCostGBP.toFixed(2) : '?'}GBP, shell≈${ps ? ps.investShellCostGBP.toFixed(2) : '?'}GBP per part)
-${commodity === 'cast_and_machine' ? `  MACHINING SECTION: estimatedCycleTimeHr=${cncHrs !== null ? cncHrs.toFixed(3) : '0.25–2.0 depending on machined features'}` : ''}`;
-    }
-
-    case 'forging':
-      return `FORGING COST INPUT RULES:
-  flashKg=netWeightKg×0.10, yieldFraction=0.90
-  strokes=${ps ? ps.forgeStrokes : '3–5 for simple prismatic, 6–9 for complex'} (OCCT-derived — use verbatim if number given); timePerBlowSec=10
-  dieCostGBP=${tc ? tc.forgeDieCostGBP.toFixed(0) : 'simple→25000/medium→55000/complex→120000'} (OCCT — use verbatim), dieLife=20000`;
-
-    case 'sheet_metal':
-    case 'sheet_metal_fab':
-      return `SHEET METAL COST INPUT RULES:
-  thicknessMm=${wallMin ? wallMin.toFixed(1) : '1.5'} (use OCCT min wall thickness)
-  blankLengthMm=${bbDimsSorted ? (bbDimsSorted[0] * 1.05).toFixed(0) : '?'} (largest bbox × 1.05)
-  blankWidthMm=${bbDimsSorted ? (bbDimsSorted[1] * 1.05).toFixed(0) : '?'} (second-largest × 1.05)
-  dieCostGBP=${tc ? tc.progressiveDieCostGBP.toFixed(0) : 'progressive→80000/single→15000/laser+brake→3000'} (OCCT — use verbatim)
-  dieLife: progressive→1000000; single-stage→300000; laser+brake→999999
-  numOps: 2 for simple bracket, 3–5 for formed, 6–8 for complex progressive`;
-
-    case 'injection_moulding':
-      return `INJECTION MOULDING COST INPUT RULES:
-  wallThicknessMm=${wallMean ? wallMean.toFixed(1) : '2.5'} (use OCCT mean wall)
-  projectedAreaCm2=${bb ? ((bb.xMm * bb.yMm) / 100).toFixed(1) : '?'} (bbox X×Y÷100)
-  cavities: >50g→1; 10–50g→2; <10g→4–8
-  mouldCostGBP=${tc ? tc.imMouldCostGBP.toFixed(0) : '1-cav small→20000/medium→50000/large→100000'} (OCCT — use verbatim)
-  mouldLife=1000000, runnerWeightKg=netWeightKg×0.15 (cold runner) or 0 (hot runner)`;
-
-    case 'blow_moulding':
-      return `BLOW MOULDING COST INPUT RULES:
-  material: fuel tanks, jerricans, drums, large industrial tanks/ducts → HDPE / HMW-HDPE (mat-hdpe); household & detergent bottles → HDPE; PET/PP bottles → PET or PP. Do NOT default a hollow tank to PP when HDPE is the correct resin.
-  subtype: "ebm" for hollow extrusions (cans, tanks, ducts, jerricans); "ibm" for small precision bottles (<250ml); "sbm" for PET/PP bottles (>250ml stretch)
-  wallThicknessMm=${wallMean ? wallMean.toFixed(1) : '2.0'} (OCCT mean wall — use verbatim)
-  flashWeightKg = partWeightKg × 0.12 (pinch-off + neck trim typical 10–15%)
-  cavities: <250ml→2–4; 250ml–2L→1–2; >2L→1
-  mouldCostGBP: single-cav EBM blow mould Al → 8000–25000; IBM → 15000–40000; SBM → 20000–60000
-  mouldLife: Al EBM → 500000 cycles; steel IBM → 2000000
-  blowTimeSec: 3–8s for bottles; 8–20s for large industrial parts
-  openCloseSec: 4–8s typical`;
-
-    case 'thermoforming':
-      return `THERMOFORMING COST INPUT RULES:
-  method: "vacuum" for simple trays/covers; "pressure" for higher detail; "twin_sheet" for hollow double-wall parts
-  sheetWeightKg = partWeightKg / (1 - wasteFraction); wasteFraction = 0.25–0.45 depending on draw ratio
-  partWeightKg = netWeightKg (OCCT plastic weight: ${geo.weights?.plasticKg.toFixed(3) ?? '?'} kg)
-  toolCostGBP: simple Al vacuum tool → 3000–8000; pressure form with detail → 8000–25000; twin-sheet → 15000–40000
-  heatTimeSec: 30–90s (depends on gauge and material)
-  formTimeSec: 5–20s vacuum; 10–30s pressure
-  trimTimeSec: 10–30s per part`;
-
-    case 'rotational_moulding':
-      return `ROTATIONAL MOULDING COST INPUT RULES:
-  numArms: 3–4 (standard carousel); 2 (large/complex)
-  partsPerArm: 1 for large parts (>5L); 2–4 for medium; up to 8 for small
-  heatTimeSec: 900–2400s (15–40 min oven time; scales with wall thickness and part volume)
-  coolTimeSec: 600–1800s (10–30 min; forced air or water mist)
-  mouldCostGBP: simple Al mould → 8000–20000; complex with inserts → 20000–60000
-  mouldLife: Al → 3000–10000 cycles; steel → 20000+ cycles`;
-
-    case 'rubber':
-      return `RUBBER MOULDING COST INPUT RULES:
-  process: "compression" for solid mounts/gaskets; "transfer" for complex cross-sections with inserts; "injection" for high volume precision; "extrusion" for profiles/seals; "die_cut" for flat gaskets
-  flashWeightKg = partWeightKg × 0.08 (compression) or 0.03 (transfer/injection)
-  cavities: compression → 1–4; transfer/injection → 2–12; die_cut → 6+
-  cycleTimeSec: compression 120–600s; transfer 90–300s; injection 45–120s
-  mouldCostGBP: compression simple → 2500–8000; transfer → 5000–20000; injection → 10000–40000
-  mouldLife: rubber moulds → 200000–1000000 cycles`;
-
-    case 'composites':
-      return `COMPOSITES COST INPUT RULES:
-  process: "hand_layup" for simple large parts; "prepreg_autoclave" for aerospace CFRP; "rtm" for medium complexity closed-mould; "infusion" for large marine/wind; "smc" for automotive high-volume; "wet_layup" for GFRP marine
-  fibreFraction: 0.30–0.45 (hand layup); 0.55–0.65 (prepreg); 0.45–0.60 (RTM/infusion)
-  wasteFraction: 0.15–0.30 (hand layup); 0.05–0.15 (prepreg cut/ply)
-  areaCm2=${geo.surfaceArea?.cm2.toFixed(0) ?? '?'} (OCCT surface area — use verbatim)
-  plies: estimate from structural requirement (typical CFRP 4–16 plies; GFRP 3–8 plies)
-  toolCostGBP: GFRP/infusion → 5000–20000; CFRP prepreg → 15000–60000; RTM matched die → 30000–120000
-  cureTimeSec: autoclave 7200–14400s (2–4hr); RTM 1800–5400s; infusion 3600–7200s`;
-
-    default:
-      return `COST INPUT RULES:
+export function buildCommodityRules(ctx: RuleContext): string {
+  const spec = specForCommodity(ctx.commodity);
+  if (spec) return renderCommodityRulesPrompt(spec, ctx);
+  return `COST INPUT RULES:
   Populate the sub-object matching the recommended commodity in costInputSuggestions.
   Use OCCT geometry measurements where available.`;
-  }
+}
+
+/**
+ * The answers the AI path can supply on the engineer's behalf.
+ *
+ * There is nobody at the screen during an `/analyze` call, so a spec that asks
+ * "what is this made of?" would block every material-dependent line. Two real
+ * answers exist and both are already trusted elsewhere in this file: a material
+ * the engineer pinned on the form, and the family named in the file name — the
+ * prior added after a file called "Aluminium…" was costed as plastic.
+ *
+ * Nothing else is invented. The service flags (pressure-tight, tolerance class,
+ * safety-critical) genuinely have no source here and stay open.
+ */
+export function answersFromContext(
+  forcedMaterial: string,
+  filename: string,
+): Record<string, unknown> {
+  const answers: Record<string, unknown> = {};
+  const family = familyFromFilename(forcedMaterial) ?? familyFromFilename(filename);
+  if (family) answers['material.family'] = family;
+  return answers;
+}
+
+/**
+ * Fold the model's material choice back into the rule context.
+ *
+ * The material is the one question an `/analyze` call has no engineer to answer,
+ * so the prompt renders those lines as UNDECIDED and the model fills them. Once
+ * it has, everything downstream is arithmetic again — and the rules, not the
+ * model, do it.
+ *
+ * Different commodities ask for it differently: metals want a family, plastics a
+ * resin grade, rubber a compound, composites a fibre/resin system. One material
+ * id answers all four, so all four are set and each derive module takes the one
+ * it recognises.
+ */
+function withAIMaterial(ctx: RuleContext, analysis: Record<string, unknown>): RuleContext {
+  const ci = analysis.costInputSuggestions as { materialId?: unknown } | undefined;
+  const materialId = typeof ci?.materialId === 'string' ? ci.materialId : '';
+  if (!materialId) return ctx;
+
+  const answers: Record<string, unknown> = { ...ctx.answers };
+  const family = familyFromMaterialId(materialId);
+  if (family) answers['material.family'] = family;
+  answers['material.resin'] = materialId;
+  answers['material.elastomer'] = materialId;
+  const laminate = systemForFibreId(materialId);
+  if (laminate) answers['material.laminate'] = laminate.value;
+  return { ...ctx, answers };
+}
+
+/** Assemble the rule context from what `buildPrompt` already has in scope. */
+export function ruleContextFor(
+  commodity: string,
+  geo: OCCTGeometry,
+  filename: string,
+  overrides: Pick<UserOverrides, 'annualVolume' | 'forcedCommodity' | 'forcedMaterial'>,
+): RuleContext {
+  return {
+    geo,
+    geometryQuality: geo.status === 'success' ? 'occt' : 'text',
+    commodity,
+    // A non-empty forcedCommodity means the engineer picked it off the form,
+    // which is the answer to the metal-or-plastic question the specs would
+    // otherwise ask.
+    commoditySource: overrides.forcedCommodity ? 'engineer' : 'inferred',
+    // Nobody is at the screen during an /analyze call. Assuming the service
+    // flags from their stated leanings, and saying so in every basis, beats
+    // blocking every casting and forging line — which would leave the model
+    // with no rules at all and nothing recorded about what it invented instead.
+    assumeLeanings: true,
+    annualVolume: overrides.annualVolume,
+    filename,
+    answers: answersFromContext(overrides.forcedMaterial, filename),
+  };
 }
 
 // ─── JSON schema builder ─────────────────────────────────────────────────────
@@ -1598,7 +1607,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   const cacheKey = cadCache.buildKey([
     Buffer.from(JSON.stringify(geo)),
     Buffer.from(partPhotoBase64),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, filename, promptVersion: CAD_PROMPT_VERSION })),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, filename, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION })),
   ]);
   const cached = cadCache.get(cacheKey);
   if (cached) {
@@ -1639,6 +1648,24 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     } catch (err) {
       console.warn('[CAD/reanalyze] Stage 1 Haiku failed, using default commodity:', (err as Error).message);
     }
+    // Deterministic geometry guard — physics overrides a stochastic AI hint.
+    // This path was missing it entirely: a part correctly redirected to sheet
+    // metal or blow moulding on upload could be silently un-redirected the
+    // moment anyone re-ran the analysis.
+    const guarded = enforceGeometryCommodity(selectedCommodity, geo);
+    if (guarded.corrected) {
+      console.warn(`[CAD/reanalyze] ${guarded.reason}`);
+      const priorPrimary = selectedCommodity;
+      selectedCommodity = guarded.commodity;
+      stage1Selection = {
+        primary: guarded.commodity,
+        conf: 0.9,
+        alt: [
+          { type: 'rotational_moulding', conf: 0.4 },
+          { type: priorPrimary, conf: 0.1 },
+        ],
+      };
+    }
   }
 
   // Minimal PreprocessedCAD stub — not used when geo.status === 'success'
@@ -1655,6 +1682,12 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     headerInfo: '',
     summary: '',
   };
+
+  // The same rules the prompt was rendered from, run again here so their values
+  // can be written over the model's reply. One spec, one context, two consumers.
+  const ruleCtx = ruleContextFor(selectedCommodity, geo, filename, userOverrides);
+  const ruleSpec = specForCommodity(selectedCommodity);
+  let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
 
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
   const userPrompt = buildPrompt(geo, preStub as Parameters<typeof buildPrompt>[1], filename, selectedCommodity, stage1Selection, userOverrides);
@@ -1676,6 +1709,23 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     analysis = await cadAnalyzeJSON(anthropic, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
     normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights);
+    // Everything the rules could decide is now written over whatever the model
+    // returned. Telling it "use verbatim" was a request; this is the guarantee.
+    if (ruleSpec) {
+      // Re-run with the model's own material answer folded in. The prompt left
+      // that line UNDECIDED precisely so the model would supply the one thing
+      // geometry cannot; now that it has, the engine does the arithmetic
+      // downstream of it rather than trusting the model's.
+      ruleOverrides = applyRuleDecisions(
+        analysis as Parameters<typeof applyRuleDecisions>[0],
+        runCostInputRules(ruleSpec, withAIMaterial(ruleCtx, analysis as Record<string, unknown>)),
+      );
+      const contradicted = ruleOverrides.overridden.filter(o => o.contradicted);
+      if (contradicted.length) {
+        console.log(`[CAD] Rules overrode ${contradicted.length} field(s) the model disagreed with: `
+          + contradicted.map(o => `${o.field} ${String(o.from)}\u2192${String(o.to)}`).join(', '));
+      }
+    }
   } catch (err) {
     respondAIError(res, err);
     return;
@@ -1687,6 +1737,9 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     success: true,
     analysis,
     sanityWarnings,
+    // What the deterministic rules decided, what the model had said, and what
+    // nobody could decide. The report renders this as the provenance trail.
+    ruleOverrides,
     fromCache: false,
     geometrySource: 'occt' as const,
     annualVolume,

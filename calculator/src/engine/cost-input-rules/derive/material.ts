@@ -13,6 +13,7 @@
  * of each answer spelled out.
  */
 import { familyFromFilename, type MaterialFamily } from '../../material-family.js';
+import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import type { AlloyFamily } from '../../modules/casting-advisor.js';
 import type { ForgingAlloyFamily } from '../../modules/forging-advisor.js';
 import type { Decision, RuleContext } from '../types.js';
@@ -146,6 +147,33 @@ export function toCastingAlloyFamily(fam: MaterialFamily): AlloyFamily | null {
     case 'steel': return 'carbon-steel';
     default: return null;
   }
+}
+
+/**
+ * The family behind a rate-library material id.
+ *
+ * Used to feed the model's own material choice back into the rules on the AI
+ * path: the prompt renders the material-dependent lines as UNDECIDED, the model
+ * answers with a grade, and the rules then re-run with that grade as the answer
+ * and overwrite everything downstream of it. The model picks the metal; the
+ * engine still does the arithmetic.
+ *
+ * Reads the library's `category` first — that is authoritative — and falls back
+ * to the filename matcher for ids not in the library.
+ */
+export function familyFromMaterialId(materialId: string): MaterialFamily | null {
+  const cat = (DEFAULT_RATE_LIBRARY.materials.find(m => m.id === materialId)?.category ?? '').toLowerCase();
+  if (cat) {
+    if (cat.includes('titanium')) return 'titanium';
+    if (cat.includes('stainless') || cat.includes('steel')) return 'steel';
+    if (cat.includes('cast iron') || cat.includes('iron')) return 'cast iron';
+    if (cat.includes('aluminium')) return 'aluminium';
+    if (cat.includes('magnesium')) return 'magnesium';
+    if (cat.includes('copper') || cat.includes('brass')) return 'copper alloy';
+    if (cat.includes('thermoplastic') || cat.includes('plastic') || cat.includes('rubber')
+      || cat.includes('moulding') || cat.includes('composite')) return 'plastic';
+  }
+  return familyFromFilename(materialId);
 }
 
 /**

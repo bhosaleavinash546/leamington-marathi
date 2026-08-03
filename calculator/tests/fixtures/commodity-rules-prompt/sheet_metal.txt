@@ -4,18 +4,29 @@
 
 ### context: full
 SHEET METAL COST INPUT RULES:
-  thicknessMm=2.4 (use OCCT min wall thickness)
-  blankLengthMm=336 (largest bbox × 1.05)
-  blankWidthMm=252 (second-largest × 1.05)
-  dieCostGBP=92300 (OCCT — use verbatim)
-  dieLife: progressive→1000000; single-stage→300000; laser+brake→999999
-  numOps: 2 for simple bracket, 3–5 for formed, 6–8 for complex progressive
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  thicknessMm=2.4  [measured from 4 bend face(s) — coil gauge — deterministic, use verbatim]
+  blankLengthMm=336  [largest bounding-box dimension × 1.05 trim allowance — deterministic, use verbatim]
+  blankWidthMm=252  [second-largest bounding-box dimension × 1.05 trim allowance — deterministic, use verbatim]
+  numOps=6  [1 blank + 4 bend(s) + 1 pierce = 6 stations — deterministic, use verbatim]
+  dieCostGBP=105285  [progressive die, 6 stations, 847 cm² blank, 170 MPa shear; OCCT parametric says £92300 — deterministic, use verbatim]
+  dieLife=1310000  [170 MPa shear at 2.4 mm on a progressive die — deterministic, use verbatim]
+  dieType=progressive  [high volume at 2.4 mm: High volume favours progressive stamping — lowest piece cost once tooling amortized — deterministic, use verbatim]
+  process=Progressive Stamping  [high volume: High volume favours progressive stamping — lowest piece cost once tooling amortized — deterministic, use verbatim]
+  netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
+  shearStrengthMPa=170  [reference shear strength for aluminium sheet — deterministic, use verbatim]
 
 ### context: degraded
 SHEET METAL COST INPUT RULES:
-  thicknessMm=1.5 (use OCCT min wall thickness)
-  blankLengthMm=? (largest bbox × 1.05)
-  blankWidthMm=? (second-largest × 1.05)
-  dieCostGBP=progressive→80000/single→15000/laser+brake→3000 (OCCT — use verbatim)
-  dieLife: progressive→1000000; single-stage→300000; laser+brake→999999
-  numOps: 2 for simple bracket, 3–5 for formed, 6–8 for complex progressive
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  thicknessMm: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
+  blankLengthMm=336  [largest bounding-box dimension × 1.05 trim allowance — deterministic, use verbatim]
+  blankWidthMm=252  [second-largest bounding-box dimension × 1.05 trim allowance — deterministic, use verbatim]
+  numOps=2  [1 blank + 0 bend(s) = 2 stations — deterministic, use verbatim]
+  dieCostGBP: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
+  dieLife: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
+  dieType: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
+  process: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
+  netWeightKg: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
+  shearStrengthMPa: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)

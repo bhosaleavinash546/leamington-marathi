@@ -4,16 +4,42 @@
 
 ### context: full
 INJECTION MOULDING COST INPUT RULES:
-  wallThicknessMm=3.0 (use OCCT mean wall)
-  projectedAreaCm2=768.0 (bbox X×Y÷100)
-  cavities: >50g→1; 10–50g→2; <10g→4–8
-  mouldCostGBP=41500 (OCCT — use verbatim)
-  mouldLife=1000000, runnerWeightKg=netWeightKg×0.15 (cold runner) or 0 (hot runner)
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  wallThicknessMm=3  [ray-cast mean wall over 400 samples (good uniformity) — deterministic, use verbatim]
+  projectedAreaCm2=768  [two largest bounding-box dimensions — the worst-case projection, so the press is never undersized — deterministic, use verbatim]
+  materialId: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  cavities: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  cavityPressureMPa: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  machineId: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  coolTimeFactorSPerMm2: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  fillTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  packTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  ejectTimeSec=2  [mould open + eject + close, standard toggle press — deterministic, use verbatim]
+  runnerWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  sideActionsLifters: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  steelClass: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
 
 ### context: degraded
 INJECTION MOULDING COST INPUT RULES:
-  wallThicknessMm=2.5 (use OCCT mean wall)
-  projectedAreaCm2=? (bbox X×Y÷100)
-  cavities: >50g→1; 10–50g→2; <10g→4–8
-  mouldCostGBP=1-cav small→20000/medium→50000/large→100000 (OCCT — use verbatim)
-  mouldLife=1000000, runnerWeightKg=netWeightKg×0.15 (cold runner) or 0 (hot runner)
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  wallThicknessMm: UNDECIDED — needs "What is the nominal wall and the projected area?" (Enter wall thickness and projected area)
+  projectedAreaCm2=768  [two largest bounding-box dimensions — the worst-case projection, so the press is never undersized — deterministic, use verbatim]
+  materialId: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  cavities: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  cavityPressureMPa: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  machineId: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  coolTimeFactorSPerMm2: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  fillTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  packTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  ejectTimeSec=2  [mould open + eject + close, standard toggle press — deterministic, use verbatim]
+  runnerWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  sideActionsLifters: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  steelClass: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))

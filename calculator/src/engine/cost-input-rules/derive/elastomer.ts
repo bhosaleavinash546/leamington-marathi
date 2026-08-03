@@ -43,6 +43,36 @@ const ELASTOMER_MENU: ElastomerCandidate[] = [
   { id: 'mat-viton-fkm', family: 'fkm', hint: /viton|\bfkm\b|fluoro/, use: 'hot oil, fuel, aggressive fluids' },
 ];
 
+/**
+ * The cure family behind an off-menu compound id or grade name.
+ *
+ * Ordered most-specific first: 'hnbr' has to beat 'nbr', and 'ffkm' has to beat
+ * 'fkm', or a £320/kg perfluoroelastomer gets costed as a £23/kg Viton.
+ */
+export function compoundFamilyOf(materialId: string, grade = ''): RubberCompoundFamily {
+  const s = `${materialId} ${grade}`.toLowerCase();
+  const rules: Array<[RegExp, RubberCompoundFamily]> = [
+    [/ffkm|perfluor|kalrez/, 'ffkm'],
+    [/fkm|viton|fvmq|fluoro/, 'fkm'],
+    [/hnbr/, 'hnbr'],
+    [/lsr|liquid ?silicone/, 'silicone-lsr'],
+    [/silicone|vmq|hcr/, 'silicone-hcr'],
+    [/peroxide/, 'epdm-peroxide'],
+    [/epdm/, 'epdm-sulphur'],
+    [/nbr|nitrile/, 'nbr'],
+    [/butyl|\biir\b|bromo|chloro/, 'halobutyl'],
+    [/neoprene|\bcr\b/, 'cr'],
+    [/\bacm\b|polyacryl/, 'acm'],
+    [/\baem\b|vamac/, 'aem'],
+    [/\beco\b|epichlorohydrin/, 'eco'],
+    [/\bcsm\b|hypalon/, 'csm'],
+    [/polyurethane|\bpu\b/, 'pu'],
+    [/\bsbr\b/, 'sbr'],
+    [/\bbr\b|polybutadiene/, 'br'],
+  ];
+  return rules.find(([re]) => re.test(s))?.[1] ?? 'nr';
+}
+
 export interface ElastomerFacts {
   materialId: string | null;
   grade: string | null;
@@ -62,8 +92,13 @@ export function elastomerFacts(ctx: RuleContext): ElastomerFacts {
   const volumeCm3 = ctx.geo.volume?.cm3 ?? 0;
   const menu = ELASTOMER_MENU.filter(c => lookup(c.id));
 
+  // As with resins: the menu shortens the question, it does not reject an
+  // answer. A compound outside it still has a library price and a cure family.
   const answered = ctx.answers[ELASTOMER_DECISION_ID];
-  const chosen = typeof answered === 'string' ? menu.find(c => c.id === answered) : undefined;
+  const chosen = typeof answered === 'string' && lookup(answered)
+    ? (menu.find(c => c.id === answered)
+      ?? { id: answered, family: compoundFamilyOf(answered, lookup(answered)!.grade), use: '' })
+    : undefined;
   if (chosen) {
     const m = lookup(chosen.id)!;
     return {

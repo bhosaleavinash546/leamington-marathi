@@ -330,6 +330,35 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
       },
     },
     {
+      // The coarse route, which is what the costing reads — `process` above is
+      // the granular machine choice the form's select carries.
+      id: 'blowMoulding.subtype',
+      path: 'blowMoulding.subtype',
+      label: 'subtype',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        return decided('blowMoulding.subtype', r.advice.process, 'rule',
+          r.advice.processReason, 0.8);
+      },
+    },
+    {
+      // Answered by the engineer where it can matter, and a plain false where it
+      // cannot — a mono-layer bottle is not "undecided", it is mono-layer.
+      id: 'blowMoulding.barrierMultilayer',
+      path: 'blowMoulding.barrierMultilayer',
+      label: 'barrierMultilayer',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        return decided('blowMoulding.barrierMultilayer', r.advice.barrier,
+          r.advice.barrier ? 'engineer' : 'rule',
+          r.advice.barrier
+            ? 'confirmed as a co-extruded EVOH barrier wall'
+            : 'mono-layer — no permeation spec on this part', 0.85);
+      },
+    },
+    {
       id: 'blowMoulding.cavities',
       path: 'blowMoulding.cavities',
       fieldId: 'bm-cav',

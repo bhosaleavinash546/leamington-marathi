@@ -46,7 +46,8 @@ import { materialFacts, toForgingAlloyFamily } from '../derive/material.js';
 import { projectedAreaCm2, isRingShape } from '../derive/envelope.js';
 import {
   toleranceClassDecision, safetyCriticalDecision,
-  answeredBool, answeredToleranceClass, SAFETY_CRITICAL_DECISION_ID,
+  answeredBool, answeredToleranceClass, assumedNote,
+  SAFETY_CRITICAL_DECISION_ID, TOLERANCE_CLASS_DECISION_ID,
 } from '../derive/service-context.js';
 
 /**
@@ -226,7 +227,17 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
       alloy, familyLabel: mat.family!,
       partKg: mat.massKg, massBasis: mat.basis,
       areaCm2, shape,
-      process: rec.process, processReason: rec.reason, ring,
+      process: rec.process,
+      processReason: rec.reason + ([
+        assumedNote(ctx, TOLERANCE_CLASS_DECISION_ID) && 'tolerance class',
+        assumedNote(ctx, SAFETY_CRITICAL_DECISION_ID) && 'safety-critical',
+      ].filter(Boolean).length
+        ? ` [${[
+            assumedNote(ctx, TOLERANCE_CLASS_DECISION_ID) && 'tolerance class',
+            assumedNote(ctx, SAFETY_CRITICAL_DECISION_ID) && 'safety-critical',
+          ].filter(Boolean).join(', ')} assumed — confirm before quoting]`
+        : ''),
+      ring,
       safetyCritical: safety,
       tonnes: Math.round(estimateForgingTonnage({
         projectedAreaCm2: areaCm2, alloyFamily: alloy, shapeComplexity: shape,

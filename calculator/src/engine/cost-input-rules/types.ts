@@ -106,6 +106,22 @@ export interface RuleContext {
    * it wrong has actually cost money.
    */
   commoditySource?: 'inferred' | 'engineer';
+  /**
+   * Resolve unanswered service-context questions to their visible `leaning`
+   * instead of blocking.
+   *
+   * Off by default, and it must stay off wherever an engineer is present — the
+   * whole point of a blocking decision is that a person answers it.
+   *
+   * It exists for the AI path, where nobody is at the screen and the honest
+   * alternative is not "an engineer decides" but "the model guesses, invisibly,
+   * and nothing records that it did". A stated assumption with reduced
+   * confidence and a basis that reads "assumed — confirm before quoting" beats
+   * a hidden one. It never applies to the material family: that is the
+   * documented dominant failure mode, and assuming it is precisely the
+   * lightest-metal trap this project exists to close.
+   */
+  assumeLeanings?: boolean;
   annualVolume: number;
   filename: string;
   /** Answers already given, keyed by Decision id. */

@@ -4,20 +4,34 @@
 
 ### context: full
 COMPOSITES COST INPUT RULES:
-  process: "hand_layup" for simple large parts; "prepreg_autoclave" for aerospace CFRP; "rtm" for medium complexity closed-mould; "infusion" for large marine/wind; "smc" for automotive high-volume; "wet_layup" for GFRP marine
-  fibreFraction: 0.30–0.45 (hand layup); 0.55–0.65 (prepreg); 0.45–0.60 (RTM/infusion)
-  wasteFraction: 0.15–0.30 (hand layup); 0.05–0.15 (prepreg cut/ply)
-  areaCm2=1220 (OCCT surface area — use verbatim)
-  plies: estimate from structural requirement (typical CFRP 4–16 plies; GFRP 3–8 plies)
-  toolCostGBP: GFRP/infusion → 5000–20000; CFRP prepreg → 15000–60000; RTM matched die → 30000–120000
-  cureTimeSec: autoclave 7200–14400s (2–4hr); RTM 1800–5400s; infusion 3600–7200s
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  process: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  fibrePricePerKg: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  resinPricePerKg: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  partWeightKg: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  fibreWeightFraction: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  wasteFraction: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  plies: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  areaM2=0.061  [1220 cm² measured surface, halved — plies cover the mould side only — deterministic, use verbatim]
+  layupTimeHrPerPart: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  cureTimeHr: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  toolingCostGBP: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  toolingLife: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
 
 ### context: degraded
 COMPOSITES COST INPUT RULES:
-  process: "hand_layup" for simple large parts; "prepreg_autoclave" for aerospace CFRP; "rtm" for medium complexity closed-mould; "infusion" for large marine/wind; "smc" for automotive high-volume; "wet_layup" for GFRP marine
-  fibreFraction: 0.30–0.45 (hand layup); 0.55–0.65 (prepreg); 0.45–0.60 (RTM/infusion)
-  wasteFraction: 0.15–0.30 (hand layup); 0.05–0.15 (prepreg cut/ply)
-  areaCm2=1220 (OCCT surface area — use verbatim)
-  plies: estimate from structural requirement (typical CFRP 4–16 plies; GFRP 3–8 plies)
-  toolCostGBP: GFRP/infusion → 5000–20000; CFRP prepreg → 15000–60000; RTM matched die → 30000–120000
-  cureTimeSec: autoclave 7200–14400s (2–4hr); RTM 1800–5400s; infusion 3600–7200s
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  process: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  fibrePricePerKg: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  resinPricePerKg: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  partWeightKg: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  fibreWeightFraction: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  wasteFraction: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  plies: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  areaM2=0.061  [1220 cm² measured surface, halved — plies cover the mould side only — deterministic, use verbatim]
+  layupTimeHrPerPart: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  cureTimeHr: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  toolingCostGBP: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)
+  toolingLife: UNDECIDED — needs "Which fibre and resin system?" (Carbon prepreg, autoclave | Glass prepreg, oven cure | Dry glass + epoxy infusion | Dry glass + vinyl ester RTM)

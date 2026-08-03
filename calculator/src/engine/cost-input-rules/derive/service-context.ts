@@ -97,15 +97,40 @@ export function safetyCriticalDecision(ctx: RuleContext): Decision {
   };
 }
 
-/** Read an answered service flag, or null when still open. */
+/**
+ * Read an answered service flag, or null when still open.
+ *
+ * Under `assumeLeanings` — the AI path, where no engineer is present — an
+ * unanswered flag falls back to the leaning the decision already displays,
+ * rather than blocking every rule downstream of it. That is not a silent
+ * default: `assumedNote` puts it in the basis, and the confidence drops.
+ */
 export function answeredBool(ctx: RuleContext, id: string): boolean | null {
   const v = ctx.answers[id];
   if (v === 'yes' || v === true) return true;
   if (v === 'no' || v === false) return false;
-  return null;
+  if (!ctx.assumeLeanings) return null;
+  const d = id === SAFETY_CRITICAL_DECISION_ID ? safetyCriticalDecision(ctx)
+    : id === PRESSURE_TIGHT_DECISION_ID ? pressureTightDecision(ctx)
+    : null;
+  if (!d) return null;
+  return d.options.find(o => o.leaning)?.value === 'yes';
 }
 
 export function answeredToleranceClass(ctx: RuleContext): ToleranceClass | null {
   const v = ctx.answers[TOLERANCE_CLASS_DECISION_ID];
-  return v === 'loose' || v === 'standard' || v === 'tight' ? v : null;
+  if (v === 'loose' || v === 'standard' || v === 'tight') return v;
+  // Tolerance class has no geometric leaning to fall back on. 'standard' is the
+  // stated assumption, and it is the one that does not silently push a part
+  // toward investment casting (tight) or sand (loose).
+  return ctx.assumeLeanings ? 'standard' : null;
+}
+
+/**
+ * The sentence appended to a basis when a service flag was assumed rather than
+ * answered. Short on purpose — it has to survive onto a report line.
+ */
+export function assumedNote(ctx: RuleContext, id: string): string {
+  if (!ctx.assumeLeanings || ctx.answers[id] !== undefined) return '';
+  return ' (assumed — confirm before quoting)';
 }

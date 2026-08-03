@@ -4,20 +4,42 @@
 
 ### context: full
 THERMOFORMING COST INPUT RULES:
-  method: "vacuum" for simple trays/covers; "pressure" for higher detail; "twin_sheet" for hollow double-wall parts
-  sheetWeightKg = partWeightKg / (1 - wasteFraction); wasteFraction = 0.25–0.45 depending on draw ratio
-  partWeightKg = netWeightKg (OCCT plastic weight: 1.089 kg)
-  toolCostGBP: simple Al vacuum tool → 3000–8000; pressure form with detail → 8000–25000; twin-sheet → 15000–40000
-  heatTimeSec: 30–90s (depends on gauge and material)
-  formTimeSec: 5–20s vacuum; 10–30s pressure
-  trimTimeSec: 10–30s per part
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  materialId: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  method: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  formedWallMm=3  [ray-cast mean wall of the formed part — deterministic, use verbatim]
+  sheetThicknessMm: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  drawRatio=0.4  [96 mm depth ÷ 240 mm smallest opening — deterministic, use verbatim]
+  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  sheetWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  heatTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  coolTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  formTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  trimTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  projectedAreaCm2=768  [two largest bounding-box dimensions — deterministic, use verbatim]
+  mouldMaterial: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  toolCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  energyKwhPerKg: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  formability: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
 
 ### context: degraded
 THERMOFORMING COST INPUT RULES:
-  method: "vacuum" for simple trays/covers; "pressure" for higher detail; "twin_sheet" for hollow double-wall parts
-  sheetWeightKg = partWeightKg / (1 - wasteFraction); wasteFraction = 0.25–0.45 depending on draw ratio
-  partWeightKg = netWeightKg (OCCT plastic weight: 1.089 kg)
-  toolCostGBP: simple Al vacuum tool → 3000–8000; pressure form with detail → 8000–25000; twin-sheet → 15000–40000
-  heatTimeSec: 30–90s (depends on gauge and material)
-  formTimeSec: 5–20s vacuum; 10–30s pressure
-  trimTimeSec: 10–30s per part
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  materialId: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  method: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  formedWallMm: UNDECIDED — needs "What is the formed wall and the part footprint?" (Enter wall thickness and footprint)
+  sheetThicknessMm: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  drawRatio=0.4  [96 mm depth ÷ 240 mm smallest opening — deterministic, use verbatim]
+  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  sheetWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  heatTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  coolTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  formTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  trimTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  projectedAreaCm2=768  [two largest bounding-box dimensions — deterministic, use verbatim]
+  mouldMaterial: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  toolCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  energyKwhPerKg: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
+  formability: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
