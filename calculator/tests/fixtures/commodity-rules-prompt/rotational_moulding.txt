@@ -1,0 +1,21 @@
+# rotational_moulding
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+ROTATIONAL MOULDING COST INPUT RULES:
+  numArms: 3–4 (standard carousel); 2 (large/complex)
+  partsPerArm: 1 for large parts (>5L); 2–4 for medium; up to 8 for small
+  heatTimeSec: 900–2400s (15–40 min oven time; scales with wall thickness and part volume)
+  coolTimeSec: 600–1800s (10–30 min; forced air or water mist)
+  mouldCostGBP: simple Al mould → 8000–20000; complex with inserts → 20000–60000
+  mouldLife: Al → 3000–10000 cycles; steel → 20000+ cycles
+
+### context: degraded
+ROTATIONAL MOULDING COST INPUT RULES:
+  numArms: 3–4 (standard carousel); 2 (large/complex)
+  partsPerArm: 1 for large parts (>5L); 2–4 for medium; up to 8 for small
+  heatTimeSec: 900–2400s (15–40 min oven time; scales with wall thickness and part volume)
+  coolTimeSec: 600–1800s (10–30 min; forced air or water mist)
+  mouldCostGBP: simple Al mould → 8000–20000; complex with inserts → 20000–60000
+  mouldLife: Al → 3000–10000 cycles; steel → 20000+ cycles

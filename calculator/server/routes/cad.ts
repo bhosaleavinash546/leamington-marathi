@@ -1082,7 +1082,15 @@ ${buildJSONSchema(selectedCommodity, geo)}`;
 
 // ─── Commodity-specific cost input rules ────────────────────────────────────
 
-function buildCommodityRules(
+/**
+ * Per-commodity cost-input rules, rendered into the specialist prompt.
+ *
+ * Exported ONLY so `scripts/snapshot-commodity-rules.ts` can capture a
+ * byte-exact baseline of every commodity block before these rules are moved
+ * into `src/engine/cost-input-rules/`. The baseline is what proves the move
+ * changed no behaviour — see tests/commodity-rules-prompt.test.ts.
+ */
+export function buildCommodityRules(
   commodity: string,
   geo: OCCTGeometry,
   tc: OCCTGeometry['toolingCostEstimates'],

@@ -1,0 +1,19 @@
+# injection_moulding
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+INJECTION MOULDING COST INPUT RULES:
+  wallThicknessMm=3.0 (use OCCT mean wall)
+  projectedAreaCm2=768.0 (bbox X×Y÷100)
+  cavities: >50g→1; 10–50g→2; <10g→4–8
+  mouldCostGBP=41500 (OCCT — use verbatim)
+  mouldLife=1000000, runnerWeightKg=netWeightKg×0.15 (cold runner) or 0 (hot runner)
+
+### context: degraded
+INJECTION MOULDING COST INPUT RULES:
+  wallThicknessMm=2.5 (use OCCT mean wall)
+  projectedAreaCm2=? (bbox X×Y÷100)
+  cavities: >50g→1; 10–50g→2; <10g→4–8
+  mouldCostGBP=1-cav small→20000/medium→50000/large→100000 (OCCT — use verbatim)
+  mouldLife=1000000, runnerWeightKg=netWeightKg×0.15 (cold runner) or 0 (hot runner)

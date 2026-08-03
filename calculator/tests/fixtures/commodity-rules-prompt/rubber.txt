@@ -1,0 +1,21 @@
+# rubber
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+RUBBER MOULDING COST INPUT RULES:
+  process: "compression" for solid mounts/gaskets; "transfer" for complex cross-sections with inserts; "injection" for high volume precision; "extrusion" for profiles/seals; "die_cut" for flat gaskets
+  flashWeightKg = partWeightKg × 0.08 (compression) or 0.03 (transfer/injection)
+  cavities: compression → 1–4; transfer/injection → 2–12; die_cut → 6+
+  cycleTimeSec: compression 120–600s; transfer 90–300s; injection 45–120s
+  mouldCostGBP: compression simple → 2500–8000; transfer → 5000–20000; injection → 10000–40000
+  mouldLife: rubber moulds → 200000–1000000 cycles
+
+### context: degraded
+RUBBER MOULDING COST INPUT RULES:
+  process: "compression" for solid mounts/gaskets; "transfer" for complex cross-sections with inserts; "injection" for high volume precision; "extrusion" for profiles/seals; "die_cut" for flat gaskets
+  flashWeightKg = partWeightKg × 0.08 (compression) or 0.03 (transfer/injection)
+  cavities: compression → 1–4; transfer/injection → 2–12; die_cut → 6+
+  cycleTimeSec: compression 120–600s; transfer 90–300s; injection 45–120s
+  mouldCostGBP: compression simple → 2500–8000; transfer → 5000–20000; injection → 10000–40000
+  mouldLife: rubber moulds → 200000–1000000 cycles

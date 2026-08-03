@@ -1,0 +1,23 @@
+# thermoforming
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+THERMOFORMING COST INPUT RULES:
+  method: "vacuum" for simple trays/covers; "pressure" for higher detail; "twin_sheet" for hollow double-wall parts
+  sheetWeightKg = partWeightKg / (1 - wasteFraction); wasteFraction = 0.25–0.45 depending on draw ratio
+  partWeightKg = netWeightKg (OCCT plastic weight: 1.089 kg)
+  toolCostGBP: simple Al vacuum tool → 3000–8000; pressure form with detail → 8000–25000; twin-sheet → 15000–40000
+  heatTimeSec: 30–90s (depends on gauge and material)
+  formTimeSec: 5–20s vacuum; 10–30s pressure
+  trimTimeSec: 10–30s per part
+
+### context: degraded
+THERMOFORMING COST INPUT RULES:
+  method: "vacuum" for simple trays/covers; "pressure" for higher detail; "twin_sheet" for hollow double-wall parts
+  sheetWeightKg = partWeightKg / (1 - wasteFraction); wasteFraction = 0.25–0.45 depending on draw ratio
+  partWeightKg = netWeightKg (OCCT plastic weight: 1.089 kg)
+  toolCostGBP: simple Al vacuum tool → 3000–8000; pressure form with detail → 8000–25000; twin-sheet → 15000–40000
+  heatTimeSec: 30–90s (depends on gauge and material)
+  formTimeSec: 5–20s vacuum; 10–30s pressure
+  trimTimeSec: 10–30s per part

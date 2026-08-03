@@ -1,0 +1,15 @@
+# forging
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+FORGING COST INPUT RULES:
+  flashKg=netWeightKg×0.10, yieldFraction=0.90
+  strokes=6 (OCCT-derived — use verbatim if number given); timePerBlowSec=10
+  dieCostGBP=63800 (OCCT — use verbatim), dieLife=20000
+
+### context: degraded
+FORGING COST INPUT RULES:
+  flashKg=netWeightKg×0.10, yieldFraction=0.90
+  strokes=3–5 for simple prismatic, 6–9 for complex (OCCT-derived — use verbatim if number given); timePerBlowSec=10
+  dieCostGBP=simple→25000/medium→55000/complex→120000 (OCCT — use verbatim), dieLife=20000

@@ -1,0 +1,23 @@
+# composites
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+COMPOSITES COST INPUT RULES:
+  process: "hand_layup" for simple large parts; "prepreg_autoclave" for aerospace CFRP; "rtm" for medium complexity closed-mould; "infusion" for large marine/wind; "smc" for automotive high-volume; "wet_layup" for GFRP marine
+  fibreFraction: 0.30–0.45 (hand layup); 0.55–0.65 (prepreg); 0.45–0.60 (RTM/infusion)
+  wasteFraction: 0.15–0.30 (hand layup); 0.05–0.15 (prepreg cut/ply)
+  areaCm2=1220 (OCCT surface area — use verbatim)
+  plies: estimate from structural requirement (typical CFRP 4–16 plies; GFRP 3–8 plies)
+  toolCostGBP: GFRP/infusion → 5000–20000; CFRP prepreg → 15000–60000; RTM matched die → 30000–120000
+  cureTimeSec: autoclave 7200–14400s (2–4hr); RTM 1800–5400s; infusion 3600–7200s
+
+### context: degraded
+COMPOSITES COST INPUT RULES:
+  process: "hand_layup" for simple large parts; "prepreg_autoclave" for aerospace CFRP; "rtm" for medium complexity closed-mould; "infusion" for large marine/wind; "smc" for automotive high-volume; "wet_layup" for GFRP marine
+  fibreFraction: 0.30–0.45 (hand layup); 0.55–0.65 (prepreg); 0.45–0.60 (RTM/infusion)
+  wasteFraction: 0.15–0.30 (hand layup); 0.05–0.15 (prepreg cut/ply)
+  areaCm2=1220 (OCCT surface area — use verbatim)
+  plies: estimate from structural requirement (typical CFRP 4–16 plies; GFRP 3–8 plies)
+  toolCostGBP: GFRP/infusion → 5000–20000; CFRP prepreg → 15000–60000; RTM matched die → 30000–120000
+  cureTimeSec: autoclave 7200–14400s (2–4hr); RTM 1800–5400s; infusion 3600–7200s

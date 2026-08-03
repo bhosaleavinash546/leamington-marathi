@@ -1,0 +1,21 @@
+# sheet_metal
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+SHEET METAL COST INPUT RULES:
+  thicknessMm=2.4 (use OCCT min wall thickness)
+  blankLengthMm=336 (largest bbox × 1.05)
+  blankWidthMm=252 (second-largest × 1.05)
+  dieCostGBP=92300 (OCCT — use verbatim)
+  dieLife: progressive→1000000; single-stage→300000; laser+brake→999999
+  numOps: 2 for simple bracket, 3–5 for formed, 6–8 for complex progressive
+
+### context: degraded
+SHEET METAL COST INPUT RULES:
+  thicknessMm=1.5 (use OCCT min wall thickness)
+  blankLengthMm=? (largest bbox × 1.05)
+  blankWidthMm=? (second-largest × 1.05)
+  dieCostGBP=progressive→80000/single→15000/laser+brake→3000 (OCCT — use verbatim)
+  dieLife: progressive→1000000; single-stage→300000; laser+brake→999999
+  numOps: 2 for simple bracket, 3–5 for formed, 6–8 for complex progressive

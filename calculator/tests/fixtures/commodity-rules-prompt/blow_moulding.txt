@@ -1,0 +1,27 @@
+# blow_moulding
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+BLOW MOULDING COST INPUT RULES:
+  material: fuel tanks, jerricans, drums, large industrial tanks/ducts → HDPE / HMW-HDPE (mat-hdpe); household & detergent bottles → HDPE; PET/PP bottles → PET or PP. Do NOT default a hollow tank to PP when HDPE is the correct resin.
+  subtype: "ebm" for hollow extrusions (cans, tanks, ducts, jerricans); "ibm" for small precision bottles (<250ml); "sbm" for PET/PP bottles (>250ml stretch)
+  wallThicknessMm=3.0 (OCCT mean wall — use verbatim)
+  flashWeightKg = partWeightKg × 0.12 (pinch-off + neck trim typical 10–15%)
+  cavities: <250ml→2–4; 250ml–2L→1–2; >2L→1
+  mouldCostGBP: single-cav EBM blow mould Al → 8000–25000; IBM → 15000–40000; SBM → 20000–60000
+  mouldLife: Al EBM → 500000 cycles; steel IBM → 2000000
+  blowTimeSec: 3–8s for bottles; 8–20s for large industrial parts
+  openCloseSec: 4–8s typical
+
+### context: degraded
+BLOW MOULDING COST INPUT RULES:
+  material: fuel tanks, jerricans, drums, large industrial tanks/ducts → HDPE / HMW-HDPE (mat-hdpe); household & detergent bottles → HDPE; PET/PP bottles → PET or PP. Do NOT default a hollow tank to PP when HDPE is the correct resin.
+  subtype: "ebm" for hollow extrusions (cans, tanks, ducts, jerricans); "ibm" for small precision bottles (<250ml); "sbm" for PET/PP bottles (>250ml stretch)
+  wallThicknessMm=2.0 (OCCT mean wall — use verbatim)
+  flashWeightKg = partWeightKg × 0.12 (pinch-off + neck trim typical 10–15%)
+  cavities: <250ml→2–4; 250ml–2L→1–2; >2L→1
+  mouldCostGBP: single-cav EBM blow mould Al → 8000–25000; IBM → 15000–40000; SBM → 20000–60000
+  mouldLife: Al EBM → 500000 cycles; steel IBM → 2000000
+  blowTimeSec: 3–8s for bottles; 8–20s for large industrial parts
+  openCloseSec: 4–8s typical

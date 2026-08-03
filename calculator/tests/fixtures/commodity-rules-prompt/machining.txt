@@ -1,0 +1,17 @@
+# machining
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+MACHINING COST INPUT RULES:
+  estimatedCycleTimeHr: 0.268
+  estimatedSetupTimeHr: 2.250
+  Operations: list each distinct setup as a separate operation (roughing, semi-finish, finish, drilling, threading)
+  machineId: choose from mach-vmc3 (3-axis), mach-vmc5 (5-axis), mach-lathe-cnc, mach-drill, mach-grind, mach-haas-vf2
+
+### context: degraded
+MACHINING COST INPUT RULES:
+  estimatedCycleTimeHr: sum of all operation cycle times
+  estimatedSetupTimeHr: 0.75 per setup, estimate from geometry complexity
+  Operations: list each distinct setup as a separate operation (roughing, semi-finish, finish, drilling, threading)
+  machineId: choose from mach-vmc3 (3-axis), mach-vmc5 (5-axis), mach-lathe-cnc, mach-drill, mach-grind, mach-haas-vf2

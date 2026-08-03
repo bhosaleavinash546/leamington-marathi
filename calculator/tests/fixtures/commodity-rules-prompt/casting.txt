@@ -1,0 +1,27 @@
+# casting
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+CASTING COST INPUT RULES:
+  subtype: "hpdc" if Al/Mg and mean_wall<6mm; "sand" if Fe/iron or >8kg or complex cores; "gravity" if Al/Zn 0.5–5kg moderate; "investment" if precision <0.5kg or >40% free-form faces
+  HPDC: cycleTimeHpdcSec=54 (45+3×wall), cavities=1 if >1kg else 2
+        dieMouldCostGBP=118000 (OCCT parametric — use verbatim), dieMouldLife=150000, yieldFraction=0.65
+  Sand: cycleTimeSandGravHr=0.262 (OCCT — use verbatim)
+        dieMouldCostGBP=7250 (OCCT — use verbatim), dieMouldLife=8000, yieldFraction=0.78
+  Gravity: cycleTimeSandGravHr=0.08, dieMouldCostGBP=26400 (OCCT — use verbatim), dieMouldLife=50000, yieldFraction=0.85
+  Investment: cycleTimeSandGravHr=0.40, dieMouldCostGBP=12000, dieMouldLife=5000, yieldFraction=0.90
+              (wax≈1.83GBP, shell≈5.49GBP per part)
+
+
+### context: degraded
+CASTING COST INPUT RULES:
+  subtype: "hpdc" if Al/Mg and mean_wall<6mm; "sand" if Fe/iron or >8kg or complex cores; "gravity" if Al/Zn 0.5–5kg moderate; "investment" if precision <0.5kg or >40% free-form faces
+  HPDC: cycleTimeHpdcSec=75 (45+3×wall), cavities=1 if >1kg else 2
+        dieMouldCostGBP=<1kg→60000/1-3kg→110000/>3kg→180000 (OCCT parametric — use verbatim), dieMouldLife=150000, yieldFraction=0.65
+  Sand: cycleTimeSandGravHr=0.5 (OCCT — use verbatim)
+        dieMouldCostGBP=6000 (OCCT — use verbatim), dieMouldLife=8000, yieldFraction=0.78
+  Gravity: cycleTimeSandGravHr=0.08, dieMouldCostGBP=22000 (OCCT — use verbatim), dieMouldLife=50000, yieldFraction=0.85
+  Investment: cycleTimeSandGravHr=0.40, dieMouldCostGBP=12000, dieMouldLife=5000, yieldFraction=0.90
+              (wax≈?GBP, shell≈?GBP per part)
+

@@ -1,0 +1,13 @@
+# __default__
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+COST INPUT RULES:
+  Populate the sub-object matching the recommended commodity in costInputSuggestions.
+  Use OCCT geometry measurements where available.
+
+### context: degraded
+COST INPUT RULES:
+  Populate the sub-object matching the recommended commodity in costInputSuggestions.
+  Use OCCT geometry measurements where available.
