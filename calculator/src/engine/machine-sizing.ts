@@ -55,6 +55,27 @@ export function pickHPDCMachineId(requiredTonnes: number, safety = 1.2): string 
   return pickTier(HPDC_MACHINE_TIERS, Math.max(0, requiredTonnes) * safety);
 }
 
+/**
+ * Pick a machining centre.
+ *
+ * Deliberately NOT a size ladder. The other five commodities here tier by force
+ * or shot weight because the rate library carries the tiers; machining does not
+ * — `mach-vmc3`, `mach-vmc5`, `mach-lathe-cnc` and `mach-drill` differ by what
+ * they can reach, not by how big a part they take. So this picks capability:
+ * a part needing four or more approach directions goes on a 5-axis machine
+ * rather than being refixtured four times, and an axisymmetric part is turned.
+ *
+ * Consequently `machining` is absent from `SIZE_TIERED_COMMODITIES` below — the
+ * self-audit layer would otherwise look for a size driver that does not exist.
+ */
+export function pickMachiningCentreId(p: {
+  principalDirections: number;
+  axisymmetric: boolean;
+}): string {
+  if (p.axisymmetric) return 'mach-lathe-cnc';
+  return p.principalDirections >= 4 ? 'mach-vmc5' : 'mach-vmc3';
+}
+
 /** Physics inputs for the dispatcher — each commodity reads only the field it needs. */
 export interface MachineSizingParams {
   /** injection moulding: estimated clamp tonnage. */

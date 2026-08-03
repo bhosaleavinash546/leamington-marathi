@@ -1,83 +1,30 @@
 /**
- * Near-net machining guard for CAD-to-Cost.
+ * Near-net machining guard for CAD-to-Cost — the server-side wrapper.
  *
- * The OCCT CNC estimator (`_estimate_cnc_cycle` in cad-geometry-engine.py) times
- * milling as `planar_face_area / feed_rate` — i.e. it mills EVERY planar face as
- * if the part were machined from solid billet. That is correct for a `machining`
- * (machined-from-solid) part, but it badly over-states `cast_and_machine` /
- * forged near-net parts, where only a thin finish stock is removed from a few
- * datum / journal faces.
- *
- * Left unchecked, a 2.8 kg gravity die-cast stub axle was charged ~0.9 h of
- * machining and came out at ~£116 instead of a realistic ~£30 — the machining
- * (process + labour + overhead + margin) dwarfed a casting that should cost
- * ~£15-18. This module caps the machining time for near-net commodities to a
- * finish-machining envelope that scales with part mass, and reports when it did.
+ * The envelope itself, and the reasoning behind it, now live in
+ * `src/engine/near-net-machining.ts`: the deterministic cost-input rules need
+ * the same ceiling the AI path is capped to, and one calibration constant in two
+ * places is how the two drift apart. This module re-exports it unchanged and
+ * adds `applyNearNetMachiningCap`, which knows the shape of a CAD analysis.
  *
  * Pure functions: no I/O, no AI.
  */
 
 import type { CADSanityWarning } from './cad-sanity.js';
+import {
+  NEAR_NET_COMMODITIES, NEAR_NET_ENVELOPE,
+  nearNetMachiningCeilingHr, capNearNetMachiningHr,
+  type MachiningCapResult,
+} from '../../src/engine/near-net-machining.js';
 
-/** Commodities that arrive near-net and only need finish machining. */
-export const NEAR_NET_COMMODITIES = new Set(['cast_and_machine', 'casting', 'forging']);
-
-// Finish-machining envelope: a near-net part only needs its datum faces trued,
-// journals/bores finished and holes drilled/tapped — not the whole envelope
-// milled from solid. These bound the plausible ceiling, they don't set the value.
-// Tunable against real machined-casting actuals (see nearNetMachiningCeilingHr).
-export const NEAR_NET_ENVELOPE = {
-  setupHr: 0.10,        // ~6 min: one or two datum/fixture setups
-  finishHrPerKg: 0.07,  // ~4.2 min/kg of finish machining — generous ceiling
+export {
+  NEAR_NET_COMMODITIES, NEAR_NET_ENVELOPE,
+  nearNetMachiningCeilingHr, capNearNetMachiningHr,
 };
+export type { MachiningCapResult };
 
 const n = (v: unknown): number => { const x = Number(v); return Number.isFinite(x) && x > 0 ? x : 0; };
 const round4 = (x: number): number => Math.round(x * 1e4) / 1e4;
-
-/**
- * Finish-machining time ceiling (hours) for a near-net part of the given mass.
- * Calibratable: pass an override to tune against known machined-casting actuals.
- */
-export function nearNetMachiningCeilingHr(
-  weightKg: number,
-  env: { setupHr: number; finishHrPerKg: number } = NEAR_NET_ENVELOPE,
-): number {
-  return env.setupHr + env.finishHrPerKg * n(weightKg);
-}
-
-export interface MachiningCapResult {
-  machiningHr: number;
-  capped: boolean;
-  ceilingHr: number;
-  reason?: string;
-}
-
-/**
- * Cap a from-solid machining estimate to the near-net finish-machining envelope
- * for cast / forged commodities. Machined-from-solid commodities are returned
- * unchanged — there the from-solid estimate is exactly right.
- */
-export function capNearNetMachiningHr(rawHr: number, weightKg: number, commodity: string): MachiningCapResult {
-  const raw = n(rawHr);
-  if (!NEAR_NET_COMMODITIES.has(commodity)) {
-    return { machiningHr: raw, capped: false, ceilingHr: Infinity };
-  }
-  // Without a usable weight the envelope cannot be sized — do NOT collapse the
-  // ceiling to bare setup time (that would under-cost large machined castings).
-  if (n(weightKg) <= 0) {
-    return { machiningHr: raw, capped: false, ceilingHr: Infinity };
-  }
-  const ceilingHr = nearNetMachiningCeilingHr(weightKg);
-  if (raw > ceilingHr) {
-    return {
-      machiningHr: round4(ceilingHr),
-      capped: true,
-      ceilingHr: round4(ceilingHr),
-      reason: `Machining time ${raw.toFixed(2)} h looked machined-from-solid; a ${n(weightKg).toFixed(1)} kg near-net ${commodity} part only needs finish machining — capped to ${ceilingHr.toFixed(2)} h.`,
-    };
-  }
-  return { machiningHr: raw, capped: false, ceilingHr: round4(ceilingHr) };
-}
 
 interface OperationLike { cycleTimeHr?: unknown; [k: string]: unknown }
 interface ProcessRecLike { commodityType?: unknown; process?: unknown; estimatedCycleTimeHr?: unknown; [k: string]: unknown }

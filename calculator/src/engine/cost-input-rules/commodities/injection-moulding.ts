@@ -30,6 +30,7 @@ import {
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
+import { projectedAreaCm2 } from '../derive/envelope.js';
 
 /** Largest press in the rate library, tonnes — the hard cavitation ceiling. */
 const MAX_CLAMP_TONNES = 3500;
@@ -38,17 +39,10 @@ const MAX_CLAMP_TONNES = 3500;
 const PROGRAMME_YEARS = 5;
 
 /**
- * Projected area of one cavity, cm².
- *
- * The two largest bounding-box dimensions: the worst-case projection, and the
- * only choice that cannot under-size the press.
+ * Projected area of one cavity, cm² — the two largest bounding-box dimensions.
+ * Shared with forging, which needs the same footprint for its die-fill force.
  */
-export function projectedAreaCm2(ctx: RuleContext): number | null {
-  const bb = ctx.geo.boundingBox;
-  if (!bb) return null;
-  const [a, b] = [bb.xMm, bb.yMm, bb.zMm].sort((x, y) => y - x);
-  return Math.round((a * b) / 100 * 10) / 10;
-}
+export { projectedAreaCm2 };
 
 /**
  * Cavity count.

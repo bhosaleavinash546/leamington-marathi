@@ -14,6 +14,7 @@
  */
 import { familyFromFilename, type MaterialFamily } from '../../material-family.js';
 import type { AlloyFamily } from '../../modules/casting-advisor.js';
+import type { ForgingAlloyFamily } from '../../modules/forging-advisor.js';
 import type { Decision, RuleContext } from '../types.js';
 
 /** Density used to turn measured volume into a mass, kg/cm³. */
@@ -144,6 +145,29 @@ export function toCastingAlloyFamily(fam: MaterialFamily): AlloyFamily | null {
     case 'cast iron': return 'ductile-iron';
     case 'steel': return 'carbon-steel';
     default: return null;
+  }
+}
+
+/**
+ * Map a broad family onto the alloy family the forging advisor expects.
+ *
+ * Two honest approximations, both stated where they are used:
+ *  - carbon vs alloy steel is a GRADE distinction the family does not carry.
+ *    Carbon steel is the conservative choice: it forges easier (90 MPa flow
+ *    stress against 110) and gives dies a longer life (40k against 30k), so
+ *    choosing it never inflates the estimate.
+ *  - magnesium forges on aluminium equipment at aluminium temperatures; the
+ *    advisor has no magnesium entry and aluminium is the closest behaviour.
+ * Cast iron is not forgeable at all — it returns null and the caller stops.
+ */
+export function toForgingAlloyFamily(fam: MaterialFamily): ForgingAlloyFamily | null {
+  switch (fam) {
+    case 'aluminium':
+    case 'magnesium': return 'aluminium';
+    case 'titanium': return 'titanium';
+    case 'copper alloy': return 'copper';
+    case 'steel': return 'carbon-steel';
+    default: return null;   // cast iron and plastic cannot be forged
   }
 }
 
