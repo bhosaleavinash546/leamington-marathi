@@ -79,6 +79,19 @@ const RESIN_MENUS: Record<string, ResinCandidate[]> = {
     { id: 'mat-pp-homo', grade: /\bpp\b|polyprop/ },
     { id: 'mat-pet-bg', grade: /\bpet\b/, application: /bottle/ },
   ],
+  thermoforming: [
+    { id: 'mat-hips', grade: /hips|\bps\b|polystyr/, application: /tray|liner|pack/ },
+    { id: 'mat-abs', grade: /\babs\b/, application: /cover|housing|panel/ },
+    { id: 'mat-pp-homo', grade: /\bpp\b|polyprop/ },
+    { id: 'mat-upvc', grade: /pvc/ },
+    { id: 'mat-pc', grade: /\bpc\b|polycarb|lexan/, application: /glazing|guard|shield/ },
+  ],
+  // Rotational moulding is overwhelmingly polyethylene; a short menu is the
+  // honest one rather than a long list of grades nobody rotomoulds.
+  rotational_moulding: [
+    { id: 'mat-hdpe', grade: /hdpe|\bpe\b/, application: /tank|bin|kayak|planter|reservoir/ },
+    { id: 'mat-pp-homo', grade: /\bpp\b|polyprop/ },
+  ],
 };
 
 export interface ResinFacts {

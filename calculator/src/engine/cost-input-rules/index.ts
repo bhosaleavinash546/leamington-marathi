@@ -15,10 +15,15 @@ import { BLOW_MOULDING_RULES } from './commodities/blow-moulding.js';
 import { MACHINING_RULES } from './commodities/machining.js';
 import { FORGING_RULES } from './commodities/forging.js';
 import { CAST_AND_MACHINE_RULES } from './commodities/cast-and-machine.js';
+import { THERMOFORMING_RULES } from './commodities/thermoforming.js';
+import { ROTATIONAL_MOULDING_RULES } from './commodities/rotational-moulding.js';
+import { RUBBER_RULES } from './commodities/rubber.js';
+import { COMPOSITES_RULES } from './commodities/composites.js';
 
 export {
   CASTING_RULES, SHEET_METAL_RULES, INJECTION_MOULDING_RULES, BLOW_MOULDING_RULES,
   MACHINING_RULES, FORGING_RULES, CAST_AND_MACHINE_RULES,
+  THERMOFORMING_RULES, ROTATIONAL_MOULDING_RULES, RUBBER_RULES, COMPOSITES_RULES,
 };
 
 /**
@@ -37,6 +42,10 @@ export const RULE_SPECS: Record<string, CommodityRuleSpec> = {
   blow_moulding: BLOW_MOULDING_RULES,
   machining: MACHINING_RULES,
   forging: FORGING_RULES,
+  thermoforming: THERMOFORMING_RULES,
+  rotational_moulding: ROTATIONAL_MOULDING_RULES,
+  rubber: RUBBER_RULES,
+  composites: COMPOSITES_RULES,
 };
 
 /** Commodities that can be costed with no AI call today. */
