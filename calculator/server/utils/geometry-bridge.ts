@@ -48,126 +48,17 @@ async function acquirePython(): Promise<() => void> {
   };
 }
 
-export interface OCCTGeometry {
-  status: 'success' | 'error';
-  partName?: string;
-  boundingBox?: { xMm: number; yMm: number; zMm: number };
-  volume?: { mm3: number; cm3: number };
-  surfaceArea?: { mm2: number; cm2: number };
-  fillRatio?: number;
-  /** Sealed-hollow-body vs open-drape topology (distinguishes a fuel tank from a bumper). */
-  topology?: {
-    available: boolean;
-    solidCount?: number;
-    shellCount?: number;
-    voidCount?: number;
-    freeEdgeCount?: number;
-    freeEdgeRatio?: number;
-    /** True → encloses a sealed cavity (blow/rotational-moulding candidate). */
-    enclosesSealedVoid?: boolean;
-    /** True → thin open drape with no enclosed void (injection-moulding / thermoforming). */
-    openShell?: boolean;
-    note?: string;
-  } | null;
-  wallThickness?: {
-    minMm: number; maxMm: number; meanMm: number; stdDevMm: number;
-    sampleCount: number; method: 'ray_cast' | 'formula'; uniformity: string;
-  } | null;
-  draftAnalysis?: {
-    drawDirectionXYZ: [number, number, number];
-    undercutFaceCount: number;
-    zeroDraftFaceCount: number;
-    adequateDraftFaceCount: number;
-    minPositiveDraftDeg: number | null;
-    maxPositiveDraftDeg: number | null;
-    analyzedFaceCount: number;
-  } | null;
-  setupAnalysis?: {
-    estimatedSetupCount: number;
-    principalDirections: Array<{ directionLabel: string; faceCount: number }>;
-  } | null;
-  cncCycleTimeEstimate?: {
-    setupTimeMins: number;
-    planarMillingTimeMins: number;
-    drillBoreTimeMins: number;
-    estimatedTotalMins: number;
-    estimatedTotalHrs: number;
-    assumedFeedRateMm2PerMin: number;
-    assumedDrillBoreMinPerFeature: number;
-    assumedSetupTimeMinsPerSetup: number;
-  } | null;
-  weights?: {
-    aluminiumKg: number;
-    steelKg: number;
-    plasticKg: number;
-    castIronKg: number;
-    copperKg: number;
-    titaniumKg: number;
-  };
-  faces?: { total: number; byType: Record<string, number> };
-  edges?: {
-    total: number;
-    byType: Record<string, number>;
-    sampleCircleRadiiMm: number[];
-  };
-  features?: {
-    cylindricalFaceCount: number;
-    cylindricalFaceRadiiMm: number[];
-    estimatedHoleCount: number;
-    holeRadiiMm: number[];
-    bossShaftRadiiMm: number[];
-    threadFeaturesDetected: boolean;
-    planarFaceCount: number;
-    freeFormFaceCount: number;
-  };
-  /** Exact per-feature rows: hole/boss × Ø × depth × through, axis-deduped counts. */
-  featureTable?: Array<{
-    kind: 'hole' | 'boss' | 'face' | 'pocket' | 'slot';
-    diaMm: number;
-    depthMm: number;
-    through: boolean | null;
-    count: number;
-    areaMm2?: number;
-  }>;
-  sheetMetal?: { bendCount: number; totalBendLengthMm: number; thicknessMm: number };
-  error?: string;
-  toolingCostEstimates?: {
-    hpdcDieCostGBP: number;
-    gravityMouldCostGBP: number;
-    sandPatternCostGBP: number;
-    imMouldCostGBP: number;
-    forgeDieCostGBP: number;
-    progressiveDieCostGBP: number;
-  };
-  manufacturabilityScore?: number;
-  processSpecificEstimates?: {
-    sandCycleTimeHr: number;
-    sandCycleTimeHrFerrous: number;
-    forgeStrokes: number;
-    investWaxCostGBP: number;
-    investShellCostGBP: number;
-  };
-  assemblyWarning?: string | null;
-  unitWarning?: string | null;
-  /** Weld-nut / weld-stud hardware detected from distinct small solids (kernel-exact,
-   * deterministic). available:false with a note when bodies aren't separable. */
-  detectedHardware?: {
-    available: boolean;
-    note?: string;
-    solidCount?: number;
-    totalVolumeCm3?: number;
-    estSteelMassKg?: number;
-    detected?: Array<{
-      type: string;
-      threadSize: string;
-      count: number;
-      boreDiaMm: number;
-      heightMm: number;
-      sideFlats: number;
-      onSheetHole: boolean;
-    }>;
-  } | null;
-}
+/**
+ * The measured-geometry contract.
+ *
+ * Declared once, in the pure engine (`src/engine/ai-analysis.ts`), and re-exported
+ * here. There used to be two copies and they had already drifted — the engine's
+ * was missing `topology`, which is the signal that separates a sealed hollow body
+ * (fuel tank → blow moulding) from an open drape (bumper → injection moulding).
+ * One declaration means that class of bug cannot recur.
+ */
+import type { OCCTGeometry } from '../../src/engine/ai-analysis.js';
+export type { OCCTGeometry };
 
 export async function analyzeGeometry(
   buffer: Buffer,
