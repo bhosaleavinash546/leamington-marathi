@@ -20,7 +20,7 @@ import {
   type CastingProcess, type ComplexityLevel,
 } from '../../modules/casting-advisor.js';
 import type { CastingSubtype } from '../../modules/casting.js';
-import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
+import { answeredNumber, decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { materialFacts, toCastingAlloyFamily } from '../derive/material.js';
 import {
   pressureTightDecision, toleranceClassDecision, safetyCriticalDecision,
@@ -231,7 +231,12 @@ export const CASTING_RULES: CommodityRuleSpec = {
           // wearing the costume of a constant.
           investment: undefined,
         };
-        const v = pick[r.advice.subtype];
+        const quoted = answeredNumber(ctx.answers, 'casting.toolingCost');
+        const v = pick[r.advice.subtype] ?? quoted ?? undefined;
+        if (quoted != null && pick[r.advice.subtype] == null) {
+          return decided('casting.dieMouldCostGBP', Math.round(quoted), 'engineer',
+            `${r.advice.subtype} tooling quotation supplied by the engineer`, 0.95);
+        }
         if (v == null) {
           return ask({
             id: 'casting.toolingCost',
@@ -240,7 +245,8 @@ export const CASTING_RULES: CommodityRuleSpec = {
             why: 'The geometry kernel prices HPDC dies, gravity moulds and sand patterns '
               + 'parametrically, but has no model for investment-casting tooling. '
               + 'A quotation is worth more than an invented band.',
-            options: [{ value: 'quote', label: 'Enter the toolmaker quotation' }],
+            options: [{ value: 'quote', label: 'Toolmaker quotation' }],
+            entry: { kind: 'number', unit: '£', placeholder: 'e.g. 14000' },
             blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
           });
         }

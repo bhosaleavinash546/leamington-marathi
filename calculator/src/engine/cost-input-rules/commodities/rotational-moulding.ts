@@ -128,6 +128,7 @@ function advise(ctx: RuleContext): { advice: RmAdvice } | { blocked: RuleOutcome
         why: 'No wall or bounding box was measured. Oven time scales directly with wall '
           + 'thickness, and it is most of the cycle.',
         options: [{ value: 'enter', label: 'Enter wall thickness and footprint' }],
+        entry: { kind: 'number' },
         blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
       }),
     };
@@ -196,6 +197,7 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
           question: 'What is the wall thickness and the part footprint?',
           why: 'No wall was measured, and oven time scales directly with it.',
           options: [{ value: 'enter', label: 'Enter wall thickness and footprint' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('roto.wallThicknessMm', Math.round(wall * 10) / 10, 'geometry',
@@ -290,6 +292,7 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
           question: 'What is the wall thickness and the part footprint?',
           why: 'No bounding box was measured, so the tool cannot be sized.',
           options: [{ value: 'enter', label: 'Enter wall thickness and footprint' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('roto.projectedAreaCm2', a, 'geometry',

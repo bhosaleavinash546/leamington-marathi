@@ -116,6 +116,7 @@ function advise(ctx: RuleContext): { advice: RubAdvice } | { blocked: RuleOutcom
         why: 'No wall thickness or bounding box was measured. Cure time goes as section '
           + 'thickness squared, and cure time is the cycle.',
         options: [{ value: 'enter', label: 'Enter section thickness and footprint' }],
+        entry: { kind: 'number' },
         blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
       }),
     };
@@ -242,6 +243,7 @@ export const RUBBER_RULES: CommodityRuleSpec = {
           question: 'What is the thickest section and the part footprint?',
           why: 'No bounding box was measured, so the tool cannot be sized.',
           options: [{ value: 'enter', label: 'Enter section thickness and footprint' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('rubber.projectedAreaCm2', a, 'geometry',

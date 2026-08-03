@@ -210,6 +210,7 @@ function advise(ctx: RuleContext): { advice: BmAdvice } | { blocked: RuleOutcome
         question: 'What is the nominal wall thickness?',
         why: 'No wall was measured, and cooling — most of the blow cycle — goes as wall squared.',
         options: [{ value: 'enter', label: 'Enter the nominal wall' }],
+        entry: { kind: 'number' },
         blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
       }),
     };
@@ -253,6 +254,7 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
           question: 'What is the nominal wall thickness?',
           why: 'No wall was measured, and cooling goes as wall squared.',
           options: [{ value: 'enter', label: 'Enter the nominal wall' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('blowMoulding.wallThicknessMm', Math.round(wall * 10) / 10, 'geometry',

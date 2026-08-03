@@ -232,6 +232,7 @@ function advise(ctx: RuleContext): { advice: MachAdvice } | { blocked: RuleOutco
           + 'the billet it is cut from can be derived — and their ratio is the whole '
           + 'raw-material bucket.',
         options: [{ value: 'enter', label: 'Enter net weight and stock dimensions' }],
+        entry: { kind: 'number' },
         blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
       }),
     };

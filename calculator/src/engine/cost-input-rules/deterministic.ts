@@ -14,9 +14,11 @@
  *   - **Prose.** `aiExplanation` becomes a derivation — the rules' own `basis`
  *     strings, in order — which is more useful in a supplier meeting than a
  *     paragraph anyway, because every line of it is checkable.
- *   - **DFM issues.** The eight `analyse*DFM` functions exist and are not wired
- *     here yet; `dfmIssues` is empty and `analysisLimitations` says so rather
- *     than letting an empty list read as "no issues found".
+ *   - **DFM issues** on the two commodities with no analyser in the tree
+ *     (machining, composites). Everywhere else the measurement now feeds the
+ *     advisor directly. Where no analyser exists, or where the checks it could
+ *     run needed a drawing callout the kernel cannot read, `analysisLimitations`
+ *     says so — an empty list must never read as a clean bill of health.
  */
 import type {
   CADAnalysisResult, CADGeometry, DetectedFeature, OCCTGeometry,
@@ -24,7 +26,8 @@ import type {
 } from '../ai-analysis.js';
 import type { CommodityRuleSpec, CostInputRuleResult, RuleContext } from './types.js';
 import { runCostInputRules } from './engine.js';
-import { applyRuleDecisions, type ApplyResult } from './apply.js';
+import { applyRuleDecisions, toRuleFields, type ApplyResult, type RuleField } from './apply.js';
+import { analyseDFMFromGeometry, DFM_ANALYSED_COMMODITIES } from './dfm.js';
 
 /** How significant a detected feature is, by how many of them there are. */
 function significance(count: number): DetectedFeature['significance'] {
@@ -123,6 +126,8 @@ export interface DeterministicAnalysis {
   analysis: CADAnalysisResult;
   result: CostInputRuleResult;
   applied: ApplyResult;
+  /** Every rule value keyed by form field id — see `toRuleFields`. */
+  ruleFields: Record<string, RuleField>;
 }
 
 /**
@@ -167,10 +172,25 @@ export function buildDeterministicAnalysis(
     analysisLimitations: [
       ...result.decisions.map(d => `Unanswered: ${d.question}`),
       ...result.notes,
-      'DFM issues are not analysed on the deterministic path — an empty list here '
-        + 'means "not checked", not "nothing found".',
+      DFM_ANALYSED_COMMODITIES.has(ctx.commodity)
+        ? 'DFM checks ran against the measured geometry. Checks that need a drawing '
+          + 'callout — tolerances, which face is critical, whether a weld line is in a '
+          + 'load path — did not run, so this list is a floor and not a ceiling.'
+        : `No DFM analyser exists for ${ctx.commodity}; an empty issue list here means `
+          + '"not checked", not "nothing found".',
     ],
   };
+
+  // Run the advisor for the process the rules actually chose, so the checks are
+  // against the route being costed rather than a default.
+  const sub = Object.values(result.suggestions).find(v => v && typeof v === 'object') as Record<string, unknown> | undefined;
+  const dfm = analyseDFMFromGeometry(ctx, {
+    process: (sub?.subtype ?? sub?.process) as string | undefined,
+    materialFamily: (ctx.answers['material.family'] ?? sub?.materialFamily) as string | undefined,
+    materialId: sub?.materialId as string | undefined,
+    compoundFamily: sub?.compoundFamily as string | undefined,
+  });
+  if (dfm.length) analysis.costInputSuggestions.dfmIssues = dfm;
 
   // The same writer the AI path uses, so there is one place that knows how a
   // rule value lands on `costInputSuggestions`.
@@ -181,5 +201,5 @@ export function buildDeterministicAnalysis(
     analysis.analysisLimitations.push(
       `Computed but not carried into the form: ${applied.notWritten.join(', ')}`);
   }
-  return { analysis, result, applied };
+  return { analysis, result, applied, ruleFields: toRuleFields(result) };
 }

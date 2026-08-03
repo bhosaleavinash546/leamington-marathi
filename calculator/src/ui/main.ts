@@ -228,9 +228,17 @@ interface CADDecision {
   question: string;
   why: string;
   options: Array<{ value: string; label: string; consequence?: string; leaning?: boolean }>;
+  /** Present when the answer is a typed value rather than one of the options. */
+  entry?: { kind: 'number' | 'text'; unit?: string; placeholder?: string };
   blockedFieldIds: string[];
   severity: 'blocking' | 'advisory';
 }
+/** Every rule value the server derived, keyed by the form field it belongs in. */
+interface CADRuleField {
+  fieldId: string; value: unknown; basis: string;
+  source: string; confidence: number; ruleId: string;
+}
+let _cadRuleFields: Record<string, CADRuleField> = {};
 let _cadDecisions: CADDecision[] = [];
 let _cadDecisionAnswers: Record<string, string> = {};
 let cadSanityWarnings: Array<{ code: string; message: string; severity: 'warn' | 'error' }> = [];
@@ -5708,6 +5716,15 @@ function renderCADAnalysisForm(): string {
           <option value="">— Auto-detect (AI selects) —</option>
         </select>
       </div>
+      <div class="field-group">
+        <label style="font-size:0.75rem">Analysis mode</label>
+        <select id="cad-analysis-mode" style="font-size:0.8rem"
+                title="Rules only: every cost input is derived from the measured geometry — no AI call, no API key. Compare: runs both and shows where they disagree. AI-led: the old behaviour, kept for comparison.">
+          <option value="deterministic" selected>Rules only — no AI call</option>
+          <option value="both">Compare — rules vs AI</option>
+          <option value="ai">AI-led (legacy)</option>
+        </select>
+      </div>
     </div>
 
     <!-- Annual Volume -->
@@ -5941,7 +5958,7 @@ function wireCADEvents(): void {
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null;
     _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-    _cadDecisions = []; _cadDecisionAnswers = {};
+    _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {};
     unmountCADViewer();
     document.getElementById('cad-file-info')?.style.setProperty('display', 'none');
     document.getElementById('cad-drop-zone')?.style.setProperty('display', '');
@@ -6033,7 +6050,7 @@ function setCADFile(f: File): void {
   cadFile = f;
   // A new part starts with a clean slate — clear any pins from the previous file.
   _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-  _cadDecisions = []; _cadDecisionAnswers = {};
+  _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {};
   document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
   const cadFileInfo = document.getElementById('cad-file-info');
   if (cadFileInfo) cadFileInfo.style.display = 'flex';
@@ -6048,6 +6065,20 @@ function setCADFile(f: File): void {
   cadAnalysisResult = null;
   cadOCCTGeometry = null;
   void mountCADViewer('cad-viewer-host', f, false);
+}
+
+/**
+ * Which analysis the engineer asked for.
+ *
+ * The default is `deterministic`: the rules derive every cost input from the
+ * measured geometry and nothing is sent to a model. Anything else is an
+ * explicit choice, and it stays an explicit choice even with no key in the
+ * field — the key may be on the server, and silently downgrading someone's
+ * selection is worse than the server saying it has no key.
+ */
+function selectedAnalysisMode(): 'deterministic' | 'ai' | 'both' {
+  const v = (document.getElementById('cad-analysis-mode') as HTMLSelectElement | null)?.value;
+  return v === 'ai' || v === 'both' ? v : 'deterministic';
 }
 
 async function analyzeCAD(autoCalculate = false): Promise<void> {
@@ -6141,6 +6172,8 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
       formData.append('partPhotoMime', cadPartPhotoMime);
     }
     formData.append('deepAnalysis', String((document.getElementById('cad-deep-analysis') as HTMLInputElement | null)?.checked ?? false));
+    const mode = selectedAnalysisMode();
+    formData.append('mode', mode);
 
     const headers: HeadersInit = {};
     if (apiKey) headers['x-api-key'] = apiKey;
@@ -6150,7 +6183,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
       method: 'POST', headers, body: formData, signal: controller.signal,
     });
 
-    updateProgress(85, 'AI feature analysis…');
+    updateProgress(85, mode === 'deterministic' ? 'Deriving cost inputs from the geometry…' : 'AI feature analysis…');
     const data = await res.json() as {
       success?: boolean;
       analysis?: CADAnalysisResult;
@@ -6169,6 +6202,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     _cadDecisions = (data as { decisions?: CADDecision[] }).decisions ?? [];
+    _cadRuleFields = (data as { ruleFields?: Record<string, CADRuleField> }).ruleFields ?? {};
 
     const partNameEl = el<HTMLInputElement>('part-name');
     if (partNameEl && cadAnalysisResult.partName) partNameEl.value = cadAnalysisResult.partName;
@@ -6271,7 +6305,19 @@ function renderCADDecisionsPanel(): string {
     <div class="cad-decision" data-decision-id="${escHtml(d.id)}" style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(220,38,38,0.18)">
       <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">${escHtml(d.question)}</div>
       <div style="font-size:0.7rem;color:var(--text-secondary);margin:3px 0 6px;line-height:1.5">${escHtml(d.why)}</div>
-      ${d.options.map(o => `
+      ${d.entry
+        // Some answers are a figure, not a choice — an investment-casting
+        // quotation, a gauge off a drawing. Rendering those as a radio group
+        // with one option made 23 of the engine's questions unanswerable.
+        ? `<label style="display:flex;align-items:center;gap:7px;font-size:0.72rem">
+             <span style="color:var(--text-primary)">${escHtml(d.options[0]?.label ?? 'Value')}</span>
+             ${d.entry.unit ? `<span style="color:var(--text-muted)">${escHtml(d.entry.unit)}</span>` : ''}
+             <input type="${d.entry.kind === 'number' ? 'number' : 'text'}" data-decision-entry="1"
+                    value="${escHtml(String(_cadDecisionAnswers[d.id] ?? ''))}"
+                    placeholder="${escHtml(d.entry.placeholder ?? '')}"
+                    style="width:130px;padding:3px 6px;font-size:0.72rem"/>
+           </label>`
+        : d.options.map(o => `
         <label style="display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:0.72rem;cursor:pointer">
           <input type="radio" name="dec-${escHtml(d.id)}" value="${escHtml(o.value)}" ${_cadDecisionAnswers[d.id] === o.value ? 'checked' : ''} style="margin-top:2px"/>
           <span>
@@ -6304,14 +6350,16 @@ function wireCADDecisionsPanel(): void {
   const sync = (): void => {
     for (const block of Array.from(panel.querySelectorAll<HTMLElement>('.cad-decision'))) {
       const id = block.dataset.decisionId;
-      const picked = block.querySelector<HTMLInputElement>('input[type=radio]:checked');
-      if (id && picked) _cadDecisionAnswers[id] = picked.value;
+      const typed = block.querySelector<HTMLInputElement>('input[data-decision-entry]');
+      const picked = typed ?? block.querySelector<HTMLInputElement>('input[type=radio]:checked');
+      if (id && picked && picked.value.trim()) _cadDecisionAnswers[id] = picked.value.trim();
     }
     const open = _cadDecisions.filter(d => d.severity === 'blocking');
     const status = document.getElementById('cad-decisions-status');
     if (status) status.textContent = `${open.filter(d => _cadDecisionAnswers[d.id]).length}/${open.length} answered`;
   };
   panel.addEventListener('change', sync);
+  panel.addEventListener('input', sync);
   document.getElementById('cad-decisions-apply')?.addEventListener('click', () => {
     sync();
     void reanalyzeCAD();
@@ -6761,9 +6809,7 @@ async function reanalyzeCAD(): Promise<void> {
     // The answers the engineer just gave. The server re-runs the rules with them
     // and returns a resolved analysis — the same round-trip the pins use.
     body['decisionAnswers'] = _cadDecisionAnswers;
-    // With no key there is nothing to ask a model, but the rules still work.
-    // Saying so is better than a 400 the user cannot act on.
-    if (!apiKey) body['mode'] = 'deterministic';
+    body['mode'] = selectedAnalysisMode();
 
     const res = await fetch('/api/cad/reanalyze', {
       method: 'POST',
@@ -6776,6 +6822,7 @@ async function reanalyzeCAD(): Promise<void> {
       analysis?: CADAnalysisResult;
       annualVolume?: number;
       decisions?: CADDecision[];
+      ruleFields?: Record<string, CADRuleField>;
       error?: string;
     };
 
@@ -6786,6 +6833,7 @@ async function reanalyzeCAD(): Promise<void> {
     _applyCadPins(cadAnalysisResult);
     // What the rules could still not settle after the answers were applied.
     _cadDecisions = data.decisions ?? [];
+    _cadRuleFields = data.ruleFields ?? {};
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     const resolvedVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
@@ -10497,6 +10545,60 @@ function markAIFilled(element: HTMLInputElement | HTMLSelectElement | null): voi
  * one they estimated — it is empty on purpose, and the border says which
  * question would fill it.
  */
+/**
+ * Write every rule-derived value straight onto the form, by field id.
+ *
+ * This runs LAST, after the commodity switch has filled from
+ * `costInputSuggestions` — because that object cannot carry most of what the
+ * rules compute. It is the model's response schema: it has a slot for what the
+ * AI was asked and nothing for the rest. Of the 131 rule values that name a
+ * form field, only 77 have anywhere to land in it. The 54 with nowhere include
+ * the forge press sized from die-fill force, the injection press sized from
+ * clamp tonnage, the resin-specific cooling factor, the rubber cure time and
+ * the envelope-derived billet weight — every one a cost driver, computed and
+ * then dropped on the floor.
+ *
+ * Addressing the form directly sidesteps the schema. It also puts each value's
+ * derivation in its own tooltip, which is the first time the reasoning has been
+ * visible at the number rather than three panels away.
+ */
+function applyRuleFieldsToForm(): void {
+  const fields = Object.values(_cadRuleFields);
+  if (!fields.length) return;
+  let written = 0;
+
+  for (const f of fields) {
+    const elm = document.getElementById(f.fieldId) as HTMLInputElement | HTMLSelectElement | null;
+    if (!elm) continue;   // this commodity's form is not on screen
+
+    if (elm instanceof HTMLSelectElement) {
+      const wanted = String(f.value);
+      // Only assign a value the select actually offers — a silent mismatch here
+      // is how "Machine '' not found" used to reach Calculate.
+      if (!Array.from(elm.options).some(o => o.value === wanted)) continue;
+      elm.value = wanted;
+    } else if (typeof f.value === 'number') {
+      elm.value = Number.isInteger(f.value) ? String(f.value) : f.value.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+    } else if (typeof f.value === 'boolean') {
+      if (elm.type === 'checkbox') (elm as HTMLInputElement).checked = f.value;
+      else elm.value = String(f.value);
+    } else {
+      elm.value = String(f.value);
+    }
+
+    elm.classList.add('ai-filled');
+    // Rule values are derived, not estimated: green, whatever the field is named.
+    elm.setAttribute('data-prov', f.source === 'geometry' ? 'measured' : 'estimated');
+    elm.title = `${f.ruleId} = ${String(f.value)}\n${f.basis}\n[${f.source}, confidence ${(f.confidence * 100).toFixed(0)}%]`;
+    elm.addEventListener('input', () => {
+      elm.classList.remove('ai-filled');
+      elm.removeAttribute('data-prov');
+    }, { once: true });
+    written++;
+  }
+  if (written) console.log(`[CAD] ${written} field(s) filled from the deterministic rules`);
+}
+
 function markBlockedDecisionFields(): void {
   for (const d of openCADDecisions()) {
     for (const fieldId of d.blockedFieldIds) {
@@ -10596,8 +10698,12 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     const annVol = el<HTMLInputElement>('annual-volume')?.value || '100000';
     const fd = new FormData();
     fd.append('cadFile', file);
-    fd.append('commodity', commodity);   // tell the AI the target process so it suggests matching inputs
+    fd.append('commodity', commodity);   // the engineer has already chosen the process — this form is it
     fd.append('annualVolume', annVol);
+    // Same default as the full panel: derive from the geometry. This path has
+    // no decisions block, so anything the rules cannot settle is reported in
+    // the status line instead of being quietly filled.
+    fd.append('mode', selectedAnalysisMode());
     if (cadPartPhotoBase64) { fd.append('partPhotoBase64', cadPartPhotoBase64); fd.append('partPhotoMime', cadPartPhotoMime); }
     const apiKey = sessionStorage.getItem('cad-api-key') ?? '';
     const headers: HeadersInit = {};
@@ -10606,14 +10712,24 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     const to = setTimeout(() => controller.abort(new DOMException('Timed out after 150 s', 'TimeoutError')), 150_000);
     const res = await fetch('/api/cad/analyze', { method: 'POST', headers, body: fd, signal: controller.signal });
     clearTimeout(to);
-    const data = await res.json() as { success?: boolean; analysis?: CADAnalysisResult; occtGeometry?: OCCTGeometry | null; geometrySource?: 'occt' | 'text_parsing'; error?: string };
+    const data = await res.json() as { success?: boolean; analysis?: CADAnalysisResult; occtGeometry?: OCCTGeometry | null; geometrySource?: 'occt' | 'text_parsing'; decisions?: CADDecision[]; ruleFields?: Record<string, CADRuleField>; error?: string };
     if (!res.ok || !data.success || !data.analysis) throw new Error(data.error ?? `Server error ${res.status}`);
     cadAnalysisResult = data.analysis;
     cadOCCTGeometry = data.occtGeometry ?? null;
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
+    _cadDecisions = data.decisions ?? [];
+    _cadRuleFields = data.ruleFields ?? {};
     const g = data.analysis.geometry;
     applyCADToForm(commodity);   // re-renders this form and fills it from the geometry
     showToast(`CAD applied — ${data.geometrySource === 'occt' ? 'OCCT solid geometry' : 'text-parsed'}: ${g.estimatedVolumeCm3.toFixed(1)} cm³, net ${data.analysis.costInputSuggestions.netWeightKg.toFixed(3)} kg`, 'info');
+    if (_cadDecisions.length) {
+      // These fields are blank on purpose. Naming them beats leaving the
+      // engineer to discover the gaps at Calculate.
+      markBlockedDecisionFields();
+      setStatus(`${_cadDecisions.length} input(s) the geometry cannot settle — fill them in: `
+        + _cadDecisions.map(d => d.question).join(' · '));
+      showToast(`${_cadDecisions.length} input(s) need your answer before this is costable`, 'warning');
+    }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     setStatus(`⚠ ${msg.slice(0, 160)}`);
@@ -11508,7 +11624,8 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
     }
 
     // Surface provenance: how much of this form is measured geometry vs AI guess.
-    markBlockedDecisionFields();
+    applyRuleFieldsToForm();
+  markBlockedDecisionFields();
   showCADProvenanceBanner();
 
     // Keep the 3D model on screen: the CAD form (with its viewer) was just

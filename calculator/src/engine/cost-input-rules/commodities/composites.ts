@@ -93,6 +93,7 @@ function advise(ctx: RuleContext): { advice: CompAdvice } | { blocked: RuleOutco
         why: 'No wall thickness or surface area was measured, so the ply count and the '
           + 'layup hours cannot be derived — and layup is most of the labour.',
         options: [{ value: 'enter', label: 'Enter laminate thickness and area' }],
+        entry: { kind: 'number' },
         blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
       }),
     };
@@ -214,6 +215,7 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
           question: 'What is the laminate thickness and the moulded area?',
           why: 'No surface area was measured.',
           options: [{ value: 'enter', label: 'Enter laminate thickness and area' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('composites.areaM2', a, 'geometry',

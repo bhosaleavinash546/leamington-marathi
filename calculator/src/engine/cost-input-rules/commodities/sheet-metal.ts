@@ -145,6 +145,7 @@ function advise(ctx: RuleContext): { advice: SmAdvice } | { blocked: RuleOutcome
         why: 'No bends were detected and no wall thickness could be measured, so the coil '
           + 'gauge is unknown — and it drives the blank weight, the press tonnage and the die.',
         options: [{ value: 'enter', label: 'Enter the gauge from the drawing' }],
+        entry: { kind: 'number' },
         blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
       }),
     };
@@ -210,6 +211,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
           question: 'What are the blank dimensions?',
           why: 'No bounding box was measured, so the developed blank cannot be derived.',
           options: [{ value: 'enter', label: 'Enter blank length and width' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('sheetMetal.blankLengthMm', b.lengthMm, 'geometry',
@@ -228,6 +230,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
           question: 'What are the blank dimensions?',
           why: 'No bounding box was measured, so the developed blank cannot be derived.',
           options: [{ value: 'enter', label: 'Enter blank length and width' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('sheetMetal.blankWidthMm', b.widthMm, 'geometry',
@@ -329,6 +332,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
             question: 'What is the part weight?',
             why: 'No volume was measured, so the blank weight cannot be derived.',
             options: [{ value: 'enter', label: 'Enter the net weight' }],
+            entry: { kind: 'number' },
             blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
           });
         }

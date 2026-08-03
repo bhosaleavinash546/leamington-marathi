@@ -269,4 +269,42 @@ export function applyRuleDecisions(
   };
 }
 
+/** One field the rules filled, as the form needs it. */
+export interface RuleField {
+  fieldId: string;
+  value: unknown;
+  basis: string;
+  source: string;
+  confidence: number;
+  ruleId: string;
+}
+
+/**
+ * Every rule value, keyed by the form field it belongs in.
+ *
+ * This is the transport that `costInputSuggestions` cannot be. That object is
+ * the *model's* response schema — it has a slot for what the AI was asked, and
+ * the rules compute a good deal the AI was never asked for. Auditing the two
+ * against each other: 131 of 144 rules carry a form field id, but only 77 of
+ * their paths have anywhere to land in the schema. The other 54 include the
+ * forge press sized from die-fill force, the injection press sized from clamp
+ * tonnage, the resin-specific cooling factor, the rubber cure time and the
+ * envelope-derived billet weight — every one of them a cost driver, and every
+ * one of them computed and then dropped.
+ *
+ * Keying by field id sidesteps the schema entirely: the form is the consumer,
+ * so address the form. It also carries the basis to the field's tooltip, which
+ * is the first time the derivation has been visible where the number is.
+ */
+export function toRuleFields(result: CostInputRuleResult): Record<string, RuleField> {
+  const out: Record<string, RuleField> = {};
+  for (const [fieldId, p] of Object.entries(result.provenance)) {
+    out[fieldId] = {
+      fieldId, value: p.value, basis: p.basis,
+      source: p.source, confidence: p.confidence, ruleId: p.ruleId,
+    };
+  }
+  return out;
+}
+
 export { RULE_PATH_MAP };

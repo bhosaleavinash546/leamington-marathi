@@ -17,11 +17,13 @@ import { familyFromFilename, proseFamily, promoteHighestConfidence, type Materia
 import { correctShellWallMm } from '../../src/engine/geometry-sanity.js';
 import { specForCommodity, DETERMINISTIC_COMMODITIES } from '../../src/engine/cost-input-rules/index.js';
 import { buildDeterministicAnalysis } from '../../src/engine/cost-input-rules/deterministic.js';
+import { diffAnalyses } from '../../src/engine/cost-input-rules/diff.js';
+import type { CADAnalysisResult } from '../../src/engine/ai-analysis.js';
 import { inferCommodity } from '../../src/engine/cost-input-rules/derive/commodity.js';
 import { familyFromMaterialId } from '../../src/engine/cost-input-rules/derive/material.js';
 import { systemForFibreId } from '../../src/engine/cost-input-rules/derive/laminate.js';
 import { renderCommodityRulesPrompt, runCostInputRules } from '../../src/engine/cost-input-rules/engine.js';
-import { applyRuleDecisions } from '../../src/engine/cost-input-rules/apply.js';
+import { applyRuleDecisions, toRuleFields } from '../../src/engine/cost-input-rules/apply.js';
 import { RULE_ENGINE_VERSION, type RuleContext, type Decision } from '../../src/engine/cost-input-rules/types.js';
 
 const router = Router();
@@ -450,7 +452,10 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   const ovrDensityGcm3  = req.body?.densityGcm3 ? parseFloat(req.body.densityGcm3) : null;
 
   const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
-  const analysisMode = parseAnalysisMode(req.body?.mode);
+  let analysisMode = parseAnalysisMode(req.body?.mode);
+  // Whether the caller *chose* deterministic or simply got the default. The two
+  // deserve different behaviour on a commodity with no rules yet.
+  const modeExplicit = typeof req.body?.mode === 'string' && req.body.mode.trim() !== '';
   const decisionAnswers = parseDecisionAnswers(
     typeof req.body?.decisionAnswers === 'string'
       ? JSON.parse(req.body.decisionAnswers) as unknown : req.body?.decisionAnswers);
@@ -567,6 +572,9 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   const ruleCtx = ruleContextFor(selectedCommodity, geo, originalname, userOverrides, decisionAnswers);
   const ruleSpec = specForCommodity(selectedCommodity);
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
+  let ruleFields: ReturnType<typeof toRuleFields> | null = null;
+  let modeDiff: ReturnType<typeof diffAnalyses> | null = null;
+  let deterministicAnalysis: CADAnalysisResult | null = null;
 
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
   const userPrompt = buildPrompt(geo, preprocessed, originalname, selectedCommodity, stage1Selection, userOverrides);
@@ -595,20 +603,30 @@ router.post('/analyze', analyzeLimiter, upload.fields([
 
   let analysis: unknown;
 
-  if (analysisMode === 'deterministic') {
-    // No model, no key, no network. Everything from here is arithmetic on the
-    // measurement plus the rules, which is the whole point of the exercise.
-    const det = ruleSpec
-      ? buildDeterministicAnalysis(ruleSpec, ruleCtx, geo.partName || originalname)
-      : null;
-    if (!det) {
+  if (analysisMode === 'deterministic' && !ruleSpec) {
+    // Seven commodities have no rule spec yet. What happens next turns on
+    // whether deterministic was *asked for* or merely defaulted to: an explicit
+    // request gets a straight answer about what does not exist, but a default
+    // must not turn a commodity that analysed fine yesterday into an error.
+    const fallbackKey = modeExplicit ? '' : resolveApiKey(req);
+    if (!fallbackKey) {
       res.status(422).json({
         error: `No deterministic rules exist for '${selectedCommodity}' yet. `
-          + `Converted so far: ${DETERMINISTIC_COMMODITIES.join(', ')}.`,
+          + `Converted so far: ${DETERMINISTIC_COMMODITIES.join(', ')}.`
+          + (modeExplicit ? '' : ' An API key would have let this fall back to the AI path.'),
         decisions: commodityDecision ? [commodityDecision] : [],
       });
       return;
     }
+    anthropic = createAnthropic(fallbackKey);
+    analysisMode = 'ai';
+    console.log(`[CAD] No rule spec for '${selectedCommodity}' — falling back to the AI path`);
+  }
+
+  if (analysisMode === 'deterministic') {
+    // No model, no key, no network. Everything from here is arithmetic on the
+    // measurement plus the rules, which is the whole point of the exercise.
+    const det = buildDeterministicAnalysis(ruleSpec!, ruleCtx, geo.partName || originalname);
     const detPayload = {
       success: true,
       analysis: det.analysis,
@@ -617,6 +635,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
         geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null,
         buildGeoSanityContext(geo, det.analysis)),
       ruleOverrides: det.applied,
+      ruleFields: det.ruleFields,
       decisions: [...(commodityDecision ? [commodityDecision] : []), ...det.result.decisions],
       mode: analysisMode,
       fromCache: false,
@@ -654,14 +673,31 @@ router.post('/analyze', analyzeLimiter, upload.fields([
       // that line UNDECIDED precisely so the model would supply the one thing
       // geometry cannot; now that it has, the engine does the arithmetic
       // downstream of it rather than trusting the model's.
+      // Snapshot before the overwrite — `applyRuleDecisions` mutates in place,
+      // so a diff taken afterwards would be the rules against themselves.
+      const aiOriginal = analysisMode === 'both'
+        ? structuredClone((analysis as { costInputSuggestions?: Record<string, unknown> }).costInputSuggestions ?? {})
+        : null;
+      const resolved = runCostInputRules(
+        ruleSpec, withAIMaterial(ruleCtx, analysis as Record<string, unknown>));
       ruleOverrides = applyRuleDecisions(
-        analysis as Parameters<typeof applyRuleDecisions>[0],
-        runCostInputRules(ruleSpec, withAIMaterial(ruleCtx, analysis as Record<string, unknown>)),
-      );
+        analysis as Parameters<typeof applyRuleDecisions>[0], resolved);
+      ruleFields = toRuleFields(resolved);
       const contradicted = ruleOverrides.overridden.filter(o => o.contradicted);
       if (contradicted.length) {
         console.log(`[CAD] Rules overrode ${contradicted.length} field(s) the model disagreed with: `
           + contradicted.map(o => `${o.field} ${String(o.from)}\u2192${String(o.to)}`).join(', '));
+      }
+      if (analysisMode === 'both') {
+        // The audit run: build the deterministic answer independently and diff
+        // it against the model's ORIGINAL reply, before the rules overwrote it.
+        // Diffing after the overwrite would compare the rules with themselves.
+        const det = buildDeterministicAnalysis(ruleSpec, ruleCtx, geo.partName || 'part');
+        modeDiff = diffAnalyses(
+          det.analysis.costInputSuggestions as unknown as Record<string, unknown>,
+          aiOriginal ?? {},
+          resolved);
+        deterministicAnalysis = det.analysis;
       }
     }
   } catch (err) {
@@ -684,6 +720,15 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     // What the deterministic rules decided, what the model had said, and what
     // nobody could decide. The report renders this as the provenance trail.
     ruleOverrides,
+    // Every rule value keyed by form field id. The form is the consumer, so this
+    // addresses the form directly rather than going through the model's response
+    // schema, which has nowhere to put 54 of the 131 values the rules compute.
+    ruleFields,
+    // mode='both': the deterministic answer alongside the model's, and the diff.
+    // Not a merge — a comparison, which is what makes flipping the default a
+    // measured decision rather than a preference.
+    deterministicAnalysis,
+    diff: modeDiff,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
     decisions: ruleOverrides?.undecided.length ? ruleSpec ? runCostInputRules(ruleSpec, ruleCtx).decisions : [] : [],
@@ -1280,11 +1325,22 @@ export type AnalysisMode = 'deterministic' | 'ai' | 'both';
 /**
  * Read the requested mode.
  *
- * `'ai'` is the default and stays the default until the differential harness
- * says otherwise — flipping it should be a measured decision, not a preference.
+ * **`'deterministic'` is now the default.** It was `'ai'` until the evidence
+ * arrived, because flipping it had to be a measured decision rather than a
+ * preference. The measurement is `tests/cad-six-parts.test.ts`: the six real
+ * parts in `docs/cad-to-cost-learnings.md` with independent manual bottom-up
+ * costs, run through both paths. On four of the six the AI's material *class*
+ * was wrong — a 13.5 kg front bumper (real 4.5 kg) and an 83 kg fuel tank
+ * (real 11.1 kg) among them — and each error carried straight into the money:
+ * £41.04 against £4.54, and £252.32 against £11.77. The rules read those two
+ * off the measured volume and got them right.
+ *
+ * So the bar the plan set — "rules land closer to the manual than the AI did"
+ * — is met, and the AI path becomes the second opinion it should always have
+ * been. `'ai'` and `'both'` remain available and are one select away in the UI.
  */
 export function parseAnalysisMode(raw: unknown): AnalysisMode {
-  return raw === 'deterministic' || raw === 'both' ? raw : 'ai';
+  return raw === 'ai' || raw === 'both' ? raw : 'deterministic';
 }
 
 /**
@@ -1710,7 +1766,8 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
   // This is the route the client posts decision answers back to, so it is the
   // one that most needs to work without a key.
-  const analysisMode = parseAnalysisMode(req.body?.mode);
+  let analysisMode = parseAnalysisMode(req.body?.mode);
+  const modeExplicit = typeof req.body?.mode === 'string' && req.body.mode.trim() !== '';
   const decisionAnswers = parseDecisionAnswers(req.body?.decisionAnswers);
 
   let anthropic: ReturnType<typeof createAnthropic> | null = null;
@@ -1811,6 +1868,9 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   const ruleCtx = ruleContextFor(selectedCommodity, geo, filename, userOverrides, decisionAnswers);
   const ruleSpec = specForCommodity(selectedCommodity);
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
+  let ruleFields: ReturnType<typeof toRuleFields> | null = null;
+  let modeDiff: ReturnType<typeof diffAnalyses> | null = null;
+  let deterministicAnalysis: CADAnalysisResult | null = null;
 
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
   const userPrompt = buildPrompt(geo, preStub as Parameters<typeof buildPrompt>[1], filename, selectedCommodity, stage1Selection, userOverrides);
@@ -1822,19 +1882,28 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
 
   let analysis: unknown;
 
-  if (analysisMode === 'deterministic') {
-    // The route the client posts decision answers to. Re-running the rules with
-    // them is the whole round-trip: no re-upload, no model, no key.
-    const det = ruleSpec
-      ? buildDeterministicAnalysis(ruleSpec, ruleCtx, geo.partName || filename)
-      : null;
-    if (!det) {
+  if (analysisMode === 'deterministic' && !ruleSpec) {
+    // As on /analyze: an explicit deterministic request is told what does not
+    // exist; a defaulted one falls back rather than breaking a commodity that
+    // re-analysed fine before the default moved.
+    const fallbackKey = modeExplicit ? '' : resolveApiKey(req);
+    if (!fallbackKey) {
       res.status(422).json({
         error: `No deterministic rules exist for '${selectedCommodity}' yet. `
-          + `Converted so far: ${DETERMINISTIC_COMMODITIES.join(', ')}.`,
+          + `Converted so far: ${DETERMINISTIC_COMMODITIES.join(', ')}.`
+          + (modeExplicit ? '' : ' An API key would have let this fall back to the AI path.'),
       });
       return;
     }
+    anthropic = createAnthropic(fallbackKey);
+    analysisMode = 'ai';
+    console.log(`[CAD] No rule spec for '${selectedCommodity}' — falling back to the AI path`);
+  }
+
+  if (analysisMode === 'deterministic') {
+    // The route the client posts decision answers to. Re-running the rules with
+    // them is the whole round-trip: no re-upload, no model, no key.
+    const det = buildDeterministicAnalysis(ruleSpec!, ruleCtx, geo.partName || filename);
     const detPayload = {
       success: true,
       analysis: det.analysis,
@@ -1843,6 +1912,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
         geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null,
         buildGeoSanityContext(geo, det.analysis)),
       ruleOverrides: det.applied,
+      ruleFields: det.ruleFields,
       decisions: det.result.decisions,
       mode: analysisMode,
       fromCache: false,
@@ -1874,14 +1944,31 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
       // that line UNDECIDED precisely so the model would supply the one thing
       // geometry cannot; now that it has, the engine does the arithmetic
       // downstream of it rather than trusting the model's.
+      // Snapshot before the overwrite — `applyRuleDecisions` mutates in place,
+      // so a diff taken afterwards would be the rules against themselves.
+      const aiOriginal = analysisMode === 'both'
+        ? structuredClone((analysis as { costInputSuggestions?: Record<string, unknown> }).costInputSuggestions ?? {})
+        : null;
+      const resolved = runCostInputRules(
+        ruleSpec, withAIMaterial(ruleCtx, analysis as Record<string, unknown>));
       ruleOverrides = applyRuleDecisions(
-        analysis as Parameters<typeof applyRuleDecisions>[0],
-        runCostInputRules(ruleSpec, withAIMaterial(ruleCtx, analysis as Record<string, unknown>)),
-      );
+        analysis as Parameters<typeof applyRuleDecisions>[0], resolved);
+      ruleFields = toRuleFields(resolved);
       const contradicted = ruleOverrides.overridden.filter(o => o.contradicted);
       if (contradicted.length) {
         console.log(`[CAD] Rules overrode ${contradicted.length} field(s) the model disagreed with: `
           + contradicted.map(o => `${o.field} ${String(o.from)}\u2192${String(o.to)}`).join(', '));
+      }
+      if (analysisMode === 'both') {
+        // The audit run: build the deterministic answer independently and diff
+        // it against the model's ORIGINAL reply, before the rules overwrote it.
+        // Diffing after the overwrite would compare the rules with themselves.
+        const det = buildDeterministicAnalysis(ruleSpec, ruleCtx, geo.partName || 'part');
+        modeDiff = diffAnalyses(
+          det.analysis.costInputSuggestions as unknown as Record<string, unknown>,
+          aiOriginal ?? {},
+          resolved);
+        deterministicAnalysis = det.analysis;
       }
     }
   } catch (err) {
@@ -1898,6 +1985,15 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     // What the deterministic rules decided, what the model had said, and what
     // nobody could decide. The report renders this as the provenance trail.
     ruleOverrides,
+    // Every rule value keyed by form field id. The form is the consumer, so this
+    // addresses the form directly rather than going through the model's response
+    // schema, which has nowhere to put 54 of the 131 values the rules compute.
+    ruleFields,
+    // mode='both': the deterministic answer alongside the model's, and the diff.
+    // Not a merge — a comparison, which is what makes flipping the default a
+    // measured decision rather than a preference.
+    deterministicAnalysis,
+    diff: modeDiff,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
     decisions: ruleOverrides?.undecided.length ? ruleSpec ? runCostInputRules(ruleSpec, ruleCtx).decisions : [] : [],

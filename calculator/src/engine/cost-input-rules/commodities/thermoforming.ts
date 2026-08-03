@@ -118,6 +118,7 @@ function advise(ctx: RuleContext): { advice: TfAdvice } | { blocked: RuleOutcome
         why: 'No wall thickness or bounding box was measured, so the sheet gauge cannot '
           + 'be worked back from the draw — and the sheet is the material buy.',
         options: [{ value: 'enter', label: 'Enter wall thickness and footprint' }],
+        entry: { kind: 'number' },
         blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
       }),
     };
@@ -182,6 +183,7 @@ export const THERMOFORMING_RULES: CommodityRuleSpec = {
           question: 'What is the formed wall and the part footprint?',
           why: 'No wall thickness was measured.',
           options: [{ value: 'enter', label: 'Enter wall thickness and footprint' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('thermoforming.formedWallMm', Math.round(wall * 100) / 100, 'geometry',
@@ -216,6 +218,7 @@ export const THERMOFORMING_RULES: CommodityRuleSpec = {
           question: 'What is the formed wall and the part footprint?',
           why: 'No bounding box was measured, so the draw ratio is unknown.',
           options: [{ value: 'enter', label: 'Enter wall thickness and footprint' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('thermoforming.drawRatio', d.ratio, 'geometry',
@@ -320,6 +323,7 @@ export const THERMOFORMING_RULES: CommodityRuleSpec = {
           question: 'What is the formed wall and the part footprint?',
           why: 'No bounding box was measured.',
           options: [{ value: 'enter', label: 'Enter wall thickness and footprint' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('thermoforming.projectedAreaCm2', a, 'geometry',

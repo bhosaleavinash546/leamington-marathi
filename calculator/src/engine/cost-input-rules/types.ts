@@ -78,6 +78,17 @@ export interface Decision<V = string> {
    *  a limit of physics rather than a limit of the software. */
   why: string;
   options: DecisionOption<V>[];
+  /**
+   * Set when the answer is a value to type, not one of the options.
+   *
+   * Twenty-three decisions across the engine ask for a figure nothing can
+   * derive — an investment-casting toolmaker quotation, a gauge off a drawing,
+   * a container's nominal capacity. They were being written as a single option
+   * labelled "Enter the quotation", which reads fine in a prompt and is
+   * unanswerable in a radio group. `options` stays as the label; this says what
+   * the input should be.
+   */
+  entry?: { kind: 'number' | 'text'; unit?: string; placeholder?: string };
   /** Form field ids left empty until this is answered. */
   blockedFieldIds: string[];
   blockedRuleIds: string[];
@@ -180,6 +191,20 @@ export interface CostInputRuleResult {
   /** Bumped when a rule changes, so the analysis cache cannot serve stale
    *  results the way it would if only CAD_PROMPT_VERSION were keyed. */
   engineVersion: number;
+}
+
+/**
+ * A number the engineer typed in answer to an `entry` decision.
+ *
+ * Returns null when unanswered or unparseable, so the rule blocks again rather
+ * than costing on a blank.
+ */
+export function answeredNumber(
+  answers: Readonly<Record<string, unknown>>, id: string,
+): number | null {
+  const raw = answers[id];
+  const n = typeof raw === 'number' ? raw : typeof raw === 'string' ? Number(raw) : NaN;
+  return Number.isFinite(n) && n > 0 ? n : null;
 }
 
 /** Bump on any rule change. Part of the analysis cache key. */

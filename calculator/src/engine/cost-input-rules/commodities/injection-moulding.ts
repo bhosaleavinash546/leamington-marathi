@@ -135,6 +135,7 @@ function advise(ctx: RuleContext): { advice: ImAdvice } | { blocked: RuleOutcome
         why: 'No wall thickness or bounding box was measured, so neither the cooling '
           + 'time nor the clamp force can be derived — and those are the cycle and the press.',
         options: [{ value: 'enter', label: 'Enter wall thickness and projected area' }],
+        entry: { kind: 'number' },
         blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
       }),
     };
@@ -177,6 +178,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
           question: 'What is the nominal wall and the projected area?',
           why: 'No wall thickness was measured, and cooling time goes as wall squared.',
           options: [{ value: 'enter', label: 'Enter wall thickness and projected area' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         const u = ctx.geo.wallThickness?.uniformity;
@@ -197,6 +199,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
           question: 'What is the nominal wall and the projected area?',
           why: 'No bounding box was measured, so the clamp force cannot be derived.',
           options: [{ value: 'enter', label: 'Enter wall thickness and projected area' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('injectionMoulding.projectedAreaCm2', a, 'geometry',

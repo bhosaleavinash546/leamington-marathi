@@ -196,6 +196,7 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
         why: 'No bounding box or volume was measured, so neither the die-fill force nor '
           + 'the billet weight can be derived.',
         options: [{ value: 'enter', label: 'Enter part weight and projected area' }],
+        entry: { kind: 'number' },
         blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
       }),
     };
@@ -322,6 +323,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
           question: 'What is the part weight and plan area?',
           why: 'No bounding box was measured, so the die-fill force cannot be derived.',
           options: [{ value: 'enter', label: 'Enter part weight and projected area' }],
+          entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('forging.projectedAreaCm2', a, 'geometry',
