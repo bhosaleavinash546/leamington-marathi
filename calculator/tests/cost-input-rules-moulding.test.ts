@@ -234,11 +234,16 @@ describe('injection moulding', () => {
   it('estimates the mould from cavitation, area, steel and slides', () => {
     const r = runCostInputRules(INJECTION_MOULDING_RULES, imCtx(BUMPER, PP));
     const im = r.suggestions.injectionMoulding as Record<string, number>;
-    expect(im.mouldCostGBP).toBe(estimateMouldCost({
+    // Geometric-mean blend of the two independent parametrics. The advisor
+    // alone said £828k on the real bumper against the kernel's £200k, and the
+    // £8.28/part tooling line carried the whole +30% residual; the blend lands
+    // beside the deck's own £420k bumper-class mould.
+    const advisor = estimateMouldCost({
       cavities: 1, projectedAreaCm2: 9000, steelClass: 'production',
       sideActionsLifters: 3, runnerSystem: 'cold',
-    }).total);
-    expect(r.provenance['imm-mould-cost'].basis).toContain('412000');   // OCCT cross-check
+    }).total;
+    expect(im.mouldCostGBP).toBe(Math.round(Math.sqrt(advisor * 412_000)));
+    expect(r.provenance['imm-mould-cost'].basis).toContain('412000');   // both inputs on the record
   });
 
   it('does not re-ask the metal-or-plastic question of someone who chose the tile', () => {

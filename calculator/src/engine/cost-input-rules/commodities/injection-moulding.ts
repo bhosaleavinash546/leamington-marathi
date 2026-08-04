@@ -387,10 +387,22 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
           runnerSystem: 'cold',
         });
         const occt = ctx.geo.toolingCostEstimates?.imMouldCostGBP;
-        return decided('injectionMoulding.mouldCostGBP', est.total, 'advisor',
+        // Two independent parametrics exist: the area-driven advisor estimate
+        // and the kernel's B-rep-derived figure. On the real bumper they said
+        // £828k and £200k, the advisor number stood alone, and tooling carried
+        // the whole +30% residual. When both exist, take the geometric mean —
+        // the standard combination for multiplicative estimators — and show
+        // both inputs in the basis so the blend is arguable, not hidden.
+        // (The explainer deck's own bumper-class example uses £420k; the blend
+        // lands at £407k.)
+        const blended = occt && occt > 0
+          ? Math.round(Math.sqrt(est.total * occt))
+          : est.total;
+        return decided('injectionMoulding.mouldCostGBP', blended, 'advisor',
           `${r.advice.cavities}-cavity ${r.advice.steel.cls} tool, ${r.advice.areaCm2} cm²/cavity, `
           + `${r.advice.slides} slide(s)`
-          + (occt ? `; OCCT parametric says £${occt.toFixed(0)}` : ''), 0.65);
+          + (occt ? ` — advisor £${est.total.toFixed(0)} ⊕ OCCT £${occt.toFixed(0)} (geometric mean)` : ''),
+          0.65);
       },
     },
   ],

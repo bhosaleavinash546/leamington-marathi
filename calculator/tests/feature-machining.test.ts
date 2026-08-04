@@ -96,9 +96,9 @@ describe('computeFeatureMachining', () => {
       { kind: 'hole', diaMm: 10, depthMm: 20, through: true, count: 4 },
       FACE, POCKET,
     ];
-    // near-net: only the 4 holes auto-cost
+    // near-net: the 4 holes AND the face auto-cost; the pocket needs confirming
     const near = computeFeatureMachining(rows, { machineId: 'm', labourId: 'l' });
-    expect(near.featureCount).toBe(4);
+    expect(near.featureCount).toBe(5);
     // solid-billet: holes + face + pocket all auto-cost
     const billet = computeFeatureMachining(rows, { machineId: 'm', labourId: 'l', stockCondition: 'solid_billet' });
     expect(billet.featureCount).toBe(6);
@@ -122,11 +122,15 @@ describe('Phase 2 — compound machining features (facing, pockets)', () => {
     expect(m).toBeGreaterThan(0.3);
   });
 
-  it('faces and pockets are OFF by default (engineer confirms machined surfaces)', () => {
-    expect(defaultInclude(FACE)).toBe(false);
+  it('faces are ON by default; pockets stay off (engineer confirms recesses)', () => {
+    // Policy change, measured: the real steering knuckle has 99 planar faces —
+    // mounting pads and bearing datums — and with faces off it costed 0.18 hr
+    // of machining and landed −25% against its manual. A near-net casting's
+    // large flats exist to be faced; recesses may genuinely be as-cast.
+    expect(defaultInclude(FACE)).toBe(true);
     expect(defaultInclude(POCKET)).toBe(false);
     const r = computeFeatureMachining([FACE, POCKET], { machineId: 'm', labourId: 'l' });
-    expect(r.featureCount).toBe(0); // nothing auto-included
+    expect(r.featureCount).toBe(1); // the face, not the pocket
   });
 
   it('confirming a face + pocket adds a facing + pocket-milling op with real time', () => {

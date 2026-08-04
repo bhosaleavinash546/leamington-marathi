@@ -98,6 +98,16 @@ const HEAT_TREAT: Record<ForgingAlloyFamily, 'normalise' | 'quench-temper' | 'an
   superalloy: 'solution-age',
 };
 
+
+/** Surfaces of revolution dominate the face census — a turned/round part. */
+export function isRevolutionDominant(ctx: RuleContext): boolean {
+  const by = (ctx.geo.faces?.byType ?? {}) as Record<string, number>;
+  const total = ctx.geo.faces?.total ?? 0;
+  if (!total) return false;
+  const rev = (by['CYLINDER'] ?? 0) + (by['CONE'] ?? 0) + (by['TORUS'] ?? 0);
+  return rev / total >= 0.55;
+}
+
 /** Shape complexity for the tonnage, die-cost and die-life estimators. */
 export function shapeComplexity(ctx: RuleContext): ShapeComplexity {
   const freeForm = ctx.geo.features?.freeFormFaceCount ?? 0;
@@ -108,12 +118,14 @@ export function shapeComplexity(ctx: RuleContext): ShapeComplexity {
   if (undercuts >= 4) score += 1;
   if (faces >= 120) score += 1;
   const raw: ShapeComplexity = score >= 3 ? 'complex' : score >= 1 ? 'moderate' : 'simple';
-  // A turned axle is all curvature — the kernel reads its cylinders and fillets
-  // as "free-form" faces and its bores as "undercuts", which scored the stub
-  // axle `complex` (3 impressions, 8 blows, a £202k die). An axisymmetric
-  // envelope is the EASY forging: round dies, upset-and-finish. Cap it at
-  // moderate; genuinely complex round parts (crown gears) still reach moderate.
-  if (raw === 'complex' && isAxisymmetric(ctx)) return 'moderate';
+  // A turned part is all curvature, and the free-form face count cannot tell a
+  // blend fillet from a styling surface — the real stub axle scored `complex`
+  // (3 impressions, £81k die) while its face census reads CYLINDER 132 +
+  // CONE 55 + TORUS 34 of 364 faces: 61% surfaces of revolution. A
+  // revolution-dominant forging forms in round dies, upset-and-finish — the
+  // moderate case whatever its fillet count says. The bbox-squareness test
+  // alone misses it (277×223 is not "square"), so both signals are used.
+  if (raw === 'complex' && (isAxisymmetric(ctx) || isRevolutionDominant(ctx))) return 'moderate';
   return raw;
 }
 

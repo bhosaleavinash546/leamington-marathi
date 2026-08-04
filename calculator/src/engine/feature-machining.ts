@@ -87,13 +87,16 @@ const MACHINABLE_KINDS: readonly FeatureRow['kind'][] = ['hole', 'boss', 'face',
  *    physically cut from the billet, so all machinable features are costed by
  *    default. Leaving faces/pockets off here silently under-counts a machined
  *    part (the exact bug that made a 14-hole knuckle cost one face-mill).
- *  - `near_net` (cast/forged/moulded): only holes/bores are reliably machined;
- *    external bosses, faced datums and recesses may be as-cast, so they stay
- *    off until the engineer confirms them — but the UI/report surface them
- *    loudly so the omission is never invisible. */
+ *  - `near_net` (cast/forged/moulded): holes/bores AND planar faces are
+ *    machined. The faces used to stay off, and the real steering knuckle —
+ *    99 planar faces, every mounting pad and bearing datum among them — was
+ *    costed with 0.18 hr of machining and landed −25% against its manual.
+ *    A near-net casting's large planar faces exist to be faced; as-cast
+ *    surfaces are draft walls, not flats. Bosses/pockets/slots stay off until
+ *    the engineer confirms them, and the report surfaces the omission. */
 export function defaultInclude(row: FeatureRow, stock: StockCondition = 'near_net'): boolean {
   if (stock === 'solid_billet') return MACHINABLE_KINDS.includes(row.kind);
-  return row.kind === 'hole';
+  return row.kind === 'hole' || row.kind === 'face';
 }
 
 /** Geometry-measured machining minutes for ONE instance of a feature.

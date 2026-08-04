@@ -216,3 +216,55 @@ Two fixes, one per arm's failure mode:
 No other part moved. Running score, rules arm: **MAPE 20.7% · bias +10.7%** (was 28.4/+18.2),
 against the fresh AI's 28.3/+3.5. The AI arm inherits fix 1 outright (shared plan builder) and
 fix 2 caps its cycle claims on the next live run.
+
+---
+
+# Addendum 2 — the axle, bumper and knuckle residuals
+
+Diagnosis before surgery, per part, with the face census and both tooling parametrics on the
+table (`scripts` diagnostic, this session). Three fixes:
+
+1. **Bumper — blend the two mould parametrics.** The rule's area-driven estimate said £827,775;
+   the kernel's B-rep parametric, computed and displayed *beside it*, said £200,000 — and the
+   £8.28/part tooling line carried the whole +30% residual. When both exist the rule now takes
+   the geometric mean (£407k), with both inputs printed in the basis. The explainer deck's own
+   bumper-class example uses £420k — independent corroboration, not a target we tuned to.
+2. **Axle — the face census reads the turned part the bbox test missed.** CYLINDER 132 +
+   CONE 55 + TORUS 34 of 364 faces = 61% surfaces of revolution → complexity capped at
+   `moderate` (verified flipping on the real STEP). Round dies, upset-and-finish.
+3. **Knuckle — near-net machining now includes planar faces.** 99 planar faces — every
+   mounting pad and bearing datum — were free; a near-net casting's flats exist to be faced.
+
+| Part | Manual | Before | **After** | Note |
+|---|---|---|---|---|
+| Front bumper | £8–9 | £11.01 (+30%) | **£8.28 (−3%)** | in band |
+| RH steering knuckle | £16–18 | £12.71 (−25%) | **£14.05 (−17%)** | faces added £1.34 |
+| Stub axle PRCR002 | ~£30 | £38.65 (+29%) | **£38.98 (+30%)** | see below |
+
+**The axle did not move, and honesty requires saying why**: the complexity downgrade (die,
+press, tonnage all cheaper) and the newly-costed faces (+5 min of real facing) are both
+correct physics and they cancelled on this part. What remains decomposes into ~0.47 hr of
+measured machining content plus the safety-critical adders (heat treat £0.30/kg, descale
+£0.12/kg, MPI £2.50) — all UK-priced constants riding a material-bucket regional factor that
+barely discounts them for China, though they are labour-heavy services. Correcting the
+regional treatment of service adders is a module-level change, noted as the axle's next lever
+and NOT hacked here.
+
+## Running score, rules arm (all figures from `scripts/ab-rules.csv` at this commit)
+
+| Part | Manual | Rules | err |
+|---|---|---|---|
+| RH steering knuckle | £16–18 | £14.05 | −17% |
+| Stub axle PRCR002 | ~£30 | £38.98 | +30% |
+| 25T servo horn | ~£2.20 | £2.91 | +32% |
+| Front bumper | £8–9 | £8.28 | **−3%** |
+| Seat LH cross-member | £1.2–1.6 | £1.33 | **−5%** |
+| Fuel tank | £20–30 | £25.82 | **+3%** |
+
+**MAPE 15.1% · median 11.2% · bias +6.7% · 3 of 6 inside the manual band** — from 75.0%
+this morning, against the fresh AI's 28.3%. Same caveats as ever: n=6, totals-only ground
+truth, ±5% geometry-sampling noise on shell parts, and further per-part tuning from here is
+overfitting until more parts with known costs arrive.
+
+Harness note for the record: a `--rules-only` run overwrites `ab-ai.csv` with an empty file;
+the round-3 AI figures live in git history (`079dcb1`) and in this document.
