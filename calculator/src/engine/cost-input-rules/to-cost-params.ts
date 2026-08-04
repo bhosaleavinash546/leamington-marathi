@@ -38,7 +38,7 @@ import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '.
 import { computeFeatureMachining } from '../feature-machining.js';
 import type { FeatureRow } from '../feature-ops.js';
 import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../geometry-sanity.js';
-import { representativeMaterialId, isLibraryMaterialId } from './derive/material.js';
+import { representativeMaterialId, isLibraryMaterialId, familyFromMaterialId } from './derive/material.js';
 import type { MaterialFamily } from '../material-family.js';
 
 type CostInputs = CADAnalysisResult['costInputSuggestions'];
@@ -55,12 +55,19 @@ function resolveMaterialId(
   commodity: string, carried: string, familyHint?: MaterialFamily | null,
 ): { id: string | null; assumed: string | null } {
   if (isLibraryMaterialId(carried)) return { id: carried, assumed: null };
-  const family = (carried || familyHint || '') as MaterialFamily;
+  // The model invents ids: round 1 of the A/B returned `mat-hss`, which is in
+  // no library, and the whole part became uncostable. An invented id usually
+  // still NAMES its family — resolve it through the same token matcher the
+  // filenames use, substitute the representative grade, and say so out loud.
+  const carriedFamily = carried ? familyFromMaterialId(carried) : null;
+  const family = (carriedFamily ?? familyHint ?? (carried as MaterialFamily) ?? '') as MaterialFamily;
   if (!family) return { id: null, assumed: null };
   const id = representativeMaterialId(commodity, family);
-  return id
-    ? { id, assumed: `materialId (${family} → ${id}, representative grade — not a drawing callout)` }
-    : { id: null, assumed: null };
+  if (!id) return { id: null, assumed: null };
+  const note = carried && carried !== family
+    ? `materialId ('${carried}' is not in the rate library → ${family} → ${id})`
+    : `materialId (${family} → ${id}, representative grade — not a drawing callout)`;
+  return { id, assumed: note };
 }
 
 /**

@@ -18,7 +18,7 @@ export function familyFromFilename(filename: string): MaterialFamily | null {
   if (/magnesium|az91|am60/.test(n)) return 'magnesium';
   if (/titanium|ti ?6al|grade ?5/.test(n)) return 'titanium';
   if (/cast ?iron|ductile|\bgjl|\bgjs|sg ?iron|nodular/.test(n)) return 'cast iron';
-  if (/\bsteel|\b1045|\b4140|\bc45|s45c|\ben8|42crmo|scm440|16mncr|20mncr|stainless|\b316|\b304|17 ?4ph/.test(n)) return 'steel';
+  if (/\bsteel|\b1045|\b4140|\bc45|s45c|\ben8|42crmo|scm440|16mncr|20mncr|stainless|\b316|\b304|17 ?4ph|\bhss\b|\bhsla|\bdp[0-9]{3}|\bdc0[1-9]/.test(n)) return 'steel';
   if (/brass|bronze|copper|cuzn|phosphor/.test(n)) return 'copper alloy';
   return null;
 }

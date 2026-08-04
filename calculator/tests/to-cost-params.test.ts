@@ -130,3 +130,28 @@ describe('costInputSuggestions → £/part', () => {
     });
   });
 });
+
+describe('invented material ids (the mat-hss guard)', () => {
+  /** Minimal sheet-metal cost inputs — only what the mapper reads. */
+  const ci = {
+    recommendedCommodity: 'sheet_metal', netWeightKg: 0.26, materialId: 'mat-hss',
+    estimatedCycleTimeHr: 0, estimatedSetupTimeHr: 0, estimatedOperations: [],
+    sheetMetal: { thicknessMm: 1.5, blankLengthMm: 358, blankWidthMm: 89,
+      dieCostGBP: 60_000, dieLife: 1_000_000, numOps: 8 },
+  } as never;
+
+  it('resolves an id the model invented to the representative grade of its family', () => {
+    // Round 1 of the A/B: the model returned `mat-hss` (no such library id) and
+    // the seat cross-member's AI arm could not be costed at all. The invented
+    // id still names its family; the token matcher recovers it.
+    const r = toCostParams('sheet_metal', ci, 100_000);
+    expect(r).not.toBeNull();
+    expect(r!.params.materialId).toBe('mat-dc04');
+    expect(r!.assumed.join(' ')).toContain("'mat-hss' is not in the rate library");
+  });
+
+  it('still returns null when nothing names a family', () => {
+    const blank = { ...(ci as Record<string, unknown>), materialId: 'mat-unobtainium' } as never;
+    expect(toCostParams('sheet_metal', blank, 100_000)).toBeNull();
+  });
+});
