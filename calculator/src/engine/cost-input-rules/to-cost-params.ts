@@ -36,6 +36,7 @@
 import type { CADAnalysisResult, OCCTGeometry } from '../ai-analysis.js';
 import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '../machine-sizing.js';
 import { computeFeatureMachining } from '../feature-machining.js';
+import { standardBatchSize } from '../routing-optimiser.js';
 import type { FeatureRow } from '../feature-ops.js';
 import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../geometry-sanity.js';
 import { physicalRemovalCeilingMin } from '../feature-costing.js';
@@ -329,10 +330,9 @@ export function toCostParams(
       const stock = num(ci.machining?.stockWeightKg) || net / 0.65;
       const machineId = ci.machining?.machineId
         || pickMachiningCentreId({ principalDirections: 3, axisymmetric: false });
-      // 100k/yr is not machined in batches of 100 — setup amortisation at that
-      // batch size dominated a 3 g part. Roughly a batch per fortnightly-ish
-      // run, clamped to sane shop floor sizes.
-      const batchSize = Math.round(Math.min(5000, Math.max(50, annualVolume / 20)));
+      // One batch per fortnightly-ish run — the SAME convention the routing
+      // optimiser ranks with, imported so the two can never drift.
+      const batchSize = standardBatchSize(annualVolume);
       // The golden rule, applied to TIME: whoever supplied these operations —
       // the rules or the model — the billed cycle cannot exceed what the stock
       // envelope can physically give up. The rules arm arrives pre-capped; the

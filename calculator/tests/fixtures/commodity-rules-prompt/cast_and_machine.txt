@@ -13,10 +13,10 @@ CAST + MACHINE COST INPUT RULES:
   dieMouldLife=150000  [hpdc tool life band — deterministic, use verbatim]
   cavities=1  [2.80 kg > 1 kg → single cavity — deterministic, use verbatim]
   machiningCycleTimeHr=0.268  [0.268 hr, inside the 0.296 hr near-net finish envelope — deterministic, use verbatim]
-  machiningSetupTimeHr=2.25  [3 datum/fixture setup(s) × 45 min — deterministic, use verbatim]
-  machiningOperations=Milling — +Z (40 faces) 0.072 hr on mach-vmc3; Milling — -Z (30 faces) 0.054 hr on mach-vmc3; Milling — +X (20 faces) 0.036 hr on mach-vmc3; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.105 hr on mach-drill  [sums to 0.268 hr of finish machining — deterministic, use verbatim]
-  setupCount=3  [distinct approach directions: +Z, -Z, +X — deterministic, use verbatim]
-  machineId=mach-vmc3  [3 approach direction(s): 3-axis vertical machining centre — deterministic, use verbatim]
+  machiningSetupTimeHr=3  [4 datum/fixture setup(s) of the split-3axis routing × 45 min — deterministic, use verbatim]
+  machiningOperations=Milling — +Z (40 faces) 0.072 hr on mach-haas-vf2; Milling — -Z (30 faces) 0.054 hr on mach-haas-vf2; Milling — +X (20 faces) 0.036 hr on mach-haas-vf2; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.105 hr on mach-drill  [sums to 0.268 hr of finish machining — deterministic, use verbatim]
+  setupCount=4  [4 fixturing(s) of the split-3axis routing (3 approach direction(s) measured) — deterministic, use verbatim]
+  machineId=mach-haas-vf2  [cost-ranked 2 routing(s): split-3axis £12.91 (3-direction split routing: mach-haas-vf2 £45/hr + mach-drill £30/hr, 4 setup(s) × 45 min / batch 5000 + 0.8 min handling per part per setup) vs consolidated-5axis £21.11 (single-setup 5-axis consolidation: mach-haas-umc500 £75/hr, 1 setup(s) × 45 min / batch 5000 + 0.8 min handling per part per setup) → split-3axis, £8.20/part cheaper than consolidated-5axis — deterministic, use verbatim]
 
 ### context: degraded
 CAST + MACHINE COST INPUT RULES:

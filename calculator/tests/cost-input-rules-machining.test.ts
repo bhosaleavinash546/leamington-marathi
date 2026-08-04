@@ -239,7 +239,11 @@ describe('machine choice', () => {
     expect(principalDirections(ctx()).count).toBe(3);
     expect(isAxisymmetric(ctx())).toBe(false);          // 60 x 20 is not round
     const r = runCostInputRules(MACHINING_RULES, ctx(SERVO_HORN, AL));
-    expect((r.suggestions.machining as Record<string, string>).machineId).toBe('mach-vmc3');
+    // The routing optimiser reaches the CHEAPER capable 3-axis machine: the
+    // 60x20x6 horn fits a HAAS VF-2 (£45/hr), which the £55/hr generic VMC
+    // ladder could never select. Split routing wins over 5-axis consolidation
+    // at this batch (see routing-optimiser.test.ts for the arithmetic).
+    expect((r.suggestions.machining as Record<string, string>).machineId).toBe('mach-haas-vf2');
   });
 });
 
@@ -258,8 +262,11 @@ describe('machining end to end', () => {
     expect(m.stockWeightKg).toBe(0.019);
     expect(m.materialUtilization).toBe(0.154);
     expect(m.estimatedCycleTimeHr).toBe(0.095);
-    expect(m.setupCount).toBe(3);
-    expect(m.setupTimeHr).toBe(2.25);                    // 3 × 45 min
+    // Setups follow the chosen split routing: 3 milling fixturings (one per
+    // approach direction) + 1 drill-press fixturing for the drilling op — the
+    // drill station is a real re-clamp the old direction-count missed.
+    expect(m.setupCount).toBe(4);
+    expect(m.setupTimeHr).toBe(3);                       // 4 × 45 min
     expect(m.operationCount).toBe(4);
     expect(r.provenance['mach-net-wt'].source).toBe('geometry');
   });
@@ -327,7 +334,9 @@ describe('cast_and_machine — the composition', () => {
     const machining = r.suggestions.machining as Record<string, number | string>;
     expect(casting.netWeightKg).toBe(2.8);
     expect(machining.estimatedCycleTimeHr).toBe(0.296);
-    expect(machining.setupTimeHr).toBe(1.5);            // 2 setups × 45 min
+    // 2 datum directions + the drill-press fixturing of the chosen split
+    // routing = 3 real setups; the old pin counted directions only.
+    expect(machining.setupTimeHr).toBe(2.25);           // 3 setups × 45 min
     expect(r.provenance['cam-cast-wt']).toBeDefined();
     expect(r.provenance['cam-mach-setup-time']).toBeDefined();
   });

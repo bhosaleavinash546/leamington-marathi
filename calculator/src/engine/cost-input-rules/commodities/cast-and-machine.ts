@@ -24,7 +24,7 @@
 import { capNearNetMachiningHr } from '../../near-net-machining.js';
 import { decided, fmt, type CommodityRuleSpec, type RuleContext, type RuleDef } from '../types.js';
 import { CASTING_RULES } from './casting.js';
-import { MACHINING_RULES, cuttingHours, machiningOperationPlan, principalDirections } from './machining.js';
+import { MACHINING_RULES, cuttingHours, machiningOperationPlan, machiningRouting, principalDirections } from './machining.js';
 import { materialFacts } from '../derive/material.js';
 
 /**
@@ -142,9 +142,18 @@ const SETUP_RULE: RuleDef = {
   evaluate: (ctx) => {
     const p = principalDirections(ctx);
     const mins = ctx.geo.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45;
+    // Setups follow the cost-chosen routing (machiningRouting caps the hours to
+    // the near-net finish envelope for this commodity before ranking). While the
+    // metal is unanswered the direction count stands in — costing is blocked
+    // then anyway.
+    const mat = materialFacts(ctx);
+    const routing = mat.family ? machiningRouting(ctx, mat.family) : null;
+    const setups = routing ? routing.chosen.setups : p.count;
     return decided('castAndMachine.machiningSetupTimeHr',
-      Math.round(p.count * mins / 60 * 1000) / 1000, 'rule',
-      `${p.count} datum/fixture setup(s) × ${mins} min`, 0.7);
+      Math.round(setups * mins / 60 * 1000) / 1000, 'rule',
+      routing
+        ? `${setups} datum/fixture setup(s) of the ${routing.chosen.label} routing × ${mins} min`
+        : `${p.count} datum/fixture setup(s) × ${mins} min`, 0.7);
   },
 };
 

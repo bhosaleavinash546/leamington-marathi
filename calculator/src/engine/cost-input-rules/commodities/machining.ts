@@ -33,9 +33,12 @@ import { physicalRemovalCeilingMin } from '../../feature-costing.js';
 import { featureMinutesEach } from '../../feature-machining.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import { drillingOpFromFeatures } from '../../feature-ops.js';
-import { pickMachiningCentreId } from '../../machine-sizing.js';
 import type { MachiningOpType } from '../../modules/machining.js';
 import type { MaterialFamily } from '../../material-family.js';
+import { capNearNetMachiningHr } from '../../near-net-machining.js';
+import {
+  optimiseMachiningRouting, standardBatchSize, type RoutingChoice,
+} from '../../routing-optimiser.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { materialFacts, DENSITY_KG_PER_CM3 } from '../derive/material.js';
 import { bboxSortedMm, bboxVolumeCm3 } from '../derive/envelope.js';
@@ -159,6 +162,52 @@ export interface OperationPlan {
 }
 
 /**
+ * The milling/drilling split the plan will cost, hr — shared between the
+ * operation plan and the routing decision so both see the same job. For
+ * cast+machine the from-solid estimate is first capped to the near-net finish
+ * envelope, so the routing is chosen for the machining the part actually needs.
+ */
+function cuttingSplit(ctx: RuleContext, family: MaterialFamily): { millingHr: number; drillHr: number } {
+  const cut = cuttingHours(ctx, family);
+  let totalHr = cut.hours;
+  if (ctx.commodity === 'cast_and_machine') {
+    const mat = materialFacts(ctx);
+    if (mat.massKg !== null) totalHr = capNearNetMachiningHr(totalHr, mat.massKg, 'cast_and_machine').machiningHr;
+  }
+  const holeRows = (ctx.geo.featureTable ?? []).filter(r => r.kind === 'hole');
+  const drill = drillingOpFromFeatures(
+    ctx.geo.featureTable, ctx.geo.cncCycleTimeEstimate?.drillBoreTimeMins);
+  const diaAwareDrillHr = holeRows.length
+    ? holeRows.reduce((sum, r) => sum + featureMinutesEach(r as FeatureRow) * r.count, 0) / 60
+    : (drill?.cycleTimeHr ?? 0);
+  const drillHr = Math.min(diaAwareDrillHr, totalHr * 0.8);
+  return { millingHr: totalHr - drillHr, drillHr };
+}
+
+/**
+ * The machine choice as a COST decision.
+ *
+ * Ranks the feasible routings — split across cheap 3-axis stations, single-setup
+ * 5-axis consolidation, turning-led when axisymmetric — in pounds, under the
+ * same setup-amortisation conventions the mapper charges, and returns the
+ * cheapest with the losers priced in the basis. This is what retires the report
+ * critiquing its own routing: the consolidation question is ANSWERED here,
+ * before a single pound is booked.
+ */
+export function machiningRouting(ctx: RuleContext, family: MaterialFamily): RoutingChoice {
+  const split = cuttingSplit(ctx, family);
+  return optimiseMachiningRouting({
+    millingHr: split.millingHr,
+    drillHr: split.drillHr,
+    principalDirections: principalDirections(ctx).count,
+    axisymmetric: isAxisymmetric(ctx),
+    bboxSortedMm: bboxSortedMm(ctx),
+    batchSize: standardBatchSize(ctx.annualVolume),
+    setupMinsPerSetup: setupMinsPerSetup(ctx),
+  });
+}
+
+/**
  * The routing.
  *
  * One milling operation per principal direction — that is what a setup IS — with
@@ -188,12 +237,10 @@ export function machiningOperationPlan(
   const millingHr = cut.hours - drillHr;
 
   const { faces } = principalDirections(ctx);
-  const machineId = pickMachiningCentreId({
-    principalDirections: principalDirections(ctx).count,
-    axisymmetric: isAxisymmetric(ctx),
-  });
-  const type: MachiningOpType = machineId === 'mach-lathe-cnc' ? 'turning'
-    : machineId === 'mach-vmc5' ? 'milling_5ax' : 'milling_3ax';
+  const routing = machiningRouting(ctx, family);
+  const machineId = routing.chosen.primaryMachineId;
+  const type: MachiningOpType = routing.chosen.label === 'turned' ? 'turning'
+    : routing.chosen.label === 'consolidated-5axis' ? 'milling_5ax' : 'milling_3ax';
 
   const ops: OperationPlan[] = [];
   const totalFaces = faces.reduce((s, f) => s + f.faceCount, 0);
@@ -223,10 +270,11 @@ export function machiningOperationPlan(
     ops.push({
       name: drill.name,
       type: 'drilling',
-      machineId: 'mach-drill',
+      machineId: routing.chosen.drillMachineId,
       cycleTimeHr: Math.round(drillHr * 10_000) / 10_000,
       partsPerCycle: 1,
-      basis: `${drill.holeCount} holes measured off the B-rep: ${drill.summary}`,
+      basis: `${drill.holeCount} holes measured off the B-rep: ${drill.summary}`
+        + (routing.chosen.drillMachineId === machineId ? ' — drilled in the same clamping' : ''),
     });
   }
   return ops;
@@ -239,6 +287,7 @@ interface MachAdvice {
   stock: NonNullable<ReturnType<typeof stockFacts>>;
   cut: ReturnType<typeof cuttingHours>;
   ops: OperationPlan[];
+  routing: RoutingChoice;
   setups: number;
   machineId: string;
 }
@@ -265,16 +314,15 @@ function advise(ctx: RuleContext): { advice: MachAdvice } | { blocked: RuleOutco
   }
 
   const ops = machiningOperationPlan(ctx, mat.family!);
+  const routing = machiningRouting(ctx, mat.family!);
   return {
     advice: {
       family: mat.family!, massBasis: mat.basis, netKg, stock,
       cut: cuttingHours(ctx, mat.family!),
       ops,
-      setups: principalDirections(ctx).count,
-      machineId: pickMachiningCentreId({
-        principalDirections: principalDirections(ctx).count,
-        axisymmetric: isAxisymmetric(ctx),
-      }),
+      routing,
+      setups: routing.chosen.setups,
+      machineId: routing.chosen.primaryMachineId,
     },
   };
 }
@@ -352,16 +400,29 @@ export const MACHINING_RULES: CommodityRuleSpec = {
       },
     },
     {
+      // Setups follow the CHOSEN routing, not the raw direction count: a 5-axis
+      // consolidation collapses four approach directions into one clamping, and
+      // charging four setups against a routing that only fixtures once was the
+      // exact inconsistency the report used to recommend fixing to its reader.
+      // While the material is still unanswered the routing cannot be costed, so
+      // the geometry count stands in — the costing is blocked at that point
+      // anyway, so only the prompt rendering sees the fallback.
       id: 'machining.setupCount',
       path: 'machining.setupCount',
       label: 'setupCount',
       evaluate: (ctx) => {
         const p = principalDirections(ctx);
-        return decided('machining.setupCount', p.count, 'geometry',
-          p.faces.length > 0
-            ? `distinct approach directions: ${p.faces.map(f => f.directionLabel).join(', ')}`
-            : 'no setup analysis available — assuming a single setup',
-          p.faces.length > 0 ? 0.8 : 0.4);
+        const r = advise(ctx);
+        if ('blocked' in r) {
+          return decided('machining.setupCount', p.count, 'geometry',
+            p.faces.length > 0
+              ? `distinct approach directions: ${p.faces.map(f => f.directionLabel).join(', ')}`
+              : 'no setup analysis available — assuming a single setup',
+            p.faces.length > 0 ? 0.8 : 0.4);
+        }
+        return decided('machining.setupCount', r.advice.setups, 'advisor',
+          `${r.advice.setups} fixturing(s) of the ${r.advice.routing.chosen.label} routing `
+          + `(${p.count} approach direction(s) measured)`, 0.8);
       },
     },
     {
@@ -372,11 +433,18 @@ export const MACHINING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const p = principalDirections(ctx);
         const mins = setupMinsPerSetup(ctx);
-        return decided('machining.setupTimeHr', Math.round(p.count * mins / 60 * 1000) / 1000, 'rule',
-          `${p.count} setup(s) × ${mins} min`, 0.7);
+        const r = advise(ctx);
+        const setups = 'blocked' in r ? p.count : r.advice.setups;
+        return decided('machining.setupTimeHr', Math.round(setups * mins / 60 * 1000) / 1000, 'rule',
+          'blocked' in r
+            ? `${setups} setup(s) × ${mins} min`
+            : `${setups} fixturing(s) of the ${r.advice.routing.chosen.label} routing × ${mins} min`,
+          0.7);
       },
     },
     {
+      // The machine is a COST decision: the feasible routings are priced and the
+      // cheapest wins, with the losers in the basis. See machiningRouting().
       id: 'machining.machineId',
       path: 'machining.machineId',
       fieldId: 'mach-setup-mach',
@@ -385,13 +453,7 @@ export const MACHINING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('machining.machineId', r.advice.machineId, 'advisor',
-          isAxisymmetric(ctx)
-            ? 'axisymmetric envelope — turned rather than milled'
-            : `${r.advice.setups} approach direction(s): `
-              + (r.advice.setups >= 4
-                ? '5-axis, rather than refixturing four times'
-                : '3-axis vertical machining centre'),
-          0.75);
+          r.advice.routing.basis, 0.75);
       },
     },
     {
