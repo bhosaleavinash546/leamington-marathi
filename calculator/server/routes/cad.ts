@@ -446,6 +446,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   // Whether the caller *chose* deterministic or simply got the default. The two
   // deserve different behaviour on a commodity with no rules yet.
   const modeExplicit = typeof req.body?.mode === 'string' && req.body.mode.trim() !== '';
+  const noCache = req.body?.noCache === true || req.body?.noCache === 'true';
   const decisionAnswers = parseDecisionAnswers(
     typeof req.body?.decisionAnswers === 'string'
       ? JSON.parse(req.body.decisionAnswers) as unknown : req.body?.decisionAnswers);
@@ -468,7 +469,11 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     ...renderViews.map(v => Buffer.from(v)),
     Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION })),
   ]);
-  const cached = cadCache.get(cacheKey);
+  // `noCache` re-samples the model instead of serving the stored answer. Needed
+  // for any A/B or variance measurement: without it a second run of the same
+  // part returns the first run's response and the model is never called again.
+  // The write still happens below, so the run stays inspectable afterwards.
+  const cached = noCache ? null : cadCache.get(cacheKey);
   if (cached) {
     console.log(`[CAD] Cache HIT: ${cacheKey.slice(0, 12)}`);
     res.json(cached);
@@ -564,6 +569,11 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
   let ruleFields: ReturnType<typeof toRuleFields> | null = null;
   let modeDiff: ReturnType<typeof diffAnalyses> | null = null;
+  // The model's own reply, before `applyRuleDecisions` writes over it. Without
+  // this in the payload there is no way to see — or cost — what the AI actually
+  // said: every mode returns a rules-corrected analysis, so an "AI arm" built
+  // from the response would be the rules compared against themselves.
+  let aiOriginal: Record<string, unknown> | null = null;
   let deterministicAnalysis: CADAnalysisResult | null = null;
 
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
@@ -665,7 +675,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
       // downstream of it rather than trusting the model's.
       // Snapshot before the overwrite — `applyRuleDecisions` mutates in place,
       // so a diff taken afterwards would be the rules against themselves.
-      const aiOriginal = analysisMode === 'both'
+      aiOriginal = analysisMode === 'both'
         ? structuredClone((analysis as { costInputSuggestions?: Record<string, unknown> }).costInputSuggestions ?? {})
         : null;
       const resolved = runCostInputRules(
@@ -719,6 +729,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     // measured decision rather than a preference.
     deterministicAnalysis,
     diff: modeDiff,
+    aiOriginal,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
     decisions: ruleOverrides?.undecided.length ? ruleSpec ? runCostInputRules(ruleSpec, ruleCtx).decisions : [] : [],
@@ -1758,6 +1769,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   // one that most needs to work without a key.
   let analysisMode = parseAnalysisMode(req.body?.mode);
   const modeExplicit = typeof req.body?.mode === 'string' && req.body.mode.trim() !== '';
+  const noCache = req.body?.noCache === true || req.body?.noCache === 'true';
   const decisionAnswers = parseDecisionAnswers(req.body?.decisionAnswers);
 
   let anthropic: ReturnType<typeof createAnthropic> | null = null;
@@ -1779,7 +1791,11 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     Buffer.from(partPhotoBase64),
     Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, filename, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION })),
   ]);
-  const cached = cadCache.get(cacheKey);
+  // `noCache` re-samples the model instead of serving the stored answer. Needed
+  // for any A/B or variance measurement: without it a second run of the same
+  // part returns the first run's response and the model is never called again.
+  // The write still happens below, so the run stays inspectable afterwards.
+  const cached = noCache ? null : cadCache.get(cacheKey);
   if (cached) {
     console.log(`[CAD/reanalyze] Cache HIT: ${cacheKey.slice(0, 12)}`);
     res.json(cached);
@@ -1860,6 +1876,11 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
   let ruleFields: ReturnType<typeof toRuleFields> | null = null;
   let modeDiff: ReturnType<typeof diffAnalyses> | null = null;
+  // The model's own reply, before `applyRuleDecisions` writes over it. Without
+  // this in the payload there is no way to see — or cost — what the AI actually
+  // said: every mode returns a rules-corrected analysis, so an "AI arm" built
+  // from the response would be the rules compared against themselves.
+  let aiOriginal: Record<string, unknown> | null = null;
   let deterministicAnalysis: CADAnalysisResult | null = null;
 
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
@@ -1936,7 +1957,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
       // downstream of it rather than trusting the model's.
       // Snapshot before the overwrite — `applyRuleDecisions` mutates in place,
       // so a diff taken afterwards would be the rules against themselves.
-      const aiOriginal = analysisMode === 'both'
+      aiOriginal = analysisMode === 'both'
         ? structuredClone((analysis as { costInputSuggestions?: Record<string, unknown> }).costInputSuggestions ?? {})
         : null;
       const resolved = runCostInputRules(
@@ -1984,6 +2005,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     // measured decision rather than a preference.
     deterministicAnalysis,
     diff: modeDiff,
+    aiOriginal,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
     decisions: ruleOverrides?.undecided.length ? ruleSpec ? runCostInputRules(ruleSpec, ruleCtx).decisions : [] : [],
