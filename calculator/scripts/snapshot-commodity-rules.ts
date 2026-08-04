@@ -73,8 +73,9 @@ const FULL_GEO = {
     ],
   },
   cncCycleTimeEstimate: {
+    // Kernel-true: estimatedTotal INCLUDES the setup allowance.
     setupTimeMins: 135, planarMillingTimeMins: 12, drillBoreTimeMins: 4,
-    estimatedTotalMins: 16.1, estimatedTotalHrs: 0.268,
+    estimatedTotalMins: 151.1, estimatedTotalHrs: 2.518,
     assumedFeedRateMm2PerMin: 3000, assumedDrillBoreMinPerFeature: 0.4,
     assumedSetupTimeMinsPerSetup: 45,
   },

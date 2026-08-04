@@ -27,6 +27,7 @@
  * override a model with.
  */
 import type { Decision, RuleContext } from '../types.js';
+import { hollowVerdict } from './hollow.js';
 
 export const COMMODITY_DECISION_ID = 'commodity.route';
 
@@ -104,7 +105,14 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
   }
 
   const largeThinShell = fill < 0.03 && maxDim >= 250 && (wall == null || wall <= 10);
-  const sealed = g.topology?.available ? (g.topology.enclosesSealedVoid ?? null) : null;
+  // `near-enclosed` (a watertight thin container whose cavity has openings — a
+  // fuel tank with a filler neck) must land in the HOLLOW branch: topology says
+  // "no sealed void" for it, and routing a tank to injection/thermoform on that
+  // technicality is the exact £216.97-sand-casting error class this exists for.
+  const hv = hollowVerdict(g);
+  const sealed = g.topology?.available
+    ? (hv === 'near-enclosed' ? true : (g.topology.enclosesSealedVoid ?? null))
+    : null;
 
   if (largeThinShell && sealed === true) {
     // A sealed cavity rules out every solid process — no core comes out. Which

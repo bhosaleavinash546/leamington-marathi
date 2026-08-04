@@ -197,6 +197,14 @@ export interface CADAnalysisResult {
     estimatedCycleTimeHr: number;
     estimatedSetupTimeHr: number;
     estimatedOperations: SuggestedOperation[];
+    /** Machining-specific derived inputs. Rule-engine written; the model is not
+     *  asked for these — they were the largest orphaned group in the A/B. */
+    machining?: {
+      stockWeightKg?: number;
+      materialUtilization?: number;
+      machineId?: string;
+      setupCount?: number;
+    };
     casting?: {
       subtype: 'hpdc' | 'sand' | 'gravity' | 'investment';
       dieMouldCostGBP: number;
@@ -213,6 +221,15 @@ export interface CADAnalysisResult {
       dieLife: number;
       strokes: number;
       timePerBlowSec: number;
+      /** Rule-engine written (parametric die + secondary adders). */
+      projectedAreaCm2?: number;
+      dieSteel?: string;
+      dieImpressions?: number;
+      heatingEnergyKwhPerKg?: number;
+      heatTreatCostPerKg?: number;
+      descaleCostPerKg?: number;
+      ndtCostPerPart?: number;
+      forgeId?: string;
     };
     sheetMetal?: {
       thicknessMm: number;
@@ -221,6 +238,12 @@ export interface CADAnalysisResult {
       dieCostGBP: number;
       dieLife: number;
       numOps: number;
+      /** Rule-engine written strip layout + press speed. */
+      shearStrengthMPa?: number;
+      dieType?: string;
+      pitchMm?: number;
+      stripWidthMm?: number;
+      strokesPerMin?: number;
     };
     injectionMoulding?: {
       cavities: number;
@@ -229,6 +252,14 @@ export interface CADAnalysisResult {
       mouldCostGBP: number;
       mouldLife: number;
       runnerWeightKg: number;
+      /** Rule-engine written cycle chain + machine sizing. */
+      fillTimeSec?: number;
+      packTimeSec?: number;
+      ejectTimeSec?: number;
+      coolTimeFactorSPerMm2?: number;
+      cavityPressureMPa?: number;
+      machineId?: string;
+      steelClass?: string;
     };
     blowMoulding?: {
       /** 'ebm' | 'ibm' | 'sbm' */

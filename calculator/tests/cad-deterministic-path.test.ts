@@ -144,7 +144,8 @@ describe('a costing with no AI in it', () => {
 
     expect(done.applied.overridden.length).toBeGreaterThan(0);
     for (const o of done.applied.overridden) expect(o.basis.length).toBeGreaterThan(0);
-    // The known gap: machining's measured billet has no form field to land in.
-    expect(done.applied.notWritten).toContain('machining.stockWeightKg');
+    // The measured billet now lands on the contract — it was the poster child
+    // of the 55 orphans the A/B exposed (docs/ab-rules-vs-ai.md).
+    expect(done.applied.notWritten).not.toContain('machining.stockWeightKg');
   });
 });

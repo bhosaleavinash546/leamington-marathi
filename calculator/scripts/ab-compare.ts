@@ -66,8 +66,8 @@ const PARTS: Part[] = [
   { file: 'Seat_LH_Cross_Member.stp', name: 'Seat LH cross-member', commodity: 'sheet_metal', manual: [1.2, 1.6],
     answers: { 'material.family': 'steel' } },
   { file: 'Fuel_tank.STEP', name: 'Fuel tank', commodity: 'blow_moulding', manual: [20, 30],
-    answers: { 'material.resin': 'mat-hdpe-blow', 'blow.capacityL': '60',
-               'blow.barrierWall': 'coex', 'blow.notHollow': 'blow_moulding' } },
+    answers: { 'material.resin': 'mat-hdpe', 'blow.capacityL': 'over_20',
+               'blow.barrierWall': 'barrier', 'blow.notHollow': 'blow_moulding' } },
   { file: 'Casting_Braket.stp', name: 'Casting bracket', commodity: 'casting', manual: null,
     answers: { 'material.family': 'aluminium', 'service.pressureTight': 'no',
                'service.toleranceClass': 'standard', 'service.safetyCritical': 'no' } },
@@ -84,14 +84,15 @@ function toChina(breakdown: Record<string, number>): number {
   return cn?.total ?? NaN;
 }
 
-function cost(commodity: string, analysis: CADAnalysisResult, familyHint: string | null):
+function cost(commodity: string, analysis: CADAnalysisResult, familyHint: string | null, geo?: OCCTGeometry):
   { uk: number; cn: number; breakdown: Record<string, number> } | { error: string } {
-  const mapped = toCostParams(commodity, analysis.costInputSuggestions, VOLUME, familyHint as never);
+  const mapped = toCostParams(commodity, analysis.costInputSuggestions, VOLUME, familyHint as never, geo);
   if (!mapped) return { error: 'no cost mapping (missing material or commodity)' };
   const r = executeCalculateCost({
     commodity, params: mapped.params, partName: analysis.partName,
     overheadPct: SHOP_DEFAULTS.overheadPct, marginPct: SHOP_DEFAULTS.marginPct,
-    packagingPerPart: SHOP_DEFAULTS.packagingPerPart, logisticsPerPart: SHOP_DEFAULTS.logisticsPerPart,
+    packagingPerPart: mapped.packagingPerPart ?? SHOP_DEFAULTS.packagingPerPart,
+    logisticsPerPart: mapped.logisticsPerPart ?? SHOP_DEFAULTS.logisticsPerPart,
   });
   if (!r.success) return { error: r.error ?? 'costing failed' };
   return { uk: r.total, cn: toChina(r.breakdown), breakdown: r.breakdown };
@@ -144,7 +145,7 @@ async function main(): Promise<void> {
     const det = buildDeterministicAnalysis(spec, ctx, part.name);
     const rulesCost = det.result.decisions.length
       ? { error: `blocked: ${det.result.decisions.map(d => d.id).join(', ')}` }
-      : cost(part.commodity, det.analysis, materialFacts(ctx).family);
+      : cost(part.commodity, det.analysis, materialFacts(ctx).family, geo);
 
     let aiCost: ReturnType<typeof cost> | { error: string } = { error: 'not run (--rules-only)' };
     let aiMaterial = '';
@@ -153,7 +154,7 @@ async function main(): Promise<void> {
       if ('error' in ai) { aiCost = { error: ai.error }; }
       else {
         aiMaterial = ai.costInputSuggestions?.materialId ?? '';
-        aiCost = cost(part.commodity, ai, null);
+        aiCost = cost(part.commodity, ai, null, geo);
       }
     }
 

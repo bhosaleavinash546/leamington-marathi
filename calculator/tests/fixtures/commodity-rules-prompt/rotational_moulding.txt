@@ -15,7 +15,7 @@ ROTATIONAL MOULDING COST INPUT RULES:
   coolingMethod: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
   numArms: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
   partsPerArm: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  projectedAreaCm2=768  [two largest bounding-box dimensions — deterministic, use verbatim]
+  projectedAreaCm2=288.4  [two largest bounding-box dimensions — deterministic, use verbatim]
   mouldType: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
   mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
   mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))

@@ -203,7 +203,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('injectionMoulding.projectedAreaCm2', a, 'geometry',
-          'two largest bounding-box dimensions — the worst-case projection, so the press is never undersized', 0.75);
+          'projection: bbox face × √fill for a solid, bbox face (worst case) for a shell', 0.75);
       },
     },
     {

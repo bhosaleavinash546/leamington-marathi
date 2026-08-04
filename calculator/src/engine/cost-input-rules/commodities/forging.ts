@@ -44,6 +44,7 @@ import { pickForgePressId } from '../../machine-sizing.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { materialFacts, toForgingAlloyFamily } from '../derive/material.js';
 import { projectedAreaCm2, isRingShape } from '../derive/envelope.js';
+import { isAxisymmetric } from './machining.js';
 import {
   toleranceClassDecision, safetyCriticalDecision,
   answeredBool, answeredToleranceClass, assumedNote,
@@ -106,7 +107,14 @@ export function shapeComplexity(ctx: RuleContext): ShapeComplexity {
   if (freeForm >= 8) score += 2; else if (freeForm >= 3) score += 1;
   if (undercuts >= 4) score += 1;
   if (faces >= 120) score += 1;
-  return score >= 3 ? 'complex' : score >= 1 ? 'moderate' : 'simple';
+  const raw: ShapeComplexity = score >= 3 ? 'complex' : score >= 1 ? 'moderate' : 'simple';
+  // A turned axle is all curvature — the kernel reads its cylinders and fillets
+  // as "free-form" faces and its bores as "undercuts", which scored the stub
+  // axle `complex` (3 impressions, 8 blows, a £202k die). An axisymmetric
+  // envelope is the EASY forging: round dies, upset-and-finish. Cap it at
+  // moderate; genuinely complex round parts (crown gears) still reach moderate.
+  if (raw === 'complex' && isAxisymmetric(ctx)) return 'moderate';
+  return raw;
 }
 
 /** The advisor grades complexity on a three-point scale of its own. */
@@ -327,7 +335,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('forging.projectedAreaCm2', a, 'geometry',
-          'two largest bounding-box dimensions at the parting plane', 0.8);
+          'parting-plane silhouette: bbox face × √fill for a solid, bbox face for a shell', 0.8);
       },
     },
     {

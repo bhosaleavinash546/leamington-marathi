@@ -107,7 +107,7 @@ async function main(): Promise<void> {
 
   // The rules resolve a family; the costing layer turns that into a grade.
   const mapped = toCostParams(commodity, analysis.costInputSuggestions, annualVolume,
-    materialFacts(ctx).family);
+    materialFacts(ctx).family, geo);
   if (!mapped) {
     console.error(`\n  No cost mapping for '${commodity}' yet (have: ${COSTABLE_COMMODITIES.join(', ')}).`);
     process.exit(4);
@@ -116,7 +116,8 @@ async function main(): Promise<void> {
   const cost = executeCalculateCost({
     commodity, params: mapped.params, partName: geo.partName || name,
     overheadPct: SHOP_DEFAULTS.overheadPct, marginPct: SHOP_DEFAULTS.marginPct,
-    packagingPerPart: SHOP_DEFAULTS.packagingPerPart, logisticsPerPart: SHOP_DEFAULTS.logisticsPerPart,
+    packagingPerPart: mapped.packagingPerPart ?? SHOP_DEFAULTS.packagingPerPart,
+    logisticsPerPart: mapped.logisticsPerPart ?? SHOP_DEFAULTS.logisticsPerPart,
   });
   if (!cost.success) {
     console.error(`\n  Costing failed: ${cost.error}`);

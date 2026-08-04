@@ -8,17 +8,17 @@ FORGING COST INPUT RULES:
   materialFamily=aluminium  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   partWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   process=cold-forming  [small aluminium part at 100,000/yr — cold forging gives near-100% material yield, work-hardened strength and a machined-quality finish with no flash [tolerance class, safety-critical assumed — confirm before quoting] — deterministic, use verbatim]
-  projectedAreaCm2=768  [two largest bounding-box dimensions at the parting plane — deterministic, use verbatim]
+  projectedAreaCm2=288.4  [parting-plane silhouette: bbox face × √fill for a solid, bbox face for a shell — deterministic, use verbatim]
   shapeComplexity=moderate  [4 free-form face(s), 2 undercut face(s), 120 faces total — deterministic, use verbatim]
   yieldFraction=0.915  [cold-forming stock yield band 0.85–0.98, midpoint 0.915 — this route makes no flash — deterministic, use verbatim]
   flashAndScaleKg=0  [cold-forming has no impression parting line — it makes no flash; the stock loss is inside the yield band — deterministic, use verbatim]
-  forgeId=forge-press-4000t  [F = Kt × σflow × A: moderate shape in aluminium over 768 cm² = 2154 t (1.2 safety) — deterministic, use verbatim]
+  forgeId=forge-press-1600t  [F = Kt × σflow × A: moderate shape in aluminium over 288.4 cm² = 809 t (1.2 safety) — deterministic, use verbatim]
   strokesToForm=6  [blows to fill the impression, from the measured shape — deterministic, use verbatim]
   timePerBlowSec=10  [ram travel + dwell per blow on a mechanical press — deterministic, use verbatim]
   dieSteel=h13  [H13 — the impression-die workhorse — deterministic, use verbatim]
   dieImpressions=4  [cold-forming tooling — deterministic, use verbatim]
-  dieCostGBP=234528  [4-impression h13 die over 768 cm²: £41260 block + £182960 sinking + £7108 HT + £3200 polish; OCCT parametric says £63800 — deterministic, use verbatim]
-  dieLife=53213  [aluminium at 768 cm², moderate impression — deterministic, use verbatim]
+  dieCostGBP=104556  [4-impression h13 die over 288.4 cm²: £19678 block + £77448 sinking + £4230 HT + £3200 polish; OCCT parametric says £63800 — deterministic, use verbatim]
+  dieLife=64728  [aluminium at 288.4 cm², moderate impression — deterministic, use verbatim]
   heatingEnergyKwhPerKg=0  [cold forming — the billet is never heated — deterministic, use verbatim]
   heatTreatCostPerKg=1.2  [solution-age for a aluminium forging — deterministic, use verbatim]
   descaleCostPerKg=0  [cold formed — no scale to remove — deterministic, use verbatim]
@@ -31,7 +31,7 @@ FORGING COST INPUT RULES:
   materialFamily: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Titanium | Copper alloy)
   partWeightKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Titanium | Copper alloy)
   process: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Titanium | Copper alloy)
-  projectedAreaCm2=768  [two largest bounding-box dimensions at the parting plane — deterministic, use verbatim]
+  projectedAreaCm2=768  [parting-plane silhouette: bbox face × √fill for a solid, bbox face for a shell — deterministic, use verbatim]
   shapeComplexity=simple  [0 free-form face(s), 0 undercut face(s), 0 faces total — deterministic, use verbatim]
   yieldFraction: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Titanium | Copper alloy)
   flashAndScaleKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Titanium | Copper alloy)

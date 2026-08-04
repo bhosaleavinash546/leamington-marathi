@@ -17,11 +17,29 @@ export function bboxSortedMm(ctx: RuleContext): [number, number, number] | null 
   return [a, b, c];
 }
 
-/** Projected area at the parting plane, cm² — the two largest dimensions. */
+/**
+ * Projected area at the parting plane, cm².
+ *
+ * The bbox face (two largest dimensions) is the WORST-CASE silhouette, and for
+ * a thin shell — a bumper skin spanning its envelope — it is also roughly the
+ * truth. For a SOLID part it badly overstates: the stub axle's bbox face is
+ * 617.6 cm² where its real parting silhouette is ~200 cm², and that one number
+ * cascaded into an 8000 t press, a £202k die and a 16,675-shot die life —
+ * £104/part against a £30 manual.
+ *
+ * Physics bounds the silhouette for a solid of volume V in an L×W×H box:
+ * at least V/H (a prism) and at most L×W. In fill-ratio terms those bounds are
+ * LW×fill and LW×1; the geometric mean LW×√fill interpolates between them and
+ * lands where real forgings do. Shells (fill < 5%) keep the bbox face — for
+ * them the envelope IS the part.
+ */
 export function projectedAreaCm2(ctx: RuleContext): number | null {
   const d = bboxSortedMm(ctx);
   if (!d) return null;
-  return Math.round((d[0] * d[1]) / 100 * 10) / 10;
+  const faceCm2 = (d[0] * d[1]) / 100;
+  const fill = ctx.geo.fillRatio ?? null;
+  const est = fill !== null && fill >= 0.05 ? faceCm2 * Math.sqrt(fill) : faceCm2;
+  return Math.round(est * 10) / 10;
 }
 
 /** Envelope volume in cm³ — the solid billet a from-solid part is cut out of. */

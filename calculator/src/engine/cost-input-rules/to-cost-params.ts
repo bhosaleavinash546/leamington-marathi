@@ -33,8 +33,11 @@
  * measurements, and any number that moves because of them is attributable to
  * this block.
  */
-import type { CADAnalysisResult } from '../ai-analysis.js';
+import type { CADAnalysisResult, OCCTGeometry } from '../ai-analysis.js';
 import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '../machine-sizing.js';
+import { computeFeatureMachining } from '../feature-machining.js';
+import type { FeatureRow } from '../feature-ops.js';
+import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../geometry-sanity.js';
 import { representativeMaterialId, isLibraryMaterialId } from './derive/material.js';
 import type { MaterialFamily } from '../material-family.js';
 
@@ -111,6 +114,42 @@ export interface ToCostParamsResult {
   params: Record<string, unknown>;
   /** Inputs the analysis did not carry, filled from SHOP_DEFAULTS or a picker. */
   assumed: string[];
+  /** Envelope-scaled when geometry was supplied; else the caller's flat default. */
+  packagingPerPart?: number;
+  logisticsPerPart?: number;
+}
+
+/**
+ * Fixtures + CNC programming NRE for geometry-driven secondary machining.
+ *
+ * A stated parametric default, deliberately NOT the browser form's
+ * `value="150000"` — that figure predates the currency cleanup and looks like
+ * an INR leftover; £150k of fixturing on every casting would dwarf the die.
+ */
+const SECONDARY_MACHINING_NRE_GBP = 15_000;
+
+/**
+ * The machining a near-net part still needs, measured.
+ *
+ * A knuckle is cast AND machined — its feature table is full of bores. The
+ * browser has wired `computeFeatureMachining` into the casting and forging
+ * forms for months; the headless path never did, which is how the knuckle
+ * costed −57% against its manual with literally zero machining content.
+ */
+function secondaryMachining(
+  geo: OCCTGeometry | undefined, labourId: string,
+): ReturnType<typeof computeFeatureMachining> | null {
+  const rows = geo?.featureTable as FeatureRow[] | undefined;
+  if (!rows?.length) return null;
+  // Near-net secondary work is hole work by construction (`defaultInclude`
+  // costs only holes on near_net stock) — that runs on a drilling centre, not
+  // a milling VMC, and the rate difference is real money at 27 min/part.
+  const r = computeFeatureMachining(rows, {
+    machineId: 'mach-drill', labourId, stockCondition: 'near_net',
+    oee: SHOP_DEFAULTS.oee, manning: SHOP_DEFAULTS.manning,
+    labourEfficiency: SHOP_DEFAULTS.labourEfficiency,
+  });
+  return r.featureCount > 0 ? r : null;
 }
 
 /**
@@ -125,6 +164,7 @@ export function toCostParams(
   ci: CostInputs,
   annualVolume = SHOP_DEFAULTS.annualVolume,
   familyHint?: MaterialFamily | null,
+  geo?: OCCTGeometry,
 ): ToCostParamsResult | null {
   const assumed: string[] = [];
   const D = SHOP_DEFAULTS;
@@ -146,6 +186,25 @@ export function toCostParams(
     amortizationVolume: annualVolume,
   };
 
+  // Packaging scales with the shipping envelope — a 1.7 m bumper is not a 3 g
+  // servo horn. Same estimators the browser has always applied; flat defaults
+  // survive only when no geometry was supplied.
+  let packagingPerPart: number | undefined;
+  let logisticsPerPart: number | undefined;
+  const bb = geo?.boundingBox;
+  if (bb) {
+    const bboxVolCm3 = (bb.xMm * bb.yMm * bb.zMm) / 1000;
+    packagingPerPart = estimatePackagingPerPart(bboxVolCm3, num(ci.netWeightKg));
+    logisticsPerPart = estimateLogisticsPerPart(num(ci.netWeightKg), bboxVolCm3);
+  } else {
+    assumed.push('flat packaging/logistics (no geometry supplied)');
+  }
+  const finish = (r: ToCostParamsResult | null): ToCostParamsResult | null =>
+    r === null ? null : { ...r, packagingPerPart, logisticsPerPart };
+
+  return finish(buildParams());
+
+  function buildParams(): ToCostParamsResult | null {
   switch (commodity) {
     case 'casting': {
       const c = ci.casting;
@@ -196,6 +255,12 @@ export function toCostParams(
         };
         assumed.push('investment.waxCostPerPart', 'investment.shellBuildCostPerPart');
       }
+      const sec = secondaryMachining(geo, labourId);
+      if (sec) {
+        params.secondaryMachiningOps = sec.operations;
+        params.secondaryMachiningToolingCost = SECONDARY_MACHINING_NRE_GBP;
+        assumed.push(`secondary-machining NRE £${SECONDARY_MACHINING_NRE_GBP} (fixtures + programming)`);
+      }
       return { commodity, params, assumed };
     }
 
@@ -203,42 +268,63 @@ export function toCostParams(
       const f = ci.forging;
       if (!f) return null;
       const weight = num(ci.netWeightKg);
-      return {
-        commodity, assumed: [...assumed, 'forgeId', 'heatingEnergyKwhPerKg'],
-        params: {
-          ...shop,
-          materialId,
-          partWeightKg: weight,
-          flashAndScaleKg: num(f.flashKg),
-          yieldFraction: num(f.yieldFraction, 0.675),
-          // Tonnage is not carried; size from mass, which tracks plan area well
-          // enough on the closed-die parts this path sees.
-          forgeId: `forge-press-${weight > 12 ? 4000 : weight > 5 ? 2500 : 1600}t`,
-          strokesToForm: num(f.strokes, 3),
-          timePerBlowSec: num(f.timePerBlowSec, 10),
-          cycleTimeHr: 0,          // computed from strokes × time per blow
-          heatingEnergyKwhPerKg: 0.35,
-          dieLife: num(f.dieLife, 30_000),
-          dieCost: num(f.dieCostGBP),
-        },
+      // The rules size the press and compute the heat-treat / descale / NDT
+      // adders; until the orphan mapping landed, none of it reached here and a
+      // weight-tier hack picked the press. Carried values now win; the hack is
+      // the stated fallback.
+      const params: Record<string, unknown> = {
+        ...shop,
+        materialId,
+        partWeightKg: weight,
+        flashAndScaleKg: num(f.flashKg),
+        yieldFraction: num(f.yieldFraction, 0.675),
+        forgeId: f.forgeId || `forge-press-${weight > 12 ? 4000 : weight > 5 ? 2500 : 1600}t`,
+        strokesToForm: num(f.strokes, 3),
+        timePerBlowSec: num(f.timePerBlowSec, 10),
+        cycleTimeHr: 0,          // computed from strokes × time per blow
+        heatingEnergyKwhPerKg: num(f.heatingEnergyKwhPerKg, 0.35),
+        dieLife: num(f.dieLife, 30_000),
+        dieCost: num(f.dieCostGBP),
       };
+      if (num(f.projectedAreaCm2) > 0) params.projectedAreaCm2 = num(f.projectedAreaCm2);
+      if (f.dieSteel) params.dieSteel = f.dieSteel;
+      if (num(f.dieImpressions) > 0) params.dieImpressions = num(f.dieImpressions);
+      if (num(f.heatTreatCostPerKg) > 0) params.heatTreatCostPerKg = num(f.heatTreatCostPerKg);
+      if (num(f.descaleCostPerKg) > 0) params.descaleCostPerKg = num(f.descaleCostPerKg);
+      if (num(f.ndtCostPerPart) > 0) params.ndtCostPerPart = num(f.ndtCostPerPart);
+      if (!f.forgeId) assumed.push('forgeId (weight-tier fallback)');
+      const sec = secondaryMachining(geo, labourId);
+      if (sec) {
+        params.secondaryMachiningOps = sec.operations;
+        params.secondaryMachiningToolingCost = SECONDARY_MACHINING_NRE_GBP;
+        assumed.push(`secondary-machining NRE £${SECONDARY_MACHINING_NRE_GBP} (fixtures + programming)`);
+      }
+      return { commodity, params, assumed };
     }
 
     case 'machining': {
       const ops = (ci.estimatedOperations ?? []).filter(o => num(o.cycleTimeHr) > 0);
       const cycleHr = num(ci.estimatedCycleTimeHr);
       const net = num(ci.netWeightKg);
-      // The browser uses a flat net/0.65 when no stock weight is carried, and
-      // costInputSuggestions has no stock field at all, so both arms get it.
-      const stock = net / 0.65;
-      assumed.push('stockWeightKg (net / 0.65 — no stock field on the contract)', 'partsPerCycle=1', 'labourTimeHr=cycleTimeHr');
+      // The rules measure the billet from the envelope; net/0.65 survives only
+      // as the no-geometry fallback (it is what the browser used for years).
+      const stock = num(ci.machining?.stockWeightKg) || net / 0.65;
+      const machineId = ci.machining?.machineId
+        || pickMachiningCentreId({ principalDirections: 3, axisymmetric: false });
+      // 100k/yr is not machined in batches of 100 — setup amortisation at that
+      // batch size dominated a 3 g part. Roughly a batch per fortnightly-ish
+      // run, clamped to sane shop floor sizes.
+      const batchSize = Math.round(Math.min(5000, Math.max(50, annualVolume / 20)));
+      if (!ci.machining?.stockWeightKg) assumed.push('stockWeightKg (net / 0.65 fallback)');
+      assumed.push(`batchSize=${batchSize} (annualVolume / 20)`, 'partsPerCycle=1', 'labourTimeHr=cycleTimeHr');
       return {
         commodity, assumed,
         params: {
           materialId,
           netWeightKg: net,
           stockWeightKg: stock,
-          materialUtilization: stock > 0 ? net / stock : 0.65,
+          materialUtilization: num(ci.machining?.materialUtilization)
+            || (stock > 0 ? net / stock : 0.65),
           rejectRate: D.rejectRate,
           // `partsPerCycle` and `labourTimeHr` are required by the module and are
           // not on the analysis contract: one part per cycle, and the operator
@@ -255,14 +341,14 @@ export function toCostParams(
                 labourEfficiency: num(o.labourEfficiency, D.labourEfficiency),
               }))
             : [{
-                name: 'Machining', machineId: 'mach-vmc3', cycleTimeHr: cycleHr,
+                name: 'Machining', machineId, cycleTimeHr: cycleHr,
                 labourId, oee: D.oee, manning: D.manning, labourEfficiency: D.labourEfficiency,
               }]
           ).map(o => ({ ...o, type: 'milling', partsPerCycle: 1, labourTimeHr: o.cycleTimeHr })),
           setup: {
-            machineId: 'mach-vmc3', labourId,
+            machineId, labourId,
             setupTimeHr: num(ci.estimatedSetupTimeHr, 0.5),
-            batchSize: 100,
+            batchSize,
           },
           programmingNRE: 0,
           toolingCost: 0,
@@ -286,11 +372,16 @@ export function toCostParams(
           regrindFraction: 0.8,
           cavities: num(m.cavities, 1),
           projectedAreaCm2: area,
-          cavityPressureMPa: 30,
+          cavityPressureMPa: num(m.cavityPressureMPa, 30),
           wallThicknessMm: wall,
-          coolTimeFactorSPerMm2: 3.16,     // PP basis; the resin-specific figure is an orphan rule
-          fillTimeSec: 2, packTimeSec: 6, ejectTimeSec: 3,
-          machineId: pickIMMPressId(area),
+          // Resin-specific when the rules carried it (they compute it per resin);
+          // the PP figure is the no-carry fallback.
+          coolTimeFactorSPerMm2: num(m.coolTimeFactorSPerMm2, 3.16),
+          fillTimeSec: num(m.fillTimeSec, 2),
+          packTimeSec: num(m.packTimeSec, 6),
+          ejectTimeSec: num(m.ejectTimeSec, 3),
+          machineId: m.machineId || pickIMMPressId(area),
+          steelClass: m.steelClass || undefined,
           mouldCost: num(m.mouldCostGBP),
           mouldLife: num(m.mouldLife, 1_000_000),
         },
@@ -303,9 +394,10 @@ export function toCostParams(
       const L = num(s.blankLengthMm, 100);
       const W = num(s.blankWidthMm, 100);
       const t = num(s.thicknessMm, 1.5);
+      const shear = num(s.shearStrengthMPa, 250);
       // Blanking force ≈ perimeter × thickness × shear strength.
       const perimeter = 2 * (L + W);
-      const tonnes = (perimeter * t * 250) / 9807;
+      const tonnes = (perimeter * t * shear) / 9807;
       return {
         commodity, assumed: [...assumed, 'pressId', 'strokesPerMin', 'strip layout'],
         params: {
@@ -314,12 +406,16 @@ export function toCostParams(
           netWeightKg: num(ci.netWeightKg),
           blankLengthMm: L, blankWidthMm: W, thicknessMm: t,
           perimeterMm: perimeter,
-          shearStrengthMPa: 250,
-          stripWidthMm: W * 1.1, pitchMm: L * 1.05, partsPerStroke: 1,
+          shearStrengthMPa: shear,
+          stripWidthMm: num(s.stripWidthMm, W * 1.1),
+          pitchMm: num(s.pitchMm, L * 1.05),
+          partsPerStroke: 1,
           pressId: pickStampingPressId(tonnes),
-          strokesPerMin: 20,
+          // Feed-limited when the rules carried it; 20 SPM was the old blind
+          // default and alone inflated the cross-member cycle ~4.5×.
+          strokesPerMin: num(s.strokesPerMin, 45),
           numOperations: num(s.numOps, 3),
-          dieType: 'progressive',
+          dieType: (s.dieType as string | undefined) || 'progressive',
           dieLife: num(s.dieLife, 1_000_000),
           dieCostEstimate: num(s.dieCostGBP),
         },
@@ -354,6 +450,7 @@ export function toCostParams(
     default:
       // No mapping yet. Returning null beats returning a plausible wrong number.
       return null;
+  }
   }
 }
 

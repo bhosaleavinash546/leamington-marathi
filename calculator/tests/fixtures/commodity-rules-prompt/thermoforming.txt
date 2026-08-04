@@ -17,7 +17,7 @@ THERMOFORMING COST INPUT RULES:
   coolTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
   formTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
   trimTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
-  projectedAreaCm2=768  [two largest bounding-box dimensions — deterministic, use verbatim]
+  projectedAreaCm2=288.4  [two largest bounding-box dimensions — deterministic, use verbatim]
   mouldMaterial: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
   toolCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))
   energyKwhPerKg: UNDECIDED — needs "Which resin is this moulded in?" (HIPS (High Impact PS) | ABS | PP Homopolymer (MFI 12) | Rigid PVC (uPVC pipe grade) | PC (Lexan))

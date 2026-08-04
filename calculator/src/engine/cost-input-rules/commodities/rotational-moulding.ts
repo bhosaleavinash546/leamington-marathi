@@ -25,6 +25,7 @@ import {
 } from '../../modules/roto-advisor.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
+import { hollowVerdict } from '../derive/hollow.js';
 import { bboxSortedMm, projectedAreaCm2 } from '../derive/envelope.js';
 
 /** Map the chosen resin onto the roto advisor's material families. */
@@ -96,8 +97,11 @@ interface RmAdvice {
 
 function advise(ctx: RuleContext): { advice: RmAdvice } | { blocked: RuleOutcome<never> } {
   // A rotomoulded part is hollow by definition — the powder tumbles inside a
-  // closed cavity. A model with no void is not this process.
-  if (ctx.geo.topology?.available && ctx.geo.topology.enclosesSealedVoid === false) {
+  // closed cavity. But a tank with a filler neck reports "no sealed void" too:
+  // block only for genuine surface models or solids, and honour the answer.
+  const hv = hollowVerdict(ctx.geo);
+  if ((hv === 'open-surface' || hv === 'solid')
+      && ctx.answers['roto.notHollow'] !== 'rotational_moulding') {
     return {
       blocked: ask({
         id: 'roto.notHollow', kind: 'commodity',

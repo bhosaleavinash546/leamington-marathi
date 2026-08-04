@@ -165,7 +165,15 @@ export interface CommodityRuleSpec {
   commodity: string;
   /** The block header, e.g. "CASTING COST INPUT RULES:". */
   header: string;
-  rules: RuleDef[];
+  /**
+   * `RuleDef<any>`, not the scalar default: a rule may decide a structured
+   * value (an operation plan). The scalar bound forced `machining.operations`
+   * to flatten a real routing into a prose string, which then had no
+   * `RULE_PATH_MAP` entry and cost the deterministic path its whole operation
+   * list. A structured rule states its prompt line via `promptLine`.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  rules: Array<RuleDef<any>>;
 }
 
 export interface CostInputRuleResult {

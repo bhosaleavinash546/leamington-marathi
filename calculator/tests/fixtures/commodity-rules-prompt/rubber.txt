@@ -13,7 +13,7 @@ RUBBER MOULDING COST INPUT RULES:
   cureTimeSec: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   cycleTimeSec: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   cavities: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
-  projectedAreaCm2=768  [two largest bounding-box dimensions — deterministic, use verbatim]
+  projectedAreaCm2=288.4  [two largest bounding-box dimensions — deterministic, use verbatim]
   flashWeightKg: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   mouldSteel: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   mouldCostGBP: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)

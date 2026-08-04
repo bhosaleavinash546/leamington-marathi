@@ -131,12 +131,23 @@ describe('the forging yield fix', () => {
   });
 });
 
+
+/**
+ * The fixture's parting-plane silhouette under the fill-aware estimator.
+ *
+ * bbox face 260 × 180 = 468 cm² is the worst case; the axle fills 12.3% of its
+ * envelope, and a solid's silhouette is bounded by [LW × fill, LW]. The
+ * geometric mean LW × √fill is what the rule now uses — the bbox face fed an
+ * 8000 t press and a £202k die on the real axle (£104 vs a £30 manual).
+ */
+const AXLE_SILHOUETTE_CM2 = Math.round(468 * Math.sqrt(0.123) * 10) / 10;
+
 describe('the forging die-life fix', () => {
   it('predicts life from the alloy instead of a flat 20,000', () => {
     const r = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
     const f = r.suggestions.forging as Record<string, number>;
     expect(f.dieLife).toBe(estimateForgingDieLife({
-      alloyFamily: 'carbon-steel', projectedAreaCm2: 468, complexity: 'moderate',
+      alloyFamily: 'carbon-steel', projectedAreaCm2: AXLE_SILHOUETTE_CM2, complexity: 'moderate',
     }));
     expect(f.dieLife).toBeGreaterThan(20_000);   // the flat prompt figure over-charged tooling
   });
@@ -242,18 +253,19 @@ describe('press, die and secondary ops', () => {
   it('sizes the press to the die-fill force', () => {
     const r = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
     const f = r.suggestions.forging as Record<string, string | number>;
-    // F = Kt(5, moderate) x σflow(90 MPa, carbon steel) x 468 cm²
-    const t = estimateForgingTonnage({ projectedAreaCm2: 468, alloyFamily: 'carbon-steel', shapeComplexity: 'moderate' });
-    expect(Math.round(t)).toBe(2148);
-    expect(f.forgeId).toBe('forge-press-4000t');   // 2148 x 1.2 safety = 2577 t
-    expect(f.projectedAreaCm2).toBe(468);
+    // F = Kt(5, moderate) x σflow(90 MPa, carbon steel) x the SILHOUETTE, not
+    // the bbox face — the press is sized to the metal actually under the die.
+    const t = estimateForgingTonnage({ projectedAreaCm2: AXLE_SILHOUETTE_CM2, alloyFamily: 'carbon-steel', shapeComplexity: 'moderate' });
+    expect(Math.round(t)).toBe(753);
+    expect(f.forgeId).toBe('forge-press-1600t');   // 753 x 1.2 safety = 904 t
+    expect(f.projectedAreaCm2).toBe(AXLE_SILHOUETTE_CM2);
   });
 
   it('estimates the die from the envelope and shows the kernel figure beside it', () => {
     const r = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
     const f = r.suggestions.forging as Record<string, number>;
     expect(f.dieCost).toBe(estimateForgingDieCost({
-      projectedAreaCm2: 468, partWeightKg: 8.14, dieSteel: 'h13',
+      projectedAreaCm2: AXLE_SILHOUETTE_CM2, partWeightKg: 8.14, dieSteel: 'h13',
       impressions: 2, complexity: 'moderate',
     }).total);
     expect(r.provenance['forge-die-cost'].basis).toContain('78400');

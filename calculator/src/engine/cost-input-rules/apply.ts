@@ -65,6 +65,46 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'machining.netWeightKg': { to: 'netWeightKg' },
   'machining.estimatedCycleTimeHr': { to: 'estimatedCycleTimeHr' },
   'machining.setupTimeHr': { to: 'estimatedSetupTimeHr' },
+  // The orphan wiring. Every entry below existed as a computed rule with no
+  // consumer — the A/B (docs/ab-rules-vs-ai.md) showed the AI beating the rules
+  // on precisely these fields, because the model fills them while the rules
+  // calculated them and dropped them. `notWritten` should now be near-empty.
+  'machining.stockWeightKg': { to: 'machining.stockWeightKg' },
+  'machining.materialUtilization': { to: 'machining.materialUtilization' },
+  'machining.setupCount': { to: 'machining.setupCount' },
+  'machining.machineId': { to: 'machining.machineId' },
+  'machining.operations': {
+    to: 'estimatedOperations',
+    // OperationPlan[] → SuggestedOperation[]: the plan deliberately carries no
+    // labour/OEE (those are shop context, not geometry); consumers default them.
+    transform: v => Array.isArray(v)
+      ? v.map(o => ({
+          name: String((o as { name: unknown }).name),
+          machineId: String((o as { machineId: unknown }).machineId),
+          cycleTimeHr: num((o as { cycleTimeHr: unknown }).cycleTimeHr),
+        }))
+      : v,
+  },
+  'injectionMoulding.fillTimeSec': { to: 'injectionMoulding.fillTimeSec' },
+  'injectionMoulding.packTimeSec': { to: 'injectionMoulding.packTimeSec' },
+  'injectionMoulding.ejectTimeSec': { to: 'injectionMoulding.ejectTimeSec' },
+  'injectionMoulding.coolTimeFactorSPerMm2': { to: 'injectionMoulding.coolTimeFactorSPerMm2' },
+  'injectionMoulding.cavityPressureMPa': { to: 'injectionMoulding.cavityPressureMPa' },
+  'injectionMoulding.machineId': { to: 'injectionMoulding.machineId' },
+  'injectionMoulding.steelClass': { to: 'injectionMoulding.steelClass' },
+  'forging.projectedAreaCm2': { to: 'forging.projectedAreaCm2' },
+  'forging.dieSteel': { to: 'forging.dieSteel' },
+  'forging.dieImpressions': { to: 'forging.dieImpressions' },
+  'forging.heatingEnergyKwhPerKg': { to: 'forging.heatingEnergyKwhPerKg' },
+  'forging.heatTreatCostPerKg': { to: 'forging.heatTreatCostPerKg' },
+  'forging.descaleCostPerKg': { to: 'forging.descaleCostPerKg' },
+  'forging.ndtCostPerPart': { to: 'forging.ndtCostPerPart' },
+  'forging.forgeId': { to: 'forging.forgeId' },
+  'sheetMetal.shearStrengthMPa': { to: 'sheetMetal.shearStrengthMPa' },
+  'sheetMetal.dieType': { to: 'sheetMetal.dieType' },
+  'sheetMetal.pitchMm': { to: 'sheetMetal.pitchMm' },
+  'sheetMetal.stripWidthMm': { to: 'sheetMetal.stripWidthMm' },
+  'sheetMetal.strokesPerMin': { to: 'sheetMetal.strokesPerMin' },
   // The metal commodities decide a material FAMILY, and until now it landed
   // nowhere: `costInputSuggestions.materialId` came back empty on every metal
   // part, so a deterministic analysis could not be costed at all ("Material ''

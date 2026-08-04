@@ -29,6 +29,7 @@ import {
 import { pickEBMMachineId, barrierMaterialId } from '../../modules/blow-moulding.js';
 import { decided, ask, type CommodityRuleSpec, type Decision, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
+import { hollowVerdict } from '../derive/hollow.js';
 
 export const CAPACITY_DECISION_ID = 'blow.capacityL';
 export const BARRIER_DECISION_ID = 'blow.barrierWall';
@@ -162,9 +163,15 @@ interface BmAdvice {
 }
 
 function advise(ctx: RuleContext): { advice: BmAdvice } | { blocked: RuleOutcome<never> } {
-  // A blow-moulded part encloses a void by definition. If the kernel positively
-  // says otherwise, the commodity is wrong and no amount of costing fixes that.
-  if (ctx.geo.topology?.available && ctx.geo.topology.enclosesSealedVoid === false) {
+  // A blow-moulded part encloses a void by definition. But "no sealed void" from
+  // the kernel does NOT mean "not hollow": a real tank has a filler neck, so its
+  // cavity communicates with the outside and topology reports zero sealed voids.
+  // `hollowVerdict` separates that (near-enclosed: proceed, with a basis) from a
+  // genuine surface/half model or a solid (ask). And the ask is resumable — the
+  // engineer's answer is honoured, like every other gate in this file.
+  const hv = hollowVerdict(ctx.geo);
+  if ((hv === 'open-surface' || hv === 'solid')
+      && ctx.answers['blow.notHollow'] !== 'blow_moulding') {
     return {
       blocked: ask({
         id: 'blow.notHollow', kind: 'commodity',

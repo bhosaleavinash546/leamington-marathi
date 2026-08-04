@@ -177,10 +177,19 @@ function advise(ctx: RuleContext): { advice: SmAdvice } | { blocked: RuleOutcome
   };
 }
 
-/** Die stations: one to blank, one per bend, one to pierce if there are holes. */
+/**
+ * Die stations: one to blank, bends, one to pierce — CAPPED at 12.
+ *
+ * The kernel counts bend FACES, and a rolled channel reads 25 of them; a
+ * station-per-bend model then prices a 27-station £299k transfer die for a
+ * seat cross-member whose real progressive die is ~£25-60k. Real dies form
+ * several bends per station past a handful; twelve stations is already a big
+ * transfer die, and beyond that the count is a face-count artefact, not a
+ * tooling requirement.
+ */
 function stations(ctx: RuleContext): number {
   const bends = ctx.geo.sheetMetal?.bendCount ?? 0;
-  return Math.max(2, 1 + bends + (holeCount(ctx) > 0 ? 1 : 0));
+  return Math.min(12, Math.max(2, 1 + bends + (holeCount(ctx) > 0 ? 1 : 0)));
 }
 
 export const SHEET_METAL_RULES: CommodityRuleSpec = {
@@ -248,6 +257,61 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         return decided('sheetMetal.numOps', stations(ctx), 'geometry',
           `1 blank + ${bends} bend(s)${holes > 0 ? ' + 1 pierce' : ''} = ${stations(ctx)} stations`,
           bends > 0 ? 0.75 : 0.4);
+      },
+    },
+    {
+      // Strip layout: how the blank nests on the coil. Blank + a web between
+      // parts (pitch) and an edge margin per side (strip width). These were
+      // blind mapper defaults until the A/B showed them costing real money.
+      id: 'sheetMetal.pitchMm',
+      path: 'sheetMetal.pitchMm',
+      label: 'pitchMm',
+      appliesWhen: (ctx) => !!blankDims(ctx) && !!gaugeMm(ctx),
+      evaluate: (ctx) => {
+        const b = blankDims(ctx)!;
+        const g = gaugeMm(ctx)!;
+        const web = Math.max(3, 2 * g.mm);
+        return decided('sheetMetal.pitchMm', Math.round(b.lengthMm + web), 'rule',
+          `blank ${b.lengthMm} mm + ${web.toFixed(0)} mm web (max(3, 2 × gauge))`, 0.7);
+      },
+    },
+    {
+      id: 'sheetMetal.stripWidthMm',
+      path: 'sheetMetal.stripWidthMm',
+      label: 'stripWidthMm',
+      appliesWhen: (ctx) => !!blankDims(ctx) && !!gaugeMm(ctx),
+      evaluate: (ctx) => {
+        const b = blankDims(ctx)!;
+        const g = gaugeMm(ctx)!;
+        const edge = Math.max(3, 2 * g.mm);
+        return decided('sheetMetal.stripWidthMm', Math.round(b.widthMm + 2 * edge), 'rule',
+          `blank ${b.widthMm} mm + 2 × ${edge.toFixed(0)} mm edge margin`, 0.7);
+      },
+    },
+    {
+      // Press speed is feed-limited, not press-limited, on progressive work:
+      // the coil advances one pitch per stroke at ~18 m/min, de-rated as the
+      // forming content grows. This exact formula ran in the browser for months
+      // while the headless path sat on a blind 20 SPM — a 4.5× cycle error on
+      // the seat cross-member.
+      id: 'sheetMetal.strokesPerMin',
+      path: 'sheetMetal.strokesPerMin',
+      fieldId: 'sm-spm',
+      label: 'strokesPerMin',
+      appliesWhen: (ctx) => !!blankDims(ctx) && !!gaugeMm(ctx),
+      evaluate: (ctx) => {
+        const b = blankDims(ctx)!;
+        const g = gaugeMm(ctx)!;
+        const pitch = b.lengthMm + Math.max(3, 2 * g.mm);
+        const bends = ctx.geo.sheetMetal?.bendCount ?? 0;
+        let spm = 18_000 / pitch;
+        if (bends >= 4) spm *= 0.8;
+        if (bends >= 8) spm *= 0.8;
+        if (bends >= 14) spm *= 0.8;
+        const clamped = Math.round(Math.min(120, Math.max(10, spm)));
+        return decided('sheetMetal.strokesPerMin', clamped, 'rule',
+          `feed-limited: 18 m/min ÷ ${pitch.toFixed(0)} mm pitch`
+          + (bends >= 4 ? `, de-rated for ${bends} bends` : ''), 0.65);
       },
     },
     {

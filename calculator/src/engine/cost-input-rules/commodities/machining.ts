@@ -30,6 +30,8 @@
  * 3 g part can physically absorb.
  */
 import { physicalRemovalCeilingMin } from '../../feature-costing.js';
+import { featureMinutesEach } from '../../feature-machining.js';
+import type { FeatureRow } from '../../feature-ops.js';
 import { drillingOpFromFeatures } from '../../feature-ops.js';
 import { pickMachiningCentreId } from '../../machine-sizing.js';
 import type { MachiningOpType } from '../../modules/machining.js';
@@ -115,16 +117,31 @@ export function stockFacts(
 export function cuttingHours(
   ctx: RuleContext, family: MaterialFamily,
 ): { hours: number; capped: boolean; rawHours: number | null; ceilingHr: number | null } {
-  const raw = ctx.geo.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
+  // `estimatedTotalHrs` INCLUDES the kernel's setup allowance (setup_count ×
+  // 15 min) — and `machining.setupTimeHr` charges setup again, separately. On a
+  // 3 g part with 3-6 principal directions that double-count was most of the
+  // cycle: the servo horn costed +186% against its manual. Cutting time here is
+  // cutting time only; setup is the setup rule's job.
+  const est = ctx.geo.cncCycleTimeEstimate;
+  const kernelSetupHr = (est?.setupTimeMins ?? 0) / 60;
+  const raw = est?.estimatedTotalHrs != null
+    ? Math.max(est.estimatedTotalHrs - kernelSetupHr, 0.02)
+    : null;
   const partCm3 = ctx.geo.volume?.cm3 ?? 0;
   const stockCm3 = bboxVolumeCm3(ctx) ?? 0;
   if (raw === null || !partCm3 || !stockCm3) {
     return { hours: raw ?? 0, capped: false, rawHours: raw, ceilingHr: null };
   }
   const mf = MACHINABILITY[family];
-  const holes = ctx.geo.features?.estimatedHoleCount ?? 0;
+  // Dia-aware drilling allowance: the feature table knows a Ø2 spot from a
+  // Ø37 bore, and a flat 0.4 min/hole billed a 3 g part a third of its cycle
+  // for twelve micro-holes. The flat figure survives only when no table exists.
+  const holeRows = (ctx.geo.featureTable ?? []).filter(r => r.kind === 'hole');
+  const drillMin = holeRows.length
+    ? holeRows.reduce((sum, r) => sum + featureMinutesEach(r as FeatureRow) * r.count, 0)
+    : (ctx.geo.features?.estimatedHoleCount ?? 0) * 0.4;
   const ceilingHr = (
-    physicalRemovalCeilingMin(partCm3, stockCm3, ctx.geo.surfaceArea?.cm2 ?? 0, mf) + holes * 0.4 * mf
+    physicalRemovalCeilingMin(partCm3, stockCm3, ctx.geo.surfaceArea?.cm2 ?? 0, mf) + drillMin * mf
   ) / 60;
   return raw > ceilingHr
     ? { hours: Math.round(ceilingHr * 10_000) / 10_000, capped: true, rawHours: raw, ceilingHr }
@@ -382,20 +399,29 @@ export const MACHINING_RULES: CommodityRuleSpec = {
       },
     },
     {
-      // The routing itself. Rendered as prose because it is a list, not a scalar;
-      // `machiningOperationPlan` returns the structured version for the form.
+      // The routing itself — the STRUCTURED plan, not prose. It was flattened to
+      // a summary string for the scalar RuleDef bound, which left the whole
+      // operation list AI-owned; the A/B showed the model beating the rules on
+      // exactly the fields the rules computed and discarded. The prompt line
+      // reproduces the old prose byte for byte via `promptLine`.
       id: 'machining.operations',
       path: 'machining.operations',
       label: 'operations',
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const summary = r.advice.ops
-          .map(o => `${o.name} ${fmt(o.cycleTimeHr, 3)} hr on ${o.machineId}`)
-          .join('; ');
         const total = r.advice.ops.reduce((s, o) => s + o.cycleTimeHr, 0);
-        return decided('machining.operations', summary, 'geometry',
+        return decided('machining.operations', r.advice.ops, 'geometry',
           `sums to ${fmt(total, 3)} hr — the capped bottom-up cycle, apportioned by face count`, 0.75);
+      },
+      promptLine: (outcome) => {
+        if (!outcome.ok) {
+          const opts = outcome.decision.options.map(o => o.label).join(' | ');
+          return `  operations: UNDECIDED — needs "${outcome.decision.question}" (${opts})`;
+        }
+        const ops = outcome.decided.value as Array<{ name: string; cycleTimeHr: number; machineId: string }>;
+        const summary = ops.map(o => `${o.name} ${fmt(o.cycleTimeHr, 3)} hr on ${o.machineId}`).join('; ');
+        return `  operations=${summary}  [${outcome.decided.basis} — deterministic, use verbatim]`;
       },
     },
   ],

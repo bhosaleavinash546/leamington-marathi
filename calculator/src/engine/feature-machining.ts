@@ -116,13 +116,25 @@ export function featureMinutesEach(row: FeatureRow): number {
   if (row.kind === 'boss') {
     return 0.30 + L * 0.020;                     // external turning
   }
+  // A wide, shallow "hole" is not a bore — it is a spot-face, counterbore land
+  // or seat face. The kernel reports every cylindrical land of a stepped bore
+  // separately, so a real stub axle carried eight Ø40–46 lands 2–7 mm deep,
+  // each billed as a full helical-milled bore (~0.6 min each). One facing pass
+  // is what the land actually costs.
+  if (d >= 30 && row.depthMm > 0 && row.depthMm < 0.25 * d) {
+    return 0.20 + d * 0.004;                      // spot-face / seat skim
+  }
   let t: number;
   if (d > 26) {
     t = 0.50 + L * 0.050;                         // helical mill / large bore
   } else if (d > 13) {
     t = 0.15 + L * 0.020 + 0.25 + L * 0.020;      // drill + ream/bore pass
-  } else {
+  } else if (d > 6) {
     t = 0.15 + L * 0.020;                         // drill
+  } else {
+    // Micro-drilling: a Ø2–6 mm hole is seconds, not half a minute. Twelve of
+    // these on a 3 g servo horn were a third of its whole (capped) cycle.
+    t = 0.06 + L * 0.010;
   }
   if (row.through === false) t += 0.10;           // blind: bottom finishing
   return t;

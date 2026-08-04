@@ -11,7 +11,7 @@ run Stub_Axle.stp --commodity forging --answer material.family=steel \
     --answer service.toleranceClass=standard --answer service.safetyCritical=yes
 run Seat_LH_Cross_Member.stp --commodity sheet_metal --answer material.family=steel
 run BUMPER.stp --commodity injection_moulding --answer material.resin=mat-pp-impact
-run Fuel_tank.STEP --commodity blow_moulding --answer material.resin=mat-hdpe-blow --answer blow.capacityL=60 --answer blow.barrierWall=coex
+run Fuel_tank.STEP --commodity blow_moulding --answer material.resin=mat-hdpe --answer blow.capacityL=60 --answer blow.barrierWall=coex
 run Casting_Braket.stp --commodity casting --answer material.family=aluminium \
     --answer service.pressureTight=no --answer service.toleranceClass=standard --answer service.safetyCritical=no
 run Hood_Bracket.stp --commodity sheet_metal --answer material.family=steel
