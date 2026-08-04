@@ -32,12 +32,14 @@ const flag = (name: string): string | undefined => {
 };
 
 const answers: Record<string, unknown> = {};
-for (const a of argv) {
-  if (!a.startsWith('--answer')) continue;
-  const kv = a.includes('=') ? a.slice(a.indexOf('=') + 1) : argv[argv.indexOf(a) + 1];
-  const [k, ...v] = kv.split('=');
+// Index-based, not `argv.indexOf(a)`: every `--answer` flag is the same string,
+// so indexOf returns the first one and only a single answer is ever read.
+argv.forEach((a, i) => {
+  if (!a.startsWith('--answer')) return;
+  const kv = a.includes('=') ? a.slice(a.indexOf('=') + 1) : argv[i + 1];
+  const [k, ...v] = (kv ?? '').split('=');
   if (k && v.length) answers[k] = v.join('=');
-}
+});
 
 if (!file || !existsSync(file)) {
   console.error('usage: tsx scripts/cost-from-cad.ts <file.step> [--commodity X] [--answer k=v]... [--volume N]');
