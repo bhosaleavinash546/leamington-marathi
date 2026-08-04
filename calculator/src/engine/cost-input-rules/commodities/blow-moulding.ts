@@ -27,6 +27,7 @@ import {
   estimateBlowMouldCost, type BlowProcess, type BlowMouldMaterial,
 } from '../../modules/blow-advisor.js';
 import { pickEBMMachineId, barrierMaterialId } from '../../modules/blow-moulding.js';
+import { thermodynamicCoolFactor } from '../../modules/injection-moulding.js';
 import { decided, ask, type CommodityRuleSpec, type Decision, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
 import { hollowVerdict } from '../derive/hollow.js';
@@ -255,7 +256,14 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
       fieldId: 'bm-wall',
       label: 'wallThicknessMm',
       evaluate: (ctx) => {
-        const wall = ctx.geo.wallThickness?.meanMm;
+        // AVERAGE wall on purpose — not the p95 governing wall that injection
+        // uses. An EBM wall is programmed at the parison, and the thick tail of
+        // a ray-cast on a blown part is dominated by the pinch-off weld, where
+        // two parison walls fuse and the ray reads one doubled wall. The cycle
+        // model is calibrated on average wall (see the module input schema);
+        // costing the whole tank at the weld seam read as +19% on the real one.
+        const wt = ctx.geo.wallThickness;
+        const wall = wt?.meanMm;
         if (!wall) return ask({
           id: 'blow.wall', kind: 'geometry_gap',
           question: 'What is the nominal wall thickness?',
@@ -264,8 +272,10 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
           entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
-        return decided('blowMoulding.wallThicknessMm', Math.round(wall * 10) / 10, 'geometry',
-          `ray-cast mean wall over ${ctx.geo.wallThickness?.sampleCount ?? 0} samples`, 0.85);
+        const how = wt!.method === 'volume_surface_shell'
+          ? 'thin-shell wall from 2·V/S (ray-cast overshot the cavity)'
+          : `ray-cast mean wall over ${wt!.sampleCount ?? 0} samples (average governs the programmed EBM cycle; thick reads are pinch welds)`;
+        return decided('blowMoulding.wallThicknessMm', Math.round(wall * 10) / 10, 'geometry', how, 0.85);
       },
     },
     {
@@ -399,10 +409,19 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
+        const wall = r.advice.wallMm;   // average wall — see the wallThicknessMm rule
+        const thermo = thermodynamicCoolFactor(r.advice.resin.materialId ?? '');
+        if (thermo) {
+          const f = thermo.factorSPerMm2;
+          return decided('blowMoulding.coolTimeFactorSPerMm2', f, 'library',
+            `transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)]: `
+            + `α_eff ${thermo.alphaEffMm2S} mm²/s, melt ${thermo.meltC}°C / mould ${thermo.mouldC}°C / eject ${thermo.ejectC}°C `
+            + `→ ${f} s/mm²; cool ≈ ${(f * wall ** 2).toFixed(1)} s at ${wall.toFixed(1)} mm`, 0.8);
+        }
         const f = r.advice.resin.coolFactorSPerMm2!;
         return decided('blowMoulding.coolTimeFactorSPerMm2', f, 'library',
-          `${r.advice.resin.grade}: cool = ${f} x wall² = `
-          + `${(f * r.advice.wallMm ** 2).toFixed(1)} s at ${r.advice.wallMm.toFixed(1)} mm`, 0.8);
+          `${r.advice.resin.grade}: curated ${f} s/mm² (no thermal reference for this resin); `
+          + `cool = ${(f * wall ** 2).toFixed(1)} s at ${wall.toFixed(1)} mm`, 0.8);
       },
     },
     {

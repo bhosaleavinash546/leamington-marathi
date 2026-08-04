@@ -190,7 +190,9 @@ async function main(): Promise<void> {
   console.log('='.repeat(130));
 
   writeFileSync(join(HERE, 'ab-rules.csv'), csvR.join('\n') + '\n');
-  writeFileSync(join(HERE, 'ab-ai.csv'), csvA.join('\n') + '\n');
+  // A --rules-only run has no AI results; overwriting ab-ai.csv with an empty
+  // table would destroy the last real AI benchmark (it did, once).
+  if (!rulesOnly) writeFileSync(join(HERE, 'ab-ai.csv'), csvA.join('\n') + '\n');
   console.log(`\nScored parts — rules ${csvR.length - 1}, ai ${csvA.length - 1}. CSVs written for:`);
   console.log('  npx tsx scripts/accuracy-report.ts scripts/ab-rules.csv');
   console.log('  npx tsx scripts/accuracy-report.ts scripts/ab-ai.csv\n');

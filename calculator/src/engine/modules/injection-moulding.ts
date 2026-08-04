@@ -159,6 +159,114 @@ export function autoCoolFactorForMaterial(materialId: string): number {
   return 2.5;
 }
 
+// ─── Thermodynamic cooling — closed-form transient conduction (M7b) ──────────
+//
+// The wall² law above is the exact solution of Fourier's transient conduction
+// equation for a slab cooling between two mould faces:
+//
+//     t_cool = wall² / (π²·α) × ln[ (4/π) · (T_melt − T_mould) / (T_eject − T_mould) ]
+//
+// The per-resin factor lumps everything except wall² into one constant. Here we
+// un-lump it: each resin family carries its typical melt / mould / eject
+// temperatures, and the effective diffusivity α_eff is derived ONCE from the
+// curated industry factor at those reference conditions (calibration — α_eff
+// absorbs latent heat of crystallisation and mould-interface resistance, which
+// the ideal slab ignores). At reference temperatures the closed form reproduces
+// the curated factor exactly; move the mould or eject temperature and the
+// factor responds along the physical law, with every input printable in the
+// derivation trace.
+
+export interface ResinThermalReference {
+  /** typical melt/injection temperature °C */ meltC: number;
+  /** typical coolant/mould temperature °C */ mouldC: number;
+  /** typical safe ejection temperature °C */ ejectC: number;
+}
+
+const RESIN_THERMAL_REFERENCE: Array<[RegExp, ResinThermalReference]> = [
+  [/lcp/,               { meltC: 350, mouldC: 120, ejectC: 180 }],
+  [/pc-abs/,            { meltC: 260, mouldC: 70,  ejectC: 105 }],
+  [/pc-pbt/,            { meltC: 260, mouldC: 75,  ejectC: 110 }],
+  [/pom|acetal|delrin/, { meltC: 205, mouldC: 90,  ejectC: 125 }],
+  [/pps|ppa/,           { meltC: 330, mouldC: 140, ejectC: 180 }],
+  [/peek|pei|ultem/,    { meltC: 380, mouldC: 180, ejectC: 220 }],
+  [/pbt/,               { meltC: 255, mouldC: 80,  ejectC: 125 }],
+  [/pa12/,              { meltC: 250, mouldC: 60,  ejectC: 105 }],
+  [/pa6|pa66|nylon/,    { meltC: 280, mouldC: 80,  ejectC: 125 }],
+  [/san|asa/,           { meltC: 240, mouldC: 60,  ejectC: 95  }],
+  [/hips|gpps|\bps\b/,  { meltC: 220, mouldC: 45,  ejectC: 85  }],
+  [/mppe|ppe|ppo|noryl/,{ meltC: 280, mouldC: 90,  ejectC: 130 }],
+  [/abs/,               { meltC: 240, mouldC: 60,  ejectC: 95  }],
+  [/pc|lexan|glazing/,  { meltC: 300, mouldC: 90,  ejectC: 130 }],
+  [/pet/,               { meltC: 280, mouldC: 90,  ejectC: 135 }],
+  [/tpo/,               { meltC: 220, mouldC: 35,  ejectC: 80  }],
+  [/hdpe|ldpe|lldpe/,   { meltC: 210, mouldC: 30,  ejectC: 75  }],
+  [/fpvc/,              { meltC: 180, mouldC: 30,  ejectC: 70  }],
+  [/upvc|pvc/,          { meltC: 190, mouldC: 35,  ejectC: 75  }],
+  [/pp/,                { meltC: 230, mouldC: 40,  ejectC: 85  }],
+];
+
+/** ln[(4/π)·(Tm−Tw)/(Te−Tw)] — the dimensionless temperature term. >0 iff Tm>Te>Tw. */
+function conductionLogTerm(meltC: number, mouldC: number, ejectC: number): number {
+  const drive = meltC - mouldC, span = ejectC - mouldC;
+  if (!(drive > 0) || !(span > 0)) return NaN;
+  return Math.log((4 / Math.PI) * (drive / span));
+}
+
+export interface ThermoCooling {
+  /** the runtime cooling factor s/mm² from the closed form (sanity-clamped) */
+  factorSPerMm2: number;
+  /** effective thermal diffusivity mm²/s implied by the curated factor at reference temps */
+  alphaEffMm2S: number;
+  meltC: number; mouldC: number; ejectC: number;
+  /** the curated industry factor this resin calibrates against */
+  curatedFactorSPerMm2: number;
+  /** true when the computed factor hit the [0.5×, 2×] curated sanity bound */
+  clamped: boolean;
+}
+
+/**
+ * Evaluate the transient-conduction cooling factor for a resin, optionally at
+ * non-reference mould / ejection temperatures. Returns null for a resin with no
+ * thermal reference data (caller falls back to the curated factor).
+ *
+ * With no overrides this returns the curated factor exactly (by construction),
+ * so switching the rules to this function changes provenance, not price.
+ */
+export function thermodynamicCoolFactor(
+  materialId: string,
+  overrides?: { mouldC?: number; ejectC?: number },
+): ThermoCooling | null {
+  const id = (materialId || '').toLowerCase();
+  const ref = RESIN_THERMAL_REFERENCE.find(([re]) => re.test(id))?.[1];
+  if (!ref) return null;
+
+  const curated = autoCoolFactorForMaterial(materialId);
+  const gRef = conductionLogTerm(ref.meltC, ref.mouldC, ref.ejectC);
+  if (!Number.isFinite(gRef) || gRef <= 0) return null;
+  const PI2 = Math.PI ** 2;
+  const alphaEff = gRef / (PI2 * curated);
+
+  const mouldC = overrides?.mouldC ?? ref.mouldC;
+  const ejectC = overrides?.ejectC ?? ref.ejectC;
+  const gAct = conductionLogTerm(ref.meltC, mouldC, ejectC);
+  if (!Number.isFinite(gAct) || gAct <= 0) return null;
+
+  const raw = gAct / (PI2 * alphaEff);
+  // Curated factor is the sanity bound: physics may move the cycle, but a
+  // pathological temperature pair must not run away with the cost.
+  const lo = curated * 0.5, hi = curated * 2;
+  const clamped = raw < lo || raw > hi;
+  const factor = Math.min(hi, Math.max(lo, raw));
+
+  return {
+    factorSPerMm2: Math.round(factor * 100) / 100,
+    alphaEffMm2S: Math.round(alphaEff * 1e4) / 1e4,
+    meltC: ref.meltC, mouldC, ejectC,
+    curatedFactorSPerMm2: curated,
+    clamped,
+  };
+}
+
 export function getInjectionMouldingInputSchema(): Record<string, string> {
   return {
     materialId: 'string — resin material ID in rate library',

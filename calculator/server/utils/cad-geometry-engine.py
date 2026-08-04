@@ -402,7 +402,9 @@ def _compute_wall_thickness(shape, faces, max_samples: int = 30) -> dict:
     if not planar_outer:
         return None
 
-    sample = random.sample(planar_outer, min(max_samples, len(planar_outer)))
+    # Seeded: the same file must measure the same wall every run — the cost is
+    # deterministic downstream, so the measurement feeding it must be too.
+    sample = random.Random(20260401).sample(planar_outer, min(max_samples, len(planar_outer)))
     thicknesses = []
 
     for face in sample:
@@ -432,9 +434,15 @@ def _compute_wall_thickness(shape, faces, max_samples: int = 30) -> dict:
     n = len(thicknesses)
     mean = sum(thicknesses) / n
     std = math.sqrt(sum((x - mean) ** 2 for x in thicknesses) / n)
+    # 95th-percentile wall: the thickest section ejects last, so cooling time is
+    # governed by the upper tail, not the mean. p95 (not max) so a single sliver
+    # or a ray that grazed a boss cannot set the cycle.
+    ordered = sorted(thicknesses)
+    p95 = ordered[min(n - 1, max(0, math.ceil(0.95 * n) - 1))]
     return {
         "minMm": round(min(thicknesses), 2),
         "maxMm": round(max(thicknesses), 2),
+        "p95Mm": round(p95, 2),
         "meanMm": round(mean, 2),
         "stdDevMm": round(std, 2),
         "sampleCount": n,

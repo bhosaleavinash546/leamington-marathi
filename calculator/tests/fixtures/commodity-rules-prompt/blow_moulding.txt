@@ -6,7 +6,7 @@
 BLOW MOULDING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
-  wallThicknessMm=3  [ray-cast mean wall over 400 samples — deterministic, use verbatim]
+  wallThicknessMm=3  [ray-cast mean wall over 400 samples (average governs the programmed EBM cycle; thick reads are pinch welds) — deterministic, use verbatim]
   materialId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   partVolumeL: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))

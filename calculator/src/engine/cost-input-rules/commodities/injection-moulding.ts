@@ -24,13 +24,13 @@
  *    can close.
  */
 import {
-  estimateClampingTonnage, estimateMouldCost, pickIMMPressId,
+  estimateClampingTonnage, estimateMouldCost, pickIMMPressId, thermodynamicCoolFactor,
   type MouldSteelClass,
 } from '../../modules/injection-moulding.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
-import { projectedAreaCm2 } from '../derive/envelope.js';
+import { projectedAreaCm2, governingWallMm } from '../derive/envelope.js';
 
 /** Largest press in the rate library, tonnes — the hard cavitation ceiling. */
 const MAX_CLAMP_TONNES = 3500;
@@ -172,8 +172,8 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       fieldId: 'imm-wall',
       label: 'wallThicknessMm',
       evaluate: (ctx) => {
-        const wall = ctx.geo.wallThickness?.meanMm;
-        if (!wall) return ask({
+        const gw = governingWallMm(ctx.geo.wallThickness);
+        if (!gw) return ask({
           id: 'injectionMoulding.envelope', kind: 'geometry_gap',
           question: 'What is the nominal wall and the projected area?',
           why: 'No wall thickness was measured, and cooling time goes as wall squared.',
@@ -182,9 +182,8 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         const u = ctx.geo.wallThickness?.uniformity;
-        return decided('injectionMoulding.wallThicknessMm', Math.round(wall * 10) / 10, 'geometry',
-          `ray-cast mean wall over ${ctx.geo.wallThickness?.sampleCount ?? 0} samples`
-          + (u ? ` (${u} uniformity)` : ''), 0.9);
+        return decided('injectionMoulding.wallThicknessMm', gw.mm, 'geometry',
+          gw.basis + (u ? ` (${u} uniformity)` : ''), 0.9);
       },
     },
     {
@@ -275,10 +274,19 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
+        const wall = governingWallMm(ctx.geo.wallThickness)?.mm ?? r.advice.wallMm;
+        const thermo = thermodynamicCoolFactor(r.advice.resin.materialId ?? '');
+        if (thermo) {
+          const f = thermo.factorSPerMm2;
+          return decided('injectionMoulding.coolTimeFactorSPerMm2', f, 'library',
+            `transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)]: `
+            + `α_eff ${thermo.alphaEffMm2S} mm²/s, melt ${thermo.meltC}°C / mould ${thermo.mouldC}°C / eject ${thermo.ejectC}°C `
+            + `→ ${f} s/mm²; cool ≈ ${(f * wall ** 2).toFixed(1)} s at ${wall.toFixed(1)} mm`, 0.8);
+        }
         const f = r.advice.resin.coolFactorSPerMm2!;
         return decided('injectionMoulding.coolTimeFactorSPerMm2', f, 'library',
-          `${r.advice.resin.grade}: cool = ${f} x wall² = `
-          + `${(f * r.advice.wallMm ** 2).toFixed(1)} s at ${r.advice.wallMm.toFixed(1)} mm`, 0.8);
+          `${r.advice.resin.grade}: curated ${f} s/mm² (no thermal reference for this resin); `
+          + `cool = ${(f * wall ** 2).toFixed(1)} s at ${wall.toFixed(1)} mm`, 0.8);
       },
     },
     {

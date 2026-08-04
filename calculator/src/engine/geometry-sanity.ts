@@ -90,7 +90,7 @@ export function correctShellWallMm(
  * @returns the before/after pair when it changed something, else null.
  */
 export function applyShellWallCorrection(
-  geo: { wallThickness?: { meanMm?: number | null; minMm?: number | null; maxMm?: number | null; method?: string } | null;
+  geo: { wallThickness?: { meanMm?: number | null; minMm?: number | null; maxMm?: number | null; p95Mm?: number | null; method?: string } | null;
          volume?: { cm3: number } | null; surfaceArea?: { cm2: number } | null; fillRatio?: number | null } | null,
 ): { fromMm: number; toMm: number } | null {
   if (!geo?.wallThickness || !geo.volume || !geo.surfaceArea) return null;
@@ -100,6 +100,10 @@ export function applyShellWallCorrection(
   geo.wallThickness.meanMm = wc.meanMm;
   geo.wallThickness.minMm = Math.min(geo.wallThickness.minMm ?? wc.meanMm, wc.meanMm);
   geo.wallThickness.maxMm = wc.meanMm * 1.4;
+  // The ray-cast samples measured cavity depth, not wall — every derived
+  // statistic from them is wrong, not just the mean. Drop p95 so no consumer
+  // treats an overshoot tail as "the thickest section".
+  geo.wallThickness.p95Mm = null;
   geo.wallThickness.method = wc.method;
   return { fromMm: before, toMm: wc.meanMm };
 }

@@ -29,7 +29,9 @@ export interface OCCTGeometry {
   } | null;
   wallThickness?: {
     minMm: number; maxMm: number; meanMm: number; stdDevMm: number;
-    sampleCount: number; method: 'ray_cast' | 'formula'; uniformity: string;
+    /** 95th-percentile ray-cast wall (mm) — the thickest section governs cooling/ejection. */
+    p95Mm?: number | null;
+    sampleCount: number; method: 'ray_cast' | 'formula' | 'volume_surface_shell'; uniformity: string;
   } | null;
   draftAnalysis?: {
     drawDirectionXYZ: [number, number, number];

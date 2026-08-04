@@ -268,3 +268,52 @@ overfitting until more parts with known costs arrive.
 
 Harness note for the record: a `--rules-only` run overwrites `ab-ai.csv` with an empty file;
 the round-3 AI figures live in git history (`079dcb1`) and in this document.
+
+---
+
+## Addendum 3 — thermodynamic cooling + governing wall (Steps 1 & 2)
+
+Two upgrades to how cooling time is derived, plus two hygiene fixes, re-benchmarked.
+
+**Step 1 — the cooling factor is now computed, not curated.** The wall² law was always
+the closed-form solution of transient conduction; the per-resin s/mm² constant lumped
+everything else. `thermodynamicCoolFactor()` un-lumps it: each resin family carries its
+typical melt / mould / eject temperatures, α_eff is derived once from the curated industry
+factor at those reference conditions (α_eff absorbs latent heat of crystallisation and
+mould-interface resistance, which the ideal slab ignores), and the runtime factor is
+evaluated from `t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)]` with every input printed in the
+derivation trace. At reference temperatures the closed form reproduces the curated factor
+EXACTLY (unit-tested identity), so this changed provenance, not price. Off-reference
+temperatures move the factor along the physical law, sanity-clamped to [0.5×, 2×] curated.
+
+**Step 2 — the wall that governs cooling.** The kernel now reports a 95th-percentile
+ray-cast wall (p95, not max — one sliver cannot set the cycle) and the sampler is SEEDED,
+which kills the ±5% run-to-run jitter documented on shell parts. Injection moulding cools
+on the governing wall (p95 capped at 2× mean — a thick section is solid plastic that must
+cool). Blow moulding deliberately stays on the AVERAGE wall: the thick tail of a ray-cast
+on a blown part is dominated by the pinch-off weld, where two parison walls fuse and the
+ray reads one doubled wall. The first re-run proved it: the tank's p95 read 10 mm against
+a 5.04 mm mean and pushed the part to £29.80 (+19%); average wall puts it at £25.92 (+4%).
+That distinction is physics (parison programming controls EBM wall; injection thick
+sections are real), not benchmark tuning — and both choices are stated in the trace.
+When the thin-shell 2·V/S correction fires, p95 is dropped at the measurement boundary
+(the raw samples measured cavity depth, so every statistic from them is wrong).
+
+Hygiene: `--rules-only` no longer clobbers `ab-ai.csv` (the harness bug from round 3), and
+`CAD_PROMPT_VERSION` bumped 11 → 12.
+
+### Re-benchmark (rules arm, China ex-works, 100k/yr, seeded geometry)
+
+| Part | Manual | Before | After | err |
+|---|---|---|---|---|
+| RH steering knuckle | £16–18 | £14.05 | £14.10 | −17% |
+| Stub axle PRCR002 | ~£30 | £38.98 | £38.98 | +30% |
+| 25T servo horn | ~£2.20 | £2.91 | £2.91 | +32% |
+| Front bumper | £8–9 | £8.28 | £8.28 | **−3%** |
+| Seat LH cross-member | £1.2–1.6 | £1.33 | £1.33 | **−5%** |
+| Fuel tank | £20–30 | £25.82 | £25.92 | **+4%** |
+
+**MAPE 15.1% (unchanged) · median 11% · bias +0.5% (was +6.7%) · 3 of 6 inside ±10%.**
+The knuckle's £0.05 and the tank's £0.10 movement are the seeded sampler picking a fixed
+sample subset — that number now reproduces byte-identically on every run, which is the
+point. The AI column is not re-run here (no key on the box); round-3 AI figures stand.

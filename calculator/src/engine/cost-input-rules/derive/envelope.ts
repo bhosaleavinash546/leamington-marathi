@@ -50,6 +50,39 @@ export function bboxVolumeCm3(ctx: RuleContext): number | null {
 }
 
 /**
+ * The wall thickness that GOVERNS cooling, mm.
+ *
+ * Cooling time goes as wall² and the part ejects when its THICKEST section is
+ * stiff enough — the mean wall systematically under-times any part with local
+ * thick sections. The ray-cast measurement now carries a 95th-percentile wall
+ * (p95, not max, so one sliver or a grazed boss cannot set the cycle); use it,
+ * capped at 2× the mean so rib/boss outliers stay a local feature rather than
+ * becoming the whole part. When the thin-shell 2·V/S correction fired, the raw
+ * samples measured cavity depth and p95 was dropped at the boundary — the
+ * corrected mean is all there is, and for a uniform shell it is also right.
+ */
+export function governingWallMm(
+  wt: RuleContext['geo']['wallThickness'],
+): { mm: number; basis: string } | null {
+  if (!wt?.meanMm) return null;
+  const mean = wt.meanMm;
+  if (wt.method === 'ray_cast' && wt.p95Mm && wt.p95Mm > mean) {
+    const capped = wt.p95Mm > mean * 2;
+    const mm = Math.round(Math.min(wt.p95Mm, mean * 2) * 10) / 10;
+    return {
+      mm,
+      basis: `95th-percentile ray-cast wall over ${wt.sampleCount ?? 0} samples (mean ${mean} mm)`
+        + (capped ? `, capped at 2x mean — p95 ${wt.p95Mm} mm reads as a local boss/rib` : '')
+        + ' — the thickest section governs cooling',
+    };
+  }
+  const basis = wt.method === 'volume_surface_shell'
+    ? 'thin-shell wall from 2·V/S (ray-cast overshot the cavity)'
+    : `ray-cast mean wall over ${wt.sampleCount ?? 0} samples`;
+  return { mm: Math.round(mean * 10) / 10, basis };
+}
+
+/**
  * Axisymmetric ring/flange/gear-blank shape?
  *
  * Two near-equal footprint dimensions plus a large central bore. Ring rolling is
