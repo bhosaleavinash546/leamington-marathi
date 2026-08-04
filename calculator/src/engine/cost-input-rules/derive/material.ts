@@ -200,3 +200,51 @@ export function toForgingAlloyFamily(fam: MaterialFamily): ForgingAlloyFamily | 
 }
 
 export { DENSITY_KG_PER_CM3 };
+
+/**
+ * A family is not a price. This is the grade we cost it at.
+ *
+ * The rules resolve *family* — aluminium, steel — because that is what a
+ * measured volume plus an engineer's answer can honestly settle. The cost
+ * engine prices a *grade*, and the two are not the same question: within steel
+ * the library spans £0.72/kg (DC04 sheet) to £3.82/kg (316L), a 5x swing that
+ * no geometry decides.
+ *
+ * So this table names one representative grade per family per process, chosen
+ * as the commonest automotive workhorse for that route — the grade a cost
+ * engineer would assume in the absence of a drawing callout. It is an
+ * assumption and it is reported as one (`toCostParams` lists it in `assumed`),
+ * never presented as measured.
+ *
+ * Process matters as much as family: sheet steel is DC04 and forged steel is
+ * 1045, and pricing a stamping at bar-stock rates would be wrong by 20%.
+ */
+const REPRESENTATIVE_GRADE: Record<string, Partial<Record<MaterialFamily, string>>> = {
+  machining:          { aluminium: 'mat-al6082-bar', steel: 'mat-en8', 'cast iron': 'mat-gjl250',
+                        titanium: 'mat-ti6al4v', 'copper alloy': 'mat-brass-cz121', plastic: 'mat-pom-c' },
+  forging:            { aluminium: 'mat-al6082-bar', steel: 'mat-steel1045', titanium: 'mat-ti6al4v',
+                        'copper alloy': 'mat-brass-cz121' },
+  casting:            { aluminium: 'mat-adc12', 'cast iron': 'mat-gjl250', steel: 'mat-steel1045',
+                        'copper alloy': 'mat-bronze-pb1', magnesium: 'mat-az91d' },
+  cast_and_machine:   { aluminium: 'mat-adc12', 'cast iron': 'mat-gjl250', steel: 'mat-steel1045' },
+  sheet_metal:        { steel: 'mat-dc04', aluminium: 'mat-aa5754-sheet' },
+  sheet_metal_fab:    { steel: 'mat-dc04', aluminium: 'mat-aa5754-sheet' },
+};
+
+/**
+ * The grade to cost a resolved family at, for this process.
+ *
+ * Returns null when the family is not producible by the process at all — a
+ * plastic forging, a cast-iron stamping — so the caller stops rather than
+ * costing something that cannot be made.
+ */
+export function representativeMaterialId(
+  commodity: string, family: MaterialFamily,
+): string | null {
+  return REPRESENTATIVE_GRADE[commodity]?.[family] ?? null;
+}
+
+/** True when the string is a real id in the rate library, not a family name. */
+export function isLibraryMaterialId(id: string): boolean {
+  return !!id && DEFAULT_RATE_LIBRARY.materials.some(m => m.id === id);
+}

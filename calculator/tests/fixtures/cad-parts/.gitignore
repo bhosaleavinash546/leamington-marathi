@@ -1,0 +1,10 @@
+# Customer CAD supplied for the rules-vs-AI accuracy run.
+#
+# Deliberately NOT committed. These are real automotive parts (steering
+# knuckle, stub axle, bumper, fuel tank, cross-member) supplied for
+# measurement only, and the standing constraint on this project is that the
+# tool is built and tested from open-source input. They are also ~58 MB,
+# which does not belong in git history either way.
+#
+# The committed synthetic fixtures next door are what CI runs on.
+real/

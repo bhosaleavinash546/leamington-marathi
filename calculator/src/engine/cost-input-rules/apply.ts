@@ -65,6 +65,14 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'machining.netWeightKg': { to: 'netWeightKg' },
   'machining.estimatedCycleTimeHr': { to: 'estimatedCycleTimeHr' },
   'machining.setupTimeHr': { to: 'estimatedSetupTimeHr' },
+  // The metal commodities decide a material FAMILY, and until now it landed
+  // nowhere: `costInputSuggestions.materialId` came back empty on every metal
+  // part, so a deterministic analysis could not be costed at all ("Material ''
+  // not found"). Only the plastics worked, because a resin rule emits a real
+  // library id. The value written here is a family name, which the costing
+  // layer resolves to a representative grade — see `representativeMaterialId`.
+  'machining.materialId': { to: 'materialId' },
+  'forging.materialId': { to: 'materialId' },
   'forging.partWeightKg': { to: 'netWeightKg' },
   'sheetMetal.netWeightKg': { to: 'netWeightKg' },
   'injectionMoulding.partWeightKg': { to: 'netWeightKg' },
