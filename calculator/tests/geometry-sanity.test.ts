@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { correctShellWallMm, shellWallEstimateMm, estimatePackagingPerPart } from '../src/engine/geometry-sanity.js';
+import { correctShellWallMm, shellWallEstimateMm, estimatePackagingPerPart, applyShellWallCorrection } from '../src/engine/geometry-sanity.js';
 import { pickIMMPressId } from '../src/engine/modules/injection-moulding.js';
 import { pickEBMMachineId, barrierMaterialId } from '../src/engine/modules/blow-moulding.js';
 
@@ -87,5 +87,46 @@ describe('barrier (coex) material selection', () => {
   it('does not upgrade a non-PE barrier grade (a barrier PP/PET keeps its own resin)', () => {
     expect(barrierMaterialId('mat-pp', true)).toBe('mat-pp');
     expect(barrierMaterialId('mat-pet-bg', true)).toBe('mat-pet-bg');
+  });
+});
+
+describe('applyShellWallCorrection — at the boundary, not in a route', () => {
+  /** The real bumper, as measured: 2059.9 cm³, 16261.7 cm², fill 0.0036. */
+  const bumper = () => ({
+    wallThickness: { meanMm: 27.1, minMm: 20, maxMm: 35, method: 'ray_cast' },
+    volume: { cm3: 2059.9 }, surfaceArea: { cm2: 16261.7 }, fillRatio: 0.0036,
+  });
+
+  it('rewrites the overshooting ray-cast wall in place', () => {
+    const geo = bumper();
+    const r = applyShellWallCorrection(geo);
+    expect(r).toEqual({ fromMm: 27.1, toMm: 2.53 });
+    expect(geo.wallThickness.meanMm).toBe(2.53);
+    expect(geo.wallThickness.method).toBe('volume_surface_shell');
+  });
+
+  it('is idempotent, so a re-measured geometry is not corrected twice', () => {
+    const geo = bumper();
+    applyShellWallCorrection(geo);
+    expect(applyShellWallCorrection(geo)).toBeNull();
+    expect(geo.wallThickness.meanMm).toBe(2.53);
+  });
+
+  it('leaves a chunky solid alone', () => {
+    // A forging whose ray-cast reads thick because it IS thick.
+    const forging = {
+      wallThickness: { meanMm: 26, minMm: 12, maxMm: 48, method: 'ray_cast' },
+      volume: { cm3: 1037 }, surfaceArea: { cm2: 960 }, fillRatio: 0.123,
+    };
+    expect(applyShellWallCorrection(forging)).toBeNull();
+    expect(forging.wallThickness.meanMm).toBe(26);
+  });
+
+  it('is what stands between a bumper and a 115x cycle time', () => {
+    // Moulding cooling goes as wall². This is the whole reason the correction
+    // cannot be allowed to live in one caller: 3.16 x 27.1² = 2321 s against
+    // 3.16 x 2.53² = 20 s, and the part costed £339 against a manual of £8-9.
+    const cool = (w: number) => 3.16 * w * w;
+    expect(cool(27.1) / cool(2.53)).toBeGreaterThan(100);
   });
 });

@@ -70,3 +70,36 @@ export function correctShellWallMm(
   }
   return { meanMm: m, corrected: false, method: 'ray_cast', shellWallMm };
 }
+
+/**
+ * Apply the thin-shell wall correction to a measured geometry, in place.
+ *
+ * This used to live inline in `server/routes/cad.ts`, immediately after
+ * `analyzeGeometry`. That worked for the one caller that existed, and it made
+ * the correction invisible to every caller that came later: a bumper measured
+ * through any other path kept its 27.1 mm ray-cast wall, and moulding cooling
+ * goes as wall², so the cycle came out 115x long and the part costed at £339
+ * against a manual of £8-9.
+ *
+ * Wall thickness is a property of the measurement, not of one HTTP route, so
+ * the correction belongs at the geometry boundary where nobody can forget it.
+ *
+ * Idempotent: a corrected geometry re-measures the same 2·V/S and the guard
+ * (`m > 3 x shellWallMm`) no longer fires, so calling it twice is a no-op.
+ *
+ * @returns the before/after pair when it changed something, else null.
+ */
+export function applyShellWallCorrection(
+  geo: { wallThickness?: { meanMm?: number | null; minMm?: number | null; maxMm?: number | null; method?: string } | null;
+         volume?: { cm3: number } | null; surfaceArea?: { cm2: number } | null; fillRatio?: number | null } | null,
+): { fromMm: number; toMm: number } | null {
+  if (!geo?.wallThickness || !geo.volume || !geo.surfaceArea) return null;
+  const before = geo.wallThickness.meanMm ?? 0;
+  const wc = correctShellWallMm(before, geo.volume.cm3, geo.surfaceArea.cm2, geo.fillRatio ?? 1);
+  if (!wc.corrected) return null;
+  geo.wallThickness.meanMm = wc.meanMm;
+  geo.wallThickness.minMm = Math.min(geo.wallThickness.minMm ?? wc.meanMm, wc.meanMm);
+  geo.wallThickness.maxMm = wc.meanMm * 1.4;
+  geo.wallThickness.method = wc.method;
+  return { fromMm: before, toMm: wc.meanMm };
+}

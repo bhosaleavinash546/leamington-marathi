@@ -70,6 +70,7 @@ async function acquirePython(): Promise<() => void> {
  * One declaration means that class of bug cannot recur.
  */
 import type { OCCTGeometry } from '../../src/engine/ai-analysis.js';
+import { applyShellWallCorrection } from '../../src/engine/geometry-sanity.js';
 export type { OCCTGeometry };
 
 export async function analyzeGeometry(
@@ -82,7 +83,14 @@ export async function analyzeGeometry(
   const release = await acquirePython();
   try {
     await writeFile(tmpPath, buffer);
-    return await _runPython(tmpPath, timeoutMs);
+    const geo = await _runPython(tmpPath, timeoutMs);
+    // The ray-cast wall overshoots badly on thin shells (a bumper reads 27 mm
+    // against a real ~2.5 mm). Correct it HERE, at the measurement boundary, so
+    // every consumer sees the same wall — moulding cooling goes as wall², so a
+    // caller that misses this is not slightly wrong, it is 100x wrong.
+    const wc = applyShellWallCorrection(geo);
+    if (wc) console.log(`[geometry] thin-shell wall corrected: ${wc.fromMm} mm → ${wc.toMm} mm (2·V/S)`);
+    return geo;
   } finally {
     release();
     unlink(tmpPath).catch(() => {});

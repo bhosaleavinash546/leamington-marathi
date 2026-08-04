@@ -14,7 +14,6 @@ import { runCADSanityChecks, type CADGeometryContext } from '../utils/cad-sanity
 import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-machining-guard.js';
 import { normalizeFieldConfidences } from '../utils/cad-schema.js';
 import { familyFromFilename, proseFamily, promoteHighestConfidence, type MaterialSuggestion } from '../../src/engine/material-family.js';
-import { correctShellWallMm } from '../../src/engine/geometry-sanity.js';
 import { specForCommodity, DETERMINISTIC_COMMODITIES } from '../../src/engine/cost-input-rules/index.js';
 import { buildDeterministicAnalysis } from '../../src/engine/cost-input-rules/deterministic.js';
 import { diffAnalyses } from '../../src/engine/cost-input-rules/diff.js';
@@ -394,18 +393,9 @@ router.post('/analyze', analyzeLimiter, upload.fields([
 
     if (geo.status === 'success') {
       geometrySource = 'occt';
-      // Correct the ray-cast wall on thin shells (a bumper read 27 mm vs ~2.5 mm),
-      // so the moulding cooling time and the process classifier see the real wall.
-      if (geo.wallThickness && geo.volume && geo.surfaceArea) {
-        const wc = correctShellWallMm(geo.wallThickness.meanMm, geo.volume.cm3, geo.surfaceArea.cm2, geo.fillRatio ?? 1);
-        if (wc.corrected) {
-          console.log(`[CAD] Wall corrected (thin shell): ${geo.wallThickness.meanMm}mm → ${wc.meanMm}mm (2·V/S)`);
-          geo.wallThickness.meanMm = wc.meanMm;
-          geo.wallThickness.minMm = Math.min(geo.wallThickness.minMm ?? wc.meanMm, wc.meanMm);
-          geo.wallThickness.maxMm = wc.meanMm * 1.4;
-          (geo.wallThickness as { method?: string }).method = wc.method;
-        }
-      }
+      // The thin-shell wall correction now runs inside `analyzeGeometry`, at the
+      // measurement boundary, so it cannot be missed by a caller. It used to be
+      // here, which meant it applied to this route and nowhere else.
       console.log(`[CAD] OCCT success — V=${geo.volume!.cm3.toFixed(1)}cm³  SA=${geo.surfaceArea!.cm2.toFixed(0)}cm²  faces=${geo.faces!.total}`);
     } else {
       console.warn(`[CAD] OCCT failed (${geo.error}) — falling back to text preprocessor`);
