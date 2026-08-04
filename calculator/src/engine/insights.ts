@@ -176,12 +176,18 @@ export function currencySymbol(code: string): string {
 const SYNTHETIC_OP = /setup \(amortised\)|\bcast|mould|mold|pour|shakeout|melt|foundry/i;
 const FIVE_AXIS_ID = /vmc5|umc|dmu|5[\s-]?ax/i;
 
+/** The real machining operations behind an operation list — synthetic entries
+ *  (the amortised-setup pseudo-op, the casting pour) excluded. */
+export function realMachiningOps(input: UniversalStackInput): UniversalStackInput['operations'] {
+  return (input.operations ?? []).filter(o => !SYNTHETIC_OP.test(o.operationName ?? ''));
+}
+
 /** The REAL machining stations behind an operation list: synthetic ops
  *  excluded, distinct machines counted, consolidation recognised. */
 export function realMachiningStations(input: UniversalStackInput): {
   opCount: number; stations: number; fiveAxis: boolean; consolidated: boolean;
 } {
-  const machOps = (input.operations ?? []).filter(o => !SYNTHETIC_OP.test(o.operationName ?? ''));
+  const machOps = realMachiningOps(input);
   const ids = new Set(machOps.map(o => o.machineId).filter(Boolean));
   const fiveAxis = [...ids].some(id => FIVE_AXIS_ID.test(id));
   return {

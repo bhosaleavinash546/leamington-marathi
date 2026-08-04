@@ -4,7 +4,10 @@
  * Follow the same pattern as insights.ts.
  */
 import type { PartCostResult, UniversalStackInput, CommodityType } from './types.js';
-import { realMachiningStations, type SuggestionContext } from './insights.js';
+import { realMachiningStations, realMachiningOps, type SuggestionContext } from './insights.js';
+import {
+  optimiseMachiningRouting, costRoutingAsGiven, classifyOpName, standardBatchSize,
+} from './routing-optimiser.js';
 
 export type DFMSeverity = 'critical' | 'major' | 'minor' | 'opportunity';
 export type DFMCategory = 'geometry' | 'material' | 'process' | 'tolerance' | 'tooling' | 'assembly' | 'automation' | 'commercial';
@@ -660,20 +663,67 @@ export function generateDFMDFA(
     });
   }
 
-  // Process consolidation — only when the costed routing is actually split.
-  // The routing optimiser already ranks consolidation against the split routing
-  // when it builds the cost, so recommending it against a routing that is
-  // already consolidated (or already on a 5-axis machine) is the tool
-  // critiquing its own choice. That exact action shipped in a real report.
+  // Process consolidation — only when the costed routing is actually split,
+  // and the saving is the OPTIMISER'S DELTA, not a generic percentage. The old
+  // action claimed "40–60% through 4/5-axis investment" while the optimiser's
+  // own table could show consolidation LOSING on the same part (it did, on the
+  // real stub axle — the true lever there was the machine mix, not the setup
+  // count). Method: hold turning and grinding identical on both sides (the
+  // optimiser does not re-plan them), cost the milling + drilling content on
+  // the machines AS GIVEN, cost the optimiser's cheapest routing of the same
+  // content, and recommend whichever direction the arithmetic points —
+  // consolidation when the 5-axis candidate wins, a machine-mix re-quote when
+  // a cheaper split wins. No verifiable delta (unknown machine ids) → no claim.
   if (st.opCount > 4 && st.stations > 2 && !st.consolidated) {
-    costOptimisations.push({
-      title: 'Multi-Axis Machining to Consolidate Operations',
-      description: `${st.opCount} operations across ${st.stations} stations can be reduced by 40–60% through 4/5-axis machining centre investment.`,
-      expectedSavingPct: Math.min(12, st.opCount * 1.5),
-      technicalJustification: '5-axis machining centres can combine 3–4 separate operations into a single setup, eliminating re-fixturing time, reducing WIP and improving dimensional accuracy through datum consistency.',
-      risk: 'Medium',
-      timeframe: 'Long Term',
+    const machOps = realMachiningOps(input);
+    const optimisable = machOps.filter(o => {
+      const cap = classifyOpName(o.operationName ?? '');
+      return cap === 'mill3' || cap === 'mill5' || cap === 'drill';
     });
+    const millOps = optimisable.filter(o => classifyOpName(o.operationName ?? '') !== 'drill');
+    const batch = standardBatchSize(input.tooling?.amortizationVolume ?? 0);
+    const given = optimisable.length > 0 ? costRoutingAsGiven(
+      optimisable.map(o => ({ name: o.operationName ?? '', machineId: o.machineId, cycleTimeHr: o.cycleTimeHr })),
+      batch) : null;
+    if (given) {
+      const hrOf = (pred: (cap: string) => boolean) => optimisable
+        .filter(o => pred(classifyOpName(o.operationName ?? '')))
+        .reduce((sum, o) => sum + o.cycleTimeHr, 0);
+      const opt = optimiseMachiningRouting({
+        millingHr: hrOf(c => c !== 'drill'),
+        drillHr: hrOf(c => c === 'drill'),
+        // Each existing milling op is treated as one fixturing of the split
+        // alternative — the ops are the only setup evidence this layer has.
+        principalDirections: Math.max(1, millOps.length),
+        axisymmetric: false,
+        bboxSortedMm: null,
+        batchSize: batch,
+      });
+      const delta = given.costPerPart - opt.chosen.costPerPart;
+      // Claim only what the arithmetic supports: >2% of the machining spend
+      // and more than pennies.
+      if (delta > Math.max(0.05, given.costPerPart * 0.02)) {
+        const pct = Math.min(20, (delta / given.costPerPart) * 100);
+        const consolidationWins = opt.chosen.label === 'consolidated-5axis';
+        costOptimisations.push(consolidationWins
+          ? {
+              title: 'Multi-Axis Machining to Consolidate Operations',
+              description: `Consolidating the milled and drilled content into a single 5-axis setup saves £${delta.toFixed(2)}/part (${pct.toFixed(0)}% of the costed machining spend of £${given.costPerPart.toFixed(2)}).`,
+              expectedSavingPct: pct,
+              technicalJustification: opt.basis,
+              risk: 'Medium',
+              timeframe: 'Long Term',
+            }
+          : {
+              title: 'Re-quote Machining on the Cost-Optimal Routing',
+              description: `The costed ${st.stations}-station routing books £${given.costPerPart.toFixed(2)}/part of machining; the same content on the cheapest capable machines costs £${opt.chosen.costPerPart.toFixed(2)} — a £${delta.toFixed(2)}/part (${pct.toFixed(0)}%) machine-mix saving. Note: 5-axis consolidation was ranked and does NOT win on this part.`,
+              expectedSavingPct: pct,
+              technicalJustification: opt.basis,
+              risk: 'Low',
+              timeframe: 'Quick Win',
+            });
+      }
+    }
   }
 
   // Regional sourcing — pointless advice when the part is already costed in a

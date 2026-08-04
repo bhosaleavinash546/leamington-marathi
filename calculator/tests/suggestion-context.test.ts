@@ -171,10 +171,35 @@ describe('generateDFMDFA — same facts, one verdict', () => {
     expect(withoutCtx.costOptimisations.some(o => o.title.includes('Regional Sourcing'))).toBe(true);
   });
 
-  it('split routing still earns the §14 multi-axis action, with station counts in the text', () => {
+  it('§14 on a split routing quotes the OPTIMISER delta — and names the true lever', () => {
+    // For SPLIT_OPS the cheaper SPLIT (VF-2 + drill press) beats 5-axis
+    // consolidation, so the action must be a machine-mix re-quote, not the old
+    // generic "40-60% through 4/5-axis investment" claim.
     const r = generateDFMDFA(result(), input(SPLIT_OPS), 'cast_and_machine');
+    expect(r.costOptimisations.some(o => o.title.includes('Multi-Axis Machining'))).toBe(false);
+    const act = r.costOptimisations.find(o => o.title.includes('Re-quote Machining'));
+    expect(act).toBeDefined();
+    expect(act!.description).toMatch(/£\d/);                       // a real pounds figure
+    expect(act!.description).toContain('does NOT win');            // consolidation honestly ranked
+    expect(act!.technicalJustification).toContain('cost-ranked');  // the optimiser table rides along
+    expect(act!.expectedSavingPct).toBeGreaterThan(0);
+    expect(act!.timeframe).toBe('Quick Win');                      // negotiation, not capex
+  });
+
+  it('§14 recommends consolidation only when the optimiser says it actually wins', () => {
+    // Short cycles at a tiny batch: setup amortisation dominates, so the
+    // single-setup 5-axis candidate genuinely beats the 3-station split.
+    const shortOp = (name: string, machineId: string) =>
+      ({ ...op(name, machineId), cycleTimeHr: 0.005, labourTimeHr: 0.005 });
+    const ops = [
+      shortOp('Milling — +Z', 'mach-vmc3'), shortOp('Milling — -Z', 'mach-vmc3'),
+      shortOp('Milling — +X', 'mach-haas-vf2'), shortOp('Milling — -X', 'mach-haas-vf2'),
+      shortOp('Drilling — 4 holes', 'mach-drill'),
+    ];
+    const r = generateDFMDFA(result(), input(ops, 1000), 'machining');   // batch 50
     const act = r.costOptimisations.find(o => o.title.includes('Multi-Axis Machining'));
     expect(act).toBeDefined();
-    expect(act!.description).toContain('5 stations');
+    expect(act!.description).toMatch(/saves £\d/);
+    expect(act!.technicalJustification).toContain('consolidated-5axis');
   });
 });
