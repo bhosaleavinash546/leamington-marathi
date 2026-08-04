@@ -49,6 +49,40 @@ describe('machine-undersized lesson', () => {
   });
 });
 
+describe('machine-oversized lesson — the machining-routing lesson, generalised', () => {
+  const overInput = () => {
+    const i = mkInput('mat-pp-impact', 0.5, 100000);
+    i.operations = [{
+      operationName: 'Injection Moulding', machineId: 'imm-800t', cycleTimeHr: 0.01,
+      partsPerCycle: 1, oee: 0.85, manning: 0.25, labourTimeHr: 0.0025,
+      labourEfficiency: 0.9, labourId: 'lab-uk-skilled',
+    }] as never;
+    return i;
+  };
+
+  it('prices an oversized press in £/part and proposes the sized machine', () => {
+    // 180 t of clamp needs imm-200t (£25/hr); costed on imm-800t (£78/hr).
+    // 0.01 hr / 0.85 oee × £53/hr difference ≈ £0.62/part of machine nobody needed.
+    const f = runShouldCostAudit(base({
+      commodity: 'injection_moulding', input: overInput(),
+      sizingParams: { clampTonnes: 180 }, selectedMachineId: 'imm-800t',
+    }));
+    const m = f.find(x => x.id === 'machine-oversized');
+    expect(m).toBeDefined();
+    expect(m?.severity).toBe('medium');
+    expect(m?.correction).toEqual({ kind: 'machineId', machineId: 'imm-200t' });
+    expect(m?.message).toMatch(/£0\.6\d\/part/);
+  });
+
+  it('stays silent when the selected machine IS the sized one', () => {
+    const f = runShouldCostAudit(base({
+      commodity: 'injection_moulding', input: overInput(),
+      sizingParams: { clampTonnes: 700 }, selectedMachineId: 'imm-800t',
+    }));
+    expect(f.find(x => x.id === 'machine-oversized')).toBeUndefined();
+  });
+});
+
 describe('tooling-amort lesson', () => {
   it('flags amort over a stale default and proposes annual volume', () => {
     const f = runShouldCostAudit(base({ input: mkInput('mat-al6061', 2, 500000), annualVolume: 100000 }));

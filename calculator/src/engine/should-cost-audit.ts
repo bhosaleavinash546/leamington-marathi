@@ -13,6 +13,7 @@
  * from the rate library or the annual amortisation volume, never a £.
  */
 import { sizeProcessMachine, SIZE_TIERED_COMMODITIES, type MachineSizingParams } from './machine-sizing.js';
+import { DEFAULT_RATE_LIBRARY } from './rate-library.js';
 import { physicalRemovalCeilingMin } from './feature-costing.js';
 import type { UniversalStackInput, RateLibrary } from './types.js';
 
@@ -83,6 +84,46 @@ const checkMachineSizing: Check = (ctx) => {
     title: 'Machine not sized to the part',
     severity: 'high',
     message: `Selected ${ctx.selectedMachineId}, but the part's process force/shot needs ${expected}. An undersized machine mis-costs the process (the fuel-tank bottle-machine class of error).`,
+    expected,
+    actual: ctx.selectedMachineId,
+    correction: { kind: 'machineId', machineId: expected },
+  };
+};
+
+/** Lesson (the machining-routing lesson, generalised to every sized process):
+ *  an OVERSIZED machine is a cost decision nobody made. The deterministic path
+ *  always picks the smallest tier that covers the physics — which on a
+ *  monotonic rate ladder is also the cheapest — but an AI- or hand-picked
+ *  machine a tier or three too big sailed through unchallenged, booking £/hr
+ *  the part never needed. Flag it WITH the per-part delta so the reader can
+ *  either fix it or, if the big machine is a deliberate supplier reality,
+ *  quote this line in negotiation. */
+const checkMachineOversized: Check = (ctx) => {
+  if (!(ctx.commodity in SIZE_TIERED_COMMODITIES)) return null;
+  if (!ctx.sizingParams || !ctx.selectedMachineId) return null;
+  const expected = sizeProcessMachine(ctx.commodity, ctx.sizingParams);
+  if (!expected || expected === ctx.selectedMachineId) return null;
+  const ecap = machineCapacityTonnes(expected);
+  const acap = machineCapacityTonnes(ctx.selectedMachineId);
+  if (ecap == null || acap == null || acap <= ecap) return null;   // undersize is the check above
+  const rateOf = (id: string) =>
+    DEFAULT_RATE_LIBRARY.machines.find(m => m.id === id)?.computedRatePerHr ?? null;
+  const actualRate = rateOf(ctx.selectedMachineId);
+  const expectedRate = rateOf(expected);
+  if (actualRate == null || expectedRate == null || actualRate <= expectedRate) return null;
+  // Effective machine hours this part books on the oversized machine.
+  const hours = (ctx.input.operations ?? [])
+    .filter(o => o.machineId === ctx.selectedMachineId)
+    .reduce((sum, o) => sum + o.cycleTimeHr / Math.max(0.3, o.oee ?? 0.85) / Math.max(1, o.partsPerCycle ?? 1), 0);
+  const deltaPerPart = hours * (actualRate - expectedRate);
+  if (deltaPerPart < 0.01) return null;   // pennies — not worth a finding
+  return {
+    id: 'machine-oversized',
+    title: 'Machine larger than the part needs',
+    severity: 'medium',
+    message: `Selected ${ctx.selectedMachineId} (£${actualRate.toFixed(0)}/hr) where the physics needs only `
+      + `${expected} (£${expectedRate.toFixed(0)}/hr). At the costed cycle that books £${deltaPerPart.toFixed(2)}/part `
+      + `the part does not need. If the larger machine is the supplier's real cell, keep it — and use this line as the negotiation lever.`,
     expected,
     actual: ctx.selectedMachineId,
     correction: { kind: 'machineId', machineId: expected },
@@ -209,6 +250,7 @@ const checkMachiningEnvelope: Check = (ctx) => {
 
 const CHECKS: ReadonlyArray<Check> = [
   checkMachineSizing,
+  checkMachineOversized,
   checkThinHollowNotCast,
   checkMachiningEnvelope,
   checkWallPlausible,
