@@ -4,6 +4,7 @@
  * Follow the same pattern as insights.ts.
  */
 import type { PartCostResult, UniversalStackInput, CommodityType } from './types.js';
+import { realMachiningStations, type SuggestionContext } from './insights.js';
 
 export type DFMSeverity = 'critical' | 'major' | 'minor' | 'opportunity';
 export type DFMCategory = 'geometry' | 'material' | 'process' | 'tolerance' | 'tooling' | 'assembly' | 'automation' | 'commercial';
@@ -16,6 +17,8 @@ export interface DFMIssue {
   savingPct: number;
   risk: 'Low' | 'Medium' | 'High';
   recommendation: string;
+  /** Who owns this lever (see SuggestionContext in insights.ts). */
+  lever?: 'design' | 'supplier' | 'sourcing' | 'assumption' | 'verified';
 }
 
 export interface DFMAnalysis {
@@ -78,7 +81,16 @@ export function generateDFMDFA(
   result: PartCostResult,
   input: UniversalStackInput,
   commodity: CommodityType,
+  ctx?: SuggestionContext,
 ): DFMDFAResult {
+  // Station-aware view of the operation list: synthetic ops (the amortised
+  // setup pseudo-op, the casting pour) excluded, distinct machines counted.
+  // Raw opCount included those and made 2 of a real stub axle's "7 operations"
+  // fictitious — and the multi-axis advice below used to fire against routings
+  // already consolidated on one 5-axis machine, including routings this tool
+  // itself chose. Void ctx keeps every non-routing rule at its old behaviour.
+  void ctx;
+  const st = realMachiningStations(input);
   const tot = result.total || 1;
   const matPct  = (result.breakdown.rawMaterial / tot) * 100;
   const procPct = (result.breakdown.process / tot) * 100;
@@ -191,16 +203,19 @@ export function generateDFMDFA(
 
   // ─── Commodity-specific DFM rules ────────────────────────────────────────────
 
-  if (commodity === 'machining') {
-    if (opCount > 4) {
+  if (commodity === 'machining' || commodity === 'cast_and_machine') {
+    // cast_and_machine used to be absent here while the DFA block below was
+    // ungated — the same part scored DFM 10/10 and DFA MAJOR for the same fact.
+    if (st.opCount > 4 && st.stations > 2 && !st.consolidated) {
       dfmIssues.push({
         severity: 'major',
         category: 'geometry',
-        title: 'High operation count (>4)',
-        description: `${opCount} machining operations detected. Each additional setup adds fixture cost, handling time, and process variation.`,
+        lever: 'supplier',
+        title: `Split routing across ${st.stations} stations`,
+        description: `${st.opCount} machining operations across ${st.stations} separate stations. Each station adds fixture cost, handling time, and process variation.`,
         savingPct: 10,
         risk: 'Medium',
-        recommendation: 'Multi-axis consolidation, reduce setups',
+        recommendation: 'Quote a multi-axis consolidation against the split routing',
       });
     }
     if (procPct > 40) {
@@ -474,15 +489,29 @@ export function generateDFMDFA(
 
   const dfaIssues: DFMIssue[] = [];
 
-  if (opCount > 5) {
+  if (st.opCount > 4 && st.stations > 2 && !st.consolidated) {
     dfaIssues.push({
       severity: 'major',
       category: 'assembly',
-      title: 'High operation count implies multiple setups/transfers',
-      description: `${opCount} operations require multiple machine setups or work transfers, increasing total assembly/process cycle time.`,
+      lever: 'supplier',
+      title: `${st.stations} separate stations imply multiple setups/transfers`,
+      description: `${st.opCount} machining operations across ${st.stations} stations require multiple setups or work transfers, increasing total process cycle time.`,
       savingPct: 8,
       risk: 'Medium',
-      recommendation: 'Reduce operation count through multi-axis machining, combined tooling, or part consolidation',
+      recommendation: 'Quote multi-axis consolidation, combined tooling, or part consolidation against this routing',
+    });
+  } else if (st.opCount > 4 && st.consolidated) {
+    dfaIssues.push({
+      severity: 'opportunity',
+      category: 'assembly',
+      lever: 'verified',
+      title: 'Multi-operation routing already consolidated',
+      description: `${st.opCount} operations run across ${st.stations} station(s)`
+        + (st.fiveAxis ? ' on a multi-axis machine' : '')
+        + ' — the setup-reduction lever is already taken in this cost.',
+      savingPct: 0,
+      risk: 'Low',
+      recommendation: 'Use the routing comparison in the derivation trace as negotiation evidence',
     });
   }
 
@@ -522,12 +551,13 @@ export function generateDFMDFA(
     });
   }
 
-  if ((commodity === 'machining' || commodity === 'forging') && opCount > 3) {
+  if ((commodity === 'machining' || commodity === 'forging') && st.stations > 2) {
     dfaIssues.push({
       severity: 'minor',
       category: 'assembly',
+      lever: 'supplier',
       title: 'Multiple fixturing operations; consider pallet systems',
-      description: `${opCount} operations in ${commodity.replace(/_/g, ' ')} imply multiple fixturing steps. Pallet systems can reduce handling time.`,
+      description: `${st.opCount} operations across ${st.stations} stations in ${commodity.replace(/_/g, ' ')} imply multiple fixturing steps. Pallet systems can reduce handling time.`,
       savingPct: 5,
       risk: 'Low',
       recommendation: 'Evaluate tombstone/pallet machining systems for batch processing without re-fixturing',
@@ -625,12 +655,16 @@ export function generateDFMDFA(
     });
   }
 
-  // Process consolidation
-  if (opCount > 4) {
+  // Process consolidation — only when the costed routing is actually split.
+  // The routing optimiser already ranks consolidation against the split routing
+  // when it builds the cost, so recommending it against a routing that is
+  // already consolidated (or already on a 5-axis machine) is the tool
+  // critiquing its own choice. That exact action shipped in a real report.
+  if (st.opCount > 4 && st.stations > 2 && !st.consolidated) {
     costOptimisations.push({
       title: 'Multi-Axis Machining to Consolidate Operations',
-      description: `${opCount} operations can be reduced by 40–60% through 4/5-axis machining centre investment.`,
-      expectedSavingPct: Math.min(12, opCount * 1.5),
+      description: `${st.opCount} operations across ${st.stations} stations can be reduced by 40–60% through 4/5-axis machining centre investment.`,
+      expectedSavingPct: Math.min(12, st.opCount * 1.5),
       technicalJustification: '5-axis machining centres can combine 3–4 separate operations into a single setup, eliminating re-fixturing time, reducing WIP and improving dimensional accuracy through datum consistency.',
       risk: 'Medium',
       timeframe: 'Long Term',

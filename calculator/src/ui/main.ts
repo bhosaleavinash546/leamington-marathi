@@ -170,6 +170,17 @@ import {
 } from './animations.js';
 import { initMotionFX, motionInViewReveal, motionRevealRows } from './motion-fx.js';
 
+/** What the suggestion layer may know about the current costing — the region
+ *  select and whether a person actually typed an annual volume — so the
+ *  insights stop recommending the region we are already in or volume levers
+ *  built on assumed volumes. */
+function uiSuggestionContext(): { region: string; volumeProvided: boolean } {
+  const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
+  const vol = (document.getElementById('annual-volume') as HTMLInputElement)?.value ?? '';
+  return { region, volumeProvided: vol.trim() !== '' && Number(vol) > 0 };
+}
+
+
 // ─── State ────────────────────────────────────────────────────────────────────
 
 let library: RateLibrary = recomputeMachineRates(getLibraryFromStorage());
@@ -13906,7 +13917,7 @@ function updateTabBadges(result: PartCostResult, input: UniversalStackInput): vo
 
   if (insightsBadge) {
     try {
-      const insights = generateInsights(result, input, library, activeCommodity);
+      const insights = generateInsights(result, input, library, activeCommodity, uiSuggestionContext());
       const highVal = insights.filter(i => (i as any).savingPct >= 10);
       const count = highVal.length || insights.length;
       if (count > 0) {
@@ -13921,7 +13932,7 @@ function updateTabBadges(result: PartCostResult, input: UniversalStackInput): vo
 
   if (dfmBadge) {
     try {
-      const dfm = generateDFMDFA(result, input, activeCommodity);
+      const dfm = generateDFMDFA(result, input, activeCommodity, uiSuggestionContext());
       const critCount = [...dfm.dfm.issues, ...dfm.dfa.issues]
         .filter(i => i.severity === 'critical' || i.severity === 'major').length;
       if (critCount > 0) {
@@ -15168,7 +15179,7 @@ function renderDetail(result: PartCostResult, input: UniversalStackInput): void 
 function renderInsights(result: PartCostResult, input: UniversalStackInput): void {
   const panel = el('results-insights');
   const cf = _currFmt;
-  const insights = generateInsights(result, input, library, activeCommodity);
+  const insights = generateInsights(result, input, library, activeCommodity, uiSuggestionContext());
   const totalSaving = totalPotentialSaving(insights);
 
   const typeLabel: Record<string, string> = {
@@ -15470,7 +15481,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
 
   setTimeout(() => {
     try {
-      const dfmResult = generateDFMDFA(result, input, activeCommodity);
+      const dfmResult = generateDFMDFA(result, input, activeCommodity, uiSuggestionContext());
 
       const severityColor: Record<string, string> = {
         critical: '#e63b3b',

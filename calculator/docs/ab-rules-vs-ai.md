@@ -317,3 +317,57 @@ Hygiene: `--rules-only` no longer clobbers `ab-ai.csv` (the harness bug from rou
 The knuckle's £0.05 and the tank's £0.10 movement are the seeded sampler picking a fixed
 sample subset — that number now reproduces byte-identically on every run, which is the
 point. The AI column is not re-run here (no key on the box); round-3 AI figures stand.
+
+---
+
+## Addendum 4 — the tool now picks the optimal machine itself
+
+The stub-axle report (24 Jul) costed a 7-op routing across 5 machines and then advised itself,
+in §11/§13/§14, to "consolidate operations using multi-axis machining". Root cause, verified:
+that routing was 1 hardcoded casting pin + 1 setup pseudo-op on a hardcoded form default + 4
+AI-chosen ops (unvalidated, from a 9-id list) + 1 regex-injected grind op — and **no code
+anywhere compared two machines on cost**. Every picker was capability/capacity sizing; the
+suggestion layers read only `operations.length`, blind to machines, counting the synthetic
+ops.
+
+**Fix 1 — the routing optimiser** (`src/engine/routing-optimiser.ts`). The feasible routings
+are priced under the mapper's own conventions — split across cheap 3-axis stations (one
+fixturing per approach direction + the drill press) vs single-setup 5-axis consolidation vs
+turning-led when axisymmetric — including batch setup amortisation AND a per-part handling
+term per fixturing. Cheapest wins; the losers are printed in the machineId basis, e.g.:
+`split-3axis £12.91 vs consolidated-5axis £21.11 → split-3axis, £8.20/part cheaper`.
+Capability + envelope metadata covers BOTH rate-library machine families, so the cheaper
+capable machine (HAAS VF-2 £45/hr vs the generic VMC £55/hr the old picker always chose) is
+reachable for the first time. `applyRuleDecisions` already overwrites the model in every AI
+mode, so the AI can no longer pick the machine on any path; `aiOriginal` still records what
+it said. Engineer-typed machine choices are respected (user decision) — the suggestion layer
+surfaces the delta instead.
+
+**Fix 2 — suggestion layers know what was decided.** `realMachiningStations()` excludes
+synthetic ops and counts distinct stations; "use multi-axis" fires only on a genuinely split
+routing (>2 stations) and flips to a **verified** line ("routing already consolidated — quote
+it as evidence") when the lever is already taken. Regional sourcing is suppressed when the
+part is already costed in a low-cost region (a real report recommended China to a part costed
+in China). Volume levers on an assumed volume downgrade to assumption checks. Tool-estimated
+packaging/logistics reword to "confirm before acting". Every insight/DFM/DFA item carries a
+`lever` tag: design / supplier / sourcing / assumption / verified. The DFM-vs-DFA
+contradiction (cast_and_machine scored 10/10 in §12 and MAJOR in §13 for the same fact) is
+closed — both use the station-aware view.
+
+### Re-benchmark (rules arm, China ex-works, 100k/yr, seeded geometry)
+
+| Part | Manual | Before | After |
+|---|---|---|---|
+| RH steering knuckle | £16–18 | £14.10 (−17%) | £14.10 (−17%) |
+| Stub axle PRCR002 | ~£30 | £38.98 (+30%) | £38.98 (+30%) |
+| 25T servo horn | ~£2.20 | £2.91 (+32%) | **£2.65 (+21%)** |
+| Front bumper | £8–9 | £8.28 (−3%) | £8.28 (−3%) |
+| Seat LH cross-member | £1.2–1.6 | £1.33 (−5%) | £1.33 (−5%) |
+| Fuel tank | £20–30 | £25.92 (+4%) | £25.92 (+4%) |
+
+**Fleet MAPE 15.1% → 13.1% · median 11% · bias +0.5%.** Only the servo horn routes through
+the machining optimiser (the others' machining is the feature-machining layer, unchanged) —
+and picking the cost-optimal machine moved it £0.26 TOWARD the manual. The optimisation was
+not tuned to the benchmark; the benchmark improved because the routing got cheaper for a
+stated physical reason (the £45/hr VF-2 does the same 3-axis work as the £55/hr default).
+Standing caveats unchanged: n=6, totals-only ground truth, in-sample.

@@ -26,6 +26,27 @@ export interface CostInsight {
   potentialSavingPct: number;
   actions: string[];
   benchmark?: BenchmarkRange;
+  /** Who owns this lever: the designer, the supplier negotiation, the sourcing
+   *  strategy, an assumption to confirm — or 'verified': a choice the tool
+   *  already optimised, stated as evidence rather than as a to-do. */
+  lever?: 'design' | 'supplier' | 'sourcing' | 'assumption' | 'verified';
+}
+
+/**
+ * What the suggestion layer is allowed to know about the costing context, so it
+ * stops critiquing the tool's own choices and assumptions. Every field is
+ * optional: with no context the rules keep their historical behaviour, minus
+ * the self-critique that needed no context to fix (see the op-count rule).
+ */
+export interface SuggestionContext {
+  /** Region the part was costed in (e.g. 'CN', 'China', 'UK'). A regional
+   *  sourcing insight recommending the region you are already in is noise. */
+  region?: string;
+  /** true only when a person supplied the annual volume; volume levers built
+   *  on an assumed volume are sensitivity notes, not instructions. */
+  volumeProvided?: boolean;
+  /** packaging + logistics were tool-estimated from size/weight, not quoted. */
+  pkgLogisticsEstimated?: boolean;
 }
 
 // ─── Industry Benchmarks (aPriori-calibrated) ────────────────────────────────
@@ -149,13 +170,38 @@ export function currencySymbol(code: string): string {
   return CURRENCY_SYMBOL[code] ?? code + ' ';
 }
 
+// ─── Routing awareness ────────────────────────────────────────────────────────
+
+/** Synthetic entries in the operation list that are not machining stations. */
+const SYNTHETIC_OP = /setup \(amortised\)|\bcast|mould|mold|pour|shakeout|melt|foundry/i;
+const FIVE_AXIS_ID = /vmc5|umc|dmu|5[\s-]?ax/i;
+
+/** The REAL machining stations behind an operation list: synthetic ops
+ *  excluded, distinct machines counted, consolidation recognised. */
+export function realMachiningStations(input: UniversalStackInput): {
+  opCount: number; stations: number; fiveAxis: boolean; consolidated: boolean;
+} {
+  const machOps = (input.operations ?? []).filter(o => !SYNTHETIC_OP.test(o.operationName ?? ''));
+  const ids = new Set(machOps.map(o => o.machineId).filter(Boolean));
+  const fiveAxis = [...ids].some(id => FIVE_AXIS_ID.test(id));
+  return {
+    opCount: machOps.length,
+    stations: ids.size,
+    fiveAxis,
+    // Consolidated means FEW STATIONS — owning a 5-axis machine somewhere in a
+    // five-station routing (the real stub axle) is not consolidation.
+    consolidated: ids.size <= 2,
+  };
+}
+
 // ─── Insight generation ───────────────────────────────────────────────────────
 
 export function generateInsights(
   result: PartCostResult,
   input: UniversalStackInput,
   _library: RateLibrary,
-  commodity: CommodityType = 'machining'
+  commodity: CommodityType = 'machining',
+  ctx?: SuggestionContext,
 ): CostInsight[] {
   const insights: CostInsight[] = [];
   const bm = COMMODITY_BENCHMARKS[commodity] ?? DEFAULT_BENCHMARK;
@@ -282,12 +328,20 @@ export function generateInsights(
   if (pcts.tool > bm.toolingPct[1]) {
     const toolCostPerPart = result.breakdown.tooling;
     const volumeToHalve = input.tooling.amortizationVolume * 2;
+    // A volume lever built on an ASSUMED volume is a sensitivity note, not an
+    // instruction — a real bumper report told the reader to "increase volume"
+    // when no volume had ever been entered.
+    const volumeAssumed = ctx?.volumeProvided === false;
     insights.push({
-      type: 'warning',
+      type: volumeAssumed ? 'info' : 'warning',
       category: 'tooling',
-      title: 'Tooling amortisation is a significant cost driver',
-      finding: `Tooling at ${pcts.tool.toFixed(1)}% (£${toolCostPerPart.toFixed(2)}/part) exceeds the benchmark of ${bm.toolingPct[1]}%. This is volume-sensitive.`,
-      impact: 'High',
+      lever: volumeAssumed ? 'assumption' : 'supplier',
+      title: volumeAssumed
+        ? 'Tooling amortisation is volume-sensitive — and the volume is assumed'
+        : 'Tooling amortisation is a significant cost driver',
+      finding: `Tooling at ${pcts.tool.toFixed(1)}% (£${toolCostPerPart.toFixed(2)}/part) exceeds the benchmark of ${bm.toolingPct[1]}%. This is volume-sensitive.`
+        + (volumeAssumed ? ` The ${input.tooling.amortizationVolume.toLocaleString()} amortisation volume is a tool assumption — confirm it before acting on any figure below.` : ''),
+      impact: volumeAssumed ? 'Medium' : 'High',
       potentialSavingPct: Math.min(10, (pcts.tool - bm.toolingPct[1]) * 0.4),
       actions: [
         `Doubling volume to ${volumeToHalve.toLocaleString()} parts halves tooling cost to £${(toolCostPerPart / 2).toFixed(2)}/part`,
@@ -335,7 +389,12 @@ export function generateInsights(
 
   // ── Regional arbitrage opportunity ───────────────────────────────────────
   const labourIntensity = pcts.lab + pcts.proc; // Combined conversion cost
-  if (labourIntensity > 25) {
+  // Recommending China to a part costed in China was a shipped defect: the rule
+  // never knew the region. With no context it keeps its old behaviour.
+  const LOW_COST_REGIONS = new Set(['cn', 'china', 'in', 'india', 'mx', 'mexico',
+    'pl', 'poland', 'cz', 'czechia', 'czech republic', 'tr', 'turkey', 'th', 'thailand', 'vn', 'vietnam']);
+  const alreadyLowCost = LOW_COST_REGIONS.has((ctx?.region ?? '').trim().toLowerCase());
+  if (labourIntensity > 25 && !alreadyLowCost) {
     const chinaIdx = REGIONAL_COST_INDEX['China'];
     const indiaIdx = REGIONAL_COST_INDEX['India'];
     const ukIdx = REGIONAL_COST_INDEX['UK'];
@@ -343,6 +402,7 @@ export function generateInsights(
     insights.push({
       type: 'opportunity',
       category: 'regional',
+      lever: 'sourcing',
       title: 'Regional sourcing opportunity — high conversion cost',
       finding: `Conversion (process + labour) represents ${labourIntensity.toFixed(0)}% of total cost. Low-cost manufacturing regions offer significant savings on this component.`,
       impact: 'High',
@@ -359,10 +419,29 @@ export function generateInsights(
   }
 
   // ── High packaging/logistics ──────────────────────────────────────────────
-  if (pcts.pkg > 5) {
+  // When the tool ESTIMATED these lines from size and weight, benchmarking them
+  // against "should be under 2%" critiques the tool's own assumption — a real
+  // hood-bracket report flagged 43% pkg+logistics where both figures were its
+  // own estimates. Context turns that into an assumption check.
+  if (pcts.pkg > 5 && ctx?.pkgLogisticsEstimated) {
+    insights.push({
+      type: 'info',
+      category: 'commercial',
+      lever: 'assumption',
+      title: 'Packaging & logistics are size-based estimates — confirm before acting',
+      finding: `Packaging + logistics at ${pcts.pkg.toFixed(1)}% of total are tool estimates from part size and weight, not quotes. On a low-value part these lines dominate the percentage without being wrong in pounds.`,
+      impact: 'Low',
+      potentialSavingPct: 0,
+      actions: [
+        'Confirm actual packaging spec and freight terms with the supplier before treating this as a saving',
+        'If confirmed high: evaluate returnable dunnage and consolidated shipment frequency',
+      ],
+    });
+  } else if (pcts.pkg > 5) {
     insights.push({
       type: 'opportunity',
       category: 'commercial',
+      lever: 'supplier',
       title: 'Packaging & logistics cost is above average',
       finding: `Packaging + logistics at ${pcts.pkg.toFixed(1)}% of total cost. For high-volume parts this should be under 2%.`,
       impact: 'Low',
@@ -453,20 +532,40 @@ export function generateInsights(
   }
 
   // ── Design for manufacturability ─────────────────────────────────────────
-  if (input.operations.length > 4) {
+  // Station-aware, not count-blind. The old rule fired on raw operation count,
+  // which included the synthetic setup pseudo-op and the casting pour, and it
+  // never looked at WHICH machines the ops ran on — so it recommended "use
+  // multi-axis machining" against routings that already ran on one 5-axis
+  // machine, including routings this tool itself had chosen. A real report
+  // shipped with that self-critique in §11; this is the fix.
+  const machiningStations = realMachiningStations(input);
+  if (machiningStations.opCount > 4 && machiningStations.stations > 2 && !machiningStations.consolidated) {
     insights.push({
       type: 'info',
       category: 'design',
-      title: 'High operation count — DFM review recommended',
-      finding: `${input.operations.length} machining operations detected. Each additional setup adds fixture cost, handling time, and process variation risk.`,
+      lever: 'supplier',
+      title: 'Split routing — consolidation worth quoting',
+      finding: `${machiningStations.opCount} machining operation(s) across ${machiningStations.stations} separate stations. Each station is a re-fixturing: fixture cost, handling time, and datum-transfer variation.`,
       impact: 'Medium',
-      potentialSavingPct: Math.min(8, (input.operations.length - 3) * 1.5),
+      potentialSavingPct: Math.min(8, (machiningStations.stations - 1) * 1.5),
       actions: [
-        'Consolidate operations using multi-axis machining (4/5-axis) to reduce setups',
+        'Quote a multi-axis (4/5-axis) consolidation of the milled and drilled features against the split routing',
         'Redesign features (deep pockets, undercuts) that force additional setups',
         'Evaluate whether all features are functionally necessary',
-        'Use Group Technology — batch with similar parts to maximise machine utilisation',
       ],
+    });
+  } else if (machiningStations.opCount > 4 && machiningStations.consolidated) {
+    insights.push({
+      type: 'info',
+      category: 'design',
+      lever: 'verified',
+      title: 'Routing already consolidated — no multi-axis lever left',
+      finding: `${machiningStations.opCount} machining operation(s) run across ${machiningStations.stations} station(s)`
+        + (machiningStations.fiveAxis ? ', on a multi-axis machine' : '')
+        + '. The consolidation a reviewer would suggest is already assumed in this cost — quote it as evidence, not as an action.',
+      impact: 'Low',
+      potentialSavingPct: 0,
+      actions: ['Use the routing basis in the derivation trace to defend the process cost line'],
     });
   }
 

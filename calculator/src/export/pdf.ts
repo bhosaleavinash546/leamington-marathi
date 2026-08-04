@@ -798,7 +798,13 @@ export function renderShouldCostSections(
   // ════════════════════════════════════════════════════════════════════════
   // §11 — Cost Intelligence Insights
   // ════════════════════════════════════════════════════════════════════════
-  const insights = generateInsights(result, input, library, commodityType);
+  // What the suggestion layer may know about this costing, so it stops
+  // critiquing the tool's own region and volume assumptions.
+  const suggestionCtx = {
+    region: String(region),
+    volumeProvided: !!(cadMeta?.annualVolume ?? (input as { annualVolume?: number }).annualVolume),
+  };
+  const insights = generateInsights(result, input, library, commodityType, suggestionCtx);
   if (insights.length > 0) {
     doc.addPage(); y = 18;
     y = secBar(doc, y, '§11 — Cost Intelligence Insights', `${insights.length} findings  ·  ~${totalPotentialSaving(insights).toFixed(0)}% combined saving`);
@@ -847,7 +853,7 @@ export function renderShouldCostSections(
   // §8 + §9 — DFM / DFA, §10 — Optimisation, §11 — Roadmap
   // ════════════════════════════════════════════════════════════════════════
   try {
-    const dfm = generateDFMDFA(result, input, commodityType);
+    const dfm = generateDFMDFA(result, input, commodityType, suggestionCtx);
 
     // §8 DFM
     y = chk(doc, y, 22);
@@ -1128,7 +1134,7 @@ export function printPDF(
     `Currency: ${currency}`,
     `FX Rate: ${fxRate.toFixed(4)} to GBP`,
     `Operations: ${result.operationDetails.length}`,
-    `Region: ${(input as { region?: string }).region ?? 'UK'}`,
+    `Region: ${(input as { region?: string }).region ?? region}`,
   ].join('   ·   ');
   doc.text(meta, MG + 6, y + 19);
 
