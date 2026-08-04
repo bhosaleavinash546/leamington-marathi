@@ -163,6 +163,14 @@ describe('generateDFMDFA — same facts, one verdict', () => {
     expect(r.costOptimisations.some(o => o.title.includes('Annual Volume Re-Commitment'))).toBe(false);
   });
 
+  it('§14 regional-sourcing action is suppressed when already costed in a low-cost region', () => {
+    const convHeavy = result({ process: 45, labour: 20 });
+    const withCtx = generateDFMDFA(convHeavy, input(SPLIT_OPS), 'cast_and_machine', { region: 'CN' });
+    expect(withCtx.costOptimisations.some(o => o.title.includes('Regional Sourcing'))).toBe(false);
+    const withoutCtx = generateDFMDFA(convHeavy, input(SPLIT_OPS), 'cast_and_machine');
+    expect(withoutCtx.costOptimisations.some(o => o.title.includes('Regional Sourcing'))).toBe(true);
+  });
+
   it('split routing still earns the §14 multi-axis action, with station counts in the text', () => {
     const r = generateDFMDFA(result(), input(SPLIT_OPS), 'cast_and_machine');
     const act = r.costOptimisations.find(o => o.title.includes('Multi-Axis Machining'));

@@ -676,9 +676,13 @@ export function generateDFMDFA(
     });
   }
 
-  // Regional sourcing
+  // Regional sourcing — pointless advice when the part is already costed in a
+  // low-cost region (the §11 twin of this rule is gated the same way).
+  const LOW_COST = new Set(['cn', 'china', 'in', 'india', 'mx', 'mexico', 'pl', 'poland',
+    'cz', 'czechia', 'czech republic', 'tr', 'turkey', 'th', 'thailand', 'vn', 'vietnam']);
+  const alreadyLowCost = LOW_COST.has((ctx?.region ?? '').trim().toLowerCase());
   const convPct = procPct + labPct;
-  if (convPct > 30) {
+  if (convPct > 30 && !alreadyLowCost) {
     costOptimisations.push({
       title: 'Regional Sourcing Study — Low-Cost Country Manufacturing',
       description: `Conversion cost (process + labour) at ${convPct.toFixed(1)}% creates significant regional arbitrage opportunity.`,
