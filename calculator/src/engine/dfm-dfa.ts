@@ -89,7 +89,6 @@ export function generateDFMDFA(
   // fictitious — and the multi-axis advice below used to fire against routings
   // already consolidated on one 5-axis machine, including routings this tool
   // itself chose. Void ctx keeps every non-routing rule at its old behaviour.
-  void ctx;
   const st = realMachiningStations(input);
   const tot = result.total || 1;
   const matPct  = (result.breakdown.rawMaterial / tot) * 100;
@@ -619,11 +618,17 @@ export function generateDFMDFA(
     });
   }
 
-  // Tooling cost reduction
+  // Tooling cost reduction — a volume lever on an ASSUMED volume is a
+  // sensitivity note, not an instruction (a real bumper report said "increase
+  // volume" when no volume had ever been entered).
+  const volumeAssumed = ctx?.volumeProvided === false;
   if (toolPct > 12) {
     costOptimisations.push({
-      title: 'Volume Increase to Dilute Tooling NRE',
-      description: `Tooling at ${toolPct.toFixed(1)}% of part cost is volume-sensitive. Doubling volume halves per-part tooling cost.`,
+      title: volumeAssumed
+        ? 'Tooling NRE is volume-sensitive — confirm the annual volume first'
+        : 'Volume Increase to Dilute Tooling NRE',
+      description: `Tooling at ${toolPct.toFixed(1)}% of part cost is volume-sensitive. Doubling volume halves per-part tooling cost.`
+        + (volumeAssumed ? ' The amortisation volume in this cost is a tool assumption, not a commitment — confirm it before treating this as a saving.' : ''),
       expectedSavingPct: Math.min(10, toolPct * 0.4),
       technicalJustification: 'Tooling is a fixed NRE amortised over volume. Annual volume increase through platform sharing or new platform adoption directly reduces tooling cost per part.',
       risk: 'Low',
@@ -696,7 +701,7 @@ export function generateDFMDFA(
     });
   }
 
-  if (costOptimisations.length < 6) {
+  if (costOptimisations.length < 6 && !volumeAssumed) {
     costOptimisations.push({
       title: 'Annual Volume Re-Commitment for Better Pricing',
       description: 'Provide 12-month rolling volume forecast to supplier to secure better unit pricing and tooling amortisation.',

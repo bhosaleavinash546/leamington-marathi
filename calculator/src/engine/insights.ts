@@ -486,21 +486,27 @@ export function generateInsights(
   }
 
   // ── Casting-specific: Missing post-casting operations ─────────────────────
+  // A real report told its reader to "add heat treatment to the module if not
+  // already included" — the tool instructing the user to add scope the tool
+  // itself owns. Now: stay SILENT when the operation list already carries the
+  // finishing ops, and when it does not, frame the check as a scope
+  // verification (an assumption to confirm), never as "the model is missing".
+  const FINISHING_OP = /heat.?treat|t[456]\b|ageing|aging|shot.?blast|vibrator|deburr|fettl|impregnat|trim|degate/i;
+  const hasFinishingOps = input.operations.some(o => FINISHING_OP.test(o.operationName ?? ''));
   if ((commodity === 'casting' || commodity === 'cast_and_machine') &&
-      input.operations.length <= 2) {
+      input.operations.length <= 2 && !hasFinishingOps) {
     insights.push({
       type: 'info',
       category: 'process',
-      title: 'Post-casting operations may be missing from cost model',
-      finding: `Only ${input.operations.length} operation(s) detected for a casting process. Structural aluminium castings (especially HPDC) typically require: T5/T6 heat treatment (£1.20–2.80/kg), shot blasting (£0.15–0.40/part), impregnation for pressure-critical parts (£0.80–1.80/part), and deburring/fettling (£0.10–0.60/part). These are often omitted from initial estimates and can add 8–18% to part cost.`,
-      impact: 'High',
+      lever: 'assumption',
+      title: 'Confirm post-casting scope — no finishing operations in this cost',
+      finding: `The operation list carries no heat treatment, shot blasting or fettling line. If the casting form's service adders were set they are already in the material bucket; if not, structural castings typically add 8–18% for T5/T6 heat treatment (£1.20–2.80/kg), shot blast (£0.15–0.40/part), impregnation (£0.80–1.80/part) and deburring (£0.10–0.60/part).`,
+      impact: 'Medium',
       potentialSavingPct: 0,
       actions: [
-        'Add heat treatment (T5 ageing or T6 solution + ageing) to Cast+Machine module if not already included',
-        'Include shot blast / vibratory finishing — mandatory for most OEM castings',
-        'Check if impregnation is required by the pressure/leak specification',
-        'Include CMM/gauging cost for first-article and in-process inspection',
-        'Validate with foundry quotation template that all secondary ops are captured',
+        'Check the derivation trace: heat-treat/descale/NDT adders appear there when they were costed',
+        'If genuinely absent, set the casting service adders (heat treat, shot blast, impregnation) and re-cost',
+        'Validate with a foundry quotation template that all secondary ops are captured',
       ],
     });
   }

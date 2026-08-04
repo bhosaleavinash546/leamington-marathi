@@ -121,6 +121,24 @@ describe('generateInsights — no self-critique', () => {
   });
 });
 
+describe('casting scope check — verify, never "add to the module"', () => {
+  const CAST_OPS_BARE = [op('HPDC Casting', 'hpdc-800t'), op('CNC Machining', 'mach-vmc3')];
+  const CAST_OPS_FINISHED = [...CAST_OPS_BARE.slice(0, 1), op('T6 Heat Treatment + Shot Blast', 'bench-assembly')];
+
+  it('with no finishing ops: an assumption check pointing at the derivation trace', () => {
+    const ins = generateInsights(result(), input(CAST_OPS_BARE), DEFAULT_RATE_LIBRARY, 'casting');
+    const hit = ins.find(i => i.title.includes('post-casting scope'));
+    expect(hit).toBeDefined();
+    expect(hit!.lever).toBe('assumption');
+    expect(hit!.actions.join(' ')).not.toContain('to Cast+Machine module');
+  });
+
+  it('stays silent when the operation list already carries the finishing ops', () => {
+    const ins = generateInsights(result(), input(CAST_OPS_FINISHED), DEFAULT_RATE_LIBRARY, 'casting');
+    expect(ins.some(i => i.title.includes('post-casting scope'))).toBe(false);
+  });
+});
+
 describe('generateDFMDFA — same facts, one verdict', () => {
   it('cast_and_machine now scores the split routing in DFM too (was 10/10 vs DFA MAJOR)', () => {
     const r = generateDFMDFA(result(), input(SPLIT_OPS), 'cast_and_machine');
@@ -134,6 +152,15 @@ describe('generateDFMDFA — same facts, one verdict', () => {
     const v = r.dfa.issues.find(i => i.lever === 'verified');
     expect(v).toBeDefined();
     expect(v!.severity).toBe('opportunity');   // no score deduction for a taken lever
+  });
+
+  it('§14 volume actions on an assumed volume become confirm-first, and the filler action drops', () => {
+    const toolingHeavy = result({ tooling: 25, process: 30 });
+    const r = generateDFMDFA(toolingHeavy, input(SPLIT_OPS), 'cast_and_machine', { volumeProvided: false });
+    const vol = r.costOptimisations.find(o => o.title.includes('volume-sensitive'));
+    expect(vol).toBeDefined();
+    expect(vol!.title).toContain('confirm the annual volume');
+    expect(r.costOptimisations.some(o => o.title.includes('Annual Volume Re-Commitment'))).toBe(false);
   });
 
   it('split routing still earns the §14 multi-axis action, with station counts in the text', () => {

@@ -174,10 +174,14 @@ import { initMotionFX, motionInViewReveal, motionRevealRows } from './motion-fx.
  *  select and whether a person actually typed an annual volume — so the
  *  insights stop recommending the region we are already in or volume levers
  *  built on assumed volumes. */
-function uiSuggestionContext(): { region: string; volumeProvided: boolean } {
+function uiSuggestionContext(): { region: string; volumeProvided: boolean; pkgLogisticsEstimated: boolean } {
   const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
   const vol = (document.getElementById('annual-volume') as HTMLInputElement)?.value ?? '';
-  return { region, volumeProvided: vol.trim() !== '' && Number(vol) > 0 };
+  // The CAD fill stamps data-prov="estimated" on packaging/logistics; a manual
+  // edit clears it. Estimated lines are assumptions to confirm, not savings.
+  const pkgEstimated = document.getElementById('packaging')?.getAttribute('data-prov') === 'estimated'
+    || document.getElementById('logistics')?.getAttribute('data-prov') === 'estimated';
+  return { region, volumeProvided: vol.trim() !== '' && Number(vol) > 0, pkgLogisticsEstimated: pkgEstimated };
 }
 
 
@@ -10990,7 +10994,9 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       if (pbb && pkgEl) {
         const bboxVolCm3 = (pbb.xMm * pbb.yMm * pbb.zMm) / 1000;
         pkgEl.value = String(estimatePackagingPerPart(bboxVolCm3, c.netWeightKg || 0));
-        pkgEl.dispatchEvent(new Event('input'));
+        pkgEl.dispatchEvent(new Event('input', { bubbles: false }));
+        pkgEl.setAttribute('data-prov', 'estimated');
+        pkgEl.addEventListener('input', () => pkgEl.removeAttribute('data-prov'), { once: true });
       }
       // Size-aware inbound freight — the flat £0.25 default read as 35% of a
       // 0.2 kg stamping's cost. Scale to mass + shipping envelope.
@@ -10998,7 +11004,9 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       if (pbb && logEl) {
         const bboxVolCm3 = (pbb.xMm * pbb.yMm * pbb.zMm) / 1000;
         logEl.value = String(estimateLogisticsPerPart(c.netWeightKg || 0, bboxVolCm3));
-        logEl.dispatchEvent(new Event('input'));
+        logEl.dispatchEvent(new Event('input', { bubbles: false }));
+        logEl.setAttribute('data-prov', 'estimated');
+        logEl.addEventListener('input', () => logEl.removeAttribute('data-prov'), { once: true });
       }
     }
 
