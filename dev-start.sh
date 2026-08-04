@@ -4,9 +4,10 @@
 #  One command:   ./dev-start.sh      or:   make dev      or double-click Start-Dev.command
 #
 #  Runs the real dev stack (Vite UI :5174 + Express/tsx API :3002) in the
-#  FOREGROUND so the sign-in OTP is visible, and auto-opens the browser. Unlike
-#  `make start` (Docker/Alpine, STL only), this uses your local Python so STEP/
-#  IGES render — provided cadquery is installed (it warns you if it isn't).
+#  FOREGROUND so the sign-in OTP is visible, and auto-opens the browser. Like
+#  `make start` this runs natively, so STEP/IGES render from your local Python —
+#  provided cadquery is installed (it warns you if it isn't). The container that
+#  ships (calculator/Dockerfile.cad) has cadquery baked in.
 # ──────────────────────────────────────────────────────────────────────────────
 cd "$(dirname "$0")" || exit 1
 

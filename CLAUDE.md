@@ -81,10 +81,17 @@ time to a finish envelope) run before the cost. **Geometry is the ground truth;
 the AI only interprets — treat any AI number that contradicts the measured
 geometry as a bug.**
 
-⚠️ **Deployment gap:** the root `Dockerfile` (Alpine) installs `python3` but NOT
-cadquery/OCP (musl-incompatible), so the STEP/IGES path does not work inside the
-shipped container — only the STL fast path. Run/test the STEP path from a
-glibc env with `pip install cadquery`.
+**Two images, and the STEP path works in the shipped one.** `calculator/Dockerfile.cad`
+(`node:22-bookworm-slim` + `cadquery==2.8.0` in a venv prepended to `PATH`, so the bare
+`python3` that `geometry-bridge.ts` spawns is the one with OCP) is what
+`docker-compose.yml` and `calculator/fly.toml` build — ~1.5 GB, 2 GB VM.
+`calculator/Dockerfile` is Alpine and **cannot** run cadquery/OCP (the OpenCASCADE wheels
+are manylinux/glibc, not musl); it survives as an opt-in STL-only variant selected by
+`docker compose -f docker-compose.yml -f docker-compose.stl-only.yml`.
+`.github/workflows/docker-cad.yml` builds the CAD image in CI and measures a committed
+STEP fixture inside it, so a broken OCP packaging fails CI rather than the next deploy.
+Note `make start` runs natively via Node when npm is present and only falls back to
+Docker — a local STEP run needs cadquery on your own `python3` (`make dev` warns you).
 
 ### PCB Image→BOM — `server/routes/pcb.ts` (+ `server/utils/pcb-*.ts`, `server/data/pcb-country-rates.ts`)
 Vision pipeline: photo → BOM + fab spec → should-cost. Read ALL model text blocks

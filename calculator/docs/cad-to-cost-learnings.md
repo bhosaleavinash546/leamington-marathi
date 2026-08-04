@@ -65,10 +65,14 @@ Geometry can't distinguish materials, so the AI guesses — and guessed wrong in
   thin, open shells (low fill ratio); leave chunky solids untouched. Feeds the prompt
   + display. Plus a Stage-1 hint: *thin uniform wall on a large envelope ⇒ moulding/
   sheet, not a metal casting.*
-- **Silent OCCT-vs-text-parse fallback** — the shipped Alpine container has no
-  cadquery, so STEP silently falls back to a text/heuristic weight.
-  **Fix:** `geometrySource` provenance rides into the report (MEASURED vs ESTIMATED),
-  widens the confidence band, and a badge counts measured vs AI-estimated fields.
+- **Silent OCCT-vs-text-parse fallback** — the container shipped at the time was Alpine,
+  which cannot run cadquery (musl vs the manylinux OCP wheels), so STEP silently fell back
+  to a text/heuristic weight and nothing on screen said so.
+  **Fix, both halves:** `geometrySource` provenance rides into the report (MEASURED vs
+  ESTIMATED), widens the confidence band, and a badge counts measured vs AI-estimated
+  fields — *and* the deployed image moved to glibc (`calculator/Dockerfile.cad`), so the
+  fallback is now a genuine failure signal rather than the normal case. The provenance
+  half is still the important one: the kernel can fail for other reasons.
 - **Thread false-positives** on organic surfaces (bumper reported threads). *Known,
   low-impact; noted for the geometry engine.*
 

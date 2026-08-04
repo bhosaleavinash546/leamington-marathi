@@ -14,6 +14,18 @@ function safeExt(filename: string): string {
   return /^[a-z0-9]{1,8}$/.test(ext) ? ext : 'step';
 }
 
+/**
+ * The interpreter that has OpenCASCADE.
+ *
+ * Bare `python3` resolves by PATH order, which is load-bearing and invisible:
+ * `calculator/Dockerfile.cad` prepends `/opt/cq/bin` precisely so this line
+ * finds the venv with cadquery/OCP in it. That works, but it means the choice
+ * cannot be made anywhere else — a machine with cadquery under a different
+ * interpreter has no way to say so, and the symptom is a silent downgrade to
+ * text-parsed geometry rather than an error. `PYTHON_BIN` is that way.
+ */
+const PYTHON_BIN = process.env.PYTHON_BIN ?? 'python3';
+
 // ── Python spawn semaphore ────────────────────────────────────────────────────
 // Each OCP process costs hundreds of MB RSS; unbounded concurrent spawns let a
 // burst of uploads exhaust the box. Excess requests queue instead of piling on.
@@ -87,7 +99,7 @@ function _runPython(tmpPath: string, timeoutMs: number): Promise<OCCTGeometry> {
       if (!settled) { settled = true; resolve(result); }
     };
 
-    const child = spawn('python3', [PYTHON_SCRIPT, tmpPath], {
+    const child = spawn(PYTHON_BIN, [PYTHON_SCRIPT, tmpPath], {
       env: { ...process.env },
     });
 
@@ -185,7 +197,7 @@ export async function tessellateToSTL(
       let stderr = '';
       let settled = false;
       const settle = (r: { status: string; triangles?: number; error?: string }) => { if (!settled) { settled = true; resolve(r); } };
-      const child = spawn('python3', args, { env: { ...process.env } });
+      const child = spawn(PYTHON_BIN, args, { env: { ...process.env } });
       const timer = setTimeout(() => { child.kill('SIGKILL'); settle({ status: 'error', error: `Tessellation timed out after ${timeoutMs / 1000}s` }); }, timeoutMs);
       child.stdout.on('data', (d: Buffer) => {
         stdout += d.toString();

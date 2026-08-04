@@ -103,6 +103,15 @@ if command -v npm >/dev/null 2>&1; then
     npm install --silent
   fi
 
+  # This branch runs natively, so the STEP/IGES kernel is YOUR python3, not the
+  # cadquery baked into calculator/Dockerfile.cad. Say so — an unannounced
+  # fallback to text-parsed geometry is the exact failure this tool documents.
+  if ! python3 -c "import cadquery" >/dev/null 2>&1; then
+    echo "  ⚠️  cadquery not found — STEP/IGES will fall back to a text-parsed"
+    echo "     estimate (STL is unaffected).  Enable it:  pip install cadquery"
+    echo "     Or run the container instead:  docker compose up --build"
+  fi
+
   # Load .env and start both servers in background
   set -a; [ -f .env ] && . .env; set +a
   nohup npm run dev:full > /tmp/costvision.log 2>&1 &

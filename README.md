@@ -60,13 +60,19 @@ Config lives in `calculator/.env` (created on first run, never committed to git)
 
 ### 3D CAD & STEP support
 
-`make start` builds the **STEP/IGES-capable** image (`calculator/Dockerfile.cad`,
-glibc + cadquery/OCP) — the same image production runs on Fly.io — so **CAD-to-Cost
-and the 3D viewer work with `.step` / `.stp` / `.iges` files, not just `.stl`.**
-The first build is larger (~1.5 GB) and slower as a result.
+**CAD-to-Cost and the 3D viewer read `.step` / `.stp` / `.iges`, not just `.stl`** —
+measured by OpenCASCADE through cadquery. Which Python that runs on depends on how you
+started the app, and `make start` picks the faster of the two:
 
-If you only need the STL fast path and want a smaller, quicker container, opt in to
-the Alpine image:
+| How you started it | What runs | STEP/IGES |
+|---|---|---|
+| `make start` / `make dev` **with Node installed** | native `npm run dev:full` | needs cadquery on your own `python3` — `pip install cadquery` (both scripts tell you if it's missing) |
+| `make start` **without Node** | `docker compose up` → `calculator/Dockerfile.cad` | ✅ built in (glibc + cadquery 2.8.0) |
+| Fly.io production | `calculator/Dockerfile.cad` | ✅ built in |
+
+The CAD image is ~1.5 GB and slower to build, which is the price of OpenCASCADE. If you
+only need the STL fast path, opt in to the small Alpine image — it has no cadquery, so
+STEP uploads fall back to a text-parsed estimate and say so on screen:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.stl-only.yml up --build

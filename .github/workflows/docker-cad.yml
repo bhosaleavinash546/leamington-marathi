@@ -10,6 +10,11 @@ on:
   push:
     paths:
       - 'calculator/Dockerfile.cad'
+      # The Alpine variant and the ignore file both change what lands in the
+      # image — .dockerignore deliberately keeps tests/, which the STEP fixture
+      # smoke test below runs from inside it.
+      - 'calculator/Dockerfile'
+      - 'calculator/.dockerignore'
       - 'calculator/package.json'
       - 'calculator/package-lock.json'
       - 'calculator/server/utils/cad-geometry-engine.py'
@@ -18,6 +23,11 @@ on:
   pull_request:
     paths:
       - 'calculator/Dockerfile.cad'
+      # The Alpine variant and the ignore file both change what lands in the
+      # image — .dockerignore deliberately keeps tests/, which the STEP fixture
+      # smoke test below runs from inside it.
+      - 'calculator/Dockerfile'
+      - 'calculator/.dockerignore'
       - 'calculator/package.json'
       - 'calculator/package-lock.json'
       - 'calculator/server/utils/cad-geometry-engine.py'

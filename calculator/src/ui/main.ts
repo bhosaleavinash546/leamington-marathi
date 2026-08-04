@@ -154,6 +154,7 @@ import { showNews, refreshNews } from './panels/news.js';
 import { initSWPanel } from './panels/sw-should-cost-ui.js';
 import { initObservability, breadcrumb } from './observability.js';
 import { escHtml } from './toast.js';
+import { buildRuleVsAIPanel, type CADDiff } from './cad-diff-panel.js';
 import { el, val, num, sel, fmtPct, validSel } from './helpers.js';
 import { CAD_AI_DEMOS } from './data/cad-ai-demos.js';
 import { COMMODITY_LABELS, COMMODITY_BADGE_COLOURS, CPICKER_META } from './data/commodity-meta.js';
@@ -241,6 +242,8 @@ interface CADRuleField {
 let _cadRuleFields: Record<string, CADRuleField> = {};
 let _cadDecisions: CADDecision[] = [];
 let _cadDecisionAnswers: Record<string, string> = {};
+/** The rules-vs-AI comparison. Only mode='both' produces one; else null. */
+let _cadDiff: CADDiff | null = null;
 let cadSanityWarnings: Array<{ code: string; message: string; severity: 'warn' | 'error' }> = [];
 let cadFromCache = false;
 // Provenance for the accuracy harness: 'cad' when the last applied inputs came
@@ -5958,7 +5961,7 @@ function wireCADEvents(): void {
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null;
     _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-    _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {};
+    _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadDiff = null;
     unmountCADViewer();
     document.getElementById('cad-file-info')?.style.setProperty('display', 'none');
     document.getElementById('cad-drop-zone')?.style.setProperty('display', '');
@@ -6050,7 +6053,7 @@ function setCADFile(f: File): void {
   cadFile = f;
   // A new part starts with a clean slate — clear any pins from the previous file.
   _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-  _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {};
+  _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadDiff = null;
   document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
   const cadFileInfo = document.getElementById('cad-file-info');
   if (cadFileInfo) cadFileInfo.style.display = 'flex';
@@ -6203,6 +6206,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     _cadDecisions = (data as { decisions?: CADDecision[] }).decisions ?? [];
     _cadRuleFields = (data as { ruleFields?: Record<string, CADRuleField> }).ruleFields ?? {};
+    _cadDiff = (data as { diff?: CADDiff | null }).diff ?? null;
 
     const partNameEl = el<HTMLInputElement>('part-name');
     if (partNameEl && cadAnalysisResult.partName) partNameEl.value = cadAnalysisResult.partName;
@@ -6472,6 +6476,8 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     })()}
 
     ${renderCADDecisionsPanel()}
+
+    ${buildRuleVsAIPanel(_cadDiff)}
 
     ${occtPanel}
 
@@ -6834,6 +6840,7 @@ async function reanalyzeCAD(): Promise<void> {
     // What the rules could still not settle after the answers were applied.
     _cadDecisions = data.decisions ?? [];
     _cadRuleFields = data.ruleFields ?? {};
+    _cadDiff = (data as { diff?: CADDiff | null }).diff ?? null;
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     const resolvedVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
@@ -10719,6 +10726,9 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
     _cadDecisions = data.decisions ?? [];
     _cadRuleFields = data.ruleFields ?? {};
+    // This path never asks for a comparison, so any diff on screen is the last
+    // part's. Clearing beats leaving it to look current.
+    _cadDiff = null;
     const g = data.analysis.geometry;
     applyCADToForm(commodity);   // re-renders this form and fills it from the geometry
     showToast(`CAD applied — ${data.geometrySource === 'occt' ? 'OCCT solid geometry' : 'text-parsed'}: ${g.estimatedVolumeCm3.toFixed(1)} cm³, net ${data.analysis.costInputSuggestions.netWeightKg.toFixed(3)} kg`, 'info');
@@ -17838,6 +17848,7 @@ function loadCADDemo(commodity: string): void {
     cadAnalysisResult = result;
     cadOCCTGeometry = null;          // no real OCCT geometry for demos
     cadGeometrySource = 'occt';      // tag as high-confidence (geometry was used to derive these)
+    _cadDiff = null;                 // demos are recordings — there is nothing to compare
 
     const annVol = parseInt((document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '100000', 10) || 100000;
     renderCADResults(result, false, annVol);

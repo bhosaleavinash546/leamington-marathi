@@ -4,9 +4,10 @@
 start:
 	@./start.sh
 
-# ── Local dev with the STEP-capable 3D viewer (foreground, shows the OTP) ──────
-#    Use this to validate the 3D viewer on real STEP/IGES parts (needs cadquery:
-#    pip install cadquery). Opens http://localhost:5174/calculator/ automatically.
+# ── Local dev, foreground so the sign-in OTP is visible ───────────────────────
+#    Runs natively against your own Python, so STEP/IGES need cadquery installed
+#    locally (pip install cadquery) — the shipped container has it baked in.
+#    Opens http://localhost:5174/calculator/ automatically.
 dev:
 	@./dev-start.sh
 
