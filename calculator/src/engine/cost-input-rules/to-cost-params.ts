@@ -131,6 +131,10 @@ export function toCostParams(
   const labourId = LABOUR[commodity] ?? 'lab-uk-skilled';
   assumed.push('oee', 'manning', 'labourEfficiency', 'rejectRate', 'labourId');
 
+  // A caller can hand us an analysis with no cost inputs at all (a model reply
+  // that omitted the block). Returning null is the contract; throwing here would
+  // take down a whole comparison run for one bad part.
+  if (!ci) return null;
   const mat = resolveMaterialId(commodity, ci.materialId, familyHint);
   if (!mat.id) return null;     // no grade, no honest price
   const materialId = mat.id;

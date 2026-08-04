@@ -97,6 +97,11 @@ function cost(commodity: string, analysis: CADAnalysisResult, familyHint: string
   return { uk: r.total, cn: toChina(r.breakdown), breakdown: r.breakdown };
 }
 
+/**
+ * `aiOriginal` is the model's `costInputSuggestions`, not a whole analysis —
+ * it is snapshotted at the point the diff needs it. Wrap it so both arms hand
+ * `cost()` the same shape.
+ */
 async function aiArm(part: Part, geo: OCCTGeometry): Promise<CADAnalysisResult | { error: string }> {
   try {
     const res = await fetch(`${SERVER}/api/cad/reanalyze`, {
@@ -106,10 +111,13 @@ async function aiArm(part: Part, geo: OCCTGeometry): Promise<CADAnalysisResult |
         annualVolume: String(VOLUME), mode: 'both', noCache: true,
       }),
     });
-    const data = await res.json() as { success?: boolean; aiOriginal?: CADAnalysisResult; error?: string };
+    const data = await res.json() as {
+      success?: boolean; error?: string;
+      aiOriginal?: CADAnalysisResult['costInputSuggestions'];
+    };
     if (!res.ok || !data.success) return { error: data.error ?? `HTTP ${res.status}` };
     if (!data.aiOriginal) return { error: 'server returned no aiOriginal (mode not both?)' };
-    return data.aiOriginal;
+    return { partName: part.name, costInputSuggestions: data.aiOriginal } as CADAnalysisResult;
   } catch (e) {
     return { error: e instanceof Error ? e.message : String(e) };
   }
