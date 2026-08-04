@@ -113,9 +113,9 @@ function divider(kicker, name, sub, col, items, mins, notes) {
 
   const secs = [
     ['1', 'Orientation', 'Slides 3–5', 'How the whole thing connects, and what it is worth against costing by hand', '8 min', BLUE, true],
-    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 6–21', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
-    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 22–31', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
-    ['4', 'The honest limits', 'Slide 32', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
+    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 6–22', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
+    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 23–32', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
+    ['4', 'The honest limits', 'Slide 33', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
   ];
   secs.forEach(([n, name, range, desc, mins, col, exec], i) => {
     const y = 1.22 + i * 1.16;
@@ -135,17 +135,17 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.5, y: 5.92, w: 12.33, h: 0.9, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
     { text: 'If you only have ten minutes:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'slide 3 (how it connects) · slides 4–5 (the business case) · slide 21 (the housing on one page) · slide 30 (the two findings) · slide 32 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
+    { text: 'slide 3 (how it connects) · slides 4–5 (the business case) · slide 22 (the housing on one page) · slide 31 (the two findings) · slide 33 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.02, w: 11.65, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
     'Quick map of where we are going, because there is more here than an hour needs and I would rather you chose than sat through all of it. ' +
     'Section one, two slides: how the whole thing connects, and what it is worth measured against doing the same job by hand. About eight minutes. ' +
-    'Section two is the first worked example — a die-cast aluminium housing, followed through all twelve stages from CAD file to defensible price, including the calculation shown in full so you can check it. Fifteen slides, about twenty-two minutes, and it is the heart of the pack. ' +
+    'Section two is the first worked example — a die-cast aluminium housing, followed through all twelve stages from CAD file to defensible price, including the calculation shown in full so you can check it. Sixteen slides, about twenty-two minutes, and it is the heart of the pack. ' +
     'Section three does the same thing on a completely different part, an injection-moulded bumper fascia, plus paint, plus two findings that I genuinely did not predict. Ten slides, about eighteen minutes. ' +
     'Section four is five minutes on what the tool cannot do. ' +
-    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the two business-case slides, slide twenty-one, slide thirty and slide thirty-two. Everything in between is the evidence for those five, and you can read it afterwards.'
+    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the two business-case slides, slide twenty-two, slide thirty-one and slide thirty-three. Everything in between is the evidence for those five, and you can read it afterwards.'
   );
 }
 
@@ -1193,6 +1193,58 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   footer(s, ++PG);
   s.addNotes(
     'Sections twelve to fifteen of every report — DFM, DFA, cost optimisation and the roadmap — come from one deterministic rule engine, and I want to show exactly how, because the honest answer to "is this AI opinion?" is no. Step one: the engine runs AFTER the costing and reads the finished result — the eight buckets and the same measured inputs the estimate used. It critiques the numbers that were actually costed. Step two: around thirty-seven fixed thresholds fire — material utilisation below sixty percent is critical, below seventy-two major; OEE below seventy critical; every bucket compared to its commodity benchmark band. Each hit carries a severity, a saving percentage and a recommendation, all constants in code. Step three: ten per-process advisor modules add the geometry findings — heavy sections that will draw porosity, sharp corners that start hot tears, missing draft, near-net opportunities — read from the measured solid, not guessed. Step four: the score is arithmetic — start at ten, minus two per critical, one per major, half per minor — and the roadmap is a filter of the same actions by risk and timeframe. Two properties to underline. The saving headline is root-sum-square of the top three issues capped at forty percent — we deliberately do not add up every opportunity, because stacked savings never materialise additively. And the AI cannot touch any of it: in AI mode it may add commentary to the analysis panel, but no score, severity or saving in this report comes from a model. Source: src slash engine slash dfm-dfa dot ts plus the ten advisor modules — one function, feeding both the screen and the PDF, so the two can never disagree.'
+  );
+}
+
+// ══════════ 10a4 · THE ROUTING OPTIMISER (machine choice + the Re-quote suggestion) ══════════
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'The Machine Is a Cost Decision — Not a Default', 'The routing optimiser picks the cheapest capable machine, and every suggestion follows the same arithmetic', '4F46E5');
+  const steps = [
+    ['1 · Rank the routings in pounds', 'Before a single pound is booked, the feasible routings are priced under the same conventions the cost charges: split across cheap 3-axis stations (one fixturing per approach direction plus the drill press) vs a single-setup 5-axis consolidation vs turning-led — batch setup amortisation AND per-part handling at every fixturing included.'],
+    ['2 · The losers print in the trace', 'The chosen machine carries the full comparison as its basis: "split-3axis £12.91 vs consolidated-5axis £21.11 → split-3axis, £8.20/part cheaper". A buyer can defend the process line with the table, and the AI cannot pick a machine on any path — the rules overwrite it everywhere.'],
+    ['3 · Suggestions read the same arithmetic', 'The report used to advise "consolidate with multi-axis machining" against routings the tool itself had chosen. Now the advice is station-aware: it fires only on a genuinely split routing, flips to "routing verified optimal — quote it as evidence" when the lever is already taken, and every finding carries a lever tag: design · supplier · sourcing · assumption · verified.'],
+    ['4 · The Re-quote suggestion — a real case', 'On the stub-axle routing, the old §14 claimed "multi-axis consolidation, 11% saving". The optimiser ranked it: consolidation LOSES on that part. The new action: "Re-quote machining on the cost-optimal routing — £28.58 as costed vs £21.63 optimal, a £6.95/part (20%) machine-mix saving" — a Quick Win negotiation, not a capex project.'],
+  ];
+  steps.forEach(([t, d], i) => {
+    const y = 1.18 + i * 1.28;
+    s.addShape('roundRect', { x: 0.5, y, w: 7.1, h: 1.16, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+    s.addShape('ellipse', { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fill: { color: '4F46E5' } });
+    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(t.slice(4), { x: 1.2, y: y + 0.1, w: 6.3, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0 });
+    s.addText(d, { x: 1.2, y: y + 0.36, w: 6.25, h: 0.78, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
+  });
+  // Right: before/after on the real part + the three rules of engagement
+  s.addText('BEFORE vs AFTER — THE STUB-AXLE REPORT', { x: 7.95, y: 1.16, w: 4.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: '4F46E5', charSpacing: 0.6, margin: 0 });
+  s.addShape('roundRect', { x: 7.95, y: 1.42, w: 4.88, h: 0.92, fill: { color: 'FDF2F2' }, line: { color: RED, width: 1 }, rectRadius: 0.09 });
+  s.addText('BEFORE — generic claim', { x: 8.13, y: 1.52, w: 4.5, h: 0.2, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: RED, margin: 0 });
+  s.addText('"Multi-Axis Machining to Consolidate Operations — 11% saving · Long Term." Fired on operation count alone; on this part the arithmetic says consolidation loses money.',
+    { x: 8.13, y: 1.74, w: 4.55, h: 0.56, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
+  s.addShape('roundRect', { x: 7.95, y: 2.44, w: 4.88, h: 0.92, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.09 });
+  s.addText('AFTER — the optimiser’s delta', { x: 8.13, y: 2.54, w: 4.5, h: 0.2, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: GREEN, margin: 0 });
+  s.addText('"Re-quote machining on the cost-optimal routing: £6.95/part (20% of the machining spend) · Quick Win. 5-axis consolidation was ranked and does NOT win on this part."',
+    { x: 8.13, y: 2.76, w: 4.55, h: 0.56, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
+  const promises = [
+    ['AI never picks the machine', 'The model may name machines; the rules overwrite them with the cost-ranked choice on every path. What it said is kept for the comparison panel.', I.shield, '4F46E5'],
+    ['Engineer choice is respected', 'A machine an engineer picked by hand is never overridden — the cheaper capable routing is surfaced as a supplier lever with its £/part delta instead.', I.person, TEAL],
+    ['No verifiable delta, no claim', 'Below 2% of the machining spend, pennies, or an unknown machine: the suggestion stays silent. Every claimed saving is arithmetic the reader can check.', I.check, GREEN],
+  ];
+  promises.forEach(([t, d, ico, c], i) => {
+    const y = 3.5 + i * 0.97;
+    s.addShape('roundRect', { x: 7.95, y, w: 4.88, h: 0.88, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+    s.addShape('ellipse', { x: 8.09, y: y + 0.11, w: 0.34, h: 0.34, fill: { color: c } });
+    s.addImage({ data: ico, x: 8.17, y: y + 0.19, w: 0.18, h: 0.18 });
+    s.addText(t, { x: 8.52, y: y + 0.09, w: 4.2, h: 0.22, fontFace: 'Calibri', fontSize: 9.5, bold: true, color: c, margin: 0 });
+    s.addText(d, { x: 8.52, y: y + 0.32, w: 4.22, h: 0.52, fontFace: 'Calibri', fontSize: 8, color: SLATE, margin: 0, valign: 'top' });
+  });
+  s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'EEF2FF' }, line: { color: '4F46E5', width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Read it in one line:  ', options: { bold: true, color: '4F46E5' } },
+    { text: 'the should-cost models the most efficient plausible supplier — so the tool takes the optimal machine itself, and its suggestions are reserved for levers only you can pull, each one priced by the same arithmetic that built the estimate.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10, margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+  s.addNotes(
+    'A buyer challenged us with exactly the right question: the tool costed a five-machine routing and then recommended consolidating it with multi-axis machining — why did it not just pick the right machine in the first place? So now it does, and I want to show the mechanism. Step one: before any pound is booked, the routing optimiser prices the feasible alternatives — the split routing on cheap three-axis stations with a fixturing per approach direction, the single-setup five-axis consolidation, the turning-led route when the part is round — including batch setup amortisation and the per-part handling every extra fixturing costs. Cheapest capable routing wins. Step two: the losers are printed in the derivation trace next to the chosen machine, so the process line comes with its own defence. Step three: the suggestion layer reads the same arithmetic — it no longer critiques the tool’s own choices, it flips to "routing verified optimal" when the lever is already taken, and every finding is tagged with who owns the lever. And step four is my favourite, because it is the honest one: on the very report that prompted the question, the old advice said multi-axis consolidation, eleven percent, long term. The optimiser ranked it and consolidation loses on that part. The new suggestion is a quick-win re-quote: the same machining content on the cheapest capable machines is six pounds ninety-five cheaper per part — twenty percent of the machining spend — and the report says out loud that consolidation was ranked and does not win. Three rules of engagement: the AI never picks the machine, an engineer’s explicit choice is respected with the delta surfaced beside it, and if there is no verifiable delta there is no claim.'
   );
 }
 
