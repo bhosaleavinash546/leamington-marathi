@@ -113,9 +113,9 @@ function divider(kicker, name, sub, col, items, mins, notes) {
 
   const secs = [
     ['1', 'Orientation', 'Slides 3–5', 'How the whole thing connects, and what it is worth against costing by hand', '8 min', BLUE, true],
-    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 6–20', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
-    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 21–30', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
-    ['4', 'The honest limits', 'Slide 31', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
+    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 6–21', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
+    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 22–31', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
+    ['4', 'The honest limits', 'Slide 32', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
   ];
   secs.forEach(([n, name, range, desc, mins, col, exec], i) => {
     const y = 1.22 + i * 1.16;
@@ -135,17 +135,17 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.5, y: 5.92, w: 12.33, h: 0.9, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
     { text: 'If you only have ten minutes:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'slide 3 (how it connects) · slides 4–5 (the business case) · slide 20 (the housing on one page) · slide 29 (the two findings) · slide 31 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
+    { text: 'slide 3 (how it connects) · slides 4–5 (the business case) · slide 21 (the housing on one page) · slide 30 (the two findings) · slide 32 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.02, w: 11.65, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
     'Quick map of where we are going, because there is more here than an hour needs and I would rather you chose than sat through all of it. ' +
     'Section one, two slides: how the whole thing connects, and what it is worth measured against doing the same job by hand. About eight minutes. ' +
-    'Section two is the first worked example — a die-cast aluminium housing, followed through all twelve stages from CAD file to defensible price, including the calculation shown in full so you can check it. Fourteen slides, about twenty-two minutes, and it is the heart of the pack. ' +
+    'Section two is the first worked example — a die-cast aluminium housing, followed through all twelve stages from CAD file to defensible price, including the calculation shown in full so you can check it. Fifteen slides, about twenty-two minutes, and it is the heart of the pack. ' +
     'Section three does the same thing on a completely different part, an injection-moulded bumper fascia, plus paint, plus two findings that I genuinely did not predict. Ten slides, about eighteen minutes. ' +
     'Section four is five minutes on what the tool cannot do. ' +
-    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the two business-case slides, slide twenty, slide twenty-nine and slide thirty-one. Everything in between is the evidence for those five, and you can read it afterwards.'
+    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the two business-case slides, slide twenty-one, slide thirty and slide thirty-two. Everything in between is the evidence for those five, and you can read it afterwards.'
   );
 }
 
@@ -1141,6 +1141,58 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   footer(s, ++PG);
   s.addNotes(
     'A question I get every time is where the plus-or-minus comes from, so here is the mechanism, exactly as the code does it. Step one: every cost line already carries a confidence grade from its provenance — measured geometry and library rates are High, derived values Medium, assumptions Low. Step two: those grades become spreads — five, twelve and twenty-two percent at one sigma — with per-bucket reality on top: tooling estimates get one-point-eight times the spread because tooling is genuinely the least certain thing we estimate, packaging and logistics get less because they are contracted, and overhead and margin are never perturbed at all because they are policy percentages — they are recomputed inside every trial exactly as the real engine composes them. Step three: four thousand trials. Each one multiplies every base bucket by a lognormal factor — always positive, mean one — and rebuilds the stack. Step four: sort the four thousand totals and read off the tenth, fiftieth and ninetieth percentiles. That is the band on the result card. Three properties worth stating. It is seeded, so the same part gives the same band every time — it is reproducible and it is unit-tested. It is calibrated: once we have enough real actuals in a segment, a conformal layer replaces the prior with a band that provably covers the target share of real outcomes — that is a statistical guarantee, and until we have the data the tool says it is on the prior. And it is honest by construction: assumptions widen the band automatically, so a part costed on guesses cannot pretend to precision. The one line: the band is the same arithmetic run four thousand times with each input exactly as uncertain as its provenance says.'
+  );
+}
+
+// ══════════ 10a3 · THE DFM / DFA REPORT (rules, not opinions) ══════════
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'The DFM / DFA Report — Rules, Not Opinions', 'How §12–§15 of the report are made, end to end — and who is allowed to write them', TEAL);
+  // Left: the pipeline, exactly as the engine runs it
+  const steps = [
+    ['1 · The costing finishes first', 'The DFM/DFA engine reads the FINISHED result: the 8-bucket breakdown plus the same measured inputs the estimate used — material utilisation, OEE, operation list, tooling amortisation. It critiques the exact numbers that were costed, not a separate copy.'],
+    ['2 · ~37 threshold rules fire', 'Fixed engineering thresholds, each with severity, saving % and a recommendation: material utilisation below 60% is critical and below 72% major; OEE below 70% critical, below 80% major; each cost bucket compared to its commodity benchmark band; operation and setup counts checked.'],
+    ['3 · 10 process advisors add geometry findings', 'Per-process DFM read from the measured solid (casting, forging, sheet metal, moulding families…): heavy sections that solidify last → shrink porosity at the hot spot; sharp re-entrant corners → hot-tear initiation; missing draft; wall-ratio breaches; excess machining stock → near-net opportunity.'],
+    ['4 · Score and roadmap by arithmetic', 'Every part starts at 10/10: minus 2 per critical, 1 per major, 0.5 per minor. The DFA score runs the same way on assembly rules. Actions become the roadmap: low-risk quick wins vs long-term changes — a filter over the same list, nothing new invented.'],
+  ];
+  steps.forEach(([t, d], i) => {
+    const y = 1.18 + i * 1.28;
+    s.addShape('roundRect', { x: 0.5, y, w: 7.1, h: 1.16, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+    s.addShape('ellipse', { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fill: { color: TEAL } });
+    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(t.slice(4), { x: 1.2, y: y + 0.1, w: 6.3, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0 });
+    s.addText(d, { x: 1.2, y: y + 0.38, w: 6.25, h: 0.74, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'top' });
+  });
+  // Right: source of truth + the three properties
+  s.addText('WHERE IT COMES FROM', { x: 7.95, y: 1.16, w: 4.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: TEAL, charSpacing: 0.6, margin: 0 });
+  s.addShape('roundRect', { x: 7.95, y: 1.42, w: 4.88, h: 1.9, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+  s.addText('src/engine/dfm-dfa.ts', { x: 8.15, y: 1.56, w: 4.5, h: 0.24, fontFace: 'Courier New', fontSize: 10.5, bold: true, color: NAVY, margin: 0 });
+  s.addText('“Rule-based DFM/DFA and Cost Optimisation engine. Deterministic — no AI API required.” — the file’s own header, and the test suite holds it to that.',
+    { x: 8.15, y: 1.84, w: 4.5, h: 0.44, fontFace: 'Calibri', fontSize: 8.4, italic: true, color: SLATE, margin: 0, valign: 'top' });
+  s.addText('+ modules/*-advisor.ts', { x: 8.15, y: 2.32, w: 4.5, h: 0.22, fontFace: 'Courier New', fontSize: 9.5, bold: true, color: NAVY, margin: 0 });
+  s.addText('Ten per-process advisor modules supply the geometry-driven findings. One function feeds §12–§15 of the PDF AND the on-screen panel — the same object rendered twice, so screen and report can never disagree.',
+    { x: 8.15, y: 2.56, w: 4.55, h: 0.68, fontFace: 'Calibri', fontSize: 8.4, color: SLATE, margin: 0, valign: 'top' });
+  const promises = [
+    ['Same part, same report', 'Deterministic and unit-tested: identical inputs produce an identical report, every run. Every threshold is a named constant in code a reviewer can read — not a prompt.', I.check, TEAL],
+    ['Honest saving maths', 'The headline saving is NOT the sum of every issue — it is the root-sum-square of the top three, capped at 40%. Stacked opportunities are never allowed to promise an impossible discount.', I.calc, GREEN],
+    ['The AI cannot touch it', 'In optional AI mode the model may add advisory commentary to the CAD analysis panel — display-only. It writes no score, no severity, no saving and no recommendation in this report.', I.shield, AMBER],
+  ];
+  promises.forEach(([t, d, ico, c], i) => {
+    const y = 3.46 + i * 0.99;
+    s.addShape('roundRect', { x: 7.95, y, w: 4.88, h: 0.9, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+    s.addShape('ellipse', { x: 8.09, y: y + 0.11, w: 0.34, h: 0.34, fill: { color: c } });
+    s.addImage({ data: ico, x: 8.17, y: y + 0.19, w: 0.18, h: 0.18 });
+    s.addText(t, { x: 8.52, y: y + 0.09, w: 4.2, h: 0.22, fontFace: 'Calibri', fontSize: 9.5, bold: true, color: c, margin: 0 });
+    s.addText(d, { x: 8.52, y: y + 0.33, w: 4.22, h: 0.52, fontFace: 'Calibri', fontSize: 8, color: SLATE, margin: 0, valign: 'top' });
+  });
+  s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'E7F4F2' }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Read it in one line:  ', options: { bold: true, color: TEAL } },
+    { text: 'the same measured geometry and the same costed numbers are pushed through fixed engineering thresholds — the DFM/DFA report is arithmetic you can audit, not opinion you have to trust.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10, margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+  s.addNotes(
+    'Sections twelve to fifteen of every report — DFM, DFA, cost optimisation and the roadmap — come from one deterministic rule engine, and I want to show exactly how, because the honest answer to "is this AI opinion?" is no. Step one: the engine runs AFTER the costing and reads the finished result — the eight buckets and the same measured inputs the estimate used. It critiques the numbers that were actually costed. Step two: around thirty-seven fixed thresholds fire — material utilisation below sixty percent is critical, below seventy-two major; OEE below seventy critical; every bucket compared to its commodity benchmark band. Each hit carries a severity, a saving percentage and a recommendation, all constants in code. Step three: ten per-process advisor modules add the geometry findings — heavy sections that will draw porosity, sharp corners that start hot tears, missing draft, near-net opportunities — read from the measured solid, not guessed. Step four: the score is arithmetic — start at ten, minus two per critical, one per major, half per minor — and the roadmap is a filter of the same actions by risk and timeframe. Two properties to underline. The saving headline is root-sum-square of the top three issues capped at forty percent — we deliberately do not add up every opportunity, because stacked savings never materialise additively. And the AI cannot touch any of it: in AI mode it may add commentary to the analysis panel, but no score, severity or saving in this report comes from a model. Source: src slash engine slash dfm-dfa dot ts plus the ten advisor modules — one function, feeding both the screen and the PDF, so the two can never disagree.'
   );
 }
 
