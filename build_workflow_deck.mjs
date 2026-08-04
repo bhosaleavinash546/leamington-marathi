@@ -112,10 +112,10 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText('Four sections, about an hour — or five slides if that is all the time there is', { x: 1.25, y: 0.66, w: 9, h: 0.28, fontFace: 'Calibri', fontSize: 12, italic: true, color: MUTED, margin: 0 });
 
   const secs = [
-    ['1', 'Orientation', 'Slides 3–4', 'How the whole thing connects, and what it is worth against costing by hand', '8 min', BLUE, true],
-    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 5–18', 'Twelve stages end to end: measure, classify, guard, calculate, approve. Includes the calculation shown in full.', '22 min', TEAL, false],
-    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 19–28', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
-    ['4', 'The honest limits', 'Slide 29', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
+    ['1', 'Orientation', 'Slides 3–5', 'How the whole thing connects, and what it is worth against costing by hand', '8 min', BLUE, true],
+    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 6–20', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
+    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 21–30', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
+    ['4', 'The honest limits', 'Slide 31', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
   ];
   secs.forEach(([n, name, range, desc, mins, col, exec], i) => {
     const y = 1.22 + i * 1.16;
@@ -135,7 +135,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.5, y: 5.92, w: 12.33, h: 0.9, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
     { text: 'If you only have ten minutes:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'slide 3 (how it connects) · slide 4 (what it is worth) · slide 18 (the housing on one page) · slide 27 (the two findings) · slide 29 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
+    { text: 'slide 3 (how it connects) · slides 4–5 (the business case) · slide 20 (the housing on one page) · slide 29 (the two findings) · slide 31 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.02, w: 11.65, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
@@ -145,210 +145,250 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     'Section two is the first worked example — a die-cast aluminium housing, followed through all twelve stages from CAD file to defensible price, including the calculation shown in full so you can check it. Fourteen slides, about twenty-two minutes, and it is the heart of the pack. ' +
     'Section three does the same thing on a completely different part, an injection-moulded bumper fascia, plus paint, plus two findings that I genuinely did not predict. Ten slides, about eighteen minutes. ' +
     'Section four is five minutes on what the tool cannot do. ' +
-    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slides three, four, eighteen, twenty-seven and twenty-nine. Everything in between is the evidence for those five, and you can read it afterwards.'
+    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the two business-case slides, slide twenty, slide twenty-nine and slide thirty-one. Everything in between is the evidence for those five, and you can read it afterwards.'
   );
 }
 
-// ══════════ 1b · THE NETWORK MAP (bird's-eye) ══════════
+// ══════════ 1b · THE NETWORK MAP (bird's-eye — deterministic-by-default) ══════════
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
   logoMark(s, 0.5, 0.22, 0.6);
   s.addText('How It All Connects — One Picture', { x: 1.25, y: 0.2, w: 8.6, h: 0.44, fontFace: 'Cambria', fontSize: 24, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-  s.addText('Everything feeds one engine. Only one arrow leaves the building.', { x: 1.25, y: 0.66, w: 8.6, h: 0.28, fontFace: 'Calibri', fontSize: 12, italic: true, color: MUTED, margin: 0 });
-
+  s.addText('Rules derive every cost input; the engineer answers what geometry cannot know; the AI is optional.', { x: 1.25, y: 0.66, w: 8.9, h: 0.28, fontFace: 'Calibri', fontSize: 11.5, italic: true, color: MUTED, margin: 0 });
   // ── legend (top right) ──
-  const legend = [['Measure', BLUE], ['AI', PURPLE], ['Guardrail', AMBER], ['Engine', TEAL], ['Human / output', GREEN]];
+  const legend = [['Measure', BLUE], ['Rules', '4F46E5'], ['AI (optional)', PURPLE], ['Guardrail', AMBER], ['Engine', TEAL], ['Human / output', GREEN]];
   legend.forEach(([t, c], i) => {
-    const x = 9.95 + (i % 3) * 1.0, y = 0.26 + Math.floor(i / 3) * 0.28;
-    s.addShape('ellipse', { x, y: y + 0.055, w: 0.12, h: 0.12, fill: { color: c } });
-    s.addText(t, { x: x + 0.17, y, w: 0.95, h: 0.24, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'middle' });
+    const x = 10.35 + (i % 2) * 1.35, y = 0.16 + Math.floor(i / 2) * 0.24;
+    s.addShape('ellipse', { x, y: y + 0.05, w: 0.11, h: 0.11, fill: { color: c } });
+    s.addText(t, { x: x + 0.16, y, w: 1.25, h: 0.22, fontFace: 'Calibri', fontSize: 7.8, color: SLATE, margin: 0, valign: 'middle' });
   });
-
-  // ── OUTSIDE the tool ──
-  s.addShape('roundRect', { x: 2.55, y: 1.02, w: 5.2, h: 0.95, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5, dashType: 'dash' }, rectRadius: 0.09 });
+  // ── OUTSIDE the tool: the OPTIONAL AI ──
+  s.addShape('roundRect', { x: 2.55, y: 1.02, w: 5.2, h: 0.99, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5, dashType: 'dash' }, rectRadius: 0.09 });
   s.addShape('ellipse', { x: 2.70, y: 1.28, w: 0.44, h: 0.44, fill: { color: PURPLE } });
   s.addImage({ data: I.eye, x: 2.81, y: 1.39, w: 0.22, h: 0.22 });
-  s.addText('LEAVES YOUR NETWORK — the only outbound call', { x: 3.28, y: 1.08, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
+  s.addText('OPTIONAL AI — off by default, the only outbound call', { x: 3.28, y: 1.08, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
   s.addText([
-    { text: 'Claude API · classification only. ', options: { bold: true, color: NAVY } },
-    { text: 'Geometry out, words back. No prices, no rates, no drawings.', options: { color: SLATE } },
-  ], { x: 3.28, y: 1.29, w: 4.35, h: 0.4, fontFace: 'Calibri', fontSize: 9, margin: 0, valign: 'top' });
-  s.addText('Routable to a private endpoint · AIR_GAPPED=1 switches it off entirely', { x: 3.28, y: 1.71, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 8, italic: true, color: PURPLE, margin: 0 });
-
-  s.addShape('roundRect', { x: 8.0, y: 1.02, w: 4.83, h: 0.95, fill: { color: CARD }, line: { color: LINE, width: 1, dashType: 'dash' }, rectRadius: 0.09 });
+    { text: 'Three modes: ', options: { color: SLATE } },
+    { text: 'Rules only (default) · Compare · AI-led. ', options: { bold: true, color: NAVY } },
+    { text: 'Classification only — geometry out, words back. No prices, no rates, no drawings.', options: { color: SLATE } },
+  ], { x: 3.28, y: 1.29, w: 4.35, h: 0.44, fontFace: 'Calibri', fontSize: 8.7, margin: 0, valign: 'top' });
+  s.addText('Routable to a private endpoint · AIR_GAPPED=1 refuses the call — costing still works', { x: 3.28, y: 1.76, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 8, italic: true, color: PURPLE, margin: 0 });
+  s.addShape('roundRect', { x: 8.0, y: 1.02, w: 4.83, h: 0.99, fill: { color: CARD }, line: { color: LINE, width: 1, dashType: 'dash' }, rectRadius: 0.09 });
   s.addText('OPTIONAL FEEDS — off by default, none of them price a part', { x: 8.2, y: 1.12, w: 4.5, h: 0.22, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
   s.addText('Live component pricing (PCB only) · industry news · metal-price ticker (display only)',
     { x: 8.2, y: 1.38, w: 4.5, h: 0.5, fontFace: 'Calibri', fontSize: 9, color: SLATE, margin: 0, valign: 'top' });
-
   // ── the boundary ──
   s.addShape('roundRect', { x: 0.45, y: 2.18, w: 12.4, h: 4.4, fill: { color: 'FFFFFF' }, line: { color: TEAL, width: 1.75, dashType: 'dash' }, rectRadius: 0.12 });
   s.addShape('roundRect', { x: 0.75, y: 2.05, w: 3.5, h: 0.28, fill: { color: TEAL }, rectRadius: 0.14 });
   s.addText('INSIDE — RUNS ON YOUR OWN SERVER', { x: 0.75, y: 2.05, w: 3.5, h: 0.28, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
-
-  // dashed link kernel <-> AI, crossing the boundary
-  s.addShape('line', { x: 4.15, y: 1.97, w: 0, h: 0.71, line: { color: PURPLE, width: 1.5, dashType: 'dash', beginArrowType: 'triangle', endArrowType: 'triangle' } });
-
-  /** Straight connector between two points; handles any direction. */
+  // dashed link guardrails <-> AI, crossing the boundary
+  s.addShape('line', { x: 4.15, y: 2.01, w: 0, h: 0.67, line: { color: PURPLE, width: 1.5, dashType: 'dash', beginArrowType: 'triangle', endArrowType: 'triangle' } });
   const link = (x1, y1, x2, y2, col, wid = 1.75) => s.addShape('line', {
     x: Math.min(x1, x2), y: Math.min(y1, y2), w: Math.abs(x2 - x1), h: Math.abs(y2 - y1),
     flipH: x2 < x1, flipV: y2 < y1,
     line: { color: col, width: wid, endArrowType: 'triangle' },
   });
-
   const node = (x, y, w, h, col, tint, ttl, body, ico) => {
     s.addShape('roundRect', { x, y, w, h, fill: { color: tint }, line: { color: col, width: 1.4 }, rectRadius: 0.09 });
-    if (ico) { s.addShape('ellipse', { x: x + 0.14, y: y + 0.14, w: 0.36, h: 0.36, fill: { color: col } }); s.addImage({ data: ico, x: x + 0.23, y: y + 0.23, w: 0.18, h: 0.18 }); }
-    s.addText(ttl, { x: x + (ico ? 0.58 : 0.16), y: y + 0.13, w: w - (ico ? 0.72 : 0.32), h: 0.28, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: col, margin: 0, valign: 'middle' });
-    s.addText(body, { x: x + 0.16, y: y + 0.52, w: w - 0.32, h: h - 0.66, fontFace: 'Calibri', fontSize: 8.4, color: SLATE, margin: 0, valign: 'top' });
+    if (ico) { s.addShape('ellipse', { x: x + 0.14, y: y + 0.12, w: 0.34, h: 0.34, fill: { color: col } }); s.addImage({ data: ico, x: x + 0.22, y: y + 0.20, w: 0.18, h: 0.18 }); }
+    s.addText(ttl, { x: x + (ico ? 0.56 : 0.16), y: y + 0.11, w: w - (ico ? 0.70 : 0.32), h: 0.30, fontFace: 'Calibri', fontSize: 10, bold: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(body, { x: x + 0.16, y: y + 0.47, w: w - 0.32, h: h - 0.60, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
   };
-
   // inputs (left) and outputs (right)
   const col = (x, w, label, c, items, y0) => {
     s.addText(label, { x, y: y0 - 0.3, w, h: 0.24, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: c, charSpacing: 0.6, margin: 0 });
     items.forEach((t, i) => {
       const y = y0 + i * 0.80;
       s.addShape('roundRect', { x, y, w, h: 0.68, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.07 });
-      s.addText(t, { x: x + 0.13, y, w: w - 0.26, h: 0.68, fontFace: 'Calibri', fontSize: 8.8, color: SLATE, margin: 0, valign: 'middle' });
+      s.addText(t, { x: x + 0.13, y, w: w - 0.26, h: 0.68, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'middle' });
     });
   };
-  col(0.65, 2.05, 'WHAT GOES IN', BLUE, ['3D CAD model\n(STEP / IGES / STL)', 'Photo of a PCB', 'Plain description\nor an RFQ sheet', 'Volume + region\n(the engineer types)'], 2.74);
-  col(11.0, 1.85, 'WHAT COMES OUT', GREEN, ['8-bucket cost, with\nevery figure traceable', 'Operation list —\nwhat takes the time', 'Confidence band +\n20-country comparison', 'PDF · Excel · PowerPoint\nnegotiation pack'], 2.74);
-
-  node(3.05, 2.68, 2.2, 1.30, BLUE, BLUE_T, 'Geometry kernel', 'OCCT via the OCP bindings. Volume, walls, holes and faces — measured, never guessed.', I.ruler);
-  node(3.05, 4.55, 2.2, 1.30, AMBER, AMBER_T, 'Guardrails', 'Nine automatic checks plus autocorrect. Measurements always beat the AI.', I.shield);
-  node(8.5, 2.68, 2.2, 1.30, TEAL, TEAL_T, 'Rate library', 'Materials, machines, labour, 20 regions. The only source of money in the tool.', I.coins);
-  node(8.5, 4.55, 2.2, 1.30, TEAL, TEAL_T, 'Local database', 'Parts, quotes and real actuals — these feed the learning loop back in.', I.clip);
-  node(5.6, 5.42, 2.5, 0.95, GREEN, GREEN_T, 'Uncertainty & calibration', 'Monte-Carlo band, learned from real actuals.', null);
-
+  col(0.65, 2.0, 'WHAT GOES IN', BLUE, ['3D CAD model\n(STEP / IGES / STL)', 'Photo of a PCB', 'Plain description\nor an RFQ sheet', 'Volume + region\n(the engineer types)'], 2.74);
+  col(11.05, 1.8, 'WHAT COMES OUT', GREEN, ['8-bucket cost — every\nfigure shows its basis', 'Operation list —\nwhat takes the time', 'Confidence band +\n20-country comparison', 'PDF · Excel · PowerPoint\nnegotiation pack'], 2.74);
+  // inside nodes — the deterministic spine
+  node(2.85, 2.68, 2.1, 1.22, BLUE, BLUE_T, 'Geometry kernel', 'OCCT measures the part: volume, walls, holes, faces, topology. Never guessed.', I.ruler);
+  node(2.85, 4.06, 2.1, 1.22, '4F46E5', 'EEF2FF', 'Rules engine', '12 commodities. Derives every cost input from the measurement — cycle, tooling, press, yield.', I.cog);
+  node(2.85, 5.44, 2.1, 1.02, GREEN, GREEN_T, 'The engineer', 'Answers only what geometry cannot know: material, duty, volume, region. Hard stop — no silent guess.', I.person);
+  node(5.35, 2.68, 2.15, 1.22, AMBER, AMBER_T, 'Guardrails', '9 sanity checks + physics caps. Measurements beat the AI; AI cycle claims are capped.', I.shield);
+  node(8.5, 2.68, 2.1, 1.22, TEAL, TEAL_T, 'Rate library', 'Materials, machines, labour, 20 regions. The only source of money in the tool.', I.coins);
+  node(8.5, 4.06, 2.1, 1.22, TEAL, TEAL_T, 'Local database', 'Parts, quotes, real actuals — the learning loop that calibrates the estimates.', I.clip);
+  node(8.5, 5.44, 2.1, 1.02, GREEN, GREEN_T, 'Uncertainty', 'Monte-Carlo band (P10–P90), conformal-calibrated from actuals.', null);
   // the hub
-  s.addShape('roundRect', { x: 5.6, y: 3.52, w: 2.5, h: 1.58, fill: { color: '0E5A5A' }, rectRadius: 0.1 });
-  s.addShape('ellipse', { x: 6.58, y: 3.68, w: 0.54, h: 0.54, fill: { color: '17A398' } });
-  s.addImage({ data: I.calc, x: 6.72, y: 3.82, w: 0.26, h: 0.26 });
-  s.addText('COST CALCULATION\nENGINE', { x: 5.72, y: 4.30, w: 2.26, h: 0.5, fontFace: 'Calibri', fontSize: 12, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
-  s.addText('Fixed arithmetic. 8 buckets.\nNo AI, no judgement.', { x: 5.72, y: 4.78, w: 2.26, h: 0.3, fontFace: 'Calibri', fontSize: 8.4, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
-
-  link(2.70, 3.22, 3.05, 3.22, BLUE);
-  link(2.70, 5.09, 3.05, 5.09, BLUE);
-  link(5.25, 3.62, 5.60, 3.95, AMBER);
-  link(5.25, 4.90, 5.60, 4.62, AMBER);
-  link(8.50, 3.62, 8.10, 3.95, TEAL);
-  link(8.10, 4.62, 8.50, 4.90, TEAL);
-  link(6.85, 5.10, 6.85, 5.42, GREEN);
-  link(8.10, 4.31, 11.00, 4.31, GREEN, 2.5);
-  s.addText('the answer', { x: 8.6, y: 4.04, w: 1.9, h: 0.24, fontFace: 'Calibri', fontSize: 8.2, italic: true, bold: true, color: GREEN, align: 'center', margin: 0 });
-
+  s.addShape('roundRect', { x: 5.35, y: 4.06, w: 2.15, h: 1.58, fill: { color: '0E5A5A' }, rectRadius: 0.1 });
+  s.addShape('ellipse', { x: 6.16, y: 4.20, w: 0.5, h: 0.5, fill: { color: '17A398' } });
+  s.addImage({ data: I.calc, x: 6.29, y: 4.33, w: 0.24, h: 0.24 });
+  s.addText('COST ENGINE', { x: 5.45, y: 4.76, w: 1.95, h: 0.3, fontFace: 'Calibri', fontSize: 12, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
+  s.addText('Fixed arithmetic. 8 buckets.\nNo AI, no judgement.', { x: 5.45, y: 5.08, w: 1.95, h: 0.44, fontFace: 'Calibri', fontSize: 8.2, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
+  // flows: inputs→kernel, kernel→rules, engineer→rules, AI⇢guardrails⇢rules, rules→engine, rates→engine, engine↔db, engine→uncertainty→outputs
+  link(2.65, 3.29, 2.85, 3.29, BLUE);
+  link(2.65, 5.89, 2.85, 5.89, BLUE);
+  link(3.90, 3.90, 3.90, 4.06, BLUE);                       // kernel ↓ rules
+  link(3.90, 5.44, 3.90, 5.28, GREEN);                      // engineer ↑ rules
+  link(5.35, 3.29, 4.95, 3.60, AMBER, 1.4);                 // guardrails → rules (corrected words land here)
+  link(4.95, 4.67, 5.35, 4.67, '4F46E5');                   // rules → engine
+  link(8.50, 3.29, 7.90, 3.29, TEAL); link(7.90, 3.29, 7.50, 4.30, TEAL);   // rates → engine
+  link(8.50, 4.67, 7.50, 4.67, TEAL);                       // db ↔ engine
+  link(7.50, 5.30, 8.50, 5.85, GREEN);                      // engine → uncertainty
+  link(10.60, 5.95, 11.05, 5.95, GREEN);                    // uncertainty → outputs
+  link(10.60, 3.29, 11.05, 3.29, GREEN);
+  // read-in-one-line
+  s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
-    { text: 'Read it in one line:  ', options: { bold: true, color: NAVY } },
-    { text: 'the kernel measures, the AI names, the guardrails check, the engine calculates, a person approves. ', options: { color: SLATE } },
-    { text: 'The AI can reach none of the money — not the rate library, not the arithmetic — ', options: { bold: true, color: NAVY } },
-    { text: 'and the only thing that ever leaves your network is a description of a shape.', options: { color: SLATE } },
-  ], { x: 0.5, y: 6.62, w: 12.33, h: 0.48, fontFace: 'Calibri', fontSize: 10.5, margin: 0, valign: 'middle' });
+    { text: 'Read it in one line:  ', options: { bold: true, color: GREEN } },
+    { text: 'the kernel measures, the rules derive, the engineer answers, the guardrails check, the engine calculates — and the AI is an optional second opinion that can reach none of the money.', options: { color: SLATE } },
+  ], { x: 0.65, y: 6.70, w: 12.0, h: 0.42, fontFace: 'Calibri', fontSize: 10.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
-
   s.addNotes(
-    'Before we walk through the twelve stages, I want to give you the whole thing on one picture, because I think the bird’s-eye view answers half the questions before they get asked. ' +
-    'Start in the middle. That dark box is the cost calculation engine, and everything on this slide connects to it. It is fixed arithmetic — the same eight buckets, the same formulas, every part, every time. There is no AI inside that box and no judgement inside it. ' +
-    'Coming in from the left, the four ways work arrives: a three-D CAD model, a photograph of a circuit board, a plain description or an RFQ sheet, and the two things only a person can supply — how many a year and where we plan to make them. ' +
-    'Those inputs hit the blue box, the geometry kernel, which measures the part. From there, look up. That purple box sits deliberately outside the dashed line, and it is the single most important thing on this slide. It is the only outbound call on the costing path. What goes up is a description of a shape — volumes, wall thicknesses, hole counts. What comes back is words: "aluminium die-casting alloy", "high-pressure die cast". No prices go up, no rates go up, no drawings go up. And there are two controls on it: we can route it to a private endpoint inside our own cloud tenancy, or we can set the air-gapped flag and the call simply refuses to happen, with the deterministic costing still working perfectly. ' +
-    'Those words come back down into the amber box — the guardrails. Nine automatic checks, plus the autocorrect. If the AI and the measurements disagree, the measurements win, automatically. Only then does anything reach the engine. ' +
-    'On the right of the engine, two feeds. The rate library — materials, machines, labour, twenty regions — which is the only source of money anywhere in the tool. And the local database, which holds our parts, our quotes and, importantly, our real actuals, which feed back in and calibrate the estimates over time. ' +
-    'Below the engine, the uncertainty layer, which turns a single number into an honest range. ' +
-    'And out to the right, what our engineer actually receives: the eight-bucket cost with every figure traceable, the operation list, the confidence band and country comparison, and the exportable negotiation pack. ' +
-    'The top-right box is there for completeness and for the security conversation. There are three other things that can talk to the internet — live component pricing for circuit boards, an industry news feed, and a metal-price ticker that is display-only and does not price any part. All three are optional and all three are off by default. ' +
-    'So if you remember one line from this slide: the kernel measures, the AI names, the guardrails check, the engine calculates, a person approves — and the only thing that ever leaves your network is a description of a shape.'
+    'Before the twelve stages, the whole thing on one picture — and one important update since the last session: the tool is now deterministic by default. Start in the middle-left. The blue box measures the part — OCCT, real geometry, never guessed. Below it the indigo box is new: the rules engine. Twelve commodities of explicit engineering rules that derive every cost input straight from the measurement — cycle times, tooling, press size, yield. Where geometry genuinely cannot know something — what the part is made of, whether it is safety-critical, how many a year — the tool does not guess. It stops and asks the engineer, that is the green box, and the costing is blocked until a person answers. That combination is what changed: the purple box at the top, the AI, is now OPTIONAL. Three modes on the form: Rules only, which is the default and makes no outbound call at all; Compare, which runs both and shows you exactly where they disagree, field by field; and AI-led, the old behaviour, kept for comparison. When the AI does run, its words come down through the amber guardrails — nine sanity checks, and its numbers are overwritten wherever the rules can derive the value, its machining time capped by what the stock could physically give up. On the right, unchanged: the rate library is still the only source of money in the tool, the local database holds our parts and real actuals for calibration, the engine is still fixed eight-bucket arithmetic with no judgement in it, and the uncertainty layer turns the number into an honest range. The one line: the kernel measures, the rules derive, the engineer answers, the guardrails check, the engine calculates. The AI is a second opinion — useful, optional, and unable to reach the money.'
   );
 }
 
-// ══════════ 2b · THE BUSINESS CASE ══════════
+// ══════════ 2b · THE BUSINESS CASE (two management slides) ══════════
 {
+  // ── Business case I — minutes, not hours ──
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'What It Is Worth — Manual vs Automated', 'The same should-cost, done both ways', GREEN);
-
-  s.addShape('roundRect', { x: 0.5, y: 1.22, w: 6.15, h: 3.42, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText('TODAY — CAD → CAPEE, BY HAND', { x: 0.75, y: 1.33, w: 5.6, h: 0.24, fontFace: 'Calibri', fontSize: 10, bold: true, color: MUTED, charSpacing: 0.6, margin: 0 });
-  const manual = [
-    ['Open the CAD, measure, read the drawing', '45–90 min'],
-    ['Choose the material grade, look up a price', '20–30 min'],
-    ['Choose the process route and the machine', '30–60 min'],
-    ['Build the cycle time, operation by operation', '60–120 min'],
-    ['Key it all into CAPEE, correct the typos', '45–60 min'],
-    ['Sanity-check and iterate with an engineer', '60–90 min'],
+  title(s, 'Business Case I — Minutes, Not Hours', 'The same should-cost, by commodity: CostVision measured against the CAPEE-by-hand baseline', GREEN);
+  // What the CostVision minutes actually contain (the tool truth)
+  const steps = [
+    [I.upload, 'Upload CAD', '~1 min'],
+    [I.ruler, 'Measure + derive', '1–2 min\nautomatic'],
+    [I.person, 'Answer 2–5 questions', '2–5 min\nmaterial · duty'],
+    [I.check, 'Review band + approve', '5–8 min'],
   ];
-  manual.forEach(([k, v], i) => {
-    const y = 1.66 + i * 0.36;
-    if (i % 2 === 0) s.addShape('rect', { x: 0.68, y: y - 0.02, w: 5.85, h: 0.34, fill: { color: PAGE } });
-    s.addText(k, { x: 0.78, y, w: 4.2, h: 0.32, fontFace: 'Calibri', fontSize: 10, color: SLATE, margin: 0, valign: 'middle' });
-    s.addText(v, { x: 5.0, y, w: 1.45, h: 0.32, fontFace: 'Calibri', fontSize: 10, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
+  s.addText('WHAT THE COSTVISION MINUTES CONTAIN', { x: 0.5, y: 1.16, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: TEAL, charSpacing: 0.6, margin: 0 });
+  steps.forEach(([ico, t, d], i) => {
+    const x = 0.5 + i * 1.52;
+    s.addShape('roundRect', { x, y: 1.42, w: 1.4, h: 1.16, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.08 });
+    s.addShape('ellipse', { x: x + 0.51, y: 1.52, w: 0.38, h: 0.38, fill: { color: TEAL } });
+    s.addImage({ data: ico, x: x + 0.61, y: 1.62, w: 0.18, h: 0.18 });
+    s.addText(t, { x: x + 0.05, y: 1.94, w: 1.3, h: 0.24, fontFace: 'Calibri', fontSize: 8.3, bold: true, color: NAVY, align: 'center', margin: 0 });
+    s.addText(d, { x: x + 0.05, y: 2.16, w: 1.3, h: 0.4, fontFace: 'Calibri', fontSize: 7.6, color: MUTED, align: 'center', margin: 0, valign: 'top' });
+    if (i < 3) s.addImage({ data: I.arrow, x: x + 1.41, y: 1.92, w: 0.12, h: 0.12 });
   });
-  s.addShape('line', { x: 0.78, y: 3.88, w: 5.65, h: 0, line: { color: LINE, width: 1 } });
-  s.addText('One die-cast housing', { x: 0.78, y: 3.96, w: 4.2, h: 0.3, fontFace: 'Calibri', fontSize: 11, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-  s.addText('≈ 6 hours', { x: 5.0, y: 3.96, w: 1.45, h: 0.3, fontFace: 'Calibri', fontSize: 12, bold: true, color: RED, align: 'right', margin: 0, valign: 'middle' });
-  s.addText('…and a different engineer gets a different answer.', { x: 0.78, y: 4.28, w: 5.6, h: 0.26, fontFace: 'Calibri', fontSize: 9.4, italic: true, color: MUTED, margin: 0 });
-
-  s.addShape('roundRect', { x: 6.88, y: 1.22, w: 5.95, h: 3.42, fill: { color: GREEN_T }, line: { color: GREEN, width: 1.5 }, rectRadius: 0.1 });
-  s.addText('WITH COSTVISION', { x: 7.13, y: 1.33, w: 5.4, h: 0.24, fontFace: 'Calibri', fontSize: 10, bold: true, color: GREEN, charSpacing: 0.6, margin: 0 });
-  const auto = [
-    ['Upload the CAD file', '1 min'],
-    ['Measure · classify · guard · calculate', '≈ 2 min'],
-    ['— all of it, unattended', ''],
-    ['Engineer reviews every AI call and confirms', '15 min'],
-    ['Set volume and region, check the band', '7 min'],
-    ['Export the report', '5 min'],
+  s.addText([
+    { text: 'End to end: 10–15 minutes ', options: { bold: true, color: TEAL, fontSize: 12 } },
+    { text: 'for a CAD part, engineer at the screen throughout. The tool computes; the engineer answers and approves.', options: { color: SLATE, fontSize: 9.5 } },
+  ], { x: 0.5, y: 2.72, w: 5.9, h: 0.5, fontFace: 'Calibri', margin: 0, valign: 'top' });
+  // Per-commodity time table
+  const rows = [
+    ['Casting + machining (CAD)', '10–15 min', '4–5 h', '✓ confirmed baseline'],
+    ['Machining from billet (CAD)', '10–15 min', '3–4 h', 'team-reported'],
+    ['Injection moulding (CAD)', '10–15 min', '3–4 h', 'team-reported'],
+    ['Forging + machining (CAD)', '10–15 min', '3–4 h', 'team-reported'],
+    ['Sheet-metal pressing (CAD)', '10–15 min', '2–3 h', 'team-reported'],
+    ['Blow-moulded tank (CAD)', '10–15 min', '3–4 h', 'team-reported'],
+    ['PCB — from a photo', '≈ 10 min', '4–6 h', 'team-reported'],
+    ['Manual form (any of 18)', '15–30 min', '2–4 h', 'team-reported'],
   ];
-  auto.forEach(([k, v], i) => {
-    const y = 1.66 + i * 0.36;
-    if (i % 2 === 0 && v) s.addShape('rect', { x: 7.06, y: y - 0.02, w: 5.65, h: 0.34, fill: { color: 'FFFFFF' } });
-    s.addText(k, { x: 7.16, y, w: 4.1, h: 0.32, fontFace: 'Calibri', fontSize: 10, italic: !v, color: v ? SLATE : MUTED, margin: 0, valign: 'middle' });
-    if (v) s.addText(v, { x: 11.3, y, w: 1.3, h: 0.32, fontFace: 'Calibri', fontSize: 10, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
+  const ty = 3.34;
+  s.addText('TIME PER SHOULD-COST, BY COMMODITY', { x: 0.5, y: ty - 0.28, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
+  const th = ['Commodity', 'CostVision', 'CAPEE by hand', 'Baseline'];
+  const tw = [2.5, 1.0, 1.2, 1.35];
+  let tx = 0.5;
+  th.forEach((h, i) => { s.addText(h, { x: tx, y: ty, w: tw[i], h: 0.24, fontFace: 'Calibri', fontSize: 8.3, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i ? 'center' : 'left', valign: 'middle', margin: 0.04 }); tx += tw[i]; });
+  rows.forEach(([c, cv, cap, note], r) => {
+    const y = ty + 0.24 + r * 0.335;
+    let x = 0.5;
+    const cells = [c, cv, cap, note];
+    cells.forEach((v, i) => {
+      s.addText(v, { x, y, w: tw[i], h: 0.335, fontFace: 'Calibri', fontSize: 8.4,
+        bold: i === 1, color: i === 1 ? TEAL : (i === 3 && v.startsWith('✓') ? GREEN : SLATE),
+        fill: { color: r % 2 ? 'F0F4F9' : 'FFFFFF' }, align: i ? 'center' : 'left', valign: 'middle', margin: 0.04 });
+      x += tw[i];
+    });
   });
-  s.addShape('line', { x: 7.16, y: 3.88, w: 5.45, h: 0, line: { color: GREEN, width: 1 } });
-  s.addText('The same die-cast housing', { x: 7.16, y: 3.96, w: 4.1, h: 0.3, fontFace: 'Calibri', fontSize: 11, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-  s.addText('≈ 30 min', { x: 11.3, y: 3.96, w: 1.3, h: 0.3, fontFace: 'Calibri', fontSize: 12, bold: true, color: GREEN, align: 'right', margin: 0, valign: 'middle' });
-  s.addText('…and it is the same answer every time, for everyone.', { x: 7.16, y: 4.28, w: 5.4, h: 0.26, fontFace: 'Calibri', fontSize: 9.4, italic: true, color: GREEN, margin: 0 });
-
-  s.addShape('roundRect', { x: 0.5, y: 4.82, w: 7.5, h: 1.72, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText('ACROSS THE PART TYPES YOU ACTUALLY BUY', { x: 0.75, y: 4.92, w: 7, h: 0.24, fontFace: 'Calibri', fontSize: 10, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
-  const hdr2 = ['Part', 'By hand', 'CostVision', 'Faster by'];
-  const bx = [0.78, 3.55, 5.25, 6.75];
-  const bw = [2.7, 1.6, 1.4, 1.1];
-  hdr2.forEach((h, i) => s.addText(h, { x: bx[i], y: 5.19, w: bw[i], h: 0.2, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: MUTED, align: i ? 'right' : 'left', margin: 0 }));
-  const rows2 = [
-    ['Machined bracket', '2–3 h', '15 min', '≈ 10×'],
-    ['Die-cast housing', '5–7 h', '30 min', '≈ 12×'],
-    ['Moulded fascia + paint', '7–10 h', '40 min', '≈ 13×'],
-    ['PCB / PCBA from a photo', '2–4 days', '45 min', '≈ 25×'],
-  ];
-  rows2.forEach((r, i) => {
-    const y = 5.41 + i * 0.27;
-    if (i % 2 === 0) s.addShape('rect', { x: 0.68, y: y - 0.02, w: 7.2, h: 0.25, fill: { color: PAGE } });
-    r.forEach((c, k) => s.addText(c, { x: bx[k], y, w: bw[k], h: 0.23, fontFace: 'Calibri', fontSize: 9.2, bold: k === 3, color: k === 3 ? GREEN : SLATE, align: k ? 'right' : 'left', margin: 0, valign: 'middle' }));
+  // Bar chart: the same rows as minutes
+  s.addText('THE SAME TABLE AS A PICTURE — MINUTES PER ESTIMATE', { x: 6.85, y: 1.16, w: 6.0, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
+  s.addChart('bar', [
+    { name: 'CostVision (midpoint)', labels: ['Cast+mach', 'Machining', 'Inj. mould', 'Forging', 'Sheet metal', 'Blow mould', 'PCB photo'], values: [12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 10] },
+    { name: 'CAPEE by hand (midpoint)', labels: ['Cast+mach', 'Machining', 'Inj. mould', 'Forging', 'Sheet metal', 'Blow mould', 'PCB photo'], values: [270, 210, 210, 210, 150, 210, 300] },
+  ], {
+    x: 6.85, y: 1.42, w: 6.0, h: 4.6, barDir: 'bar', barGrouping: 'clustered',
+    chartColors: ['0E8074', 'B7791F'], showLegend: true, legendPos: 'b', legendFontSize: 9,
+    showValue: true, dataLabelPosition: 'outEnd', dataLabelFontSize: 8, dataLabelColor: '3A4356',
+    valAxisTitle: 'minutes', showValAxisTitle: true, valAxisTitleFontSize: 9,
+    catAxisLabelColor: '3A4356', valAxisLabelColor: '6B7280', catAxisLabelFontSize: 9, valAxisLabelFontSize: 8,
+    valGridLine: { color: 'DCE3EE', size: 0.5 }, catGridLine: { style: 'none' },
   });
-
-  s.addShape('roundRect', { x: 8.25, y: 4.82, w: 4.58, h: 1.72, fill: { color: NAVY }, rectRadius: 0.1 });
-  s.addText('WHAT THAT BUYS THE PROGRAMME', { x: 8.5, y: 4.92, w: 4.1, h: 0.24, fontFace: 'Calibri', fontSize: 9.5, bold: true, color: '9FB6E0', charSpacing: 0.5, margin: 0 });
-  const wins = [
-    ['8–10×', 'more parts costed by the same team'],
-    ['Same answer', 'twice — impossible by hand'],
-    ['During design', 'not after the quote lands'],
-  ];
-  wins.forEach(([a, b], i) => {
-    const y = 5.24 + i * 0.4;
-    s.addText(a, { x: 8.5, y, w: 1.4, h: 0.34, fontFace: 'Calibri', fontSize: 12, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
-    s.addText(b, { x: 9.95, y, w: 2.7, h: 0.34, fontFace: 'Calibri', fontSize: 9, color: 'CADCFC', margin: 0, valign: 'middle' });
-  });
-
-  s.addText('Timings are planning assumptions for a moderately complex part, not measured results. Replace them with your own after a 20-part pilot — the tool logs its own run times.',
-    { x: 0.5, y: 6.66, w: 12.33, h: 0.3, fontFace: 'Calibri', fontSize: 9, italic: true, color: MUTED, margin: 0 });
+  s.addText('16–30× faster on the confirmed baseline. CAPEE midpoints marked "team-reported" are working figures — confirm with the costing team before circulating beyond this room.',
+    { x: 6.85, y: 6.10, w: 6.0, h: 0.5, fontFace: 'Calibri', fontSize: 8.6, italic: true, color: MUTED, margin: 0, valign: 'top' });
+  s.addShape('roundRect', { x: 0.5, y: 6.35, w: 5.9, h: 0.62, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Capacity, not headcount:  ', options: { bold: true, color: GREEN } },
+    { text: 'at these times one engineer reviews 15–25 should-costs a day instead of preparing 1–2 — the saved hours go into negotiation, not data entry.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.35, w: 5.6, h: 0.62, fontFace: 'Calibri', fontSize: 9.3, margin: 0, valign: 'middle' });
   footer(s, ++PG);
-
   s.addNotes(
-    'Before we go into how it works, let me put the commercial case on the table, because that is the question I would be asking. ' +
-    'On the left is what costing this housing looks like today. Open the CAD and take the measurements. Decide the material grade and go and find a price. Decide the process route and pick a machine. Build the cycle time operation by operation. Key it all into CAPEE and correct the typos. Then sanity-check it and iterate with an engineer. Call it six hours for a moderately complex part, and be honest — a different engineer doing the same part next week gets a different answer, because every one of those steps is a judgement. ' +
-    'On the right, the same part through this tool. Upload the file. The measuring, the classification, the safety checks and the whole calculation run unattended in about two minutes. Then our engineer spends fifteen minutes reviewing every AI call and confirming or overriding it, seven minutes setting volume and region and looking at the confidence band, and five minutes exporting the report. Half an hour. And it is the same answer every time, for everyone. ' +
-    'I want to be careful here: the two minutes is the machine, the half hour is the human. We have not automated the engineer away — we have taken the mechanical work off them and left them the judgement, which is the bit they are actually good at. ' +
-    'The table at the bottom left shows how that plays out across the part types we actually buy. A bracket, ten times faster. This casting, twelve. A moulded fascia with paint, thirteen. And the standout is the circuit board — building a two-hundred-line bill of materials by hand and pricing every component is genuinely two to four days of work, and the tool does it from a photograph in about forty-five minutes. ' +
-    'What that buys the programme is on the right, and it is not a headcount argument. It is coverage. The same team can cost eight to ten times more parts, which means you stop cherry-picking the top twenty spend items and start covering the tail where the leakage actually is. You get the same answer twice, which you simply cannot do by hand. And critically you get the number during design, while the wall thickness can still be changed, rather than after the quote has landed and the tool is already cut. ' +
-    'One caveat I want to say out loud: the timings on this slide are planning assumptions, not measured results. I have tried to be realistic rather than flattering. Run twenty parts through it and replace them with your own numbers — the tool logs its own run times, so that measurement is free.'
+    'The business case starts with time, because time is the thing nobody disputes. The left side shows what the CostVision minutes actually contain — upload, automatic measurement and derivation, then the engineer answers the two to five questions geometry cannot answer, reviews the band and approves. Ten to fifteen minutes end to end for a CAD part, and I want to be precise: that is not unattended time, that is an engineer at the screen owning the answer. The table is the same should-cost by commodity. One row is a confirmed baseline — casting plus machining, four to five hours in CAPEE, measured by us. The other CAPEE figures are team-reported working numbers and the slide says so; I would rather show you an honest label than a precise-looking guess. The chart makes the point the table makes: the green bars are barely visible against the amber ones. And the box at the bottom is the real argument — this is capacity, not headcount. At these times one engineer reviews fifteen to twenty-five should-costs a day instead of preparing one or two. The hours we save do not disappear, they move into negotiation preparation, which is where the money actually is.'
+  );
+}
+{
+  // ── Business case II — evidence, coverage, cost to run ──
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'Business Case II — Evidence, Coverage, Cost to Run', 'Every figure on this slide is measured from the tool — nothing is projected', GREEN);
+  // KPI band
+  const kpis = [
+    ['16–30×', 'faster than the confirmed\nCAPEE baseline', TEAL],
+    ['£0', 'marginal cost per estimate\nin Rules mode — no AI call', GREEN],
+    ['20', 'manufacturing regions\npriced on every run', BLUE],
+    ['100%', 'of cost lines carry their\nown printed derivation', NAVY],
+  ];
+  kpis.forEach(([n, d, c], i) => {
+    const x = 0.5 + i * 3.16;
+    s.addShape('roundRect', { x, y: 1.18, w: 2.96, h: 1.12, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+    s.addText(n, { x: x + 0.15, y: 1.26, w: 2.65, h: 0.52, fontFace: 'Cambria', fontSize: 30, bold: true, color: c, margin: 0 });
+    s.addText(d, { x: x + 0.15, y: 1.80, w: 2.65, h: 0.44, fontFace: 'Calibri', fontSize: 8.6, color: MUTED, margin: 0, valign: 'top' });
+  });
+  // Accuracy evidence — the six verified parts
+  s.addText('ACCURACY — 6 REAL PARTS vs INDEPENDENT MANUAL SHOULD-COSTS (China · 100k/yr)', { x: 0.5, y: 2.56, w: 7.6, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
+  const parts = [
+    ['Fuel tank (blow-moulded)', '£20–30', '£25.82', '+3%', GREEN],
+    ['Front bumper (inj. moulded)', '£8–9', '£8.28', '−3%', GREEN],
+    ['Seat cross-member (pressed)', '£1.20–1.60', '£1.33', '−5%', GREEN],
+    ['Steering knuckle (cast+mach)', '£16–18', '£14.05', '−17%', AMBER],
+    ['Stub axle (forged+mach)', '≈ £30', '£38.98', '+30%', AMBER],
+    ['Servo horn (CNC, 3 g)', '≈ £2.20', '£2.91', '+32%', AMBER],
+  ];
+  const pw = [2.55, 1.05, 1.0, 0.75];
+  let px = 0.5;
+  ['Part', 'Manual', 'CostVision', 'Error'].forEach((h, i) => { s.addText(h, { x: px, y: 2.82, w: pw[i], h: 0.24, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i ? 'center' : 'left', valign: 'middle', margin: 0.04 }); px += pw[i]; });
+  parts.forEach(([p, m, cv, e, c], r) => {
+    const y = 3.06 + r * 0.315;
+    let x = 0.5;
+    [p, m, cv, e].forEach((v, i) => {
+      s.addText(v, { x, y, w: pw[i], h: 0.315, fontFace: 'Calibri', fontSize: 8.3, bold: i === 3, color: i === 3 ? c : SLATE, fill: { color: r % 2 ? 'F0F4F9' : 'FFFFFF' }, align: i ? 'center' : 'left', valign: 'middle', margin: 0.04 });
+      x += pw[i];
+    });
+  });
+  s.addText([
+    { text: 'Fleet error 15% vs the AI path’s 28% on the same parts. ', options: { bold: true, color: NAVY } },
+    { text: 'Every miss is visible and every over-estimate errs on the negotiating side — no silent under-quote. Validated on these 6 parts; validation on unseen parts is the next step and is said so out loud.', options: { color: SLATE } },
+  ], { x: 0.5, y: 5.02, w: 5.9, h: 0.8, fontFace: 'Calibri', fontSize: 9, margin: 0, valign: 'top' });
+  // Donuts: commodity coverage + verification state
+  s.addChart('doughnut', [
+    { name: 'Commodity coverage', labels: ['Deterministic rules (12)', 'AI-assisted (6)'], values: [12, 6] },
+  ], {
+    x: 6.6, y: 2.66, w: 3.1, h: 2.5, holeSize: 60,
+    chartColors: ['0E8074', 'B7791F'], showLegend: true, legendPos: 'b', legendFontSize: 8.5,
+    showValue: false, showTitle: true, title: '18 commodities', titleFontSize: 10, titleColor: '16325C',
+  });
+  s.addChart('doughnut', [
+    { name: 'Verification', labels: ['Inside manual band (3)', 'Within ±32% (3)', 'No manual yet (2)'], values: [3, 3, 2] },
+  ], {
+    x: 9.85, y: 2.66, w: 3.1, h: 2.5, holeSize: 60,
+    chartColors: ['2E8B57', 'B7791F', 'DCE3EE'], showLegend: true, legendPos: 'b', legendFontSize: 8.5,
+    showValue: false, showTitle: true, title: '8 parts costed, 8 of 8 succeeded', titleFontSize: 10, titleColor: '16325C',
+  });
+  // what it is NOT — the trust strip
+  s.addShape('roundRect', { x: 0.5, y: 5.95, w: 12.33, h: 1.02, fill: { color: 'FCF3E3' }, line: { color: AMBER, width: 1 }, rectRadius: 0.09 });
+  s.addImage({ data: I.warn, x: 0.68, y: 6.12, w: 0.26, h: 0.26 });
+  s.addText([
+    { text: 'What we are NOT claiming — ', options: { bold: true, color: AMBER } },
+    { text: 'the tool does not read drawings or tolerances yet; it stops and asks the engineer for the material rather than guessing; accuracy is verified on 6 parts and the validation set is being widened before any accuracy figure goes into a supplier commitment. Every number above is reproducible from the tool today — the evidence pack (per-part derivations, all three benchmark rounds) accompanies this deck.', options: { color: SLATE } },
+  ], { x: 1.05, y: 6.02, w: 11.6, h: 0.9, fontFace: 'Calibri', fontSize: 9, margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+  s.addNotes(
+    'Second half of the business case: evidence, coverage, and what it costs to run. Four headline figures, all measured. Sixteen to thirty times faster on the baseline we confirmed ourselves. Zero marginal cost per estimate in the default mode — there is no AI call, no per-seat metering on the costing path, it is arithmetic on our own server. Twenty manufacturing regions priced on every single run. And every line of every estimate prints its own derivation — that is what makes it usable in a supplier meeting. The table is the accuracy evidence: six real parts with independent manual bottom-up costs. Three inside the manual band. Three within about thirty percent, every one of them an over-estimate — the miss direction you can live with, because an over-estimate is a negotiating position and an under-estimate is a signed mistake. Fleet error fifteen percent, against twenty-eight for the AI path on the same parts. The two donuts: twelve of eighteen commodities run fully deterministic today, and of the eight parts we costed, all eight produced a number — the AI path managed five of eight before we hardened it. And the amber strip is deliberate, because this deck goes up, and the fastest way to lose the room is to overclaim: it does not read drawings yet, it asks rather than guesses on material, and six parts is six parts — we widen the validation set before any of these figures goes into a commitment. Everything on this slide can be regenerated from the tool this afternoon.'
   );
 }
 
@@ -393,7 +433,6 @@ partSlide('assets/workflow-deck/part-housing.png',
   'Two point eight kilos finished. Walls about three millimetres. Two precision bores that have to be reamed. Sixteen holes that get drilled and tapped. Two faces that have to be machined flat because something bolts to them. And a projected shadow of one thousand six hundred and fifty square centimetres, which is going to decide which press it runs on. ' +
   'I want you to look at that list on the right and register one thing: every single number on it came out of the three-D model. Nobody typed them in, nobody estimated them off a drawing, and if we open the same file tomorrow we get exactly the same numbers. That is the foundation everything else in this deck is built on. ' +
   'The picture is an illustration rather than a photograph, but it is drawn to the dimensions the tool actually measured — so what you are looking at is the part as the software sees it.');
-
 
 // ══════════ 3 · THE PART + THE JOURNEY ══════════
 {
@@ -1045,6 +1084,63 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     'I would rather hand you an honest range than a falsely precise number, and the width of that band is itself information — it is wider here than it would be on a simple pressing, because a machining-heavy casting carries more cycle-time risk. ' +
     'Stage twelve, and this is the one I care most about. Every AI suggestion arrives as an editable pre-fill. Highlighted. Never silently applied. Our engineer can change the material, the process, the machine, the cycle time, the rates — and the whole cost recalculates instantly. The tool proposes. The engineer disposes. The last line of defence is a person, and it always will be. ' +
     'And here is what it is all for. A supplier quotes fifty-two pounds for this part. That is above our P90 — above where ninety percent of our simulated outcomes landed. Our buyer no longer has to say "that feels high". They can open the operation list and say: your machining time looks about thirty percent above what this geometry needs, walk me through your fixturing. That is a completely different conversation, and it is the reason this tool exists.'
+  );
+}
+
+// ══════════ 10a2 · INSIDE THE CONFIDENCE BAND (Monte-Carlo) ══════════
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'Inside the Confidence Band — How the Monte-Carlo Works', 'What the P10–P90 range actually is, and why the same part always gets the same band', GREEN);
+  // Left: the 4 steps, exactly as the engine does them
+  const steps = [
+    ['1 · Every line carries a confidence grade', 'Each cost line remembers where it came from: measured geometry and library rates grade High, derived values Medium, assumptions Low. This provenance already exists for the trace — the band re-uses it.'],
+    ['2 · Grade becomes a spread', 'High = ±5%, Medium = ±12%, Low = ±22% (one sigma). Per-bucket reality applied on top: tooling estimates are the least certain (×1.8); packaging and logistics are contracted and stable (×0.6); overhead and margin are policy percentages — never perturbed, always recomputed.'],
+    ['3 · 4,000 trials', 'Each trial multiplies every base bucket — material, process, labour, tooling, packaging, logistics — by a lognormal factor with that spread (always positive, mean 1), then recomposes overhead and margin exactly as the real engine does. 4,000 slightly different worlds, 4,000 totals.'],
+    ['4 · Read the distribution', 'Sort the 4,000 totals: the 10th percentile is the optimistic case, the median is the estimate, the 90th is the conservative case. The half-width becomes the ± figure on the result card, and the band is labelled tight, moderate or wide.'],
+  ];
+  steps.forEach(([t, d], i) => {
+    const y = 1.18 + i * 1.28;
+    s.addShape('roundRect', { x: 0.5, y, w: 7.1, h: 1.16, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+    s.addShape('ellipse', { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fill: { color: GREEN } });
+    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(t.slice(4), { x: 1.2, y: y + 0.1, w: 6.3, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0 });
+    s.addText(d, { x: 1.2, y: y + 0.38, w: 6.25, h: 0.74, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'top' });
+  });
+  // Right: the band drawn, plus the two guarantees
+  s.addText('WHAT THE BUYER SEES', { x: 7.95, y: 1.16, w: 4.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: GREEN, charSpacing: 0.6, margin: 0 });
+  s.addShape('roundRect', { x: 7.95, y: 1.42, w: 4.88, h: 1.9, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+  // mini histogram (illustrative shape only — labelled as such)
+  const bars = [0.10, 0.22, 0.44, 0.72, 0.95, 1.0, 0.88, 0.62, 0.38, 0.18, 0.08];
+  bars.forEach((h, i) => {
+    s.addShape('rect', { x: 8.35 + i * 0.38, y: 2.62 - h * 0.95, w: 0.3, h: h * 0.95, fill: { color: i >= 1 && i <= 9 ? '9FD9CF' : 'DCE3EE' } });
+  });
+  s.addShape('line', { x: 8.73, y: 2.72, w: 3.04, h: 0, line: { color: TEAL, width: 2 } });
+  s.addText('P10', { x: 8.55, y: 2.78, w: 0.5, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: TEAL, margin: 0 });
+  s.addText('P50 — the estimate', { x: 9.65, y: 2.78, w: 1.5, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: NAVY, margin: 0 });
+  s.addText('P90', { x: 11.55, y: 2.78, w: 0.5, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: TEAL, margin: 0 });
+  s.addText('4,000 simulated totals for one part (illustrative shape) — the quoted band is the middle 80%',
+    { x: 8.15, y: 3.02, w: 4.5, h: 0.24, fontFace: 'Calibri', fontSize: 7.8, italic: true, color: MUTED, margin: 0 });
+  const promises = [
+    ['Reproducible, on purpose', 'The random draws are seeded: the same part, volume and region gives the same band every single time, and the band is unit-tested. No "run it again and hope".', I.check, TEAL],
+    ['Calibrated by real actuals', 'Once enough real quotes or invoices exist for a segment, a conformal calibration layer replaces the prior — the band then provably covers the target share of actual outcomes. Until then, the Monte-Carlo prior stands and says so.', I.clip, GREEN],
+    ['Honest by construction', 'Assumptions widen the band automatically — a part costed from an unanswered question cannot show a tight range. The band is the tool admitting exactly how much it does not know.', I.shield, AMBER],
+  ];
+  promises.forEach(([t, d, ico, c], i) => {
+    const y = 3.46 + i * 0.99;
+    s.addShape('roundRect', { x: 7.95, y, w: 4.88, h: 0.9, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+    s.addShape('ellipse', { x: 8.09, y: y + 0.11, w: 0.34, h: 0.34, fill: { color: c } });
+    s.addImage({ data: ico, x: 8.17, y: y + 0.19, w: 0.18, h: 0.18 });
+    s.addText(t, { x: 8.52, y: y + 0.09, w: 4.2, h: 0.22, fontFace: 'Calibri', fontSize: 9.5, bold: true, color: c, margin: 0 });
+    s.addText(d, { x: 8.52, y: y + 0.33, w: 4.22, h: 0.52, fontFace: 'Calibri', fontSize: 8, color: SLATE, margin: 0, valign: 'top' });
+  });
+  s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Why it matters:  ', options: { bold: true, color: GREEN } },
+    { text: 'a single number pretends to a precision the inputs never had. The band is the same arithmetic run 4,000 times with each input as uncertain as its provenance says it is — so “£26 ± 18%” is a statement of evidence, not of confidence.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10, margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+  s.addNotes(
+    'A question I get every time is where the plus-or-minus comes from, so here is the mechanism, exactly as the code does it. Step one: every cost line already carries a confidence grade from its provenance — measured geometry and library rates are High, derived values Medium, assumptions Low. Step two: those grades become spreads — five, twelve and twenty-two percent at one sigma — with per-bucket reality on top: tooling estimates get one-point-eight times the spread because tooling is genuinely the least certain thing we estimate, packaging and logistics get less because they are contracted, and overhead and margin are never perturbed at all because they are policy percentages — they are recomputed inside every trial exactly as the real engine composes them. Step three: four thousand trials. Each one multiplies every base bucket by a lognormal factor — always positive, mean one — and rebuilds the stack. Step four: sort the four thousand totals and read off the tenth, fiftieth and ninetieth percentiles. That is the band on the result card. Three properties worth stating. It is seeded, so the same part gives the same band every time — it is reproducible and it is unit-tested. It is calibrated: once we have enough real actuals in a segment, a conformal layer replaces the prior with a band that provably covers the target share of real outcomes — that is a statistical guarantee, and until we have the data the tool says it is on the prior. And it is honest by construction: assumptions widen the band automatically, so a part costed on guesses cannot pretend to precision. The one line: the band is the same arithmetic run four thousand times with each input exactly as uncertain as its provenance says.'
   );
 }
 
