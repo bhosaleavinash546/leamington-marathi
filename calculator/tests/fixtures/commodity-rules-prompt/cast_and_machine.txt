@@ -14,7 +14,7 @@ CAST + MACHINE COST INPUT RULES:
   cavities=1  [2.80 kg > 1 kg → single cavity — deterministic, use verbatim]
   machiningCycleTimeHr=0.268  [0.268 hr, inside the 0.296 hr near-net finish envelope — deterministic, use verbatim]
   machiningSetupTimeHr=2.25  [3 datum/fixture setup(s) × 45 min — deterministic, use verbatim]
-  machiningOperations=Milling — +Z (40 faces) 0.089 hr on mach-vmc3; Milling — -Z (30 faces) 0.067 hr on mach-vmc3; Milling — +X (20 faces) 0.045 hr on mach-vmc3; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.067 hr on mach-drill  [sums to 0.268 hr of finish machining — deterministic, use verbatim]
+  machiningOperations=Milling — +Z (40 faces) 0.072 hr on mach-vmc3; Milling — -Z (30 faces) 0.054 hr on mach-vmc3; Milling — +X (20 faces) 0.036 hr on mach-vmc3; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.105 hr on mach-drill  [sums to 0.268 hr of finish machining — deterministic, use verbatim]
   setupCount=3  [distinct approach directions: +Z, -Z, +X — deterministic, use verbatim]
   machineId=mach-vmc3  [3 approach direction(s): 3-axis vertical machining centre — deterministic, use verbatim]
 

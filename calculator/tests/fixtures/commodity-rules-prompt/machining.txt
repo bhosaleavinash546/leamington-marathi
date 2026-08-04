@@ -14,7 +14,7 @@ MACHINING COST INPUT RULES:
   setupTimeHr=2.25  [3 setup(s) × 45 min — deterministic, use verbatim]
   machineId=mach-vmc3  [3 approach direction(s): 3-axis vertical machining centre — deterministic, use verbatim]
   operationCount=4  [3 cutting op(s) from the setup analysis + 1 measured drilling op — deterministic, use verbatim]
-  operations=Milling — +Z (40 faces) 0.089 hr on mach-vmc3; Milling — -Z (30 faces) 0.067 hr on mach-vmc3; Milling — +X (20 faces) 0.045 hr on mach-vmc3; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.067 hr on mach-drill  [sums to 0.268 hr — the capped bottom-up cycle, apportioned by face count — deterministic, use verbatim]
+  operations=Milling — +Z (40 faces) 0.072 hr on mach-vmc3; Milling — -Z (30 faces) 0.054 hr on mach-vmc3; Milling — +X (20 faces) 0.036 hr on mach-vmc3; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.105 hr on mach-drill  [sums to 0.268 hr — the capped bottom-up cycle, apportioned by face count — deterministic, use verbatim]
 
 ### context: degraded
 MACHINING COST INPUT RULES:

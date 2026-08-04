@@ -187,3 +187,32 @@ and hard stops instead of silent guesses on the questions geometry cannot answer
   the guard resolves them with a logged substitution instead of a dead part.
 - Remaining shared weakness: the servo horn (+68/+59) — both arms over-cost 3 g CNC parts.
   Whatever fixes it will fix it for both, because the arithmetic is shared.
+
+---
+
+# Addendum — the servo-horn fix (both arms)
+
+The horn was both arms' worst part because the defect was in the **shared** arithmetic, and
+diagnosis found it precisely: the machining operation plan's drilling op was built from the
+kernel's flat 0.5 min/hole, so on a part with ten Ø2.5–5 spline holes **the drilling op alone
+(0.083 hr) exceeded the entire capped cycle (0.061 hr)** — the ops summed to more than the
+cycle they claim to partition, and the mapper costs the ops. A 3.7-minute job was billed 5.7
+minutes, on a part where time is the whole price.
+
+Two fixes, one per arm's failure mode:
+
+1. **The plan partitions the capped cycle by construction**: drilling uses the same dia-aware
+   minutes as the ceiling, clamped to ≤80% of the cycle; milling carries the remainder. The
+   invariant the tests claimed ("parts add up to the whole") is now actually true.
+2. **The mapper caps ANY supplied machining ops** — the model's included — by the same
+   physical removal ceiling, scaling proportionally with the substitution logged. The golden
+   rule applied to time: whoever supplied the cycle, it cannot exceed what the stock envelope
+   can physically give up.
+
+| Part | Manual | Before | After |
+|---|---|---|---|
+| 25T servo horn | £2.20 | £3.69 (+68%) | **£2.91 (+32%)** |
+
+No other part moved. Running score, rules arm: **MAPE 20.7% · bias +10.7%** (was 28.4/+18.2),
+against the fresh AI's 28.3/+3.5. The AI arm inherits fix 1 outright (shared plan builder) and
+fix 2 caps its cycle claims on the next live run.

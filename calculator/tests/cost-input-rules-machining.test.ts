@@ -196,14 +196,15 @@ describe('the routing', () => {
   it('apportions cutting time by face count and sums to the capped cycle', () => {
     const ops = machiningOperationPlan(ctx(), 'aluminium');
     const total = ops.reduce((s, o) => s + o.cycleTimeHr, 0);
-    // 0.095 hr capped; milling = max(cut − 0.08 drill, cut × 0.2) = 0.019 hr,
-    // split 40/30/26 by face count.
-    expect(ops[0].cycleTimeHr).toBe(0.0079);
-    expect(ops[1].cycleTimeHr).toBe(0.0059);
-    expect(ops[2].cycleTimeHr).toBe(0.0051);
-    expect(ops[3].cycleTimeHr).toBe(0.08);
-    // milling floor (cut × 0.2) + measured drilling
-    expect(total).toBeCloseTo(0.099, 3);
+    // 0.095 hr capped. Drilling uses the SAME dia-aware minutes as the ceiling
+    // (12 × Ø2×6 = 0.024 hr, not the kernel's flat 12 × 0.5 min = 0.10 hr that
+    // used to exceed the whole cycle); milling carries the remaining 0.071 hr,
+    // split 40/30/26 by face count. The ops now PARTITION the capped cycle.
+    expect(ops[0].cycleTimeHr).toBe(0.0296);
+    expect(ops[1].cycleTimeHr).toBe(0.0222);
+    expect(ops[2].cycleTimeHr).toBe(0.0192);
+    expect(ops[3].cycleTimeHr).toBe(0.024);
+    expect(total).toBeCloseTo(0.095, 3);
     // Nothing is rescaled after the fact — the parts add up to the whole by
     // construction, which is what the AI-op-list-then-rescale path could not say.
     expect(ops[0].basis).toContain('40 of 96 faces');

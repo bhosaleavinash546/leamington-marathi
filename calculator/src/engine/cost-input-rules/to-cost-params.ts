@@ -38,6 +38,15 @@ import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '.
 import { computeFeatureMachining } from '../feature-machining.js';
 import type { FeatureRow } from '../feature-ops.js';
 import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../geometry-sanity.js';
+import { physicalRemovalCeilingMin } from '../feature-costing.js';
+import { featureMinutesEach } from '../feature-machining.js';
+
+/** Same machinability table the machining rules use — duplicated deliberately
+ *  small rather than exporting rules internals into the mapper. */
+const MACHINABILITY_FOR_CEILING: Partial<Record<MaterialFamily, number>> = {
+  aluminium: 1.0, magnesium: 0.8, plastic: 0.6, 'copper alloy': 1.1,
+  'cast iron': 1.4, steel: 1.5, titanium: 2.5,
+};
 import { representativeMaterialId, isLibraryMaterialId, familyFromMaterialId } from './derive/material.js';
 import type { MaterialFamily } from '../material-family.js';
 
@@ -53,21 +62,23 @@ type CostInputs = CADAnalysisResult['costInputSuggestions'];
  */
 function resolveMaterialId(
   commodity: string, carried: string, familyHint?: MaterialFamily | null,
-): { id: string | null; assumed: string | null } {
-  if (isLibraryMaterialId(carried)) return { id: carried, assumed: null };
+): { id: string | null; assumed: string | null; family: MaterialFamily | null } {
+  if (isLibraryMaterialId(carried)) {
+    return { id: carried, assumed: null, family: familyFromMaterialId(carried) ?? familyHint ?? null };
+  }
   // The model invents ids: round 1 of the A/B returned `mat-hss`, which is in
   // no library, and the whole part became uncostable. An invented id usually
   // still NAMES its family — resolve it through the same token matcher the
   // filenames use, substitute the representative grade, and say so out loud.
   const carriedFamily = carried ? familyFromMaterialId(carried) : null;
   const family = (carriedFamily ?? familyHint ?? (carried as MaterialFamily) ?? '') as MaterialFamily;
-  if (!family) return { id: null, assumed: null };
+  if (!family) return { id: null, assumed: null, family: null };
   const id = representativeMaterialId(commodity, family);
-  if (!id) return { id: null, assumed: null };
+  if (!id) return { id: null, assumed: null, family };
   const note = carried && carried !== family
     ? `materialId ('${carried}' is not in the rate library → ${family} → ${id})`
     : `materialId (${family} → ${id}, representative grade — not a drawing callout)`;
-  return { id, assumed: note };
+  return { id, assumed: note, family };
 }
 
 /**
@@ -322,6 +333,26 @@ export function toCostParams(
       // batch size dominated a 3 g part. Roughly a batch per fortnightly-ish
       // run, clamped to sane shop floor sizes.
       const batchSize = Math.round(Math.min(5000, Math.max(50, annualVolume / 20)));
+      // The golden rule, applied to TIME: whoever supplied these operations —
+      // the rules or the model — the billed cycle cannot exceed what the stock
+      // envelope can physically give up. The rules arm arrives pre-capped; the
+      // model's ops arrived uncapped and stood, which is how its cycle numbers
+      // become prices unexamined. Scale proportionally so the routing shape is
+      // preserved and only the total moves.
+      let opsScale = 1;
+      if (geo?.volume?.cm3 && geo.boundingBox) {
+        const stockCm3 = geo.boundingBox.xMm * geo.boundingBox.yMm * geo.boundingBox.zMm / 1000;
+        const mf = MACHINABILITY_FOR_CEILING[mat.family ?? 'steel'] ?? 1.2;
+        const holeRows = ((geo.featureTable ?? []) as FeatureRow[]).filter(r => r.kind === 'hole');
+        const drillMin = holeRows.reduce((sum, r) => sum + featureMinutesEach(r) * r.count, 0);
+        const ceilingHr = (physicalRemovalCeilingMin(
+          geo.volume.cm3, stockCm3, geo.surfaceArea?.cm2 ?? 0, mf) + drillMin * mf) / 60;
+        const supplied = ops.reduce((sum, o) => sum + num(o.cycleTimeHr), 0) || cycleHr;
+        if (supplied > ceilingHr * 1.05 && supplied > 0) {
+          opsScale = ceilingHr / supplied;
+          assumed.push(`cycle capped to the removal ceiling (${supplied.toFixed(3)} → ${ceilingHr.toFixed(3)} hr)`);
+        }
+      }
       if (!ci.machining?.stockWeightKg) assumed.push('stockWeightKg (net / 0.65 fallback)');
       assumed.push(`batchSize=${batchSize} (annualVolume / 20)`, 'partsPerCycle=1', 'labourTimeHr=cycleTimeHr');
       return {
@@ -351,7 +382,11 @@ export function toCostParams(
                 name: 'Machining', machineId, cycleTimeHr: cycleHr,
                 labourId, oee: D.oee, manning: D.manning, labourEfficiency: D.labourEfficiency,
               }]
-          ).map(o => ({ ...o, type: 'milling', partsPerCycle: 1, labourTimeHr: o.cycleTimeHr })),
+          ).map(o => ({
+            ...o, type: 'milling', partsPerCycle: 1,
+            cycleTimeHr: o.cycleTimeHr * opsScale,
+            labourTimeHr: o.cycleTimeHr * opsScale,
+          })),
           setup: {
             machineId, labourId,
             setupTimeHr: num(ci.estimatedSetupTimeHr, 0.5),

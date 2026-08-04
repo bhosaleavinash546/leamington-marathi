@@ -173,10 +173,19 @@ export function machiningOperationPlan(
   const cut = cuttingHours(ctx, family);
   const drill = drillingOpFromFeatures(
     ctx.geo.featureTable, ctx.geo.cncCycleTimeEstimate?.drillBoreTimeMins);
-  const drillHr = drill?.cycleTimeHr ?? 0;
-  // Never let drilling swallow the whole cycle — a part that is mostly holes
-  // still has to be faced and held.
-  const millingHr = Math.max(cut.hours - drillHr, cut.hours * 0.2);
+  // The drilling op must use the SAME dia-aware minutes the ceiling uses, and
+  // must fit inside the capped cycle. It used the kernel's flat 0.5 min/hole:
+  // on the servo horn (ten Ø2.5–5 spline holes) that made the drilling op alone
+  // 0.083 hr against a 0.061 hr capped total — the ops summed to MORE than the
+  // cycle they claim to partition, and the mapper costs the ops. Billed 5.7 min
+  // of a 3.7-min job, on a part where time is the whole price.
+  const holeRows = (ctx.geo.featureTable ?? []).filter(r => r.kind === 'hole');
+  const diaAwareDrillHr = holeRows.length
+    ? holeRows.reduce((sum, r) => sum + featureMinutesEach(r as FeatureRow) * r.count, 0) / 60
+    : (drill?.cycleTimeHr ?? 0);
+  // ≤80% of the cycle: a part that is mostly holes still has to be faced and held.
+  const drillHr = Math.min(diaAwareDrillHr, cut.hours * 0.8);
+  const millingHr = cut.hours - drillHr;
 
   const { faces } = principalDirections(ctx);
   const machineId = pickMachiningCentreId({
@@ -210,12 +219,12 @@ export function machiningOperationPlan(
     });
   }
 
-  if (drill) {
+  if (drill && drillHr > 0) {
     ops.push({
       name: drill.name,
       type: 'drilling',
       machineId: 'mach-drill',
-      cycleTimeHr: Math.round(drill.cycleTimeHr * 10_000) / 10_000,
+      cycleTimeHr: Math.round(drillHr * 10_000) / 10_000,
       partsPerCycle: 1,
       basis: `${drill.holeCount} holes measured off the B-rep: ${drill.summary}`,
     });
