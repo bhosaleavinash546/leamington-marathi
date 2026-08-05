@@ -21,6 +21,7 @@ import { searchPatents, patentVelocity, buildPatentQuery, providerStatus } from 
 import { BOM_TREE, ANALYZE_SYSTEMS } from '../src/data/vehicle-bom.mjs';
 import { messagesJson } from '../llm-json.mjs';
 import { shouldResearch, researchFutureTechnologies } from '../foresight-research.mjs';
+import { initKnowledge, getCachedResearch, saveResearch, mergedRegister, promoteCandidate, demoteEntry, promotedEntries, candidateToEntry } from '../foresight-knowledge.mjs';
 
 const SMALL_MODEL = process.env.CV_SMALL_MODEL || 'claude-sonnet-5';
 const POWERTRAINS = ['ICE', 'MHEV', 'PHEV', 'BEV'];
@@ -104,6 +105,19 @@ const CRITIQUE_SCHEMA = {
 // one thing in this tool that must not lie about its own past.
 const LANE_RULE = 'decision-timing-2026';
 
+// Sanitize every string field of a client-supplied object (one level of
+// arrays included) — promotion candidates arrive from the browser and their
+// text ends up in prompts and rendered cards.
+function deepSanitize(obj, sanitize) {
+  const out = {};
+  for (const [k, v] of Object.entries(obj ?? {})) {
+    if (typeof v === 'string') out[k] = sanitize(v, 700);
+    else if (Array.isArray(v)) out[k] = v.slice(0, 12).map((x) => (typeof x === 'string' ? sanitize(x, 120) : x));
+    else if (typeof v === 'number' || typeof v === 'boolean') out[k] = v;
+  }
+  return out;
+}
+
 function snapshotCards(result) {
   const cards = [...result.horizons.H1, ...result.horizons.H2, ...result.horizons.H3];
   return cards.map((c) => ({
@@ -115,6 +129,7 @@ function snapshotCards(result) {
 }
 
 export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, performSearch }) {
+  initKnowledge(db);
   db.exec(`CREATE TABLE IF NOT EXISTS foresight_ledger (
     id TEXT PRIMARY KEY,
     userId TEXT NOT NULL,
@@ -132,7 +147,8 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
       commodities: COMMODITY_KEYS,
       powertrains: POWERTRAINS,
       segments: SEGMENTS,
-      technologies: FORESIGHT_REGISTER.length,
+      technologies: mergedRegister(db).length,
+      promotedCount: promotedEntries(db).length,
       anchors: REG_ANCHORS,
       benchmarks: BENCHMARK_VEHICLES,
       bom: BOM_TREE,
@@ -150,7 +166,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     if (!query && !commodity && !segment) return res.status(400).json({ error: 'Give a part/assembly name (e.g. "BEV HV battery", "diff lock"), pick a commodity, or choose the Off-Road / Luxury segment lens.' });
 
     // ── Step 1: deterministic foresight — the only source of numbers ──
-    const result = foresightFor({ query, commodity, powertrain, segment });
+    const result = foresightFor({ query, commodity, powertrain, segment }, { register: mergedRegister(db) });
     // SUV segment lenses → include the curated competitor benchmark set
     // (the vehicles are off-road/luxury benchmarks, not software ones).
     if (segment === 'off-road' || segment === 'luxury') result.benchmarks = BENCHMARK_VEHICLES;
@@ -180,18 +196,25 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
         return row.count <= 20;
       } catch { return true; }   // a limiter fault must never break the endpoint
     };
-    const wantResearch = (deepPref === true || (deepPref !== false && trigger.research)) && researchAllowed();
-    let researched = null;
-    if (wantResearch && !researchKey) {
+    const researchSubject = query || commodity || segment || '';
+    const wantResearchRaw = deepPref === true || (deepPref !== false && trigger.research);
+    // Knowledge flywheel: the same research question is never paid for twice.
+    // Cached results are served with their age shown; the hourly research
+    // budget only applies to LIVE research.
+    const cached = wantResearchRaw ? getCachedResearch(db, researchSubject) : null;
+    const wantResearch = wantResearchRaw && !cached && researchAllowed();
+    let researched = cached ? { ...cached, trigger: trigger.reason, fromCache: true } : null;
+    if (!researched && wantResearch && !researchKey) {
       researched = { candidates: [], evidence: { searches: [], patents: [] }, landscapeNote: null, evidenceGaps: null, trigger: trigger.reason, note: 'The register is thin for this query and forward research needs an Anthropic API key (Settings) — showing curated technologies only rather than guessing.' };
-    } else if (wantResearch && researchKey) {
+    } else if (!researched && wantResearch && researchKey) {
       try {
         const client = makeAnthropic(researchKey, { userId: req.user?.id, route: '/api/foresight/predict:research' });
-        const out = await researchFutureTechnologies(query || commodity || segment || '', {
+        const out = await researchFutureTechnologies(researchSubject, {
           performSearch, searchPatents, client, messagesJson, model: SMALL_MODEL, sanitize,
           searchApiKey: typeof req.body?.searchApiKey === 'string' ? req.body.searchApiKey : (process.env.BRAVE_API_KEY || ''),
           now: REGISTER_VINTAGE,
         });
+        saveResearch(db, researchSubject, out);
         researched = { ...out, trigger: trigger.reason };
       } catch {
         researched = { candidates: [], evidence: { searches: [], patents: [] }, landscapeNote: null, evidenceGaps: null, trigger: trigger.reason, note: 'Forward research failed (search or AI step) — curated foresight is shown in full and nothing was invented to fill the gap.' };
@@ -252,7 +275,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
   // Retrieval only, no LLM: counts come from PatentsView, the trend label is a
   // deterministic classification (patentTrend). Unconfigured → says so.
   app.post('/api/foresight/evidence', requireAuth, rateLimit(120, 60 * 60 * 1000), async (req, res) => {
-    const tech = FORESIGHT_REGISTER.find((t) => t.id === req.body?.techId);
+    const tech = mergedRegister(db).find((t) => t.id === req.body?.techId);
     if (!tech) return res.status(404).json({ error: 'Unknown technology id.' });
     if (!providerStatus().configured) {
       return res.json({
@@ -284,7 +307,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
   // the LLM only interprets what was retrieved, and every finding must cite a
   // retrieved URL — uncited findings are dropped server-side.
   app.post('/api/foresight/deepdive', requireAuth, rateLimit(30, 60 * 60 * 1000), async (req, res) => {
-    const tech = FORESIGHT_REGISTER.find((t) => t.id === req.body?.techId);
+    const tech = mergedRegister(db).find((t) => t.id === req.body?.techId);
     if (!tech) return res.status(404).json({ error: 'Unknown technology id.' });
     const key = resolveApiKey(req);
     if (!key) return res.status(400).json({ error: 'Deep research needs an Anthropic API key (Settings) — the evidence synthesis is an AI step. The deterministic foresight and patent evidence work without one.' });
@@ -356,6 +379,8 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     if (!key) return res.status(400).json({ error: 'Deep research needs an Anthropic API key (Settings) — the synthesis is an AI step over retrieved sources.' });
 
     try {
+      const cachedR = getCachedResearch(db, query);
+      if (cachedR) return res.json({ query, research: null, ...cachedR, fromCache: true });
       const year = new Date().getFullYear();
       const queries = [
         `${query} automotive technology trends ${year}`,
@@ -413,13 +438,39 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     }
   });
 
+  // ── Knowledge flywheel: curator promotion of researched candidates ──
+  // The AI proposes, a HUMAN promotes, the register audits (DECISIONS.md #19).
+  // Promoted entries face the same structural validation as shipped register
+  // entries and enter live lanes stamped origin:'promoted'.
+  app.post('/api/foresight/promote', requireAuth, rateLimit(30, 60 * 60 * 1000), (req, res) => {
+    const candidate = req.body?.candidate;
+    if (!candidate || typeof candidate !== 'object') return res.status(400).json({ error: 'Send the researched candidate to promote.' });
+    const entry = candidateToEntry(deepSanitize(candidate, sanitize), {
+      query: sanitize(String(req.body?.query || ''), 200),
+      commodity: typeof req.body?.commodity === 'string' ? req.body.commodity : null,
+    });
+    if (!entry.commodity) return res.status(400).json({ error: 'Could not infer a commodity for this candidate — pass one explicitly.', entry });
+    const out = promoteCandidate(db, { entry, sourceUrl: String(candidate.sourceUrl || ''), promotedBy: req.user.id });
+    if (!out.ok) return res.status(400).json({ error: `Candidate does not meet register standards: ${out.errors.join('; ')}`, entry });
+    res.json({ ok: true, id: out.id, entry: { ...entry, id: out.id, origin: 'promoted' }, note: 'Promoted into the live register with provenance. It will appear in lanes with a PROMOTED badge; demote any time. Fold it into the shipped register at the next re-curation.' });
+  });
+
+  app.get('/api/foresight/promoted', requireAuth, (_req, res) => {
+    res.json({ promoted: promotedEntries(db) });
+  });
+
+  app.delete('/api/foresight/promoted/:id', requireAuth, (req, res) => {
+    if (!demoteEntry(db, req.params.id)) return res.status(404).json({ error: 'No such promoted entry.' });
+    res.json({ ok: true });
+  });
+
   // ── Panel critique: three sceptical lenses over deterministic cards ──
   // Cards are rebuilt server-side from techIds (never trusted from the client);
   // critiques referencing unknown ids are dropped. Soft-axis judgment only —
   // the deterministic positions are not changed by the panel.
   app.post('/api/foresight/critique', requireAuth, rateLimit(30, 60 * 60 * 1000), async (req, res) => {
     const ids = Array.isArray(req.body?.techIds) ? req.body.techIds.slice(0, 12) : [];
-    const subset = FORESIGHT_REGISTER.filter((t) => ids.includes(t.id));
+    const subset = mergedRegister(db).filter((t) => ids.includes(t.id));
     if (subset.length < 2) return res.status(400).json({ error: 'Give 2-12 known technology ids to convene the panel on.' });
     const key = resolveApiKey(req);
     if (!key) return res.status(400).json({ error: 'The panel critique is an AI step — add an Anthropic API key in Settings. The deterministic foresight works without one.' });
@@ -501,7 +552,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     const row = db.prepare('SELECT * FROM foresight_ledger WHERE id = ? AND userId = ?').get(req.params.id, req.user.id);
     if (!row) return res.status(404).json({ error: 'Ledger entry not found.' });
     const then = JSON.parse(row.snapshot);
-    const now = foresightFor({ query: row.query || '', commodity: row.commodity, powertrain: row.powertrain, segment: row.segment || null });
+    const now = foresightFor({ query: row.query || '', commodity: row.commodity, powertrain: row.powertrain, segment: row.segment || null }, { register: mergedRegister(db) });
     const nowById = new Map([...now.horizons.H1, ...now.horizons.H2, ...now.horizons.H3].map((c) => [c.id, c]));
 
     const yearsElapsed = REGISTER_VINTAGE - row.vintage;

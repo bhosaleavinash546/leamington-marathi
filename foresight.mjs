@@ -285,6 +285,11 @@ export function resolveParts(query, register = FORESIGHT_REGISTER) {
 
 // ── Assembler ────────────────────────────────────────────────────────────────
 const PROJECTION_YEARS = [3, 5, 8];
+// Below this many term matches, a query's landscape is widened with its
+// commodity's technologies (stamped `related`) — see the audit note in
+// foresightFor. Chosen so a specific part still reads as a landscape, not a
+// single card.
+const MIN_LANDSCAPE = 5;
 
 function techCard(tech, now, anchors) {
   const anchor = tech.regAnchor ? anchors.find((a) => a.id === tech.regAnchor) ?? null : null;
@@ -330,6 +335,7 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
 
   let matched = [];
   const hasQuery = Boolean(String(query ?? '').trim());
+  const relatedIds = new Set();
   if (hasQuery) {
     matched = resolveParts(query, pool);
     if (!matched.length && !usedCommodity) {
@@ -343,6 +349,22 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
         // honestly rather than dumping the whole register.
         pool = [];
       }
+    } else if (matched.length > 0 && matched.length < MIN_LANDSCAPE && !usedCommodity) {
+      // 2026 audit: the fallback net was ALL-OR-NOTHING — one weak term match
+      // suppressed the whole commodity net, so "cylinder head" returned a
+      // 1-card landscape while 20+ Powertrain technologies sat behind it
+      // (41% of BOM leaves landed thin this way). Few matches now WIDEN with
+      // the same commodity net instead of replacing it: exact matches keep the
+      // top of every lane (relevance ranks first), widened entries are stamped
+      // `related: true` so the UI/report can label them honestly.
+      const domain = inferCommodityKey(query) ?? matched[0].tech.commodity;
+      const have = new Set(matched.map((m) => m.tech.id));
+      for (const t of register) {
+        if (t.commodity !== domain || have.has(t.id)) continue;
+        if (segment && !t.segments?.includes(segment)) continue;
+        relatedIds.add(t.id);
+        matched.push({ tech: t, score: 0 });
+      }
     }
   }
   let selected = matched.length ? matched.map((m) => m.tech) : pool;
@@ -352,7 +374,7 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
   // MHEV battery" leads with 48V technologies, not the loudest HV-pack tech
   // that happened to share the word "battery".
   const scoreById = new Map(matched.map((m) => [m.tech.id, m.score]));
-  const cards = selected.map((t) => ({ ...techCard(t, now, anchors), matchScore: scoreById.get(t.id) ?? 0 }));
+  const cards = selected.map((t) => ({ ...techCard(t, now, anchors), matchScore: scoreById.get(t.id) ?? 0, related: relatedIds.has(t.id) || undefined }));
   const horizons = { H1: [], H2: [], H3: [] };
   for (const c of cards) horizons[c.horizon].push(c);
   for (const k of H_ORDER) horizons[k].sort((a, b) => (b.matchScore - a.matchScore) || (b.momentum - a.momentum) || a.id.localeCompare(b.id));

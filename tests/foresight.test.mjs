@@ -685,3 +685,92 @@ test('audit: hostile candidate shapes cannot crash the pipeline', async () => {
   assert.ok(Number.isFinite(c.adoptionPct));
   assert.equal(positionCandidates(null).length, 0);
 });
+
+// ── Knowledge flywheel + landscape coverage (2026 root-cause fix) ────────────
+
+test('coverage gate: EVERY BOM leaf and Analyze name gets a full landscape', async () => {
+  // "Resolves to >=1 tech" let 41% of parts ship thin/future-less landscapes.
+  // The bar is now landscape quality: 3+ technologies including a future lane.
+  const { coverageReport } = await import('../scripts/horizon-coverage.mjs');
+  const { bom, analyze, bomTotal, analyzeTotal } = coverageReport();
+  assert.equal(bom.ok.length, bomTotal, `BOM not fully covered: ${[...bom.dead, ...bom.thin, ...bom.noFuture].slice(0, 8).join(', ')}`);
+  assert.equal(analyze.ok.length, analyzeTotal, `Analyze not fully covered: ${[...analyze.dead, ...analyze.thin, ...analyze.noFuture].slice(0, 8).join(', ')}`);
+});
+
+test('landscape floor: exact matches lead, widened entries are stamped related', () => {
+  const r = foresightFor({ query: 'cylinder head' });
+  assert.ok(r.count >= 3, `still thin: ${r.count}`);
+  const all = [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3];
+  const exact = all.filter((c) => !c.related);
+  const related = all.filter((c) => c.related);
+  assert.ok(exact.length >= 1 && related.length >= 1, 'floor did not widen');
+  for (const k of ['H1', 'H2', 'H3']) {
+    const lane = r.horizons[k];
+    const firstRelated = lane.findIndex((c) => c.related);
+    const lastExact = lane.map((c) => !c.related).lastIndexOf(true);
+    if (firstRelated !== -1 && lastExact !== -1) assert.ok(lastExact < firstRelated, `${k}: related outranked an exact match`);
+  }
+  // A strong multi-match query must NOT be diluted with related entries.
+  const strong = foresightFor({ query: 'battery pack' });
+  assert.ok([...strong.horizons.H1, ...strong.horizons.H2, ...strong.horizons.H3].every((c) => !c.related), 'strong query was widened');
+});
+
+test('knowledge: research cache round-trips, ages out, never caches emptiness', async () => {
+  const Database = (await import('better-sqlite3')).default;
+  const { initKnowledge, getCachedResearch, saveResearch } = await import('../foresight-knowledge.mjs');
+  const db = new Database(':memory:');
+  initKnowledge(db);
+  const payload = { candidates: [{ name: 'X' }], landscapeNote: 'n' };
+  assert.equal(saveResearch(db, '  Air  SUSPENSION ', payload), true);
+  const hit = getCachedResearch(db, 'air suspension');
+  assert.equal(hit.candidates[0].name, 'X');
+  assert.ok(hit.cacheAgeDays >= 0);
+  // TTL: pretend 31 days pass.
+  assert.equal(getCachedResearch(db, 'air suspension', { now: Date.now() + 31 * 86_400_000 }), null);
+  // Empty results are never pinned.
+  assert.equal(saveResearch(db, 'obscure part', { candidates: [] }), false);
+  assert.equal(getCachedResearch(db, 'obscure part'), null);
+});
+
+test('knowledge: promotion is validated like the register, merges with provenance, demotes cleanly', async () => {
+  const Database = (await import('better-sqlite3')).default;
+  const { initKnowledge, promoteCandidate, mergedRegister, demoteEntry, candidateToEntry, validatePromotion } = await import('../foresight-knowledge.mjs');
+  const db = new Database(':memory:');
+  initKnowledge(db);
+
+  // Garbage cannot enter the live register.
+  assert.equal(promoteCandidate(db, { entry: { name: 'x' }, promotedBy: 'u1' }).ok, false);
+  assert.equal(validatePromotion({ name: 'Valid name', commodity: 'NopeCommodity' }).ok, false);
+
+  // A researched candidate maps to a register-shaped entry and promotes.
+  const entry = candidateToEntry({
+    name: 'Magnetorheological engine mounts', whatItIs: 'MR fluid stiffens under field, replacing switchable hydraulic mounts with software-tuned damping across the map — a mechatronic mount family already proven in chassis dampers and now moving into powertrain isolation.',
+    whyItMatters: 'Deletes vacuum switching hardware and one mount variant per programme.',
+    replaces: 'Switchable hydraulic mounts', trlEstimate: 6, adoptionEstimatePct: 1, ceilingEstimatePct: 20,
+    players: ['BWI', 'Vibracoustic'], sourceUrl: 'https://src.example/a',
+  }, { query: 'engine mounts' });
+  const out = promoteCandidate(db, { entry, sourceUrl: 'https://src.example/a', promotedBy: 'u1' });
+  assert.equal(out.ok, true, JSON.stringify(out));
+
+  const merged = mergedRegister(db);
+  const prm = merged.find((t) => t.id === out.id);
+  assert.ok(prm, 'promoted entry missing from merged register');
+  assert.equal(prm.origin, 'promoted');
+  assert.equal(prm.sourceUrl, 'https://src.example/a');
+
+  // It resolves through the engine like any register entry.
+  const r = foresightFor({ query: 'engine mounts' }, { register: merged });
+  const found = [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3].find((c) => c.id === out.id);
+  assert.ok(found, 'promoted entry did not resolve');
+  assert.equal(found.origin, 'promoted');
+
+  assert.equal(demoteEntry(db, out.id), true);
+  assert.ok(!mergedRegister(db).some((t) => t.id === out.id), 'demote did not remove entry');
+});
+
+test('research still fires for landscapes that are only wide because of related entries', async () => {
+  const { shouldResearch } = await import('../foresight-research.mjs');
+  const r = foresightFor({ query: 'cylinder head' });   // 1 exact match + widened net
+  const t = shouldResearch(r);
+  assert.equal(t.research, true, `research suppressed by landscape floor: ${t.reason}`);
+});

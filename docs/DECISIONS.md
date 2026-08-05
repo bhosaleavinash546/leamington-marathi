@@ -108,3 +108,21 @@ Format: decision · why · what would change it.
     evidence means the LLM is never called at all. *Changes it:* if a future version promotes a
     researched candidate into the register, it must arrive with curated evidence like any other
     entry — promotion is a human curation act, not an automatic one.
+
+19. **The register grows from usage: landscape floor + knowledge flywheel (2026 root-cause fix).**
+    *Why:* three gap-fill waves later, 41% of BOM leaves still returned thin or future-less
+    landscapes. Measured root cause: (a) the match fallback was all-or-nothing — one weak term
+    match suppressed the whole commodity net ("cylinder head" → 1 card with 20+ Powertrain
+    techs behind it); (b) every forward-research result was discarded after the response —
+    the tool could not learn from use; (c) the CI gate asserted "resolves to ≥1", so thin
+    landscapes were invisible. Fixes: few matches now WIDEN with the commodity net (widened
+    entries stamped `related`, exact matches keep every lane's top, and research triggering
+    counts only exact matches so a floor-widened landscape still researches); research results
+    cache for 30 days (never caching emptiness); and a curator can PROMOTE a researched
+    candidate into the live register — validated by the same structural rules as shipped
+    entries, stamped `origin: 'promoted'` with its source URL, demotable any time, folded into
+    the shipped register at re-curation. The honesty ladder is explicit: AI-researched →
+    cached → promoted (human act) → curated. Coverage is now quality-gated in CI: every BOM
+    leaf and Analyze name must score 3+ technologies with a future lane (`npm run
+    horizon:coverage`). *Changes it:* nothing — promotion must stay a human act; auto-promoting
+    research would collapse the ladder.

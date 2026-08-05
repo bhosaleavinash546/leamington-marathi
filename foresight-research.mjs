@@ -33,9 +33,14 @@ export const RESEARCH_TRIGGER = { minCards: 6, minFutureCards: 1 };
  */
 export function shouldResearch(result, { minCards = RESEARCH_TRIGGER.minCards, minFutureCards = RESEARCH_TRIGGER.minFutureCards } = {}) {
   if (!result) return { research: true, reason: 'no-result' };
-  const count = result.count ?? 0;
-  const future = (result.horizons?.H2?.length ?? 0) + (result.horizons?.H3?.length ?? 0);
-  if (count === 0) return { research: true, reason: 'no-register-match' };
+  // Landscape-floor entries (`related: true`) widen the DISPLAY, but they are
+  // commodity-generic — a query answered by 1 exact match + 13 related cards
+  // is still specifically thin, and research must still fire for it.
+  const exact = (lane) => (lane ?? []).filter((c) => !c?.related);
+  const lanes = result.horizons ?? {};
+  const count = exact(lanes.H1).length + exact(lanes.H2).length + exact(lanes.H3).length || (result.count ?? 0);
+  const future = exact(lanes.H2).length + exact(lanes.H3).length;
+  if ((result.count ?? 0) === 0) return { research: true, reason: 'no-register-match' };
   if (count < minCards) return { research: true, reason: 'thin-register-coverage' };
   if (future < minFutureCards) return { research: true, reason: 'no-future-lane' };
   return { research: false, reason: 'register-coverage-sufficient' };

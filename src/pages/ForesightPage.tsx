@@ -21,6 +21,7 @@ interface TechCard {
   phase: string; horizon: 'H1' | 'H2' | 'H3'; regPulled: boolean; momentum: number;
   confidence: 'committed' | 'probable' | 'speculative';
   regAnchorDetail: RegAnchor | null; projection: Projection;
+  related?: boolean; origin?: string; sourceUrl?: string;
 }
 interface HorizonWindow { label: string; from: number; to: number | null; }
 interface ForesightResult {
@@ -44,6 +45,7 @@ interface ResearchedCandidate {
 }
 interface ResearchedBlock {
   candidates: ResearchedCandidate[];
+  fromCache?: boolean; cacheAgeDays?: number;
   landscapeNote?: string | null; evidenceGaps?: string | null; trigger?: string; note?: string;
   evidence?: { searches?: Array<{ title: string; url: string; source?: string }>; patents?: Array<{ title: string; url: string; assignee?: string }> };
 }
@@ -267,7 +269,15 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
       <div className="hz-spot" aria-hidden="true" />
       <div className="flex items-start justify-between gap-2 mb-1.5">
         <h3 className="text-white font-semibold text-sm leading-snug">{c.name}</h3>
-        <span className={`shrink-0 px-2 py-0.5 rounded-md border text-[10px] font-semibold uppercase tracking-wide ${CONFIDENCE_STYLE[c.confidence]} ${c.confidence === 'committed' ? 'hz-committed' : ''}`}>{c.confidence}</span>
+        <span className="flex shrink-0 items-center gap-1.5">
+          {c.origin === 'promoted' && (
+            <span className="px-1.5 py-0.5 rounded-md border border-violet-500/40 bg-violet-500/10 text-violet-300 text-[9px] font-semibold uppercase tracking-wide" title={`Curator-promoted from AI research${c.sourceUrl ? ` — source: ${c.sourceUrl}` : ''}. Not yet part of the shipped curated register.`}>promoted</span>
+          )}
+          {c.related && (
+            <span className="px-1.5 py-0.5 rounded-md border border-white/15 bg-white/5 text-slate-400 text-[9px] font-semibold uppercase tracking-wide" title="Widened into this landscape from the same commodity — no direct term match on your query.">related</span>
+          )}
+          <span className={`px-2 py-0.5 rounded-md border text-[10px] font-semibold uppercase tracking-wide ${CONFIDENCE_STYLE[c.confidence]} ${c.confidence === 'committed' ? 'hz-committed' : ''}`}>{c.confidence}</span>
+        </span>
       </div>
       <div className="flex items-end justify-between gap-2 mb-2">
         <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px]">
@@ -464,6 +474,8 @@ export default function ForesightPage() {
   const [revisit, setRevisit] = useState<LedgerRevisit | null>(null);
   const [saveNote, setSaveNote] = useState('');
   const [exportOpen, setExportOpen] = useState(false);
+  const [promoting, setPromoting] = useState<string | null>(null);
+  const [promoted, setPromoted] = useState<Record<string, string>>({});
   const [stage, setStage] = useState(0);
 
   useEffect(() => {
@@ -558,6 +570,24 @@ export default function ForesightPage() {
     setCommodity('');
     setBomOpen(false);
     predict(part);   // explicit query — no stale-closure risk
+  }
+
+  async function promoteCandidateToRegister(c: ResearchedCandidate) {
+    if (!result) return;
+    setPromoting(c.id);
+    try {
+      const r = await fetch('/api/foresight/promote', {
+        method: 'POST', headers: authHeaders,
+        body: JSON.stringify({ candidate: c, query: result.query, commodity: result.commodity || undefined }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Promotion failed');
+      setPromoted(prev => ({ ...prev, [c.id]: data.id }));
+    } catch (e) {
+      setPromoted(prev => ({ ...prev, [c.id]: `error:${e instanceof Error ? e.message : 'failed'}` }));
+    } finally {
+      setPromoting(null);
+    }
   }
 
   async function predict(qOverride?: string) {
@@ -689,6 +719,7 @@ export default function ForesightPage() {
         </div>
 
         {/* Forward research — walled off from the curated lanes on purpose */}
+
         {result?.researched && (
           <div className="max-w-4xl mx-auto mb-8">
             <div className="rounded-2xl border border-violet-500/30 bg-violet-500/[0.06] p-4">
@@ -697,6 +728,9 @@ export default function ForesightPage() {
                 <h3 className="text-violet-200 font-semibold text-sm">Forward research — AI-researched, not curated</h3>
                 {result.researched.trigger && (
                   <span className="text-[10px] uppercase tracking-wider text-violet-300/70 border border-violet-500/30 rounded px-1.5 py-0.5">{result.researched.trigger.replace(/-/g, ' ')}</span>
+                )}
+                {result.researched.fromCache && (
+                  <span className="text-[10px] uppercase tracking-wider text-teal-300/70 border border-teal-500/30 rounded px-1.5 py-0.5" title="Served from the knowledge cache — this research question was already answered and cost nothing to reuse.">cached {result.researched.cacheAgeDays ?? 0}d ago</span>
                 )}
               </div>
               <p className="text-slate-400 text-[11px] mb-3">
@@ -735,6 +769,19 @@ export default function ForesightPage() {
                         <ExternalLink size={10} /> {c.sourceUrl}
                       </a>
                     )}
+                    <div className="mt-2">
+                      {promoted[c.id]?.startsWith('error:') ? (
+                        <p className="text-red-400 text-[10px]">{promoted[c.id].slice(6)}</p>
+                      ) : promoted[c.id] ? (
+                        <p className="text-emerald-300 text-[10px]">Promoted into the live register — it now appears in lanes with a PROMOTED badge. Re-run the prediction to see it.</p>
+                      ) : (
+                        <button onClick={() => promoteCandidateToRegister(c)} disabled={promoting === c.id}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-violet-500/40 bg-violet-500/10 text-violet-200 hover:bg-violet-500/20 text-[11px] transition-colors disabled:opacity-50"
+                          title="Curator action: after reviewing the source, admit this candidate into the live register. It keeps a PROMOTED provenance badge and can be demoted any time.">
+                          {promoting === c.id ? <ButtonSpinner size={11} /> : <BookMarked size={11} />} Promote to register
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
