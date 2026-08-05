@@ -114,8 +114,8 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   const secs = [
     ['1', 'Orientation', 'Slides 3–5', 'How the whole thing connects, and what it is worth against costing by hand', '8 min', BLUE, true],
     ['2', 'Worked example one — die-cast aluminium housing', 'Slides 6–22', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
-    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 23–32', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
-    ['4', 'The honest limits', 'Slide 33', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
+    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 23–33', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
+    ['4', 'The honest limits', 'Slide 34', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
   ];
   secs.forEach(([n, name, range, desc, mins, col, exec], i) => {
     const y = 1.22 + i * 1.16;
@@ -135,7 +135,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.5, y: 5.92, w: 12.33, h: 0.9, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
     { text: 'If you only have ten minutes:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'slide 3 (how it connects) · slides 4–5 (the business case) · slide 22 (the housing on one page) · slide 31 (the two findings) · slide 33 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
+    { text: 'slide 3 (how it connects) · slides 4–5 (the business case) · slide 22 (the housing on one page) · slide 32 (the two findings) · slide 34 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.02, w: 11.65, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
@@ -143,9 +143,9 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     'Quick map of where we are going, because there is more here than an hour needs and I would rather you chose than sat through all of it. ' +
     'Section one, two slides: how the whole thing connects, and what it is worth measured against doing the same job by hand. About eight minutes. ' +
     'Section two is the first worked example — a die-cast aluminium housing, followed through all twelve stages from CAD file to defensible price, including the calculation shown in full so you can check it. Sixteen slides, about twenty-two minutes, and it is the heart of the pack. ' +
-    'Section three does the same thing on a completely different part, an injection-moulded bumper fascia, plus paint, plus two findings that I genuinely did not predict. Ten slides, about eighteen minutes. ' +
+    'Section three does the same thing on a completely different part, an injection-moulded bumper fascia, plus paint, plus two findings that I genuinely did not predict. Eleven slides, about eighteen minutes. ' +
     'Section four is five minutes on what the tool cannot do. ' +
-    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the two business-case slides, slide twenty-two, slide thirty-one and slide thirty-three. Everything in between is the evidence for those five, and you can read it afterwards.'
+    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the two business-case slides, slide twenty-two, slide thirty-two and slide thirty-four. Everything in between is the evidence for those five, and you can read it afterwards.'
   );
 }
 
@@ -1503,7 +1503,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
 
   const guards = [
     ['1 · Hot runner means no wasted resin', 'A cold runner would add 0.6–0.9 kg of scrap plastic per shot. This tool has a hot runner, so the shot weight IS the part weight — the guard makes sure we do not charge for plastic nobody buys.'],
-    ['2 · Cooling is calculated, not guessed', 'Cool time = 3.16 × wall² . At 3.0 mm that is 28.4 seconds — over half the whole cycle. Wall thickness enters SQUARED, so it is the most powerful lever in moulding.'],
+    ['2 · Cooling is calculated, not guessed', 'Cool time from Fourier\u2019s transient-conduction law — each resin\u2019s real melt/mould/eject temperatures, diffusivity calibrated to industry data (next slide shows every symbol). For PP: 3.16 s/mm\u00b2 \u00d7 (3.0 mm)\u00b2 = 28.4 s — over half the whole cycle, and the wall enters SQUARED.'],
     ['3 · Press sized to the projected area', 'Not a default machine. 9,900 cm² × 25 MPa × 1.15 safety = 2,902 tonnes of clamp force needed.'],
     ['4 · Tool cost is entered, never invented', 'A £420k mould is a quotation, not an estimate. The tool takes it as an input, applies the Class-A finish uplift, and shows the arithmetic.'],
   ];
@@ -1544,6 +1544,63 @@ partSlide('assets/workflow-deck/part-bumper.png',
     'Guard three is the press, and it is the same physics as the die-casting slide, just a different commodity. Nine thousand nine hundred square centimetres of shadow, times twenty-five megapascals of cavity pressure, times a fifteen percent safety factor, gives two thousand nine hundred tonnes of clamp force needed. The engine walks the ladder and takes the smallest press that covers it — three and a half thousand tonnes at three hundred and six pounds an hour. ' +
     'Guard four, the tool cost. A four hundred and twenty thousand pound mould is a quotation from a toolmaker, not something we invent. The tool takes it as an input, applies the Class-A finish uplift, and shows you the arithmetic. ' +
     'Now the red box, because this is the commercial argument for having the guard at all. If you let the model sit on a default two-thousand-tonne press, you cost the moulding at a hundred and seventy-eight pounds an hour instead of three hundred and six. Forty-two percent too cheap. And worse than being wrong — the part would never mould, because that press cannot hold the tool shut. You would walk into a supplier meeting and negotiate hard against a price that is physically impossible to deliver. That is the kind of mistake that costs credibility, and you only need to make it once.'
+  );
+}
+
+// ══════════ PART 2 · C1b · COOLING TIME FROM FIRST PRINCIPLES ══════════
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'Cooling Time from First Principles', 'The Fourier slab solution, calibrated to industry data — every input printable, nothing guessed', PURPLE);
+  const steps = [
+    ['1 · The physical law, not a fitted curve', 'Cooling a moulded wall between two mould faces is textbook transient conduction, and its exact solution is:  t_cool = wall² ÷ (π²·α) × ln[ (4/π) × (T_melt − T_mould) ÷ (T_eject − T_mould) ].  The wall enters SQUARED because heat must diffuse out through half the thickness — that is why wall is the most powerful lever in moulding.'],
+    ['2 · Every resin carries its real temperatures', '19 resin families each carry typical melt / mould / eject temperatures. PP (the bumper): melt 230 °C, mould 40 °C, eject 85 °C → log term ln(1.273 × 190/45) = 1.682. ABS runs 240/60/95; PA6 280/80/125; PC 300/90/130. Change the resin and the physics changes with it.'],
+    ['3 · Calibrated ONCE against industry cycle data', 'The effective diffusivity α_eff is derived from the curated industry factor at those reference temperatures — for PP: α_eff = 1.682 ÷ (π² × 3.16) = 0.054 mm²/s. α_eff deliberately absorbs what the ideal slab ignores: latent heat of crystallisation and mould-interface resistance. At reference temperatures the formula reproduces the curated factor EXACTLY — adopting the physics changed provenance, not price.'],
+    ['4 · The governing wall, and a sanity clamp', 'Cooling is evaluated at the 95th-percentile measured wall (capped at 2× the mean): the part ejects when its THICKEST section is stiff, so the mean systematically under-times ribs and bosses. And the computed factor is clamped to [0.5×, 2×] of the curated value — physics may move the cycle; a pathological temperature pair may not run away with the cost.'],
+  ];
+  steps.forEach(([t, d], i) => {
+    const y = 1.18 + i * 1.28;
+    s.addShape('roundRect', { x: 0.5, y, w: 7.1, h: 1.16, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+    s.addShape('ellipse', { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fill: { color: PURPLE } });
+    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(t.slice(4), { x: 1.2, y: y + 0.08, w: 6.3, h: 0.24, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0 });
+    s.addText(d, { x: 1.2, y: y + 0.33, w: 6.25, h: 0.82, fontFace: 'Calibri', fontSize: 7.9, color: SLATE, margin: 0, valign: 'top' });
+  });
+  // Right: the bumper worked through, then the what-if the formula unlocks
+  s.addText('THE BUMPER, WORKED THROUGH', { x: 7.95, y: 1.16, w: 4.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: PURPLE, charSpacing: 0.6, margin: 0 });
+  s.addShape('roundRect', { x: 7.95, y: 1.42, w: 4.88, h: 1.98, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+  const calc = [
+    ['Resin / temps', 'PP · melt 230 °C · mould 40 °C · eject 85 °C'],
+    ['Log term', 'ln(1.273 × 190 ÷ 45) = 1.682'],
+    ['α_eff (calibrated)', '1.682 ÷ (π² × 3.16) = 0.054 mm²/s'],
+    ['Factor', '1.682 ÷ (π² × 0.054) = 3.16 s/mm²'],
+    ['Cooling', '3.16 × (3.0 mm)² = 28.4 s — over half the 55 s cycle'],
+  ];
+  calc.forEach(([k, v], i) => {
+    const y = 1.56 + i * 0.35;
+    s.addText(k, { x: 8.15, y, w: 1.75, h: 0.3, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(v, { x: 9.95, y, w: 2.8, h: 0.3, fontFace: 'Courier New', fontSize: 8.0, color: SLATE, margin: 0, valign: 'middle' });
+  });
+  const promises = [
+    ['Same price, honest provenance', 'At reference temperatures the closed form reproduces the curated industry factor exactly, so adopting the physics moved NO estimate. What changed: the trace now shows α_eff, all three temperatures and the log term instead of one bare constant.', I.check, GREEN],
+    ['A lever a constant could never price', 'Run the mould at 20 °C instead of 40 °C and the factor follows the law: ln(1.273 × 210/65) = 1.414 → 2.66 s/mm² → cooling 23.9 s, 4.5 s off every shot. A curated constant cannot answer that question; the formula prices it.', I.calc, PURPLE],
+    ['The design lever, quantified', 'Wall enters squared: 3.0 mm → 2.5 mm takes cooling from 28.4 s to 19.8 s — nearly 9 s off every shot, £1.11 off the UK part. A design decision, priced before anyone tools anything.', I.ruler, TEAL],
+  ];
+  promises.forEach(([t, d, ico, c], i) => {
+    const y = 3.52 + i * 0.97;
+    s.addShape('roundRect', { x: 7.95, y, w: 4.88, h: 0.88, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+    s.addShape('ellipse', { x: 8.09, y: y + 0.11, w: 0.34, h: 0.34, fill: { color: c } });
+    s.addImage({ data: ico, x: 8.17, y: y + 0.19, w: 0.18, h: 0.18 });
+    s.addText(t, { x: 8.52, y: y + 0.08, w: 4.25, h: 0.22, fontFace: 'Calibri', fontSize: 9.5, bold: true, color: c, margin: 0 });
+    s.addText(d, { x: 8.52, y: y + 0.31, w: 4.22, h: 0.55, fontFace: 'Calibri', fontSize: 7.7, color: SLATE, margin: 0, valign: 'top' });
+  });
+  s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'F3EFFA' }, line: { color: PURPLE, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Read it in one line:  ', options: { bold: true, color: PURPLE } },
+    { text: 'cooling is Fourier’s conduction law with each resin’s real temperatures and a diffusivity calibrated once against industry cycle data — the same number as before at standard conditions, but now every input is on the record and every temperature or wall change is priced by physics.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 9.6, margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+  s.addNotes(
+    'This slide exists because cooling is the biggest single number in a moulding cycle and the one everybody used to guess. Here is exactly how the tool calculates it now — from first principles, and I can defend every symbol. Step one, the law: a moulded wall cooling between two mould faces is textbook transient heat conduction, and the exact solution says cooling time equals wall squared, divided by pi squared times the thermal diffusivity, times the log of a temperature ratio — how far the melt has to fall against how much margin there is at ejection. The wall enters squared because heat has to diffuse out through half the thickness. That is physics, not a fitted curve. Step two: each of nineteen resin families carries its real processing temperatures. Polypropylene — this bumper — melts in at two hundred and thirty, the mould runs at forty, the part ejects safely at eighty-five. Step three is the honest part: the diffusivity is not taken from a textbook, it is calibrated once so that at those reference temperatures the formula reproduces the curated industry factor exactly — for PP, three point one six seconds per millimetre squared. That calibration deliberately absorbs what the ideal equation ignores, like the latent heat a crystallising polymer gives up and the imperfect contact between plastic and steel. So adopting the physics did not move a single estimate — it changed the provenance from “a constant we assert” to “a law you can check”. Step four: it is evaluated at the ninety-fifth percentile wall, because the part ejects when its thickest section is stiff, and the result is clamped to within a factor of two of the curated value so a bad temperature input cannot run away with the cost. And the payoff is on the right: because it is a formula, it answers questions a constant never could. Chill the mould to twenty degrees and cooling drops four and a half seconds a shot, priced by the law. Thin the wall half a millimetre and nine seconds come out, one pound eleven a part. Those are the two conversations this slide is built to start.'
   );
 }
 
