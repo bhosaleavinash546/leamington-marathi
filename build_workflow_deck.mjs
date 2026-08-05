@@ -112,10 +112,10 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText('Four sections, about an hour — or five slides if that is all the time there is', { x: 1.25, y: 0.66, w: 9, h: 0.28, fontFace: 'Calibri', fontSize: 12, italic: true, color: MUTED, margin: 0 });
 
   const secs = [
-    ['1', 'Orientation', 'Slides 3–6', 'How the whole thing connects, and what it is worth against costing by hand', '8 min', BLUE, true],
-    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 7–25', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
-    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 26–36', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
-    ['4', 'The honest limits', 'Slide 37', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
+    ['1', 'Orientation', 'Slides 3–7', 'How the whole thing connects, and what it is worth against costing by hand', '8 min', BLUE, true],
+    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 8–26', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
+    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 27–37', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
+    ['4', 'The honest limits', 'Slide 38', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
   ];
   secs.forEach(([n, name, range, desc, mins, col, exec], i) => {
     const y = 1.22 + i * 1.16;
@@ -135,17 +135,17 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.5, y: 5.92, w: 12.33, h: 0.9, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
     { text: 'If you only have ten minutes:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'slide 3 (how it connects) · slides 4–6 (the business case) · slide 25 (the housing on one page) · slide 35 (the two findings) · slide 37 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
+    { text: 'slides 3–4 (how it connects, incl. the PCB flow) · slides 5–7 (the business case) · slide 26 (the housing on one page) · slide 36 (the two findings) · slide 38 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.02, w: 11.65, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
     'Quick map of where we are going, because there is more here than an hour needs and I would rather you chose than sat through all of it. ' +
-    'Section one, four slides: how the whole thing connects, and what it is worth measured against doing the same job by hand — including the category-by-category comparison with CAPEE from our internal review. About eight minutes. ' +
+    'Section one, five slides: how the whole thing connects, and what it is worth measured against doing the same job by hand — including the category-by-category comparison with CAPEE from our internal review. About eight minutes. ' +
     'Section two is the first worked example — a die-cast aluminium housing, followed through all twelve stages from CAD file to defensible price, including the calculation shown in full so you can check it. Eighteen slides, about twenty-two minutes, and it is the heart of the pack. ' +
     'Section three does the same thing on a completely different part, an injection-moulded bumper fascia, plus paint, plus two findings that I genuinely did not predict. Eleven slides, about eighteen minutes. ' +
     'Section four is five minutes on what the tool cannot do. ' +
-    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the three business-case slides, slide twenty-five, slide thirty-five and slide thirty-seven. Everything in between is the evidence for those five, and you can read it afterwards.'
+    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slides three and four, the three business-case slides, slide twenty-six, slide thirty-six and slide thirty-eight. Everything in between is the evidence for those five, and you can read it afterwards.'
   );
 }
 
@@ -265,6 +265,110 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   footer(s, ++PG);
   s.addNotes(
     'Before the twelve stages, the whole thing on one picture — and one important update since the last session: the tool is now deterministic by default. Start in the middle-left. The blue box measures the part — OCCT, real geometry, never guessed. Below it the indigo box is new: the rules engine. Twelve commodities of explicit engineering rules that derive every cost input straight from the measurement — cycle times, tooling, press size, yield. Where geometry genuinely cannot know something — what the part is made of, whether it is safety-critical, how many a year — the tool does not guess. It stops and asks the engineer, that is the green box, and the costing is blocked until a person answers. That combination is what changed: the purple box at the top, the AI, is now OPTIONAL. Three modes on the form: Rules only, which is the default and makes no outbound call at all; Compare, which runs both and shows you exactly where they disagree, field by field; and AI-led, the old behaviour, kept for comparison. When the AI does run, its words come down through the amber guardrails — nine sanity checks, and its numbers are overwritten wherever the rules can derive the value, its machining time capped by what the stock could physically give up. On the right, unchanged: the rate library is still the only source of money in the tool, the local database holds our parts and real actuals for calibration, the engine is still fixed eight-bucket arithmetic with no judgement in it, and the uncertainty layer turns the number into an honest range. The one line: the kernel measures, the rules derive, the engineer answers, the guardrails check, the engine calculates. The AI is a second opinion — useful, optional, and unable to reach the money. Three annotations on this version of the picture, from questions this room asked. Every box badged AUTO runs unattended — the only HUMAN badge on the slide is the engineer, answering material, duty, volume and region, and approving. WHO picks the machine and the tonnage: the indigo rules-and-optimisers box — presses and dies sized by clamp and forming physics, and the machining routing and mould cavitation actually cost-ranked, with the losing options printed in the trace. And WHERE the DFM, DFA and saving ideas come from: the cost engine itself — rule thresholds and geometry advisors, every idea priced — not from the AI; you can see that on the outputs column now, and it is verified in the source code. Two more things this version of the picture carries. The little green card top-left is why to believe the boxes: the tool is deterministic — same file and same answers give the same price, every time; twelve of the eighteen commodities are fully rules-driven and the slide says so honestly; the arithmetic sits behind roughly one and a half thousand automated tests; and it has been validated against six real parts with independent manual costs, at about thirteen percent fleet error. And the small dashed arrow feeding back into the local database is the flywheel: every won quote and real invoice we record calibrates the estimates and tightens the confidence band — this is a tool that gets better the more we use it. One flow deserves its own sentence because it is the exception to the rules-first rule: the PCB photo. A photograph has no geometry for the kernel to measure, so this is the one input where the AI is REQUIRED — its vision reads the board and names the components and the fab spec. But naming is all it does: the board spec is then stabilised deterministically, every component price is snapped to our OFFLINE price catalogue with class-median caps — the model never prices a component — and the deterministic PCB fabrication and assembly models cost the board from the rate library like any other part. The live distributor pricing you see top-right is optional and off by default. So even on the one path that needs the AI\u2019s eyes, the money never comes from the AI.'
+  );
+}
+
+// ══════════ 1b2 · THE PCB WORKFLOW — ONE PICTURE ══════════
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  logoMark(s, 0.5, 0.22, 0.6);
+  s.addText('The PCB Photo → Should-Cost — One Picture', { x: 1.25, y: 0.2, w: 9.6, h: 0.44, fontFace: 'Cambria', fontSize: 24, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+  s.addText('The one flow where the AI is required — its eyes read the board; the catalogue prices it, the engine costs it, the engineer owns the doubtful lines.', { x: 1.25, y: 0.66, w: 11.0, h: 0.28, fontFace: 'Calibri', fontSize: 11, italic: true, color: MUTED, margin: 0 });
+
+  // ── OUTSIDE: AI VISION — required for this input ──
+  s.addShape('roundRect', { x: 2.55, y: 1.02, w: 7.6, h: 0.99, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5 }, rectRadius: 0.09 });
+  s.addShape('ellipse', { x: 2.70, y: 1.28, w: 0.44, h: 0.44, fill: { color: PURPLE } });
+  s.addImage({ data: I.eye, x: 2.81, y: 1.39, w: 0.22, h: 0.22 });
+  s.addText('AI VISION — REQUIRED here (a photo has no geometry to measure) · the only outbound call', { x: 3.28, y: 1.08, w: 6.8, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
+  s.addText([
+    { text: 'Pass 1: ', options: { bold: true, color: NAVY } },
+    { text: 'names the board (dims, layers, finish) and EVERY component — reference, package, part number where legible — with a confidence per line. ', options: { color: SLATE } },
+    { text: 'Pass 2: ', options: { bold: true, color: NAVY } },
+    { text: 're-inspects the markings of every unconfirmed part. ', options: { color: SLATE } },
+    { text: 'Words only — it prices nothing.', options: { bold: true, color: PURPLE } },
+  ], { x: 3.28, y: 1.29, w: 6.75, h: 0.5, fontFace: 'Calibri', fontSize: 8.4, margin: 0, valign: 'top' });
+  s.addText('Photo fingerprint cached (SHA-256) — the same photos never pay for a second read', { x: 3.28, y: 1.79, w: 6.75, h: 0.2, fontFace: 'Calibri', fontSize: 7.6, italic: true, color: PURPLE, margin: 0 });
+
+  // ── boundary ──
+  s.addShape('roundRect', { x: 0.45, y: 2.18, w: 12.4, h: 4.4, fill: { color: 'FFFFFF' }, line: { color: TEAL, width: 1.75, dashType: 'dash' }, rectRadius: 0.12 });
+  s.addShape('roundRect', { x: 0.75, y: 2.05, w: 3.5, h: 0.28, fill: { color: TEAL }, rectRadius: 0.14 });
+  s.addText('INSIDE — RUNS ON YOUR OWN SERVER', { x: 0.75, y: 2.05, w: 3.5, h: 0.28, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
+  s.addShape('line', { x: 6.35, y: 2.01, w: 0, h: 0.67, line: { color: PURPLE, width: 1.5, beginArrowType: 'triangle', endArrowType: 'triangle' } });
+
+  const link2 = (x1, y1, x2, y2, col, wid = 1.75) => s.addShape('line', {
+    x: Math.min(x1, x2), y: Math.min(y1, y2), w: Math.abs(x2 - x1), h: Math.abs(y2 - y1),
+    flipH: x2 < x1, flipV: y2 < y1,
+    line: { color: col, width: wid, endArrowType: 'triangle' },
+  });
+  const node2 = (x, y, w, h, col, tint, ttl, body, ico) => {
+    s.addShape('roundRect', { x, y, w, h, fill: { color: tint }, line: { color: col, width: 1.4 }, rectRadius: 0.09 });
+    if (ico) { s.addShape('ellipse', { x: x + 0.14, y: y + 0.12, w: 0.34, h: 0.34, fill: { color: col } }); s.addImage({ data: ico, x: x + 0.22, y: y + 0.20, w: 0.18, h: 0.18 }); }
+    s.addText(ttl, { x: x + (ico ? 0.56 : 0.16), y: y + 0.11, w: w - (ico ? 0.70 : 0.32), h: 0.30, fontFace: 'Calibri', fontSize: 9.6, bold: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(body, { x: x + 0.16, y: y + 0.45, w: w - 0.32, h: h - 0.58, fontFace: 'Calibri', fontSize: 8.0, color: SLATE, margin: 0, valign: 'top' });
+  };
+  const chip2 = (x, y, label, bg) => {
+    s.addShape('roundRect', { x, y, w: 0.6, h: 0.17, fill: { color: bg }, rectRadius: 0.085 });
+    s.addText(label, { x, y, w: 0.6, h: 0.17, fontFace: 'Calibri', fontSize: 6.2, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
+  };
+
+  // inputs / outputs
+  const col2 = (x, w, label, c, items, y0, pitch = 0.80) => {
+    s.addText(label, { x, y: y0 - 0.3, w, h: 0.24, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: c, charSpacing: 0.6, margin: 0 });
+    items.forEach((t, i) => {
+      const y = y0 + i * pitch;
+      s.addShape('roundRect', { x, y, w, h: 0.68, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.07 });
+      s.addText(t, { x: x + 0.13, y, w: w - 0.26, h: 0.68, fontFace: 'Calibri', fontSize: 8.4, color: SLATE, margin: 0, valign: 'middle' });
+    });
+  };
+  col2(0.65, 2.0, 'WHAT GOES IN', BLUE, ['Photo(s) of the board\n(top / bottom)', 'Annual qty + region\n(the engineer types)', 'Known dims / layers\n(optional overrides)'], 2.74);
+  col2(11.05, 1.8, 'WHAT COMES OUT', GREEN, ['Priced BOM — every line\nconfirmed or capped', 'Fab spec + 8-bucket\nboard cost', 'Confirmed vs needs-\nverification headline', 'PDF report + country\ncomparison'], 2.74, 0.76);
+
+  // pipeline nodes
+  node2(2.85, 2.68, 2.35, 1.22, '4F46E5', 'EEF2FF', 'BOM parser + salvage', 'Parses the model’s list; SALVAGES truncated replies line by line; automotive keywords force the conservative class.', I.cog);
+  node2(2.85, 4.06, 2.35, 1.22, '4F46E5', 'EEF2FF', 'Board-spec stabiliser', 'Dims, layers and finish snapped to stable values — re-running the same photos gives the same board.', I.ruler);
+  node2(5.45, 2.68, 2.3, 1.35, AMBER, AMBER_T, 'Price grounding', 'Confirmed lines SNAP to the offline catalogue; unreadable lines get the class-median CAP; volume scaling from the 10k base. The model never prices.', I.shield);
+  node2(5.45, 5.30, 2.3, 1.16, GREEN, GREEN_T, 'The engineer', 'Reviews every flagged line, edits any BOM line — a real quote overrides the catalogue.', I.person);
+  s.addShape('roundRect', { x: 8.2, y: 2.68, w: 2.5, h: 1.86, fill: { color: '0E5A5A' }, rectRadius: 0.1 });
+  s.addShape('ellipse', { x: 9.2, y: 2.84, w: 0.5, h: 0.5, fill: { color: '17A398' } });
+  s.addImage({ data: I.calc, x: 9.33, y: 2.97, w: 0.24, h: 0.24 });
+  s.addText('COST ENGINE', { x: 8.3, y: 3.42, w: 2.3, h: 0.3, fontFace: 'Calibri', fontSize: 11.5, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
+  s.addText('PCB fab model: layers × area × finish, panelisation.\nAssembly: placements, AOI, test — at country rates.', { x: 8.3, y: 3.74, w: 2.3, h: 0.72, fontFace: 'Calibri', fontSize: 7.6, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
+  node2(8.2, 4.76, 2.5, 0.92, TEAL, TEAL_T, 'Country rates', 'Real per-country labour £/hr and electricity £/kWh (IPC/CBRE published figures) — not scaled guesses.', null);
+
+  // flows
+  link2(2.65, 3.29, 2.85, 3.29, BLUE);                       // photos → (up via AI) parser
+  link2(3.95, 3.90, 3.95, 4.06, '4F46E5');                   // parser ↓ stabiliser
+  link2(5.20, 3.29, 5.45, 3.29, '4F46E5');                   // parser → grounding
+  link2(5.20, 4.67, 5.45, 3.85, '4F46E5', 1.4);              // stabiliser → grounding
+  link2(7.75, 3.35, 8.2, 3.35, AMBER);                       // grounding → engine
+  link2(8.2, 5.22, 7.75, 5.60, TEAL, 1.4);                   // rates ← ... engine↔rates adjacency
+  link2(6.6, 5.30, 6.6, 4.03, GREEN, 1.4);                   // engineer ↑ grounding (overrides)
+  link2(10.70, 3.55, 11.05, 3.55, GREEN);                    // engine → outputs
+  link2(10.70, 5.20, 11.05, 5.95, GREEN, 1.4);
+  // AUTO/HUMAN chips
+  chip2(4.59, 2.59, 'AUTO', '4F46E5');
+  chip2(4.59, 3.97, 'AUTO', '4F46E5');
+  chip2(7.14, 2.59, 'AUTO', AMBER);
+  chip2(10.09, 2.59, 'AUTO', '0E8074');
+  chip2(10.09, 4.67, 'AUTO', TEAL);
+  chip2(7.14, 5.21, 'HUMAN', GREEN);
+
+  s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Read it in one line:  ', options: { bold: true, color: GREEN } },
+    { text: 'the AI’s eyes read the board and name every part — then the offline catalogue prices it, the deterministic fab + assembly models cost it, and the engineer owns every doubtful line. The model never prices a component.', options: { color: SLATE } },
+  ], { x: 0.65, y: 6.70, w: 12.0, h: 0.42, fontFace: 'Calibri', fontSize: 10, margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+
+  s.addNotes(
+    'The previous slide had one exception on it, and it deserves its own picture: the PCB photo, the one flow in the tool where the AI is genuinely required. Here is exactly what happens, stage by stage, straight from the code. ' +
+    'What goes in: one or more photographs of the board — top and bottom if we have them — the annual quantity and region our engineer types, and any dimensions or layer counts we already know as optional overrides. ' +
+    'The photo goes up to the AI’s vision, and this is the only outbound call on the path. It makes two passes. Pass one names the board — dimensions, layer count, surface finish — and every component it can see: reference designator, package, and the part number where the marking is legible, each line carrying its own confidence. Pass two goes back and re-inspects the markings of every part it could not confirm the first time. And that is the entirety of its job: words. It prices nothing. The photos are fingerprinted, so the same board never pays for a second reading. ' +
+    'Everything after that line is deterministic and runs on our own server. The BOM parser normalises the model’s list and — a real lesson from a real failure — salvages line by line when a long automotive board truncates the reply, so a two-hundred-line BOM cannot silently come back empty. Automotive keywords force the conservative component class. The board-spec stabiliser snaps dimensions and layers to stable values, so re-running the same photos gives the same board and the same price. ' +
+    'Then the money, and this is the slide’s most important box: price grounding. Every line the vision CONFIRMED snaps to our offline price catalogue — curated market prices, no distributor API, volume-scaled from the ten-thousand base. Every line it could NOT confirm gets the class-median cap, so one unreadable chip cannot balloon the BOM, and it is flagged for a person. The model never prices a component — not one. ' +
+    'The cost engine then does what it does for every commodity: the fabrication model prices the bare board from layers, area, finish and panelisation — how many boards actually fit a panel — and the assembly model prices placement, inspection and test, at real per-country labour and electricity rates from published figures, not scaled guesses. ' +
+    'And the human: our engineer reviews every flagged line, can edit any line of the BOM, and a real quotation overrides the catalogue — same rule as everywhere else in the tool. What comes out: a priced BOM where every line says whether it is confirmed or capped, the fab spec and the eight-bucket board cost, the honest headline split between confirmed cost and cost that still needs verification, and the PDF report with the country comparison. ' +
+    'One line to keep: the AI’s eyes read the board — the catalogue prices it, the engine costs it, the engineer owns the doubt.'
   );
 }
 
