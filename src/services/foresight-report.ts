@@ -357,6 +357,9 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       ensure(6);
       doc.text('MILESTONES ARE SHARES OF EACH TECHNOLOGY’S MODELLED CEILING (BASS DIFFUSION) — MODELLED, NOT MEASURED', ML, y);
       y += 7;
+      // A board that ends high on the page leaves dead white below — close the
+      // page with the horizon grid so it reads as an instrument, not padding.
+      if (y < 190) horizonArt(Math.max(y + 30, 235));
     }
   }
 
@@ -407,9 +410,14 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
     y += 3;
   }
 
+  let firstLane = true;
   for (const key of ['H1', 'H2', 'H3'] as const) {
     const cards = result.horizons[key];
-    newPage();
+    // Each lane opens a fresh page EXCEPT a 1-2 card lane that fits under the
+    // previous lane's tail — two consecutive quarter-full pages read as
+    // padding, not instrument (2026 design audit).
+    if (firstLane || cards.length > 2 || y > 150) newPage(); else y += 12;
+    firstLane = false;
     sectionTitle(`${result.windows[key].label} · ${cards.length} technologies`, HORIZON_TITLE[key]);
     if (!cards.length) { wrapped('Nothing in this window for this selection.', 9, P.MUT); continue; }
     if (cards.length >= 2) lanePaths(cards);
@@ -512,6 +520,8 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       y += 6.5;
     }
   }
+
+  if (y < 190) horizonArt(Math.max(y + 30, 235));
 
   // ═══ RESEARCHED CANDIDATES ═════════════════════════════════════════════════
   // Deliberately walled off from the curated lanes: different page, violet
