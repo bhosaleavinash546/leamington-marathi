@@ -112,10 +112,10 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText('Four sections, about an hour — or five slides if that is all the time there is', { x: 1.25, y: 0.66, w: 9, h: 0.28, fontFace: 'Calibri', fontSize: 12, italic: true, color: MUTED, margin: 0 });
 
   const secs = [
-    ['1', 'Orientation', 'Slides 3–5', 'How the whole thing connects, and what it is worth against costing by hand', '8 min', BLUE, true],
-    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 6–22', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
-    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 23–33', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
-    ['4', 'The honest limits', 'Slide 34', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
+    ['1', 'Orientation', 'Slides 3–6', 'How the whole thing connects, and what it is worth against costing by hand', '8 min', BLUE, true],
+    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 7–23', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
+    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 24–34', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
+    ['4', 'The honest limits', 'Slide 35', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
   ];
   secs.forEach(([n, name, range, desc, mins, col, exec], i) => {
     const y = 1.22 + i * 1.16;
@@ -135,17 +135,17 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.5, y: 5.92, w: 12.33, h: 0.9, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
     { text: 'If you only have ten minutes:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'slide 3 (how it connects) · slides 4–5 (the business case) · slide 22 (the housing on one page) · slide 32 (the two findings) · slide 34 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
+    { text: 'slide 3 (how it connects) · slides 4–6 (the business case) · slide 23 (the housing on one page) · slide 33 (the two findings) · slide 35 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.02, w: 11.65, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
     'Quick map of where we are going, because there is more here than an hour needs and I would rather you chose than sat through all of it. ' +
-    'Section one, two slides: how the whole thing connects, and what it is worth measured against doing the same job by hand. About eight minutes. ' +
+    'Section one, four slides: how the whole thing connects, and what it is worth measured against doing the same job by hand — including the category-by-category comparison with CAPEE from our internal review. About eight minutes. ' +
     'Section two is the first worked example — a die-cast aluminium housing, followed through all twelve stages from CAD file to defensible price, including the calculation shown in full so you can check it. Sixteen slides, about twenty-two minutes, and it is the heart of the pack. ' +
     'Section three does the same thing on a completely different part, an injection-moulded bumper fascia, plus paint, plus two findings that I genuinely did not predict. Eleven slides, about eighteen minutes. ' +
     'Section four is five minutes on what the tool cannot do. ' +
-    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the two business-case slides, slide twenty-two, slide thirty-two and slide thirty-four. Everything in between is the evidence for those five, and you can read it afterwards.'
+    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the three business-case slides, slide twenty-three, slide thirty-three and slide thirty-five. Everything in between is the evidence for those five, and you can read it afterwards.'
   );
 }
 
@@ -268,7 +268,8 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText([
     { text: 'End to end: 10–15 minutes ', options: { bold: true, color: TEAL, fontSize: 12 } },
     { text: 'for a CAD part, engineer at the screen throughout. The tool computes; the engineer answers and approves.', options: { color: SLATE, fontSize: 9.5 } },
-  ], { x: 0.5, y: 2.72, w: 5.9, h: 0.5, fontFace: 'Calibri', margin: 0, valign: 'top' });
+    { text: ' In CAPEE these inputs are keyed by hand from the CAD — automatic feeding is the largest single saving.', options: { color: NAVY, fontSize: 8.2, bold: true } },
+  ], { x: 0.5, y: 2.64, w: 5.9, h: 0.42, fontFace: 'Calibri', margin: 0, valign: 'top' });
   // Per-commodity time table
   const rows = [
     ['Casting + machining (CAD)', '10–15 min', '4–5 h', '✓ confirmed baseline'],
@@ -281,7 +282,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     ['Manual form (any of 18)', '15–30 min', '2–4 h', 'team-reported'],
   ];
   const ty = 3.34;
-  s.addText('TIME PER SHOULD-COST, BY COMMODITY', { x: 0.5, y: ty - 0.28, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
+  s.addText('TIME PER SHOULD-COST, BY COMMODITY', { x: 0.5, y: ty - 0.22, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
   const th = ['Commodity', 'CostVision', 'CAPEE by hand', 'Baseline'];
   const tw = [2.5, 1.0, 1.2, 1.35];
   let tx = 0.5;
@@ -312,20 +313,64 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   });
   s.addText('16–30× faster on the confirmed baseline. CAPEE midpoints marked "team-reported" are working figures — confirm with the costing team before circulating beyond this room.',
     { x: 6.85, y: 6.10, w: 6.0, h: 0.5, fontFace: 'Calibri', fontSize: 8.6, italic: true, color: MUTED, margin: 0, valign: 'top' });
-  s.addShape('roundRect', { x: 0.5, y: 6.35, w: 5.9, h: 0.62, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
+  s.addShape('roundRect', { x: 0.5, y: 6.32, w: 5.9, h: 0.72, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
-    { text: 'Capacity, not headcount:  ', options: { bold: true, color: GREEN } },
-    { text: 'at these times one engineer reviews 15–25 should-costs a day instead of preparing 1–2 — the saved hours go into negotiation, not data entry.', options: { color: SLATE } },
-  ], { x: 0.68, y: 6.35, w: 5.6, h: 0.62, fontFace: 'Calibri', fontSize: 9.3, margin: 0, valign: 'middle' });
+    { text: 'Man-hours saved = Σ (CAPEE hrs − CostVision hrs) × annual parts. ', options: { bold: true, color: GREEN, fontSize: 8.6 } },
+    { text: 'Illustrative 500-part/yr mix over this table\u2019s midpoints: ', options: { color: SLATE, fontSize: 8.3 } },
+    { text: '≈ 1,650 h/yr ≈ one engineer-year', options: { bold: true, color: NAVY, fontSize: 9.0 } },
+    { text: ' — capacity that moves into negotiation. Replace with your annual volumes; the tool logs its own run times.', options: { color: SLATE, fontSize: 8.3 } },
+  ], { x: 0.68, y: 6.38, w: 5.6, h: 0.62, fontFace: 'Calibri', margin: 0, valign: 'top' });
   footer(s, ++PG);
   s.addNotes(
-    'The business case starts with time, because time is the thing nobody disputes. The left side shows what the CostVision minutes actually contain — upload, automatic measurement and derivation, then the engineer answers the two to five questions geometry cannot answer, reviews the band and approves. Ten to fifteen minutes end to end for a CAD part, and I want to be precise: that is not unattended time, that is an engineer at the screen owning the answer. The table is the same should-cost by commodity. One row is a confirmed baseline — casting plus machining, four to five hours in CAPEE, measured by us. The other CAPEE figures are team-reported working numbers and the slide says so; I would rather show you an honest label than a precise-looking guess. The chart makes the point the table makes: the green bars are barely visible against the amber ones. And the box at the bottom is the real argument — this is capacity, not headcount. At these times one engineer reviews fifteen to twenty-five should-costs a day instead of preparing one or two. The hours we save do not disappear, they move into negotiation preparation, which is where the money actually is.'
+    'The business case starts with time, because time is the thing nobody disputes. The left side shows what the CostVision minutes actually contain — upload, automatic measurement and derivation, then the engineer answers the two to five questions geometry cannot answer, reviews the band and approves. Ten to fifteen minutes end to end for a CAD part, and I want to be precise: that is not unattended time, that is an engineer at the screen owning the answer. The table is the same should-cost by commodity. One row is a confirmed baseline — casting plus machining, four to five hours in CAPEE, measured by us. The other CAPEE figures are team-reported working numbers and the slide says so; I would rather show you an honest label than a precise-looking guess. The chart makes the point the table makes: the green bars are barely visible against the amber ones. And the box at the bottom is the real argument — this is capacity, not headcount. At these times one engineer reviews fifteen to twenty-five should-costs a day instead of preparing one or two. The hours we save do not disappear, they move into negotiation preparation, which is where the money actually is. Two additions from our own review. First, the single biggest category of saving is input data feeding: in CAPEE every measurement and cycle input is read off the CAD and keyed by hand; here the geometry kernel measures the file and feeds the cost engine automatically. Second, the total: hours saved equals the per-part difference times the annual number of parts, summed over the commodities. On an illustrative five-hundred-part annual mix over this table\u2019s own midpoints that is roughly one thousand six hundred and fifty hours a year — about one engineer-year. That mix is illustrative and the slide says so; substitute our real annual volumes and the tool\u2019s own logged run times to firm it up.'
   );
 }
 {
-  // ── Business case II — evidence, coverage, cost to run ──
+  // ── Business case II — CostVision vs CAPEE, category by category ──
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Business Case II — Evidence, Coverage, Cost to Run', 'Every figure on this slide is measured from the tool — nothing is projected', GREEN);
+  title(s, 'Business Case II — CostVision vs CAPEE, Category by Category', 'The seven saving categories from our internal review — what CAPEE does today, and what changes', GREEN);
+
+  const cw = [2.35, 2.55, 5.55, 1.85];
+  const ch = ['Saving category', 'CAPEE today', 'CostVision', 'Shown at'];
+  let hx = 0.5;
+  ch.forEach((h, i) => {
+    s.addText(h, { x: hx, y: 1.28, w: cw[i], h: 0.3, fontFace: 'Calibri', fontSize: 9.5, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i ? 'left' : 'left', valign: 'middle', margin: 0.06 });
+    hx += cw[i];
+  });
+  const rows = [
+    ['1 · Input data feeding', 'Every measurement and cycle input read off the CAD and keyed by hand', 'The geometry kernel measures the CAD file and feeds every input automatically — the single largest time saving', 'Measure + kernel slides'],
+    ['2 · Machine, tonnage & process selection', 'Partially automated', 'Automatic AND cost-ranked: presses sized by clamp/force physics; machining routing and mould cavitation chosen by price, with the losing alternatives printed in the trace', 'Process-selection + routing slides'],
+    ['3 · Coverage & early programme support', 'Few parts, usually after the quote lands', '15–25 should-costs per engineer-day — directional cost early in the programme, while wall thickness and process can still change', 'Business Case I'],
+    ['4 · Total man-hours saved', '—', 'Σ (CAPEE hrs − CostVision hrs) × annual parts, per commodity. Illustrative 500-part/yr mix ≈ 1,650 h/yr ≈ one engineer-year — replace with our real volumes', 'Business Case I strip'],
+    ['5 · DFM / DFA insights', 'Not available', 'Generated by the deterministic COST ENGINE — ~37 threshold rules + 10 geometry advisors, scores by fixed arithmetic. Not by AI: the AI cannot write a score, severity or saving', 'DFM/DFA slide'],
+    ['6 · Cost-saving ideas', 'Engineer\u2019s own analysis', 'Generated by the cost engine\u2019s rule layer and the optimisers — each idea priced in £/part with its lever owner (design / supplier / sourcing); the AI adds display-only commentary at most', 'DFM + routing slides'],
+    ['7 · Beyond a conventional tool', '—', '20-region pricing on every run · confidence band · negotiation pack · every cost line carries its printed derivation · self-audit · learns from actuals · landed cost incl. duty/CBAM · carbon · PCB photo→BOM · air-gapped mode', 'Throughout the deck'],
+  ];
+  rows.forEach((r, ri) => {
+    const y = 1.58 + ri * 0.665;
+    let x = 0.5;
+    r.forEach((v, i) => {
+      s.addText(v, { x, y, w: cw[i], h: 0.665, fontFace: 'Calibri', fontSize: i === 0 ? 8.7 : 8.1,
+        bold: i === 0, color: i === 0 ? NAVY : (i === 3 ? MUTED : SLATE), italic: i === 3,
+        fill: { color: ri % 2 ? 'F0F4F9' : 'FFFFFF' }, align: 'left', valign: 'middle', margin: 0.06 });
+      x += cw[i];
+    });
+  });
+
+  s.addShape('roundRect', { x: 0.5, y: 6.35, w: 12.33, h: 0.6, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'The honest one-liner:  ', options: { bold: true, color: GREEN } },
+    { text: 'CAPEE is a costing calculator that a person feeds; CostVision is a measuring, deciding and explaining system with the same deterministic arithmetic at its core — the AI reads part descriptions and writes commentary, and is never allowed to touch a number.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.35, w: 12.0, h: 0.6, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+  s.addNotes(
+    'This slide is our internal review with the manager, made presentable — seven categories, and I will take them in order. One, input data feeding, and this is the big one: in CAPEE every measurement and every cycle input is read off the CAD by a person and keyed in by hand; here the geometry kernel measures the file and feeds the cost engine automatically. Two, machine and tonnage selection: CAPEE partially automates this; here it is automatic and, more importantly, cost-ranked — the press is sized by physics, and the machining routing and the mould cavitation are chosen by price with the losing alternatives printed in the trace, so the choice defends itself. Three, coverage: at these cycle times one engineer reviews fifteen to twenty-five should-costs a day, which means directional cost support early in the programme, while the design can still move. Four, the total: hours saved per part times annual parts, summed by commodity — on an illustrative five-hundred-part mix, about one thousand six hundred and fifty hours a year, roughly one engineer-year; that mix is illustrative and we will substitute our real volumes. Five, and I checked this in the source code before putting it on a slide: the DFM and DFA insights are generated by the deterministic cost engine — thirty-seven threshold rules and ten geometry advisors, scores by fixed arithmetic — not by the AI. CAPEE has nothing equivalent. Six, same answer for the cost-saving ideas: they come from the engine\u2019s rule layer and the optimisers, each one priced in pounds per part with a named lever owner; the AI is allowed to add commentary and nothing else. And seven, everything a conventional tool does not do: twenty regions priced on every run, the confidence band, the negotiation pack, full derivation on every line, the self-audit, learning from actuals, landed cost including duty and carbon border adjustment, and the air-gapped mode for IP-sensitive programmes.'
+  );
+}
+{
+  // ── Business case III — evidence, coverage, cost to run ──
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'Business Case III — Evidence, Coverage, Cost to Run', 'Every figure on this slide is measured from the tool — nothing is projected', GREEN);
   // KPI band
   const kpis = [
     ['16–30×', 'faster than the confirmed\nCAPEE baseline', TEAL],
@@ -342,12 +387,12 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   // Accuracy evidence — the six verified parts
   s.addText('ACCURACY — 6 REAL PARTS vs INDEPENDENT MANUAL SHOULD-COSTS (China · 100k/yr)', { x: 0.5, y: 2.56, w: 7.6, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
   const parts = [
-    ['Fuel tank (blow-moulded)', '£20–30', '£25.82', '+3%', GREEN],
+    ['Fuel tank (blow-moulded)', '£20–30', '£25.92', '+4%', GREEN],
     ['Front bumper (inj. moulded)', '£8–9', '£8.28', '−3%', GREEN],
     ['Seat cross-member (pressed)', '£1.20–1.60', '£1.33', '−5%', GREEN],
-    ['Steering knuckle (cast+mach)', '£16–18', '£14.05', '−17%', AMBER],
+    ['Steering knuckle (cast+mach)', '£16–18', '£14.10', '−17%', AMBER],
     ['Stub axle (forged+mach)', '≈ £30', '£38.98', '+30%', AMBER],
-    ['Servo horn (CNC, 3 g)', '≈ £2.20', '£2.91', '+32%', AMBER],
+    ['Servo horn (CNC, 3 g)', '≈ £2.20', '£2.65', '+21%', AMBER],
   ];
   const pw = [2.55, 1.05, 1.0, 0.75];
   let px = 0.5;
@@ -361,7 +406,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     });
   });
   s.addText([
-    { text: 'Fleet error 15% vs the AI path’s 28% on the same parts. ', options: { bold: true, color: NAVY } },
+    { text: 'Fleet error ≈13% vs the AI path’s 28% on the same parts. ', options: { bold: true, color: NAVY } },
     { text: 'Every miss is visible and every over-estimate errs on the negotiating side — no silent under-quote. Validated on these 6 parts; validation on unseen parts is the next step and is said so out loud.', options: { color: SLATE } },
   ], { x: 0.5, y: 5.02, w: 5.9, h: 0.8, fontFace: 'Calibri', fontSize: 9, margin: 0, valign: 'top' });
   // Donuts: commodity coverage + verification state
@@ -373,7 +418,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     showValue: false, showTitle: true, title: '18 commodities', titleFontSize: 10, titleColor: '16325C',
   });
   s.addChart('doughnut', [
-    { name: 'Verification', labels: ['Inside manual band (3)', 'Within ±32% (3)', 'No manual yet (2)'], values: [3, 3, 2] },
+    { name: 'Verification', labels: ['Inside manual band (3)', 'Within ±30% (3)', 'No manual yet (2)'], values: [3, 3, 2] },
   ], {
     x: 9.85, y: 2.66, w: 3.1, h: 2.5, holeSize: 60,
     chartColors: ['2E8B57', 'B7791F', 'DCE3EE'], showLegend: true, legendPos: 'b', legendFontSize: 8.5,
