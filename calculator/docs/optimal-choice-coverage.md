@@ -15,7 +15,7 @@ Status per choice, per commodity. Three states:
 | machining | routing + machine (split vs 5-axis vs turned) | **COST-RANKED** (routing-optimiser.ts) |
 | cast_and_machine | machining half | **COST-RANKED**; casting half: HPDC machine **SIZED + AUDITED** |
 | injection_moulding | press | **SIZED + AUDITED** (clamp → smallest press; over/undersize flagged in £/part) |
-| injection_moulding | cavity count | **ADVISOR/RULE** (weight ladder + clamp cap) — next candidate for cost-ranking (mould NRE vs cycle share) |
+| injection_moulding | cavity count | **COST-RANKED** (cavitation-optimiser.ts — machine+labour+mould NRE per candidate, clamp-feasible set, losers priced in the trace) |
 | blow_moulding | machine | **SIZED** by shot weight; undersize audited; oversize NOT priced (ids not tonnage-tiered) |
 | forging | press | **SIZED + AUDITED** |
 | sheet_metal | press | **SIZED + AUDITED** |
@@ -35,9 +35,12 @@ Status per choice, per commodity. Three states:
 
 ## Honest limits / staged next steps
 
-1. **IM cavitation** — the largest remaining rule-of-thumb: cavities trade mould NRE against
-   cycle share; `estimateMouldCost` already prices the tool per cavitation, so ranking is
-   implementable with existing estimators.
+1. ~~IM cavitation~~ — **done** (`cavitation-optimiser.ts`): candidates [1,2,4,8] clamp-
+   filtered, each priced as machine+labour (both divide by n) + level-calibrated mould NRE
+   amortised the way the mapper charges it; ranked table rides the cavities basis. The
+   runner-per-shot under-count at n>1 was fixed in the same pass. Follow-up flagged: the
+   dfm-dfa "consider multi-cavity tooling" generic advice should be suppressed or replaced
+   with this optimiser's priced delta, in the style of the §14 Re-quote fix.
 2. **Sheet-metal die type** — progressive vs stage is a volume-economics decision currently
    made by rule.
 3. **Casting subtype** — the advisor constrains by spec; within the feasible set, cost ranking

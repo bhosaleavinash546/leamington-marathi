@@ -24,9 +24,10 @@
  *    can close.
  */
 import {
-  estimateClampingTonnage, estimateMouldCost, pickIMMPressId, thermodynamicCoolFactor,
-  type MouldSteelClass,
+  estimateClampingTonnage, estimateMouldCost, pickIMMPressId, steelClassFor,
+  thermodynamicCoolFactor, type MouldSteelClass,
 } from '../../modules/injection-moulding.js';
+import { optimiseCavitation, type CavitationChoice } from '../../cavitation-optimiser.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
@@ -53,23 +54,51 @@ export { projectedAreaCm2 };
  * cavitation.
  */
 export function cavityCount(ctx: RuleContext, resin: ResinFacts): { n: number; basis: string } {
-  const kg = resin.massKg ?? 0;
-  const ladder = kg > 0.05 ? 1 : kg >= 0.01 ? 2 : 4;
-  const area = projectedAreaCm2(ctx) ?? 0;
-  const pressure = resin.cavityPressureMPa ?? 50;
+  const choice = cavitationChoiceFor(ctx, resin);
+  return choice
+    ? { n: choice.chosen.n, basis: choice.basis }
+    : { n: 1, basis: 'no measured wall/area — single cavity assumed' };
+}
 
-  let n = ladder;
-  while (n > 1 && estimateClampingTonnage({ projectedAreaCm2: area * n, cavityPressureMPa: pressure }) > MAX_CLAMP_TONNES) {
-    n--;
-  }
-  const capped = n < ladder;
-  return {
-    n,
-    basis: `${(kg * 1000).toFixed(0)} g part`
-      + (capped
-        ? ` would take ${ladder} cavities, but ${ladder}-up needs more than the ${MAX_CLAMP_TONNES} t largest press — capped at ${n}`
-        : ` (>50 g -> 1, 10–50 g -> 2, <10 g -> 4)`),
-  };
+/**
+ * The cavitation decision, ranked in pounds (see cavitation-optimiser.ts).
+ * The old mass ladder (>50 g -> 1, 10–50 g -> 2, <10 g -> 4) was volume-blind:
+ * annual volume never entered the one decision that trades mould NRE against
+ * cycle share. Null when the geometry cannot support the arithmetic.
+ */
+export function cavitationChoiceFor(ctx: RuleContext, resin: ResinFacts): CavitationChoice | null {
+  const wallMm = ctx.geo.wallThickness?.meanMm ?? 0;
+  const areaCm2 = projectedAreaCm2(ctx);
+  if (!wallMm || !areaCm2) return null;
+  const governingWall = governingWallMm(ctx.geo.wallThickness)?.mm ?? wallMm;
+  // The exact shot the mapper will charge: fill/pack off the mean wall (their
+  // rules), cooling off the governing wall (the wall rule ships it), eject flat.
+  const shotSeconds = fillSeconds(wallMm) + packSeconds(wallMm)
+    + coolFactorFor(resin) * governingWall ** 2 + EJECT_SECONDS;
+  return optimiseCavitation({
+    areaPerCavityCm2: areaCm2,
+    cavityPressureMPa: resin.cavityPressureMPa ?? 50,
+    shotSeconds,
+    annualVolume: ctx.annualVolume,
+    sideActionsLifters: sideActions(ctx).n,
+    occtMouldCostGBP: ctx.geo.toolingCostEstimates?.imMouldCostGBP,
+    maxClampTonnes: MAX_CLAMP_TONNES,
+    programmeYears: PROGRAMME_YEARS,
+  });
+}
+
+/** Shared cycle formulas — the rules print these, the optimiser sums them.
+ *  One source, so the ranked shot is exactly the shot the mapper charges. */
+export function fillSeconds(wallMm: number): number {
+  return Math.max(1.5, Math.round(wallMm * 0.5 * 10) / 10);
+}
+export function packSeconds(wallMm: number): number {
+  return Math.max(2.0, Math.round(wallMm * 0.8 * 10) / 10);
+}
+export const EJECT_SECONDS = 2;
+export function coolFactorFor(resin: ResinFacts): number {
+  return thermodynamicCoolFactor(resin.materialId ?? '')?.factorSPerMm2
+    ?? resin.coolFactorSPerMm2!;
 }
 
 /**
@@ -88,25 +117,15 @@ export function sideActions(ctx: RuleContext): { n: number; basis: string } {
   return { n, basis: `${faces} undercut face(s) -> ${n} slide/lifter(s) at ~6 faces each` };
 }
 
-/**
- * Tool steel class from the shots the programme needs.
- *
- * The life figures are the ones documented against `mouldSteelClassFactor` in
- * modules/injection-moulding.ts — prototype ~10–50k, standard P20 ~500k,
- * hardened H13 ~1M+, high-wear ~5M+. Reading them off the same ladder that sets
- * the cost multiplier keeps the two from drifting.
- */
-export function steelClassFor(shots: number): { cls: MouldSteelClass; life: number } {
-  if (shots <= 25_000) return { cls: 'prototype', life: 50_000 };
-  if (shots <= 100_000) return { cls: 'standard', life: 500_000 };
-  if (shots <= 1_000_000) return { cls: 'production', life: 1_000_000 };
-  return { cls: 'high_volume', life: 5_000_000 };
-}
+// steelClassFor now lives beside `mouldSteelClassFactor` in the module so the
+// life ladder and the cost multiplier cannot drift; re-exported for callers.
+export { steelClassFor };
 
 interface ImAdvice {
   resin: ResinFacts;
   wallMm: number;
   areaCm2: number;
+  choice: CavitationChoice;
   cavities: number;
   cavitiesBasis: string;
   slides: number;
@@ -141,22 +160,23 @@ function advise(ctx: RuleContext): { advice: ImAdvice } | { blocked: RuleOutcome
     };
   }
 
-  const cav = cavityCount(ctx, resin);
+  const choice = cavitationChoiceFor(ctx, resin)!;   // wall+area guaranteed above
   const slides = sideActions(ctx);
+  const n = choice.chosen.n;
   const clampTonnes = estimateClampingTonnage({
-    projectedAreaCm2: areaCm2 * cav.n,
+    projectedAreaCm2: areaCm2 * n,
     cavityPressureMPa: resin.cavityPressureMPa!,
   });
-  const shots = (ctx.annualVolume * PROGRAMME_YEARS) / cav.n;
+  const shots = (ctx.annualVolume * PROGRAMME_YEARS) / n;
 
   return {
     advice: {
-      resin, wallMm, areaCm2,
-      cavities: cav.n, cavitiesBasis: cav.basis,
+      resin, wallMm, areaCm2, choice,
+      cavities: n, cavitiesBasis: choice.basis,
       slides: slides.n, slidesBasis: slides.basis,
       clampTonnes: Math.round(clampTonnes),
       pressId: pickIMMPressId(clampTonnes),
-      steel: steelClassFor(shots),
+      steel: { cls: choice.chosen.steelClass, life: choice.chosen.mouldLife },
       shots: Math.round(shots),
     },
   };
@@ -299,7 +319,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const v = Math.max(1.5, Math.round(r.advice.wallMm * 0.5 * 10) / 10);
+        const v = fillSeconds(r.advice.wallMm);
         return decided('injectionMoulding.fillTimeSec', v, 'rule',
           `0.5 s per mm of wall (${r.advice.wallMm.toFixed(1)} mm), floored at 1.5 s`, 0.6);
       },
@@ -312,7 +332,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const v = Math.max(2.0, Math.round(r.advice.wallMm * 0.8 * 10) / 10);
+        const v = packSeconds(r.advice.wallMm);
         return decided('injectionMoulding.packTimeSec', v, 'rule',
           `0.8 s per mm of wall (${r.advice.wallMm.toFixed(1)} mm), floored at 2.0 s`, 0.6);
       },
@@ -337,9 +357,12 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const v = Math.round(r.advice.resin.massKg! * 0.15 * 10_000) / 10_000;
+        // TOTAL per shot: the cost model divides the runner by cavities, so a
+        // per-part figure at n>1 under-counted the waste by n (a live defect).
+        const v = Math.round(r.advice.resin.massKg! * 0.15 * r.advice.cavities * 10_000) / 10_000;
         return decided('injectionMoulding.runnerWeightKg', v, 'rule',
-          '15% of part weight — cold runner and sprue; a hot runner would make this 0', 0.6);
+          `15% of part weight × ${r.advice.cavities}-cavity shot — cold runner and sprue `
+          + 'per SHOT (the cost model allocates it per cavity); a hot runner would make this 0', 0.6);
       },
     },
     {
@@ -403,9 +426,11 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         // both inputs in the basis so the blend is arguable, not hidden.
         // (The explainer deck's own bumper-class example uses £420k; the blend
         // lands at £407k.)
-        const blended = occt && occt > 0
-          ? Math.round(Math.sqrt(est.total * occt))
-          : est.total;
+        // The optimiser level-calibrates every candidate by √(occt/est(1)) — at
+        // the chosen n=1 this IS Math.round(Math.sqrt(est.total × occt)), so the
+        // shipped blend convention is preserved bit-for-bit; at n>1 the OCCT
+        // evidence corrects the level while the advisor supplies the shape in n.
+        const blended = r.advice.choice.chosen.mouldCostGBP;
         return decided('injectionMoulding.mouldCostGBP', blended, 'advisor',
           `${r.advice.cavities}-cavity ${r.advice.steel.cls} tool, ${r.advice.areaCm2} cm²/cavity, `
           + `${r.advice.slides} slide(s)`

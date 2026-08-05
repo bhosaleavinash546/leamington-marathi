@@ -170,25 +170,35 @@ describe('injection moulding', () => {
     expect(r.provenance['imm-mach'].basis).toContain('3694 t clamp');
   });
 
-  it('caps cavitation at what a press can actually close', () => {
-    // A 5 g part on a big footprint: the weight ladder wants 4 cavities, but
-    // 4-up would need more clamp than exists.
+  it('ranks cavitation in pounds — clamp bounds it and the arithmetic decides', () => {
+    // A 5 g part on a big footprint: 4-up and 8-up cannot be clamped (>3,500 t),
+    // and 2-up LOSES on arithmetic too — a big-footprint tool's NRE dominates.
+    // The old mass ladder wanted 4 and was silently capped; now the basis prices
+    // every candidate and names the infeasible ones.
     const smallWidePart = {
       ...BUMPER,
       volume: { mm3: 5_500, cm3: 5.5 },
       boundingBox: { xMm: 900, yMm: 400, zMm: 20 },
+      toolingCostEstimates: undefined,   // a different part — the bumper's kernel mould figure does not apply
     } as unknown as OCCTGeometry;
     const ctx = imCtx(smallWidePart, PP);
     const resin = resinFacts(ctx);
     const c = cavityCount(ctx, resin);
-    expect(c.n).toBeLessThan(4);
-    expect(c.basis).toContain('capped at');
+    expect(c.n).toBe(1);
+    expect(c.basis).toContain('cost-ranked');
+    expect(c.basis).toContain('infeasible');
+    expect(c.basis).toContain('3,500 t largest press');
 
-    // ...and a genuinely small part still gets its four cavities.
+    // ...and a genuinely small part still gets its four cavities — now PROVEN
+    // (4-up £0.212/part beats 2-up £0.252 and 1-up £0.394 at 200k/yr), not
+    // asserted from a weight class.
     const smallPart = {
       ...BUMPER, volume: { mm3: 5_500, cm3: 5.5 }, boundingBox: { xMm: 60, yMm: 40, zMm: 20 },
+      toolingCostEstimates: undefined,
     } as unknown as OCCTGeometry;
-    expect(cavityCount(imCtx(smallPart, PP), resinFacts(imCtx(smallPart, PP))).n).toBe(4);
+    const small = cavityCount(imCtx(smallPart, PP), resinFacts(imCtx(smallPart, PP)));
+    expect(small.n).toBe(4);
+    expect(small.basis).toContain('cheaper than');
   });
 
   it('never gives an undercut part a straight-pull tool', () => {

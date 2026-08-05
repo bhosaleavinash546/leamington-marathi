@@ -86,6 +86,21 @@ export function mouldSteelClassFactor(cls: MouldSteelClass | undefined): number 
 /** Smallest standard IM press (by clamp tonnage) that covers the required force.
  *  A part must be moulded on a press big enough for its projected area — a bumper
  *  (~3900 T) on a 200 T press is both physically impossible and ~10× too cheap. */
+/**
+ * Tool steel class from the shots the programme needs.
+ *
+ * The life figures are the ones documented against `mouldSteelClassFactor`
+ * above — prototype ~10–50k, standard P20 ~500k, hardened H13 ~1M+, high-wear
+ * ~5M+. Living beside the cost multiplier keeps the two from drifting; the
+ * cost-input rules and the cavitation optimiser both read this one ladder.
+ */
+export function steelClassFor(shots: number): { cls: MouldSteelClass; life: number } {
+  if (shots <= 25_000) return { cls: 'prototype', life: 50_000 };
+  if (shots <= 100_000) return { cls: 'standard', life: 500_000 };
+  if (shots <= 1_000_000) return { cls: 'production', life: 1_000_000 };
+  return { cls: 'high_volume', life: 5_000_000 };
+}
+
 export function pickIMMPressId(clampTonnes: number): string {
   const presses: Array<[number, string]> = [
     [50, 'imm-50t'], [100, 'imm-100t'], [200, 'imm-200t'], [350, 'imm-350t'],
