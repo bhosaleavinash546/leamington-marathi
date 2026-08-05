@@ -18,12 +18,18 @@
 //  • firstProduction: cite a real programme + year, or omit entirely.
 //  • regAnchor:  only when a listed regulation genuinely forces/pulls the tech.
 //  • matchTerms: lowercase part-name fragments users actually type.
-//  • GLOBAL FRONTIER FIRST (2026 lesson): before writing any spec/gauge/
-//    performance claim, check the Chinese production frontier — the West is
-//    often not the leading edge (0.15mm laminations shipped in Xiaomi motors
-//    while this register still said 0.20mm). `npm run horizon:audit` flags
-//    entries with no China-based reference; clear the flag with evidence or
-//    a deliberate reason, never by ignoring it.
+//  • GLOBAL FRONTIER FIRST — and mean GLOBAL. The 2026 lesson was that this
+//    register was Western-anchored and missed the Chinese frontier (0.15mm
+//    laminations shipped in Xiaomi motors while this file still said 0.20mm).
+//    The first fix asked "is China named?", which turned one blind spot into
+//    its mirror image: a Korea-led or Japan-led technology would have been
+//    marked deficient for not mentioning China. The rule is now the honest
+//    one — LOOK IN MORE THAN ONE PLACE, and name where the frontier really
+//    is. For a given part that may be Korean (LG/Samsung SDI cells), Japanese
+//    (Toyota solid-state, Denso), Indian (Tata/Motherson cost engineering),
+//    European, North American or Chinese. `npm run horizon:audit` flags
+//    entries that looked in only one region, whichever region that is; clear
+//    it with evidence or a deliberate reason, never by ignoring it.
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ── Known regulatory anchors ─────────────────────────────────────────────────

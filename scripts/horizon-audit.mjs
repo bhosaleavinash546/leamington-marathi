@@ -19,7 +19,7 @@ const FLAG_HELP = {
 
 const a = auditRegister();
 console.log('═══ BrainSpark Horizon — register self-audit ═══');
-console.log(`register vintage ${REGISTER_VINTAGE} · ${a.total} entries · ${a.flaggedCount} flagged · China-frontier coverage ${a.chinaCoveragePct}%`);
+console.log(`register vintage ${REGISTER_VINTAGE} · ${a.total} entries · ${a.flaggedCount} flagged · multi-region coverage ${a.multiRegionPct}%`);
 console.log('\nFlag totals:');
 for (const [f, n] of Object.entries(a.byFlag).sort((x, y) => y[1] - x[1])) {
   console.log(`  ${String(n).padStart(3)}  ${f.padEnd(19)} ${FLAG_HELP[f]}`);
@@ -46,6 +46,7 @@ console.log('\nDiscipline: fix worst-first, cite evidence for every change, re-r
   const { auditRegister } = await import('../foresight-audit.mjs');
   const a = auditRegister();
   console.log(`\nOntology mix: ${JSON.stringify(a.byKind)} — ${a.nonSubstitutionPct}% non-substitution`);
+  console.log(`Region mix:   ${JSON.stringify(a.byRegion)} — ${a.multiRegionPct}% of entries looked in more than one region`);
   if (a.ontologyBlindCommodities.length) {
     console.log('Commodities that can still ONLY see part swaps (worst-first):');
     for (const c of a.ontologyBlindCommodities) {

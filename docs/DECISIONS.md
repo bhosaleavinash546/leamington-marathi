@@ -159,3 +159,23 @@ Format: decision · why · what would change it.
     would have hidden exactly that. *Changes it:* nothing — but the remaining 165
     substitution-only entries are curation debt, now visible worst-first in `horizon:audit`
     rather than invisible.
+
+22. **The frontier check is region-NEUTRAL: look in more than one place, wherever that is (2026).**
+    *Why:* the original lesson was that this register was Western-anchored and missed the
+    Chinese frontier (0.15mm laminations in Xiaomi motors while the file said 0.20mm). The fix
+    for that asked a single question — "is a Chinese entity named?" — which hardwired the
+    correction into the auditor (`no-china-frontier`), the search plan (a probe literally
+    naming China) and the curation rule. That is the same blindness pointing the other way: a
+    Korea-led (LG/Samsung SDI) or Japan-led (Toyota solid-state, Denso) technology would have
+    been marked deficient for not mentioning China, and a curator's cheapest way to clear the
+    flag was to bolt on a Chinese name whether or not it belonged. The check is now
+    `single-region-view`: an entry that names players from only ONE region is un-checked,
+    whichever region that is. Measured at changeover it flags 24 Europe-only entries AND 12
+    China-only ones — proof it cuts both ways. The search plan lost its hardcoded country and
+    gained a region-neutral cost-frontier probe plus a multi-region one; the research prompt
+    now says explicitly not to assume the frontier is Western OR Chinese. Reporting moved from
+    a single-country percentage to a full region mix (Europe 113, China 96, North America 96,
+    Japan 31, Korea 26, India 11). *Changes it:* the gate was re-baselined 129 → 119 because
+    the flag now MEANS something different, not because the register got worse — that
+    re-baseline is legitimate only because the check changed definition, and it is documented
+    here so it cannot be repeated as a way of absorbing real debt.

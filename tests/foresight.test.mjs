@@ -255,7 +255,7 @@ import { auditRegister, auditQueryPrecision } from '../foresight-audit.mjs';
 test('self-audit: audits every entry with known flags, worst-first inbox', () => {
   const a = auditRegister();
   assert.equal(a.total, FORESIGHT_REGISTER.length);
-  const known = new Set(['no-evidence', 'few-players', 'no-china-frontier', 'stale-evidence', 'thin-matchterms', 'short-note']);
+  const known = new Set(['no-evidence', 'few-players', 'single-region-view', 'stale-evidence', 'thin-matchterms', 'short-note']);
   for (const e of a.inbox) for (const f of e.flags) assert.ok(known.has(f), f);
   for (let i = 1; i < a.inbox.length; i++) assert.ok(a.inbox[i - 1].flags.length >= a.inbox[i].flags.length);
 });
@@ -266,8 +266,12 @@ test('self-audit regression gates: the register can only get healthier', () => {
   // HARDENED to named entities only (generic "Chinese …" no longer clears the
   // flag — that is how the gate got gamed), so the measured baseline moved.
   // Future edits must not regress from here.
-  assert.ok(a.chinaCoveragePct >= 51, `China-frontier coverage fell to ${a.chinaCoveragePct}%`);
-  assert.ok(a.flaggedCount <= 129, `curation debt grew to ${a.flaggedCount}`);
+  assert.ok(a.multiRegionPct >= 71, `multi-region coverage fell to ${a.multiRegionPct}%`);
+  // Re-baselined when the frontier check went region-neutral (single-region-view
+  // replaced no-china-frontier): the flag MEANS something different, so the old
+  // 129 number does not transfer. 119 is the measured value at that changeover —
+  // the register can only get healthier from here.
+  assert.ok(a.flaggedCount <= 119, `curation debt grew to ${a.flaggedCount}`);
   assert.ok((a.byFlag['no-evidence'] ?? 0) <= 23, 'evidence debt grew');
 });
 
@@ -868,4 +872,36 @@ test('generic fix: ontology blindness is reported per commodity, not hidden in a
   const summed = Object.values(a.perCommodity).reduce((n, v) => n + v.total, 0);
   assert.equal(summed, a.total, 'per-commodity totals do not reconcile with the register');
   for (const c of a.ontologyBlindCommodities) assert.equal(a.perCommodity[c.commodity].nonSubstitution, 0);
+});
+
+test('global lens: the frontier check privileges no region', async () => {
+  const { REGION_MARKERS, regionsNamed, auditRegister } = await import('../foresight-audit.mjs');
+  // At least the major automotive manufacturing regions must be recognisable —
+  // otherwise "look in more than one place" silently means "look in the two
+  // places we bothered to encode".
+  for (const r of ['china', 'korea', 'japan', 'europe', 'north-america', 'india']) {
+    assert.ok(Array.isArray(REGION_MARKERS[r]) && REGION_MARKERS[r].length >= 10, `region ${r} under-encoded`);
+  }
+  // The flag must fire on ANY single-region entry, not just non-Chinese ones.
+  const chinaOnly = { players: ['BYD', 'CATL', 'NIO'], note: '', firstProduction: '' };
+  const europeOnly = { players: ['Bosch', 'ZF', 'Continental'], note: '', firstProduction: '' };
+  const mixed = { players: ['Bosch', 'CATL'], note: '', firstProduction: '' };
+  assert.deepEqual(regionsNamed(chinaOnly), ['china']);
+  assert.deepEqual(regionsNamed(europeOnly), ['europe']);
+  assert.equal(regionsNamed(mixed).length, 2);
+  // And the live register must actually be flagging both directions.
+  const a = auditRegister();
+  const single = a.inbox.filter((e) => e.flags.includes('single-region-view'));
+  const only = (r) => single.filter((e) => e.regions[0] === r).length;
+  assert.ok(only('europe') > 0, 'no Europe-only entry flagged — the old Western bias is invisible again');
+  assert.ok(only('china') > 0, 'no China-only entry flagged — the check is still one-directional');
+});
+
+test('global lens: the search plan does not hardwire one country', async () => {
+  const { buildResearchPlan } = await import('../foresight-research.mjs');
+  const blob = buildResearchPlan('brake disc', { year: 2026 }).map((p) => p.q).join(' ').toLowerCase();
+  // Naming several manufacturing regions is fine; naming exactly one is the bug.
+  const named = ['china', 'korea', 'japan', 'india'].filter((c) => blob.includes(c));
+  assert.ok(named.length === 0 || named.length >= 3, `plan leans on ${named.join('/')} alone`);
+  assert.ok(/lowest cost|cost leader/.test(blob), 'plan lost its region-neutral cost-frontier probe');
 });

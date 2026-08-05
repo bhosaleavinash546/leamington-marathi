@@ -67,7 +67,8 @@ export function buildResearchPlan(query, { year = new Date().getFullYear() } = {
   return [
     { q: `${q} automotive next generation technology roadmap ${year}`, targets: 'substitution' },
     { q: `${q} emerging automotive technology ${year + 4} future concept`, targets: 'substitution' },
-    { q: `${q} automotive cost reduction China supplier localisation ${year}`, targets: 'substitution' },
+    { q: `${q} automotive manufacturing cost leader lowest cost supplier ${year}`, targets: 'substitution' },
+    { q: `${q} automotive technology leader China Korea Japan India supplier ${year}`, targets: 'substitution' },
     { q: `${q} automotive lightweight material process innovation patent`, targets: 'substitution' },
     { q: `${q} automotive predictive maintenance diagnostics warranty failure mode`, targets: 'lifecycle' },
     { q: `${q} software defined vehicle domain controller control software ${year}`, targets: 'orchestration' },
@@ -235,6 +236,7 @@ export async function researchFutureTechnologies(query, deps) {
     system: [
       'You are an automotive technology-foresight researcher working for a cost engineer.',
       'Your job is to identify what is COMING for this part — emerging technologies, next-generation architectures, pilots and roadmap items — not to describe what is already standard.',
+      'Look GLOBALLY for the frontier and name where it actually is. Do not assume it sits in Europe or North America, and do not assume it sits in China either — for a given part the leading edge may be Korean, Japanese, Indian, European, North American or Chinese, and naming the wrong region confidently is worse than naming none. Prefer evidence that identifies the real volume or technology leader.',
       'Hunt FOUR kinds, not one. Most lists only contain part swaps, and that blindness is the single biggest gap in technology foresight: (1) SUBSTITUTION — a new part or process displaces an incumbent; (2) FUNCTION — hardware already on the car earns a NEW job and a new business case (e.g. ride height bought for comfort now bought for aerodynamic range, competing against battery cost rather than against steel springs); (3) ORCHESTRATION — a software layer that coordinates actuators and replaces none of them, moving differentiation from the part to the calibration; (4) LIFECYCLE — a change in how the part is serviced, warranted or monitored. Actively look for at least one non-substitution candidate before you finish.',
       'Use ONLY the retrieved evidence. Every candidate must cite the exact url of a provided source; if the evidence does not support a candidate, omit it rather than filling the list.',
       'Describe MECHANISM (how it physically works), not marketing benefits. Prefer named programmes, suppliers and dates that appear in the evidence.',
