@@ -194,3 +194,21 @@ Format: decision · why · what would change it.
     without a Brave key the fallback is DuckDuckGo's Instant Answer API — encyclopedia
     abstracts, not a web index — so locale gains nothing there. Worldwide retrieval needs a
     search key; the tool degrades honestly and says so rather than pretending.
+
+24. **Technology dossiers: depth, and BOTH sides (2026 depth audit).**
+    *Why:* a reader said the report was too superficial to understand, citing axial flux —
+    fairly: its whole entry was a 119-character note. `note` is one paragraph and there was
+    nowhere to put mechanism, origin, or forward view. Worse, a scan of all 180 entries found
+    ZERO carrying a single disadvantage. A register that lists only upside is a sales
+    brochure, and a cost engineer choosing between architectures needs the reasons not to as
+    much as the reasons to. Entries now take an optional `detail` dossier — `howItWorks`,
+    `origin`, `benefits[]`, `tradeoffs[]`, `outlook` — rendered in the PDF as a brief with
+    benefits and trade-offs in facing columns, trade-offs in their own colour so the report
+    cannot be mistaken for advocacy. `one-sided` (benefits with no trade-offs) is curation
+    DEBT and gated at zero. Dossier depth is tracked SEPARATELY as `depthPct` rather than
+    folded into `flaggedCount`, because a dimension that starts at 0% would swamp a gate whose
+    job is catching regressions in evidence/region/findability. *Changes it:* nothing — but
+    note the rendering bug this created and how it was caught: the first cut used a
+    mid-column break guard that silently dropped trade-offs at a page bottom. Dropping the
+    downside specifically is the worst failure this report could have; the block now
+    pre-measures and paginates with both columns intact.

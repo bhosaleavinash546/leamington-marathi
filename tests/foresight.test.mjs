@@ -255,7 +255,7 @@ import { auditRegister, auditQueryPrecision } from '../foresight-audit.mjs';
 test('self-audit: audits every entry with known flags, worst-first inbox', () => {
   const a = auditRegister();
   assert.equal(a.total, FORESIGHT_REGISTER.length);
-  const known = new Set(['no-evidence', 'few-players', 'single-region-view', 'stale-evidence', 'thin-matchterms', 'short-note']);
+  const known = new Set(['no-evidence', 'few-players', 'single-region-view', 'stale-evidence', 'thin-matchterms', 'short-note', 'one-sided']);
   for (const e of a.inbox) for (const f of e.flags) assert.ok(known.has(f), f);
   for (let i = 1; i < a.inbox.length; i++) assert.ok(a.inbox[i - 1].flags.length >= a.inbox[i].flags.length);
 });
@@ -930,4 +930,24 @@ test('worldwide search: locale is actually threaded to the search provider', asy
   // Global probes must NOT be pinned to a country — that would re-introduce bias.
   const globalProbes = seen.filter((s) => !s.opts.country);
   assert.ok(globalProbes.length >= 6, 'global probes got pinned to a region');
+});
+
+test('depth: dossiers brief a reader, and never sell one side (2026 depth audit)', async () => {
+  const { auditRegister } = await import('../foresight-audit.mjs');
+  const a = auditRegister();
+  // Depth is its own metric with its own ratchet — it starts near zero and can
+  // only go up. It is deliberately NOT folded into flaggedCount, which exists
+  // to catch regressions in evidence/region/findability quality.
+  assert.ok(typeof a.depthPct === 'number', 'depth metric missing');
+  assert.ok(a.deepCount >= 8, `deep dossiers fell to ${a.deepCount}`);
+  // Advocacy guard: benefits without trade-offs is never acceptable.
+  assert.equal(a.byFlag['one-sided'] ?? 0, 0, 'an entry lists benefits with no trade-offs');
+  // Every dossier that exists must carry BOTH sides and real mechanism depth.
+  for (const t of FORESIGHT_REGISTER) {
+    if (!t.detail) continue;
+    assert.ok((t.detail.howItWorks ?? '').length >= 200, `${t.id}: howItWorks too shallow to brief anyone`);
+    assert.ok((t.detail.benefits ?? []).length >= 2, `${t.id}: needs at least two benefits`);
+    assert.ok((t.detail.tradeoffs ?? []).length >= 2, `${t.id}: needs at least two trade-offs`);
+    assert.ok(t.detail.origin && t.detail.outlook, `${t.id}: dossier missing origin or outlook`);
+  }
 });

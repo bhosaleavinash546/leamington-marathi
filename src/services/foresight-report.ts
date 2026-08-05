@@ -24,6 +24,7 @@ export interface ForesightReportCard {
   phase: string; horizon: 'H1' | 'H2' | 'H3'; regPulled: boolean; momentum: number;
   confidence: string; regAnchorDetail: ForesightReportAnchor | null;
   related?: boolean; origin?: string; kind?: string;
+  detail?: { howItWorks?: string; origin?: string; benefits?: string[]; tradeoffs?: string[]; outlook?: string };
   projection: { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null; band25?: [number | null, number | null] | null; band50?: [number | null, number | null] | null; share25?: number; share50?: number; ceiling?: number; peakGrowth?: number | 'passed' | null } };
 }
 export interface ForesightReportBenchmark {
@@ -505,6 +506,72 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
         const ceilNote = typeof x.ceiling === 'number' && x.ceiling < 90 ? ` OF ITS ${x.ceiling}% CEILING` : '';
         doc.text(fitText(doc, `REACHES ${x.share25 ?? 25}% SHARE (1/4${ceilNote ? ' CEIL' : ''}) ${lbl(x.cross25, x.band25)}   ·   ${x.share50 ?? 50}% (1/2) ${lbl(x.cross50, x.band50)}${x.peakGrowth !== undefined ? `   ·   PEAK GROWTH ${lbl(x.peakGrowth)}` : ''}`, CW - 6), ML + 3, y);
         y += 4.6;
+      }
+
+      // ── Technology dossier ──────────────────────────────────────────────
+      // A one-paragraph note cannot brief anyone (2026 depth audit). Where a
+      // curated dossier exists, render it: mechanism, origin, and BOTH sides —
+      // trade-offs get equal billing with benefits, in a distinct colour, so a
+      // reader cannot mistake the report for advocacy.
+      const d = c.detail;
+      if (d) {
+        if (d.howItWorks) {
+          ensure(10); mono(6.8, true); setColor(doc, P.DIM);
+          doc.text('HOW IT WORKS', ML + 3, y); y += 4;
+          wrapped(d.howItWorks, 8.7, P.BODY, CW - 6, 3.95, 'normal', ML + 3);
+        }
+        if (d.origin) {
+          ensure(8); mono(6.8, true); setColor(doc, P.DIM);
+          doc.text('ORIGIN', ML + 3, y); y += 4;
+          wrapped(d.origin, 8.7, P.BODY, CW - 6, 3.95, 'normal', ML + 3);
+        }
+        const half = (CW - 10) / 2;
+        if (d.benefits?.length || d.tradeoffs?.length) {
+          // Pre-measure BOTH columns and take the page break BEFORE drawing.
+          // The first cut of this used a mid-column `break` guard, which
+          // silently dropped trade-offs at the page bottom — dropping the
+          // downside specifically is the worst possible failure for a report
+          // whose point is that it shows both sides.
+          sans(8.3);
+          const wrapCol = (items?: string[]) => (items ?? []).flatMap((x) => doc.splitTextToSize(`•  ${x}`, half));
+          const leftLines = wrapCol(d.benefits);
+          const rightLines = wrapCol(d.tradeoffs);
+          const blockH = 4 + Math.max(leftLines.length, rightLines.length) * 3.8 + 3;
+          ensure(Math.min(blockH, PH - 60));
+          const top = y;
+          mono(6.8, true); setColor(doc, P.EVID);
+          doc.text('BENEFITS', ML + 3, top);
+          mono(6.8, true); setColor(doc, [200, 90, 30] as RGB);
+          doc.text('TRADE-OFFS', ML + 7 + half, top);
+          sans(8.3); setColor(doc, P.BODY);
+          let leftY = top + 4;
+          let rightY = top + 4;
+          // Draw row by row so a long block paginates with BOTH columns intact.
+          const rows = Math.max(leftLines.length, rightLines.length);
+          for (let i = 0; i < rows; i++) {
+            if (Math.max(leftY, rightY) > PH - 20) {
+              setDraw(doc, P.RULE, 0.25);
+              doc.line(ML + 4 + half, top - 2, ML + 4 + half, Math.max(leftY, rightY) - 2);
+              newPage();
+              mono(6.8, true); setColor(doc, P.EVID); doc.text('BENEFITS (CONT.)', ML + 3, y);
+              setColor(doc, [200, 90, 30] as RGB); doc.text('TRADE-OFFS (CONT.)', ML + 7 + half, y);
+              sans(8.3); setColor(doc, P.BODY);
+              leftY = y + 4; rightY = y + 4;
+            }
+            if (leftLines[i]) doc.text(leftLines[i], ML + 3, leftY);
+            if (rightLines[i]) doc.text(rightLines[i], ML + 7 + half, rightY);
+            leftY += 3.8; rightY += 3.8;
+          }
+          setDraw(doc, P.RULE, 0.25);
+          doc.line(ML + 4 + half, Math.max(top, y) - 2, ML + 4 + half, Math.max(leftY, rightY) - 2);
+          y = Math.max(leftY, rightY) + 2;
+        }
+        if (d.outlook) {
+          ensure(10); mono(6.8, true); setColor(doc, P.GOLD);
+          doc.text('OUTLOOK', ML + 3, y); y += 4;
+          wrapped(d.outlook, 8.7, P.BODY, CW - 6, 3.95, 'normal', ML + 3);
+        }
+        y += 1;
       }
 
       const sig = signalFor(c.id);

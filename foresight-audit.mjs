@@ -15,6 +15,8 @@
 //   freshness     — evidence younger than (vintage − 3); old proof goes stale
 //   findability   — ≥4 matchTerms so real part names reach the entry
 //   note depth    — enough substance to brief a cost engineer
+//   dossier depth — how-it-works, origin, benefits AND trade-offs (an entry
+//                   with only upside is advocacy; `one-sided` catches it)
 //
 // Advisory by design: it produces a CURATION INBOX (worst-first), and the
 // tests hold regression gates so the register can only get healthier.
@@ -109,7 +111,16 @@ export function auditEntry(tech, { now = REGISTER_VINTAGE } = {}) {
   if (latest !== null && latest <= now - 3) flags.push('stale-evidence');
   if ((tech.matchTerms?.length ?? 0) < 4) flags.push('thin-matchterms');
   if ((tech.note?.length ?? 0) < 90) flags.push('short-note');
-  return { id: tech.id, name: tech.name, commodity: tech.commodity, kind: tech.kind ?? 'substitution', regions, flags, latestEvidenceYear: latest };
+  // Depth audit (2026): a one-paragraph note cannot brief a cost engineer, and
+  // benefits without trade-offs is advocacy, not foresight.
+  // `one-sided` IS debt — benefits written without trade-offs is advocacy.
+  // Dossier depth is tracked separately (see depthPct): it starts at 0% by
+  // definition, so folding it into flaggedCount would swamp a gate that exists
+  // to catch regressions in evidence, region and findability quality.
+  const d = tech.detail;
+  if (d?.benefits?.length && !d?.tradeoffs?.length) flags.push('one-sided');
+  const deep = Boolean(d?.howItWorks && d.howItWorks.length >= 200 && d.benefits?.length && d.tradeoffs?.length);
+  return { id: tech.id, name: tech.name, commodity: tech.commodity, kind: tech.kind ?? 'substitution', regions, deep, flags, latestEvidenceYear: latest };
 }
 
 export function auditRegister({ register = FORESIGHT_REGISTER, now = REGISTER_VINTAGE } = {}) {
@@ -124,6 +135,17 @@ export function auditRegister({ register = FORESIGHT_REGISTER, now = REGISTER_VI
   const byRegion = {};
   for (const e of entries) for (const r of e.regions) byRegion[r] = (byRegion[r] ?? 0) + 1;
   const multiRegionPct = Math.round(((entries.length - (byFlag['single-region-view'] ?? 0)) / entries.length) * 1000) / 10;
+  // Dossier depth: how many entries can actually brief a reader (how-it-works
+  // + benefits + trade-offs), and which commodities are deepest. Its own
+  // metric with its own gate — it can only go up.
+  const deepEntries = entries.filter((e) => e.deep);
+  const depthPct = Math.round((deepEntries.length / entries.length) * 1000) / 10;
+  const depthByCommodity = {};
+  for (const e of entries) {
+    depthByCommodity[e.commodity] ??= { total: 0, deep: 0 };
+    depthByCommodity[e.commodity].total++;
+    if (e.deep) depthByCommodity[e.commodity].deep++;
+  }
   // Ontology coverage (2026 internet-benchmark audit): a register made only of
   // part swaps is structurally blind to function shifts, software orchestration
   // and lifecycle change — the three things live research found and the tool
@@ -156,6 +178,9 @@ export function auditRegister({ register = FORESIGHT_REGISTER, now = REGISTER_VI
     ontologyBlindCommodities,
     byRegion,
     multiRegionPct,
+    deepCount: deepEntries.length,
+    depthPct,
+    depthByCommodity,
     // worst-first inbox: most flags, then id for determinism
     inbox: [...flagged].sort((a, b) => b.flags.length - a.flags.length || a.id.localeCompare(b.id)),
   };
