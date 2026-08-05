@@ -30,7 +30,13 @@ describe('H3 — parametric mould-cost estimator', () => {
     const r = estimateMouldCost({ ...base, steelClass: 'production', sideActionsLifters: 2, runnerSystem: 'hot' });
     expect(r.base).toBeGreaterThan(0);
     expect(r.cavityBlock).toBeGreaterThan(0);
-    expect(r.sideActions).toBe(2 * 3500);
+    // A slide is no longer a flat £3,500 lump: it is a £1,450 catalogue
+    // core-pull cylinder + 28h-plus bench machining/fitting at £48/hr, with
+    // the shop's 22% overhead allocated — the toolmaker's-quotation shape.
+    expect(r.sideActions).toBeGreaterThan(5_000);
+    expect(r.sideActions).toBeLessThan(9_000);
+    expect(r.detail.lines.some(l => /Core-pull cylinders × 2/.test(l.item))).toBe(true);
+    expect(r.detail.lines.some(l => l.kind === 'overheadProfit')).toBe(true);
     expect(r.hotRunner).toBeGreaterThan(0);
     expect(Math.abs(r.total - (r.base + r.cavityBlock + r.sideActions + r.hotRunner))).toBeLessThanOrEqual(2);
   });

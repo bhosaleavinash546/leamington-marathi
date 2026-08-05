@@ -1,3 +1,6 @@
+import {
+  TOOLROOM_RATES, composeTool, labourLine, materialLine, type ToolCostDetail, type ToolCostLine,
+} from '../toolmaking.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
 export type VolumeCategory = 'low' | 'medium' | 'high';
@@ -256,21 +259,14 @@ export interface StampingDieCostInputs {
 }
 
 export interface StampingDieCostBreakdown {
+  /** toolmaker's-quotation view — hours × rate, steel by kg; sums to total. */
+  detail: ToolCostDetail;
   base: number;
   stations: number;   // station machining cost (all stations)
   total: number;
 }
 
 /** Die-construction base + per-station cost by die type. */
-function stampingDieRates(type: StampingDieType): { base: number; perStation: number } {
-  switch (type) {
-    case 'single_stage':  return { base: 6000, perStation: 2500 };
-    case 'transfer':      return { base: 20000, perStation: 9000 };
-    case 'fine_blanking': return { base: 30000, perStation: 12000 };  // triple-action FB tools are dear
-    case 'progressive':
-    default:              return { base: 12000, perStation: 6000 };
-  }
-}
 
 /** Tool-steel/coating hardness factor from workpiece shear strength (mild ~280 → 1.0, boron ~900 → ~1.8). */
 export function stampingHardnessFactor(shearStrengthMPa: number): number {
@@ -285,14 +281,48 @@ export function stampingHardnessFactor(shearStrengthMPa: number): number {
  */
 export function estimateStampingDieCost(inputs: StampingDieCostInputs): StampingDieCostBreakdown {
   const stations = Math.max(1, Math.floor(inputs.stations || 1));
-  const rates = stampingDieRates(inputs.dieType);
-  const sizeFactor = 0.5 + Math.max(0, inputs.blankAreaCm2) / 500;   // 300 cm² → 1.1×
+  const blank = Math.max(20, inputs.blankAreaCm2);
   const hardnessFactor = stampingHardnessFactor(inputs.shearStrengthMPa);
+  // Die-type factors: station content complexity + the method-design NRE.
+  const typeF = inputs.dieType === 'single_stage' ? 0.6
+    : inputs.dieType === 'transfer' ? 1.25
+    : inputs.dieType === 'fine_blanking' ? 1.6 : 1.0;
+  const nre = inputs.dieType === 'single_stage' ? 1200 + 300 * stations
+    : inputs.dieType === 'transfer' ? 4500 + 900 * stations
+    : inputs.dieType === 'fine_blanking' ? 6000 + 1100 * stations
+    : 3200 + 800 * stations;
 
-  const base = rates.base * sizeFactor * hardnessFactor;
-  const stationCost = stations * rates.perStation * sizeFactor * hardnessFactor;
-  const total = Math.round(base + stationCost);
-  return { base: Math.round(base), stations: Math.round(stationCost), total };
+  // Each station spans the strip: its sections carry most of the blank footprint.
+  // Station content calibrated against two independent witnesses on the same
+  // fixture (847 cm² 6-station progressive): the kernel's B-rep parametric
+  // (£92.3k) and a real seat-member manual cost whose amortisation implies a
+  // £100k-class die. Automotive stations carry 5 cm sections, not gauge plate.
+  const stationSteelKg = blank * 0.85 * 5 * 2 * 1.2 * 7.85e-3;
+  const stationHrs = (70 + 0.11 * blank) * hardnessFactor * typeF;
+
+  const lines: ToolCostLine[] = [
+    labourLine('Strip layout & die design', 'design', nre / TOOLROOM_RATES.design, TOOLROOM_RATES.design,
+      `${inputs.dieType} method design NRE`),
+    { item: 'Die set (plates, guides, bolster)', kind: 'boughtOut',
+      cost: Math.round(2900 + 3.2 * blank), basis: `£2,900 + £3.20/cm² of blank footprint` },
+    labourLine('Die-set machining & fitting', 'machining', 25 + 0.02 * blank, TOOLROOM_RATES.cnc,
+      'squaring, pockets, dowels'),
+    materialLine(`Punch + die tool steel × ${stations} station(s)`, stationSteelKg * stations, 'h13',
+      `${Math.round(blank * 0.85)} cm² section × 4 cm × 2 per station`),
+    labourLine(`Wire-EDM cutting edges × ${stations}`, 'edm', 0.35 * stationHrs * stations, TOOLROOM_RATES.edm,
+      '35% of station hours — profiles and clearances'),
+    labourLine(`Station CNC machining × ${stations}`, 'machining', 0.45 * stationHrs * stations, TOOLROOM_RATES.cnc,
+      `(45 + 0.075 × blank cm²) h × hardness ${hardnessFactor.toFixed(2)} × ${inputs.dieType}`),
+    labourLine(`Bench fitting & try-in × ${stations}`, 'fitting', 0.20 * stationHrs * stations, TOOLROOM_RATES.fitting,
+      '20% of station hours'),
+    labourLine('Die tryout — 4 strip runs', 'tryout', 32, TOOLROOM_RATES.tryoutPress, 'press time + strip inspection'),
+  ];
+  const detail = composeTool(lines);
+  const raw = (pred: (l: ToolCostLine) => boolean) => lines.filter(pred).reduce((sum, l) => sum + l.cost, 0);
+  const subtotal = lines.reduce((sum, l) => sum + l.cost, 0);
+  const scale = subtotal > 0 ? detail.total / subtotal : 1;
+  const stationCost = Math.round(raw(l => /station|Wire-EDM|Punch \+ die/.test(l.item)) * scale);
+  return { base: detail.total - stationCost, stations: stationCost, total: detail.total, detail };
 }
 
 export interface StampingDieLifeInputs {

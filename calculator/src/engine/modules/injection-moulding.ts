@@ -1,4 +1,9 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import {
+  TOOLROOM_RATES, BOUGHT_OUT_GBP, EDM_FRACTION, POLISH_FRACTION, FITTING_FRACTION,
+  cavityCncHours, cavitySteelKg, toolBaseCost, composeTool, labourLine, materialLine,
+  boughtOutLine, type ToolComplexity, type ToolCostDetail, type ToolCostLine, type ToolMaterialId,
+} from '../toolmaking.js';
 
 export type RunnerSystem = 'cold' | 'hot';
 
@@ -54,14 +59,23 @@ export interface MouldCostInputs {
   sideActionsLifters?: number;     // number of side-action slides + lifters
   runnerSystem?: RunnerSystem;
   hotRunnerDrops?: number;         // default = cavities
+  /** cavity depth, cm — defaulted from the footprint when not measured. */
+  depthCm?: number;
+  /** geometric complexity — drives EDM content (ribs, slots, sharp corners). */
+  complexity?: ToolComplexity;
+  /** surface finish grade — drives polishing hours (+ texturing bought-out). */
+  finish?: 'standard' | 'textured' | 'high_gloss';
 }
 
 export interface MouldCostBreakdown {
-  base: number;         // bolster / plates / ejector / guides
+  base: number;         // bolster / plates / ejector / guides + design + tryout
   cavityBlock: number;  // cavity + core steel & machining (all cavities, steel-class scaled)
   sideActions: number;  // slides + lifters
   hotRunner: number;    // manifold + controller + drops
   total: number;
+  /** the toolmaker's-quotation view: every line priced as hours × rate,
+   *  steel by the kilogram, bought-outs each — sums to `total`. */
+  detail: ToolCostDetail;
 }
 
 /** Steel-class cost multiplier applied to the machined-steel portion of the tool. */
@@ -111,28 +125,100 @@ export function pickIMMPressId(clampTonnes: number): string {
   return 'imm-3500t';
 }
 
+/**
+ * The mould, priced the way a toolmaker quotes it (M8 — tooling deep-dive).
+ *
+ * Replaced the lump parametric (`£6k + (2.5k + area×55)·n^0.9·steel + …`),
+ * which priced the one tool we hold a real quotation for — the bumper fascia
+ * mould, £420k — at £690k (+64%). This build-up composes the shop model in
+ * toolmaking.ts: design hours, mould base, cavity/core steel by the kilogram,
+ * CNC + EDM + polishing + fitting hours, slides as cylinder + bench hours, hot
+ * runner per drop, tryout trials, and the shop's 22% overhead+profit as its own
+ * line. Same inputs land ≈£424k — on the quotation — and the small-tool end
+ * stays where the old model was (2-cav 46 cm²: £20.4k vs £20.8k), so the change
+ * is shape and truth at the big end, not a wholesale re-level.
+ *
+ * Steel class maps to real materials and cutting speed: prototype = 7075
+ * aluminium (fast, soft); standard = P20; production = pre-hard/H13-class
+ * (+12% hours); high_volume = H13 + wear coating (+20% hours). The Nth
+ * identical cavity keeps the n^0.9 learning economy on every cavity-set line.
+ */
 export function estimateMouldCost(inputs: MouldCostInputs): MouldCostBreakdown {
   const cavities = Math.max(1, Math.floor(inputs.cavities || 1));
-  const perCavityAreaCm2 = Math.max(0, inputs.projectedAreaCm2) / cavities;
+  const areaPerCav = Math.max(0, inputs.projectedAreaCm2) / cavities;
+  const complexity: ToolComplexity = inputs.complexity ?? 'moderate';
+  const finish = inputs.finish ?? 'standard';
+  const nEcon = Math.pow(cavities, 0.9);
 
-  const base = 6000;                                   // bolster, plates, ejector system, guides
-  const perCavityCost = 2500 + perCavityAreaCm2 * 55;  // cavity + core steel & machining
-  // Mild economy of scale — the Nth identical cavity is cheaper than the first.
-  const cavityBlockRaw = perCavityCost * Math.pow(cavities, 0.9);
+  const steelMap: Record<MouldSteelClass, { mat: ToolMaterialId; hourF: number; coating: number }> = {
+    prototype:   { mat: 'al-7075',  hourF: 0.55, coating: 0 },
+    standard:    { mat: 'p20',      hourF: 1.0,  coating: 0 },
+    production:  { mat: 'p20-hard', hourF: 1.12, coating: 0 },
+    high_volume: { mat: 'h13',      hourF: 1.2,  coating: 6000 },
+  };
+  const steel = steelMap[inputs.steelClass ?? 'standard'];
 
-  const steelFactor = mouldSteelClassFactor(inputs.steelClass);
-  // Steel class scales the machined steel (base frame + cavities), not the bolt-ons.
-  const scaledBase = base * steelFactor;
-  const cavityBlock = cavityBlockRaw * steelFactor;
+  const H = cavityCncHours(areaPerCav, inputs.depthCm) * steel.hourF;
+  const slides = Math.max(0, Math.floor(inputs.sideActionsLifters ?? 0));
+  const drops = inputs.runnerSystem === 'hot' ? Math.max(1, Math.floor(inputs.hotRunnerDrops ?? cavities)) : 0;
+  const trials = 2 + Math.ceil(cavities / 2) + (areaPerCav > 2000 ? 2 : 0);
 
-  const sideActions = Math.max(0, Math.floor(inputs.sideActionsLifters ?? 0)) * 3500;
+  const lines: ToolCostLine[] = [
+    labourLine('Tool design & CAM', 'design', 30 + 0.2 * H, TOOLROOM_RATES.design,
+      `30 h + 20% of the ${Math.round(H)} h cavity programme`),
+    toolBaseCost(areaPerCav * cavities),
+    materialLine(`Cavity + core steel × ${cavities}`, cavitySteelKg(areaPerCav, inputs.depthCm) * nEcon, steel.mat,
+      `${Math.round(areaPerCav)} cm²/cavity block, both halves, ×${cavities}^0.9`),
+    labourLine(`CNC cavity/core machining × ${cavities}`, 'machining', H * nEcon, TOOLROOM_RATES.cnc,
+      `12 + 3.4 × area^0.72 per cavity set, ${inputs.steelClass ?? 'standard'} steel ×${steel.hourF}`),
+    labourLine('EDM (ribs, slots, corners)', 'edm', EDM_FRACTION[complexity] * H * nEcon, TOOLROOM_RATES.edm,
+      `${complexity}: ${(EDM_FRACTION[complexity] * 100).toFixed(0)}% of CNC hours`),
+    labourLine(`Polishing (${finish})`, 'polish', POLISH_FRACTION[finish] * H * nEcon, TOOLROOM_RATES.polish,
+      `${(POLISH_FRACTION[finish] * 100).toFixed(0)}% of CNC hours to ${finish} grade`),
+    labourLine('Bench fitting & spotting', 'fitting', FITTING_FRACTION * H * nEcon, TOOLROOM_RATES.fitting,
+      `${(FITTING_FRACTION * 100).toFixed(0)}% of CNC hours`),
+    labourLine(`Mould tryout — ${trials} trial(s)`, 'tryout', trials * 8, TOOLROOM_RATES.tryoutPress,
+      'press time, material and first-off inspection'),
+  ];
+  if (slides > 0) {
+    lines.push(boughtOutLine(`Core-pull cylinders × ${slides}`, slides, BOUGHT_OUT_GBP.corePullCylinder,
+      'hydraulic side-action cylinders, catalogue'));
+    lines.push(labourLine(`Slide/lifter machining & fitting × ${slides}`, 'fitting', slides * (28 + areaPerCav / 200),
+      TOOLROOM_RATES.fitting, '28 h + footprint-scaled bench work per mechanism'));
+  }
+  if (drops > 0) {
+    lines.push(boughtOutLine(`Hot-runner system — ${drops} drop(s)`, drops, BOUGHT_OUT_GBP.hotRunnerPerDrop,
+      'manifold + valve gates, per drop'));
+    lines.push(boughtOutLine('Hot-runner controller', 1, BOUGHT_OUT_GBP.hotRunnerController, 'multi-zone controller'));
+  }
+  if (finish === 'textured') {
+    lines.push(boughtOutLine('Texturing (photo-etch)', 1, BOUGHT_OUT_GBP.texturingPerTool, 'etch house, per tool'));
+  }
+  if (steel.coating > 0) {
+    lines.push(boughtOutLine('Wear coating (high-volume tool)', 1, steel.coating, 'nitride/PVD on gate + shut-off faces'));
+  }
 
-  const hotRunner = inputs.runnerSystem === 'hot'
-    ? 4000 + Math.max(1, Math.floor(inputs.hotRunnerDrops ?? cavities)) * 2500  // controller base + per-drop
-    : 0;
-
-  const total = Math.round(scaledBase + cavityBlock + sideActions + hotRunner);
-  return { base: Math.round(scaledBase), cavityBlock: Math.round(cavityBlock), sideActions, hotRunner, total };
+  const detail = composeTool(lines);
+  // Aggregate view (back-compat): allocate the overhead/profit proportionally so
+  // the four buckets still sum to the total.
+  const pick = (kinds: string[], items?: RegExp) => lines
+    .filter(l => kinds.includes(l.kind) && (!items || items.test(l.item)))
+    .reduce((sum, l) => sum + l.cost, 0);
+  const slidesRaw = pick(['boughtOut', 'fitting'], /Core-pull|Slide\/lifter/);
+  const hotRaw = pick(['boughtOut'], /Hot-runner/);
+  const cavityRaw = pick(['material', 'machining', 'edm', 'polish'], undefined)
+    + pick(['fitting'], /Bench fitting/);
+  const subtotal = lines.reduce((sum, l) => sum + l.cost, 0);
+  const scale = subtotal > 0 ? detail.total / subtotal : 1;
+  const cavityBlock = Math.round(cavityRaw * scale);
+  const sideActions = Math.round(slidesRaw * scale);
+  const hotRunner = Math.round(hotRaw * scale);
+  return {
+    base: detail.total - cavityBlock - sideActions - hotRunner,
+    cavityBlock, sideActions, hotRunner,
+    total: detail.total,
+    detail,
+  };
 }
 
 // ─── Per-resin cooling (M7) ───────────────────────────────────────────────────

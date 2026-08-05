@@ -21,6 +21,10 @@ import {
 } from '../../modules/casting-advisor.js';
 import type { CastingSubtype } from '../../modules/casting.js';
 import { answeredNumber, decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
+import {
+  estimateHPDCDieCost, estimateGravityMouldCost, estimateSandPatternCost, estimateInvestmentToolCost,
+} from '../../casting-tooling.js';
+import { projectedAreaCm2 } from '../derive/envelope.js';
 import { materialFacts, toCastingAlloyFamily } from '../derive/material.js';
 import {
   pressureTightDecision, toleranceClassDecision, safetyCriticalDecision,
@@ -232,26 +236,41 @@ export const CASTING_RULES: CommodityRuleSpec = {
           investment: undefined,
         };
         const quoted = answeredNumber(ctx.answers, 'casting.toolingCost');
-        const v = pick[r.advice.subtype] ?? quoted ?? undefined;
         if (quoted != null && pick[r.advice.subtype] == null) {
           return decided('casting.dieMouldCostGBP', Math.round(quoted), 'engineer',
             `${r.advice.subtype} tooling quotation supplied by the engineer`, 0.95);
         }
-        if (v == null) {
-          return ask({
-            id: 'casting.toolingCost',
-            kind: 'tolerance_class',
-            question: `What does the ${r.advice.subtype} tooling cost?`,
-            why: 'The geometry kernel prices HPDC dies, gravity moulds and sand patterns '
-              + 'parametrically, but has no model for investment-casting tooling. '
-              + 'A quotation is worth more than an invented band.',
-            options: [{ value: 'quote', label: 'Toolmaker quotation' }],
-            entry: { kind: 'number', unit: '£', placeholder: 'e.g. 14000' },
-            blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
-          });
+        if (pick[r.advice.subtype] != null) {
+          return decided('casting.dieMouldCostGBP', Math.round(pick[r.advice.subtype]!), 'geometry',
+            `OCCT parametric ${r.advice.subtype} tooling estimate`, 0.7);
         }
-        return decided('casting.dieMouldCostGBP', Math.round(v), 'geometry',
-          `OCCT parametric ${r.advice.subtype} tooling estimate`, 0.7);
+        // Shop-model fallback (tooling deep-dive): the toolmaker build-up in
+        // casting-tooling.ts prices the tool from the parting-plane footprint —
+        // hours × toolroom rate + steel by the kilogram + bought-outs. This is
+        // what closed the investment gap (a wax tool is an aluminium/P20 mould
+        // at low pressure) and what answers the STL/manual paths that used to
+        // have to ask for every routine die.
+        const area = projectedAreaCm2(ctx);
+        if (area != null && area > 0) {
+          const est = r.advice.subtype === 'hpdc' ? estimateHPDCDieCost({ projectedAreaCm2: area })
+            : r.advice.subtype === 'gravity' ? estimateGravityMouldCost({ projectedAreaCm2: area })
+            : r.advice.subtype === 'sand' ? estimateSandPatternCost({ projectedAreaCm2: area })
+            : estimateInvestmentToolCost({ projectedAreaCm2: area });
+          return decided('casting.dieMouldCostGBP', est.total, 'advisor',
+            `${r.advice.subtype} toolmaker shop model: ${est.detail.labourHours.toLocaleString()} toolroom hours `
+            + `+ steel + bought-outs from a ${Math.round(area)} cm² parting footprint — a quotation overrides this`,
+            0.6);
+        }
+        return ask({
+          id: 'casting.toolingCost',
+          kind: 'tolerance_class',
+          question: `What does the ${r.advice.subtype} tooling cost?`,
+          why: 'No measured footprint exists to drive the toolmaker shop model. '
+            + 'A quotation is worth more than an invented band.',
+          options: [{ value: 'quote', label: 'Toolmaker quotation' }],
+          entry: { kind: 'number', unit: '£', placeholder: 'e.g. 14000' },
+          blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
+        });
       },
     },
     {

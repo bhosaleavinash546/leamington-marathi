@@ -1,3 +1,6 @@
+import {
+  TOOLROOM_RATES, composeTool, labourLine, materialLine, type ToolCostDetail, type ToolCostLine, type ToolMaterialId,
+} from '../toolmaking.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
 /**
@@ -21,6 +24,8 @@ export interface BlowMouldCostInputs {
 }
 
 export interface BlowMouldCostBreakdown {
+  /** toolmaker's-quotation view — hours × rate, metal by kg; sums to total. */
+  detail: ToolCostDetail;
   base: number;
   cavityBlock: number;
   cooling: number;
@@ -46,19 +51,44 @@ export function estimateBlowMouldCost(inputs: BlowMouldCostInputs): BlowMouldCos
   const cavities = Math.max(1, Math.floor(inputs.cavities || 1));
   const volL = Math.max(0.02, inputs.partVolumeL ?? 1);
   const process = inputs.process ?? 'ebm';
+  const mouldMaterial = inputs.mouldMaterial ?? (process === 'ebm' ? 'aluminium' : 'steel-p20');
+  const nEcon = Math.pow(cavities, 0.9);
+  const mat: ToolMaterialId = mouldMaterial === 'aluminium' ? 'al-7075'
+    : mouldMaterial === 'steel-h13' ? 'h13' : 'p20';
+  const hourF = mouldMaterial === 'aluminium' ? 1.0 : mouldMaterial === 'steel-h13' ? 1.6 : 1.4;
 
-  // Per-cavity cost grows with part volume; IBM/SBM carry a core-rod/preform-tool premium.
-  const processPerCavity = process === 'sbm' ? 3200 : process === 'ibm' ? 3800 : 1800;
-  const base = process === 'ebm' ? 4000 : 7000;               // frame / clamp interface
-  const matFactor = blowMouldMaterialFactor(
-    inputs.mouldMaterial ?? (process === 'ebm' ? 'aluminium' : 'steel-p20'));
+  // Machining grows near-linearly with the litres the cavity holds — the
+  // cavity is a container's whole inner surface, not a projected shadow.
+  const H = (30 + 9.5 * volL) * hourF;
+  const steelKg = 14 * Math.pow(volL, 0.75) * (mouldMaterial === 'aluminium' ? 1.0 : 1.15);
+  const coolFrac = inputs.highCooling ? 0.20 : 0.08;
 
-  const perCavity = (processPerCavity + volL * 900);
-  const cavityBlock = perCavity * Math.pow(cavities, 0.9) * matFactor; // mild multi-cavity economy
-  const cooling = inputs.highCooling ? cavityBlock * 0.15 : cavityBlock * 0.06;
-
-  const total = Math.round(base * matFactor + cavityBlock + cooling);
-  return { base: Math.round(base * matFactor), cavityBlock: Math.round(cavityBlock), cooling: Math.round(cooling), total };
+  const lines: ToolCostLine[] = [
+    labourLine('Mould design', 'design', 15 + 0.12 * H, TOOLROOM_RATES.design, 'split-line + pinch-off layout'),
+    { item: 'Mould frame & clamp interface', kind: 'boughtOut',
+      cost: Math.round((process === 'ebm' ? 2500 : 4500) + 80 * Math.pow(volL, 0.8)),
+      basis: `${process.toUpperCase()} frame, scaled to capacity` },
+    materialLine(`Cavity halves × ${cavities}`, steelKg * nEcon, mat, `14 × litres^0.75 kg per cavity set`),
+    labourLine(`CNC cavity machining × ${cavities}`, 'machining', H * nEcon, TOOLROOM_RATES.cnc,
+      `(30 + 9.5 × litres) h × ${mouldMaterial} ×${hourF}`),
+    labourLine('Cooling-line drilling', 'machining', coolFrac * H * nEcon, TOOLROOM_RATES.cnc,
+      inputs.highCooling ? 'high-cooling spec: 20% of cavity hours' : '8% of cavity hours'),
+    labourLine('Bench fitting & venting', 'fitting', 0.2 * H * nEcon, TOOLROOM_RATES.fitting, '20% of cavity hours'),
+    { item: 'Pinch-off / neck insert steel', kind: 'boughtOut',
+      cost: Math.round((925 + 25 * volL) * cavities), basis: 'hardened inserts at the pinch lines, per cavity' },
+    labourLine('Mould tryout', 'tryout', volL > 10 ? 32 : 12, TOOLROOM_RATES.tryoutPress, 'blow trials + wall-thickness check'),
+  ];
+  if (process === 'ibm' || process === 'sbm') {
+    lines.push({ item: `${process.toUpperCase()} core-rod / preform tooling × ${cavities}`, kind: 'boughtOut',
+      cost: (process === 'ibm' ? 2600 : 2000) * cavities, basis: 'per cavity, catalogue-typical' });
+  }
+  const detail = composeTool(lines);
+  const raw = (pred: (l: ToolCostLine) => boolean) => lines.filter(pred).reduce((sum, l) => sum + l.cost, 0);
+  const subtotal = lines.reduce((sum, l) => sum + l.cost, 0);
+  const scale = subtotal > 0 ? detail.total / subtotal : 1;
+  const cooling = Math.round(raw(l => /Cooling/.test(l.item)) * scale);
+  const cavityBlock = Math.round(raw(l => /Cavity|core-rod|Pinch/.test(l.item)) * scale);
+  return { base: detail.total - cavityBlock - cooling, cavityBlock, cooling, total: detail.total, detail };
 }
 
 // ─── DFM analyser (BR4) ───────────────────────────────────────────────────────

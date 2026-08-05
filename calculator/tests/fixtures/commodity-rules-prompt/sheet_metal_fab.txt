@@ -12,7 +12,7 @@ SHEET METAL COST INPUT RULES:
   pitchMm=341  [blank 336 mm + 5 mm web (max(3, 2 × gauge)) — deterministic, use verbatim]
   stripWidthMm=262  [blank 252 mm + 2 × 5 mm edge margin — deterministic, use verbatim]
   strokesPerMin=42  [feed-limited: 18 m/min ÷ 341 mm pitch, de-rated for 4 bends — deterministic, use verbatim]
-  dieCostGBP=105285  [progressive die, 6 stations, 847 cm² blank, 170 MPa shear; OCCT parametric says £92300 — deterministic, use verbatim]
+  dieCostGBP=90947  [progressive die, 6 stations, 847 cm² blank, 170 MPa shear; OCCT parametric says £92300 — deterministic, use verbatim]
   dieLife=1310000  [170 MPa shear at 2.4 mm on a progressive die — deterministic, use verbatim]
   dieType=progressive  [high volume at 2.4 mm: High volume favours progressive stamping — lowest piece cost once tooling amortized — deterministic, use verbatim]
   process=Progressive Stamping  [high volume: High volume favours progressive stamping — lowest piece cost once tooling amortized — deterministic, use verbatim]

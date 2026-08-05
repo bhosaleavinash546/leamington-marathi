@@ -126,15 +126,28 @@ describe('casting cost-input rules', () => {
       expect(r.status).toBe('needs_decision');
     });
 
-    it('asks for a quotation rather than inventing investment tooling cost', () => {
-      // Investment is the one route the geometry kernel does not price. The old
-      // prompt fell back to a flat GBP 12,000 constant.
+    it('prices investment tooling from the wax-tool shop model — the old ask, closed', () => {
+      // Investment is the one route the geometry kernel does not price. It used
+      // to stop and ask; the tooling deep-dive closed the gap — a wax-injection
+      // tool is an aluminium/P20 mould at low pressure, so the toolmaker shop
+      // model prices it (hours x rate + steel), and a quotation still overrides.
       const r = runCostInputRules(CASTING_RULES, ctx({
         ...ALL_ANSWERED, 'material.family': 'steel', 'service.toleranceClass': 'tight',
       }));
-      const sub = (r.suggestions.casting as Record<string, unknown>).subtype;
-      expect(sub).toBe('investment');
-      expect(r.decisions.map(d => d.id)).toContain('casting.toolingCost');
+      const c = r.suggestions.casting as Record<string, unknown>;
+      expect(c.subtype).toBe('investment');
+      expect(r.decisions.map(d => d.id)).not.toContain('casting.toolingCost');
+      expect(c.dieMouldCostGBP as number).toBeGreaterThan(4_000);
+      expect(r.provenance['cam-cast-die-cost' in r.provenance ? 'cam-cast-die-cost' : 'cast-hpdc-die-cost'].source).toBe('advisor');
+      expect(r.provenance['cast-hpdc-die-cost'].basis).toContain('toolmaker shop model');
+
+      // ...and an engineer's quotation beats the model, always.
+      const q = runCostInputRules(CASTING_RULES, ctx({
+        ...ALL_ANSWERED, 'material.family': 'steel', 'service.toleranceClass': 'tight',
+        'casting.toolingCost': 14_000,
+      }));
+      expect((q.suggestions.casting as Record<string, unknown>).dieMouldCostGBP).toBe(14_000);
+      expect(q.provenance['cast-hpdc-die-cost'].source).toBe('engineer');
     });
   });
 

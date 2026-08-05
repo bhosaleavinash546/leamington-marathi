@@ -4,6 +4,9 @@
  * and index-anchored to the 2026-07 rate-library basis; treat cost bands as
  * indicative and override with real quotes via the admin Rate Library.
  */
+import {
+  TOOLROOM_RATES, composeTool, labourLine, materialLine, type ToolCostDetail, type ToolCostLine, type ToolMaterialId,
+} from '../toolmaking.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
 export type ForgingProcess =
@@ -498,6 +501,8 @@ export interface ForgingDieCostInputs {
 }
 
 export interface ForgingDieCostBreakdown {
+  /** toolmaker's-quotation view — hours × rate, steel by kg; sums to total. */
+  detail: ToolCostDetail;
   block: number;        // die block steel
   machining: number;    // sink/CNC/EDM per impression
   heatTreat: number;    // die HT
@@ -522,28 +527,52 @@ export function dieSteelFactor(steel: DieSteel | undefined): number {
  * die-steel grade and geometric complexity.
  */
 export function estimateForgingDieCost(inputs: ForgingDieCostInputs): ForgingDieCostBreakdown {
-  const areaCm2 = Math.max(0, inputs.projectedAreaCm2);
+  const areaCm2 = Math.max(10, inputs.projectedAreaCm2);
   const impressions = Math.max(1, Math.floor(inputs.impressions ?? 2));
-  const complexityFactor = (inputs.complexity ?? 'moderate') === 'complex' ? 1.4
-    : (inputs.complexity ?? 'moderate') === 'simple' ? 0.8 : 1.0;
+  const complexity = inputs.complexity ?? 'moderate';
+  const complexityFactor = complexity === 'complex' ? 1.4 : complexity === 'simple' ? 0.8 : 1.0;
   const steelFactor = dieSteelFactor(inputs.dieSteel);
+  const mat: ToolMaterialId = inputs.dieSteel === 'premium' ? 'premium-pm'
+    : inputs.dieSteel === 'hammer' ? 'hammer-1.2714' : 'h13';
 
-  // Block scales with part envelope (area) + a mass allowance for the holder.
-  const blockRaw = 6000 + areaCm2 * 45 + Math.max(0, inputs.partWeightKg) * 250;
-  const machiningRaw = impressions * (3500 + areaCm2 * 55) * complexityFactor;
+  // Die blocks: face ~4x the impression silhouette, both halves.
+  const faceCm2 = areaCm2 * 4;
+  const heightCm = Math.max(18, Math.sqrt(areaCm2) + 4);
+  const steelKg = faceCm2 * heightCm * 2 * 1.15 * 7.85e-3
+    + Math.max(0, inputs.partWeightKg) * 3;   // holder allowance grows with the forging
+  const sinkHrsPerImp = (40 + 0.9 * Math.pow(areaCm2, 0.85)) * complexityFactor * steelFactor;
+  const sinkHrs = sinkHrsPerImp * impressions;
 
-  const block = blockRaw * steelFactor;
-  const machining = machiningRaw * steelFactor;
-  const heatTreat = 2500 + areaCm2 * 6;                 // harden + temper the block
-  const polish = impressions * 800 * complexityFactor;  // finish impressions
-
-  const total = Math.round(block + machining + heatTreat + polish);
+  const lines: ToolCostLine[] = [
+    labourLine('Die design & CAM', 'design', 20 + 0.15 * sinkHrs, TOOLROOM_RATES.design,
+      '20 h + 15% of the sinking programme'),
+    materialLine('Die blocks (both halves + holder allowance)', steelKg, mat,
+      `${Math.round(faceCm2)} cm² face × ${heightCm.toFixed(0)} cm × 2 halves`),
+    labourLine('Block prep (squaring, faces, keyways)', 'machining', 30 + 0.05 * steelKg, TOOLROOM_RATES.cnc,
+      '30 h + 0.05 h/kg of block'),
+    labourLine(`Die sinking × ${impressions} impression(s)`, 'machining', sinkHrs, TOOLROOM_RATES.cnc,
+      `(40 + 0.9 × area^0.85) h per impression × ${complexity} ×${steelFactor} steel`),
+    labourLine('EDM (deep ribs, tight radii)', 'edm', 0.25 * sinkHrs * complexityFactor, TOOLROOM_RATES.edm,
+      `${complexity}: 25% of sinking hours × complexity`),
+    { item: 'Harden + temper the blocks', kind: 'heatTreat',
+      cost: Math.round(2500 + steelKg * 2.2), basis: '£2,500 + £2.20/kg of die steel' },
+    labourLine(`Impression polishing × ${impressions}`, 'polish', impressions * 16 * complexityFactor,
+      TOOLROOM_RATES.polish, '16 h per impression × complexity'),
+    labourLine('Die tryout — 3 sessions', 'tryout', 18, TOOLROOM_RATES.tryoutPress, 'press strokes + first-offs'),
+  ];
+  const detail = composeTool(lines);
+  // Legacy aggregate view, overhead allocated proportionally.
+  const raw = (pred: (l: ToolCostLine) => boolean) => lines.filter(pred).reduce((sum, l) => sum + l.cost, 0);
+  const subtotal = lines.reduce((sum, l) => sum + l.cost, 0);
+  const scale = subtotal > 0 ? detail.total / subtotal : 1;
+  const machining = Math.round(raw(l => l.kind === 'machining' || l.kind === 'edm') * scale);
+  const heatTreat = Math.round(raw(l => l.kind === 'heatTreat') * scale);
+  const polish = Math.round(raw(l => l.kind === 'polish') * scale);
   return {
-    block: Math.round(block),
-    machining: Math.round(machining),
-    heatTreat: Math.round(heatTreat),
-    polish: Math.round(polish),
-    total,
+    block: detail.total - machining - heatTreat - polish,
+    machining, heatTreat, polish,
+    total: detail.total,
+    detail,
   };
 }
 

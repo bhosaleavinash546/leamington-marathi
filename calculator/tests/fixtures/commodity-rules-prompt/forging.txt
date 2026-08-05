@@ -17,7 +17,7 @@ FORGING COST INPUT RULES:
   timePerBlowSec=10  [ram travel + dwell per blow on a mechanical press — deterministic, use verbatim]
   dieSteel=h13  [H13 — the impression-die workhorse — deterministic, use verbatim]
   dieImpressions=4  [cold-forming tooling — deterministic, use verbatim]
-  dieCostGBP=104556  [4-impression h13 die over 288.4 cm²: £19678 block + £77448 sinking + £4230 HT + £3200 polish; OCCT parametric says £63800 — deterministic, use verbatim]
+  dieCostGBP=74926  [4-impression h13 die over 288.4 cm²: £14854 block + £52312 sinking + £4246 HT + £3514 polish; OCCT parametric says £63800 — deterministic, use verbatim]
   dieLife=64728  [aluminium at 288.4 cm², moderate impression — deterministic, use verbatim]
   heatingEnergyKwhPerKg=0  [cold forming — the billet is never heated — deterministic, use verbatim]
   heatTreatCostPerKg=1.2  [solution-age for a aluminium forging — deterministic, use verbatim]
