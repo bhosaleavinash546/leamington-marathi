@@ -1,7 +1,7 @@
 commodity,part,estimate,actual,source
 casting,RH steering knuckle,14.10,17,rules
-forging,Stub axle PRCR002,38.98,30,rules
+forging,Stub axle PRCR002,38.73,30,rules
 machining,25T servo horn,2.65,2.2,rules
-injection_moulding,Front bumper,8.28,8.5,rules
-sheet_metal,Seat LH cross-member,1.33,1.4,rules
-blow_moulding,Fuel tank,25.92,25,rules
+injection_moulding,Front bumper,7.67,8.5,rules
+sheet_metal,Seat LH cross-member,1.26,1.4,rules
+blow_moulding,Fuel tank,25.96,25,rules
