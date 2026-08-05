@@ -113,9 +113,9 @@ function divider(kicker, name, sub, col, items, mins, notes) {
 
   const secs = [
     ['1', 'Orientation', 'Slides 3–6', 'How the whole thing connects, and what it is worth against costing by hand', '8 min', BLUE, true],
-    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 7–23', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
-    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 24–34', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
-    ['4', 'The honest limits', 'Slide 35', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
+    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 7–25', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
+    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 26–36', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
+    ['4', 'The honest limits', 'Slide 37', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
   ];
   secs.forEach(([n, name, range, desc, mins, col, exec], i) => {
     const y = 1.22 + i * 1.16;
@@ -135,17 +135,17 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.5, y: 5.92, w: 12.33, h: 0.9, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
     { text: 'If you only have ten minutes:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'slide 3 (how it connects) · slides 4–6 (the business case) · slide 23 (the housing on one page) · slide 33 (the two findings) · slide 35 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
+    { text: 'slide 3 (how it connects) · slides 4–6 (the business case) · slide 25 (the housing on one page) · slide 35 (the two findings) · slide 37 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.02, w: 11.65, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
     'Quick map of where we are going, because there is more here than an hour needs and I would rather you chose than sat through all of it. ' +
     'Section one, four slides: how the whole thing connects, and what it is worth measured against doing the same job by hand — including the category-by-category comparison with CAPEE from our internal review. About eight minutes. ' +
-    'Section two is the first worked example — a die-cast aluminium housing, followed through all twelve stages from CAD file to defensible price, including the calculation shown in full so you can check it. Sixteen slides, about twenty-two minutes, and it is the heart of the pack. ' +
+    'Section two is the first worked example — a die-cast aluminium housing, followed through all twelve stages from CAD file to defensible price, including the calculation shown in full so you can check it. Eighteen slides, about twenty-two minutes, and it is the heart of the pack. ' +
     'Section three does the same thing on a completely different part, an injection-moulded bumper fascia, plus paint, plus two findings that I genuinely did not predict. Eleven slides, about eighteen minutes. ' +
     'Section four is five minutes on what the tool cannot do. ' +
-    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the three business-case slides, slide twenty-three, slide thirty-three and slide thirty-five. Everything in between is the evidence for those five, and you can read it afterwards.'
+    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slide three, the three business-case slides, slide twenty-five, slide thirty-five and slide thirty-seven. Everything in between is the evidence for those five, and you can read it afterwards.'
   );
 }
 
@@ -1290,6 +1290,93 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   footer(s, ++PG);
   s.addNotes(
     'A buyer challenged us with exactly the right question: the tool costed a five-machine routing and then recommended consolidating it with multi-axis machining — why did it not just pick the right machine in the first place? So now it does, and I want to show the mechanism. Step one: before any pound is booked, the routing optimiser prices the feasible alternatives — the split routing on cheap three-axis stations with a fixturing per approach direction, the single-setup five-axis consolidation, the turning-led route when the part is round — including batch setup amortisation and the per-part handling every extra fixturing costs. Cheapest capable routing wins. Step two: the losers are printed in the derivation trace next to the chosen machine, so the process line comes with its own defence. Step three: the suggestion layer reads the same arithmetic — it no longer critiques the tool’s own choices, it flips to "routing verified optimal" when the lever is already taken, and every finding is tagged with who owns the lever. And step four is my favourite, because it is the honest one: on the very report that prompted the question, the old advice said multi-axis consolidation, eleven percent, long term. The optimiser ranked it and consolidation loses on that part. The new suggestion is a quick-win re-quote: the same machining content on the cheapest capable machines is six pounds ninety-five cheaper per part — twenty percent of the machining spend — and the report says out loud that consolidation was ranked and does not win. Three rules of engagement: the AI never picks the machine, an engineer’s explicit choice is respected with the delta surfaced beside it, and if there is no verifiable delta there is no claim.'
+  );
+}
+
+// ══════════ 10a5 · TOOLING COST I (method + moulds & dies) ══════════
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'How Tooling Is Priced I — The Method, and Moulds & Dies', 'Parametric build-ups from measured geometry — every constant in a named source file, none of it from AI', TEAL);
+  const steps = [
+    ['1 · Geometry sets the size drivers', 'The kernel measures what tools scale with: projected area per cavity/impression, part volume, bounding box, face count, hole count, undercut count. Nothing is typed in.'],
+    ['2 · A parametric build-up prices the tool', 'Base block + per-cavity (or per-impression / per-station) machining + extras — in £ constants a toolmaker can argue with line by line, not a single opaque number.'],
+    ['3 · The programme sets the tool steel', 'Steel class follows the shots the programme needs (annual volume × 5 yr ÷ cavities): prototype ×0.55 · standard P20 ×1.0 · hardened production ×1.35 · high-wear ×1.7 — and the steel sets the life.'],
+    ['4 · Life → number of tools → £/part', 'tools needed = ceil(programme shots ÷ tool life); tooling £/part = tool cost × tools ÷ annual volume — then tolerance (×1.0–2.0) and surface-finish (up to ×1.6 painted Class-A) uplifts.'],
+    ['5 · Two estimates blended; a quote always wins', 'The kernel prices the tool independently from the B-rep; when both exist they are geometric-mean blended (sanity-clamped). A toolmaker QUOTATION overrides everything — the £420k bumper mould is an input, never an estimate.'],
+  ];
+  steps.forEach(([t, d], i) => {
+    const y = 1.18 + i * 1.06;
+    s.addShape('roundRect', { x: 0.5, y, w: 6.6, h: 0.96, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+    s.addShape('ellipse', { x: 0.64, y: y + 0.1, w: 0.36, h: 0.36, fill: { color: TEAL } });
+    s.addText(String(i + 1), { x: 0.64, y: y + 0.1, w: 0.36, h: 0.36, fontFace: 'Cambria', fontSize: 13, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(t.slice(4), { x: 1.12, y: y + 0.07, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 10, bold: true, color: NAVY, margin: 0 });
+    s.addText(d, { x: 1.12, y: y + 0.3, w: 5.95, h: 0.64, fontFace: 'Calibri', fontSize: 7.9, color: SLATE, margin: 0, valign: 'top' });
+  });
+  // Right: the two headline formula cards
+  s.addText('THE TWO BIGGEST TOOLS, FORMULA BY FORMULA', { x: 7.35, y: 1.16, w: 5.5, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: TEAL, charSpacing: 0.6, margin: 0 });
+  s.addShape('roundRect', { x: 7.35, y: 1.42, w: 5.48, h: 2.42, fill: { color: CARD }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.09 });
+  s.addText('INJECTION MOULD  ·  estimateMouldCost()', { x: 7.55, y: 1.52, w: 5.1, h: 0.22, fontFace: 'Courier New', fontSize: 8.8, bold: true, color: NAVY, margin: 0 });
+  s.addText('total = [ £6,000 base  +  (£2,500 + area/cavity × £55) × n^0.9 ] × steel factor\n        + side-actions × £3,500  +  hot runner (£4,000 + £2,500 per drop)',
+    { x: 7.55, y: 1.76, w: 5.15, h: 0.5, fontFace: 'Courier New', fontSize: 7.6, color: SLATE, margin: 0, valign: 'top' });
+  s.addText([
+    { text: 'Why n^0.9: ', options: { bold: true, color: TEAL, fontSize: 8 } },
+    { text: 'the Nth identical cavity is cheaper than the first — and the cavity count itself is COST-RANKED (mould NRE vs cycle share per candidate, losers printed in the trace).\n', options: { color: SLATE, fontSize: 8 } },
+    { text: 'The bumper, worked: ', options: { bold: true, color: NAVY, fontSize: 8 } },
+    { text: '1 cavity (2-up needs 7,388 t > the 3,500 t largest press) × 9,000 cm² × production steel + 3 slides → advisor estimate ⊕ kernel’s independent £412k B-rep parametric, geometric mean → £407k. The deck’s worked example uses the £420k toolmaker quotation instead — because a quote always wins.', options: { color: SLATE, fontSize: 8 } },
+  ], { x: 7.55, y: 2.3, w: 5.15, h: 1.46, fontFace: 'Calibri', margin: 0, valign: 'top' });
+  s.addShape('roundRect', { x: 7.35, y: 3.98, w: 5.48, h: 2.3, fill: { color: CARD }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.09 });
+  s.addText('HPDC DIE  ·  kernel parametric (B-rep)', { x: 7.55, y: 4.08, w: 5.1, h: 0.22, fontFace: 'Courier New', fontSize: 8.8, bold: true, color: NAVY, margin: 0 });
+  s.addText('complexity = faces × £150 + holes × £400 + undercuts × £10,000\ndie = complexity × (bbox litres)^0.45, floored £40k/£80k/£120k by\nshot weight, capped £300k   ·   die life: 150,000 shots',
+    { x: 7.55, y: 4.32, w: 5.15, h: 0.66, fontFace: 'Courier New', fontSize: 7.6, color: SLATE, margin: 0, valign: 'top' });
+  s.addText([
+    { text: 'Every undercut face the kernel counts is £10,000 of sliding tool section ', options: { color: SLATE, fontSize: 8 } },
+    { text: '— the die price moves with measured features, not with anyone’s optimism. Gravity moulds and sand patterns have their own kernel parametrics (sand: £1.5k–£50k, complexity-driven). Life bands: HPDC 150k · gravity 50k · sand 8k · investment 5k shots.', options: { color: SLATE, fontSize: 8 } },
+  ], { x: 7.55, y: 5.0, w: 5.15, h: 1.2, fontFace: 'Calibri', margin: 0, valign: 'top' });
+  s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'E7F4F2' }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Read it in one line:  ', options: { bold: true, color: TEAL } },
+    { text: 'tooling is a parametric build-up from measured geometry, steel class from the programme volume, life from the steel, amortised over the tools the programme actually consumes — and a real quotation beats the estimate every time.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+  s.addNotes(
+    'A fair challenge from our own review was tooling: where do the die and mould numbers come from? Two slides, and everything on them is read out of the source code, not summarised from memory. The method first, five steps, identical across commodities. One: the kernel measures the size drivers — projected area per cavity, volume, faces, holes, undercuts. Two: a parametric build-up prices the tool as a base block plus per-cavity machining plus extras, in constants a toolmaker can argue with individually — six thousand pounds of bolster and ejector system, two and a half thousand plus fifty-five pounds per square centimetre per cavity, three and a half thousand per sliding action. Three: the tool steel follows the programme — the shots you need decide whether it is a prototype tool at roughly half cost or a hardened production tool at one-point-three-five times, and the steel decides the life. Four: life gives the number of tools the programme consumes, and the cost amortises over the annual volume, with tolerance and surface-finish uplifts on top. Five — and this is the confidence point: there are TWO independent estimates, the advisor formula and the geometry kernel’s own B-rep parametric, blended by geometric mean when they both exist; and a real toolmaker quotation overrides both, always. On the right, the two biggest tools with the actual formulas: the injection mould, where the cavity count is itself cost-ranked, and the die-cast die, where every undercut face the kernel counts adds ten thousand pounds of sliding section. On the bumper the advisor and the kernel blend to four hundred and seven thousand; the worked example in this deck uses the four-twenty quotation instead, because a quote always wins.'
+  );
+}
+
+// ══════════ 10a6 · TOOLING COST II (forging, stamping, blow, the rest) ══════════
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'How Tooling Is Priced II — Forging, Stamping, Blow Moulding', 'The same method, commodity by commodity — with the honest gap stated', TEAL);
+  const cards = [
+    ['FORGING DIE  ·  estimateForgingDieCost() / DieLife()',
+     'die = [ £6,000 + area × £45 + part kg × £250 ] × die steel\n    + impressions × (£3,500 + area × £55) × complexity × steel\n    + heat treat (£2,500 + area × £6) + polish £800/impression',
+     'Die steel: hammer ×0.85 · H13 ×1.0 · premium ×1.4. Complexity ×0.8–1.4. LIFE IS ALLOY-KEYED — aluminium 80k · carbon steel 40k · alloy steel 30k · stainless 18k · titanium 8k · superalloy 3,500 hits — × complexity (0.6–1.3) × size penalty (100/area)^0.2. A flat die life was a live defect this engine fixed: it over-charged aluminium tooling 2–4× and under-charged titanium.'],
+    ['STAMPING DIE  ·  estimateStampingDieCost() / DieLife()',
+     'die = (base + stations × per-station) × size × hardness\nsize = 0.5 + blank cm²/500      hardness: mild 1.0 → boron ≈1.8\nsingle £6k+£2.5k/stn · progressive £12k+£6k/stn · transfer £20k+£9k/stn · fine-blank £30k+£12k/stn',
+     'Life = 1M × (300 ÷ shear MPa)^1.3 × thickness factor × 0.6 if fine-blanking, clamped 50k–3M strokes. Harder, thicker steel wears the tool faster and the formula says by how much.'],
+    ['BLOW MOULD  ·  estimateBlowMouldCost()',
+     'mould = [ base £4k–£7k + (process £1.8k–£3.8k + litres × £900) × n^0.9 ]\n        × mould material  +  cooling 6% (15% high-cooling)',
+     'EBM aluminium is the workhorse; IBM/SBM carry a core-rod/preform premium. Life follows the mould material: aluminium 500k · P20 1M · H13 2M shots.'],
+    ['MACHINING · CAST+MACHINE · THE HONEST GAP',
+     'No die: fixtures + CNC programming NRE (cast+machine books £15,000\nof secondary-machining NRE), amortised over annual volume.',
+     'And the gap stated out loud: INVESTMENT-CASTING tooling has no parametric model — the tool STOPS AND ASKS for a toolmaker quotation rather than inventing a band. An asked question beats a guessed constant.'],
+  ];
+  cards.forEach(([h, f, d], i) => {
+    const col = i % 2, row = Math.floor(i / 2);
+    const x = 0.5 + col * 6.28, y = 1.2 + row * 2.56, w = 6.05, hh = 2.42;
+    s.addShape('roundRect', { x, y, w, h: hh, fill: { color: CARD }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.09 });
+    s.addText(h, { x: x + 0.2, y: y + 0.1, w: w - 0.4, h: 0.22, fontFace: 'Courier New', fontSize: 8.4, bold: true, color: NAVY, margin: 0 });
+    s.addText(f, { x: x + 0.2, y: y + 0.36, w: w - 0.4, h: 0.72, fontFace: 'Courier New', fontSize: 7.2, color: SLATE, margin: 0, valign: 'top' });
+    s.addText(d, { x: x + 0.2, y: y + 1.12, w: w - 0.4, h: 1.24, fontFace: 'Calibri', fontSize: 7.9, color: SLATE, margin: 0, valign: 'top' });
+  });
+  s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'E7F4F2' }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Why you can trust these numbers:  ', options: { bold: true, color: TEAL } },
+    { text: 'every constant lives in a named, unit-tested source file (forging-advisor.ts, sheet-metal-advisor.ts, blow-advisor.ts, injection-moulding.ts, the geometry kernel) — auditable line by line, changed only by a code review, and never written by an AI.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+  s.addNotes(
+    'Same method, three more commodities, and one honest gap. The forging die: a block that scales with the part’s footprint and weight, machining per impression, the die steel as a multiplier, plus heat treatment and polishing — and the life is keyed to the ALLOY, because an aluminium forging is gentle on a die at eighty thousand hits while a superalloy destroys one in three and a half thousand. That alloy-keyed life replaced a flat constant that was over-charging aluminium tooling by a factor of two to four — a defect this engine found and fixed, with the test to prove it. The stamping die: priced by die type and station count, scaled by blank size and by how hard the steel being cut is — and the life law says exactly how much faster boron steel eats a tool than mild steel. The blow mould: per-cavity cost grows with the litres the container holds, the mould material sets both cost and life. Machining has no die — fixtures and programming NRE, amortised the same way. And the gap, said out loud because it builds more confidence than hiding it: investment-casting tooling has no parametric model, so the tool stops and asks for a quotation instead of inventing one. The bottom line is the audit trail: every constant on these two slides lives in a named, unit-tested source file. I did not summarise these formulas from memory — they are read out of the code, and the code is the same code that prices every part.'
   );
 }
 
