@@ -72,7 +72,7 @@ function owner(s, x, y, label, col, tint) {
   s.addShape('roundRect', { x: 0.8, y: 3.95, w: 11.7, h: 0.75, fill: { color: '24406E' }, rectRadius: 0.1 });
   s.addText([
     { text: 'The one line to remember:  ', options: { color: '9FB6DF', bold: true } },
-    { text: 'the AI reads the part.  The costing engine does every calculation.  A person approves the answer.', options: { color: 'FFFFFF', bold: true } },
+    { text: 'the rules derive every input, the engine does every calculation, a person approves the answer — and the AI is an optional second opinion.', options: { color: 'FFFFFF', bold: true } },
   ], { x: 1.1, y: 3.95, w: 11.1, h: 0.75, fontFace: 'Calibri', fontSize: 15, margin: 0, valign: 'middle' });
   s.addText('Worked example: die-cast aluminium housing · 2.8 kg · 60,000 per year · made in China',
     { x: 0.8, y: 5.1, w: 11.7, h: 0.3, fontFace: 'Calibri', fontSize: 13, color: '8FA3CC', margin: 0 });
@@ -80,7 +80,7 @@ function owner(s, x, y, label, col, tint) {
     'Thank you all for coming back. In the last session I showed you what this tool produces. The feedback I got — very fairly — was that the workflow itself was still a black box. People told me they could not follow who does what, and where the AI actually sits in all this. So today I am going to open the box. ' +
     'I am going to take one real part — a die-cast aluminium housing, the sort of thing we buy tens of thousands of a year — and walk it through the tool from the moment we upload the CAD file to the moment a buyer walks into a supplier meeting with a number. Every single step. ' +
     'And I will keep colour-coding who owns each step, because that is the bit that has been confusing. Blue is measuring. Purple is the AI. Amber is the safety checks. Teal is the costing engine doing the arithmetic. Green is where a human signs it off. ' +
-    'If you take one line away today, take the line on the screen: the AI reads the part, the costing engine does every calculation, and a person approves the answer. Everything I show you for the next twenty minutes is an elaboration of that sentence.'
+    'If you take one line away today, take the line on the screen: the rules derive every input, the engine does every calculation, a person approves the answer — and the AI is an optional second opinion, off by default. Everything I show you for the next twenty minutes is an elaboration of that sentence.'
   );
 }
 
@@ -521,7 +521,7 @@ partSlide('assets/workflow-deck/part-housing.png',
 
   const phases = [
     [BLUE, BLUE_T, 'MEASURE', 'Ruler', ['1 · Upload the file', '2 · Measure the geometry', '3 · Sense-check the shape'], 'Facts, not opinions'],
-    [PURPLE, PURPLE_T, 'AI READS', 'AI', ['4 · Recognise the recipe', '   alloy · process · finish', '   with a confidence score'], 'Words only — no prices'],
+    [PURPLE, PURPLE_T, 'AI READS (OPT.)', 'AI — optional', ['4 · Second-opinion read', '   alloy · process · finish', '   skipped in Rules mode'], 'Words only — no prices'],
     [AMBER, AMBER_T, 'SAFETY CHECKS', 'Engine', ['5 · Four automatic guards', '6 · Autocorrect wrong calls', '   before any money is counted'], 'Measurements always win'],
     [TEAL, TEAL_T, 'CALCULATE', 'Engine', ['7 · Pick machines & cycles', '8 · Cost every operation', '9-10 · Build & regionalise'], 'Fixed formulas'],
     [GREEN, GREEN_T, 'CHECK & USE', 'Engineer', ['11 · Confidence band', '12 · Report & approval'], 'A person signs it off'],
@@ -547,7 +547,7 @@ partSlide('assets/workflow-deck/part-housing.png',
 
   s.addNotes(
     'Here is the part and here is the map of where we are going. The housing weighs two point eight kilos finished, has walls about three millimetres thick, two precision bores, sixteen holes that need drilling and threading, and two faces that must be machined flat. We buy sixty thousand a year and we are looking at making them in China. ' +
-    'Underneath, the five phases. Blue, we measure. Purple, the AI reads. Amber, four automatic safety checks run. Teal, the engine calculates. Green, a person checks and signs. Twelve stages in total, and the whole thing takes about two minutes of computer time. ' +
+    'Underneath, the five phases. Blue, we measure. Purple, the optional AI reads — and in the default Rules mode this phase is skipped entirely, the rules and the engineer answer instead. Amber, four automatic safety checks run. Teal, the engine calculates. Green, a person checks and signs. Twelve stages in total, and the whole thing takes about two minutes of computer time. ' +
     'Now look at the box at the bottom, because this answers the question I was asked most often last time — how much of this is AI? Of the twelve stages, the AI owns exactly one. One. Three stages are measurement, two are safety checks, four are arithmetic, two are human review. ' +
     'That is deliberate. We did not build an AI tool and bolt some costing onto it. We built a costing engine and gave it a very small, very bounded AI assistant to do the one job AI is genuinely good at — recognising what something is. Everything else is engineering that we can audit.'
   );
@@ -1481,10 +1481,10 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
 
   const lanes = [
     [BLUE, BLUE_T, 'THE RULER', 'Measures the CAD file', ['Volume, weight, walls', 'Bores, holes, faces', 'Hollow-vs-solid check'], 'Same answer every time'],
-    [PURPLE, PURPLE_T, 'THE AI', 'Reads and names it', ['Alloy family', 'Process route', 'Confidence score'], 'Words only. Never money.'],
+    [PURPLE, PURPLE_T, 'THE AI', 'Optional second opinion', ['Alloy family', 'Process route', 'Confidence score'], 'Words only. Never money.'],
     [AMBER, AMBER_T, 'THE GUARDS', 'Check and autocorrect', ['Pour weight, not part weight', 'Machining = finishing', 'Right alloy, right press'], 'Measurements always win'],
     [TEAL, TEAL_T, 'THE ENGINE', 'Does every calculation', ['Sizes the machine', 'Builds each cycle time', '8 buckets, 20 countries'], 'Fixed formulas, traceable'],
-    [GREEN, GREEN_T, 'THE ENGINEER', 'Reviews and approves', ['Sets volume and region', 'Confirms every AI call', 'Signs off the number'], 'The final decision'],
+    [GREEN, GREEN_T, 'THE ENGINEER', 'Answers and approves', ['Sets volume and region', 'Answers what geometry can\u2019t — their entry always wins', 'Signs off the number'], 'The final decision'],
   ];
   const lw = 2.36, lg = 0.11;
   lanes.forEach(([col, tint, who, does, items, rule], i) => {
@@ -1499,7 +1499,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   });
 
   s.addShape('roundRect', { x: 0.5, y: 5.1, w: 12.33, h: 0.85, fill: { color: NAVY }, rectRadius: 0.1 });
-  s.addText('The AI reads the part.   The engine does every calculation.   A person approves the answer.', {
+  s.addText('The rules derive.  The engine calculates.  A person approves.  The AI is an optional second opinion.', {
     x: 0.5, y: 5.1, w: 12.33, h: 0.85, fontFace: 'Cambria', fontSize: 19, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
 
   s.addShape('roundRect', { x: 0.5, y: 6.1, w: 12.33, h: 0.78, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
@@ -1511,8 +1511,8 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
 
   s.addNotes(
     'Let me put the whole thing on one page, because this is the answer to the question you asked me after the last session. ' +
-    'Five players, left to right, in the order they act. The ruler measures the CAD file and gives the same answer every time. The AI reads those measurements and names what the part is — words only, never money. The guards check the AI against the measurements and autocorrect it where they disagree, and the measurements always win. The engine does every calculation — sizes the machine, builds the cycle times, fills the eight buckets, reprices across twenty countries — with fixed, traceable formulas. And our engineer sets the commercial context, confirms every AI call, and signs off the number. ' +
-    'The line in the middle is the whole tool in one sentence. The AI reads the part. The engine does every calculation. A person approves the answer. ' +
+    'Five players, left to right, in the order they act. The ruler measures the CAD file and gives the same answer every time. The AI is the optional player: off by default, and when it does run it names what the part is — words only, never money. The guards check it against the measurements and autocorrect where they disagree, and the measurements always win. The engine does every calculation — sizes the machine, builds the cycle times, fills the eight buckets, reprices across twenty countries — with fixed, traceable formulas. And our engineer answers what geometry cannot know, overrides any choice they disagree with — their entry always wins — and signs off the number. ' +
+    'The line in the middle is the whole tool in one sentence. The rules derive. The engine calculates. A person approves. The AI is an optional second opinion. ' +
     'And the result on this housing: a defensible forty pounds ninety-nine, with a thirty-five to forty-seven confidence band, produced in about two minutes, and every penny traceable to either a measurement or a published rate. ' +
     'That is the workflow. I am very happy to take questions — and if it would help, I can run this live on any part you want to throw at me, and you can watch each of these stages happen in real time.'
   );
@@ -1549,7 +1549,7 @@ divider('SECTION THREE', 'An Injection-Moulded Bumper Fascia', 'The same method,
 
   const phases = [
     [BLUE, BLUE_T, 'MEASURE', 'Ruler', ['1 · Upload the file', '2 · Measure the geometry', '3 · Draft & undercut check'], 'Same kernel, same facts'],
-    [PURPLE, PURPLE_T, 'AI READS', 'AI', ['4 · Recognise the recipe', 'resin · process · finish', 'with a confidence score'], 'Words only — no prices'],
+    [PURPLE, PURPLE_T, 'AI READS (OPT.)', 'AI — optional', ['4 · Second-opinion read', 'resin · process · finish', 'skipped in Rules mode'], 'Words only — no prices'],
     [AMBER, AMBER_T, 'SAFETY CHECKS', 'Engine', ['5 · Four automatic guards', '6 · Autocorrect wrong calls', 'before any money is counted'], 'Measurements always win'],
     [TEAL, TEAL_T, 'CALCULATE', 'Engine', ['7 · Pick press & cycle', '8 · Cost every second', '9-10 · Build & regionalise'], 'The same eight buckets'],
     [GREEN, GREEN_T, 'CHECK & USE', 'Engineer', ['11 · Confidence band', '12 · Report & approval'], 'A person signs it off'],
@@ -1617,7 +1617,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   });
 
   s.addShape('roundRect', { x: 6.15, y: 1.3, w: 3.35, h: 2.9, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.25 }, rectRadius: 0.1 });
-  s.addText('WHAT THE AI SAYS BACK', { x: 6.4, y: 1.44, w: 3, h: 0.26, fontFace: 'Calibri', fontSize: 10, bold: true, color: PURPLE, charSpacing: 0.8, margin: 0 });
+  s.addText('WHAT THE OPTIONAL AI SAYS BACK', { x: 6.4, y: 1.44, w: 3.4, h: 0.26, fontFace: 'Calibri', fontSize: 10, bold: true, color: PURPLE, charSpacing: 0.8, margin: 0 });
   const says = [['Material family', 'Talc-filled polypropylene'], ['How it is made', 'Injection moulded, one shot'], ['Then what', 'Painted, Class-A finish'], ['How sure it is', '0.87 confident']];
   says.forEach(([k, v], i) => {
     const y = 1.78 + i * 0.52;
@@ -1645,7 +1645,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addShape('roundRect', { x: 0.5, y: 5.75, w: 12.33, h: 0.85, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1 }, rectRadius: 0.1 });
   s.addText([
     { text: 'Identical to the casting: ', options: { bold: true, color: PURPLE } },
-    { text: 'stages 1 to 3 happen before the AI is involved, the AI hands back four words and a confidence score, and it still has no access to a price, a rate or a machine.', options: { color: SLATE } },
+    { text: 'stages 1 to 3 happen before any AI is involved; in the AI modes it hands back four words and a confidence score with no access to a price, a rate or a machine — and in the default Rules mode it is skipped entirely.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.86, w: 11.75, h: 0.66, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
@@ -1653,7 +1653,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
     'Stages one to four, and I will go quickly because the method is the one you have already seen. ' +
     'The kernel opens the model and measures. Volume, and on polypropylene that is four point two kilos. Wall thickness, three millimetres — hold onto that, it matters more than you would think. The projected shadow in the direction the mould opens, nine thousand nine hundred square centimetres. The painted surface area, one point six square metres. ' +
     'And then the measurement that I find genuinely clever: it classifies every face by its angle to the mould-opening direction and counts the ones pointing back against the draw. Six of them. Every one of those needs a sliding section in the tool so the part can be released, and every slide is real money in the mould. Nobody counted those by eye off a drawing. ' +
-    'The AI then does its one job and hands back four words: talc-filled polypropylene, injection moulded in one shot, painted to a Class-A finish, eighty-seven percent confident. Four words and a score. No numbers. It still cannot see a price list, a rate or a machine. ' +
+    'In the optional AI modes the model then does its one job and hands back four words: talc-filled polypropylene, injection moulded in one shot, painted to a Class-A finish, eighty-seven percent confident. Four words and a score. No numbers. It still cannot see a price list, a rate or a machine — and in the default Rules mode this step is skipped: the filename, the geometry and the engineer\u2019s answer supply the same facts. ' +
     'And the box across the bottom is the one I would underline. That projected shadow, nine thousand nine hundred square centimetres, decides the biggest process number on this part. Molten plastic pushing outwards across that area is what tries to force the mould open, so it sets the press size — and the press rate then sets the moulding cost. A part this size simply cannot be moulded on a small machine, no matter how cheap that machine is per hour. We will see exactly what that costs on the next slide.'
   );
 }
