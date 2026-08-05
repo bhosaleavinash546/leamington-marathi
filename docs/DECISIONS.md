@@ -179,3 +179,18 @@ Format: decision · why · what would change it.
     the flag now MEANS something different, not because the register got worse — that
     re-baseline is legitimate only because the check changed definition, and it is documented
     here so it cannot be repeated as a way of absorbing real debt.
+
+23. **Worldwide means the SOURCES, not just the words (2026).**
+    *Why:* #22 made the register's frontier check and the search plan region-neutral, which
+    fixed the bias in what the tool ASKS. It did not fix what the tool READS. Every probe was
+    English and `performSearch` passed no locale, so an English query hit an English index and
+    returned the Anglophone commentary ABOUT a global industry rather than the industry's own
+    sources — the Baolong cost forecasts surfaced through an English report on China, not from
+    Chinese material. `performSearch` now accepts `{ country, searchLang }` (Brave supports
+    both) and the plan carries two cheap native-language frontier probes (zh-hans/cn and
+    jp/jp, 2 hits each) alongside eight region-neutral English ones. Tests assert the locale
+    actually reaches the provider AND that global probes stay unpinned, so worldwide reach
+    cannot be bought by pinning everything to one market. *Known limit, stated not hidden:*
+    without a Brave key the fallback is DuckDuckGo's Instant Answer API — encyclopedia
+    abstracts, not a web index — so locale gains nothing there. Worldwide retrieval needs a
+    search key; the tool degrades honestly and says so rather than pretending.

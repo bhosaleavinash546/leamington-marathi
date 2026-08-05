@@ -69,6 +69,13 @@ export function buildResearchPlan(query, { year = new Date().getFullYear() } = {
     { q: `${q} emerging automotive technology ${year + 4} future concept`, targets: 'substitution' },
     { q: `${q} automotive manufacturing cost leader lowest cost supplier ${year}`, targets: 'substitution' },
     { q: `${q} automotive technology leader China Korea Japan India supplier ${year}`, targets: 'substitution' },
+    // Native-language frontier probes. An English index mostly returns English
+    // commentary ABOUT a market; these ask the market itself. Cheap (2 hits
+    // each) and the single highest-leverage step toward a genuinely worldwide
+    // read — without them "global search" means "global words, Anglophone
+    // sources".
+    { q: `${q} 汽车 技术 趋势 供应商 ${year}`, targets: 'substitution', country: 'cn', searchLang: 'zh-hans', hits: 2 },
+    { q: `${q} 自動車 技術 動向 サプライヤー ${year}`, targets: 'substitution', country: 'jp', searchLang: 'jp', hits: 2 },
     { q: `${q} automotive lightweight material process innovation patent`, targets: 'substitution' },
     { q: `${q} automotive predictive maintenance diagnostics warranty failure mode`, targets: 'lifecycle' },
     { q: `${q} software defined vehicle domain controller control software ${year}`, targets: 'orchestration' },
@@ -193,8 +200,10 @@ export async function researchFutureTechnologies(query, deps) {
   const searches = [];
   for (const probe of plan) {
     const sq = typeof probe === 'string' ? probe : probe.q;
-    const hits = await performSearch(sq, searchApiKey).catch(() => []);
-    for (const r of (hits || []).slice(0, 3)) {
+    const locale = typeof probe === 'string' ? {} : { country: probe.country, searchLang: probe.searchLang };
+    const cap = (typeof probe === 'string' ? 3 : probe.hits) ?? 3;
+    const hits = await performSearch(sq, searchApiKey, locale).catch(() => []);
+    for (const r of (hits || []).slice(0, cap)) {
       const url = safeUrl(r?.url);
       if (!url) continue;               // unusable scheme => not a citable source
       searches.push({

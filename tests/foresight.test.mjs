@@ -905,3 +905,29 @@ test('global lens: the search plan does not hardwire one country', async () => {
   assert.ok(named.length === 0 || named.length >= 3, `plan leans on ${named.join('/')} alone`);
   assert.ok(/lowest cost|cost leader/.test(blob), 'plan lost its region-neutral cost-frontier probe');
 });
+
+test('worldwide search: probes reach beyond the Anglophone index', async () => {
+  const { buildResearchPlan } = await import('../foresight-research.mjs');
+  const plan = buildResearchPlan('brake disc', { year: 2026 });
+  const localised = plan.filter((p) => p.country && p.searchLang);
+  assert.ok(localised.length >= 2, 'no native-language probes — "global search" means Anglophone sources only');
+  assert.ok(localised.some((p) => /[一-鿿]/.test(p.q)), 'no CJK-script probe');
+  // Localised probes stay cheap so worldwide reach does not blow the token budget.
+  for (const p of localised) assert.ok((p.hits ?? 3) <= 2, `${p.country} probe requests too many hits`);
+});
+
+test('worldwide search: locale is actually threaded to the search provider', async () => {
+  const { researchFutureTechnologies } = await import('../foresight-research.mjs');
+  const seen = [];
+  await researchFutureTechnologies('brake disc', {
+    performSearch: async (q, key, opts) => { seen.push({ q, opts: opts ?? {} }); return [{ title: 't', url: 'https://a.example/x', snippet: 's', source: 'a' }]; },
+    searchPatents: async () => ({ patents: [] }), client: {}, model: 'm',
+    messagesJson: async () => ({ candidates: [], landscapeNote: 'n', evidenceGaps: 'g' }),
+  });
+  const withLocale = seen.filter((s) => s.opts.country && s.opts.searchLang);
+  assert.ok(withLocale.length >= 2, 'locale options never reached performSearch');
+  assert.ok(withLocale.some((s) => s.opts.country === 'cn'), 'no cn-market retrieval');
+  // Global probes must NOT be pinned to a country — that would re-introduce bias.
+  const globalProbes = seen.filter((s) => !s.opts.country);
+  assert.ok(globalProbes.length >= 6, 'global probes got pinned to a region');
+});

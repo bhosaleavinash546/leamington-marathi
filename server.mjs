@@ -2235,10 +2235,19 @@ const emitIdeasTool = {
   },
 };
 
-async function performSearch(query, braveApiKey) {
+async function performSearch(query, braveApiKey, opts = {}) {
+  // Locale matters for foresight: an English-only query answered from an
+  // English-only index returns the Anglophone view of a global industry. Brave
+  // takes `country` and `search_lang`, so a probe can be aimed at the market
+  // whose frontier it is asking about (2026: "the tool should research the
+  // whole world, not any specific region" — asking globally is only half of it).
+  const locale = [
+    opts.country ? `&country=${encodeURIComponent(opts.country)}` : '',
+    opts.searchLang ? `&search_lang=${encodeURIComponent(opts.searchLang)}` : '',
+  ].join('');
   if (braveApiKey?.trim()) {
     try {
-      const resp = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=6`, {
+      const resp = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=6${locale}`, {
         headers: { Accept: 'application/json', 'X-Subscription-Token': braveApiKey.trim() },
         signal: AbortSignal.timeout(8000),
       });
