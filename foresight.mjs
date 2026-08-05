@@ -258,6 +258,31 @@ export function confidenceTier(tech) {
   return 'speculative';
 }
 
+// ── Powertrain intent in free text ───────────────────────────────────────────
+/**
+ * A query like "HEV battery" names a POWERTRAIN, and until 2026 the engine
+ * threw that word away: every entry matched on "battery" alone, so the single
+ * most HEV-relevant technology in the register (next-gen 48V MHEV batteries)
+ * ranked 24th behind twenty-three BEV-only ones, and the user had to know to
+ * use the powertrain dropdown to fix it.
+ *
+ * The hint BOOSTS rather than filters. HEV and BEV battery technology overlap
+ * heavily — chemistry, cell contacting, thermal barriers are shared — so
+ * hiding BEV entries would lose real content. Ranking the applicable ones
+ * first is what the reader actually wanted.
+ */
+export function powertrainHint(query) {
+  const q = ` ${String(query ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ')} `;
+  const has = (w) => q.includes(` ${w} `);
+  const hits = new Set();
+  if (has('mhev') || has('48v') || has('mild')) hits.add('MHEV');
+  if (has('phev') || has('plugin') || has('plug in')) hits.add('PHEV');
+  if (has('hev') || has('hybrid')) { hits.add('MHEV'); hits.add('PHEV'); }
+  if (has('bev') || has('battery electric')) hits.add('BEV');
+  if (has('ice') || has('combustion') || has('petrol') || has('diesel') || has('gasoline')) hits.add('ICE');
+  return [...hits];
+}
+
 // ── Part resolution ──────────────────────────────────────────────────────────
 /**
  * Match a free-text part/assembly query against register matchTerms.
@@ -374,7 +399,23 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
   // MHEV battery" leads with 48V technologies, not the loudest HV-pack tech
   // that happened to share the word "battery".
   const scoreById = new Map(matched.map((m) => [m.tech.id, m.score]));
-  const cards = selected.map((t) => ({ ...techCard(t, now, anchors), matchScore: scoreById.get(t.id) ?? 0, related: relatedIds.has(t.id) || undefined }));
+  // Powertrain named in the free text ranks applicable technologies first.
+  const ptHint = powertrainHint(query);
+  // Proportional, not binary: most BEV battery entries ALSO list PHEV, so a
+  // flat boost lifts nearly everything and changes nothing. Weight by how much
+  // of the entry's applicability is the hinted powertrain — an MHEV-only
+  // technology outranks a BEV technology that merely also happens to apply.
+  const ptBoost = (t) => {
+    if (!ptHint.length || !t.powertrains?.length) return 0;
+    const hit = t.powertrains.filter((p) => ptHint.includes(p)).length;
+    return (hit / t.powertrains.length) * 4;
+  };
+  const cards = selected.map((t) => ({
+    ...techCard(t, now, anchors),
+    matchScore: (scoreById.get(t.id) ?? 0) + ptBoost(t),
+    powertrainMatch: ptHint.length ? t.powertrains?.some((p) => ptHint.includes(p)) || false : undefined,
+    related: relatedIds.has(t.id) || undefined,
+  }));
   const horizons = { H1: [], H2: [], H3: [] };
   for (const c of cards) horizons[c.horizon].push(c);
   for (const k of H_ORDER) horizons[k].sort((a, b) => (b.matchScore - a.matchScore) || (b.momentum - a.momentum) || a.id.localeCompare(b.id));
@@ -386,6 +427,7 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
     powertrain: powertrain ?? null,
     segment: segment ?? null,
     matchedByTerms: matched.length > 0,
+    powertrainHint: ptHint.length ? ptHint : null,
     count: cards.length,
     windows: horizonWindows(now),
     horizons,

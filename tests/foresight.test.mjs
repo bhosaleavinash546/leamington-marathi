@@ -951,3 +951,26 @@ test('depth: dossiers brief a reader, and never sell one side (2026 depth audit)
     assert.ok(t.detail.origin && t.detail.outlook, `${t.id}: dossier missing origin or outlook`);
   }
 });
+
+test('relevance: a powertrain named in free text ranks applicable technologies first', async () => {
+  const { powertrainHint } = await import('../foresight.mjs');
+  assert.deepEqual(powertrainHint('HEV battery').sort(), ['MHEV', 'PHEV']);
+  assert.deepEqual(powertrainHint('BEV battery pack'), ['BEV']);
+  assert.deepEqual(powertrainHint('48V starter generator'), ['MHEV']);
+  assert.deepEqual(powertrainHint('brake disc'), []);          // no powertrain named -> no boost
+  // "hev" must not be matched inside "mhev"/"phev" by substring.
+  assert.ok(!powertrainHint('mhev pack').includes('PHEV') || powertrainHint('mhev pack').includes('MHEV'));
+
+  // The regression this guards: "HEV battery" buried the one MHEV-specific
+  // technology at rank 24 behind 23 BEV-first entries, because the engine
+  // threw the word "HEV" away entirely.
+  const r = foresightFor({ query: 'HEV battery' });
+  assert.deepEqual(r.powertrainHint.sort(), ['MHEV', 'PHEV']);
+  const mhevOnly = r.horizons.H2.findIndex((c) => c.powertrains.length === 1 && c.powertrains[0] === 'MHEV');
+  assert.equal(mhevOnly, 0, 'an MHEV-only technology should lead its lane for an HEV query');
+  // Boost must be proportional, not binary — a BEV-only entry gets none.
+  const bev = foresightFor({ query: 'BEV battery pack' });
+  assert.deepEqual(bev.horizons.H1[0].powertrains, ['BEV'], 'BEV-only entry should lead a BEV query');
+  // And an unhinted query is unchanged (no silent reordering).
+  assert.equal(foresightFor({ query: 'brake disc' }).powertrainHint, null);
+});

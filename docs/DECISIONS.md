@@ -212,3 +212,17 @@ Format: decision · why · what would change it.
     mid-column break guard that silently dropped trade-offs at a page bottom. Dropping the
     downside specifically is the worst failure this report could have; the block now
     pre-measures and paginates with both columns intact.
+
+25. **A powertrain named in the query is a ranking signal, not noise (2026).**
+    *Why:* "HEV battery" ranked the register's one MHEV-specific technology 24th, behind 23
+    BEV-first entries — the engine matched on "battery" and threw "HEV" away, leaving the user
+    to discover the powertrain dropdown. `powertrainHint()` now reads MHEV/PHEV/BEV/ICE intent
+    out of free text and BOOSTS applicable entries. Boost, not filter: HEV and BEV battery
+    technology overlap heavily (chemistry, cell contacting, thermal barriers are shared), so
+    hiding BEV entries would lose real content. The boost is also PROPORTIONAL —
+    `matching/total powertrains × 4` — because a flat bonus lifted almost everything (most BEV
+    battery entries also list PHEV) and changed nothing; weighting by how much of an entry's
+    applicability is the hinted powertrain puts an MHEV-only technology above a BEV technology
+    that merely also applies. *Changes it:* nothing — but note the failure mode found while
+    fixing it: the first, binary version looked like it worked and moved the target entry only
+    four places. Measuring the actual rank, not eyeballing the list, is what caught it.
