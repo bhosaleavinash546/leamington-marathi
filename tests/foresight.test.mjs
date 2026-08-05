@@ -774,3 +774,68 @@ test('research still fires for landscapes that are only wide because of related 
   const t = shouldResearch(r);
   assert.equal(t.research, true, `research suppressed by landscape floor: ${t.reason}`);
 });
+
+// ── Ontology coverage (2026 internet-benchmark audit) ───────────────────────
+// Benchmarking the register against live internet research on air suspension
+// found three real technologies missing, and ALL THREE were non-substitutions.
+// Root cause: `replaces` is required and the research prompt asked only for
+// displacement, so 169/169 entries were part swaps. These tests keep the
+// register able to see the other three kinds.
+
+test('ontology: every entry declares a valid kind', async () => {
+  const { TECH_KINDS } = await import('../src/data/tech-foresight-register.mjs');
+  assert.deepEqual(TECH_KINDS, ['substitution', 'function', 'orchestration', 'lifecycle']);
+  for (const t of FORESIGHT_REGISTER) {
+    assert.ok(TECH_KINDS.includes(t.kind), `${t.id}: kind '${t.kind}' invalid`);
+    // `replaces` stays required for EVERY kind — non-substitutions must still
+    // say what they displace, in cost terms. That is the anti-laziness rule.
+    assert.ok(t.replaces && t.replaces.trim().length > 3, `${t.id}: replaces must state what is displaced`);
+  }
+});
+
+test('ontology: the register is not blind to non-substitution technologies', async () => {
+  const { auditRegister } = await import('../foresight-audit.mjs');
+  const a = auditRegister();
+  for (const kind of ['function', 'orchestration', 'lifecycle']) {
+    assert.ok((a.byKind[kind] ?? 0) >= 1, `register has no '${kind}' technologies — the 2026 blind spot has returned`);
+  }
+  assert.ok(a.nonSubstitutionPct > 0, 'non-substitution coverage fell to zero');
+});
+
+test('ontology: air suspension landscape now carries the researched gaps', () => {
+  const r = foresightFor({ query: 'air suspension' });
+  const all = [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3];
+  const ids = new Set(all.map((c) => c.id));
+  // Each was found by live internet research and missed by the register.
+  for (const id of ['aero-ride-height', 'chassis-orchestration', 'suspension-health-monitoring', 'thermoplastic-air-springs']) {
+    assert.ok(ids.has(id), `${id} missing from the air-suspension landscape`);
+  }
+  // And each is positioned by the same deterministic cores as any other entry.
+  for (const c of all) {
+    assert.ok(['H1', 'H2', 'H3'].includes(c.horizon), `${c.id}: no lane`);
+    assert.ok(c.projection?.crossings, `${c.id}: no milestones`);
+  }
+});
+
+test('ontology: forward research is instructed to hunt all four kinds', async () => {
+  const { CANDIDATE_SCHEMA } = await import('../foresight-research.mjs');
+  const item = CANDIDATE_SCHEMA.properties.candidates.items;
+  assert.ok(item.required.includes('kind'), 'research no longer forces a kind classification');
+  assert.deepEqual(item.properties.kind.enum, ['substitution', 'function', 'orchestration', 'lifecycle']);
+});
+
+test('ontology: promotion carries kind through and rejects an invalid one', async () => {
+  const Database = (await import('better-sqlite3')).default;
+  const { initKnowledge, candidateToEntry, validatePromotion } = await import('../foresight-knowledge.mjs');
+  const db = new Database(':memory:'); initKnowledge(db);
+  const e = candidateToEntry({
+    name: 'Chassis orchestration layer test', kind: 'orchestration',
+    whatItIs: 'A software layer arbitrating every chassis actuator at once instead of each supplier ECU optimising alone and the OEM refereeing conflicts between them.',
+    whyItMatters: 'Moves differentiation from the damper to the calibration.',
+    replaces: 'Per-ECU calibration loops', trlEstimate: 8, adoptionEstimatePct: 2,
+    ceilingEstimatePct: 50, players: ['ZF'], sourceUrl: 'https://x.example/a',
+  }, { query: 'suspension', commodity: 'Chassis' });
+  assert.equal(e.kind, 'orchestration');
+  assert.equal(validatePromotion(e).ok, true, JSON.stringify(validatePromotion(e).errors));
+  assert.equal(validatePromotion({ ...e, kind: 'nonsense' }).ok, false);
+});

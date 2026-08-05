@@ -126,3 +126,21 @@ Format: decision · why · what would change it.
     leaf and Analyze name must score 3+ technologies with a future lane (`npm run
     horizon:coverage`). *Changes it:* nothing — promotion must stay a human act; auto-promoting
     research would collapse the ladder.
+
+20. **Technology KIND: the register must see more than part swaps (2026 internet benchmark).**
+    *Why:* benchmarking Horizon against independent live internet research on air suspension
+    scored 7/10 — and all three misses were the same shape. `replaces` is a required field and
+    the research prompt asked only "what does it displace", so 169 of 169 entries were part
+    substitutions. That ontology is structurally blind to (a) FUNCTION shifts — hardware
+    already on the car earning a new job and a new business case (air-suspension ride height
+    bought for aerodynamic range, competing against battery cost per kWh rather than against
+    steel springs), (b) ORCHESTRATION — software layers coordinating actuators they replace
+    none of (ZF cubiX, Bosch VMM), and (c) LIFECYCLE — service/warranty model shifts
+    (air-spring leak prognostics). Every entry now declares `kind`; `replaces` stays required
+    for all kinds but for non-substitutions it names what is displaced in COST terms, which is
+    what a cost engineer needs. The research schema forces a kind and the prompt explicitly
+    hunts all four; the auditor tracks `byKind`/`nonSubstitutionPct`; tests fail if any
+    non-substitution kind falls to zero. *Changes it:* nothing — but note the gate discipline
+    held: adding four entries pushed curation debt past the CI limit, and the fix was to cite
+    the most recent evidence the research actually found (which the stale-evidence flag was
+    correctly demanding), not to raise the threshold.

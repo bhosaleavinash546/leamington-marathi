@@ -60,7 +60,7 @@ export function auditEntry(tech, { now = REGISTER_VINTAGE } = {}) {
   if (latest !== null && latest <= now - 3) flags.push('stale-evidence');
   if ((tech.matchTerms?.length ?? 0) < 4) flags.push('thin-matchterms');
   if ((tech.note?.length ?? 0) < 90) flags.push('short-note');
-  return { id: tech.id, name: tech.name, commodity: tech.commodity, flags, latestEvidenceYear: latest };
+  return { id: tech.id, name: tech.name, commodity: tech.commodity, kind: tech.kind ?? 'substitution', flags, latestEvidenceYear: latest };
 }
 
 export function auditRegister({ register = FORESIGHT_REGISTER, now = REGISTER_VINTAGE } = {}) {
@@ -69,10 +69,19 @@ export function auditRegister({ register = FORESIGHT_REGISTER, now = REGISTER_VI
   const byFlag = {};
   for (const e of flagged) for (const f of e.flags) byFlag[f] = (byFlag[f] ?? 0) + 1;
   const chinaCoveragePct = Math.round(((entries.length - (byFlag['no-china-frontier'] ?? 0)) / entries.length) * 1000) / 10;
+  // Ontology coverage (2026 internet-benchmark audit): a register made only of
+  // part swaps is structurally blind to function shifts, software orchestration
+  // and lifecycle change — the three things live research found and the tool
+  // had missed. Track the mix so the blindness cannot return silently.
+  const byKind = {};
+  for (const e of entries) byKind[e.kind] = (byKind[e.kind] ?? 0) + 1;
+  const nonSubstitutionPct = Math.round(((entries.length - (byKind.substitution ?? 0)) / entries.length) * 1000) / 10;
   return {
     total: entries.length,
     flaggedCount: flagged.length,
     byFlag,
+    byKind,
+    nonSubstitutionPct,
     chinaCoveragePct,
     // worst-first inbox: most flags, then id for determinism
     inbox: [...flagged].sort((a, b) => b.flags.length - a.flags.length || a.id.localeCompare(b.id)),

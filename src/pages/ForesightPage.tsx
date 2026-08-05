@@ -21,7 +21,7 @@ interface TechCard {
   phase: string; horizon: 'H1' | 'H2' | 'H3'; regPulled: boolean; momentum: number;
   confidence: 'committed' | 'probable' | 'speculative';
   regAnchorDetail: RegAnchor | null; projection: Projection;
-  related?: boolean; origin?: string; sourceUrl?: string;
+  related?: boolean; origin?: string; sourceUrl?: string; kind?: string;
 }
 interface HorizonWindow { label: string; from: number; to: number | null; }
 interface ForesightResult {
@@ -272,6 +272,12 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
         <span className="flex shrink-0 items-center gap-1.5">
           {c.origin === 'promoted' && (
             <span className="px-1.5 py-0.5 rounded-md border border-violet-500/40 bg-violet-500/10 text-violet-300 text-[9px] font-semibold uppercase tracking-wide" title={`Curator-promoted from AI research${c.sourceUrl ? ` — source: ${c.sourceUrl}` : ''}. Not yet part of the shipped curated register.`}>promoted</span>
+          )}
+          {c.kind && c.kind !== 'substitution' && (
+            <span className="px-1.5 py-0.5 rounded-md border border-teal-500/40 bg-teal-500/10 text-teal-300 text-[9px] font-semibold uppercase tracking-wide"
+              title={c.kind === 'function' ? 'FUNCTION: existing hardware earns a new job and a new business case — it replaces no part.'
+                : c.kind === 'orchestration' ? 'ORCHESTRATION: a software layer coordinating actuators it replaces none of — differentiation moves from the part to the calibration.'
+                : 'LIFECYCLE: a service, warranty or monitoring model shift rather than a part swap.'}>{c.kind}</span>
           )}
           {c.related && (
             <span className="px-1.5 py-0.5 rounded-md border border-white/15 bg-white/5 text-slate-400 text-[9px] font-semibold uppercase tracking-wide" title="Widened into this landscape from the same commodity — no direct term match on your query.">related</span>

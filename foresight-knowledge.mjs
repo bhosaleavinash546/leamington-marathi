@@ -28,6 +28,7 @@
 import { randomUUID } from 'node:crypto';
 import { FORESIGHT_REGISTER } from './src/data/tech-foresight-register.mjs';
 import { COMMODITY_KEYS, inferCommodityKey } from './src/data/commodity-classify.mjs';
+import { TECH_KINDS } from './src/data/tech-foresight-register.mjs';
 import { resolveParts } from './foresight.mjs';
 import { safeUrl } from './foresight-research.mjs';
 
@@ -95,6 +96,7 @@ export function validatePromotion(t) {
   if (!Array.isArray(t.players) || !t.players.length) errors.push('players required');
   if (!t.replaces) errors.push('replaces required');
   if (!t.note || String(t.note).length < 90) errors.push('note must be at least 90 chars (register short-note rule)');
+  if (t.kind !== undefined && !TECH_KINDS.includes(t.kind)) errors.push(`kind must be one of ${TECH_KINDS.join('/')}`);
   if (t.ceiling !== undefined && !(t.ceiling >= 1 && t.ceiling <= 90)) errors.push('ceiling must be 1-90');
   if (t.adoptionPct > (t.ceiling ?? 90)) errors.push('adoption above its own ceiling');
   return { ok: errors.length === 0, errors };
@@ -130,6 +132,7 @@ export function candidateToEntry(candidate, { query = '', commodity = null } = {
     trl: Math.min(9, Math.max(1, Math.round(Number(c.trl ?? c.trlEstimate) || 4))),
     adoptionPct: Math.min(40, Math.max(0, Number(c.adoptionPct ?? c.adoptionEstimatePct) || 0)),
     drivers: ['performance'],
+    kind: TECH_KINDS.includes(c.kind) ? c.kind : 'substitution',
     costTrend: 'falling',
     players: (Array.isArray(c.players) ? c.players : []).slice(0, 6).map((p) => String(p).slice(0, 60)),
     note: [c.whatItIs, c.whyItMatters].filter(Boolean).map(String).join(' ').slice(0, 700),

@@ -23,7 +23,7 @@ export interface ForesightReportCard {
   costTrend: string; players: string[]; note: string;
   phase: string; horizon: 'H1' | 'H2' | 'H3'; regPulled: boolean; momentum: number;
   confidence: string; regAnchorDetail: ForesightReportAnchor | null;
-  related?: boolean; origin?: string;
+  related?: boolean; origin?: string; kind?: string;
   projection: { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null; band25?: [number | null, number | null] | null; band50?: [number | null, number | null] | null; share25?: number; share50?: number; ceiling?: number; peakGrowth?: number | 'passed' | null } };
 }
 export interface ForesightReportBenchmark {
@@ -429,7 +429,8 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       sans(11.5, 'bold'); setColor(doc, P.INK);
       doc.text(fitText(doc, c.name, CW - 40), ML + 3, y);
       mono(7, true); setColor(doc, cc);
-      const provenance = c.origin === 'promoted' ? 'PROMOTED · ' : c.related ? 'RELATED · ' : '';
+      const kindTag = c.kind && c.kind !== 'substitution' ? `${c.kind.toUpperCase()} · ` : '';
+      const provenance = kindTag + (c.origin === 'promoted' ? 'PROMOTED · ' : c.related ? 'RELATED · ' : '');
       if (provenance) { setColor(doc, P.VIOLET); doc.text(provenance + c.confidence.toUpperCase(), PW - MR - 3, y, { align: 'right' }); setColor(doc, cc); }
       else doc.text(c.confidence.toUpperCase(), PW - MR - 3, y, { align: 'right' });
       y += 4.8;
@@ -519,9 +520,11 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       brackets(ML, cardTop, CW, y - cardTop + 1.5, cc, 3, 0.42);
       y += 6.5;
     }
+    // A lane's TAIL card can land almost alone on a fresh page (ensure() broke
+    // mid-lane). Close that page with the horizon grid too — the earlier fix
+    // only covered whole small lanes, not lane tails (2026 benchmark run).
+    if (y < 190) horizonArt(Math.max(y + 30, 235));
   }
-
-  if (y < 190) horizonArt(Math.max(y + 30, 235));
 
   // ═══ RESEARCHED CANDIDATES ═════════════════════════════════════════════════
   // Deliberately walled off from the curated lanes: different page, violet
