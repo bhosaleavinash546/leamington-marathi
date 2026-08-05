@@ -154,7 +154,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   const s = pres.addSlide(); s.background = { color: PAGE };
   logoMark(s, 0.5, 0.22, 0.6);
   s.addText('How It All Connects — One Picture', { x: 1.25, y: 0.2, w: 8.6, h: 0.44, fontFace: 'Cambria', fontSize: 24, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-  s.addText('Rules derive every cost input; the engineer answers what geometry cannot know; the AI is optional.', { x: 1.25, y: 0.66, w: 8.9, h: 0.28, fontFace: 'Calibri', fontSize: 11.5, italic: true, color: MUTED, margin: 0 });
+  s.addText('Everything badged AUTO runs unattended — the rules pick the machine and tonnage, the engine writes the DFM/DFA and saving ideas; the engineer is the only manual step.', { x: 1.25, y: 0.66, w: 8.9, h: 0.28, fontFace: 'Calibri', fontSize: 11.5, italic: true, color: MUTED, margin: 0 });
   // ── legend (top right) ──
   const legend = [['Measure', BLUE], ['Rules', '4F46E5'], ['AI (optional)', PURPLE], ['Guardrail', AMBER], ['Engine', TEAL], ['Human / output', GREEN]];
   legend.forEach(([t, c], i) => {
@@ -195,19 +195,19 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     s.addText(body, { x: x + 0.16, y: y + 0.47, w: w - 0.32, h: h - 0.60, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
   };
   // inputs (left) and outputs (right)
-  const col = (x, w, label, c, items, y0) => {
+  const col = (x, w, label, c, items, y0, pitch = 0.80) => {
     s.addText(label, { x, y: y0 - 0.3, w, h: 0.24, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: c, charSpacing: 0.6, margin: 0 });
     items.forEach((t, i) => {
-      const y = y0 + i * 0.80;
+      const y = y0 + i * pitch;
       s.addShape('roundRect', { x, y, w, h: 0.68, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.07 });
       s.addText(t, { x: x + 0.13, y, w: w - 0.26, h: 0.68, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'middle' });
     });
   };
   col(0.65, 2.0, 'WHAT GOES IN', BLUE, ['3D CAD model\n(STEP / IGES / STL)', 'Photo of a PCB', 'Plain description\nor an RFQ sheet', 'Volume + region\n(the engineer types)'], 2.74);
-  col(11.05, 1.8, 'WHAT COMES OUT', GREEN, ['8-bucket cost — every\nfigure shows its basis', 'Operation list —\nwhat takes the time', 'Confidence band +\n20-country comparison', 'PDF · Excel · PowerPoint\nnegotiation pack'], 2.74);
+  col(11.05, 1.8, 'WHAT COMES OUT', GREEN, ['8-bucket cost — every\nfigure shows its basis', 'Operation list —\nwhat takes the time', 'Confidence band +\n20-country comparison', 'DFM/DFA + priced saving\nideas — engine, not AI', 'PDF · Excel · PowerPoint\nnegotiation pack'], 2.74, 0.76);
   // inside nodes — the deterministic spine
   node(2.85, 2.68, 2.1, 1.22, BLUE, BLUE_T, 'Geometry kernel', 'OCCT measures the part: volume, walls, holes, faces, topology. Never guessed.', I.ruler);
-  node(2.85, 4.06, 2.1, 1.22, '4F46E5', 'EEF2FF', 'Rules engine', '12 commodities. Derives every cost input from the measurement — cycle, tooling, press, yield.', I.cog);
+  node(2.85, 4.06, 2.1, 1.22, '4F46E5', 'EEF2FF', 'Rules + optimisers', 'Derive every input AND pick the machine: press/die tonnage by physics; routing & cavitation cost-ranked.', I.cog);
   node(2.85, 5.44, 2.1, 1.02, GREEN, GREEN_T, 'The engineer', 'Answers only what geometry cannot know: material, duty, volume, region. Hard stop — no silent guess.', I.person);
   node(5.35, 2.68, 2.15, 1.22, AMBER, AMBER_T, 'Guardrails', '9 sanity checks + physics caps. Measurements beat the AI; AI cycle claims are capped.', I.shield);
   node(8.5, 2.68, 2.1, 1.22, TEAL, TEAL_T, 'Rate library', 'Materials, machines, labour, 20 regions. The only source of money in the tool.', I.coins);
@@ -219,6 +219,20 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addImage({ data: I.calc, x: 6.29, y: 4.33, w: 0.24, h: 0.24 });
   s.addText('COST ENGINE', { x: 5.45, y: 4.76, w: 1.95, h: 0.3, fontFace: 'Calibri', fontSize: 12, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
   s.addText('Fixed arithmetic. 8 buckets.\nNo AI, no judgement.', { x: 5.45, y: 5.08, w: 1.95, h: 0.44, fontFace: 'Calibri', fontSize: 8.2, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
+  // who runs unattended, and where the person is — the automation map
+  const chip = (x, y, label, bg) => {
+    s.addShape('roundRect', { x, y, w: 0.6, h: 0.17, fill: { color: bg }, rectRadius: 0.085 });
+    s.addText(label, { x, y, w: 0.6, h: 0.17, fontFace: 'Calibri', fontSize: 6.2, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
+  };
+  chip(4.27, 2.59, 'AUTO', BLUE);       // kernel
+  chip(4.27, 3.97, 'AUTO', '4F46E5');   // rules + optimisers
+  chip(6.82, 2.59, 'AUTO', AMBER);      // guardrails
+  chip(9.92, 2.59, 'AUTO', TEAL);       // rate library
+  chip(9.92, 3.97, 'AUTO', TEAL);       // local db
+  chip(9.92, 5.35, 'AUTO', GREEN);      // uncertainty
+  chip(6.82, 3.97, 'AUTO', '0E8074');   // cost engine
+  chip(4.27, 5.35, 'HUMAN', GREEN);     // the engineer — the only manual step
+
   // flows: inputs→kernel, kernel→rules, engineer→rules, AI⇢guardrails⇢rules, rules→engine, rates→engine, engine↔db, engine→uncertainty→outputs
   link(2.65, 3.29, 2.85, 3.29, BLUE);
   link(2.65, 5.89, 2.85, 5.89, BLUE);
@@ -235,11 +249,11 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: GREEN } },
-    { text: 'the kernel measures, the rules derive, the engineer answers, the guardrails check, the engine calculates — and the AI is an optional second opinion that can reach none of the money.', options: { color: SLATE } },
+    { text: 'everything badged AUTO is unattended — measure, derive, pick the machine, check, calculate, write the DFM/DFA and saving ideas. The engineer answers and approves; the AI is an optional second opinion that can reach none of the money.', options: { color: SLATE } },
   ], { x: 0.65, y: 6.70, w: 12.0, h: 0.42, fontFace: 'Calibri', fontSize: 10.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'Before the twelve stages, the whole thing on one picture — and one important update since the last session: the tool is now deterministic by default. Start in the middle-left. The blue box measures the part — OCCT, real geometry, never guessed. Below it the indigo box is new: the rules engine. Twelve commodities of explicit engineering rules that derive every cost input straight from the measurement — cycle times, tooling, press size, yield. Where geometry genuinely cannot know something — what the part is made of, whether it is safety-critical, how many a year — the tool does not guess. It stops and asks the engineer, that is the green box, and the costing is blocked until a person answers. That combination is what changed: the purple box at the top, the AI, is now OPTIONAL. Three modes on the form: Rules only, which is the default and makes no outbound call at all; Compare, which runs both and shows you exactly where they disagree, field by field; and AI-led, the old behaviour, kept for comparison. When the AI does run, its words come down through the amber guardrails — nine sanity checks, and its numbers are overwritten wherever the rules can derive the value, its machining time capped by what the stock could physically give up. On the right, unchanged: the rate library is still the only source of money in the tool, the local database holds our parts and real actuals for calibration, the engine is still fixed eight-bucket arithmetic with no judgement in it, and the uncertainty layer turns the number into an honest range. The one line: the kernel measures, the rules derive, the engineer answers, the guardrails check, the engine calculates. The AI is a second opinion — useful, optional, and unable to reach the money.'
+    'Before the twelve stages, the whole thing on one picture — and one important update since the last session: the tool is now deterministic by default. Start in the middle-left. The blue box measures the part — OCCT, real geometry, never guessed. Below it the indigo box is new: the rules engine. Twelve commodities of explicit engineering rules that derive every cost input straight from the measurement — cycle times, tooling, press size, yield. Where geometry genuinely cannot know something — what the part is made of, whether it is safety-critical, how many a year — the tool does not guess. It stops and asks the engineer, that is the green box, and the costing is blocked until a person answers. That combination is what changed: the purple box at the top, the AI, is now OPTIONAL. Three modes on the form: Rules only, which is the default and makes no outbound call at all; Compare, which runs both and shows you exactly where they disagree, field by field; and AI-led, the old behaviour, kept for comparison. When the AI does run, its words come down through the amber guardrails — nine sanity checks, and its numbers are overwritten wherever the rules can derive the value, its machining time capped by what the stock could physically give up. On the right, unchanged: the rate library is still the only source of money in the tool, the local database holds our parts and real actuals for calibration, the engine is still fixed eight-bucket arithmetic with no judgement in it, and the uncertainty layer turns the number into an honest range. The one line: the kernel measures, the rules derive, the engineer answers, the guardrails check, the engine calculates. The AI is a second opinion — useful, optional, and unable to reach the money. Three annotations on this version of the picture, from questions this room asked. Every box badged AUTO runs unattended — the only HUMAN badge on the slide is the engineer, answering material, duty, volume and region, and approving. WHO picks the machine and the tonnage: the indigo rules-and-optimisers box — presses and dies sized by clamp and forming physics, and the machining routing and mould cavitation actually cost-ranked, with the losing options printed in the trace. And WHERE the DFM, DFA and saving ideas come from: the cost engine itself — rule thresholds and geometry advisors, every idea priced — not from the AI; you can see that on the outputs column now, and it is verified in the source code.'
   );
 }
 
