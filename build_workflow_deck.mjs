@@ -1316,16 +1316,16 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   );
 }
 
-// ══════════ 10a5 · TOOLING COST I (method + moulds & dies) ══════════
+// ══════════ 10a5 · TOOLING COST I (the shop model + the quotation proof) ══════════
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'How Tooling Is Priced I — The Method, and Moulds & Dies', 'Parametric build-ups from measured geometry — every constant in a named source file, none of it from AI', TEAL);
+  title(s, 'How Tooling Is Priced I — The Toolmaking Shop Model', 'Every tool built up the way a toolmaker quotes it: hours × rate, steel by the kilogram, bought-outs each', TEAL);
   const steps = [
-    ['1 · Geometry sets the size drivers', 'The kernel measures what tools scale with: projected area per cavity/impression, part volume, bounding box, face count, hole count, undercut count. Nothing is typed in.'],
-    ['2 · A parametric build-up prices the tool', 'Base block + per-cavity (or per-impression / per-station) machining + extras — in £ constants a toolmaker can argue with line by line, not a single opaque number.'],
-    ['3 · The programme sets the tool steel', 'Steel class follows the shots the programme needs (annual volume × 5 yr ÷ cavities): prototype ×0.55 · standard P20 ×1.0 · hardened production ×1.35 · high-wear ×1.7 — and the steel sets the life.'],
-    ['4 · Life → number of tools → £/part', 'tools needed = ceil(programme shots ÷ tool life); tooling £/part = tool cost × tools ÷ annual volume — then tolerance (×1.0–2.0) and surface-finish (up to ×1.6 painted Class-A) uplifts.'],
-    ['5 · Two estimates blended; a quote always wins', 'The kernel prices the tool independently from the B-rep; when both exist they are geometric-mean blended (sanity-clamped). A toolmaker QUOTATION overrides everything — the £420k bumper mould is an input, never an estimate.'],
+    ['1 · Geometry sets the size drivers', 'The kernel measures what tools scale with: projected area per cavity/impression, depth, part volume, faces, holes, undercuts. Nothing is typed in.'],
+    ['2 · One shop prices every commodity', 'UK toolroom rates: design £58 · CNC £52 · EDM £58 · fitting £48 · polishing £45 · tryout £85 /hr. Tool steels by the kilogram: P20 £6.8 → H13 £9.5 → PM £14; 7075 Al £7.5. Bought-outs each: hot runner £3,800/drop, core-pull cylinder £1,450. The shop’s 22% overhead + profit is its own stated line.'],
+    ['3 · The cavity law drives the hours', 'CNC hours = 12 + 3.4 × area^0.72 per cavity set, depth-corrected. EDM, polishing and bench fitting follow as complexity- and finish-driven fractions (5–30% · 8–30% · 25%). Steel class means a real material AND a cutting speed: a prototype tool is 7075 aluminium at ×0.55 hours; a high-volume tool is H13 at ×1.2 plus a wear coating.'],
+    ['4 · Life → number of tools → £/part', 'Steel class follows the programme shots and sets the life; tools consumed = ceil(shots ÷ life); tooling £/part = tool cost × tools ÷ annual volume, with tolerance (×1.0–2.0) and finish (up to ×1.6 Class-A) uplifts.'],
+    ['5 · Two estimates blended; a quote always wins', 'The kernel prices the tool independently from the B-rep; the shop model and the kernel are geometric-mean blended, sanity-clamped. A toolmaker QUOTATION overrides everything — and the proof of calibration is on the right.'],
   ];
   steps.forEach(([t, d], i) => {
     const y = 1.18 + i * 1.06;
@@ -1333,73 +1333,81 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     s.addShape('ellipse', { x: 0.64, y: y + 0.1, w: 0.36, h: 0.36, fill: { color: TEAL } });
     s.addText(String(i + 1), { x: 0.64, y: y + 0.1, w: 0.36, h: 0.36, fontFace: 'Cambria', fontSize: 13, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
     s.addText(t.slice(4), { x: 1.12, y: y + 0.07, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 10, bold: true, color: NAVY, margin: 0 });
-    s.addText(d, { x: 1.12, y: y + 0.3, w: 5.95, h: 0.64, fontFace: 'Calibri', fontSize: 7.9, color: SLATE, margin: 0, valign: 'top' });
+    s.addText(d, { x: 1.12, y: y + 0.3, w: 5.95, h: 0.64, fontFace: 'Calibri', fontSize: 7.7, color: SLATE, margin: 0, valign: 'top' });
   });
-  // Right: the two headline formula cards
-  s.addText('THE TWO BIGGEST TOOLS, FORMULA BY FORMULA', { x: 7.35, y: 1.16, w: 5.5, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: TEAL, charSpacing: 0.6, margin: 0 });
-  s.addShape('roundRect', { x: 7.35, y: 1.42, w: 5.48, h: 2.42, fill: { color: CARD }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.09 });
-  s.addText('INJECTION MOULD  ·  estimateMouldCost()', { x: 7.55, y: 1.52, w: 5.1, h: 0.22, fontFace: 'Courier New', fontSize: 8.8, bold: true, color: NAVY, margin: 0 });
-  s.addText('total = [ £6,000 base  +  (£2,500 + area/cavity × £55) × n^0.9 ] × steel factor\n        + side-actions × £3,500  +  hot runner (£4,000 + £2,500 per drop)',
-    { x: 7.55, y: 1.76, w: 5.15, h: 0.5, fontFace: 'Courier New', fontSize: 7.6, color: SLATE, margin: 0, valign: 'top' });
+  // Right: the bumper mould as the ACTUAL quotation the engine prints
+  s.addText('THE PROOF — THE BUMPER MOULD, LINE BY LINE', { x: 7.35, y: 1.16, w: 5.5, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: TEAL, charSpacing: 0.6, margin: 0 });
+  s.addShape('roundRect', { x: 7.35, y: 1.42, w: 5.48, h: 4.86, fill: { color: CARD }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.09 });
+  const q = [
+    ['Tool design & CAM', '568 h × £58', '£32,956'],
+    ['Mould base, guides & ejection', 'footprint-scaled', '£23,019'],
+    ['Cavity + core steel (P20-hard)', '8,469 kg × £8.2', '£69,443'],
+    ['CNC cavity/core machining', '2,691 h × £52', '£139,936'],
+    ['EDM (ribs, slots, corners)', '336 h × £58', '£19,510'],
+    ['Polishing', '269 h × £45', '£12,110'],
+    ['Bench fitting & spotting', '673 h × £48', '£32,293'],
+    ['Mould tryout — 5 trials', '40 h × £85', '£3,400'],
+    ['Core-pull cylinders × 3 + fitting', 'bought-out + bench', '£14,862'],
+    ['Toolmaker overhead + profit', '22%', '£76,456'],
+  ];
+  q.forEach(([item, how, cost], i) => {
+    const y = 1.56 + i * 0.335;
+    s.addText(item, { x: 7.55, y, w: 2.9, h: 0.3, fontFace: 'Calibri', fontSize: 8.2, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(how, { x: 10.3, y, w: 1.35, h: 0.3, fontFace: 'Courier New', fontSize: 7.0, color: MUTED, margin: 0, valign: 'middle' });
+    s.addText(cost, { x: 11.6, y, w: 1.05, h: 0.3, fontFace: 'Courier New', fontSize: 7.8, bold: false, color: SLATE, align: 'right', margin: 0, valign: 'middle' });
+  });
+  s.addShape('line', { x: 7.55, y: 4.96, w: 5.1, h: 0, line: { color: TEAL, width: 1 } });
   s.addText([
-    { text: 'Why n^0.9: ', options: { bold: true, color: TEAL, fontSize: 8 } },
-    { text: 'the Nth identical cavity is cheaper than the first — and the cavity count itself is COST-RANKED (mould NRE vs cycle share per candidate, losers printed in the trace).\n', options: { color: SLATE, fontSize: 8 } },
-    { text: 'The bumper, worked: ', options: { bold: true, color: NAVY, fontSize: 8 } },
-    { text: '1 cavity (2-up needs 7,388 t > the 3,500 t largest press) × 9,000 cm² × production steel + 3 slides → advisor estimate ⊕ kernel’s independent £412k B-rep parametric, geometric mean → £407k. The deck’s worked example uses the £420k toolmaker quotation instead — because a quote always wins.', options: { color: SLATE, fontSize: 8 } },
-  ], { x: 7.55, y: 2.3, w: 5.15, h: 1.46, fontFace: 'Calibri', margin: 0, valign: 'top' });
-  s.addShape('roundRect', { x: 7.35, y: 3.98, w: 5.48, h: 2.3, fill: { color: CARD }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.09 });
-  s.addText('HPDC DIE  ·  kernel parametric (B-rep)', { x: 7.55, y: 4.08, w: 5.1, h: 0.22, fontFace: 'Courier New', fontSize: 8.8, bold: true, color: NAVY, margin: 0 });
-  s.addText('complexity = faces × £150 + holes × £400 + undercuts × £10,000\ndie = complexity × (bbox litres)^0.45, floored £40k/£80k/£120k by\nshot weight, capped £300k   ·   die life: 150,000 shots',
-    { x: 7.55, y: 4.32, w: 5.15, h: 0.66, fontFace: 'Courier New', fontSize: 7.6, color: SLATE, margin: 0, valign: 'top' });
-  s.addText([
-    { text: 'Every undercut face the kernel counts is £10,000 of sliding tool section ', options: { color: SLATE, fontSize: 8 } },
-    { text: '— the die price moves with measured features, not with anyone’s optimism. Gravity moulds and sand patterns have their own kernel parametrics (sand: £1.5k–£50k, complexity-driven). Life bands: HPDC 150k · gravity 50k · sand 8k · investment 5k shots.', options: { color: SLATE, fontSize: 8 } },
-  ], { x: 7.55, y: 5.0, w: 5.15, h: 1.2, fontFace: 'Calibri', margin: 0, valign: 'top' });
+    { text: 'Engine total £423,985', options: { bold: true, color: TEAL, fontSize: 10.5 } },
+    { text: '  vs the toolmaker’s real quotation ', options: { color: SLATE, fontSize: 9 } },
+    { text: '£420,000', options: { bold: true, color: NAVY, fontSize: 10.5 } },
+    { text: '  — within 1%. 4,797 toolroom hours, every line arguable. The old lump parametric said £690k (+64%).', options: { color: SLATE, fontSize: 8.4 } },
+  ], { x: 7.55, y: 5.06, w: 5.1, h: 1.1, fontFace: 'Calibri', margin: 0, valign: 'top' });
   s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'E7F4F2' }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: TEAL } },
-    { text: 'tooling is a parametric build-up from measured geometry, steel class from the programme volume, life from the steel, amortised over the tools the programme actually consumes — and a real quotation beats the estimate every time.', options: { color: SLATE } },
+    { text: 'tooling is a toolmaker’s quotation the engine writes itself — hours × rate, steel by the kilogram, bought-outs each, overhead stated — calibrated to land on the one real quotation we hold, and a real quotation still beats it every time.', options: { color: SLATE } },
   ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'A fair challenge from our own review was tooling: where do the die and mould numbers come from? Two slides, and everything on them is read out of the source code, not summarised from memory. The method first, five steps, identical across commodities. One: the kernel measures the size drivers — projected area per cavity, volume, faces, holes, undercuts. Two: a parametric build-up prices the tool as a base block plus per-cavity machining plus extras, in constants a toolmaker can argue with individually — six thousand pounds of bolster and ejector system, two and a half thousand plus fifty-five pounds per square centimetre per cavity, three and a half thousand per sliding action. Three: the tool steel follows the programme — the shots you need decide whether it is a prototype tool at roughly half cost or a hardened production tool at one-point-three-five times, and the steel decides the life. Four: life gives the number of tools the programme consumes, and the cost amortises over the annual volume, with tolerance and surface-finish uplifts on top. Five — and this is the confidence point: there are TWO independent estimates, the advisor formula and the geometry kernel’s own B-rep parametric, blended by geometric mean when they both exist; and a real toolmaker quotation overrides both, always. On the right, the two biggest tools with the actual formulas: the injection mould, where the cavity count is itself cost-ranked, and the die-cast die, where every undercut face the kernel counts adds ten thousand pounds of sliding section. On the bumper the advisor and the kernel blend to four hundred and seven thousand; the worked example in this deck uses the four-twenty quotation instead, because a quote always wins.'
+    'Our own review challenged the tooling numbers against a dedicated tooling cost tool, and the challenge was fair — so the estimators were rebuilt, and this slide shows the result. The method first. One toolmaking shop model prices every commodity: design at fifty-eight pounds an hour, CNC at fifty-two, EDM at fifty-eight, bench fitting at forty-eight, polishing at forty-five, press tryout at eighty-five; tool steels by the kilogram from P20 at six-eighty to powder-metallurgy grades at fourteen; hot-runner drops and core-pull cylinders at catalogue prices; and the shop’s twenty-two percent overhead and profit as its own visible line. The hours come from one law — twelve plus three-point-four times area to the nought-point-seven-two per cavity, depth-corrected — with EDM, polishing and fitting as fractions driven by complexity and finish grade. And the right-hand side is why you can believe it: the bumper fascia mould, the one tool we hold a real toolmaker’s quotation for, printed line by line exactly as the engine builds it. Five hundred and sixty-eight hours of design. Eight and a half tonnes of steel. Two thousand seven hundred hours of CNC. Every line ends in a number a toolmaker can argue with — and the total lands at four hundred and twenty-four thousand against a real quotation of four hundred and twenty. Within one percent. The old single-formula parametric said six hundred and ninety. That is what the deep-dive bought: not a different constant, a different KIND of number.'
   );
 }
 
 // ══════════ 10a6 · TOOLING COST II (forging, stamping, blow, the rest) ══════════
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'How Tooling Is Priced II — Forging, Stamping, Blow Moulding', 'The same method, commodity by commodity — with the honest gap stated', TEAL);
+  title(s, 'How Tooling Is Priced II — Forging, Stamping, Blow Moulding', 'The same shop, commodity by commodity — cross-checked against the kernel’s independent estimates', TEAL);
   const cards = [
-    ['FORGING DIE  ·  estimateForgingDieCost() / DieLife()',
-     'die = [ £6,000 + area × £45 + part kg × £250 ] × die steel\n    + impressions × (£3,500 + area × £55) × complexity × steel\n    + heat treat (£2,500 + area × £6) + polish £800/impression',
-     'Die steel: hammer ×0.85 · H13 ×1.0 · premium ×1.4. Complexity ×0.8–1.4. LIFE IS ALLOY-KEYED — aluminium 80k · carbon steel 40k · alloy steel 30k · stainless 18k · titanium 8k · superalloy 3,500 hits — × complexity (0.6–1.3) × size penalty (100/area)^0.2. A flat die life was a live defect this engine fixed: it over-charged aluminium tooling 2–4× and under-charged titanium.'],
-    ['STAMPING DIE  ·  estimateStampingDieCost() / DieLife()',
-     'die = (base + stations × per-station) × size × hardness\nsize = 0.5 + blank cm²/500      hardness: mild 1.0 → boron ≈1.8\nsingle £6k+£2.5k/stn · progressive £12k+£6k/stn · transfer £20k+£9k/stn · fine-blank £30k+£12k/stn',
-     'Life = 1M × (300 ÷ shear MPa)^1.3 × thickness factor × 0.6 if fine-blanking, clamped 50k–3M strokes. Harder, thicker steel wears the tool faster and the formula says by how much.'],
-    ['BLOW MOULD  ·  estimateBlowMouldCost()',
-     'mould = [ base £4k–£7k + (process £1.8k–£3.8k + litres × £900) × n^0.9 ]\n        × mould material  +  cooling 6% (15% high-cooling)',
-     'EBM aluminium is the workhorse; IBM/SBM carry a core-rod/preform premium. Life follows the mould material: aluminium 500k · P20 1M · H13 2M shots.'],
-    ['MACHINING · CAST+MACHINE · THE HONEST GAP',
-     'No die: fixtures + CNC programming NRE (cast+machine books £15,000\nof secondary-machining NRE), amortised over annual volume.',
-     'And the former gap, now closed by the tooling deep-dive: INVESTMENT-CASTING tooling is priced as what it physically is — a wax-injection tool is an aluminium/P20 mould at low pressure, so the mould shop model prices it. A toolmaker quotation still overrides every estimate on this slide.'],
+    ['FORGING DIE  ·  shop build-up',
+     'die blocks: face 4× silhouette × 2 halves, steel by kg\n  (hammer 1.2714 £5.8 · H13 £9.5 · PM £14)\nsinking: (40 + 0.9×area^0.85) h/impression × complexity × steel\n+ block prep + EDM 25% + harden £2,500+£2.2/kg + polish + tryout',
+     'Die life stays ALLOY-KEYED (aluminium 80k → superalloy 3,500 hits). Cross-check: the fixture die moved £104.6k → £74.9k — the gap to the kernel’s independent £63.8k fell from 64% to 17%.'],
+    ['STAMPING DIE  ·  shop build-up',
+     'die set £2,900 + £3.20/cm² + strip-design NRE by die type\nper station: H13 sections by kg + (70 + 0.11×blank cm²) h\n  × hardness × type — split wire-EDM 35% / CNC 45% / fitting 20%\n+ die-set machining + 4 tryout strip runs',
+     'Wear law unchanged: life = 1M × (300 ÷ shear)^1.3, clamped 50k–3M. Two independent witnesses now AGREE: shop model £90,947 vs kernel £92,300 on the same fixture — within 1.5% (they were 14% apart).'],
+    ['BLOW MOULD  ·  shop build-up',
+     'cavity halves: 14 × litres^0.75 kg (Al 7075 or P20/H13)\nCNC: (30 + 9.5 × litres) h × material · cooling drilling 8–20%\n+ frame + pinch-off inserts + IBM/SBM core-rod tooling + tryout',
+     'A container’s cavity is its whole inner surface, so hours scale with the litres it holds. Life follows the mould material: aluminium 500k · P20 1M · H13 2M shots. The 60 L tank tool prices £73k — inside the £60–75k industry band.'],
+    ['CASTING FALLBACKS · MACHINING · THE CLOSED GAP',
+     'HPDC/gravity/sand: kernel B-rep parametric stays PRIMARY on the\nCAD path; the shop model now answers STL/manual paths that\nused to have to ask. Machining: fixtures + £15,000 CNC-programming\nNRE (cast+machine), amortised the same way.',
+     'And the former honest gap, closed: INVESTMENT tooling is priced as what it physically is — a wax-injection tool is an aluminium/P20 mould at low pressure (mould shop model × 0.8 + £1,200 per soluble-core box). A toolmaker quotation still overrides every estimate on both of these slides.'],
   ];
   cards.forEach(([h, f, d], i) => {
     const col = i % 2, row = Math.floor(i / 2);
     const x = 0.5 + col * 6.28, y = 1.2 + row * 2.56, w = 6.05, hh = 2.42;
     s.addShape('roundRect', { x, y, w, h: hh, fill: { color: CARD }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.09 });
     s.addText(h, { x: x + 0.2, y: y + 0.1, w: w - 0.4, h: 0.22, fontFace: 'Courier New', fontSize: 8.4, bold: true, color: NAVY, margin: 0 });
-    s.addText(f, { x: x + 0.2, y: y + 0.36, w: w - 0.4, h: 0.72, fontFace: 'Courier New', fontSize: 7.2, color: SLATE, margin: 0, valign: 'top' });
-    s.addText(d, { x: x + 0.2, y: y + 1.12, w: w - 0.4, h: 1.24, fontFace: 'Calibri', fontSize: 7.9, color: SLATE, margin: 0, valign: 'top' });
+    s.addText(f, { x: x + 0.2, y: y + 0.36, w: w - 0.4, h: 0.88, fontFace: 'Courier New', fontSize: 6.9, color: SLATE, margin: 0, valign: 'top' });
+    s.addText(d, { x: x + 0.2, y: y + 1.28, w: w - 0.4, h: 1.08, fontFace: 'Calibri', fontSize: 7.8, color: SLATE, margin: 0, valign: 'top' });
   });
   s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'E7F4F2' }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Why you can trust these numbers:  ', options: { bold: true, color: TEAL } },
-    { text: 'every tool is now priced the way a toolmaker quotes it — design/CNC/EDM/polish/fitting/tryout hours × toolroom rates, steel by the kilogram, bought-outs each, the shop\u2019s 22% overhead as its own line (toolmaking.ts + the estimators; the bumper mould lands £423,985 against its £420k real quotation) — auditable line by line, changed only by a code review, and never written by an AI.', options: { color: SLATE } },
-  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
+    { text: 'every tool is now priced the way a toolmaker quotes it — hours × toolroom rates, steel by the kilogram, bought-outs each, the shop’s 22% overhead as its own line — in unit-tested source (toolmaking.ts + the estimators), anchored to a real £420k quotation and cross-checked against the kernel’s independent B-rep estimates.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 9.4, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'Same method, three more commodities, and one honest gap. The forging die: a block that scales with the part’s footprint and weight, machining per impression, the die steel as a multiplier, plus heat treatment and polishing — and the life is keyed to the ALLOY, because an aluminium forging is gentle on a die at eighty thousand hits while a superalloy destroys one in three and a half thousand. That alloy-keyed life replaced a flat constant that was over-charging aluminium tooling by a factor of two to four — a defect this engine found and fixed, with the test to prove it. The stamping die: priced by die type and station count, scaled by blank size and by how hard the steel being cut is — and the life law says exactly how much faster boron steel eats a tool than mild steel. The blow mould: per-cavity cost grows with the litres the container holds, the mould material sets both cost and life. Machining has no die — fixtures and programming NRE, amortised the same way. And the gap, said out loud because it builds more confidence than hiding it: investment-casting tooling has no parametric model, so the tool stops and asks for a quotation instead of inventing one. The bottom line is the audit trail: every constant on these two slides lives in a named, unit-tested source file. I did not summarise these formulas from memory — they are read out of the code, and the code is the same code that prices every part.'
+    'Same shop, three more commodities — and every card now reads like the quotation a die shop would send. The forging die: blocks at four times the impression silhouette in real die steels priced by the kilogram, sinking hours per impression scaled by complexity and by how hard the chosen steel is to cut, EDM, hardening priced per kilogram of block, polishing per impression, tryout strokes. The alloy-keyed die life is unchanged — that was already right. And the cross-check matters: on the reference fixture the new build-up moved thirty thousand pounds closer to the kernel’s independent estimate, from sixty-four percent apart to seventeen. The stamping die is the strongest convergence on the slide: die set plus strip-design engineering plus per-station steel and hours split across wire EDM, CNC and bench fitting — and the shop model and the kernel now agree within one and a half percent on the same fixture, corroborated by a real seat-member manual cost. The blow mould scales with the litres the container holds, in aluminium or steel, with the life following the mould material. And the bottom-right card closes the loop: the kernel stays primary where it has a B-rep; the shop model answers the STL and manual paths that used to have to ask; investment tooling — the gap we used to state out loud — is now priced as the wax-injection mould it physically is. One rule survives everything on both slides: a real toolmaker quotation beats every estimate, every time.'
   );
 }
 
