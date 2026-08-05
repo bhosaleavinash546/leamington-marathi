@@ -1382,7 +1382,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
      'EBM aluminium is the workhorse; IBM/SBM carry a core-rod/preform premium. Life follows the mould material: aluminium 500k · P20 1M · H13 2M shots.'],
     ['MACHINING · CAST+MACHINE · THE HONEST GAP',
      'No die: fixtures + CNC programming NRE (cast+machine books £15,000\nof secondary-machining NRE), amortised over annual volume.',
-     'And the gap stated out loud: INVESTMENT-CASTING tooling has no parametric model — the tool STOPS AND ASKS for a toolmaker quotation rather than inventing a band. An asked question beats a guessed constant.'],
+     'And the former gap, now closed by the tooling deep-dive: INVESTMENT-CASTING tooling is priced as what it physically is — a wax-injection tool is an aluminium/P20 mould at low pressure, so the mould shop model prices it. A toolmaker quotation still overrides every estimate on this slide.'],
   ];
   cards.forEach(([h, f, d], i) => {
     const col = i % 2, row = Math.floor(i / 2);
@@ -1395,7 +1395,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'E7F4F2' }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Why you can trust these numbers:  ', options: { bold: true, color: TEAL } },
-    { text: 'every constant lives in a named, unit-tested source file (forging-advisor.ts, sheet-metal-advisor.ts, blow-advisor.ts, injection-moulding.ts, the geometry kernel) — auditable line by line, changed only by a code review, and never written by an AI.', options: { color: SLATE } },
+    { text: 'every tool is now priced the way a toolmaker quotes it — design/CNC/EDM/polish/fitting/tryout hours × toolroom rates, steel by the kilogram, bought-outs each, the shop\u2019s 22% overhead as its own line (toolmaking.ts + the estimators; the bumper mould lands £423,985 against its £420k real quotation) — auditable line by line, changed only by a code review, and never written by an AI.', options: { color: SLATE } },
   ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
