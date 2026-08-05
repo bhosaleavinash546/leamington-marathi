@@ -47,17 +47,31 @@ export function shouldResearch(result, { minCards = RESEARCH_TRIGGER.minCards, m
 }
 
 /**
- * Search plan aimed at what is COMING, not what exists. Generic "trends"
- * queries return marketing pages; these target roadmaps, pilots and R&D.
+ * Search plan aimed at what is COMING — across ALL FOUR technology kinds.
+ *
+ * 2026 benchmark lesson: the first plan asked four roadmap/cost questions and
+ * therefore retrieved four roadmap/cost answers. Benchmarking the tool against
+ * a human researching the same part showed the misses were not in the model's
+ * reasoning but in what the model was ever SHOWN — the materials source, the
+ * diagnostics source and the chassis-software source were never retrieved, so
+ * no amount of prompting could have surfaced them. A kind-aware schema over a
+ * substitution-biased search plan still finds substitutions.
+ *
+ * Each probe targets a kind the register would otherwise stay blind to.
+ * Returns [{ q, targets }] — `targets` is the kind the probe hunts, used by the
+ * prompt and asserted in tests so the plan cannot silently narrow again.
  */
 export function buildResearchPlan(query, { year = new Date().getFullYear() } = {}) {
   const q = String(query || '').trim();
   if (!q) return [];
   return [
-    `${q} automotive next generation technology roadmap ${year}`,
-    `${q} emerging automotive technology ${year + 4} future`,
-    `${q} automotive supplier development pilot prototype`,
-    `${q} automotive cost reduction new technology China`,
+    { q: `${q} automotive next generation technology roadmap ${year}`, targets: 'substitution' },
+    { q: `${q} emerging automotive technology ${year + 4} future concept`, targets: 'substitution' },
+    { q: `${q} automotive cost reduction China supplier localisation ${year}`, targets: 'substitution' },
+    { q: `${q} automotive lightweight material process innovation patent`, targets: 'substitution' },
+    { q: `${q} automotive predictive maintenance diagnostics warranty failure mode`, targets: 'lifecycle' },
+    { q: `${q} software defined vehicle domain controller control software ${year}`, targets: 'orchestration' },
+    { q: `${q} automotive efficiency range aerodynamic secondary benefit new use`, targets: 'function' },
   ];
 }
 
@@ -176,9 +190,10 @@ export async function researchFutureTechnologies(query, deps) {
 
   const plan = buildResearchPlan(q);
   const searches = [];
-  for (const sq of plan) {
+  for (const probe of plan) {
+    const sq = typeof probe === 'string' ? probe : probe.q;
     const hits = await performSearch(sq, searchApiKey).catch(() => []);
-    for (const r of (hits || []).slice(0, 4)) {
+    for (const r of (hits || []).slice(0, 3)) {
       const url = safeUrl(r?.url);
       if (!url) continue;               // unusable scheme => not a citable source
       searches.push({

@@ -144,3 +144,18 @@ Format: decision · why · what would change it.
     held: adding four entries pushed curation debt past the CI limit, and the fix was to cite
     the most recent evidence the research actually found (which the stale-evidence flag was
     correctly demanding), not to raise the threshold.
+
+21. **The search plan, not the prompt, decides what foresight can see (2026 benchmark, part 2).**
+    *Why:* after adding the `kind` ontology (#20), the tool was still going to miss the same
+    class of technology on every OTHER part — because the four search probes all asked
+    roadmap/cost questions. A kind-aware schema over a substitution-biased plan still returns
+    substitutions: the model can only reason about sources it was actually shown, and the
+    materials, diagnostics and chassis-software sources were never retrieved. The plan now
+    carries seven labelled probes — four substitution angles (roadmap, emerging, China cost,
+    materials/patent) plus one each for `lifecycle`, `orchestration` and `function` — and a
+    test asserts every part gets all four kinds probed. Blindness is also now reported PER
+    COMMODITY (`ontologyBlindCommodities`), because fixing air suspension made Chassis
+    kind-diverse and left eight commodities at 100% part swaps — a register-wide percentage
+    would have hidden exactly that. *Changes it:* nothing — but the remaining 165
+    substitution-only entries are curation debt, now visible worst-first in `horizon:audit`
+    rather than invisible.

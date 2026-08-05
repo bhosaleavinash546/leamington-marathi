@@ -40,3 +40,20 @@ console.log(`\nQuery precision: ${q.checked} probes, ${q.weak.length} weak (gene
 for (const w of q.weak) console.log(`  "${w.query}" → ${w.reason} (top=${w.top ?? '—'}, tied=${w.tied ?? 0})`);
 if (!q.weak.length) console.log('  none — all probes resolve with specific term matches');
 console.log('\nDiscipline: fix worst-first, cite evidence for every change, re-run. The tests gate regression — the register can only get healthier.');
+
+// Ontology blindness — which commodities can still only see part swaps.
+{
+  const { auditRegister } = await import('../foresight-audit.mjs');
+  const a = auditRegister();
+  console.log(`\nOntology mix: ${JSON.stringify(a.byKind)} — ${a.nonSubstitutionPct}% non-substitution`);
+  if (a.ontologyBlindCommodities.length) {
+    console.log('Commodities that can still ONLY see part swaps (worst-first):');
+    for (const c of a.ontologyBlindCommodities) {
+      console.log(`  ${c.commodity.padEnd(12)} ${c.entries} entries, 0 function/orchestration/lifecycle`);
+    }
+    console.log('  -> run a Horizon query on any part in these and read the FORWARD RESEARCH block:');
+    console.log('     the plan now probes lifecycle, orchestration and function angles explicitly.');
+  } else {
+    console.log('Every commodity carries at least one non-substitution technology.');
+  }
+}

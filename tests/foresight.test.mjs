@@ -568,11 +568,13 @@ test('shouldResearch: fires exactly on the shapes users read as "not predicting"
 });
 
 test('buildResearchPlan: queries target what is coming, not what exists', () => {
+  // Probes are labelled { q, targets } since the 2026 benchmark — the plan must
+  // stay forward-looking AND stay spread across kinds.
   const plan = buildResearchPlan('air suspension', { year: 2026 });
   assert.ok(plan.length >= 3);
-  assert.ok(plan.every((q) => q.includes('air suspension')));
-  const blob = plan.join(' ').toLowerCase();
-  for (const forward of ['roadmap', 'emerging', 'prototype', 'future']) assert.ok(blob.includes(forward), `plan lacks forward term ${forward}`);
+  assert.ok(plan.every((p) => p.q.includes('air suspension')));
+  const blob = plan.map((p) => p.q).join(' ').toLowerCase();
+  for (const forward of ['roadmap', 'emerging', 'future', 'innovation']) assert.ok(blob.includes(forward), `plan lacks forward term ${forward}`);
   assert.deepEqual(buildResearchPlan(''), []);
 });
 
@@ -838,4 +840,32 @@ test('ontology: promotion carries kind through and rejects an invalid one', asyn
   assert.equal(e.kind, 'orchestration');
   assert.equal(validatePromotion(e).ok, true, JSON.stringify(validatePromotion(e).errors));
   assert.equal(validatePromotion({ ...e, kind: 'nonsense' }).ok, false);
+});
+
+test('generic fix: the search plan probes every kind for ANY part, not just air suspension', async () => {
+  const { buildResearchPlan } = await import('../foresight-research.mjs');
+  // The 2026 benchmark lesson: a kind-aware schema over a substitution-biased
+  // plan still finds substitutions, because the model can only reason about
+  // sources it was shown. Every part must get lifecycle/orchestration/function
+  // probes, not only the one part a human happened to audit.
+  for (const part of ['air suspension', 'brake caliper', 'wiring harness', 'battery module', 'headlamp', 'seat frame']) {
+    const plan = buildResearchPlan(part, { year: 2026 });
+    const targets = new Set(plan.map((p) => p.targets));
+    for (const kind of ['substitution', 'lifecycle', 'orchestration', 'function']) {
+      assert.ok(targets.has(kind), `"${part}": plan has no ${kind} probe — the substitution bias is back`);
+    }
+    assert.ok(plan.every((p) => p.q.includes(part)), `"${part}": a probe lost the subject`);
+  }
+  assert.deepEqual(buildResearchPlan(''), []);
+});
+
+test('generic fix: ontology blindness is reported per commodity, not hidden in an average', async () => {
+  const { auditRegister } = await import('../foresight-audit.mjs');
+  const a = auditRegister();
+  assert.ok(a.perCommodity && Object.keys(a.perCommodity).length >= 5, 'per-commodity ontology mix missing');
+  assert.ok(Array.isArray(a.ontologyBlindCommodities), 'blind-commodity list missing');
+  // Every commodity total must reconcile — the report cannot quietly drop entries.
+  const summed = Object.values(a.perCommodity).reduce((n, v) => n + v.total, 0);
+  assert.equal(summed, a.total, 'per-commodity totals do not reconcile with the register');
+  for (const c of a.ontologyBlindCommodities) assert.equal(a.perCommodity[c.commodity].nonSubstitution, 0);
 });

@@ -76,12 +76,29 @@ export function auditRegister({ register = FORESIGHT_REGISTER, now = REGISTER_VI
   const byKind = {};
   for (const e of entries) byKind[e.kind] = (byKind[e.kind] ?? 0) + 1;
   const nonSubstitutionPct = Math.round(((entries.length - (byKind.substitution ?? 0)) / entries.length) * 1000) / 10;
+  // Per-commodity ontology blindness. Fixing the air-suspension blind spot made
+  // Chassis kind-diverse and left eight commodities still 100% part swaps — a
+  // register-wide percentage would have hidden that. This is the curator's
+  // worst-first list for the ontology, the way `inbox` is for evidence.
+  const perCommodity = {};
+  for (const e of entries) {
+    perCommodity[e.commodity] ??= { total: 0, substitution: 0, nonSubstitution: 0 };
+    perCommodity[e.commodity].total++;
+    if (e.kind === 'substitution') perCommodity[e.commodity].substitution++;
+    else perCommodity[e.commodity].nonSubstitution++;
+  }
+  const ontologyBlindCommodities = Object.entries(perCommodity)
+    .filter(([, v]) => v.nonSubstitution === 0)
+    .map(([c, v]) => ({ commodity: c, entries: v.total }))
+    .sort((a, b) => b.entries - a.entries);
   return {
     total: entries.length,
     flaggedCount: flagged.length,
     byFlag,
     byKind,
     nonSubstitutionPct,
+    perCommodity,
+    ontologyBlindCommodities,
     chinaCoveragePct,
     // worst-first inbox: most flags, then id for determinism
     inbox: [...flagged].sort((a, b) => b.flags.length - a.flags.length || a.id.localeCompare(b.id)),
