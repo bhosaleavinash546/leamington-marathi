@@ -679,12 +679,12 @@ partSlide('assets/workflow-deck/part-housing.png',
 // ══════════ 5 · AI READS ══════════
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Stage 4 · The AI Reads the Part', 'The one stage the AI owns — and the hard limits on it', PURPLE);
-  owner(s, 10.3, 0.74, 'OWNER: THE AI', PURPLE, PURPLE_T);
+  title(s, 'Stage 4 · The AI Reads the Part (Optional)', 'Off by default — and skipped entirely when the engineer enters the answers', PURPLE);
+  owner(s, 10.05, 0.74, 'OWNER: AI — OPTIONAL', PURPLE, PURPLE_T);
 
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 6.0, h: 2.75, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.25 }, rectRadius: 0.1 });
   s.addText('WHAT THE AI IS GIVEN', { x: 0.75, y: 1.45, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: PURPLE, charSpacing: 1, margin: 0 });
-  s.addText('Only the measurements from the previous slide — plus the part name and the shape signature. It never sees a price list, and it never sees the rate library.',
+  s.addText('Runs only in the Compare and AI-led modes — the default Rules-only path makes no AI call: the rules derive the inputs and the ENGINEER answers the material and duty questions. When it does run, it is given only the measurements — never a price list, never the rate library.',
     { x: 0.75, y: 1.76, w: 5.5, h: 0.7, fontFace: 'Calibri', fontSize: 11, color: SLATE, margin: 0, valign: 'top' });
   s.addText('WHAT IT SAYS BACK', { x: 0.75, y: 2.48, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: PURPLE, charSpacing: 1, margin: 0 });
   const says = [['Material family', 'Aluminium die-casting alloy'], ['How it is made', 'High-pressure die cast'], ['Then what', 'Machine-finished on a cutting machine'], ['How sure it is', '84% confident']];
@@ -694,14 +694,14 @@ partSlide('assets/workflow-deck/part-housing.png',
     s.addText(v, { x: 2.7, y, w: 3.6, h: 0.28, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0, valign: 'middle' });
   });
 
-  s.addShape('roundRect', { x: 6.75, y: 1.3, w: 6.08, h: 2.75, fill: { color: CARD }, line: { color: RED, width: 1.5 }, rectRadius: 0.1 });
+  s.addShape('roundRect', { x: 6.75, y: 1.3, w: 6.08, h: 2.92, fill: { color: CARD }, line: { color: RED, width: 1.5 }, rectRadius: 0.1 });
   s.addText('WHAT THE AI CANNOT DO', { x: 7.0, y: 1.45, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: RED, charSpacing: 1, margin: 0 });
   const cannot = [
     'Set a price, or any part of a price',
     'Change a measured dimension or weight',
     'Choose the machine or the cycle time',
     'Touch the rate library',
-    'Override a safety check',
+    'Override a safety check', 'Overrule anything the engineer entered',
   ];
   cannot.forEach((t, i) => {
     s.addImage({ data: I.times, x: 7.0, y: 1.85 + i * 0.4, w: 0.17, h: 0.17 });
@@ -712,24 +712,23 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addText('The confidence score is not decoration — it changes what happens next', {
     x: 0.8, y: 4.42, w: 11, h: 0.3, fontFace: 'Calibri', fontSize: 12.5, bold: true, color: NAVY, margin: 0 });
   s.addText([
-    { text: 'At 84% the tool proceeds but flags the call for review. Below 50% a hard rule fires — "material suggestion is only N% confident, add a part photo or confirm the material manually" — and it stays on the result until a person clears it. ', options: { color: SLATE } },
+    { text: 'In the AI modes: at 84% the tool proceeds but flags the call for review. Below 50% a hard rule fires — "material suggestion is only N% confident, add a part photo or confirm the material manually" — and it stays on the result until a person clears it. ', options: { color: SLATE } },
     { text: 'A confident-sounding wrong answer is the most dangerous thing an AI can produce — so uncertainty is made visible rather than smoothed over.', options: { bold: true, color: NAVY } },
   ], { x: 0.8, y: 4.75, w: 11.75, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 5.7, w: 12.33, h: 0.9, fill: { color: GREEN_T }, line: { color: GREEN, width: 1 }, rectRadius: 0.1 });
   s.addText([
     { text: 'In plain terms: ', options: { bold: true, color: GREEN } },
-    { text: 'the AI does the job an experienced engineer does in the first ten seconds of picking up a part — "ah, that\'s a die-cast housing, that\'ll be machined after". It saves setup time. It does not do the costing, and it cannot.', options: { color: SLATE } },
+    { text: 'the AI does the job an experienced engineer does in the first ten seconds of picking up a part — "ah, that\'s a die-cast housing, that\'ll be machined after". It saves setup time. It does not do the costing, it cannot — and on the default Rules-only path this whole stage is skipped: the engineer\u2019s answers replace the AI\u2019s reading.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.83, w: 11.75, h: 0.7, fontFace: 'Calibri', fontSize: 12, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'Now the AI. This is the one stage out of twelve that it owns, so let us be precise about it. ' +
-    'What is it given? Only the measurements from the previous slide, plus the part name. It does not see a price list. It does not see our rate library. It cannot see what the answer ought to be. ' +
-    'What does it say back? Four things. The material family — an aluminium die-casting alloy. How it is made — high-pressure die casting, meaning molten aluminium injected into a steel mould under very high pressure. What happens next — machine finishing. And how sure it is: eighty-four percent. ' +
-    'Now the red box, which is the answer to "but what if the AI gets it wrong". The AI cannot set a price or any part of a price. It cannot change a measured dimension or the weight. It cannot choose the machine or the cycle time. It cannot touch the rate library. And it cannot override a safety check. Those are not rules we ask it to follow — it has no access to any of those things. ' +
-    'One more thing on the confidence score, because it does real work. At eighty-four percent the tool proceeds but flags the call for review. There is a hard rule in the code: if the material confidence falls below fifty percent, a warning fires that says the suggestion is a coin toss and asks for a part photo or a manual confirmation, and that warning stays attached to the result until a person clears it. A confident-sounding wrong answer is the most dangerous thing an AI can give you, so we make the uncertainty visible rather than hiding it. ' +
-    'In plain terms: the AI does what an experienced engineer does in the first ten seconds of picking up a part. It saves setup time. It does not do the costing, and it cannot.'
+    'Stage four, the AI — and the first thing to say has changed since this deck was first written: this stage is OPTIONAL, and by default it does not run at all. The default mode is Rules only — the geometry kernel measures, the rules derive every cost input, and the two or three things geometry cannot know, the material and the duty questions, are answered by our engineer on the form. No outbound call, nothing leaves the network, and the costing is complete. ' +
+    'The AI exists for the other two modes. In Compare it reads the part alongside the rules and we see field by field where the two disagree. In AI-led — kept mainly for comparison — it does the classification job you see on the left: it is handed the measurements and the shape signature, never a price list, never the rate library, and it hands back words — aluminium die-casting alloy, high-pressure die cast, machine-finished — with a confidence score. ' +
+    'The red box is unchanged and worth reading slowly, because every line is enforced in code, not requested in a prompt: the AI cannot set a price or any part of one, cannot change a measured dimension, cannot choose the machine or the cycle time, cannot touch the rate library, cannot override a safety check — and cannot overrule anything the engineer entered. An engineer\u2019s entry outranks the model everywhere, always. ' +
+    'When the AI does run, the confidence score is not decoration. At eighty-four percent the tool proceeds but flags the call for review. Below fifty percent a hard rule fires and stays on the result until a person clears it — because a confident-sounding wrong answer is the most dangerous thing an AI can produce, so uncertainty is made visible rather than smoothed over. ' +
+    'In plain terms: the AI does the job an experienced engineer does in the first ten seconds of picking up a part. It saves setup time when we want a second opinion. It does not do the costing, it cannot — and on the default path it is not even in the room: the engineer\u2019s answers replace its reading entirely.'
   );
 }
 
@@ -800,7 +799,7 @@ partSlide('assets/workflow-deck/part-housing.png',
 // ══════════ 7 · PROCESS & MACHINE SELECTION ══════════
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Stage 7 · Choosing the Process and the Machine', 'Why high-pressure die casting, and why a 1,600-tonne press', TEAL);
+  title(s, 'Stage 7 · Choosing the Process and the Machine', 'Why high-pressure die casting, why a 1,600-tonne press — and what happens when the engineer chooses differently', TEAL);
   owner(s, 10.3, 0.74, 'OWNER: THE ENGINE', TEAL, TEAL_T);
 
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 6.0, h: 2.5, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
@@ -841,27 +840,27 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addText([
     { text: 'Every machine in the library carries its own hourly rate — a bigger press costs more per hour to own and run. ', options: { color: SLATE } },
     { text: 'Pick a press that is too big and you overstate the cost; too small and the part physically cannot be made. ', options: { bold: true, color: NAVY } },
-    { text: 'So the engine sizes the machine from the geometry rather than accepting a default, and it flags the choice for the engineer to confirm.', options: { color: SLATE } },
+    { text: 'So the engine sizes the machine from the geometry rather than accepting a default — and every choice on this slide is optional: enter a process or a machine yourself and that entry is respected. The engine keeps it, prices its own alternative alongside it as a negotiation lever, and the self-audit flags an over- or undersized machine with the £/part difference.', options: { color: SLATE } },
   ], { x: 0.8, y: 4.48, w: 11.75, h: 0.82, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 5.58, w: 12.33, h: 1.05, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1 }, rectRadius: 0.1 });
   s.addText([
     { text: 'Who decided all this?  ', options: { bold: true, color: PURPLE } },
-    { text: 'The AI ', options: { bold: true, color: PURPLE } },
-    { text: 'suggested "die casting". ', options: { color: SLATE } },
-    { text: 'The engine ', options: { bold: true, color: TEAL } },
-    { text: 'then tested that suggestion against the measured geometry, rejected the alternatives on physical grounds, and sized the press by calculation. ', options: { color: SLATE } },
-    { text: 'The AI proposed; the engine disposed. ', options: { bold: true, color: NAVY } },
-    { text: 'If the AI had said "sand casting", the 3 mm walls would have overruled it.', options: { color: SLATE } },
-  ], { x: 0.8, y: 5.7, w: 11.75, h: 0.85, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
+    { text: 'The rules engine — by default, with no AI call: ', options: { bold: true, color: TEAL } },
+    { text: 'it tested the shape against each process\u2019s physics, rejected the alternatives, and sized the press by calculation. ', options: { color: SLATE } },
+    { text: 'The optional AI ', options: { bold: true, color: PURPLE } },
+    { text: 'offered a second opinion ("die casting" — it agreed). ', options: { color: SLATE } },
+    { text: 'A pinned engineer choice overrides both. ', options: { bold: true, color: NAVY } },
+    { text: 'And if anyone — AI or person — had said "sand casting", the 3 mm walls would have argued back with the physics.', options: { color: SLATE } },
+  ], { x: 0.8, y: 5.7, w: 11.75, h: 0.85, fontFace: 'Calibri', fontSize: 11, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'Now we are into the engine, and this is where the real engineering lives. Two questions get answered here: which process, and which machine. ' +
-    'First, the process. The AI suggested die casting, but the engine does not simply accept that. It tests the measured shape against what each process can physically do. Three millimetre walls, a hollow shape, sixty thousand a year — that combination points firmly at high-pressure die casting. Sand casting is rejected because it cannot reliably produce three millimetre walls at that quality or speed. Machining from solid is rejected because you would cut away about eighty percent of the metal — absurd on cost. Gravity die casting is rejected because it cannot reliably fill walls that thin. ' +
-    'Second, and this is check four from the previous slide — the press. When you inject molten aluminium at high pressure it tries to force the two halves of the mould apart. The press has to clamp it shut. So the engine takes the shadow area of the part, which it measured from the CAD, multiplies it by the pressure inside the mould, and gets the force trying to open the tool. Add a safety margin, and pick the smallest press in the library that can hold it. That comes out at sixteen hundred tonnes. ' +
-    'Why does this matter commercially? Because every machine carries its own hourly rate. A bigger press costs more per hour to own and to run. Choose too big a machine and you overstate the cost — you go into a negotiation asking for the wrong number. Choose too small and the part physically cannot be made. So the engine sizes it by calculation rather than defaulting, and it flags the choice for our engineer to confirm. ' +
-    'And in the purple box, the summary of who did what. The AI proposed. The engine disposed. If the AI had said sand casting, the three millimetre walls would have overruled it automatically.'
+    'Now we are into the engine, and this is where the real engineering lives. Two questions get answered here: which process, and which machine — and one thing to hold onto throughout: every answer on this slide is a DEFAULT, not a decree. ' +
+    'First, the process, and note who decides: the rules engine, by default with no AI call at all. It tests the measured shape against what each process can physically do. Three millimetre walls, a hollow shape, sixty thousand a year — that combination points firmly at high-pressure die casting. Sand casting is rejected because it cannot reliably produce three millimetre walls at that quality or speed. Machining from solid would cut away about eighty percent of the metal — absurd on cost. Gravity die casting cannot reliably fill walls that thin. In the optional AI modes the model offers its own reading — here it agreed, die casting — and where it disagrees, the physics wins. ' +
+    'Second, the press. Molten aluminium injected under pressure tries to force the two mould halves apart, so the engine takes the shadow area it measured from the CAD, multiplies by the cavity pressure, adds a safety margin, and picks the smallest press in the library that clamps it: sixteen hundred tonnes. Smallest-that-covers is also cheapest-per-hour on the ladder, so the sizing IS the cost optimisation. ' +
+    'Third — and this is the point our own review sharpened — all of it is optional the moment our engineer enters data. Pin the process on the form and the pin is honoured everywhere, including on re-analysis. Pick a different machine by hand and the tool respects the choice: it keeps your machine, prices its own alternative alongside as a negotiation lever, and the self-audit challenges the selection in both directions — a machine bigger than the physics needs is flagged with the pounds-per-part it wastes, a smaller one with the reason it cannot work. Enter a toolmaker quotation and it overrides every tooling estimate. The tool decides where the engineer has not; the engineer outranks the tool everywhere they have. ' +
+    'And the purple box is the one line to remember: the rules engine decided, the optional AI seconded, a pinned engineer choice overrides both — and physics argues back at anyone, human or machine, who picks a process the walls cannot survive.'
   );
 }
 
