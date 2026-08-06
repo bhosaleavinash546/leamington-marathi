@@ -251,12 +251,28 @@ async function main(): Promise<void> {
     })()`) as string;
     log(`on-screen headline: ${headline}`);
 
-    // 6 · Export the tool's own PDF.
-    const dl = page.waitForEvent('download', { timeout: 60_000 });
-    await page.evaluate(`(() => {
-      if (!window.__demoOpenPDF) throw new Error('__demoOpenPDF hook missing');
-      return window.__demoOpenPDF();
-    })()`);
+    // 6 · Export. Two different reports live behind two different buttons:
+    //
+    //   printPDF        (#export-pdf-btn / __demoOpenPDF) - the standard
+    //                   should-cost PDF, sections 1..15.
+    //   printMasterPDF  (#export-all-pdf-btn)             - the MASTER COST
+    //                   REPORT, PART A / B / C. This is the format the Radar
+    //                   PCB example uses. PART A is the same should-cost body;
+    //                   PART C (board spec, ISO 26262 ASIL, BOM, board images)
+    //                   only renders when the PCB vision analysis has run.
+    //
+    // MASTER=1 selects the master report.
+    const wantMaster = process.env.MASTER === '1';
+    const dl = page.waitForEvent('download', { timeout: 90_000 });
+    if (wantMaster) {
+      log('exporting the MASTER COST REPORT (#export-all-pdf-btn)');
+      await page.click('#export-all-pdf-btn', { timeout: 20_000 });
+    } else {
+      await page.evaluate(`(() => {
+        if (!window.__demoOpenPDF) throw new Error('__demoOpenPDF hook missing');
+        return window.__demoOpenPDF();
+      })()`);
+    }
     const download = await dl;
     mkdirSync(dirname(OUT), { recursive: true });
     await download.saveAs(OUT);
