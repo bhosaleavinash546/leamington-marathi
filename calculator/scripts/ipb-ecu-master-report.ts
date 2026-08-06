@@ -27,7 +27,11 @@ import { mkdirSync, existsSync, readdirSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 
 const UI_PORT = Number(process.env.MASTER_UI_PORT ?? 5178);
-const API_PORT = Number(process.env.MASTER_API_PORT ?? 3007);
+// vite.config.ts HARDCODES its /api proxy target to localhost:3002 and reads no
+// env var for it, so the API must listen there. Pointing this at a free port
+// and passing VITE_API_PROXY_TARGET (which nothing reads) silently sends every
+// browser request somewhere else — that is how the first run "timed out".
+const API_PORT = Number(process.env.MASTER_API_PORT ?? 3002);
 const BASE = `http://localhost:${UI_PORT}/calculator/`;
 const OUT = resolve(process.argv[2] ?? '../CostVision-IPB2.0-ECU-MASTER-REPORT.pdf');
 
@@ -47,7 +51,7 @@ async function main(): Promise<void> {
   const api: ChildProcess = spawn('npx', ['tsx', 'server/index.ts'], { stdio: 'ignore', env });
   const ui: ChildProcess = spawn(
     'npx', ['vite', '--port', String(UI_PORT), '--strictPort'],
-    { stdio: 'ignore', env: { ...env, VITE_API_PROXY_TARGET: `http://localhost:${API_PORT}` } },
+    { stdio: 'ignore', env },
   );
   let browser: Browser | undefined;
   const cleanup = () => {
@@ -65,6 +69,20 @@ async function main(): Promise<void> {
     await waitFor(BASE, 'Vite dev server');
     log(`UI up on ${BASE}`);
 
+    // Preflight: without a usable key the analyze endpoint 400s in under a
+    // second, and waiting on a success selector afterwards is a 10-minute lie.
+    const apiKey = (process.env.ANTHROPIC_API_KEY ?? '').trim();
+    // NB the field is `apiKeyConfigured` — see server/index.ts's /api/health.
+    const health = await fetch(`http://localhost:${API_PORT}/api/health`)
+      .then(r => r.json() as Promise<{ apiKeyConfigured?: boolean }>).catch(() => ({}));
+    log(`server key configured: ${health.apiKeyConfigured ?? 'unknown'}; env key supplied: ${apiKey ? 'yes' : 'no'}`);
+    if (!apiKey && health.apiKeyConfigured === false) {
+      throw new Error(
+        'No usable ANTHROPIC_API_KEY. The PCB vision analysis needs one and will 400 without it.\n'
+        + '  Set it in calculator/.env, or export ANTHROPIC_API_KEY before running this script.',
+      );
+    }
+
     const photoDir = process.env.TOOLRUN_PHOTO_DIR ?? '';
     const photos = (photoDir && existsSync(photoDir))
       ? readdirSync(photoDir).filter(f => /\.(jpe?g|png)$/i.test(f)).sort()
@@ -79,8 +97,28 @@ async function main(): Promise<void> {
     const ctx = await browser.newContext({ acceptDownloads: true, viewport: { width: 1600, height: 1100 } });
     const page = await ctx.newPage();
 
+    if (apiKey) await ctx.setExtraHTTPHeaders({ 'x-api-key': apiKey });
+
     const errors: string[] = [];
     page.on('pageerror', e => errors.push(String(e)));
+
+    // Watch the analyze call itself. The first version of this script waited on
+    // a success selector with no failure path, so a 400 that came back in 0.4 s
+    // looked identical to a slow analysis and burned the full 10-minute timeout.
+    let analyzeFailure: string | null = null;
+    page.on('response', (res) => {
+      if (!/\/api\/pcb\//.test(res.url())) return;
+      log(`${new URL(res.url()).pathname} responded ${res.status()}`);
+      if (res.status() >= 400) {
+        void res.text()
+          .then((body) => {
+            let msg = body.slice(0, 300);
+            try { msg = (JSON.parse(body) as { error?: string }).error ?? msg; } catch { /* raw */ }
+            analyzeFailure = `HTTP ${res.status()} from ${new URL(res.url()).pathname}: ${msg}`;
+          })
+          .catch(() => { analyzeFailure = `HTTP ${res.status()} from ${new URL(res.url()).pathname}`; });
+      }
+    });
 
     await page.addInitScript(() => {
       const payload = btoa(JSON.stringify({ sub: 'master', exp: Math.floor(Date.now() / 1000) + 86_400 }));
@@ -118,8 +156,31 @@ async function main(): Promise<void> {
     log('photos attached — running the vision analysis (this is a real API call)');
 
     await page.click('#pcb-img-analyze-btn', { timeout: 20_000 });
-    // The vision pipeline on a dense automotive board takes minutes.
-    await page.waitForSelector('#pcb-apply-pcba-btn', { state: 'visible', timeout: 600_000 });
+
+    // Race the success selector against an API failure, so a rejected request
+    // ends the run immediately with the server's own message.
+    const deadline = Date.now() + 600_000;
+    let ready = false;
+    while (Date.now() < deadline) {
+      if (analyzeFailure) throw new Error(`PCB analysis failed - ${analyzeFailure}`);
+      ready = await page.locator('#pcb-apply-pcba-btn').isVisible().catch(() => false);
+      if (ready) break;
+      // A streamed analysis can fail with HTTP 200 and an SSE error frame, so
+      // also watch the button falling back to its idle label and any toast.
+      const uiState = await page.evaluate(`(() => {
+        const b = document.getElementById('pcb-img-analyze-btn');
+        const toast = document.querySelector('.toast--error, .toast-error, [data-toast="error"]');
+        return { label: b ? b.textContent.trim() : '', busy: b ? b.disabled : false,
+                 toast: toast ? toast.textContent.trim().slice(0, 200) : '' };
+      })()`).catch(() => null) as { label: string; busy: boolean; toast: string } | null;
+      if (uiState?.toast) throw new Error(`PCB analysis failed - UI reported: ${uiState.toast}`);
+      if (uiState && !uiState.busy && !/Analyzing/i.test(uiState.label)) {
+        throw new Error(`PCB analysis ended without a result (button back to "${uiState.label}")`);
+      }
+      await page.waitForTimeout(1000);
+    }
+    if (analyzeFailure) throw new Error(`PCB analysis failed - ${analyzeFailure}`);
+    if (!ready) throw new Error('PCB analysis did not finish within 10 minutes and reported no error');
     log('analysis complete');
 
     const asil = await page.evaluate(
