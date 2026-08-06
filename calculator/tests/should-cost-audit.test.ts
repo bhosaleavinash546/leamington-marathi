@@ -165,10 +165,17 @@ describe('runShouldCostAudit ordering', () => {
   it('returns findings most-severe first', () => {
     const f = runShouldCostAudit(base({
       commodity: 'forging', sizingParams: { forgeTonnes: 1500 }, selectedMachineId: 'forge-press-500t',
-      input: mkInput('mat-al6061', 2, 500000), annualVolume: 100000,   // also triggers low-severity amort
+      input: mkInput('mat-al6061', 2, 500000), annualVolume: 100000,   // also triggers an amort finding
     }));
     expect(f.length).toBeGreaterThanOrEqual(2);
     expect(f[0].severity).toBe('high');           // machine-undersized first
-    expect(f[f.length - 1].severity).toBe('low'); // amort last
+    // Assert the ORDERING property rather than a specific severity on the last
+    // row. Amort severity now scales with the size of the error (5x out here,
+    // so 'high'), and pinning it made this ordering test fail for a reason that
+    // had nothing to do with ordering.
+    const rank = { high: 0, medium: 1, low: 2 } as const;
+    for (let i = 1; i < f.length; i++) {
+      expect(rank[f[i].severity]).toBeGreaterThanOrEqual(rank[f[i - 1].severity]);
+    }
   });
 });

@@ -14758,7 +14758,7 @@ function renderSelfAudit(result: PartCostResult, input: UniversalStackInput): vo
     fillRatio: geo.fillRatio ?? null,
   } : undefined;
   const findings: AuditFinding[] = runShouldCostAudit({
-    commodity: activeCommodity, input, library,
+    commodity: activeCommodity, input, library, result,
     annualVolume: num('annual-volume') || (input.annualVolume ?? null),
     selectedMachineId, sizingParams, geometry,
   });

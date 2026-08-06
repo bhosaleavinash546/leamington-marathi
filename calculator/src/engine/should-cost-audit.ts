@@ -15,7 +15,7 @@
 import { sizeProcessMachine, SIZE_TIERED_COMMODITIES, type MachineSizingParams } from './machine-sizing.js';
 import { DEFAULT_RATE_LIBRARY } from './rate-library.js';
 import { physicalRemovalCeilingMin } from './feature-costing.js';
-import type { UniversalStackInput, RateLibrary } from './types.js';
+import type { UniversalStackInput, RateLibrary, PartCostResult } from './types.js';
 
 export type AuditSeverity = 'high' | 'medium' | 'low';
 
@@ -48,6 +48,9 @@ export interface AuditGeometry {
 export interface AuditContext {
   commodity: string;
   input: UniversalStackInput;
+  /** The finished estimate. Needed by the checks that read the 8-bucket split
+   *  rather than the inputs — a zero-conversion costing is only visible there. */
+  result?: PartCostResult;
   library: RateLibrary;
   annualVolume?: number | null;
   /** The primary process machine actually selected for this estimate. */
@@ -141,7 +144,11 @@ const checkAmortVolume: Check = (ctx) => {
   return {
     id: 'amort-not-annual',
     title: 'Tooling not amortised over annual volume',
-    severity: 'low',
+    // Scale with the size of the error. The ECU amortised a 46k tooling spend
+    // over 5,000 parts against a stated 150,000 — 30x out, and reported as a
+    // "low" note. An order of magnitude is not a note.
+    severity: (amort / av >= 5 || av / amort >= 5) ? 'high'
+      : (amort / av >= 1.5 || av / amort >= 1.5) ? 'medium' : 'low',
     message: `Tooling amortises over ${Math.round(amort).toLocaleString()} parts but the stated annual volume is ${Math.round(av).toLocaleString()}. Per-part tooling is off by ${(amort / av).toFixed(2)}×.`,
     expected: Math.round(av).toLocaleString(),
     actual: Math.round(amort).toLocaleString(),
@@ -248,6 +255,58 @@ const checkMachiningEnvelope: Check = (ctx) => {
   };
 };
 
+/** Lesson (Bosch IPB2.0 ECU, Aug 2026): a populated brake ECU was costed as
+ *  `pcb_fab` — a bare board — and published with Process GBP 0.00, Labour
+ *  GBP 0.00 and "Operations: 0". Every manufactured part has conversion cost;
+ *  a costing that is pure material is a mis-classified commodity or a routing
+ *  nobody entered, and it under-states by whatever the conversion would have
+ *  been (on that board, 88%). Commodity-agnostic on purpose: the same shape of
+ *  error is possible on any commodity, not just electronics. */
+const checkZeroConversion: Check = (ctx) => {
+  const b = ctx.result?.breakdown;
+  if (!b) return null;
+  const conversion = b.process + b.labour;
+  const material = b.rawMaterial;
+  if (material <= 0) return null;               // nothing costed at all — not this lesson
+  if (conversion > 0.005) return null;          // has a routing
+  const ops = ctx.input.operations?.length ?? 0;
+  return {
+    id: 'zero-conversion-cost',
+    title: 'Costed as material only — no conversion',
+    severity: 'high',
+    message: `Material is ${material.toFixed(2)} but process and labour are both zero across ${ops} operation(s). `
+      + 'Every manufactured part has conversion cost. Either the commodity is wrong (a populated assembly costed as '
+      + 'a bare fabrication) or no routing was entered — the estimate is a purchase price, not a should-cost.',
+    expected: 'at least one operation with machine or labour time',
+    actual: `${ops} operations, conversion 0.00`,
+  };
+};
+
+/** Lesson (same board): the largest cost bucket was a single `mat-virtual` line
+ *  with no itemisation, so 72% of the part could not be checked by anyone. A
+ *  pass-through material bucket must carry the lines behind it — the BOM for a
+ *  PCBA, the wire schedule for a harness, the sub-part list for a BIW. */
+const checkUnitemisedMaterial: Check = (ctx) => {
+  const b = ctx.result?.breakdown;
+  const rm = ctx.input.rawMaterial;
+  if (!b || rm?.directCost === undefined) return null;      // weight-based material is traceable via the rate
+  const total = b.rawMaterial + b.process + b.labour + b.tooling + b.packaging + b.logistics + b.overhead + b.margin;
+  if (total <= 0) return null;
+  const share = b.rawMaterial / total;
+  if (share < 0.40) return null;                            // not the dominant bucket
+  if ((rm.lines?.length ?? 0) > 0) return null;             // itemised — auditable
+  return {
+    id: 'unitemised-direct-material',
+    title: 'Largest cost bucket is not auditable',
+    severity: 'high',
+    message: `Material is ${(share * 100).toFixed(0)}% of the part and enters as one pass-through figure with no `
+      + 'line items. Nobody reviewing this can check the biggest number in it. Attach the bill of materials '
+      + '(or wire / sub-part schedule) so each line carries its own quantity, price and source.',
+    expected: 'itemised lines behind the material bucket',
+    actual: 'single directCost line',
+  };
+};
+
 const CHECKS: ReadonlyArray<Check> = [
   checkMachineSizing,
   checkMachineOversized,
@@ -256,6 +315,8 @@ const CHECKS: ReadonlyArray<Check> = [
   checkWallPlausible,
   checkWeightVsGeometry,
   checkAmortVolume,
+  checkZeroConversion,
+  checkUnitemisedMaterial,
 ];
 
 const SEVERITY_ORDER: Record<AuditSeverity, number> = { high: 0, medium: 1, low: 2 };
