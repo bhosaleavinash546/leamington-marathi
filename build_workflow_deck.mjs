@@ -140,7 +140,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.5, y: 5.92, w: 12.33, h: 0.9, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
     { text: 'If you only have ten minutes:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'slides 3–4 (how it connects, incl. the PCB flow) · slides 5–7 (the business case) · slide 26 (the housing on one page) · slide 36 (the two findings) · slide 38 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
+    { text: 'slides 3–4 (how it connects, incl. the PCB flow) · slides 5–9 (the business case) · slide 26 (the housing on one page) · slide 36 (the two findings) · slide 38 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.02, w: 11.65, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
@@ -377,11 +377,95 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   );
 }
 
-// ══════════ 2b · THE BUSINESS CASE (two management slides) ══════════
+// ══════════ 2b · THE BUSINESS CASE (five management slides) ══════════
+{
+  // ── Business case I — where the money comes from ──
+  // Time savings do not convince a budget holder. The previous version of this
+  // section proved "one engineer-year" and then said "capacity, not headcount",
+  // which to a finance ear reads as "nothing comes out". The money in a
+  // should-cost tool is the negotiation floor and design-stage avoidance. Every
+  // figure below is either measured by the tool or a labelled planning
+  // assumption printed on the slide for the room to attack.
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'Business Case I — Where the Money Comes From', 'Three value streams, one transparent calculation — every assumption is on the slide and open to challenge', GREEN);
+
+  const streams = [
+    [I.coins, 'A · Negotiation floor', GREEN,
+      'A defensible should-cost turns a quote into a conversation with a floor price under it. Supplier margin and overhead are priced as separate lines, and every line prints its own derivation — so the challenge survives the meeting.',
+      'Measured: £3.22/part of ranked opportunity on the £25.14 reference part — 12.8%, of which the commercial levers alone are £5.28.'],
+    [I.cube, 'B · Design-stage avoidance', TEAL,
+      'Cost known while the design can still move. At 10–15 minutes a part this runs at concept stage rather than after the quote lands, while wall thickness, cavitation and routing are all still open.',
+      'Measured: on the bumper, tooling was 43% of piece cost — more than resin, press and labour combined. Nobody predicted that before the run.'],
+    [I.person, 'C · Engineering capacity', BLUE,
+      'The hours are the enabler, not the prize. You cannot hold 40 floor-price negotiations a year if each should-cost costs half a day to prepare — capacity is what makes stream A reachable at all.',
+      'Measured: 16–30× faster than the confirmed CAPEE baseline · ≈1,650 h/yr on an illustrative 500-part mix.'],
+  ];
+  streams.forEach(([ico, t, col, body, ev], i) => {
+    const x = 0.5 + i * 4.19;
+    s.addShape('roundRect', { x, y: 1.14, w: 3.94, h: 1.9, fill: { color: CARD }, line: { color: col, width: 1.5 }, rectRadius: 0.1 });
+    s.addShape('ellipse', { x: x + 0.16, y: 1.26, w: 0.34, h: 0.34, fill: { color: col } });
+    s.addImage({ data: ico, x: x + 0.24, y: 1.34, w: 0.18, h: 0.18 });
+    s.addText(t, { x: x + 0.58, y: 1.24, w: 3.2, h: 0.3, fontFace: 'Calibri', fontSize: 11, bold: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(body, { x: x + 0.16, y: 1.64, w: 3.62, h: 0.8, fontFace: 'Calibri', fontSize: 8.3, color: SLATE, margin: 0, valign: 'top' });
+    s.addShape('roundRect', { x: x + 0.16, y: 2.48, w: 3.62, h: 0.46, fill: { color: 'F0F4F9' }, rectRadius: 0.05 });
+    s.addText(ev, { x: x + 0.26, y: 2.48, w: 3.42, h: 0.46, fontFace: 'Calibri', fontSize: 7.4, italic: true, color: NAVY, margin: 0, valign: 'middle' });
+  });
+
+  // The calculation as a chain, so each term can be attacked separately.
+  s.addText('THE CALCULATION — ATTACK ANY OF THE THREE TERMS', { x: 0.5, y: 3.14, w: 8, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
+  const chain = [
+    ['Addressed spend', '£20 m', 'annual purchased value of the\nparts we put through it', MUTED, false],
+    ['× Identified', '8%', 'planning figure — the tool\nmeasured 12.8% on the\nreference part', MUTED, false],
+    ['× Captured', '20%', 'the share we actually\nimplement — the honest\nunknown', AMBER, false],
+    ['= Saving', '£320k/yr', 'recurring, against a one-off\npilot cost of ≈ £25k', GREEN, true],
+  ];
+  chain.forEach(([label, val, note, col, last], i) => {
+    const x = 0.5 + i * 3.13;
+    s.addShape('roundRect', { x, y: 3.40, w: 2.78, h: 1.28, fill: { color: last ? GREEN_T : CARD }, line: { color: last ? GREEN : LINE, width: last ? 1.5 : 1 }, rectRadius: 0.09 });
+    s.addText(label, { x: x + 0.14, y: 3.48, w: 2.5, h: 0.24, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: last ? GREEN : NAVY, margin: 0 });
+    s.addText(val, { x: x + 0.14, y: 3.72, w: 2.5, h: 0.42, fontFace: 'Cambria', fontSize: 21, bold: true, color: last ? GREEN : NAVY, margin: 0, valign: 'middle' });
+    s.addText(note, { x: x + 0.14, y: 4.14, w: 2.5, h: 0.5, fontFace: 'Calibri', fontSize: 7.4, color: col, margin: 0, valign: 'top' });
+    if (!last) s.addText(i === 2 ? '=' : '×', { x: x + 2.80, y: 3.84, w: 0.31, h: 0.4, fontFace: 'Cambria', fontSize: 15, bold: true, color: MUTED, align: 'center', margin: 0, valign: 'middle' });
+  });
+
+  // Assumptions, visible — so the room argues with the model, not with the idea.
+  s.addShape('roundRect', { x: 0.5, y: 4.78, w: 7.55, h: 1.2, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+  s.addText('WHAT WE ASSUMED — SWAP ANY OF THESE FOR OUR REAL NUMBERS', { x: 0.68, y: 4.85, w: 7.2, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
+  s.addText([
+    { text: '40 parts in the pilot basket · £500k average annual purchased value each · 8% identified · 20% captured.\n', options: { color: SLATE } },
+    { text: 'Deliberately conservative: ', options: { bold: true, color: NAVY } },
+    { text: 'the 8% sits below the 12.8% the tool actually measured, and a 20% capture assumes four of every five ideas are never acted on. Nothing here needs the tool to be right about one part — only roughly right across a basket.', options: { color: SLATE } },
+  ], { x: 0.68, y: 5.07, w: 7.2, h: 0.86, fontFace: 'Calibri', fontSize: 8.4, margin: 0, valign: 'top' });
+
+  // Cost of doing nothing.
+  s.addShape('roundRect', { x: 8.28, y: 4.78, w: 4.55, h: 1.2, fill: { color: 'FBEAE8' }, line: { color: RED, width: 1 }, rectRadius: 0.09 });
+  s.addText('IF WE DO NOTHING', { x: 8.46, y: 4.85, w: 4.2, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: RED, charSpacing: 0.4, margin: 0 });
+  s.addText('Quotes keep being accepted without a floor price · cost keeps being discovered after the design is locked, when the cheap levers have closed · findings like 43%-tooling keep arriving too late to act on · a should-cost stays half a day of an engineer, so only the biggest parts ever get one.',
+    { x: 8.46, y: 5.07, w: 4.2, h: 0.86, fontFace: 'Calibri', fontSize: 8.1, color: SLATE, margin: 0, valign: 'top' });
+
+  // The number that makes the pilot decision easy.
+  s.addShape('roundRect', { x: 0.5, y: 6.10, w: 12.33, h: 0.86, fill: { color: NAVY }, rectRadius: 0.1 });
+  s.addText([
+    { text: 'Break-even: ', options: { bold: true, color: '9FB6E0', fontSize: 12 } },
+    { text: 'the pilot pays for itself if we capture ', options: { color: 'FFFFFF', fontSize: 12 } },
+    { text: '1.6% ', options: { bold: true, color: '6EE7B7', fontSize: 15 } },
+    { text: 'of what it identifies — one pound in sixty. Every point of capture above that is ≈£16k a year.   ', options: { color: 'FFFFFF', fontSize: 12 } },
+    { text: 'We are not asking you to believe 20%. We are asking whether 1.6% is plausible.', options: { bold: true, color: 'FFFFFF', fontSize: 12 } },
+  ], { x: 0.85, y: 6.16, w: 11.65, h: 0.74, fontFace: 'Calibri', margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+
+  s.addNotes(
+    'This is the slide the business case was missing, and I want to be honest about why. The previous version led with engineer-hours — and hours are not money. Worse, we then said "capacity, not headcount", which to a budget holder reads as "nothing actually comes out". So this version leads with the money and puts the hours where they belong. ' +
+    'Three streams. A, the negotiation floor: a defensible should-cost turns a quote into a conversation with a number underneath it, and because every line prints its own derivation the challenge survives the meeting rather than collapsing the first time a supplier pushes back. On our reference part the tool identified three pounds twenty-two of opportunity against a twenty-five pound piece cost. B, design-stage avoidance: at ten to fifteen minutes a part this can run at concept stage, while wall thickness and cavitation are still open — and the bumper is the proof, where tooling turned out to be forty-three percent of piece cost, more than the resin, the press and the labour added together. Nobody in this room predicted that in advance. C, capacity — and note that I have put it third. The hours are the enabler, not the prize. You cannot hold forty floor-price negotiations a year if every should-cost costs half a day to prepare. ' +
+    'Then the calculation, laid out as a chain deliberately, so you can attack any single term instead of the whole idea. Addressed spend, times what the tool identifies, times what we actually capture. Twenty million of purchased value, eight percent identified, twenty percent captured: three hundred and twenty thousand a year, recurring, against a one-off pilot cost of about twenty-five thousand. ' +
+    'The assumptions are printed on the slide because I would rather you argued with the model than with me — and they are deliberately pessimistic. Eight percent is below the twelve point eight the tool actually measured. A twenty percent capture assumes four out of every five ideas never get acted on. ' +
+    'But the line to leave with is the navy strip. At this pilot cost the break-even capture rate is one point six percent. One pound in sixty. I am not asking you to believe twenty percent — I am asking whether one point six is plausible. If it is, the pilot is very nearly free, and the only remaining question is whether the tool works, which is precisely what a pilot is for.'
+  );
+}
 {
   // ── Business case I — minutes, not hours ──
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Business Case I — Minutes, Not Hours', 'The same should-cost, by commodity: CostVision measured against the CAPEE-by-hand baseline', GREEN);
+  title(s, 'Business Case II — Minutes, Not Hours', 'Why the capacity in stream C exists — the same should-cost, by commodity, against the CAPEE-by-hand baseline', GREEN);
   // What the CostVision minutes actually contain (the tool truth)
   const steps = [
     [I.upload, 'Upload CAD', '~1 min'],
@@ -456,13 +540,13 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   ], { x: 0.68, y: 6.38, w: 5.6, h: 0.62, fontFace: 'Calibri', margin: 0, valign: 'top' });
   footer(s, ++PG);
   s.addNotes(
-    'The business case starts with time, because time is the thing nobody disputes. The left side shows what the CostVision minutes actually contain — upload, automatic measurement and derivation, then the engineer answers the two to five questions geometry cannot answer, reviews the band and approves. Ten to fifteen minutes end to end for a CAD part, and I want to be precise: that is not unattended time, that is an engineer at the screen owning the answer. The table is the same should-cost by commodity. One row is a confirmed baseline — casting plus machining, four to five hours in CAPEE, measured by us. The other CAPEE figures are team-reported working numbers and the slide says so; I would rather show you an honest label than a precise-looking guess. The chart makes the point the table makes: the green bars are barely visible against the amber ones. And the box at the bottom is the real argument — this is capacity, not headcount. At these times one engineer reviews fifteen to twenty-five should-costs a day instead of preparing one or two. The hours we save do not disappear, they move into negotiation preparation, which is where the money actually is. Two additions from our own review. First, the single biggest category of saving is input data feeding: in CAPEE every measurement and cycle input is read off the CAD and keyed by hand; here the geometry kernel measures the file and feeds the cost engine automatically. Second, the total: hours saved equals the per-part difference times the annual number of parts, summed over the commodities. On an illustrative five-hundred-part annual mix over this table\u2019s own midpoints that is roughly one thousand six hundred and fifty hours a year — about one engineer-year. That mix is illustrative and the slide says so; substitute our real annual volumes and the tool\u2019s own logged run times to firm it up.'
+    'The business case starts with time, because time is the thing nobody disputes. The left side shows what the CostVision minutes actually contain — upload, automatic measurement and derivation, then the engineer answers the two to five questions geometry cannot answer, reviews the band and approves. Ten to fifteen minutes end to end for a CAD part, and I want to be precise: that is not unattended time, that is an engineer at the screen owning the answer. The table is the same should-cost by commodity. One row is a confirmed baseline — casting plus machining, four to five hours in CAPEE, measured by us. The other CAPEE figures are team-reported working numbers and the slide says so; I would rather show you an honest label than a precise-looking guess. The chart makes the point the table makes: the green bars are barely visible against the amber ones. And the box at the bottom links straight back to the money slide — this capacity is stream C, and stream C is what makes stream A reachable. At these times one engineer reviews fifteen to twenty-five should-costs a day instead of preparing one or two. The hours we save do not disappear, they move into negotiation preparation, which is where the money actually is. Two additions from our own review. First, the single biggest category of saving is input data feeding: in CAPEE every measurement and cycle input is read off the CAD and keyed by hand; here the geometry kernel measures the file and feeds the cost engine automatically. Second, the total: hours saved equals the per-part difference times the annual number of parts, summed over the commodities. On an illustrative five-hundred-part annual mix over this table\u2019s own midpoints that is roughly one thousand six hundred and fifty hours a year — about one engineer-year. That mix is illustrative and the slide says so; substitute our real annual volumes and the tool\u2019s own logged run times to firm it up.'
   );
 }
 {
   // ── Business case II — CostVision vs CAPEE, category by category ──
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Business Case II — CostVision vs CAPEE, Category by Category', 'The seven saving categories from our internal review — what CAPEE does today, and what changes', GREEN);
+  title(s, 'Business Case III — CostVision vs CAPEE, Category by Category', 'The seven saving categories from our internal review — what CAPEE does today, and what changes', GREEN);
 
   const cw = [2.35, 2.55, 5.55, 1.85];
   const ch = ['Saving category', 'CAPEE today', 'CostVision', 'Shown at'];
@@ -474,8 +558,8 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   const rows = [
     ['1 · Input data feeding', 'Every measurement and cycle input read off the CAD and keyed by hand', 'The geometry kernel measures the CAD file and feeds every input automatically — the single largest time saving', 'Measure + kernel slides'],
     ['2 · Machine, tonnage & process selection', 'Partially automated', 'Automatic AND cost-ranked: presses sized by clamp/force physics; machining routing and mould cavitation chosen by price, with the losing alternatives printed in the trace', 'Process-selection + routing slides'],
-    ['3 · Coverage & early programme support', 'Few parts, usually after the quote lands', '15–25 should-costs per engineer-day — directional cost early in the programme, while wall thickness and process can still change', 'Business Case I'],
-    ['4 · Total man-hours saved', '—', 'Σ (CAPEE hrs − CostVision hrs) × annual parts, per commodity. Illustrative 500-part/yr mix ≈ 1,650 h/yr ≈ one engineer-year — replace with our real volumes', 'Business Case I strip'],
+    ['3 · Coverage & early programme support', 'Few parts, usually after the quote lands', '15–25 should-costs per engineer-day — directional cost early in the programme, while wall thickness and process can still change', 'Business Case II'],
+    ['4 · Total man-hours saved', '—', 'Σ (CAPEE hrs − CostVision hrs) × annual parts, per commodity. Illustrative 500-part/yr mix ≈ 1,650 h/yr ≈ one engineer-year — replace with our real volumes', 'Business Case II strip'],
     ['5 · DFM / DFA insights', 'Not available', 'Generated by the deterministic COST ENGINE — 52 threshold rules + 10 geometry advisors, scores by fixed arithmetic. Not by AI: the AI cannot write a score, severity or saving', 'DFM/DFA slide'],
     ['6 · Cost-saving ideas', 'Engineer\u2019s own analysis', 'Generated by the cost engine\u2019s rule layer and the optimisers — each idea priced in £/part with its lever owner (design / supplier / sourcing); the AI adds display-only commentary at most', 'DFM + routing slides'],
     ['7 · Beyond a conventional tool', '—', '20-region pricing on every run · confidence band · negotiation pack · every cost line carries its printed derivation · self-audit · learns from actuals · landed cost incl. duty/CBAM · carbon · PCB photo→BOM · air-gapped mode', 'Throughout the deck'],
@@ -504,7 +588,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
 {
   // ── Business case III — evidence, coverage, cost to run ──
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Business Case III — Evidence, Coverage, Cost to Run', 'Every figure on this slide is measured from the tool — nothing is projected', GREEN);
+  title(s, 'Business Case IV — Evidence, Coverage, Cost to Run', 'Every figure on this slide is measured from the tool — nothing is projected', GREEN);
   // KPI band
   const kpis = [
     ['16–30×', 'faster than the confirmed\nCAPEE baseline', TEAL],
@@ -568,6 +652,97 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   footer(s, ++PG);
   s.addNotes(
     'Second half of the business case: evidence, coverage, and what it costs to run. Four headline figures, all measured. Sixteen to thirty times faster on the baseline we confirmed ourselves. Zero marginal cost per estimate in the default mode — there is no AI call, no per-seat metering on the costing path, it is arithmetic on our own server. Twenty manufacturing regions priced on every single run. And every line of every estimate prints its own derivation — that is what makes it usable in a supplier meeting. The table is the accuracy evidence: six real parts with independent manual bottom-up costs. Three inside the manual band. Three within about thirty percent, every one of them an over-estimate — the miss direction you can live with, because an over-estimate is a negotiating position and an under-estimate is a signed mistake. Fleet error fifteen percent, against twenty-eight for the AI path on the same parts. The two donuts: twelve of eighteen commodities run fully deterministic today, and of the eight parts we costed, all eight produced a number — the AI path managed five of eight before we hardened it. And the amber strip is deliberate, because this deck goes up, and the fastest way to lose the room is to overclaim: it does not read drawings yet, it asks rather than guesses on material, and six parts is six parts — we widen the validation set before any of these figures goes into a commitment. Everything on this slide can be regenerated from the tool this afternoon.'
+  );
+}
+{
+  // ── Business case V — the ask ──
+  // A business case that ends on "what it cannot do" leaves the room with no
+  // decision to make. This slide is the one thing the previous version had no
+  // equivalent of: a specific, small, time-boxed, reversible ask.
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'Business Case V — The Ask: a 90-Day Pilot', 'One decision, a fixed scope, criteria agreed before we start, and a go/no-go date', GREEN);
+
+  // THE ASK — the single most important box on the slide.
+  s.addShape('roundRect', { x: 0.5, y: 1.14, w: 5.6, h: 1.5, fill: { color: GREEN_T }, line: { color: GREEN, width: 2 }, rectRadius: 0.1 });
+  s.addText('WHAT WE ARE ASKING FOR', { x: 0.72, y: 1.22, w: 5.2, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: GREEN, charSpacing: 0.6, margin: 0 });
+  s.addText([
+    { text: 'Approve a 90-day pilot on 40 parts.\n', options: { bold: true, color: NAVY, fontSize: 15 } },
+    { text: 'One named owner · 0.3 FTE · one VM · ≈£25k one-off · no licence, no per-seat and no per-estimate cost. Nothing recurring is committed until the day-90 review.', options: { color: SLATE, fontSize: 9.5 } },
+  ], { x: 0.72, y: 1.48, w: 5.2, h: 1.08, fontFace: 'Calibri', margin: 0, valign: 'top' });
+
+  // Scope.
+  s.addShape('roundRect', { x: 0.5, y: 2.76, w: 5.6, h: 1.42, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+  s.addText('PILOT SCOPE — AGREED UP FRONT', { x: 0.72, y: 2.84, w: 5.2, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
+  [
+    ['In', '40 live parts across 4–5 commodities we already buy, chosen with purchasing — a mix of quoted parts and parts still in design.'],
+    ['Out', 'No supplier is told a price comes from a tool. Every number is reviewed and owned by an engineer before it leaves the building.'],
+  ].forEach(([k, v], i) => {
+    const y = 3.06 + i * 0.52;
+    s.addText(k, { x: 0.72, y, w: 0.42, h: 0.48, fontFace: 'Calibri', fontSize: 8.4, bold: true, color: i ? RED : GREEN, margin: 0, valign: 'top' });
+    s.addText(v, { x: 1.16, y, w: 4.76, h: 0.48, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
+  });
+
+  // Timeline.
+  s.addText('90 DAYS, THREE PHASES', { x: 0.5, y: 4.32, w: 5.6, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: NAVY, charSpacing: 0.4, margin: 0 });
+  [
+    ['Days 1–30', 'Set up + calibrate', 'One VM, our own rates loaded, the 6 validated parts re-run to confirm the baseline, two engineers trained.', TEAL],
+    ['Days 31–60', 'Run the basket', 'The 40 parts costed. Every estimate logged against the quote or the actual PO. Top levers taken to suppliers.', BLUE],
+    ['Days 61–90', 'Measure + decide', 'Scored against the four criteria opposite. Captured saving written up. Go / no-go presented here.', GREEN],
+  ].forEach(([d, t, body, col], i) => {
+    const y = 4.54 + i * 0.5;
+    s.addShape('roundRect', { x: 0.5, y, w: 1.0, h: 0.46, fill: { color: col }, rectRadius: 0.05 });
+    s.addText(d, { x: 0.5, y, w: 1.0, h: 0.46, fontFace: 'Calibri', fontSize: 7.8, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(t, { x: 1.6, y: y + 0.02, w: 1.5, h: 0.2, fontFace: 'Calibri', fontSize: 8.4, bold: true, color: NAVY, margin: 0 });
+    s.addText(body, { x: 1.6, y: y + 0.20, w: 4.5, h: 0.28, fontFace: 'Calibri', fontSize: 7.6, color: SLATE, margin: 0, valign: 'top' });
+  });
+
+  // Success criteria — pre-agreed and measurable, so the decision is not a debate.
+  s.addShape('roundRect', { x: 6.3, y: 1.14, w: 6.53, h: 2.5, fill: { color: CARD }, line: { color: NAVY, width: 1.5 }, rectRadius: 0.1 });
+  s.addText('SUCCESS CRITERIA — SET NOW, SCORED AT DAY 90', { x: 6.5, y: 1.22, w: 6.1, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
+  s.addText('Agreeing these before we start is the point: at day 90 the decision is arithmetic, not opinion — and a miss is a legitimate stop.',
+    { x: 6.5, y: 1.44, w: 6.1, h: 0.26, fontFace: 'Calibri', fontSize: 7.6, italic: true, color: MUTED, margin: 0 });
+  [
+    ['Accuracy', '≥ 70% of pilot parts within ±20% of an independent manual should-cost or the actual PO price'],
+    ['Speed', 'Median ≤ 20 min per CAD part, engineer-attended — read from the tool’s own run logs, not estimated'],
+    ['Value', '≥ £150k of opportunity identified across the basket, and ≥ 3 levers taken to a supplier with the outcome recorded either way'],
+    ['Adoption', '2+ engineers running it unaided after one day of training, without the person who built it in the room'],
+  ].forEach(([k, v], i) => {
+    const y = 1.76 + i * 0.45;
+    s.addShape('roundRect', { x: 6.5, y, w: 0.95, h: 0.4, fill: { color: 'E8EDF6' }, rectRadius: 0.05 });
+    s.addText(k, { x: 6.5, y, w: 0.95, h: 0.4, fontFace: 'Calibri', fontSize: 8, bold: true, color: NAVY, align: 'center', valign: 'middle', margin: 0 });
+    s.addText(v, { x: 7.55, y, w: 5.1, h: 0.4, fontFace: 'Calibri', fontSize: 8, color: SLATE, margin: 0, valign: 'middle' });
+  });
+
+  // Risks, each with the mitigation already built.
+  s.addShape('roundRect', { x: 6.3, y: 3.76, w: 6.53, h: 2.22, fill: { color: 'FCF3E3' }, line: { color: AMBER, width: 1 }, rectRadius: 0.09 });
+  s.addImage({ data: I.warn, x: 6.5, y: 3.85, w: 0.2, h: 0.2 });
+  s.addText('THE FOUR OBJECTIONS — AND WHAT IS ALREADY BUILT FOR THEM', { x: 6.78, y: 3.84, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: AMBER, charSpacing: 0.4, margin: 0 });
+  [
+    ['“It will be wrong on parts it has not seen.”', 'The band is agreed before we start, every actual is logged, and the calibration layer learns from them. 6 parts validated so far and the deck says so.'],
+    ['“The AI is inventing numbers.”', 'Deterministic by default — no outbound call at all. Every cost line prints its own derivation, and there is an air-gapped mode.'],
+    ['“Rates go stale and nobody notices.”', 'The engine blocks a duty rate that is unverified or over 90 days old rather than quietly using it. The refresh gets a named owner in the pilot.'],
+    ['“Engineering will read it as criticism.”', 'Already changed: the output is savings ranked by category, with no score and no severity anywhere an engineer sees.'],
+  ].forEach(([q, a], i) => {
+    const y = 4.10 + i * 0.46;
+    s.addText(q, { x: 6.5, y, w: 2.55, h: 0.44, fontFace: 'Calibri', fontSize: 7.6, bold: true, italic: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(a, { x: 9.15, y, w: 3.5, h: 0.44, fontFace: 'Calibri', fontSize: 7.4, color: SLATE, margin: 0, valign: 'middle' });
+  });
+
+  // The close.
+  s.addShape('roundRect', { x: 0.5, y: 6.10, w: 12.33, h: 0.86, fill: { color: NAVY }, rectRadius: 0.1 });
+  s.addText([
+    { text: 'The decision on the table:  ', options: { bold: true, color: '9FB6E0', fontSize: 12 } },
+    { text: '≈£25k and 90 days to find out whether a tool that is already built and already validated on six parts holds up on forty of ours. If it misses the criteria we stop and nothing recurring has been committed. If it meets them, the same £25k has already bought its way out at a 1.6% capture rate.', options: { color: 'FFFFFF', fontSize: 11.5 } },
+  ], { x: 0.85, y: 6.14, w: 11.65, h: 0.78, fontFace: 'Calibri', margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+
+  s.addNotes(
+    'And this is the slide the old deck did not have at all — it ended on what the tool cannot do, which left you with nothing to decide. So here is one specific ask. ' +
+    'Approve a ninety-day pilot on forty parts. One named owner, three tenths of an engineer, one virtual machine, about twenty-five thousand pounds one-off. No licence, no per-seat cost, no per-estimate cost — in the default mode there is no AI call to pay for. And nothing recurring is committed until we come back at day ninety. ' +
+    'Scope is deliberately bounded. Forty live parts across four or five commodities we already buy, picked with purchasing, deliberately mixing parts already quoted with parts still in design so we can test both value streams. And explicitly out of scope: no supplier is ever told a number came from a tool, and every figure is reviewed and owned by an engineer before it leaves the building. ' +
+    'Ninety days in three phases: set up and calibrate, run the basket, then measure and decide. ' +
+    'The criteria on the right are the part I would most like you to hold me to, and I want them agreed today rather than at day ninety. Seventy percent of parts within twenty percent of an independent manual cost or the actual PO price. Median twenty minutes a part, read from the tool’s own logs rather than estimated by me. A hundred and fifty thousand of opportunity identified and at least three levers actually taken to a supplier with the outcome recorded — including when the answer is no. And two engineers running it unaided without the person who built it in the room. If we miss those, stopping is the correct decision and I will say so. ' +
+    'The amber box is the four objections I expect, with what is already built for each. And the close is the arithmetic from the money slide: twenty-five thousand pounds and ninety days to find out whether something already built and already validated on six parts holds up on forty of ours. If it fails we stop, having committed nothing ongoing. If it works, it has already paid for itself at a one point six percent capture rate.'
   );
 }
 
