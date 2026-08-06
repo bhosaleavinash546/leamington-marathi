@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lightbulb, Sparkles, ArrowRight, CheckCircle, XCircle, Wand2, Cpu, Layers } from 'lucide-react';
+import { Lightbulb, Sparkles, ArrowRight, CheckCircle, XCircle, Wand2, Cpu, Layers, FileDown, Table2 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import BusinessCaseModal from '../components/BusinessCaseModal';
@@ -43,6 +43,44 @@ export default function TrizStudioPage() {
   const [error, setError] = useState('');
   const [result, setResult] = useState<TrizResult | null>(null);
   const [pipelineIdea, setPipelineIdea] = useState<TrizIdea | null>(null);
+  const [exporting, setExporting] = useState<'' | 'pdf' | 'xlsx'>('');
+
+  // Same report generator as the Innovation Studio — TRIZ is one of its methods,
+  // it just has its own page. The contradiction and the principles applied
+  // become the "method analysis" block; a principle becomes the idea's lens.
+  async function exportReport(kind: 'pdf' | 'xlsx') {
+    if (!result) return;
+    setExporting(kind);
+    try {
+      const mod = await import('../services/innovation-report');
+      const payload = {
+        method: { id: 'triz', name: 'TRIZ — contradiction resolution' },
+        analysis: {
+          improving: result.contradiction.improving.name,
+          worsening: result.contradiction.worsening.name,
+          restatement: result.contradiction.restatement,
+          selectionBasis: result.contradiction.basis,
+          principlesApplied: result.principles.map(p => ({ id: p.id, principle: p.name, hint: p.hint })),
+        },
+        ideas: result.ideas.map(i => ({
+          lens: i.triz ? `P${i.triz.id} · ${i.triz.name}` : `Principle ${i.principleId}`,
+          title: i.title,
+          technicalDescription: i.technicalDescription,
+          costAngle: i.costAngle,
+          riskNotes: i.riskNotes,
+          engineCheck: i.engineCheck,
+        })),
+        engineChecks: result.engineChecks,
+        subject: { part, system, material },
+      };
+      if (kind === 'pdf') mod.exportInnovationPdf(payload);
+      else await mod.exportInnovationXlsx(payload);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Export failed');
+    } finally {
+      setExporting('');
+    }
+  }
 
   async function resolve() {
     if (contradiction.trim().length < 8) { setError('Describe the trade-off you want to break.'); return; }
@@ -155,7 +193,21 @@ export default function TrizStudioPage() {
 
             {/* Costed ideas */}
             <div>
-              <h2 className="text-white font-bold text-lg flex items-center gap-2 mb-1"><Cpu size={18} className="text-gold-400" /> Generated Ideas</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
+                <h2 className="text-white font-bold text-lg flex items-center gap-2"><Cpu size={18} className="text-gold-400" /> Generated Ideas</h2>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => exportReport('pdf')} disabled={exporting !== ''}
+                    title="Branded PDF report: the contradiction, the principles applied, every idea in full, and each engine-check verdict."
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 text-xs transition-colors disabled:opacity-50">
+                    {exporting === 'pdf' ? <ButtonSpinner size={12} /> : <FileDown size={13} />} Export PDF
+                  </button>
+                  <button onClick={() => exportReport('xlsx')} disabled={exporting !== ''}
+                    title="Formatted Excel workbook: summary, filterable idea table, and the principles applied."
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 text-xs transition-colors disabled:opacity-50">
+                    {exporting === 'xlsx' ? <ButtonSpinner size={12} /> : <Table2 size={13} />} Export Excel
+                  </button>
+                </div>
+              </div>
               {result.engineChecks && result.engineChecks.checked > 0 && (
                 <p className="text-slate-500 text-xs mb-3">{result.engineChecks.checked} engine-checked · {result.engineChecks.confirmed} confirmed · {result.engineChecks.contradicted} contradicted</p>
               )}

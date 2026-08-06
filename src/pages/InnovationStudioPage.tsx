@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, CheckCircle, XCircle, Layers, Cpu, Wand2, ArrowRight } from 'lucide-react';
+import { Sparkles, CheckCircle, XCircle, Layers, Cpu, Wand2, ArrowRight, FileDown, Table2 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import BusinessCaseModal from '../components/BusinessCaseModal';
@@ -55,6 +55,25 @@ export default function InnovationStudioPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<Result | null>(null);
+  const [exporting, setExporting] = useState<'' | 'pdf' | 'xlsx'>('');
+
+  // Exports are available for EVERY method: the report renders `analysis`
+  // generically (tables from arrays, a metric strip from scalars), so a new
+  // method exports correctly without anyone remembering to update this page.
+  async function exportReport(kind: 'pdf' | 'xlsx') {
+    if (!result) return;
+    setExporting(kind);
+    try {
+      const mod = await import('../services/innovation-report');
+      const payload = { ...result, subject: { part, system, material } };
+      if (kind === 'pdf') mod.exportInnovationPdf(payload);
+      else await mod.exportInnovationXlsx(payload);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Export failed');
+    } finally {
+      setExporting('');
+    }
+  }
   const [pipelineIdea, setPipelineIdea] = useState<Idea | null>(null);
 
   const method = METHODS.find(m => m.id === methodId)!;
@@ -257,7 +276,21 @@ export default function InnovationStudioPage() {
             {result.analysis != null && <AnalysisPanel methodId={result.method.id} analysis={result.analysis} />}
 
             <div>
-              <h2 className="text-white font-bold text-lg flex items-center gap-2 mb-1"><Cpu size={18} className="text-gold-400" /> Generated Ideas · {result.method.name}</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
+                <h2 className="text-white font-bold text-lg flex items-center gap-2"><Cpu size={18} className="text-gold-400" /> Generated Ideas · {result.method.name}</h2>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => exportReport('pdf')} disabled={exporting !== ''}
+                    title="Branded PDF report: method analysis, every idea in full, and each engine-check verdict."
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 text-xs transition-colors disabled:opacity-50">
+                    {exporting === 'pdf' ? <ButtonSpinner size={12} /> : <FileDown size={13} />} Export PDF
+                  </button>
+                  <button onClick={() => exportReport('xlsx')} disabled={exporting !== ''}
+                    title="Formatted Excel workbook: summary, filterable idea table, and one sheet per analysis table."
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 text-xs transition-colors disabled:opacity-50">
+                    {exporting === 'xlsx' ? <ButtonSpinner size={12} /> : <Table2 size={13} />} Export Excel
+                  </button>
+                </div>
+              </div>
               {result.engineChecks && result.engineChecks.checked > 0 && (
                 <p className="text-slate-500 text-xs mb-3">{result.engineChecks.checked} engine-checked · {result.engineChecks.confirmed} confirmed · {result.engineChecks.contradicted} contradicted</p>
               )}

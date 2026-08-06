@@ -20,5 +20,24 @@ Also renders the Horizon foresight report (full 75-card register + hostile
 AI-layer fixture in fixture-foresight.mjs) — run after any change to
 src/services/foresight-report.ts too.
 
+The Innovation Studio report (PDF + Excel) has its own renderer, because it
+also has to capture the workbook bytes. Run after any change to
+src/services/innovation-report.ts:
+
+```bash
+npx esbuild src/services/innovation-report.ts --bundle --format=esm --platform=node \
+  --external:jspdf --external:exceljs \
+  --outfile=scripts/pdf-qa/innovation-report.bundle.mjs
+sed -i 's/import jsPDF from "jspdf";/import { jsPDF } from "jspdf";/;s|const ExcelJS = await import("exceljs");|const ExcelJS = (await import("exceljs")).default ?? (await import("exceljs"));|' \
+  scripts/pdf-qa/innovation-report.bundle.mjs
+cd scripts/pdf-qa && node render-innovation.mjs && python3 scan.py BrainSpark_Innovation*.pdf
+```
+
+fixture-innovation.mjs carries two payload shapes on purpose — a FAST
+function-cost matrix and a TRIZ contradiction — because the report renders
+`analysis` generically. If a change quietly shapes the renderer around one
+method, the other fixture shows it. The pure helpers behind both are unit
+tested in tests/innovation-report-core.test.mjs.
+
 `scan.py` needs `pip install pymupdf`. The bundle + generated PDFs are
 gitignored — only the harness itself is tracked.

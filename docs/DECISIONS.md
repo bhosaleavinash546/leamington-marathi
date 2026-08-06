@@ -226,3 +226,31 @@ Format: decision · why · what would change it.
     that merely also applies. *Changes it:* nothing — but note the failure mode found while
     fixing it: the first, binary version looked like it worked and moved the target entry only
     four places. Measuring the actual rank, not eyeballing the list, is what caught it.
+
+26. **The Innovation Studio report renders `analysis` generically, not per method (2026).**
+    *Why:* eleven methods (twelve counting TRIZ on its own page) each return a differently
+    shaped deterministic result — a FAST function-cost matrix, a characteristic register, a
+    teardown-delta list, a TRIZ contradiction. A `switch (method.id)` in the exporter would
+    mean every new method silently exports as a blank page until someone remembers to add a
+    branch, and nobody would notice because the export still "works". So the report walks the
+    `analysis` object: short scalars become a metric strip, long scalars become named
+    paragraphs, arrays of objects become tables with proportional column widths, and arrays of
+    plain values become lists. TRIZ feeds the same generator through a thin adapter (the
+    contradiction and the principles applied ARE its analysis; a principle is its lens), which
+    is the proof the generality is real and not shaped around one method.
+    *Changes it:* the pdf-qa fixture carries two payload shapes deliberately — if a future
+    change quietly special-cases the FAST matrix, the TRIZ fixture shows it.
+
+27. **The engine verdict is the report's spine, and it is decided in testable code (2026).**
+    *Why:* the house rule only means anything if a contradicted idea is as visible as a
+    confirmed one. `verdictOf` lives in `innovation-report-core.mjs` as a pure function
+    returning a semantic TONE, and the exporters map tone to colour — so the honesty decision
+    is made once, in something node:test can exercise, rather than twice inside two renderers.
+    Three specifics it enforces: an unrecognised status is surfaced VERBATIM rather than
+    flattened into "unchecked" (saying "we do not know what this means" beats falsely claiming
+    nothing happened); `savingPct: 0` and negative savings stay visible instead of being
+    falsy-filtered away; and an idea with no check at all gets an explicit "the engine had no
+    comparable basis" sentence rather than an empty space the reader would read as a pass.
+    The PDF also gives the three verdicts a legend page, and the Excel tints contradicted rows
+    red — the disagreement is a feature of the deliverable, not a blemish hidden from it.
+    *Changes it:* nothing — but this is why the exporters must never filter the idea list.
