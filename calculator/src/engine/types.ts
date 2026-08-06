@@ -139,6 +139,10 @@ export interface MaterialLineItem {
   qty: number;
   /** Unit cost in the costing's base currency (GBP). */
   unitCost: number;
+  /** Package / form factor — "BGA", "SOIC-8", "0402", "THT radial". */
+  pkg?: string;
+  /** Electrical or physical value — "32Mbit", "100V", "10-pin", "0.47uH". */
+  value?: string;
   /** Optional provenance — "marking legible in photo", "class median", a quote ref. */
   note?: string;
 }

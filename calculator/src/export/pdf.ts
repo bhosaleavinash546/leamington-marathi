@@ -41,6 +41,8 @@ export interface CADReportMeta {
    * reviewer could not check a single line against them.
    */
   photos?: ReportPhoto[];
+  /** ISO 26262 context — printed for electronics commodities. */
+  functionalSafety?: FunctionalSafetyMeta;
 }
 
 /** One labelled source photo carried into the report. */
@@ -48,6 +50,33 @@ export interface ReportPhoto {
   dataUrl: string;
   /** Slot name — "Top side", "Bottom side", "Close-up 3". */
   label: string;
+}
+
+/**
+ * ISO 26262 context for an electronics costing.
+ *
+ * The safety grade is a genuine cost driver here: it is what sets the quality
+ * multiplier on test and inspection, drives 100% X-ray and long ICT, and pushes
+ * component selection to AEC-Q grades. The should-cost report charged for all
+ * of that and never stated the grade it was charging for — the ASIL section
+ * existed only in the separate combined PART A/B/C report.
+ *
+ * `asil` is only ever REPORTED, never derived by this module. An ASIL is an
+ * output of hazard analysis (HARA), not something readable off a board, so when
+ * it is absent the section says what the costing assumed and asks for it to be
+ * confirmed rather than inventing a rating.
+ */
+export interface FunctionalSafetyMeta {
+  /** "ASIL-D" … "QM". Absent when no hazard analysis has been supplied. */
+  asil?: string | null;
+  /** Why that ASIL — from the vision analysis or entered by the engineer. */
+  rationale?: string | null;
+  /** Safety functions the board performs. */
+  safetyFunctions?: string[];
+  /** The PCBA quality grade actually costed (`auto_grade1`, `aerospace` …). */
+  qualityGrade?: string | null;
+  /** What that grade multiplied test and inspection cycle times by. */
+  qualityMultiplier?: number | null;
 }
 
 // ─── Shared constants ─────────────────────────────────────────────────────────
@@ -396,34 +425,46 @@ export function renderShouldCostSections(
   const matLines = input.rawMaterial.lines ?? [];
   if (matLines.length > 0) {
     const linesTotal = matLines.reduce((a, l) => a + l.qty * l.unitCost, 0);
+    const totalQty = matLines.reduce((a, l) => a + l.qty, 0);
     doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
-    doc.text(`3B  Material Line Items (${matLines.length} lines)`, MG, y); y += 5;
+    doc.text(`3B  Bill of Materials  (${matLines.length} lines  ${String.fromCharCode(183)}  ${totalQty} pieces)`, MG, y);
+    y += 5;
 
-    const body = matLines.map(l => [
-      l.ref, l.description, String(l.qty), c(l.unitCost), c(l.qty * l.unitCost), l.note ?? '',
+    // Column set matches the PCB master report's BOM so the two are readable
+    // side by side: line number, designator, description, package, value, qty,
+    // unit and extended cost. Package and value are what let an engineer check
+    // a line against the board without going back to the source photographs.
+    const body = matLines.map((l, i) => [
+      String(i + 1), l.ref, l.description, l.pkg ?? '', l.value ?? '',
+      String(l.qty), c(l.unitCost), c(l.qty * l.unitCost),
     ]);
-    body.push(['', 'LINE ITEM TOTAL', '', '', c(linesTotal), '']);
+    body.push(['', '', 'BOM TOTAL', '', '', String(totalQty), '', c(linesTotal)]);
 
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG },
-      head: [['Ref', 'Description', 'Qty', `Unit ${currency}`, `Ext ${currency}`, 'Source / basis']],
+      head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', `Unit ${currency}`, `Ext ${currency}`]],
       body,
       theme: 'plain',
-      headStyles: { ...TH.headStyles },
-      bodyStyles: { ...TH.bodyStyles, fontSize: 7 },
+      headStyles: { ...TH.headStyles, fontSize: 7 },
+      bodyStyles: { ...TH.bodyStyles, fontSize: 6.8 },
       alternateRowStyles: { fillColor: LIGHT },
       columnStyles: {
-        0: { cellWidth: 20, fontStyle: 'bold' },
-        1: { cellWidth: 60 },
-        2: { cellWidth: 14, halign: 'right' },
-        3: { cellWidth: 20, halign: 'right' },
-        4: { cellWidth: 20, halign: 'right', fontStyle: 'bold' },
-        5: { cellWidth: 48, textColor: GREY, fontSize: 6.5 },
+        // The shared body padding is 4 mm each side, which on a narrow column
+        // leaves no room for the digits and wraps "14" onto two lines. Give the
+        // index column its own tight padding.
+        0: { cellWidth: 10, textColor: GREY, halign: 'right',
+             cellPadding: { top: 2.5, bottom: 2.5, left: 1, right: 1.5 } },
+        1: { cellWidth: 20, fontStyle: 'bold' },
+        2: { cellWidth: 55 },
+        3: { cellWidth: 23, textColor: GREY },
+        4: { cellWidth: 16, textColor: GREY },
+        5: { cellWidth: 14, halign: 'right' },
+        6: { cellWidth: 20, halign: 'right' },
+        7: { cellWidth: 24, halign: 'right', fontStyle: 'bold' },
       },
       didParseCell: (d) => {
         if (d.section !== 'body') return;
-        const t = Array.isArray(d.cell.text) ? d.cell.text[0] : '';
-        if (t === 'LINE ITEM TOTAL' || d.row.index === body.length - 1) {
+        if (d.row.index === body.length - 1) {
           d.cell.styles.fontStyle = 'bold';
           d.cell.styles.fillColor = OR_LT;
           d.cell.styles.textColor = NAVY;
@@ -432,13 +473,30 @@ export function renderShouldCostSections(
     });
     y = lastFinalY(doc) + 4;
 
+    // Provenance is per line and too long for a column, so it goes underneath —
+    // dropping it would leave the reader unable to tell a read marking from a
+    // class median.
+    const sourced = matLines.filter(l => l.note);
+    if (sourced.length) {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(6.8); doc.setTextColor(...NAVY);
+      doc.text('Line provenance', MG, y); y += 3.6;
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+      for (const l of sourced) {
+        y = chk(doc, y, 6);
+        for (const ln of doc.splitTextToSize(`${l.ref} - ${l.note}`, CW) as string[]) {
+          doc.text(ln, MG, y); y += 3.2;
+        }
+      }
+      y += 2;
+    }
+
     // Reconcile the itemisation against the bucket it is meant to explain. A
     // silent gap here would be worse than printing nothing.
     const direct = input.rawMaterial.directCost ?? 0;
     const gap = direct - linesTotal;
     const note = Math.abs(gap) < 0.005
       ? `Lines reconcile exactly to the ${c(direct)} direct material cost.`
-      : `Lines total ${c(linesTotal)} against a ${c(direct)} material bucket — the ${c(Math.abs(gap))} `
+      : `Lines total ${c(linesTotal)} against a ${c(direct)} material bucket - the ${c(Math.abs(gap))} `
         + `${gap > 0 ? 'balance' : 'excess'} is carried outside the itemisation (bare board, yield/rework allowance, coating).`;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...GREY);
     for (const ln of doc.splitTextToSize(note, CW) as string[]) { doc.text(ln, MG, y); y += 3.6; }

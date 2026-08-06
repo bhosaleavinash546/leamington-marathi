@@ -12917,6 +12917,31 @@ function collectPCBFabInput(): UniversalStackInput {
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
+/** Package label per component type — the class is the package on a BOM line. */
+const PACKAGE_LABEL: Record<string, string> = {
+  passive_0402: '0402', passive_0603: '0603', passive_0805: '0805',
+  crystal_osc: 'SMD crystal', power_module: 'Power module', transformer: 'Transformer',
+  led: 'LED SMD', relay_switch: 'Relay / switch', fuse_tvs: 'SOD / TVS',
+  ic_soic: 'SOIC', ic_qfn: 'QFN', ic_bga: 'BGA', ic_tqfp: 'TQFP',
+  connector_smt: 'SMT connector', through_hole: 'THT', manual_solder: 'Hand-solder',
+};
+
+/**
+ * Pull "[PKG]" and a trailing value out of a BOM description.
+ * applyPCBImageToPCBA composes `desc [pkg] value`, so the parts are recoverable
+ * rather than lost to a single string.
+ */
+function splitBomDescription(raw: string): { description: string; pkg?: string; value?: string } {
+  let description = raw ?? '';
+  let pkg: string | undefined;
+  let value: string | undefined;
+  const pkgMatch = /\[([^\]]+)\]/.exec(description);
+  if (pkgMatch) { pkg = pkgMatch[1].trim(); description = description.replace(pkgMatch[0], ' '); }
+  const valMatch = /\b(\d+(?:\.\d+)?\s?(?:[munpk]?[FHV]|Mbit|Gbit|kbit|Ohm|R|A|W|MHz|kHz|GHz|pin))\b/i.exec(description);
+  if (valMatch) { value = valMatch[1].trim(); description = description.replace(valMatch[0], ' '); }
+  return { description: description.replace(/\s{2,}/g, ' ').trim(), pkg, value };
+}
+
 function collectPCBAInput(): UniversalStackInput {
   const bomRows = document.querySelectorAll<HTMLElement>('#bom-body tr[data-bom-id]');
   const bom: BOMLine[] = Array.from(bomRows).map(row => {
@@ -12974,8 +12999,15 @@ function collectPCBAInput(): UniversalStackInput {
   // single directCost, which on a populated board is ~72% of the part — printed
   // alone it is a number nobody can check.
   const lines: MaterialLineItem[] = bom.map(b => ({
-    ref: b.refDes || '—',
-    description: b.description,
+    ref: b.refDes || '-',
+    // The BOM table stores package and value inside the description string
+    // (applyPCBImageToPCBA appends "[QFN-32] 32Mbit"). Split them back out so
+    // the report can column them the way the PCB master report does.
+    // The specific package parsed from the description ("BGA-292", "TQFP-144")
+    // beats the generic class label - fall back to the class only when the
+    // description carries nothing.
+    ...splitBomDescription(b.description),
+    pkg: splitBomDescription(b.description).pkg ?? PACKAGE_LABEL[b.componentType],
     qty: b.qty,
     unitCost: b.unitPriceGBP,
   }));

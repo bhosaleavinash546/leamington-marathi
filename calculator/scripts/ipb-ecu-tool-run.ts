@@ -27,27 +27,28 @@ const log = (m: string) => process.stdout.write(`[tool-run] ${m}\n`);
 // Same measured/inferred inputs as scripts/ipb-ecu-costing.ts, so the two runs
 // are directly comparable. Prices are the REVISED set (see the pricing review).
 const BOM: Array<[string, string, string, number, number]> = [
-  // refDes, componentType, description, qty, unitPriceGBP
-  ['U-MCU',   'ic_bga',       'Renesas R7F702300B RH850/U2A automotive MCU',   1,  15.00],
-  ['U-ASIC1', 'ic_tqfp',      'Bosch 40342/01 motor-control ASIC (captive)',   1,  10.00],
-  ['U-ASIC2', 'ic_tqfp',      'Bosch 40341/01 ASIC (captive)',                 1,   7.00],
-  ['U-ASIC3', 'ic_tqfp',      'Bosch 2302701 ASIC (captive)',                  1,   4.00],
-  ['U-SBC',   'ic_tqfp',      'ST L9369 multi-channel driver / SBC',           1,   5.00],
-  ['U-BGA2',  'ic_bga',       'Secondary safety MCU / ASIC (BGA)',             1,   8.00],
-  ['U-MEM',   'ic_bga',       'External memory (BGA)',                         1,   3.00],
-  ['Q1-6',    'power_module', 'Q142E power stage / dual half-bridge',          6,   3.00],
-  ['U-CAN',   'ic_soic',      'NXP TJA1463A CAN-FD SIC transceiver',           2,   1.20],
-  ['U-71H',   'ic_soic',      'Bosch 71H740 driver / power-path (captive)',    3,   1.50],
-  ['U-76E2',  'ic_soic',      'Bosch 76E240 device (captive)',                 1,   1.80],
-  ['U-76E8',  'ic_soic',      'Bosch 76E840 device (captive)',                 1,   1.80],
-  ['U-7S1R',  'ic_soic',      'Bosch 7S1R540H power device (captive)',         2,   1.60],
-  ['C-BULK',  'passive_0805', 'Polymer alu cap 150 uF 35 V (351 150 EJV)',     6,   0.40],
-  ['L-PWR',   'power_module', 'Shielded power inductor 0.47-10 uH',            8,   0.60],
-  ['R/C-SMD', 'passive_0402', 'MLCC + thick-film resistors, AEC-Q200',       620,   0.009],
-  ['D/Q-SML', 'ic_soic',      'Small-signal semis (SOT/SOD/QFN)',             90,   0.09],
-  ['Y1',      'crystal_osc',  'Crystal / oscillator',                          1,   0.45],
-  ['J1-2',    'through_hole', 'Automotive press-fit header (main + motor)',    2,   2.50],
-  ['TIM',     'through_hole', 'Thermal interface pad (power stages)',          8,   0.12],
+  // refDes, componentType, description (with [pkg] and value, as the vision
+  // flow composes them), qty, unitPriceGBP
+  ['U-MCU',   'ic_bga',       'Renesas R7F702300B RH850/U2A automotive MCU [BGA-292]',   1,  15.00],
+  ['U-ASIC1', 'ic_tqfp',      'Bosch 40342/01 motor-control ASIC, captive [TQFP-144]',   1,  10.00],
+  ['U-ASIC2', 'ic_tqfp',      'Bosch 40341/01 ASIC, captive [TQFP-100]',                 1,   7.00],
+  ['U-ASIC3', 'ic_tqfp',      'Bosch 2302701 ASIC, captive [TQFP-64]',                  1,   4.00],
+  ['U-SBC',   'ic_tqfp',      'ST L9369 dual H-bridge EPB pre-driver / SBC [LQFP-64]',           1,   5.00],
+  ['U-BGA2',  'ic_bga',       'Secondary safety MCU / ASIC [BGA]',             1,   8.00],
+  ['U-MEM',   'ic_bga',       'External memory [BGA]',                         1,   3.00],
+  ['Q1-6',    'power_module', 'Q142E power stage / dual half-bridge [PowerSO-8]',          6,   3.00],
+  ['U-CAN',   'ic_soic',      'NXP TJA1463A CAN-FD SIC transceiver [SOIC-8] 8MHz',           2,   1.20],
+  ['U-71H',   'ic_soic',      'Bosch 71H740 driver / power-path, captive [SOIC-8]',    3,   1.50],
+  ['U-76E2',  'ic_soic',      'Bosch 76E240 device, captive [SOIC-8]',                 1,   1.80],
+  ['U-76E8',  'ic_soic',      'Bosch 76E840 device, captive [SOIC-8]',                 1,   1.80],
+  ['U-7S1R',  'ic_soic',      'Bosch 7S1R540H power device, captive [SOIC-8]',         2,   1.60],
+  ['C-BULK',  'passive_0805', 'Polymer aluminium capacitor, marking 351 150 EJV [V-chip] 150uF',     6,   0.40],
+  ['L-PWR',   'power_module', 'Shielded power inductor, automotive [SMD shielded] 0.47uH',            8,   0.60],
+  ['R/C-SMD', 'passive_0402', 'MLCC and thick-film resistors, AEC-Q200 [0402] various',       620,   0.009],
+  ['D/Q-SML', 'ic_soic',      'Small-signal semiconductors [SOT-23 / SOD-323]',             90,   0.09],
+  ['Y1',      'crystal_osc',  'Crystal / oscillator [SMD 3225]',                          1,   0.45],
+  ['J1-2',    'through_hole', 'Automotive press-fit header, main and motor [THT press-fit] 2-pin',    2,   2.50],
+  ['TIM',     'through_hole', 'Thermal interface pad under power stages [Gap pad]',          8,   0.12],
 ];
 
 /** Fields set on the PCBA form. id → value. */
