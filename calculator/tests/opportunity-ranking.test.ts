@@ -172,6 +172,15 @@ describe('nothing grades the design', () => {
 });
 
 describe('headline maths is unchanged', () => {
+  it('is never smaller than its own biggest row — a total below a component is indefensible', () => {
+    // Regression: the headline used to come from the engine's issue-based
+    // totalPotentialSavingPct while the list showed levers, so a real part
+    // reported 12.8% combined above an 18% top row.
+    const r = RICH();
+    expect(r.headlineSavingPct).toBeGreaterThanOrEqual(r.all[0].savingPct);
+    expect(r.headlineSavingPerPart).toBeGreaterThanOrEqual(r.all[0].savingPerPart - 1e-9);
+  });
+
   it('keeps the engine root-sum-square headline, and never the sum of the list', () => {
     const r = RICH();
     const sum = r.all.reduce((s, o) => s + o.savingPct, 0);

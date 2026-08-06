@@ -236,10 +236,18 @@ export function rankOpportunities(dfm: DFMDFAResult, partTotal: number): RankedO
   }
   groups.sort((a, b) => b.topSavingPerPart - a.topSavingPerPart);
 
-  // 4 · Headline stays the engine's honest one: root-sum-square of the top
-  //     three, capped at 40% — never the sum, because overlapping fixes do not
-  //     save twice.
-  const headlineSavingPct = dfm.totalPotentialSavingPct;
+  // 4 · Headline: root-sum-square of the top three ROWS SHOWN, capped at 40%.
+  //     It must be computed from the ranked list, not from the engine's
+  //     issue-based totalPotentialSavingPct — those are different populations,
+  //     and on a real part the issue-based figure came out SMALLER than the
+  //     biggest row in the list (12.8% against an 18% lever). A total that is
+  //     less than one of its own components is indefensible in front of an
+  //     engineer. Still root-sum-square rather than a sum, so overlapping
+  //     actions never claim to save twice.
+  const headlineSavingPct = opportunities.length === 0 ? 0 : Math.round(
+    Math.min(40, Math.sqrt(
+      opportunities.slice(0, 3).reduce((acc, o) => acc + o.savingPct ** 2, 0),
+    )) * 10) / 10;
 
   return {
     groups,

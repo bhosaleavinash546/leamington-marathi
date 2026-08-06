@@ -409,7 +409,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   const streams = [
     [I.coins, 'A · Negotiation floor', GREEN,
       'A defensible should-cost turns a quote into a conversation with a floor price under it. Supplier margin and overhead are priced as separate lines, and every line prints its own derivation — so the challenge survives the meeting.',
-      'Measured: £3.22/part of ranked opportunity on the £25.14 reference part — 12.8%, of which the commercial levers alone are £5.28.'],
+      'Measured: £5.55/part of combined opportunity on the £25.14 reference part — 22% of piece cost. The single biggest action is a £4.53 sourcing lever.'],
     [I.cube, 'B · Design-stage avoidance', TEAL,
       'Cost known while the design can still move. At 10–15 minutes a part this runs at concept stage rather than after the quote lands, while wall thickness, cavitation and routing are all still open.',
       'Measured: on the bumper, tooling was 43% of piece cost — more than resin, press and labour combined. Nobody predicted that before the run.'],
@@ -432,7 +432,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText('THE CALCULATION — ATTACK ANY OF THE THREE TERMS', { x: 0.5, y: 3.14, w: 8, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
   const chain = [
     ['Addressed spend', '£20 m', 'annual purchased value of the\nparts we put through it', MUTED, false],
-    ['× Identified', '8%', 'planning figure — the tool\nmeasured 12.8% on the\nreference part', MUTED, false],
+    ['× Identified', '8%', 'planning figure — the tool\nmeasured 22% on the\nreference part', MUTED, false],
     ['× Captured', '20%', 'the share we actually\nimplement — the honest\nunknown', AMBER, false],
     ['= Saving', '£320k/yr', 'recurring, against a one-off\npilot cost of ≈ £25k', GREEN, true],
   ];
@@ -451,7 +451,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText([
     { text: '40 parts in the pilot basket · £500k average annual purchased value each · 8% identified · 20% captured.\n', options: { color: SLATE } },
     { text: 'Deliberately conservative: ', options: { bold: true, color: NAVY } },
-    { text: 'the 8% sits below the 12.8% the tool actually measured, and a 20% capture assumes four of every five ideas are never acted on. Nothing here needs the tool to be right about one part — only roughly right across a basket.', options: { color: SLATE } },
+    { text: 'the 8% is barely a third of the 22% the tool actually measured, and a 20% capture assumes four of every five ideas are never acted on. Nothing here needs the tool to be right about one part — only roughly right across a basket.', options: { color: SLATE } },
   ], { x: 0.68, y: 5.07, w: 7.2, h: 0.86, fontFace: 'Calibri', fontSize: 8.4, margin: 0, valign: 'top' });
 
   // Cost of doing nothing.
@@ -473,9 +473,9 @@ function divider(kicker, name, sub, col, items, mins, notes) {
 
   s.addNotes(
     'This is the slide the business case was missing, and I want to be honest about why. The previous version led with engineer-hours — and hours are not money. Worse, we then said "capacity, not headcount", which to a budget holder reads as "nothing actually comes out". So this version leads with the money and puts the hours where they belong. ' +
-    'Three streams. A, the negotiation floor: a defensible should-cost turns a quote into a conversation with a number underneath it, and because every line prints its own derivation the challenge survives the meeting rather than collapsing the first time a supplier pushes back. On our reference part the tool identified three pounds twenty-two of opportunity against a twenty-five pound piece cost. B, design-stage avoidance: at ten to fifteen minutes a part this can run at concept stage, while wall thickness and cavitation are still open — and the bumper is the proof, where tooling turned out to be forty-three percent of piece cost, more than the resin, the press and the labour added together. Nobody in this room predicted that in advance. C, capacity — and note that I have put it third. The hours are the enabler, not the prize. You cannot hold forty floor-price negotiations a year if every should-cost costs half a day to prepare. ' +
+    'Three streams. A, the negotiation floor: a defensible should-cost turns a quote into a conversation with a number underneath it, and because every line prints its own derivation the challenge survives the meeting rather than collapsing the first time a supplier pushes back. On our reference part the tool identified five pounds fifty-five of combined opportunity against a twenty-five pound piece cost, and its single biggest action was a four-pound-fifty sourcing lever. B, design-stage avoidance: at ten to fifteen minutes a part this can run at concept stage, while wall thickness and cavitation are still open — and the bumper is the proof, where tooling turned out to be forty-three percent of piece cost, more than the resin, the press and the labour added together. Nobody in this room predicted that in advance. C, capacity — and note that I have put it third. The hours are the enabler, not the prize. You cannot hold forty floor-price negotiations a year if every should-cost costs half a day to prepare. ' +
     'Then the calculation, laid out as a chain deliberately, so you can attack any single term instead of the whole idea. Addressed spend, times what the tool identifies, times what we actually capture. Twenty million of purchased value, eight percent identified, twenty percent captured: three hundred and twenty thousand a year, recurring, against a one-off pilot cost of about twenty-five thousand. ' +
-    'The assumptions are printed on the slide because I would rather you argued with the model than with me — and they are deliberately pessimistic. Eight percent is below the twelve point eight the tool actually measured. A twenty percent capture assumes four out of every five ideas never get acted on. ' +
+    'The assumptions are printed on the slide because I would rather you argued with the model than with me — and they are deliberately pessimistic. Eight percent is barely a third of the twenty-two percent the tool actually measured. A twenty percent capture assumes four out of every five ideas never get acted on. ' +
     'But the line to leave with is the navy strip. At this pilot cost the break-even capture rate is one point six percent. One pound in sixty. I am not asking you to believe twenty percent — I am asking whether one point six is plausible. If it is, the pilot is very nearly free, and the only remaining question is whether the tool works, which is precisely what a pilot is for.'
   );
 }
@@ -721,7 +721,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   [
     ['Accuracy', '≥ 70% of pilot parts within ±20% of an independent manual should-cost or the actual PO price'],
     ['Speed', 'Median ≤ 20 min per CAD part, engineer-attended — read from the tool’s own run logs, not estimated'],
-    ['Value', '≥ £150k of opportunity identified across the basket, and ≥ 3 levers taken to a supplier with the outcome recorded either way'],
+    ['Value', '≥ £800k of annualised opportunity identified across the basket — half what Business Case I assumes — and ≥ 3 levers taken to a supplier with the outcome recorded either way'],
     ['Adoption', '2+ engineers running it unaided after one day of training, without the person who built it in the room'],
   ].forEach(([k, v], i) => {
     const y = 1.76 + i * 0.45;
@@ -2972,8 +2972,8 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   // headline strip
   s.addShape('roundRect', { x: 0.5, y: 1.18, w: 12.33, h: 0.72, fill: { color: GREEN_T }, line: { color: GREEN, width: 1.25 }, rectRadius: 0.08 });
   s.addText([
-    { text: 'Combined opportunity £3.22/part ', options: { bold: true, color: GREEN, fontSize: 13 } },
-    { text: '(~12.8% of the £25.14 piece cost)  ·  10 ranked opportunities across 4 categories  ·  machining', options: { color: SLATE, fontSize: 11 } },
+    { text: 'Combined opportunity £5.55/part ', options: { bold: true, color: GREEN, fontSize: 13 } },
+    { text: '(~22% of the £25.14 piece cost)  ·  10 ranked opportunities across 4 categories  ·  machining', options: { color: SLATE, fontSize: 11 } },
   ], { x: 0.78, y: 1.18, w: 11.8, h: 0.72, fontFace: 'Calibri', margin: 0, valign: 'middle' });
 
   const ccx = [0.72, 1.25, 4.9, 10.15, 11.25, 12.15], ccw = [0.4, 3.6, 5.2, 1.0, 0.85, 1.1];
@@ -3033,7 +3033,7 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
 
   s.addNotes(
     'This is the output, for a real part — the reference machined bracket, run through the shipped engine. Not a mock-up; these are the numbers the tool produced. ' +
-    'Top line: three pounds twenty-two per part of combined opportunity, about thirteen percent of a twenty-five pound piece cost, ten ranked opportunities across four categories. ' +
+    'Top line: five pounds fifty-five per part of combined opportunity, about twenty-two percent of a twenty-five pound piece cost, ten ranked opportunities across four categories. ' +
     'Then the list, and this is the whole point of the change. Commercial and sourcing first, because it holds the single biggest action — a regional sourcing study worth four pounds fifty-three a part, and the tool flags it high risk and long term rather than pretending it is free. Material second: near-net-shape at two fifty-two, and a scrap-credit clause at eighty-two pence that costs nothing but a conversation. Process third, led by the bottleneck lever that names the operation — CNC milling carries sixty-four percent of the conversion cost on this part, so that is where cycle-time work pays. Design last on this part, at a pound twenty-six. ' +
     'Every row says what to do, why it is on the list, what it is worth in pounds, who can pull it and how long it takes. ' +
     'And now the thing I would ask you to notice, which is what is NOT on the slide. There is no score. There is no "critical". There is nothing that grades the part or the person who designed it. This is exactly the same deterministic arithmetic we had before — fifty-two rules, ten advisors, thirty-six levers — presented as a work list instead of a verdict. That was the feedback, and I think it is right: the last time an exercise like this scored designs, engineering read it as criticism and nothing got implemented. A ranked list with money against it is a conversation people want to have.'
