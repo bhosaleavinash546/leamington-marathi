@@ -12157,13 +12157,25 @@ function switchCommodity(type: CommodityType): void {
 
 // ─── Input collectors ─────────────────────────────────────────────────────────
 
-function getUniversalTail(): Pick<UniversalStackInput, 'partName' | 'packagingPerPart' | 'logisticsPerPart' | 'overheadPct' | 'marginPct'> {
+function getUniversalTail(): Pick<UniversalStackInput,
+  'partName' | 'packagingPerPart' | 'logisticsPerPart' | 'overheadPct' | 'marginPct' | 'annualVolume'> {
   return {
     partName: val('part-name') || 'Unnamed Part',
     packagingPerPart: num('packaging'),
     logisticsPerPart: num('logistics'),
     overheadPct: num('overhead-pct') / 100,
     marginPct: num('margin-pct') / 100,
+    // The #annual-volume field used to be read ONLY as an amortisation fallback
+    // inside each commodity collector and was never carried onto the input, so
+    // `input.annualVolume` was undefined on every costing the UI produced. That
+    // printed "Annual volume: —" on the report, forced SuggestionContext's
+    // volumeProvided to false (downgrading every volume-dependent lever to a
+    // confirm-first note, and permanently silencing the learning-curve lever,
+    // which is gated on volumeProvided === true), silently disabled the
+    // learning curve in computeUniversalStack, and dropped the volume from the
+    // saved costing record. All 19 collectors spread this tail, so setting it
+    // here fixes every commodity at once.
+    annualVolume: num('annual-volume') || undefined,
   };
 }
 
