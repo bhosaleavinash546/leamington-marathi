@@ -463,27 +463,33 @@ export function renderShouldCostSections(
       mObj?.machineClass ?? op.machineId,
       c(op.machineRateUsed),
       (op.cycleTimeHr * 60).toFixed(2),
+      // Parts per cycle divides BOTH machine and labour time. Without it the
+      // reader cannot reconcile a multi-cavity mould or multi-up stamping:
+      // "45 s cycle" against a per-part cost four times smaller looks wrong
+      // until you know four parts came out of that cycle.
+      String(op.partsPerCycle ?? 1),
       pct(op.oee * 100),
       c(op.processCost),
     ];
   });
-  opRowsA.push(['TOTAL', '', '', '', '', c(result.breakdown.process)]);
+  opRowsA.push(['TOTAL', '', '', '', '', '', c(result.breakdown.process)]);
 
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG },
-    head: [['Operation', 'Machine Class', 'Rate / hr', 'Cycle (min)', 'OEE %', 'Machine Cost']],
+    head: [['Operation', 'Machine Class', 'Rate / hr', 'Cycle (min)', 'Parts / Cycle', 'OEE %', 'Machine Cost']],
     body: opRowsA,
     theme: 'plain',
     headStyles: { ...TH.headStyles, fontSize: 7.5 },
     bodyStyles: { fontSize: 7.5, textColor: SLATE, cellPadding: { top: 2.5, bottom: 2.5, left: 4, right: 4 } },
     alternateRowStyles: { fillColor: LIGHT },
     columnStyles: {
-      0: { cellWidth: 42 },
-      1: { cellWidth: 32 },
-      2: { cellWidth: 22, halign: 'right' },
+      0: { cellWidth: 38 },
+      1: { cellWidth: 28 },
+      2: { cellWidth: 20, halign: 'right' },
       3: { cellWidth: 18, halign: 'right' },
       4: { cellWidth: 18, halign: 'right' },
-      5: { cellWidth: 50, halign: 'right', fontStyle: 'bold' },
+      5: { cellWidth: 16, halign: 'right' },
+      6: { cellWidth: 44, halign: 'right', fontStyle: 'bold' },
     },
     didParseCell: (d) => {
       if (d.section === 'body' && d.row.index === opRowsA.length - 1) {
@@ -1100,6 +1106,7 @@ export function printPDF(
 
   const sym  = currencySymbol(currency);
   const pct  = (n: number) => `${n.toFixed(1)}%`;
+  const money = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
   const pcts = breakdownPercentages(result);
   const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const timeStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
@@ -1240,6 +1247,35 @@ export function printPDF(
   doc.setTextColor(...GREY); doc.setFont('helvetica', 'normal');
   doc.text(`·  ${result.operationDetails.length} traced operations  ·  ${allCount} data points auditable`, MG + 62, y + 7);
   y += 17;
+
+  // ── Engine warnings ───────────────────────────────────────────────────────
+  // The engine validates every input and raises warnings — low material-rate
+  // confidence, sub-30% utilisation, an overhead entered as 12 where 0.12 was
+  // meant. They were computed and discarded; a report that hides its own
+  // engine's caveats is not defensible.
+  if (result.warnings?.length) {
+    y = calloutBox(doc, y, `Engine Warnings (${result.warnings.length})`,
+      result.warnings, AM, [254, 249, 231]);
+  }
+
+  // ── Learning curve ────────────────────────────────────────────────────────
+  // A learning curve REDUCES the labour in the headline. Printing the reduced
+  // number without saying so is a silent adjustment — exactly what this report
+  // exists to prevent.
+  const lc = result.learningCurveApplied;
+  if (lc) {
+    // NB `labourSaving` is signed: negative IS the saving (core.ts documents
+    // "negative = saving"). Printing it raw would read "reducing labour cost
+    // by £-6.84". Take the direction from the sign and the magnitude from abs.
+    const dir = lc.labourSaving <= 0 ? 'reducing' : 'increasing';
+    y = calloutBox(doc, y, 'Learning Curve Applied — labour has been adjusted', [
+      `Wright's law at ${lc.curvePct}% has been applied to labour: factor ${lc.adjustmentFactor.toFixed(4)}, `
+      + `${dir} labour cost by ${money(Math.abs(lc.labourSaving))}/part.`,
+      `Basis: cumulative volume ${lc.annualVolume.toLocaleString()} against a reference volume of `
+      + `${lc.referenceVolume.toLocaleString()} at which the base labour time was established.`,
+      'The labour figure in every table below is the ADJUSTED figure, not the as-quoted standard time.',
+    ], AM, [254, 249, 231]);
+  }
 
   // ── Geometry provenance (CAD flows) — measured vs estimated ───────────────
   const alloyMat = library.materials.find(m => m.id === input.rawMaterial.materialId);

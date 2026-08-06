@@ -271,6 +271,17 @@ export function computeUniversalStack(
   if (toolingNRE !== undefined) result.toolingNRE = toolingNRE;
   if (learningCurveApplied !== undefined) result.learningCurveApplied = learningCurveApplied;
 
+  // Carry the validation warnings onto the result. `validateInput` has always
+  // computed them — low material-rate confidence, sub-30% utilisation, an
+  // overhead/margin entered as a percentage where a fraction was meant — and
+  // they were discarded at the door. Nothing downstream could see them, so the
+  // PDF could not print them and every saved costing recorded itself as High
+  // confidence (main.ts keys that off `result.warnings?.length`).
+  const validation = validateStackInput(input, library);
+  if (validation.warnings.length > 0) {
+    result.warnings = validation.warnings.map((w: ValidationIssue) => `${w.field}: ${w.message}`);
+  }
+
   return result;
 }
 
