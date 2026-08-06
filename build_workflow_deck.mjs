@@ -102,9 +102,11 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     s.addShape('ellipse', { x: 0.86, y: y + 0.1, w: 0.11, h: 0.11, fill: { color: col } });
     s.addText(t, { x: 1.18, y, w: 8.6, h: 0.32, fontFace: 'Calibri', fontSize: 12, color: 'CADCFC', margin: 0, valign: 'middle' });
   });
-  s.addShape('roundRect', { x: 10.6, y: 2.42, w: 2.23, h: 1.0, fill: { color: '24406E' }, rectRadius: 0.1 });
-  s.addText(mins, { x: 10.6, y: 2.52, w: 2.23, h: 0.5, fontFace: 'Cambria', fontSize: 26, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
-  s.addText('minutes', { x: 10.6, y: 3.0, w: 2.23, h: 0.3, fontFace: 'Calibri', fontSize: 11, color: '8FA3CC', align: 'center', margin: 0 });
+  if (mins) {
+    s.addShape('roundRect', { x: 10.6, y: 2.42, w: 2.23, h: 1.0, fill: { color: '24406E' }, rectRadius: 0.1 });
+    s.addText(mins, { x: 10.6, y: 2.52, w: 2.23, h: 0.5, fontFace: 'Cambria', fontSize: 26, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
+    s.addText('minutes', { x: 10.6, y: 3.0, w: 2.23, h: 0.3, fontFace: 'Calibri', fontSize: 11, color: '8FA3CC', align: 'center', margin: 0 });
+  }
   footer(s, ++PG);
   s.addNotes(notes);
 }
@@ -117,10 +119,10 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText('Four sections, about an hour — or five slides if that is all the time there is', { x: 1.25, y: 0.66, w: 9, h: 0.28, fontFace: 'Calibri', fontSize: 12, italic: true, color: MUTED, margin: 0 });
 
   const secs = [
-    ['1', 'Orientation', 'Slides 3–7', 'How the whole thing connects, and what it is worth against costing by hand', '8 min', BLUE, true],
-    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 8–26', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
-    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 27–37', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
-    ['4', 'The honest limits', 'Slide 38', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
+    ['1', 'Orientation & the business case', 'Slides 3–9', 'How the whole thing connects, the PCB flow, and the money case ending in one decision', '18 min', BLUE, true],
+    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 10–28', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
+    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 29–39', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
+    ['4', 'The honest limits', 'Slide 40', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
   ];
   secs.forEach(([n, name, range, desc, mins, col, exec], i) => {
     const y = 1.22 + i * 1.16;
@@ -139,8 +141,10 @@ function divider(kicker, name, sub, col, items, mins, notes) {
 
   s.addShape('roundRect', { x: 0.5, y: 5.92, w: 12.33, h: 0.9, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
+    { text: 'Appendix (slides 42–52): ', options: { bold: true, color: '9FB6E0' } },
+    { text: 'the complete DFM/DFA rule library and the technical architecture — reference material, not part of the hour.\n', options: { color: 'CADCFC' } },
     { text: 'If you only have ten minutes:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'slides 3–4 (how it connects, incl. the PCB flow) · slides 5–9 (the business case) · slide 26 (the housing on one page) · slide 36 (the two findings) · slide 38 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
+    { text: 'slides 3–4 (how it connects, incl. the PCB flow) · slides 5–9 (the business case) · slide 28 (the housing on one page) · slide 38 (the two findings) · slide 40 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.02, w: 11.65, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
@@ -170,7 +174,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   // ── why believe the picture: four measured facts ──
   s.addShape('roundRect', { x: 0.45, y: 1.18, w: 2.0, h: 0.83, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText('WHY TRUST THIS PICTURE', { x: 0.56, y: 1.23, w: 1.85, h: 0.15, fontFace: 'Calibri', fontSize: 6.6, bold: true, color: GREEN, charSpacing: 0.4, margin: 0 });
-  s.addText('Same file + answers = same price\n12 of 18 commodities rules-driven\n~1,490 automated tests\n6 real parts · fleet error ≈13%',
+  s.addText('Same file + answers = same price\n12 of 18 commodities rules-driven\n1,530 automated tests\n6 real parts · fleet error ≈13%',
     { x: 0.56, y: 1.39, w: 1.85, h: 0.6, fontFace: 'Calibri', fontSize: 6.9, color: SLATE, margin: 0, valign: 'top' });
   // ── OUTSIDE the tool: the OPTIONAL AI ──
   s.addShape('roundRect', { x: 2.55, y: 1.02, w: 5.2, h: 0.99, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5, dashType: 'dash' }, rectRadius: 0.09 });
@@ -651,7 +655,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   ], { x: 1.05, y: 6.02, w: 11.6, h: 0.9, fontFace: 'Calibri', fontSize: 9, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'Second half of the business case: evidence, coverage, and what it costs to run. Four headline figures, all measured. Sixteen to thirty times faster on the baseline we confirmed ourselves. Zero marginal cost per estimate in the default mode — there is no AI call, no per-seat metering on the costing path, it is arithmetic on our own server. Twenty manufacturing regions priced on every single run. And every line of every estimate prints its own derivation — that is what makes it usable in a supplier meeting. The table is the accuracy evidence: six real parts with independent manual bottom-up costs. Three inside the manual band. Three within about thirty percent, every one of them an over-estimate — the miss direction you can live with, because an over-estimate is a negotiating position and an under-estimate is a signed mistake. Fleet error fifteen percent, against twenty-eight for the AI path on the same parts. The two donuts: twelve of eighteen commodities run fully deterministic today, and of the eight parts we costed, all eight produced a number — the AI path managed five of eight before we hardened it. And the amber strip is deliberate, because this deck goes up, and the fastest way to lose the room is to overclaim: it does not read drawings yet, it asks rather than guesses on material, and six parts is six parts — we widen the validation set before any of these figures goes into a commitment. Everything on this slide can be regenerated from the tool this afternoon.'
+    'Second half of the business case: evidence, coverage, and what it costs to run. Four headline figures, all measured. Sixteen to thirty times faster on the baseline we confirmed ourselves. Zero marginal cost per estimate in the default mode — there is no AI call, no per-seat metering on the costing path, it is arithmetic on our own server. Twenty manufacturing regions priced on every single run. And every line of every estimate prints its own derivation — that is what makes it usable in a supplier meeting. The table is the accuracy evidence: six real parts with independent manual bottom-up costs. Three inside the manual band. Three within about thirty percent, every one of them an over-estimate — the miss direction you can live with, because an over-estimate is a negotiating position and an under-estimate is a signed mistake. Fleet error thirteen percent, against twenty-eight for the AI path on the same parts. The two donuts: twelve of eighteen commodities run fully deterministic today, and of the eight parts we costed, all eight produced a number — the AI path managed five of eight before we hardened it. And the amber strip is deliberate, because this deck goes up, and the fastest way to lose the room is to overclaim: it does not read drawings yet, it asks rather than guesses on material, and six parts is six parts — we widen the validation set before any of these figures goes into a commitment. Everything on this slide can be regenerated from the tool this afternoon.'
   );
 }
 {
@@ -1863,7 +1867,7 @@ divider('SECTION THREE', 'An Injection-Moulded Bumper Fascia', 'The same method,
     'Right — second worked example, and I have chosen a part that could not be much more different from the casting: a front bumper fascia. ' +
     'It is talc-filled polypropylene, four point two kilos, walls three millimetres thick, roughly one point eight metres by half a metre, with six undercut features that need sliding sections in the tool for the lamp and sensor apertures, and it is Class-A painted. Sixty thousand a year, made in China — deliberately the same volume and the same country as the casting so you can compare like with like. ' +
     'Look at the five phases across the middle and compare them with the strip I showed you on the casting. They are identical. Same twelve stages, same owners, same colours. The geometry kernel is the same kernel. The AI does the same one job. The rate library is the same library. The engine builds the same eight buckets. ' +
-    'That is the point of this second example, and it is worth saying out loud: we have not built twenty different tools. We have built one method that applies to twenty commodities. When someone brings us a part we have never costed before, nothing new has to be invented. ' +
+    'That is the point of this second example, and it is worth saying out loud: we have not built twenty different tools. We have built one method that applies to eighteen commodities. When someone brings us a part we have never costed before, nothing new has to be invented. ' +
     'What does change — and this is what makes it worth your time — is which bucket ends up holding the money. On the casting it was the machining. On this part it is somewhere completely different, and I think the answer will surprise you as much as it surprised me.'
   );
 }
@@ -2412,7 +2416,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
     ['Guarantee the AI classified correctly', 'It can misread an unusual part. That is why it carries a confidence score, why nine checks run automatically, and why a person signs the result. We claim no AI-invented number becomes money — not that the AI is never wrong.'],
     ['Replace a quotation', 'This is a should-cost: what the part ought to cost on stated assumptions. It is a negotiating instrument and a design-feedback loop, not a price, and not a substitute for an RFQ.'],
     ['Keep duty and tariff data fresh by itself', 'Rates decay. The engine blocks any rate that is unverified or older than 90 days rather than quietly using it — but somebody has to run the refresh against the official tariff service.'],
-    ['Cost a process it has never met', 'Twenty commodities are modelled. A genuinely novel process needs a new module — days of work, not minutes, and it needs a process engineer to specify it.'],
+    ['Cost a process it has never met', 'Eighteen manufacturing commodities are modelled (plus assembly roll-up and software). A genuinely novel process needs a new module — days of work, not minutes, and a process engineer to specify it.'],
   ];
   lims.forEach(([h, t], i) => {
     const col = i % 2, row = Math.floor(i / 2);
@@ -2437,11 +2441,20 @@ partSlide('assets/workflow-deck/part-bumper.png',
     'Three, it cannot guarantee the AI classified the part correctly. It can misread something unusual. That is precisely why there is a confidence score, why nine checks run automatically on every estimate, and why a person signs the result. Our claim is narrow and deliberate: no AI-invented number ever becomes money. It is not that the AI is never wrong. ' +
     'Four, it does not replace a quotation. This is a should-cost — what the part ought to cost on stated assumptions. It is a negotiating instrument and a design-feedback loop. It is not a price and it does not replace an RFQ. ' +
     'Five, it cannot keep the duty and tariff data fresh on its own. Rates decay. The engine will block a rate that is unverified or more than ninety days old rather than quietly using it — which is the right behaviour — but somebody still has to run the refresh against the official tariff service. ' +
-    'Six, it cannot cost a process it has never met. Twenty commodities are modelled. Something genuinely novel needs a new module: days of work, and a process engineer to specify it. ' +
+    'Six, it cannot cost a process it has never met. Eighteen manufacturing commodities are modelled, plus assembly roll-up and software. Something genuinely novel needs a new module: days of work, and a process engineer to specify it. ' +
     'And the reason I am showing you this slide at all is on the navy strip. A tool that claims no limits is a tool nobody should trust with a supplier negotiation. Every one of those six is either on the roadmap or is a job we have deliberately chosen to leave with a person.'
   );
 }
 
+
+FOOT = 'CostVision · appendix — reference material';
+divider('APPENDIX', 'Reference Material', 'Everything behind the numbers — kept out of the main hour, here when it is asked for', AMBER,
+  ['The complete DFM/DFA rule library — 52 threshold rules, 10 geometry advisors, 36 idea levers',
+   'What engineering actually sees: opportunities ranked by money, never a score',
+   'Technical architecture — languages, code size, licences and what calls out',
+   'Backup: the data contracts, field by field'],
+  null,
+  'That is the end of the hour. Everything from here is reference material, and I do not intend to present it — it is here so that when somebody asks how the DFM rules actually work, or what the tool is built from, or whether anything calls out to the internet, the answer is in the pack rather than in my head. Two groups. The first is the complete DFM and DFA rule library: every threshold, every geometry advisor and every idea lever, with the exact numbers they fire on. The second is the technical architecture for the engineers — languages, code size, licences, and a straight answer on what talks to the outside world. Jump to whichever gets asked about.');
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // APPENDIX · DFM / DFA & IDEA GENERATION — THE COMPLETE RULE LIBRARY
@@ -2728,7 +2741,7 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
     s.addText(r[3], { x: rcx[3], y, w: rcw[3], h: 0.3, fontFace: 'Calibri', fontSize: 9.2, bold: true, color: TEAL, align: 'right', margin: 0, valign: 'middle' });
   });
 
-  s.addText('Rules 8–11 are new — Boothroyd-style checks read from the operation list itself: inspection and finishing as separate steps, manning levels, and labour running past the machine cycle. With slides 1–2: 52 threshold checks in total (41 DFM + 11 DFA).',
+  s.addText('Rules 8–11 are new — Boothroyd-style checks read from the operation list itself: inspection and finishing as separate steps, manning levels, and labour running past the machine cycle. With the two previous slides: 52 threshold checks in total (41 DFM + 11 DFA).',
     { x: 0.5, y: 5.5, w: 12.33, h: 0.4, fontFace: 'Calibri', fontSize: 8.5, italic: true, color: MUTED, margin: 0 });
 
   s.addShape('roundRect', { x: 0.5, y: 6.02, w: 12.33, h: 0.82, fill: { color: NAVY }, rectRadius: 0.1 });
