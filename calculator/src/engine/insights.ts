@@ -200,6 +200,125 @@ export function realMachiningStations(input: UniversalStackInput): {
   };
 }
 
+// ─── Material-dominance actions, by commodity ────────────────────────────────
+
+/**
+ * What to actually DO when material dominates depends entirely on the commodity.
+ * This used to be one hard-coded metal-forming list, so a populated PCB was told
+ * to "evaluate near-net-shape alternatives (HPDC → lost foam; forging →
+ * closed-die)" — advice with no meaning for an electronic assembly, and the kind
+ * of thing that costs the whole report its credibility with an engineer.
+ *
+ * Buy-to-fly and material-utilisation levers only make sense where the part is
+ * cut or cast from stock. Commodities that price material as a pass-through
+ * (`rawMaterial.directCost` set — PCBA, PCB fab, harness, paint, BIW) have no
+ * utilisation to improve; their material lever is the bought-out content.
+ */
+function materialDominanceActions(
+  commodity: CommodityType,
+  matUtilPct: number,
+  fivePctSaving: string,
+): string[] {
+  const commercial = [
+    'Negotiate a long-term agreement with the supplier for price-ceiling protection',
+    'Regional sourcing study: low-cost regions can reduce landed material cost by 20–40%',
+  ];
+
+  switch (commodity) {
+    case 'pcba':
+      return [
+        'Re-cost the BOM at the target volume — line items quoted at prototype price carry the largest error',
+        'Consolidate part numbers across the passive families (a single 0402 100nF X7R across the board)',
+        'Second-source the top 5 semiconductors by value; sole-sourced silicon is where the margin sits',
+        'Challenge over-specified parts: AEC-Q100 Grade 0 where Grade 1 meets the thermal envelope',
+        'Review the bare-board spec — layer count and surface finish drive the fab cost inside this line',
+        ...commercial,
+      ];
+    case 'pcb_fab':
+      return [
+        'Challenge layer count — one pair removed is typically 12–18% of the bare-board cost',
+        'Improve panel utilisation: re-pitch the array or change board outline to fit more up',
+        'Review surface finish — ENIG to OSP where the assembly and shelf-life allow',
+        'Relax trace/space and via structure to the loosest class the layout actually needs',
+        ...commercial,
+      ];
+    case 'wiring_harness':
+      return [
+        'Review wire gauge against actual current draw — copper is the dominant cost',
+        'Shorten routing lengths and remove service loops that design added "just in case"',
+        'Standardise connector families to raise volume on fewer part numbers',
+        'Challenge shielding and braid where EMC test data supports a lighter spec',
+        ...commercial,
+      ];
+    case 'painting':
+      return [
+        'Improve transfer efficiency — electrostatic bell vs conventional spray',
+        'Reduce film build to the specification minimum; over-application is pure waste',
+        'Recover and reuse solvent/overspray where the system supports it',
+        ...commercial,
+      ];
+    case 'biw_assembly':
+      return [
+        'Material here is bought-out sub-parts — re-cost the top 3 sub-assemblies individually',
+        'Look for part consolidation: fewer stampings means less material and less joining',
+        'Review gauge and grade of the incoming panels against the load case',
+        ...commercial,
+      ];
+    case 'injection_moulding':
+    case 'blow_moulding':
+    case 'thermoforming':
+    case 'rotational_moulding':
+    case 'rubber':
+      return [
+        'Reduce wall thickness / nominal section to the minimum the load case allows',
+        `Runner and sprue return: material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        'Evaluate regrind at the highest percentage the specification permits',
+        'Requalify to a lower-cost resin grade or a filled equivalent that meets spec',
+        ...commercial,
+      ];
+    case 'composites':
+      return [
+        'Review ply schedule and drop-offs — nesting waste is the biggest single lever',
+        `Material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        'Evaluate a lower-cost fibre or a hybrid layup where the load path allows',
+        ...commercial,
+      ];
+    case 'machining':
+    case 'cast_and_machine':
+      return [
+        'Evaluate a near-net-shape blank (casting or forging) instead of cutting from solid',
+        `Material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        'Review stock size against the finished envelope — oversized billet is invisible waste',
+        'Credit the swarf: confirm scrap recovery is being priced back into the quote',
+        ...commercial,
+      ];
+    case 'casting':
+    case 'forging':
+      return [
+        'Improve yield: gating/riser design for casting, flash-land and preform design for forging',
+        `Material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        'Explore secondary/recycled alloy grades that meet functional spec',
+        'Confirm returns and scrap recovery are credited back in the quote',
+        ...commercial,
+      ];
+    case 'sheet_metal':
+    case 'sheet_metal_fab':
+      return [
+        'Re-nest the blank — nesting efficiency is the single biggest sheet-metal material lever',
+        `Material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        'Review gauge and grade against the load case; one gauge down is a step change',
+        'Consider coil width optimisation or a progressive die to cut skeleton waste',
+        ...commercial,
+      ];
+    default:
+      return [
+        `Material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        'Re-cost the bought-out content at the target volume',
+        ...commercial,
+      ];
+  }
+}
+
 // ─── Insight generation ───────────────────────────────────────────────────────
 
 export function generateInsights(
@@ -233,13 +352,11 @@ export function generateInsights(
       finding: `Raw material at ${pcts.mat.toFixed(1)}% of total exceeds the ${commodity.replace(/_/g, ' ')} benchmark ceiling of ${bm.materialPct[1]}%. Material is controlling this part's economics.`,
       impact: 'High',
       potentialSavingPct: Math.min(excess * 0.4, 12),
-      actions: [
-        'Evaluate near-net-shape alternatives (HPDC → lost foam; forging → closed-die) to improve buy-to-fly ratio',
-        `Material utilisation at ${(input.rawMaterial.materialUtilization * 100).toFixed(0)}% — every +5% saves ~£${(result.breakdown.rawMaterial * 0.05).toFixed(2)}/part`,
-        'Explore secondary/recycled alloy grades that meet functional spec (e.g. Al secondary ingot for non-structural castings)',
-        'Negotiate LTA (long-term agreement) with metal distributor for price ceiling protection',
-        `Regional sourcing study: low-cost regions (India, China) can reduce material landed cost by 20-40%`,
-      ],
+      actions: materialDominanceActions(
+        commodity,
+        input.rawMaterial.materialUtilization * 100,
+        `£${(result.breakdown.rawMaterial * 0.05).toFixed(2)}`,
+      ),
       benchmark: {
         label: 'Material %',
         yourValue: pcts.mat,

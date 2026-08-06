@@ -161,7 +161,7 @@ s = D['sensitivity']
 rows = [['Driver', 'Basis', 'Effect on total'],
         ['Board size / layer count', 'scaled from photos, not measured', '±8% (±£15)'],
         ['Component prices', 'class medians, not quoted', '±25% of BOM → ±£28'],
-        ['BGA X-ray method', f"engine assumes 100% offline X-ray ({D['operations'][2]['sec']:.0f} s/board)",
+        ['BGA X-ray method', f"headline uses 100% offline X-ray ({D['operations'][2]['sec']:.0f} s/board)",
          f"inline AXI at {s['inlineAxiSec']} s → {money(s['totalInlineAxi'])} (−{money(D['total']-s['totalInlineAxi'])})"],
         ['Assembly complexity', "'high' — >300 parts, BGAs, double-sided", '±10% of SMT → ±£1'],
         ['Overhead / margin', '9% / 8% assumed', '±1pt each → ±£3']]
@@ -169,8 +169,9 @@ A(table(rows, [42*mm, 65*mm, 59*mm], size=6.6))
 A(Paragraph(
     f"<b>Working range £165 – £215 per board.</b> At {D['annualVolume']:,}/yr, 100% offline X-ray would need "
     "3.3 dedicated machines; inline AXI is the industry norm at this volume and is shown above as the realistic "
-    "lower case. The headline keeps the engine's conservative default — an over-estimate is a negotiating "
-    "position, an under-estimate is a signed mistake.", NOTE))
+    "lower case. The headline keeps the conservative default — an over-estimate is a negotiating "
+    "position, an under-estimate is a signed mistake. Inline AXI is now a selectable strategy on the PCBA form, "
+    "so this case can be quoted directly rather than reconstructed by hand.", NOTE))
 
 # ── §6 gap analysis ──────────────────────────────────────────────────────────
 A(Paragraph('§6 — Gap Analysis vs the Uploaded Tool Report', SEC))
@@ -185,7 +186,9 @@ gaps = [
     ['4', 'No BOM', 'One line: mat-virtual £82.43. No component lines, so the largest cost bucket is unauditable.',
      f"{len(D['bom'])} BOM lines, {money(D['bomTotal'])}, each flagged confirmed or estimated (§3).", 'Critical'],
     ['5', 'Wrong-commodity advice', '§11 recommended "HPDC → lost foam; forging → closed-die" and a material-utilisation '
-     'lever — casting and forging advice on a PCB.', 'Levers gated to the commodity actually being costed.', 'Major'],
+     'lever — casting and forging advice on a PCB.',
+     'Fixed in the engine: material-dominance advice is now gated to the commodity, and a pass-through '
+     'material bucket no longer offers a utilisation lever.', 'Major'],
     ['6', 'Carbon = 0.00', 'Net weight 0.000 kg → 0.00 kgCO2e for a 500 g electronics assembly.',
      'Carbon must come from board area, copper mass and component class, not net weight.', 'Major'],
     ['7', 'Confidence not enforced', 'Published a headline while self-reporting "Low confidence, 1 data point auditable".',
@@ -198,6 +201,12 @@ for g in gaps:
     rows.append([g[0], Paragraph(f"<b>{g[1]}</b>", CELLB), Paragraph(g[2], CELL), Paragraph(g[3], CELL),
                  Paragraph(f"<font color='{'#B03A2E' if g[4]=='Critical' else '#B7791F' if g[4]=='Major' else '#6B7280'}'><b>{g[4]}</b></font>", CELL)])
 A(table(rows, [7*mm, 30*mm, 62*mm, 55*mm, 12*mm], size=6.2, pad=2.5))
+A(Paragraph(
+    "Four engine defects found during this exercise have been fixed at source and pinned with tests: "
+    "double-sided assembly was charging every component placement twice; BGA X-ray had no model other than "
+    "100% offline inspection; the PCB forms inherited mechanical-part packaging and freight defaults; and "
+    "optimisation advice was not gated to the commodity. Gaps 1–4 and 6–8 above are how the report was "
+    "<i>driven</i>, not engine faults — the board was costed under the wrong commodity from the start.", NOTE))
 
 A(Paragraph('§7 — Net Effect', SEC))
 rows = [['', 'Total per board', 'Material', 'Process + Labour', 'Basis'],

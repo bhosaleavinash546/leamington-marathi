@@ -22,8 +22,12 @@ import { computePaintingDrivers } from '../engine/modules/painting.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
 import { computePCBFabDrivers } from '../engine/modules/pcb-fab.js';
 import type { PCBTechnology, PCBQualityGrade } from '../engine/modules/pcb-fab.js';
-import { computePCBADrivers } from '../engine/modules/pcba.js';
-import type { AssemblyComplexityLevel, PCBAQualityGrade } from '../engine/modules/pcba.js';
+import {
+  computePCBADrivers,
+  estimatePCBAPackagingPerPart, estimatePCBALogisticsPerPart,
+  estimatePCBFabPackagingPerPart, estimatePCBFabLogisticsPerPart,
+} from '../engine/modules/pcba.js';
+import type { AssemblyComplexityLevel, PCBAQualityGrade, XrayInspectionMode } from '../engine/modules/pcba.js';
 import { computeCastAndMachineDrivers } from '../engine/modules/cast-and-machine.js';
 import { computeSheetMetalFabDrivers, estimateBlankingCycleSec, type FabMaterialFamily } from '../engine/modules/sheet-metal-fab.js';
 import {
@@ -5359,6 +5363,19 @@ function renderPCBAForm(): string {
       <div class="field-group"><label>X-Ray Machine <span title="Required if BGA Count > 0. Select 'xray-bga-inspection' (£90/hr).">ℹ</span></label><select id="pcba-xray-mach" class="machine-select"></select></div>
       <div class="field-group"><label>ICT Machine <span title="Select 'ict-automotive' (£110/hr) or leave at default for no ICT.">ℹ</span></label><select id="pcba-ict-mach" class="machine-select"></select></div>
     </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>X-Ray Strategy <span title="100% offline: every board off the line into an X-ray cell — conservative, and the right basis for a negotiating floor. Inline AXI: machine sits in the line and runs at takt, independent of BGA count — how most automotive EMS actually build. Sample: AQL sampling at the rate below.">ℹ</span></label>
+        <select id="pcba-xray-mode">
+          <option value="offline_100pct" selected>100% offline X-ray</option>
+          <option value="inline_axi">Inline AXI (at line takt)</option>
+          <option value="sample">Sample (AQL)</option>
+        </select></div>
+      <div class="field-group"><label>Inline AXI (s) / Sample Rate <span title="Used only by the strategy above. Inline AXI: seconds per board, default 45. Sample: enter a fraction 0–1 in the sample-rate field.">ℹ</span></label><input type="number" id="pcba-axi-time" step="5" min="0" value="45"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>X-Ray Sample Rate (0–1)</label><input type="number" id="pcba-xray-sample" step="0.05" min="0" max="1" value="0.1" title="Fraction of boards X-rayed. Only used when X-Ray Strategy = Sample."/></div>
+      <div class="field-group"></div>
+    </div>
     <div class="section-title" style="margin-top:8px">Yield &amp; Rework</div>
     <div class="field-row">
       <div class="field-group"><label>Assembly Yield (0–1)</label><input type="number" id="pcba-yield" step="0.01" min="0.01" max="1" value="0.98"/></div>
@@ -10080,6 +10097,13 @@ function applyPCBImageToFab(): void {
   const tgMap: Record<string, string> = { FR4_STD: '130', FR4_HTg: '150', HDI_RIGID: '170', RF_MICRO: '170' };
   setF('pcbf-tg', tgMap[b.technologyType] ?? '150');
 
+  // Packaging & logistics: the generic £0.15 / £0.25 defaults on this form are
+  // sized for a mechanical part. A stack of vacuum-sealed bare boards is much
+  // cheaper than that; leaving the defaults quietly over-charged every board.
+  const fabAreaCm2 = (b.widthMm * b.heightMm) / 100;
+  setF('packaging', estimatePCBFabPackagingPerPart(fabAreaCm2).toFixed(2));
+  setF('logistics', estimatePCBFabLogisticsPerPart(fabAreaCm2).toFixed(2));
+
   const partNameEl = el<HTMLInputElement>('part-name');
   if (partNameEl && pcbImageResult.partName) {
     partNameEl.value = pcbImageResult.partName;
@@ -10117,6 +10141,16 @@ function applyPCBImageToPCBA(): void {
 
     // PCB cost from fab estimate mid
     setF('pcba-pcb-cost', r.costEstimates.pcbFabGBP.mid.toFixed(2));
+
+    // Packaging & logistics: a populated board needs a moisture-barrier bag,
+    // desiccant, an ESD tray and a labelled carton. The generic £0.15 / £0.25
+    // defaults on this form are sized for a mechanical part and under-charge
+    // an electronic assembly by roughly 3×.
+    const pcbaAreaCm2 = (r.boardSpec.widthMm * r.boardSpec.heightMm) / 100;
+    setF('packaging', estimatePCBAPackagingPerPart(
+      pcbaAreaCm2, r.boardSpec.qualityGrade as unknown as PCBAQualityGrade,
+    ).toFixed(2));
+    setF('logistics', estimatePCBALogisticsPerPart(pcbaAreaCm2).toFixed(2));
 
     // Auto-set X-ray if BGAs detected
     if (a.bgaCount > 0) {
@@ -12902,6 +12936,11 @@ function collectPCBAInput(): UniversalStackInput {
     qualityGrade: validSel<PCBAQualityGrade>('pcba-quality', PCBA_QUALS, 'consumer'),
     bgaCount: bgaCount || undefined,
     xrayMachineId: (bgaCount > 0 && xrayMachId) ? xrayMachId : undefined,
+    xrayMode: validSel<XrayInspectionMode>(
+      'pcba-xray-mode', ['offline_100pct', 'inline_axi', 'sample'], 'offline_100pct',
+    ),
+    inlineAxiCycleTimeSec: num('pcba-axi-time') || undefined,
+    xraySampleRate: num('pcba-xray-sample') || undefined,
     ictMachineId: (ictTimeSec > 0 && ictMachId) ? ictMachId : undefined,
     ictCycleTimeSec: ictTimeSec || undefined,
     conformalCoatAreaCm2: num('pcba-coat-area') || undefined,

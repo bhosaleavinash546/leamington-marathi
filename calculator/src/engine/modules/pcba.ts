@@ -78,6 +78,97 @@ export const PCBA_QUALITY_MULTIPLIER: Record<PCBAQualityGrade, number> = {
   aerospace:   2.2,
 };
 
+// ─── Double-sided assembly ────────────────────────────────────────────────────
+
+/**
+ * Extra line time (seconds/board) for a second SMT pass on a double-sided board.
+ *
+ * This used to be modelled as `placementTime × smtSides`, which double-charged
+ * every placement: a component is placed ONCE, on whichever side it lives on,
+ * and the BOM already counts it once. On a 755-placement ECU that inflated
+ * conversion cost by roughly £8/board for work nobody does.
+ *
+ * What a second side actually costs is a second pass down the line, not a second
+ * set of placements:
+ *   second stencil print cycle          ~12 s
+ *   board flip + re-load / re-fiducial  ~10 s
+ *   second reflow entry/exit handling    ~8 s
+ * Reflow dwell itself is conveyor time absorbed by OEE, not added per board.
+ *
+ * Note the bottom side normally also needs adhesive or a higher-temperature
+ * first-pass alloy; that is a consumable, not line time, and belongs in the BOM.
+ */
+export const SECOND_SIDE_PASS_OVERHEAD_SEC = 30;
+
+// ─── BGA inspection strategy ──────────────────────────────────────────────────
+
+/**
+ * How BGA solder joints are inspected.
+ *
+ * `offline_100pct` is the conservative default and what every estimate before
+ * this option was built on, so it stays the default. Be aware what it implies:
+ * at 475 s/board and 150,000 boards/yr it needs three dedicated X-ray machines.
+ * Real automotive EMS lines run inline AXI at conveyor speed. Quote `offline_100pct`
+ * when you are setting a negotiating floor; quote `inline_axi` when you are
+ * modelling how the supplier actually builds it.
+ */
+export type XrayInspectionMode = 'offline_100pct' | 'inline_axi' | 'sample';
+
+/** Inline AXI runs at line takt, independent of BGA count. Seconds/board. */
+export const INLINE_AXI_CYCLE_TIME_SEC = 45;
+
+// ─── Packaging & logistics ────────────────────────────────────────────────────
+
+/**
+ * ESD packaging cost per board (£). A populated board is not a stamping: it
+ * needs a moisture-barrier bag with desiccant and a humidity card, an ESD tray
+ * or clamshell, and an antistatic carton. The generic £0.15 mechanical-part
+ * default under-charges this by roughly 3×.
+ *
+ * Buildup at automotive volumes: MBB + desiccant + HIC ≈ £0.11, share of a
+ * returnable/one-way ESD tray ≈ £0.02/cm² of board footprint, carton and
+ * labelling ≈ £0.06.
+ */
+export function estimatePCBAPackagingPerPart(
+  boardAreaCm2: number,
+  qualityGrade: PCBAQualityGrade = 'consumer',
+): number {
+  const area = Math.max(0, boardAreaCm2);
+  // Automotive and above ship in dedicated trays with traceability labelling.
+  const gradeUplift = qualityGrade === 'consumer' ? 1.0
+    : qualityGrade === 'industrial' ? 1.15
+      : qualityGrade === 'aerospace' ? 1.6 : 1.35;
+  const pkg = (0.11 + area * 0.002 + 0.06) * gradeUplift;
+  return Math.round(Math.min(4, Math.max(0.08, pkg)) * 100) / 100;
+}
+
+/**
+ * Inbound freight per board (£). Boards are light and bulky, so freight is
+ * volumetric, driven by the tray footprint rather than by mass. Assumes air
+ * freight on an overseas lane, which is how automotive electronics actually
+ * move; sea freight would be roughly a third of this.
+ */
+export function estimatePCBALogisticsPerPart(boardAreaCm2: number): number {
+  const area = Math.max(0, boardAreaCm2);
+  const log = 0.12 + area * 0.0024;
+  return Math.round(Math.min(3, Math.max(0.05, log)) * 100) / 100;
+}
+
+/**
+ * Bare boards ship stacked and vacuum-sealed, far cheaper per board than a
+ * populated assembly — no tray, one bag per stack of ~50.
+ */
+export function estimatePCBFabPackagingPerPart(boardAreaCm2: number): number {
+  const pkg = 0.02 + Math.max(0, boardAreaCm2) * 0.0004;
+  return Math.round(Math.min(1, Math.max(0.02, pkg)) * 100) / 100;
+}
+
+/** Inbound freight for bare boards — dense stacks, so cheaper than populated. */
+export function estimatePCBFabLogisticsPerPart(boardAreaCm2: number): number {
+  const log = 0.04 + Math.max(0, boardAreaCm2) * 0.0008;
+  return Math.round(Math.min(2, Math.max(0.03, log)) * 100) / 100;
+}
+
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
 export interface BOMLine {
@@ -102,7 +193,12 @@ export interface PCBAInputs {
   thLabourId: string;
   thLabourTimeSecPerJoint: number;    // default 12 s/joint
   manualLabourTimeSecPerJoint: number; // default 20 s/joint
-  smtSides?: 1 | 2;                   // 1 = single-sided (default), 2 = double-sided
+  /**
+   * 1 = single-sided (default), 2 = double-sided. Adds a second line pass
+   * (SECOND_SIDE_PASS_OVERHEAD_SEC), NOT a second set of placements — the BOM
+   * already counts every component once whichever side it sits on.
+   */
+  smtSides?: 1 | 2;
   testCostPerBoard?: number;           // externally supplied test cost £
   conformalCoatAreaCm2?: number;
   conformalCoatPricePerCm2?: number;
@@ -115,6 +211,15 @@ export interface PCBAInputs {
   qualityGrade?: PCBAQualityGrade;
   /** Number of BGA packages — enables X-ray inspection operation when > 0. */
   bgaCount?: number;
+  /**
+   * How BGAs are inspected. Default 'offline_100pct' — the conservative
+   * assumption, and what every estimate predating this field was built on.
+   */
+  xrayMode?: XrayInspectionMode;
+  /** Inline AXI cycle time per board s. Only used when xrayMode = 'inline_axi'. Default 45. */
+  inlineAxiCycleTimeSec?: number;
+  /** Fraction of boards X-rayed. Only used when xrayMode = 'sample'. Default 0.1 (AQL sampling). */
+  xraySampleRate?: number;
   /** Machine ID for BGA X-ray inspection (e.g. 'xray-bga-inspection'). */
   xrayMachineId?: string;
   /** Labour rate ID for X-ray operator. Falls back to smtLabourId if omitted. */
@@ -144,7 +249,7 @@ export function getPCBAInputSchema(): Record<string, string> {
     smtLabourId: 'string — SMT operator labour rate ID',
     smtLines: 'number — parallel SMT lines',
     smtOee: 'number 0–1 — SMT line OEE',
-    smtSides: '1 | 2 — single or double-sided assembly',
+    smtSides: '1 | 2 — single or double-sided assembly (adds a second line pass, not a second set of placements)',
     throughHoleCount: 'number — TH pads/joints per board',
     manualSolderCount: 'number — hand-solder joints per board',
     thLabourId: 'string — TH insertion / manual solder labour rate ID',
@@ -157,6 +262,9 @@ export function getPCBAInputSchema(): Record<string, string> {
     qualityGrade: 'consumer | industrial | auto_grade2 | auto_grade1 | aerospace — multiplies test/inspection time',
     bgaCount: 'number? — BGA package count; triggers X-ray inspection operation',
     xrayMachineId: 'string? — X-ray BGA inspection machine ID',
+    xrayMode: "offline_100pct | inline_axi | sample — BGA inspection strategy (default offline_100pct)",
+    inlineAxiCycleTimeSec: 'number? — inline AXI cycle time per board s (default 45); used when xrayMode = inline_axi',
+    xraySampleRate: 'number? 0–1 — fraction X-rayed (default 0.1); used when xrayMode = sample',
     ictMachineId: 'string? — ICT / functional test machine ID',
     ictCycleTimeSec: 'number? — ICT test time per board s (default 120)',
     nreCost: 'number? — NRE cost £ (solder paste stencil + ICT fixture + programming). Default 0.',
@@ -210,8 +318,14 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
     }
   }
   smtPlacementTimeHr /= inputs.smtLines;
-  smtPlacementTimeHr *= (inputs.smtSides ?? 1);
   smtPlacementTimeHr *= complexityMult;
+
+  // A second side is a second pass down the line, not a second set of placements.
+  // The pass overhead is fixed handling, so the complexity multiplier — which
+  // scales placement difficulty — does not apply to it.
+  if ((inputs.smtSides ?? 1) === 2) {
+    smtPlacementTimeHr += SECOND_SIDE_PASS_OVERHEAD_SEC / 3600 / inputs.smtLines;
+  }
 
   // 6. Through-hole + manual solder time
   const thAndManualTimeHr =
@@ -251,11 +365,27 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
 
   // 7. BGA X-ray inspection (quality-scaled)
   if ((inputs.bgaCount ?? 0) > 0 && inputs.xrayMachineId) {
-    // X-ray cycle time scales with BGA count: 2min base + 0.8min per BGA, capped at 20min
-    const xrayBaseMin = Math.min(2 + (inputs.bgaCount ?? 1) * 0.8, 20);
-    const xrayCycleHr = (xrayBaseMin / 60) * qualityMult;
+    const xrayMode: XrayInspectionMode = inputs.xrayMode ?? 'offline_100pct';
+    // Offline: cycle scales with BGA count — 2 min base + 0.8 min per BGA, capped at 20 min.
+    const offlineMin = Math.min(2 + (inputs.bgaCount ?? 1) * 0.8, 20);
+    let xrayCycleHr: number;
+    let xrayLabel: string;
+    if (xrayMode === 'inline_axi') {
+      // Inline AXI sits in the line and runs at takt, so BGA count does not
+      // change the board's time through it. Quality grade still scales the
+      // recipe depth (slice count / re-image on a marginal joint).
+      xrayCycleHr = ((inputs.inlineAxiCycleTimeSec ?? INLINE_AXI_CYCLE_TIME_SEC) / 3600) * qualityMult;
+      xrayLabel = 'BGA X-Ray Inspection (inline AXI)';
+    } else if (xrayMode === 'sample') {
+      const rate = Math.min(1, Math.max(0, inputs.xraySampleRate ?? 0.1));
+      xrayCycleHr = (offlineMin / 60) * qualityMult * rate;
+      xrayLabel = `BGA X-Ray Inspection (${Math.round(rate * 100)}% sample)`;
+    } else {
+      xrayCycleHr = (offlineMin / 60) * qualityMult;
+      xrayLabel = 'BGA X-Ray Inspection (100% offline)';
+    }
     operations.push({
-      operationName: 'BGA X-Ray Inspection',
+      operationName: xrayLabel,
       machineId: inputs.xrayMachineId,
       labourId: inputs.xrayLabourId ?? inputs.smtLabourId,
       cycleTimeHr: xrayCycleHr,

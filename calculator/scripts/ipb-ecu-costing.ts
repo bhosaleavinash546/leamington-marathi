@@ -15,16 +15,17 @@
  *   npx tsx scripts/ipb-ecu-costing.ts
  */
 import { computePCBFabDrivers } from '../src/engine/modules/pcb-fab.js';
-import { computePCBADrivers, type BOMLine } from '../src/engine/modules/pcba.js';
+import {
+  computePCBADrivers, type BOMLine, type PCBAInputs,
+  estimatePCBAPackagingPerPart, estimatePCBALogisticsPerPart,
+  estimatePCBFabPackagingPerPart, estimatePCBFabLogisticsPerPart,
+} from '../src/engine/modules/pcba.js';
 import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { buildRegionalLibrary } from '../src/engine/regional-rates.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
 
 const ANNUAL_VOLUME = 150_000;
-// ESD tray + desiccant carton, and China-domestic outbound freight per board.
-const PKG = 0.35;
-const LOG = 0.55;
 const REGION = 'CN' as const;
 
 // ─── Board specification ─────────────────────────────────────────────────────
@@ -66,22 +67,36 @@ const fabDrivers = computePCBFabDrivers({
 
 const library = buildRegionalLibrary(DEFAULT_RATE_LIBRARY, REGION);
 
-function stack(drivers: ReturnType<typeof computePCBFabDrivers>, name: string) {
+// Packaging and logistics come from the engine's own PCB estimators, not from a
+// hand-picked pair of numbers — a bare board ships as a vacuum-sealed stack, a
+// populated board needs a moisture-barrier bag, desiccant and an ESD tray.
+const AREA_CM2 = (BOARD_W_MM * BOARD_H_MM) / 100;
+
+function stack(
+  drivers: ReturnType<typeof computePCBFabDrivers>,
+  name: string,
+  packagingPerPart: number,
+  logisticsPerPart: number,
+) {
   const input: UniversalStackInput = {
     partName: name,
     rawMaterial: drivers.rawMaterial,
     operations: drivers.operations,
     tooling: drivers.tooling,
-    packagingPerPart: drivers.packagingPerPart ?? PKG,
-    logisticsPerPart: drivers.logisticsPerPart ?? LOG,
-    overheadPct: drivers.overheadPct ?? 0.09,
-    marginPct: drivers.marginPct ?? 0.08,
+    packagingPerPart,
+    logisticsPerPart,
+    overheadPct: 0.09,
+    marginPct: 0.08,
     annualVolume: ANNUAL_VOLUME,
   };
   return { input, result: computeUniversalStack(input, library) };
 }
 
-const fab = stack(fabDrivers, 'IPB2.0 bare PCB');
+const fab = stack(
+  fabDrivers, 'IPB2.0 bare PCB',
+  estimatePCBFabPackagingPerPart(AREA_CM2),
+  estimatePCBFabLogisticsPerPart(AREA_CM2),
+);
 const pcbCostPerBoard = fab.result.total;
 
 // ─── BOM ─────────────────────────────────────────────────────────────────────
@@ -115,7 +130,7 @@ const placements = bom.filter(b => b.componentType !== 'through_hole' && b.compo
 const bgaCount = bom.filter(b => b.componentType === 'ic_bga').reduce((s, b) => s + b.qty, 0);
 
 // ─── PCBA ────────────────────────────────────────────────────────────────────
-const pcbaDrivers = computePCBADrivers({
+const pcbaInputs: PCBAInputs = {
   pcbCostPerBoard,
   bom,
   smtMachineId: 'smt-high-speed-line',
@@ -144,9 +159,14 @@ const pcbaDrivers = computePCBADrivers({
   ictCycleTimeSec: 150,                     // ICT + EOL functional for a brake ECU
   nreCost: 46_000,                          // stencils, ICT fixture, EOL rig, programming
   nreAmortizationVolume: ANNUAL_VOLUME,
-});
+};
+const pcbaDrivers = computePCBADrivers(pcbaInputs);
 
-const pcba = stack(pcbaDrivers, 'Bosch IPB2.0 ECU PCBA');
+const pcba = stack(
+  pcbaDrivers, 'Bosch IPB2.0 ECU PCBA',
+  estimatePCBAPackagingPerPart(AREA_CM2, 'auto_grade1'),
+  estimatePCBALogisticsPerPart(AREA_CM2),
+);
 const r = pcba.result;
 
 // ─── Report ──────────────────────────────────────────────────────────────────
@@ -183,14 +203,18 @@ console.log(`  Tool report : ${f(toolGBP)}  (¥887.42 @ 9.0498)  — 0 operation
 console.log(`  Corrected   : ${f(r.total)}`);
 console.log(`  Delta       : ${f(r.total - toolGBP)}  (${(((r.total - toolGBP) / toolGBP) * 100).toFixed(1)}%)`);
 
-// ─── Sensitivity: the engine's X-ray formula is an OFFLINE 100%-inspection
-//     model. At 150k/yr the industry norm is inline AXI, so show the delta. ───
+// ─── Sensitivity: the headline uses 100% OFFLINE X-ray, the conservative
+//     assumption. At 150k/yr the industry norm is inline AXI, so re-run the
+//     whole stack in that mode rather than scaling the operation by hand. ────
 const xray = r.operationDetails.find(o => o.operationName.includes('X-Ray'));
 const xrayCost = xray ? xray.processCost + xray.labourCost : 0;
 const inlineAxiSec = 45;
-const xrayScale = xray ? inlineAxiSec / (xray.cycleTimeHr * 3600) : 0;
-const xraySaving = xrayCost * (1 - xrayScale);
-const totalInlineAxi = r.total - xraySaving * (1 + 0.09) * (1 + 0.08);
+const totalInlineAxi = stack(
+  computePCBADrivers({ ...pcbaInputs, xrayMode: 'inline_axi', inlineAxiCycleTimeSec: inlineAxiSec }),
+  'Bosch IPB2.0 ECU PCBA (inline AXI)',
+  estimatePCBAPackagingPerPart(AREA_CM2, 'auto_grade1'),
+  estimatePCBALogisticsPerPart(AREA_CM2),
+).result.total;
 
 // ─── Emit JSON for the PDF generator ─────────────────────────────────────────
 import { writeFileSync } from 'node:fs';
