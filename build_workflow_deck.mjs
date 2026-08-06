@@ -3015,127 +3015,125 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
 }
 
 // ══════════ TECHNICAL APPENDIX · THE STACK, BOX BY BOX ══════════
-// Written for an engineer who wants to know what each box is actually made of:
-// language, size, licence, and whether it touches the network. Every line
-// count is measured from the repository, not estimated.
+// Written for an engineer who wants to know what each box is actually made of.
+// Structure deliberately simple: one flow across the top (cost engine in the
+// middle), one facts table, one panel that answers the network question in full
+// — including KPIs and telemetry. Every line count is measured from the repo.
 FOOT = 'CostVision · technical architecture — languages, licences, code size and network behaviour';
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Technical Architecture — What Each Box Is Made Of', 'Slide 3 in engineering terms — language, code size, licence and network behaviour of every box', NAVY);
+  title(s, 'Technical Architecture — What Each Box Is Made Of', 'Slide 3 in engineering terms. One flow, one table, one straight answer on what calls out', NAVY);
 
-  const LANGC = { 'Python 3': AMBER, 'TypeScript': BLUE, 'TS + WebGL': PURPLE, 'TS + SQLite': TEAL };
-
-  /** Spec-sheet card: coloured header, language/size badges, body, network strip. */
-  const techCard = (x, y, w, h, ttl, col, lang, size, body, net, netOk) => {
-    s.addShape('roundRect', { x, y, w, h, fill: { color: CARD }, line: { color: col, width: 1.25 }, rectRadius: 0.08 });
-    s.addShape('roundRect', { x, y, w, h: 0.26, fill: { color: col }, rectRadius: 0.08 });
-    s.addShape('rect', { x, y: y + 0.16, w, h: 0.10, fill: { color: col } });
-    s.addText(ttl, { x: x + 0.12, y, w: w - 0.24, h: 0.26, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
-    // badges
-    s.addShape('roundRect', { x: x + 0.12, y: y + 0.31, w: 0.92, h: 0.18, fill: { color: LANGC[lang] ?? BLUE }, rectRadius: 0.04 });
-    s.addText(lang, { x: x + 0.12, y: y + 0.31, w: 0.92, h: 0.18, fontFace: 'Calibri', fontSize: 6.6, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
-    s.addShape('roundRect', { x: x + 1.09, y: y + 0.31, w: 1.28, h: 0.18, fill: { color: 'E8EDF6' }, rectRadius: 0.04 });
-    s.addText(size, { x: x + 1.09, y: y + 0.31, w: 1.28, h: 0.18, fontFace: 'Calibri', fontSize: 6.6, bold: true, color: NAVY, align: 'center', valign: 'middle', margin: 0 });
-    s.addText(body, { x: x + 0.12, y: y + 0.53, w: w - 0.24, h: h - 0.53 - 0.26, fontFace: 'Calibri', fontSize: 7.3, color: SLATE, margin: 0, valign: 'top' });
-    s.addShape('roundRect', { x: x + 0.08, y: y + h - 0.245, w: w - 0.16, h: 0.2, fill: { color: netOk ? GREEN_T : PURPLE_T }, rectRadius: 0.04 });
-    s.addText(net, { x: x + 0.16, y: y + h - 0.245, w: w - 0.32, h: 0.2, fontFace: 'Calibri', fontSize: 6.8, bold: true, color: netOk ? GREEN : PURPLE, margin: 0, valign: 'middle' });
+  // ── 1 · THE FLOW, WITH THE COST ENGINE IN THE MIDDLE ──────────────────────
+  const step = (x, y, n, t, d, col) => {
+    s.addShape('roundRect', { x, y, w: 1.12, h: 1.04, fill: { color: CARD }, line: { color: col, width: 1.25 }, rectRadius: 0.08 });
+    s.addShape('ellipse', { x: x + 0.42, y: y + 0.07, w: 0.28, h: 0.28, fill: { color: col } });
+    s.addText(String(n), { x: x + 0.42, y: y + 0.07, w: 0.28, h: 0.28, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(t, { x: x + 0.06, y: y + 0.38, w: 1.0, h: 0.2, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: col, align: 'center', margin: 0 });
+    s.addText(d, { x: x + 0.06, y: y + 0.58, w: 1.0, h: 0.42, fontFace: 'Calibri', fontSize: 7.1, color: SLATE, align: 'center', margin: 0, valign: 'top' });
   };
+  step(0.50, 1.22, 1, 'Upload', 'A CAD file, a PCB photo, or a typed form', BLUE);
+  step(1.72, 1.22, 2, 'Measure', 'Python kernel: volume, walls, holes, faces', AMBER);
+  step(2.94, 1.22, 3, 'Derive', '162 rules → cost inputs. Engineer answers the rest', TEAL);
 
-  // ── LEFT: what reads the part ──
-  s.addText('1 · READ THE PART', { x: 0.5, y: 1.04, w: 3.5, h: 0.18, fontFace: 'Calibri', fontSize: 7.8, bold: true, color: MUTED, charSpacing: 0.6, margin: 0 });
-  techCard(0.5, 1.24, 3.5, 1.4, 'Geometry kernel', AMBER, 'Python 3', '1,587 lines',
-    'Open CASCADE (OCCT) driven through the OCP bindings — the same B-rep kernel FreeCAD uses. Reads STEP/IGES: solid volume, bounding box, faces, walls, draft, hole/boss/pocket table. Spawned by Node as a subprocess (semaphore-capped), returns JSON on stdout.',
-    'OFFLINE · free (OCCT LGPL-2.1 + exc., OCP/CadQuery Apache-2.0)', true);
-  techCard(0.5, 2.72, 3.5, 1.4, '3D viewer + STL fast path', PURPLE, 'TS + WebGL', '2,334 lines',
-    'three.js in the browser: section planes, exploded view, wall-thickness heatmap, hand measurement. Edge extraction runs in a Web Worker with transferable buffers so a 500k-triangle part never freezes the tab. STL files skip Python entirely and parse in TypeScript.',
-    'OFFLINE · free (three.js, MIT)', true);
-  techCard(0.5, 4.20, 3.5, 1.4, 'AI classifier — OPTIONAL', PURPLE, 'TypeScript', '~900 lines',
-    'The ONLY component that leaves your network. Anthropic SDK via one choke-point (ai-client.ts) — Haiku 4.5 for commentary, Sonnet/Opus for vision. Sends geometry + part name; receives words. Never sees a price list or the rate library.',
-    'OUTBOUND HTTPS · AIR_GAPPED=1 disables it', false);
+  s.addShape('line', { x: 4.10, y: 1.74, w: 0.22, h: 0, line: { color: TEAL, width: 2.5, endArrowType: 'triangle' } });
 
-  // ── CENTRE: the cost engine ──
-  s.addText('2 · CALCULATE — THE COST ENGINE IS THE CENTRE OF EVERYTHING', { x: 4.3, y: 1.04, w: 4.55, h: 0.18, fontFace: 'Calibri', fontSize: 7.8, bold: true, color: TEAL, charSpacing: 0.5, margin: 0 });
-  s.addShape('roundRect', { x: 4.3, y: 1.24, w: 4.55, h: 4.36, fill: { color: TEAL_T }, line: { color: TEAL, width: 2 }, rectRadius: 0.1 });
-  s.addShape('roundRect', { x: 4.3, y: 1.24, w: 4.55, h: 0.3, fill: { color: TEAL }, rectRadius: 0.1 });
-  s.addShape('rect', { x: 4.3, y: 1.42, w: 4.55, h: 0.12, fill: { color: TEAL } });
-  s.addText('THE COST ENGINE   ·   src/engine/', { x: 4.42, y: 1.24, w: 4.3, h: 0.3, fontFace: 'Calibri', fontSize: 9.2, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
-  s.addText('TypeScript (no framework) · 107 files · 29,229 lines · compiled by tsc, runs unchanged in the browser AND in Node · 1,530 automated tests',
-    { x: 4.42, y: 1.58, w: 4.3, h: 0.3, fontFace: 'Calibri', fontSize: 7.4, italic: true, color: NAVY, margin: 0, valign: 'top' });
+  s.addShape('roundRect', { x: 4.38, y: 1.10, w: 4.56, h: 1.28, fill: { color: TEAL_T }, line: { color: TEAL, width: 2 }, rectRadius: 0.1 });
+  s.addText('THE COST ENGINE  ·  src/engine/', { x: 4.52, y: 1.15, w: 4.3, h: 0.24, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: TEAL, margin: 0, valign: 'middle' });
+  s.addText('TypeScript · 29,229 lines · 107 files · 1,530 tests · runs unchanged in the browser and on the server',
+    { x: 4.52, y: 1.38, w: 4.3, h: 0.2, fontFace: 'Calibri', fontSize: 7.2, italic: true, color: NAVY, margin: 0 });
+  [['core.ts → the 8 cost buckets', 0], ['18 commodity modules', 1], ['Optimisers pick the cheapest capable machine', 2], ['Guardrails check every number before it counts', 3]]
+    .forEach(([t, i]) => {
+      const cx = 4.52 + (i % 2) * 2.18, cy = 1.60 + Math.floor(i / 2) * 0.22;
+      s.addShape('ellipse', { x: cx, y: cy + 0.06, w: 0.08, h: 0.08, fill: { color: TEAL } });
+      s.addText(t, { x: cx + 0.14, y: cy, w: 2.02, h: 0.2, fontFace: 'Calibri', fontSize: 7.1, color: SLATE, margin: 0, valign: 'middle' });
+    });
+  s.addShape('roundRect', { x: 4.52, y: 2.06, w: 4.28, h: 0.24, fill: { color: NAVY }, rectRadius: 0.05 });
+  s.addText('Pure functions — numbers in, numbers out. No database, no network, no file access.',
+    { x: 4.62, y: 2.06, w: 4.08, h: 0.24, fontFace: 'Calibri', fontSize: 7.1, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
 
-  const blocks = [
-    ['core.ts — computeUniversalStack()', 'drivers × rate library → the 8 buckets. Overhead is a % of factory base, margin a % of subtotal, applied once. Every other module feeds this one function.'],
-    ['18 commodity modules', 'casting · machining · forging · sheet metal · the moulding family · extrusion · rubber · composites · harness · PCB fab & assembly · painting · BIW. Each returns CommodityDrivers.'],
-    ['Rules & optimisers', '162 declarative CAD→input rules (7,525 lines, 11 files) · routing optimiser picks the cheapest capable machine · cavitation and press-tonnage sized by physics, then cost-ranked.'],
-    ['Guardrails', 'cad-sanity (AI numbers vs measured volume) · machining guard (caps near-net cutting) · self-audit on every estimate · rate freshness blocks duty rates older than 90 days.'],
+  s.addShape('line', { x: 9.00, y: 1.74, w: 0.22, h: 0, line: { color: TEAL, width: 2.5, endArrowType: 'triangle' } });
+
+  step(9.28, 1.22, 4, 'Check', 'Guardrails, self-audit, confidence band', AMBER);
+  step(10.50, 1.22, 5, 'Review', 'Engineer approves. 3D viewer to measure by hand', PURPLE);
+  step(11.72, 1.22, 6, 'Report', 'PDF, Excel, PowerPoint — made in the browser', GREEN);
+
+  // ── 2 · THE FACTS TABLE ───────────────────────────────────────────────────
+  const cx = [0.5, 3.05, 6.10, 7.22, 9.72], cw = [2.55, 2.95, 0.80, 2.40, 3.11];
+  const th = ['Component', 'Built with', 'Lines', 'Free to use?', 'Calls out to the internet?'];
+  th.forEach((h, i) => s.addText(h, { x: cx[i], y: 2.56, w: cw[i], h: 0.26, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i === 2 ? 'right' : 'left', valign: 'middle', margin: 0.06 }));
+
+  const rows = [
+    ['Geometry kernel', 'Python 3 + Open CASCADE (via OCP)', '1,587', 'Yes — LGPL-2.1 + exc. / Apache-2.0', 'No', GREEN],
+    ['3D viewer', 'TypeScript + three.js (WebGL)', '2,334', 'Yes — MIT', 'No', GREEN],
+    ['Cost engine (core + 18 modules)', 'TypeScript, no framework', '29,229', 'Yes — our own code', 'No', GREEN],
+    ['Cost-input rules (162 of them)', 'TypeScript, inside the engine', '7,525', 'Yes — our own code', 'No', GREEN],
+    ['Optimisers + DFM / idea levers', 'TypeScript, inside the engine', '1,973', 'Yes — our own code', 'No', GREEN],
+    ['Guardrails + self-audit', 'TypeScript (engine + server)', '780', 'Yes — our own code', 'No', GREEN],
+    ['Rate library — 20 regions', 'TypeScript data files, in git', '2,501', 'Yes — our own data', 'No', GREEN],
+    ['Server + database', 'TypeScript · Express + SQLite', '14,215', 'Yes — MIT', 'Localhost only', GREEN],
+    ['AI classifier — OPTIONAL', 'TypeScript · Anthropic SDK', '~900', 'SDK free · API paid per token', 'YES — the only one', PURPLE],
+    ['Automated tests', 'TypeScript · Vitest', '17,507', 'Yes — MIT', 'No', GREEN],
   ];
-  blocks.forEach(([t, d], i) => {
-    const y = 1.92 + i * 0.84;
-    s.addShape('roundRect', { x: 4.44, y, w: 4.27, h: 0.76, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.06 });
-    s.addShape('rect', { x: 4.44, y, w: 0.06, h: 0.76, fill: { color: TEAL } });
-    s.addText(`${i + 1}`, { x: 4.56, y: y + 0.04, w: 0.2, h: 0.2, fontFace: 'Calibri', fontSize: 7.4, bold: true, color: TEAL, margin: 0 });
-    s.addText(t, { x: 4.76, y: y + 0.03, w: 3.85, h: 0.22, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-    s.addText(d, { x: 4.6, y: y + 0.25, w: 4.0, h: 0.48, fontFace: 'Calibri', fontSize: 7.1, color: SLATE, margin: 0, valign: 'top' });
+  rows.forEach((r, ri) => {
+    const y = 2.82 + ri * 0.212;
+    const ai = ri === 8;
+    [0, 1, 2, 3, 4].forEach(i => {
+      s.addText(String(r[i]), {
+        x: cx[i], y, w: cw[i], h: 0.212, fontFace: 'Calibri', fontSize: 7.6,
+        bold: i === 0 || i === 4, italic: i === 2,
+        color: i === 4 ? r[5] : (i === 0 ? (ai ? PURPLE : NAVY) : SLATE),
+        fill: { color: ai ? 'F1EBF8' : (ri % 2 ? 'F0F4F9' : 'FFFFFF') },
+        align: i === 2 ? 'right' : 'left', valign: 'middle', margin: 0.06,
+      });
+    });
   });
-  s.addShape('roundRect', { x: 4.44, y: 5.28, w: 4.27, h: 0.24, fill: { color: NAVY }, rectRadius: 0.05 });
-  s.addText('Pure functions in · numbers out. No I/O, no database, no network — which is why it can be tested this hard.',
-    { x: 4.54, y: 5.28, w: 4.07, h: 0.24, fontFace: 'Calibri', fontSize: 6.9, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
+  s.addText('Line counts measured from the repository, not estimated. Licences as published by each project — worth a formal review before anything is distributed outside the company.',
+    { x: 0.5, y: 4.98, w: 12.33, h: 0.2, fontFace: 'Calibri', fontSize: 7.2, italic: true, color: MUTED, margin: 0 });
 
-  // flow arrows into and out of the engine
-  s.addShape('line', { x: 4.02, y: 3.4, w: 0.26, h: 0, line: { color: TEAL, width: 2.5, endArrowType: 'triangle' } });
-  s.addShape('line', { x: 8.87, y: 3.4, w: 0.26, h: 0, line: { color: TEAL, width: 2.5, endArrowType: 'triangle' } });
+  // ── 3 · THE NETWORK ANSWER, IN FULL ───────────────────────────────────────
+  s.addShape('roundRect', { x: 0.5, y: 5.28, w: 7.62, h: 1.66, fill: { color: CARD }, line: { color: NAVY, width: 1.5 }, rectRadius: 0.09 });
+  s.addText('DOES IT CALL ANYTHING? — API, KPI AND TELEMETRY, IN FULL', { x: 0.68, y: 5.34, w: 7.3, h: 0.2, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
+  const net = [
+    ['API calls', 'One — and optional', 'AI classifier → api.anthropic.com (or your own endpoint). AIR_GAPPED=1 switches it off. The costing path never calls out.', PURPLE],
+    ['KPI calls', 'None. Not one.', 'No KPIs measured, no usage tracked, no per-seat licence check phoning home. No analytics call of any kind.', GREEN],
+    ['Error telemetry', 'Yes — stays in-house', 'Uncaught errors POST to /api/telemetry/error on YOUR server, into YOUR log. No Sentry, no Analytics, no third party.', AMBER],
+    ['Optional feeds', 'Off by default', 'PCB component prices, metal ticker, industry news. Display-only — none of them can price a part.', MUTED],
+  ];
+  net.forEach(([k, v, d, col], i) => {
+    const y = 5.58 + i * 0.335;
+    s.addShape('ellipse', { x: 0.70, y: y + 0.12, w: 0.09, h: 0.09, fill: { color: col } });
+    s.addText(k, { x: 0.88, y, w: 1.12, h: 0.18, fontFace: 'Calibri', fontSize: 7.6, bold: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(v, { x: 2.02, y, w: 1.85, h: 0.18, fontFace: 'Calibri', fontSize: 7.6, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(d, { x: 0.88, y: y + 0.16, w: 7.0, h: 0.17, fontFace: 'Calibri', fontSize: 7.0, color: SLATE, margin: 0, valign: 'middle' });
+  });
 
-  // ── RIGHT: data it reads, and what comes out ──
-  s.addText('3 · DATA IT READS   ·   4 · WHAT COMES OUT', { x: 9.15, y: 1.04, w: 3.68, h: 0.18, fontFace: 'Calibri', fontSize: 7.8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  techCard(9.15, 1.24, 3.68, 1.4, 'Rate library', TEAL, 'TypeScript', '~6,800 lines',
-    'NOT a database — plain TypeScript data modules under version control, so every rate change is a reviewable diff. Materials, machines, labour, overhead and 20 manufacturing regions, each row carrying its source note and confidence.',
-    'OFFLINE · ships with the app', true);
-  techCard(9.15, 2.72, 3.68, 1.4, 'Local database', TEAL, 'TS + SQLite', '14,215 lines (server)',
-    'better-sqlite3 — one file on your own server, no cloud. Holds parts, saved costings, quotes and logged actuals; the actuals feed the calibration layer. Express + JWT auth, rate-limited, helmet-hardened.',
-    'LOCALHOST ONLY · free (MIT)', true);
-  techCard(9.15, 4.20, 3.68, 1.4, 'Outputs', GREEN, 'TypeScript', '2,960 lines',
-    'The SPA is Vite + TypeScript with no UI framework. Reports are generated client-side: jsPDF + autoTable for the PDF, SheetJS for Excel, pptxgenjs for PowerPoint, Chart.js for charts. Exports reuse engine results — they never recompute cost.',
-    'OFFLINE · free (MIT / Apache-2.0)', true);
-
-  // ── BOTTOM LEFT: the size question, answered as a picture ──
-  s.addText('CODE SIZE BY LAYER — LINES', { x: 0.5, y: 5.72, w: 4.2, h: 0.18, fontFace: 'Calibri', fontSize: 7.6, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
+  // ── 4 · SIZE, AS A PICTURE ────────────────────────────────────────────────
+  s.addText('CODE SIZE BY LAYER — LINES', { x: 8.32, y: 5.30, w: 4.5, h: 0.18, fontFace: 'Calibri', fontSize: 7.6, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
   s.addChart('bar', [{
     name: 'lines',
-    labels: ['Cost engine (TS)', 'UI + 3D viewer (TS)', 'Tests (TS)', 'Server + API (TS)', 'Exports (TS)', 'Geometry kernel (Py)'],
+    labels: ['Cost engine', 'UI + 3D viewer', 'Tests', 'Server + API', 'Exports', 'Kernel (Python)'],
     values: [29229, 27231, 17507, 14215, 2960, 1587],
   }], {
-    x: 0.42, y: 5.88, w: 4.35, h: 1.06, barDir: 'bar',
+    x: 8.24, y: 5.44, w: 4.62, h: 1.48, barDir: 'bar',
     chartColors: ['0E8074'], showLegend: false, showValue: true,
-    dataLabelPosition: 'outEnd', dataLabelFontSize: 6.4, dataLabelColor: '3A4356',
-    catAxisLabelColor: '3A4356', catAxisLabelFontSize: 6.4,
+    dataLabelPosition: 'outEnd', dataLabelFontSize: 6.6, dataLabelColor: '3A4356',
+    catAxisLabelColor: '3A4356', catAxisLabelFontSize: 6.8,
     valAxisHidden: true, valGridLine: { style: 'none' }, catGridLine: { style: 'none' },
     barGapWidthPct: 40,
   });
 
-  // ── BOTTOM RIGHT: the question the engineer actually asked ──
-  s.addShape('roundRect', { x: 4.95, y: 5.72, w: 7.88, h: 1.22, fill: { color: CARD }, line: { color: NAVY, width: 1.5 }, rectRadius: 0.09 });
-  s.addText('“DOES IT CALL OUT ANYWHERE?” — THE COMPLETE ANSWER', { x: 5.12, y: 5.78, w: 7.5, h: 0.2, fontFace: 'Calibri', fontSize: 7.8, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
-  const net = [
-    ['The costing path', 'Kernel → rules → engine → guardrails → report: ZERO network calls. Runs with the cable unplugged.', GREEN],
-    ['AI classify (optional)', 'One HTTPS call to api.anthropic.com — or your own endpoint via ANTHROPIC_BASE_URL. AIR_GAPPED=1 disables it.', PURPLE],
-    ['Optional feeds', 'PCB component pricing, a metal-price ticker, industry news. Off by default, display-only — none can price a part.', AMBER],
-    ['Everything else', 'localhost: Express on :3002 and one SQLite file. No telemetry, no analytics, no per-seat call-home.', GREEN],
-  ];
-  net.forEach(([k, v, col], i) => {
-    const y = 6.00 + i * 0.225;
-    s.addShape('ellipse', { x: 5.14, y: y + 0.065, w: 0.09, h: 0.09, fill: { color: col } });
-    s.addText(k, { x: 5.32, y, w: 1.5, h: 0.22, fontFace: 'Calibri', fontSize: 7.3, bold: true, color: col, margin: 0, valign: 'middle' });
-    s.addText(v, { x: 6.86, y, w: 5.8, h: 0.22, fontFace: 'Calibri', fontSize: 7.2, color: SLATE, margin: 0, valign: 'middle' });
-  });
-
   footer(s, ++PG);
   s.addNotes(
-    'This one is for the engineers, and it is slide three again with the lid off — same picture, but every box now says what it is actually made of. Three things to notice before the detail. ' +
-    'First, the cost engine is deliberately in the middle, because everything else exists to feed it or to render what it produced. It is TypeScript, twenty-nine thousand lines across a hundred and seven files, and — this is the design decision that matters most — it is written as pure functions. Inputs in, numbers out, no file access, no database, no network. That is precisely why fifteen hundred and thirty automated tests can cover it, and why the same code runs unchanged in the browser and on the server. ' +
-    'Second, the languages. Only one component is Python: the geometry kernel, fifteen hundred lines driving Open CASCADE through the OCP bindings — the same B-rep kernel FreeCAD is built on. Node spawns it as a subprocess and it hands back JSON. Everything else in the stack is TypeScript. The 3D viewer is three.js and WebGL in the browser, with edge extraction pushed into a Web Worker so a half-million-triangle part does not freeze the tab. ' +
-    'And an important distinction on the viewer, because it gets confused: the viewer is for looking and for measuring by hand. The numbers that reach the cost engine come from the kernel, not from the viewer. They are two different measurements for two different purposes. ' +
-    'Third — is it free? Yes, with one exception. OCCT is LGPL with the usual linking exception, CadQuery and OCP are Apache-2.0, and three.js, Express, the SQLite driver, jsPDF, pptxgenjs, Chart.js, Vite, Vitest and zod are MIT; SheetJS is Apache-2.0. There is no licence fee and no per-seat cost anywhere in the stack. The single paid item in the whole system is the optional Anthropic API call, and that is metered per token only when somebody chooses to use it. I would still get the licence list formally reviewed before we distribute anything outside the company. ' +
-    'The bar chart answers the "how big is it" question honestly: about ninety-one thousand lines of TypeScript plus sixteen hundred of Python, and notice that tests are the third-largest layer — seventeen and a half thousand lines. That ratio is the reason we can change a rate or a rule and know within twenty seconds whether we broke a costing. ' +
-    'And the box on the bottom right is the question I was actually asked. The costing path makes no network calls at all — kernel, rules, engine, guardrails, report, all of it runs with the cable unplugged. Exactly one component can leave your network, the optional AI classifier, and it goes through a single choke-point in the code so it can be pointed at a private endpoint or switched off entirely with an environment variable. The optional feeds — PCB component pricing, the metal ticker, the news RSS — are off by default and display-only; none of them can price a part. Everything else is localhost and a SQLite file on your own server. No telemetry, no analytics, nothing calls home.'
+    'This is slide three with the lid off, and I have kept it to three things: the flow across the top, the facts table in the middle, and one straight answer at the bottom on what talks to the outside world. ' +
+    'The flow first, left to right, six steps. Upload a CAD file, a PCB photo or a typed form. The kernel measures it. The rules turn those measurements into cost inputs and the engineer answers the handful of things a shape cannot tell you — what it is made of, how many a year. Then the cost engine, in the middle, because everything either feeds it or renders what it produced. Then the guardrails check the answer, an engineer reviews and approves, and the report comes out as PDF, Excel or PowerPoint. ' +
+    'The one design decision worth pausing on is inside the engine box: it is written as pure functions. Numbers in, numbers out — no database, no network, no file access. That is exactly why fifteen hundred tests can cover it, and why the same code runs unchanged in the browser and on the server. ' +
+    'The table answers the questions I was asked, row by row. Only one component is Python — the geometry kernel, fifteen hundred lines driving Open CASCADE through the OCP bindings, the same B-rep kernel FreeCAD is built on. Everything else is TypeScript. The 3D viewer is three.js and WebGL running in the browser, and there is a distinction there that catches people out: the viewer is for looking and for measuring by hand; the numbers that reach the cost engine come from the kernel. Two different measurements, two different jobs. ' +
+    'Is it free? Yes, with exactly one exception. OCCT is LGPL with the linking exception, CadQuery and OCP are Apache-2.0, and three.js, Express, the SQLite driver, jsPDF, pptxgenjs, Chart.js, Vite and Vitest are MIT. No licence fee, no per-seat cost. The single paid item anywhere in the stack is the optional Anthropic API call, metered per token only when somebody chooses to use it. I would still get that licence list formally reviewed before we ship anything outside the company, and the slide says so. ' +
+    'Now the bottom-left box, which is the question I was actually asked, and I have made it complete rather than reassuring. API calls: one, and it is optional — the AI classifier, through a single choke-point in the code, so it can be pointed at a private endpoint or switched off entirely with an environment variable. Nothing in the costing path calls out at all. ' +
+    'KPI calls: none. Not one. The tool measures no KPIs, tracks no usage, and has no per-seat licence check phoning home. ' +
+    'But I want to be precise about the third line, because an earlier version of this slide said "no telemetry" and that was too absolute. There IS error telemetry: when the app hits an uncaught error it posts it to slash-api-slash-telemetry-slash-error — which is our own Express server — and it lands in our own log. No Sentry, no Google Analytics, no third party, and nothing leaves your network. I would rather you heard that from me than found it in the source. ' +
+    'And the optional feeds — component prices, the metal ticker, the news RSS — are off by default, display-only, and none of them can price a part.'
   );
 }
 
