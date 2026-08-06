@@ -119,6 +119,28 @@ export interface RawMaterialInput {
   directCost?: number;
   /** Per-part recurring consumable cost (cores, wax patterns, shell, etc.) added to raw material cost line. */
   consumablesCostPerPart?: number;
+  /**
+   * Optional itemisation behind `directCost` — the BOM for a PCBA, the wire and
+   * connector schedule for a harness, the sub-part list for a BIW assembly.
+   *
+   * Commodities that price material as a single pass-through used to report it
+   * as one opaque `mat-virtual` line, so on a populated ECU the LARGEST cost
+   * bucket (72% of the part) was unauditable in the report. Purely for display
+   * and audit — no cost path reads this, so it can never move a number.
+   */
+  lines?: MaterialLineItem[];
+}
+
+/** One itemised line behind a `directCost` material bucket. Display only. */
+export interface MaterialLineItem {
+  /** Reference designator, wire number, or sub-part number. */
+  ref: string;
+  description: string;
+  qty: number;
+  /** Unit cost in the costing's base currency (GBP). */
+  unitCost: number;
+  /** Optional provenance — "marking legible in photo", "class median", a quote ref. */
+  note?: string;
 }
 
 export interface OperationInput {

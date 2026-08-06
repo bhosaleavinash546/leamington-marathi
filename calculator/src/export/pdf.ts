@@ -372,6 +372,62 @@ export function renderShouldCostSections(
   });
   y = lastFinalY(doc) + 8;
 
+  // ── §3B — Itemised material lines ─────────────────────────────────────────
+  // For a pass-through material bucket (PCBA BOM, harness schedule, BIW
+  // sub-parts) the single `directCost` figure above is the largest number in
+  // the report and, on its own, unauditable. Print the lines behind it.
+  const matLines = input.rawMaterial.lines ?? [];
+  if (matLines.length > 0) {
+    const linesTotal = matLines.reduce((a, l) => a + l.qty * l.unitCost, 0);
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+    doc.text(`3B  Material Line Items (${matLines.length} lines)`, MG, y); y += 5;
+
+    const body = matLines.map(l => [
+      l.ref, l.description, String(l.qty), c(l.unitCost), c(l.qty * l.unitCost), l.note ?? '',
+    ]);
+    body.push(['', 'LINE ITEM TOTAL', '', '', c(linesTotal), '']);
+
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG },
+      head: [['Ref', 'Description', 'Qty', `Unit ${currency}`, `Ext ${currency}`, 'Source / basis']],
+      body,
+      theme: 'plain',
+      headStyles: { ...TH.headStyles },
+      bodyStyles: { ...TH.bodyStyles, fontSize: 7 },
+      alternateRowStyles: { fillColor: LIGHT },
+      columnStyles: {
+        0: { cellWidth: 20, fontStyle: 'bold' },
+        1: { cellWidth: 60 },
+        2: { cellWidth: 14, halign: 'right' },
+        3: { cellWidth: 20, halign: 'right' },
+        4: { cellWidth: 20, halign: 'right', fontStyle: 'bold' },
+        5: { cellWidth: 48, textColor: GREY, fontSize: 6.5 },
+      },
+      didParseCell: (d) => {
+        if (d.section !== 'body') return;
+        const t = Array.isArray(d.cell.text) ? d.cell.text[0] : '';
+        if (t === 'LINE ITEM TOTAL' || d.row.index === body.length - 1) {
+          d.cell.styles.fontStyle = 'bold';
+          d.cell.styles.fillColor = OR_LT;
+          d.cell.styles.textColor = NAVY;
+        }
+      },
+    });
+    y = lastFinalY(doc) + 4;
+
+    // Reconcile the itemisation against the bucket it is meant to explain. A
+    // silent gap here would be worse than printing nothing.
+    const direct = input.rawMaterial.directCost ?? 0;
+    const gap = direct - linesTotal;
+    const note = Math.abs(gap) < 0.005
+      ? `Lines reconcile exactly to the ${c(direct)} direct material cost.`
+      : `Lines total ${c(linesTotal)} against a ${c(direct)} material bucket — the ${c(Math.abs(gap))} `
+        + `${gap > 0 ? 'balance' : 'excess'} is carried outside the itemisation (bare board, yield/rework allowance, coating).`;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...GREY);
+    for (const ln of doc.splitTextToSize(note, CW) as string[]) { doc.text(ln, MG, y); y += 3.6; }
+    y += 5;
+  }
+
   // ── Alloy / specification advisory (casting commodities) ──────────────────
   // A general die-cast alloy on a safety-critical structural part is the exact
   // silent mis-spec the knuckle exposed. Flag it; don't leave it implicit.

@@ -143,7 +143,7 @@ import { generateInsights, totalPotentialSaving, FX_TO_GBP, CURRENCY_SYMBOL } fr
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities, CATEGORY_LABELS } from '../engine/opportunity-ranking.js';
 import type { RankedOpportunity } from '../engine/opportunity-ranking.js';
-import type { RateLibrary, UniversalStackInput, PartCostResult, CommodityType, SupplierQuote } from '../engine/types.js';
+import type { RateLibrary, UniversalStackInput, PartCostResult, CommodityType, SupplierQuote, MaterialLineItem } from '../engine/types.js';
 import type { BOMLine, ComponentType } from '../engine/modules/pcba.js';
 import { parseBOMCSV } from '../engine/bom-csv.js';
 import type { MachiningOperation } from '../engine/modules/machining.js';
@@ -12948,7 +12948,21 @@ function collectPCBAInput(): UniversalStackInput {
     nreCost: num('pcba-nre-cost') || undefined,
     nreAmortizationVolume: num('pcba-nre-amort') || undefined,
   });
-  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+  // Carry the BOM into the result for the report. The engine collapses it to a
+  // single directCost, which on a populated board is ~72% of the part — printed
+  // alone it is a number nobody can check.
+  const lines: MaterialLineItem[] = bom.map(b => ({
+    ref: b.refDes || '—',
+    description: b.description,
+    qty: b.qty,
+    unitCost: b.unitPriceGBP,
+  }));
+  return {
+    ...getUniversalTail(),
+    rawMaterial: { ...drivers.rawMaterial, lines },
+    operations: drivers.operations,
+    tooling: drivers.tooling,
+  };
 }
 
 function collectCastAndMachineInput(): UniversalStackInput {
