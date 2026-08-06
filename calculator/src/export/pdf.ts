@@ -277,6 +277,120 @@ function renderSourcePhotographs(doc: jsPDF, y: number, photos: ReportPhoto[]): 
   return col === 0 ? rowTop : rowTop + maxCellH + 14;
 }
 
+/**
+ * Functional Safety (ISO 26262) for an electronics costing.
+ *
+ * Safety grade is a real cost driver on this report: it sets the quality
+ * multiplier on every test and inspection operation, it is why BGA X-ray and a
+ * long ICT cycle are in the routing at all, and it pushes component selection
+ * to AEC-Q parts. The report charged for all of that and never stated the grade
+ * it was charging for - the ASIL section existed only in the master report's
+ * PART C, which needs the vision analysis to have run.
+ *
+ * This NEVER derives an ASIL. An ASIL is an output of hazard analysis (HARA),
+ * not something readable off a board photograph, so when none has been supplied
+ * the section states what the costing assumed and asks for it to be confirmed.
+ */
+function renderFunctionalSafety(
+  doc: jsPDF, y: number,
+  result: PartCostResult,
+  commodityType: CommodityType,
+  fs: FunctionalSafetyMeta | undefined,
+  money: (n: number) => string,
+): number {
+  if (!/^(pcba|pcb_fab)$/.test(String(commodityType))) return y;
+  if (!fs) return y;
+
+  const asil = fs.asil && !/^(unknown|n\/?a|none)$/i.test(fs.asil) ? fs.asil : null;
+  const mult = fs.qualityMultiplier ?? null;
+
+  // What the safety grade actually bought, in money: the test and inspection
+  // operations it scaled.
+  const RX_TEST = /x-ray|xray|ict|test|inspect|aoi|axi/i;
+  const testOps = result.operationDetails.filter(o => RX_TEST.test(o.operationName));
+  const testCost = testOps.reduce((a, o) => a + o.processCost + o.labourCost, 0);
+  const atUnity = mult && mult > 0 ? testCost / mult : null;
+
+  y = chk(doc, y, 60);
+  y = secBar(doc, y, 'Functional Safety (ISO 26262)',
+    asil ? `ASIL ${asil}` : 'grade assumed - not yet confirmed');
+
+  if (asil) {
+    doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...RD);
+    doc.text(`ASIL ${asil}`, MG, y + 2); y += 6;
+    if (fs.rationale) {
+      doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+      for (const ln of doc.splitTextToSize(fs.rationale.replace(/\s+/g, ' ').trim(), CW) as string[]) {
+        y = chk(doc, y, 6); doc.text(ln, MG, y); y += 3.6;
+      }
+      y += 2;
+    }
+    if (fs.safetyFunctions?.length) {
+      doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+      for (const ln of doc.splitTextToSize(`Safety functions: ${fs.safetyFunctions.join('; ')}`, CW) as string[]) {
+        y = chk(doc, y, 6); doc.text(ln, MG, y); y += 3.6;
+      }
+      y += 3;
+    }
+  }
+
+  // What the costing actually applied — the auditable part.
+  const rows: string[][] = [
+    ['Quality grade costed', (fs.qualityGrade ?? '-').replace(/_/g, ' '),
+     'Sets the multiplier on test and inspection cycle times'],
+  ];
+  if (mult) {
+    rows.push(['Test / inspection multiplier', `x${mult.toFixed(2)}`,
+      'Applied to every test and inspection operation in section 4']);
+  }
+  if (testOps.length) {
+    rows.push([`Test & inspection cost (${testOps.length} ops)`, money(testCost),
+      testOps.map(o => o.operationName).join(', ')]);
+    if (atUnity !== null) {
+      rows.push(['Same routing at consumer grade', money(atUnity),
+        `The safety grade adds ${money(testCost - atUnity)}/part to verification`]);
+    }
+  }
+  rows.push(['ASIL determination', asil ?? 'NOT SUPPLIED',
+    asil ? 'From the PCB image analysis - confirm against the safety concept'
+         : 'An ASIL comes from hazard analysis (HARA), not from a board photograph']);
+
+  autoTable(doc, {
+    startY: y, margin: { left: MG, right: MG },
+    head: [['Parameter', 'Value', 'Basis']],
+    body: rows,
+    theme: 'plain',
+    headStyles: { ...TH.headStyles },
+    bodyStyles: { ...TH.bodyStyles },
+    alternateRowStyles: { fillColor: LIGHT },
+    columnStyles: {
+      0: { cellWidth: 52, textColor: GREY },
+      1: { cellWidth: 34, halign: 'right', fontStyle: 'bold' },
+      2: { cellWidth: 96, textColor: GREY, fontSize: 7 },
+    },
+    didParseCell: (d) => {
+      if (d.section === 'body' && d.row.index === rows.length - 1 && !asil) {
+        d.cell.styles.textColor = RD;
+        d.cell.styles.fontStyle = 'bold';
+      }
+    },
+  });
+  y = lastFinalY(doc) + 4;
+
+  if (!asil) {
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+    const note = 'No ASIL has been supplied for this costing, so the figures above record the quality grade that '
+      + 'was ASSUMED rather than a safety rating this tool determined. Confirm the grade against the item safety '
+      + 'requirement before quoting: a step up or down changes the verification cost shown above roughly in '
+      + 'proportion to the multiplier, and can change component selection and the X-ray strategy as well.';
+    for (const ln of doc.splitTextToSize(note, CW) as string[]) {
+      y = chk(doc, y, 6); doc.text(ln, MG, y); y += 3.6;
+    }
+    y += 4;
+  }
+  return y;
+}
+
 export function renderShouldCostSections(
   doc: jsPDF,
   y: number,
@@ -400,6 +514,11 @@ export function renderShouldCostSections(
   y = lastFinalY(doc) + 10;
 
   // ════════════════════════════════════════════════════════════════════════
+  // Functional safety sits between the commercial parameters and the cost
+  // detail: it is the context that explains why the verification operations in
+  // section 4 cost what they do.
+  y = renderFunctionalSafety(doc, y, result, commodityType, cadMeta.functionalSafety, c);
+
   // §3 — Material Detail  (new page)
   // ════════════════════════════════════════════════════════════════════════
   doc.addPage(); y = 18;

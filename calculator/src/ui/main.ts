@@ -27,6 +27,7 @@ import {
   estimatePCBAPackagingPerPart, estimatePCBALogisticsPerPart,
   estimatePCBFabPackagingPerPart, estimatePCBFabLogisticsPerPart,
 } from '../engine/modules/pcba.js';
+import { PCBA_QUALITY_MULTIPLIER } from '../engine/modules/pcba.js';
 import type { AssemblyComplexityLevel, PCBAQualityGrade, XrayInspectionMode } from '../engine/modules/pcba.js';
 import { computeCastAndMachineDrivers } from '../engine/modules/cast-and-machine.js';
 import { computeSheetMetalFabDrivers, estimateBlankingCycleSec, type FabMaterialFamily } from '../engine/modules/sheet-metal-fab.js';
@@ -111,7 +112,7 @@ async function ensurePdfLibs(): Promise<void> {
   renderShouldCostSections = m3.renderShouldCostSections;
 }
 import { exportToExcelBlob } from '../export/excel.js';
-import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto } from '../export/pdf.js';
+import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import {
@@ -16455,6 +16456,27 @@ function reportPhotos(): ReportPhoto[] {
   return out;
 }
 
+/** ISO 26262 context for the report. The ASIL is only ever REPORTED — it comes
+ *  from the PCB vision analysis, never from this function — while the quality
+ *  grade is what the costing actually applied and is always available. */
+function reportFunctionalSafety(): FunctionalSafetyMeta | undefined {
+  if (activeCommodity !== 'pcba' && activeCommodity !== 'pcb_fab') return undefined;
+  const gradeId = activeCommodity === 'pcba' ? 'pcba-quality' : 'pcbf-quality';
+  const grade = (document.getElementById(gradeId) as HTMLSelectElement | null)?.value ?? null;
+  const mult = grade && grade in PCBA_QUALITY_MULTIPLIER
+    ? PCBA_QUALITY_MULTIPLIER[grade as PCBAQualityGrade]
+    : null;
+  const r = pcbImageResult;
+  const asil = r?._asilLevel && !/^(unknown|n\/?a|none)$/i.test(r._asilLevel) ? r._asilLevel : null;
+  return {
+    asil,
+    rationale: r?._asilRationale ?? null,
+    safetyFunctions: r?._asilSafetyFunctions ?? [],
+    qualityGrade: grade,
+    qualityMultiplier: mult,
+  };
+}
+
 /** Assemble the metadata the should-cost report needs.
  *
  *  This used to early-return `{}` for any costing without a CAD analysis, which
@@ -16466,6 +16488,7 @@ function buildCadReportMeta(): CADReportMeta {
   const universal: CADReportMeta = {
     annualVolume: lastInput?.annualVolume ?? null,
     photos: reportPhotos(),
+    functionalSafety: reportFunctionalSafety(),
   };
   if (!cadAnalysisResult || !lastInput) return universal;
   const volCm3 = cadOCCTGeometry?.volume?.cm3 ?? null;
