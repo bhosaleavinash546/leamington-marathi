@@ -3014,54 +3014,85 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   );
 }
 
-// ══════════ TECHNICAL APPENDIX · THE STACK, BOX BY BOX ══════════
-// Written for an engineer who wants to know what each box is actually made of.
-// Structure deliberately simple: one flow across the top (cost engine in the
-// middle), one facts table, one panel that answers the network question in full
-// — including KPIs and telemetry. Every line count is measured from the repo.
-FOOT = 'CostVision · technical architecture — languages, licences, code size and network behaviour';
+// ══════════ TECHNICAL APPENDIX · THE STACK AND WHAT FLOWS THROUGH IT ══════════
+// The flow-and-boxes layout, with the data hand-offs folded into it: each box
+// says what it is built from AND what it hands to the next box. Plain language
+// on the slide; the exact type names are there so an engineer can grep for them.
+// Every line count and field name is taken from the repo, not estimated.
+FOOT = 'CostVision · technical architecture — what each box is made of, and what flows between them';
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Technical Architecture — What Each Box Is Made Of', 'Slide 3 in engineering terms. One flow, one table, one straight answer on what calls out', NAVY);
+  title(s, 'Technical Architecture — Boxes, Code and Data Flow', 'Six steps with the cost engine in the middle. Each box: what it is built from, and what it hands on', NAVY);
 
-  // ── 1 · THE FLOW, WITH THE COST ENGINE IN THE MIDDLE ──────────────────────
-  const step = (x, y, n, t, d, col) => {
-    s.addShape('roundRect', { x, y, w: 1.12, h: 1.04, fill: { color: CARD }, line: { color: col, width: 1.25 }, rectRadius: 0.08 });
-    s.addShape('ellipse', { x: x + 0.42, y: y + 0.07, w: 0.28, h: 0.28, fill: { color: col } });
-    s.addText(String(n), { x: x + 0.42, y: y + 0.07, w: 0.28, h: 0.28, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
-    s.addText(t, { x: x + 0.06, y: y + 0.38, w: 1.0, h: 0.2, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: col, align: 'center', margin: 0 });
-    s.addText(d, { x: x + 0.06, y: y + 0.58, w: 1.0, h: 0.42, fontFace: 'Calibri', fontSize: 7.1, color: SLATE, align: 'center', margin: 0, valign: 'top' });
+  const MONO = 'Consolas';
+
+  /** One step: number, plain-English job, and the parcel of data it hands on. */
+  const step = (x, n, ttl, job, obj, objPlain, col) => {
+    const y = 1.06, w = 1.18, h = 1.62;
+    s.addShape('roundRect', { x, y, w, h, fill: { color: CARD }, line: { color: col, width: 1.25 }, rectRadius: 0.08 });
+    s.addShape('ellipse', { x: x + 0.45, y: y + 0.07, w: 0.28, h: 0.28, fill: { color: col } });
+    s.addText(String(n), { x: x + 0.45, y: y + 0.07, w: 0.28, h: 0.28, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(ttl, { x: x + 0.05, y: y + 0.38, w: w - 0.1, h: 0.2, fontFace: 'Calibri', fontSize: 8.8, bold: true, color: col, align: 'center', margin: 0 });
+    s.addText(job, { x: x + 0.06, y: y + 0.58, w: w - 0.12, h: 0.42, fontFace: 'Calibri', fontSize: 7.0, color: SLATE, align: 'center', margin: 0, valign: 'top' });
+    // the hand-off
+    s.addShape('roundRect', { x: x + 0.06, y: y + 1.02, w: w - 0.12, h: 0.54, fill: { color: 'F0F4F9' }, line: { color: LINE, width: 0.75 }, rectRadius: 0.05 });
+    s.addText('HANDS ON', { x: x + 0.06, y: y + 1.04, w: w - 0.12, h: 0.12, fontFace: 'Calibri', fontSize: 5.4, bold: true, color: MUTED, align: 'center', charSpacing: 0.3, margin: 0 });
+    s.addText(obj, { x: x + 0.03, y: y + 1.16, w: w - 0.06, h: 0.14, fontFace: MONO, fontSize: 6.2, bold: true, color: NAVY, align: 'center', margin: 0 });
+    s.addText(objPlain, { x: x + 0.06, y: y + 1.30, w: w - 0.12, h: 0.24, fontFace: 'Calibri', fontSize: 6.2, color: SLATE, align: 'center', margin: 0, valign: 'top' });
   };
-  step(0.50, 1.22, 1, 'Upload', 'A CAD file, a PCB photo, or a typed form', BLUE);
-  step(1.72, 1.22, 2, 'Measure', 'Python kernel: volume, walls, holes, faces', AMBER);
-  step(2.94, 1.22, 3, 'Derive', '162 rules → cost inputs. Engineer answers the rest', TEAL);
 
-  s.addShape('line', { x: 4.10, y: 1.74, w: 0.22, h: 0, line: { color: TEAL, width: 2.5, endArrowType: 'triangle' } });
+  step(0.50, 1, 'Upload', 'A CAD file, a PCB photo, or a typed form', 'the file', 'STEP · IGES · STL · JPG', BLUE);
+  step(1.78, 2, 'Measure', 'The Python kernel measures the solid', 'OCCTGeometry', 'size, walls, holes, draft', AMBER);
+  step(3.06, 3, 'Derive', '162 rules turn measurements into cost inputs', 'UniversalStackInput', 'material, operations, tooling', TEAL);
 
-  s.addShape('roundRect', { x: 4.38, y: 1.10, w: 4.56, h: 1.28, fill: { color: TEAL_T }, line: { color: TEAL, width: 2 }, rectRadius: 0.1 });
-  s.addText('THE COST ENGINE  ·  src/engine/', { x: 4.52, y: 1.15, w: 4.3, h: 0.24, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: TEAL, margin: 0, valign: 'middle' });
-  s.addText('TypeScript · 29,229 lines · 107 files · 1,530 tests · runs unchanged in the browser and on the server',
-    { x: 4.52, y: 1.38, w: 4.3, h: 0.2, fontFace: 'Calibri', fontSize: 7.2, italic: true, color: NAVY, margin: 0 });
-  [['core.ts → the 8 cost buckets', 0], ['18 commodity modules', 1], ['Optimisers pick the cheapest capable machine', 2], ['Guardrails check every number before it counts', 3]]
+  s.addShape('line', { x: 4.28, y: 1.87, w: 0.22, h: 0, line: { color: TEAL, width: 2.5, endArrowType: 'triangle' } });
+
+  // ── the cost engine, in the middle ──
+  s.addShape('roundRect', { x: 4.54, y: 1.06, w: 4.26, h: 1.62, fill: { color: TEAL_T }, line: { color: TEAL, width: 2 }, rectRadius: 0.1 });
+  s.addText('THE COST ENGINE  ·  src/engine/', { x: 4.68, y: 1.11, w: 4.0, h: 0.22, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: TEAL, margin: 0, valign: 'middle' });
+  s.addText('TypeScript · 29,229 lines · 1,530 tests · same code runs in the browser and on the server',
+    { x: 4.68, y: 1.32, w: 4.0, h: 0.18, fontFace: 'Calibri', fontSize: 6.9, italic: true, color: NAVY, margin: 0 });
+  [['core.ts works out the 8 cost buckets', 0], ['18 commodity modules', 1], ['Optimisers pick the cheapest capable machine', 2], ['Guardrails check every number', 3]]
     .forEach(([t, i]) => {
-      const cx = 4.52 + (i % 2) * 2.18, cy = 1.60 + Math.floor(i / 2) * 0.22;
-      s.addShape('ellipse', { x: cx, y: cy + 0.06, w: 0.08, h: 0.08, fill: { color: TEAL } });
-      s.addText(t, { x: cx + 0.14, y: cy, w: 2.02, h: 0.2, fontFace: 'Calibri', fontSize: 7.1, color: SLATE, margin: 0, valign: 'middle' });
+      const cx = 4.68 + (i % 2) * 2.02, cy = 1.53 + Math.floor(i / 2) * 0.185;
+      s.addShape('ellipse', { x: cx, y: cy + 0.05, w: 0.07, h: 0.07, fill: { color: TEAL } });
+      s.addText(t, { x: cx + 0.12, y: cy, w: 1.9, h: 0.18, fontFace: 'Calibri', fontSize: 6.5, color: SLATE, margin: 0, valign: 'middle' });
     });
-  s.addShape('roundRect', { x: 4.52, y: 2.06, w: 4.28, h: 0.24, fill: { color: NAVY }, rectRadius: 0.05 });
-  s.addText('Pure functions — numbers in, numbers out. No database, no network, no file access.',
-    { x: 4.62, y: 2.06, w: 4.08, h: 0.24, fontFace: 'Calibri', fontSize: 7.1, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
+  s.addShape('roundRect', { x: 4.68, y: 1.92, w: 3.98, h: 0.3, fill: { color: CARD }, line: { color: TEAL, width: 0.75 }, rectRadius: 0.05 });
+  s.addText([
+    { text: 'HANDS ON  ', options: { fontSize: 5.6, bold: true, color: MUTED } },
+    { text: 'PartCostResult', options: { fontFace: MONO, fontSize: 7.4, bold: true, color: NAVY } },
+    { text: '  — the 8 buckets, plus where every number came from', options: { fontSize: 6.6, color: SLATE } },
+  ], { x: 4.76, y: 1.92, w: 3.82, h: 0.3, fontFace: 'Calibri', margin: 0, valign: 'middle' });
+  s.addShape('roundRect', { x: 4.68, y: 2.28, w: 3.98, h: 0.3, fill: { color: NAVY }, rectRadius: 0.05 });
+  s.addText('Numbers in, numbers out. No database, no network, no file access.',
+    { x: 4.78, y: 2.28, w: 3.78, h: 0.3, fontFace: 'Calibri', fontSize: 6.9, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
 
-  s.addShape('line', { x: 9.00, y: 1.74, w: 0.22, h: 0, line: { color: TEAL, width: 2.5, endArrowType: 'triangle' } });
+  s.addShape('line', { x: 8.84, y: 1.87, w: 0.22, h: 0, line: { color: TEAL, width: 2.5, endArrowType: 'triangle' } });
 
-  step(9.28, 1.22, 4, 'Check', 'Guardrails, self-audit, confidence band', AMBER);
-  step(10.50, 1.22, 5, 'Review', 'Engineer approves. 3D viewer to measure by hand', PURPLE);
-  step(11.72, 1.22, 6, 'Report', 'PDF, Excel, PowerPoint — made in the browser', GREEN);
+  step(9.08, 4, 'Check', 'Guardrails, self-audit and the confidence band', 'a checked cost', 'plus any warnings', AMBER);
+  step(10.36, 5, 'Rank', 'Findings become savings, ranked by money', 'RankedOpportunities', 'what to do, what it is worth', GREEN);
+  step(11.64, 6, 'Keep', 'Saved on your server; reports made in the browser', 'SQLite · 12 tables', 'PDF · Excel · PowerPoint', PURPLE);
 
-  // ── 2 · THE FACTS TABLE ───────────────────────────────────────────────────
+  // ── what is actually inside those parcels ────────────────────────────────
+  s.addShape('roundRect', { x: 0.5, y: 2.78, w: 12.33, h: 0.66, fill: { color: 'F0F4F9' }, line: { color: LINE, width: 1 }, rectRadius: 0.07 });
+  s.addText('WHAT IS INSIDE EACH PARCEL', { x: 0.68, y: 2.82, w: 3, h: 0.16, fontFace: 'Calibri', fontSize: 7, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
+  const parcels = [
+    ['OCCTGeometry', 'bounding box · volume · wall thickness · draft angles · setup count · hole and boss table'],
+    ['UniversalStackInput', 'material and utilisation · per-operation cycle time, OEE, manning · tooling · overhead · margin'],
+    ['PartCostResult', 'the 8 buckets · cost per operation · total · a traceability row per figure (value, unit, rate)'],
+    ['RankedOpportunities', 'each idea with its saving in £/part, risk, timeframe and owner — grouped by category, biggest first'],
+  ];
+  parcels.forEach(([k, v], i) => {
+    const y = 2.99 + (i % 2) * 0.20, x = 0.68 + Math.floor(i / 2) * 6.15;
+    s.addText(k, { x, y, w: 1.32, h: 0.18, fontFace: MONO, fontSize: 6.4, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(v, { x: x + 1.34, y, w: 4.7, h: 0.18, fontFace: 'Calibri', fontSize: 6.4, color: SLATE, margin: 0, valign: 'middle' });
+  });
+
+  // ── the facts table ───────────────────────────────────────────────────────
   const cx = [0.5, 3.05, 6.10, 7.22, 9.72], cw = [2.55, 2.95, 0.80, 2.40, 3.11];
   const th = ['Component', 'Built with', 'Lines', 'Free to use?', 'Calls out to the internet?'];
-  th.forEach((h, i) => s.addText(h, { x: cx[i], y: 2.56, w: cw[i], h: 0.26, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i === 2 ? 'right' : 'left', valign: 'middle', margin: 0.06 }));
+  th.forEach((h, i) => s.addText(h, { x: cx[i], y: 3.54, w: cw[i], h: 0.24, fontFace: 'Calibri', fontSize: 8, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i === 2 ? 'right' : 'left', valign: 'middle', margin: 0.06 }));
 
   const rows = [
     ['Geometry kernel', 'Python 3 + Open CASCADE (via OCP)', '1,587', 'Yes — LGPL-2.1 + exc. / Apache-2.0', 'No', GREEN],
@@ -3076,11 +3107,11 @@ FOOT = 'CostVision · technical architecture — languages, licences, code size 
     ['Automated tests', 'TypeScript · Vitest', '17,507', 'Yes — MIT', 'No', GREEN],
   ];
   rows.forEach((r, ri) => {
-    const y = 2.82 + ri * 0.212;
+    const y = 3.78 + ri * 0.196;
     const ai = ri === 8;
     [0, 1, 2, 3, 4].forEach(i => {
       s.addText(String(r[i]), {
-        x: cx[i], y, w: cw[i], h: 0.212, fontFace: 'Calibri', fontSize: 7.6,
+        x: cx[i], y, w: cw[i], h: 0.196, fontFace: 'Calibri', fontSize: 7.4,
         bold: i === 0 || i === 4, italic: i === 2,
         color: i === 4 ? r[5] : (i === 0 ? (ai ? PURPLE : NAVY) : SLATE),
         fill: { color: ai ? 'F1EBF8' : (ri % 2 ? 'F0F4F9' : 'FFFFFF') },
@@ -3088,141 +3119,36 @@ FOOT = 'CostVision · technical architecture — languages, licences, code size 
       });
     });
   });
-  s.addText('Line counts measured from the repository, not estimated. Licences as published by each project — worth a formal review before anything is distributed outside the company.',
-    { x: 0.5, y: 4.98, w: 12.33, h: 0.2, fontFace: 'Calibri', fontSize: 7.2, italic: true, color: MUTED, margin: 0 });
+  s.addText('Line counts measured from the repository. Licences as published by each project — worth a formal review before anything is distributed outside the company.',
+    { x: 0.5, y: 5.76, w: 12.33, h: 0.18, fontFace: 'Calibri', fontSize: 6.9, italic: true, color: MUTED, margin: 0 });
 
-  // ── 3 · THE NETWORK ANSWER, IN FULL ───────────────────────────────────────
-  s.addShape('roundRect', { x: 0.5, y: 5.28, w: 7.62, h: 1.66, fill: { color: CARD }, line: { color: NAVY, width: 1.5 }, rectRadius: 0.09 });
-  s.addText('DOES IT CALL ANYTHING? — API, KPI AND TELEMETRY, IN FULL', { x: 0.68, y: 5.34, w: 7.3, h: 0.2, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
+  // ── the network answer ────────────────────────────────────────────────────
+  s.addShape('roundRect', { x: 0.5, y: 6.00, w: 12.33, h: 0.94, fill: { color: CARD }, line: { color: NAVY, width: 1.5 }, rectRadius: 0.08 });
+  s.addText('DOES IT CALL ANYTHING? — API, KPI AND TELEMETRY, IN FULL', { x: 0.68, y: 6.04, w: 6, h: 0.18, fontFace: 'Calibri', fontSize: 7.8, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
   const net = [
-    ['API calls', 'One — and optional', 'AI classifier → api.anthropic.com (or your own endpoint). AIR_GAPPED=1 switches it off. The costing path never calls out.', PURPLE],
+    ['API calls', 'One — and optional', 'The AI classifier → api.anthropic.com, or your own endpoint. AIR_GAPPED=1 switches it off. The costing path never calls out.', PURPLE],
     ['KPI calls', 'None. Not one.', 'No KPIs measured, no usage tracked, no per-seat licence check phoning home. No analytics call of any kind.', GREEN],
-    ['Error telemetry', 'Yes — stays in-house', 'Uncaught errors POST to /api/telemetry/error on YOUR server, into YOUR log. No Sentry, no Analytics, no third party.', AMBER],
+    ['Error telemetry', 'Yes — stays in-house', 'Uncaught errors go to /api/telemetry/error on YOUR server, into YOUR log. No Sentry, no Analytics, no third party.', AMBER],
     ['Optional feeds', 'Off by default', 'PCB component prices, metal ticker, industry news. Display-only — none of them can price a part.', MUTED],
   ];
   net.forEach(([k, v, d, col], i) => {
-    const y = 5.58 + i * 0.335;
-    s.addShape('ellipse', { x: 0.70, y: y + 0.12, w: 0.09, h: 0.09, fill: { color: col } });
-    s.addText(k, { x: 0.88, y, w: 1.12, h: 0.18, fontFace: 'Calibri', fontSize: 7.6, bold: true, color: col, margin: 0, valign: 'middle' });
-    s.addText(v, { x: 2.02, y, w: 1.85, h: 0.18, fontFace: 'Calibri', fontSize: 7.6, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-    s.addText(d, { x: 0.88, y: y + 0.16, w: 7.0, h: 0.17, fontFace: 'Calibri', fontSize: 7.0, color: SLATE, margin: 0, valign: 'middle' });
-  });
-
-  // ── 4 · SIZE, AS A PICTURE ────────────────────────────────────────────────
-  s.addText('CODE SIZE BY LAYER — LINES', { x: 8.32, y: 5.30, w: 4.5, h: 0.18, fontFace: 'Calibri', fontSize: 7.6, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
-  s.addChart('bar', [{
-    name: 'lines',
-    labels: ['Cost engine', 'UI + 3D viewer', 'Tests', 'Server + API', 'Exports', 'Kernel (Python)'],
-    values: [29229, 27231, 17507, 14215, 2960, 1587],
-  }], {
-    x: 8.24, y: 5.44, w: 4.62, h: 1.48, barDir: 'bar',
-    chartColors: ['0E8074'], showLegend: false, showValue: true,
-    dataLabelPosition: 'outEnd', dataLabelFontSize: 6.6, dataLabelColor: '3A4356',
-    catAxisLabelColor: '3A4356', catAxisLabelFontSize: 6.8,
-    valAxisHidden: true, valGridLine: { style: 'none' }, catGridLine: { style: 'none' },
-    barGapWidthPct: 40,
+    const y = 6.24 + (i % 2) * 0.32, x = 0.68 + Math.floor(i / 2) * 6.15;
+    s.addShape('ellipse', { x, y: y + 0.05, w: 0.08, h: 0.08, fill: { color: col } });
+    s.addText(k, { x: x + 0.15, y, w: 1.0, h: 0.16, fontFace: 'Calibri', fontSize: 7.2, bold: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(v, { x: x + 1.17, y, w: 1.5, h: 0.16, fontFace: 'Calibri', fontSize: 7.2, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(d, { x: x + 0.15, y: y + 0.15, w: 5.7, h: 0.15, fontFace: 'Calibri', fontSize: 6.5, color: SLATE, margin: 0, valign: 'middle' });
   });
 
   footer(s, ++PG);
   s.addNotes(
-    'This is slide three with the lid off, and I have kept it to three things: the flow across the top, the facts table in the middle, and one straight answer at the bottom on what talks to the outside world. ' +
-    'The flow first, left to right, six steps. Upload a CAD file, a PCB photo or a typed form. The kernel measures it. The rules turn those measurements into cost inputs and the engineer answers the handful of things a shape cannot tell you — what it is made of, how many a year. Then the cost engine, in the middle, because everything either feeds it or renders what it produced. Then the guardrails check the answer, an engineer reviews and approves, and the report comes out as PDF, Excel or PowerPoint. ' +
-    'The one design decision worth pausing on is inside the engine box: it is written as pure functions. Numbers in, numbers out — no database, no network, no file access. That is exactly why fifteen hundred tests can cover it, and why the same code runs unchanged in the browser and on the server. ' +
-    'The table answers the questions I was asked, row by row. Only one component is Python — the geometry kernel, fifteen hundred lines driving Open CASCADE through the OCP bindings, the same B-rep kernel FreeCAD is built on. Everything else is TypeScript. The 3D viewer is three.js and WebGL running in the browser, and there is a distinction there that catches people out: the viewer is for looking and for measuring by hand; the numbers that reach the cost engine come from the kernel. Two different measurements, two different jobs. ' +
-    'Is it free? Yes, with exactly one exception. OCCT is LGPL with the linking exception, CadQuery and OCP are Apache-2.0, and three.js, Express, the SQLite driver, jsPDF, pptxgenjs, Chart.js, Vite and Vitest are MIT. No licence fee, no per-seat cost. The single paid item anywhere in the stack is the optional Anthropic API call, metered per token only when somebody chooses to use it. I would still get that licence list formally reviewed before we ship anything outside the company, and the slide says so. ' +
-    'Now the bottom-left box, which is the question I was actually asked, and I have made it complete rather than reassuring. API calls: one, and it is optional — the AI classifier, through a single choke-point in the code, so it can be pointed at a private endpoint or switched off entirely with an environment variable. Nothing in the costing path calls out at all. ' +
-    'KPI calls: none. Not one. The tool measures no KPIs, tracks no usage, and has no per-seat licence check phoning home. ' +
-    'But I want to be precise about the third line, because an earlier version of this slide said "no telemetry" and that was too absolute. There IS error telemetry: when the app hits an uncaught error it posts it to slash-api-slash-telemetry-slash-error — which is our own Express server — and it lands in our own log. No Sentry, no Google Analytics, no third party, and nothing leaves your network. I would rather you heard that from me than found it in the source. ' +
-    'And the optional feeds — component prices, the metal ticker, the news RSS — are off by default, display-only, and none of them can price a part.'
-  );
-}
-
-// ══════════ TECHNICAL APPENDIX 2 · THE DATA CONTRACTS ══════════
-// The deep-dive for an engineer from a data background: what OBJECT moves
-// between each box, what is in it, and where every field comes from. All type
-// names and fields below are copied from the source, not paraphrased.
-{
-  const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Data Contracts — What Actually Moves Between the Boxes', 'Five typed hand-offs from CAD file to database. Type and field names exactly as they appear in the source', NAVY);
-
-  const MONO = 'Consolas';
-
-  /** One hand-off: a typed object, its fields, and where the values come from. */
-  const contract = (x, y, w, h, n, name, where, col, fields, note) => {
-    s.addShape('roundRect', { x, y, w, h, fill: { color: CARD }, line: { color: col, width: 1.4 }, rectRadius: 0.09 });
-    s.addShape('roundRect', { x, y, w, h: 0.42, fill: { color: col }, rectRadius: 0.09 });
-    s.addShape('rect', { x, y: y + 0.26, w, h: 0.16, fill: { color: col } });
-    s.addShape('ellipse', { x: x + 0.11, y: y + 0.09, w: 0.24, h: 0.24, fill: { color: 'FFFFFF' } });
-    s.addText(String(n), { x: x + 0.11, y: y + 0.09, w: 0.24, h: 0.24, fontFace: 'Calibri', fontSize: 8, bold: true, color: col, align: 'center', valign: 'middle', margin: 0 });
-    s.addText(name, { x: x + 0.42, y: y + 0.04, w: w - 0.52, h: 0.20, fontFace: MONO, fontSize: 8.4, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
-    s.addText(where, { x: x + 0.42, y: y + 0.22, w: w - 0.52, h: 0.16, fontFace: 'Calibri', fontSize: 6.6, color: 'FFFFFF', margin: 0, valign: 'middle' });
-    s.addText(fields, { x: x + 0.12, y: y + 0.48, w: w - 0.24, h: h - 0.48 - 0.24, fontFace: MONO, fontSize: 6.1, color: SLATE, margin: 0, valign: 'top', lineSpacingMultiple: 0.98 });
-    s.addText(note, { x: x + 0.12, y: y + h - 0.24, w: w - 0.24, h: 0.2, fontFace: 'Calibri', fontSize: 6.6, italic: true, color: col, margin: 0, valign: 'middle' });
-  };
-
-  const CW = 2.34, GAP = 0.155, Y = 1.14, H = 3.42;
-  const xs = [0.5, 0.5 + CW + GAP, 0.5 + 2 * (CW + GAP), 0.5 + 3 * (CW + GAP), 0.5 + 4 * (CW + GAP)];
-
-  contract(xs[0], Y, CW, H, 1, 'OCCTGeometry', 'Python kernel → JSON on stdout', AMBER,
-    'status: success|error\nboundingBox: {xMm,yMm,zMm}\nvolume: {mm3, cm3}\nsurfaceArea: {mm2, cm2}\nfillRatio: number\ntopology: {solidCount,\n  shellCount, voidCount,\n  enclosesSealedVoid,\n  openShell}\nwallThickness: {minMm,\n  maxMm, meanMm, p95Mm,\n  method, uniformity}\ndraftAnalysis: {undercut-\n  FaceCount, minPositive-\n  DraftDeg, ...}\nsetupAnalysis: {estimated-\n  SetupCount, principal-\n  Directions[]}\ncncCycleTimeEstimate: {...}\nweights: {aluminiumKg,\n  steelKg, plasticKg}\nfeatureTable, detected-\n  Hardware, bendCount',
-    'Measured. Never guessed.');
-
-  contract(xs[1], Y, CW, H, 2, 'UniversalStackInput', '162 rules + engineer answers', TEAL,
-    'partName: string\nrawMaterial: {\n  materialId: string\n  netWeightKg: number\n  materialUtilization: number\n  directCost?: number\n  consumablesCostPerPart?\n}\noperations: [{\n  operationName: string\n  machineId: string\n  labourId: string\n  cycleTimeHr: number\n  partsPerCycle: number\n  oee: number\n  manning: number\n  labourTimeHr: number\n  labourEfficiency: number\n}]\ntooling: {totalToolingCost,\n  amortizationVolume, mode}\npackagingPerPart: number\nlogisticsPerPart: number\noverheadPct · marginPct\nannualVolume?',
-    'Geometry wins; engineer fills gaps.');
-
-  contract(xs[2], Y, CW, H, 3, 'PartCostResult', 'core.ts :: computeUniversalStack()', BLUE,
-    'partName: string\nbreakdown: Breakdown8Bucket {\n  rawMaterial · process\n  labour · tooling\n  packaging · logistics\n  overhead · margin\n}\noperationDetails: [{\n  operationName, machineId\n  processCost, labourCost\n  machineRateUsed\n  labourRateUsed\n  cycleTimeHr, oee, manning\n}]\nfactoryCost · subtotal · total\ntoolingNRE?\ntraceability: [{\n  field, value, unit,\n  rateSource, rateId,\n  confidence\n}]\nwarnings?: string[]',
-    'traceability[] = the printed derivation.');
-
-  contract(xs[3], Y, CW, H, 4, 'RankedOpportunities', 'dfm-dfa → opportunity-ranking', GREEN,
-    'groups: [{\n  category: LeverCategory\n  label: string\n  opportunities: [{\n    action: string\n    basis: string\n    detail?: string\n    savingPct: number\n    savingPerPart: number\n    risk · timeframe\n    owner?: design|supplier|\n      sourcing|assumption\n    signal: string\n  }]\n  groupSavingPerPart\n  topSavingPerPart\n}]\nall: RankedOpportunity[]\nverificationChecks: [{\n  title, detail, action\n}]\nheadlineSavingPct\nheadlineSavingPerPart\npartTotal',
-    'Ranked by money, never scored.');
-
-  contract(xs[4], Y, CW, H, 5, 'SQLite  ·  12 tables', 'better-sqlite3 — one file, your server', PURPLE,
-    'projects (id, user_id, kind,\n  name, data, created_at,\n  updated_at)\nscenarios (id, name,\n  description, data,\n  created_by, created_at)\nsupplier_quotes (id,\n  scenario_id, supplier_name,\n  supplier_country, unit_price,\n  currency, moq,\n  lead_time_weeks, tooling_cost)\nbom_items (id,\n  parent_scenario_id,\n  child_scenario_id, quantity,\n  unit_cost_override)\nrate_library (id, data,\n  updated_at, updated_by)\nrate_overrides (id, tbl,\n  row_id, field, value)\nusers · shared_costings ·\nmaterial_price_overrides ·\nprice_fetch_log · app_settings',
-    'data columns hold the JSON above.');
-
-  // arrows between the five contracts
-  [0, 1, 2, 3].forEach(i => {
-    s.addShape('line', { x: xs[i] + CW + 0.012, y: Y + 1.7, w: GAP - 0.024, h: 0, line: { color: MUTED, width: 2, endArrowType: 'triangle' } });
-  });
-
-  // ── the one idea a data engineer should leave with ──
-  s.addShape('roundRect', { x: 0.5, y: 4.68, w: 12.33, h: 0.62, fill: { color: TEAL_T }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.08 });
-  s.addText([
-    { text: 'The shape of the whole system:  ', options: { bold: true, color: TEAL, fontSize: 10.5 } },
-    { text: 'computeUniversalStack(UniversalStackInput, RateLibrary) → PartCostResult', options: { bold: true, color: NAVY, fontSize: 10.5, fontFace: MONO } },
-    { text: '   — a pure transform between two typed structures. Same input, same output, forever. That is what makes 1,530 tests possible and why the identical code runs in the browser and on the server.', options: { color: SLATE, fontSize: 9.5 } },
-  ], { x: 0.72, y: 4.68, w: 11.9, h: 0.62, fontFace: 'Calibri', margin: 0, valign: 'middle' });
-
-  // ── where fields come from, and the rules a data person will ask about ──
-  const panels = [
-    ['PROVENANCE — EVERY NUMBER KNOWS ITS SOURCE', TEAL,
-      'Each cost line emits a TraceabilityRecord: field, value, unit, rateSource, rateId, confidence. That is what prints under every figure in the report, and what a supplier is shown in the meeting. Nothing is a bare number.'],
-    ['UNITS — WHERE BUGS ACTUALLY COME FROM', AMBER,
-      'Fields carry units in their names (cycleTimeHr, netWeightKg, boundingBoxMm, savingPerPart). The recurring bug class in this domain is sec/hr and mm/cm/kg conversions, so the convention is enforced by naming and pinned by tests.'],
-    ['STORAGE — TYPED IN CODE, JSON AT REST', PURPLE,
-      'SQLite holds the JSON blobs above in `data` columns rather than a shredded relational model: the engine owns the schema, and a costing round-trips byte-identical. rate_overrides is the audit trail of who changed which rate.'],
-  ];
-  panels.forEach(([t, col, body], i) => {
-    const x = 0.5 + i * 4.19;
-    s.addShape('roundRect', { x, y: 5.44, w: 3.94, h: 1.5, fill: { color: CARD }, line: { color: col, width: 1.25 }, rectRadius: 0.09 });
-    s.addShape('rect', { x, y: 5.44, w: 0.06, h: 1.5, fill: { color: col } });
-    s.addText(t, { x: x + 0.18, y: 5.52, w: 3.64, h: 0.24, fontFace: 'Calibri', fontSize: 7.8, bold: true, color: col, charSpacing: 0.4, margin: 0, valign: 'middle' });
-    s.addText(body, { x: x + 0.18, y: 5.78, w: 3.64, h: 1.08, fontFace: 'Calibri', fontSize: 7.9, color: SLATE, margin: 0, valign: 'top' });
-  });
-
-  footer(s, ++PG);
-  s.addNotes(
-    'This is the deep-dive slide, and I have pitched it at someone who thinks in schemas rather than in castings, because that is the question I was asked. Five typed hand-offs from CAD file to database, and every type name and field on this slide is copied from the source rather than paraphrased. ' +
-    'One: the kernel writes an OCCTGeometry document to stdout as JSON. Bounding box, volume, surface area, fill ratio, and then the interesting parts — a topology block that tells you whether the shape encloses a sealed void, which is how a fuel tank is distinguished from a bumper; a wall-thickness block with a p95 because the thickest section is what governs cooling; draft, setup count, a bottom-up CNC cycle estimate, and weights in three candidate materials. Everything in there is measured. Nothing in there is guessed. ' +
-    'Two: the rules layer plus the engineer’s answers produce a UniversalStackInput. This is the form the cost engine actually eats — a material with a utilisation, an array of operations each with cycle time, OEE, manning and labour efficiency, a tooling block, and the universal per-part costs. Where geometry can determine a field, geometry wins; where it cannot, the engineer answers and the tool blocks until they do. ' +
-    'Three: computeUniversalStack turns that into a PartCostResult. Eight buckets, per-operation detail, and — the field I would point at first — a traceability array. Every cost line emits its field, value, unit, rate source, rate id and confidence. That is what prints beneath every number in the report, and it is why a figure survives a supplier meeting. ' +
-    'Four: the DFM/DFA layer reads the finished result and produces RankedOpportunities, which is the change we made after the last review — savings ranked in money per part and grouped by category, with no score and no severity anywhere a person sees. ' +
-    'Five: SQLite, twelve tables, one file on our own server. And note the design decision, because a data person will spot it immediately: the JSON objects above are stored whole in data columns rather than shredded into a relational model. The engine owns the schema, so a costing round-trips byte-identical, and rate_overrides is a proper audit trail of who changed which rate and when. ' +
-    'The teal strip in the middle is the sentence I would like him to leave with. The whole system is one pure transform between two typed structures: UniversalStackInput and a RateLibrary in, PartCostResult out. Same input, same output, forever. That property is what makes fifteen hundred tests possible, and it is why the identical code runs in the browser and on the server without a line changing. ' +
-    'And the three panels at the bottom are the things I would want to be asked about. Provenance: nothing is a bare number. Units: fields carry their unit in the name, because seconds-versus-hours and millimetres-versus-centimetres are genuinely where the bugs in this domain come from, and that convention is pinned by tests rather than by good intentions. Storage: typed in code, JSON at rest.'
+    'This is slide three with the lid off, and it answers two questions at once: what each box is built from, and what it hands to the next box. Follow it left to right. ' +
+    'Upload a CAD file, a PCB photo or a typed form. The Python kernel measures the solid and hands on a parcel we call OCCTGeometry — sizes, wall thickness, holes, draft angles. All measured; none of it guessed. The rules layer turns those measurements into cost inputs and the engineer answers the two or three things a shape cannot tell you, such as what it is made of and how many a year; that parcel is the UniversalStackInput — a material, a list of operations, and a tooling block. ' +
+    'The cost engine sits in the middle because everything either feeds it or renders what it produced. It works out the eight buckets, it has a module per commodity, its optimisers pick the cheapest capable machine, and its guardrails check every number. What it hands on is the PartCostResult: the eight buckets, plus where every single number came from. ' +
+    'The line at the bottom of that box is the design decision that matters most — numbers in, numbers out, no database, no network, no file access. That is exactly why fifteen hundred tests can cover it and why the identical code runs in the browser and on the server. ' +
+    'Then out to the right: the guardrails and self-audit check the answer and attach a confidence band, the findings become savings ranked by money — which is the change we made after the last review — and finally it is saved to SQLite on our own server, with the reports built in the browser. ' +
+    'The grey strip underneath opens those four parcels up, because somebody always asks what is actually in them. The geometry parcel carries bounding box, volume, wall thickness including a ninety-fifth percentile because the thickest section governs cooling, draft, setup count and a hole table. The input parcel carries one row per operation with cycle time, OEE, manning and efficiency. The result parcel carries the eight buckets and a traceability row for every figure — value, unit, which rate it used and how confident that rate is; that is what prints under every number in the report. And the opportunities parcel carries each idea with its saving in pounds per part, its risk, its timeframe and its owner. ' +
+    'The table answers the language, size and licence questions row by row. Only one component is Python — the geometry kernel, driving Open CASCADE, the same kernel FreeCAD is built on. Everything else is TypeScript. Is it free? Yes, with exactly one exception: every library is MIT, Apache-2.0 or LGPL, there is no licence fee and no per-seat cost, and the single paid item anywhere in the stack is the optional Anthropic API call, metered per token only when somebody chooses to use it. I would still get that list formally reviewed before we distribute anything outside the company. ' +
+    'And the box along the bottom is the question I was asked, answered completely rather than reassuringly. API calls: one, and it is optional, through a single point in the code so it can be pointed at a private endpoint or switched off with an environment variable. KPI calls: none — no KPIs measured, no usage tracked, nothing phoning home. Error telemetry: yes, and I want to be precise because an earlier draft of this slide said "no telemetry" and that was too absolute. When the app hits an uncaught error it posts it to our own Express server and it lands in our own log. No Sentry, no Google Analytics, no third party, nothing leaving the network. And the optional feeds are off by default and display-only; none of them can price a part.'
   );
 }
 
