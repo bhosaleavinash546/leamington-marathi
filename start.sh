@@ -29,7 +29,11 @@ fi
 
 # ── 2. Prompt for API key only if missing ─────────────────────────────────────
 CURRENT_KEY="$(grep '^ANTHROPIC_API_KEY=' "$ENV_FILE" | cut -d= -f2- | tr -d ' ')"
-if [ -z "$CURRENT_KEY" ] || [ "$CURRENT_KEY" = "sk-ant-..." ]; then
+SKIP_KEY_PROMPT="$(grep '^CV_SKIP_KEY_PROMPT=' "$ENV_FILE" | cut -d= -f2- | tr -d ' ')"
+# The costing engine is deterministic and needs no key, so asking on every
+# single launch for an optional feature is what stops this being one click.
+# Ask once; remember a decline.
+if { [ -z "$CURRENT_KEY" ] || [ "$CURRENT_KEY" = "sk-ant-..." ]; } && [ "$SKIP_KEY_PROMPT" != "1" ]; then
   echo "  🔑 Enter your Anthropic API key (or press Enter to skip — AI features disabled)"
   echo "     Get one free at: https://console.anthropic.com/settings/keys"
   echo ""
@@ -44,6 +48,10 @@ if [ -z "$CURRENT_KEY" ] || [ "$CURRENT_KEY" = "sk-ant-..." ]; then
       echo "ANTHROPIC_API_KEY=$USER_KEY" >> "$ENV_FILE"
     fi
     echo "  ✅ API key saved"
+  else
+    echo "CV_SKIP_KEY_PROMPT=1" >> "$ENV_FILE"
+    echo "  ⏭  Skipped — CostVision runs deterministically without it."
+    echo "     To add one later: put ANTHROPIC_API_KEY=... in calculator/.env"
   fi
   echo ""
 fi
