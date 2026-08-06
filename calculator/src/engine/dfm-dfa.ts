@@ -8,6 +8,7 @@ import { realMachiningStations, realMachiningOps, type SuggestionContext } from 
 import {
   optimiseMachiningRouting, costRoutingAsGiven, classifyOpName, standardBatchSize,
 } from './routing-optimiser.js';
+import { generateIdeaLevers, RX_INSPECT, RX_REWORK } from './idea-levers.js';
 
 export type DFMSeverity = 'critical' | 'major' | 'minor' | 'opportunity';
 export type DFMCategory = 'geometry' | 'material' | 'process' | 'tolerance' | 'tooling' | 'assembly' | 'automation' | 'commercial';
@@ -38,6 +39,11 @@ export interface DFAAnalysis {
   totalSavingPct: number;
 }
 
+/** 360° lever category — which aspect of the cost the idea attacks. */
+export type LeverCategory =
+  | 'material' | 'design' | 'process' | 'tooling'
+  | 'logistics' | 'commercial' | 'quality' | 'sustainability';
+
 export interface CostOptimisation {
   title: string;
   description: string;
@@ -45,6 +51,10 @@ export interface CostOptimisation {
   technicalJustification: string;
   risk: 'Low' | 'Medium' | 'High';
   timeframe: 'Quick Win' | 'Medium Term' | 'Long Term';
+  /** 360° category of the lever (material / design / process / tooling / logistics / commercial / quality / sustainability). */
+  category?: LeverCategory;
+  /** Who owns this lever (see SuggestionContext in insights.ts). */
+  lever?: 'design' | 'supplier' | 'sourcing' | 'assumption' | 'verified';
 }
 
 export interface DFMDFAResult {
@@ -103,6 +113,23 @@ export function generateDFMDFA(
   const opCount = (input.operations ?? []).length;
   const avgOEE  = opCount > 0 ? (input.operations.reduce((s, o) => s + (o.oee ?? 0.85), 0) / opCount) : 0.85;
   const matUtil = input.rawMaterial?.materialUtilization ?? 0.72;
+
+  // Extended parameter diet for the 360° rules — still everything the costing
+  // itself established, nothing external: packaging/logistics buckets, labour
+  // efficiency, the per-operation cost Pareto, consumables, amortisation basis.
+  const pkgPct = (result.breakdown.packaging / tot) * 100;
+  const logPct = (result.breakdown.logistics / tot) * 100;
+  const avgLabEff = opCount > 0
+    ? input.operations.reduce((s, o) => s + (o.labourEfficiency ?? 1), 0) / opCount : 1;
+  const opConv = (result.operationDetails ?? []).map(o => ({ name: o.operationName, conv: o.processCost + o.labourCost }));
+  const convTotalCost = opConv.reduce((s, o) => s + o.conv, 0);
+  const topOp = opConv.length > 0 ? opConv.reduce((a, b) => (b.conv > a.conv ? b : a)) : null;
+  const topOpShare = topOp && convTotalCost > 0 ? topOp.conv / convTotalCost : 0;
+  const consumShare = (result.breakdown.rawMaterial || 0) > 0
+    ? (input.rawMaterial?.consumablesCostPerPart ?? 0) / result.breakdown.rawMaterial : 0;
+  const annualVol = input.annualVolume ?? 0;
+  const amortVol = input.tooling?.amortizationVolume ?? 0;
+  const maxManning = (input.operations ?? []).reduce((m, o) => Math.max(m, o.manning ?? 0), 0);
 
   // ─── DFM Issues ──────────────────────────────────────────────────────────────
 
@@ -203,6 +230,92 @@ export function generateDFMDFA(
     });
   }
 
+  // All-commodity rules — packaging
+  if (pkgPct > 5) {
+    dfmIssues.push({
+      severity: 'major',
+      category: 'commercial',
+      lever: ctx?.pkgLogisticsEstimated ? 'assumption' : 'sourcing',
+      title: 'Packaging cost heavy (>5% of part cost)',
+      description: `Packaging at ${pkgPct.toFixed(1)}% of part cost is above the 5% benchmark for engineered parts.`
+        + (ctx?.pkgLogisticsEstimated ? ' This figure is tool-estimated from size/weight — confirm the quoted packaging spec first.' : ''),
+      savingPct: 4,
+      risk: 'Low',
+      recommendation: 'Evaluate returnable packaging loop; redesign dunnage for pack density; challenge expendable-pack pricing',
+    });
+  }
+
+  // All-commodity rules — logistics
+  if (logPct > 8) {
+    dfmIssues.push({
+      severity: 'major',
+      category: 'commercial',
+      lever: ctx?.pkgLogisticsEstimated ? 'assumption' : 'sourcing',
+      title: 'Logistics cost heavy (>8% of part cost)',
+      description: `Logistics at ${logPct.toFixed(1)}% of part cost is above the 8% benchmark.`
+        + (ctx?.pkgLogisticsEstimated ? ' This figure is tool-estimated — confirm the quoted freight basis first.' : ''),
+      savingPct: 5,
+      risk: 'Low',
+      recommendation: 'Review freight mode (sea vs air), consolidation, incoterm and pack density; run the landed-cost comparison',
+    });
+  }
+
+  // All-commodity rules — one operation dominates the conversion cost
+  if (topOp && topOpShare > 0.6 && opCount >= 3) {
+    dfmIssues.push({
+      severity: 'major',
+      category: 'process',
+      lever: 'supplier',
+      title: `One operation dominates — "${topOp.name}"`,
+      description: `"${topOp.name}" carries ${(topOpShare * 100).toFixed(0)}% of the conversion cost across ${opCount} operations. The part's cost rides on a single process step.`,
+      savingPct: 8,
+      risk: 'Medium',
+      recommendation: 'Focus cycle-time engineering on the governing operation before touching anything else; ask the supplier for its OEE and changeover data',
+    });
+  }
+
+  // All-commodity rules — labour efficiency
+  if (avgLabEff < 0.80) {
+    dfmIssues.push({
+      severity: 'minor',
+      category: 'process',
+      title: 'Low labour efficiency (<80%)',
+      description: `Average labour efficiency at ${(avgLabEff * 100).toFixed(0)}% means a fifth of paid labour minutes add no value.`,
+      savingPct: 4,
+      risk: 'Low',
+      recommendation: 'Line-balance the manual content; remove walking/waiting via cell layout; standard work instructions',
+    });
+  }
+
+  // All-commodity rules — consumables share of the material line
+  if (consumShare > 0.25) {
+    dfmIssues.push({
+      severity: 'major',
+      category: 'material',
+      lever: 'design',
+      title: 'Consumables dominate the material line',
+      description: `Per-part consumables (cores, patterns, shell, filters) are ${(consumShare * 100).toFixed(0)}% of the material cost line.`,
+      savingPct: 6,
+      risk: 'Medium',
+      recommendation: 'Rationalise core count and pattern life; evaluate reclaim (shell sand, wax); challenge consumable pricing open-book',
+    });
+  }
+
+  // All-commodity rules — amortisation basis vs stated annual volume.
+  // A data/commercial check, not a saving claim.
+  if (annualVol > 0 && amortVol > 0 && amortVol < annualVol * 0.9) {
+    dfmIssues.push({
+      severity: 'minor',
+      category: 'tooling',
+      lever: 'assumption',
+      title: 'Tooling amortised over less than the annual volume',
+      description: `The tooling is amortised over ${amortVol.toLocaleString()} parts against a stated annual volume of ${annualVol.toLocaleString()} — the piece price carries more tooling per part than a full-year basis would.`,
+      savingPct: 0,
+      risk: 'Low',
+      recommendation: 'Confirm the amortisation basis with the supplier; align it to programme volume or move tooling to a separate NRE line',
+    });
+  }
+
   // ─── Commodity-specific DFM rules ────────────────────────────────────────────
 
   if (commodity === 'machining' || commodity === 'cast_and_machine') {
@@ -233,7 +346,7 @@ export function generateDFMDFA(
     }
   }
 
-  if (commodity === 'casting') {
+  if (commodity === 'casting' || commodity === 'cast_and_machine') {
     if (toolPct > 18) {
       dfmIssues.push({
         severity: 'critical',
@@ -473,6 +586,70 @@ export function generateDFMDFA(
     }
   }
 
+  if (commodity === 'extrusion') {
+    if (procPct > 40) {
+      dfmIssues.push({
+        severity: 'major',
+        category: 'process',
+        title: 'Extrusion conversion cost high (>40%)',
+        description: `Process cost at ${procPct.toFixed(1)}% of total. Die design, puller speed or billet temperature is limiting throughput.`,
+        savingPct: 8,
+        risk: 'Medium',
+        recommendation: 'Review die bearing lengths and port design; evaluate a multi-hole die; optimise billet temperature and ram speed for the alloy',
+      });
+    }
+    if (matUtil < 0.80) {
+      dfmIssues.push({
+        severity: 'major',
+        category: 'material',
+        title: 'High start-up and offcut scrap (<80% utilisation)',
+        description: `Material utilisation at ${(matUtil * 100).toFixed(0)}%. Butt ends, start-up lengths and cut-to-length offcuts exceed the 80% extrusion benchmark.`,
+        savingPct: 5,
+        risk: 'Low',
+        recommendation: 'Optimise cut plan against the order lengths; recycle offcuts closed-loop; negotiate a scrap credit at the billet price',
+      });
+    }
+  }
+
+  if (commodity === 'rotational_moulding') {
+    if (procPct > 50) {
+      dfmIssues.push({
+        severity: 'major',
+        category: 'process',
+        title: 'Oven cycle dominates (>50% of part cost)',
+        description: `Process cost at ${procPct.toFixed(1)}% of total. The oven cook/cool cycle is the governing cost element.`,
+        savingPct: 8,
+        risk: 'Medium',
+        recommendation: 'Increase arm loading density (more moulds per arm); optimise cook control (internal-air temperature control); review wall thickness — cycle scales with wall',
+      });
+    }
+    if (opCount > 4) {
+      dfmIssues.push({
+        severity: 'minor',
+        category: 'process',
+        title: 'Many secondary operations after moulding',
+        description: `${opCount} operations on a rotomoulded part. Trimming, drilling and fitting content is adding labour beyond the moulding itself.`,
+        savingPct: 4,
+        risk: 'Low',
+        recommendation: 'Mould-in features (inserts, kiss-offs, apertures with moulded witness lines) to delete downstream operations',
+      });
+    }
+  }
+
+  if (commodity === 'painting') {
+    if (matPct > 40) {
+      dfmIssues.push({
+        severity: 'major',
+        category: 'material',
+        title: 'Paint material heavy — transfer efficiency lever',
+        description: `Paint material at ${matPct.toFixed(1)}% of cost. At typical 60% transfer efficiency, 4 of every 10 litres bought ends in the booth filters.`,
+        savingPct: 8,
+        risk: 'Medium',
+        recommendation: 'Improve transfer efficiency (electrostatics, robot path optimisation); review film-build spec vs requirement; reclaim/recirculate where the chemistry allows',
+      });
+    }
+  }
+
   if (commodity === 'painting' || commodity === 'biw_assembly') {
     if (oheadPct > 20) {
       dfmIssues.push({
@@ -578,6 +755,61 @@ export function generateDFMDFA(
     });
   }
 
+  // Boothroyd-flavoured checks read from the operation list itself.
+  const opNamesAll = (input.operations ?? []).map(o => o.operationName ?? '');
+  const inspConvShare = convTotalCost > 0
+    ? opConv.filter(o => RX_INSPECT.test(o.name ?? '')).reduce((s, o) => s + o.conv, 0) / tot : 0;
+
+  if (opNamesAll.some(n => RX_INSPECT.test(n)) && inspConvShare > 0.05) {
+    dfaIssues.push({
+      severity: 'minor',
+      category: 'assembly',
+      lever: 'supplier',
+      title: 'Inspection is a separate manual step',
+      description: `Standalone inspection/test operations carry ${(inspConvShare * 100).toFixed(1)}% of part cost. Capable processes should be verifying in-line, not at a separate station.`,
+      savingPct: 3,
+      risk: 'Low',
+      recommendation: 'Move to in-line gauging / on-machine probing; SPC-based skip-lot once capability is demonstrated',
+    });
+  }
+
+  if (opNamesAll.some(n => RX_REWORK.test(n))) {
+    dfaIssues.push({
+      severity: 'minor',
+      category: 'assembly',
+      lever: 'supplier',
+      title: 'Manual finishing after the primary process',
+      description: 'Deburring/fettling/rework appears as its own operation — a symptom of an upstream condition (tool wear, gating, die state) being paid for by hand, every part.',
+      savingPct: 3,
+      risk: 'Low',
+      recommendation: 'Fix the burr at source (tooling discipline, gate redesign); where finishing must remain, tumble/vibratory beats manual',
+    });
+  }
+
+  if (maxManning >= 2) {
+    dfaIssues.push({
+      severity: 'major',
+      category: 'automation',
+      title: `High manning (${maxManning.toFixed(1)} operators on one operation)`,
+      description: `At least one operation runs with ${maxManning.toFixed(1)} operators. Multi-manned stations are the strongest automation candidates on any part.`,
+      savingPct: 6,
+      risk: 'Medium',
+      recommendation: 'Line-balance or automate the multi-manned station first; check whether the second operator exists only to load/unload',
+    });
+  }
+
+  if (labPct > 15 && (input.operations ?? []).some(o => (o.labourTimeHr ?? 0) > (o.cycleTimeHr ?? 0) * 1.2 && (o.cycleTimeHr ?? 0) > 0)) {
+    dfaIssues.push({
+      severity: 'minor',
+      category: 'automation',
+      title: 'Labour time exceeds the machine cycle',
+      description: 'On at least one operation the charged labour minutes exceed the machine cycle — manual work content is running beyond the machine-paced window.',
+      savingPct: 4,
+      risk: 'Low',
+      recommendation: 'Move the excess manual content offline (pre-kitting, subassembly) or in parallel with the cycle; review what the operator actually does during the cycle',
+    });
+  }
+
   // ─── Cost Optimisations ───────────────────────────────────────────────────────
 
   const costOptimisations: CostOptimisation[] = [];
@@ -588,6 +820,7 @@ export function generateDFMDFA(
   // Labour automation
   if (labPct > 30) {
     costOptimisations.push({
+      category: 'process', lever: 'supplier',
       title: 'Automate High-Labour Operations',
       description: `Labour represents ${labPct.toFixed(1)}% of total part cost. Automation of repetitive tasks can reduce this significantly.`,
       expectedSavingPct: Math.min(20, labPct * 0.4),
@@ -600,6 +833,7 @@ export function generateDFMDFA(
   // Material utilisation improvement
   if (matUtil < 0.75) {
     costOptimisations.push({
+      category: 'material', lever: 'design',
       title: 'Improve Material Utilisation via Near-Net-Shape',
       description: `Current utilisation at ${(matUtil * 100).toFixed(0)}%. Near-net-shape process or improved nesting targets 80–90%.`,
       expectedSavingPct: Math.min(15, (0.85 - matUtil) * 50),
@@ -612,6 +846,7 @@ export function generateDFMDFA(
   // OEE improvement
   if (avgOEE < 0.82) {
     costOptimisations.push({
+      category: 'process', lever: 'supplier',
       title: 'OEE Improvement Programme (TPM)',
       description: `OEE at ${(avgOEE * 100).toFixed(0)}% vs 85% world-class target. Each 5% OEE gain reduces effective machine cost by 5%.`,
       expectedSavingPct: Math.min(12, (0.85 - avgOEE) * 30),
@@ -627,6 +862,7 @@ export function generateDFMDFA(
   const volumeAssumed = ctx?.volumeProvided === false;
   if (toolPct > 12) {
     costOptimisations.push({
+      category: 'tooling', lever: volumeAssumed ? 'assumption' : 'sourcing',
       title: volumeAssumed
         ? 'Tooling NRE is volume-sensitive — confirm the annual volume first'
         : 'Volume Increase to Dilute Tooling NRE',
@@ -642,6 +878,7 @@ export function generateDFMDFA(
   // Overhead challenge
   if (oheadPct > 15) {
     costOptimisations.push({
+      category: 'commercial', lever: 'sourcing',
       title: 'Overhead Rate Negotiation and Benchmarking',
       description: `Overhead at ${oheadPct.toFixed(1)}% of part cost. Open-book costing can expose inflated factory burden.`,
       expectedSavingPct: Math.min(6, (oheadPct - 12) * 0.4),
@@ -654,6 +891,7 @@ export function generateDFMDFA(
   // Supplier margin negotiation
   if (mgnPct > 12) {
     costOptimisations.push({
+      category: 'commercial', lever: 'sourcing',
       title: 'Competitive RFQ to Reduce Supplier Margin',
       description: `Supplier margin at ${mgnPct.toFixed(1)}% is above the 10–12% competitive benchmark. Multi-source RFQ can recover 2–5%.`,
       expectedSavingPct: Math.min(5, mgnPct - 10),
@@ -707,6 +945,7 @@ export function generateDFMDFA(
         const consolidationWins = opt.chosen.label === 'consolidated-5axis';
         costOptimisations.push(consolidationWins
           ? {
+              category: 'process', lever: 'supplier',
               title: 'Multi-Axis Machining to Consolidate Operations',
               description: `Consolidating the milled and drilled content into a single 5-axis setup saves £${delta.toFixed(2)}/part (${pct.toFixed(0)}% of the costed machining spend of £${given.costPerPart.toFixed(2)}).`,
               expectedSavingPct: pct,
@@ -715,6 +954,7 @@ export function generateDFMDFA(
               timeframe: 'Long Term',
             }
           : {
+              category: 'process', lever: 'supplier',
               title: 'Re-quote Machining on the Cost-Optimal Routing',
               description: `The costed ${st.stations}-station routing books £${given.costPerPart.toFixed(2)}/part of machining; the same content on the cheapest capable machines costs £${opt.chosen.costPerPart.toFixed(2)} — a £${delta.toFixed(2)}/part (${pct.toFixed(0)}%) machine-mix saving. Note: 5-axis consolidation was ranked and does NOT win on this part.`,
               expectedSavingPct: pct,
@@ -734,6 +974,7 @@ export function generateDFMDFA(
   const convPct = procPct + labPct;
   if (convPct > 30 && !alreadyLowCost) {
     costOptimisations.push({
+      category: 'commercial', lever: 'sourcing',
       title: 'Regional Sourcing Study — Low-Cost Country Manufacturing',
       description: `Conversion cost (process + labour) at ${convPct.toFixed(1)}% creates significant regional arbitrage opportunity.`,
       expectedSavingPct: Math.min(18, convPct * 0.35),
@@ -743,9 +984,19 @@ export function generateDFMDFA(
     });
   }
 
+  // ─── 360° lever catalogue — material / design / process / tooling /
+  //     logistics / commercial / quality / sustainability (idea-levers.ts) ─────
+  costOptimisations.push(...generateIdeaLevers(result, input, commodity, ctx, {
+    matPct, procPct, labPct, toolPct, oheadPct, mgnPct, opCount, avgOEE, matUtil,
+  }));
+
+  // Biggest lever first; the backstops below always append at the end.
+  costOptimisations.sort((a, b) => b.expectedSavingPct - a.expectedSavingPct);
+
   // Ensure we have 5–8 items — add generic ones if needed
   if (costOptimisations.length < 5) {
     costOptimisations.push({
+      category: 'design', lever: 'design',
       title: 'Design Review for DFM Compliance',
       description: 'Formal DFM review with manufacturing engineering to identify part features that increase cost without functional benefit.',
       expectedSavingPct: 5,
@@ -757,6 +1008,7 @@ export function generateDFMDFA(
 
   if (costOptimisations.length < 6 && !volumeAssumed) {
     costOptimisations.push({
+      category: 'commercial', lever: 'sourcing',
       title: 'Annual Volume Re-Commitment for Better Pricing',
       description: 'Provide 12-month rolling volume forecast to supplier to secure better unit pricing and tooling amortisation.',
       expectedSavingPct: 3,

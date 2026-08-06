@@ -15525,6 +15525,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
         <div style="background:var(--surface-elevated);border-radius:6px;padding:10px 14px;margin-bottom:8px;border:1px solid var(--border)">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
             <span style="font-weight:600;font-size:0.85rem">${escHtml(opt.title)}</span>
+            ${opt.category ? `<span style="font-size:0.68rem;background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);border-radius:4px;padding:1px 6px;text-transform:capitalize">${escHtml(opt.category)}</span>` : ''}
             <span style="font-size:0.72rem;color:#10b981;font-weight:700;margin-left:auto">~${opt.expectedSavingPct.toFixed(1)}% saving</span>
             <span style="font-size:0.7rem;background:${opt.timeframe === 'Quick Win' ? '#10b981' : opt.timeframe === 'Medium Term' ? '#f59e0b' : '#6366f1'};color:#fff;border-radius:4px;padding:1px 6px">${opt.timeframe}</span>
           </div>
