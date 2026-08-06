@@ -177,7 +177,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText('Same file + answers = same price\n12 of 18 commodities rules-driven\n1,530 automated tests\n6 real parts · fleet error ≈13%',
     { x: 0.56, y: 1.39, w: 1.85, h: 0.6, fontFace: 'Calibri', fontSize: 6.9, color: SLATE, margin: 0, valign: 'top' });
   // ── OUTSIDE the tool: the OPTIONAL AI ──
-  s.addShape('roundRect', { x: 2.55, y: 1.02, w: 5.2, h: 0.99, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5, dashType: 'dash' }, rectRadius: 0.09 });
+  s.addShape('roundRect', { x: 2.55, y: 1.02, w: 5.2, h: 1.12, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5, dashType: 'dash' }, rectRadius: 0.09 });
   s.addShape('ellipse', { x: 2.70, y: 1.28, w: 0.44, h: 0.44, fill: { color: PURPLE } });
   s.addImage({ data: I.eye, x: 2.81, y: 1.39, w: 0.22, h: 0.22 });
   s.addText('OPTIONAL AI — off by default, the only outbound call', { x: 3.28, y: 1.08, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
@@ -188,7 +188,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     { text: 'One required use: a PCB PHOTO ', options: { bold: true, color: PURPLE } },
     { text: '— vision reads the board; prices still come from the offline catalogue.', options: { color: SLATE } },
   ], { x: 3.28, y: 1.27, w: 4.35, h: 0.46, fontFace: 'Calibri', fontSize: 7.8, margin: 0, valign: 'top' });
-  s.addText('Routable to a private endpoint · AIR_GAPPED=1 refuses the call — CAD costing still works', { x: 3.28, y: 1.79, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 7.6, italic: true, color: PURPLE, margin: 0 });
+  s.addText('Routable to a private endpoint · AIR_GAPPED=1 refuses the call — CAD and manual costing still work; only the PCB photo path stops', { x: 3.28, y: 1.77, w: 4.35, h: 0.32, fontFace: 'Calibri', fontSize: 7.0, italic: true, color: PURPLE, margin: 0, valign: 'top' });
   s.addShape('roundRect', { x: 8.0, y: 1.02, w: 4.83, h: 0.99, fill: { color: CARD }, line: { color: LINE, width: 1, dashType: 'dash' }, rectRadius: 0.09 });
   s.addText('OPTIONAL FEEDS — off by default, none of them price a part', { x: 8.2, y: 1.12, w: 4.5, h: 0.22, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
   s.addText('Live component pricing (PCB only) · industry news · metal-price ticker (display only)',
@@ -219,8 +219,17 @@ function divider(kicker, name, sub, col, items, mins, notes) {
       s.addText(t, { x: x + 0.13, y, w: w - 0.26, h: 0.68, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'middle' });
     });
   };
-  col(0.65, 2.0, 'WHAT GOES IN', BLUE, ['3D CAD model\n(STEP / IGES / STL)', 'Photo of a PCB —\nAI vision reads it (↑)', 'Plain description\nor an RFQ sheet', 'Volume + region\n(the engineer types)'], 2.74);
-  col(11.05, 1.8, 'WHAT COMES OUT', GREEN, ['8-bucket cost — every\nfigure shows its basis', 'Operation list —\nwhat takes the time', 'Confidence band +\n20-country comparison', 'DFM/DFA + priced saving\nideas — engine, not AI', 'PDF · Excel · PowerPoint\nnegotiation pack'], 2.74, 0.76);
+  col(0.65, 2.0, 'WHAT GOES IN', BLUE, ['3D CAD model\n(STEP / IGES / STL)', 'Photo of a PCB', 'Plain description\nor an RFQ sheet', 'Volume + region\n(the engineer types)'], 2.74);
+  // The PCB photo is the one input that MUST leave the network to be read.
+  // Everything else can be costed with the cable unplugged, so say so here
+  // rather than leaving it to a footnote on the AI box.
+  s.addShape('roundRect', { x: 0.65, y: 3.54, w: 2.0, h: 0.68, fill: { color: 'FFFFFF' }, line: { color: PURPLE, width: 1.5 }, rectRadius: 0.07 });
+  s.addText('Photo of a PCB', { x: 0.78, y: 3.56, w: 1.74, h: 0.26, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'middle' });
+  s.addShape('roundRect', { x: 0.78, y: 3.86, w: 1.15, h: 0.19, fill: { color: PURPLE }, rectRadius: 0.095 });
+  s.addText('NEEDS THE AI', { x: 0.78, y: 3.86, w: 1.15, h: 0.19, fontFace: 'Calibri', fontSize: 6.2, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.4 });
+  s.addShape('line', { x: 0.55, y: 1.98, w: 0, h: 1.90, line: { color: PURPLE, width: 1.4, dashType: 'dash', beginArrowType: 'triangle', endArrowType: 'triangle' } });
+  s.addShape('line', { x: 0.55, y: 1.98, w: 2.0, h: 0, line: { color: PURPLE, width: 1.4, dashType: 'dash', endArrowType: 'triangle' } });
+  col(11.05, 1.8, 'WHAT COMES OUT', GREEN, ['8-bucket cost — every\nfigure shows its basis', 'Operation list —\nwhat takes the time', 'Confidence band +\n20-country comparison', 'DFM/DFA + savings\nranked in £/part\n(engine, not AI)', 'PDF · Excel · PowerPoint\nnegotiation pack'], 2.74, 0.76);
   // inside nodes — the deterministic spine
   node(2.85, 2.68, 2.1, 1.22, BLUE, BLUE_T, 'Geometry kernel', 'OCCT measures the part: volume, walls, holes, faces, topology. Never guessed.', I.ruler);
   node(2.85, 4.06, 2.1, 1.22, '4F46E5', 'EEF2FF', 'Rules + optimisers', 'Derive every input AND pick the machine: press/die tonnage by physics; routing & cavitation cost-ranked.', I.cog);
@@ -344,6 +353,10 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText('PCB fab model: layers × area × finish, panelisation.\nAssembly: placements, AOI, test — at country rates.', { x: 8.3, y: 3.74, w: 2.3, h: 0.72, fontFace: 'Calibri', fontSize: 7.6, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
   node2(8.2, 4.76, 2.5, 0.92, TEAL, TEAL_T, 'Country rates', 'Real per-country labour £/hr and electricity £/kWh (IPC/CBRE published figures) — not scaled guesses.', null);
 
+  s.addShape('roundRect', { x: 2.85, y: 5.42, w: 2.35, h: 1.04, fill: { color: 'FBEAE8' }, line: { color: RED, width: 1.25 }, rectRadius: 0.09 });
+  s.addText('IF THE NETWORK IS OFF', { x: 3.00, y: 5.48, w: 2.05, h: 0.18, fontFace: 'Calibri', fontSize: 7.2, bold: true, color: RED, charSpacing: 0.4, margin: 0 });
+  s.addText('AIR_GAPPED=1 blocks this flow — a photo cannot be costed without the vision read. CAD and manual costing are unaffected.\nLive distributor pricing exists but is OFF by default; the offline catalogue is the source.',
+    { x: 3.00, y: 5.66, w: 2.05, h: 0.74, fontFace: 'Calibri', fontSize: 6.6, color: SLATE, margin: 0, valign: 'top' });
   // flows
   link2(2.65, 3.29, 2.85, 3.29, BLUE);                       // photos → (up via AI) parser
   link2(3.95, 3.90, 3.95, 4.06, '4F46E5');                   // parser ↓ stabiliser
