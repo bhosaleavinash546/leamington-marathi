@@ -5,6 +5,7 @@ import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { breakdownPercentages } from '../engine/core.js';
 import { generateInsights, totalPotentialSaving, currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
+import { rankOpportunities } from '../engine/opportunity-ranking.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
@@ -855,128 +856,121 @@ export function renderShouldCostSections(
   try {
     const dfm = generateDFMDFA(result, input, commodityType, suggestionCtx);
 
-    // §8 DFM
-    y = chk(doc, y, 22);
-    y = secBar(doc, y, '§12 — Design for Manufacture (DFM)', `Score: ${dfm.dfm.score.toFixed(1)}/10  ·  Saving Potential: ${dfm.dfm.totalSavingPct.toFixed(0)}%`);
+    // The engine grades findings internally (critical/major/minor, score /10).
+    // The REPORT does not: a score reads as a verdict on whoever designed the
+    // part, and cost-reduction work that starts with a grade gets defended
+    // against rather than actioned. Sections §12–§14 present the identical
+    // deterministic findings ranked by money per part, grouped by category.
+    const ranked = rankOpportunities(dfm, result.total);
 
-    if (dfm.dfm.summary) {
-      const ls = doc.splitTextToSize(dfm.dfm.summary, CW) as string[];
-      doc.setFontSize(7.5); doc.setFont('helvetica', 'italic'); doc.setTextColor(...GREY);
+    // §12 — the ranked list
+    y = chk(doc, y, 22);
+    y = secBar(doc, y, '§12 — Cost-Reduction Opportunities (ranked by saving)',
+      `${ranked.all.length} opportunities  ·  combined ${c(ranked.headlineSavingPerPart)}/part (~${ranked.headlineSavingPct.toFixed(0)}%)`);
+
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'italic'); doc.setTextColor(...GREY);
+    {
+      const note = 'Ranked on money per part against this costing. The combined figure is the root-sum-square of the top three, capped at 40% — overlapping actions do not save twice, so the column is deliberately not summed.';
+      const ls = doc.splitTextToSize(note, CW) as string[];
       doc.text(ls, MG, y); y += ls.length * 4.2 + 5;
     }
 
-    if (dfm.dfm.issues.length > 0) {
-      // col widths: 18 + 20 + 28 + 44 + 12 + 14 + (182-136) = 136+46 = 182 ✓
+    if (ranked.all.length > 0) {
+      // col widths: 9 + 22 + 34 + 55 + 16 + 11 + 21 + 14 = 182 ✓
+      let rankNo = 0;
+      const rows = ranked.groups.flatMap(g => g.opportunities.map(o => [
+        String(++rankNo), g.label, o.action, o.basis,
+        `${c(o.savingPerPart)}`, `${o.savingPct.toFixed(1)}%`, o.timeframe, o.risk,
+      ]));
+      const flat = ranked.groups.flatMap(g => g.opportunities);
       autoTable(doc, {
         startY: y, margin: { left: MG, right: MG },
-        head: [['Sev.', 'Category', 'Issue', 'Description', 'Save%', 'Risk', 'Recommendation']],
-        body: dfm.dfm.issues.map(i => [i.severity.toUpperCase(), i.category, i.title, i.description, `${i.savingPct.toFixed(0)}%`, i.risk, i.recommendation]),
+        head: [['#', 'Category', 'Action', 'Why it is on the list', `Save/part`, '%', 'Timeframe', 'Risk']],
+        body: rows,
         theme: 'plain',
         headStyles: { ...TH.headStyles, fontSize: 7 },
         bodyStyles: { fontSize: 7, textColor: SLATE, cellPadding: 2.5, overflow: 'linebreak' },
         alternateRowStyles: { fillColor: LIGHT },
         columnStyles: {
-          0: { cellWidth: 18, fontStyle: 'bold' },
-          1: { cellWidth: 20 },
-          2: { cellWidth: 28, fontStyle: 'bold' },
-          3: { cellWidth: 44, textColor: GREY },
-          4: { cellWidth: 12, halign: 'right' },
-          5: { cellWidth: 14 },
-          6: { cellWidth: 46 },
-        },
-        didParseCell: (d) => {
-          if (d.section === 'body' && d.column.index === 0) {
-            const sev = dfm.dfm.issues[d.row.index]?.severity;
-            d.cell.styles.textColor = sev === 'critical' ? RD : sev === 'major' ? AM : sev === 'opportunity' ? GN : GREY;
-          }
-        },
-      });
-      y = lastFinalY(doc) + 8;
-    } else {
-      doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GN);
-      doc.text('No DFM issues detected for this part and process combination.', MG, y); y += 10;
-    }
-
-    // §9 DFA
-    y = chk(doc, y, 22);
-    y = secBar(doc, y, '§13 — Design for Assembly (DFA)', `Score: ${dfm.dfa.score.toFixed(1)}/10  ·  Saving Potential: ${dfm.dfa.totalSavingPct.toFixed(0)}%`);
-
-    if (dfm.dfa.summary) {
-      const ls = doc.splitTextToSize(dfm.dfa.summary, CW) as string[];
-      doc.setFontSize(7.5); doc.setFont('helvetica', 'italic'); doc.setTextColor(...GREY);
-      doc.text(ls, MG, y); y += ls.length * 4.2 + 5;
-    }
-
-    if (dfm.dfa.issues.length > 0) {
-      autoTable(doc, {
-        startY: y, margin: { left: MG, right: MG },
-        head: [['Sev.', 'Category', 'Issue', 'Description', 'Save%', 'Risk', 'Recommendation']],
-        body: dfm.dfa.issues.map(i => [i.severity.toUpperCase(), i.category, i.title, i.description, `${i.savingPct.toFixed(0)}%`, i.risk, i.recommendation]),
-        theme: 'plain',
-        headStyles: { ...TH.headStyles, fontSize: 7 },
-        bodyStyles: { fontSize: 7, textColor: SLATE, cellPadding: 2.5, overflow: 'linebreak' },
-        alternateRowStyles: { fillColor: LIGHT },
-        columnStyles: {
-          0: { cellWidth: 18, fontStyle: 'bold' },
-          1: { cellWidth: 20 },
-          2: { cellWidth: 28, fontStyle: 'bold' },
-          3: { cellWidth: 44, textColor: GREY },
-          4: { cellWidth: 12, halign: 'right' },
-          5: { cellWidth: 14 },
-          6: { cellWidth: 46 },
-        },
-        didParseCell: (d) => {
-          if (d.section === 'body' && d.column.index === 0) {
-            const sev = dfm.dfa.issues[d.row.index]?.severity;
-            d.cell.styles.textColor = sev === 'critical' ? RD : sev === 'major' ? AM : sev === 'opportunity' ? GN : GREY;
-          }
-        },
-      });
-      y = lastFinalY(doc) + 8;
-    } else {
-      doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GN);
-      doc.text('No DFA issues detected for this part and process combination.', MG, y); y += 10;
-    }
-
-    // §10 Cost Optimisation
-    if (dfm.costOptimisations.length > 0) {
-      y = chk(doc, y, 22);
-      y = secBar(doc, y, '§14 — Cost Optimisation Opportunities',
-        `${dfm.costOptimisations.length} actions  ·  Total Potential: ${dfm.totalPotentialSavingPct.toFixed(0)}%`);
-
-      // col widths: 30 + 36 + 12 + 22 + 12 + (182-112) = 112+70 = 182 ✓
-      autoTable(doc, {
-        startY: y, margin: { left: MG, right: MG },
-        head: [['Action', 'Description', 'Save%', 'Timeframe', 'Risk', 'Technical Justification']],
-        body: dfm.costOptimisations.map(o => [o.title, o.description, `${o.expectedSavingPct.toFixed(0)}%`, o.timeframe, o.risk, o.technicalJustification]),
-        theme: 'plain',
-        headStyles: { ...TH.headStyles, fontSize: 7 },
-        bodyStyles: { fontSize: 7, textColor: SLATE, cellPadding: 2.5, overflow: 'linebreak' },
-        alternateRowStyles: { fillColor: LIGHT },
-        columnStyles: {
-          0: { cellWidth: 30, fontStyle: 'bold' },
-          1: { cellWidth: 36 },
-          2: { cellWidth: 12, halign: 'right' },
-          3: { cellWidth: 22 },
-          4: { cellWidth: 12 },
-          5: { cellWidth: 70, textColor: GREY },
+          0: { cellWidth: 9, halign: 'right', textColor: GREY },
+          1: { cellWidth: 22, textColor: GREY },
+          2: { cellWidth: 34, fontStyle: 'bold' },
+          3: { cellWidth: 55, textColor: GREY },
+          4: { cellWidth: 16, halign: 'right', fontStyle: 'bold' },
+          5: { cellWidth: 11, halign: 'right' },
+          6: { cellWidth: 21 },
+          7: { cellWidth: 14 },
         },
         didParseCell: (d) => {
           if (d.section !== 'body') return;
-          const o = dfm.costOptimisations[d.row.index];
+          const o = flat[d.row.index];
           if (!o) return;
-          if (d.column.index === 3) {
+          if (d.column.index === 4) d.cell.styles.textColor = GN;
+          if (d.column.index === 6) {
             d.cell.styles.textColor = o.timeframe === 'Quick Win' ? GN : o.timeframe === 'Medium Term' ? AM : GREY;
           }
-          if (d.column.index === 2 && o.expectedSavingPct >= 10) {
-            d.cell.styles.fontStyle = 'bold'; d.cell.styles.textColor = GN;
+          if (d.column.index === 7) {
+            d.cell.styles.textColor = o.risk === 'High' ? RD : o.risk === 'Medium' ? AM : GN;
           }
+        },
+      });
+      y = lastFinalY(doc) + 8;
+    } else {
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GN);
+      doc.text('No cost-reduction opportunities were triggered by this costing.', MG, y); y += 10;
+    }
+
+    // §13 — where the opportunity sits, by category
+    if (ranked.groups.length > 0) {
+      y = chk(doc, y, 22);
+      y = secBar(doc, y, '§13 — Opportunity by Category',
+        `${ranked.groups.length} categories with an actionable lever`);
+
+      autoTable(doc, {
+        startY: y, margin: { left: MG, right: MG },
+        head: [['Category', 'Opportunities', 'Best single action', 'Best save/part', 'Category total (indicative)']],
+        body: ranked.groups.map(g => [
+          g.label, String(g.opportunities.length), g.opportunities[0].action,
+          c(g.topSavingPerPart), c(g.groupSavingPerPart),
+        ]),
+        theme: 'plain',
+        headStyles: { ...TH.headStyles, fontSize: 7 },
+        bodyStyles: { fontSize: 7.5, textColor: SLATE, cellPadding: 2.5, overflow: 'linebreak' },
+        alternateRowStyles: { fillColor: LIGHT },
+        columnStyles: {
+          0: { cellWidth: 38, fontStyle: 'bold' },
+          1: { cellWidth: 22, halign: 'right' },
+          2: { cellWidth: 66, textColor: GREY },
+          3: { cellWidth: 26, halign: 'right', fontStyle: 'bold', textColor: GN },
+          4: { cellWidth: 30, halign: 'right', textColor: GREY },
         },
       });
       y = lastFinalY(doc) + 8;
     }
 
-    // §11 Roadmap
+    // §14 — inputs to confirm (no saving claimed against any of these)
+    if (ranked.verificationChecks.length > 0) {
+      y = chk(doc, y, 22);
+      y = secBar(doc, y, '§14 — Inputs to Confirm', 'No saving is claimed against these');
+
+      autoTable(doc, {
+        startY: y, margin: { left: MG, right: MG },
+        head: [['Item', 'What the costing assumed', 'How to close it']],
+        body: ranked.verificationChecks.map(v => [v.title, v.detail, v.action]),
+        theme: 'plain',
+        headStyles: { ...TH.headStyles, fontSize: 7 },
+        bodyStyles: { fontSize: 7, textColor: SLATE, cellPadding: 2.5, overflow: 'linebreak' },
+        alternateRowStyles: { fillColor: LIGHT },
+        columnStyles: {
+          0: { cellWidth: 44, fontStyle: 'bold' },
+          1: { cellWidth: 74, textColor: GREY },
+          2: { cellWidth: 64 },
+        },
+      });
+      y = lastFinalY(doc) + 8;
+    }
+
+    // §15 Roadmap
     if (dfm.quickWins.length > 0 || dfm.longTermChanges.length > 0) {
       y = chk(doc, y, 22);
       y = secBar(doc, y, '§15 — Implementation Roadmap');

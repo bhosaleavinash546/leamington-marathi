@@ -1331,7 +1331,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     ['1 · The costing finishes first', 'The DFM/DFA engine reads the FINISHED result: the 8-bucket breakdown plus the same measured inputs the estimate used — material utilisation, OEE, operation list, tooling amortisation. It critiques the exact numbers that were costed, not a separate copy.'],
     ['2 · 52 threshold rules fire', 'Fixed engineering thresholds, each with severity, saving % and a recommendation: material utilisation below 60% is critical and below 72% major; OEE below 70% critical, below 80% major; each cost bucket compared to its commodity benchmark band; operation and setup counts checked.'],
     ['3 · 10 process advisors add geometry findings', 'Per-process DFM read from the measured solid (casting, forging, sheet metal, moulding families…): heavy sections that solidify last → shrink porosity at the hot spot; sharp re-entrant corners → hot-tear initiation; missing draft; wall-ratio breaches; excess machining stock → near-net opportunity.'],
-    ['4 · Score and roadmap by arithmetic', 'Every part starts at 10/10: minus 2 per critical, 1 per major, 0.5 per minor. The DFA score runs the same way on assembly rules. Actions become the roadmap: low-risk quick wins vs long-term changes — a filter over the same list, nothing new invented.'],
+    ['4 · Ranked by money, not marked out of ten', 'Every finding is converted to £/part against this costing and ranked biggest first, grouped by category. The engine still grades findings internally to order them, but no score and no severity is ever published — the report shows what to do and what it is worth, never a mark against the design.'],
   ];
   steps.forEach(([t, d], i) => {
     const y = 1.18 + i * 1.28;
@@ -2307,7 +2307,7 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   const steps = [
     ['1 · Read', 'The finished costing is reduced to 10 core parameters and 9 extended signals — buckets, operations, tooling basis, pack rates.'],
     ['2 · Check', 'All 52 threshold rules run — each a plain test like "tooling above 20% of part cost" — and the geometry advisors read the solid.'],
-    ['3 · Score', 'Start at 10. Minus 2 per critical, 1 per major, ½ per minor finding. Two scores: manufacturability and assembly, each 1–10.'],
+    ['3 · Rank', 'Each finding is priced in £/part against this costing and ranked biggest-first inside its category. No score is published, and no severity label.'],
     ['4 · Size', 'The three biggest savings are combined (root-sum-square, capped at 40%) — so overlapping fixes are never double-counted.'],
     ['5 · Suggest', 'The 36-lever catalogue produces a ranked action list — categorised, priced from the part’s own numbers, biggest saving first.'],
   ];
@@ -2379,20 +2379,20 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   s.addText('11 packaging share · 12 logistics share · 13 labour efficiency · 14 per-operation cost split (which op carries the money) · 15 consumables cost (cores, patterns, shell) · 16 tooling investment (NRE) and its amortisation basis vs the annual volume · 17 manning and parts-per-cycle · 18 labour-vs-machine cycle time · 19 operation names (welding, inspection, rework, heat-treat signals)',
     { x: 0.68, y: 6.4, w: 9.4, h: 0.56, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
 
-  // scoring card
-  s.addShape('roundRect', { x: 10.45, y: 1.48, w: 2.38, h: 5.52, fill: { color: CARD }, line: { color: TEAL, width: 1.5 }, rectRadius: 0.1 });
-  s.addText('HOW THE SCORE\nIS BUILT', { x: 10.62, y: 1.62, w: 2.05, h: 0.55, fontFace: 'Calibri', fontSize: 10, bold: true, color: TEAL, charSpacing: 0.4, margin: 0 });
+  // ranking card — deliberately NOT a scoring card
+  s.addShape('roundRect', { x: 10.45, y: 1.48, w: 2.38, h: 5.52, fill: { color: CARD }, line: { color: GREEN, width: 1.5 }, rectRadius: 0.1 });
+  s.addText('HOW THE RANKING\nWORKS', { x: 10.62, y: 1.62, w: 2.05, h: 0.55, fontFace: 'Calibri', fontSize: 10, bold: true, color: GREEN, charSpacing: 0.4, margin: 0 });
   s.addText([
-    { text: 'Start at 10.\n', options: { bold: true, color: NAVY } },
-    { text: '− 2.0 ', options: { bold: true, color: RED } }, { text: 'per critical finding\n', options: { color: SLATE } },
-    { text: '− 1.0 ', options: { bold: true, color: AMBER } }, { text: 'per major finding\n', options: { color: SLATE } },
-    { text: '− 0.5 ', options: { bold: true, color: MUTED } }, { text: 'per minor finding\n', options: { color: SLATE } },
-    { text: '− 0 ', options: { bold: true, color: GREEN } }, { text: 'for opportunities\n\n', options: { color: SLATE } },
-    { text: 'Never below 1, never above 10. Two scores: DFM (manufacturability) and DFA (assembly).\n\n', options: { color: SLATE } },
-    { text: 'Saving headline: ', options: { bold: true, color: NAVY } },
-    { text: 'the three biggest findings combined root-sum-square — not added — and capped at 40%, so overlapping fixes are not double-counted.\n\n', options: { color: SLATE } },
+    { text: 'Every finding is priced:\n', options: { bold: true, color: NAVY } },
+    { text: 'saving % × this part’s cost = ', options: { color: SLATE } },
+    { text: '£/part.\n\n', options: { bold: true, color: GREEN } },
+    { text: 'Ranked biggest-first inside its category; categories ordered by their best single action.\n\n', options: { color: SLATE } },
+    { text: 'No score is published ', options: { bold: true, color: NAVY } },
+    { text: 'and no severity label. The engine still grades findings internally to order them — that grading never leaves the engine.\n\n', options: { color: SLATE } },
+    { text: 'Headline: ', options: { bold: true, color: NAVY } },
+    { text: 'the three biggest combined root-sum-square — not added — capped at 40%, so overlapping actions are not double-counted.\n\n', options: { color: SLATE } },
     { text: 'Context gates: ', options: { bold: true, color: NAVY } },
-    { text: 'assumed volumes, quoted regions and tool-estimated pack rates downgrade a lever to a confirm-first note.', options: { color: SLATE } },
+    { text: 'assumed volumes, quoted regions and estimated pack rates downgrade a lever to a confirm-first note.', options: { color: SLATE } },
   ], { x: 10.62, y: 2.24, w: 2.05, h: 4.66, fontFace: 'Calibri', fontSize: 8.6, margin: 0, valign: 'top' });
 
   footer(s, ++PG);
@@ -2400,7 +2400,9 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
     'These are the numbers the analysis is allowed to read — the ten core parameters from before, and nine extended signals we added with the 360-degree upgrade. Nothing else goes in. ' +
     'The ten core ones you know: the total, six bucket shares, the operation count, OEE and material utilisation — teal read straight from the costing, blue entered with the part, with stated assumptions when left blank. ' +
     'The nine extended signals are what let the new rules and levers behave like an experienced cost engineer instead of a checklist. Packaging and logistics shares — two buckets the old rules ignored entirely. Labour efficiency per operation. The per-operation cost split, so the tool knows WHICH operation carries the money, not just how many there are. Consumables — cores, patterns, shell. The tooling investment and, importantly, its amortisation basis against the stated annual volume — a mismatch there is a commercial finding on its own. Manning and parts-per-cycle. Labour time against machine cycle time. And the operation names themselves — welding, inspection, rework and heat-treat words in the routing are signals, and the rules read them. ' +
-    'The scoring card is unchanged — ten minus two per critical, one per major, half per minor; savings root-sum-square of the top three, capped at forty. And one addition at the bottom: the context gates. If the volume was assumed rather than entered, if the part is already costed in the region a lever would recommend, or if pack rates are tool estimates, the lever downgrades itself to a confirm-first note. The tool does not instruct on facts nobody gave it.'
+    'And the card on the right is the one that changed most recently, on direct feedback from this room. It used to be a scoring card — manufacturability out of ten, assembly out of ten. It is now a ranking card. Every finding is priced against this part: saving percentage times the part cost equals pounds per part, ranked biggest first inside its category. No score is published and no severity label appears anywhere an engineer sees. The engine still grades findings internally, because it needs an order — but that grading never leaves the engine. ' +
+    'The reason is worth saying out loud: a previous exercise like this scored designs, and the engineering team quite reasonably read it as a report card on their work. Nothing gets implemented after that. A ranked list of actions with money against each one is the same arithmetic and a completely different conversation. ' +
+    'The headline is unchanged: the three biggest combined root-sum-square, capped at forty percent. And the context gates at the bottom — if the volume was assumed rather than entered, if the part is already costed in the region a lever would recommend, or if pack rates are tool estimates, the lever downgrades itself to a confirm-first note. The tool does not instruct on facts nobody gave it.'
   );
 }
 
@@ -2441,7 +2443,7 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
     s.addText(r[3], { x: rcx[3], y, w: rcw[3], h: 0.3, fontFace: 'Calibri', fontSize: 9.2, bold: true, color: TEAL, align: 'right', margin: 0, valign: 'middle' });
   });
 
-  s.addText('Rules 9–14 are new with the 360° upgrade — packaging, logistics, the operation Pareto, labour efficiency, consumables and the amortisation-basis check were previously unread. "Save" is the rule’s own estimate; the headline combines the top three.',
+  s.addText('Rules 9–14 are new with the 360° upgrade — packaging, logistics, the operation Pareto, labour efficiency, consumables and the amortisation-basis check were previously unread.  ·  SEVERITY IS INTERNAL: it orders the rule list inside the engine and never appears in the app or the report — engineering sees the ranked £/part list on the last slide.',
     { x: 0.5, y: 6.42, w: 12.33, h: 0.4, fontFace: 'Calibri', fontSize: 8.5, italic: true, color: MUTED, margin: 0 });
   footer(s, ++PG);
 
@@ -2557,7 +2559,7 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   s.addShape('roundRect', { x: 0.5, y: 6.02, w: 12.33, h: 0.82, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
     { text: 'The Boothroyd point:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'classic DFA asks whether each part and each handling step needs to exist. These checks ask the same question of the operation list the costing actually used — every separate inspection, finishing step, transfer and second operator is a step that classical DFA says should justify itself.', options: { color: 'FFFFFF' } },
+    { text: 'classic DFA asks whether each part and each handling step needs to exist. These checks ask the same question of the operation list the costing actually used. Severity here is internal ordering only — what reaches an engineer is the ranked £/part list, never a grade.', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.1, w: 11.65, h: 0.66, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
@@ -2756,6 +2758,84 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
     'Commercial: the three from before — regional sourcing, open-book overhead, competitive RFQ — plus make-vs-buy, a raw-material indexation clause, a learning-curve price-down where a real volume was confirmed, and payment terms. ' +
     'Quality reads the routing: standalone inspection and manual finishing both get challenged at source. And sustainability carries real money as well as carbon: recycled resin content and process energy. ' +
     'Two honest notes to close. Every lever is gated on what a person actually told the tool — assumed volumes, quoted regions and estimated pack rates downgrade the lever to a confirm-first note. And the two backstops still exist so no part ever leaves with an empty list — they are labelled as what they are.'
+  );
+}
+
+// ══════════ A9 · WHAT ENGINEERING ACTUALLY SEES ══════════
+// Real output: the £23.27 reference bracket, run through the shipped engine.
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'What Engineering Actually Sees', 'The output for one real part — ranked by money, grouped by category, nothing graded', GREEN);
+  owner(s, 10.33, 0.28, 'OWNER: THE ENGINE', TEAL, TEAL_T);
+
+  // headline strip
+  s.addShape('roundRect', { x: 0.5, y: 1.18, w: 12.33, h: 0.72, fill: { color: GREEN_T }, line: { color: GREEN, width: 1.25 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Combined opportunity £3.22/part ', options: { bold: true, color: GREEN, fontSize: 13 } },
+    { text: '(~12.8% of the £25.14 piece cost)  ·  10 ranked opportunities across 4 categories  ·  machining', options: { color: SLATE, fontSize: 11 } },
+  ], { x: 0.78, y: 1.18, w: 11.8, h: 0.72, fontFace: 'Calibri', margin: 0, valign: 'middle' });
+
+  const ccx = [0.72, 1.25, 4.9, 10.15, 11.25, 12.15], ccw = [0.4, 3.6, 5.2, 1.0, 0.85, 1.1];
+  const header = y => {
+    ['#', 'ACTION', 'WHY IT IS ON THE LIST', 'SAVE/PART', 'RISK', 'TIMEFRAME'].forEach((h, i) =>
+      s.addText(h, { x: ccx[i], y, w: ccw[i], h: 0.18, fontFace: 'Calibri', fontSize: 7.4, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 }));
+  };
+  const band = (y, label, best, col, tint) => {
+    s.addShape('roundRect', { x: 0.5, y, w: 12.33, h: 0.22, fill: { color: tint }, rectRadius: 0.05 });
+    s.addText(label, { x: 0.72, y, w: 8, h: 0.22, fontFace: 'Calibri', fontSize: 8, bold: true, color: col, charSpacing: 0.5, margin: 0, valign: 'middle' });
+    s.addText(`best ${best}/part`, { x: 10.0, y, w: 2.6, h: 0.22, fontFace: 'Calibri', fontSize: 8, bold: true, color: col, align: 'right', margin: 0, valign: 'middle' });
+  };
+  const row = (y, [n, action, why, save, risk, tf], zebra) => {
+    if (zebra) s.addShape('rect', { x: 0.5, y: y - 0.005, w: 12.33, h: 0.245, fill: { color: CARD } });
+    s.addText(n, { x: ccx[0], y, w: ccw[0], h: 0.24, fontFace: 'Calibri', fontSize: 8.4, bold: true, color: MUTED, margin: 0, valign: 'middle' });
+    s.addText(action, { x: ccx[1], y, w: ccw[1], h: 0.24, fontFace: 'Calibri', fontSize: 8.4, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(why, { x: ccx[2], y, w: ccw[2], h: 0.24, fontFace: 'Calibri', fontSize: 8, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(save, { x: ccx[3], y, w: ccw[3], h: 0.24, fontFace: 'Calibri', fontSize: 9, bold: true, color: GREEN, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(risk, { x: ccx[4], y, w: ccw[4], h: 0.24, fontFace: 'Calibri', fontSize: 8, bold: true, color: RISKC[risk], margin: 0, valign: 'middle' });
+    s.addText(tf, { x: ccx[5], y, w: ccw[5], h: 0.24, fontFace: 'Calibri', fontSize: 8, bold: true, color: TIMEC[tf], margin: 0, valign: 'middle' });
+  };
+
+  let y = 2.02;
+  header(y); y += 0.2;
+  band(y, 'COMMERCIAL & SOURCING · 2 opportunities', '£4.53', NAVY, 'E8EDF6'); y += 0.26;
+  [
+    ['1', 'Regional sourcing study (LCC)', 'Conversion cost at 69.6% of the part — real regional arbitrage', '£4.53', 'High', 'Long term'],
+    ['2', 'Learning-curve price-down', 'Labour 23.5% with a confirmed volume and no curve priced in', '£0.75', 'Low', 'Quick win'],
+  ].forEach((r, i) => { row(y, r, i % 2 === 0); y += 0.25; });
+
+  y += 0.06; band(y, 'MATERIAL · 2 opportunities', '£2.52', TEAL, TEAL_T); y += 0.26;
+  [
+    ['3', 'Near-net-shape / better nesting', 'Utilisation 65% against the 80–90% target', '£2.52', 'Med', 'Medium term'],
+    ['4', 'Scrap revenue at index prices', '35% of bought metal leaves as chips — claim the credit', '£0.82', 'Low', 'Quick win'],
+  ].forEach((r, i) => { row(y, r, i % 2 === 0); y += 0.25; });
+
+  y += 0.06; band(y, 'PROCESS & AUTOMATION · 4 opportunities', '£2.01', BLUE, BLUE_T); y += 0.26;
+  [
+    ['5', 'Attack the bottleneck: "CNC Milling"', 'One operation carries 64% of the conversion cost', '£2.01', 'Med', 'Medium term'],
+    ['6', 'Near-net-shape pre-form (cast/forge)', 'Machining is 46.0% of the part cost', '£2.01', 'Med', 'Medium term'],
+    ['7', 'Unmanned / lights-out running', 'Machine-paced, labour 23.5%, OEE 89% — the classic profile', '£1.51', 'Med', 'Medium term'],
+    ['8', 'Multi-machine manning', 'One operator per machine while the machine paces the cycle', '£1.26', 'Low', 'Quick win'],
+  ].forEach((r, i) => { row(y, r, i % 2 === 0); y += 0.25; });
+
+  y += 0.06; band(y, 'DESIGN & GEOMETRY · 2 opportunities', '£1.26', PURPLE, PURPLE_T); y += 0.26;
+  [
+    ['9', 'Pallet / tombstone fixturing', '3 operations across 3 stations imply repeated re-fixturing', '£1.26', 'Low', 'Quick win'],
+    ['10', 'Tolerance & surface-finish relaxation', 'The tightest callouts set the machine, cycle and inspection', '£1.01', 'Low', 'Quick win'],
+  ].forEach((r, i) => { row(y, r, i % 2 === 0); y += 0.25; });
+
+  s.addShape('roundRect', { x: 0.5, y: 6.14, w: 12.33, h: 0.76, fill: { color: NAVY }, rectRadius: 0.1 });
+  s.addText([
+    { text: 'Read the whole slide and notice what is missing:  ', options: { bold: true, color: '9FB6E0' } },
+    { text: 'no score, no “critical”, nothing that grades the design. Ten things to do, what each is worth, who owns it and how long it takes — the identical deterministic findings, presented as work rather than as a verdict.', options: { color: 'FFFFFF' } },
+  ], { x: 0.85, y: 6.22, w: 11.65, h: 0.6, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
+  footer(s, ++PG);
+
+  s.addNotes(
+    'This is the output, for a real part — the reference machined bracket, run through the shipped engine. Not a mock-up; these are the numbers the tool produced. ' +
+    'Top line: three pounds twenty-two per part of combined opportunity, about thirteen percent of a twenty-five pound piece cost, ten ranked opportunities across four categories. ' +
+    'Then the list, and this is the whole point of the change. Commercial and sourcing first, because it holds the single biggest action — a regional sourcing study worth four pounds fifty-three a part, and the tool flags it high risk and long term rather than pretending it is free. Material second: near-net-shape at two fifty-two, and a scrap-credit clause at eighty-two pence that costs nothing but a conversation. Process third, led by the bottleneck lever that names the operation — CNC milling carries sixty-four percent of the conversion cost on this part, so that is where cycle-time work pays. Design last on this part, at a pound twenty-six. ' +
+    'Every row says what to do, why it is on the list, what it is worth in pounds, who can pull it and how long it takes. ' +
+    'And now the thing I would ask you to notice, which is what is NOT on the slide. There is no score. There is no "critical". There is nothing that grades the part or the person who designed it. This is exactly the same deterministic arithmetic we had before — fifty-two rules, ten advisors, thirty-six levers — presented as a work list instead of a verdict. That was the feedback, and I think it is right: the last time an exercise like this scored designs, engineering read it as criticism and nothing got implemented. A ranked list with money against it is a conversation people want to have.'
   );
 }
 

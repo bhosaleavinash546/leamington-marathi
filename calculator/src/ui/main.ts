@@ -137,7 +137,8 @@ import { computeCarbon } from '../engine/carbon.js';
 import { computeFeatureCosting, physicalRemovalCeilingMin } from '../engine/feature-costing.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
-import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
+import { rankOpportunities, CATEGORY_LABELS } from '../engine/opportunity-ranking.js';
+import type { RankedOpportunity } from '../engine/opportunity-ranking.js';
 import type { RateLibrary, UniversalStackInput, PartCostResult, CommodityType, SupplierQuote } from '../engine/types.js';
 import type { BOMLine, ComponentType } from '../engine/modules/pcba.js';
 import { parseBOMCSV } from '../engine/bom-csv.js';
@@ -12696,16 +12697,10 @@ function wireForgingAdvisor(): void {
       machiningStockMm: num('forge-adv-stock') || undefined,
     });
 
-    const sevColor: Record<string, string> = { critical: '#c62828', major: '#e65100', minor: '#f9a825', opportunity: '#2e7d32' };
-    const scoreColor = dfm.score >= 8 ? '#2e7d32' : dfm.score >= 5 ? '#e65100' : '#c62828';
-    const issuesHtml = dfm.issues.length === 0
-      ? `<div style="color:#2e7d32;margin-top:4px">✓ ${escHtml(dfm.summary)}</div>`
-      : dfm.issues.map(i => `
-          <div style="margin-top:4px;padding-left:6px;border-left:3px solid ${sevColor[i.severity] ?? '#999'}">
-            <div style="font-weight:600;color:${sevColor[i.severity] ?? '#555'}">[${i.severity.toUpperCase()}] ${escHtml(i.title)}</div>
-            <div style="color:#555">${escHtml(i.description)}</div>
-            <div style="color:#333"><em>Fix:</em> ${escHtml(i.recommendation)}</div>
-          </div>`).join('');
+    const issuesHtml = renderDFMNotes(dfm.issues, dfm.summary);
+    const notesHeading = dfm.issues.length === 0
+      ? 'no manufacturing constraints flagged'
+      : `${dfm.issues.length} point${dfm.issues.length === 1 ? '' : 's'} to consider, most significant first`;
 
     const resultEl = document.getElementById('forge-adv-result');
     if (!resultEl) return;
@@ -12721,7 +12716,7 @@ function wireForgingAdvisor(): void {
         <div style="color:#555;margin-top:4px"><em>${escHtml(rec.reason)}</em></div>
         ${rec.suggestedSecondary.length ? `<div style="color:#555;margin-top:4px"><strong>Secondary:</strong> ${rec.suggestedSecondary.map(escHtml).join(', ')}</div>` : ''}
         <div style="margin-top:6px;border-top:1px solid #eee;padding-top:6px">
-          <span style="font-weight:700">DFM score: <span style="color:${scoreColor}">${dfm.score}/10</span></span>
+          <span style="font-weight:700">Design review — ${notesHeading}</span>
           ${issuesHtml}
         </div>
       </div>`;
@@ -12750,22 +12745,16 @@ function wireInjectionAdvisor(): void {
       toleranceMm: num('imm-tolerance') || undefined,
     });
 
-    const sevColor: Record<string, string> = { critical: '#c62828', major: '#e65100', minor: '#f9a825', opportunity: '#2e7d32' };
-    const scoreColor = dfm.score >= 8 ? '#2e7d32' : dfm.score >= 5 ? '#e65100' : '#c62828';
-    const issuesHtml = dfm.issues.length === 0
-      ? `<div style="color:#2e7d32;margin-top:4px">✓ ${escHtml(dfm.summary)}</div>`
-      : dfm.issues.map(i => `
-          <div style="margin-top:4px;padding-left:6px;border-left:3px solid ${sevColor[i.severity] ?? '#999'}">
-            <div style="font-weight:600;color:${sevColor[i.severity] ?? '#555'}">[${i.severity.toUpperCase()}] ${escHtml(i.title)}</div>
-            <div style="color:#555">${escHtml(i.description)}</div>
-            <div style="color:#333"><em>Fix:</em> ${escHtml(i.recommendation)}</div>
-          </div>`).join('');
+    const issuesHtml = renderDFMNotes(dfm.issues, dfm.summary);
+    const notesHeading = dfm.issues.length === 0
+      ? 'no manufacturing constraints flagged'
+      : `${dfm.issues.length} point${dfm.issues.length === 1 ? '' : 's'} to consider, most significant first`;
 
     const resultEl = document.getElementById('imm-adv-result');
     if (!resultEl) return;
     resultEl.innerHTML = `
       <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px">
-        <span style="font-weight:700">Moulding DFM score: <span style="color:${scoreColor}">${dfm.score}/10</span></span>
+        <span style="font-weight:700">Moulding design review — ${notesHeading}</span>
         <span style="color:#777;margin-left:6px">${escHtml(dfm.summary)}</span>
         ${issuesHtml}
       </div>`;
@@ -13365,19 +13354,29 @@ function collectRotationalMouldingInput(): UniversalStackInput {
 // ─── Blow / Roto DFM advisor panels (BR3/BR4) ─────────────────────────────────
 
 interface _DFMIssueLike { severity: string; title: string; description: string; recommendation: string }
-function renderDFMPanel(score: number, issues: _DFMIssueLike[], summary: string): string {
-  const sevColor: Record<string, string> = { critical: '#c62828', major: '#e65100', minor: '#f9a825', opportunity: '#2e7d32' };
-  const scoreColor = score >= 8 ? '#2e7d32' : score >= 5 ? '#e65100' : '#c62828';
-  const body = issues.length === 0
-    ? `<div style="color:#2e7d32;margin-top:4px">✓ ${escHtml(summary)}</div>`
-    : issues.map(i => `
-        <div style="margin-top:4px;padding-left:6px;border-left:3px solid ${sevColor[i.severity] ?? '#999'}">
-          <div style="font-weight:600;color:${sevColor[i.severity] ?? '#555'}">[${i.severity.toUpperCase()}] ${escHtml(i.title)}</div>
-          <div style="color:#555">${escHtml(i.description)}</div>
-          <div style="color:#333"><em>Fix:</em> ${escHtml(i.recommendation)}</div>
-        </div>`).join('');
+/** Geometry advisor output as design NOTES, not a graded verdict.
+ *  The advisors rank findings internally (critical → opportunity) and that
+ *  ranking still sets the order here — but no score and no severity tag is
+ *  shown. A "[CRITICAL]" label against someone's geometry gets argued with;
+ *  "do this, because the tool measured that" gets actioned. */
+const _SEV_RANK: Record<string, number> = { critical: 0, major: 1, minor: 2, opportunity: 3 };
+
+function renderDFMNotes(issues: _DFMIssueLike[], summary: string): string {
+  if (issues.length === 0) return `<div style="color:#2e7d32;margin-top:4px">✓ ${escHtml(summary)}</div>`;
+  const ordered = [...issues].sort((a, b) => (_SEV_RANK[a.severity] ?? 9) - (_SEV_RANK[b.severity] ?? 9));
+  return ordered.map(i => `
+      <div style="margin-top:5px;padding-left:7px;border-left:3px solid #4f8ef7">
+        <div style="font-weight:600;color:#333">${escHtml(i.recommendation)}</div>
+        <div style="color:#666;font-size:0.95em">${escHtml(i.title)} — ${escHtml(i.description)}</div>
+      </div>`).join('');
+}
+
+function renderDFMPanel(_score: number, issues: _DFMIssueLike[], summary: string): string {
+  const heading = issues.length === 0
+    ? 'Design review — no manufacturing constraints flagged'
+    : `Design review — ${issues.length} point${issues.length === 1 ? '' : 's'} to consider, most significant first`;
   return `<div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px">
-      <span style="font-weight:700">DFM score: <span style="color:${scoreColor}">${score}/10</span></span>${body}
+      <span style="font-weight:700">${heading}</span>${renderDFMNotes(issues, summary)}
     </div>`;
 }
 
@@ -15491,121 +15490,98 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
     try {
       const dfmResult = generateDFMDFA(result, input, activeCommodity, uiSuggestionContext());
 
-      const severityColor: Record<string, string> = {
-        critical: '#e63b3b',
-        major: '#f59e0b',
-        minor: '#3b82f6',
-        opportunity: '#10b981',
-      };
-
-      const severityLabel: Record<string, string> = {
-        critical: 'Critical',
-        major: 'Major',
-        minor: 'Minor',
-        opportunity: 'Opportunity',
-      };
+      // Savings-ranked presentation. The engine still grades findings
+      // internally, but a score out of 10 and a "CRITICAL" tag read as a
+      // verdict on the people who designed the part — so this panel shows only
+      // ranked opportunities: what to do, what it is worth, what it costs to do.
+      const ranked = rankOpportunities(dfmResult, result.total);
 
       const riskColor = (r: string) => r === 'High' ? '#e63b3b' : r === 'Medium' ? '#f59e0b' : '#10b981';
-
-      const issueCard = (issue: DFMIssue) => `
-        <div style="border-left:3px solid ${severityColor[issue.severity]};background:var(--surface-elevated);border-radius:6px;padding:10px 14px;margin-bottom:8px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
-            <span style="font-size:0.7rem;font-weight:700;color:${severityColor[issue.severity]};text-transform:uppercase;border:1px solid ${severityColor[issue.severity]};border-radius:4px;padding:1px 6px">${severityLabel[issue.severity]}</span>
-            <span style="font-weight:600;font-size:0.85rem">${escHtml(issue.title)}</span>
-            ${issue.savingPct > 0 ? `<span style="margin-left:auto;font-size:0.72rem;color:#10b981;font-weight:700">~${issue.savingPct}% saving</span>` : ''}
-          </div>
-          <p style="font-size:0.78rem;color:var(--text-secondary);margin:0 0 6px 0">${escHtml(issue.description)}</p>
-          <div style="font-size:0.75rem;background:var(--surface);border-radius:4px;padding:5px 8px;color:var(--text-primary)">
-            <strong>Recommendation:</strong> ${escHtml(issue.recommendation)}
-            <span style="float:right;color:${riskColor(issue.risk)};font-weight:600">Risk: ${issue.risk}</span>
-          </div>
-        </div>`;
-
-      const optimCard = (opt: CostOptimisation) => `
-        <div style="background:var(--surface-elevated);border-radius:6px;padding:10px 14px;margin-bottom:8px;border:1px solid var(--border)">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-            <span style="font-weight:600;font-size:0.85rem">${escHtml(opt.title)}</span>
-            ${opt.category ? `<span style="font-size:0.68rem;background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);border-radius:4px;padding:1px 6px;text-transform:capitalize">${escHtml(opt.category)}</span>` : ''}
-            <span style="font-size:0.72rem;color:#10b981;font-weight:700;margin-left:auto">~${opt.expectedSavingPct.toFixed(1)}% saving</span>
-            <span style="font-size:0.7rem;background:${opt.timeframe === 'Quick Win' ? '#10b981' : opt.timeframe === 'Medium Term' ? '#f59e0b' : '#6366f1'};color:#fff;border-radius:4px;padding:1px 6px">${opt.timeframe}</span>
-          </div>
-          <p style="font-size:0.78rem;color:var(--text-secondary);margin:0 0 5px 0">${escHtml(opt.description)}</p>
-          <p style="font-size:0.73rem;color:#888;margin:0;font-style:italic">${escHtml(opt.technicalJustification)}</p>
-        </div>`;
-
-      const scoreBar = (score: number, label: string) => {
-        const pct = (score / 10) * 100;
-        const col = score >= 8 ? '#10b981' : score >= 6 ? '#f59e0b' : '#e63b3b';
-        return `
-          <div style="margin-bottom:10px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-              <span style="font-weight:600;font-size:0.83rem">${label}</span>
-              <span style="font-weight:700;color:${col};font-size:0.9rem">${score}/10</span>
-            </div>
-            <div style="height:8px;background:var(--surface);border-radius:4px;overflow:hidden">
-              <div style="height:100%;width:${pct}%;background:${col};border-radius:4px;transition:width 0.4s"></div>
-            </div>
-          </div>`;
+      const timeColor = (t: string) => t === 'Quick Win' ? '#10b981' : t === 'Medium Term' ? '#f59e0b' : '#6366f1';
+      const OWNER_LABEL: Record<string, string> = {
+        design: 'Design', supplier: 'Supplier', sourcing: 'Sourcing',
+        assumption: 'Confirm input', verified: 'Already optimal',
       };
 
-      const dfmIssuesHtml = dfmResult.dfm.issues.map(issueCard).join('') || '<p style="color:#888;font-size:0.82rem">No DFM issues detected.</p>';
-      const dfaIssuesHtml = dfmResult.dfa.issues.map(issueCard).join('') || '<p style="color:#888;font-size:0.82rem">No DFA issues detected.</p>';
-      const optimHtml = dfmResult.costOptimisations.map(optimCard).join('');
+      const oppRow = (o: RankedOpportunity, rank: number) => `
+        <div style="display:flex;gap:12px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin-bottom:6px">
+          <div style="min-width:34px;text-align:center;color:var(--text-muted);font-weight:700;font-size:0.95rem;padding-top:2px">${rank}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+              <span style="font-weight:600;font-size:0.85rem">${escHtml(o.action)}</span>
+              ${o.owner ? `<span style="font-size:0.66rem;background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);border-radius:4px;padding:1px 6px">${escHtml(OWNER_LABEL[o.owner] ?? o.owner)}</span>` : ''}
+            </div>
+            <p style="font-size:0.77rem;color:var(--text-secondary);margin:0 0 4px 0">${escHtml(o.basis)}</p>
+            ${o.detail ? `<p style="font-size:0.72rem;color:#888;margin:0;font-style:italic">${escHtml(o.detail)}</p>` : ''}
+          </div>
+          <div style="min-width:118px;text-align:right">
+            <div style="font-size:1.02rem;font-weight:800;color:#10b981;line-height:1.2">${fmt(o.savingPerPart)}</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:4px">per part · ${o.savingPct.toFixed(1)}%</div>
+            <div style="font-size:0.66rem;color:${timeColor(o.timeframe)};font-weight:700">${o.timeframe}</div>
+            <div style="font-size:0.66rem;color:${riskColor(o.risk)}">${o.risk} risk</div>
+          </div>
+        </div>`;
 
-      const quickWinBadges = dfmResult.quickWins.map(w => `<span style="background:var(--surface-elevated);border:1px solid #10b981;color:#10b981;border-radius:4px;padding:2px 8px;font-size:0.73rem;display:inline-block;margin:2px">${escHtml(w)}</span>`).join('');
-      const ltBadges = dfmResult.longTermChanges.map(w => `<span style="background:var(--surface-elevated);border:1px solid #6366f1;color:#6366f1;border-radius:4px;padding:2px 8px;font-size:0.73rem;display:inline-block;margin:2px">${escHtml(w)}</span>`).join('');
+      let rankNo = 0;
+      const groupsHtml = ranked.groups.map(g => `
+        <div style="margin-bottom:16px">
+          <div style="display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:8px">
+            <span style="font-weight:700;font-size:0.9rem">${escHtml(g.label)}</span>
+            <span style="font-size:0.72rem;color:var(--text-muted)">${g.opportunities.length} ${g.opportunities.length === 1 ? 'opportunity' : 'opportunities'}</span>
+            <span style="margin-left:auto;font-size:0.75rem;color:#10b981;font-weight:700">best ${fmt(g.topSavingPerPart)}/part</span>
+          </div>
+          ${g.opportunities.map(o => oppRow(o, ++rankNo)).join('')}
+        </div>`).join('') || '<p style="color:#888;font-size:0.82rem">No cost-reduction opportunities triggered on this costing.</p>';
+
+      const checksHtml = ranked.verificationChecks.map(c => `
+        <div style="display:flex;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px dashed var(--border)">
+          <span style="font-size:0.78rem;font-weight:600;min-width:210px">${escHtml(c.title)}</span>
+          <span style="font-size:0.75rem;color:var(--text-secondary);flex:1">${escHtml(c.action)}</span>
+        </div>`).join('');
+
+      const topThree = ranked.all.slice(0, 3);
 
       panel.innerHTML = `
         <div style="padding:12px 16px;overflow-y:auto">
 
-          <!-- Summary banner -->
-          <div style="display:flex;gap:12px;flex-wrap:wrap;background:var(--surface-elevated);border-radius:8px;padding:14px 16px;margin-bottom:16px;align-items:center">
-            <div style="text-align:center;min-width:80px">
-              <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase">Total Saving</div>
-              <div style="font-size:1.6rem;font-weight:800;color:#10b981">~${dfmResult.totalPotentialSavingPct.toFixed(1)}%</div>
+          <!-- Headline: money, not marks out of ten -->
+          <div style="display:flex;gap:16px;flex-wrap:wrap;background:var(--surface-elevated);border-radius:8px;padding:14px 16px;margin-bottom:16px;align-items:center">
+            <div style="min-width:150px">
+              <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase">Combined opportunity</div>
+              <div style="font-size:1.6rem;font-weight:800;color:#10b981;line-height:1.2">${fmt(ranked.headlineSavingPerPart)}</div>
+              <div style="font-size:0.72rem;color:var(--text-muted)">per part · ~${ranked.headlineSavingPct.toFixed(1)}% of ${fmt(ranked.partTotal)}</div>
             </div>
-            <div style="flex:1;min-width:200px">
-              ${scoreBar(dfmResult.dfm.score, 'Manufacturability (DFM)')}
-              ${scoreBar(dfmResult.dfa.score, 'Assembly Efficiency (DFA)')}
-            </div>
-            <div style="min-width:160px;font-size:0.75rem;color:var(--text-muted)">
-              Commodity: <strong>${activeCommodity.replace(/_/g, ' ')}</strong><br>
-              DFM issues: <strong>${dfmResult.dfm.issues.length}</strong> &nbsp;|&nbsp; DFA issues: <strong>${dfmResult.dfa.issues.length}</strong><br>
-              Cost levers: <strong>${dfmResult.costOptimisations.length}</strong>
+            <div style="flex:1;min-width:240px;font-size:0.76rem;color:var(--text-secondary)">
+              <strong>${ranked.all.length}</strong> ranked ${ranked.all.length === 1 ? 'opportunity' : 'opportunities'} across
+              <strong>${ranked.groups.length}</strong> ${ranked.groups.length === 1 ? 'category' : 'categories'} ·
+              commodity <strong>${activeCommodity.replace(/_/g, ' ')}</strong><br>
+              <span style="color:var(--text-muted)">Headline is the root-sum-square of the top three, capped at 40% — overlapping actions never save twice, so the list is not summed.</span>
             </div>
           </div>
 
-          <!-- DFM Section -->
-          <div style="margin-bottom:20px">
-            <div class="detail-section-title" style="margin-bottom:6px">Design for Manufacture (DFM)</div>
-            <p style="font-size:0.78rem;color:var(--text-secondary);margin:0 0 10px 0">${escHtml(dfmResult.dfm.summary)}</p>
-            ${dfmIssuesHtml}
-          </div>
-
-          <!-- DFA Section -->
-          <div style="margin-bottom:20px">
-            <div class="detail-section-title" style="margin-bottom:6px">Design for Assembly (DFA)</div>
-            <p style="font-size:0.78rem;color:var(--text-secondary);margin:0 0 10px 0">${escHtml(dfmResult.dfa.summary)}</p>
-            ${dfaIssuesHtml}
-          </div>
-
-          <!-- Cost Optimisations -->
-          <div style="margin-bottom:20px">
-            <div class="detail-section-title" style="margin-bottom:6px">Cost Optimisation Levers</div>
-            ${optimHtml}
-          </div>
-
-          <!-- Quick wins / long term -->
-          ${dfmResult.quickWins.length > 0 ? `
-          <div style="margin-bottom:12px">
-            <div style="font-weight:600;font-size:0.82rem;margin-bottom:5px;color:#10b981">Quick Wins (Low Risk)</div>
-            <div>${quickWinBadges}</div>
+          ${topThree.length > 0 ? `
+          <div style="margin-bottom:18px">
+            <div class="detail-section-title" style="margin-bottom:6px">Where the money is — top ${topThree.length}</div>
+            ${topThree.map((o, i) => `
+              <div style="display:flex;align-items:center;gap:10px;padding:5px 0">
+                <span style="font-size:0.72rem;color:var(--text-muted);min-width:16px">${i + 1}</span>
+                <span style="font-size:0.8rem;font-weight:600;flex:1">${escHtml(o.action)}</span>
+                <span style="font-size:0.7rem;color:var(--text-muted)">${escHtml(CATEGORY_LABELS[o.category])}</span>
+                <span style="font-size:0.85rem;font-weight:700;color:#10b981;min-width:80px;text-align:right">${fmt(o.savingPerPart)}</span>
+              </div>`).join('')}
           </div>` : ''}
 
-          ${dfmResult.longTermChanges.length > 0 ? `
+          <!-- Ranked opportunities by category -->
+          <div style="margin-bottom:8px">
+            <div class="detail-section-title" style="margin-bottom:8px">Cost-reduction opportunities — ranked by saving, grouped by category</div>
+            ${groupsHtml}
+          </div>
+
+          ${checksHtml ? `
           <div style="margin-bottom:16px">
-            <div style="font-weight:600;font-size:0.82rem;margin-bottom:5px;color:#6366f1">Long-Term Strategic Changes</div>
-            <div>${ltBadges}</div>
+            <div class="detail-section-title" style="margin-bottom:6px">Inputs to confirm</div>
+            <p style="font-size:0.74rem;color:var(--text-muted);margin:0 0 6px 0">No saving is claimed against these — they are assumptions in the costing, or decisions the tool has already verified as optimal.</p>
+            ${checksHtml}
           </div>` : ''}
 
           <!-- AI Deep Analysis Button -->
