@@ -227,6 +227,56 @@ function utilisationBenchmarkNote(commodity?: string): string {
  *  comparison, carbon, insights, DFM/DFA, optimisation, roadmap, scenarios).
  *  Drawn into any jsPDF doc at cursor `y`; returns the new `y`. Used by both
  *  the standalone Should-Cost report (printPDF) and the Master report Part A. */
+/**
+ * Every source photograph the costing was built from, slot-labelled, two-up.
+ *
+ * Lives in the SHARED body rather than in printPDF, because the Master Cost
+ * Report renders PART A from here — putting it in printPDF alone meant the
+ * master report, which is the one a PCB costing normally produces, showed no
+ * photographs at all unless the vision analysis had run and populated its
+ * separate C7 section.
+ */
+function renderSourcePhotographs(doc: jsPDF, y: number, photos: ReportPhoto[]): number {
+  if (photos.length === 0) return y;
+  // Break only if there is not room, rather than unconditionally. An
+  // unconditional addPage() here left the Master report's PART A divider page
+  // almost empty, because the shared body starts with this section.
+  y = chk(doc, y, 100);
+  y = secBar(doc, y, 'Source Photographs', `${photos.length} image${photos.length > 1 ? 's' : ''} the costing was built from`);
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+  for (const ln of doc.splitTextToSize(
+    'Every component identification in the bill of materials traces to a package marking legible in one of these images. '
+    + 'Lines flagged as estimated could not be read from any of them.', CW) as string[]) {
+    doc.text(ln, MG, y); y += 3.6;
+  }
+  y += 4;
+
+  const colW = (CW - 6) / 2;          // two up, 6 mm gutter
+  const maxCellH = 62;
+  let col = 0;
+  let rowTop = y;
+  for (const p of photos) {
+    try {
+      const props = doc.getImageProperties(p.dataUrl);
+      let iw = colW, ih = colW * (props.height / props.width);
+      if (ih > maxCellH) { ih = maxCellH; iw = maxCellH * (props.width / props.height); }
+
+      if (col === 0) rowTop = chk(doc, rowTop, maxCellH + 12);
+      const x = MG + col * (colW + 6);
+
+      doc.setFontSize(7); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+      doc.text(p.label, x, rowTop + 3);
+      doc.setDrawColor(...NAVY); doc.setLineWidth(0.25);
+      doc.roundedRect(x, rowTop + 5, iw + 3, ih + 3, 1.5, 1.5, 'S');
+      doc.addImage(p.dataUrl, props.fileType || 'JPEG', x + 1.5, rowTop + 6.5, iw, ih, undefined, 'FAST');
+
+      col++;
+      if (col === 2) { col = 0; rowTop += maxCellH + 14; }
+    } catch { /* skip an image that fails to embed */ }
+  }
+  return col === 0 ? rowTop : rowTop + maxCellH + 14;
+}
+
 export function renderShouldCostSections(
   doc: jsPDF,
   y: number,
@@ -243,6 +293,7 @@ export function renderShouldCostSections(
   },
 ): number {
   const { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta } = ctx;
+  y = renderSourcePhotographs(doc, y, cadMeta.photos ?? []);
   const sym  = currencySymbol(currency);
   const c    = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
   const pct  = (n: number) => `${n.toFixed(1)}%`;
@@ -1389,49 +1440,6 @@ export function printPDF(
     `Material utilisation: ${utilPct.toFixed(0)}%   ·   Overhead: ${(input.overheadPct * 100).toFixed(0)}% of factory base   ·   Margin: ${(input.marginPct * 100).toFixed(0)}% of subtotal   ·   Operations: ${result.operationDetails.length}`,
   ], NAVY, HDR);
 
-
-  // ── Source photographs ────────────────────────────────────────────────────
-  // On a PCB the whole BOM is read off package markings, so the photographs
-  // ARE the evidence. One hero photo went on the cover and the rest never
-  // reached the report, leaving a reviewer unable to check a single BOM line
-  // against what was actually on the board. Print them all, slot-labelled.
-  const photos = cadMeta.photos ?? [];
-  if (photos.length > 0) {
-    doc.addPage(); y = 18;
-    y = secBar(doc, y, 'Source Photographs', `${photos.length} image${photos.length > 1 ? 's' : ''} the costing was built from`);
-    doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
-    for (const ln of doc.splitTextToSize(
-      'Every component identification in the bill of materials traces to a package marking legible in one of these images. '
-      + 'Lines flagged as estimated could not be read from any of them.', CW) as string[]) {
-      doc.text(ln, MG, y); y += 3.6;
-    }
-    y += 4;
-
-    const colW = (CW - 6) / 2;          // two up, 6 mm gutter
-    const maxCellH = 62;
-    let col = 0;
-    let rowTop = y;
-    for (const p of photos) {
-      try {
-        const props = doc.getImageProperties(p.dataUrl);
-        let iw = colW, ih = colW * (props.height / props.width);
-        if (ih > maxCellH) { ih = maxCellH; iw = maxCellH * (props.width / props.height); }
-
-        if (col === 0) rowTop = chk(doc, rowTop, maxCellH + 12);
-        const x = MG + col * (colW + 6);
-
-        doc.setFontSize(7); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
-        doc.text(p.label, x, rowTop + 3);
-        doc.setDrawColor(...NAVY); doc.setLineWidth(0.25);
-        doc.roundedRect(x, rowTop + 5, iw + 3, ih + 3, 1.5, 1.5, 'S');
-        doc.addImage(p.dataUrl, props.fileType || 'JPEG', x + 1.5, rowTop + 6.5, iw, ih, undefined, 'FAST');
-
-        col++;
-        if (col === 2) { col = 0; rowTop += maxCellH + 14; }
-      } catch { /* skip an image that fails to embed */ }
-    }
-    y = col === 0 ? rowTop : rowTop + maxCellH + 14;
-  }
 
   y = renderShouldCostSections(doc, y, { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta });
 
