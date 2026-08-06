@@ -31,6 +31,23 @@ export interface CADReportMeta {
   userSpecifiedMaterial?: boolean;
   userSpecifiedProcess?: boolean;
   annualVolume?: number | null;
+  /**
+   * Every photo the costing was built from, in slot order with its label
+   * ("Top side", "Bottom side", "Close-up 1" …).
+   *
+   * `partPhotoDataUrl` carries ONE hero photo. The PCB Image-to-BOM flow accepts
+   * eight, and seven of them never reached the report — on a board where the
+   * whole BOM is read off package markings, the photos ARE the evidence, and a
+   * reviewer could not check a single line against them.
+   */
+  photos?: ReportPhoto[];
+}
+
+/** One labelled source photo carried into the report. */
+export interface ReportPhoto {
+  dataUrl: string;
+  /** Slot name — "Top side", "Bottom side", "Close-up 3". */
+  label: string;
 }
 
 // ─── Shared constants ─────────────────────────────────────────────────────────
@@ -1314,6 +1331,49 @@ export function printPDF(
     `Material utilisation: ${utilPct.toFixed(0)}%   ·   Overhead: ${(input.overheadPct * 100).toFixed(0)}% of factory base   ·   Margin: ${(input.marginPct * 100).toFixed(0)}% of subtotal   ·   Operations: ${result.operationDetails.length}`,
   ], NAVY, HDR);
 
+
+  // ── Source photographs ────────────────────────────────────────────────────
+  // On a PCB the whole BOM is read off package markings, so the photographs
+  // ARE the evidence. One hero photo went on the cover and the rest never
+  // reached the report, leaving a reviewer unable to check a single BOM line
+  // against what was actually on the board. Print them all, slot-labelled.
+  const photos = cadMeta.photos ?? [];
+  if (photos.length > 0) {
+    doc.addPage(); y = 18;
+    y = secBar(doc, y, 'Source Photographs', `${photos.length} image${photos.length > 1 ? 's' : ''} the costing was built from`);
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+    for (const ln of doc.splitTextToSize(
+      'Every component identification in the bill of materials traces to a package marking legible in one of these images. '
+      + 'Lines flagged as estimated could not be read from any of them.', CW) as string[]) {
+      doc.text(ln, MG, y); y += 3.6;
+    }
+    y += 4;
+
+    const colW = (CW - 6) / 2;          // two up, 6 mm gutter
+    const maxCellH = 62;
+    let col = 0;
+    let rowTop = y;
+    for (const p of photos) {
+      try {
+        const props = doc.getImageProperties(p.dataUrl);
+        let iw = colW, ih = colW * (props.height / props.width);
+        if (ih > maxCellH) { ih = maxCellH; iw = maxCellH * (props.width / props.height); }
+
+        if (col === 0) rowTop = chk(doc, rowTop, maxCellH + 12);
+        const x = MG + col * (colW + 6);
+
+        doc.setFontSize(7); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+        doc.text(p.label, x, rowTop + 3);
+        doc.setDrawColor(...NAVY); doc.setLineWidth(0.25);
+        doc.roundedRect(x, rowTop + 5, iw + 3, ih + 3, 1.5, 1.5, 'S');
+        doc.addImage(p.dataUrl, props.fileType || 'JPEG', x + 1.5, rowTop + 6.5, iw, ih, undefined, 'FAST');
+
+        col++;
+        if (col === 2) { col = 0; rowTop += maxCellH + 14; }
+      } catch { /* skip an image that fails to embed */ }
+    }
+    y = col === 0 ? rowTop : rowTop + maxCellH + 14;
+  }
 
   y = renderShouldCostSections(doc, y, { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta });
 

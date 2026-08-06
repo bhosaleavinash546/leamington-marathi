@@ -14,8 +14,8 @@
  */
 import { spawn, type ChildProcess } from 'node:child_process';
 import { chromium, type Browser } from 'playwright';
-import { mkdirSync, existsSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
+import { mkdirSync, existsSync, readdirSync } from 'node:fs';
+import { resolve, dirname, join } from 'node:path';
 
 const PORT = Number(process.env.TOOLRUN_PORT ?? 4193);
 const BASE = `http://localhost:${PORT}/calculator/`;
@@ -132,12 +132,30 @@ async function main(): Promise<void> {
     await page.waitForTimeout(1200);
     log(`app loaded — "${await page.title()}"`);
 
+    // 0 · Board photographs to load into the PCB Image→BOM slots, so the report
+    //     carries the evidence the BOM was read from. Any jpg/png in
+    //     TOOLRUN_PHOTO_DIR is used, in filename order, against the slot labels.
+    const photoDir = process.env.TOOLRUN_PHOTO_DIR ?? '';
+    const photoFiles: string[] = (photoDir && existsSync(photoDir))
+      ? readdirSync(photoDir).filter(f => /\.(jpe?g|png)$/i.test(f)).sort()
+          .map(f => join(photoDir, f)).slice(0, 8)
+      : [];
+
     // 1 · Into the PCBA cost model, via the New Costing picker.
     await page.click('#new-costing-btn', { timeout: 15_000 });
     await page.click('.cpicker-tile[data-commodity="pcba"]', { timeout: 15_000 });
     await page.waitForSelector('#pcba-smt-mach', { state: 'attached', timeout: 15_000 });
     await page.waitForTimeout(800);
     log('PCBA panel open');
+
+    // 1b · Attach the photographs to the slot file inputs.
+    for (let i = 0; i < photoFiles.length; i++) {
+      const input = await page.$(`#pcb-img-input-${i}`);
+      if (!input) { log(`no slot input #pcb-img-input-${i} — stopped after ${i} photo(s)`); break; }
+      await input.setInputFiles(photoFiles[i]);
+      await page.waitForTimeout(300);   // let the FileReader settle
+    }
+    if (photoFiles.length) log(`attached ${photoFiles.length} photo(s) from ${photoDir}`);
 
     // NOTE: every page.evaluate below is passed as a SOURCE STRING, not a
     // closure. tsx compiles with esbuild's keepNames, which wraps every function

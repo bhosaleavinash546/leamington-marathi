@@ -111,7 +111,7 @@ async function ensurePdfLibs(): Promise<void> {
   renderShouldCostSections = m3.renderShouldCostSections;
 }
 import { exportToExcelBlob } from '../export/excel.js';
-import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta } from '../export/pdf.js';
+import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import {
@@ -284,6 +284,9 @@ let pcbNREEnabled = false;
 const PCB_IMAGE_MAX = 8;
 const PCB_SLOT_LABELS = ['Top side', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3', 'Close-up 4', 'Close-up 5', 'Close-up 6'];
 let pcbImageFiles: (File | null)[] = Array(PCB_IMAGE_MAX).fill(null);
+/** Slot photos as data URLs, for the PDF. Files cannot be embedded directly and
+ *  an object URL is revoked long before the report is generated. */
+let pcbImageDataUrls: (string | null)[] = Array(PCB_IMAGE_MAX).fill(null);
 let pcbEditMode = false;
 const pcbPinnedPrices = new Map<number, number>(); // BOM row index → pinned unitPriceGBP
 let _pcbVolumeChart: Chart | null = null;
@@ -7441,6 +7444,11 @@ function wirePCBImageZone(): void {
 
   function setSlot(idx: number, file: File): void {
     pcbImageFiles[idx] = file;
+    // Read a data URL now, while we still hold the File — the report is
+    // generated much later, by which point an object URL has been revoked.
+    const fr = new FileReader();
+    fr.onload = () => { pcbImageDataUrls[idx] = fr.result as string; };
+    fr.readAsDataURL(file);
     const thumb = el<HTMLImageElement>(`pcb-img-thumb-${idx}`);
     if (thumb) thumb.src = URL.createObjectURL(file);
     const emptyDiv = el(`pcb-img-slot-empty-${idx}`);
@@ -7455,6 +7463,7 @@ function wirePCBImageZone(): void {
 
   function clearSlot(idx: number): void {
     pcbImageFiles[idx] = null;
+    pcbImageDataUrls[idx] = null;
     const emptyDiv = el(`pcb-img-slot-empty-${idx}`);
     const filledDiv = el(`pcb-img-slot-filled-${idx}`);
     const slot = el(`pcb-img-slot-${idx}`);
@@ -7883,6 +7892,7 @@ function injectPCBImagePanel(): void {
   el('pcb-clear-btn')?.addEventListener('click', () => {
     pcbImageResult = null;
     pcbImageFiles = Array(PCB_IMAGE_MAX).fill(null);
+    pcbImageDataUrls = Array(PCB_IMAGE_MAX).fill(null);
     pcbImageDataURL = null;
     pcbUploadedImages = [];
     if (_pcbVolumeChart) { _pcbVolumeChart.destroy(); _pcbVolumeChart = null; }
@@ -16399,10 +16409,33 @@ function currentPartPhotoDataUrl(): string | null {
   return null;
 }
 
-/** Assemble the CAD provenance + geometry metadata for the should-cost report.
- *  Empty ({}) for non-CAD costings so the report is unchanged for them. */
+/** Every source photograph the costing was built from, slot-labelled, newest
+ *  flow first: the PCB Image→BOM slots, then the generic part-photo drop-zone. */
+function reportPhotos(): ReportPhoto[] {
+  const out: ReportPhoto[] = [];
+  pcbImageDataUrls.forEach((dataUrl, i) => {
+    if (dataUrl) out.push({ dataUrl, label: PCB_SLOT_LABELS[i] ?? `Image ${i + 1}` });
+  });
+  if (out.length === 0) {
+    const single = currentPartPhotoDataUrl();
+    if (single) out.push({ dataUrl: single, label: 'Part photo' });
+  }
+  return out;
+}
+
+/** Assemble the metadata the should-cost report needs.
+ *
+ *  This used to early-return `{}` for any costing without a CAD analysis, which
+ *  quietly dropped every field that is NOT CAD-specific — annual volume, and
+ *  now the source photographs — for exactly the flows that need them most (a
+ *  PCB costing has no CAD result by definition). The universal fields are built
+ *  first and unconditionally; the CAD block is layered on when there is one. */
 function buildCadReportMeta(): CADReportMeta {
-  if (!cadAnalysisResult || !lastInput) return {};
+  const universal: CADReportMeta = {
+    annualVolume: lastInput?.annualVolume ?? null,
+    photos: reportPhotos(),
+  };
+  if (!cadAnalysisResult || !lastInput) return universal;
   const volCm3 = cadOCCTGeometry?.volume?.cm3 ?? null;
   const matRate = library.materials.find(m => m.id === lastInput!.rawMaterial.materialId);
   const measuredWeightKg = (volCm3 != null && matRate)
@@ -16430,6 +16463,7 @@ function buildCadReportMeta(): CADReportMeta {
   }
 
   return {
+    ...universal,
     geometrySource: cadGeometrySource,
     measuredVolumeCm3: volCm3,
     measuredWeightKg,
@@ -16438,7 +16472,6 @@ function buildCadReportMeta(): CADReportMeta {
     featureStock,
     userSpecifiedMaterial: _cadMaterialLocked,
     userSpecifiedProcess: _cadProcessLocked,
-    annualVolume: (lastInput as { annualVolume?: number }).annualVolume ?? null,
   };
 }
 
