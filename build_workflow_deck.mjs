@@ -3137,5 +3137,94 @@ FOOT = 'CostVision · technical architecture — languages, licences, code size 
   );
 }
 
+// ══════════ TECHNICAL APPENDIX 2 · THE DATA CONTRACTS ══════════
+// The deep-dive for an engineer from a data background: what OBJECT moves
+// between each box, what is in it, and where every field comes from. All type
+// names and fields below are copied from the source, not paraphrased.
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'Data Contracts — What Actually Moves Between the Boxes', 'Five typed hand-offs from CAD file to database. Type and field names exactly as they appear in the source', NAVY);
+
+  const MONO = 'Consolas';
+
+  /** One hand-off: a typed object, its fields, and where the values come from. */
+  const contract = (x, y, w, h, n, name, where, col, fields, note) => {
+    s.addShape('roundRect', { x, y, w, h, fill: { color: CARD }, line: { color: col, width: 1.4 }, rectRadius: 0.09 });
+    s.addShape('roundRect', { x, y, w, h: 0.42, fill: { color: col }, rectRadius: 0.09 });
+    s.addShape('rect', { x, y: y + 0.26, w, h: 0.16, fill: { color: col } });
+    s.addShape('ellipse', { x: x + 0.11, y: y + 0.09, w: 0.24, h: 0.24, fill: { color: 'FFFFFF' } });
+    s.addText(String(n), { x: x + 0.11, y: y + 0.09, w: 0.24, h: 0.24, fontFace: 'Calibri', fontSize: 8, bold: true, color: col, align: 'center', valign: 'middle', margin: 0 });
+    s.addText(name, { x: x + 0.42, y: y + 0.04, w: w - 0.52, h: 0.20, fontFace: MONO, fontSize: 8.4, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
+    s.addText(where, { x: x + 0.42, y: y + 0.22, w: w - 0.52, h: 0.16, fontFace: 'Calibri', fontSize: 6.6, color: 'FFFFFF', margin: 0, valign: 'middle' });
+    s.addText(fields, { x: x + 0.12, y: y + 0.48, w: w - 0.24, h: h - 0.48 - 0.24, fontFace: MONO, fontSize: 6.1, color: SLATE, margin: 0, valign: 'top', lineSpacingMultiple: 0.98 });
+    s.addText(note, { x: x + 0.12, y: y + h - 0.24, w: w - 0.24, h: 0.2, fontFace: 'Calibri', fontSize: 6.6, italic: true, color: col, margin: 0, valign: 'middle' });
+  };
+
+  const CW = 2.34, GAP = 0.155, Y = 1.14, H = 3.42;
+  const xs = [0.5, 0.5 + CW + GAP, 0.5 + 2 * (CW + GAP), 0.5 + 3 * (CW + GAP), 0.5 + 4 * (CW + GAP)];
+
+  contract(xs[0], Y, CW, H, 1, 'OCCTGeometry', 'Python kernel → JSON on stdout', AMBER,
+    'status: success|error\nboundingBox: {xMm,yMm,zMm}\nvolume: {mm3, cm3}\nsurfaceArea: {mm2, cm2}\nfillRatio: number\ntopology: {solidCount,\n  shellCount, voidCount,\n  enclosesSealedVoid,\n  openShell}\nwallThickness: {minMm,\n  maxMm, meanMm, p95Mm,\n  method, uniformity}\ndraftAnalysis: {undercut-\n  FaceCount, minPositive-\n  DraftDeg, ...}\nsetupAnalysis: {estimated-\n  SetupCount, principal-\n  Directions[]}\ncncCycleTimeEstimate: {...}\nweights: {aluminiumKg,\n  steelKg, plasticKg}\nfeatureTable, detected-\n  Hardware, bendCount',
+    'Measured. Never guessed.');
+
+  contract(xs[1], Y, CW, H, 2, 'UniversalStackInput', '162 rules + engineer answers', TEAL,
+    'partName: string\nrawMaterial: {\n  materialId: string\n  netWeightKg: number\n  materialUtilization: number\n  directCost?: number\n  consumablesCostPerPart?\n}\noperations: [{\n  operationName: string\n  machineId: string\n  labourId: string\n  cycleTimeHr: number\n  partsPerCycle: number\n  oee: number\n  manning: number\n  labourTimeHr: number\n  labourEfficiency: number\n}]\ntooling: {totalToolingCost,\n  amortizationVolume, mode}\npackagingPerPart: number\nlogisticsPerPart: number\noverheadPct · marginPct\nannualVolume?',
+    'Geometry wins; engineer fills gaps.');
+
+  contract(xs[2], Y, CW, H, 3, 'PartCostResult', 'core.ts :: computeUniversalStack()', BLUE,
+    'partName: string\nbreakdown: Breakdown8Bucket {\n  rawMaterial · process\n  labour · tooling\n  packaging · logistics\n  overhead · margin\n}\noperationDetails: [{\n  operationName, machineId\n  processCost, labourCost\n  machineRateUsed\n  labourRateUsed\n  cycleTimeHr, oee, manning\n}]\nfactoryCost · subtotal · total\ntoolingNRE?\ntraceability: [{\n  field, value, unit,\n  rateSource, rateId,\n  confidence\n}]\nwarnings?: string[]',
+    'traceability[] = the printed derivation.');
+
+  contract(xs[3], Y, CW, H, 4, 'RankedOpportunities', 'dfm-dfa → opportunity-ranking', GREEN,
+    'groups: [{\n  category: LeverCategory\n  label: string\n  opportunities: [{\n    action: string\n    basis: string\n    detail?: string\n    savingPct: number\n    savingPerPart: number\n    risk · timeframe\n    owner?: design|supplier|\n      sourcing|assumption\n    signal: string\n  }]\n  groupSavingPerPart\n  topSavingPerPart\n}]\nall: RankedOpportunity[]\nverificationChecks: [{\n  title, detail, action\n}]\nheadlineSavingPct\nheadlineSavingPerPart\npartTotal',
+    'Ranked by money, never scored.');
+
+  contract(xs[4], Y, CW, H, 5, 'SQLite  ·  12 tables', 'better-sqlite3 — one file, your server', PURPLE,
+    'projects (id, user_id, kind,\n  name, data, created_at,\n  updated_at)\nscenarios (id, name,\n  description, data,\n  created_by, created_at)\nsupplier_quotes (id,\n  scenario_id, supplier_name,\n  supplier_country, unit_price,\n  currency, moq,\n  lead_time_weeks, tooling_cost)\nbom_items (id,\n  parent_scenario_id,\n  child_scenario_id, quantity,\n  unit_cost_override)\nrate_library (id, data,\n  updated_at, updated_by)\nrate_overrides (id, tbl,\n  row_id, field, value)\nusers · shared_costings ·\nmaterial_price_overrides ·\nprice_fetch_log · app_settings',
+    'data columns hold the JSON above.');
+
+  // arrows between the five contracts
+  [0, 1, 2, 3].forEach(i => {
+    s.addShape('line', { x: xs[i] + CW + 0.012, y: Y + 1.7, w: GAP - 0.024, h: 0, line: { color: MUTED, width: 2, endArrowType: 'triangle' } });
+  });
+
+  // ── the one idea a data engineer should leave with ──
+  s.addShape('roundRect', { x: 0.5, y: 4.68, w: 12.33, h: 0.62, fill: { color: TEAL_T }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'The shape of the whole system:  ', options: { bold: true, color: TEAL, fontSize: 10.5 } },
+    { text: 'computeUniversalStack(UniversalStackInput, RateLibrary) → PartCostResult', options: { bold: true, color: NAVY, fontSize: 10.5, fontFace: MONO } },
+    { text: '   — a pure transform between two typed structures. Same input, same output, forever. That is what makes 1,530 tests possible and why the identical code runs in the browser and on the server.', options: { color: SLATE, fontSize: 9.5 } },
+  ], { x: 0.72, y: 4.68, w: 11.9, h: 0.62, fontFace: 'Calibri', margin: 0, valign: 'middle' });
+
+  // ── where fields come from, and the rules a data person will ask about ──
+  const panels = [
+    ['PROVENANCE — EVERY NUMBER KNOWS ITS SOURCE', TEAL,
+      'Each cost line emits a TraceabilityRecord: field, value, unit, rateSource, rateId, confidence. That is what prints under every figure in the report, and what a supplier is shown in the meeting. Nothing is a bare number.'],
+    ['UNITS — WHERE BUGS ACTUALLY COME FROM', AMBER,
+      'Fields carry units in their names (cycleTimeHr, netWeightKg, boundingBoxMm, savingPerPart). The recurring bug class in this domain is sec/hr and mm/cm/kg conversions, so the convention is enforced by naming and pinned by tests.'],
+    ['STORAGE — TYPED IN CODE, JSON AT REST', PURPLE,
+      'SQLite holds the JSON blobs above in `data` columns rather than a shredded relational model: the engine owns the schema, and a costing round-trips byte-identical. rate_overrides is the audit trail of who changed which rate.'],
+  ];
+  panels.forEach(([t, col, body], i) => {
+    const x = 0.5 + i * 4.19;
+    s.addShape('roundRect', { x, y: 5.44, w: 3.94, h: 1.5, fill: { color: CARD }, line: { color: col, width: 1.25 }, rectRadius: 0.09 });
+    s.addShape('rect', { x, y: 5.44, w: 0.06, h: 1.5, fill: { color: col } });
+    s.addText(t, { x: x + 0.18, y: 5.52, w: 3.64, h: 0.24, fontFace: 'Calibri', fontSize: 7.8, bold: true, color: col, charSpacing: 0.4, margin: 0, valign: 'middle' });
+    s.addText(body, { x: x + 0.18, y: 5.78, w: 3.64, h: 1.08, fontFace: 'Calibri', fontSize: 7.9, color: SLATE, margin: 0, valign: 'top' });
+  });
+
+  footer(s, ++PG);
+  s.addNotes(
+    'This is the deep-dive slide, and I have pitched it at someone who thinks in schemas rather than in castings, because that is the question I was asked. Five typed hand-offs from CAD file to database, and every type name and field on this slide is copied from the source rather than paraphrased. ' +
+    'One: the kernel writes an OCCTGeometry document to stdout as JSON. Bounding box, volume, surface area, fill ratio, and then the interesting parts — a topology block that tells you whether the shape encloses a sealed void, which is how a fuel tank is distinguished from a bumper; a wall-thickness block with a p95 because the thickest section is what governs cooling; draft, setup count, a bottom-up CNC cycle estimate, and weights in three candidate materials. Everything in there is measured. Nothing in there is guessed. ' +
+    'Two: the rules layer plus the engineer’s answers produce a UniversalStackInput. This is the form the cost engine actually eats — a material with a utilisation, an array of operations each with cycle time, OEE, manning and labour efficiency, a tooling block, and the universal per-part costs. Where geometry can determine a field, geometry wins; where it cannot, the engineer answers and the tool blocks until they do. ' +
+    'Three: computeUniversalStack turns that into a PartCostResult. Eight buckets, per-operation detail, and — the field I would point at first — a traceability array. Every cost line emits its field, value, unit, rate source, rate id and confidence. That is what prints beneath every number in the report, and it is why a figure survives a supplier meeting. ' +
+    'Four: the DFM/DFA layer reads the finished result and produces RankedOpportunities, which is the change we made after the last review — savings ranked in money per part and grouped by category, with no score and no severity anywhere a person sees. ' +
+    'Five: SQLite, twelve tables, one file on our own server. And note the design decision, because a data person will spot it immediately: the JSON objects above are stored whole in data columns rather than shredded into a relational model. The engine owns the schema, so a costing round-trips byte-identical, and rate_overrides is a proper audit trail of who changed which rate and when. ' +
+    'The teal strip in the middle is the sentence I would like him to leave with. The whole system is one pure transform between two typed structures: UniversalStackInput and a RateLibrary in, PartCostResult out. Same input, same output, forever. That property is what makes fifteen hundred tests possible, and it is why the identical code runs in the browser and on the server without a line changing. ' +
+    'And the three panels at the bottom are the things I would want to be asked about. Provenance: nothing is a bare number. Units: fields carry their unit in the name, because seconds-versus-hours and millimetres-versus-centimetres are genuinely where the bugs in this domain come from, and that convention is pinned by tests rather than by good intentions. Storage: typed in code, JSON at rest.'
+  );
+}
+
 await pres.writeFile({ fileName: 'CostVision-Workflow-Explained.pptx' });
 console.log('WRITTEN');
