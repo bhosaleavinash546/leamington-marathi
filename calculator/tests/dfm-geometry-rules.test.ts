@@ -17,7 +17,9 @@ import {
   CASTING_RULES, MACHINING_RULES, INJECTION_MOULDING_RULES, SHEET_METAL_RULES,
   MIN_DRAFT_DEG, STANDARD_DRILL_LD, PREFERRED_DRILL_DIA_MM,
   GEOMETRIC_DFM_COMMODITIES, highlightFaceIds,
+  FORGING_RULES, BLOW_MOULDING_RULES, MIN_BLOWN_WALL_MM, UNDERCUT_SHARE_IMPLAUSIBLE,
 } from '../src/engine/dfm-geometry/index.js';
+import { FORGING_PROCESS_REFERENCE } from '../src/engine/modules/forging-advisor.js';
 import type { PartContext, ManufacturingFeature } from '../src/engine/dfm-geometry/types.js';
 import type { ManufacturingFeatureSet } from '../src/engine/ai-analysis.js';
 
@@ -289,16 +291,146 @@ describe('every pack declares what geometry can never tell it', () => {
   });
 });
 
+describe('forging reads its thresholds from the advisor, never restates them', () => {
+  it('uses the ROUTE minimum web, not a single number', () => {
+    // closed-die 3.0 mm vs cold-forming 1.0 mm — a 2 mm web is a defect on one
+    // and routine on the other. Restating either number here would recreate the
+    // drift that put the casting yield constants 2x out from the advisor bands.
+    const web = { id: 'P1', kind: 'planar_face' as const, faceIds: [1], thicknessMm: 2 };
+    const closed = analyseGeometricDFM(ctx([web], { commodity: 'forging', process: 'closed-die' }));
+    expect(closed.findings.some(f => f.ruleId === 'forging.web.below-process-minimum')).toBe(true);
+    expect(closed.findings[0].threshold.value).toBe(FORGING_PROCESS_REFERENCE['closed-die'].minWebMm);
+
+    const cold = analyseGeometricDFM(ctx([web], { commodity: 'forging', process: 'cold-forming' }));
+    expect(cold.findings.some(f => f.ruleId === 'forging.web.below-process-minimum')).toBe(false);
+  });
+
+  it('applies the most permissive web when the route is unstated', () => {
+    const loosest = Math.min(...Object.values(FORGING_PROCESS_REFERENCE).map(r => r.minWebMm));
+    const r = analyseGeometricDFM(ctx(
+      [{ id: 'P1', kind: 'planar_face', faceIds: [1], thicknessMm: 0.5 }],
+      { commodity: 'forging', process: undefined }));
+    const f = r.findings.find(x => x.ruleId === 'forging.web.below-process-minimum')!;
+    expect(f.threshold.value).toBe(loosest);
+    expect(f.source.note).toMatch(/most permissive/);
+  });
+
+  it('does NOT check draft without a stated route', () => {
+    // Three of five forging routes need no draft at all. Firing here would
+    // invent failures on every open-die, ring-rolled and cold-formed part.
+    const r = analyseGeometricDFM(ctx(
+      [{ id: 'P1', kind: 'planar_face', faceIds: [1], draftDeg: 0, draftClass: 'zero_draft' }],
+      { commodity: 'forging', process: undefined }));
+    expect(r.findings.filter(f => f.ruleId.includes('forging.draft'))).toHaveLength(0);
+  });
+
+  it('does not check draft on a route that requires none', () => {
+    for (const route of ['open-die', 'ring-rolling', 'cold-forming']) {
+      expect(FORGING_PROCESS_REFERENCE[route as 'open-die'].draftDegMin).toBe(0);
+      const r = analyseGeometricDFM(ctx(
+        [{ id: 'P1', kind: 'planar_face', faceIds: [1], draftDeg: 0, draftClass: 'zero_draft' }],
+        { commodity: 'forging', process: route }));
+      expect(r.findings.filter(f => f.ruleId.includes('forging.draft')), route).toHaveLength(0);
+    }
+  });
+
+  it('exempts cold forming from the hot-metal fillet rule', () => {
+    const fillet = { id: 'F1', kind: 'fillet' as const, faceIds: [1], radiusMm: 1 };
+    expect(analyseGeometricDFM(ctx([fillet], { commodity: 'forging', process: 'closed-die' }))
+      .findings.some(f => f.ruleId.includes('fillet'))).toBe(true);
+    expect(analyseGeometricDFM(ctx([fillet], { commodity: 'forging', process: 'cold-forming' }))
+      .findings.some(f => f.ruleId.includes('fillet'))).toBe(false);
+  });
+
+  it('states that grain flow and parting line are beyond geometry', () => {
+    const t = analyseGeometricDFM(ctx([], { commodity: 'forging' })).limitations.join(' ');
+    expect(t).toMatch(/Grain-flow alignment was not assessed/);
+    expect(t).toMatch(/Parting-line position/);
+  });
+});
+
+describe('blow moulding is honest about a weak measurement', () => {
+  it('scales the corner rule off the characteristic wall', () => {
+    const r = analyseGeometricDFM(ctx(
+      [{ id: 'F1', kind: 'fillet', faceIds: [1], radiusMm: 3 }],
+      { commodity: 'blow_moulding', medianWallMm: 4 }));
+    const f = r.findings.find(x => x.ruleId === 'blow.corner.radius-below-2x-wall')!;
+    expect(f.threshold.value).toBe(8);          // 2 x 4 mm
+    expect(f.detail).toContain('characteristic wall');
+  });
+
+  it('flags a wall below the blow-moulding floor as a PART-level finding', () => {
+    const r = analyseGeometricDFM(ctx([], { commodity: 'blow_moulding', medianWallMm: 0.3 }));
+    const f = r.findings.find(x => x.ruleId === 'blow.wall.below-minimum')!;
+    expect(f.measured.value).toBe(0.3);
+    expect(f.threshold.value).toBe(MIN_BLOWN_WALL_MM);
+  });
+
+  it('derives parison sag risk from the part slenderness', () => {
+    const r = analyseGeometricDFM(ctx([], {
+      commodity: 'blow_moulding', medianWallMm: 3, bboxMm: { x: 1500, y: 100, z: 100 } }));
+    const f = r.findings.find(x => x.ruleId === 'blow.parison.slenderness-sag')!;
+    expect(f.measured.value).toBe(15);          // 1500 / 100
+  });
+
+  it('says the wall is characteristic, not per-face, and that layers are unknown', () => {
+    const t = analyseGeometricDFM(ctx([], { commodity: 'blow_moulding' })).limitations.join(' ');
+    expect(t).toMatch(/not a per-face measurement/);
+    expect(t).toMatch(/six-layer coextrusion/);
+    expect(t).toMatch(/Blow-up ratio was not computed/);
+  });
+});
+
+describe('the assumed draw direction is checked before undercuts are believed', () => {
+  const wall = (i: number, uc: boolean) => ({
+    id: `P${i}`, kind: 'planar_face' as const, faceIds: [i],
+    draftClass: (uc ? 'undercut' : 'drafted') as 'undercut' | 'drafted',
+    draftDeg: uc ? 20 : 5,
+  });
+
+  it('withdraws undercut findings when more than half the walls are undercuts', () => {
+    // The bumper case, measured: 4 of 6 wall faces (67%) came out as undercuts,
+    // which no mouldable part can be. One honest "the draw is wrong" beats four
+    // confident falsehoods.
+    const faces = [wall(1, true), wall(2, true), wall(3, true), wall(4, true),
+                   wall(5, false), wall(6, false)];
+    const r = analyseGeometricDFM(ctx(faces, { commodity: 'injection_moulding' }));
+    expect(r.findings.filter(f => f.ruleId.includes('.undercut.'))).toHaveLength(0);
+    expect(r.limitations[0]).toMatch(/Draw direction is assumed to be \+Z/);
+    expect(r.limitations[0]).toMatch(/67%/);
+    expect(r.limitations[0]).toMatch(/withdrawn/);
+  });
+
+  it('believes undercuts at a plausible share', () => {
+    // Knuckle 9%, stub axle 11%, servo horn 5%, fuel tank 25%, seat 28% — all
+    // real parts, all below the guard, all still reported.
+    const faces = [wall(1, true), ...Array.from({ length: 9 }, (_, i) => wall(i + 2, false))];
+    const r = analyseGeometricDFM(ctx(faces, { commodity: 'casting' }));
+    expect(r.findings.filter(f => f.ruleId.includes('.undercut.')).length).toBe(1);
+    expect(r.limitations.some(l => /Draw direction is assumed/.test(l))).toBe(false);
+  });
+
+  it('does not fire on a single undercut, however small the part', () => {
+    const r = analyseGeometricDFM(ctx([wall(1, true)], { commodity: 'casting' }));
+    expect(r.findings.filter(f => f.ruleId.includes('.undercut.')).length).toBe(1);
+  });
+
+  it('the threshold is the calibrated one, not an ad-hoc number', () => {
+    expect(UNDERCUT_SHARE_IMPLAUSIBLE).toBe(0.5);
+  });
+});
+
 describe('the pack registry is deliberately small', () => {
-  it('covers exactly the six commodities validated so far', () => {
+  it('covers exactly the eight commodities validated so far', () => {
     expect([...GEOMETRIC_DFM_COMMODITIES].sort()).toEqual([
-      'cast_and_machine', 'casting', 'injection_moulding',
-      'machining', 'sheet_metal', 'sheet_metal_fab',
+      'blow_moulding', 'cast_and_machine', 'casting', 'forging',
+      'injection_moulding', 'machining', 'sheet_metal', 'sheet_metal_fab',
     ]);
   });
 
   it('every pack has at least one rule, so no commodity claims coverage it lacks', () => {
-    for (const pack of [CASTING_RULES, MACHINING_RULES, INJECTION_MOULDING_RULES, SHEET_METAL_RULES]) {
+    for (const pack of [CASTING_RULES, MACHINING_RULES, INJECTION_MOULDING_RULES,
+                        SHEET_METAL_RULES, FORGING_RULES, BLOW_MOULDING_RULES]) {
       expect(pack.length).toBeGreaterThan(0);
     }
   });

@@ -12,6 +12,8 @@ import { CASTING_RULES, CASTING_LIMITATIONS, castingHotSpotFindings } from './co
 import { INJECTION_MOULDING_RULES, MOULDING_LIMITATIONS } from './commodities/injection-moulding.js';
 import { MACHINING_RULES, MACHINING_LIMITATIONS } from './commodities/machining.js';
 import { SHEET_METAL_RULES, SHEET_METAL_LIMITATIONS } from './commodities/sheet-metal.js';
+import { FORGING_RULES, FORGING_LIMITATIONS } from './commodities/forging.js';
+import { BLOW_MOULDING_RULES, BLOW_LIMITATIONS, blowPartLevelFindings } from './commodities/blow-moulding.js';
 import { analyseDFAHandling, type DFAHandlingResult } from './dfa-handling.js';
 
 export * from './types.js';
@@ -21,6 +23,8 @@ export { CASTING_RULES, CASTING_LIMITATIONS, MIN_DRAFT_DEG } from './commodities
 export { INJECTION_MOULDING_RULES, MOULDING_LIMITATIONS } from './commodities/injection-moulding.js';
 export { MACHINING_RULES, MACHINING_LIMITATIONS, PREFERRED_DRILL_DIA_MM, STANDARD_DRILL_LD } from './commodities/machining.js';
 export { SHEET_METAL_RULES, SHEET_METAL_LIMITATIONS } from './commodities/sheet-metal.js';
+export { FORGING_RULES, FORGING_LIMITATIONS } from './commodities/forging.js';
+export { BLOW_MOULDING_RULES, BLOW_LIMITATIONS, MIN_BLOWN_WALL_MM } from './commodities/blow-moulding.js';
 
 /**
  * Which commodities have a geometric pack.
@@ -29,9 +33,19 @@ export { SHEET_METAL_RULES, SHEET_METAL_LIMITATIONS } from './commodities/sheet-
  * this work answers; a commodity is added when its rules are measured, cited
  * and validated against a real part, not before.
  */
+/**
+ * Undercut share above which the ASSUMED draw direction is provably wrong.
+ *
+ * Calibrated against the six benchmark parts rather than picked: five sit at
+ * 5–28%, the bumper at 67%. Half is comfortably above every plausible case and
+ * comfortably below the implausible one.
+ */
+export const UNDERCUT_SHARE_IMPLAUSIBLE = 0.5;
+
 export const GEOMETRIC_DFM_COMMODITIES: ReadonlySet<CommodityType> = new Set<CommodityType>([
   'casting', 'cast_and_machine', 'injection_moulding',
   'machining', 'sheet_metal', 'sheet_metal_fab',
+  'forging', 'blow_moulding',
 ]);
 
 /** Every registered rule, for the citation test and the rule-library report. */
@@ -41,6 +55,8 @@ export function allGeometricRules(): readonly GeometricRule[] {
     ...INJECTION_MOULDING_RULES,
     ...MACHINING_RULES,
     ...SHEET_METAL_RULES,
+    ...FORGING_RULES,
+    ...BLOW_MOULDING_RULES,
   ];
 }
 
@@ -59,6 +75,10 @@ function packFor(commodity: CommodityType): readonly GeometricRule[] {
     case 'sheet_metal':
     case 'sheet_metal_fab':
       return SHEET_METAL_RULES.map(r => ({ ...r, commodity }));
+    case 'forging':
+      return FORGING_RULES;
+    case 'blow_moulding':
+      return BLOW_MOULDING_RULES;
     default:
       return [];
   }
@@ -94,6 +114,9 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
   if (part.commodity === 'casting' || part.commodity === 'cast_and_machine') {
     findings.push(...castingHotSpotFindings(part));
   }
+  if (part.commodity === 'blow_moulding') {
+    findings.push(...blowPartLevelFindings(part));
+  }
   // Every pack declares what geometry can never tell it. A short finding list
   // must not be read as a clean part — this is the difference between "we
   // looked and found little" and "we could not look".
@@ -108,6 +131,40 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
   }
   if (part.commodity === 'sheet_metal' || part.commodity === 'sheet_metal_fab') {
     limitations.push(...SHEET_METAL_LIMITATIONS);
+  }
+  if (part.commodity === 'forging') {
+    limitations.push(...FORGING_LIMITATIONS);
+  }
+  if (part.commodity === 'blow_moulding') {
+    limitations.push(...BLOW_LIMITATIONS);
+  }
+
+  // ── Draw-direction sanity ────────────────────────────────────────────────
+  // The kernel measures draft against an ASSUMED +Z draw; it does not derive
+  // the parting. When more than half the wall faces come out as undercuts the
+  // part could not be cast, moulded or forged in that direction at all, so the
+  // assumption is wrong and every undercut finding is an artefact of it.
+  // Measured across the six benchmark parts: knuckle 9%, stub axle 11%, servo
+  // horn 5%, fuel tank 25%, seat member 28% — all plausible; the bumper 67%,
+  // which is not. Reporting ONE honest "the assumed draw is wrong" beats
+  // reporting four confident falsehoods.
+  const wallFaces = (part.featureSet.features ?? [])
+    .filter(f => f.draftClass && f.draftClass !== 'not_applicable');
+  const undercutCount = wallFaces.filter(f => f.draftClass === 'undercut').length;
+  const undercutShare = wallFaces.length > 0 ? undercutCount / wallFaces.length : 0;
+  if (undercutShare > UNDERCUT_SHARE_IMPLAUSIBLE && undercutCount > 1) {
+    const before = findings.length;
+    for (let i = findings.length - 1; i >= 0; i--) {
+      if (/\.undercut\./.test(findings[i].ruleId)) findings.splice(i, 1);
+    }
+    limitations.unshift(
+      `Draw direction is assumed to be +Z and is NOT derived from the part. `
+      + `${undercutCount} of ${wallFaces.length} wall faces (${(undercutShare * 100).toFixed(0)}%) `
+      + 'came out as undercuts, which no castable, mouldable or forgeable part can be — so the '
+      + `assumed draw is wrong for this shape and ${before - findings.length} undercut finding(s) `
+      + 'were withdrawn rather than reported. Re-run with the correct parting direction, or read '
+      + 'the draft findings below as provisional.',
+    );
   }
 
   findings.sort((a, b) => {

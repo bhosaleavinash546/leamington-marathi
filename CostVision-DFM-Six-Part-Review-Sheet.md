@@ -16,13 +16,11 @@ tool should have caught and did not — that is the MISSED list at the end of ea
 | Part | Commodity | Pack? | Features | Issues | Instances | Not-checked | Kernel |
 |---|---|---|---|---|---|---|---|
 | RH steering knuckle | casting | yes | 172 | 4 | 98 | 4 | 2s |
-| Stub axle (PRCR002) | forging | **no** | 128 | 0 | 0 | 1 | 3s |
+| Stub axle (PRCR002) | forging | yes | 128 | 2 | 24 | 5 | 3s |
 | 25T servo horn | machining | yes | 105 | 2 | 5 | 4 | 1s |
-| Front bumper | injection_moulding | yes | 6 | 2 | 6 | 4 | 11s |
+| Front bumper | injection_moulding | yes | 6 | 1 | 2 | 5 | 11s |
 | Seat LH cross-member | sheet_metal | yes | 124 | 1 | 2 | 5 | 3s |
-| Fuel tank | blow_moulding | **no** | 905 | 0 | 0 | 1 | 71s |
-
-> **2 of 6 parts have no geometric pack** (forging, blow_moulding). Those commodities are not covered yet, and the tool says so rather than returning an empty clean bill.
+| Fuel tank | blow_moulding | yes | 905 | 2 | 188 | 5 | 72s |
 
 
 ## RH steering knuckle
@@ -108,8 +106,45 @@ tool should have caught and did not — that is the MISSED list at the end of ea
 | Wall analysis valid | yes |
 | Kernel time | 3 s |
 
-> **No geometric rule pack for `forging`.** No geometry-based checks ran.
-> This is stated rather than silently returning zero findings.
+| # | Sev | Issue | Instances | Measured range | Threshold | Source | T/F/N |
+|---|---|---|---|---|---|---|---|---|
+| 1 | major | Fillet too sharp for hot metal flow | 18 | radiusMm 1.5 … 2mm | < 3mm | ASM Handbook Vol. 14A, Metalworking: Bulk Forming — fil |   |
+| 2 | major | Undercut — cannot release from an impression die | 6 | angleToDrawDeg 94.57 … 120° | > 90° | ASM Handbook Vol. 14A, Metalworking: Bulk Forming — die |   |
+
+**1. Fillet too sharp for hot metal flow** — 18 instance(s)
+
+- Worst case: Fillet at face 177 is R1.50 mm against a 3 mm minimum for hot forging.
+- Faces: 34, 64, 69, 117, 119, 126, 169, 174, 177, 227, 279, 295, 296, 305, 308, 311, 313, 362
+- Fix: Open the fillet to at least R3 mm. Hot metal will not turn a sharp corner: it folds instead, producing laps that only show up at magnetic-particle inspection, and the sharp die corner is where the die itself cracks first.
+- Source: ASM Handbook Vol. 14A, Metalworking: Bulk Forming — fillet and corner radii — Minimum fillet radius on hot forgings ≈ 3 mm
+- Note: Mirrors the 3 mm threshold in analyseForgingDFM. Cold forming is exempt: it flows metal at room temperature into tighter radii, so the rule does not run for that route.
+
+**2. Undercut — cannot release from an impression die** — 6 instance(s)
+
+- Worst case: Face 172 sits at 120.0° to the draw (past 90°) and cannot lift out of an impression die.
+- Faces: 10, 11, 35, 172, 178, 194
+- Fix: Move the parting line, or accept the feature as a machined operation after forging and carry that cost. Unlike casting or moulding, a forging die cannot buy its way out with a slide.
+- Source: ASM Handbook Vol. 14A, Metalworking: Bulk Forming — die design and parting
+- Note: A forging die has no slides or cores: the part must lift straight out of the impression. A face whose normal opposes the draw cannot be forged on that parting and has to be machined afterwards, or the parting has to move.
+
+**DFA (Boothroyd, geometric half):** handling 1.63s + insertion 4.3s = **5.93s**, 1.98× the 3 s ideal part.
+
+- +0.5s — Asymmetric envelope — the part must be oriented before insertion _(bounding box 277×223×182 mm, no two dimensions within 5%)_
+- +2.8s — Fasteners approach from more than one direction — the part must be re-oriented or the fixture indexed during assembly _(5 distinct hole axes across 26 holes)_
+
+**What was NOT checked:**
+
+- Grain-flow alignment was not assessed. Whether the forged flow lines follow the principal load path is the single largest reason to forge a part rather than cast or machine it, and it depends on the die design and preform, not on the finished shape.
+- Parting-line position was assumed perpendicular to the draw. A different parting changes which faces are undercuts and where the flash line falls; if the flash line crosses a sealing or highly-loaded face that is a defect the geometry cannot reveal.
+- Machining stock allowance on forged surfaces was not checked — it is a process decision.
+- Rib height-to-thickness was not computed: it needs rib identification, and the kernel does not yet separate a rib from any other thin planar region.
+- Billet and preform design, and therefore realistic flash loss, were not evaluated.
+
+**MISSED — what should this have caught and did not?**
+
+1. 
+2. 
+3. 
 
 ## 25T servo horn
 
@@ -176,18 +211,9 @@ tool should have caught and did not — that is the MISSED list at the end of ea
 
 | # | Sev | Issue | Instances | Measured range | Threshold | Source | T/F/N |
 |---|---|---|---|---|---|---|---|---|
-| 1 | major | Undercut — needs a side action or lifter | 4 | angleToDrawDeg 91.08 … 91.54° | > 90° | Injection-moulding design guidelines (widely published; |   |
-| 2 | minor | Moulded wall below minimum draft | 2 | draftDeg 0.04 … 0.04° | < 0.5° | Injection-moulding design guidelines (widely published; |   |
+| 1 | minor | Moulded wall below minimum draft | 2 | draftDeg 0.04 … 0.04° | < 0.5° | Injection-moulding design guidelines (widely published; |   |
 
-**1. Undercut — needs a side action or lifter** — 4 instance(s)
-
-- Worst case: Face 144 sits at 91.5° to the draw (past 90°) and cannot eject on the main parting.
-- Faces: 144, 187, 258, 319
-- Fix: Re-orient the parting, redesign the feature to draw, or price a slide / lifter — each adds mould cost and lengthens the cycle.
-- Source: Injection-moulding design guidelines (widely published; e.g. Protolabs / Xometry design-for-moulding guides and the Plastics Design Library handbook) — Undercuts and moving mould components
-- Note: These are industry design-guide figures rather than a formal standard, and are stated as such so an engineer can argue with the number rather than with the tool.
-
-**2. Moulded wall below minimum draft** — 2 instance(s)
+**1. Moulded wall below minimum draft** — 2 instance(s)
 
 - Worst case: Face 218 draws at 0.04° against a 0.5° minimum.
 - Faces: 218, 284
@@ -201,6 +227,7 @@ tool should have caught and did not — that is the MISSED list at the end of ea
 
 **What was NOT checked:**
 
+- Draw direction is assumed to be +Z and is NOT derived from the part. 4 of 6 wall faces (67%) came out as undercuts, which no castable, mouldable or forgeable part can be — so the assumed draw is wrong for this shape and 4 undercut finding(s) were withdrawn rather than reported. Re-run with the correct parting direction, or read the draft findings below as provisional.
 - Gate position and flow length were not evaluated — they are a tooling decision, not a feature of the solid.
 - Weld-line position was not checked; whether a knit line falls on a functional or cosmetic face is a moulding-simulation question.
 - Texture depth was not read, so the draft threshold applied is the untextured minimum — a textured face needs roughly 1° more per 0.025 mm of texture depth.
@@ -266,7 +293,45 @@ tool should have caught and did not — that is the MISSED list at the end of ea
 | Faces measured | 3444 |
 | Features extracted | 905 |
 | Wall analysis valid | yes |
-| Kernel time | 71 s |
+| Kernel time | 72 s |
 
-> **No geometric rule pack for `blow_moulding`.** No geometry-based checks ran.
-> This is stated rather than silently returning zero findings.
+| # | Sev | Issue | Instances | Measured range | Threshold | Source | T/F/N |
+|---|---|---|---|---|---|---|---|---|
+| 1 | major | External corner too sharp for the parison to reach | 104 | radiusMm 1.5 … 8mm | < 8.91mm | Blow-moulding design guidance (SPI/SPE extrusion blow-m |   |
+| 2 | major | Undercut — the split mould cannot release it | 84 | angleToDrawDeg 96.37 … 161.57° | > 90° | Blow-moulding design guidance (SPI/SPE extrusion blow-m |   |
+
+**1. External corner too sharp for the parison to reach** — 104 instance(s)
+
+- Worst case: Corner at face 1950 is R1.50 mm against a 8.91 mm minimum (2× the 4.46 mm characteristic wall).
+- Faces: 920, 941, 949, 1619, 1621, 1623, 1626, 1628, 1632, 1641, 1644, 1646, 1650, 1653, 1658, 1661, 1667, 1676, 1678, 1680, 1684, 1685, 1687, 1695 … (104 total)
+- Fix: Radius external corners to at least 2–3× wall. A corner is where the parison stretches hardest, so it thins to a fraction of nominal and cracks in service; sharp detail belongs on the least-stretched face.
+- Source: Blow-moulding design guidance (SPI/SPE extrusion blow-moulding design guides; mirrored in this tool's blow-advisor module) — External corner radius ≥ 2–3 × nominal wall
+- Note: Industry design-guide figures rather than a formal standard, stated as such so the threshold can be argued with directly.
+
+**2. Undercut — the split mould cannot release it** — 84 instance(s)
+
+- Worst case: Face 1634 sits at 161.6° to the mould draw (past 90°) and cannot release from a two-part split.
+- Faces: 58, 162, 329, 405, 423, 433, 452, 462, 497, 507, 530, 617, 635, 659, 677, 707, 709, 711, 976, 1128, 1147, 1159, 1184, 1202 … (84 total)
+- Fix: Re-orient the split line, relax the feature so it draws, or price a moving insert. Deep undercuts on a blown part are often cheaper to trim after moulding than to tool for.
+- Source: Blow-moulding design guidance (SPI/SPE extrusion blow-moulding design guides; mirrored in this tool's blow-advisor module) — Undercuts and mould splits
+- Note: A blow mould is two halves closing on a parison. A face opposing the draw needs a third split, a moving insert or post-mould trimming — each adds tool cost and cycle.
+
+**DFA (Boothroyd, geometric half):** handling 3.13s + insertion 7.1s = **10.23s**, 3.41× the 3 s ideal part.
+
+- +0.5s — Asymmetric envelope — the part must be oriented before insertion _(bounding box 1528×658×594 mm, no two dimensions within 5%)_
+- +1.5s — Large part — two-handed handling or mechanical assistance _(largest dimension 1528 mm > 380 mm)_
+- +5.6s — Fasteners approach from more than one direction — the part must be re-oriented or the fixture indexed during assembly _(9 distinct hole axes across 45 holes)_
+
+**What was NOT checked:**
+
+- Wall figures are the characteristic 2·V/S thickness, not a per-face measurement. On a sealed thin shell the single-ray wall reading is unreliable, so local thin spots — which is where a blown part actually fails — cannot be located from this geometry.
+- Blow-up ratio was not computed: it needs the parison die diameter, which is a process choice rather than a feature of the part.
+- Pinch-off and weld-line position were not checked. On an extrusion-blown part the pinch weld is the weakest line and a common failure origin, and where it falls depends on the mould.
+- Multi-layer barrier construction was not detected. An automotive fuel tank is typically a six-layer coextrusion, and costing it as a monolayer understates material significantly — the layer schedule has to be stated by an engineer.
+- Top-load and drop performance were not assessed; those need the material and a structural check.
+
+**MISSED — what should this have caught and did not?**
+
+1. 
+2. 
+3. 
