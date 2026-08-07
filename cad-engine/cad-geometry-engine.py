@@ -5,6 +5,12 @@ Extracts precise geometric properties from STEP / IGES files.
 Output: single-line JSON to stdout.
 """
 import sys, json, os, math, signal, random
+import time as _time
+
+#: Seconds of geometry work before stages start being skipped WITH A REASON. The
+#: bridge kills the process at 120 s, so this leaves room to serialise a partial,
+#: honest answer instead of dying with nothing to show.
+DFM_TIME_BUDGET_S = 75.0
 
 # Best-effort 110-second limit (Unix only). NOTE: Python signal handlers only
 # run between bytecode instructions, so this CANNOT interrupt a single long
@@ -707,12 +713,30 @@ def analyze(filepath: str) -> dict:
         try:
             import dfm_geometry as _dfm
             from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
+            # WALL-CLOCK BUDGET. The bridge kills this process at 120 s and the
+            # user then sees "Geometry engine timed out after 120s" with nothing
+            # else — which is exactly what happened on the first real automotive
+            # part uploaded. Ray casting is the cost and it scales with geometry
+            # nobody can predict from a file size, so each stage is checked
+            # against a deadline and SKIPPED WITH A REASON rather than allowed to
+            # run the whole analysis into the ground. A part with draft but no
+            # wall figure, clearly labelled, beats a dead request.
+            _t0 = _time.monotonic()
+            _left = lambda: DFM_TIME_BUDGET_S - (_time.monotonic() - _t0)
+            _skipped = []
             tess = _dfm.tessellate(wrapped, deflection=max(0.05, min(x_sz, y_sz, z_sz) / 60.0))
             if tess["count"]:
                 inter = IntCurvesFace_ShapeIntersector()
                 inter.Load(wrapped, 1e-4)
-                wall_stats = _dfm.wall_thickness(tess, inter)
-                draft_info, draft_alts = _dfm.choose_draw_direction(tess, inter)
+                if _left() > 0:
+                    wall_stats = _dfm.wall_thickness(tess, inter)
+                else:
+                    _skipped.append("wall thickness")
+                if _left() > 0:
+                    draft_info, draft_alts = _dfm.choose_draw_direction(tess, inter)
+                else:
+                    draft_info, draft_alts = None, []
+                    _skipped.append("draft and undercut classification")
                 axes = [f["axisXYZ"] for f in (feature_table or []) if f.get("axisXYZ")]
                 setup_info = _dfm.setup_directions(axes) if axes else {
                     "estimatedSetupCount": 1,
@@ -729,9 +753,21 @@ def analyze(filepath: str) -> dict:
                     # An absent measurement gets a REASON, not a blank. Without
                     # this the report shows "wall: —" and the reader cannot tell
                     # a thin part from an unmeasurable one.
-                    "wallThicknessNote": None if wall_stats else _dfm.WALL_UNMEASURED_REASON,
+                    "wallThicknessNote": None if wall_stats else (
+                        f"Skipped: the {DFM_TIME_BUDGET_S:.0f} s geometry budget was "
+                        "spent before this stage could run."
+                        if "wall thickness" in _skipped else _dfm.WALL_UNMEASURED_REASON),
                     "setups": setup_info,
                 }
+                if _skipped:
+                    dfm_block["budgetExceeded"] = {
+                        "budgetSeconds": DFM_TIME_BUDGET_S,
+                        "skipped": _skipped,
+                        "message": "This part needed more ray casting than the "
+                                   f"{DFM_TIME_BUDGET_S:.0f} s budget allows, so "
+                                   + " and ".join(_skipped)
+                                   + " were not measured. Everything else below was.",
+                    }
             try:
                 import feature_recognition as _fr
                 dfm_block = dfm_block or {}
@@ -741,7 +777,14 @@ def analyze(filepath: str) -> dict:
                 # Sheet-metal measures. Until these existed, all four
                 # sheet-metal rules depended on values nothing produced, so the
                 # family scored 0 of 4 on every part ever uploaded.
-                dfm_block["sheetMetal"] = _fr.sheet_metal_features(wrapped, feature_table)
+                # The measured wall is handed in so the recogniser can cross-check its
+                # own answer: a radius-derived thickness that disagrees with the
+                # ray-cast wall is not a sheet. Without it, a casting was handed
+                # to the sheet-metal rule family on the strength of any coaxial
+                # cylinder pair.
+                dfm_block["sheetMetal"] = _fr.sheet_metal_features(
+                    wrapped, feature_table,
+                    wall_p50_mm=(wall_stats or {}).get("p50Mm"))
             except Exception as e:
                 (dfm_block or {}).setdefault("featuresError", f"{e}")
         except Exception as e:

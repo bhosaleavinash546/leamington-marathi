@@ -581,7 +581,13 @@ RIB_OPPOSED_TOL_DEG = 12.0
 # 40-60%-of-wall threshold would make an OVER-THICK rib vanish from the model
 # instead of being flagged — a recogniser that hides exactly the parts a rule
 # would fail is worse than no recogniser at all.
-RIB_MIN_HEIGHT_TO_THICKNESS = 1.0
+#
+# MEASURED AGAINST REAL PARTS: at 1.0 this admitted a 25.5 mm x 26.4 mm lump on a
+# machined block as a "rib" — a height/thickness of 1.03, which is a block, not a
+# stiffener. No design guideline treats anything under about 2:1 as a rib, and
+# the fixture ribs run 4:1 to 6:1, so 2.0 stays far below anything the catalogue
+# would judge while rejecting the false positive.
+RIB_MIN_HEIGHT_TO_THICKNESS = 2.0
 
 
 def _planar_geometry(shape, ids):
@@ -764,9 +770,20 @@ def rib_features(shape, aag):
 # unrelated bends on parallel axes are not merged.
 BEND_ANG_TOL_DEG = 2.0
 BEND_AXIS_POS_TOL = 0.05
+#: A pair sweeping this far or more is a hole/counterbore/boss-blend, not a fold.
+#: Real folded bends measured 30-100 deg; every false positive on a casting and a
+#: machined block came back at exactly 180.0 deg.
+BEND_MAX_ANGLE_DEG = 170.0
+#: How far a bend's implied thickness may sit from the part's median before it is
+#: rejected as not belonging to the same sheet.
+SHEET_T_TOL_MM = 0.05
+SHEET_T_TOL_FRAC = 0.10
+#: How far the radius-derived thickness and the ray-cast wall may disagree and
+#: still be believed to be measuring the same sheet.
+SHEET_WALL_AGREE = 1.35
 
 
-def sheet_metal_features(shape, feature_table=None):
+def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None):
     """Bends, sheet thickness and flange lengths from B-rep geometry.
 
     A bend is a PAIR of coaxial cylinders sweeping the same angle: the inside
@@ -840,6 +857,16 @@ def sheet_metal_features(shape, feature_table=None):
                 continue
             if abs(a["angleDeg"] - b["angleDeg"]) > BEND_ANG_TOL_DEG:
                 continue
+            # A pair sweeping a half turn or more is not a FOLD. It is a hole and
+            # its counterbore, or a boss and its blend — two coaxial cylinders of
+            # different radius, which is exactly the signature this pairing looks
+            # for. Measured on real parts: an aluminium casting reported eleven
+            # "bends" and a machined block four, every one of them at 180.0 deg,
+            # while the one genuine folded bracket in the set had bends between
+            # 30 and 100 deg. Without this test both parts were handed to the
+            # sheet-metal rule family.
+            if max(a["angleDeg"], b["angleDeg"]) > BEND_MAX_ANGLE_DEG:
+                continue
             t = abs(a["r"] - b["r"])
             if t <= 1e-3:
                 continue
@@ -867,6 +894,41 @@ def sheet_metal_features(shape, feature_table=None):
     # Thickness: the median across bends, so one malformed bend cannot move it.
     ts = sorted(b["thicknessMm"] for b in bends)
     thickness = ts[len(ts) // 2]
+
+    # ── Coherence. A SHEET HAS ONE THICKNESS. ────────────────────────────────
+    # Two tests, both taken from what real parts actually measured. On the one
+    # genuine folded bracket in a six-part set, all 38 bends returned 1.602 mm
+    # and the ray-cast wall read 1.60 — the same number twice, from two
+    # independent measurements. On an aluminium casting the "bends" returned
+    # 6.5 / 3.5 / 4.8 / 0.5 mm against a 15.8 mm wall, and on a machined block
+    # 11.5 / 4.75 against an 8 mm wall. Nothing is 11.5 mm sheet.
+    #
+    # Without this the family was assigned on the strength of ANY coaxial
+    # cylinder pair, so a casting was handed to the sheet-metal rules and every
+    # finding they produced — including a negative hole-to-bend clearance — was
+    # fabricated from geometry that is not a bend.
+    kept = [b for b in bends
+            if abs(b["thicknessMm"] - thickness) <= max(SHEET_T_TOL_MM,
+                                                        thickness * SHEET_T_TOL_FRAC)]
+    if len(kept) < max(1, len(bends) * 0.6):
+        return {"isSheetMetal": False, "bends": [], "reason":
+                "Coaxial cylinder pairs were found, but they imply "
+                f"inconsistent thicknesses ({min(ts)}-{max(ts)} mm). A folded "
+                "sheet has ONE thickness, so these are holes, counterbores or "
+                "blends rather than bends, and no sheet-metal rule is applied."}
+    bends = kept
+
+    # The derived thickness has to agree with the INDEPENDENTLY measured wall.
+    # Two different methods — radius difference and a ray cast — landing on the
+    # same number is what makes this a measurement rather than a coincidence.
+    if wall_p50_mm and wall_p50_mm > 0:
+        ratio = thickness / wall_p50_mm
+        if not (1.0 / SHEET_WALL_AGREE <= ratio <= SHEET_WALL_AGREE):
+            return {"isSheetMetal": False, "bends": [], "reason":
+                    f"Bend radii imply a {round(thickness, 2)} mm sheet, but the "
+                    f"wall measures {round(wall_p50_mm, 2)} mm. Two independent "
+                    "measurements of the same thing disagree, so this is not "
+                    "treated as folded sheet and no sheet-metal rule is applied."}
 
     # Flange length, measured from the BEND rather than mined from bounding
     # boxes. A leg of a folded part is the planar face lying tangent to the bend,

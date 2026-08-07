@@ -155,6 +155,20 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
         message: `The mesh hit its ${geo.dfm.tessellation.triangles} triangle budget, so draft, undercut and wall figures cover only part of the model.`,
       });
     }
+    if (geo.dfm?.budgetExceeded) {
+      limits.push({
+        kind: 'timeBudget', severity: 'warning',
+        message: geo.dfm.budgetExceeded.message,
+      });
+    }
+    if (geo.dfm?.draft?.sampled) {
+      // A percentage that quietly changes from a census to an estimate as parts
+      // get bigger is the sort of number this feature exists not to produce.
+      limits.push({
+        kind: 'sampling', severity: 'warning',
+        message: `Draft and undercut areas are estimated from ${geo.dfm.draft.raysCast} visibility tests across ${geo.dfm.draft.trianglesTotal} triangles, not from every one. The undercut count is stable under sampling; the "% below minimum draft" figure carries a few points of uncertainty.`,
+      });
+    }
     if (geo.dfm && !geo.dfm.wallThickness && geo.dfm.wallThicknessNote) {
       limits.push({ kind: 'wallThickness', severity: 'warning', message: geo.dfm.wallThicknessNote });
     }

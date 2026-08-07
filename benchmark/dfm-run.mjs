@@ -145,6 +145,18 @@ async function main() {
         record(fx.file, `sheet ${k}`, near(sm[k], want, 0.02), `${sm[k]} vs ${want}`);
       }
     }
+    if (t.notSheetMetal) {
+      const sm = g.dfm?.sheetMetal || {};
+      record(fx.file, 'not sheet metal', sm.isSheetMetal === false,
+        sm.isSheetMetal
+          ? `WRONGLY classified as ${sm.thicknessMm} mm sheet with ${sm.bendCount} bends`
+          : 'rejected, with a reason');
+      // The sheet-metal family must then evaluate NOTHING rather than judging a
+      // casting against bend-radius guidelines.
+      const r = runDfmRules(g, 'sheet-metal');
+      record(fx.file, 'sheet rules abstain', r.evaluatedCount === 0 && r.score === null,
+        `${r.evaluatedCount}/${r.ruleCount} evaluated, score ${r.score}`);
+    }
     if (t.sheetMetalRulesEvaluated !== undefined) {
       // The point of the wave: this family used to evaluate 0 of 4 on every part.
       const r = runDfmRules(g, 'sheet-metal');

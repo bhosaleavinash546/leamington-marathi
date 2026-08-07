@@ -412,3 +412,43 @@ Format: decision · why · what would change it.
     committed fixtures with nothing but a new date — the module docstring promised
     byte-comparable output and did not deliver it. A fixture diff should mean the geometry
     moved, which is the only reason anyone should be reviewing one.
+
+38. **Ray casting is budgeted, and the budget was set by timing REAL parts (2026).**
+    *Why:* six genuine automotive STEP files — CATIA V5 and Creo exports, 209 to 426 faces —
+    were the first non-synthetic geometry this feature ever saw, and one of them timed out at
+    the bridge's 120 s limit in front of the user. Every analytic fixture is a primitive with
+    a few hundred triangles, so a ray cast PER TRIANGLE cost nothing and the gate ran at 100%
+    the whole time. On the smallest real part: wall thickness 24.4 s over 4000 rays, and the
+    draw sweep 34.2 s over 22,728 (three axes x every triangle). A draft ANGLE is arithmetic
+    on a triangle normal and stays exact for all of them; only VISIBILITY needs a ray, so only
+    that is sampled, each sampled triangle standing for the ones it strides over so the area
+    fractions remain unbiased. The sweep also became two-stage: ranking three axes needs a
+    coarse sample, and only the winner is re-classified at full budget. Budgets come from a
+    measured curve, not a guess — on the 426-face bracket the undercut fraction moved 0.02
+    points between 800 and 3000 rays while the cost went 8 s to 30 s, and wall p50 was
+    identical at every budget. Worst case fell from a 120 s timeout to 37.5 s. *Changes it:*
+    the result carries `sampled`, `raysCast` and `trianglesTotal`, and the route raises a
+    limit saying the draft percentages are estimates — a figure that silently changes from a
+    census to an estimate as parts get bigger is exactly the kind of number this feature
+    exists not to produce. A wall-clock budget now also skips a stage WITH A REASON rather
+    than letting the process be killed with nothing to show.
+
+39. **A sheet has ONE thickness, and it must agree with the measured wall (2026).**
+    *Why:* the same six real parts exposed something worse than the timeout. Bend recognition
+    pairs coaxial cylinders of differing radius — which is also the exact signature of a hole
+    and its counterbore, or a boss and its blend. So an aluminium casting was reported as
+    "0.5 mm sheet with 11 bends" and a machined block as "11.5 mm sheet", both were handed to
+    the sheet-metal rule family, and both produced findings — including a negative
+    hole-to-bend clearance — computed from geometry that is not a bend. Nothing is 11.5 mm
+    sheet. Three tests, every one of them read off the measured data rather than invented:
+    a pair sweeping 180 deg is a bore, not a fold (every false positive came back at exactly
+    180.0 deg while the genuine folded bracket's bends ran 30-100 deg); the implied
+    thicknesses must agree with each other (the real sheet part returned 1.602 mm on all 38
+    bends, the casting returned 6.5 / 3.5 / 4.8 / 0.5); and the radius-derived thickness must
+    agree with the INDEPENDENTLY ray-cast wall (1.602 against 1.60 on the real part, 0.5
+    against 15.84 on the casting). Two different methods landing on the same number is what
+    makes it a measurement rather than a coincidence. *Changes it:* rejection is explicit —
+    the reason names both figures — and `counterbore-plate`, `boss-plate` and
+    `plate-two-holes` now gate it, asserting both that the part is refused AND that the
+    sheet-metal family then evaluates nothing. Rib recognition was tightened the same way:
+    at a 1.0 height/thickness gate it called a 25.5 x 26.4 mm lump on a machined block a rib.

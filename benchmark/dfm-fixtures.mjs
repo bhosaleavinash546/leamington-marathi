@@ -29,6 +29,7 @@ export const DFM_FIXTURES = [
         { diaMm: 8.0, depthMm: 6.0, through: false },
         { diaMm: 10.0, depthMm: 10.0, through: true },
       ],
+      notSheetMetal: true,
     },
   },
   {
@@ -92,6 +93,7 @@ export const DFM_FIXTURES = [
       bosses: 1,
       holes: [{ diaMm: 6.0, through: true }],
       featureCounts: { 'through-hole': 1, boss: 1 },
+      notSheetMetal: true,
       // Slenderness ratios, arithmetic from the construction: the boss is
       // Ø16 x 12 high, and the hole runs Ø6 through the full 8 + 12 = 20 mm.
       // These drive the boss-height, drill-depth and core-pin rules.
@@ -106,6 +108,13 @@ export const DFM_FIXTURES = [
     what: '60x60x20 plate, Ø8 through hole with a Ø16 counterbore 6 deep',
     truth: {
       featureCounts: { 'counterbored-hole': 1 },
+      // A counterbore IS two coaxial cylinders of different radius — the exact
+      // signature bend pairing looks for. Real parts proved this the hard way:
+      // an aluminium casting reported eleven "bends" and was handed to the
+      // sheet-metal rule family, which then produced a negative hole-to-bend
+      // clearance from geometry that is not a bend. A bore sweeps a full turn;
+      // a fold does not.
+      notSheetMetal: true,
       compoundHole: { kind: 'counterbored-hole', boreDiaMm: 8.0, featureDiaMm: 16.0, featureDepthMm: 6.0, through: true },
     },
   },

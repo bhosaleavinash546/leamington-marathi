@@ -129,7 +129,47 @@ def _escapes(inter, px, py, pz, dx, dy, dz, reach):
         return False
 
 
-def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5):
+# Ray budget for the draft classification.
+#
+# MEASURED ON A REAL PART, which is how this was found at all. Every analytic
+# fixture is a primitive with a few hundred triangles, so the per-triangle ray
+# cast never cost anything and the gate ran at 100% while the tool timed out on
+# the first genuine automotive STEP file a user uploaded:
+#
+#   PRCR012.stp — 209 faces, 100x69x135 mm, the SMALLEST of six real parts
+#     tessellate       0.2 s
+#     wall_thickness  24.4 s   (4000 rays)
+#     draw sweep      34.2 s   (3 axes x 7576 triangles = 22,728 rays)
+#     build_aag        0.2 s
+#
+# 59 s of ray casting on the small one; the 5 MB parts blew the bridge's 120 s
+# timeout outright and the user saw "Geometry engine timed out after 120s".
+#
+# The draft ANGLE of every triangle is pure arithmetic on its normal and stays
+# exact for all of them. Only VISIBILITY — the test that separates a releasing
+# face from an undercut — needs a ray, so only that is sampled. Each sampled
+# triangle carries its own area, so the area percentages remain an unbiased
+# estimate; the result is stamped `sampled` and carries its ray count so the
+# report can say it is an estimate rather than a census.
+# Budget vs accuracy, MEASURED on the 426-face bracket that timed out (14,346
+# triangles). The undercut fraction — the finding that buys tooling — is stable
+# to 0.02 pp across every budget; what moves is the below-minimum-draft
+# percentage, which is why the result carries `sampled` and the report says the
+# figure is an estimate:
+#
+#   budget   time    undercut   zeroDraft   belowMinDraft
+#     3000  30.4 s      0.04%       2.74%           9.99%
+#     2000  18.6 s      0.05%       2.24%           8.53%
+#      800   8.3 s      0.03%       1.71%           6.66%
+DRAFT_RAY_BUDGET = 2000
+#: The sweep only has to RANK candidate axes, which a coarse sample does as well
+#: as a fine one. The winner is then re-classified at the full budget, so the
+#: numbers a user reads come from the fine pass, not the ranking pass.
+DRAFT_SWEEP_RAY_BUDGET = 250
+
+
+def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
+                   max_rays=DRAFT_RAY_BUDGET):
     """Classify every triangle against a draw axis. Area-weighted, four-way.
 
     The four-way split is the whole game. A vertical wall with no draft is a DRAG
@@ -150,8 +190,18 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5):
     drafts = []          # (draftDeg, area) over wall-like releasing faces only
     histogram = {}
 
-    for i in range(tess["count"]):
-        ar = tess["area"][i]
+    # Stride over the triangles when there are more than the ray budget allows.
+    # step == 1 below the budget, so every fixture and every small part is a
+    # full census and this changes nothing about the gated numbers.
+    n = tess["count"]
+    step = max(1, -(-n // max_rays)) if max_rays else 1
+    rays = 0
+
+    for i in range(0, n, step):
+        # Each sampled triangle stands for the `step` triangles it represents, so
+        # the area fractions stay an unbiased estimate of the whole surface
+        # rather than shrinking to the sampled fraction.
+        ar = tess["area"][i] * step
         nxi, nyi, nzi = tess["nx"][i], tess["ny"][i], tess["nz"][i]
         cos_a = max(-1.0, min(1.0, nxi * dx + nyi * dy + nzi * dz))
         # sd in [-90, +90]: +90 faces the +draw tool half, 0 is parallel to the
@@ -170,6 +220,7 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5):
             vis = _escapes(inter, px, py, pz, dx, dy, dz, reach)
         else:
             vis = _escapes(inter, px, py, pz, -dx, -dy, -dz, reach)
+        rays += 1
 
         if not vis:
             kind = "undercut"
@@ -205,7 +256,21 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5):
         "zeroDraftFaceCount": len(zero_faces),
         "zeroDraftFaceIds": sorted(zero_faces, key=zero_faces.get, reverse=True)[:40],
         "draftHistogramDegToAreaMm2": {str(k): round(v, 1) for k, v in sorted(histogram.items())},
+        # Stated, not hidden. Below the budget this is a full census and
+        # `sampled` is False; above it the areas are an unbiased estimate from
+        # `raysCast` visibility tests and the report says so. A percentage that
+        # silently changes meaning with part size is the kind of number this
+        # feature exists to not produce.
+        "sampled": step > 1,
+        "raysCast": rays,
+        "trianglesTotal": n,
     }
+
+
+def _same_axis(candidate, normalised):
+    """Match a raw candidate back to the normalised axis classify_draft returned."""
+    m = math.sqrt(sum(c * c for c in candidate)) or 1.0
+    return all(abs(c / m - n) < 1e-6 for c, n in zip(candidate, normalised))
 
 
 def choose_draw_direction(tess, inter, candidates=None, min_draft_deg=1.0):
@@ -217,9 +282,15 @@ def choose_draw_direction(tess, inter, candidates=None, min_draft_deg=1.0):
     """
     if candidates is None:
         candidates = [(0, 0, 1), (0, 1, 0), (1, 0, 0)]
+    # TWO STAGES. Ranking three axes only needs enough rays to tell them apart,
+    # and running the full classification three times was two thirds of a 34 s
+    # sweep on a real part. The winner is re-classified at the full budget below,
+    # so every number a user reads comes from the fine pass — the coarse pass
+    # only chooses which axis to spend it on.
     scored = []
     for d in candidates:
-        r = classify_draft(tess, inter, d, min_draft_deg=min_draft_deg)
+        r = classify_draft(tess, inter, d, min_draft_deg=min_draft_deg,
+                           max_rays=DRAFT_SWEEP_RAY_BUDGET)
         scored.append({
             "drawDirectionXYZ": r["drawDirectionXYZ"],
             "undercutAreaPct": r["areaPct"]["undercut"],
@@ -228,6 +299,11 @@ def choose_draw_direction(tess, inter, candidates=None, min_draft_deg=1.0):
         })
     scored.sort(key=lambda s: (s["undercutAreaPct"], s["zeroDraftAreaPct"]))
     best = scored[0]
+    if best["result"].get("sampled"):
+        best["result"] = classify_draft(
+            tess, inter, [c for c in candidates
+                          if _same_axis(c, best["result"]["drawDirectionXYZ"])][0],
+            min_draft_deg=min_draft_deg)
     return best["result"], [
         {k: s[k] for k in ("drawDirectionXYZ", "undercutAreaPct", "zeroDraftAreaPct")}
         for s in scored
@@ -260,7 +336,16 @@ WALL_UNMEASURED_REASON = (
 )
 
 
-def wall_thickness(tess, inter, max_samples=4000, reach=1e4):
+#: Thickness rays. 4000 measured at 24.4 s on the smallest of six real
+#: automotive parts — the percentiles are a distribution estimate either way, and
+#: 1500 area-weighted samples locate p5/p50/p95 no differently while costing a
+#: third as much. The `samples` count is reported so a reader can see the basis.
+# p50 is identical at every budget on the same part (1.60 mm at 1500, 1000 and
+# 600 rays); only p5 drifts 1.48 -> 1.55. 1000 costs 9.1 s against 14.3 s.
+WALL_RAY_BUDGET = 1000
+
+
+def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4):
     """Ray-cast inward from triangle centroids; area-weighted distribution.
 
     Two rules make this trustworthy where the old version was not:
