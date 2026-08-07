@@ -27,46 +27,85 @@ const stack = (d: any, name: string, pkg: number, log: number) => {
 const board = stack(fab, 'bare', estimatePCBFabPackagingPerPart(AREA), estimatePCBFabLogisticsPerPart(AREA)).total;
 
 // REVISED BOM. Split by who owns the silicon, because that is what sets the basis.
-type L = BOMLine & { basis: 'published' | 'catalogue' | 'captive' | 'class' };
+type Conf = 'marking-legible' | 'marking-partial' | 'inferred';
+type L = BOMLine & { basis: 'published' | 'catalogue' | 'captive' | 'class'; conf: Conf; note: string };
 
-// Every price now states the QUANTITY it came from. The engine extrapolates
-// each line from that quantity to the 200,000 build volume, so the annual
-// volume finally moves the 70% of this part that is components.
+// Each line records WHAT IS ACTUALLY READABLE in the photographs, separately
+// from what was inferred. The previous version mixed the two, which let a part
+// number I could not read (an "ST 7724A") sit in the BOM as if it were on the
+// board.
 const bom: L[] = [
-  // --- Merchant silicon, priced from published distributor breaks -----------
-  { refDes:'U-MCU', componentType:'ic_bga', description:'Renesas R7F702300B RH850/U2A 292-BGA 28nm 400MHz 16MB [BGA-292]',
-    qty:1, unitPriceGBP:25.20, priceRefQty:1_000, moq:1, basis:'catalogue' },      // DigiKey $49.47@1; ~$32@1k
+  // --- Merchant silicon ------------------------------------------------------
+  { refDes:'U-MCU', componentType:'ic_bga', description:'Renesas R7F702300B RH850/U2A 292-BGA [BGA-292]',
+    qty:1, unitPriceGBP:25.20, priceRefQty:1_000, moq:1, basis:'catalogue', conf:'marking-legible',
+    note:'"R7F702300B FABA-C BB05253 2308 JAPAN" fully legible. DigiKey $49.47@1.' },
   { refDes:'U-SBC', componentType:'ic_tqfp', description:'ST L9369 dual H-bridge EPB pre-driver [LQFP-64]',
-    qty:1, unitPriceGBP:4.33, priceRefQty:1_000, moq:1, basis:'catalogue' },        // LCSC $6.74 / ABR $4.11
-  { refDes:'U-CAN', componentType:'ic_soic', description:'NXP TJA1463A CAN-FD SIC transceiver [SO-14]',
-    qty:2, unitPriceGBP:0.83, priceRefQty:1_000, moq:1, basis:'published' },        // LCSC $1.0575
+    qty:1, unitPriceGBP:4.33, priceRefQty:1_000, moq:1, basis:'catalogue', conf:'marking-legible',
+    note:'"L9369 VC DTE" + ST logo, LQFP-64. Confirms this is an EPB/brake ECU.' },
+  { refDes:'U-CAN', componentType:'ic_soic', description:'NXP TJA1463AT CAN-FD SIC transceiver [SO-14]',
+    qty:2, unitPriceGBP:1.05, priceRefQty:1_000, moq:1, basis:'catalogue', conf:'marking-partial',
+    note:'CORRECTED: board shows SO-14 gull-wing = TJA1463AT. Previously priced from TJA1463ATK, which is HVSON-14 - wrong package. Qty 2 is an assumption; only one is clearly visible.' },
   { refDes:'U-NCV', componentType:'ic_soic', description:'onsemi NCV8461 protected high-side switch [SOIC-8]',
-    qty:2, unitPriceGBP:0.52, priceRefQty:1_000, moq:1, basis:'published' },        // $0.6610 @1k
-  { refDes:'U-ST77', componentType:'ic_soic', description:'ST 7724A-series analog [TSSOP]',
-    qty:1, unitPriceGBP:0.90, priceRefQty:1_000, moq:1, basis:'class' },
-  { refDes:'Y1', componentType:'crystal_osc', description:'Crystal / oscillator [SMD 3225]',
-    qty:1, unitPriceGBP:0.55, priceRefQty:1_000, moq:1, basis:'class' },
+    qty:1, unitPriceGBP:0.52, priceRefQty:1_000, moq:1, basis:'published', conf:'marking-legible',
+    note:'"NCV8461 PR17" legible. Qty CUT 2 -> 1: only one instance is visible.' },
+  { refDes:'U-UNK1', componentType:'ic_soic', description:'UNIDENTIFIED 8-pin, marking "T698 / 1000T / 2809h"',
+    qty:2, unitPriceGBP:0.60, priceRefQty:1_000, moq:1, basis:'class', conf:'marking-partial',
+    note:'Marking visible but not resolvable to a manufacturer. Appears at least twice. Class median.' },
+  { refDes:'U-UNK2', componentType:'ic_soic', description:'UNIDENTIFIED small package, marking "CH40 3095 / 9096"',
+    qty:2, unitPriceGBP:0.30, priceRefQty:1_000, moq:1, basis:'class', conf:'marking-partial',
+    note:'Two similar parts, marking legible, part not identifiable.' },
 
-  // --- Bosch captive silicon: no market price exists. Stated at internal cost
-  //     AT PROGRAMME VOLUME, so priceRefQty = the build volume and the curve
-  //     leaves them alone. Scaling them too would double-discount.
-  { refDes:'U-40342', componentType:'ic_tqfp', description:'Bosch 40342/01 motor-control ASIC [QFP-144]', qty:1, unitPriceGBP:3.50, priceRefQty:200_000, moq:1, basis:'captive' },
-  { refDes:'U-40341', componentType:'ic_tqfp', description:'Bosch 40341/01 ASIC [QFP-100]',              qty:1, unitPriceGBP:2.50, priceRefQty:200_000, moq:1, basis:'captive' },
-  { refDes:'U-23027', componentType:'ic_tqfp', description:'Bosch 2302701 ASIC [QFP-64]',                qty:1, unitPriceGBP:1.80, priceRefQty:200_000, moq:1, basis:'captive' },
-  { refDes:'Q1-6',   componentType:'power_module', description:'Bosch Q142E power stage / dual half-bridge [PowerSO-8]', qty:6, unitPriceGBP:1.20, priceRefQty:200_000, moq:1, basis:'captive' },
-  { refDes:'U-71H',  componentType:'ic_soic', description:'Bosch 71H740 driver / power-path [SOIC-8]',   qty:3, unitPriceGBP:0.65, priceRefQty:200_000, moq:1, basis:'captive' },
-  { refDes:'U-76E2', componentType:'ic_soic', description:'Bosch 76E240 device [SOIC-8]',                qty:3, unitPriceGBP:0.70, priceRefQty:200_000, moq:1, basis:'captive' },
-  { refDes:'U-76E8', componentType:'ic_soic', description:'Bosch 76E840 device [SOIC-8]',                qty:1, unitPriceGBP:0.70, priceRefQty:200_000, moq:1, basis:'captive' },
-  { refDes:'U-7S1R', componentType:'ic_soic', description:'Bosch 7S1R540H power device [SOIC-8]',        qty:2, unitPriceGBP:0.80, priceRefQty:200_000, moq:1, basis:'captive' },
+  // --- Bosch captive silicon: internal cost, no market price, not scaled -----
+  { refDes:'U-40342', componentType:'ic_tqfp', description:'Bosch 40342/01 motor-control ASIC [QFP-144]',
+    qty:1, unitPriceGBP:3.50, priceRefQty:200_000, moq:1, basis:'captive', conf:'marking-legible',
+    note:'"40342 /01 2324 VC252NVN" + Bosch logo.' },
+  { refDes:'U-40341', componentType:'ic_tqfp', description:'Bosch 40341/01 ASIC [QFP-100]',
+    qty:1, unitPriceGBP:2.50, priceRefQty:200_000, moq:1, basis:'captive', conf:'marking-legible',
+    note:'"40341 /01 2240 A2I92F4A" + Bosch logo.' },
+  { refDes:'U-23027', componentType:'ic_tqfp', description:'Bosch 2302701 ASIC [QFP-64]',
+    qty:1, unitPriceGBP:1.80, priceRefQty:200_000, moq:1, basis:'captive', conf:'marking-partial',
+    note:'"2302701" + Bosch logo legible; the line above it ("SSEAC"?) is not resolved.' },
+  { refDes:'Q1-6', componentType:'power_module', description:'Bosch Q142E / 0142E power stage [PowerSO-8]',
+    qty:6, unitPriceGBP:1.20, priceRefQty:200_000, moq:1, basis:'captive', conf:'marking-partial',
+    note:'AMBIGUOUS: leading character reads Q in some views and 0 in others. Suffix "BABA .W31C". Qty 6 counted from one close-up; more may sit outside frame.' },
+  { refDes:'U-71H', componentType:'ic_soic', description:'Bosch 71H740 driver / power-path [SOIC-8]',
+    qty:3, unitPriceGBP:0.65, priceRefQty:200_000, moq:1, basis:'captive', conf:'marking-legible',
+    note:'"71H740 Prm 2321 C3 5371" legible. Qty 3 is a count across overlapping views - may double-count.' },
+  { refDes:'U-76E2', componentType:'ic_soic', description:'Bosch 76E240 device [SOIC-8]',
+    qty:3, unitPriceGBP:0.70, priceRefQty:200_000, moq:1, basis:'captive', conf:'marking-legible',
+    note:'"76E240 PNW 2328 B6 0125" legible. Qty 3 same caveat as 71H740.' },
+  { refDes:'U-76E8', componentType:'ic_soic', description:'Bosch 76E840 device [SOIC-8]',
+    qty:1, unitPriceGBP:0.70, priceRefQty:200_000, moq:1, basis:'captive', conf:'marking-legible',
+    note:'"76E840 PEm 2319 A2 1431" legible.' },
+  { refDes:'U-7S1R', componentType:'ic_soic', description:'Bosch 7S1R540H power device [SOIC-8]',
+    qty:2, unitPriceGBP:0.80, priceRefQty:200_000, moq:1, basis:'captive', conf:'marking-legible',
+    note:'"7S1R540H Prt" x2, lot codes 2313D6 and 026200.' },
 
-  // --- Passives, magnetics, connectors, thermal: class prices at a 1k break --
-  { refDes:'C-BULK', componentType:'passive_0805', description:'Polymer alu capacitor 150uF 35V (351 150 EJV)', qty:6, unitPriceGBP:0.52, priceRefQty:1_000, moq:1, basis:'class' },
-  { refDes:'L-PWR',  componentType:'power_module', description:'Shielded power inductors 0.47-22uH',            qty:8, unitPriceGBP:0.68, priceRefQty:1_000, moq:1, basis:'class' },
-  { refDes:'R/C',    componentType:'passive_0402', description:'MLCC + thick-film resistors, AEC-Q200 [0402/0603]', qty:600, unitPriceGBP:0.011, priceRefQty:1_000, moq:1, basis:'class' },
-  { refDes:'D/Q',    componentType:'ic_soic',  description:'Small-signal semis + BRL-series diodes [SOT/SOD]',  qty:80, unitPriceGBP:0.07, priceRefQty:1_000, moq:1, basis:'class' },
-  { refDes:'J1-2',   componentType:'through_hole', description:'Automotive press-fit headers (main + motor)',   qty:2, unitPriceGBP:3.20, priceRefQty:1_000, moq:1, basis:'class' },
-  { refDes:'TIM',    componentType:'through_hole', description:'Thermal interface pads (power stages, both sides)', qty:8, unitPriceGBP:0.15, priceRefQty:1_000, moq:1, basis:'class' },
+  // --- Passives, magnetics, connectors --------------------------------------
+  { refDes:'C-BULK', componentType:'passive_0805', description:'Polymer alu capacitor, marking "351 150 EJV"',
+    qty:6, unitPriceGBP:0.52, priceRefQty:1_000, moq:1, basis:'class', conf:'marking-partial',
+    note:'Marking legible; 150uF/35V is an INTERPRETATION of it, not a datasheet reading.' },
+  { refDes:'L-PWR', componentType:'power_module', description:'Shielded power inductors 0.47uH / 10uH / 22uH / 220H',
+    qty:8, unitPriceGBP:0.68, priceRefQty:1_000, moq:1, basis:'class', conf:'marking-partial',
+    note:'Four DISTINCT values readable (0.47uH 23220J, 10uH, 22uH 2316NJ, 220H 374A) - previously lumped as one line at one price.' },
+  { refDes:'R/C', componentType:'passive_0402', description:'MLCC + thick-film resistors (1201, 1001, 7501, 000, 30.9, 120E, 4021, 100E, 10DE)',
+    qty:600, unitPriceGBP:0.011, priceRefQty:1_000, moq:1, basis:'class', conf:'inferred',
+    note:'Individual values readable in close-ups; the COUNT of 600 is a density estimate over both sides, not a count.' },
+  { refDes:'D/Q', componentType:'ic_soic', description:'Small-signal semis + BRL-23/BRL-97 diodes [SOT/SOD]',
+    qty:80, unitPriceGBP:0.07, priceRefQty:1_000, moq:1, basis:'class', conf:'inferred',
+    note:'"BRL 23 M", "BRL 97 M", "WJY", "52s", "Y7A A00A 110", "CXR 42AA" all visible. Count estimated.' },
+  { refDes:'J1-2', componentType:'through_hole', description:'Automotive press-fit headers (main + motor)',
+    qty:2, unitPriceGBP:3.20, priceRefQty:1_000, moq:1, basis:'class', conf:'inferred',
+    note:'Press-fit hole fields visible along two board edges; connectors themselves not in frame.' },
+  { refDes:'TIM', componentType:'through_hole', description:'Thermal interface pads (both sides)',
+    qty:8, unitPriceGBP:0.15, priceRefQty:1_000, moq:1, basis:'class', conf:'marking-legible',
+    note:'Pink pads clearly visible bottom side, grey/graphite pads top side.' },
+
+  // REMOVED: "ST 7724A-series analog". That part number was NOT readable on any
+  // photograph - it was my reconstruction of a partial marking near the board
+  // edge, and it should never have entered the BOM as an identified part.
 ];
+
 const scaled = (l: L) => l.qty * l.unitPriceGBP * bomVolumePriceFactor(l.priceRefQty ?? VOL, VOL);
 const totRef = (f:(l:L)=>boolean) => bom.filter(f).reduce((a,l)=>a+l.qty*l.unitPriceGBP,0);
 const tot    = (f:(l:L)=>boolean) => bom.filter(f).reduce((a,l)=>a+scaled(l),0);
@@ -98,6 +137,11 @@ console.log(`     published-price parts ${f(tot(l=>l.basis==='published'))}`);
 console.log(`     catalogue-price parts ${f(tot(l=>l.basis==='catalogue'))}`);
 console.log(`     Bosch captive         ${f(tot(l=>l.basis==='captive'))}   (no market price; not scaled)`);
 console.log(`     class-median parts    ${f(tot(l=>l.basis==='class'))}`);
+console.log(`\n  BY EVIDENCE:`);
+for (const c of ['marking-legible','marking-partial','inferred'] as const) {
+  const v = tot(l=>l.conf===c), n = bom.filter(l=>l.conf===c).length;
+  console.log(`     ${c.padEnd(16)} ${f(v).padStart(8)}  ${((v/bomTotal)*100).toFixed(0).padStart(3)}% of BOM   ${n} lines`);
+}
 console.log('\n  per-line extrapolation:');
 for (const l of bom) {
   const fac = bomVolumePriceFactor(l.priceRefQty ?? VOL, VOL);
