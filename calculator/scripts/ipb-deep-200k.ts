@@ -1,5 +1,5 @@
 import { computePCBFabDrivers } from '../src/engine/modules/pcb-fab.js';
-import { computePCBADrivers, type BOMLine,
+import { computePCBADrivers, bomVolumePriceFactor, type BOMLine,
   estimatePCBAPackagingPerPart, estimatePCBALogisticsPerPart,
   estimatePCBFabPackagingPerPart, estimatePCBFabLogisticsPerPart } from '../src/engine/modules/pcba.js';
 import { computeUniversalStack } from '../src/engine/core.js';
@@ -27,34 +27,49 @@ const stack = (d: any, name: string, pkg: number, log: number) => {
 const board = stack(fab, 'bare', estimatePCBFabPackagingPerPart(AREA), estimatePCBFabLogisticsPerPart(AREA)).total;
 
 // REVISED BOM. Split by who owns the silicon, because that is what sets the basis.
-type L = BOMLine & { basis: 'merchant' | 'bosch-captive' | 'passive' };
+type L = BOMLine & { basis: 'published' | 'catalogue' | 'captive' | 'class' };
+
+// Every price now states the QUANTITY it came from. The engine extrapolates
+// each line from that quantity to the 200,000 build volume, so the annual
+// volume finally moves the 70% of this part that is components.
 const bom: L[] = [
-  // Merchant silicon — Bosch BUYS these, so market price at 200k LTA is right.
-  { refDes:'U-MCU',  componentType:'ic_bga',   description:'Renesas R7F702300B RH850/U2A [BGA-292]', qty:1, unitPriceGBP:11.00, moq:1, basis:'merchant' },
-  { refDes:'U-SBC',  componentType:'ic_tqfp',  description:'ST L9369 dual H-bridge EPB pre-driver [LQFP-64]', qty:1, unitPriceGBP:3.50, moq:1, basis:'merchant' },
-  { refDes:'U-CAN',  componentType:'ic_soic',  description:'NXP TJA1463A CAN-FD SIC transceiver [SO-14]', qty:2, unitPriceGBP:0.95, moq:1, basis:'merchant' },
-  { refDes:'U-NCV',  componentType:'ic_soic',  description:'onsemi NCV8461 protected high-side switch [SOIC-8]', qty:2, unitPriceGBP:0.55, moq:1, basis:'merchant' },
-  { refDes:'U-ST77', componentType:'ic_soic',  description:'ST 7724A-series analog [TSSOP]', qty:1, unitPriceGBP:0.60, moq:1, basis:'merchant' },
-  { refDes:'Y1',     componentType:'crystal_osc', description:'Crystal / oscillator [SMD 3225]', qty:1, unitPriceGBP:0.35, moq:1, basis:'merchant' },
-  // Bosch CAPTIVE silicon — Bosch designs and fabs these. Internal transfer cost,
-  // not a merchant purchase price. This is the basis error in the first costing.
-  { refDes:'U-40342', componentType:'ic_tqfp', description:'Bosch 40342/01 motor-control ASIC [QFP-144]', qty:1, unitPriceGBP:3.50, moq:1, basis:'bosch-captive' },
-  { refDes:'U-40341', componentType:'ic_tqfp', description:'Bosch 40341/01 ASIC [QFP-100]', qty:1, unitPriceGBP:2.50, moq:1, basis:'bosch-captive' },
-  { refDes:'U-23027', componentType:'ic_tqfp', description:'Bosch 2302701 ASIC [QFP-64]', qty:1, unitPriceGBP:1.80, moq:1, basis:'bosch-captive' },
-  { refDes:'Q1-6',   componentType:'power_module', description:'Bosch Q142E power stage / dual half-bridge [PowerSO-8]', qty:6, unitPriceGBP:1.20, moq:1, basis:'bosch-captive' },
-  { refDes:'U-71H',  componentType:'ic_soic',  description:'Bosch 71H740 driver / power-path [SOIC-8]', qty:3, unitPriceGBP:0.65, moq:1, basis:'bosch-captive' },
-  { refDes:'U-76E2', componentType:'ic_soic',  description:'Bosch 76E240 device [SOIC-8]', qty:3, unitPriceGBP:0.70, moq:1, basis:'bosch-captive' },
-  { refDes:'U-76E8', componentType:'ic_soic',  description:'Bosch 76E840 device [SOIC-8]', qty:1, unitPriceGBP:0.70, moq:1, basis:'bosch-captive' },
-  { refDes:'U-7S1R', componentType:'ic_soic',  description:'Bosch 7S1R540H power device [SOIC-8]', qty:2, unitPriceGBP:0.80, moq:1, basis:'bosch-captive' },
-  // Passives, magnetics, connectors, thermal.
-  { refDes:'C-BULK', componentType:'passive_0805', description:'Polymer alu capacitor 150uF 35V (351 150 EJV)', qty:6, unitPriceGBP:0.35, moq:1, basis:'passive' },
-  { refDes:'L-PWR',  componentType:'power_module', description:'Shielded power inductors 0.47-22uH', qty:8, unitPriceGBP:0.45, moq:1, basis:'passive' },
-  { refDes:'R/C',    componentType:'passive_0402', description:'MLCC + thick-film resistors, AEC-Q200 [0402/0603]', qty:600, unitPriceGBP:0.007, moq:1, basis:'passive' },
-  { refDes:'D/Q',    componentType:'ic_soic',  description:'Small-signal semis + BRL-series diodes [SOT/SOD]', qty:80, unitPriceGBP:0.045, moq:1, basis:'passive' },
-  { refDes:'J1-2',   componentType:'through_hole', description:'Automotive press-fit headers (main + motor)', qty:2, unitPriceGBP:2.20, moq:1, basis:'passive' },
-  { refDes:'TIM',    componentType:'through_hole', description:'Thermal interface pads (power stages, both sides)', qty:8, unitPriceGBP:0.10, moq:1, basis:'passive' },
+  // --- Merchant silicon, priced from published distributor breaks -----------
+  { refDes:'U-MCU', componentType:'ic_bga', description:'Renesas R7F702300B RH850/U2A 292-BGA 28nm 400MHz 16MB [BGA-292]',
+    qty:1, unitPriceGBP:25.20, priceRefQty:1_000, moq:1, basis:'catalogue' },      // DigiKey $49.47@1; ~$32@1k
+  { refDes:'U-SBC', componentType:'ic_tqfp', description:'ST L9369 dual H-bridge EPB pre-driver [LQFP-64]',
+    qty:1, unitPriceGBP:4.33, priceRefQty:1_000, moq:1, basis:'catalogue' },        // LCSC $6.74 / ABR $4.11
+  { refDes:'U-CAN', componentType:'ic_soic', description:'NXP TJA1463A CAN-FD SIC transceiver [SO-14]',
+    qty:2, unitPriceGBP:0.83, priceRefQty:1_000, moq:1, basis:'published' },        // LCSC $1.0575
+  { refDes:'U-NCV', componentType:'ic_soic', description:'onsemi NCV8461 protected high-side switch [SOIC-8]',
+    qty:2, unitPriceGBP:0.52, priceRefQty:1_000, moq:1, basis:'published' },        // $0.6610 @1k
+  { refDes:'U-ST77', componentType:'ic_soic', description:'ST 7724A-series analog [TSSOP]',
+    qty:1, unitPriceGBP:0.90, priceRefQty:1_000, moq:1, basis:'class' },
+  { refDes:'Y1', componentType:'crystal_osc', description:'Crystal / oscillator [SMD 3225]',
+    qty:1, unitPriceGBP:0.55, priceRefQty:1_000, moq:1, basis:'class' },
+
+  // --- Bosch captive silicon: no market price exists. Stated at internal cost
+  //     AT PROGRAMME VOLUME, so priceRefQty = the build volume and the curve
+  //     leaves them alone. Scaling them too would double-discount.
+  { refDes:'U-40342', componentType:'ic_tqfp', description:'Bosch 40342/01 motor-control ASIC [QFP-144]', qty:1, unitPriceGBP:3.50, priceRefQty:200_000, moq:1, basis:'captive' },
+  { refDes:'U-40341', componentType:'ic_tqfp', description:'Bosch 40341/01 ASIC [QFP-100]',              qty:1, unitPriceGBP:2.50, priceRefQty:200_000, moq:1, basis:'captive' },
+  { refDes:'U-23027', componentType:'ic_tqfp', description:'Bosch 2302701 ASIC [QFP-64]',                qty:1, unitPriceGBP:1.80, priceRefQty:200_000, moq:1, basis:'captive' },
+  { refDes:'Q1-6',   componentType:'power_module', description:'Bosch Q142E power stage / dual half-bridge [PowerSO-8]', qty:6, unitPriceGBP:1.20, priceRefQty:200_000, moq:1, basis:'captive' },
+  { refDes:'U-71H',  componentType:'ic_soic', description:'Bosch 71H740 driver / power-path [SOIC-8]',   qty:3, unitPriceGBP:0.65, priceRefQty:200_000, moq:1, basis:'captive' },
+  { refDes:'U-76E2', componentType:'ic_soic', description:'Bosch 76E240 device [SOIC-8]',                qty:3, unitPriceGBP:0.70, priceRefQty:200_000, moq:1, basis:'captive' },
+  { refDes:'U-76E8', componentType:'ic_soic', description:'Bosch 76E840 device [SOIC-8]',                qty:1, unitPriceGBP:0.70, priceRefQty:200_000, moq:1, basis:'captive' },
+  { refDes:'U-7S1R', componentType:'ic_soic', description:'Bosch 7S1R540H power device [SOIC-8]',        qty:2, unitPriceGBP:0.80, priceRefQty:200_000, moq:1, basis:'captive' },
+
+  // --- Passives, magnetics, connectors, thermal: class prices at a 1k break --
+  { refDes:'C-BULK', componentType:'passive_0805', description:'Polymer alu capacitor 150uF 35V (351 150 EJV)', qty:6, unitPriceGBP:0.52, priceRefQty:1_000, moq:1, basis:'class' },
+  { refDes:'L-PWR',  componentType:'power_module', description:'Shielded power inductors 0.47-22uH',            qty:8, unitPriceGBP:0.68, priceRefQty:1_000, moq:1, basis:'class' },
+  { refDes:'R/C',    componentType:'passive_0402', description:'MLCC + thick-film resistors, AEC-Q200 [0402/0603]', qty:600, unitPriceGBP:0.011, priceRefQty:1_000, moq:1, basis:'class' },
+  { refDes:'D/Q',    componentType:'ic_soic',  description:'Small-signal semis + BRL-series diodes [SOT/SOD]',  qty:80, unitPriceGBP:0.07, priceRefQty:1_000, moq:1, basis:'class' },
+  { refDes:'J1-2',   componentType:'through_hole', description:'Automotive press-fit headers (main + motor)',   qty:2, unitPriceGBP:3.20, priceRefQty:1_000, moq:1, basis:'class' },
+  { refDes:'TIM',    componentType:'through_hole', description:'Thermal interface pads (power stages, both sides)', qty:8, unitPriceGBP:0.15, priceRefQty:1_000, moq:1, basis:'class' },
 ];
-const tot = (f: (l:L)=>boolean) => bom.filter(f).reduce((a,l)=>a+l.qty*l.unitPriceGBP,0);
+const scaled = (l: L) => l.qty * l.unitPriceGBP * bomVolumePriceFactor(l.priceRefQty ?? VOL, VOL);
+const totRef = (f:(l:L)=>boolean) => bom.filter(f).reduce((a,l)=>a+l.qty*l.unitPriceGBP,0);
+const tot    = (f:(l:L)=>boolean) => bom.filter(f).reduce((a,l)=>a+scaled(l),0);
 const bomTotal = tot(()=>true);
 const placements = bom.filter(l=>!['through_hole','manual_solder'].includes(l.componentType)).reduce((a,l)=>a+l.qty,0);
 
@@ -64,7 +79,7 @@ const pcba = computePCBADrivers({
   thLabourId:'lab-cn-electronics', thLabourTimeSecPerJoint:12, manualLabourTimeSecPerJoint:20,
   smtSides:2, conformalCoatAreaCm2:AREA, conformalCoatPricePerCm2:0.0035,
   assemblyYield:0.985, reworkCostPerFailure:18, amortizationVolume:VOL,
-  assemblyComplexity:'high', qualityGrade:'auto_grade1', bgaCount:1,
+  assemblyComplexity:'high', qualityGrade:'auto_grade1', bgaCount:1, bomPriceRefQty:1_000,
   xrayMachineId:'xray-bga-inspection', xrayLabourId:'lab-cn-electronics',
   xrayMode:'inline_axi', inlineAxiCycleTimeSec:45,
   ictMachineId:'ict-automotive', ictLabourId:'lab-cn-electronics', ictCycleTimeSec:150,
@@ -77,9 +92,17 @@ const f = (n:number)=>`£${n.toFixed(2)}`;
 console.log(`\n=== IPB2.0 ECU PCBA — ${VOL.toLocaleString()}/yr, China ===`);
 console.log(`Bare 6L board            ${f(board)}`);
 console.log(`BOM total                ${f(bomTotal)}   (${bom.length} lines, ${placements} placements)`);
-console.log(`   merchant silicon      ${f(tot(l=>l.basis==='merchant'))}`);
-console.log(`   Bosch captive silicon ${f(tot(l=>l.basis==='bosch-captive'))}`);
-console.log(`   passives/mag/conn     ${f(tot(l=>l.basis==='passive'))}`);
+console.log(`   at the 1k quoted break  ${f(totRef(()=>true))}`);
+console.log(`   extrapolated to ${VOL.toLocaleString()}  ${f(bomTotal)}   (volume factor ${(bomVolumePriceFactor(1000,VOL)).toFixed(3)} on merchant lines)`);
+console.log(`     published-price parts ${f(tot(l=>l.basis==='published'))}`);
+console.log(`     catalogue-price parts ${f(tot(l=>l.basis==='catalogue'))}`);
+console.log(`     Bosch captive         ${f(tot(l=>l.basis==='captive'))}   (no market price; not scaled)`);
+console.log(`     class-median parts    ${f(tot(l=>l.basis==='class'))}`);
+console.log('\n  per-line extrapolation:');
+for (const l of bom) {
+  const fac = bomVolumePriceFactor(l.priceRefQty ?? VOL, VOL);
+  console.log(`    ${l.refDes.padEnd(8)} x${String(l.qty).padStart(3)}  £${l.unitPriceGBP.toFixed(3)} @${(l.priceRefQty??VOL).toLocaleString().padStart(7)}  -> £${(l.unitPriceGBP*fac).toFixed(3)}  ext ${f(scaled(l))}`);
+}
 console.log(`\n8-BUCKET`);
 for (const [k,v] of Object.entries(b)) console.log(`  ${k.padEnd(13)} ${f(v).padStart(9)}  ${((v/r.total)*100).toFixed(1)}%`);
 console.log(`  ${'FACTORY'.padEnd(13)} ${f(r.factoryCost).padStart(9)}`);

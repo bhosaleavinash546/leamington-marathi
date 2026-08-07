@@ -169,6 +169,55 @@ export function estimatePCBFabLogisticsPerPart(boardAreaCm2: number): number {
   return Math.round(Math.min(2, Math.max(0.03, log)) * 100) / 100;
 }
 
+// ─── Component price vs volume ───────────────────────────────────────────────
+
+/**
+ * How far a component price falls per 10x increase in annual quantity.
+ *
+ * Fitted to a real published distributor ladder (onsemi NCV8461DR2G, Aug 2026):
+ *   1 -> $1.4420   100 -> $0.9780   500 -> $0.8320   1,000 -> $0.6610
+ * Least squares on log(price) vs log(qty) gives a slope of -0.111, i.e. the
+ * price falls 22.5% for every 10x of volume. That is the decay used here.
+ */
+export const PRICE_DECAY_PER_DECADE = 0.775;
+
+/**
+ * Quantity beyond which price stops falling.
+ *
+ * The fitted curve decays forever; real semiconductor pricing approaches die +
+ * test + package cost and flattens. Modelling that as a floor on the cumulative
+ * FACTOR was wrong — a 0.55 factor floor binds after only three decades, so
+ * extrapolating a qty-1 price to 1,000 returned 0.55 instead of the 0.466 the
+ * published ladder actually shows, a 20% error at the anchor. Saturation is a
+ * property of absolute volume, not of the ratio, so it is expressed that way:
+ * past this quantity the curve simply stops.
+ */
+export const PRICE_SATURATION_QTY = 500_000;
+
+/**
+ * Scale a component price from the quantity it was quoted at to the quantity
+ * actually being built.
+ *
+ * This exists because the PCBA module used `unitPriceGBP` verbatim and applied
+ * `amortizationVolume` to tooling ONLY. On a board where components are ~70% of
+ * cost, that meant annual volume — the single biggest commercial lever there is
+ * — moved pennies of tooling and nothing else. A 150k and a 200k costing came
+ * out within GBP 0.08 of each other on a GBP 115 part.
+ */
+export function bomVolumePriceFactor(refQty: number, targetQty: number): number {
+  if (!(refQty > 0) || !(targetQty > 0)) return 1;
+  // Saturate on the way UP only. Going DOWN in volume genuinely costs more and
+  // is not capped — a 100-off build really does pay a premium.
+  const scalingUp = targetQty > refQty;
+  const effective = scalingUp ? Math.min(targetQty, PRICE_SATURATION_QTY) : targetQty;
+  // Guard only the upward case: saturation can pull `effective` back below the
+  // reference (a price already quoted past saturation), and that must be a
+  // no-op rather than an inflation. It must NOT swallow the downward case,
+  // where target < ref legitimately produces a factor above 1.
+  if (scalingUp && effective <= refQty) return 1;
+  return Math.pow(PRICE_DECAY_PER_DECADE, Math.log10(effective / refQty));
+}
+
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
 export interface BOMLine {
@@ -178,6 +227,13 @@ export interface BOMLine {
   qty: number;
   unitPriceGBP: number;
   moq: number;
+  /**
+   * Quantity this unit price was quoted at. Lines sourced from a published
+   * distributor break carry that break (commonly 1,000); a line already stated
+   * at programme volume carries the programme volume and is left alone.
+   * Falls back to `PCBAInputs.bomPriceRefQty` when absent.
+   */
+  priceRefQty?: number;
 }
 
 export interface PCBAInputs {
@@ -205,6 +261,12 @@ export interface PCBAInputs {
   assemblyYield: number;              // 0–1 first-pass yield
   reworkCostPerFailure: number;       // rework cost per failed board £
   amortizationVolume: number;
+  /**
+   * Default quantity the BOM prices were quoted at, for lines that do not state
+   * their own `priceRefQty`. Omit to treat prices as already at programme
+   * volume — which is what the module did unconditionally before.
+   */
+  bomPriceRefQty?: number;
   /** Assembly complexity level — multiplies SMT placement cycle time. Default: low. */
   assemblyComplexity?: AssemblyComplexityLevel;
   /** Quality / reliability grade — multiplies test/inspection cycle times. Default: consumer. */
@@ -244,7 +306,9 @@ export function getPCBAInputSchema(): Record<string, string> {
     'bom[].refDes': 'string — reference designator',
     'bom[].componentType': 'passive_0402 | passive_0603 | passive_0805 | crystal_osc | power_module | transformer | led | relay_switch | fuse_tvs | ic_soic | ic_qfn | ic_bga | ic_tqfp | connector_smt | through_hole | manual_solder',
     'bom[].qty': 'number — quantity per board',
-    'bom[].unitPriceGBP': 'number — unit price £ at volume',
+    'bom[].unitPriceGBP': 'number — unit price £ at bom[].priceRefQty',
+    'bom[].priceRefQty': 'number? — quantity this price was quoted at (e.g. 1000 for a published break)',
+    bomPriceRefQty: 'number? — default quote quantity for lines with no priceRefQty',
     smtMachineId: 'string — SMT pick-and-place machine ID',
     smtLabourId: 'string — SMT operator labour rate ID',
     smtLines: 'number — parallel SMT lines',
@@ -276,7 +340,13 @@ export function getPCBAInputSchema(): Record<string, string> {
 
 export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
   // 1. Bill-of-materials cost
-  const componentCost = inputs.bom.reduce((acc, line) => acc + line.qty * line.unitPriceGBP, 0);
+  // Component prices are quoted at SOME quantity; scale each line from that
+  // quantity to the volume actually being built.
+  const targetQty = inputs.amortizationVolume;
+  const componentCost = inputs.bom.reduce((acc, line) => {
+    const ref = line.priceRefQty ?? inputs.bomPriceRefQty ?? targetQty;
+    return acc + line.qty * line.unitPriceGBP * bomVolumePriceFactor(ref, targetQty);
+  }, 0);
 
   // 2. Ancillary costs
   const conformalCoatCost =
