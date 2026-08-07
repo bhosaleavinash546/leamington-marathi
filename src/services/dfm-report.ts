@@ -63,6 +63,8 @@ export interface DfmProcessResult {
 
 export interface DfmReportData {
   partName?: string;
+  processFamily?: string | null;
+  processFamilyBasis?: string;
   fileName?: string;
   geometry?: Record<string, unknown>;
   dfm?: Record<string, unknown>;
@@ -209,7 +211,15 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
   wrapped('Rules report in three states, not two: failed, passed, and NOT EVALUATED. A rule whose measurement this part does not provide is listed as unevaluated with the reason, never as a pass — so the coverage figure beside each score tells you how much of the catalogue actually ran.', 9.2, BODY);
   y += 2;
   wrapped('Thresholds are industry design guidelines with their source cited, not laws of physics. A capable supplier will beat several of them. Treat a finding as the start of a conversation, not a verdict.', 9, MUT, CW, 4.2, 'italic');
-  y += 6;
+  y += 2;
+  if (!data.processFamily) {
+    // Without this, a speculative sweep is indistinguishable from a targeted
+    // analysis and the reader has no way to know some findings are for a process
+    // the part will never see.
+    wrapped('No manufacturing process was specified, so EVERY rule family below was run speculatively. Some findings will be for processes this part will never see, and their cost figures should not be added together.', 9, AMBER, CW, 4.2, 'bold');
+    y += 2;
+  }
+  y += 4;
 
   // Measured-geometry strip — the evidence the findings rest on.
   const dfm = (data.dfm || {}) as Record<string, any>;

@@ -37,6 +37,8 @@ interface DfmResponse {
   geometry?: Record<string, any>;
   dfm?: Record<string, any>;
   results: ProcessResult[];
+  processFamily?: string | null;
+  processFamilyBasis?: string;
 }
 interface DfaResponse { decomposition?: Record<string, any>; dfa?: Record<string, any>; }
 
@@ -242,6 +244,17 @@ export default function DfmStudioPage() {
                   value={String(result.geometry?.setupAnalysis?.estimatedSetupCount ?? '—')} />
               </div>
             </div>
+
+            {/* Which rule families ran, and why. Without this a reader cannot
+                tell a targeted analysis from a speculative sweep. */}
+            {!result.processFamily && (
+              <p className="text-amber-400/90 text-xs flex items-start gap-2">
+                <AlertTriangle size={13} className="shrink-0 mt-0.5" />
+                No costing process was chosen, so every rule family was run speculatively —
+                some findings below will be for processes this part will never see. Pick a
+                costing process to narrow it.
+              </p>
+            )}
 
             {/* Per-process results */}
             {result.results.filter(r => r.ruleCount > 0).map(r => (

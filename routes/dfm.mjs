@@ -72,10 +72,28 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
     const geo = await analyzeGeometry(req.file.buffer, req.file.originalname);
     if (geo.status !== 'success') return res.status(422).json({ error: geo.error });
 
-    const process = String(req.body?.process || '').trim();
-    const ruleResults = process && PROCESS_FAMILIES[process]
-      ? [runDfmRules(geo, process)]
-      : runAllDfmRules(geo);
+    // Which rule families to run. If the user named a costing process, the DFM
+    // family follows from it — running injection-moulding rules on an aluminium
+    // die casting produces findings for a process the part will never see, and
+    // prices a "saving" against it. A live run on a die-cast bracket did exactly
+    // that: EUR 36,000/yr of moulding savings on a part nobody will mould.
+    const COST_TO_FAMILY = {
+      'Die Casting (Aluminium)': 'hpdc',
+      'Die Casting (Zinc)': 'hpdc',
+      'Gravity Die Casting': 'hpdc',
+      'Injection Moulding': 'injection-moulding',
+      'Machining (CNC)': 'machining',
+      'Machining (secondary ops)': 'machining',
+      'Stamping / Deep Drawing': 'sheet-metal',
+      'Lamination Stamping (Electrical Steel)': 'sheet-metal',
+    };
+    const explicit = String(req.body?.process || '').trim();
+    const derived = COST_TO_FAMILY[req.body?.costProcess];
+    const family = PROCESS_FAMILIES[explicit] ? explicit : derived;
+    const ruleResults = family ? [runDfmRules(geo, family)] : runAllDfmRules(geo);
+    const familyBasis = PROCESS_FAMILIES[explicit] ? 'chosen'
+      : derived ? 'derived from the costing process'
+        : 'no process given — every family run speculatively, so findings may not all apply';
 
     // Mass is derived from the kernel-measured volume and the chosen material,
     // never taken from the request: a typed weight could silently disagree with
@@ -132,6 +150,8 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       },
       dfm: geo.dfm,
       results,
+      processFamily: family || null,
+      processFamilyBasis: familyBasis,
       analysedAt: new Date().toISOString(),
     });
   });

@@ -254,3 +254,88 @@ Format: decision · why · what would change it.
     The PDF also gives the three verdicts a legend page, and the Excel tints contradicted rows
     red — the disagreement is a feature of the deliverable, not a blemish hidden from it.
     *Changes it:* nothing — but this is why the exporters must never filter the idea list.
+
+28. **DFM geometry is measured on the TESSELLATION, not on analytic surfaces (2026).**
+    *Why:* the previous draft analysis inspected only `PLANE` and `CYLINDER` faces. Real
+    die-cast and moulded automotive parts are mostly freeform, so on a truncated pyramid
+    with an EXACT 3.000° draft on all four walls it found ZERO drafted faces and invented
+    two undercuts (the flat top and bottom), because `ThruSections` produces B-spline walls.
+    The wall-thickness ray-cast accepted any hit, so a 10 mm plate measured 39.95 mm — the
+    part's WIDTH — from four UV-midpoint samples, several of which land outside a trimmed
+    face. Working on the tessellation fixes both at once: a triangle centroid is always
+    inside its face, and a triangle has a normal whatever the underlying surface is. It also
+    costs ~0.02 s, which is what pays for sweeping candidate draw directions instead of
+    hard-coding +Z. *Changes it:* nothing — but note two bugs the fixtures caught that
+    reading could not. A tessellation chord sits INSIDE the true cylinder, so a 0.01 mm ray
+    offset left the origin buried in the solid and every boss read as an undercut (the offset
+    now scales with mesh deflection). And stdDev called a constant 2.50 mm shell
+    "non-uniform" because a few rim rays measure down the wall, so uniformity uses a robust
+    spread ratio.
+
+29. **Undercuts are separated from zero-draft drag faces — four states, not two (2026).**
+    *Why:* a zero-draft wall is fixable with a degree of taper; an undercut buys a slide or a
+    lifter. Collapsing them is the easiest way to produce a confident wrong report, and an
+    early probe of mine did exactly that, scoring a clean box 62.6% undercut. Classification
+    is now `partingParallel | releasing | zeroDraft | undercut`, area-weighted, with the
+    undercut test being ray occlusion in both tool halves rather than a normal sign.
+    *Changes it:* nothing — the `box-side-hole` fixture gates it, requiring 1 undercut and 4
+    zero-draft faces at +Z.
+
+30. **Feature recognition is HYBRID, because AAG alone cannot see a through hole (2026).**
+    *Why:* decomposing the attributed adjacency graph at concave edges is the standard method
+    and it works — a blind hole comes back as `[CYLINDER, PLANE]`, a rectangular pocket as
+    five planes. But a through hole has NO concave edges: convex rim top and bottom, no
+    floor. A probe on a part with a through hole and a pocket found only the pocket. So
+    cylindrical features keep coming from the exact analytic pass and prismatic features from
+    the graph. Getting the convexity label itself right took three attempts: UV-midpoint
+    normals left 16 of 18 edges unclassifiable, and probing along `n1+n2` with a solid
+    classifier discriminates NOTHING (that direction exits the solid for convex and concave
+    alike, scoring a pocketed box 24/0). What works is the dihedral test using each edge's own
+    pcurve, signed by the edge's orientation in face 1's wire. *Changes it:*
+    `through-hole-and-pocket.step` exists to fail if anyone "simplifies" this to pure AAG.
+
+31. **A DFM rule has three outcomes: pass, fail, and NOT EVALUATED (2026).**
+    *Why:* the recogniser does not yet produce pocket bounding boxes or bend features, so
+    several rules cannot be measured on a given part. Treating those as passes would let the
+    report claim a clean bill of health it never checked. `extractMeasures` therefore never
+    returns a fallback — a test asserts every measure is `undefined` on empty geometry — and
+    unmeasurable rules are listed with their reason, in their own PDF section and their own
+    Excel SHEET headed "these were NOT checked and are NOT passes". Two consequences follow:
+    `coveragePct` always appears beside the score, and the score is computed over evaluated
+    rules only, returning `null` when nothing ran. *Changes it:* a live render caught the
+    inverse failure — with zero evaluated rules the report printed a green "no rule was
+    breached", an all-clear on a family nobody looked at. That line now requires
+    `evaluatedCount > 0` and states the count.
+
+32. **A finding is priced by the existing engines or not priced at all (2026).**
+    *Why:* the house rule says the engine produces every number. Wall thickness and setup
+    count are modelled cost drivers, so those findings are re-costed through
+    `computeShouldCost` / `featuredMachiningCost` at the NEAREST compliant value — the
+    smallest change that clears the rule, not the most flattering one. Draft, undercuts,
+    corner radii and warp are not piece-price drivers in these engines, so those come back
+    `priced: false` WITH the reason. Where the literature gives a range it is passed through
+    labelled "cited literature, NOT an engine result". `summarisePricedImpact` excludes the
+    unpriced ones and names how many were left out, because they may well be the expensive
+    ones — an undercut buys tooling, not piece price. *Changes it:* the DFM rule family is
+    now DERIVED from the chosen costing process. A live run on an aluminium die-cast bracket
+    ran injection-moulding rules too and priced EUR 36,000/yr of moulding savings on a part
+    nobody will mould; with no process given, the report says in amber that every family was
+    run speculatively and the figures must not be summed.
+
+33. **DFA symmetry is measured by rotating the solid, and the index is withheld until a
+    human answers (2026).**
+    *Why:* Boothroyd's handling time depends on size, thickness, weight and α/β symmetry, and
+    every commercial DFA tool asks an engineer to read those off the part and type them in.
+    All four are geometric. Equal principal moments are NECESSARY but not SUFFICIENT for
+    rotational symmetry — a cube has three equal moments and is not a sphere — so inertia only
+    proposes a candidate axis and the symmetry is verified by rotating the solid and
+    intersecting it with itself (cylinder 1.000 at every angle, cube 1.000 at 90° but 0.944 at
+    7.3°, 60×40 plate 1.000 at 180° and 0.667 at 90°). But the three minimum-part questions
+    are about FUNCTION and INTENT, which a static solid model cannot answer: geometry
+    proposes a probable fastener at low confidence and notes that a dowel and a bolt look
+    identical to a solid modeller, and the user confirms. Until every part is answered,
+    `theoreticalMinParts` and `designEfficiencyPct` are `null` and the completeness block
+    names the outstanding parts. *Changes it:* the time model is OURS. Boothroyd & Dewhurst's
+    method is public and is what we follow; their tables are copyrighted and licensed with
+    their software, so `dfa-time-model.mjs` is MTM-structured with every coefficient exposed
+    as data for calibration, and a test asserts the provenance string.
