@@ -77,13 +77,21 @@ export async function analyzeGeometry(
   buffer: Buffer,
   filename: string,
   timeoutMs = DEFAULT_TESS_TIMEOUT_MS,
+  /**
+   * Extra environment for the kernel process. Used by the background DFM job to
+   * set CV_EXTRACT_FEATURES=1, which turns on the expensive per-face scan.
+   * Passed explicitly rather than by mutating `process.env` around the await —
+   * a global mutation across an async boundary is a race waiting for the day
+   * someone raises the worker concurrency.
+   */
+  extraEnv: Record<string, string> = {},
 ): Promise<OCCTGeometry> {
   const tmpPath = join(tmpdir(), `cv-cad-${randomBytes(8).toString('hex')}.${safeExt(filename)}`);
 
   const release = await acquirePython();
   try {
     await writeFile(tmpPath, buffer);
-    const geo = await _runPython(tmpPath, timeoutMs);
+    const geo = await _runPython(tmpPath, timeoutMs, extraEnv);
     // The ray-cast wall overshoots badly on thin shells (a bumper reads 27 mm
     // against a real ~2.5 mm). Correct it HERE, at the measurement boundary, so
     // every consumer sees the same wall — moulding cooling goes as wall², so a
@@ -97,7 +105,8 @@ export async function analyzeGeometry(
   }
 }
 
-function _runPython(tmpPath: string, timeoutMs: number): Promise<OCCTGeometry> {
+function _runPython(tmpPath: string, timeoutMs: number,
+                    extraEnv: Record<string, string> = {}): Promise<OCCTGeometry> {
   return new Promise((resolve) => {
     let stdout = '';
     let stderr = '';
@@ -108,7 +117,7 @@ function _runPython(tmpPath: string, timeoutMs: number): Promise<OCCTGeometry> {
     };
 
     const child = spawn(PYTHON_BIN, [PYTHON_SCRIPT, tmpPath], {
-      env: { ...process.env },
+      env: { ...process.env, ...extraEnv },
     });
 
     const timer = setTimeout(() => {

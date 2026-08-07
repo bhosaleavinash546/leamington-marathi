@@ -17,6 +17,29 @@ import type { FeatureMachiningLine } from '../engine/feature-machining.js';
  * report so a reviewer can see WHERE each number came from. All optional — when
  * absent the report renders exactly as before (non-CAD flows are unaffected).
  */
+/** Background geometric-DFM result, when a job has completed for this part. */
+export interface GeometricDFMMeta {
+  findings: Array<{
+    ruleId: string; severity: string; title: string; detail: string;
+    featureId: string; faceIds: number[];
+    measured: { field: string; value: number; unit: string };
+    threshold: { value: number; unit: string; comparator: string };
+    recommendation: string;
+    source: { standard: string; clause?: string; note?: string };
+  }>;
+  limitations: string[];
+  featuresExamined: number;
+  rulesEvaluated: number;
+  packAvailable: boolean;
+  dfa?: {
+    available: boolean; handlingTimeSec?: number; insertionTimeSec?: number;
+    totalTimeSec?: number; vsIdealRatio?: number;
+    penalties: Array<{ reason: string; addedSec: number; measured: string }>;
+    source: { standard: string; clause?: string; note?: string };
+    limitations: string[];
+  };
+}
+
 export interface CADReportMeta {
   /** How the geometry was obtained: precise B-rep (occt), mesh (stl_parser), or
    *  the text/heuristic fallback (text_parsing) that only estimates weight. */
@@ -26,6 +49,8 @@ export interface CADReportMeta {
   /** Per-feature secondary-machining breakdown actually used in the cost. */
   featureLines?: FeatureMachiningLine[] | null;
   featureMachineRatePerHr?: number | null;
+  /** Geometric DFM/DFA from the background job, when one has completed. */
+  geometricDFM?: GeometricDFMMeta | null;
   featureStock?: 'near_net' | 'solid_billet' | null;
   /** True when the engineer pinned the grade / process (locks out AI + sanity). */
   userSpecifiedMaterial?: boolean;
@@ -291,6 +316,92 @@ function renderSourcePhotographs(doc: jsPDF, y: number, photos: ReportPhoto[]): 
  * not something readable off a board photograph, so when none has been supplied
  * the section states what the costing assumed and asks for it to be confirmed.
  */
+/**
+ * Geometric DFM/DFA — findings measured from the CAD, each naming its faces and
+ * citing its source.
+ *
+ * Printed BEFORE the cost-ratio DFM section, because these are the findings an
+ * engineer can act on: they point at a feature and quote what was measured.
+ * The limitations block is not optional garnish — it is what stops a short
+ * finding list being read as a clean part.
+ */
+function renderGeometricDFM(
+  doc: jsPDF, y: number, g: GeometricDFMMeta | null | undefined,
+): number {
+  if (!g) return y;
+
+  y = chk(doc, y, 26);
+  doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+  doc.text('Geometric DFM / DFA - measured from the CAD model', MG, y);
+  y += 5;
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+  doc.text(
+    `${g.findings.length} finding(s) from ${g.featuresExamined} measured feature(s), `
+    + `${g.rulesEvaluated} rule(s) applied. Every finding names the B-rep faces that produced it `
+    + 'and the published source of its threshold.', MG, y, { maxWidth: CW });
+  y += 8;
+
+  if (!g.packAvailable) {
+    y = calloutBox(doc, y, 'No geometric rule pack for this commodity',
+      ['Geometry-based checks did not run. The commercial cost-ratio observations below still apply.'],
+      ORANGE, OR_LT);
+  }
+
+  for (const f of g.findings) {
+    y = chk(doc, y, 24);
+    const sev = String(f.severity).toUpperCase();
+    const col: RGB = f.severity === 'critical' || f.severity === 'major' ? RD
+      : f.severity === 'minor' ? ORANGE : SLATE;
+    doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...col);
+    doc.text(`[${sev}] ${f.title}`, MG, y);
+    y += 3.8;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.3); doc.setTextColor(...SLATE);
+    for (const ln of doc.splitTextToSize(f.detail, CW - 4) as string[]) { doc.text(ln, MG + 2, y); y += 3.3; }
+    doc.setTextColor(...GREY);
+    doc.text(
+      `measured ${f.measured.field} = ${f.measured.value}${f.measured.unit}   `
+      + `threshold ${f.threshold.comparator} ${f.threshold.value}${f.threshold.unit}   `
+      + `faces ${f.faceIds.join(', ')}`, MG + 2, y);
+    y += 3.3;
+    for (const ln of doc.splitTextToSize(`Fix: ${f.recommendation}`, CW - 4) as string[]) {
+      doc.text(ln, MG + 2, y); y += 3.3;
+    }
+    const src = f.source.clause ? `${f.source.standard} - ${f.source.clause}` : f.source.standard;
+    for (const ln of doc.splitTextToSize(`Source: ${src}`, CW - 4) as string[]) {
+      doc.text(ln, MG + 2, y); y += 3.1;
+    }
+    if (f.source.note) {
+      for (const ln of doc.splitTextToSize(f.source.note, CW - 6) as string[]) {
+        doc.text(ln, MG + 4, y); y += 3.1;
+      }
+    }
+    y += 2;
+  }
+
+  if (g.findings.length === 0 && g.packAvailable) {
+    y = calloutBox(doc, y, 'No geometric findings',
+      ['No rule in the pack fired on the measured features. Read this alongside the limitations '
+       + 'below - it means the checks that RAN found nothing, not that the part is clean.'],
+      NAVY, HDR);
+  }
+
+  if (g.dfa?.available) {
+    y = chk(doc, y, 20);
+    const p = g.dfa.penalties.map(x => `+${x.addedSec}s ${x.reason} (${x.measured})`);
+    y = calloutBox(doc, y, 'DFA - handling & insertion (Boothroyd method, geometric half)', [
+      `Handling ${g.dfa.handlingTimeSec}s + insertion ${g.dfa.insertionTimeSec}s = `
+      + `${g.dfa.totalTimeSec}s, ${g.dfa.vsIdealRatio}x the 3s ideal part.`,
+      ...p,
+      ...g.dfa.limitations,
+    ], NAVY, HDR);
+  }
+
+  if (g.limitations.length) {
+    y = calloutBox(doc, y, 'What was NOT checked', g.limitations, ORANGE, OR_LT);
+  }
+  return y;
+}
+
 function renderFunctionalSafety(
   doc: jsPDF, y: number,
   result: PartCostResult,
@@ -517,6 +628,7 @@ export function renderShouldCostSections(
   // Functional safety sits between the commercial parameters and the cost
   // detail: it is the context that explains why the verification operations in
   // section 4 cost what they do.
+  y = renderGeometricDFM(doc, y, cadMeta.geometricDFM);
   y = renderFunctionalSafety(doc, y, result, commodityType, cadMeta.functionalSafety, c);
 
   // §3 — Material Detail  (new page)

@@ -99,6 +99,27 @@ db.exec(`
     error TEXT
   );
 
+  -- Background geometric-DFM jobs. The deep per-face scan is far too slow to
+  -- sit in the costing request, so the CAD upload queues one of these and the
+  -- costing returns immediately. Payload/result are JSON blobs in a data column,
+  -- following the convention used by scenarios and shared_costings: the engine
+  -- owns the schema, so a job round-trips byte-identical.
+  CREATE TABLE IF NOT EXISTS dfm_jobs (
+    id TEXT PRIMARY KEY,
+    status TEXT NOT NULL DEFAULT 'queued',   -- queued | running | done | error
+    commodity TEXT NOT NULL DEFAULT '',
+    part_name TEXT NOT NULL DEFAULT '',
+    file_path TEXT NOT NULL DEFAULT '',
+    request TEXT NOT NULL DEFAULT '{}',
+    result TEXT,
+    error TEXT,
+    created_by TEXT NOT NULL DEFAULT '',
+    queued_at TEXT NOT NULL,
+    started_at TEXT,
+    finished_at TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_dfm_jobs_status ON dfm_jobs(status, queued_at);
+
   CREATE TABLE IF NOT EXISTS shared_costings (
     id TEXT PRIMARY KEY,
     part_name TEXT NOT NULL DEFAULT '',
