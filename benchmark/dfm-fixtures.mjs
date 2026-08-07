@@ -92,6 +92,13 @@ export const DFM_FIXTURES = [
       bosses: 1,
       holes: [{ diaMm: 6.0, through: true }],
       featureCounts: { 'through-hole': 1, boss: 1 },
+      // Slenderness ratios, arithmetic from the construction: the boss is
+      // Ø16 x 12 high, and the hole runs Ø6 through the full 8 + 12 = 20 mm.
+      // These drive the boss-height, drill-depth and core-pin rules.
+      measures: {
+        maxBossHeightToDia: 0.75,   // 12 / 16
+        maxHoleDepthToDia: 3.33,    // 20 / 6
+      },
     },
   },
   {
@@ -234,6 +241,54 @@ export const DFM_FIXTURES = [
         },
       },
     },
+  },
+];
+
+/**
+ * DEGENERATE inputs — the fixtures whose absence let a 100% gate coexist with
+ * four live bugs. Every part above is a well-formed, sharp-edged, millimetre
+ * solid, so nothing here was ever exercised: a surface model crashed with a
+ * KeyError, a metre-scale part returned a confident 0.05 mm wall, and an
+ * unreadable file showed the user OCCT's own ANSI-coloured parser output.
+ *
+ * The truth for these is not a measurement. It is that the tool degrades
+ * HONESTLY — a clean typed error, or a result that states what it could not do —
+ * and never a stack-trace fragment, kernel internals, or a number computed at a
+ * scale nobody checked.
+ */
+export const DEGENERATE_FIXTURES = [
+  {
+    file: 'degenerate-surface-only.step',
+    what: 'A single trimmed face — no solid anywhere in the file',
+    // It must NOT crash. Either the engine reports success while saying it could
+    // not measure a wall, or it fails with a readable message; both are honest,
+    // a Python KeyError reaching the user is not.
+    mustNotContain: ['meanMm', 'KeyError', 'Traceback'],
+    // Whatever else happens, it may never publish a wall thickness for a shape
+    // that has no thickness.
+    noWallThickness: true,
+  },
+  {
+    file: 'degenerate-metres.step',
+    what: 'plate-two-holes drawn in metres — 0.06 x 0.04 x 0.01',
+    // The warning must exist AND be actionable. Producing it internally while
+    // the report shows three confident sub-millimetre findings is the exact
+    // failure this fixture guards.
+    unitWarning: true,
+    // Rules run through the route's suppression path must evaluate NOTHING.
+    suppressedEvaluatedCount: 0,
+  },
+  {
+    file: 'degenerate-empty.step',
+    what: 'A zero-byte file with a .step extension',
+    errorExpected: true,
+    mustNotContain: ['****', 'ERR StepFile', 'Traceback', 'undefined'],
+  },
+  {
+    file: 'degenerate-garbage.step',
+    what: '4 KB of bytes that are not STEP at all',
+    errorExpected: true,
+    mustNotContain: ['****', 'ERR StepFile', 'Traceback', 'undefined'],
   },
 ];
 

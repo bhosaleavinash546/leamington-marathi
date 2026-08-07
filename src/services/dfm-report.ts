@@ -515,10 +515,16 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
 
   y += 4;
   sectionTitle('Limits', 'What this analysis does not cover');
+  // The RECOGNISER'S OWN limits come first, straight from the engine. A
+  // hand-maintained list drifts the moment the engine gains a capability, and
+  // this one had: it still told every reader that "sheet-metal rules require
+  // bend recognition, which is not yet implemented" for the whole life of the
+  // wave that implemented it. The engine knows what it cannot do; print that.
+  for (const line of (feats.knownLimits || []) as string[]) {
+    wrapped(`·  ${line}`, 9.1, BODY); y += 2;
+  }
   for (const line of [
-    'Threads, GD&T and tolerance callouts are not present in solid geometry and are not analysed.',
     'Surface finish and material specification come from your input, not from the model.',
-    'Sheet-metal rules require bend recognition, which is not yet implemented; those rules report as not evaluated rather than passing.',
     'Thresholds are design guidelines from published industry sources. Validate against your supplier before committing a design change.',
   ]) { wrapped(`·  ${line}`, 9.1, BODY); y += 2; }
 
@@ -644,6 +650,19 @@ export async function exportDfmXlsx(data: DfmReportData): Promise<void> {
       headerRow: 0, zebra: true, autoFilter: true,
       colWidths: [24, 14, 14, 12, 10, 46], wrapCols: [5],
       rows: [['Kind', 'Diameter mm', 'Depth mm', 'Through', 'Count', 'Axis / detail'], ...featureRows],
+    });
+  }
+
+  // The recogniser's own limits, as data rather than prose. Someone reading the
+  // workbook without the PDF still needs to know what was never looked for.
+  if (Array.isArray(feats.knownLimits) && feats.knownLimits.length) {
+    sheets.push({
+      name: 'Recogniser limits',
+      title: 'What the feature recogniser cannot see',
+      subtitle: 'Reported by the engine itself, so this list cannot drift out of date with what the code actually does. An absent feature here means "not looked for", which is not the same as "not present".',
+      headerRow: 0, zebra: true,
+      colWidths: [6, 110], wrapCols: [1],
+      rows: [['#', 'Limit'], ...feats.knownLimits.map((l: string, i: number) => [i + 1, l])],
     });
   }
 

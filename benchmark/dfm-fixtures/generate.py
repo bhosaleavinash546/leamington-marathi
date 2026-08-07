@@ -20,6 +20,7 @@ files are byte-comparable across runs, so they can be committed and CI need not
 have OCP installed to READ them.
 """
 import math
+import re
 import os
 import sys
 
@@ -32,11 +33,28 @@ from OCP.Interface import Interface_Static
 from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
 
 
+# OCCT stamps the wall-clock time into the STEP header, so every regeneration
+# rewrote all sixteen committed fixtures with nothing but a new timestamp — the
+# docstring below promised byte-comparable output and did not deliver it. The
+# stamp is normalised to a fixed value so a diff on a fixture means the GEOMETRY
+# moved, which is the only reason anyone should be reviewing one.
+_EPOCH_STAMP = "1970-01-01T00:00:00"
+_STAMP_RE = re.compile(rb"(FILE_NAME\([^,]*,')[^']*(')")
+
+
 def _write(shape, path):
     Interface_Static.SetCVal_s("write.step.product.name", os.path.basename(path))
     w = STEPControl_Writer()
     w.Transfer(shape, STEPControl_AsIs)
     w.Write(path)
+    with open(path, "rb") as fh:
+        data = fh.read()
+    data, n = _STAMP_RE.subn(rb"\g<1>" + _EPOCH_STAMP.encode() + rb"\g<2>", data, count=1)
+    if n != 1:
+        raise RuntimeError(f"{path}: could not normalise the STEP timestamp — "
+                           "the header format changed and fixtures would churn")
+    with open(path, "wb") as fh:
+        fh.write(data)
     return path
 
 
@@ -315,6 +333,56 @@ def ribbed_plate(outdir):
     }
 
 
+def surface_only(outdir):
+    """A single trimmed FACE — no solid anywhere in the file.
+
+    A very common CAD export, and the shape that crashed the analyser: fewer than
+    eight valid thickness rays meant `wall_thickness` returned a dict flagged
+    "insufficient" instead of None, every `if wall_stats:` guard passed, and the
+    next line raised KeyError 'meanMm' -> HTTP 422 with a Python traceback
+    fragment in the message. The contract is None, and this fixture holds it.
+    """
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace
+    from OCP.gp import gp_Pln
+    f = BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1)),
+                                0.0, 80.0, 0.0, 60.0).Face()
+    return _write(f, os.path.join(outdir, "degenerate-surface-only.step")), "no solid"
+
+
+def metres_part(outdir):
+    """The plate-two-holes geometry drawn in METRES: 0.06 x 0.04 x 0.01.
+
+    Numerically valid, physically absurd, and it used to return HTTP 200 with a
+    confident report claiming a 0.05 mm wall and three "wall below minimum"
+    findings. Findings computed at the wrong scale are worse than no findings, so
+    the truth here is that every dimensional rule must be WITHHELD.
+    """
+    s = BRepPrimAPI_MakeBox(0.06, 0.04, 0.01).Shape()
+    for c, r, d in (((0.02, 0.02, -0.001), 0.005, 0.012), ((0.04, 0.02, 0.004), 0.004, 0.007)):
+        s = BRepAlgoAPI_Cut(s, BRepPrimAPI_MakeCylinder(
+            gp_Ax2(gp_Pnt(*c), gp_Dir(0, 0, 1)), r, d).Shape()).Shape()
+    return _write(s, os.path.join(outdir, "degenerate-metres.step")), "modelled in metres"
+
+
+def unreadable_files(outdir):
+    """An empty file and a file of bytes that are not STEP at all.
+
+    OCCT writes its parser errors — with ANSI colour codes — to STDOUT, ahead of
+    our JSON, so `JSON.parse(stdout)` surfaced "****ERR StepFile: Undefined
+    Parsing..." to the user. The truth is a clean, typed, human-readable error
+    and no kernel internals.
+    """
+    empty = os.path.join(outdir, "degenerate-empty.step")
+    with open(empty, "wb") as fh:
+        fh.write(b"")
+    junk = os.path.join(outdir, "degenerate-garbage.step")
+    with open(junk, "wb") as fh:
+        # Deterministic pseudo-random bytes: the fixture must be byte-identical
+        # across runs so it can be committed like every other one here.
+        fh.write(bytes((i * 37 + 11) % 256 for i in range(4096)))
+    return junk, "not readable geometry"
+
+
 def bolted_assembly(outdir):
     """A 3-solid assembly: one 80x50x10 plate and TWO identical Ø8 x 25 pins.
 
@@ -340,7 +408,12 @@ def main():
     for fn in (plate_two_holes, frustum_draft3, box_side_hole, shell_wall25, boss_plate,
                counterbore_plate, countersink_plate, slot_vs_pocket, through_hole_and_pocket,
                filleted_pocket, filleted_slot, chamfered_box, thin_plate,
-               folded_bracket, ribbed_plate, bolted_assembly):
+               folded_bracket, ribbed_plate, bolted_assembly,
+               # Degenerate inputs. Every well-formed fixture above passed while
+               # these four crashed, returned kernel internals, or produced
+               # confident nonsense — which is exactly how a 100% gate coexisted
+               # with four live bugs.
+               surface_only, metres_part, unreadable_files):
         path, truth = fn(outdir)
         print(f"  {os.path.basename(path):26s}  analytic truth: {truth}")
     print(f"wrote fixtures to {outdir}")

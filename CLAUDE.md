@@ -23,7 +23,7 @@ npm run benchmark:cost     # should-cost vs 16 reference parts (--min-hit 0.90 -
 npm run benchmark          # CAD process inference
 node benchmark/pcb-run.mjs         # PCB engine v2 vs v1 gate
 node benchmark/stamping-run.mjs    # feature-based stamping vs mass estimate
-node benchmark/dfm-run.mjs --min 1.0        # DFM geometry gate (64 checks, 100%)
+node benchmark/dfm-run.mjs --min 1.0        # DFM geometry gate (86 checks, 100%)
 python3 benchmark/dfm-fixtures/generate.py  # regenerate the analytic STEP fixtures
 
 # LLM-layer evals (cost real tokens; skip cleanly with exit 0 when ANTHROPIC_API_KEY unset)

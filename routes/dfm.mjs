@@ -15,7 +15,7 @@ import multer from 'multer';
 import { analyzeGeometry, decomposeAssembly } from '../cad-engine/cad-geometry-bridge.mjs';
 import { runDfmRules, runAllDfmRules } from '../dfm-rules.mjs';
 import { priceFindings, summarisePricedImpact } from '../dfm-cost-impact.mjs';
-import { DFM_RULES, PROCESS_FAMILIES } from '../dfm-rule-catalogue.mjs';
+import { DFM_RULES, PROCESS_FAMILIES, UNWRITTEN_RULES } from '../dfm-rule-catalogue.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
 import { TIME_MODEL } from '../dfa-time-model.mjs';
 import { MATERIALS, REGIONS } from '../costing-engine.mjs';
@@ -64,6 +64,10 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
         rationale: r.rationale, fix: r.fix, source: r.source,
       })),
       timeModel: { version: TIME_MODEL.version, basis: TIME_MODEL.basis },
+      // Named so a reader can see the SHAPE of the gap, not just the rules that
+      // exist. A catalogue that lists only what it covers invites the reader to
+      // assume the rest was checked and passed.
+      unwritten: UNWRITTEN_RULES,
     });
   });
 

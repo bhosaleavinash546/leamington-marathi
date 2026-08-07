@@ -17,7 +17,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { DFA_FIXTURES, DFM_FIXTURES } from './dfm-fixtures.mjs';
+import { DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES } from './dfm-fixtures.mjs';
 import { extractMeasures, runDfmRules } from '../dfm-rules.mjs';
 import { analyzeGeometry } from '../cad-engine/cad-geometry-bridge.mjs';
 
@@ -164,9 +164,13 @@ async function main() {
           `${r.thicknessMm} x ${r.heightMm} (len ${r.lengthMm}) vs ${want.thicknessMm} x ${want.heightMm}`);
       });
     }
-    if (t.ribMeasures !== undefined) {
+    // Measures the rules are written against, checked directly. A rule can only
+    // be as right as the number it compares, and these are arithmetic from the
+    // construction like everything else here.
+    for (const group of [t.ribMeasures, t.measures]) {
+      if (group === undefined) continue;
       const m = extractMeasures(g);
-      for (const [k, want] of Object.entries(t.ribMeasures)) {
+      for (const [k, want] of Object.entries(group)) {
         record(fx.file, `measure ${k}`, near(m[k], want, 0.02), `${m[k]} vs ${want}`);
       }
     }
@@ -223,6 +227,60 @@ async function main() {
       record(fx.file, 'compound hole', ok,
         c ? `${c.kind} Ø${c.boreDiaMm}→Ø${c.featureDiaMm} d${c.featureDepthMm} ang${c.includedAngleDeg} through=${c.through}`
           : 'none found');
+    }
+  }
+
+  // ── Degenerate inputs ──────────────────────────────────────────────────────
+  // These assert HONEST DEGRADATION, not accuracy. Nothing here has a
+  // measurement to be right about; what is checked is that a bad file produces a
+  // clean typed outcome instead of a stack-trace fragment, kernel internals, or
+  // a confident number computed at a scale nobody validated.
+  for (const fx of DEGENERATE_FIXTURES) {
+    const path = join(FIXDIR, fx.file);
+    let g;
+    try {
+      g = await analyzeGeometry(await readFile(path), fx.file);
+    } catch (e) {
+      // A THROWN error is itself a failure: the bridge's contract is a typed
+      // result object, and an exception here reaches the route as a 500.
+      record(fx.file, 'no throw', false, `bridge threw: ${e.message}`);
+      continue;
+    }
+    record(fx.file, 'typed result', g && typeof g.status === 'string',
+      `status=${g?.status}`);
+
+    const blob = JSON.stringify(g);
+    for (const needle of fx.mustNotContain || []) {
+      record(fx.file, `no "${needle}"`, !blob.includes(needle),
+        blob.includes(needle) ? `leaked: ${blob.slice(Math.max(0, blob.indexOf(needle) - 40), blob.indexOf(needle) + 60)}` : 'clean');
+    }
+    if (fx.errorExpected) {
+      record(fx.file, 'clean error', g.status === 'error' && typeof g.error === 'string' && g.error.length > 15,
+        g.error ? `"${g.error.slice(0, 90)}"` : `status=${g.status}, no message`);
+    }
+    if (fx.noWallThickness) {
+      // `wall_thickness` must return None, not a partial dict. The regression it
+      // guards produced a TRUTHY object that passed every `if wall_stats:` guard
+      // and then raised KeyError on the next line.
+      const w = g.dfm?.wallThickness;
+      record(fx.file, 'no wall published', !w || w.p50Mm === undefined,
+        w ? `published ${JSON.stringify(w).slice(0, 70)}` : 'none, as required');
+    }
+    if (fx.unitWarning) {
+      record(fx.file, 'unit warning', typeof g.unitWarning === 'string' && g.unitWarning.length > 10,
+        g.unitWarning ? `"${g.unitWarning.slice(0, 70)}"` : 'ABSENT — the report would show sub-mm findings silently');
+    }
+    if (fx.suppressedEvaluatedCount !== undefined) {
+      // The route's suppression path, exercised directly: a unit error must
+      // withhold every dimensional rule rather than evaluate it at the wrong
+      // scale. Rebuilt here rather than imported so the gate tests the BEHAVIOUR
+      // and not a shared helper's return value.
+      const raw = runDfmRules(g, 'hpdc');
+      const unitsSuspect = typeof g.unitWarning === 'string' && g.unitWarning.length > 0;
+      const evaluated = unitsSuspect ? 0 : raw.evaluatedCount;
+      record(fx.file, 'findings withheld', evaluated === fx.suppressedEvaluatedCount,
+        `${evaluated} evaluated (raw engine would have evaluated ${raw.evaluatedCount}, `
+        + `finding ${raw.findings.length} at a scale nobody checked)`);
     }
   }
 

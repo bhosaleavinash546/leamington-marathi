@@ -55,6 +55,12 @@ export const DFM_RESULT = {
     features: {
       counts: { 'through-hole': 4, 'blind-hole': 8, boss: 2, pocket: 3, 'counterbored-hole': 1, rib: 4 },
       unclassifiedAreaPct: 22.8,
+      knownLimits: [
+        'Through holes carry no concave edge, so they come from the analytic cylinder pass rather than the graph.',
+        'Threads are not recognised; any thread signal is reported unverified.',
+        'GD&T and tolerance callouts are not present in the solid geometry.',
+        'Ribs are found from opposed PLANAR side faces standing on a planar base. A rib with curved sides, or one standing on a freeform wall, is not recognised and its proportions are therefore not checked.',
+      ],
       // A rib table wide enough to test the column stops, with a drafted rib
       // (so the degree sign has to survive pdfSafe) and a rib whose length the
       // recogniser could not measure — the '—' path in every column.

@@ -27,7 +27,7 @@ Express (server.mjs + routes/*) ── better-sqlite3 (data/brainspark.db)
         ├─ cost-tools.mjs         engine-as-LLM-tools + bounded tool loop
         ├─ idea-index.mjs         BM25 retrieval over the idea corpus
         ├─ dfm-rules.mjs          DFM rule evaluator over a catalogue held as
-        │  + dfm-rule-catalogue    DATA (22 rules, 4 process families, each with
+        │  + dfm-rule-catalogue    DATA (26 rules, 4 process families, each with
         │  + dfm-cost-impact       its threshold, unit and cited source); findings
         │                          re-costed through the engines above, or marked
         │                          "not priced" WITH the reason
@@ -66,7 +66,7 @@ Environment variables:
 npm test                          # 139 unit/integration tests (node --test)
 node benchmark/cost-run.mjs       # should-cost accuracy vs reference prices
 node benchmark/run.mjs            # CAD process-inference benchmark
-node benchmark/dfm-run.mjs --min 1.0   # DFM geometry gate — 64 checks, 100% required
+node benchmark/dfm-run.mjs --min 1.0   # DFM geometry gate — 86 checks, 100% required
 ```
 
 The DFM fixtures are **analytic**: a truncated pyramid built with a 3.000 deg

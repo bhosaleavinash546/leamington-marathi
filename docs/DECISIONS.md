@@ -378,3 +378,37 @@ Format: decision · why · what would change it.
     DFA limits block reports "measured on 12 of 40 solids" rather than a binary that hides
     which parts still have a real orientation term. A partial answer that states how partial
     it is beats an all-or-nothing cap in both directions.
+
+36. **The catalogue names the rules it does NOT have (2026).**
+    *Why:* the build plan named about 25 DFM rules; 26 are written and five are deliberately
+    absent — tool reachability, tolerance stack-up, sink/warp prediction, blank nesting, and
+    press tonnage/station count. Each needs a measurement the pipeline does not produce: a
+    reachability sweep, PMI annotations that a STEP solid does not carry, a mould-flow
+    simulation, or an unfolded flat pattern. A rule whose measure never resolves can only
+    ever report NOT EVALUATED, so shipping those five would have raised the advertised rule
+    count while LOWERING the coverage figure on every part forever — exactly the criticism
+    the sheet-metal family earned when all four of its rules depended on measures nothing
+    produced. `UNWRITTEN_RULES` exports each gap with the measurement it would need, and
+    `GET /api/dfm/rules` returns it beside the catalogue. *Changes it:* the recogniser's own
+    `knownLimits` is finally RENDERED — on the page, in the PDF and as its own Excel sheet.
+    It had been emitted since the feature shipped and displayed nowhere, while the PDF
+    carried a hand-written limits list that had gone stale: it told every reader that
+    "sheet-metal rules require bend recognition, which is not yet implemented" for the entire
+    life of the wave that implemented it. A hand-maintained capability list drifts; the
+    engine's own does not.
+
+37. **Degenerate fixtures are part of the gate, not a separate concern (2026).**
+    *Why:* every accuracy fixture is a well-formed, sharp-edged, millimetre solid, and that
+    is precisely how a 100% gate coexisted with four live bugs — a surface model crashed with
+    `KeyError 'meanMm'`, a metre-scale part returned HTTP 200 and a confident 0.05 mm wall
+    with three findings, and an unreadable file showed the user OCCT's own ANSI-coloured
+    parser output. The bugs were fixed and proven live; no fixture held them dead. Four now
+    do, and their truth is not a measurement — it is that the tool degrades HONESTLY: a typed
+    result, never a stack-trace fragment or kernel internals, no wall published for a shape
+    with no thickness, and every dimensional rule WITHHELD when the units are suspect (the
+    gate records that the raw engine would have evaluated 3 rules and found 2, at a scale
+    nobody checked). *Changes it:* `generate.py` now normalises the STEP header timestamp.
+    OCCT stamps wall-clock time into every file, so each regeneration rewrote all sixteen
+    committed fixtures with nothing but a new date — the module docstring promised
+    byte-comparable output and did not deliver it. A fixture diff should mean the geometry
+    moved, which is the only reason anyone should be reviewing one.

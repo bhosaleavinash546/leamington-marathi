@@ -44,7 +44,7 @@ AI is deliberately not on the path that produces the numbers.
 
 | Method | Path | Notes |
 |---|---|---|
-| GET | `/api/dfm/rules` | the rule catalogue: 22 rules across 4 process families, each with its threshold, unit, rationale, fix and cited **source**, plus the DFA time-model provenance. Fetchable before anything is uploaded, so a user can see what *will* be checked |
+| GET | `/api/dfm/rules` | the rule catalogue: **26 rules** across 4 process families, each with its threshold, unit, rationale, fix and cited **source**, plus the DFA time-model provenance and `unwritten` — the 5 design drivers deliberately NOT implemented, each naming the measurement it would need. Fetchable before anything is uploaded, so a user can see what *will* be checked and what never will be |
 | POST | `/api/dfm/analyze` | multipart `cadFile` (STEP/IGES only — an STL has no topology). Optional `material`, `costProcess`, `region`, `annualVolume`, `toleranceClass`, `surfaceFinish`, or an explicit `process` family. Returns measured geometry (`dfm.draft`, `dfm.wallThickness`, `dfm.features` incl. ribs and prismatic pockets/slots, `dfm.sheetMetal`, `dfm.setups`), per-family rule `results`, priced cost impact, and **`analysisLimits`** |
 | POST | `/api/dfm/dfa` | multipart `cadFile` = a multi-solid STEP assembly, plus `options` JSON (`region` or `labourRateEurPerHr`, `density`/`densityByIndex`, `answers`, `securingByIndex`, `insertionFlags`, `calibration`). Returns the decomposition (per-solid mass, bbox, **measured** α/β symmetry, shape-signature instance groups, contacts) and the DFA analysis |
 
@@ -57,6 +57,11 @@ Three behaviours worth knowing before you integrate:
 - **A unit error withholds the numbers.** If the model looks like it is in metres,
   every dimensional finding is suppressed and re-reported as not-evaluated with
   that reason — findings computed at the wrong scale are worse than none.
+- **The catalogue states its own gaps.** `unwritten` lists the drivers that have
+  no rule — tool reachability, tolerance stack-up, sink/warp, blank nesting,
+  press tonnage — because each needs a measurement the pipeline does not produce.
+  A rule with no measurement can only ever report NOT EVALUATED, so shipping one
+  would inflate the rule count while lowering coverage on every part forever.
 - **The DFA index is withheld until a human answers.** `theoreticalMinParts` and
   `designEfficiencyPct` stay `null` until the three minimum-part questions are
   answered per part; geometry only *proposes* them.

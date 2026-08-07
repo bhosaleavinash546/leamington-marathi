@@ -86,6 +86,21 @@ export const DFM_RULES = [
     source: 'General machining design guidance (workpiece rigidity).',
   },
 
+  {
+    id: 'mach-hole-depth-ratio',
+    process: 'machining',
+    severity: 'medium',
+    title: 'Hole deeper than five diameters',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 5,
+    unit: 'depth/dia',
+    rationale:
+      'Past about 5x diameter a standard jobber drill stops clearing its own chips, so the cycle becomes a peck cycle — retract, clear, re-enter — and the tool wanders off centre. Past roughly 10x it is a gun-drilling or coolant-through operation on different equipment.',
+    fix: 'Open the hole diameter, drill from both ends where the tolerance allows, or accept the deep-hole process and price it as one.',
+    source: 'General machining design guidance (chip evacuation and drill L/D limits).',
+  },
+
   // ── Injection moulding ─────────────────────────────────────────────────────
   {
     id: 'im-wall-thickness-range',
@@ -195,6 +210,21 @@ export const DFM_RULES = [
     source: 'Injection-moulding design guidance (rib height <= 3x nominal wall).',
   },
 
+  {
+    id: 'im-boss-height',
+    process: 'injection-moulding',
+    severity: 'medium',
+    title: 'Boss taller than three times its diameter',
+    measure: 'maxBossHeightToDia',
+    compare: 'lte',
+    threshold: 3,
+    unit: 'height/dia',
+    rationale:
+      'A tall boss is formed by a long, slender core pin standing alone in the cavity. The melt front pushes it sideways, so the hole drifts off position and the pin fatigues; the boss itself is also a thick section that sinks on the show surface behind it.',
+    fix: 'Shorten the boss, or support it with gussets and blend it into a nearby wall so the core pin is not standing free.',
+    source: 'Injection-moulding design guidance (boss height <= 3x outside diameter; support tall bosses with ribs or gussets).',
+  },
+
   // ── High-pressure die casting ──────────────────────────────────────────────
   {
     id: 'hpdc-wall-thickness-range',
@@ -252,6 +282,35 @@ export const DFM_RULES = [
       'A die-cast undercut needs a slide or a loose core. Both add die cost and maintenance, and a loose core adds a manual handling step to every shot.',
     fix: 'Reorient the part to the draw, move the parting line, or price the slide explicitly.',
     source: 'Die-casting design guidance.',
+  },
+
+  {
+    id: 'hpdc-wall-uniformity',
+    process: 'hpdc',
+    severity: 'medium',
+    title: 'Non-uniform wall thickness',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.6,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'A heavy section next to a thin one is the last place to freeze and has no feed path once the gate has solidified, so it draws shrinkage porosity. It also distorts the casting as the two sections contract at different times.',
+    fix: 'Core out the heavy sections to a uniform nominal wall and blend the transitions rather than stepping them.',
+    source: 'Die-casting design guidance (uniform section thickness; heavy sections trap shrinkage porosity).',
+  },
+  {
+    id: 'hpdc-core-ld',
+    process: 'hpdc',
+    severity: 'high',
+    title: 'Cored hole beyond the core-pin slenderness limit',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 10,
+    unit: 'core L/D',
+    rationale:
+      'A cored hole is a steel pin standing in the die with molten aluminium injected around it at speed. Beyond about 10:1 the pin deflects under that pressure, the hole drifts, and the pin becomes a consumable that breaks mid-run and stops the cell.',
+    fix: 'Shorten the cored depth and drill the rest, open the diameter, or core from both ends so each pin is half the length.',
+    source: 'Die-casting design guidance (core pin L/D <= 10:1 for aluminium).',
   },
 
   // A die-cast rib may be RELATIVELY THICKER than a moulded one, and the band is
@@ -358,6 +417,47 @@ export const DFM_RULES = [
       'A flange shorter than about three thicknesses gives the press-brake tooling nothing to hold, so the bend wanders and the angle is not repeatable.',
     fix: 'Lengthen the flange to at least 3x thickness, or form it as part of a larger feature and trim after.',
     source: 'Sheet-metal design guidance (minimum flange ~3x thickness).',
+  },
+];
+
+/**
+ * Rules deliberately NOT in the catalogue, and why.
+ *
+ * Each of these was named in the build plan and is a real design driver. None is
+ * written, because every one needs a measurement the geometry pipeline does not
+ * produce — and a rule with no measurement can only ever report NOT EVALUATED.
+ * Shipping five of those would inflate the rule count while lowering the
+ * coverage figure on every part forever, which is precisely the criticism that
+ * the sheet-metal family earned before bend recognition existed.
+ *
+ * This list is exported so the report can state the gap rather than leave a
+ * reader to infer that the catalogue is complete.
+ */
+export const UNWRITTEN_RULES = [
+  {
+    topic: 'Tool access and reachability (machining)',
+    needs: 'A reachability sweep per feature — which tool lengths and approach angles can physically get to each floor and wall without the holder fouling.',
+    proxy: 'Setup count is the closest thing the engine measures, and it is already a rule.',
+  },
+  {
+    topic: 'Tolerance stack-up (machining)',
+    needs: 'GD&T and datum callouts, which live in the drawing or in PMI annotations — not in the solid geometry a STEP file carries.',
+    proxy: null,
+  },
+  {
+    topic: 'Sink and warp prediction (injection moulding)',
+    needs: 'A mould-flow simulation: fill pattern, cooling layout and differential shrinkage.',
+    proxy: 'Wall uniformity and rib proportions cover the two geometric causes the engine CAN see.',
+  },
+  {
+    topic: 'Blank nesting utilisation (sheet metal)',
+    needs: 'A flat pattern and a strip layout. Unfolding a formed part is a solver in its own right and the recogniser does not do it.',
+    proxy: null,
+  },
+  {
+    topic: 'Press tonnage and station count (sheet metal)',
+    needs: 'Cut perimeter from the flat pattern, plus a progressive-die strip layout. The same unfolding gap as nesting.',
+    proxy: 'stampingFeatureCost estimates forming cost from the recognised bend count, which is a cost output rather than a design rule.',
   },
 ];
 

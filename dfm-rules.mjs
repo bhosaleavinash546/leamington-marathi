@@ -41,6 +41,18 @@ export function extractMeasures(geo = {}) {
   // abstain, which is the correct answer for a part whose wall could not be
   // measured. A rib thickness divided by a guessed wall would look exactly like
   // a measurement in the report.
+  // The analytic cylinder pass, which reports diameter and depth exactly from
+  // the kernel. Worst case across the part, so one bad hole is not averaged away
+  // by twenty good ones.
+  const table = Array.isArray(geo.featureTable) ? geo.featureTable : [];
+  const ratioOverTable = (kind, overKey, byKey) => {
+    const vals = table
+      .filter(f => f.kind === kind)
+      .map(f => Number(f[overKey]) / Number(f[byKey]))
+      .filter(v => Number.isFinite(v) && v > 0);
+    return vals.length ? Math.round(Math.max(...vals) * 100) / 100 : undefined;
+  };
+
   const ribs = Array.isArray(features.ribs) ? features.ribs : [];
   const nominalWall = num(wall.p50Mm);
   const ribRatio = (pick, key) => {
@@ -63,6 +75,13 @@ export function extractMeasures(geo = {}) {
     minWallDraftDeg: num(draft.minWallDraftDeg),
     undercutFaceCount: num(draft.undercutFaceCount),
     setupCount: num(setups.estimatedSetupCount),
+
+    // ── Slenderness, from the analytic cylinder pass ──
+    // A hole is a drill on a machined part and a CORE PIN on a cast one, so the
+    // same measured depth/diameter answers two different questions and each
+    // family sets its own limit against it.
+    maxHoleDepthToDia: ratioOverTable('hole', 'depthMm', 'diaMm'),
+    maxBossHeightToDia: ratioOverTable('boss', 'depthMm', 'diaMm'),
 
     // ── Ribs, as proportions of the nominal wall ──
     maxRibThicknessToWall: ribRatio(Math.max, 'thicknessMm'),

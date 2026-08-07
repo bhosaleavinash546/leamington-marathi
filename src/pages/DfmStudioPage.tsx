@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Upload, ShieldCheck, AlertTriangle, HelpCircle, FileDown, Table2,
-  Ruler, Layers, Boxes, Info, CheckCircle2, MinusCircle,
+  Ruler, Layers, Boxes, Info, CheckCircle2, MinusCircle, ChevronRight,
 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import CadViewer3D from '../components/CadViewer3D';
@@ -341,6 +341,28 @@ export default function DfmStudioPage() {
                   value={String(result.geometry?.setupAnalysis?.estimatedSetupCount ?? '—')} />
               </div>
             </div>
+
+            {/* What the RECOGNISER itself says it cannot do. The engine has
+                emitted this list since the feature shipped and nothing rendered
+                it, so a reader had no way to tell "no ribs on this part" from
+                "ribs with curved sides are not recognised". */}
+            {Array.isArray(feats.knownLimits) && feats.knownLimits.length > 0 && (
+              <details className="bg-navy-900 border border-white/10 rounded-2xl p-5 group">
+                <summary className="text-slate-500 text-xs uppercase tracking-wider cursor-pointer
+                                    marker:content-none flex items-center gap-2
+                                    focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 rounded">
+                  <ChevronRight size={13} className="transition-transform group-open:rotate-90" aria-hidden="true" />
+                  What the feature recogniser cannot see ({feats.knownLimits.length})
+                </summary>
+                <ul className="mt-3 space-y-2">
+                  {feats.knownLimits.map((l: string, i: number) => (
+                    <li key={i} className="text-slate-400 text-xs flex gap-2">
+                      <span className="text-slate-600 shrink-0" aria-hidden="true">·</span>{l}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
 
             {/* Ribs, with the ratios the rules are actually written against.
                 A "3x rib" count says nothing; the proportions are the finding. */}
