@@ -1093,6 +1093,289 @@ def _try_detect_hardware(wrapped):
 	    return {"available": False, "note": f"detection error: {str(e)[:120]}"}
 
 
+# ─── Manufacturing feature substrate (geometric DFM) ─────────────────────────
+
+def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.0),
+                                    fill_ratio=None, max_faces: int = 4000) -> dict:
+    """Per-feature manufacturing substrate — the unit geometric DFM analyses.
+
+    The rest of this kernel reports AGGREGATES: `undercutFaceCount: 7` tells you
+    seven faces are bad but not WHICH, so no downstream finding can be specific
+    or clickable. Every commercial DFM tool (aPriori's Geometric Cost Drivers,
+    HCL DFMPro's feature recognition) makes the feature the unit of analysis
+    instead, which is what this produces.
+
+    Each record carries `faceIds` — 1-based indices into the same
+    TopTools_IndexedMapOfShape the viewer's `triFace` sidecar uses — so a DFM
+    finding can highlight the exact faces that triggered it.
+
+    Everything here is MEASURED. Where a quantity cannot be measured reliably
+    the key is absent rather than defaulted, because a fabricated input produces
+    a fabricated warning, and a wrong finding costs more trust than a missing one.
+    """
+    out = {"available": False, "features": [], "note": ""}
+    try:
+        from OCP.TopTools import TopTools_IndexedMapOfShape, TopTools_IndexedDataMapOfShapeListOfShape
+        from OCP.TopExp import TopExp
+        from OCP.TopAbs import TopAbs_FACE, TopAbs_EDGE, TopAbs_Orientation
+        from OCP.TopoDS import TopoDS
+        from OCP.BRepAdaptor import BRepAdaptor_Surface
+        from OCP.GeomAbs import GeomAbs_SurfaceType
+        from OCP.BRepGProp import BRepGProp
+        from OCP.GProp import GProp_GProps
+    except ImportError as e:
+        out["note"] = f"OCP unavailable: {e}"
+        return out
+
+    face_map = TopTools_IndexedMapOfShape()
+    TopExp.MapShapes_s(wrapped, TopAbs_FACE, face_map)
+    n = face_map.Extent()
+    if n == 0:
+        out["note"] = "no faces"
+        return out
+    if n > max_faces:
+        out["note"] = f"{n} faces exceeds the {max_faces} cap — feature extraction skipped"
+        return out
+
+    thickness = _per_face_thickness(wrapped, face_map, diag, max_faces)
+
+    # Single-ray thickness on a SOLID part measures the part's extent, not a
+    # wall: on a 40x20x10 block it returns 40, 20 and 10 from the three face
+    # pairs, and a naive "section change" rule then reports a 4x step that does
+    # not exist. Wall-derived findings are therefore gated on the part actually
+    # being thin-walled. Where it is not, the measurements are still emitted
+    # (they are true distances) but `wallAnalysisValid` is False and no rule may
+    # read sectionRatio or hotSpots. A wrong finding costs more trust than a
+    # missing one.
+    wall_valid = bool(fill_ratio is not None and fill_ratio < 0.55)
+    wall_note = ("" if wall_valid else
+                 f"solid-bodied part (fill ratio {fill_ratio if fill_ratio is not None else 'unknown'}) — "
+                 "single-ray thickness measures part extent, not wall; section-change "
+                 "and hot-spot rules suppressed")
+
+    # ── Pass 1: per-face record ───────────────────────────────────────────────
+    dx, dy, dz = draw_dir
+    d_mag = math.sqrt(dx * dx + dy * dy + dz * dz) or 1.0
+    props = GProp_GProps()
+    F = {}                       # 1-based face id -> record
+    for idx in range(1, n + 1):
+        try:
+            face = TopoDS.Face_s(face_map.FindKey(idx))
+            ad = BRepAdaptor_Surface(face)
+            st = ad.GetType()
+            BRepGProp.SurfaceProperties_s(face, props)
+            area = abs(props.Mass())
+            c = props.CentreOfMass()
+            rec = {
+                "id": idx,
+                "areaMm2": round(area, 3),
+                "centroid": [round(c.X(), 3), round(c.Y(), 3), round(c.Z(), 3)],
+            }
+            if idx in thickness:
+                rec["thicknessMm"] = thickness[idx]
+
+            if st == GeomAbs_SurfaceType.GeomAbs_Plane:
+                rec["type"] = "plane"
+                nrm = ad.Plane().Axis().Direction()
+                nx, ny, nz = nrm.X(), nrm.Y(), nrm.Z()
+                if face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED:
+                    nx, ny, nz = -nx, -ny, -nz
+                rec["normal"] = [round(nx, 5), round(ny, 5), round(nz, 5)]
+                # Draft measured PER FACE, and attributed — the aggregate
+                # `_compute_draft_analysis` counts the same thing and throws the
+                # identity away, which is why no finding could ever name a face.
+                #
+                # Draft is only DEFINED on wall-like faces — those roughly
+                # parallel to the draw. A top or bottom face is perpendicular to
+                # the draw and has no draft; classifying it produces nonsense.
+                # `_compute_draft_analysis` does exactly that today: its test is
+                # `angle > 90.5 -> undercut`, and a flat BOTTOM face has an
+                # angle of 180°, so every bottom face in this tool has been
+                # counted as an undercut. Faces that are not walls are marked
+                # `not_applicable` here rather than given a fictitious angle.
+                cos_a = max(-1.0, min(1.0, (nx * dx + ny * dy + nz * dz) / d_mag))
+                ang = math.degrees(math.acos(cos_a))
+                rec["angleToDrawDeg"] = round(ang, 2)
+                if abs(cos_a) > 0.95:            # normal along ±draw → end face
+                    rec["draftClass"] = "not_applicable"
+                else:
+                    rec["draftDeg"] = round(abs(90.0 - ang), 2)
+                    rec["draftClass"] = ("undercut" if ang > 90.5
+                                         else "zero_draft" if abs(90.0 - ang) < 1.0
+                                         else "drafted")
+            elif st == GeomAbs_SurfaceType.GeomAbs_Cylinder:
+                rec["type"] = "cylinder"
+                cyl = ad.Cylinder()
+                rec["radiusMm"] = round(cyl.Radius(), 4)
+                ax = cyl.Axis().Direction()
+                rec["axis"] = [round(ax.X(), 5), round(ax.Y(), 5), round(ax.Z(), 5)]
+                # Concave (material outside) = hole; convex = boss/shaft. The
+                # face orientation is what distinguishes them.
+                rec["concave"] = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
+                r = cyl.Radius()
+                if r > 1e-6:
+                    # Swept length from area: A = 2*pi*r*L for a full cylinder.
+                    rec["sweptLenMm"] = round(area / (2 * math.pi * r), 3)
+            elif st == GeomAbs_SurfaceType.GeomAbs_Cone:
+                rec["type"] = "cone"
+                rec["halfAngleDeg"] = round(math.degrees(abs(ad.Cone().SemiAngle())), 3)
+            elif st == GeomAbs_SurfaceType.GeomAbs_Sphere:
+                rec["type"] = "sphere"
+                rec["radiusMm"] = round(ad.Sphere().Radius(), 4)
+            elif st == GeomAbs_SurfaceType.GeomAbs_Torus:
+                rec["type"] = "torus"
+                rec["radiusMm"] = round(ad.Torus().MinorRadius(), 4)
+            else:
+                rec["type"] = "freeform"
+            F[idx] = rec
+        except Exception:
+            continue
+
+    # ── Pass 2: adjacency (which faces share an edge) ─────────────────────────
+    # Required for every relational rule — boss-to-wall, rib-to-base-wall,
+    # fillet-at-junction, section-change across a transition.
+    adj = {i: set() for i in F}
+    try:
+        emap = TopTools_IndexedDataMapOfShapeListOfShape()
+        TopExp.MapShapesAndAncestors_s(wrapped, TopAbs_EDGE, TopAbs_FACE, emap)
+        for ei in range(1, emap.Extent() + 1):
+            ids = []
+            it = emap.FindFromIndex(ei)
+            for shp in it:
+                fi = face_map.FindIndex(shp)
+                if fi > 0:
+                    ids.append(fi)
+            for a in ids:
+                for b in ids:
+                    if a != b and a in adj:
+                        adj[a].add(b)
+    except Exception:
+        pass
+
+    # ── Pass 3: assemble features ─────────────────────────────────────────────
+    feats = []
+    used_cyl = set()
+
+    def _thk(i):
+        return F.get(i, {}).get("thicknessMm")
+
+    # Fillets: a small-radius cylinder bridging two faces. Recognised BEFORE
+    # holes so a fillet is never miscounted as a tiny drilled hole.
+    fillet_r_cap = max(0.5, diag * 0.02)
+    for i, r in F.items():
+        if r.get("type") != "cylinder":
+            continue
+        rad = r.get("radiusMm", 0)
+        nb = [j for j in adj.get(i, ()) if F.get(j, {}).get("type") == "plane"]
+        if 0 < rad <= fillet_r_cap and len(nb) >= 2 and not r.get("concave", False):
+            used_cyl.add(i)
+            feats.append({
+                "id": f"FIL{i}", "kind": "fillet", "faceIds": [i],
+                "radiusMm": rad, "areaMm2": r["areaMm2"], "positionMm": r["centroid"],
+                "adjacentFaceIds": nb[:6],
+            })
+
+    # Holes and bosses: group cylinders sharing an axis direction and radius.
+    axis_groups = {}
+    for i, r in F.items():
+        if r.get("type") != "cylinder" or i in used_cyl:
+            continue
+        ax = r.get("axis")
+        if not ax:
+            continue
+        key = (round(abs(ax[0]), 2), round(abs(ax[1]), 2), round(abs(ax[2]), 2),
+               round(r.get("radiusMm", 0), 2), bool(r.get("concave")))
+        axis_groups.setdefault(key, []).append(i)
+
+    for key, ids in axis_groups.items():
+        rad = key[3]
+        concave = key[4]
+        if rad <= 0:
+            continue
+        depth = sum(F[i].get("sweptLenMm", 0) or 0 for i in ids)
+        area = sum(F[i]["areaMm2"] for i in ids)
+        cen = F[ids[0]]["centroid"]
+        dia = round(rad * 2, 3)
+        # Local wall around the feature, from the adjacent planar faces — this
+        # is what the boss-to-wall and hole-to-wall rules need.
+        nbt = [t for j in ids for k in adj.get(j, ()) if (t := _thk(k)) is not None]
+        rec = {
+            "id": ("H" if concave else "B") + str(ids[0]),
+            "kind": "hole" if concave else "boss",
+            "faceIds": sorted(ids),
+            "diaMm": dia,
+            "depthMm": round(depth, 3),
+            "areaMm2": round(area, 3),
+            "positionMm": cen,
+            "axis": F[ids[0]].get("axis"),
+        }
+        if dia > 0:
+            rec["ldRatio"] = round(depth / dia, 3)
+        if nbt:
+            rec["neighbourWallMm"] = round(min(nbt), 3)
+            if concave is False and min(nbt) > 0:
+                # Boss wall ratio drives sink marks on mouldings.
+                rec["bossToWallRatio"] = round(dia / min(nbt), 3)
+        feats.append(rec)
+
+    # Walls / ribs / planar faces, each carrying measured local thickness and
+    # draft, plus the worst section-change across any adjacent face.
+    for i, r in F.items():
+        if r.get("type") != "plane":
+            continue
+        t = r.get("thicknessMm")
+        rec = {
+            "id": f"P{i}", "kind": "planar_face", "faceIds": [i],
+            "areaMm2": r["areaMm2"], "positionMm": r["centroid"],
+        }
+        if t is not None:
+            rec["thicknessMm"] = t
+        # Carry the class even when draft is not applicable, so a rule can tell
+        # "this face is an end face, draft does not apply" apart from "draft was
+        # never measured". They are different, and only one of them is a gap.
+        if "draftClass" in r:
+            rec["draftClass"] = r["draftClass"]
+        if "draftDeg" in r:
+            rec["draftDeg"] = r["draftDeg"]
+        # Section change: the ratio to the thinnest adjacent measured section.
+        # A step change is where castings tear and mouldings sink.
+        if t and wall_valid:
+            nb_t = [x for j in adj.get(i, ()) if (x := _thk(j)) is not None]
+            if nb_t:
+                thin = min(nb_t)
+                if thin > 0:
+                    rec["neighbourMinThicknessMm"] = round(thin, 3)
+                    rec["sectionRatio"] = round(max(t, thin) / min(t, thin), 3)
+        feats.append(rec)
+
+    # ── Hot spots: heavy isolated sections (casting shrinkage porosity) ───────
+    tvals = sorted(v for v in thickness.values() if v and v > 0)
+    hot = []
+    if wall_valid and len(tvals) >= 8:
+        med = tvals[len(tvals) // 2]
+        cap = med * 2.0
+        for i, t in thickness.items():
+            if t > cap and i in F:
+                hot.append({"faceId": i, "thicknessMm": t,
+                            "vsMedianRatio": round(t / med, 2),
+                            "positionMm": F[i]["centroid"]})
+        hot.sort(key=lambda h: -h["thicknessMm"])
+
+    out["available"] = True
+    out["features"] = feats
+    out["faceCount"] = n
+    out["thicknessSampledFaces"] = len(thickness)
+    out["medianThicknessMm"] = round(tvals[len(tvals) // 2], 3) if tvals else None
+    out["hotSpots"] = hot[:25]
+    out["wallAnalysisValid"] = wall_valid
+    out["fillRatio"] = fill_ratio
+    if wall_note:
+        out["note"] = wall_note
+    out["adjacencyAvailable"] = any(adj.values())
+    out["drawDirectionXYZ"] = list(draw_dir)
+    return out
+
+
 def analyze(filepath: str) -> dict:
     try:
         from OCP.BRepGProp import BRepGProp
@@ -1212,6 +1495,19 @@ def analyze(filepath: str) -> dict:
         except Exception:
             draft_info = None
 
+        # ── Manufacturing feature substrate (geometric DFM) ───────────────────
+        # Opt-in: the per-face ray casting and adjacency build are the expensive
+        # part of this kernel, and the costing path does not need them. The
+        # background DFM job sets CV_EXTRACT_FEATURES=1; a normal costing run
+        # pays nothing for this.
+        mfg_features = None
+        if os.environ.get("CV_EXTRACT_FEATURES") == "1":
+            try:
+                _diag = math.sqrt(x_sz ** 2 + y_sz ** 2 + z_sz ** 2) or 1.0
+                mfg_features = _extract_manufacturing_features(wrapped, _diag, fill_ratio=fill_ratio)
+            except Exception as _fe:
+                mfg_features = {"available": False, "features": [], "note": str(_fe)[:160]}
+
         # ── Setup count estimation ────────────────────────────────────────────
         try:
             setup_info = _compute_setup_count(faces)
@@ -1284,6 +1580,7 @@ def analyze(filepath: str) -> dict:
             # ── New precision analysis fields ─────────────────────────────
             "wallThickness": wall_stats,
             "draftAnalysis": draft_info,
+            "manufacturingFeatures": mfg_features,
             "setupAnalysis": setup_info,
             "cncCycleTimeEstimate": cnc_time,
             # ── Parametric cost models ──────────────────────────────────────

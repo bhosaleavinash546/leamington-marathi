@@ -6,6 +6,53 @@ export interface CADGeometry {
 }
 
 /** Raw output from the OCCT Python geometry engine — present only when the engine succeeded. */
+/** One measured manufacturing feature. Absent keys mean NOT MEASURED, never zero. */
+export interface ManufacturingFeature {
+  id: string;
+  kind: 'hole' | 'boss' | 'fillet' | 'planar_face';
+  /** 1-based B-rep face indices — the viewer highlights exactly these. */
+  faceIds: number[];
+  diaMm?: number;
+  depthMm?: number;
+  /** depth / diameter — drives drill reach and tool-deflection rules. */
+  ldRatio?: number;
+  radiusMm?: number;
+  areaMm2?: number;
+  positionMm?: [number, number, number];
+  axis?: [number, number, number];
+  thicknessMm?: number;
+  /** Draft measured on this face. Absent when draftClass is not_applicable. */
+  draftDeg?: number;
+  /** `not_applicable` = an end face, where draft is undefined — not a gap. */
+  draftClass?: 'undercut' | 'zero_draft' | 'drafted' | 'not_applicable';
+  neighbourWallMm?: number;
+  neighbourMinThicknessMm?: number;
+  /** Thick:thin across an adjacent face. Only emitted when wallAnalysisValid. */
+  sectionRatio?: number;
+  bossToWallRatio?: number;
+  adjacentFaceIds?: number[];
+}
+
+export interface ManufacturingFeatureSet {
+  available: boolean;
+  features: ManufacturingFeature[];
+  faceCount?: number;
+  thicknessSampledFaces?: number;
+  medianThicknessMm?: number | null;
+  /**
+   * False on a solid-bodied part, where single-ray thickness measures the
+   * part's extent rather than a wall. Section-change and hot-spot rules MUST
+   * NOT run when this is false — that is the guard against the false-positive
+   * class that makes a DFM tool untrustworthy.
+   */
+  wallAnalysisValid?: boolean;
+  fillRatio?: number | null;
+  hotSpots?: Array<{ faceId: number; thicknessMm: number; vsMedianRatio: number; positionMm: number[] }>;
+  adjacencyAvailable?: boolean;
+  drawDirectionXYZ?: number[];
+  note?: string;
+}
+
 export interface OCCTGeometry {
   status: 'success' | 'error';
   partName?: string;
@@ -93,6 +140,17 @@ export interface OCCTGeometry {
     progressiveDieCostGBP: number;
   };
   manufacturabilityScore?: number;
+  /**
+   * Per-feature manufacturing substrate for geometric DFM — the unit of
+   * analysis, mirroring aPriori's Geometric Cost Drivers and DFMPro's
+   * recognised features.
+   *
+   * Present only when the kernel ran with `CV_EXTRACT_FEATURES=1` (the
+   * background DFM job); a normal costing run does not pay for the per-face
+   * ray casting and adjacency build. `faceIds` index the same face map the
+   * viewer's `triFace` sidecar uses, so a finding can highlight its own cause.
+   */
+  manufacturingFeatures?: ManufacturingFeatureSet | null;
   processSpecificEstimates?: {
     sandCycleTimeHr: number;
     sandCycleTimeHrFerrous: number;
