@@ -34,8 +34,6 @@ export function extractMeasures(geo = {}) {
   const sm = dfm.sheetMetal && dfm.sheetMetal.isSheetMetal ? dfm.sheetMetal : {};
   const num = v => (Number.isFinite(Number(v)) ? Number(v) : undefined);
 
-  const prismatic = Array.isArray(features.prismatic) ? features.prismatic : [];
-
   // Rib proportions are RATIOS against the nominal wall, and the wall is the
   // measured p50 — so the ratio is computed here, at the one place both numbers
   // exist, rather than in the recogniser which has never seen a wall thickness.
@@ -52,11 +50,11 @@ export function extractMeasures(geo = {}) {
     return Math.round((pick(...vals) / nominalWall) * 1000) / 1000;
   };
 
+  // Only measures a RULE is written against belong here. `pocketCount` and
+  // `slotCount` used to be computed for the reader's benefit and were read by
+  // nothing — the UI and both reports take their counts from the recogniser
+  // directly. A measure that no rule consumes is a value nobody validates.
   return {
-    // Reported so the caller can see what the recogniser found even where no
-    // rule is written against it yet.
-    pocketCount: prismatic.filter(p => p.kind === 'pocket').length || undefined,
-    slotCount: prismatic.filter(p => p.kind === 'slot').length || undefined,
     wallP5Mm: num(wall.p5Mm),
     wallP50Mm: num(wall.p50Mm),
     wallP95Mm: num(wall.p95Mm),
@@ -67,7 +65,6 @@ export function extractMeasures(geo = {}) {
     setupCount: num(setups.estimatedSetupCount),
 
     // ── Ribs, as proportions of the nominal wall ──
-    ribCount: ribs.length || undefined,
     maxRibThicknessToWall: ribRatio(Math.max, 'thicknessMm'),
     minRibThicknessToWall: ribRatio(Math.min, 'thicknessMm'),
     maxRibHeightToWall: ribRatio(Math.max, 'heightMm'),

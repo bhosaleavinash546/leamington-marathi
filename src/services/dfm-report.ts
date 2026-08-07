@@ -565,10 +565,20 @@ export async function exportDfmXlsx(data: DfmReportData): Promise<void> {
     f.cost?.priced ? f.cost.basis ?? '' : (f.cost?.reason ?? ''),
     f.fix, f.source,
   ]));
+  // An empty findings sheet is the most dangerous page in the whole export: a
+  // header row over blank space reads as "we checked everything and it is
+  // clean". Which of the two possible reasons applies has to be stated, because
+  // "nothing was breached" and "nothing could be checked" look identical here.
+  const evaluatedTotal = data.results.reduce((s, r) => s + r.evaluatedCount, 0);
+  const ruleTotal = data.results.reduce((s, r) => s + r.ruleCount, 0);
   sheets.push({
     name: 'Findings',
     title: 'DFM findings',
-    subtitle: 'Sorted by severity. A finding with no cost figure is one the engines could not price — the reason is given, and it is not the same as zero.',
+    subtitle: findingRows.length
+      ? 'Sorted by severity. A finding with no cost figure is one the engines could not price — the reason is given, and it is not the same as zero.'
+      : evaluatedTotal
+        ? `No rule was breached. ${evaluatedTotal} of ${ruleTotal} rules could be evaluated on this geometry — see the "Not evaluated" sheet for the remaining ${ruleTotal - evaluatedTotal}.`
+        : `NOT A CLEAN RESULT. None of the ${ruleTotal} rules could be evaluated on this geometry, so this sheet is empty because nothing was checked — not because nothing was wrong. Every rule and its reason is on the "Not evaluated" sheet.`,
     headerRow: 0, zebra: true, autoFilter: true,
     colWidths: [24, 10, 44, 12, 12, 18, 12, 14, 16, 52, 52, 44],
     wrapCols: [2, 9, 10, 11],

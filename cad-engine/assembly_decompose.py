@@ -27,6 +27,7 @@ import json
 import math
 import os
 import sys
+import time
 
 # Rotation angles tested for n-fold symmetry, plus a deliberately awkward angle
 # that only a continuously symmetric body can pass.
@@ -35,8 +36,37 @@ NFOLD_ANGLES = ((2, 180.0), (3, 120.0), (4, 90.0), (6, 60.0))
 # Overlap fraction above which a rotation is treated as mapping the solid onto
 # itself. Tessellation and boolean tolerance keep this off a clean 1.0.
 SYM_TOL = 0.995
-# Symmetry testing runs booleans, so it is capped on large assemblies.
-MAX_SYMMETRY_PARTS = 60
+# Symmetry testing runs booleans, and the cost is driven by FACE COUNT, not by
+# how many solids there are. Measured on this machine (rotate-and-intersect, one
+# solid at a time):
+#
+#     faces      6     14     18     26     36
+#     seconds  0.13   2.30   1.63   4.45   7.08
+#
+# — roughly 0.2 s per face once a solid is past a dozen faces. The old cap was
+# 60 SOLIDS with no reference to their complexity, set without measurement: 60
+# solids of the 36-face part above would take 425 s against the bridge's 120 s
+# timeout, and the user would get a bare "timed out" after two minutes with no
+# partial result. Every real automotive part is well past 36 faces.
+#
+# So the budget is WALL CLOCK, which is robust to any geometry, and it degrades
+# per solid: whatever is measured before the deadline keeps its symmetry and the
+# rest are marked unmeasured with the count. A partial answer that says how
+# partial it is beats an all-or-nothing cap in both directions.
+SYMMETRY_BUDGET_S = 45.0
+# One monster solid must not consume the whole budget on its own. At the rate
+# above a 150-face solid is about 33 s, so anything larger is skipped
+# individually rather than starving every solid behind it.
+MAX_SYMMETRY_FACES = 150
+
+
+def _face_count(shape):
+    from OCP.TopAbs import TopAbs_FACE
+    from OCP.TopExp import TopExp
+    from OCP.TopTools import TopTools_IndexedMapOfShape
+    m = TopTools_IndexedMapOfShape()
+    TopExp.MapShapes_s(shape, TopAbs_FACE, m)
+    return m.Size()
 
 
 def _vol(shape):
@@ -250,7 +280,8 @@ def decompose(filepath):
     if not solids:
         return {"status": "error", "error": "no solids found — the file may be a surface model"}
 
-    do_symmetry = len(solids) <= MAX_SYMMETRY_PARTS
+    deadline = time.monotonic() + SYMMETRY_BUDGET_S
+    symmetry_done = 0
     parts = []
     for i, s in enumerate(solids):
         try:
@@ -269,11 +300,24 @@ def decompose(filepath):
                 "principalMoments": [round(m, 1) for m in moments],
                 "signature": shape_signature(vol, moments, bbox),
             }
-            part["symmetry"] = measure_symmetry(s) if do_symmetry else {
-                "measured": False,
-                "reason": f"assembly has {len(solids)} solids; symmetry testing is capped at "
-                          f"{MAX_SYMMETRY_PARTS} to stay inside the analysis timeout",
-            }
+            nfaces = _face_count(s)
+            if nfaces > MAX_SYMMETRY_FACES:
+                part["symmetry"] = {
+                    "measured": False,
+                    "reason": f"this solid has {nfaces} faces; symmetry testing is skipped above "
+                              f"{MAX_SYMMETRY_FACES} so one large part cannot consume the whole "
+                              f"{SYMMETRY_BUDGET_S:.0f} s budget",
+                }
+            elif time.monotonic() >= deadline:
+                part["symmetry"] = {
+                    "measured": False,
+                    "reason": f"the {SYMMETRY_BUDGET_S:.0f} s symmetry budget was spent after "
+                              f"{symmetry_done} of {len(solids)} solids; the rest are unmeasured "
+                              f"rather than the whole analysis timing out",
+                }
+            else:
+                part["symmetry"] = measure_symmetry(s)
+                symmetry_done += 1
             parts.append(part)
         except Exception as e:
             parts.append({"index": i, "name": names.get(i) or f"solid-{i + 1}",
@@ -301,7 +345,8 @@ def decompose(filepath):
         "instanceGroups": instance_groups,
         "contacts": contacts,
         "contactsTruncated": truncated,
-        "symmetryMeasured": do_symmetry,
+        "symmetryMeasured": symmetry_done == len(solids),
+        "symmetryMeasuredCount": symmetry_done,
         "notes": [
             "Symmetry is measured by rotating each solid and intersecting it with "
             "itself, not inferred from inertia — equal principal moments are "

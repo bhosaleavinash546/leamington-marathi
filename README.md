@@ -26,6 +26,17 @@ Express (server.mjs + routes/*) ── better-sqlite3 (data/brainspark.db)
         ├─ carbon.mjs             CO2e/part + indicative CBAM € (same drivers)
         ├─ cost-tools.mjs         engine-as-LLM-tools + bounded tool loop
         ├─ idea-index.mjs         BM25 retrieval over the idea corpus
+        ├─ dfm-rules.mjs          DFM rule evaluator over a catalogue held as
+        │  + dfm-rule-catalogue    DATA (22 rules, 4 process families, each with
+        │  + dfm-cost-impact       its threshold, unit and cited source); findings
+        │                          re-costed through the engines above, or marked
+        │                          "not priced" WITH the reason
+        ├─ dfa-engine.mjs         assembly DFA: instance grouping, handling and
+        │  + dfa-time-model        insertion times from our own MTM-structured,
+        │                          calibratable model (NOT Boothroyd's tables)
+        ├─ cad-engine/*.py        OpenCascade: tessellation draft/undercut/wall
+        │                         measurement, AAG feature recognition, assembly
+        │                         decomposition with MEASURED alpha/beta symmetry
         └─ workers/cad-worker.mjs STEP parsing off the event loop
 ```
 
@@ -55,7 +66,15 @@ Environment variables:
 npm test                          # 139 unit/integration tests (node --test)
 node benchmark/cost-run.mjs       # should-cost accuracy vs reference prices
 node benchmark/run.mjs            # CAD process-inference benchmark
+node benchmark/dfm-run.mjs --min 1.0   # DFM geometry gate — 64 checks, 100% required
 ```
+
+The DFM fixtures are **analytic**: a truncated pyramid built with a 3.000 deg
+taper must measure 3.000 deg, a shell built with a 2.50 mm wall must measure
+2.50 mm, a rib built 5.0 x 24 mm must measure 5.0 x 24. None of the truth is
+copied back from engine output, which is the only thing that makes it a gate
+rather than a change detector. It skips cleanly (exit 0) where `cadquery-ocp`
+is unavailable, and says it skipped rather than reporting a pass.
 
 Accuracy is a **measured number**, not a claim: the cost benchmark scores the
 production engine against 16 reference parts (castings, forgings, machining,
@@ -74,6 +93,15 @@ MAPE 8.3%, P10–P90 band coverage 87.5%.** CI fails if it regresses.
   refits to your price reality (index-rebased so old quotes don't bias).
 - **Engine-verified AI** — chat and cost-down call the engine via tool-use;
   marketplace ideas carry `engineCheck` where the move is engine-expressible.
+- **DFM / DFA from geometry** — upload a STEP file and an OpenCascade kernel
+  measures it: draft and wall thickness on the tessellation (so freeform
+  castings are analysed, not skipped), holes/counterbores/pockets/slots/ribs/
+  bends from the topology. No LLM is on the path that produces any of it.
+- **Three-state rules** — a DFM rule passes, fails, or is **NOT EVALUATED** with
+  the reason its measurement was unavailable. Coverage is printed beside every
+  score and the score is `null`, not 100, when nothing could be checked. The
+  DFA design-efficiency index is withheld until a human answers the three
+  minimum-part questions, which are about intent and not derivable from a solid.
 - **Honest provenance** — every number is labelled: engine-computed vs
   un-grounded estimate, live vs static price, verified vs unverified benchmark.
 

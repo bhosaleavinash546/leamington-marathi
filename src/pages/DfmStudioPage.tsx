@@ -183,19 +183,30 @@ export default function DfmStudioPage() {
 
         {/* Input */}
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-6 mb-6">
+          {/* The drop target stays a div because dragging has no keyboard
+              equivalent — but the CHOOSE action is a real button, so the page is
+              operable without a mouse. It was a bare div with onClick, which no
+              keyboard or screen-reader user could reach at all. */}
           <div
             onClick={() => inputRef.current?.click()}
             onDragOver={e => e.preventDefault()}
             onDrop={e => { e.preventDefault(); pick(e.dataTransfer.files?.[0] ?? null); }}
             className="border-2 border-dashed border-white/15 rounded-xl p-8 text-center cursor-pointer hover:border-gold-500/40 transition-colors"
           >
-            <Upload size={28} className="mx-auto text-slate-500 mb-2" />
-            <p className="text-white text-sm font-medium">{file ? file.name : 'Drop a STEP or IGES file, or click to browse'}</p>
+            <Upload size={28} className="mx-auto text-slate-500 mb-2" aria-hidden="true" />
+            <p className="text-white text-sm font-medium">{file ? file.name : 'Drop a STEP or IGES file, or choose one'}</p>
             <p className="text-slate-500 text-xs mt-1">
               B-rep geometry only. An STL is a triangle mesh with no topology, so draft, undercuts and features cannot be measured from it.
             </p>
+            <button type="button"
+              onClick={e => { e.stopPropagation(); inputRef.current?.click(); }}
+              className="mt-3 px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-medium
+                         focus:outline-none focus:ring-2 focus:ring-gold-500/60"
+            >
+              {file ? 'Choose a different file' : 'Choose CAD file'}
+            </button>
             <input ref={inputRef} type="file" accept=".step,.stp,.iges,.igs" className="hidden"
-              aria-label="CAD file" onChange={e => pick(e.target.files?.[0] ?? null)} />
+              tabIndex={-1} aria-hidden="true" onChange={e => pick(e.target.files?.[0] ?? null)} />
           </div>
 
           <div className="grid sm:grid-cols-4 gap-3 mt-4">
@@ -577,7 +588,15 @@ function Metric({ label, value, hint }: { label: string; value: string; hint?: s
     <div>
       <p className="text-slate-500 text-[11px] uppercase tracking-wider flex items-center gap-1">
         {label}
-        {hint && <span title={hint}><HelpCircle size={11} className="text-slate-600" /></span>}
+        {/* The hint was a `title` on a span, which a screen reader never
+            announces and a keyboard user can never reveal. The icon is now
+            decorative and the text itself is in the accessibility tree. */}
+        {hint && (
+          <>
+            <HelpCircle size={11} className="text-slate-600" aria-hidden="true" />
+            <span className="sr-only">{hint}</span>
+          </>
+        )}
       </p>
       <p className="text-white font-semibold mt-0.5">{value}</p>
     </div>

@@ -362,3 +362,19 @@ Format: decision · why · what would change it.
     separation. And the ratio against the nominal wall is computed in `dfm-rules.mjs`, the one
     place both the rib and the measured wall exist — when the wall could not be measured the
     ratio stays undefined and all six rib rules abstain instead of dividing by a default.
+
+35. **The symmetry budget is wall clock, measured, and degrades per solid (2026).**
+    *Why:* the DFA symmetry cap was `MAX_SYMMETRY_PARTS = 60` — sixty SOLIDS, with no
+    reference to how complex any of them was, and set without measuring anything. Measured
+    since, one solid at a time: 6 faces 0.13 s, 14 faces 2.30 s, 26 faces 4.45 s, 36 faces
+    7.08 s — roughly 0.2 s per face past a dozen faces. Sixty solids of that 36-face part is
+    425 s against the bridge's 120 s timeout, so the cap would have let a real assembly run
+    straight into a bare "timed out" after two minutes with nothing to show. Every automotive
+    part is well past 36 faces. The budget is now 45 s of wall clock, which is robust to any
+    geometry the cap could not anticipate, plus a 150-face per-solid guard so one large part
+    cannot starve everything queued behind it. *Changes it:* the degradation is PER SOLID.
+    Whatever is measured before the deadline keeps its symmetry; the rest carry
+    `measured: false` with the reason, `symmetryMeasuredCount` says how many made it, and the
+    DFA limits block reports "measured on 12 of 40 solids" rather than a binary that hides
+    which parts still have a real orientation term. A partial answer that states how partial
+    it is beats an all-or-nothing cap in both directions.

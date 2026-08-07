@@ -60,8 +60,16 @@
   --navy-950: 247 249 251;  /* #F7F9FB page background (cool off-white)    */
 
   /* Gold → deeper champagne for AA contrast on light backgrounds */
-  --gold-300: 161 121  20;  /* #A17914 — readable gold for small text/icons */
-  --gold-400: 176 130  16;  /* #B0820E — ~4.7:1 on white                    */
+  /* Ratios below are MEASURED against the light page background (#F7F9FB),
+     not against pure white — the kickers and accents sit on the page, not on a
+     card. gold-400 read #B0820E and was asserted here as "~4.7:1 on white";
+     it is 3.47:1 on white and 3.29:1 on the page, and axe caught all four
+     uppercase kickers on the home page failing AA because of it. A comment
+     claiming a ratio nobody measured is worse than no comment. */
+  --gold-300: 161 121  20;  /* #A17914 — 3.78:1 on the page: LARGE text and
+                               icons only, NOT small text                   */
+  --gold-400: 143 106  12;  /* #8F6A0C — 4.70:1 on the page, 4.96:1 on white:
+                               the small-text accent, passes AA             */
   --gold-500: 150 111   9;  /* #966F09 — CTA bg, white text passes AA       */
   --gold-600: 122  89   6;  /* hover / pressed                             */
 

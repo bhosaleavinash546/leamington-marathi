@@ -198,7 +198,6 @@ const RIBBED = {
 
 test('rib measures are ratios against the measured wall, not the raw mm', () => {
   const m = extractMeasures(RIBBED);
-  assert.equal(m.ribCount, 3);
   assert.equal(m.maxRibThicknessToWall, 0.833);   // 5.0 / 6.0
   assert.equal(m.minRibThicknessToWall, 0.4);     // 2.4 / 6.0
   assert.equal(m.maxRibHeightToWall, 4);          // 24 / 6

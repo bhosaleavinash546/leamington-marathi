@@ -237,9 +237,13 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       });
     }
     if (decomposition.symmetryMeasured === false) {
+      // The count matters: symmetry now degrades PER SOLID against a wall-clock
+      // budget rather than being all-or-nothing, so "not measured" usually means
+      // "not measured on some of them" and the reader needs to know how many.
+      const done = decomposition.symmetryMeasuredCount ?? 0;
       dfaLimits.push({
         kind: 'symmetry', severity: 'warning',
-        message: `Symmetry was not measured (${decomposition.solidCount} solids exceeds the cap that keeps analysis inside the timeout), so handling times carry no orientation term.`,
+        message: `Symmetry was measured on ${done} of ${decomposition.solidCount} solids — the rest ran out of the analysis budget or were too complex to test. Handling times for the unmeasured parts carry no orientation term, and each one says so in its own row.`,
       });
     }
     if (decomposition.contactsTruncated) {

@@ -199,7 +199,12 @@ export default function HomePage() {
       <div className="border-b border-white/10 bg-navy-900">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-6 flex flex-wrap items-center justify-center gap-x-9 gap-y-3">
           <span className="text-[12px] uppercase tracking-[0.06em] font-semibold text-slate-500">Benchmarked against world-class OEMs</span>
-          {OEMS.map(o => <span key={o} className="text-[16px] font-bold text-slate-400/70 tracking-tight">{o}</span>)}
+          {/* No opacity modifier. `text-slate-400/70` emits raw Tailwind slate
+              at 70% and so bypasses the tuned .text-slate-400 override in
+              index.css entirely — 4.02:1 on navy-900, below AA, and the only
+              serious axe violation in the whole app. The bare class is
+              theme-remapped and measures 6.04:1 dark / 7.58:1 light. */}
+          {OEMS.map(o => <span key={o} className="text-[16px] font-bold text-slate-400 tracking-tight">{o}</span>)}
         </div>
       </div>
 

@@ -63,7 +63,7 @@ try {
   await page.evaluate(([t, u]) => localStorage.setItem('brainspark_auth', JSON.stringify({ token: t, user: u })), [token, user]);
 
   const axeSource = readFileSync(join(ROOT, 'node_modules', 'axe-core', 'axe.min.js'), 'utf8');
-  const PAGES = ['/', '/marketplace', '/analyze', '/should-cost', '/legal/privacy'];
+  const PAGES = ['/', '/marketplace', '/analyze', '/should-cost', '/dfm-studio', '/legal/privacy'];
   let axeFailures = 0;
 
   for (const route of PAGES) {

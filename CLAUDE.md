@@ -23,6 +23,8 @@ npm run benchmark:cost     # should-cost vs 16 reference parts (--min-hit 0.90 -
 npm run benchmark          # CAD process inference
 node benchmark/pcb-run.mjs         # PCB engine v2 vs v1 gate
 node benchmark/stamping-run.mjs    # feature-based stamping vs mass estimate
+node benchmark/dfm-run.mjs --min 1.0        # DFM geometry gate (64 checks, 100%)
+python3 benchmark/dfm-fixtures/generate.py  # regenerate the analytic STEP fixtures
 
 # LLM-layer evals (cost real tokens; skip cleanly with exit 0 when ANTHROPIC_API_KEY unset)
 node benchmark/ideation-eval.mjs --label baseline --legacy   # pre-upgrade arm (same build)
@@ -49,6 +51,7 @@ DATA_DIR=$(mktemp -d) JWT_SECRET=dev PORT=19555 node server.mjs
 
 - **`server.mjs`** (~9k lines) is a deliberate monolith holding auth/JWT, the `/api/analyze` ideation pipeline (system prompt, inline `*_CONTEXT_MAP`s, retrieval context, `finishAnalysis`), business cases + stage-gate scorecards, feedback signals, patent-watch, and route registration. New endpoint families go in **`routes/*.mjs`** modules instead, registered as `registerXRoutes(app, deps)` where `deps` injects `{ db, requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, ... }` — each route file re-declares its own `SMALL_MODEL` from `CV_SMALL_MODEL`.
 - **Engines are pure root modules** with no Express/DB imports: `costing-engine.mjs` (single-op `computeShouldCost` + multi-op `computeRouteCost`, EUR-denominated), `pcb-cost.mjs` (+ `pcb-detailed.mjs`, a CBD view that must reconcile with `pcb-cost` totals — parity test gates <0.5%), `machining-feature-cost.mjs`, `stamping-feature-cost.mjs`, `innovation.mjs` (11 method cores incl. `functionCostMatrix`, `specRelaxationDeltas`, `teardownDelta`, `targetGap`), `triz.mjs`, `calibration.mjs`, `carbon.mjs`.
+- **DFM / DFA** is a deliberately LLM-free path: `cad-engine/dfm_geometry.py` (tessellation draft/undercut/wall), `cad-engine/feature_recognition.py` (attributed adjacency graph, blend-transparent so filleted parts still decompose — see DECISIONS 34 for ribs), `cad-engine/assembly_decompose.py` (XCAF product tree, symmetry MEASURED by rotating each solid), then pure JS cores `dfm-rules.mjs` + `dfm-rule-catalogue.mjs` (rules as DATA, every one citing a source) + `dfm-cost-impact.mjs` + `dfa-engine.mjs` + `dfa-time-model.mjs`, surfaced by `routes/dfm.mjs`. **A rule has three outcomes — pass, fail, NOT EVALUATED with the reason** — and `score` is `null` rather than 100 when nothing could be evaluated; preserve that everywhere. Findings the engines cannot price say so with the reason; never substitute a default measurement to make a rule evaluable. New fixtures must carry ANALYTIC truth from their construction, never engine output.
 - **Currency**: engines compute in EUR; GBP is the display default. Conversion happens at display boundaries via `fx-rates.mjs` — never inside an engine.
 - **DB**: better-sqlite3 at `$DATA_DIR/brainspark.db`. Migrations are `try { db.exec("ALTER TABLE ...") } catch {}` lines near the schema block. In-memory caches (idea index, QD archive, marketplace ETag, clusters) are keyed on the approved-marketplace row count and rebuild automatically.
 

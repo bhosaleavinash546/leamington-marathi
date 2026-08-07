@@ -395,4 +395,56 @@ export const HOW_TO_GUIDES: HowToGuide[] = [
     example:
       '"EDU stator assembly" -> Horizon 1: 8-layer hairpin/X-pin windings (TRL 9, cost falling); Horizon 2: magnet-free EESM with inductive excitation; Horizon 3: iron-nitride magnets — watch Niron pilot magnets before betting a programme on them.',
   },
+  {
+    id: 'dfm-dfa',
+    tool: 'DFM / DFA Studio',
+    tagline:
+      'Upload a 3D CAD file and get a MEASURED manufacturability report — draft, walls, features, ribs and bends read off the geometry by a CAD kernel, checked against cited design rules, with the cost of each finding computed by the same engines that price your parts.',
+    whenToUse:
+      'Reach for it when you have the CAD and want evidence rather than opinion: before a supplier discussion, when a quote looks high and you suspect the design is driving it, or when an assembly has more parts than it needs.',
+    steps: [
+      {
+        title: 'Open the tool and drop in a STEP file',
+        detail:
+          'Tools -> DFM / DFA Studio. It takes STEP (.step/.stp) or IGES. It will refuse an STL, and that is the honest answer, not a gap: an STL is a bag of triangles with no faces, edges or hole diameters, so draft and feature recognition are impossible on it. Export STEP from your CAD tool.',
+      },
+      {
+        title: 'Tell it the material and process',
+        detail:
+          'Pick the material, the costing process, your region and annual volume. The process matters more than it looks: it decides WHICH rule family runs. Leave it blank and every family is run speculatively, which means you will see injection-moulding findings on a part that will be die cast — the page says so in amber when that happens.',
+      },
+      {
+        title: 'Click Analyse and read the limits FIRST',
+        detail:
+          'Before any numbers there is an "Analysis limits" block. It tells you if the model looks like it is in metres rather than millimetres, if a multi-body file was merged, or if the mesh hit its budget. If units look wrong the findings are withheld entirely — a 0.05 mm wall computed at the wrong scale is worse than no finding.',
+      },
+      {
+        title: 'Look at the model, not just the list',
+        detail:
+          'The 3D viewer highlights the actual faces behind the findings. Toggle between undercuts (occluded in both tool halves — buys a slide or a lifter) and zero-draft walls (they drag out but scuff, and a degree of taper fixes them). They are deliberately shown as different problems because they cost different money.',
+      },
+      {
+        title: 'Read the score WITH its coverage',
+        detail:
+          'Each process family shows a score and, right beside it, how many rules could actually be evaluated. A rule whose measurement your geometry does not provide is listed as NOT EVALUATED with the reason — never as a pass. If nothing could be evaluated the score is blank rather than 100.',
+      },
+      {
+        title: 'Use the cost column to prioritise',
+        detail:
+          'Findings the engines can price show a per-part and annual figure with the change that produces it. Findings they cannot say "not priced" and why. Do not read that as zero — an undercut buys tooling rather than piece price, and it is often the expensive one. Anything from published literature is labelled as a citation, not as an engine result.',
+      },
+      {
+        title: 'For an assembly, run DFA and answer the three questions',
+        detail:
+          'Upload a multi-solid STEP and click Analyse assembly. It measures each part and its rotational symmetry by actually rotating the solid, and groups repeated parts. Then it asks you the three minimum-part questions per part — does it move relative to its neighbours, must it be a different material, must it be separate to assemble or service. Geometry proposes; you confirm. The design-efficiency index stays blank until you have, because those questions are about intent and no solid model contains it.',
+      },
+      {
+        title: 'Export it',
+        detail:
+          'A branded PDF for the review, and a multi-sheet Excel with separate tabs for findings, rules that could not be evaluated, rules that passed, recognised features, ribs and the DFA part table — built to be filtered and pasted into a supplier discussion.',
+      },
+    ],
+    example:
+      'A die-cast bracket: 3.1 mm median wall inside the 1.0-3.5 mm band, but 41% of the wall area below the minimum draft and two undercuts needing slides. The draft finding is not priced (die life, not piece price) and says so; the wall finding is, through the cooling-limited cycle. The ribs come back at 0.83 of the wall against a 0.6-0.8 guideline, priced as the material that comes off when they are thinned.',
+  },
 ];
