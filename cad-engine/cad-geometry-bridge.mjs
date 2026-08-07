@@ -72,6 +72,46 @@ export async function decomposeAssembly(buffer, filename, timeoutMs = 120_000) {
   }
 }
 
+// eslint-disable-next-line no-control-regex
+const ANSI = /\[[0-9;]*m/g;
+
+/**
+ * Find our JSON in the engine's stdout.
+ *
+ * OCCT writes its own diagnostics — ANSI-coloured — to STDOUT, ahead of
+ * whatever we print. A plain `JSON.parse(stdout)` therefore fails on every
+ * malformed CAD file and the user was shown
+ * `JSON parse failed: ****ERR StepFile: Undefined Parsing…` instead of a
+ * sentence. Scan lines from the end and take the first that parses.
+ */
+export function extractJson(raw) {
+  const lines = String(raw).replace(ANSI, '').split('\n');
+  for (let i = lines.length - 1; i >= 0; i -= 1) {
+    const line = lines[i].trim();
+    if (!line.startsWith('{')) continue;
+    try {
+      return JSON.parse(line);
+    } catch { /* keep scanning upwards */ }
+  }
+  return null;
+}
+
+/** Turn kernel noise into something a cost engineer can act on. */
+export function describeUnparseable(raw, stderr = '') {
+  const text = `${raw}\n${stderr}`.replace(ANSI, '');
+  if (/Undefined Parsing|Incorrect syntax|expecting STEP|Bad file format/i.test(text)) {
+    return 'This file could not be read as STEP or IGES. It may be truncated, '
+      + 'saved in another format, or exported with an option this reader does not support. '
+      + 'Re-export it as AP214 or AP242 STEP and try again.';
+  }
+  if (/MemoryError|std::bad_alloc|Killed/i.test(text)) {
+    return 'The model was too large for the geometry engine to load. Try simplifying '
+      + 'the part or exporting a single body rather than a full assembly.';
+  }
+  return 'The geometry engine returned no readable result for this file. '
+    + 'Check that it is a valid STEP or IGES export.';
+}
+
 function _runPython(tmpPath, timeoutMs, script = PYTHON_SCRIPT) {
   return new Promise((resolve) => {
     let stdout = '';
@@ -107,12 +147,11 @@ function _runPython(tmpPath, timeoutMs, script = PYTHON_SCRIPT) {
         settle({ status: 'error', error: `No output from geometry engine. stderr: ${stderr.slice(0, 400)}` });
         return;
       }
-      try {
-        const parsed = JSON.parse(raw);
-        settle(parsed);
-      } catch {
-        settle({ status: 'error', error: `JSON parse failed: ${raw.slice(0, 200)}` });
-      }
+      const parsed = extractJson(raw);
+      if (parsed) { settle(parsed); return; }
+      // Nothing parseable. OCCT prints its own diagnostics here, so surface a
+      // sentence a user can act on rather than a fragment of kernel internals.
+      settle({ status: 'error', error: describeUnparseable(raw, stderr) });
     });
   });
 }

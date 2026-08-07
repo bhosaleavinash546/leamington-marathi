@@ -39,8 +39,14 @@ interface DfmResponse {
   results: ProcessResult[];
   processFamily?: string | null;
   processFamilyBasis?: string;
+  analysisLimits?: AnalysisLimit[];
 }
-interface DfaResponse { decomposition?: Record<string, any>; dfa?: Record<string, any>; }
+interface AnalysisLimit { kind: string; severity: 'blocking' | 'warning'; message: string }
+interface DfaResponse {
+  decomposition?: Record<string, any>;
+  dfa?: Record<string, any>;
+  analysisLimits?: AnalysisLimit[];
+}
 
 const MATERIALS = ['', 'Aluminium A356 (cast)', 'Aluminium 6061', 'Steel (mild)', 'Steel (high-strength)', 'Stainless Steel 304', 'Zinc (ZAMAK 5)', 'Magnesium AZ31', 'ABS', 'PA66-GF30 (glass-filled)', 'Polypropylene (PP)'];
 const COST_PROCESSES = ['', 'Die Casting (Aluminium)', 'Injection Moulding', 'Machining (CNC)', 'Stamping / Deep Drawing', 'Gravity Die Casting', 'Sand Casting'];
@@ -114,6 +120,7 @@ export default function DfmStudioPage() {
       const payload = {
         ...result,
         fileName: file?.name,
+        analysisLimits: [...(result.analysisLimits || []), ...(dfa?.analysisLimits || [])],
         dfa: dfa?.dfa ?? null,
         subject: { part: result.partName, material, process: costProcess },
       };
@@ -219,6 +226,25 @@ export default function DfmStudioPage() {
                 </button>
               </div>
             </div>
+
+            {/* Analysis limits. These flags were always produced by the engine
+                and never shown: a part drawn in metres reported a 0.05 mm wall
+                and three confident findings, with the unit warning invisible. */}
+            {(result.analysisLimits?.length ?? 0) > 0 && (
+              <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4">
+                <p className="text-amber-300 font-semibold text-sm flex items-center gap-2 mb-2">
+                  <AlertTriangle size={15} /> Analysis limits
+                </p>
+                <ul className="space-y-1.5">
+                  {result.analysisLimits!.map((l, i) => (
+                    <li key={i} className={`text-xs ${l.severity === 'blocking' ? 'text-amber-200' : 'text-amber-300/80'}`}>
+                      {l.severity === 'blocking' && <span className="font-bold uppercase mr-1.5">Blocking:</span>}
+                      {l.message}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* Measured geometry — the evidence the findings rest on */}
             <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">

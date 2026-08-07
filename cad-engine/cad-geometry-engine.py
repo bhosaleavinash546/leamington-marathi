@@ -619,14 +619,19 @@ def analyze(filepath: str) -> dict:
             from OCP.STEPControl import STEPControl_Reader
             reader = STEPControl_Reader()
             if reader.ReadFile(filepath) != IFSelect_RetDone:
-                return {"status": "error", "error": "STEPControl_Reader failed"}
+                return {"status": "error", "error":
+                        "This file could not be read as STEP. It may be truncated, "
+                        "saved in another format, or exported with an option this "
+                        "reader does not support. Re-export as AP214 or AP242 STEP."}
             reader.TransferRoots()
             shape = _ShapeShim(reader.OneShape())
         elif ext in (".iges", ".igs"):
             from OCP.IGESControl import IGESControl_Reader
             reader = IGESControl_Reader()
             if reader.ReadFile(filepath) != IFSelect_RetDone:
-                return {"status": "error", "error": "IGESControl_Reader failed"}
+                return {"status": "error", "error":
+                        "This file could not be read as IGES. Re-export it as STEP "
+                        "(AP214 or AP242), which every major CAD tool supports."}
             reader.TransferRoots()
             shape = _ShapeShim(reader.OneShape())
         else:
@@ -635,7 +640,9 @@ def analyze(filepath: str) -> dict:
         return {"status": "error", "error": f"File load error: {e}"}
 
     if shape is None or shape.wrapped.IsNull():
-        return {"status": "error", "error": "No shape loaded"}
+        return {"status": "error", "error":
+                "The file was read but contained no geometry. It may be an empty "
+                "export or reference-only assembly."}
 
     try:
         wrapped = shape.wrapped
@@ -719,6 +726,10 @@ def analyze(filepath: str) -> dict:
                     "draft": draft_info,
                     "drawDirectionAlternatives": draft_alts,
                     "wallThickness": wall_stats,
+                    # An absent measurement gets a REASON, not a blank. Without
+                    # this the report shows "wall: —" and the reader cannot tell
+                    # a thin part from an unmeasurable one.
+                    "wallThicknessNote": None if wall_stats else _dfm.WALL_UNMEASURED_REASON,
                     "setups": setup_info,
                 }
             try:
@@ -896,14 +907,19 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
             from OCP.STEPControl import STEPControl_Reader
             reader = STEPControl_Reader()
             if reader.ReadFile(filepath) != IFSelect_RetDone:
-                return {"status": "error", "error": "STEPControl_Reader failed"}
+                return {"status": "error", "error":
+                        "This file could not be read as STEP. It may be truncated, "
+                        "saved in another format, or exported with an option this "
+                        "reader does not support. Re-export as AP214 or AP242 STEP."}
             reader.TransferRoots()
             wrapped = reader.OneShape()
         elif ext in (".iges", ".igs"):
             from OCP.IGESControl import IGESControl_Reader
             reader = IGESControl_Reader()
             if reader.ReadFile(filepath) != IFSelect_RetDone:
-                return {"status": "error", "error": "IGESControl_Reader failed"}
+                return {"status": "error", "error":
+                        "This file could not be read as IGES. Re-export it as STEP "
+                        "(AP214 or AP242), which every major CAD tool supports."}
             reader.TransferRoots()
             wrapped = reader.OneShape()
         else:
@@ -911,7 +927,9 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
     except Exception as e:
         return {"status": "error", "error": f"File load error: {e}"}
     if wrapped is None or wrapped.IsNull():
-        return {"status": "error", "error": "No shape loaded"}
+        return {"status": "error", "error":
+                "The file was read but contained no geometry. It may be an empty "
+                "export or reference-only assembly."}
 
     try:
         import struct

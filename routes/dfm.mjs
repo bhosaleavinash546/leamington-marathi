@@ -131,7 +131,45 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       },
     };
 
+    // Every way the analysis was LIMITED, gathered in one place. These were all
+    // produced by the engine and none reached a user: a part drawn in metres
+    // returned HTTP 200 and a confident report claiming a 0.05 mm wall with
+    // three "wall below minimum" findings, and the warning was invisible.
+    const limits = [];
+    if (geo.unitWarning) {
+      limits.push({ kind: 'units', severity: 'blocking', message: geo.unitWarning });
+    }
+    if (geo.assemblyWarning) {
+      limits.push({ kind: 'assembly', severity: 'warning', message: geo.assemblyWarning });
+    }
+    if (geo.dfm?.tessellation?.truncated) {
+      limits.push({
+        kind: 'tessellation', severity: 'warning',
+        message: `The mesh hit its ${geo.dfm.tessellation.triangles} triangle budget, so draft, undercut and wall figures cover only part of the model.`,
+      });
+    }
+    if (geo.dfm && !geo.dfm.wallThickness && geo.dfm.wallThicknessNote) {
+      limits.push({ kind: 'wallThickness', severity: 'warning', message: geo.dfm.wallThicknessNote });
+    }
+
+    // A unit error invalidates every dimensional threshold. Findings computed at
+    // the wrong scale are worse than no findings, so they are withheld and the
+    // reason is stated — the same discipline the rule engine already applies to
+    // measurements it does not have.
+    const unitsSuspect = limits.some(l => l.kind === 'units');
     const results = ruleResults.map(r => {
+      if (unitsSuspect) {
+        return {
+          ...r,
+          findings: [], passed: [],
+          notEvaluated: [...r.findings, ...r.passed, ...r.notEvaluated].map(f => ({
+            ...f, status: 'not-evaluated',
+            reason: 'Withheld: the model appears to be in metres, not millimetres, so every dimensional threshold would be compared against the wrong scale.',
+          })),
+          evaluatedCount: 0, coveragePct: 0, score: null,
+          impact: { pricedCount: 0, unpricedCount: 0, perPartEur: 0, annualEur: 0, caveat: null },
+        };
+      }
       const priced = priceFindings(r.findings, ctx);
       return { ...r, findings: priced, impact: summarisePricedImpact(priced) };
     });
@@ -150,6 +188,7 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       },
       dfm: geo.dfm,
       results,
+      analysisLimits: limits,
       processFamily: family || null,
       processFamilyBasis: familyBasis,
       analysedAt: new Date().toISOString(),
@@ -183,6 +222,25 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
     } catch (e) {
       return res.status(422).json({ error: e.message });
     }
-    res.json({ decomposition, dfa, analysedAt: new Date().toISOString() });
+    const dfaLimits = [];
+    if (decomposition.solidCount === 1) {
+      dfaLimits.push({
+        kind: 'singleSolid', severity: 'blocking',
+        message: 'This file contains a single solid, so there is no assembly to analyse. DFA needs a multi-part STEP assembly.',
+      });
+    }
+    if (decomposition.symmetryMeasured === false) {
+      dfaLimits.push({
+        kind: 'symmetry', severity: 'warning',
+        message: `Symmetry was not measured (${decomposition.solidCount} solids exceeds the cap that keeps analysis inside the timeout), so handling times carry no orientation term.`,
+      });
+    }
+    if (decomposition.contactsTruncated) {
+      dfaLimits.push({
+        kind: 'contacts', severity: 'warning',
+        message: 'Contact detection hit its pair budget, so the part-adjacency list is incomplete.',
+      });
+    }
+    res.json({ decomposition, dfa, analysisLimits: dfaLimits, analysedAt: new Date().toISOString() });
   });
 }

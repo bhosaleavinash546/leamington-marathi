@@ -61,8 +61,11 @@ export interface DfmProcessResult {
   impact?: { pricedCount: number; unpricedCount: number; perPartEur: number; annualEur: number; caveat: string | null };
 }
 
+export interface AnalysisLimit { kind: string; severity: 'blocking' | 'warning'; message: string }
+
 export interface DfmReportData {
   partName?: string;
+  analysisLimits?: AnalysisLimit[];
   processFamily?: string | null;
   processFamilyBasis?: string;
   fileName?: string;
@@ -220,6 +223,21 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
     y += 2;
   }
   y += 4;
+
+  // Analysis limits — before the numbers, not after. A reader who sees a wall
+  // figure first has already formed a view by the time a caveat arrives.
+  if (data.analysisLimits?.length) {
+    ensure(14 + data.analysisLimits.length * 8);
+    mono(7, true); setText(doc, AMBER);
+    doc.text('ANALYSIS LIMITS', ML, y); y += 4.5;
+    setFill(doc, [254, 243, 224]); doc.roundedRect(ML, y - 4, CW, data.analysisLimits.length * 8 + 3, 1.5, 1.5, 'F');
+    for (const l of data.analysisLimits) {
+      wrapped(`${l.severity === 'blocking' ? 'BLOCKING: ' : ''}${l.message}`,
+        8.8, l.severity === 'blocking' ? RED : AMBER, CW - 6, 4.0, 'normal', ML + 3);
+      y += 1.5;
+    }
+    y += 4;
+  }
 
   // Measured-geometry strip — the evidence the findings rest on.
   const dfm = (data.dfm || {}) as Record<string, any>;

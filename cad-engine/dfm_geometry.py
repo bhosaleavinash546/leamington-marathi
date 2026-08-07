@@ -252,6 +252,14 @@ def _weighted_percentile(pairs, pct):
     return pairs[-1][0]
 
 
+#: Set by wall_thickness() when it returns None, so the caller can tell the user
+#: WHY there is no thickness rather than leaving a silent blank.
+WALL_UNMEASURED_REASON = (
+    "Too few valid opposed-surface rays to characterise wall thickness — the "
+    "model may be a surface (no solid), extremely thin, or heavily trimmed."
+)
+
+
 def wall_thickness(tess, inter, max_samples=4000, reach=1e4):
     """Ray-cast inward from triangle centroids; area-weighted distribution.
 
@@ -298,8 +306,13 @@ def wall_thickness(tess, inter, max_samples=4000, reach=1e4):
             continue
 
     if len(samples) < 8:
-        return {"samples": len(samples), "confidence": "insufficient",
-                "note": "Too few valid opposed-surface rays to characterise wall thickness."}
+        # MUST be None, not a partial dict. Every caller guards with
+        # `if wall_stats:` and then reads meanMm / stdDevMm / minMm — a truthy
+        # dict missing those keys turns an honest "could not measure" into a
+        # KeyError, which surfaced to users as HTTP 422 with the body 'meanMm'
+        # on any surface model or very thin shell. The reason travels separately
+        # so nothing is lost by returning None here.
+        return None
 
     measured = sum(w for _, w in samples)
     p5 = _weighted_percentile(samples, 5)
