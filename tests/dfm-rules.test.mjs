@@ -172,3 +172,91 @@ test('the impact summary excludes unpriced findings and says so', () => {
   assert.ok(s.perPartEur > 0);
   assert.match(s.caveat, /could not be priced/);
 });
+
+// ── Ribs ─────────────────────────────────────────────────────────────────────
+// The rib rules compare RATIOS, and a ratio has two halves. The behaviour worth
+// protecting is that a missing wall measurement makes the rule abstain rather
+// than divide by a convenient default — and that an out-of-band rib is still
+// judged, not quietly dropped by the recogniser before the rule ever sees it.
+
+/** Three ribs on a 6 mm wall: 0.50, 0.40 and a deliberately over-thick 0.83. */
+const RIBBED = {
+  dfm: {
+    wallThickness: { p5Mm: 5.9, p50Mm: 6.0, p95Mm: 6.1, spreadRatio: 0.03 },
+    draft: { wallAreaBelowMinDraftPct: 100, minWallDraftDeg: null, undercutFaceCount: 0 },
+    setups: { estimatedSetupCount: 1 },
+    features: {
+      prismatic: [],
+      ribs: [
+        { thicknessMm: 5.0, heightMm: 24.0, lengthMm: 40.0 },
+        { thicknessMm: 3.0, heightMm: 12.0, lengthMm: 40.0 },
+        { thicknessMm: 2.4, heightMm: 15.0, lengthMm: 40.0 },
+      ],
+    },
+  },
+};
+
+test('rib measures are ratios against the measured wall, not the raw mm', () => {
+  const m = extractMeasures(RIBBED);
+  assert.equal(m.ribCount, 3);
+  assert.equal(m.maxRibThicknessToWall, 0.833);   // 5.0 / 6.0
+  assert.equal(m.minRibThicknessToWall, 0.4);     // 2.4 / 6.0
+  assert.equal(m.maxRibHeightToWall, 4);          // 24 / 6
+});
+
+test('rib rules abstain when the wall could not be measured', () => {
+  const noWall = { dfm: { ...RIBBED.dfm, wallThickness: null } };
+  const m = extractMeasures(noWall);
+  assert.equal(m.maxRibThicknessToWall, undefined);
+  assert.equal(m.maxRibHeightToWall, undefined);
+  const r = runDfmRules(noWall, 'injection-moulding');
+  const notEval = r.notEvaluated.map(f => f.id);
+  for (const id of ['im-rib-thickness-max', 'im-rib-thickness-min', 'im-rib-height']) {
+    assert.ok(notEval.includes(id), `${id} must be NOT EVALUATED without a wall, got ${notEval}`);
+  }
+});
+
+test('the same ribs are judged differently by moulding and die casting', () => {
+  const im = runDfmRules(RIBBED, 'injection-moulding');
+  const hp = runDfmRules(RIBBED, 'hpdc');
+  const status = (r, id) =>
+    [...r.findings, ...r.passed, ...r.notEvaluated].find(f => f.id === id)?.status;
+
+  // 0.40 clears moulding's 40% floor but not die casting's 60% one — aluminium
+  // needs a fuller rib to fill before it freezes.
+  assert.equal(status(im, 'im-rib-thickness-min'), 'pass');
+  assert.equal(status(hp, 'hpdc-rib-thickness-min'), 'fail');
+  // The over-thick rib fails both, and the tall one fails both.
+  assert.equal(status(im, 'im-rib-thickness-max'), 'fail');
+  assert.equal(status(hp, 'hpdc-rib-thickness-max'), 'fail');
+  assert.equal(status(im, 'im-rib-height'), 'fail');
+});
+
+test('an over-thick rib is priced from the material it actually carries', () => {
+  const finding = runDfmRules(RIBBED, 'injection-moulding')
+    .findings.find(f => f.id === 'im-rib-thickness-max');
+  const [priced] = priceFindings([finding], {
+    material: 'Aluminium A356 (cast)', process: 'Die Casting (Aluminium)', region: 'Germany',
+    annualVolume: 50000, weightKg: 0.5,
+    geometry: { partVolumeCm3: 185 },
+    ribs: RIBBED.dfm.features.ribs, nominalWallMm: 6.0,
+  });
+  assert.equal(priced.cost.priced, true, priced.cost.reason);
+  // Only the 5.0 mm rib is over 0.6 x 6 = 3.6 mm; (5.0-3.6) x 24 x 40 = 1344 mm3.
+  assert.match(priced.cost.changeDescription, /1 rib thinned to 3\.6 mm — 1\.34 cm3/);
+  assert.ok(priced.cost.deltaEur > 0, 'removing material must not cost more');
+  assert.ok(priced.cost.asDrawnEur > priced.cost.improvedEur);
+  // The number covers material only, and the report has to say which part of the
+  // finding it does NOT cover.
+  assert.match(priced.cost.basis, /Sink and porosity risk/);
+});
+
+test('rib pricing declines rather than guessing when the wall is unknown', () => {
+  const finding = { id: 'im-rib-thickness-max', threshold: 0.6, measured: 0.833 };
+  const [out] = priceFindings([finding], {
+    material: 'Aluminium A356 (cast)', process: 'Die Casting (Aluminium)', region: 'Germany',
+    annualVolume: 50000, weightKg: 0.5, geometry: { partVolumeCm3: 185 },
+    ribs: RIBBED.dfm.features.ribs,          // ribs known, wall not
+  });
+  assert.equal(out.cost.priced, false);
+});

@@ -36,6 +36,22 @@ export function extractMeasures(geo = {}) {
 
   const prismatic = Array.isArray(features.prismatic) ? features.prismatic : [];
 
+  // Rib proportions are RATIOS against the nominal wall, and the wall is the
+  // measured p50 — so the ratio is computed here, at the one place both numbers
+  // exist, rather than in the recogniser which has never seen a wall thickness.
+  // When either half is missing the ratio stays undefined and the rib rules
+  // abstain, which is the correct answer for a part whose wall could not be
+  // measured. A rib thickness divided by a guessed wall would look exactly like
+  // a measurement in the report.
+  const ribs = Array.isArray(features.ribs) ? features.ribs : [];
+  const nominalWall = num(wall.p50Mm);
+  const ribRatio = (pick, key) => {
+    if (!ribs.length || !(nominalWall > 0)) return undefined;
+    const vals = ribs.map(r => Number(r[key])).filter(v => Number.isFinite(v) && v > 0);
+    if (!vals.length) return undefined;
+    return Math.round((pick(...vals) / nominalWall) * 1000) / 1000;
+  };
+
   return {
     // Reported so the caller can see what the recogniser found even where no
     // rule is written against it yet.
@@ -49,6 +65,12 @@ export function extractMeasures(geo = {}) {
     minWallDraftDeg: num(draft.minWallDraftDeg),
     undercutFaceCount: num(draft.undercutFaceCount),
     setupCount: num(setups.estimatedSetupCount),
+
+    // ── Ribs, as proportions of the nominal wall ──
+    ribCount: ribs.length || undefined,
+    maxRibThicknessToWall: ribRatio(Math.max, 'thicknessMm'),
+    minRibThicknessToWall: ribRatio(Math.min, 'thicknessMm'),
+    maxRibHeightToWall: ribRatio(Math.max, 'heightMm'),
 
     // ── Sheet metal, measured from recognised bends ──
     sheetThicknessMm: num(sm.thicknessMm),

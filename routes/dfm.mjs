@@ -127,6 +127,11 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       // Recognised bends, so the stamping engine can be driven from measured
       // geometry rather than its default of 2 bends.
       sheet: geo.dfm?.sheetMetal?.isSheetMetal ? geo.dfm.sheetMetal : undefined,
+      // Recognised ribs and the wall they stand on, so the material an
+      // over-thick rib carries can be priced from measured volume rather than
+      // described in words.
+      ribs: geo.dfm?.features?.ribs,
+      nominalWallMm: geo.dfm?.wallThickness?.p50Mm,
     };
 
     // Every way the analysis was LIMITED, gathered in one place. These were all

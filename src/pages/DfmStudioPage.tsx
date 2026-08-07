@@ -331,6 +331,55 @@ export default function DfmStudioPage() {
               </div>
             </div>
 
+            {/* Ribs, with the ratios the rules are actually written against.
+                A "3x rib" count says nothing; the proportions are the finding. */}
+            {Array.isArray(feats.ribs) && feats.ribs.length > 0 && (
+              <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+                <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">
+                  Recognised ribs
+                </p>
+                <p className="text-slate-600 text-[11px] mb-3">
+                  Thickness is measured at the base, where the guideline applies — drafted sides
+                  are opened out by the draft term rather than reported at mid-height.
+                  {wall.p50Mm
+                    ? ` Ratios are against the measured ${wall.p50Mm} mm nominal wall.`
+                    : ' Wall thickness could not be measured, so no ratio is shown and the rib rules abstain.'}
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-slate-500 text-[11px] uppercase tracking-wider text-left">
+                        <th className="py-1 pr-3 font-medium">#</th>
+                        <th className="py-1 pr-3 font-medium">Thickness</th>
+                        <th className="py-1 pr-3 font-medium">Height</th>
+                        <th className="py-1 pr-3 font-medium">Length</th>
+                        <th className="py-1 pr-3 font-medium">Draft/side</th>
+                        <th className="py-1 pr-3 font-medium">t / wall</th>
+                        <th className="py-1 font-medium">h / wall</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-slate-300">
+                      {feats.ribs.map((r: any, i: number) => (
+                        <tr key={i} className="border-t border-white/5">
+                          <td className="py-1.5 pr-3 text-slate-500">{i + 1}</td>
+                          <td className="py-1.5 pr-3 text-white">{r.thicknessMm} mm</td>
+                          <td className="py-1.5 pr-3">{r.heightMm} mm</td>
+                          <td className="py-1.5 pr-3">{r.lengthMm != null ? `${r.lengthMm} mm` : '—'}</td>
+                          <td className="py-1.5 pr-3">{r.draftPerSideDeg}°</td>
+                          <td className="py-1.5 pr-3">
+                            {wall.p50Mm ? (r.thicknessMm / wall.p50Mm).toFixed(2) : '—'}
+                          </td>
+                          <td className="py-1.5">
+                            {wall.p50Mm ? (r.heightMm / wall.p50Mm).toFixed(2) : '—'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             {/* Which rule families ran, and why. Without this a reader cannot
                 tell a targeted analysis from a speculative sweep. */}
             {!result.processFamily && (

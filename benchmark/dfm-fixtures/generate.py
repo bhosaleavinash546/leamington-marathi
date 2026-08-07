@@ -279,6 +279,42 @@ def folded_bracket(outdir):
     }
 
 
+def ribbed_plate(outdir):
+    """120x80x6 plate carrying THREE ribs of deliberately different proportions.
+
+    Truth by construction, and the third rib is wrong on purpose:
+
+        rib   thickness   height    t/wall   h/wall
+        A       3.0 mm     12 mm     0.50     2.0     both in band
+        B       2.4 mm     15 mm     0.40     2.5     thickness at the lower limit
+        C       5.0 mm     24 mm     0.83     4.0     TOO THICK and TOO TALL
+
+    Nominal wall is the 6.0 mm plate, which is also what the wall-thickness
+    measurement reports as p50 (the plate's two faces carry far more area than
+    the rib flanks). So the rules must read maxRibThicknessToWall = 0.833 and
+    maxRibHeightToWall = 4.0 and FAIL, minRibThicknessToWall = 0.40 and PASS.
+
+    Rib C exists to prove the recogniser does not quietly drop what it is about
+    to be judged on: recognition is gated on "taller than it is thick", never on
+    the 40-60% rule, so an out-of-band rib is still found and still flagged.
+
+    Ribs also make the concave graph lie. Each rib meets the plate concavely on
+    all four sides, so before rib recognition existed this part decomposed into
+    one 13-face "pocket" — a stack of protrusions reported as a depression.
+    """
+    plate = BRepPrimAPI_MakeBox(120.0, 80.0, 6.0).Shape()
+    s = plate
+    for x, t, h in ((10.0, 3.0, 12.0), (45.0, 2.4, 15.0), (80.0, 5.0, 24.0)):
+        rib = BRepPrimAPI_MakeBox(gp_Pnt(x, 20.0, 6.0), t, 40.0, h).Shape()
+        s = BRepAlgoAPI_Fuse(s, rib).Shape()
+    return _write(s, os.path.join(outdir, "ribbed-plate.step")), {
+        "wallMm": 6.0,
+        "ribs": [{"thicknessMm": 5.0, "heightMm": 24.0},
+                 {"thicknessMm": 3.0, "heightMm": 12.0},
+                 {"thicknessMm": 2.4, "heightMm": 15.0}],
+    }
+
+
 def bolted_assembly(outdir):
     """A 3-solid assembly: one 80x50x10 plate and TWO identical Ø8 x 25 pins.
 
@@ -304,7 +340,7 @@ def main():
     for fn in (plate_two_holes, frustum_draft3, box_side_hole, shell_wall25, boss_plate,
                counterbore_plate, countersink_plate, slot_vs_pocket, through_hole_and_pocket,
                filleted_pocket, filleted_slot, chamfered_box, thin_plate,
-               folded_bracket, bolted_assembly):
+               folded_bracket, ribbed_plate, bolted_assembly):
         path, truth = fn(outdir)
         print(f"  {os.path.basename(path):26s}  analytic truth: {truth}")
     print(f"wrote fixtures to {outdir}")

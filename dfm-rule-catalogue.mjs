@@ -145,6 +145,56 @@ export const DFM_RULES = [
     source: 'Injection-moulding design guidance (side actions add roughly $500–$5,000 of tooling per feature).',
   },
 
+  // Rib proportions are checked with THREE rules rather than one "40-60% of
+  // wall" band, because a band is a single comparison and a part has many ribs.
+  // Reporting one number against a band would mean choosing which rib to speak
+  // for and silently dropping the rest; max and min are unambiguous facts about
+  // the whole part, and each failure mode — sink over a thick rib, short shots
+  // in a thin one, filling and ejection in a tall one — gets its own finding
+  // with its own fix.
+  {
+    id: 'im-rib-thickness-max',
+    process: 'injection-moulding',
+    severity: 'medium',
+    title: 'Rib too thick at its base for the wall it stands on',
+    measure: 'maxRibThicknessToWall',
+    compare: 'lte',
+    threshold: 0.6,
+    unit: 'rib t / wall t',
+    rationale:
+      'A rib meeting the wall at more than about 60% of the wall thickness makes a heavy junction that is the last place to solidify. It shows as a sink mark on the opposite — usually visible — surface, and as a void inside the section.',
+    fix: 'Thin the rib to 40–60% of the nominal wall and add more ribs, or gusset it, if stiffness is lost.',
+    source: 'Injection-moulding design guidance (rib base 40–60% of nominal wall).',
+  },
+  {
+    id: 'im-rib-thickness-min',
+    process: 'injection-moulding',
+    severity: 'low',
+    title: 'Rib too thin to fill reliably',
+    measure: 'minRibThicknessToWall',
+    compare: 'gte',
+    threshold: 0.4,
+    unit: 'rib t / wall t',
+    rationale:
+      'A rib much below 40% of the wall is a narrow, high-resistance flow path off the main cavity. It fills late or not at all, and a short-shot rib contributes none of the stiffness it was drawn for.',
+    fix: 'Take the rib back up to 40% of the wall, or delete it and thicken the wall locally instead.',
+    source: 'Injection-moulding design guidance (rib base 40–60% of nominal wall).',
+  },
+  {
+    id: 'im-rib-height',
+    process: 'injection-moulding',
+    severity: 'medium',
+    title: 'Rib taller than three wall thicknesses',
+    measure: 'maxRibHeightToWall',
+    compare: 'lte',
+    threshold: 3,
+    unit: 'rib h / wall t',
+    rationale:
+      'A tall thin rib is a long dead-end for the melt and a deep, narrow slot in the tool steel that is hard to vent and hard to cool. It also grips the core on ejection, so it needs more draft than the rest of the part.',
+    fix: 'Cap the rib at about 3x the nominal wall and use two or three shorter ribs, or a cross-rib, to recover the section modulus.',
+    source: 'Injection-moulding design guidance (rib height <= 3x nominal wall).',
+  },
+
   // ── High-pressure die casting ──────────────────────────────────────────────
   {
     id: 'hpdc-wall-thickness-range',
@@ -202,6 +252,54 @@ export const DFM_RULES = [
       'A die-cast undercut needs a slide or a loose core. Both add die cost and maintenance, and a loose core adds a manual handling step to every shot.',
     fix: 'Reorient the part to the draw, move the parting line, or price the slide explicitly.',
     source: 'Die-casting design guidance.',
+  },
+
+  // A die-cast rib may be RELATIVELY THICKER than a moulded one, and the band is
+  // deliberately different for that reason: aluminium fills a thin section far
+  // less readily than a thermoplastic, so a rib below about 60% of the wall
+  // risks a cold shut, while the sink mark that caps a moulded rib at 60%
+  // matters less on a casting that is machined or hidden.
+  {
+    id: 'hpdc-rib-thickness-max',
+    process: 'hpdc',
+    severity: 'medium',
+    title: 'Rib heavier than the wall it stands on',
+    measure: 'maxRibThicknessToWall',
+    compare: 'lte',
+    threshold: 0.8,
+    unit: 'rib t / wall t',
+    rationale:
+      'A rib approaching the full wall thickness makes the junction the thickest section in the casting. That is where shrinkage porosity collects, and it holds the die open while it solidifies.',
+    fix: 'Bring the rib base to roughly 60–80% of the adjoining wall and fillet the root rather than thickening it.',
+    source: 'Die-casting design guidance (rib base ~60–80% of the adjoining wall).',
+  },
+  {
+    id: 'hpdc-rib-thickness-min',
+    process: 'hpdc',
+    severity: 'medium',
+    title: 'Rib too thin to fill before it freezes',
+    measure: 'minRibThicknessToWall',
+    compare: 'gte',
+    threshold: 0.6,
+    unit: 'rib t / wall t',
+    rationale:
+      'Aluminium loses superheat fast in a thin section. A rib much below 60% of the wall chills before the cavity is full and leaves a cold shut at the rib tip — a crack starter, not just a cosmetic defect.',
+    fix: 'Thicken the rib toward 60–80% of the wall, or shorten it so the flow path to its tip is shorter.',
+    source: 'Die-casting design guidance (rib base ~60–80% of the adjoining wall).',
+  },
+  {
+    id: 'hpdc-rib-height',
+    process: 'hpdc',
+    severity: 'medium',
+    title: 'Rib taller than three wall thicknesses',
+    measure: 'maxRibHeightToWall',
+    compare: 'lte',
+    threshold: 3,
+    unit: 'rib h / wall t',
+    rationale:
+      'A deep rib is a deep, narrow blade of die steel. It runs hotter than the rest of the die, heat-checks first, and is the feature most likely to break out in service; the casting also grips it hard on ejection.',
+    fix: 'Limit rib height to about 3x the wall, or split one deep rib into several shallower ones and increase the draft on what remains.',
+    source: 'Die-casting design guidance (rib height <= 3x wall; deep ribs need 3–5 deg draft).',
   },
 
   // ── Sheet metal / stamping ─────────────────────────────────────────────────

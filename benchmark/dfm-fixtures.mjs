@@ -190,6 +190,51 @@ export const DFM_FIXTURES = [
       sheetMetalRulesEvaluated: 4,
     },
   },
+  {
+    file: 'ribbed-plate.step',
+    what: '120x80x6 plate with three ribs — 3.0x12, 2.4x15 and a deliberately over-thick 5.0x24',
+    truth: {
+      // The nominal wall the rib ratios are taken against. The plate's two large
+      // faces dominate the area-weighted percentile, so p50 is the plate.
+      wallP50Mm: 6.0,
+      // Three ribs and NOTHING else. Before rib recognition, each rib met the
+      // plate concavely on all four sides, so the part decomposed into a single
+      // 13-face "pocket" — three protrusions reported as one depression.
+      featureCounts: { rib: 3 },
+      // Exact construction dimensions, emitted thickest-first.
+      ribs: [
+        { thicknessMm: 5.0, heightMm: 24.0, lengthMm: 40.0 },
+        { thicknessMm: 3.0, heightMm: 12.0, lengthMm: 40.0 },
+        { thicknessMm: 2.4, heightMm: 15.0, lengthMm: 40.0 },
+      ],
+      // Arithmetic against the 6.00 mm wall: 5.0/6, 2.4/6, 24/6.
+      ribMeasures: {
+        maxRibThicknessToWall: 0.833,
+        minRibThicknessToWall: 0.4,
+        maxRibHeightToWall: 4.0,
+      },
+      // Rib C is out of band on purpose. Recognition is gated on "taller than it
+      // is thick", never on the rule threshold, so the rib a rule would fail is
+      // still found — a recogniser that dropped it would turn a finding into
+      // silence, which is the exact failure this feature exists to prevent.
+      ruleOutcomes: {
+        'injection-moulding': {
+          'im-rib-thickness-max': 'fail',
+          'im-rib-thickness-min': 'pass',
+          'im-rib-height': 'fail',
+        },
+        hpdc: {
+          // Die casting demands a FULLER rib than moulding — 0.6 minimum against
+          // 0.4 — so the 2.4 mm rib that passes as a moulding fails as a
+          // casting. The same geometry, judged differently by process, is the
+          // point of running the families separately.
+          'hpdc-rib-thickness-max': 'fail',
+          'hpdc-rib-thickness-min': 'fail',
+          'hpdc-rib-height': 'fail',
+        },
+      },
+    },
+  },
 ];
 
 /** Assembly fixture — used by the DFA benchmark, not the DFM geometry one. */

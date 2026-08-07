@@ -570,6 +570,193 @@ def cone_features(shape):
     return out
 
 
+# ─── Ribs ─────────────────────────────────────────────────────────────────────
+
+# A rib's two side faces are not necessarily parallel: a moulded or die-cast rib
+# is drafted, so each side leans outward by the draft angle. This is how far from
+# anti-parallel the pair may sit and still be one rib (about 6 deg per side).
+RIB_OPPOSED_TOL_DEG = 12.0
+# Recognition is deliberately LOOSER than the rules that judge ribs: a rib only
+# has to be taller than it is thick to be recognised. Gating recognition on the
+# 40-60%-of-wall threshold would make an OVER-THICK rib vanish from the model
+# instead of being flagged — a recogniser that hides exactly the parts a rule
+# would fail is worse than no recogniser at all.
+RIB_MIN_HEIGHT_TO_THICKNESS = 1.0
+
+
+def _planar_geometry(shape, ids):
+    """Outward normal, a point on the plane and the bbox, per planar face id.
+
+    Indexed by the SAME face map build_aag uses, so ids line up with the graph.
+    """
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.Bnd import Bnd_Box
+    from OCP.BRepBndLib import BRepBndLib
+    from OCP.GeomAbs import GeomAbs_Plane
+    from OCP.TopAbs import TopAbs_FACE, TopAbs_REVERSED
+    from OCP.TopExp import TopExp
+    from OCP.TopoDS import TopoDS
+    from OCP.TopTools import TopTools_IndexedMapOfShape
+
+    fmap = TopTools_IndexedMapOfShape()
+    TopExp.MapShapes_s(shape, TopAbs_FACE, fmap)
+    out = {}
+    for i in ids:
+        if i < 1 or i > fmap.Size():
+            continue
+        f = TopoDS.Face_s(fmap.FindKey(i))
+        try:
+            ad = BRepAdaptor_Surface(f)
+            if ad.GetType() != GeomAbs_Plane:
+                continue
+            pl = ad.Plane()
+            d = pl.Axis().Direction()
+            s = -1.0 if f.Orientation() == TopAbs_REVERSED else 1.0
+            bb = Bnd_Box()
+            BRepBndLib.Add_s(f, bb)
+            x0, y0, z0, x1, y1, z1 = bb.Get()
+            out[i] = {
+                "n": (d.X() * s, d.Y() * s, d.Z() * s),
+                "c": ((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2),
+                "lo": (x0, y0, z0), "hi": (x1, y1, z1),
+            }
+        except Exception:
+            continue
+    return out
+
+
+def _dot(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+
+def _cross(a, b):
+    return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+
+
+def _unit(v):
+    m = math.sqrt(_dot(v, v))
+    return None if m < 1e-12 else (v[0] / m, v[1] / m, v[2] / m)
+
+
+def _bbox_extent(g, u):
+    """Extent of a face's bounding box along a unit direction."""
+    return sum(abs(u[i]) * (g["hi"][i] - g["lo"][i]) for i in range(3))
+
+
+def rib_features(shape, aag):
+    """Thin prismatic protrusions standing on a wall.
+
+    A rib is a PAIR OF OPPOSED SIDE FACES WITH MATERIAL BETWEEN THEM, standing on
+    a common base. Two tests do the work, and both are needed:
+
+    1. **Material between, not void between.** For a rib the two side faces look
+       AWAY from each other, so the far face lies BEHIND the near face's outward
+       normal: `(c_far - c_near) . n_near < 0`. For a pocket or slot the walls
+       look at each other and the sign flips. This one signed dot separates a
+       protrusion from a depression without any solid classification.
+
+    2. **A common base reached by a CONCAVE arc from both sides.** This is what
+       "standing on a wall" means topologically, and without it the part's own
+       outer form qualifies: a plain 40x40x8 plate has two opposed faces with
+       material between them and a height-to-thickness ratio of 5, which is a
+       textbook rib shape and emphatically not a rib. Its faces meet their
+       neighbours CONVEXLY, so this test rejects it and the box.
+
+    Ribs are recognised on the blend-COLLAPSED graph, so a filleted rib root —
+    which is every real moulded rib — still presents the concave arc that test 2
+    depends on.
+
+    Thickness is reported AT THE BASE, which is what the 40-60%-of-wall guideline
+    is written against. On a drafted rib the two sides lean apart, so the base is
+    thicker than the mid-height separation by `height * tan(draft)`; that term is
+    added rather than ignored. On a rib with no draft it is exactly zero and the
+    measurement is the construction dimension.
+    """
+    faces = aag["faces"]
+    geo = _planar_geometry(shape, list(faces.keys()))
+    concave, adjacent = {}, {}
+    for arc in aag["arcs"]:
+        adjacent.setdefault(arc["a"], set()).add(arc["b"])
+        adjacent.setdefault(arc["b"], set()).add(arc["a"])
+        if arc["label"] == "concave":
+            concave.setdefault(arc["a"], set()).add(arc["b"])
+            concave.setdefault(arc["b"], set()).add(arc["a"])
+
+    cos_tol = math.cos(math.radians(180.0 - RIB_OPPOSED_TOL_DEG))
+    candidates = []
+    ids = sorted(geo.keys())
+    for a in range(len(ids)):
+        i = ids[a]
+        gi = geo[i]
+        for b in range(a + 1, len(ids)):
+            j = ids[b]
+            gj = geo[j]
+            # Opposed within the draft tolerance.
+            if _dot(gi["n"], gj["n"]) > cos_tol:
+                continue
+            delta = tuple(q - p for p, q in zip(gi["c"], gj["c"]))
+            if _dot(delta, gi["n"]) >= 0:
+                continue                      # void between them — a slot, not a rib
+            # A base both sides meet concavely. Largest by area when several.
+            shared = (concave.get(i, set()) & concave.get(j, set()))
+            base = max(shared, key=lambda f: faces.get(f, {}).get("areaMm2", 0.0), default=None)
+            if base is None:
+                continue
+            bn = geo.get(base, {}).get("n")
+            if bn is None:
+                continue                      # rib on a freeform wall — a known limit
+            u = _unit(tuple((p - q) / 2 for p, q in zip(gi["n"], gj["n"])))
+            if u is None:
+                continue
+            t_mid = abs(_dot(delta, u))
+            if t_mid <= 1e-6:
+                continue
+            height = _bbox_extent(gi, bn)
+            # Draft opens the rib out toward its base; the guideline is written
+            # against the base thickness, so add the term instead of quietly
+            # reporting the thinner mid-height figure.
+            phi = math.acos(max(-1.0, min(1.0, -_dot(gi["n"], gj["n"]))))
+            thickness = t_mid + height * math.tan(phi / 2.0)
+            if height < RIB_MIN_HEIGHT_TO_THICKNESS * thickness:
+                continue
+            w = _unit(_cross(bn, u))
+            candidates.append({
+                "i": i, "j": j, "base": base, "bases": shared,
+                "thicknessMm": thickness, "heightMm": height,
+                "lengthMm": _bbox_extent(gi, w) if w else None,
+                "draftDeg": math.degrees(phi) / 2.0,
+            })
+
+    # Thinnest pairs win: a genuine rib's own two sides are far closer together
+    # than either is to a neighbouring rib's, so claiming the tight pairs first
+    # stops one rib being consumed by a spurious cross-part match.
+    candidates.sort(key=lambda c: c["thicknessMm"])
+    ribs, used = [], set()
+    for c in candidates:
+        if c["i"] in used or c["j"] in used:
+            continue
+        # The rib's own faces: its two sides, plus everything adjacent to BOTH of
+        # them (its top and its ends) minus the base it stands on. Claiming these
+        # matters — left in the graph, the ends keep the base concave-connected
+        # and a field of ribs decomposes into one large phantom "pocket".
+        own = {c["i"], c["j"]} | ((adjacent.get(c["i"], set()) & adjacent.get(c["j"], set()))
+                                  - set(c["bases"]))
+        ribs.append({
+            "kind": "rib",
+            "faceIds": sorted(own),
+            "baseFaceId": c["base"],
+            "thicknessMm": round(c["thicknessMm"], 3),
+            "heightMm": round(c["heightMm"], 3),
+            "lengthMm": round(c["lengthMm"], 2) if c["lengthMm"] else None,
+            "draftPerSideDeg": round(c["draftDeg"], 2),
+            "heightToThickness": round(c["heightMm"] / c["thicknessMm"], 2),
+            "confidence": "high" if c["draftDeg"] < 0.01 else "medium",
+        })
+        used |= own
+    ribs.sort(key=lambda r: -r["thicknessMm"])
+    return ribs
+
+
 # ─── Sheet metal: bends, thickness, flanges ───────────────────────────────────
 
 # Two cylinders belong to the same bend when they share an axis LINE and sweep
@@ -788,6 +975,21 @@ def recognise(shape, feature_table, extents=None, aag=None):
     fillets, chamfers = find_blends(aag)
     blend_ids = {f["faceId"] for f in fillets} | {f["faceId"] for f in chamfers}
     working = collapse_blends(aag, blend_ids)
+
+    # Ribs before the prismatic pass, and their faces taken OUT of the graph
+    # afterwards. A rib joins its base concavely on all four sides, so a field of
+    # three ribs leaves the base face concave-connected to twelve rib faces and
+    # decomposes into one large phantom "pocket" — a protrusion reported as a
+    # depression. Removing what the rib pass has already claimed is what stops it.
+    ribs = rib_features(shape, working)
+    rib_ids = {f for r in ribs for f in r["faceIds"]}
+    if rib_ids:
+        working = {
+            "faces": {k: v for k, v in working["faces"].items() if k not in rib_ids},
+            "arcs": [a for a in working["arcs"]
+                     if a["a"] not in rib_ids and a["b"] not in rib_ids],
+            "totalAreaMm2": working["totalAreaMm2"],
+        }
     prismatic = prismatic_features(working)
 
     # What counts as "classified": faces inside a prismatic feature, blend faces,
@@ -795,13 +997,15 @@ def recognise(shape, feature_table, extents=None, aag=None):
     # left over are the part's outer form — understood, not unrecognised. What
     # remains is freeform area nothing could name.
     named_faces = {f for p in prismatic for f in p["faceIds"]}
-    named_faces |= blend_ids
+    named_faces |= blend_ids | rib_ids
     named_faces |= {fid for fid, f in aag["faces"].items()
                     if f["type"] in ("CYLINDER", "CONE", "TORUS", "SPHERE", "PLANE")}
     named_area = sum(aag["faces"][f]["areaMm2"] for f in named_faces if f in aag["faces"])
     total = aag["totalAreaMm2"] or 1.0
 
     counts = {}
+    if ribs:
+        counts["rib"] = len(ribs)
     for p in prismatic:
         counts[p["kind"]] = counts.get(p["kind"], 0) + 1
     for c in compound:
@@ -825,6 +1029,7 @@ def recognise(shape, feature_table, extents=None, aag=None):
         "counts": counts,
         "compoundHoles": compound,
         "prismatic": prismatic,
+        "ribs": ribs,
         "fillets": fillets,
         "chamfers": chamfers,
         # Cylindrical features are found analytically, so their faces are named
@@ -837,5 +1042,8 @@ def recognise(shape, feature_table, extents=None, aag=None):
             "cylinder pass rather than the graph.",
             "Threads are not recognised; any thread signal is reported unverified.",
             "GD&T and tolerance callouts are not present in the solid geometry.",
+            "Ribs are found from opposed PLANAR side faces standing on a planar "
+            "base. A rib with curved sides, or one standing on a freeform wall, "
+            "is not recognised and its proportions are therefore not checked.",
         ],
     }

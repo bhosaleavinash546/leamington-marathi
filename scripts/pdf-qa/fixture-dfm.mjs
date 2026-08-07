@@ -53,8 +53,20 @@ export const DFM_RESULT = {
       areaPct: { partingParallel: 31.4, releasing: 27.4, zeroDraft: 24.6, undercut: 16.6 },
     },
     features: {
-      counts: { 'through-hole': 4, 'blind-hole': 8, boss: 2, pocket: 3, 'counterbored-hole': 1 },
+      counts: { 'through-hole': 4, 'blind-hole': 8, boss: 2, pocket: 3, 'counterbored-hole': 1, rib: 4 },
       unclassifiedAreaPct: 22.8,
+      // A rib table wide enough to test the column stops, with a drafted rib
+      // (so the degree sign has to survive pdfSafe) and a rib whose length the
+      // recogniser could not measure — the '—' path in every column.
+      ribs: [
+        { thicknessMm: 4.85, heightMm: 28.4, lengthMm: 112.75, draftPerSideDeg: 1.5, confidence: 'medium' },
+        { thicknessMm: 3.2, heightMm: 19.6, lengthMm: 88.4, draftPerSideDeg: 0, confidence: 'high' },
+        { thicknessMm: 2.05, heightMm: 14.2, lengthMm: null, draftPerSideDeg: 2.25, confidence: 'medium' },
+        { thicknessMm: 1.9, heightMm: 33.8, lengthMm: 64.1, draftPerSideDeg: 0, confidence: 'high' },
+      ],
+      prismatic: [
+        { kind: 'pocket', faceIds: [4, 5, 6, 7, 8], faceCount: 5, wallCount: 4, concaveArcs: 8, areaMm2: 1842.6, confidence: 'high' },
+      ],
       compoundHoles: [{ kind: 'counterbored-hole', boreDiaMm: 8, boreDepthMm: 14, through: true, featureDiaMm: 16, featureDepthMm: 6, includedAngleDeg: null, axisXYZ: [0, 0, 1], count: 1 }],
     },
   },

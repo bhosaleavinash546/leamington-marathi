@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { DFA_FIXTURES, DFM_FIXTURES } from './dfm-fixtures.mjs';
-import { runDfmRules } from '../dfm-rules.mjs';
+import { extractMeasures, runDfmRules } from '../dfm-rules.mjs';
 import { analyzeGeometry } from '../cad-engine/cad-geometry-bridge.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -150,6 +150,37 @@ async function main() {
       const r = runDfmRules(g, 'sheet-metal');
       record(fx.file, 'sheet rules evaluated', r.evaluatedCount === t.sheetMetalRulesEvaluated,
         `${r.evaluatedCount}/${r.ruleCount} evaluated, score ${r.score}`);
+    }
+    if (t.ribs !== undefined) {
+      const got = g.dfm?.features?.ribs || [];
+      record(fx.file, 'rib count', got.length === t.ribs.length,
+        `${got.length} vs ${t.ribs.length}`);
+      t.ribs.forEach((want, i) => {
+        const r = got[i] || {};
+        const ok = near(r.thicknessMm, want.thicknessMm, 0.02)
+          && near(r.heightMm, want.heightMm, 0.02)
+          && (want.lengthMm === undefined || near(r.lengthMm, want.lengthMm, 0.02));
+        record(fx.file, `rib ${i} t x h`, ok,
+          `${r.thicknessMm} x ${r.heightMm} (len ${r.lengthMm}) vs ${want.thicknessMm} x ${want.heightMm}`);
+      });
+    }
+    if (t.ribMeasures !== undefined) {
+      const m = extractMeasures(g);
+      for (const [k, want] of Object.entries(t.ribMeasures)) {
+        record(fx.file, `measure ${k}`, near(m[k], want, 0.02), `${m[k]} vs ${want}`);
+      }
+    }
+    if (t.ruleOutcomes !== undefined) {
+      // Not just "the rule ran" — the exact verdict, so a threshold edited to
+      // make findings disappear fails the gate.
+      for (const [family, wanted] of Object.entries(t.ruleOutcomes)) {
+        const r = runDfmRules(g, family);
+        const byId = Object.fromEntries(
+          [...r.findings, ...r.passed, ...r.notEvaluated].map(x => [x.id, x.status]));
+        for (const [id, want] of Object.entries(wanted)) {
+          record(fx.file, `rule ${id}`, byId[id] === want, `${byId[id] ?? 'absent'} vs ${want}`);
+        }
+      }
     }
     if (t.bosses !== undefined) {
       const n = (g.featureTable || []).filter(r => r.kind === 'boss')

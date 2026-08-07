@@ -339,3 +339,26 @@ Format: decision · why · what would change it.
     method is public and is what we follow; their tables are copyrighted and licensed with
     their software, so `dfa-time-model.mjs` is MTM-structured with every coefficient exposed
     as data for calibration, and a test asserts the provenance string.
+
+34. **Rib recognition is deliberately LOOSER than the rules that judge ribs (2026).**
+    *Why:* a rib is a pair of opposed side faces with MATERIAL between them, standing on a
+    common base. Two tests do the work and both are needed. First, one signed dot product:
+    for a protrusion the far face lies behind the near face's outward normal
+    (`(c_far - c_near) . n_near < 0`); for a pocket or slot the walls look at each other and
+    the sign flips. That separates a rib from a depression with no solid classification at
+    all. Second, both sides must reach a common base by a CONCAVE arc — without it a plain
+    40×40×8 plate qualifies, since it has two opposed faces with material between them and a
+    height-to-thickness ratio of 5, which is a textbook rib shape and emphatically not a rib.
+    The recognition gate is then only "taller than it is thick". It is NOT the 40–60%-of-wall
+    threshold, and that is the point: gating recognition on the rule would make an over-thick
+    rib disappear from the model rather than be flagged, turning a finding into silence. The
+    `ribbed-plate.step` fixture carries a deliberately over-thick rib to hold that open.
+    *Changes it:* ribs are removed from the graph before prismatic decomposition. Each rib
+    meets its base concavely on all four sides, so three ribs on a plate left the base
+    concave-connected to twelve rib faces and decomposed into a single 13-face "pocket" —
+    three protrusions reported as one depression, measured before the fix. Thickness is
+    reported at the BASE, where the guideline is written: on a drafted rib the sides lean
+    apart, so `height * tan(draft)` is added rather than reporting the thinner mid-height
+    separation. And the ratio against the nominal wall is computed in `dfm-rules.mjs`, the one
+    place both the rib and the measured wall exist — when the wall could not be measured the
+    ratio stays undefined and all six rib rules abstain instead of dividing by a default.

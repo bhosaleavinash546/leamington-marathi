@@ -36,6 +36,13 @@ const PRICERS = {
   // Setups are a first-class driver of featuredMachiningCost.
   'mach-setup-count': priceSetupCount,
 
+  // An over-thick rib is material, and material is a modelled driver. The
+  // recogniser measures each rib's thickness, height and length, so the volume
+  // that comes off when it is thinned to the guideline is arithmetic, not a
+  // guess — and computeShouldCost prices the lighter part.
+  'im-rib-thickness-max': priceRibThickness,
+  'hpdc-rib-thickness-max': priceRibThickness,
+
   // A tight bend radius does not change piece price by itself, but the BEND
   // COUNT it belongs to does — stampingFeatureCost prices forming per bend, and
   // until bend recognition existed it was called with its default of 2 on every
@@ -72,6 +79,62 @@ function priceBendCount(finding, ctx) {
     improvedEur: round2(flat.totalShouldCost),
     deltaEur: round2(asDrawn.totalShouldCost - flat.totalShouldCost),
     annualDeltaEur: annualVolume ? round2((asDrawn.totalShouldCost - flat.totalShouldCost) * annualVolume) : null,
+  };
+}
+
+/**
+ * Material saved by thinning every over-thick rib to the guideline.
+ *
+ * The volume removed is `(t - t_target) * height * length` per rib, summed —
+ * every term measured by the recogniser. That volume is converted to a mass
+ * fraction of the whole part and the part is re-costed, so the delta is the
+ * MATERIAL consequence only. The cycle term is deliberately held constant by
+ * passing the same nominal wall to both runs: a rib does not drive the
+ * cooling-limited cycle, the wall does, and letting it move here would credit
+ * the change with a saving the physics does not support.
+ *
+ * Sink marks and porosity — the reasons the rule exists — are quality outcomes
+ * the piece-price engines do not model. This prices the part of the finding they
+ * DO model and says so in `basis`, rather than implying the number is the whole
+ * value of fixing it.
+ */
+function priceRibThickness(finding, ctx) {
+  const { material, process, region, annualVolume, weightKg, geometry, library,
+    ribs, nominalWallMm } = ctx;
+  const limit = Number(finding.threshold);
+  const partCm3 = Number(geometry?.partVolumeCm3);
+  if (!material || !process || !(weightKg > 0) || !Array.isArray(ribs) || !ribs.length
+    || !(nominalWallMm > 0) || !Number.isFinite(limit) || !(partCm3 > 0)) return null;
+
+  const target = limit * nominalWallMm;
+  let savedMm3 = 0;
+  let thinned = 0;
+  for (const r of ribs) {
+    const t = Number(r.thicknessMm), h = Number(r.heightMm), L = Number(r.lengthMm);
+    if (!(t > target) || !(h > 0) || !(L > 0)) continue;
+    savedMm3 += (t - target) * h * L;
+    thinned += 1;
+  }
+  const savedCm3 = savedMm3 / 1000;
+  if (!(savedCm3 > 0) || savedCm3 >= partCm3) return null;
+
+  const base = { material, process, region, annualVolume, wallThicknessMm: nominalWallMm };
+  let asDrawn, improved;
+  try {
+    asDrawn = computeShouldCost({ ...base, weightKg }, {}, null, library);
+    improved = computeShouldCost(
+      { ...base, weightKg: weightKg * ((partCm3 - savedCm3) / partCm3) }, {}, null, library);
+  } catch {
+    return null;
+  }
+  return {
+    priced: true,
+    basis: 'computeShouldCost — material only, from the rib volume the recogniser measured. Sink and porosity risk are quality outcomes the piece-price engines do not model, so they are not in this number.',
+    changeDescription: `${thinned} rib${thinned === 1 ? '' : 's'} thinned to ${round2(target)} mm — ${round2(savedCm3)} cm3 of material`,
+    asDrawnEur: round2(asDrawn.totalShouldCost),
+    improvedEur: round2(improved.totalShouldCost),
+    deltaEur: round2(asDrawn.totalShouldCost - improved.totalShouldCost),
+    annualDeltaEur: annualVolume ? round2((asDrawn.totalShouldCost - improved.totalShouldCost) * annualVolume) : null,
   };
 }
 
@@ -173,6 +236,18 @@ const UNPRICED_REASON = {
   },
   'mach-thin-web': {
     reason: 'Deflection-driven extra finishing passes are not modelled; the engine cycles on volume and surface area.',
+  },
+  'im-rib-thickness-min': {
+    reason: 'A rib too thin to fill costs a short shot, not a piece price. Scrap rate is a process outcome the engines do not model.',
+  },
+  'hpdc-rib-thickness-min': {
+    reason: 'A cold shut at a rib tip is a scrap and warranty risk, not a modelled piece-price driver.',
+  },
+  'im-rib-height': {
+    reason: 'Thinning a tall rib saves no material — shortening it does, but that is a stiffness decision, not a DFM substitution the engine can make on your behalf.',
+  },
+  'hpdc-rib-height': {
+    reason: 'Deep ribs drive die life and die maintenance, which are tooling-amortisation inputs rather than geometry the piece-price engines derive.',
   },
   'mach-pocket-depth-ratio': {
     reason: 'The recogniser does not yet report pocket depth and width, so there is nothing to re-cost.',

@@ -270,6 +270,39 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
   });
   y += rows * 9 + 4;
 
+  // ── Ribs ───────────────────────────────────────────────────────────────────
+  // The rib rules compare ratios, so the ratios are what the report has to show.
+  // A count of ribs tells a reader nothing about whether any of them is right.
+  const ribs: any[] = Array.isArray(feats.ribs) ? feats.ribs : [];
+  if (ribs.length) {
+    const nominal = Number(wall.p50Mm);
+    y += 6;
+    ensure(20 + ribs.length * 5.5);
+    mono(7, true); setText(doc, GOLD);
+    doc.text('RECOGNISED RIBS', ML, y); y += 4.5;
+    wrapped(nominal > 0
+      ? `Thickness is measured at the base, where the 40-60%-of-wall guideline applies; a drafted rib is opened out by the draft term rather than reported at its thinner mid-height. Ratios are against the measured ${nominal} mm nominal wall.`
+      : 'Thickness is measured at the base of each rib. Wall thickness could not be measured on this part, so no ratio is shown and the rib rules abstained rather than guessing a nominal wall.',
+      7.4, MUT);
+    y += 1;
+    mono(6.2); setText(doc, MUT);
+    const cols = [ML, ML + 12, ML + 40, ML + 66, ML + 92, ML + 118, ML + 144];
+    ['#', 'THICKNESS', 'HEIGHT', 'LENGTH', 'DRAFT/SIDE', 'T / WALL', 'H / WALL']
+      .forEach((h, i) => doc.text(h, cols[i], y));
+    y += 4;
+    ribs.forEach((r, i) => {
+      ensure(5.5);
+      sans(8.4); setText(doc, INK);
+      const ratio = (v: number) => (nominal > 0 ? (v / nominal).toFixed(2) : '—');
+      [String(i + 1), `${r.thicknessMm} mm`, `${r.heightMm} mm`,
+        r.lengthMm != null ? `${r.lengthMm} mm` : '—',
+        `${r.draftPerSideDeg} deg`, ratio(Number(r.thicknessMm)), ratio(Number(r.heightMm))]
+        .forEach((v, c) => doc.text(fit(doc, v, 24), cols[c], y));
+      y += 5;
+    });
+    y += 2;
+  }
+
   // ── Per-process results ────────────────────────────────────────────────────
   for (const r of data.results) {
     if (!r.ruleCount) continue;
@@ -577,21 +610,53 @@ export async function exportDfmXlsx(data: DfmReportData): Promise<void> {
     });
   }
 
-  if (Array.isArray(dfm.features?.compoundHoles) || Array.isArray(g.featureTable)) {
-    const rows: (string | number)[][] = [['Kind', 'Diameter mm', 'Depth mm', 'Through', 'Count', 'Axis']];
-    for (const f of g.featureTable || []) {
-      rows.push([f.kind, f.diaMm ?? '', f.depthMm ?? '', f.through === null ? 'n/a' : String(f.through), f.count ?? '', (f.axisXYZ || []).join(', ')]);
-    }
-    for (const c of dfm.features?.compoundHoles || []) {
-      rows.push([c.kind, c.boreDiaMm, c.boreDepthMm, String(c.through), c.count ?? 1, (c.axisXYZ || []).join(', ')]);
-    }
+  const featureRows: (string | number)[][] = [];
+  for (const f of g.featureTable || []) {
+    featureRows.push([f.kind, f.diaMm ?? '', f.depthMm ?? '', f.through === null ? 'n/a' : String(f.through), f.count ?? '', (f.axisXYZ || []).join(', ')]);
+  }
+  for (const c of feats.compoundHoles || []) {
+    featureRows.push([c.kind, c.boreDiaMm, c.boreDepthMm, String(c.through), c.count ?? 1, (c.axisXYZ || []).join(', ')]);
+  }
+  // Pockets, slots and steps were recognised, counted on screen, and then left
+  // out of every export — so the one place an engineer could check WHICH faces a
+  // pocket was built from did not exist.
+  for (const p of feats.prismatic || []) {
+    featureRows.push([p.kind, '', '', '', 1,
+      `${p.faceCount} faces, ${p.wallCount} walls, ${p.areaMm2} mm2, confidence ${p.confidence}`]);
+  }
+  // Only write the sheet when it has content: a header row on its own reads as
+  // "we looked and found nothing", which is not the same as "nothing ran".
+  if (featureRows.length) {
     sheets.push({
       name: 'Features',
       title: 'Recognised features',
       subtitle: 'Cylindrical features from the exact analytic pass; pockets and slots from topology decomposition.',
       headerRow: 0, zebra: true, autoFilter: true,
-      colWidths: [24, 14, 14, 12, 10, 22],
-      rows,
+      colWidths: [24, 14, 14, 12, 10, 46], wrapCols: [5],
+      rows: [['Kind', 'Diameter mm', 'Depth mm', 'Through', 'Count', 'Axis / detail'], ...featureRows],
+    });
+  }
+
+  if (Array.isArray(feats.ribs) && feats.ribs.length) {
+    const nominal = Number(wall.p50Mm);
+    sheets.push({
+      name: 'Ribs',
+      title: `Recognised ribs — ${feats.ribs.length}`,
+      subtitle: nominal > 0
+        ? `Thickness measured at the base, where the 40-60%-of-wall guideline applies. Ratios are against the measured ${nominal} mm nominal wall.`
+        : 'Thickness measured at the base of each rib. Wall thickness could not be measured on this part, so no ratio is given and the rib rules abstained.',
+      headerRow: 0, zebra: true, autoFilter: true,
+      colWidths: [8, 16, 14, 14, 14, 12, 12, 14],
+      numFmt: { 1: '0.00', 2: '0.00', 3: '0.00', 4: '0.00', 5: '0.00', 6: '0.00' },
+      rows: [
+        ['#', 'Thickness mm', 'Height mm', 'Length mm', 'Draft/side deg', 't / wall', 'h / wall', 'Confidence'],
+        ...feats.ribs.map((r: any, i: number) => [
+          i + 1, r.thicknessMm, r.heightMm, r.lengthMm ?? '', r.draftPerSideDeg,
+          nominal > 0 ? Number((r.thicknessMm / nominal).toFixed(3)) : '',
+          nominal > 0 ? Number((r.heightMm / nominal).toFixed(3)) : '',
+          r.confidence,
+        ]),
+      ],
     });
   }
 
