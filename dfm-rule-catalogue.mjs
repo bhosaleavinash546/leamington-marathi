@@ -238,10 +238,10 @@ export const DFM_RULES = [
     process: 'sheet-metal',
     severity: 'high',
     title: 'Hole too close to a bend line',
-    measure: 'minHoleToBendMm',
+    measure: 'holeToBendClearanceMm',
     compare: 'gte',
-    threshold: 'formula:2t+r',
-    unit: 'mm',
+    threshold: 0,
+    unit: 'mm clear of 2t+r',
     rationale:
       'A hole inside the bend deformation zone is pulled oval as the bend forms, and no amount of press setup recovers the shape.',
     fix: 'Move the hole clear of the bend zone (at least 2 thicknesses plus the bend radius), or pierce it after forming.',

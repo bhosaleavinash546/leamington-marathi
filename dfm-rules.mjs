@@ -27,6 +27,11 @@ export function extractMeasures(geo = {}) {
   const draft = dfm.draft || geo.draftAnalysis || {};
   const features = dfm.features || {};
   const setups = dfm.setups || geo.setupAnalysis || {};
+  // Sheet-metal measures now come from real bend recognition (paired coaxial
+  // cylinders). `isSheetMetal: false` means the part is not folded sheet, so the
+  // measures stay undefined and the rules abstain — which is the correct answer
+  // for a casting, not a pass.
+  const sm = dfm.sheetMetal && dfm.sheetMetal.isSheetMetal ? dfm.sheetMetal : {};
   const num = v => (Number.isFinite(Number(v)) ? Number(v) : undefined);
 
   const prismatic = Array.isArray(features.prismatic) ? features.prismatic : [];
@@ -45,16 +50,23 @@ export function extractMeasures(geo = {}) {
     undercutFaceCount: num(draft.undercutFaceCount),
     setupCount: num(setups.estimatedSetupCount),
 
-    // Deliberately absent, and it matters that they are absent rather than
-    // defaulted. Pocket depth/width needs bounded boxes the recogniser does not
-    // yet produce; the sheet-metal measures need bend recognition it does not
-    // yet do. Leaving them undefined makes the rules that depend on them report
-    // NOT EVALUATED. Substituting any default here — even a generous one — would
-    // manufacture a pass on a part nobody measured, which is the one outcome
-    // this whole feature exists to prevent:
-    //   maxPocketDepthToWidth, minInternalCornerRadiusMm,
-    //   minBendRadiusToThickness, minHoleDiaToThickness,
-    //   minHoleToBendMm, minFlangeToThickness
+    // ── Sheet metal, measured from recognised bends ──
+    sheetThicknessMm: num(sm.thicknessMm),
+    bendCount: num(sm.bendCount),
+    minBendRadiusToThickness: num(sm.minBendRadiusToThickness),
+    minHoleDiaToThickness: num(sm.minHoleDiaToThickness),
+    minFlangeToThickness: num(sm.minFlangeToThickness),
+    // Reported as CLEARANCE against the 2t+r guideline so the rule is
+    // arithmetic. A raw distance would need a per-part formula the evaluator
+    // cannot express, and the rule would abstain forever.
+    holeToBendClearanceMm: num(sm.holeToBendClearanceMm),
+
+    // Still deliberately absent, and it matters that they are absent rather
+    // than defaulted — pocket depth/width needs bounded boxes the recogniser
+    // does not yet produce, and internal corner radius needs tool-access
+    // reasoning. Substituting any default would manufacture a pass on a part
+    // nobody measured:
+    //   maxPocketDepthToWidth, minInternalCornerRadiusMm
   };
 }
 

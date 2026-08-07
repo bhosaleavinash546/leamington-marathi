@@ -570,6 +570,190 @@ def cone_features(shape):
     return out
 
 
+# ─── Sheet metal: bends, thickness, flanges ───────────────────────────────────
+
+# Two cylinders belong to the same bend when they share an axis LINE and sweep
+# the same angle. Loose enough for exporter round-off, tight enough that two
+# unrelated bends on parallel axes are not merged.
+BEND_ANG_TOL_DEG = 2.0
+BEND_AXIS_POS_TOL = 0.05
+
+
+def sheet_metal_features(shape, feature_table=None):
+    """Bends, sheet thickness and flange lengths from B-rep geometry.
+
+    A bend is a PAIR of coaxial cylinders sweeping the same angle: the inside
+    radius and the outside radius. That pairing is what makes the measurement
+    exact rather than assumed — the sheet THICKNESS is simply the difference of
+    the two radii, so it comes from the same geometry as everything else instead
+    of being typed in. Verified on a bracket built with t=2.00, ri=3.00, 90 deg:
+    the kernel returns r=3.00 and r=5.00 both spanning 90.0 deg.
+
+    Until this existed, all four sheet-metal rules depended on measures nothing
+    produced, so the family evaluated 0 of 4 rules on every part ever uploaded.
+    """
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.Bnd import Bnd_Box
+    from OCP.BRepBndLib import BRepBndLib
+    from OCP.GeomAbs import GeomAbs_Cylinder, GeomAbs_Plane
+    from OCP.TopAbs import TopAbs_FACE
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopoDS import TopoDS
+
+    cylinders, planes = [], []
+    ex = TopExp_Explorer(shape, TopAbs_FACE)
+    while ex.More():
+        f = TopoDS.Face_s(ex.Current())
+        ex.Next()
+        try:
+            ad = BRepAdaptor_Surface(f)
+            if ad.GetType() == GeomAbs_Cylinder:
+                c = ad.Cylinder()
+                d, p = c.Axis().Direction(), c.Axis().Location()
+                cylinders.append({
+                    "r": c.Radius(),
+                    "axis": (d.X(), d.Y(), d.Z()),
+                    "point": (p.X(), p.Y(), p.Z()),
+                    "angleDeg": math.degrees(abs(ad.LastUParameter() - ad.FirstUParameter())),
+                    "lengthMm": abs(ad.LastVParameter() - ad.FirstVParameter()),
+                })
+            elif ad.GetType() == GeomAbs_Plane:
+                pl = ad.Plane()
+                n = pl.Axis().Direction()
+                loc = pl.Axis().Location()
+                b = Bnd_Box()
+                BRepBndLib.Add_s(f, b)
+                x0, y0, z0, x1, y1, z1 = b.Get()
+                planes.append({
+                    "normal": (n.X(), n.Y(), n.Z()),
+                    "point": (loc.X(), loc.Y(), loc.Z()),
+                    "lo": (x0, y0, z0), "hi": (x1, y1, z1),
+                    "dims": sorted([x1 - x0, y1 - y0, z1 - z0]),
+                })
+        except Exception:
+            continue
+
+    def same_axis_line(a, b):
+        dot = sum(x * y for x, y in zip(a["axis"], b["axis"]))
+        if abs(abs(dot) - 1.0) >= (1 - math.cos(COAXIAL_ANG_TOL)):
+            return False
+        delta = [q - p for p, q in zip(a["point"], b["point"])]
+        along = sum(d * u for d, u in zip(delta, a["axis"]))
+        perp = math.sqrt(max(0.0, sum(d * d for d in delta) - along * along))
+        return perp <= BEND_AXIS_POS_TOL
+
+    bends, used = [], set()
+    for i, a in enumerate(cylinders):
+        if i in used:
+            continue
+        for j, b in enumerate(cylinders):
+            if j <= i or j in used:
+                continue
+            if not same_axis_line(a, b):
+                continue
+            if abs(a["angleDeg"] - b["angleDeg"]) > BEND_ANG_TOL_DEG:
+                continue
+            t = abs(a["r"] - b["r"])
+            if t <= 1e-3:
+                continue
+            inner, outer = (a, b) if a["r"] < b["r"] else (b, a)
+            bends.append({
+                "insideRadiusMm": round(inner["r"], 3),
+                "outsideRadiusMm": round(outer["r"], 3),
+                "thicknessMm": round(t, 3),
+                "angleDeg": round((a["angleDeg"] + b["angleDeg"]) / 2, 1),
+                "bendLengthMm": round(max(a["lengthMm"], b["lengthMm"]), 2),
+                "axisXYZ": [round(v, 4) for v in inner["axis"]],
+                "axisPointXYZ": [round(v, 4) for v in inner["point"]],
+            })
+            used.add(i)
+            used.add(j)
+            break
+
+    if not bends:
+        # No paired cylinders means this is not a folded sheet part — say so
+        # rather than returning zeros that would read as measurements.
+        return {"isSheetMetal": False, "bends": [], "reason":
+                "No paired coaxial cylinders found, so no bend could be measured. "
+                "This part does not look like folded sheet metal."}
+
+    # Thickness: the median across bends, so one malformed bend cannot move it.
+    ts = sorted(b["thicknessMm"] for b in bends)
+    thickness = ts[len(ts) // 2]
+
+    # Flange length, measured from the BEND rather than mined from bounding
+    # boxes. A leg of a folded part is the planar face lying tangent to the bend,
+    # i.e. exactly the inside radius (or outside radius) away from the bend axis.
+    # The flange is that face's extent measured perpendicular to the bend line.
+    #
+    # Bbox heuristics do not work here: a planar face is flat so its smallest
+    # bbox dimension is ~0, and filtering on "wider than the thickness" picks up
+    # the bend's own 5 mm end-cap and reports it as a 5 mm flange on a bracket
+    # whose legs are 50 and 40 mm.
+    def _extent_along(p, u):
+        """Bounding-box extent of a face along a unit direction."""
+        return sum(abs(u[i]) * (p["hi"][i] - p["lo"][i]) for i in range(3))
+
+    flange = None
+    for b in bends:
+        ax = b["axisXYZ"]
+        ap = b["axisPointXYZ"]
+        for p in planes:
+            n = p["normal"]
+            # A leg face is PARALLEL to the bend axis (axis lies in the face).
+            if abs(sum(a * m for a, m in zip(ax, n))) > 0.02:
+                continue
+            # Perpendicular distance from the bend axis to this face's plane.
+            delta = [q - r for q, r in zip(p["point"], ap)]
+            dist = abs(sum(d * m for d, m in zip(delta, n)))
+            tangent = (abs(dist - b["insideRadiusMm"]) < 0.05
+                       or abs(dist - b["outsideRadiusMm"]) < 0.05)
+            if not tangent:
+                continue
+            # Run perpendicular to both the bend line and the face normal.
+            u = (ax[1] * n[2] - ax[2] * n[1],
+                 ax[2] * n[0] - ax[0] * n[2],
+                 ax[0] * n[1] - ax[1] * n[0])
+            run = _extent_along(p, u)
+            if run > thickness * 1.5 and (flange is None or run < flange):
+                flange = run
+
+    # Hole-to-bend: perpendicular distance from each hole axis to each bend line,
+    # reported as CLEARANCE against the 2t + r guideline so the rule can be
+    # evaluated arithmetically instead of carrying an unevaluatable formula.
+    clearance = None
+    hole_dia = None
+    for row in (feature_table or []):
+        if row.get("kind") != "hole" or not row.get("axisPointXYZ"):
+            continue
+        d = float(row.get("diaMm") or 0)
+        if d > 0 and (hole_dia is None or d < hole_dia):
+            hole_dia = d
+        hp = row["axisPointXYZ"]
+        for b in bends:
+            delta = [q - p for p, q in zip(b["axisPointXYZ"], hp)]
+            along = sum(x * u for x, u in zip(delta, b["axisXYZ"]))
+            perp = math.sqrt(max(0.0, sum(x * x for x in delta) - along * along))
+            required = 2 * thickness + b["insideRadiusMm"]
+            c = perp - required
+            if clearance is None or c < clearance:
+                clearance = c
+
+    return {
+        "isSheetMetal": True,
+        "thicknessMm": round(thickness, 3),
+        "bendCount": len(bends),
+        "bends": bends,
+        "minInsideRadiusMm": round(min(b["insideRadiusMm"] for b in bends), 3),
+        "minBendRadiusToThickness": round(min(b["insideRadiusMm"] for b in bends) / thickness, 3),
+        "minFlangeMm": round(flange, 2) if flange else None,
+        "minFlangeToThickness": round(flange / thickness, 3) if flange else None,
+        "minHoleDiaToThickness": round(hole_dia / thickness, 3) if hole_dia else None,
+        "holeToBendClearanceMm": round(clearance, 2) if clearance is not None else None,
+        "method": "paired coaxial cylinders; thickness = outer radius - inner radius",
+    }
+
+
 # ─── Top-level ────────────────────────────────────────────────────────────────
 
 def blend_face_ids(shape, aag=None):

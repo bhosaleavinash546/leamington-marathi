@@ -124,6 +124,9 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
           .map(f => ({ diaMm: f.diaMm, depthMm: f.depthMm, count: f.count })),
         setupCount: geo.setupAnalysis?.estimatedSetupCount,
       },
+      // Recognised bends, so the stamping engine can be driven from measured
+      // geometry rather than its default of 2 bends.
+      sheet: geo.dfm?.sheetMetal?.isSheetMetal ? geo.dfm.sheetMetal : undefined,
     };
 
     // Every way the analysis was LIMITED, gathered in one place. These were all

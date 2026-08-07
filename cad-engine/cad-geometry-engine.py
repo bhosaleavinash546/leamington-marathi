@@ -738,6 +738,10 @@ def analyze(filepath: str) -> dict:
                 dfm_block["features"] = _fr.recognise(wrapped, feature_table,
                                                       extents=(x_sz, y_sz, z_sz),
                                                       aag=_aag)
+                # Sheet-metal measures. Until these existed, all four
+                # sheet-metal rules depended on values nothing produced, so the
+                # family scored 0 of 4 on every part ever uploaded.
+                dfm_block["sheetMetal"] = _fr.sheet_metal_features(wrapped, feature_table)
             except Exception as e:
                 (dfm_block or {}).setdefault("featuresError", f"{e}")
         except Exception as e:

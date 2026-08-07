@@ -250,6 +250,35 @@ def thin_plate(outdir):
                   os.path.join(outdir, "thin-plate.step")), {}
 
 
+def folded_bracket(outdir):
+    """2 mm sheet, one 90 deg bend, inside radius 3 mm, 40 mm vertical flange,
+    and a Ø4 hole deliberately placed close to the bend.
+
+    Truth by CONSTRUCTION, which is the whole point: t = 2.00 exactly, because
+    the recogniser derives it as (outer radius - inner radius) = 5 - 3. r/t = 1.5,
+    flange/t = 20. The hole sits 9.43 mm from the bend line against a 2t+r = 7 mm
+    guideline, so it clears by 2.43 mm.
+
+    Until bend recognition existed, all four sheet-metal rules depended on
+    measures nothing produced and the family scored 0 of 4 on every part.
+    """
+    t, ri, W = 2.0, 3.0, 60.0
+    leg1 = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 50.0, W, t).Shape()
+    outer = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(50, 0, ri + t), gp_Dir(0, 1, 0)), ri + t, W).Shape()
+    inner = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(50, 0, ri + t), gp_Dir(0, 1, 0)), ri, W).Shape()
+    ring = BRepAlgoAPI_Cut(outer, inner).Shape()
+    quarter = BRepPrimAPI_MakeBox(gp_Pnt(50, 0, 0), ri + t, W, ri + t).Shape()
+    bend = BRepAlgoAPI_Cut(ring, BRepAlgoAPI_Cut(ring, quarter).Shape()).Shape()
+    leg2 = BRepPrimAPI_MakeBox(gp_Pnt(50 + ri, 0, ri + t), t, W, 40.0).Shape()
+    s = BRepAlgoAPI_Fuse(BRepAlgoAPI_Fuse(leg1, bend).Shape(), leg2).Shape()
+    hole = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(42, 30, -1), gp_Dir(0, 0, 1)), 2.0, 5.0).Shape()
+    s = BRepAlgoAPI_Cut(s, hole).Shape()
+    return _write(s, os.path.join(outdir, "folded-bracket.step")), {
+        "thicknessMm": 2.0, "insideRadiusMm": 3.0, "bendAngleDeg": 90.0,
+        "bendRadiusToThickness": 1.5, "flangeToThickness": 20.0,
+    }
+
+
 def bolted_assembly(outdir):
     """A 3-solid assembly: one 80x50x10 plate and TWO identical Ø8 x 25 pins.
 
@@ -275,7 +304,7 @@ def main():
     for fn in (plate_two_holes, frustum_draft3, box_side_hole, shell_wall25, boss_plate,
                counterbore_plate, countersink_plate, slot_vs_pocket, through_hole_and_pocket,
                filleted_pocket, filleted_slot, chamfered_box, thin_plate,
-               bolted_assembly):
+               folded_bracket, bolted_assembly):
         path, truth = fn(outdir)
         print(f"  {os.path.basename(path):26s}  analytic truth: {truth}")
     print(f"wrote fixtures to {outdir}")

@@ -18,6 +18,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { DFA_FIXTURES, DFM_FIXTURES } from './dfm-fixtures.mjs';
+import { runDfmRules } from '../dfm-rules.mjs';
 import { analyzeGeometry } from '../cad-engine/cad-geometry-bridge.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -137,6 +138,18 @@ async function main() {
           && (h.depthMm === undefined || near(r.depthMm, h.depthMm, 0.02)));
       record(fx.file, `hole Ø${h.diaMm}`, !!row && row.through === h.through,
         row ? `through=${row.through} vs ${h.through}` : 'not found');
+    }
+    if (t.sheetMetal !== undefined) {
+      const sm = g.dfm?.sheetMetal || {};
+      for (const [k, want] of Object.entries(t.sheetMetal)) {
+        record(fx.file, `sheet ${k}`, near(sm[k], want, 0.02), `${sm[k]} vs ${want}`);
+      }
+    }
+    if (t.sheetMetalRulesEvaluated !== undefined) {
+      // The point of the wave: this family used to evaluate 0 of 4 on every part.
+      const r = runDfmRules(g, 'sheet-metal');
+      record(fx.file, 'sheet rules evaluated', r.evaluatedCount === t.sheetMetalRulesEvaluated,
+        `${r.evaluatedCount}/${r.ruleCount} evaluated, score ${r.score}`);
     }
     if (t.bosses !== undefined) {
       const n = (g.featureTable || []).filter(r => r.kind === 'boss')

@@ -19,6 +19,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { computeShouldCost } from './costing-engine.mjs';
 import { featuredMachiningCost } from './machining-feature-cost.mjs';
+import { stampingFeatureCost } from './stamping-feature-cost.mjs';
 
 const round2 = n => Math.round(n * 100) / 100;
 
@@ -34,7 +35,45 @@ const PRICERS = {
 
   // Setups are a first-class driver of featuredMachiningCost.
   'mach-setup-count': priceSetupCount,
+
+  // A tight bend radius does not change piece price by itself, but the BEND
+  // COUNT it belongs to does — stampingFeatureCost prices forming per bend, and
+  // until bend recognition existed it was called with its default of 2 on every
+  // part, or not called at all. This is the first finding whose cost comes from
+  // that engine.
+  'sm-bend-radius': priceBendCount,
 };
+
+/**
+ * Cost of the forming content the recognised bends imply, against a flat blank.
+ * Not a "saving" — a bend cannot be deleted without changing the design — so it
+ * is reported as the forming CONTENT the current design carries, which is what a
+ * designer trades away when they flatten a feature.
+ */
+function priceBendCount(finding, ctx) {
+  const { material, region, annualVolume, geometry, library, sheet } = ctx;
+  if (!material || !geometry?.partVolumeCm3 || !sheet?.bendCount) return null;
+  const run = bends => stampingFeatureCost({
+    geometry: { ...geometry, thicknessMm: sheet.thicknessMm },
+    material, region, annualVolume, bends,
+  }, library);
+  let asDrawn, flat;
+  try {
+    asDrawn = run(sheet.bendCount);
+    flat = run(0);
+  } catch {
+    return null;
+  }
+  return {
+    priced: true,
+    basis: 'stampingFeatureCost — forming tonnage and station count from the recognised bend count',
+    changeDescription: `${sheet.bendCount} bend${sheet.bendCount === 1 ? '' : 's'} vs a flat blank`,
+    asDrawnEur: round2(asDrawn.totalShouldCost),
+    improvedEur: round2(flat.totalShouldCost),
+    deltaEur: round2(asDrawn.totalShouldCost - flat.totalShouldCost),
+    annualDeltaEur: annualVolume ? round2((asDrawn.totalShouldCost - flat.totalShouldCost) * annualVolume) : null,
+  };
+}
 
 /** Cost impact of bringing an out-of-range wall back into the process band. */
 function priceWallThickness(finding, ctx) {

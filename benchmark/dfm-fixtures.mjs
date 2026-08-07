@@ -173,6 +173,23 @@ export const DFM_FIXTURES = [
       featureCounts: {},
     },
   },
+  {
+    file: 'folded-bracket.step',
+    what: '2 mm sheet, 90 deg bend, inside radius 3 mm, 40 mm flange, Ø4 hole',
+    truth: {
+      // Sheet THICKNESS is derived, not assumed: outer radius minus inner
+      // radius, 5 - 3 = 2.00. Before bend recognition existed, all four
+      // sheet-metal rules abstained on every part ever uploaded.
+      sheetMetal: {
+        thicknessMm: 2.0,
+        bendCount: 1,
+        minInsideRadiusMm: 3.0,
+        minBendRadiusToThickness: 1.5,
+        minFlangeToThickness: 20.0,
+      },
+      sheetMetalRulesEvaluated: 4,
+    },
+  },
 ];
 
 /** Assembly fixture — used by the DFA benchmark, not the DFM geometry one. */

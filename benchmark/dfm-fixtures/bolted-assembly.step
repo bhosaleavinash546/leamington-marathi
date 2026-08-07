@@ -1,7 +1,7 @@
 ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION(('Open CASCADE Model'),'2;1');
-FILE_NAME('Open CASCADE Shape Model','2026-08-07T17:26:07',('Author'),(
+FILE_NAME('Open CASCADE Shape Model','2026-08-07T20:21:49',('Author'),(
     'Open CASCADE'),'Open CASCADE STEP processor 7.8','Open CASCADE 7.8'
   ,'Unknown');
 FILE_SCHEMA(('AUTOMOTIVE_DESIGN { 1 0 10303 214 1 1 1 1 }'));
@@ -15,7 +15,7 @@ DATA;
 #4 = PRODUCT_DEFINITION_SHAPE('','',#5);
 #5 = PRODUCT_DEFINITION('design','',#6,#9);
 #6 = PRODUCT_DEFINITION_FORMATION('','',#7);
-#7 = PRODUCT('bolted-assembly.step 14','bolted-assembly.step 14','',(#8)
+#7 = PRODUCT('bolted-assembly.step 15','bolted-assembly.step 15','',(#8)
   );
 #8 = PRODUCT_CONTEXT('',#2,'mechanical');
 #9 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -50,7 +50,7 @@ GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT((#31)) GLOBAL_UNIT_ASSIGNED_CONTEXT(
 #34 = PRODUCT_DEFINITION_SHAPE('','',#35);
 #35 = PRODUCT_DEFINITION('design','',#36,#39);
 #36 = PRODUCT_DEFINITION_FORMATION('','',#37);
-#37 = PRODUCT('bolted-assembly.step 14.1','bolted-assembly.step 14.1',''
+#37 = PRODUCT('bolted-assembly.step 15.1','bolted-assembly.step 15.1',''
   ,(#38));
 #38 = PRODUCT_CONTEXT('',#2,'mechanical');
 #39 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -455,7 +455,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #383 = PRODUCT_DEFINITION_SHAPE('','',#384);
 #384 = PRODUCT_DEFINITION('design','',#385,#388);
 #385 = PRODUCT_DEFINITION_FORMATION('','',#386);
-#386 = PRODUCT('bolted-assembly.step 14.2','bolted-assembly.step 14.2',
+#386 = PRODUCT('bolted-assembly.step 15.2','bolted-assembly.step 15.2',
   '',(#387));
 #387 = PRODUCT_CONTEXT('',#2,'mechanical');
 #388 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -592,7 +592,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #500 = PRODUCT_DEFINITION_SHAPE('','',#501);
 #501 = PRODUCT_DEFINITION('design','',#502,#505);
 #502 = PRODUCT_DEFINITION_FORMATION('','',#503);
-#503 = PRODUCT('bolted-assembly.step 14.3','bolted-assembly.step 14.3',
+#503 = PRODUCT('bolted-assembly.step 15.3','bolted-assembly.step 15.3',
   '',(#504));
 #504 = PRODUCT_CONTEXT('',#2,'mechanical');
 #505 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
