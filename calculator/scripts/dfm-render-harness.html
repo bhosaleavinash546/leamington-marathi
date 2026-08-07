@@ -1,0 +1,345 @@
+<!doctype html>
+<!--
+  Standalone renderer for DFM review images.
+
+  Deliberately NOT the app viewer. Driving the real UI would drag in auth, the
+  costing form and viewer state for no benefit, and would break every time the
+  UI moves. This page does one job: given a mesh, the per-triangle source face
+  map the kernel already emits, and a set of face ids, colour those triangles
+  red and everything else grey.
+
+  Three viewports, because one is not enough to judge a finding:
+
+    A  front-iso overview  — where on the part is this?
+    B  rear-iso overview   — half the findings on a real part sit on the side
+                             you cannot see from one angle, and a reviewer who
+                             cannot see the face marks the finding "false" for
+                             the wrong reason.
+    C  auto-aimed close-up — the one that actually answers the question. A
+                             hole-wall finding at part scale is four red pixels
+                             inside a bore; zoomed, and looked at from the right
+                             direction, it is unambiguous.
+
+  "The right direction" is computed, not guessed: the covariance of the
+  highlighted triangles' normals distinguishes a planar face set (view along the
+  dominant normal) from a cylindrical one (view along the axis, i.e. straight
+  down the hole).
+-->
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; background: #ffffff; }
+  canvas { display: block; }
+</style>
+<script type="module">
+import * as THREE from './three.module.js';
+
+/** Binary STL → Float32Array of vertex positions, 9 floats per triangle. */
+function parseBinarySTL(buf) {
+  const dv = new DataView(buf);
+  const n = dv.getUint32(80, true);
+  const pos = new Float32Array(n * 9);
+  let o = 84;
+  for (let t = 0; t < n; t++) {
+    o += 12;                                   // skip the facet normal
+    for (let v = 0; v < 9; v++) { pos[t * 9 + v] = dv.getFloat32(o, true); o += 4; }
+    o += 2;                                    // attribute byte count
+  }
+  return pos;
+}
+
+/**
+ * Jacobi eigen-decomposition of a symmetric 3×3 matrix.
+ *
+ * Used on the covariance of the highlighted triangles' face normals. For a set
+ * of coplanar faces the dominant eigenvector IS the face normal; for the wall of
+ * a hole every normal is perpendicular to the bore axis, so the *smallest*
+ * eigenvector is the axis. That one distinction is what lets the close-up look
+ * into a hole instead of grazing across it.
+ */
+function eigenSym3(m) {
+  const a = m.map(r => r.slice());
+  const v = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+  for (let sweep = 0; sweep < 24; sweep++) {
+    if (Math.abs(a[0][1]) + Math.abs(a[0][2]) + Math.abs(a[1][2]) < 1e-12) break;
+    for (const [p, q] of [[0, 1], [0, 2], [1, 2]]) {
+      if (Math.abs(a[p][q]) < 1e-15) continue;
+      const theta = (a[q][q] - a[p][p]) / (2 * a[p][q]);
+      const t = (theta >= 0 ? 1 : -1) / (Math.abs(theta) + Math.sqrt(theta * theta + 1));
+      const c = 1 / Math.sqrt(t * t + 1), s = t * c;
+      for (let k = 0; k < 3; k++) {
+        const kp = a[k][p], kq = a[k][q];
+        a[k][p] = c * kp - s * kq; a[k][q] = s * kp + c * kq;
+      }
+      for (let k = 0; k < 3; k++) {
+        const pk = a[p][k], qk = a[q][k];
+        a[p][k] = c * pk - s * qk; a[q][k] = s * pk + c * qk;
+      }
+      for (let k = 0; k < 3; k++) {
+        const kp = v[k][p], kq = v[k][q];
+        v[k][p] = c * kp - s * kq; v[k][q] = s * kp + c * kq;
+      }
+    }
+  }
+  return { values: [a[0][0], a[1][1], a[2][2]], col: i => new THREE.Vector3(v[0][i], v[1][i], v[2][i]) };
+}
+
+const VW = 480, VH = 560, VIEWS = 3;
+const canvas = document.createElement('canvas');
+canvas.width = VW * VIEWS; canvas.height = VH;
+document.body.appendChild(canvas);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+renderer.setClearColor(0xffffff, 1);
+renderer.setScissorTest(true);
+renderer.localClippingEnabled = true;
+
+const [meshBuf, payload] = await Promise.all([
+  fetch('./mesh.stl').then(r => r.arrayBuffer()),
+  fetch('./payload.json').then(r => r.json()),
+]);
+
+const positions = parseBinarySTL(meshBuf);
+const triCount = positions.length / 9;
+const triFace = payload.triFace ?? [];
+
+const geom = new THREE.BufferGeometry();
+geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+const colors = new Float32Array(positions.length);
+geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+geom.computeVertexNormals();
+geom.computeBoundingBox();
+
+const partBox = geom.boundingBox;
+const partCentre = new THREE.Vector3(); partBox.getCenter(partCentre);
+
+const scene = new THREE.Scene();
+const material = new THREE.MeshLambertMaterial({
+  vertexColors: true, side: THREE.DoubleSide, flatShading: false,
+});
+scene.add(new THREE.Mesh(geom, material));
+scene.add(new THREE.AmbientLight(0xffffff, 0.62));
+const key = new THREE.DirectionalLight(0xffffff, 0.85);
+key.position.set(1, 1.4, 1); scene.add(key);
+const fill = new THREE.DirectionalLight(0xffffff, 0.45);
+fill.position.set(-1, -0.6, -1); scene.add(fill);
+
+const FOV = 35;
+
+/**
+ * Frame `box` from `dir`, fitting its eight corners as projected.
+ *
+ * Fitting the bounding SPHERE instead — the obvious first try — leaves a flat
+ * part tiny on the page: a servo horn's diagonal is five times its silhouette
+ * height from an isometric angle, so the sphere reserves room for volume the
+ * part does not occupy. Every part in the review set is flat or slender, so the
+ * sphere fit was wrong for all six.
+ *
+ * For a corner at lateral offset x and depth w·n along the view axis, the camera
+ * must sit at least |x|/tan(halfFov) + w·n away for it to fall inside the
+ * frustum. The binding corner wins.
+ */
+function aim(box, dir, margin = 1.06) {
+  const centre = new THREE.Vector3(); box.getCenter(centre);
+  const n = dir.clone().normalize();
+  const up = Math.abs(n.y) > 0.95 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(0, 1, 0);
+  const u = new THREE.Vector3().crossVectors(up, n).normalize();
+  const v = new THREE.Vector3().crossVectors(n, u).normalize();
+
+  const tanV = Math.tan(THREE.MathUtils.degToRad(FOV) / 2);
+  const tanH = tanV * (VW / VH);
+
+  const min = box.min, max = box.max;
+  const w = new THREE.Vector3();
+  let d = 0, span = 0;
+  for (let i = 0; i < 8; i++) {
+    w.set(i & 1 ? max.x : min.x, i & 2 ? max.y : min.y, i & 4 ? max.z : min.z).sub(centre);
+    const depth = w.dot(n);
+    d = Math.max(d, Math.abs(w.dot(u)) / tanH + depth, Math.abs(w.dot(v)) / tanV + depth);
+    span = Math.max(span, w.length());
+  }
+  d = Math.max(d * margin, span * 1.2 + 1e-3);   // never sit inside the geometry
+
+  const cam = new THREE.PerspectiveCamera(FOV, VW / VH, Math.max(d * 0.002, 1e-4), d + span * 4);
+  cam.position.copy(centre).add(n.multiplyScalar(d));
+  cam.lookAt(centre);
+  return cam;
+}
+
+// Genuinely opposite: every component flips. The first pair was (1,0.75,1) and
+// (-1,-0.75,0.6), which is only opposite in a Y-up world — on a Z-up part both
+// cameras sat above the plate and the "rear" view showed the same side as the
+// front. A face on the underside was then invisible in every view.
+const ISO_A = new THREE.Vector3(1, 0.75, 1);
+const ISO_B = new THREE.Vector3(-1, -0.75, -1);
+
+/** Where to look from, and at what, for the close-up on the highlighted set. */
+function closeUpCamera(tris) {
+  const box = new THREE.Box3();
+  const cov = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  const mean = new THREE.Vector3();
+  const p = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+  const ab = new THREE.Vector3(), ac = new THREE.Vector3(), n = new THREE.Vector3();
+  let totalArea = 0;
+
+  for (const t of tris) {
+    for (let v = 0; v < 3; v++) {
+      p[v].fromArray(positions, t * 9 + v * 3);
+      box.expandByPoint(p[v]);
+    }
+    ab.subVectors(p[1], p[0]); ac.subVectors(p[2], p[0]);
+    n.crossVectors(ab, ac);
+    const area = n.length() / 2;           // area-weighted, so slivers do not vote
+    if (area < 1e-9) continue;
+    n.divideScalar(area * 2);
+    totalArea += area;
+    mean.addScaledVector(n, area);
+    const c = [n.x, n.y, n.z];
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) cov[i][j] += area * c[i] * c[j];
+  }
+
+  // The mesh is wound outward, so on a flat face the area-weighted mean normal
+  // IS the outward direction — no sign ambiguity, and no need for the eigen
+  // decomposition at all. Deriving the sign from the feature's position instead
+  // gets it wrong whenever the part centroid is off the feature's own axis,
+  // which is how a flat underside came to be viewed from above.
+  const planar = totalArea > 0 && mean.length() / totalArea > 0.6;
+  let dir;
+  if (planar) {
+    dir = mean.normalize();
+  } else {
+    // A bore's normals all lie perpendicular to its axis, so the QUIETEST
+    // eigen direction is the axis — look straight down the hole.
+    const { values, col } = eigenSym3(cov);
+    const order = [0, 1, 2].sort((a, b) => values[b] - values[a]);
+    dir = col(order[2]).normalize();
+    // Here the sign genuinely is arbitrary; prefer looking from outside, and
+    // fall back to agreeing with view A rather than picking at random.
+    const outward = box.getCenter(new THREE.Vector3()).sub(partCentre);
+    if ((outward.lengthSq() > 1e-6 ? dir.dot(outward) : dir.dot(ISO_A)) < 0) dir.negate();
+  }
+
+  // A dead-on axial view flattens the part to a silhouette. A ~20° tilt keeps
+  // the depth cue without losing the line of sight into the bore.
+  const perp = new THREE.Vector3(0, 1, 0).cross(dir);
+  if (perp.lengthSq() < 1e-6) perp.set(1, 0, 0).cross(dir);
+  dir.add(perp.normalize().multiplyScalar(0.36)).normalize();
+
+  // Pad so the feature is not cropped to the frame edge — and, more importantly,
+  // so there is something recognisable around it. A 0.25 mm fillet on a 300 mm
+  // knuckle framed at its own scale is two red slivers on a featureless grey
+  // wall: technically the right faces, and useless for judging where they are.
+  // The 6%-of-part floor keeps a landmark in frame at any feature size.
+  const size = new THREE.Vector3(); box.getSize(size);
+  const pad = Math.max(size.length() * 0.35, partBox.getSize(new THREE.Vector3()).length() * 0.06);
+  box.expandByScalar(pad);
+  lastCloseUp = { size: size.toArray().map(v => +v.toFixed(2)), planar,
+                  dir: dir.toArray().map(v => +v.toFixed(3)),
+                  // Kept so the caller can cut away everything between the
+                  // camera and the feature when the feature turns out to be
+                  // inside the part.
+                  centre: box.getCenter(new THREE.Vector3()).toArray(), viewDir: dir.toArray() };
+  return aim(box, dir, 1.02);
+}
+
+/** Reported back to the caller so a close-up that fails to close up is diagnosable. */
+let lastCloseUp = null;
+
+/**
+ * Count red-ish pixels in a viewport.
+ *
+ * A finding on an internal face — the inside of a moulded shell, the far wall of
+ * a bore — renders as a completely unmarked part: the triangles ARE coloured,
+ * the part simply hides them. That is indistinguishable, on the page, from "the
+ * tool found nothing here", which is the one thing an image must never say by
+ * accident. Counting the red actually on screen is what makes it detectable.
+ */
+function redPixels(x) {
+  const buf = new Uint8Array(VW * VH * 4);
+  renderer.getContext().readPixels(x, 0, VW, VH, 6408 /* RGBA */, 5121 /* UNSIGNED_BYTE */, buf);
+  let n = 0;
+  for (let i = 0; i < buf.length; i += 4) {
+    const r = buf[i], g = buf[i + 1], b = buf[i + 2];
+    if (r > 60 && r > g * 1.6 && r > b * 1.6) n++;
+  }
+  return n;
+}
+
+const GREY = [0.78, 0.79, 0.81];
+const RED  = [0.85, 0.16, 0.13];
+
+/**
+ * Paint the triangles whose source face is in `ids`, then render all views.
+ *
+ * `focusIds` is the WORST instance's faces. All instances stay red — the
+ * reviewer needs to see the spread — but the close-up aims at one of them.
+ * Aiming at the union framed all four holes of a servo horn at once, which is
+ * the whole part, which is not a close-up.
+ */
+window.__render = (ids, focusIds) => {
+  const want = new Set(ids);
+  const focus = new Set(focusIds && focusIds.length ? focusIds : ids);
+  const hitTris = [], focusTris = [];
+  for (let t = 0; t < triCount; t++) {
+    const on = want.has(triFace[t]);
+    if (on) hitTris.push(t);
+    if (focus.has(triFace[t])) focusTris.push(t);
+    const c = on ? RED : GREY;
+    for (let v = 0; v < 3; v++) {
+      const i = (t * 3 + v) * 3;
+      colors[i] = c[0]; colors[i + 1] = c[1]; colors[i + 2] = c[2];
+    }
+  }
+  geom.attributes.color.needsUpdate = true;
+
+  const aimAt = focusTris.length ? focusTris : hitTris;
+  lastCloseUp = null;
+  material.clippingPlanes = null;
+  const cams = [
+    aim(partBox, ISO_A),
+    aim(partBox, ISO_B),
+    aimAt.length ? closeUpCamera(aimAt) : aim(partBox, ISO_A),
+  ];
+  const draw = (i) => {
+    const x = i * VW;
+    renderer.setViewport(x, 0, VW, VH);
+    renderer.setScissor(x, 0, VW, VH);
+    renderer.render(scene, cams[i]);
+    return x;
+  };
+  for (let i = 0; i < VIEWS; i++) draw(i);
+
+  // If the close-up shows no red, the feature is behind material. Cut the part
+  // open at the feature and draw it again — the standard CAD-review move, and
+  // the only way an internal face can be reviewed at all.
+  let cutaway = false;
+  const visibleBefore = redPixels(2 * VW);
+  if (visibleBefore < 40 && lastCloseUp) {
+    const d = new THREE.Vector3().fromArray(lastCloseUp.viewDir).normalize();
+    const c = new THREE.Vector3().fromArray(lastCloseUp.centre);
+    // Keep the half-space beyond the feature; discard what sits between it and
+    // the camera. Three keeps points where normal·p + constant >= 0.
+    //
+    // The plane sits slightly IN FRONT of the feature. Cutting exactly at its
+    // centroid put a flat face on the boundary and clipped away the very thing
+    // the cut-away was opened to show.
+    const eps = partBox.getSize(new THREE.Vector3()).length() * 0.02;
+    material.clippingPlanes = [new THREE.Plane(d.clone().negate(), d.dot(c) + eps)];
+    draw(2);
+    cutaway = true;
+    if (redPixels(2 * VW) < 40) { material.clippingPlanes = null; draw(2); cutaway = false; }
+  }
+
+  // The hit count is returned so the caller can refuse to ship an image that
+  // highlights nothing — a picture of an unmarked part next to a finding is
+  // worse than no picture, because it reads as "the tool found nothing here".
+  return {
+    dataUrl: canvas.toDataURL('image/png'), highlightedTriangles: hitTris.length, triCount,
+    closeUp: lastCloseUp, cutaway,
+    // Per-view red pixel counts. Zero across all three means the faces exist but
+    // cannot be shown, which the pack must state rather than let the picture imply.
+    visible: [redPixels(0), redPixels(VW), redPixels(2 * VW)],
+  };
+};
+
+window.__ready = true;
+</script>

@@ -259,8 +259,17 @@ export interface TessellationFace {
 }
 
 export interface TessellationMeta {
+  /**
+   * Per-triangle source face — the 1-based B-rep face index, the SAME id a
+   * geometric-DFM finding carries in `faceIds`. Highlighting a finding's faces
+   * is therefore a direct lookup, with no translation table in between.
+   */
   triFace: number[];
-  faces: TessellationFace[];
+  /**
+   * Indexed BY face id, so `faces[triFace[t]]` is the face a triangle came
+   * from. Index 0 and any face the mesher could not triangulate are `null`.
+   */
+  faces: (TessellationFace | null)[];
   /** HONEST solid count — 0 means an unstitched surface model (volume unreliable) */
   bodies: number;
   /** faces the mesher produced no triangulation for — the mesh has gaps there */

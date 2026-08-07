@@ -1744,10 +1744,20 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
 
         tris = []
         tri_face_ids = []   # per-triangle source face id — lets the viewer map a click back to the B-rep
-        faces_meta = []     # per-face exact kernel data: type, radii, area, body, hole/boss
         skipped_faces = 0   # faces with no/failed triangulation — mesh has holes there
-        face_id = 0
+        # `triFace` carries the 1-based TopTools_IndexedMapOfShape index, the SAME
+        # id `_extract_manufacturing_features` puts in a feature's `faceIds`. It
+        # used to carry a dense 0-based counter that skipped untriangulated faces,
+        # so a DFM finding's face ids landed on the wrong faces — off by one on a
+        # clean part, and by more once anything failed to triangulate. That made
+        # every "highlight the faces that triggered this" path silently wrong.
+        # `faces_meta` is indexed BY that id (position == map index), so the
+        # viewer's `meta.faces[faceId]` lookup still holds; index 0 and any
+        # skipped face are None.
+        faces_meta = [None] * (face_map.Extent() + 1)
+        meshed_faces = 0
         for map_idx in range(1, face_map.Extent() + 1):
+            face_id = map_idx
             face = TopoDS.Face_s(face_map.FindKey(map_idx))
             loc = TopLoc_Location()
             tri = BRep_Tool.Triangulation_s(face, loc)
@@ -1801,7 +1811,8 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
                 area_cm2 = abs(fprops.Mass()) / 100.0
             except Exception:
                 pass
-            faces_meta.append({
+            meshed_faces += 1
+            faces_meta[face_id] = ({
                 "id": face_id,
                 "type": ftype,
                 "radiusMm": round(radius_mm, 4) if radius_mm is not None else None,
@@ -1839,7 +1850,6 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
                     pts[1], pts[2] = pts[2], pts[1]
                 tris.append(pts)
                 tri_face_ids.append(face_id)
-            face_id += 1
 
         if not tris:
             return {"status": "error", "error": "Meshing produced no triangles"}
@@ -1863,7 +1873,7 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
                            "bodies": bodies, "skippedFaces": skipped_faces}, jf)
 
         return {"status": "success", "triangles": len(tris), "stlBytes": os.path.getsize(out_path),
-                "faces": len(faces_meta), "bodies": bodies, "skippedFaces": skipped_faces}
+                "faces": meshed_faces, "bodies": bodies, "skippedFaces": skipped_faces}
     except Exception as e:
         return {"status": "error", "error": f"Tessellation error: {e}"}
 

@@ -33,7 +33,13 @@ export interface FaceMeta {
   /** single-ray wall thickness at the face centroid (mm); null when the ray missed */
   thicknessMm?: number | null;
 }
-export interface TessMeta { triFace: number[] | Uint32Array; faces: FaceMeta[]; bodies: number | null; skippedFaces?: number }
+/**
+ * `triFace` holds the 1-based B-rep face index — the same id a geometric-DFM
+ * finding carries — and `faces` is indexed BY that id, so `faces[triFace[t]]`
+ * is the face a triangle came from. Index 0 and any face the mesher skipped are
+ * null, which is why every read of `faces[...]` is guarded.
+ */
+export interface TessMeta { triFace: number[] | Uint32Array; faces: (FaceMeta | null)[]; bodies: number | null; skippedFaces?: number }
 
 export interface MeasurementRecord {
   kind: 'dist' | 'circle' | 'angle' | 'point' | 'facedist';
@@ -509,6 +515,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let bboxLabels: Sprite3[] = [];
   let highlight: Mesh3 | null = null;
   let meta: TessMeta | null = null;
+  /**
+   * `meta.faces` is indexed by face id and therefore sparse — index 0 and any
+   * face the mesher skipped are null. Everything that ITERATES faces (counts,
+   * type histograms, feature grouping) wants the real ones; everything that
+   * LOOKS UP a face by id still goes through `meta.faces[id]`.
+   */
+  let faceList: FaceMeta[] = [];
   let triFaceAll: Uint32Array | null = null;   // reordered per-triangle face ids
   let masterPositions: Float32Array | null = null; // reordered, centred positions
   let partRadius = 1;
@@ -747,6 +760,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const mySeq = ++loadSeq;
     const stale = () => disposed || mySeq !== loadSeq;
     meta = null;
+    faceList = [];
     let stlBuf: ArrayBuffer;
     if (/\.stl$/i.test(file.name)) {
       stlBuf = await file.arrayBuffer();
@@ -793,6 +807,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       const triFace = new Uint32Array(header.triFaceCount);
       for (let i = 0; i < header.triFaceCount; i++) triFace[i] = dv.getUint32(triOff + i * 4, true);
       meta = { triFace, faces: header.faces, bodies: header.bodies, skippedFaces: header.skippedFaces };
+      faceList = meta.faces.filter((f): f is FaceMeta => f != null);
     } else {
       statusFile.textContent = 'Unsupported format (STEP/IGES/STL). Parasolid/JT need a licensed kernel — export STEP instead.';
       throw new Error('unsupported format');
@@ -921,14 +936,14 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       : bodies === 0 ? '⚠ surface model (no closed solid)'
       : `${bodies} ${bodies === 1 ? 'body' : 'bodies'}`;
     const skippedText = meta?.skippedFaces ? ` · ⚠ ${meta.skippedFaces} faces unmeshed` : '';
-    statusFile.textContent = `${file.name} · ${triangles.toLocaleString()} triangles${meta ? ` · ${meta.faces.length} faces` : ''} · ${bodyText}${skippedText}`;
+    statusFile.textContent = `${file.name} · ${triangles.toLocaleString()} triangles${meta ? ` · ${faceList.length} faces` : ''} · ${bodyText}${skippedText}`;
     statusDims.textContent = `X ${partSpan.x.toFixed(2)} · Y ${partSpan.y.toFixed(2)} · Z ${partSpan.z.toFixed(2)} mm`;
 
     const fcBtn = $<HTMLButtonElement>('[data-act="facecolors"]');
     fcBtn.disabled = !meta;
     fcBtn.title = meta ? 'Colour by machining surface type' : 'Face types need STEP/IGES (B-rep) — STL is mesh-only';
     const featBtn = $<HTMLButtonElement>('[data-act="features"]');
-    const hasCyl = !!meta?.faces.some(f => f.type === 'cylinder');
+    const hasCyl = faceList.some(f => f.type === 'cylinder');
     featBtn.disabled = !hasCyl;
     featBtn.title = hasCyl ? 'Detected features — holes & bosses' : 'Feature detection needs STEP/IGES with cylindrical faces';
     const treeBtn = $<HTMLButtonElement>('[data-act="tree"]');
@@ -948,7 +963,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const movBtn = $<HTMLButtonElement>('[data-act="move"]');
     movBtn.disabled = bodyMeshes.length < 1;
     // wall-thickness heatmap: enabled only when the sidecar carries per-face thickness
-    const thkVals = (meta?.faces ?? []).map(f => f.thicknessMm).filter((v): v is number => typeof v === 'number' && v > 0);
+    const thkVals = faceList.map(f => f.thicknessMm).filter((v): v is number => typeof v === 'number' && v > 0);
     thicknessRange = thkVals.length >= 2 ? { min: Math.min(...thkVals), max: Math.max(...thkVals) } : null;
     const thkBtn = $<HTMLButtonElement>('[data-act="thickness"]');
     thkBtn.disabled = !thicknessRange;
@@ -1056,11 +1071,11 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     }
     if (meta) {
       const byType = new Map<string, number[]>();
-      for (const f of meta.faces) { if (!byType.has(f.type)) byType.set(f.type, []); byType.get(f.type)!.push(f.id); }
+      for (const f of faceList) { if (!byType.has(f.type)) byType.set(f.type, []); byType.get(f.type)!.push(f.id); }
       treeTypeIds = byType;
       const typesSorted = [...byType.entries()].sort((a, b) => b[1].length - a[1].length);
       parts.push(
-        `<details class="cv3d-tree-sec" open><summary>Faces by type · ${meta.faces.length}</summary>` +
+        `<details class="cv3d-tree-sec" open><summary>Faces by type · ${faceList.length}</summary>` +
         typesSorted.map(([t, ids]) =>
           `<div class="cv3d-tree-row cv3d-tree-click" data-ttype="${t}"><i style="background:${rgbCss(FACE_COLORS[t] ?? FACE_COLORS.other)}"></i>${FACE_TYPE_LABEL[t] ?? t} · ${ids.length}</div>`).join('') +
         `</details>`);
@@ -1188,7 +1203,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     featuresList.innerHTML = '';
     if (!meta) return;
     const groups = new Map<string, FeatureGroup>();
-    for (const f of meta.faces) {
+    for (const f of faceList) {
       if (f.type !== 'cylinder' || f.radiusMm == null || f.hole == null) continue;
       const kind = f.hole ? 'hole' : 'boss';
       const dia = Math.round(f.radiusMm * 2 * 100) / 100;
@@ -1657,7 +1672,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       mat.needsUpdate = true;
     }
     if (mode === 'facetype' && meta) {
-      const present = [...new Set(meta.faces.map(f => f.type))];
+      const present = [...new Set(faceList.map(f => f.type))];
       legendEl.innerHTML = present.map(t =>
         `<span><i style="background:${rgbCss(FACE_COLORS[t] ?? FACE_COLORS.other)}"></i>${FACE_TYPE_LABEL[t] ?? t}</span>`).join('');
     } else if (mode === 'draft') {

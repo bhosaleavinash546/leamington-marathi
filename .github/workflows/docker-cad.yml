@@ -18,6 +18,7 @@ on:
       - 'calculator/package.json'
       - 'calculator/package-lock.json'
       - 'calculator/server/utils/cad-geometry-engine.py'
+      - 'calculator/scripts/check-face-id-contract.py'
       - 'calculator/tests/fixtures/cad-parts/**'
       - '.github/workflows/docker-cad.yml'
   pull_request:
@@ -31,6 +32,7 @@ on:
       - 'calculator/package.json'
       - 'calculator/package-lock.json'
       - 'calculator/server/utils/cad-geometry-engine.py'
+      - 'calculator/scripts/check-face-id-contract.py'
       - '.github/workflows/docker-cad.yml'
   workflow_dispatch:
 
@@ -76,3 +78,13 @@ jobs:
           assert d['faces']['total'] > 0, d
           print(f\"OK - STEP measured: {d['volume']['cm3']} cm3, {d['faces']['total']} B-rep faces\")
           "
+
+      # A geometric DFM finding names the B-rep faces that triggered it, and the
+      # viewer highlights them by looking those ids up in the mesh. That only
+      # works if the feature extractor and the tessellator number faces the same
+      # way. They once did not, and nothing failed — the highlight simply landed
+      # on the wrong faces. This asserts the two agree.
+      - name: Smoke-test — feature faceIds and mesh triFace agree
+        run: |
+          docker run --rm costvision-cad:ci \
+            python3 scripts/check-face-id-contract.py tests/fixtures/cad-parts/flange-6holes-boss.step

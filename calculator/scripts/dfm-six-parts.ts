@@ -16,37 +16,9 @@
  */
 import { analyzeGeometry } from '../server/utils/geometry-bridge.js';
 import { analyseGeometricDFM, GEOMETRIC_DFM_COMMODITIES } from '../src/engine/dfm-geometry/index.js';
-import type { CommodityType } from '../src/engine/types.js';
+import { REVIEW_PARTS as PARTS } from './dfm-review-parts.js';
 import { readFile, writeFile } from 'node:fs/promises';
 import { basename } from 'node:path';
-
-const UP = process.env.CV_UPLOAD_DIR
-  ?? '/root/.claude/uploads/8bf32d1a-7485-5bd6-9947-7843ee6c5644';
-
-interface Part {
-  name: string;
-  file: string;
-  /** The TRUE commodity per the learnings doc, not what the tool once guessed. */
-  commodity: CommodityType;
-  process?: string;
-  materialFamily?: string;
-  manualCost: string;
-}
-
-const PARTS: Part[] = [
-  { name: 'RH steering knuckle', file: 'd8d13088-steering_knuckle_RH.stp',
-    commodity: 'casting', process: 'gravity', materialFamily: 'aluminium', manualCost: '~£16–18' },
-  { name: 'Stub axle (PRCR002)', file: 'ee3d48dc-PRCR002.stp',
-    commodity: 'forging', materialFamily: 'steel', manualCost: '~£30' },
-  { name: '25T servo horn', file: 'ed1e77f6-Aluminium_25T_Servo_Horn.step',
-    commodity: 'machining', materialFamily: 'aluminium', manualCost: '~£2.2' },
-  { name: 'Front bumper', file: 'edd2f685-BUMPER.stp',
-    commodity: 'injection_moulding', materialFamily: 'plastic', manualCost: '~£8–9' },
-  { name: 'Seat LH cross-member', file: '97fb714b-Seat_LH_Cross_Member.stp',
-    commodity: 'sheet_metal', materialFamily: 'steel', manualCost: '~£1.4' },
-  { name: 'Fuel tank', file: 'b7a8495b-Fuel_tank.STEP',
-    commodity: 'blow_moulding', materialFamily: 'plastic', manualCost: '~£20–30' },
-];
 
 const TIMEOUT_MS = Number(process.env.CV_DFM_TIMEOUT_MS ?? 600_000);
 
@@ -70,7 +42,7 @@ async function main() {
   rows.push('');
 
   for (const p of PARTS) {
-    const path = `${UP}/${p.file}`;
+    const path = p.file;
     const t0 = Date.now();
     process.stdout.write(`[dfm] ${p.name} (${p.commodity}) … `);
 
@@ -124,7 +96,7 @@ async function main() {
     rows.push('');
     rows.push(`| | |`);
     rows.push(`|---|---|`);
-    rows.push(`| File | \`${p.file}\` |`);
+    rows.push(`| File | \`${basename(p.file)}\` |`);
     rows.push(`| True commodity | ${p.commodity}${p.process ? ` (${p.process})` : ''} |`);
     rows.push(`| Independent manual cost | ${p.manualCost} |`);
     rows.push(`| Bounding box | ${geo.boundingBox
