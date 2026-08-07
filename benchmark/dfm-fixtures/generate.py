@@ -178,6 +178,78 @@ def through_hole_and_pocket(outdir):
     return _write(s, os.path.join(outdir, "through-hole-and-pocket.step")), {"throughHoles": 1, "pockets": 1}
 
 
+def _all_edges(shape, maker, value):
+    from OCP.TopAbs import TopAbs_EDGE
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopoDS import TopoDS
+    b = maker(shape)
+    ex = TopExp_Explorer(shape, TopAbs_EDGE)
+    while ex.More():
+        try:
+            b.Add(value, TopoDS.Edge_s(ex.Current()))
+        except Exception:
+            pass
+        ex.Next()
+    return b.Shape()
+
+
+def filleted_pocket(outdir):
+    """80x60x30 block with a closed pocket, then R3 fillets on EVERY edge.
+
+    THE fixture that matters for real parts. Every casting and moulding has
+    filleted internal corners, and a fillet sits BETWEEN the pocket wall and its
+    floor — so the concave edge that defines the pocket does not exist in the raw
+    topology. Measured before the blend-collapse fix: 100 arcs all tangent, zero
+    concave, the pocket GONE and 11 non-existent chamfers invented, while
+    unclassifiedAreaPct reported 0.0 (full confidence, nothing real found).
+
+    Truth: still exactly one pocket, and NO chamfers.
+    """
+    from OCP.BRepFilletAPI import BRepFilletAPI_MakeFillet
+    block = BRepPrimAPI_MakeBox(80.0, 60.0, 30.0).Shape()
+    pocket = BRepPrimAPI_MakeBox(gp_Pnt(15, 15, 12), 50.0, 30.0, 20.0).Shape()
+    s = _all_edges(BRepAlgoAPI_Cut(block, pocket).Shape(), BRepFilletAPI_MakeFillet, 3.0)
+    return _write(s, os.path.join(outdir, "filleted-pocket.step")), {"pockets": 1, "chamfers": 0}
+
+
+def filleted_slot(outdir):
+    """80x60x30 block with a through slot, R2 fillets on every edge.
+
+    Truth: one SLOT, not a "step". Counting only planar faces as walls
+    mislabelled this, because after the blend collapse a wall can legitimately be
+    a surviving cylindrical fillet.
+    """
+    from OCP.BRepFilletAPI import BRepFilletAPI_MakeFillet
+    block = BRepPrimAPI_MakeBox(80.0, 60.0, 30.0).Shape()
+    slot = BRepPrimAPI_MakeBox(gp_Pnt(30, -1, 18), 15.0, 62.0, 20.0).Shape()
+    s = _all_edges(BRepAlgoAPI_Cut(block, slot).Shape(), BRepFilletAPI_MakeFillet, 2.0)
+    return _write(s, os.path.join(outdir, "filleted-slot.step")), {"slots": 1, "chamfers": 0}
+
+
+def chamfered_box(outdir):
+    """80x60x30 box with a 3 mm chamfer on all 12 edges.
+
+    Truth: 12 chamfers and NO pocket. A chamfer meets its neighbours at CONVEX
+    edges, so a tangency test scores every real chamfer zero — this box returned
+    0 chamfers before. And rejoining collapsed chamfers as concave made the whole
+    box read as one giant pocket.
+    """
+    from OCP.BRepFilletAPI import BRepFilletAPI_MakeChamfer
+    s = _all_edges(BRepPrimAPI_MakeBox(80.0, 60.0, 30.0).Shape(), BRepFilletAPI_MakeChamfer, 3.0)
+    return _write(s, os.path.join(outdir, "chamfered-box.step")), {"chamfers": 12, "pockets": 0}
+
+
+def thin_plate(outdir):
+    """Plain 40x40x8 plate — no features at all.
+
+    Truth: {} . Its four side walls are narrow (aspect 0.2) and small relative to
+    their neighbours, so a narrowness-only chamfer test called all four chamfers.
+    A chamfer is OBLIQUE to what it joins; a plate wall is perpendicular.
+    """
+    return _write(BRepPrimAPI_MakeBox(40.0, 40.0, 8.0).Shape(),
+                  os.path.join(outdir, "thin-plate.step")), {}
+
+
 def bolted_assembly(outdir):
     """A 3-solid assembly: one 80x50x10 plate and TWO identical Ø8 x 25 pins.
 
@@ -202,6 +274,7 @@ def main():
     os.makedirs(outdir, exist_ok=True)
     for fn in (plate_two_holes, frustum_draft3, box_side_hole, shell_wall25, boss_plate,
                counterbore_plate, countersink_plate, slot_vs_pocket, through_hole_and_pocket,
+               filleted_pocket, filleted_slot, chamfered_box, thin_plate,
                bolted_assembly):
         path, truth = fn(outdir)
         print(f"  {os.path.basename(path):26s}  analytic truth: {truth}")

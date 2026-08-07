@@ -17,7 +17,7 @@ signal.alarm(110)
 
 # ─── Surface / edge type classification ──────────────────────────────────────
 
-def _extract_feature_table(wrapped, extents):
+def _extract_feature_table(wrapped, extents, skip_faces=None):
     """Exact hole/boss feature table from B-rep cylindrical faces.
 
     Per cylinder face: diameter (exact kernel radius ×2), DEPTH from the
@@ -28,17 +28,27 @@ def _extract_feature_table(wrapped, extents):
     axis, so instances are deduped by (axis point, direction) before counting.
     Returns rows grouped by (kind, diameter, depth, through) with counts.
     """
-    from OCP.TopExp import TopExp_Explorer
     from OCP.TopAbs import TopAbs_FACE, TopAbs_Orientation
     from OCP.TopoDS import TopoDS
     from OCP.BRepAdaptor import BRepAdaptor_Surface
     from OCP.GeomAbs import GeomAbs_SurfaceType
 
+    from OCP.TopTools import TopTools_IndexedMapOfShape
+    from OCP.TopExp import TopExp
+
+    skip = set(skip_faces or ())
+    # Iterate the INDEXED map, not an explorer, so face indices line up with the
+    # adjacency graph in feature_recognition.py — that is what makes `skip_faces`
+    # meaningful. A fillet is a cylindrical face, so without skipping blends
+    # every one of them is counted here as a hole or a boss.
+    fmap = TopTools_IndexedMapOfShape()
+    TopExp.MapShapes_s(wrapped, TopAbs_FACE, fmap)
+
     instances, axes = {}, {}
-    exp = TopExp_Explorer(wrapped, TopAbs_FACE)
-    while exp.More():
-        face = TopoDS.Face_s(exp.Current())
-        exp.Next()
+    for _i in range(1, fmap.Size() + 1):
+        if _i in skip:
+            continue
+        face = TopoDS.Face_s(fmap.FindKey(_i))
         try:
             ad = BRepAdaptor_Surface(face)
             if ad.GetType() != GeomAbs_SurfaceType.GeomAbs_Cylinder:
@@ -671,8 +681,20 @@ def analyze(filepath: str) -> dict:
         wall_stats = draft_info = setup_info = dfm_block = None
         # Computed here rather than inline in the return dict: the setup count
         # below needs the feature AXES from it.
+        # Blends are identified BEFORE the hole/boss table so the analytic
+        # cylinder pass can skip them. A fillet is a cylindrical face; without
+        # this, a filleted slot reported 22 phantom bosses and 2 phantom blind
+        # holes, and those reach the machining cost model as drilling operations
+        # that do not exist.
+        _blend_ids, _aag = set(), None
         try:
-            feature_table = _extract_feature_table(wrapped, (x_sz, y_sz, z_sz))
+            import feature_recognition as _fr
+            _blend_ids, _aag = _fr.blend_face_ids(wrapped)
+        except Exception:
+            pass
+        try:
+            feature_table = _extract_feature_table(wrapped, (x_sz, y_sz, z_sz),
+                                                   skip_faces=_blend_ids)
         except Exception:
             feature_table = []
         try:
@@ -703,7 +725,8 @@ def analyze(filepath: str) -> dict:
                 import feature_recognition as _fr
                 dfm_block = dfm_block or {}
                 dfm_block["features"] = _fr.recognise(wrapped, feature_table,
-                                                      extents=(x_sz, y_sz, z_sz))
+                                                      extents=(x_sz, y_sz, z_sz),
+                                                      aag=_aag)
             except Exception as e:
                 (dfm_block or {}).setdefault("featuresError", f"{e}")
         except Exception as e:

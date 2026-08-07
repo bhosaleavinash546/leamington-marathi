@@ -128,6 +128,51 @@ export const DFM_FIXTURES = [
       featureCounts: { pocket: 1, 'through-hole': 1 },
     },
   },
+
+  // ── Blend geometry — the fixtures that were missing, and their absence is
+  // why a 100% gate coexisted with a recogniser that collapsed on real parts.
+  // Every casting and moulding has filleted internal corners.
+  {
+    file: 'filleted-pocket.step',
+    what: '80x60x30 block, closed pocket, R3 fillet on EVERY edge',
+    truth: {
+      // Before the blend-collapse fix: 100 arcs all tangent, zero concave, the
+      // pocket GONE, 11 non-existent chamfers invented, and unclassifiedAreaPct
+      // reporting 0.0 — full confidence with nothing real found.
+      featureCountsIgnoring: ['fillet'],
+      featureCounts: { pocket: 1 },
+    },
+  },
+  {
+    file: 'filleted-slot.step',
+    what: '80x60x30 block, through slot, R2 fillet on every edge',
+    truth: {
+      // Counting only PLANAR faces as walls called this a "step": after the
+      // collapse a wall can legitimately be a surviving cylindrical fillet.
+      featureCountsIgnoring: ['fillet'],
+      featureCounts: { slot: 1 },
+    },
+  },
+  {
+    file: 'chamfered-box.step',
+    what: '80x60x30 box, 3 mm chamfer on all 12 edges',
+    truth: {
+      // A chamfer meets its neighbours at CONVEX edges, so the original
+      // tangency test scored every real chamfer zero. And rejoining collapsed
+      // chamfers as concave made the whole box read as one giant pocket.
+      featureCounts: { chamfer: 12 },
+    },
+  },
+  {
+    file: 'thin-plate.step',
+    what: 'Plain 40x40x8 plate — no features at all',
+    truth: {
+      // Its four side walls are narrow (aspect 0.2) and small against their
+      // neighbours, so a narrowness-only chamfer test claimed all four. A
+      // chamfer is OBLIQUE to what it joins; a plate wall is perpendicular.
+      featureCounts: {},
+    },
+  },
 ];
 
 /** Assembly fixture — used by the DFA benchmark, not the DFM geometry one. */

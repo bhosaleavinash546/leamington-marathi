@@ -147,7 +147,14 @@ async function main() {
     // ── Feature recognition ──────────────────────────────────────────────────
     const fr = g.dfm?.features;
     if (t.featureCounts !== undefined) {
-      const got = fr?.counts ?? {};
+      // `featureCountsIgnoring` drops kinds whose exact COUNT is a meshing
+      // artefact rather than a design fact — a fillet-every-edge part yields a
+      // number of blend faces that depends on how OCCT split them, so asserting
+      // "38 fillets" would be asserting a tessellation detail. The kinds that
+      // carry engineering meaning (pocket, slot, chamfer) are still exact.
+      const ignore = new Set(t.featureCountsIgnoring || []);
+      const got = Object.fromEntries(
+        Object.entries(fr?.counts ?? {}).filter(([k]) => !ignore.has(k)));
       const want = t.featureCounts;
       // Exact match both ways: a recogniser that invents an extra feature is as
       // wrong as one that misses a real one.
