@@ -1553,8 +1553,18 @@ export function printPDF(
     cadMeta.userSpecifiedMaterial ? 'grade user-specified' : '',
     cadMeta.userSpecifiedProcess ? 'process user-specified' : '',
   ].filter(Boolean).join(', ');
+  // On a multi-year award the annual rate alone is not the basis — the reader
+  // needs the programme life and the lifetime volume to know which of the two
+  // numbers priced the parts and which amortised the NRE.
+  const annVol = cadMeta.annualVolume ?? (input as { annualVolume?: number }).annualVolume;
+  const progYears = (input as { programmeYears?: number }).programmeYears;
+  const volLine = progYears && annVol
+    ? `Annual volume: ${annVol.toLocaleString()}/yr   ·   Programme: ${progYears} years `
+      + `(${(annVol * progYears).toLocaleString()} lifetime)   ·   Region: ${(input as { region?: string }).region ?? region}`
+      + `   ·   Commodity: ${commodityType.replace(/_/g, ' ')}`
+    : `Annual volume: ${(annVol ?? '—').toLocaleString?.() ?? '—'}   ·   Region: ${(input as { region?: string }).region ?? region}   ·   Commodity: ${commodityType.replace(/_/g, ' ')}`;
   y = calloutBox(doc, y, 'Key Assumptions', [
-    `Annual volume: ${(cadMeta.annualVolume ?? (input as { annualVolume?: number }).annualVolume ?? '—').toLocaleString?.() ?? '—'}   ·   Region: ${(input as { region?: string }).region ?? region}   ·   Commodity: ${commodityType.replace(/_/g, ' ')}`,
+    volLine,
     `Alloy / material: ${alloyMat?.grade ?? input.rawMaterial.materialId}${pinNote ? ` (${pinNote})` : ''}   ·   Net weight: ${input.rawMaterial.netWeightKg.toFixed(3)} kg${wtNote}`,
     `Material utilisation: ${utilPct.toFixed(0)}%   ·   Overhead: ${(input.overheadPct * 100).toFixed(0)}% of factory base   ·   Margin: ${(input.marginPct * 100).toFixed(0)}% of subtotal   ·   Operations: ${result.operationDetails.length}`,
   ], NAVY, HDR);

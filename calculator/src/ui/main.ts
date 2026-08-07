@@ -5399,7 +5399,7 @@ function renderPCBAForm(): string {
     <div class="section-title" style="margin-top:8px">NRE Costs <span style="font-weight:400;font-size:0.8em;color:#888">(amortised over programme life)</span></div>
     <div class="field-row">
       <div class="field-group"><label>NRE Total (£) <span title="Solder paste stencil, ICT fixture, programming, AOI setup. Typical: £500–£5,000.">ℹ</span></label><input type="number" id="pcba-nre-cost" step="100" min="0" value="0"/></div>
-      <div class="field-group"><label>NRE Amort. Volume <span title="Programme volume over which NRE is spread. Usually equals amortisation volume above.">ℹ</span></label><input type="number" id="pcba-nre-amort" step="1000" min="1" value="5000"/></div>
+      <div class="field-group"><label>NRE Amort. Volume <span title="Volume over which NRE is spread. On a single-year basis this equals the amortisation volume above; on a multi-year award it is the LIFETIME volume (annual x programme life). Component prices always follow the annual rate, never this figure.">ℹ</span></label><input type="number" id="pcba-nre-amort" step="1000" min="1" value="5000"/></div>
     </div>
     <div class="section-title-row" style="margin-top:8px">
       <span class="section-title" style="margin:0;border:none;padding:0">Bill of Materials</span>
@@ -12169,7 +12169,7 @@ function switchCommodity(type: CommodityType): void {
 // ─── Input collectors ─────────────────────────────────────────────────────────
 
 function getUniversalTail(): Pick<UniversalStackInput,
-  'partName' | 'packagingPerPart' | 'logisticsPerPart' | 'overheadPct' | 'marginPct' | 'annualVolume'> {
+  'partName' | 'packagingPerPart' | 'logisticsPerPart' | 'overheadPct' | 'marginPct' | 'annualVolume' | 'programmeYears'> {
   return {
     partName: val('part-name') || 'Unnamed Part',
     packagingPerPart: num('packaging'),
@@ -12187,6 +12187,9 @@ function getUniversalTail(): Pick<UniversalStackInput,
     // saved costing record. All 19 collectors spread this tail, so setting it
     // here fixes every commodity at once.
     annualVolume: num('annual-volume') || undefined,
+    // Blank = single-year basis, which is the conservative default and what
+    // every costing predating this field assumed.
+    programmeYears: num('programme-years') || undefined,
   };
 }
 
@@ -12979,6 +12982,11 @@ function collectPCBAInput(): UniversalStackInput {
     assemblyYield: num('pcba-yield'),
     reworkCostPerFailure: num('pcba-rework-cost'),
     amortizationVolume: num('pcba-amort') || num('annual-volume') || 100000,
+    // Component prices follow the ANNUAL buy rate. On a multi-year award the
+    // amortisation field above may legitimately hold the programme total, and
+    // pricing the BOM off that would push every line past the saturation
+    // quantity — cheaper, and invisible on the report.
+    annualBuildVolume: num('annual-volume') || undefined,
     testCostPerBoard: num('pcba-test-cost') || undefined,
     assemblyComplexity: validSel<AssemblyComplexityLevel>('pcba-complexity', ASSEMBLY_LEVELS, 'low'),
     qualityGrade: validSel<PCBAQualityGrade>('pcba-quality', PCBA_QUALS, 'consumer'),
@@ -16105,13 +16113,22 @@ async function printMasterPDF(): Promise<void> {
     // from the Master report; surface it explicitly at the top of Part A.
     const _ohPct  = (lastInput.overheadPct * 100).toFixed(0);
     const _mgnPct = (lastInput.marginPct * 100).toFixed(0);
-    const _annVol = ((lastInput as { annualVolume?: number }).annualVolume ?? 100000).toLocaleString();
+    const _annVolNum = (lastInput as { annualVolume?: number }).annualVolume ?? 100000;
+    const _annVol = _annVolNum.toLocaleString();
+    // A multi-year award has two volumes, and which one is which decides the
+    // answer: the annual rate prices the parts, the lifetime amortises the NRE.
+    // Printing only "Annual volume" leaves the reader unable to tell whether the
+    // amortisation figure further down is correct or a 5x error.
+    const _years = (lastInput as { programmeYears?: number }).programmeYears;
+    const _volTxt = _years && _years > 0
+      ? `Annual volume: ${_annVol}/yr   ·   Programme: ${_years} yr (${(_annVolNum * _years).toLocaleString()} lifetime)`
+      : `Annual volume: ${_annVol}`;
     doc.setFillColor(...LIGHT);
     doc.roundedRect(mg, y, cW, 12, 1.5, 1.5, 'F');
     doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...ORANGE);
     doc.text('Manufacturing Basis', mg + 4, y + 5);
     doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
-    doc.text(`Region: ${_mfgRegion}   ·   Currency: ${_displayCurrency}   ·   Annual volume: ${_annVol}   ·   Overhead ${_ohPct}%   ·   Margin ${_mgnPct}%`, mg + 4, y + 9.5);
+    doc.text(`Region: ${_mfgRegion}   ·   Currency: ${_displayCurrency}   ·   ${_volTxt}   ·   Overhead ${_ohPct}%   ·   Margin ${_mgnPct}%`, mg + 4, y + 9.5);
     y += 16;
 
     // Uploaded part photo (any commodity)

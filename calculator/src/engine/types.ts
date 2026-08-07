@@ -184,6 +184,15 @@ export interface UniversalStackInput {
   learningCurve?: LearningCurveConfig;
   /** Annual production volume — required when learningCurve is enabled */
   annualVolume?: number;
+  /**
+   * Programme life in years. Lifetime volume is `annualVolume × programmeYears`.
+   *
+   * Set this on a multi-year award (an LTA) so that amortising NRE over the
+   * whole programme reads as correct rather than as a 5× amortisation error.
+   * It does not itself move any number — `tooling.amortizationVolume` is still
+   * the figure that divides — it states which of the two bases was intended.
+   */
+  programmeYears?: number;
 }
 
 // ─── Universal Stack Output ──────────────────────────────────────────────────

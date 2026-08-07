@@ -134,13 +134,41 @@ const checkMachineOversized: Check = (ctx) => {
 };
 
 /** Lesson: tooling amortises over the stated annual volume, not a stale form
- *  default (the progressive-die £0.05-vs-£0.25 error). */
+ *  default (the progressive-die £0.05-vs-£0.25 error).
+ *
+ *  ...unless the award is multi-year, in which case amortising over the WHOLE
+ *  programme is the correct treatment, not a 5× error. A multi-year programme
+ *  says so via `programmeYears`; without it the annual figure stays the only
+ *  defensible base, because "we'll build this for years" is an assumption and
+ *  amortising on an assumption is how tooling recovery gets under-costed. */
 const checkAmortVolume: Check = (ctx) => {
   const av = ctx.annualVolume;
   if (!av || av <= 0) return null;
   const amort = ctx.input.tooling?.amortizationVolume;
   if (amort == null || amort <= 0) return null;
-  if (Math.abs(amort - av) / av <= 0.02) return null;   // within 2% — consistent
+  const within2pc = (target: number) => Math.abs(amort - target) / target <= 0.02;
+  if (within2pc(av)) return null;                        // annual — consistent
+
+  const years = ctx.input.programmeYears;
+  if (years && years > 0) {
+    const lifetime = av * years;
+    if (within2pc(lifetime)) return null;                // programme life — also correct
+    // Stated as multi-year but matching neither base: still wrong, and the
+    // message has to name both so the reader knows which one to enter.
+    const off = amort / lifetime;
+    return {
+      id: 'amort-not-annual',
+      title: 'Tooling amortised over neither the annual nor the programme volume',
+      severity: (off >= 5 || 1 / off >= 5) ? 'high' : (off >= 1.5 || 1 / off >= 1.5) ? 'medium' : 'low',
+      message: `Tooling amortises over ${Math.round(amort).toLocaleString()} parts. A ${years}-year programme at `
+        + `${Math.round(av).toLocaleString()}/yr gives ${Math.round(lifetime).toLocaleString()} lifetime; a single-year `
+        + `basis gives ${Math.round(av).toLocaleString()}. It matches neither.`,
+      expected: `${Math.round(lifetime).toLocaleString()} (programme) or ${Math.round(av).toLocaleString()} (annual)`,
+      actual: Math.round(amort).toLocaleString(),
+      correction: { kind: 'amortVolume', value: lifetime },
+    };
+  }
+
   return {
     id: 'amort-not-annual',
     title: 'Tooling not amortised over annual volume',
@@ -149,7 +177,8 @@ const checkAmortVolume: Check = (ctx) => {
     // "low" note. An order of magnitude is not a note.
     severity: (amort / av >= 5 || av / amort >= 5) ? 'high'
       : (amort / av >= 1.5 || av / amort >= 1.5) ? 'medium' : 'low',
-    message: `Tooling amortises over ${Math.round(amort).toLocaleString()} parts but the stated annual volume is ${Math.round(av).toLocaleString()}. Per-part tooling is off by ${(amort / av).toFixed(2)}×.`,
+    message: `Tooling amortises over ${Math.round(amort).toLocaleString()} parts but the stated annual volume is ${Math.round(av).toLocaleString()}. Per-part tooling is off by ${(amort / av).toFixed(2)}×.`
+      + (amort > av ? ' If this is a multi-year award, state the programme life so the longer base reads as intentional.' : ''),
     expected: Math.round(av).toLocaleString(),
     actual: Math.round(amort).toLocaleString(),
     correction: { kind: 'amortVolume', value: av },

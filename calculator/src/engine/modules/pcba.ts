@@ -262,6 +262,23 @@ export interface PCBAInputs {
   reworkCostPerFailure: number;       // rework cost per failed board £
   amortizationVolume: number;
   /**
+   * Annual build rate — the quantity component prices are negotiated against.
+   *
+   * On a single-year costing this is the same number as `amortizationVolume`,
+   * which is why the two were one field to begin with. On a multi-year
+   * programme they are NOT the same and must not be conflated: NRE amortises
+   * over the whole programme (see `nreAmortizationVolume`) while piece price is
+   * set by the annual buy rate, because that is what reserves capacity and
+   * wafer starts. A supplier does not quote year one at the five-year price.
+   *
+   * The field exists because the conflation fails silently and in the expensive
+   * direction. A 5-year, 350k/yr programme entered as `amortizationVolume =
+   * 1,750,000` prices every component past `PRICE_SATURATION_QTY`, understating
+   * a BOM-dominated board by ~3% of total with nothing on the report to show
+   * for it. Defaults to `amortizationVolume`, so existing callers are unchanged.
+   */
+  annualBuildVolume?: number;
+  /**
    * Default quantity the BOM prices were quoted at, for lines that do not state
    * their own `priceRefQty`. Omit to treat prices as already at programme
    * volume — which is what the module did unconditionally before.
@@ -322,6 +339,7 @@ export function getPCBAInputSchema(): Record<string, string> {
     assemblyYield: 'number 0–1 — first-pass assembly yield',
     reworkCostPerFailure: 'number — rework cost per failed board £',
     amortizationVolume: 'number — build volume',
+    annualBuildVolume: 'number? — annual build rate that component prices are quoted against. Defaults to amortizationVolume. On a multi-year programme this is the ANNUAL figure, never the programme total.',
     assemblyComplexity: 'low | medium | high | very_high — multiplies SMT placement time',
     qualityGrade: 'consumer | industrial | auto_grade2 | auto_grade1 | aerospace — multiplies test/inspection time',
     bgaCount: 'number? — BGA package count; triggers X-ray inspection operation',
@@ -342,7 +360,8 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
   // 1. Bill-of-materials cost
   // Component prices are quoted at SOME quantity; scale each line from that
   // quantity to the volume actually being built.
-  const targetQty = inputs.amortizationVolume;
+  // The ANNUAL rate, not the programme total — see `annualBuildVolume`.
+  const targetQty = inputs.annualBuildVolume ?? inputs.amortizationVolume;
   const componentCost = inputs.bom.reduce((acc, line) => {
     const ref = line.priceRefQty ?? inputs.bomPriceRefQty ?? targetQty;
     return acc + line.qty * line.unitPriceGBP * bomVolumePriceFactor(ref, targetQty);
