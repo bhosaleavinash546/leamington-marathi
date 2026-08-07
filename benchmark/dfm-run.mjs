@@ -17,7 +17,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { DFM_FIXTURES } from './dfm-fixtures.mjs';
+import { DFA_FIXTURES, DFM_FIXTURES } from './dfm-fixtures.mjs';
 import { analyzeGeometry } from '../cad-engine/cad-geometry-bridge.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -172,6 +172,39 @@ async function main() {
       record(fx.file, 'compound hole', ok,
         c ? `${c.kind} Ø${c.boreDiaMm}→Ø${c.featureDiaMm} d${c.featureDepthMm} ang${c.includedAngleDeg} through=${c.through}`
           : 'none found');
+    }
+  }
+
+  // ── Assembly decomposition / DFA ───────────────────────────────────────────
+  for (const fx of DFA_FIXTURES) {
+    let d;
+    try {
+      d = JSON.parse(execFileSync('python3',
+        [join(HERE, '..', 'cad-engine', 'assembly_decompose.py'), join(FIXDIR, fx.file)],
+        { encoding: 'utf-8', maxBuffer: 64 << 20 }).trim().split('\n').pop());
+    } catch (e) {
+      record(fx.file, 'decompose', false, `threw: ${e.message}`);
+      continue;
+    }
+    const t = fx.truth;
+    record(fx.file, 'solid count', d.solidCount === t.solidCount, `${d.solidCount} vs ${t.solidCount}`);
+    record(fx.file, 'distinct types', d.distinctPartTypes === t.distinctPartTypes,
+      `${d.distinctPartTypes} vs ${t.distinctPartTypes}`);
+    const biggest = Math.max(0, ...(d.instanceGroups || []).map(g => g.count));
+    record(fx.file, 'instance grouping', biggest === t.largestInstanceGroup,
+      `largest group ${biggest} vs ${t.largestInstanceGroup} (identical parts must share a signature)`);
+    if (t.symmetry) {
+      for (const [idx, want] of Object.entries(t.symmetry)) {
+        const got = d.parts?.[Number(idx)]?.symmetry || {};
+        const ok = got.continuous === want.continuous
+          && (want.totalDeg === undefined || Math.abs((got.totalDeg ?? -1) - want.totalDeg) < 0.5);
+        record(fx.file, `symmetry part ${idx}`, ok,
+          `α+β=${got.totalDeg} continuous=${got.continuous} vs α+β=${want.totalDeg} continuous=${want.continuous}`);
+      }
+    }
+    if (t.contacts !== undefined) {
+      record(fx.file, 'contacts', (d.contacts || []).length === t.contacts,
+        `${(d.contacts || []).length} vs ${t.contacts}`);
     }
   }
 

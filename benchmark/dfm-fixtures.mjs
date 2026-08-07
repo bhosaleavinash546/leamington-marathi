@@ -141,6 +141,17 @@ export const DFA_FIXTURES = [
       // The two pins are geometrically identical, so their shape signatures must
       // collide — that is what makes instance grouping possible at all.
       largestInstanceGroup: 2,
+      // Boothroyd's alpha/beta, MEASURED by rotating each solid rather than
+      // inferred from inertia. A cylinder is a body of revolution: beta = 0, and
+      // it flips end-for-end, so alpha = 180. The rectangular plate has 2-fold
+      // symmetry about its normal: alpha = beta = 180.
+      symmetry: {
+        0: { continuous: false, totalDeg: 360 },
+        1: { continuous: true, totalDeg: 180 },
+        2: { continuous: true, totalDeg: 180 },
+      },
+      // Both pins touch the plate; the pins do not touch each other.
+      contacts: 2,
     },
   },
 ];
