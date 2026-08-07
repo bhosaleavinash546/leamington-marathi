@@ -1,7 +1,12 @@
 /**
- * "How CostVision Actually Works" — the 46-slide workflow explainer.
+ * "How CostVision Actually Works" — the 56-slide workflow explainer.
  *
- * Slides 39–46 are the DFM/DFA & idea-generation rule-library appendix,
+ * Slides 5–8 are the PCBA market landscape (who else automates PCBA costing,
+ * at what automation level, software vs service, and what they charge). Every
+ * claim there is sourced; the URL list lives in slide 6's speaker notes. No
+ * price is stated unless the vendor publishes it.
+ *
+ * Slides 46–54 are the DFM/DFA & idea-generation rule-library appendix,
  * transcribed from calculator/src/engine/dfm-dfa.ts + idea-levers.ts +
  * modules/*-advisor.ts (52 rules · 19 parameters/signals · 10 advisors ·
  * 36 levers) — keep them in sync if those engines' thresholds change.
@@ -119,10 +124,10 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText('Four sections, about an hour — or five slides if that is all the time there is', { x: 1.25, y: 0.66, w: 9, h: 0.28, fontFace: 'Calibri', fontSize: 12, italic: true, color: MUTED, margin: 0 });
 
   const secs = [
-    ['1', 'Orientation & the business case', 'Slides 3–9', 'How the whole thing connects, the PCB flow, and the money case ending in one decision', '18 min', BLUE, true],
-    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 10–28', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
-    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 29–39', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
-    ['4', 'The honest limits', 'Slide 40', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
+    ['1', 'Orientation & the business case', 'Slides 3–13', 'How it connects, the PCB flow, who else does this in the market, and the money case ending in one decision', '24 min', BLUE, true],
+    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 14–32', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
+    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 33–43', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
+    ['4', 'The honest limits', 'Slide 44', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
   ];
   secs.forEach(([n, name, range, desc, mins, col, exec], i) => {
     const y = 1.22 + i * 1.16;
@@ -144,7 +149,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     { text: 'Appendix (slides 42–52): ', options: { bold: true, color: '9FB6E0' } },
     { text: 'the complete DFM/DFA rule library and the technical architecture — reference material, not part of the hour.\n', options: { color: 'CADCFC' } },
     { text: 'If you only have ten minutes:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'slides 3–4 (how it connects, incl. the PCB flow) · slides 5–9 (the business case) · slide 28 (the housing on one page) · slide 38 (the two findings) · slide 40 (the limits). Everything in between is the evidence for those five.', options: { color: 'FFFFFF' } },
+    { text: 'slides 3–4 (how it connects, incl. the PCB flow) · slides 5–8 (who else does this, and where we honestly stand) · slides 9–13 (the business case) · slide 32 (the housing on one page) · slide 42 (the two findings) · slide 44 (the limits).', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.02, w: 11.65, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
@@ -393,6 +398,331 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     'One line to keep: the AI’s eyes read the board — the catalogue prices it, the engine costs it, the engineer owns the doubt.'
   );
 }
+
+// ══════════ 1c · WHO ELSE DOES AUTOMATED PCBA COSTING (four market slides) ══════════
+//
+// Asked directly: who is doing this in the market, how automated is it really,
+// is it software or a service, and what does it cost. Every claim below is from
+// a named public source, listed in the speaker notes of the "who does what"
+// slide with its URL. Two rules held throughout:
+//
+//   1. No price is invented, interpolated or "estimated". Where a vendor does
+//      not publish, the cell says so — the absence is itself the finding.
+//   2. Nothing claims CostVision wins on an axis we have not measured.
+//
+// Research constraint, stated on the sources slide because it affects how much
+// weight these claims carry: this session's network policy blocks direct
+// fetches to vendor domains (403 at the egress proxy), so vendor pages were
+// read through the search index rather than opened. Good enough to cite; not
+// good enough to quote verbatim, and the slides do not pretend otherwise.
+
+const FOOT_MAIN = FOOT;
+FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourced August 2026';
+
+// ── 1c1 · The landscape — three camps and the data layer under them ──
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'Who Else Automates PCBA Costing', 'Three different markets get the same name — and only one of them is what we built', NAVY);
+
+  const camps = [
+    ['A · EMS QUOTING', BLUE, BLUE_T,
+     'Supplier-side. Cost-to-quote.',
+     'Luminovo · CalcuQuote',
+     'You already HAVE the BOM — the customer sent it. The job is a fast, competitive quote back.',
+     'BOM file in  →  price out'],
+    ['B · ENTERPRISE SHOULD-COST', TEAL, TEAL_T,
+     'Buyer-side. What SHOULD it cost.',
+     'aPriori · Siemens · FACTON · Tset · Boothroyd Dewhurst',
+     'OEM cost engineering and purchasing. aPriori ships a full PCBA module — this is a mature, direct competitor.',
+     'BOM + board spec in  →  should-cost out'],
+    ['C · REVERSE COSTING', PURPLE, PURPLE_T,
+     'Physical board in. A service, not software.',
+     'Yole SystemPlus · TechInsights',
+     'Engineers decap, X-ray and cross-section a real board. Closest to what we do — done by hand, at consultancy price and pace.',
+     'The board itself  →  BOM + cost'],
+  ];
+  camps.forEach(([hd, col, tint, dir, who, body, flow], i) => {
+    const x = 0.5 + i * 4.19;
+    s.addShape('roundRect', { x, y: 1.28, w: 3.94, h: 3.42, fill: { color: CARD }, line: { color: col, width: 1.4 }, rectRadius: 0.09 });
+    s.addShape('rect', { x, y: 1.28, w: 3.94, h: 0.34, fill: { color: col } });
+    s.addText(hd, { x: x + 0.14, y: 1.28, w: 3.66, h: 0.34, fontFace: 'Calibri', fontSize: 9.2, bold: true, color: 'FFFFFF', charSpacing: 0.5, margin: 0, valign: 'middle' });
+    s.addText(dir, { x: x + 0.14, y: 1.70, w: 3.66, h: 0.26, fontFace: 'Calibri', fontSize: 9.0, bold: true, italic: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(who, { x: x + 0.14, y: 2.00, w: 3.66, h: 0.52, fontFace: 'Calibri', fontSize: 9.4, bold: true, color: NAVY, margin: 0, valign: 'top' });
+    s.addText(body, { x: x + 0.14, y: 2.58, w: 3.66, h: 1.24, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'top' });
+    s.addShape('roundRect', { x: x + 0.14, y: 3.94, w: 3.66, h: 0.62, fill: { color: tint }, line: { color: col, width: 0.75 }, rectRadius: 0.07 });
+    s.addText(flow, { x: x + 0.20, y: 3.94, w: 3.54, h: 0.62, fontFace: 'Consolas', fontSize: 8.4, bold: true, color: col, align: 'center', margin: 0, valign: 'middle' });
+  });
+
+  // The data layer everyone above rents
+  s.addShape('roundRect', { x: 0.5, y: 4.86, w: 12.33, h: 0.66, fill: { color: 'EEF1F6' }, line: { color: MUTED, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Underneath all three — the component price layer they rent:  ', options: { bold: true, color: NAVY } },
+    { text: 'SiliconExpert · Z2Data · Octopart / Nexar (Altium) · Supplyframe (Siemens).  Nobody in this market builds their own component price book — they subscribe to one.', options: { color: SLATE } },
+  ], { x: 0.68, y: 4.86, w: 12.0, h: 0.66, fontFace: 'Calibri', fontSize: 9.4, margin: 0, valign: 'middle' });
+
+  // And the fourth thing people confuse with should-cost
+  s.addShape('roundRect', { x: 0.5, y: 5.64, w: 12.33, h: 0.6, fill: { color: 'FCF3E3' }, line: { color: AMBER, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Not the same thing:  ', options: { bold: true, color: AMBER } },
+    { text: 'JLCPCB / PCBWay / Eurocircuits instant quoting is fully automated and fully public — but it returns THEIR price, which is a quotation, not a should-cost. Useful as a floor reference; useless as a negotiation position.', options: { color: SLATE } },
+  ], { x: 0.68, y: 5.64, w: 12.0, h: 0.6, fontFace: 'Calibri', fontSize: 9.4, margin: 0, valign: 'middle' });
+
+  s.addShape('roundRect', { x: 0.5, y: 6.36, w: 12.33, h: 0.6, fill: { color: 'E8F1FA' }, line: { color: BLUE, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Where we sit:  ', options: { bold: true, color: BLUE } },
+    { text: 'camp B by purpose — a buyer-side should-cost — reached by camp C’s route, from the physical board, but automatically. That combination is the thing to defend.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.36, w: 12.0, h: 0.6, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
+
+  footer(s, ++PG);
+  s.addNotes(
+    'I was asked who else does this, so I went and looked properly rather than answering from memory. The first thing worth saying is that three different markets all get called "automated PCBA costing", and they are not competing with each other — they answer different questions for different people. ' +
+    'Camp A, on the left, is EMS quoting. Luminovo and CalcuQuote. This is supplier-side: a contract manufacturer receives a bill of materials from a customer and needs a competitive quote back quickly. It is genuinely the most automated thing in the market today — Luminovo say they have over three hundred EMS customers including Zollner, Cicor and TQ. But note the direction. They already have the BOM, because the customer sent it. They are answering "what shall I charge", not "what should this cost".  ' +
+    'Camp B is enterprise should-cost, and this is our camp: aPriori, Siemens Teamcenter, FACTON, Tset, Boothroyd Dewhurst. Buyer-side, used by cost engineering and purchasing. I want to correct something I said earlier in the week, because I had it wrong: I described PCBA as the thin end of what these platforms do. It is not. aPriori ships a dedicated printed-circuit-board-assembly costing module with more than forty-five out-of-the-box assembly and test cost models and over twenty-eight PCB manufacturing processes, and it picks its processes off pin counts and mount type exactly as ours does. That is a mature, direct competitor and we should treat it as one. ' +
+    'Camp C is reverse costing — Yole SystemPlus and TechInsights. This is the closest thing to what we did with the brake ECU: take a real board and work out what it costs. The difference is that they do it by hand. Engineers decap the parts, X-ray the board, cross-section it. It is a consultancy engagement, sold per report. ' +
+    'Two things underneath. The grey strip: every one of these companies rents its component price book — SiliconExpert, Z2Data, Octopart, Supplyframe. Nobody builds their own, and that is worth remembering when we come to our own gap. And the amber strip is the thing people confuse with should-cost most often: JLCPCB and PCBWay will give you a fully automated price in seconds, and it is a real published price. But it is their selling price. You cannot negotiate with a supplier using another supplier’s quotation; you negotiate with a cost model. ' +
+    'The blue line at the bottom is the position: we are camp B by purpose — a buyer-side should-cost — but we get there by camp C’s route, from the physical board, automatically. Nobody else joins those two.'
+  );
+}
+
+// ── 1c2 · Who does what — automation, delivery model, price, source ──
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'Who Does What — Automation, Delivery Model and Price', 'Every row from a named public source. Where a vendor does not publish a price, the cell says so — nothing here is estimated', NAVY);
+
+  // The automation scale, defined so it is not a matter of opinion
+  s.addShape('roundRect', { x: 0.5, y: 1.18, w: 12.33, h: 0.44, fill: { color: 'EEF1F6' }, line: { color: MUTED, width: 0.9 }, rectRadius: 0.07 });
+  s.addText([
+    { text: 'Automation scale:   ', options: { bold: true, color: NAVY } },
+    { text: 'L0 ', options: { bold: true, color: PURPLE } }, { text: 'manual service (people take the board apart)   ', options: { color: SLATE } },
+    { text: 'L1 ', options: { bold: true, color: AMBER } }, { text: 'software, human keys the BOM   ', options: { color: SLATE } },
+    { text: 'L2 ', options: { bold: true, color: BLUE } }, { text: 'BOM file in → cost out   ', options: { color: SLATE } },
+    { text: 'L3 ', options: { bold: true, color: GREEN } }, { text: 'photo / unstructured in → BOM + cost out', options: { color: SLATE } },
+  ], { x: 0.68, y: 1.18, w: 12.0, h: 0.44, fontFace: 'Calibri', fontSize: 9.0, margin: 0, valign: 'middle' });
+
+  const cw = [2.28, 1.02, 2.28, 0.52, 2.72, 3.51];
+  const ch = ['Who', 'Model', 'What goes in', 'Auto', 'Price (published only)', 'Source'];
+  let hx = 0.5;
+  ch.forEach((h, i) => {
+    s.addText(h, { x: hx, y: 1.70, w: cw[i], h: 0.3, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i === 3 ? 'center' : 'left', valign: 'middle', margin: 0.05 });
+    hx += cw[i];
+  });
+
+  const rows = [
+    ['Luminovo', 'Software\nSaaS', 'BOM file + PCB spec\n(LLM BOM importer, auto MPN match)', 'L2',
+     'NOT PUBLISHED. Pricing page names 4 tiers (Starter / Advanced / Professional / Enterprise), scaled by procurement spend or assemblies per year — no figures.',
+     'luminovo.com/pricing · /platform/quoting-intelligence · own FAQ "Are prices listed online?"'],
+    ['CalcuQuote (Elisa IndustrIQ)', 'Software\nSaaS', 'BOM file + sourcing rules', 'L2',
+     'NOT PUBLISHED. Monthly, 3 tiers (Foundational / Professional / Enterprise), unlimited users, scaled by annual quoting volume. "Request Pricing" pages.',
+     'calcuquote.com/quotecq · /request-pricing-quote · elisaindustriq.com/calcuquote/pricing'],
+    ['aPriori', 'Software\non-prem or SaaS', 'BOM + board spec (CAD for mechanical)', 'L1–L2',
+     'NOT PUBLISHED. Named-user annual subscription; Foundation module sized by deployment, cost models priced separately.',
+     'apriori.com PCBA module + Electronics process-model PDF · G2 / TrustRadius pricing pages'],
+    ['Siemens Teamcenter X PCM', 'Software\nhybrid cloud', 'BOM + board spec', 'L1–L2',
+     'NOT PUBLISHED. Named end-user licences plus modules; custom quotation.',
+     'siemens.com/.../teamcenter/solutions/product-cost-management'],
+    ['Tset', 'Software\ncloud', 'Board layout, part count, process parameters', 'L1–L2',
+     'NOT PUBLISHED.',
+     'tset.com/industries/electronics-and-high-tech-manufacturing · /videos/pcba-pcb'],
+    ['Boothroyd Dewhurst DFMA', 'Software\nlicence', 'Part / assembly definition keyed in', 'L1',
+     'NOT PUBLISHED. Contact sales.',
+     'dfma.com/software/cost.asp · /resources/pcb-cost-estimating.asp'],
+    ['Yole SystemPlus', 'SERVICE\nper report', 'The physical board', 'L0',
+     'PER-REPORT LIST PRICE — but the only figures I could verify are 2017–18 flyers (EUR 2,490 / 3,490 / 4,990). Treat as order-of-magnitude, not current.',
+     'systemplus.fr/services/reverse-costing · reverse-costing.com · yolegroup.com'],
+    ['TechInsights', 'SERVICE\n+ subscription', 'The physical board', 'L0',
+     'NOT PUBLISHED. Channel subscriptions incl. a Component Price Landscape feed.',
+     'techinsights.com/.../teardown-costing · /reverse-engineering-subscriptions'],
+    ['JLCPCB (instant quote)', 'Supplier\nself-serve', 'BOM + Gerber upload', 'L2',
+     'FULLY PUBLISHED, real time: SMT USD 0.0017/joint; setup USD 25 one side / USD 50 double-sided; hand solder USD 3.50 + USD 0.0173/joint. Their SELLING price, prototype/consumer scope.',
+     'jlcpcb.com/help/article/pcb-assembly-price · jlcpcb.com/parts/bom-tool'],
+    ['PCB Tracer', 'Software\nbrowser', 'Photos of the board (top + bottom)', 'L3',
+     'PUBLISHED: built-in features free; AI features ≈ USD 0.50 per schematic. Extracts BOM and netlist — does NOT cost the board.',
+     'pcbtracer.com · github.com/rpelorosso/pcb-tracer'],
+  ];
+  rows.forEach((r, ri) => {
+    const y = 2.06 + ri * 0.452;
+    let x = 0.5;
+    const auto = r[3];
+    const acol = auto === 'L0' ? PURPLE : auto === 'L1' ? AMBER : auto === 'L3' ? GREEN : BLUE;
+    r.forEach((v, i) => {
+      const isSvc = i === 1 && String(v).startsWith('SERVICE');
+      s.addText(v, {
+        x, y, w: cw[i], h: 0.452, fontFace: i === 3 ? 'Calibri' : 'Calibri',
+        fontSize: i === 0 ? 8.1 : i === 3 ? 9.0 : i === 5 ? 6.4 : 6.9,
+        bold: i === 0 || i === 3 || isSvc,
+        color: i === 0 ? NAVY : i === 3 ? acol : i === 5 ? MUTED : (isSvc ? PURPLE : SLATE),
+        italic: i === 5,
+        fill: { color: ri % 2 ? 'F0F4F9' : 'FFFFFF' },
+        align: i === 3 ? 'center' : 'left', valign: 'middle', margin: 0.05,
+      });
+      x += cw[i];
+    });
+  });
+
+  s.addShape('roundRect', { x: 0.5, y: 6.62, w: 12.33, h: 0.5, fill: { color: 'FCF3E3' }, line: { color: AMBER, width: 1 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'The pricing finding:  ', options: { bold: true, color: AMBER } },
+    { text: 'every should-cost and quoting platform in this market sells on quotation — not one publishes a figure. Only the per-report services and the instant-quote suppliers put a number in public. Any "typical licence cost" you are offered for these tools is somebody’s guess.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.62, w: 12.0, h: 0.5, fontFace: 'Calibri', fontSize: 9.4, margin: 0, valign: 'middle' });
+
+  footer(s, ++PG);
+  s.addNotes(
+    'This is the evidence slide, and I want to be precise about how much weight it carries before anyone quotes it outside this room. ' +
+    'The automation scale across the top is defined so that "how automated is it" is not a matter of opinion. L0 is a manual service — people physically take the board apart. L1 is software where a human still keys the bill of materials. L2 is a BOM file in, cost out, no keying. L3 is unstructured input — a photograph — in, and a BOM and a cost out. ' +
+    'Now the pricing column, which is what I was actually asked for. The honest answer is that almost nobody publishes. Luminovo has a public pricing page that names four tiers and tells you the tiers scale with your procurement spend or your number of new assemblies a year — and then gives no numbers at all; they even have a FAQ page whose title is "are prices listed online". CalcuQuote is the same shape: monthly, three tiers, unlimited users, and a "request pricing" page instead of a price. aPriori is a named-user annual subscription where the Foundation module is sized to your deployment and the cost models are priced separately, and their own guidance is to request a customised price guide. Siemens and Tset and Boothroyd Dewhurst, the same. ' +
+    'So the amber box at the bottom is the finding, not an apology for missing data: this entire market sells on quotation. If anyone shows you a "typical aPriori licence cost", it is a guess. I have deliberately left those cells saying NOT PUBLISHED rather than filling them with a plausible number, and I would ask that we keep it that way. ' +
+    'Two rows do have real figures. Yole SystemPlus sells reverse costing per report at a list price — but the only figures I could actually verify are from 2017 and 2018 flyers, two thousand four hundred and ninety to four thousand nine hundred and ninety euros, and I have labelled them as order-of-magnitude rather than current, because I could not open the current price list. And JLCPCB publishes everything in real time: a tenth of a cent per solder joint, twenty-five dollars of setup for one side, fifty for two. That is genuinely useful as a floor reference — but it is a prototype and consumer-scope selling price with no automotive quality grade, no in-circuit test, no X-ray and no conformal coating, so please do not put it next to our brake-ECU number and call it a comparison. ' +
+    'The last row is the one that made me change what I was going to say on the next slide. PCB Tracer is a browser tool that takes photographs of the top and bottom of a board and uses AI to identify the parts and export a bill of materials — that is L3, the same input we take. The built-in features are free and the AI runs at about fifty cents a schematic. It does not cost the board, which is the whole point of the distinction I draw next, but I am not going to stand here and tell you photo-to-BOM is uncontested when a free tool does it. ' +
+    'One caveat on the whole slide, and it is in the source code comments as well. This session’s network policy blocked me from opening the vendor websites directly — the proxy returned a 403 for every one of them — so these pages were read through the search index rather than fetched and quoted. That is good enough to cite and to plan against. It is not good enough for me to claim I have read the current price list, and where that matters, on the Yole line, I have said so on the slide.' +
+    '\n\n───────────── SOURCES (accessed 7 August 2026, via search index — direct fetch blocked by network policy) ─────────────\n' +
+    'Luminovo — luminovo.com/pricing · luminovo.com/platform/quoting-intelligence · luminovo.com/platform/pcb-pricing · luminovo.com/faq/how-does-luminovo-pricing-work-are-prices-listed-online · luminovo.com/faq/how-much-does-luminovo-cost\n' +
+    'CalcuQuote / Elisa IndustrIQ — calcuquote.com/quotecq · calcuquote.com/request-pricing-quote · elisaindustriq.com/calcuquote/pricing · elisaindustriq.com/resources/blog/6-bom-management-and-quoting-software-platforms-for-ems-providers-in-2026\n' +
+    'aPriori — apriori.com/wp-content/uploads/2023/03/Manufacturing-Process-Models-for-Electronics.pdf · apriori.com/resources/video/demo-pcb-pcba/ · resources.apriori.com/vidyard-all-players/introducing-aprioris-printed-circuit-board-assembly-costing-module · g2.com/products/apriori-manufacturing-intelligence-platform/pricing · trustradius.com/products/apriori-technologies/pricing\n' +
+    'Siemens — siemens.com/en-us/products/teamcenter/solutions/product-cost-management/ · resources.sw.siemens.com/en-US/fact-sheet-reduce-costs-and-carbon-footprint-with-teamcenter-x-product-cost-management/\n' +
+    'Tset — tset.com/industries/electronics-and-high-tech-manufacturing · tset.com/blog/how-to-calculate-pcba-and-pcb-costs-in-product-costing-software · tset.com/videos/pcba-pcb\n' +
+    'FACTON / costdata — costdata.de/en/blog/best-cost-engineering-software\n' +
+    'Boothroyd Dewhurst — dfma.com/software/cost.asp · dfma.com/software/cost-modeling-software-for-manufacturing.html · dfma.com/resources/pcb-cost-estimating.asp\n' +
+    'Yole SystemPlus — systemplus.fr/services/reverse-costing/ · yolegroup.com/about-us/reverse-costing/ · reverse-costing.com  (EUR figures: 2017–18 Yole flyers via slideshare.net/Yole_Developpement — STALE, order-of-magnitude only)\n' +
+    'TechInsights — techinsights.com/technical-capabilities/overview/scope-of-analysis/teardown-costing · techinsights.com/reverse-engineering-subscriptions · .../component-pricing-landscape-and-analysis-subscriptions · .../automotive-teardown-subscriptions\n' +
+    'JLCPCB — jlcpcb.com/help/article/pcb-assembly-price · jlcpcb.com/pcb-assembly · jlcpcb.com/parts/bom-tool/\n' +
+    'PCB Tracer — pcbtracer.com · pcbtracer.com/PCB_Tracer.html · github.com/rpelorosso/pcb-tracer · hackaday.com/2026/02/23/x-ray-a-pcb-virtually/\n' +
+    'Academic (photo→BOM is a researched problem, not only a product): arxiv.org/pdf/2307.13105 (PCB marking detection for hardware assurance) · arxiv.org/pdf/2202.08452 · arxiv.org/pdf/2301.09268 (PCBDet)\n' +
+    'CostVision figures on the following two slides are read from our own source, not from memory: server/routes/pcb.ts (grounding block ~L1408–1432), server/utils/pcb-live-pricing.ts, server/utils/pcb-bom-grounding.ts (groundingCandidates cap = 20), server/utils/pcb-price-catalogue.ts, src/engine/modules/pcba.ts.'
+  );
+}
+
+// ── 1c3 · CostVision on the same axes — including where we lose ──
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'CostVision Measured on the Same Axes', 'Green only where we genuinely lead. Red where we do not — including one thing we cannot yet claim at all', NAVY);
+
+  const cw2 = [2.42, 2.62, 2.62, 2.62, 2.05];
+  const ch2 = ['', 'Camp A · EMS quoting', 'Camp B · Enterprise should-cost', 'Camp C · Reverse costing', 'CostVision'];
+  let hx2 = 0.5;
+  ch2.forEach((h, i) => {
+    s.addText(h, { x: hx2, y: 1.22, w: cw2[i], h: 0.34, fontFace: 'Calibri', fontSize: 8.8, bold: true,
+      color: 'FFFFFF', fill: { color: i === 4 ? '4F46E5' : NAVY }, align: i ? 'center' : 'left', valign: 'middle', margin: 0.05 });
+    hx2 += cw2[i];
+  });
+
+  // verdict: 'w' = we lead, 'l' = we lose, 'n' = neutral/equal
+  const rows2 = [
+    ['Starts from', 'A BOM file', 'A BOM + board spec', 'The physical board', 'A photograph', 'w'],
+    ['Automation', 'L2', 'L1–L2', 'L0 — people', 'L3', 'w'],
+    ['Turnaround', 'Minutes', 'Hours (after data entry)', 'Weeks', 'Minutes', 'w'],
+    ['Cost engine', 'Supplier price build-up', 'Deterministic should-cost', 'Bottom-up from teardown', 'Deterministic, 8-bucket,\n~1,600 pinned tests', 'n'],
+    ['Component prices', 'Live distributor APIs', 'Licensed price libraries', 'Own price database', 'Live API built + wired\n— but UNCONFIGURED,\nso offline catalogue in practice', 'l'],
+    ['Runs air-gapped', 'No — cloud SaaS', 'On-prem possible', 'n/a — a service', 'Yes, AIR_GAPPED=1', 'w'],
+    ['Per-line evidence', 'Distributor quote ref', 'Model + library ref', 'Physical inspection', 'Evidence tag per line\n(legible / partial / inferred)', 'w'],
+    ['PCBA accuracy\nvs actuals', 'Won/lost quote feedback', 'Vendor-claimed ROI cases', 'The reference standard', 'NOT VALIDATED — no PCBA\nactuals recorded yet', 'l'],
+    ['Maturity', '300+ EMS customers claimed', 'Decades, thousands of seats', '250+ automotive teardowns', 'One board, internally', 'l'],
+  ];
+  rows2.forEach((r, ri) => {
+    const y = 1.62 + ri * 0.53;
+    let x = 0.5;
+    const verdict = r[5];
+    const vfill = verdict === 'w' ? 'EAF6EF' : verdict === 'l' ? 'F9E8E5' : 'EEF1F6';
+    const vcol = verdict === 'w' ? GREEN : verdict === 'l' ? RED : SLATE;
+    r.slice(0, 5).forEach((v, i) => {
+      const isUs = i === 4;
+      s.addText(v, {
+        x, y, w: cw2[i], h: 0.53, fontFace: 'Calibri', fontSize: i === 0 ? 8.2 : 7.5,
+        bold: i === 0 || isUs, color: i === 0 ? NAVY : isUs ? vcol : SLATE,
+        fill: { color: isUs ? vfill : (ri % 2 ? 'F0F4F9' : 'FFFFFF') },
+        align: i ? 'center' : 'left', valign: 'middle', margin: 0.05,
+      });
+      x += cw2[i];
+    });
+  });
+
+  s.addShape('roundRect', { x: 0.5, y: 6.44, w: 12.33, h: 0.66, fill: { color: 'F9E8E5' }, line: { color: RED, width: 1.2 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Read the two red rows first.  ', options: { bold: true, color: RED } },
+    { text: 'We have never checked a PCBA estimate against a real invoice — the 13% fleet error we quote is mechanical parts only, and does not transfer. And the brake-ECU study rested on a fitted price curve with 18% of the BOM inferred and roughly £20 of Bosch captive silicon that has no market price at all. Both are fixable. Neither is fixed.', options: { color: SLATE } },
+  ], { x: 0.68, y: 6.44, w: 12.0, h: 0.66, fontFace: 'Calibri', fontSize: 9.4, margin: 0, valign: 'middle' });
+
+  footer(s, ++PG);
+  s.addNotes(
+    'Same axes as the previous slide, with us in the indigo column, and I have coloured our cell green only where I can defend the claim and red where I cannot. ' +
+    'The green rows are real and they are worth saying plainly. We start from a photograph rather than a bill of materials, which no should-cost platform in camp B does. We return an answer in minutes where reverse costing takes weeks. We run air-gapped, which matters for a programme where the board itself is confidential. And every line in our bill of materials carries an evidence tag saying whether the part number was legible in the photograph, partly legible, or inferred — I have not found anyone else who prints that. ' +
+    'Now the row I want to correct myself on, because I told this room the opposite earlier in the week. I said we have no live distributor pricing. That is wrong, and I found it by reading our own source rather than trusting my memory. The integration is built and it is wired into the costing path — Octopart via Nexar, and RS Components — and it grounds the bill of materials before the total is summed. What is true is that it is gated on an API key, we do not have one, and so every price falls back to our offline catalogue. So the honest cell is not "we do not have this". It is "we have it, and it is switched off", which is a completely different size of problem and a completely different conversation with the budget holder. ' +
+    'The two red rows are the ones I would read first if I were you. We have never validated a PCBA estimate against a real invoice. The thirteen percent fleet accuracy we quote elsewhere in this deck is from mechanical parts — castings, mouldings, forgings — and it does not transfer to a populated circuit board. Until we cost a board we already have a purchase-order price for, our accuracy on this commodity is unknown, and I would rather say that than let the number drift across from another slide. ' +
+    'And maturity. Luminovo claims over three hundred EMS customers. Yole has done more than two hundred and fifty automotive teardowns. We have done one board, internally, and we found three part-number errors in our own first pass at it. That is not an argument against the tool — finding them is what the evidence tagging is for — but it is where we are.'
+  );
+}
+
+// ── 1c4 · The gap, and the one thing that closes it ──
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'The Gap — and the One Thing That Closes It', 'What we can defend today, what we cannot, and the smallest change that moves us from “defensible estimate” to “priced”', GREEN);
+
+  // What is genuinely ours
+  s.addShape('roundRect', { x: 0.5, y: 1.24, w: 6.05, h: 2.28, fill: { color: CARD }, line: { color: GREEN, width: 1.4 }, rectRadius: 0.09 });
+  s.addShape('rect', { x: 0.5, y: 1.24, w: 6.05, h: 0.34, fill: { color: GREEN } });
+  s.addText('WHAT IS ACTUALLY OURS', { x: 0.64, y: 1.24, w: 5.77, h: 0.34, fontFace: 'Calibri', fontSize: 9.2, bold: true, color: 'FFFFFF', charSpacing: 0.5, margin: 0, valign: 'middle' });
+  s.addText([
+    { text: 'Photograph → BOM → deterministic should-cost, in one pass.\n', options: { bold: true, color: NAVY } },
+    { text: 'Each half exists elsewhere. PCB Tracer reads a board photo into a BOM for free. aPriori costs a PCBA properly from a BOM. ', options: { color: SLATE } },
+    { text: 'Nobody joins them', options: { bold: true, color: GREEN } },
+    { text: ' — and the join is what lets a buyer cost a competitor’s board, or their own board when the supplier will not open the BOM.\n\n', options: { color: SLATE } },
+    { text: 'Plus: air-gapped operation, per-line evidence tags, and the same eight-bucket engine as every other commodity — so a PCBA sits in the same portfolio as a casting.', options: { color: SLATE } },
+  ], { x: 0.68, y: 1.66, w: 5.69, h: 1.78, fontFace: 'Calibri', fontSize: 9.0, margin: 0, valign: 'top' });
+
+  // What is not
+  s.addShape('roundRect', { x: 6.78, y: 1.24, w: 6.05, h: 2.28, fill: { color: CARD }, line: { color: RED, width: 1.4 }, rectRadius: 0.09 });
+  s.addShape('rect', { x: 6.78, y: 1.24, w: 6.05, h: 0.34, fill: { color: RED } });
+  s.addText('WHAT IS NOT — SAY IT FIRST', { x: 6.92, y: 1.24, w: 5.77, h: 0.34, fontFace: 'Calibri', fontSize: 9.2, bold: true, color: 'FFFFFF', charSpacing: 0.5, margin: 0, valign: 'middle' });
+  s.addText([
+    { text: '1 · No validated PCBA accuracy. ', options: { bold: true, color: RED } },
+    { text: 'Zero boards checked against an invoice.\n', options: { color: SLATE } },
+    { text: '2 · Live pricing is off. ', options: { bold: true, color: RED } },
+    { text: 'Built and wired; no API key, so the offline catalogue prices every line.\n', options: { color: SLATE } },
+    { text: '3 · Captive silicon is unpriceable. ', options: { bold: true, color: RED } },
+    { text: 'On the brake ECU, ~£20 of Bosch in-house parts have no market price — no feed fixes that.\n', options: { color: SLATE } },
+    { text: '4 · Placement rate unvalidated. ', options: { bold: true, color: RED } },
+    { text: 'The library CPH drives £14.21 of process cost; at 2–3× it becomes £4.74–£7.10. Worth more than the whole 200k→350k volume step.', options: { color: SLATE } },
+  ], { x: 6.96, y: 1.66, w: 5.69, h: 1.78, fontFace: 'Calibri', fontSize: 9.0, margin: 0, valign: 'top' });
+
+  // The three moves, in order of value per effort
+  const moves = [
+    ['1 · TURN THE PRICE FEED ON', BLUE, BLUE_T,
+     'A Nexar (Octopart) or RS API key. The integration already exists in server/utils/pcb-live-pricing.ts and already grounds the BOM before totals — it is key-gated and unset.',
+     'Also lift the 20-part grounding cap: the ECU BOM has 20 lines, so it is already at the limit.'],
+    ['2 · VALIDATE ON A KNOWN BOARD', GREEN, GREEN_T,
+     'Cost one board we already hold a purchase-order price for, and record the actual. That converts the red "not validated" row into a number.',
+     'The calibration and drift machinery to learn from it is already built — it has never been fed a PCBA.'],
+    ['3 · CHALLENGE THE PLACEMENT RATE', AMBER, AMBER_T,
+     'Ask one EMS supplier for a real CPH on a comparable board and reconcile it against CPH_BY_TYPE.',
+     'One conversation. Larger effect on the answer than any volume or region change we have modelled.'],
+  ];
+  moves.forEach(([hd, col, tint, body, note], i) => {
+    const x = 0.5 + i * 4.19;
+    s.addShape('roundRect', { x, y: 3.68, w: 3.94, h: 2.24, fill: { color: CARD }, line: { color: col, width: 1.25 }, rectRadius: 0.09 });
+    s.addShape('rect', { x, y: 3.68, w: 0.06, h: 2.24, fill: { color: col } });
+    s.addText(hd, { x: x + 0.18, y: 3.76, w: 3.62, h: 0.26, fontFace: 'Calibri', fontSize: 8.4, bold: true, color: col, charSpacing: 0.4, margin: 0, valign: 'middle' });
+    s.addText(body, { x: x + 0.18, y: 4.06, w: 3.62, h: 1.14, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
+    s.addShape('roundRect', { x: x + 0.18, y: 5.24, w: 3.62, h: 0.6, fill: { color: tint }, line: null, rectRadius: 0.06 });
+    s.addText(note, { x: x + 0.28, y: 5.24, w: 3.42, h: 0.6, fontFace: 'Calibri', fontSize: 7.4, italic: true, color: col, margin: 0, valign: 'middle' });
+  });
+
+  s.addShape('roundRect', { x: 0.5, y: 6.06, w: 12.33, h: 0.9, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1.2 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'The ask:  ', options: { bold: true, color: GREEN } },
+    { text: 'one distributor API key and one board with a known purchase price. Those two together turn every red cell on the previous slide amber or green, and neither needs a line of new engineering — the integration and the calibration machinery are both already built and tested. Until then the honest headline stays: ', options: { color: SLATE } },
+    { text: 'a defensible, fully traceable estimate — not a priced quotation.', options: { bold: true, color: NAVY } },
+  ], { x: 0.68, y: 6.06, w: 12.0, h: 0.9, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
+
+  footer(s, ++PG);
+  s.addNotes(
+    'Last one on the market, and it is the decision slide. ' +
+    'Top left is what is genuinely ours, and I have narrowed the claim deliberately. Both halves of what we do exist elsewhere: PCB Tracer will read a photograph of a board into a bill of materials for nothing, and aPriori will cost a PCBA properly once you give it one. What I could not find anywhere is the two joined into a single pass. That join is the whole product, because it is what lets a buyer cost a board when nobody will hand them the bill of materials — a competitor’s board, or frankly our own supplier’s. ' +
+    'Top right, and I would rather we said this before anyone else does. Four things. We have not validated PCBA accuracy against a single real invoice. Our live pricing is built and switched off. Around twenty pounds of the brake ECU is Bosch captive silicon that has no market price at all, and no data feed on earth fixes that one — it is an irreducible uncertainty and we should keep saying so. And the placement rate: the fourteen pounds twenty-one of process cost on that board comes straight out of our library’s components-per-hour assumptions, and if a real automotive line runs two or three times faster, that number falls to between four and seven pounds. That single unvalidated assumption is worth more than the entire volume change from two hundred thousand to three hundred and fifty thousand that we spent this week modelling. ' +
+    'The three cards along the bottom are what to do about it, in order of value for effort. First, turn the price feed on. This is not a development project — the code is in pcb-live-pricing dot ts, it is already wired to ground the bill of materials before the total is summed, and it is waiting on an API key we have not bought. While we are there we should lift the twenty-part grounding cap, because the ECU bill of materials has exactly twenty lines and is therefore already sitting on the limit. Second, validate: cost one board where we already know the purchase-order price, and record the actual. The calibration and drift machinery that learns from actuals is already built and has never once been given a circuit board. Third, ring one EMS supplier and ask what their real placement rate is on a comparable board. ' +
+    'So the ask is small and specific: one distributor API key, and one board with a known price. No new engineering. And until we have both, the headline we put on a should-cost stays exactly what it is today — a defensible, fully traceable estimate, and not a priced quotation. I would rather we were the ones enforcing that distinction than have a supplier enforce it on us in a negotiation.'
+  );
+}
+
+FOOT = FOOT_MAIN;
 
 // ══════════ 2b · THE BUSINESS CASE (five management slides) ══════════
 {
