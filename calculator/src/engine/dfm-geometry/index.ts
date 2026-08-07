@@ -68,6 +68,8 @@ export interface GeometricAnalysis extends GeometricDFMResult {
   dfa: DFAHandlingResult;
   /** True when a pack exists for this commodity at all. */
   packAvailable: boolean;
+  /** One entry per rule — what the report renders. See groupFindings. */
+  grouped: GroupedFinding[];
 }
 
 export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
@@ -80,7 +82,7 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
       packAvailable: false,
       limitations: [`No geometric rule pack exists for ${part.commodity} yet, so no `
         + 'geometry-based checks were run. The commercial cost-ratio observations still apply.'],
-      dfa: analyseDFAHandling(part),
+      dfa: analyseDFAHandling(part), grouped: [],
     };
   }
 
@@ -115,7 +117,70 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
       || a.featureId.localeCompare(b.featureId);
   });
 
-  return { ...base, findings, limitations, packAvailable, dfa: analyseDFAHandling(part) };
+  return { ...base, findings, limitations, packAvailable,
+    grouped: groupFindings(findings), dfa: analyseDFAHandling(part) };
+}
+
+/**
+ * One entry per RULE, with every instance under it.
+ *
+ * Found by running the packs over the real steering knuckle: 60 faces at zero
+ * draft produced 60 separate findings, and the report became a wall of
+ * identical sentences. A foundry engineer wants "60 faces are below minimum
+ * draft — here they are", not sixty rows. This is what aPriori and DFMPro show:
+ * one issue, N instances, all highlightable together.
+ *
+ * The per-instance `findings` array is kept as-is for the viewer, which needs
+ * every face id; this is the shape the REPORT should render.
+ */
+export interface GroupedFinding {
+  ruleId: string;
+  title: string;
+  severity: GeometricFinding['severity'];
+  count: number;
+  /** Every face across all instances — the viewer highlights the lot. */
+  faceIds: number[];
+  /** The worst instance, by measured distance from the threshold. */
+  worst: GeometricFinding;
+  /** Measured spread across instances, so the reader sees the range not one case. */
+  range: { min: number; max: number; unit: string };
+  threshold: GeometricFinding['threshold'];
+  recommendation: string;
+  source: GeometricFinding['source'];
+  instances: GeometricFinding[];
+}
+
+export function groupFindings(findings: readonly GeometricFinding[]): GroupedFinding[] {
+  const by = new Map<string, GeometricFinding[]>();
+  for (const f of findings) {
+    const k = by.get(f.ruleId);
+    if (k) k.push(f); else by.set(f.ruleId, [f]);
+  }
+  const rank = { critical: 0, major: 1, minor: 2, advisory: 3 } as const;
+  const out: GroupedFinding[] = [];
+  for (const [ruleId, list] of by) {
+    const vals = list.map(f => f.measured.value);
+    // "Worst" = furthest the wrong side of the threshold, whichever way it points.
+    const below = list[0].threshold.comparator.startsWith('<');
+    const worst = list.reduce((a, b) =>
+      (below ? b.measured.value < a.measured.value : b.measured.value > a.measured.value) ? b : a);
+    out.push({
+      ruleId,
+      title: list[0].title,
+      severity: list.reduce((a, b) => (rank[b.severity] < rank[a.severity] ? b : a)).severity,
+      count: list.length,
+      faceIds: [...new Set(list.flatMap(f => f.faceIds))].sort((a, b) => a - b),
+      worst,
+      range: { min: Math.min(...vals), max: Math.max(...vals), unit: list[0].measured.unit },
+      threshold: list[0].threshold,
+      recommendation: list[0].recommendation,
+      source: worst.source,
+      instances: list,
+    });
+  }
+  out.sort((a, b) => rank[a.severity] - rank[b.severity] || b.count - a.count
+    || a.ruleId.localeCompare(b.ruleId));
+  return out;
 }
 
 /** Face ids to highlight in the viewer, deduped, worst severity first. */

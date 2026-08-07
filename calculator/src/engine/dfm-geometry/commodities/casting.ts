@@ -57,7 +57,12 @@ const GENERIC_DRAFT_SOURCE = {
       + 'under-reports rather than over-reports when the process is unknown.',
 };
 DRAFT_SOURCE.diecast = DRAFT_SOURCE.hpdc;
-DRAFT_SOURCE.gravity = DRAFT_SOURCE.sand;
+DRAFT_SOURCE.gravity = {
+  standard: 'ASM Handbook Vol. 15, Casting — permanent mould (gravity die) casting design',
+  note: 'Gravity die is a permanent metal mould, not a rammed sand mould, and has its own draft '
+      + 'practice — aliasing it to sand would cite the wrong process. Published band 1°–3° per '
+      + 'side; the lower bound is used.',
+};
 DRAFT_SOURCE.shell = DRAFT_SOURCE.sand;
 
 export const CASTING_RULES: readonly GeometricRule[] = [
@@ -103,12 +108,16 @@ export const CASTING_RULES: readonly GeometricRule[] = [
     },
     evaluate(f, part) {
       if (f.draftClass !== 'undercut') return null;
+      // Report the angle to the DRAW, not the draft magnitude. An undercut is a
+      // classification (the normal opposes the draw), and printing "draft 45°
+      // against a threshold of < 0°" is a self-contradiction on the report.
+      const toDraw = 90 + (f.draftDeg ?? 0);
       return finding(this, f, part, {
         severity: 'major',
-        detail: `Face ${f.faceIds.join(', ')} lies at ${f.draftDeg?.toFixed(1) ?? '>90'}° to the `
-              + 'draw and cannot release on the main parting.',
-        measuredField: 'draftDeg', measuredValue: f.draftDeg ?? 90, unit: '°',
-        thresholdValue: 0, comparator: '<',
+        detail: `Face ${f.faceIds.join(', ')} sits at ${toDraw.toFixed(1)}° to the draw `
+              + '(past 90°, so its normal opposes withdrawal) and cannot release on the main parting.',
+        measuredField: 'angleToDrawDeg', measuredValue: toDraw, unit: '°',
+        thresholdValue: 90, comparator: '>',
         recommendation: 'Re-orient the parting line, or price a slide/core for this feature and '
           + 'carry the die cost and cycle penalty explicitly.',
       });

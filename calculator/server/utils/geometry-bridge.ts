@@ -73,6 +73,73 @@ import type { OCCTGeometry } from '../../src/engine/ai-analysis.js';
 import { applyShellWallCorrection } from '../../src/engine/geometry-sanity.js';
 export type { OCCTGeometry };
 
+/**
+ * Discard per-face thickness readings that are ray overshoot, not wall.
+ *
+ * On an open thin shell the inward ray can miss the opposite surface and cross
+ * the whole cavity — the documented bumper case, 27 mm reported against a real
+ * 2.5 mm. `applyShellWallCorrection` already fixes the AGGREGATE from 2·V/S;
+ * this applies the same physical reference per face. A reading more than 3x the
+ * true mean wall is not a thick section, it is a ray that escaped, so it is
+ * dropped rather than capped — a dropped reading makes the rule stay silent,
+ * whereas a capped one would invent a plausible number.
+ *
+ * Returns null when there was nothing to correct.
+ */
+function applyShellWallCorrectionToFeatures(
+  geo: OCCTGeometry, correctedWallMm: number | null,
+): { dropped: number; total: number; capMm: number; floorMm: number } | null {
+  const mf = geo.manufacturingFeatures;
+  if (!mf?.available) return null;
+
+  // Reference thickness: 2·V/S, the characteristic wall of ANY solid, not just a
+  // thin shell. Gating this on the shell correction was not enough — on the
+  // steering knuckle (a chunky casting, so the shell correction never fired) the
+  // raw readings still ran from 0.2 mm to 142.8 mm on a 116x237x210 mm part.
+  // Both extremes are ray artefacts: 0.2 mm is a ray grazing along a face,
+  // 142.8 mm is a ray crossing the whole part. Neither is a wall, and a section
+  // rule fed either of them reports a step change that does not exist.
+  const V = geo.volume?.mm3 ?? 0;
+  const S = geo.surfaceArea?.mm2 ?? 0;
+  const characteristic = correctedWallMm ?? (S > 0 && V > 0 ? (2 * V) / S : null);
+  if (!characteristic || !(characteristic > 0)) return null;
+
+  const capMm = characteristic * 3;
+  const floorMm = characteristic * 0.3;
+  let dropped = 0, total = 0;
+
+  for (const f of mf.features) {
+    for (const key of ['thicknessMm', 'neighbourWallMm', 'neighbourMinThicknessMm'] as const) {
+      const v = f[key];
+      if (typeof v === 'number') {
+        total++;
+        if (v > capMm || v < floorMm) { delete f[key]; dropped++; }
+      }
+    }
+    // A ratio derived from a discarded reading is meaningless — drop it too.
+    if (f.thicknessMm === undefined || f.neighbourMinThicknessMm === undefined) {
+      delete f.sectionRatio;
+    }
+    if (f.neighbourWallMm === undefined) delete f.bossToWallRatio;
+  }
+  if (mf.hotSpots) {
+    const before = mf.hotSpots.length;
+    mf.hotSpots = mf.hotSpots.filter(h => h.thicknessMm <= capMm && h.thicknessMm >= floorMm);
+    dropped += before - mf.hotSpots.length;
+    total += before;
+  }
+  if (dropped === 0) return null;
+
+  mf.medianThicknessMm = Number(characteristic.toFixed(3));
+  mf.note = [mf.note, `${dropped} of ${total} per-face thickness readings discarded as ray `
+    + `artefacts — outside ${floorMm.toFixed(2)}–${capMm.toFixed(2)} mm, i.e. 0.3x to 3x the `
+    + `characteristic 2·V/S thickness of ${characteristic.toFixed(2)} mm. Readings below the `
+    + 'floor are rays grazing a face; readings above the cap are rays crossing the part. '
+    + 'Wall-derived checks ran only on the survivors.']
+    .filter(Boolean).join(' ');
+  return { dropped, total, capMm: Number(capMm.toFixed(2)), floorMm: Number(floorMm.toFixed(2)) };
+}
+
 export async function analyzeGeometry(
   buffer: Buffer,
   filename: string,
@@ -98,6 +165,14 @@ export async function analyzeGeometry(
     // caller that misses this is not slightly wrong, it is 100x wrong.
     const wc = applyShellWallCorrection(geo);
     if (wc) console.log(`[geometry] thin-shell wall corrected: ${wc.fromMm} mm → ${wc.toMm} mm (2·V/S)`);
+    // The SAME overshoot corrupts the per-face thicknesses, and correcting only
+    // the aggregate left the geometric DFM rules reading raw values: on the
+    // bumper a face reported 108.9 mm of "wall" against a real 2.5 mm, and the
+    // rib-thickness rule duly fired. Correct both at the same boundary, so no
+    // consumer can ever see one corrected and the other not.
+    const fc = applyShellWallCorrectionToFeatures(geo, wc?.toMm ?? null);
+    if (fc) console.log(`[geometry] per-face thickness: ${fc.dropped} of ${fc.total} readings `
+      + `discarded as ray artefacts (outside ${fc.floorMm}-${fc.capMm} mm)`);
     return geo;
   } finally {
     release();

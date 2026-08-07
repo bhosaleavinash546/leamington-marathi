@@ -102,11 +102,15 @@ export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
     source: { ...DFM_TEXT, clause: 'Undercuts and moving mould components' },
     evaluate(f, part) {
       if (f.draftClass !== 'undercut') return null;
+      // Report the angle to the DRAW. An undercut is a classification, and
+      // printing "draft 45° against a threshold of < 0°" is self-contradictory.
+      const toDraw = 90 + (f.draftDeg ?? 0);
       return finding(this, f, part, {
         severity: 'major',
-        detail: `Face ${f.faceIds.join(', ')} opposes the draw and cannot eject on the main parting.`,
-        measuredField: 'draftDeg', measuredValue: f.draftDeg ?? 90, unit: '°',
-        thresholdValue: 0, comparator: '<',
+        detail: `Face ${f.faceIds.join(', ')} sits at ${toDraw.toFixed(1)}° to the draw `
+              + '(past 90°) and cannot eject on the main parting.',
+        measuredField: 'angleToDrawDeg', measuredValue: toDraw, unit: '°',
+        thresholdValue: 90, comparator: '>',
         recommendation: 'Re-orient the parting, redesign the feature to draw, or price a slide / '
           + 'lifter — each adds mould cost and lengthens the cycle.',
       });
