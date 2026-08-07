@@ -55,6 +55,15 @@ export interface CADViewerOptions {
 export interface CADViewerHandle {
   loadFile(file: File): Promise<void>;
   getMeasurements(): MeasurementRecord[];
+  /**
+   * Paint a set of B-rep face ids. Used by the DFM Studio to show WHERE an
+   * undercut or a zero-draft wall actually is: a finding that says "2 undercut
+   * regions" and cannot point at them leaves the engineer to hunt.
+   * Face ids are the same indices the analysis returns (undercutFaceIds etc.).
+   * No-op on an STL, which carries no face topology.
+   */
+  highlightFaces(faceIds: Iterable<number>): void;
+  clearHighlight(): void;
   dispose(): void;
   el: HTMLElement;
 }
@@ -1128,6 +1137,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   return {
     loadFile,
     getMeasurements: measurementRecords,
+    highlightFaces: (ids: Iterable<number>) => highlightFaces(new Set(ids)),
+    clearHighlight,
     el: root,
     dispose(): void {
       if (disposed) return;

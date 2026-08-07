@@ -5,6 +5,7 @@ import {
   Ruler, Layers, Boxes, Info, CheckCircle2, MinusCircle,
 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
+import CadViewer3D from '../components/CadViewer3D';
 import { useAuth } from '../contexts/AuthContext';
 
 // DFM / DFA Studio. Upload a STEP or IGES part and get a manufacturability
@@ -52,6 +53,16 @@ const MATERIALS = ['', 'Aluminium A356 (cast)', 'Aluminium 6061', 'Steel (mild)'
 const COST_PROCESSES = ['', 'Die Casting (Aluminium)', 'Injection Moulding', 'Machining (CNC)', 'Stamping / Deep Drawing', 'Gravity Die Casting', 'Sand Casting'];
 const REGIONS = ['Germany', 'UK', 'Czech Republic', 'Spain', 'Mexico', 'USA', 'China', 'India'];
 
+type DfaQuestion = 'moves' | 'differentMaterial' | 'mustSeparate';
+/** Boothroyd's three questions. Geometry proposes them; only a human can answer.
+ *  Without this UI the engine never received answers, so the DFA index and the
+ *  consolidation list were withheld for every user on every part. */
+const DFA_QUESTIONS: { key: DfaQuestion; label: string; hint: string }[] = [
+  { key: 'moves', label: 'Moves', hint: 'Does it move relative to parts already assembled?' },
+  { key: 'differentMaterial', label: 'Material', hint: 'Must it be a different material for a fundamental reason?' },
+  { key: 'mustSeparate', label: 'Separable', hint: 'Must it be separable for assembly or service?' },
+];
+
 const SEV_STYLE: Record<string, string> = {
   high: 'border-red-500/40 bg-red-500/10 text-red-300',
   medium: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
@@ -71,9 +82,14 @@ export default function DfmStudioPage() {
   const [result, setResult] = useState<DfmResponse | null>(null);
   const [dfa, setDfa] = useState<DfaResponse | null>(null);
   const [exporting, setExporting] = useState<'' | 'pdf' | 'xlsx'>('');
+  // Which findings the viewer paints onto the model. The analysis already
+  // returns the face ids; a finding that says "2 undercut regions" without
+  // showing WHERE leaves the engineer to hunt for them.
+  const [highlight, setHighlight] = useState<'undercuts' | 'zeroDraft' | 'none'>('undercuts');
+  const [answers, setAnswers] = useState<Record<number, Partial<Record<DfaQuestion, boolean>>>>({});
 
   const pick = useCallback((f: File | null) => {
-    setFile(f); setResult(null); setDfa(null); setError('');
+    setFile(f); setResult(null); setDfa(null); setError(''); setAnswers({});
   }, []);
 
   async function post(path: string, extra: Record<string, string> = {}) {
@@ -102,14 +118,24 @@ export default function DfmStudioPage() {
     } finally { setLoading(''); }
   }
 
-  async function analyseAssembly() {
-    if (!file || !token) return;
+  async function analyseAssembly(withAnswers = answers) {
+    if (!file) { setError('Choose a STEP or IGES file first.'); return; }
+    if (!token) { setError('Please sign in.'); return; }
     setLoading('dfa'); setError('');
     try {
-      setDfa(await post('/api/dfm/dfa', { options: JSON.stringify({ labourRateEurPerHr: 42 }) }));
+      // Region drives the labour rate instead of a hard-coded EUR 42/hr, and the
+      // confirmed answers are what let the engine release the DFA index.
+      setDfa(await post('/api/dfm/dfa', { options: JSON.stringify({ region, answers: withAnswers }) }));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Assembly analysis failed');
     } finally { setLoading(''); }
+  }
+
+  /** Answer one of the three questions for a part, then re-score immediately. */
+  function answer(index: number, q: DfaQuestion, value: boolean) {
+    const next = { ...answers, [index]: { ...(answers[index] || {}), [q]: value } };
+    setAnswers(next);
+    void analyseAssembly(next);
   }
 
   async function exportReport(kind: 'pdf' | 'xlsx') {
@@ -135,6 +161,10 @@ export default function DfmStudioPage() {
   const wall = dfmBlock.wallThickness ?? {};
   const draft = dfmBlock.draft ?? {};
   const feats = dfmBlock.features ?? {};
+  const highlightIds: number[] | null =
+    highlight === 'undercuts' ? (draft.undercutFaceIds ?? null)
+      : highlight === 'zeroDraft' ? (draft.zeroDraftFaceIds ?? null)
+        : null;
 
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
@@ -199,7 +229,7 @@ export default function DfmStudioPage() {
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-500 text-navy-950 font-semibold text-sm hover:bg-gold-400 transition-colors disabled:opacity-50">
               {loading === 'dfm' ? <ButtonSpinner size={14} /> : <Ruler size={15} />} Analyse manufacturability
             </button>
-            <button onClick={analyseAssembly} disabled={!file || loading !== ''}
+            <button onClick={() => void analyseAssembly()} disabled={!file || loading !== ''}
               title="Decompose an assembly into parts and score it for assembly"
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-teal-500/30 bg-teal-500/10 text-teal-300 font-semibold text-sm hover:bg-teal-500/20 transition-colors disabled:opacity-50">
               {loading === 'dfa' ? <ButtonSpinner size={14} /> : <Boxes size={15} />} Analyse assembly (DFA)
@@ -245,6 +275,36 @@ export default function DfmStudioPage() {
                 </ul>
               </div>
             )}
+
+            {/* 3D view with the findings painted onto the actual faces. The
+                engine already returns undercutFaceIds / zeroDraftFaceIds. */}
+            <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                <p className="text-slate-500 text-xs uppercase tracking-wider">Geometry — findings shown on the part</p>
+                <div className="flex items-center gap-1.5" role="group" aria-label="Highlight findings on the model">
+                  {([
+                    ['undercuts', `Undercuts (${draft.undercutFaceCount ?? 0})`],
+                    ['zeroDraft', `Zero-draft walls (${draft.zeroDraftFaceCount ?? 0})`],
+                    ['none', 'None'],
+                  ] as const).map(([k, label]) => (
+                    <button key={k} type="button" onClick={() => setHighlight(k)} aria-pressed={highlight === k}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${
+                        highlight === k
+                          ? 'border-gold-500/50 bg-gold-500/15 text-gold-300'
+                          : 'border-white/10 text-slate-400 hover:text-slate-200'}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <CadViewer3D file={file} token={token} highlightFaceIds={highlightIds}
+                className="h-[420px] rounded-xl overflow-hidden" />
+              <p className="text-slate-600 text-[11px] mt-2">
+                An undercut is occluded in both tool halves and buys a slide or a lifter. A zero-draft wall
+                drags out but scuffs, and is fixable with a degree of taper. They are deliberately shown
+                as different problems.
+              </p>
+            </div>
 
             {/* Measured geometry — the evidence the findings rest on */}
             <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
@@ -397,7 +457,9 @@ export default function DfmStudioPage() {
                     <th className="text-left py-1.5 pr-3">#</th><th className="text-left pr-3">Part</th>
                     <th className="text-right pr-3">Off</th><th className="text-right pr-3">α+β</th>
                     <th className="text-right pr-3">Handle s</th><th className="text-right pr-3">Insert s</th>
-                    <th className="text-right pr-3">Total s</th><th className="text-left">Fastener?</th>
+                    <th className="text-right pr-3">Total s</th>
+                    <th className="text-left pr-3">Fastener?</th>
+                    <th className="text-left" colSpan={3}>Necessary? — answer all three to release the index</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -410,7 +472,28 @@ export default function DfmStudioPage() {
                       <td className="text-right pr-3">{r.time?.handlingSec}</td>
                       <td className="text-right pr-3">{r.time?.insertionSec}</td>
                       <td className="text-right pr-3 font-semibold">{r.time?.totalSec}</td>
-                      <td className="text-slate-500">{r.fastener?.isFastener ? `probable (${r.fastener.confidence})` : '—'}</td>
+                      <td className="text-slate-500 pr-3">{r.fastener?.isFastener ? `probable (${r.fastener.confidence})` : '—'}</td>
+                      {DFA_QUESTIONS.map(q => {
+                        const v = answers[r.index]?.[q.key];
+                        return (
+                          <td key={q.key} className="pr-2 py-1">
+                            <div className="flex items-center gap-0.5" role="group" aria-label={`${r.name}: ${q.hint}`}>
+                              <span className="text-slate-600 text-[10px] mr-1">{q.label}</span>
+                              {([['Y', true], ['N', false]] as const).map(([lbl, val]) => (
+                                <button key={lbl} type="button" onClick={() => answer(r.index, q.key, val)}
+                                  aria-pressed={v === val} title={q.hint}
+                                  className={`px-1.5 py-0.5 rounded text-[10px] border transition-colors ${
+                                    v === val
+                                      ? (val ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300'
+                                             : 'border-slate-500/50 bg-slate-500/15 text-slate-300')
+                                      : 'border-white/10 text-slate-600 hover:text-slate-300'}`}>
+                                  {lbl}
+                                </button>
+                              ))}
+                            </div>
+                          </td>
+                        );
+                      })}
                     </tr>
                   ))}
                 </tbody>

@@ -18,6 +18,7 @@ import { priceFindings, summarisePricedImpact } from '../dfm-cost-impact.mjs';
 import { DFM_RULES, PROCESS_FAMILIES } from '../dfm-rule-catalogue.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
 import { TIME_MODEL } from '../dfa-time-model.mjs';
+import { MATERIALS, REGIONS } from '../costing-engine.mjs';
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 
@@ -98,15 +99,9 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
     // Mass is derived from the kernel-measured volume and the chosen material,
     // never taken from the request: a typed weight could silently disagree with
     // the geometry every finding is based on.
-    const DENSITY = {
-      'Aluminium A356 (cast)': 2.68, 'Aluminium 6061': 2.70, 'Aluminium 7075': 2.81,
-      'Steel (mild)': 7.85, 'Steel (high-strength)': 7.85, 'Stainless Steel 304': 7.9,
-      'Cast Iron (Grey)': 7.2, 'Cast Iron (Ductile/GJS)': 7.1, 'Zinc (ZAMAK 5)': 6.6,
-      'Magnesium AZ31': 1.77, 'Titanium Ti-6Al-4V': 4.43, 'Brass (CuZn39)': 8.4,
-      ABS: 1.05, 'Polypropylene (PP)': 0.91, 'PA6 (Nylon)': 1.14,
-      'PA66-GF30 (glass-filled)': 1.36, 'POM (Acetal)': 1.41, 'Polycarbonate (PC)': 1.20,
-    };
-    const density = DENSITY[req.body?.material];
+    // Density read from the costing engine's own MATERIALS table rather than a
+    // local copy, so the two can never drift apart.
+    const density = MATERIALS[req.body?.material]?.density;
     const weightKg = density && geo.volume?.cm3 > 0
       ? (geo.volume.cm3 * density) / 1000
       : undefined;
@@ -216,7 +211,11 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
         answers: parsed.answers,
         securingByIndex: parsed.securingByIndex,
         insertionFlags: parsed.insertionFlags,
-        labourRateEurPerHr: numOr(parsed.labourRateEurPerHr, undefined),
+        // Region drives the labour rate from the same REGIONS table the costing
+        // engine uses. A DFA costed at German rates for an Indian plant is a
+        // wrong number, not a rough one. An explicit rate still wins.
+        labourRateEurPerHr: numOr(parsed.labourRateEurPerHr,
+          REGIONS[parsed.region]?.labour ?? undefined),
         calibration: numOr(parsed.calibration, 1),
       });
     } catch (e) {
