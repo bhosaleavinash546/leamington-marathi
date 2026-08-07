@@ -16563,12 +16563,18 @@ function renderGeometricDFMPanel(): void {
     : s === 'minor' ? 'warn' : 'muted';
   host.innerHTML = `
     <h3>Geometric DFM — measured from the CAD</h3>
-    <p class="muted small">${g.grouped.length} issue(s) across ${g.findings.length} instance(s).
+    <p class="muted small">${g.grouped.length} issue(s) across ${g.findings.length} instance(s),
+      ranked by cost. ${(g.totalAddressableGBP ?? 0) > 0
+        ? `<strong>£${(g.totalAddressableGBP ?? 0).toFixed(2)}/part</strong> priced; issues without a
+           figure are quality or yield risks with no modelled cost path.`
+        : 'No finding here has a modelled cost path — each says why.'}
       Click an issue to highlight the faces that caused it.</p>
     <ul class="dfm-geo-list">
       ${g.grouped.map((x: GeometricDFMMeta['grouped'][number], i: number) => `
         <li class="dfm-geo-item ${sevClass(x.severity)}" data-dfm-idx="${i}" role="button" tabindex="0">
           <strong>${escHtml(x.title)}</strong>${x.count > 1 ? ` <em>(${x.count})</em>` : ''}
+          ${(x.totalCostGBP ?? 0) > 0
+            ? `<span class="dfm-geo-cost">£${(x.totalCostGBP ?? 0).toFixed(2)}/part</span>` : ''}
           <div class="small">${escHtml(x.worst.detail)}</div>
           <div class="small muted">${escHtml(x.source.standard)}</div>
         </li>`).join('')}

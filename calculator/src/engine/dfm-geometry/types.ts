@@ -68,6 +68,11 @@ export interface PartContext {
   materialFamily?: string;
   /** Casting/moulding sub-route when known, e.g. 'hpdc' | 'sand' | 'gravity'. */
   process?: string;
+  /**
+   * Rates and volume for pricing findings. Absent means findings stay unpriced
+   * with a stated reason — never estimated. See `cost-impact.ts`.
+   */
+  cost?: import('./cost-impact.js').CostContext;
 }
 
 /**
@@ -91,6 +96,18 @@ export interface GeometricFinding {
   recommendation: string;
   source: RuleSource;
   positionMm?: [number, number, number];
+  /**
+   * What this finding is worth, when a cost path is modelled. See
+   * `cost-impact.ts` — set by `analyseGeometricDFM`, never by a rule, so a rule
+   * author cannot smuggle a number in without a pricer.
+   */
+  costImpact?: import('./cost-impact.js').FindingCostImpact;
+  /**
+   * Why it was NOT priced. Mutually exclusive with `costImpact`, and pinned by
+   * test: a finding must never carry both, because "here is a number and here
+   * is why there is no number" is how a report loses its reader.
+   */
+  costNotModelled?: string;
 }
 
 export interface GeometricRule {

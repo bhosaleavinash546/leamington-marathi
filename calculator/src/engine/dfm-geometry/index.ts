@@ -15,9 +15,12 @@ import { SHEET_METAL_RULES, SHEET_METAL_LIMITATIONS } from './commodities/sheet-
 import { FORGING_RULES, FORGING_LIMITATIONS } from './commodities/forging.js';
 import { BLOW_MOULDING_RULES, BLOW_LIMITATIONS, blowPartLevelFindings } from './commodities/blow-moulding.js';
 import { analyseDFAHandling, type DFAHandlingResult } from './dfa-handling.js';
+import { priceFinding, totalCostGBP, type CostContext } from './cost-impact.js';
 
 export * from './types.js';
 export { analyseDFAHandling, symmetryClass } from './dfa-handling.js';
+export { priceFinding, totalCostGBP, PRICERS, NOT_MODELLED } from './cost-impact.js';
+export type { FindingCostImpact, CostContext, CostImpactKind } from './cost-impact.js';
 export type { DFAHandlingResult } from './dfa-handling.js';
 export { CASTING_RULES, CASTING_LIMITATIONS, MIN_DRAFT_DEG } from './commodities/casting.js';
 export { INJECTION_MOULDING_RULES, MOULDING_LIMITATIONS } from './commodities/injection-moulding.js';
@@ -90,6 +93,8 @@ export interface GeometricAnalysis extends GeometricDFMResult {
   packAvailable: boolean;
   /** One entry per rule — what the report renders. See groupFindings. */
   grouped: GroupedFinding[];
+  /** Sum of every priced finding, £/part. Unpriced findings contribute nothing. */
+  totalAddressableGBP: number;
 }
 
 export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
@@ -102,7 +107,7 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
       packAvailable: false,
       limitations: [`No geometric rule pack exists for ${part.commodity} yet, so no `
         + 'geometry-based checks were run. The commercial cost-ratio observations still apply.'],
-      dfa: analyseDFAHandling(part), grouped: [],
+      dfa: analyseDFAHandling(part), grouped: [], totalAddressableGBP: 0,
     };
   }
 
@@ -167,6 +172,16 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
     );
   }
 
+  // Price before grouping, so a group's total is the sum of its instances.
+  // Rules never set cost themselves — a rule author cannot smuggle in a number
+  // without adding a pricer, which is a visible, reviewable change.
+  const costCtx: CostContext = part.cost ?? {};
+  for (const f of findings) {
+    const priced = priceFinding(f, part, costCtx);
+    if (priced.costImpact) f.costImpact = priced.costImpact;
+    else if (priced.costNotModelled) f.costNotModelled = priced.costNotModelled;
+  }
+
   findings.sort((a, b) => {
     const rank = { critical: 0, major: 1, minor: 2, advisory: 3 } as const;
     return rank[a.severity] - rank[b.severity]
@@ -175,7 +190,8 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
   });
 
   return { ...base, findings, limitations, packAvailable,
-    grouped: groupFindings(findings), dfa: analyseDFAHandling(part) };
+    grouped: groupFindings(findings), totalAddressableGBP: totalCostGBP(findings),
+    dfa: analyseDFAHandling(part) };
 }
 
 /**
@@ -195,6 +211,10 @@ export interface GroupedFinding {
   title: string;
   severity: GeometricFinding['severity'];
   count: number;
+  /** Summed across instances. 0 when the rule has no modelled cost path. */
+  totalCostGBP: number;
+  /** Why the group is unpriced, when it is. */
+  costNotModelled?: string;
   /** Every face across all instances — the viewer highlights the lot. */
   faceIds: number[];
   /** The worst instance, by measured distance from the threshold. */
@@ -224,6 +244,8 @@ export function groupFindings(findings: readonly GeometricFinding[]): GroupedFin
     out.push({
       ruleId,
       title: list[0].title,
+      totalCostGBP: totalCostGBP(list),
+      ...(list[0].costNotModelled ? { costNotModelled: list[0].costNotModelled } : {}),
       severity: list.reduce((a, b) => (rank[b.severity] < rank[a.severity] ? b : a)).severity,
       count: list.length,
       faceIds: [...new Set(list.flatMap(f => f.faceIds))].sort((a, b) => a - b),
@@ -235,7 +257,14 @@ export function groupFindings(findings: readonly GeometricFinding[]): GroupedFin
       instances: list,
     });
   }
-  out.sort((a, b) => rank[a.severity] - rank[b.severity] || b.count - a.count
+  // MONEY FIRST. A cost engineering director reads the list top-down and stops;
+  // leading with 60 zero-draft faces instead of the £2,400 slide wastes that.
+  // Severity breaks ties, so an unpriced critical still outranks an unpriced
+  // advisory, and unpriced always follows priced at equal severity.
+  out.sort((a, b) =>
+    b.totalCostGBP - a.totalCostGBP
+    || rank[a.severity] - rank[b.severity]
+    || b.count - a.count
     || a.ruleId.localeCompare(b.ruleId));
   return out;
 }

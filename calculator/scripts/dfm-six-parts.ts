@@ -53,7 +53,7 @@ const TIMEOUT_MS = Number(process.env.CV_DFM_TIMEOUT_MS ?? 600_000);
 async function main() {
   const rows: string[] = [];
   const summary: Array<{ part: string; commodity: string; pack: boolean;
-    features: number; findings: number; instances: number; limitations: number; ms: number; note: string }> = [];
+    features: number; findings: number; instances: number; cost: number; limitations: number; ms: number; note: string }> = [];
 
   rows.push('# Geometric DFM — review sheet, six real parts');
   rows.push('');
@@ -81,7 +81,7 @@ async function main() {
     } catch (e) {
       console.log(`FILE ERROR: ${(e as Error).message}`);
       summary.push({ part: p.name, commodity: p.commodity, pack: false, features: 0,
-        findings: 0, instances: 0, limitations: 0, ms: Date.now() - t0, note: 'file unreadable' });
+        findings: 0, instances: 0, cost: 0, limitations: 0, ms: Date.now() - t0, note: 'file unreadable' });
       continue;
     }
     const ms = Date.now() - t0;
@@ -89,7 +89,7 @@ async function main() {
     if (geo.status !== 'success') {
       console.log(`KERNEL ERROR (${(ms / 1000).toFixed(0)}s): ${geo.error}`);
       summary.push({ part: p.name, commodity: p.commodity, pack: false, features: 0,
-        findings: 0, instances: 0, limitations: 0, ms, note: `kernel: ${geo.error}`.slice(0, 60) });
+        findings: 0, instances: 0, cost: 0, limitations: 0, ms, note: `kernel: ${geo.error}`.slice(0, 60) });
       rows.push(`## ${p.name} — kernel error`, '', `\`${geo.error}\``, '');
       continue;
     }
@@ -103,6 +103,9 @@ async function main() {
       medianWallMm: mf?.medianThicknessMm ?? geo.wallThickness?.meanMm ?? null,
       materialFamily: p.materialFamily,
       process: p.process,
+      // Reference rates so the sheet shows money. A real run resolves these
+      // from the regional library; these are the library's UK defaults.
+      cost: { annualVolume: 50_000, machineRatePerHr: 60, labourRatePerHr: 25 },
     });
 
     console.log(`${(ms / 1000).toFixed(0)}s · ${mf?.features.length ?? 0} features · `
@@ -111,6 +114,7 @@ async function main() {
     summary.push({
       part: p.name, commodity: p.commodity, pack: r.packAvailable,
       features: mf?.features.length ?? 0, findings: r.grouped.length, instances: r.findings.length,
+      cost: r.totalAddressableGBP ?? 0,
       limitations: r.limitations.length, ms,
       note: mf?.note?.slice(0, 60) ?? '',
     });
@@ -147,21 +151,26 @@ async function main() {
       // Grouped: one row per RULE. Sixty faces at zero draft is ONE issue with
       // sixty instances, not sixty issues — reviewing it as sixty rows is how a
       // DFM tool gets dismissed as noise.
-      rows.push('| # | Sev | Issue | Instances | Measured range | Threshold | Source | T/F/N |');
-      rows.push('|---|---|---|---|---|---|---|---|---|');
+      rows.push('| # | Sev | £/part | Issue | Instances | Measured range | Threshold | Source | T/F/N |');
+      rows.push('|---|---|---|---|---|---|---|---|---|---|');
       r.grouped.forEach((g, i) => {
         const range = g.count === 1
           ? `${g.range.min}${g.range.unit}`
           : `${g.range.min} … ${g.range.max}${g.range.unit}`;
-        rows.push(`| ${i + 1} | ${g.severity} | ${g.title} | ${g.count} `
+        const money = (g.totalCostGBP ?? 0) > 0 ? `**£${g.totalCostGBP.toFixed(2)}**` : '—';
+        rows.push(`| ${i + 1} | ${g.severity} | ${money} | ${g.title} | ${g.count} `
           + `| ${g.worst.measured.field} ${range} `
           + `| ${g.threshold.comparator} ${g.threshold.value}${g.threshold.unit} `
           + `| ${esc(g.source.standard.slice(0, 55))} |   |`);
       });
       rows.push('');
       r.grouped.forEach((g, i) => {
-        rows.push(`**${i + 1}. ${g.title}** — ${g.count} instance(s)`);
+        rows.push(`**${i + 1}. ${g.title}** — ${g.count} instance(s)`
+          + ((g.totalCostGBP ?? 0) > 0 ? ` — **£${g.totalCostGBP.toFixed(2)}/part**` : ''));
         rows.push('');
+        const inst = g.instances?.[0];
+        if (inst?.costImpact) rows.push(`- Cost basis: ${esc(inst.costImpact.basis)}`);
+        else if (inst?.costNotModelled) rows.push(`- Not priced: ${esc(inst.costNotModelled)}`);
         rows.push(`- Worst case: ${esc(g.worst.detail)}`);
         const shown = g.faceIds.slice(0, 24).join(', ');
         rows.push(`- Faces: ${shown}${g.faceIds.length > 24 ? ` … (${g.faceIds.length} total)` : ''}`);
@@ -196,11 +205,12 @@ async function main() {
   // ── Summary table, first so it reads top-down ───────────────────────────
   const head: string[] = [];
   head.push('## Summary', '');
-  head.push('| Part | Commodity | Pack? | Features | Issues | Instances | Not-checked | Kernel |');
-  head.push('|---|---|---|---|---|---|---|---|');
+  head.push('| Part | Commodity | Pack? | Features | Issues | Instances | £/part | Not-checked | Kernel |');
+  head.push('|---|---|---|---|---|---|---|---|---|');
   for (const s of summary) {
     head.push(`| ${s.part} | ${s.commodity} | ${s.pack ? 'yes' : '**no**'} | ${s.features} `
-      + `| ${s.findings} | ${s.instances} | ${s.limitations} | ${(s.ms / 1000).toFixed(0)}s |`);
+      + `| ${s.findings} | ${s.instances} | ${s.cost > 0 ? '£' + s.cost.toFixed(2) : '—'} `
+      + `| ${s.limitations} | ${(s.ms / 1000).toFixed(0)}s |`);
   }
   head.push('');
   const noPack = summary.filter(s => !s.pack).map(s => s.commodity);

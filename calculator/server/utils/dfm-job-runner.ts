@@ -19,8 +19,10 @@ import { basename, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import {
   analyseGeometricDFM, GEOMETRIC_DFM_COMMODITIES,
-  type GeometricAnalysis, type PartContext,
+  type GeometricAnalysis, type PartContext, type CostContext,
 } from '../../src/engine/dfm-geometry/index.js';
+import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
+import { buildRegionalLibrary, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
 import type { CommodityType } from '../../src/engine/types.js';
 
 export type DFMJobStatus = 'queued' | 'running' | 'done' | 'error';
@@ -42,6 +44,10 @@ export interface DFMJobRequest {
   /** Engineer-confirmed. Absent means the rules that need it will not run. */
   materialFamily?: string;
   process?: string;
+  /** Needed to amortise tooling findings. Absent → they stay unpriced, stated. */
+  annualVolume?: number;
+  /** 2-letter region for rate selection, e.g. 'GB', 'CN'. Defaults to the library. */
+  region?: string;
   createdBy?: string;
 }
 
@@ -186,6 +192,7 @@ async function execute(id: string, req: DFMJobRequest): Promise<void> {
       medianWallMm: geo.manufacturingFeatures?.medianThicknessMm ?? geo.wallThickness?.meanMm ?? null,
       materialFamily: req.materialFamily,
       process: req.process,
+      cost: resolveCostContext(req),
     };
     finish(id, analyseGeometricDFM(part));
   } catch (e) {
@@ -195,6 +202,36 @@ async function execute(id: string, req: DFMJobRequest): Promise<void> {
     // Temp uploads are ours to clean up, on the success and the failure path.
     if (req.ownsFile) await unlink(req.filePath).catch(() => {});
   }
+}
+
+/**
+ * Rates for the pricers, resolved ONCE from the same library the costing uses.
+ *
+ * A pricer must never look up a rate itself — if the DFM number and the costing
+ * number came from different lookups they would drift, and a finding that
+ * disagrees with the cost sheet is worse than one with no price at all.
+ *
+ * A general machining centre and a semi-skilled operator are used as the
+ * reference pair, because a DFM finding is about the feature, not about which
+ * specific machine a supplier happens to own. The basis string says so.
+ */
+function resolveCostContext(req: DFMJobRequest): CostContext {
+  // An unrecognised region falls back to the default library rather than
+  // throwing — a bad region code must not lose the whole DFM report.
+  let lib = DEFAULT_RATE_LIBRARY;
+  if (req.region) {
+    try { lib = buildRegionalLibrary(DEFAULT_RATE_LIBRARY, req.region as ManufacturingRegion); }
+    catch { /* keep the default */ }
+  }
+  const machine = lib.machines.find(m => /vmc|machining/i.test(m.id))
+    ?? lib.machines[0];
+  const labour = lib.labour.find(l => /semiskilled|semi-skilled/i.test(l.id))
+    ?? lib.labour[0];
+  return {
+    annualVolume: req.annualVolume && req.annualVolume > 0 ? req.annualVolume : undefined,
+    machineRatePerHr: machine?.computedRatePerHr,
+    labourRatePerHr: labour?.fullyLoadedRatePerHr,
+  };
 }
 
 function finish(id: string, result: GeometricAnalysis): void {

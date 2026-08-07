@@ -26,6 +26,8 @@ export interface GeometricDFMMeta {
    */
   grouped: Array<{
     ruleId: string; severity: string; title: string; count: number;
+    /** £/part summed across instances. 0 when no cost path is modelled. */
+    totalCostGBP?: number;
     faceIds: number[];
     worst: { detail: string; measured: { field: string; value: number; unit: string } };
     range: { min: number; max: number; unit: string };
@@ -46,6 +48,8 @@ export interface GeometricDFMMeta {
   featuresExamined: number;
   rulesEvaluated: number;
   packAvailable: boolean;
+  /** Sum of every priced finding, £/part. */
+  totalAddressableGBP?: number;
   dfa?: {
     available: boolean; handlingTimeSec?: number; insertionTimeSec?: number;
     totalTimeSec?: number; vsIdealRatio?: number;
@@ -342,6 +346,7 @@ function renderSourcePhotographs(doc: jsPDF, y: number, photos: ReportPhoto[]): 
  */
 function renderGeometricDFM(
   doc: jsPDF, y: number, g: GeometricDFMMeta | null | undefined,
+  money: (n: number) => string,
 ): number {
   if (!g) return y;
 
@@ -351,12 +356,17 @@ function renderGeometricDFM(
   y += 5;
   doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
   const groups = g.grouped ?? [];
+  const addressable = g.totalAddressableGBP ?? 0;
   doc.text(
     `${groups.length} issue(s) across ${g.findings.length} instance(s), from `
     + `${g.featuresExamined} measured feature(s) and ${g.rulesEvaluated} rule(s). Every issue `
-    + 'names the B-rep faces that produced it and the published source of its threshold.',
+    + 'names the B-rep faces that produced it and the published source of its threshold. '
+    + (addressable > 0
+      ? `Priced findings total ${money(addressable)}/part; issues shown without a figure are `
+        + 'quality or yield risks with no modelled cost path — see each entry.'
+      : 'No finding on this part has a modelled cost path; each says why.'),
     MG, y, { maxWidth: CW });
-  y += 8;
+  y += 11;
 
   if (!g.packAvailable) {
     y = calloutBox(doc, y, 'No geometric rule pack for this commodity',
@@ -370,7 +380,12 @@ function renderGeometricDFM(
     const col: RGB = gr.severity === 'critical' || gr.severity === 'major' ? RD
       : gr.severity === 'minor' ? ORANGE : SLATE;
     doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...col);
+    const cost = gr.totalCostGBP ?? 0;
     doc.text(`[${sev}] ${gr.title}${gr.count > 1 ? `  (${gr.count} instances)` : ''}`, MG, y);
+    if (cost > 0) {
+      doc.setTextColor(...NAVY);
+      doc.text(money(cost) + '/part', MG + CW, y, { align: 'right' });
+    }
     y += 3.8;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.3); doc.setTextColor(...SLATE);
     for (const ln of doc.splitTextToSize(`Worst: ${gr.worst.detail}`, CW - 4) as string[]) {
@@ -653,7 +668,7 @@ export function renderShouldCostSections(
   // Functional safety sits between the commercial parameters and the cost
   // detail: it is the context that explains why the verification operations in
   // section 4 cost what they do.
-  y = renderGeometricDFM(doc, y, cadMeta.geometricDFM);
+  y = renderGeometricDFM(doc, y, cadMeta.geometricDFM, c);
   y = renderFunctionalSafety(doc, y, result, commodityType, cadMeta.functionalSafety, c);
 
   // §3 — Material Detail  (new page)

@@ -73,6 +73,7 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX
 async function queueGeometricDFM(
   buffer: Buffer, filename: string, commodity: string,
   partName: string, materialFamily: string, process: string,
+  annualVolume?: number, region?: string,
 ): Promise<string | null> {
   if (!GEOMETRIC_DFM_COMMODITIES.has(commodity as CommodityType)) return null;
   try {
@@ -83,6 +84,8 @@ async function queueGeometricDFM(
       // which is correct — never a guessed material or route.
       materialFamily: materialFamily || undefined,
       process: process || undefined,
+      annualVolume,
+      region,
     });
   } catch (e) {
     console.warn('[CAD] geometric DFM job not queued:', (e as Error).message);
@@ -688,7 +691,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     };
     const detJobId = await queueGeometricDFM(
       buffer, originalname, selectedCommodity,
-      preprocessed.partName, forcedMaterial, forcedProcess);
+      preprocessed.partName, forcedMaterial, forcedProcess, annualVolume);
     // Cached WITH the job id, so re-analysing the same part returns the same
     // job rather than silently losing its findings on a cache hit.
     cadCache.set(cacheKey, { ...detPayload, dfmJobId: detJobId });
@@ -809,7 +812,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   // "no pack exists" wastes a kernel run and a worker slot.
   const dfmJobId = await queueGeometricDFM(
     buffer, originalname, selectedCommodity,
-    preprocessed.partName, forcedMaterial, forcedProcess);
+    preprocessed.partName, forcedMaterial, forcedProcess, annualVolume);
   cadCache.set(cacheKey, { ...payload, fromCache: true, dfmJobId });
 
   res.json({ ...payload, dfmJobId });
