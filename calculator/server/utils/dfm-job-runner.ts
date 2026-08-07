@@ -14,8 +14,9 @@
 import { randomUUID } from 'node:crypto';
 import db from '../db.js';
 import { analyzeGeometry } from './geometry-bridge.js';
-import { readFile } from 'node:fs/promises';
-import { basename } from 'node:path';
+import { readFile, writeFile, unlink } from 'node:fs/promises';
+import { basename, join } from 'node:path';
+import { tmpdir } from 'node:os';
 import {
   analyseGeometricDFM, GEOMETRIC_DFM_COMMODITIES,
   type GeometricAnalysis, type PartContext,
@@ -25,7 +26,17 @@ import type { CommodityType } from '../../src/engine/types.js';
 export type DFMJobStatus = 'queued' | 'running' | 'done' | 'error';
 
 export interface DFMJobRequest {
+  /**
+   * Path to the CAD file on disk.
+   *
+   * The upload route uses multer memoryStorage, so an uploaded part never
+   * touches the filesystem — queueing one therefore has to persist the buffer
+   * first (see `queueDFMJobFromBuffer`). This field is the path that was
+   * persisted, and the runner deletes it when the job finishes.
+   */
   filePath: string;
+  /** True when `filePath` is a temp file this queue owns and must clean up. */
+  ownsFile?: boolean;
   commodity: CommodityType;
   partName?: string;
   /** Engineer-confirmed. Absent means the rules that need it will not run. */
@@ -50,7 +61,34 @@ export interface DFMJobRow {
  *  is CPU-bound. Two in flight would slow both without finishing sooner. */
 const MAX_CONCURRENT = 1;
 let running = 0;
-let draining = false;
+
+/**
+ * The in-flight drain, so concurrent callers AWAIT it rather than skipping.
+ *
+ * The first version used a boolean and returned early when it was set. Because
+ * `queueDFMJob` kicks a fire-and-forget `drain()`, a caller's own `await
+ * drain()` then returned instantly with the job still queued — so nothing could
+ * reliably wait for a job to finish, and the end-to-end check failed with the
+ * job stuck in `running`. Sharing the promise makes "wait for the queue to
+ * settle" actually mean that.
+ */
+let drainPromise: Promise<void> | null = null;
+
+/**
+ * Queue a job for an in-memory upload.
+ *
+ * Persists the buffer to a temp file first — the analysis needs a path for the
+ * Python kernel, and the upload route holds only a Buffer. The runner unlinks
+ * it on completion, including on failure, so a rejected file cannot leak.
+ */
+export async function queueDFMJobFromBuffer(
+  buffer: Buffer, filename: string, req: Omit<DFMJobRequest, 'filePath' | 'ownsFile'>,
+): Promise<string> {
+  const ext = (filename.toLowerCase().split('.').pop() ?? 'step').replace(/[^a-z0-9]/g, '');
+  const path = join(tmpdir(), `cv-dfm-${randomUUID()}.${ext}`);
+  await writeFile(path, buffer);
+  return queueDFMJob({ ...req, filePath: path, ownsFile: true, partName: req.partName ?? filename });
+}
 
 export function queueDFMJob(req: DFMJobRequest): string {
   const id = randomUUID();
@@ -83,11 +121,16 @@ function safeParse(s: string): GeometricAnalysis | null {
   try { return JSON.parse(s) as GeometricAnalysis; } catch { return null; }
 }
 
-/** Pull queued jobs until the queue is empty. Safe to call repeatedly. */
-export async function drain(): Promise<void> {
-  if (draining) return;
-  draining = true;
-  try {
+/**
+ * Pull queued jobs until the queue is empty.
+ *
+ * Safe to call repeatedly and safe to await: concurrent callers all receive the
+ * same in-flight promise, so awaiting it genuinely means "the queue has
+ * settled". A job queued after the loop exits starts a fresh drain.
+ */
+export function drain(): Promise<void> {
+  if (drainPromise) return drainPromise;
+  drainPromise = (async () => {
     for (;;) {
       if (running >= MAX_CONCURRENT) return;
       const row = db.prepare(
@@ -101,9 +144,8 @@ export async function drain(): Promise<void> {
         running--;
       }
     }
-  } finally {
-    draining = false;
-  }
+  })().finally(() => { drainPromise = null; });
+  return drainPromise;
 }
 
 async function execute(id: string, req: DFMJobRequest): Promise<void> {
@@ -149,6 +191,9 @@ async function execute(id: string, req: DFMJobRequest): Promise<void> {
   } catch (e) {
     db.prepare("UPDATE dfm_jobs SET status = 'error', error = ?, finished_at = ? WHERE id = ?")
       .run(String((e as Error).message ?? e).slice(0, 500), new Date().toISOString(), id);
+  } finally {
+    // Temp uploads are ours to clean up, on the success and the failure path.
+    if (req.ownsFile) await unlink(req.filePath).catch(() => {});
   }
 }
 

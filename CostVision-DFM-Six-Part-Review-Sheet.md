@@ -17,10 +17,10 @@ tool should have caught and did not — that is the MISSED list at the end of ea
 |---|---|---|---|---|---|---|---|
 | RH steering knuckle | casting | yes | 172 | 4 | 98 | 4 | 2s |
 | Stub axle (PRCR002) | forging | yes | 128 | 2 | 24 | 5 | 3s |
-| 25T servo horn | machining | yes | 105 | 2 | 5 | 4 | 1s |
-| Front bumper | injection_moulding | yes | 6 | 1 | 2 | 5 | 11s |
+| 25T servo horn | machining | yes | 105 | 2 | 5 | 4 | 2s |
+| Front bumper | injection_moulding | yes | 6 | 1 | 2 | 5 | 12s |
 | Seat LH cross-member | sheet_metal | yes | 124 | 1 | 2 | 5 | 3s |
-| Fuel tank | blow_moulding | yes | 905 | 2 | 188 | 5 | 72s |
+| Fuel tank | blow_moulding | yes | 905 | 2 | 188 | 5 | 71s |
 
 
 ## RH steering knuckle
@@ -157,7 +157,7 @@ tool should have caught and did not — that is the MISSED list at the end of ea
 | Faces measured | 210 |
 | Features extracted | 105 |
 | Wall analysis valid | yes |
-| Kernel time | 1 s |
+| Kernel time | 2 s |
 
 | # | Sev | Issue | Instances | Measured range | Threshold | Source | T/F/N |
 |---|---|---|---|---|---|---|---|---|
@@ -207,7 +207,7 @@ tool should have caught and did not — that is the MISSED list at the end of ea
 | Faces measured | 498 |
 | Features extracted | 6 |
 | Wall analysis valid | yes |
-| Kernel time | 11 s |
+| Kernel time | 12 s |
 
 | # | Sev | Issue | Instances | Measured range | Threshold | Source | T/F/N |
 |---|---|---|---|---|---|---|---|---|
@@ -293,7 +293,7 @@ tool should have caught and did not — that is the MISSED list at the end of ea
 | Faces measured | 3444 |
 | Features extracted | 905 |
 | Wall analysis valid | yes |
-| Kernel time | 72 s |
+| Kernel time | 71 s |
 
 | # | Sev | Issue | Instances | Measured range | Threshold | Source | T/F/N |
 |---|---|---|---|---|---|---|---|---|

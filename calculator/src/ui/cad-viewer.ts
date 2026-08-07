@@ -59,6 +59,12 @@ export interface CADViewerOptions {
 export interface CADViewerHandle {
   loadFile(file: File): Promise<void>;
   getMeasurements(): MeasurementRecord[];
+  /**
+   * Highlight a set of B-rep faces — the mechanism behind clicking a geometric
+   * DFM finding. Face ids index the same map the triFace picking uses, so a
+   * finding's `faceIds` can be passed straight through. An empty array clears.
+   */
+  highlightFaces(faceIds: number[]): void;
   dispose(): void;
   el: HTMLElement;
 }
@@ -1990,6 +1996,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   return {
     loadFile,
     getMeasurements: measurementRecords,
+    highlightFaces(faceIds: number[]): void {
+      if (!faceIds?.length) { clearHighlight(); return; }
+      highlightFaces(new Set(faceIds));
+    },
     el: root,
     dispose(): void {
       if (disposed) return;

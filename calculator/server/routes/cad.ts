@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import { resolveApiKey } from '../utils/api-key.js';
 import multer from 'multer';
+import { queueDFMJobFromBuffer } from '../utils/dfm-job-runner.js';
+import { GEOMETRIC_DFM_COMMODITIES } from '../../src/engine/dfm-geometry/index.js';
+import type { CommodityType } from '../../src/engine/types.js';
 import rateLimit from 'express-rate-limit';
 import { createAnthropic } from '../utils/ai-client.js';
 import type Anthropic from '@anthropic-ai/sdk';
@@ -56,6 +59,38 @@ const isDeepReq = (req: { body?: Record<string, unknown> }): boolean =>
 const MAX_UPLOAD_MB = parseInt(process.env.CV_MAX_UPLOAD_MB ?? '250', 10) || 250;
 const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_UPLOAD_BYTES } });
+
+/**
+ * Queue the background geometric DFM for an analysed part.
+ *
+ * Called from EVERY response path in /analyze. The first version only patched
+ * the AI path, and the deterministic path — the one that needs no API key and
+ * is therefore the one a demo uses — has its own early return, so the feature
+ * was dead exactly where it mattered. Returns null when there is no pack, when
+ * queueing fails, or when the commodity is unsupported; a costing must never
+ * fail because an optional background analysis could not start.
+ */
+async function queueGeometricDFM(
+  buffer: Buffer, filename: string, commodity: string,
+  partName: string, materialFamily: string, process: string,
+): Promise<string | null> {
+  if (!GEOMETRIC_DFM_COMMODITIES.has(commodity as CommodityType)) return null;
+  try {
+    return await queueDFMJobFromBuffer(buffer, filename, {
+      commodity: commodity as CommodityType,
+      partName: partName || filename,
+      // Engineer-confirmed only. Absent means the rules needing it do not run,
+      // which is correct — never a guessed material or route.
+      materialFamily: materialFamily || undefined,
+      process: process || undefined,
+    });
+  } catch (e) {
+    console.warn('[CAD] geometric DFM job not queued:', (e as Error).message);
+    return null;
+  }
+}
+
+
 
 // Per-IP rate limits for the anonymous CAD endpoints (audit RK3). Defined here,
 // before the routes that use them, so there is no temporal-dead-zone at load.
@@ -651,8 +686,13 @@ router.post('/analyze', analyzeLimiter, upload.fields([
         entityStats: preprocessed.entityStats,
       },
     };
-    cadCache.set(cacheKey, detPayload);
-    res.json(detPayload);
+    const detJobId = await queueGeometricDFM(
+      buffer, originalname, selectedCommodity,
+      preprocessed.partName, forcedMaterial, forcedProcess);
+    // Cached WITH the job id, so re-analysing the same part returns the same
+    // job rather than silently losing its findings on a cache hit.
+    cadCache.set(cacheKey, { ...detPayload, dfmJobId: detJobId });
+    res.json({ ...detPayload, dfmJobId: detJobId });
     return;
   }
 
@@ -757,8 +797,22 @@ router.post('/analyze', analyzeLimiter, upload.fields([
       entityStats: preprocessed.entityStats,
     },
   };
-  cadCache.set(cacheKey, { ...payload, fromCache: true });
-  res.json(payload);
+  // Cache set AFTER the queue so a cache hit replays the same job id.
+
+  // ── Queue the deep geometric DFM in the background ───────────────────────
+  // Manufacturing asked for this to run unattended and produce a detailed
+  // report. The per-face scan is far too slow to sit in this request, so the
+  // costing returns now and the analysis runs on. The job id rides in the
+  // response so the client can collect the report when it lands.
+  //
+  // Only for commodities with a rule pack: queueing a job that can only return
+  // "no pack exists" wastes a kernel run and a worker slot.
+  const dfmJobId = await queueGeometricDFM(
+    buffer, originalname, selectedCommodity,
+    preprocessed.partName, forcedMaterial, forcedProcess);
+  cadCache.set(cacheKey, { ...payload, fromCache: true, dfmJobId });
+
+  res.json({ ...payload, dfmJobId });
 }));
 
 // ─── JSON extraction helper ──────────────────────────────────────────────────

@@ -19,6 +19,21 @@ import type { FeatureMachiningLine } from '../engine/feature-machining.js';
  */
 /** Background geometric-DFM result, when a job has completed for this part. */
 export interface GeometricDFMMeta {
+  /**
+   * One entry per RULE, not per instance. The knuckle produces 98 instances of
+   * 4 rules; printing 98 rows is the wall of identical sentences that made the
+   * old engine read as noise. `grouped` is what the report renders.
+   */
+  grouped: Array<{
+    ruleId: string; severity: string; title: string; count: number;
+    faceIds: number[];
+    worst: { detail: string; measured: { field: string; value: number; unit: string } };
+    range: { min: number; max: number; unit: string };
+    threshold: { value: number; unit: string; comparator: string };
+    recommendation: string;
+    source: { standard: string; clause?: string; note?: string };
+  }>;
+  /** Per-instance, kept for the viewer — never rendered as rows. */
   findings: Array<{
     ruleId: string; severity: string; title: string; detail: string;
     featureId: string; faceIds: number[];
@@ -335,10 +350,12 @@ function renderGeometricDFM(
   doc.text('Geometric DFM / DFA - measured from the CAD model', MG, y);
   y += 5;
   doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+  const groups = g.grouped ?? [];
   doc.text(
-    `${g.findings.length} finding(s) from ${g.featuresExamined} measured feature(s), `
-    + `${g.rulesEvaluated} rule(s) applied. Every finding names the B-rep faces that produced it `
-    + 'and the published source of its threshold.', MG, y, { maxWidth: CW });
+    `${groups.length} issue(s) across ${g.findings.length} instance(s), from `
+    + `${g.featuresExamined} measured feature(s) and ${g.rulesEvaluated} rule(s). Every issue `
+    + 'names the B-rep faces that produced it and the published source of its threshold.',
+    MG, y, { maxWidth: CW });
   y += 8;
 
   if (!g.packAvailable) {
@@ -347,38 +364,46 @@ function renderGeometricDFM(
       ORANGE, OR_LT);
   }
 
-  for (const f of g.findings) {
-    y = chk(doc, y, 24);
-    const sev = String(f.severity).toUpperCase();
-    const col: RGB = f.severity === 'critical' || f.severity === 'major' ? RD
-      : f.severity === 'minor' ? ORANGE : SLATE;
+  for (const gr of groups) {
+    y = chk(doc, y, 26);
+    const sev = String(gr.severity).toUpperCase();
+    const col: RGB = gr.severity === 'critical' || gr.severity === 'major' ? RD
+      : gr.severity === 'minor' ? ORANGE : SLATE;
     doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...col);
-    doc.text(`[${sev}] ${f.title}`, MG, y);
+    doc.text(`[${sev}] ${gr.title}${gr.count > 1 ? `  (${gr.count} instances)` : ''}`, MG, y);
     y += 3.8;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.3); doc.setTextColor(...SLATE);
-    for (const ln of doc.splitTextToSize(f.detail, CW - 4) as string[]) { doc.text(ln, MG + 2, y); y += 3.3; }
-    doc.setTextColor(...GREY);
-    doc.text(
-      `measured ${f.measured.field} = ${f.measured.value}${f.measured.unit}   `
-      + `threshold ${f.threshold.comparator} ${f.threshold.value}${f.threshold.unit}   `
-      + `faces ${f.faceIds.join(', ')}`, MG + 2, y);
-    y += 3.3;
-    for (const ln of doc.splitTextToSize(`Fix: ${f.recommendation}`, CW - 4) as string[]) {
+    for (const ln of doc.splitTextToSize(`Worst: ${gr.worst.detail}`, CW - 4) as string[]) {
       doc.text(ln, MG + 2, y); y += 3.3;
     }
-    const src = f.source.clause ? `${f.source.standard} - ${f.source.clause}` : f.source.standard;
+    doc.setTextColor(...GREY);
+    const range = gr.count > 1
+      ? `${gr.range.min}-${gr.range.max}${gr.range.unit}` : `${gr.range.min}${gr.range.unit}`;
+    doc.text(
+      `measured ${gr.worst.measured.field} ${range}   `
+      + `threshold ${gr.threshold.comparator} ${gr.threshold.value}${gr.threshold.unit}`, MG + 2, y);
+    y += 3.3;
+    // Face list is capped: a 104-instance issue would otherwise run pages of ids.
+    const shown = gr.faceIds.slice(0, 30).join(', ');
+    for (const ln of doc.splitTextToSize(
+      `Faces: ${shown}${gr.faceIds.length > 30 ? ` ... (${gr.faceIds.length} total)` : ''}`,
+      CW - 4) as string[]) { doc.text(ln, MG + 2, y); y += 3.1; }
+    for (const ln of doc.splitTextToSize(`Fix: ${gr.recommendation}`, CW - 4) as string[]) {
+      doc.text(ln, MG + 2, y); y += 3.3;
+    }
+    const src = gr.source.clause ? `${gr.source.standard} - ${gr.source.clause}` : gr.source.standard;
     for (const ln of doc.splitTextToSize(`Source: ${src}`, CW - 4) as string[]) {
       doc.text(ln, MG + 2, y); y += 3.1;
     }
-    if (f.source.note) {
-      for (const ln of doc.splitTextToSize(f.source.note, CW - 6) as string[]) {
+    if (gr.source.note) {
+      for (const ln of doc.splitTextToSize(gr.source.note, CW - 6) as string[]) {
         doc.text(ln, MG + 4, y); y += 3.1;
       }
     }
     y += 2;
   }
 
-  if (g.findings.length === 0 && g.packAvailable) {
+  if (groups.length === 0 && g.packAvailable) {
     y = calloutBox(doc, y, 'No geometric findings',
       ['No rule in the pack fired on the measured features. Read this alongside the limitations '
        + 'below - it means the checks that RAN found nothing, not that the part is clean.'],

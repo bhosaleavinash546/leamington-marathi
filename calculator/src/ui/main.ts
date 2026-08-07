@@ -112,7 +112,7 @@ async function ensurePdfLibs(): Promise<void> {
   renderShouldCostSections = m3.renderShouldCostSections;
 }
 import { exportToExcelBlob } from '../export/excel.js';
-import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta } from '../export/pdf.js';
+import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import {
@@ -231,6 +231,16 @@ let camMachOpCount = 0;
 let asmLineCount = 0;
 let cadFile: File | null = null;
 let cadAnalysisResult: CADAnalysisResult | null = null;
+/**
+ * Geometric DFM from the background job, once it lands.
+ *
+ * The costing does not wait for it — the per-face scan takes seconds to a
+ * minute on a large part. The job id arrives with the analysis; this is polled
+ * in the background and the report picks it up if it has arrived by export
+ * time. If it has not, the report simply omits the section rather than blocking.
+ */
+let cadDfmJobId: string | null = null;
+let cadGeometricDFM: GeometricDFMMeta | null = null;
 let cadOCCTGeometry: OCCTGeometry | null = null;
 let cadGeometrySource: 'occt' | 'text_parsing' = 'text_parsing';
 // Stage-3 user pins: when true the engineer has fixed the grade / process, so AI
@@ -844,6 +854,7 @@ async function loadViewerFile(file: File): Promise<void> {
     if (!viewerStandalone) {
       const { createCADViewer } = await import('./cad-viewer.js');
       viewerStandalone = await createCADViewer(hostWrap, { compact: false, headers: cadViewerHeaders });
+      publishViewerHandle(viewerStandalone);
     }
     await viewerStandalone.loadFile(file);
   } catch (err) {
@@ -5908,6 +5919,7 @@ async function _mountCADViewerNow(hostId: string, file: File, compact: boolean):
         : undefined,
     });
     if (hostId === 'cad-viewer-host') cadViewer = handle; else cadInlineViewer = handle;
+    publishViewerHandle(handle);
     await handle.loadFile(file);
   } catch (err) {
     console.warn('[CAD viewer] mount failed:', err instanceof Error ? err.message : String(err));
@@ -5953,6 +5965,7 @@ async function showPersistentCADViewer(file: File): Promise<void> {
     cadPersistViewer?.dispose();
     host.style.display = '';
     const handle = await createCADViewer(host, { compact: true, headers: cadViewerHeaders });
+    publishViewerHandle(handle);
     cadPersistViewer = handle;
     await handle.loadFile(file);
   } catch (err) {
@@ -6244,6 +6257,9 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     _cadDecisions = (data as { decisions?: CADDecision[] }).decisions ?? [];
     _cadRuleFields = (data as { ruleFields?: Record<string, CADRuleField> }).ruleFields ?? {};
     _cadDiff = (data as { diff?: CADDiff | null }).diff ?? null;
+    cadDfmJobId = (data as { dfmJobId?: string | null }).dfmJobId ?? null;
+    cadGeometricDFM = null;
+    if (cadDfmJobId) void pollGeometricDFM(cadDfmJobId);
 
     const partNameEl = el<HTMLInputElement>('part-name');
     if (partNameEl && cadAnalysisResult.partName) partNameEl.value = cadAnalysisResult.partName;
@@ -16501,11 +16517,108 @@ function reportFunctionalSafety(): FunctionalSafetyMeta | undefined {
  *  now the source photographs — for exactly the flows that need them most (a
  *  PCB costing has no CAD result by definition). The universal fields are built
  *  first and unconditionally; the CAD block is layered on when there is one. */
+/**
+ * Collect the background geometric-DFM report when it finishes.
+ *
+ * Deliberately fire-and-forget: nothing in the costing path waits on it, a
+ * failure is logged and dropped, and the report renders without the section if
+ * the job has not landed. The alternative — blocking the costing on a
+ * minute-long per-face scan — is what the background job exists to avoid.
+ */
+async function pollGeometricDFM(jobId: string, tries = 60): Promise<void> {
+  for (let i = 0; i < tries; i++) {
+    await new Promise(r => setTimeout(r, i < 5 ? 1000 : 3000));
+    if (cadDfmJobId !== jobId) return;          // a newer upload superseded this
+    try {
+      const st = await fetch(`/api/dfm/jobs/${jobId}`);
+      if (!st.ok) return;
+      const meta = await st.json() as { status?: string };
+      if (meta.status === 'error') { console.warn('[dfm] job failed'); return; }
+      if (meta.status !== 'done') continue;
+      const rep = await fetch(`/api/dfm/jobs/${jobId}/report`);
+      if (!rep.ok) return;
+      cadGeometricDFM = await rep.json() as GeometricDFMMeta;
+      console.log(`[dfm] geometric DFM ready: ${cadGeometricDFM.grouped?.length ?? 0} issue(s)`);
+      renderGeometricDFMPanel();
+      return;
+    } catch { return; }
+  }
+}
+
+/**
+ * Findings panel with viewer highlighting.
+ *
+ * Clicking an issue selects the exact B-rep faces that triggered it — the same
+ * face ids the viewer's triFace map already uses for picking. This is the
+ * difference between "tooling is 18% of cost" and being shown the six faces
+ * that cannot come out of the die.
+ */
+function renderGeometricDFMPanel(): void {
+  const host = el<HTMLElement>('geometric-dfm-panel');
+  if (!host) return;
+  const g = cadGeometricDFM;
+  if (!g || !(g.grouped?.length)) { host.innerHTML = ''; host.style.display = 'none'; return; }
+  host.style.display = '';
+  const sevClass = (s: string) => s === 'critical' || s === 'major' ? 'danger'
+    : s === 'minor' ? 'warn' : 'muted';
+  host.innerHTML = `
+    <h3>Geometric DFM — measured from the CAD</h3>
+    <p class="muted small">${g.grouped.length} issue(s) across ${g.findings.length} instance(s).
+      Click an issue to highlight the faces that caused it.</p>
+    <ul class="dfm-geo-list">
+      ${g.grouped.map((x: GeometricDFMMeta['grouped'][number], i: number) => `
+        <li class="dfm-geo-item ${sevClass(x.severity)}" data-dfm-idx="${i}" role="button" tabindex="0">
+          <strong>${escHtml(x.title)}</strong>${x.count > 1 ? ` <em>(${x.count})</em>` : ''}
+          <div class="small">${escHtml(x.worst.detail)}</div>
+          <div class="small muted">${escHtml(x.source.standard)}</div>
+        </li>`).join('')}
+    </ul>`;
+  host.querySelectorAll<HTMLElement>('[data-dfm-idx]').forEach(node => {
+    const act = () => {
+      const idx = Number(node.dataset.dfmIdx);
+      const faces = cadGeometricDFM?.grouped?.[idx]?.faceIds ?? [];
+      highlightViewerFaces(faces);
+      host.querySelectorAll('.dfm-geo-item').forEach(n => n.classList.remove('selected'));
+      node.classList.add('selected');
+    };
+    node.addEventListener('click', act);
+    node.addEventListener('keydown', e => { if ((e as KeyboardEvent).key === 'Enter') act(); });
+  });
+}
+
+/**
+ * Publish the live viewer handle so a DFM finding can reach it.
+ *
+ * A module-level global rather than an import, because the viewer is created
+ * lazily at three different sites and the findings panel must not force it to
+ * load. When no viewer is open the highlight call degrades to a log line.
+ */
+function publishViewerHandle(h: { highlightFaces?: (ids: number[]) => void }): void {
+  (window as unknown as { __cadViewer?: unknown }).__cadViewer = h;
+}
+
+/**
+ * Ask the 3D viewer to highlight a set of B-rep faces.
+ *
+ * Routed through the viewer's own API when it is loaded; a no-op otherwise, so
+ * a finding list still works with the viewer closed.
+ */
+function highlightViewerFaces(faceIds: number[]): void {
+  const v = (window as unknown as {
+    __cadViewer?: { highlightFaces?: (ids: number[]) => void };
+  }).__cadViewer;
+  if (v?.highlightFaces) { v.highlightFaces(faceIds); return; }
+  console.log('[dfm] viewer not open — faces to inspect:', faceIds.join(', '));
+}
+
 function buildCadReportMeta(): CADReportMeta {
   const universal: CADReportMeta = {
     annualVolume: lastInput?.annualVolume ?? null,
     photos: reportPhotos(),
     functionalSafety: reportFunctionalSafety(),
+    // Present only when the background job has landed. Omitted rather than
+    // blocked on — the section is additive, never load-bearing.
+    geometricDFM: cadGeometricDFM,
   };
   if (!cadAnalysisResult || !lastInput) return universal;
   const volCm3 = cadOCCTGeometry?.volume?.cm3 ?? null;
