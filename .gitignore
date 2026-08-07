@@ -6,3 +6,7 @@ dist/
 /data/
 users.json
 .claude/
+
+# Python bytecode from the OCCT geometry engine
+__pycache__/
+*.pyc

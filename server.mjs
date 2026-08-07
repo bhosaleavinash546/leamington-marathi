@@ -2559,6 +2559,43 @@ function sanitizeGeometry(g) {
     dfmaFindings: Array.isArray(g.dfmaFindings) ? g.dfmaFindings.slice(0, 20).map(f => ({ id: s(f?.id, 40), severity: s(f?.severity, 20), finding: s(f?.finding, 200), metric: s(f?.metric, 80) })) : undefined,
     extractedDimensions: Array.isArray(g.extractedDimensions) ? g.extractedDimensions.slice(0, 10).map(d => s(d, 40)) : undefined,
     extractedText: Array.isArray(g.extractedText) ? g.extractedText.slice(0, 8).map(t => s(t, 120)) : undefined,
+    // OCCT-measured blocks. These were previously dropped, which quietly killed
+    // the exact-hole branch in featureCostFromCad below — every part fell back to
+    // "assume Ø8 holes, 60% of the thin dimension deep" even when the kernel had
+    // handed us the real table. Numeric-only, so nothing here reaches a prompt
+    // as free text.
+    featureTable: Array.isArray(g.featureTable) ? g.featureTable.slice(0, 60).map(f => ({
+      kind: s(f?.kind, 12), diaMm: num(f?.diaMm), depthMm: num(f?.depthMm),
+      through: f?.through === true ? true : f?.through === false ? false : null,
+      count: num(f?.count),
+      axisXYZ: Array.isArray(f?.axisXYZ) ? f.axisXYZ.slice(0, 3).map(num) : undefined,
+    })) : undefined,
+    wallThickness: g.wallThickness && typeof g.wallThickness === 'object' ? {
+      p5Mm: num(g.wallThickness.p5Mm), p50Mm: num(g.wallThickness.p50Mm),
+      p95Mm: num(g.wallThickness.p95Mm), minMm: num(g.wallThickness.minMm),
+      maxMm: num(g.wallThickness.maxMm), meanMm: num(g.wallThickness.meanMm),
+      stdDevMm: num(g.wallThickness.stdDevMm), spreadRatio: num(g.wallThickness.spreadRatio),
+      sampleCount: num(g.wallThickness.sampleCount), uniformity: s(g.wallThickness.uniformity, 20),
+      confidence: s(g.wallThickness.confidence, 20), method: s(g.wallThickness.method, 48),
+    } : undefined,
+    draftAnalysis: g.draftAnalysis && typeof g.draftAnalysis === 'object' ? {
+      drawDirectionXYZ: Array.isArray(g.draftAnalysis.drawDirectionXYZ)
+        ? g.draftAnalysis.drawDirectionXYZ.slice(0, 3).map(num) : undefined,
+      minDraftDeg: num(g.draftAnalysis.minDraftDeg),
+      minWallDraftDeg: num(g.draftAnalysis.minWallDraftDeg),
+      maxWallDraftDeg: num(g.draftAnalysis.maxWallDraftDeg),
+      areaWeightedDraftDeg: num(g.draftAnalysis.areaWeightedDraftDeg),
+      wallAreaBelowMinDraftPct: num(g.draftAnalysis.wallAreaBelowMinDraftPct),
+      undercutFaceCount: num(g.draftAnalysis.undercutFaceCount),
+      zeroDraftFaceCount: num(g.draftAnalysis.zeroDraftFaceCount),
+      areaPct: g.draftAnalysis.areaPct && typeof g.draftAnalysis.areaPct === 'object'
+        ? Object.fromEntries(Object.entries(g.draftAnalysis.areaPct).slice(0, 8)
+            .map(([k, v]) => [s(k, 20), num(v)])) : undefined,
+    } : undefined,
+    setupAnalysis: g.setupAnalysis && typeof g.setupAnalysis === 'object' ? {
+      estimatedSetupCount: num(g.setupAnalysis.estimatedSetupCount),
+      basis: s(g.setupAnalysis.basis, 90),
+    } : undefined,
   };
 }
 

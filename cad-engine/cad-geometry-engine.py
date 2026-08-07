@@ -34,7 +34,7 @@ def _extract_feature_table(wrapped, extents):
     from OCP.BRepAdaptor import BRepAdaptor_Surface
     from OCP.GeomAbs import GeomAbs_SurfaceType
 
-    instances = {}
+    instances, axes = {}, {}
     exp = TopExp_Explorer(wrapped, TopAbs_FACE)
     while exp.More():
         face = TopoDS.Face_s(exp.Current())
@@ -62,6 +62,9 @@ def _extract_feature_table(wrapped, extents):
                      round(r, 3), round(depth, 1), hole)
             key = ('hole' if hole else 'boss', round(r * 2, 2), round(depth, 1), bool(through))
             instances.setdefault(key, set()).add(ident)
+            # Axis direction is what a machining SETUP is counted from — a part
+            # is re-fixtured to reach features approached from a new direction.
+            axes.setdefault(key, (round(d.X(), 4), round(d.Y(), 4), round(d.Z(), 4)))
         except Exception:
             continue
 
@@ -73,6 +76,7 @@ def _extract_feature_table(wrapped, extents):
             "depthMm": depth,
             "through": through if kind == "hole" else None,
             "count": len(idents),
+            "axisXYZ": list(axes.get((kind, dia, depth, through), ())) or None,
         })
     rows.sort(key=lambda r: (r["kind"], r["diaMm"], r["depthMm"]))
     return rows
@@ -654,23 +658,53 @@ def analyze(filepath: str) -> dict:
         all_cyl_uniq     = sorted(set(round(r, 1) for r in cyl_radii_all))
         has_threads = (edge_counts.get("BSPLINE", 0) > 150 or "HELIX" in edge_counts)
 
-        # ── Wall thickness (ray-cast) ─────────────────────────────────────────
+        # ── Wall thickness, draft/undercut, setups ────────────────────────────
+        # All three now measured on the TESSELLATION (see dfm_geometry.py). The
+        # analytic versions they replace were each wrong on parts we could prove:
+        # planar-only draft found ZERO drafted faces on an exactly-3-degree
+        # frustum, and the old ray-cast reported a 10 mm plate as 39.95 mm thick.
+        wall_stats = draft_info = setup_info = dfm_block = None
+        # Computed here rather than inline in the return dict: the setup count
+        # below needs the feature AXES from it.
         try:
-            wall_stats = _compute_wall_thickness(shape, faces)
+            feature_table = _extract_feature_table(wrapped, (x_sz, y_sz, z_sz))
         except Exception:
-            wall_stats = None
-
-        # ── Draft angle & undercut analysis ───────────────────────────────────
+            feature_table = []
         try:
-            draft_info = _compute_draft_analysis(faces)
-        except Exception:
-            draft_info = None
-
-        # ── Setup count estimation ────────────────────────────────────────────
-        try:
-            setup_info = _compute_setup_count(faces)
-        except Exception:
-            setup_info = None
+            import dfm_geometry as _dfm
+            from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
+            tess = _dfm.tessellate(wrapped, deflection=max(0.05, min(x_sz, y_sz, z_sz) / 60.0))
+            if tess["count"]:
+                inter = IntCurvesFace_ShapeIntersector()
+                inter.Load(wrapped, 1e-4)
+                wall_stats = _dfm.wall_thickness(tess, inter)
+                draft_info, draft_alts = _dfm.choose_draw_direction(tess, inter)
+                axes = [f["axisXYZ"] for f in (feature_table or []) if f.get("axisXYZ")]
+                setup_info = _dfm.setup_directions(axes) if axes else {
+                    "estimatedSetupCount": 1,
+                    "accessDirections": [],
+                    "basis": "no discrete machined features recognised — single-setup assumption",
+                }
+                dfm_block = {
+                    "tessellation": {"triangles": tess["count"],
+                                     "totalAreaMm2": round(tess["totalAreaMm2"], 1),
+                                     "truncated": tess["truncated"]},
+                    "draft": draft_info,
+                    "drawDirectionAlternatives": draft_alts,
+                    "wallThickness": wall_stats,
+                    "setups": setup_info,
+                }
+        except Exception as e:
+            dfm_block = {"status": "error", "error": f"DFM analysis failed: {e}"}
+        if wall_stats is None:
+            try:
+                wall_stats = _compute_wall_thickness(shape, faces)
+            except Exception:
+                wall_stats = None
+        # NOTE: no fallback to _compute_setup_count here. It clustered every face
+        # normal in the model, so any plain box scored 3 setups whether or not a
+        # single feature was machined on those faces. A wrong number is worse
+        # than the honest single-setup assumption above.
 
         # ── Planar face area & CNC cycle estimate ────────────────────────────
         try:
@@ -731,9 +765,11 @@ def analyze(filepath: str) -> dict:
             },
             # Exact per-feature table: hole/boss × diameter × depth × through,
             # axis-deduped counts — feeds the operations mapping in the client.
-            "featureTable": _extract_feature_table(
-                wrapped, (xmax - xmin, ymax - ymin, zmax - zmin)
-            ),
+            "featureTable": feature_table,
+            # Tessellation-measured DFM block: draft (any surface type), undercuts
+            # separated from zero-draft drag faces, area-weighted wall thickness,
+            # and the draw-direction sweep. See cad-engine/dfm_geometry.py.
+            "dfm": dfm_block,
             # ── New precision analysis fields ─────────────────────────────
             "wallThickness": wall_stats,
             "draftAnalysis": draft_info,
@@ -1024,5 +1060,10 @@ if __name__ == "__main__":
         print(json.dumps({"status": "error", "error": f"File not found: {fp}"}))
         sys.exit(1)
     result = analyze(fp)
+    try:
+        import dfm_geometry as _dfm
+        result = _dfm.strip_private(result)   # raw ray samples stay server-side
+    except Exception:
+        pass
     print(json.dumps(result))
     sys.exit(0 if result.get("status") == "success" else 1)

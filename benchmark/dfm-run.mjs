@@ -1,0 +1,168 @@
+#!/usr/bin/env node
+// DFM geometry accuracy gate.
+//
+// Runs the analytic fixtures through the PRODUCTION path — the same
+// cad-geometry-bridge.mjs the server uses — and compares against arithmetic
+// truth from benchmark/dfm-fixtures.mjs. Fixtures are held out in the sense that
+// matters: their answers come from how they were built, not from what the engine
+// said last time, so tuning a constant to pass cannot work.
+//
+//   node benchmark/dfm-run.mjs [--min 1.0] [--json]
+//
+// Skips cleanly (exit 0) when cadquery-ocp is unavailable, matching how the
+// key-dependent evals behave — CI without the Python wheel reports SKIPPED
+// rather than a false failure. It never reports a PASS it did not earn.
+import { readFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+import { DFM_FIXTURES } from './dfm-fixtures.mjs';
+import { analyzeGeometry } from '../cad-engine/cad-geometry-bridge.mjs';
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const FIXDIR = join(HERE, 'dfm-fixtures');
+const argv = process.argv.slice(2);
+const MIN = Number(argv[argv.indexOf('--min') + 1]) || 1.0;
+const AS_JSON = argv.includes('--json');
+
+function ocpAvailable() {
+  try {
+    execFileSync('python3', ['-c', 'import OCP'], { stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const checks = [];
+const record = (fixture, name, ok, detail) => checks.push({ fixture, name, ok, detail });
+const near = (got, want, tolPct) =>
+  Number.isFinite(got) && Math.abs(got - want) <= Math.abs(want) * tolPct + 1e-9;
+
+/** Re-run the draft classification along a forced axis via the Python module. */
+function draftAlong(file, axis) {
+  const py = `
+import sys, json
+sys.path.insert(0, ${JSON.stringify(join(HERE, '..', 'cad-engine'))})
+import dfm_geometry as G
+from OCP.STEPControl import STEPControl_Reader
+from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
+r = STEPControl_Reader(); r.ReadFile(${JSON.stringify(join(FIXDIR, file))}); r.TransferRoots()
+s = r.OneShape()
+t = G.tessellate(s, 0.2)
+it = IntCurvesFace_ShapeIntersector(); it.Load(s, 1e-4)
+print(json.dumps(G.strip_private(G.classify_draft(t, it, ${JSON.stringify(axis)}))))
+`;
+  const out = execFileSync('python3', ['-c', py], { encoding: 'utf-8', maxBuffer: 32 << 20 });
+  return JSON.parse(out.trim().split('\n').pop());
+}
+
+async function main() {
+  if (!ocpAvailable()) {
+    console.log('DFM benchmark SKIPPED — cadquery-ocp not installed (pip install cadquery-ocp).');
+    console.log('This is a skip, not a pass: the geometry gate did not run.');
+    process.exit(0);
+  }
+
+  for (const fx of DFM_FIXTURES) {
+    const path = join(FIXDIR, fx.file);
+    let g;
+    try {
+      g = await analyzeGeometry(await readFile(path), fx.file);
+    } catch (e) {
+      record(fx.file, 'analyze', false, `bridge threw: ${e.message}`);
+      continue;
+    }
+    if (g.status !== 'success') {
+      record(fx.file, 'analyze', false, g.error || 'engine error');
+      continue;
+    }
+    const t = fx.truth;
+    const wall = g.wallThickness || {};
+    const zAxis = draftAlong(fx.file, [0, 0, 1]);
+
+    if (t.volumeMm3 !== undefined) {
+      record(fx.file, 'volume', near(g.volume?.mm3, t.volumeMm3, 0.005),
+        `${g.volume?.mm3} vs ${t.volumeMm3}`);
+    }
+    if (t.wallP50Mm !== undefined) {
+      record(fx.file, 'wall p50', near(wall.p50Mm, t.wallP50Mm, 0.02),
+        `${wall.p50Mm} vs ${t.wallP50Mm} mm`);
+    }
+    if (t.wallP5Mm !== undefined) {
+      record(fx.file, 'wall p5', near(wall.p5Mm, t.wallP5Mm, 0.02),
+        `${wall.p5Mm} vs ${t.wallP5Mm} mm`);
+    }
+    if (t.uniformity !== undefined) {
+      record(fx.file, 'uniformity', wall.uniformity === t.uniformity,
+        `${wall.uniformity} vs ${t.uniformity}`);
+    }
+    if (t.setupCount !== undefined) {
+      record(fx.file, 'setups', g.setupAnalysis?.estimatedSetupCount === t.setupCount,
+        `${g.setupAnalysis?.estimatedSetupCount} vs ${t.setupCount}`);
+    }
+    if (t.undercutFaceCountAtZ !== undefined) {
+      record(fx.file, 'undercuts @+Z', zAxis.undercutFaceCount === t.undercutFaceCountAtZ,
+        `${zAxis.undercutFaceCount} vs ${t.undercutFaceCountAtZ}`);
+    }
+    if (t.zeroDraftFaceCountAtZ !== undefined) {
+      record(fx.file, 'zero-draft @+Z', zAxis.zeroDraftFaceCount === t.zeroDraftFaceCountAtZ,
+        `${zAxis.zeroDraftFaceCount} vs ${t.zeroDraftFaceCountAtZ}`);
+    }
+    if (t.minWallDraftDeg !== undefined) {
+      record(fx.file, 'min wall draft', near(zAxis.minWallDraftDeg, t.minWallDraftDeg, 0.02),
+        `${zAxis.minWallDraftDeg} vs ${t.minWallDraftDeg} deg`);
+    }
+    if (t.maxWallDraftDeg !== undefined) {
+      record(fx.file, 'max wall draft', near(zAxis.maxWallDraftDeg, t.maxWallDraftDeg, 0.02),
+        `${zAxis.maxWallDraftDeg} vs ${t.maxWallDraftDeg} deg`);
+    }
+    if (t.releasingAreaPctMin !== undefined) {
+      record(fx.file, 'releasing area', (zAxis.areaPct?.releasing ?? 0) >= t.releasingAreaPctMin,
+        `${zAxis.areaPct?.releasing}% >= ${t.releasingAreaPctMin}%`);
+    }
+    if (t.bestDrawAxis !== undefined) {
+      const d = g.dfm?.draft?.drawDirectionXYZ || [];
+      const idx = { x: 0, y: 1, z: 2 }[t.bestDrawAxis];
+      record(fx.file, 'draw sweep', Math.abs(d[idx] ?? 0) > 0.99,
+        `[${d}] should be ${t.bestDrawAxis}`);
+      record(fx.file, 'best undercut area',
+        (g.dfm?.draft?.areaPct?.undercut ?? 99) <= t.bestUndercutAreaPct + 0.01,
+        `${g.dfm?.draft?.areaPct?.undercut}% <= ${t.bestUndercutAreaPct}%`);
+    }
+    for (const h of t.holes || []) {
+      const row = (g.featureTable || []).find(
+        r => r.kind === 'hole' && near(r.diaMm, h.diaMm, 0.02)
+          && (h.depthMm === undefined || near(r.depthMm, h.depthMm, 0.02)));
+      record(fx.file, `hole Ø${h.diaMm}`, !!row && row.through === h.through,
+        row ? `through=${row.through} vs ${h.through}` : 'not found');
+    }
+    if (t.bosses !== undefined) {
+      const n = (g.featureTable || []).filter(r => r.kind === 'boss')
+        .reduce((s, r) => s + (r.count || 0), 0);
+      record(fx.file, 'bosses', n === t.bosses, `${n} vs ${t.bosses}`);
+    }
+  }
+
+  const pass = checks.filter(c => c.ok).length;
+  const score = checks.length ? pass / checks.length : 0;
+
+  if (AS_JSON) {
+    console.log(JSON.stringify({ score, pass, total: checks.length, checks }, null, 2));
+  } else {
+    let last = '';
+    for (const c of checks) {
+      if (c.fixture !== last) { console.log(`\n  ${c.fixture}`); last = c.fixture; }
+      console.log(`    ${c.ok ? 'ok  ' : 'FAIL'}  ${c.name.padEnd(20)} ${c.detail}`);
+    }
+    console.log('\n  ──────────────────────────────────────────────────────────');
+    console.log(`  DFM geometry accuracy: ${(score * 100).toFixed(1)}%  (${pass}/${checks.length})`);
+  }
+  if (score < MIN) {
+    console.error(`\nFAILED: ${(score * 100).toFixed(1)}% < required ${(MIN * 100).toFixed(1)}%`);
+    process.exit(1);
+  }
+}
+
+main().catch(e => { console.error(e); process.exit(1); });

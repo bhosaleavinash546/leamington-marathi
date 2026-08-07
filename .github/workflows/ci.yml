@@ -39,6 +39,18 @@ jobs:
       - name: Cost benchmark (hit-rate ≥ 90%, MAPE ≤ 12%)
         run: node benchmark/cost-run.mjs --min-hit 0.90 --max-mape 0.12
 
+      # OpenCascade wheel — needed by the DFM geometry gate below. Kept as its
+      # own step so a wheel/index problem reads as an install failure rather than
+      # a mysterious benchmark skip.
+      - name: Install OpenCascade (cadquery-ocp)
+        run: python3 -m pip install --quiet 'cadquery-ocp>=7.7,<7.9'
+
+      # Fixtures are analytic: a 3.000° drafted frustum must measure 3.000°, a
+      # 2.50 mm shell must measure 2.50 mm. Gated at 100% because every answer is
+      # arithmetic — there is no modelling slack to spend here.
+      - name: DFM geometry benchmark (analytic fixtures, must be 100%)
+        run: node benchmark/dfm-run.mjs --min 1.0
+
       - name: Production build
         run: npx vite build
 
