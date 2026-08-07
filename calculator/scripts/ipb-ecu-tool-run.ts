@@ -26,41 +26,39 @@ const log = (m: string) => process.stdout.write(`[tool-run] ${m}\n`);
 // ─── Board + assembly inputs ─────────────────────────────────────────────────
 // Same measured/inferred inputs as scripts/ipb-ecu-costing.ts, so the two runs
 // are directly comparable. Prices are the REVISED set (see the pricing review).
-const BOM: Array<[string, string, string, number, number]> = [
-  // refDes, componentType, description (with [pkg] and value, as the vision
-  // flow composes them), qty, unitPriceGBP
-  ['U-MCU',   'ic_bga',       'Renesas R7F702300B RH850/U2A automotive MCU [BGA-292]',   1,  15.00],
-  ['U-ASIC1', 'ic_tqfp',      'Bosch 40342/01 motor-control ASIC, captive [TQFP-144]',   1,  10.00],
-  ['U-ASIC2', 'ic_tqfp',      'Bosch 40341/01 ASIC, captive [TQFP-100]',                 1,   7.00],
-  ['U-ASIC3', 'ic_tqfp',      'Bosch 2302701 ASIC, captive [TQFP-64]',                  1,   4.00],
-  ['U-SBC',   'ic_tqfp',      'ST L9369 dual H-bridge EPB pre-driver / SBC [LQFP-64]',           1,   5.00],
-  ['U-BGA2',  'ic_bga',       'Secondary safety MCU / ASIC [BGA]',             1,   8.00],
-  ['U-MEM',   'ic_bga',       'External memory [BGA]',                         1,   3.00],
-  ['Q1-6',    'power_module', 'Q142E power stage / dual half-bridge [PowerSO-8]',          6,   3.00],
-  ['U-CAN',   'ic_soic',      'NXP TJA1463A CAN-FD SIC transceiver [SOIC-8] 8MHz',           2,   1.20],
-  ['U-71H',   'ic_soic',      'Bosch 71H740 driver / power-path, captive [SOIC-8]',    3,   1.50],
-  ['U-76E2',  'ic_soic',      'Bosch 76E240 device, captive [SOIC-8]',                 1,   1.80],
-  ['U-76E8',  'ic_soic',      'Bosch 76E840 device, captive [SOIC-8]',                 1,   1.80],
-  ['U-7S1R',  'ic_soic',      'Bosch 7S1R540H power device, captive [SOIC-8]',         2,   1.60],
-  ['C-BULK',  'passive_0805', 'Polymer aluminium capacitor, marking 351 150 EJV [V-chip] 150uF',     6,   0.40],
-  ['L-PWR',   'power_module', 'Shielded power inductor, automotive [SMD shielded] 0.47uH',            8,   0.60],
-  ['R/C-SMD', 'passive_0402', 'MLCC and thick-film resistors, AEC-Q200 [0402] various',       620,   0.009],
-  ['D/Q-SML', 'ic_soic',      'Small-signal semiconductors [SOT-23 / SOD-323]',             90,   0.09],
-  ['Y1',      'crystal_osc',  'Crystal / oscillator [SMD 3225]',                          1,   0.45],
-  ['J1-2',    'through_hole', 'Automotive press-fit header, main and motor [THT press-fit] 2-pin',    2,   2.50],
-  ['TIM',     'through_hole', 'Thermal interface pad under power stages [Gap pad]',          8,   0.12],
+const BOM: Array<[string, string, string, number, number, string]> = [
+  ['U-MCU', 'ic_bga', 'Renesas R7F702300B RH850/U2A 292-BGA [BGA-292]', 1, 14.0178, 'MARKING LEGIBLE - "R7F702300B FABA-C BB05253 2308 JAPAN" fully legible. DigiKey $49.47@1.'],
+  ['U-SBC', 'ic_tqfp', 'ST L9369 dual H-bridge EPB pre-driver [LQFP-64]', 1, 2.4086, 'MARKING LEGIBLE - "L9369 VC DTE" + ST logo, LQFP-64. Confirms this is an EPB/brake ECU.'],
+  ['U-CAN', 'ic_soic', 'NXP TJA1463AT CAN-FD SIC transceiver [SO-14]', 2, 0.5841, 'MARKING PARTIAL - CORRECTED: board shows SO-14 gull-wing = TJA1463AT. Previously priced from TJA1463ATK, which is HVSON-14 - wrong package. Qty 2 is an assumption; only one is clearly visible.'],
+  ['U-NCV', 'ic_soic', 'onsemi NCV8461 protected high-side switch [SOIC-8]', 1, 0.2893, 'MARKING LEGIBLE - "NCV8461 PR17" legible. Qty CUT 2 -> 1: only one instance is visible.'],
+  ['U-UNK1', 'ic_soic', 'UNIDENTIFIED 8-pin, marking "T698 / 1000T / 2809h"', 2, 0.3338, 'MARKING PARTIAL - Marking visible but not resolvable to a manufacturer. Appears at least twice. Class median.'],
+  ['U-UNK2', 'ic_soic', 'UNIDENTIFIED small package, marking "CH40 3095 / 9096"', 2, 0.1669, 'MARKING PARTIAL - Two similar parts, marking legible, part not identifiable.'],
+  ['U-40342', 'ic_tqfp', 'Bosch 40342/01 motor-control ASIC [QFP-144]', 1, 3.5000, 'MARKING LEGIBLE - "40342 /01 2324 VC252NVN" + Bosch logo.'],
+  ['U-40341', 'ic_tqfp', 'Bosch 40341/01 ASIC [QFP-100]', 1, 2.5000, 'MARKING LEGIBLE - "40341 /01 2240 A2I92F4A" + Bosch logo.'],
+  ['U-23027', 'ic_tqfp', 'Bosch 2302701 ASIC [QFP-64]', 1, 1.8000, 'MARKING PARTIAL - "2302701" + Bosch logo legible; the line above it ("SSEAC"?) is not resolved.'],
+  ['Q1-6', 'power_module', 'Bosch Q142E / 0142E power stage [PowerSO-8]', 6, 1.2000, 'MARKING PARTIAL - AMBIGUOUS: leading character reads Q in some views and 0 in others. Suffix "BABA .W31C". Qty 6 counted from one close-up; more may sit outside frame.'],
+  ['U-71H', 'ic_soic', 'Bosch 71H740 driver / power-path [SOIC-8]', 3, 0.6500, 'MARKING LEGIBLE - "71H740 Prm 2321 C3 5371" legible. Qty 3 is a count across overlapping views - may double-count.'],
+  ['U-76E2', 'ic_soic', 'Bosch 76E240 device [SOIC-8]', 3, 0.7000, 'MARKING LEGIBLE - "76E240 PNW 2328 B6 0125" legible. Qty 3 same caveat as 71H740.'],
+  ['U-76E8', 'ic_soic', 'Bosch 76E840 device [SOIC-8]', 1, 0.7000, 'MARKING LEGIBLE - "76E840 PEm 2319 A2 1431" legible.'],
+  ['U-7S1R', 'ic_soic', 'Bosch 7S1R540H power device [SOIC-8]', 2, 0.8000, 'MARKING LEGIBLE - "7S1R540H Prt" x2, lot codes 2313D6 and 026200.'],
+  ['C-BULK', 'passive_0805', 'Polymer alu capacitor, marking "351 150 EJV"', 6, 0.2893, 'MARKING PARTIAL - Marking legible; 150uF/35V is an INTERPRETATION of it, not a datasheet reading.'],
+  ['L-PWR', 'power_module', 'Shielded power inductors 0.47uH / 10uH / 22uH / 220H', 8, 0.3783, 'MARKING PARTIAL - Four DISTINCT values readable (0.47uH 23220J, 10uH, 22uH 2316NJ, 220H 374A) - previously lumped as one line at one price.'],
+  ['R/C', 'passive_0402', 'MLCC + thick-film resistors (1201, 1001, 7501, 000, 30.9, 120E, 4021, 100E, 10DE)', 600, 0.0061, 'INFERRED - Individual values readable in close-ups; the COUNT of 600 is a density estimate over both sides, not a count.'],
+  ['D/Q', 'ic_soic', 'Small-signal semis + BRL-23/BRL-97 diodes [SOT/SOD]', 80, 0.0389, 'INFERRED - "BRL 23 M", "BRL 97 M", "WJY", "52s", "Y7A A00A 110", "CXR 42AA" all visible. Count estimated.'],
+  ['J1-2', 'through_hole', 'Automotive press-fit headers (main + motor)', 2, 1.7800, 'INFERRED - Press-fit hole fields visible along two board edges; connectors themselves not in frame.'],
+  ['TIM', 'through_hole', 'Thermal interface pads (both sides)', 8, 0.0834, 'MARKING LEGIBLE - Pink pads clearly visible bottom side, grey/graphite pads top side.'],
 ];
 
 /** Fields set on the PCBA form. id → value. */
 const FIELDS: Record<string, string> = {
   'part-name': 'Bosch IPB2.0 ECU PCBA',
-  'annual-volume': '150000',
+  'annual-volume': '200000',
   'packaging': '0.73',
   'logistics': '0.57',
   'overhead-pct': '9',
   'margin-pct': '8',
   // Assembly
-  'pcba-pcb-cost': '21.64',
+  'pcba-pcb-cost': '21.62',
   'pcba-smt-lines': '1',
   'pcba-smt-oee': '0.82',
   'pcba-smt-sides': '2',
@@ -70,9 +68,9 @@ const FIELDS: Record<string, string> = {
   'pcba-man-time': '20',
   'pcba-complexity': 'high',
   'pcba-quality': 'auto_grade1',
-  'pcba-bga-count': '3',
+  'pcba-bga-count': '1',
   'pcba-ict-time': '150',
-  'pcba-xray-mode': 'offline_100pct',
+  'pcba-xray-mode': 'inline_axi',
   'pcba-axi-time': '45',
   'pcba-xray-sample': '0.1',
   'pcba-yield': '0.985',
@@ -80,8 +78,8 @@ const FIELDS: Record<string, string> = {
   'pcba-coat-area': '187',
   'pcba-coat-price': '0.0035',
   'pcba-nre-cost': '46000',
-  'pcba-nre-amort': '150000',
-  'pcba-amort': '150000',
+  'pcba-nre-amort': '200000',
+  'pcba-amort': '200000',
 };
 
 async function waitForServer(url: string, timeoutMs = 40_000): Promise<void> {
@@ -213,10 +211,10 @@ async function main(): Promise<void> {
     }
     log(`cleared ${seeded} seeded BOM rows`);
 
-    for (const [ref, type, desc, qty, price] of BOM) {
+    for (const [ref, type, desc, qty, price, note] of BOM) {
       await page.click('#add-bom-btn');
       await page.evaluate(`(() => {
-        const line = ${JSON.stringify({ ref, type, desc, qty: String(qty), price: String(price) })};
+        const line = ${JSON.stringify({ ref, type, desc: `${desc} | ${note}`, qty: String(qty), price: String(price) })};
         const rows = document.querySelectorAll('#bom-body tr[data-bom-id]');
         const id = rows[rows.length - 1].dataset.bomId;
         const put = (suffix, v) => {

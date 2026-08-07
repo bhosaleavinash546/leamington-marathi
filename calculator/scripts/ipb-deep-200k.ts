@@ -158,3 +158,20 @@ const consigned = (board + conv + b.tooling + b.packaging + b.logistics) * 1.09 
 const convOnly  = (conv + b.tooling + b.packaging + b.logistics) * 1.09 * 1.08;
 console.log(`board+assembly, parts consigned  ${f(consigned)}   quote is ${((35-consigned)/consigned*100).toFixed(0)}%`);
 console.log(`assembly only (all free-issued)  ${f(convOnly)}   quote is ${((35-convOnly)/convOnly*100).toFixed(0)}%`);
+
+// ─── Emit for the report generator, so the PDF and this analysis cannot drift ─
+import { writeFileSync } from 'node:fs';
+writeFileSync('/tmp/ipb-audited-bom.json', JSON.stringify({
+  annualVolume: VOL, region: 'CN', boardCost: board, bomTotal, placements,
+  pkg: estimatePCBAPackagingPerPart(AREA, 'auto_grade1'),
+  log: estimatePCBALogisticsPerPart(AREA),
+  total: r.total, breakdown: b, conversion: conv,
+  lines: bom.map(l => ({
+    ref: l.refDes, description: l.description, qty: l.qty,
+    unitAtRef: l.unitPriceGBP, refQty: l.priceRefQty ?? VOL,
+    unitAtVolume: l.unitPriceGBP * bomVolumePriceFactor(l.priceRefQty ?? VOL, VOL),
+    ext: scaled(l), basis: l.basis, conf: l.conf, note: l.note,
+    componentType: l.componentType,
+  })),
+}, null, 2));
+console.log('\naudited BOM written to /tmp/ipb-audited-bom.json');
