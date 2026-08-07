@@ -64,7 +64,11 @@ def _extract_feature_table(wrapped, extents):
             instances.setdefault(key, set()).add(ident)
             # Axis direction is what a machining SETUP is counted from — a part
             # is re-fixtured to reach features approached from a new direction.
-            axes.setdefault(key, (round(d.X(), 4), round(d.Y(), 4), round(d.Z(), 4)))
+            # The axis POINT is needed too: two holes can share a direction and
+            # be nowhere near each other, and without the point a stepped-hole
+            # grouper happily merges them into one counterbore.
+            axes.setdefault(key, ((round(d.X(), 4), round(d.Y(), 4), round(d.Z(), 4)),
+                                  (round(p.X(), 4), round(p.Y(), 4), round(p.Z(), 4))))
         except Exception:
             continue
 
@@ -76,7 +80,8 @@ def _extract_feature_table(wrapped, extents):
             "depthMm": depth,
             "through": through if kind == "hole" else None,
             "count": len(idents),
-            "axisXYZ": list(axes.get((kind, dia, depth, through), ())) or None,
+            "axisXYZ": list(axes.get((kind, dia, depth, through), (None, None))[0] or ()) or None,
+            "axisPointXYZ": list(axes.get((kind, dia, depth, through), (None, None))[1] or ()) or None,
         })
     rows.sort(key=lambda r: (r["kind"], r["diaMm"], r["depthMm"]))
     return rows
@@ -694,6 +699,13 @@ def analyze(filepath: str) -> dict:
                     "wallThickness": wall_stats,
                     "setups": setup_info,
                 }
+            try:
+                import feature_recognition as _fr
+                dfm_block = dfm_block or {}
+                dfm_block["features"] = _fr.recognise(wrapped, feature_table,
+                                                      extents=(x_sz, y_sz, z_sz))
+            except Exception as e:
+                (dfm_block or {}).setdefault("featuresError", f"{e}")
         except Exception as e:
             dfm_block = {"status": "error", "error": f"DFM analysis failed: {e}"}
         if wall_stats is None:

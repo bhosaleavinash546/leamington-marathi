@@ -117,6 +117,67 @@ def boss_plate(outdir):
     return _write(BRepAlgoAPI_Cut(s, hole).Shape(), os.path.join(outdir, "boss-plate.step")), 1
 
 
+def counterbore_plate(outdir):
+    """60x60x20 plate. Ø8 through hole with a Ø16 counterbore 6 deep.
+
+    Truth: two COAXIAL cylinders of stepped radius plus a flat annular shoulder —
+    that triple is what makes it a counterbore rather than two unrelated holes.
+    """
+    plate = BRepPrimAPI_MakeBox(60.0, 60.0, 20.0).Shape()
+    thru = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(30, 30, -1), gp_Dir(0, 0, 1)), 4.0, 22.0).Shape()
+    cbore = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(30, 30, 14), gp_Dir(0, 0, 1)), 8.0, 7.0).Shape()
+    s = BRepAlgoAPI_Cut(plate, thru).Shape()
+    s = BRepAlgoAPI_Cut(s, cbore).Shape()
+    return _write(s, os.path.join(outdir, "counterbore-plate.step")), {"boreDia": 8.0, "cboreDia": 16.0, "cboreDepth": 6.0}
+
+
+def countersink_plate(outdir):
+    """60x60x20 plate. Ø8 through hole with a 90 deg countersink to Ø16 at the top.
+
+    Truth: a CONE at the mouth of a coaxial cylinder. A cone is what separates a
+    countersink from a counterbore; recognising one as the other would put the
+    wrong tool on the process sheet.
+    """
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeCone
+    plate = BRepPrimAPI_MakeBox(60.0, 60.0, 20.0).Shape()
+    thru = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(30, 30, -1), gp_Dir(0, 0, 1)), 4.0, 22.0).Shape()
+    # 90 deg included angle: radius falls 8 -> 4 over 4 mm of depth.
+    csk = BRepPrimAPI_MakeCone(gp_Ax2(gp_Pnt(30, 30, 16), gp_Dir(0, 0, 1)), 4.0, 8.0, 4.0).Shape()
+    s = BRepAlgoAPI_Cut(plate, thru).Shape()
+    s = BRepAlgoAPI_Cut(s, csk).Shape()
+    return _write(s, os.path.join(outdir, "countersink-plate.step")), {"boreDia": 8.0, "csinkDia": 16.0, "includedAngleDeg": 90.0}
+
+
+def slot_vs_pocket(outdir):
+    """80x60x25 block with ONE closed pocket and ONE open-ended slot.
+
+    Truth: 2 prismatic features. The pocket is enclosed on all four sides; the
+    slot runs out through both Y faces. Both are found by concave decomposition,
+    so this fixture is about telling them APART, not about finding them.
+    """
+    block = BRepPrimAPI_MakeBox(80.0, 60.0, 25.0).Shape()
+    pocket = BRepPrimAPI_MakeBox(gp_Pnt(10, 20, 15), 20.0, 20.0, 15.0).Shape()
+    slot = BRepPrimAPI_MakeBox(gp_Pnt(50, -1, 15), 12.0, 62.0, 15.0).Shape()
+    s = BRepAlgoAPI_Cut(block, pocket).Shape()
+    s = BRepAlgoAPI_Cut(s, slot).Shape()
+    return _write(s, os.path.join(outdir, "slot-and-pocket.step")), {"pockets": 1, "slots": 1}
+
+
+def through_hole_and_pocket(outdir):
+    """50x40x30 block, Ø8 through hole AND a closed pocket.
+
+    Truth: 2 features. This one exists because a through hole has NO concave
+    edges — concave decomposition alone finds only the pocket. It is the guard on
+    the hybrid recogniser: miss the hole and this fixture fails.
+    """
+    block = BRepPrimAPI_MakeBox(50.0, 40.0, 30.0).Shape()
+    hole = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(12, 20, -1), gp_Dir(0, 0, 1)), 4.0, 32.0).Shape()
+    pocket = BRepPrimAPI_MakeBox(gp_Pnt(30, 5, 20), 15.0, 30.0, 12.0).Shape()
+    s = BRepAlgoAPI_Cut(block, hole).Shape()
+    s = BRepAlgoAPI_Cut(s, pocket).Shape()
+    return _write(s, os.path.join(outdir, "through-hole-and-pocket.step")), {"throughHoles": 1, "pockets": 1}
+
+
 def bolted_assembly(outdir):
     """A 3-solid assembly: one 80x50x10 plate and TWO identical Ø8 x 25 pins.
 
@@ -139,7 +200,9 @@ def bolted_assembly(outdir):
 def main():
     outdir = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__))
     os.makedirs(outdir, exist_ok=True)
-    for fn in (plate_two_holes, frustum_draft3, box_side_hole, shell_wall25, boss_plate, bolted_assembly):
+    for fn in (plate_two_holes, frustum_draft3, box_side_hole, shell_wall25, boss_plate,
+               counterbore_plate, countersink_plate, slot_vs_pocket, through_hole_and_pocket,
+               bolted_assembly):
         path, truth = fn(outdir)
         print(f"  {os.path.basename(path):26s}  analytic truth: {truth}")
     print(f"wrote fixtures to {outdir}")

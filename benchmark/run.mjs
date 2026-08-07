@@ -44,9 +44,16 @@ export function scoreFixture(name, meshes, truth) {
     const ids = new Set(feat.dfma.map(f => f.id));
     add('dfma', truth.dfma.every(id => ids.has(id)), [...ids].join(','));
   }
-  // SEMANTIC tier — features the geometric pipeline cannot yet produce (blind-vs-
-  // through holes, threads, pockets, slots, draft, GD&T). These are EXPECTED to
-  // fail today; they measure the gap to best-in-class and are NOT gated.
+  // SEMANTIC tier — features THIS pipeline cannot produce. This benchmark runs
+  // the kernel-free MESH path (occt-import-js triangles), which has no topology
+  // to reason from, so blind-vs-through, pockets, slots and draft are out of
+  // reach here by construction. Still NOT gated, and still honest about it.
+  //
+  // Those checks are now MET on the B-rep path: benchmark/dfm-run.mjs measures
+  // them against analytic fixtures via the OCCT engine and is gated at 100%.
+  // Left failing here deliberately — this tier is the mesh path's own scorecard,
+  // and quietly importing the B-rep result would misreport what the mesh path
+  // can actually do when a user uploads an STL.
   if (truth.semantic) {
     for (const [key, want] of Object.entries(truth.semantic)) {
       const got = brep[key];

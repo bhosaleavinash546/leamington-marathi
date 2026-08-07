@@ -43,6 +43,12 @@ export const DFM_FIXTURES = [
       undercutFaceCountAtZ: 0,
       // Four tapered walls out of a closed solid; the rest is top and bottom.
       releasingAreaPctMin: 40.0,
+      // Honest degradation, gated. Those four walls are B-spline, so the
+      // recogniser can name nothing here and must SAY so rather than return an
+      // empty list that reads as "this part has no features". The percentage is
+      // their share of surface area, and it matches the releasing area above.
+      featureCounts: {},
+      unclassifiedAreaPctMin: 40.0,
     },
   },
   {
@@ -85,6 +91,41 @@ export const DFM_FIXTURES = [
       undercutFaceCountAtZ: 0,
       bosses: 1,
       holes: [{ diaMm: 6.0, through: true }],
+      featureCounts: { 'through-hole': 1, boss: 1 },
+    },
+  },
+  {
+    file: 'counterbore-plate.step',
+    what: '60x60x20 plate, Ø8 through hole with a Ø16 counterbore 6 deep',
+    truth: {
+      featureCounts: { 'counterbored-hole': 1 },
+      compoundHole: { kind: 'counterbored-hole', boreDiaMm: 8.0, featureDiaMm: 16.0, featureDepthMm: 6.0, through: true },
+    },
+  },
+  {
+    file: 'countersink-plate.step',
+    what: '60x60x20 plate, Ø8 through hole with a 90 deg countersink to Ø16',
+    truth: {
+      // A cone at the mouth is what makes this a countersink rather than a
+      // counterbore. Confusing the two puts the wrong tool on the process sheet,
+      // so the included angle is checked, not just the diameter.
+      featureCounts: { 'countersunk-hole': 1 },
+      compoundHole: { kind: 'countersunk-hole', boreDiaMm: 8.0, featureDiaMm: 16.0, includedAngleDeg: 90.0, through: true },
+    },
+  },
+  {
+    file: 'slot-and-pocket.step',
+    what: '80x60x25 block with one closed pocket and one open-ended slot',
+    truth: { featureCounts: { pocket: 1, slot: 1 } },
+  },
+  {
+    file: 'through-hole-and-pocket.step',
+    what: '50x40x30 block, Ø8 through hole AND a closed pocket',
+    truth: {
+      // The guard on the hybrid recogniser. A through hole has no concave edges,
+      // so AAG decomposition alone finds only the pocket — this fixture fails if
+      // the analytic cylinder pass is ever dropped in favour of "pure" AAG.
+      featureCounts: { pocket: 1, 'through-hole': 1 },
     },
   },
 ];

@@ -143,6 +143,36 @@ async function main() {
         .reduce((s, r) => s + (r.count || 0), 0);
       record(fx.file, 'bosses', n === t.bosses, `${n} vs ${t.bosses}`);
     }
+
+    // ── Feature recognition ──────────────────────────────────────────────────
+    const fr = g.dfm?.features;
+    if (t.featureCounts !== undefined) {
+      const got = fr?.counts ?? {};
+      const want = t.featureCounts;
+      // Exact match both ways: a recogniser that invents an extra feature is as
+      // wrong as one that misses a real one.
+      const keys = new Set([...Object.keys(got), ...Object.keys(want)]);
+      const bad = [...keys].filter(k => (got[k] ?? 0) !== (want[k] ?? 0));
+      record(fx.file, 'feature counts', bad.length === 0,
+        `${JSON.stringify(got)} vs ${JSON.stringify(want)}`);
+    }
+    if (t.unclassifiedAreaPctMin !== undefined) {
+      record(fx.file, 'unclassified area', (fr?.unclassifiedAreaPct ?? -1) >= t.unclassifiedAreaPctMin,
+        `${fr?.unclassifiedAreaPct}% >= ${t.unclassifiedAreaPctMin}% (must admit what it cannot name)`);
+    }
+    if (t.compoundHole !== undefined) {
+      const c = (fr?.compoundHoles || [])[0];
+      const w = t.compoundHole;
+      const ok = !!c && c.kind === w.kind
+        && near(c.boreDiaMm, w.boreDiaMm, 0.02)
+        && near(c.featureDiaMm, w.featureDiaMm, 0.02)
+        && (w.featureDepthMm === undefined || near(c.featureDepthMm, w.featureDepthMm, 0.02))
+        && (w.includedAngleDeg === undefined || near(c.includedAngleDeg, w.includedAngleDeg, 0.02))
+        && (w.through === undefined || c.through === w.through);
+      record(fx.file, 'compound hole', ok,
+        c ? `${c.kind} Ø${c.boreDiaMm}→Ø${c.featureDiaMm} d${c.featureDepthMm} ang${c.includedAngleDeg} through=${c.through}`
+          : 'none found');
+    }
   }
 
   const pass = checks.filter(c => c.ok).length;
