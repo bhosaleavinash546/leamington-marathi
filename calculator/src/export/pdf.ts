@@ -28,8 +28,20 @@ export interface GeometricDFMMeta {
     ruleId: string; severity: string; title: string; count: number;
     /** £/part summed across instances. 0 when no cost path is modelled. */
     totalCostGBP?: number;
+    /**
+     * Why the group carries no £ figure. Mutually exclusive with a non-zero
+     * `totalCostGBP` — a finding never shows both a number and a reason there
+     * is none. Present on the wire since the engine grouped it; the on-screen
+     * panel renders it so an unpriced finding reads as "no model for this yet"
+     * rather than as free.
+     */
+    costNotModelled?: string;
     faceIds: number[];
-    worst: { detail: string; measured: { field: string; value: number; unit: string } };
+    worst: {
+      detail: string; measured: { field: string; value: number; unit: string };
+      /** The arithmetic behind the £ figure, printable end to end. */
+      costImpact?: { perPartGBP: number; basis: string; confidence: string };
+    };
     range: { min: number; max: number; unit: string };
     threshold: { value: number; unit: string; comparator: string };
     recommendation: string;

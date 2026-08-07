@@ -7008,3 +7008,40 @@ select:focus-visible, [tabindex]:focus-visible, .hs-mode:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .cv-spin { animation-duration: 1.6s; }
 }
+
+/* ── Geometric DFM findings panel ──────────────────────────────────────────
+   The list the engineer reads before deciding whether a finding is real, so it
+   carries the same evidence the printed review pack does: measured value vs
+   threshold, the fix, the cost basis (or the stated reason there is no figure),
+   and the citation. These classes were referenced by the panel from the day it
+   shipped and never defined, so it rendered as unstyled markup. */
+.dfm-geo-list { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.dfm-geo-item {
+  position: relative;
+  padding: 10px 12px 10px 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--text-muted);
+  border-radius: 8px;
+  background: var(--surface-elevated);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.dfm-geo-item:hover { border-color: var(--border-strong); }
+.dfm-geo-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dfm-geo-item.danger { border-left-color: var(--danger); }
+.dfm-geo-item.warn   { border-left-color: var(--warning); }
+.dfm-geo-item.muted  { border-left-color: var(--text-muted); }
+.dfm-geo-item.selected { border-color: var(--accent); background: var(--accent-light); }
+.dfm-geo-item > div { margin-top: 3px; }
+.dfm-geo-item em { color: var(--text-muted); font-style: normal; }
+/* Money is what the list is ranked by, so it reads as a figure, not as prose. */
+.dfm-geo-cost {
+  float: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+.dfm-geo-measure { display: flex; flex-wrap: wrap; gap: 4px 14px; font-variant-numeric: tabular-nums; }
+.dfm-geo-lims { margin-top: 10px; }
+.dfm-geo-lims > summary { cursor: pointer; font-size: 0.82rem; color: var(--text-secondary); }
+.dfm-geo-lims ul { margin: 6px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }

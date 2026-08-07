@@ -160,6 +160,7 @@ import { showNews, refreshNews } from './panels/news.js';
 import { initSWPanel } from './panels/sw-should-cost-ui.js';
 import { initObservability, breadcrumb } from './observability.js';
 import { escHtml } from './toast.js';
+import { buildGeometricDFMPanel, dfmHighlightHint } from './dfm-geometry-panel.js';
 import { buildRuleVsAIPanel, type CADDiff } from './cad-diff-panel.js';
 import { el, val, num, sel, fmtPct, validSel } from './helpers.js';
 import { CAD_AI_DEMOS } from './data/cad-ai-demos.js';
@@ -16556,36 +16557,20 @@ async function pollGeometricDFM(jobId: string, tries = 60): Promise<void> {
 function renderGeometricDFMPanel(): void {
   const host = el<HTMLElement>('geometric-dfm-panel');
   if (!host) return;
-  const g = cadGeometricDFM;
-  if (!g || !(g.grouped?.length)) { host.innerHTML = ''; host.style.display = 'none'; return; }
-  host.style.display = '';
-  const sevClass = (s: string) => s === 'critical' || s === 'major' ? 'danger'
-    : s === 'minor' ? 'warn' : 'muted';
-  host.innerHTML = `
-    <h3>Geometric DFM — measured from the CAD</h3>
-    <p class="muted small">${g.grouped.length} issue(s) across ${g.findings.length} instance(s),
-      ranked by cost. ${(g.totalAddressableGBP ?? 0) > 0
-        ? `<strong>£${(g.totalAddressableGBP ?? 0).toFixed(2)}/part</strong> priced; issues without a
-           figure are quality or yield risks with no modelled cost path.`
-        : 'No finding here has a modelled cost path — each says why.'}
-      Click an issue to highlight the faces that caused it.</p>
-    <ul class="dfm-geo-list">
-      ${g.grouped.map((x: GeometricDFMMeta['grouped'][number], i: number) => `
-        <li class="dfm-geo-item ${sevClass(x.severity)}" data-dfm-idx="${i}" role="button" tabindex="0">
-          <strong>${escHtml(x.title)}</strong>${x.count > 1 ? ` <em>(${x.count})</em>` : ''}
-          ${(x.totalCostGBP ?? 0) > 0
-            ? `<span class="dfm-geo-cost">£${(x.totalCostGBP ?? 0).toFixed(2)}/part</span>` : ''}
-          <div class="small">${escHtml(x.worst.detail)}</div>
-          <div class="small muted">${escHtml(x.source.standard)}</div>
-        </li>`).join('')}
-    </ul>`;
+  const html = buildGeometricDFMPanel(cadGeometricDFM);
+  host.innerHTML = html;
+  host.style.display = html ? '' : 'none';
+  if (!html) return;
+
   host.querySelectorAll<HTMLElement>('[data-dfm-idx]').forEach(node => {
     const act = () => {
       const idx = Number(node.dataset.dfmIdx);
       const faces = cadGeometricDFM?.grouped?.[idx]?.faceIds ?? [];
-      highlightViewerFaces(faces);
+      const shown = highlightViewerFaces(faces);
       host.querySelectorAll('.dfm-geo-item').forEach(n => n.classList.remove('selected'));
       node.classList.add('selected');
+      const hint = el<HTMLElement>('dfm-geo-hint');
+      if (hint) hint.textContent = dfmHighlightHint(faces, shown);
     };
     node.addEventListener('click', act);
     node.addEventListener('keydown', e => { if ((e as KeyboardEvent).key === 'Enter') act(); });
@@ -16606,15 +16591,17 @@ function publishViewerHandle(h: { highlightFaces?: (ids: number[]) => void }): v
 /**
  * Ask the 3D viewer to highlight a set of B-rep faces.
  *
- * Routed through the viewer's own API when it is loaded; a no-op otherwise, so
- * a finding list still works with the viewer closed.
+ * Routed through the viewer's own API when it is loaded. Returns whether the
+ * highlight actually happened, so the caller can tell the user the viewer is
+ * closed instead of leaving a click that appears to do nothing — the previous
+ * version logged to the console, which no engineer is reading.
  */
-function highlightViewerFaces(faceIds: number[]): void {
+function highlightViewerFaces(faceIds: number[]): boolean {
   const v = (window as unknown as {
     __cadViewer?: { highlightFaces?: (ids: number[]) => void };
   }).__cadViewer;
-  if (v?.highlightFaces) { v.highlightFaces(faceIds); return; }
-  console.log('[dfm] viewer not open — faces to inspect:', faceIds.join(', '));
+  if (v?.highlightFaces) { v.highlightFaces(faceIds); return true; }
+  return false;
 }
 
 function buildCadReportMeta(): CADReportMeta {
