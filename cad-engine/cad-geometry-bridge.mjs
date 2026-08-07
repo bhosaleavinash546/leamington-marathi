@@ -12,6 +12,7 @@ import { randomBytes } from 'crypto';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PYTHON_SCRIPT = join(__dirname, 'cad-geometry-engine.py');
+const ASSEMBLY_SCRIPT = join(__dirname, 'assembly_decompose.py');
 
 /** Temp-file extensions come from user-supplied filenames — keep them boring. */
 function safeExt(filename) {
@@ -53,7 +54,25 @@ export async function analyzeGeometry(buffer, filename, timeoutMs = 120_000) {
   }
 }
 
-function _runPython(tmpPath, timeoutMs) {
+/**
+ * Decompose an assembly into solids with measured symmetry, shape signatures and
+ * contacts — the input to the DFA engine. Same semaphore and timeout discipline
+ * as analyzeGeometry: symmetry testing runs boolean intersections, so this is the
+ * more expensive of the two and must not escape the concurrency cap.
+ */
+export async function decomposeAssembly(buffer, filename, timeoutMs = 120_000) {
+  const tmpPath = join(tmpdir(), `cv-asm-${randomBytes(8).toString('hex')}.${safeExt(filename)}`);
+  const release = await acquirePython();
+  try {
+    await writeFile(tmpPath, buffer);
+    return await _runPython(tmpPath, timeoutMs, ASSEMBLY_SCRIPT);
+  } finally {
+    release();
+    unlink(tmpPath).catch(() => {});
+  }
+}
+
+function _runPython(tmpPath, timeoutMs, script = PYTHON_SCRIPT) {
   return new Promise((resolve) => {
     let stdout = '';
     let stderr = '';
@@ -63,7 +82,7 @@ function _runPython(tmpPath, timeoutMs) {
       if (!settled) { settled = true; resolve(result); }
     };
 
-    const child = spawn('python3', [PYTHON_SCRIPT, tmpPath], {
+    const child = spawn('python3', [script, tmpPath], {
       env: { ...process.env },
     });
 

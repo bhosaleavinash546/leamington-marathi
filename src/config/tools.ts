@@ -6,7 +6,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Zap, Lightbulb, Target, Sparkles, GitCompare, Calculator, Box, CircuitBoard,
   Layers, GitMerge, ClipboardList, Store, TrendingUp, HelpCircle, Link2, Database,
-  Telescope,
+  Telescope, ShieldCheck,
 } from 'lucide-react';
 
 export type ToolCategory = 'generate' | 'cost' | 'track' | 'learn';
@@ -32,6 +32,7 @@ export const TOOLS: Tool[] = [
   { id: 'cad-to-cost', label: 'CAD → Cost',        route: '/cad-to-cost',  icon: Box,          category: 'cost', description: 'Geometry-driven cost from a CAD file' },
   { id: 'pcb-bom',     label: 'PCB → BOM → Cost',  route: '/pcb-bom-cost', icon: CircuitBoard, category: 'cost', description: 'Board photo to BOM to cost' },
   { id: 'bom-batch',   label: 'BOM Batch',         route: '/bom-analysis', icon: Layers,       category: 'cost', description: 'Analyse a full BOM in one run' },
+  { id: 'dfm-studio',  label: 'DFM / DFA Studio',  route: '/dfm-studio',   icon: ShieldCheck,  category: 'cost', description: 'Manufacturability and assembly from 3D CAD' },
   // ── Track & decide ──────────────────────────────────────────────────────
   { id: 'pipeline',    label: 'Pipeline',          route: '/pipeline',     icon: GitMerge,      category: 'track', description: 'Ideas from proposal to confirmed saving' },
   { id: 'vave',        label: 'VAVE Tracker',      route: '/vave-tracker', icon: ClipboardList, category: 'track', description: 'Track approved ideas to realisation' },

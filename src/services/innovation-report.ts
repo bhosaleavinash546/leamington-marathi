@@ -99,8 +99,15 @@ export function exportInnovationPdf(dataIn: InnovationReportData): void {
 
   function wrapped(text: string, size = 9.2, colour: RGB = BODY, width = CW, lh = 4.2, style: 'normal' | 'bold' | 'italic' = 'normal', x = ML) {
     sans(size, style); setText(doc, colour);
-    for (const line of doc.splitTextToSize(text, width)) {
+    const lines: string[] = doc.splitTextToSize(text, width);
+    for (const line of lines) {
       ensure(lh + 1);
+      // Re-assert the font on EVERY line: ensure() may break to a new page and
+      // footer() leaves Courier selected, so the rest of a paragraph would draw
+      // in a wider font than it was measured in and overflow the right margin.
+      // Latent here — this fixture never broke mid-paragraph — and caught in the
+      // DFM report, which does.
+      sans(size, style); setText(doc, colour);
       doc.text(line, x, y);
       y += lh;
     }

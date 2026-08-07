@@ -43,6 +43,7 @@ import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerMarketplaceRoutes } from './routes/marketplace.mjs';
 import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
 import { registerCadRoutes } from './routes/cad.mjs';
+import { registerDfmRoutes } from './routes/dfm.mjs';
 import { registerHarnessRoutes } from './routes/harness.mjs';
 import { registerOrgRoutes } from './routes/orgs.mjs';
 import { registerTrizRoutes } from './routes/triz.mjs';
@@ -3517,6 +3518,7 @@ const shouldCostApi = registerShouldCostRoutes(app, { db, requireAuth, rateLimit
 registerMarketplaceRoutes(app, { db, requireAuth, rateLimit });
 // 3D CAD viewer: STEP/IGES tessellation + geometry analysis via the OCCT engine.
 registerCadRoutes(app, { requireAuth, rateLimit });
+registerDfmRoutes(app, { requireAuth, rateLimit });
 // Wiring-harness should-cost (deterministic parametric model).
 registerHarnessRoutes(app, { requireAuth, rateLimit });
 // Organisations & roles v1 (SaaS substrate: personal orgs, invites, role middleware).

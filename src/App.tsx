@@ -26,6 +26,7 @@ const ResultsPage = lazy(() => import('./pages/ResultsPage'));
 const HelpPage = lazy(() => import('./pages/HelpPage'));
 const TrendsPage = lazy(() => import('./pages/TrendsPage'));
 const CadToCostPage = lazy(() => import('./pages/CadToCostPage'));
+const DfmStudioPage = lazy(() => import('./pages/DfmStudioPage'));
 const BomAnalysisPage = lazy(() => import('./pages/BomAnalysisPage'));
 const SharedResultPage = lazy(() => import('./pages/SharedResultPage'));
 const ShouldCostPage = lazy(() => import('./pages/ShouldCostPage'));
@@ -61,6 +62,7 @@ function AnimatedRoutes() {
         <Route path="/results" element={<ProtectedRoute><PageTransition><ResultsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/trends" element={<ProtectedRoute><PageTransition><TrendsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/cad-to-cost" element={<ProtectedRoute><PageTransition><CadToCostPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dfm-studio" element={<ProtectedRoute><PageTransition><DfmStudioPage /></PageTransition></ProtectedRoute>} />
         <Route path="/bom-analysis" element={<ProtectedRoute><PageTransition><BomAnalysisPage /></PageTransition></ProtectedRoute>} />
         <Route path="/should-cost" element={<ProtectedRoute><PageTransition><ShouldCostPage /></PageTransition></ProtectedRoute>} />
         <Route path="/pcb-bom-cost" element={<ProtectedRoute><PageTransition><PcbBomCostPage /></PageTransition></ProtectedRoute>} />

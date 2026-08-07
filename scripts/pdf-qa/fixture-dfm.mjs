@@ -1,0 +1,124 @@
+// Hostile fixture for the DFM / DFA report: Unicode in the part name, long
+// rationale and fix prose, a finding priced by the engine and one explicitly
+// unpriced, a process family where NOTHING could be evaluated (score null), a
+// long not-evaluated list, and a DFA table with an unanswered completeness state.
+//
+// The unevaluated/withheld cases are here on purpose — they are the states the
+// report must render legibly, and they are the ones a layout is most likely to
+// forget.
+const LONG_RATIONALE = 'Below about 1 mm the die will not fill reliably before the melt freezes off, and cold shuts appear along the last-to-fill boundary; above about 3.5 mm the section traps porosity as it solidifies from the outside in, holds the cycle open while the centre gives up its heat, and leaves a shrinkage void exactly where the casting is thickest and a machinist is most likely to break into it. Neither failure is recoverable by process tuning once the wall is drawn, which is why wall thickness is the first thing a die caster looks at and the last thing a designer wants to change.';
+const LONG_FIX = 'Hold a uniform nominal wall in the 2.0-3.5 mm band and core out heavy sections rather than leaving solid mass. Where local stiffness is needed, add ribs at 40-60% of the nominal wall rather than thickening the wall itself; where a boss must be thick, core it from the back so the section stays even. WARNING_TOKEN_THAT_IS_EXTREMELY_LONG_AND_UNBREAKABLE_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+const finding = (over = {}) => ({
+  id: over.id || 'hpdc-wall-thickness-range',
+  title: over.title || 'Wall thickness outside the die-casting range',
+  severity: over.severity || 'high',
+  measure: 'wallP50Mm',
+  measured: over.measured ?? 30,
+  unit: over.unit || 'mm',
+  thresholdText: over.thresholdText || '1–3.5 mm',
+  rationale: over.rationale || LONG_RATIONALE,
+  fix: over.fix || LONG_FIX,
+  source: over.source || 'Aluminium HPDC design guidance (1.0 mm minimum, 2.0–3.5 mm recommended).',
+  status: 'fail',
+  cost: over.cost ?? {
+    priced: true,
+    basis: 'computeShouldCost — cooling-limited cycle (base + k·wall²) and the mass change that comes with it',
+    changeDescription: 'wall 30 mm → 3.5 mm',
+    asDrawnEur: 12.84, improvedEur: 12.2, deltaEur: 0.64, annualDeltaEur: 76800,
+  },
+});
+
+export const DFM_RESULT = {
+  partName: 'Rear subframe bracket — «hostile» “fixture” × ½',
+  fileName: 'rear-subframe-bracket.step',
+  subject: { part: 'Rear subframe bracket', system: 'Chassis', material: 'Aluminium A356 (cast)', process: 'Die Casting (Aluminium)' },
+  geometry: {
+    boundingBox: { xMm: 248.5, yMm: 162.3, zMm: 88.1 },
+    volume: { cm3: 412.7 }, surfaceArea: { cm2: 1863.2 }, fillRatio: 0.116,
+    faces: { total: 214, byType: { PLANE: 88, CYLINDER: 41, BSPLINE: 79, CONE: 6 } },
+    setupAnalysis: { estimatedSetupCount: 3, basis: 'distinct feature access directions (not raw face normals)' },
+    featureTable: [
+      { kind: 'hole', diaMm: 10.5, depthMm: 24, through: true, count: 4, axisXYZ: [0, 0, 1] },
+      { kind: 'hole', diaMm: 6.8, depthMm: 12, through: false, count: 8, axisXYZ: [0, 0, 1] },
+      { kind: 'boss', diaMm: 32, depthMm: 18, through: null, count: 2, axisXYZ: [0, 0, 1] },
+    ],
+    assemblyWarning: null, unitWarning: null,
+  },
+  dfm: {
+    wallThickness: { p5Mm: 2.1, p50Mm: 30.0, p95Mm: 61.4, spreadRatio: 1.98, uniformity: 'non-uniform', samples: 2841 },
+    draft: {
+      drawDirectionXYZ: [0, 0, 1], undercutFaceCount: 3, zeroDraftFaceCount: 11,
+      wallAreaBelowMinDraftPct: 41.2, minWallDraftDeg: 0.4, maxWallDraftDeg: 5.1,
+      areaPct: { partingParallel: 31.4, releasing: 27.4, zeroDraft: 24.6, undercut: 16.6 },
+    },
+    features: {
+      counts: { 'through-hole': 4, 'blind-hole': 8, boss: 2, pocket: 3, 'counterbored-hole': 1 },
+      unclassifiedAreaPct: 22.8,
+      compoundHoles: [{ kind: 'counterbored-hole', boreDiaMm: 8, boreDepthMm: 14, through: true, featureDiaMm: 16, featureDepthMm: 6, includedAngleDeg: null, axisXYZ: [0, 0, 1], count: 1 }],
+    },
+  },
+  results: [
+    {
+      process: 'hpdc', processName: 'High-pressure die casting',
+      ruleCount: 4, evaluatedCount: 3, coveragePct: 75, score: 25,
+      findings: [
+        finding(),
+        finding({
+          id: 'hpdc-draft-minimum', title: 'Wall area below the minimum die-casting draft',
+          measured: 41.2, unit: '% of wall area', thresholdText: '≤ 5 % of wall area',
+          cost: { priced: false, reason: 'Insufficient draft shortens die life through galling; die life is a tooling-amortisation input, not a geometric one the engine derives.' },
+        }),
+        finding({
+          id: 'hpdc-undercuts', title: 'Undercuts require slides or lifters in the die',
+          severity: 'high', measured: 3, unit: 'regions', thresholdText: '≤ 0 regions',
+          cost: {
+            priced: false,
+            reason: 'Slide and loose-core tooling is quoted by the diemaker; the piece-price engines do not model it.',
+            externalGuideline: 'Industry guidance puts a side action, lifter or collapsible core at roughly $500–$5,000 of tooling per feature. Cited literature, NOT an engine result — confirm with your toolmaker.',
+          },
+        }),
+      ],
+      passed: [finding({ id: 'hpdc-internal-radius', title: 'Sharp internal corners concentrate stress and restrict flow', measured: 2.4, thresholdText: '≥ 1.6 mm', severity: 'medium' })],
+      notEvaluated: [],
+      impact: { pricedCount: 1, unpricedCount: 2, perPartEur: 0.64, annualEur: 76800, caveat: '2 of 3 findings could not be priced by the engines; the total below excludes them.' },
+    },
+    {
+      // A whole family with nothing measurable. The report must show a null
+      // score and the reasons, not an implied clean sheet.
+      process: 'sheet-metal', processName: 'Sheet metal / stamping',
+      ruleCount: 4, evaluatedCount: 0, coveragePct: 0, score: null,
+      findings: [], passed: [],
+      notEvaluated: [
+        { id: 'sm-bend-radius', title: 'Inside bend radius below one material thickness', measure: 'minBendRadiusToThickness', unit: 'r/t', thresholdText: '≥ 1 r/t', rationale: '', fix: '', status: 'not-evaluated', source: 'Sheet-metal design guidance (1x t typical, 1.5–2x for stainless and 6061-T6).', reason: 'no measurement available for "minBendRadiusToThickness" on this geometry' },
+        { id: 'sm-hole-diameter', title: 'Punched hole smaller than the material thickness', measure: 'minHoleDiaToThickness', unit: 'd/t', thresholdText: '≥ 1 d/t', rationale: '', fix: '', status: 'not-evaluated', source: 'Sheet-metal design guidance.', reason: 'no measurement available for "minHoleDiaToThickness" on this geometry' },
+        { id: 'sm-hole-to-bend', title: 'Hole too close to a bend line', measure: 'minHoleToBendMm', unit: 'mm', thresholdText: '2t+r', rationale: '', fix: '', status: 'not-evaluated', source: 'Sheet-metal design guidance (hole-to-bend >= 2T + R).', reason: 'threshold is a formula' },
+        { id: 'sm-flange-length', title: 'Flange too short to form', measure: 'minFlangeToThickness', unit: 'flange/t', thresholdText: '≥ 3 flange/t', rationale: '', fix: '', status: 'not-evaluated', source: 'Sheet-metal design guidance (minimum flange ~3x thickness).', reason: 'no measurement available for "minFlangeToThickness" on this geometry' },
+      ],
+      impact: { pricedCount: 0, unpricedCount: 0, perPartEur: 0, annualEur: 0, caveat: null },
+    },
+  ],
+  dfa: {
+    engine: 'dfa-v1',
+    timeModel: { version: 'brainspark-dfa-v1', basis: 'MTM-structured; BrainSpark coefficients; calibratable. NOT Boothroyd & Dewhurst tables.', calibration: 1 },
+    totalParts: 6, distinctPartTypes: 3,
+    totalAssemblyTimeSec: 41.8, assemblyCostEur: 0.49, labourRateEurPerHr: 42,
+    theoreticalMinParts: null, idealAssemblyTimeSec: null, designEfficiencyPct: null,
+    consolidationCandidates: [],
+    suspectedFasteners: [{ index: 2, name: 'solid-3', confidence: 'medium' }, { index: 3, name: 'solid-4', confidence: 'medium' }],
+    rows: [
+      { index: 0, name: 'bracket casting', groupSize: 1, massKg: 1.11, contacts: 4, symmetry: { totalDeg: 720, continuous: false, order: 1 }, time: { handlingSec: 3.24, insertionSec: 1.5, totalSec: 4.74 }, fastener: { isFastener: false }, necessary: null },
+      { index: 1, name: 'reinforcement plate — very long descriptive name that must not overflow the column', groupSize: 1, massKg: 0.42, contacts: 2, symmetry: { totalDeg: 360, continuous: false, order: 2 }, time: { handlingSec: 1.63, insertionSec: 1.5, totalSec: 3.13 }, fastener: { isFastener: false }, necessary: null },
+      { index: 2, name: 'M10 bolt', groupSize: 4, massKg: 0.05, contacts: 2, symmetry: { totalDeg: 180, continuous: true, order: null }, time: { handlingSec: 1.13, insertionSec: 6.5, totalSec: 7.63 }, fastener: { isFastener: true, confidence: 'medium' }, necessary: null },
+      { index: 3, name: 'washer', groupSize: 4, massKg: 0.01, contacts: 2, symmetry: { totalDeg: 180, continuous: true, order: null }, time: { handlingSec: 1.83, insertionSec: 1.5, totalSec: 3.33 }, fastener: { isFastener: true, confidence: 'medium' }, necessary: null },
+      { index: 4, name: 'bush', groupSize: 2, massKg: 0.03, contacts: 1, symmetry: { totalDeg: 180, continuous: true, order: null }, time: { handlingSec: 1.13, insertionSec: 2.5, totalSec: 3.63 }, fastener: { isFastener: false }, necessary: null },
+      { index: 5, name: 'broken solid', skipped: true, error: 'boolean failed' },
+    ],
+    completeness: {
+      answered: 0, unanswered: 5,
+      unansweredParts: [{ index: 0 }, { index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }],
+      indexAvailable: false,
+      note: '5 of 5 parts have unanswered DFA questions, so the theoretical minimum and design efficiency are withheld. Handling and insertion times below are geometric and stand on their own.',
+    },
+  },
+};
