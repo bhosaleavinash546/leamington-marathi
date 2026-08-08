@@ -599,3 +599,22 @@ Format: decision · why · what would change it.
     local const, thrown away after use — is now remembered. Without it every callout would
     have been pinned confidently to the wrong place, which is precisely the failure the
     face-id work existed to end.
+
+48. **The progress the user watches is the progress that actually happened (2026).**
+    *Why:* a real part takes 5-30 s and the page showed a spinner for all of it. The engine
+    already ran in discrete phases, so it now prints one `@stage {json}` line to stdout the
+    moment each phase GENUINELY COMPLETES, carrying the figure it just measured — 7,862
+    triangles, a 1.60 mm median wall over 1,000 rays, the winning draw axis and its undercut
+    percentage. The bridge already read stdout incrementally, and `extractJson` already
+    scanned for the last parseable line, so a non-JSON progress line interleaved ahead of
+    the result needed no protocol change at all. `POST /api/dfm/analyze` streams these when
+    the caller sends `Accept: text/event-stream` and returns exactly the same JSON otherwise
+    — the benchmark and every existing caller are untouched. Nothing is predicted or
+    interpolated: there is no percentage, and a stage skipped by the time budget reports
+    `skipped` with its reason, which is what the UI then shows.
+    *Changes it:* the first working version streamed the result and silently dropped every
+    stage. `req.on('close')` fires when the REQUEST STREAM ends, and for a multipart upload
+    that is the moment multer finishes reading the body — not when the client disconnects.
+    So every caller was marked gone before the analysis started and every progress event was
+    swallowed, while the final result still went out. It watches `res.on('close')` now. The
+    symptom is worth remembering: a stream that appeared to work and showed no progress.

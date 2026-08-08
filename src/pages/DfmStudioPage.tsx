@@ -72,6 +72,30 @@ const SOURCE_GRADE: Record<string, string> = {
   'engine-derived': "This tool's own cost model",
 };
 
+/** Plain-English names for the engine's stage events. */
+const STAGE_LABEL: Record<string, string> = {
+  tessellate: 'Meshed the surface',
+  wallThickness: 'Measured wall thickness',
+  drawSweep: 'Swept candidate draw directions',
+  features: 'Recognised features',
+  sheetMetal: 'Checked for folded sheet',
+};
+
+/** The figure the engine actually measured in that stage — never a guess. */
+function describeStage(s: any): string {
+  if (s.status === 'skipped') return `skipped — ${s.reason}`;
+  switch (s.stage) {
+    case 'tessellate': return `${s.triangles?.toLocaleString?.() ?? s.triangles} triangles${s.truncated ? ' (budget hit)' : ''}`;
+    case 'wallThickness': return s.p50Mm != null ? `${s.p50Mm} mm median, ${s.samples} rays` : 'not measurable';
+    case 'drawSweep': return s.drawDirectionXYZ
+      ? `[${s.drawDirectionXYZ.join(', ')}] · ${s.undercutAreaPct}% undercut${s.ambiguous ? ' · close call' : ''}`
+      : '';
+    case 'features': return Object.entries(s.counts ?? {}).map(([k, v]) => `${v}x ${k}`).join(', ') || 'none named';
+    case 'sheetMetal': return s.isSheetMetal ? 'folded sheet' : 'not folded sheet';
+    default: return '';
+  }
+}
+
 const SEV_STYLE: Record<string, string> = {
   high: 'border-red-500/40 bg-red-500/10 text-red-300',
   medium: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
@@ -99,6 +123,8 @@ export default function DfmStudioPage() {
   const [highlight, setHighlight] = useState<'undercuts' | 'zeroDraft' | 'none'>('undercuts');
   const [answers, setAnswers] = useState<Record<number, Partial<Record<DfaQuestion, boolean>>>>({});
   const [showCallouts, setShowCallouts] = useState(true);
+  // Stages the engine has actually finished, newest last. Real events only.
+  const [stages, setStages] = useState<any[]>([]);
 
   const pick = useCallback((f: File | null) => {
     setFile(f); setResult(null); setDfa(null); setError(''); setAnswers({});
@@ -114,17 +140,53 @@ export default function DfmStudioPage() {
     return d;
   }
 
+  /**
+   * Run the analysis, showing each stage AS IT GENUINELY COMPLETES.
+   *
+   * The server streams an event per phase the engine finishes — tessellation,
+   * wall thickness, the draw-direction sweep, feature recognition — carrying the
+   * real figures it just measured. Nothing here is a predicted percentage or a
+   * bar invented to look busy: if a stage is skipped by the time budget, the
+   * event says skipped and so does the UI.
+   */
   async function analyse() {
     if (!file) { setError('Choose a STEP or IGES file first.'); return; }
     if (!token) { setError('Please sign in.'); return; }
-    setLoading('dfm'); setError('');
+    setLoading('dfm'); setError(''); setStages([]);
+    const fd = new FormData();
+    fd.append('cadFile', file);
+    // weightKg is deliberately not sent: the server derives it from the
+    // kernel-measured volume and the chosen material, so a value typed here
+    // could silently disagree with the geometry the findings are based on.
+    for (const [k, v] of Object.entries({ material, costProcess, region, annualVolume: String(annualVolume) })) fd.append(k, v);
     try {
-      // weightKg is deliberately not sent: the server derives it from the
-      // kernel-measured volume and the chosen material, so a value typed here
-      // could silently disagree with the geometry the findings are based on.
-      setResult(await post('/api/dfm/analyze', {
-        material, costProcess, region, annualVolume: String(annualVolume),
-      }));
+      const r = await fetch('/api/dfm/analyze', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'text/event-stream' },
+        body: fd,
+      });
+      if (!r.ok || !r.body) {
+        const d = await r.json().catch(() => ({}));
+        throw new Error(d.error || 'Analysis failed');
+      }
+      const reader = r.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          let ev: any;
+          try { ev = JSON.parse(line.slice(6)); } catch { continue; }
+          if (ev.type === 'stage') setStages(prev => [...prev, ev]);
+          else if (ev.type === 'result') setResult(ev.result);
+          else if (ev.type === 'error') throw new Error(ev.error);
+        }
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Analysis failed');
     } finally { setLoading(''); }
@@ -368,6 +430,28 @@ export default function DfmStudioPage() {
                 </div>
               )}
             </div>
+            {/* LIVE STAGES. Each line appears when the engine has genuinely
+                finished that phase, and carries the figure it just measured —
+                not a predicted percentage. A skipped stage says skipped. */}
+            {(loading === 'dfm' || stages.length > 0) && !result && (
+              <ol className="mb-3 space-y-1" aria-live="polite">
+                {stages.filter(s2 => s2.status !== 'start').map((s2, i) => (
+                  <li key={i} className="flex items-center gap-2 text-[11px]">
+                    {s2.status === 'skipped'
+                      ? <MinusCircle size={12} className="text-amber-400 shrink-0" />
+                      : <CheckCircle2 size={12} className="text-emerald-400 shrink-0" />}
+                    <span className="text-slate-300">{STAGE_LABEL[s2.stage] ?? s2.stage}</span>
+                    <span className="text-slate-500">{describeStage(s2)}</span>
+                  </li>
+                ))}
+                {loading === 'dfm' && (
+                  <li className="flex items-center gap-2 text-[11px] text-gold-400">
+                    <ButtonSpinner size={11} />
+                    <span>{STAGE_LABEL[stages[stages.length - 1]?.stage] ?? 'Reading geometry'}…</span>
+                  </li>
+                )}
+              </ol>
+            )}
             <CadViewer3D ref={viewerRef} file={file} token={token} highlightFaceIds={highlightIds}
               className="h-[420px] rounded-xl overflow-hidden" />
             <p className="text-slate-600 text-[11px] mt-2">

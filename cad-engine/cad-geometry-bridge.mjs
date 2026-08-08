@@ -41,13 +41,15 @@ async function acquirePython() {
   };
 }
 
-export async function analyzeGeometry(buffer, filename, timeoutMs = 120_000) {
+export async function analyzeGeometry(buffer, filename, timeoutMs = 120_000, onStage = null) {
   const tmpPath = join(tmpdir(), `cv-cad-${randomBytes(8).toString('hex')}.${safeExt(filename)}`);
 
   const release = await acquirePython();
   try {
     await writeFile(tmpPath, buffer);
-    return await _runPython(tmpPath, timeoutMs);
+    // `onStage` is optional and every existing caller omits it, so the
+    // non-streaming path — the benchmark included — is byte-for-byte unchanged.
+    return await _runPython(tmpPath, timeoutMs, PYTHON_SCRIPT, onStage);
   } finally {
     release();
     unlink(tmpPath).catch(() => {});
@@ -112,11 +114,15 @@ export function describeUnparseable(raw, stderr = '') {
     + 'Check that it is a valid STEP or IGES export.';
 }
 
-function _runPython(tmpPath, timeoutMs, script = PYTHON_SCRIPT) {
+function _runPython(tmpPath, timeoutMs, script = PYTHON_SCRIPT, onStage = null) {
   return new Promise((resolve) => {
     let stdout = '';
     let stderr = '';
     let settled = false;
+    // Partial line carried between chunks: a stdout chunk boundary can land
+    // mid-JSON, and forwarding half an event would surface a parse error to the
+    // user in the middle of an otherwise fine analysis.
+    let pending = '';
 
     const settle = (result) => {
       if (!settled) { settled = true; resolve(result); }
@@ -131,7 +137,23 @@ function _runPython(tmpPath, timeoutMs, script = PYTHON_SCRIPT) {
       settle({ status: 'error', error: `Geometry engine timed out after ${timeoutMs / 1000}s` });
     }, timeoutMs);
 
-    child.stdout.on('data', (d) => { stdout += d.toString(); });
+    child.stdout.on('data', (d) => {
+      const text = d.toString();
+      stdout += text;
+      // Forward completed `@stage` lines AS THEY ARRIVE. The engine announces
+      // each phase the moment it genuinely finishes, so the browser can show the
+      // analysis working rather than a spinner that says nothing for 30 s. These
+      // lines are not valid JSON, so extractJson() below already ignores them.
+      if (!onStage) return;
+      pending += text;
+      const lines = pending.split('\n');
+      pending = lines.pop() ?? '';
+      for (const line of lines) {
+        const t = line.trim();
+        if (!t.startsWith('@stage ')) continue;
+        try { onStage(JSON.parse(t.slice(7))); } catch { /* ignore a malformed event */ }
+      }
+    });
     child.stderr.on('data', (d) => { stderr += d.toString(); });
 
     child.on('error', (err) => {
@@ -181,6 +203,8 @@ export async function tessellateToSTL(buffer, filename, opts = {}) {
       const settle = (r) => { if (!settled) { settled = true; resolve(r); } };
       const child = spawn('python3', args, { env: { ...process.env } });
       const timer = setTimeout(() => { child.kill('SIGKILL'); settle({ status: 'error', error: `Tessellation timed out after ${timeoutMs / 1000}s` }); }, timeoutMs);
+      // Tessellation is one shot with no phases worth reporting, so this spawn
+      // just accumulates. Progress events belong to the analysis path only.
       child.stdout.on('data', (d) => { stdout += d.toString(); });
       child.stderr.on('data', (d) => { stderr += d.toString(); });
       child.on('error', (err) => { clearTimeout(timer); settle({ status: 'error', error: `Python process error: ${err.message}` }); });

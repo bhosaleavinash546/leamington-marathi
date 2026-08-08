@@ -74,8 +74,41 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
   /** Single-part DFM: measure, apply the rules, price what the engines can. */
   app.post('/api/dfm/analyze', requireAuth, limit, upload.single('cadFile'), async (req, res) => {
     if (rejectUnsupported(req, res)) return;
-    const geo = await analyzeGeometry(req.file.buffer, req.file.originalname);
-    if (geo.status !== 'success') return res.status(422).json({ error: geo.error });
+
+    // STREAM THE STAGES THAT GENUINELY COMPLETE, when the caller asks for it.
+    // A real part takes 5-30 s and the page had nothing to show for it but a
+    // spinner. The engine already announces each phase the moment it finishes,
+    // so this forwards those events and then sends the finished analysis as a
+    // final `result` event. Same handler, same code path, same output — a plain
+    // JSON caller (and the benchmark) sees exactly what it saw before.
+    const useSSE = String(req.headers.accept || '').includes('text/event-stream');
+    if (useSSE) {
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      res.flushHeaders();
+    }
+    const emit = (data) => {
+      if (useSSE) { try { res.write(`data: ${JSON.stringify(data)}\n\n`); } catch { /* closed */ } }
+    };
+    // A stage that arrives after the client has gone must not throw.
+    //
+    // RESPONSE close, not REQUEST close. `req.on('close')` fires when the
+    // request STREAM ends — and for a multipart upload that is the moment multer
+    // finishes reading the body, long before the client goes anywhere. Watching
+    // it marked every caller as disconnected immediately and silently swallowed
+    // every stage event, while the final result still went out. The symptom was
+    // a stream that worked and showed no progress.
+    let clientGone = false;
+    if (useSSE) res.on('close', () => { clientGone = true; });
+
+    const geo = await analyzeGeometry(
+      req.file.buffer, req.file.originalname, 120_000,
+      useSSE ? (ev) => { if (!clientGone) emit({ type: 'stage', ...ev }); } : null);
+    if (geo.status !== 'success') {
+      if (useSSE) { emit({ type: 'error', error: geo.error }); return res.end(); }
+      return res.status(422).json({ error: geo.error });
+    }
 
     // Which rule families to run. If the user named a costing process, the DFM
     // family follows from it — running injection-moulding rules on an aluminium
@@ -204,7 +237,7 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       return { ...r, findings: priced, impact: summarisePricedImpact(priced) };
     });
 
-    res.json({
+    const payload = {
       // The engine names the part after the file it was handed, which is the
       // bridge's temp file (cv-cad-3e46530a…). Use the name the user actually
       // uploaded, or their report is titled with a random hex string.
@@ -222,7 +255,9 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       processFamily: family || null,
       processFamilyBasis: familyBasis,
       analysedAt: new Date().toISOString(),
-    });
+    };
+    if (useSSE) { emit({ type: 'result', result: payload }); return res.end(); }
+    res.json(payload);
   });
 
   /** Assembly DFA: decompose, then score. */

@@ -12,6 +12,27 @@ import time as _time
 #: honest answer instead of dying with nothing to show.
 DFM_TIME_BUDGET_S = 75.0
 
+
+def _stage(name, **fields):
+    """Announce a stage that has GENUINELY COMPLETED, on stdout, immediately.
+
+    The bridge reads this process's stdout incrementally and forwards each line,
+    so the browser can show the analysis progressing instead of a spinner that
+    says nothing for thirty seconds. These lines are prefixed `@stage ` and are
+    therefore not valid JSON, which matters: extractJson() in the bridge scans
+    for the LAST parseable line, so interleaving these ahead of the result is
+    already tolerated by design and needs no protocol change.
+
+    Every event reports work that has FINISHED. Nothing here is a prediction or
+    a percentage invented to make a bar move — if a stage is skipped by the time
+    budget the client is told it was skipped, and the animation shows that.
+    """
+    try:
+        sys.stdout.write("@stage " + json.dumps({"stage": name, **fields}) + "\n")
+        sys.stdout.flush()
+    except Exception:
+        pass   # progress reporting must never be able to fail the analysis
+
 # Best-effort 110-second limit (Unix only). NOTE: Python signal handlers only
 # run between bytecode instructions, so this CANNOT interrupt a single long
 # native OCCT call (e.g. a pathological BRepMesh_IncrementalMesh). The
@@ -724,19 +745,35 @@ def analyze(filepath: str) -> dict:
             _t0 = _time.monotonic()
             _left = lambda: DFM_TIME_BUDGET_S - (_time.monotonic() - _t0)
             _skipped = []
+            _stage("tessellate", status="start")
             tess = _dfm.tessellate(wrapped, deflection=max(0.05, min(x_sz, y_sz, z_sz) / 60.0))
+            _stage("tessellate", status="done", triangles=tess["count"],
+                   truncated=tess["truncated"])
             if tess["count"]:
                 inter = IntCurvesFace_ShapeIntersector()
                 inter.Load(wrapped, 1e-4)
                 if _left() > 0:
+                    _stage("wallThickness", status="start")
                     wall_stats = _dfm.wall_thickness(tess, inter)
+                    _stage("wallThickness", status="done",
+                           p50Mm=(wall_stats or {}).get("p50Mm"),
+                           samples=(wall_stats or {}).get("samples"))
                 else:
                     _skipped.append("wall thickness")
+                    _stage("wallThickness", status="skipped",
+                           reason="time budget spent")
                 if _left() > 0:
+                    _stage("drawSweep", status="start", candidates=3)
                     draft_info, draft_alts = _dfm.choose_draw_direction(tess, inter)
+                    _stage("drawSweep", status="done",
+                           drawDirectionXYZ=(draft_info or {}).get("drawDirectionXYZ"),
+                           undercutAreaPct=((draft_info or {}).get("areaPct") or {}).get("undercut"),
+                           ambiguous=(draft_info or {}).get("drawDirectionAmbiguous"),
+                           alternatives=draft_alts)
                 else:
                     draft_info, draft_alts = None, []
                     _skipped.append("draft and undercut classification")
+                    _stage("drawSweep", status="skipped", reason="time budget spent")
                 axes = [f["axisXYZ"] for f in (feature_table or []) if f.get("axisXYZ")]
                 setup_info = _dfm.setup_directions(axes) if axes else {
                     "estimatedSetupCount": 1,
@@ -771,6 +808,7 @@ def analyze(filepath: str) -> dict:
             try:
                 import feature_recognition as _fr
                 dfm_block = dfm_block or {}
+                _stage("features", status="start")
                 dfm_block["features"] = _fr.recognise(wrapped, feature_table,
                                                       extents=(x_sz, y_sz, z_sz),
                                                       aag=_aag)
@@ -782,9 +820,14 @@ def analyze(filepath: str) -> dict:
                 # ray-cast wall is not a sheet. Without it, a casting was handed
                 # to the sheet-metal rule family on the strength of any coaxial
                 # cylinder pair.
+                _stage("features", status="done",
+                       counts=(dfm_block.get("features") or {}).get("counts"),
+                       unclassifiedAreaPct=(dfm_block.get("features") or {}).get("unclassifiedAreaPct"))
                 dfm_block["sheetMetal"] = _fr.sheet_metal_features(
                     wrapped, feature_table,
                     wall_p50_mm=(wall_stats or {}).get("p50Mm"))
+                _stage("sheetMetal", status="done",
+                       isSheetMetal=(dfm_block.get("sheetMetal") or {}).get("isSheetMetal"))
             except Exception as e:
                 (dfm_block or {}).setdefault("featuresError", f"{e}")
         except Exception as e:
