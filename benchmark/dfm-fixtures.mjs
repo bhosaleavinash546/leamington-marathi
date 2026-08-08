@@ -73,6 +73,12 @@ export const DFM_FIXTURES = [
       // face 6 — a PLANE — while the bore was face 5. Every count-based check
       // passed throughout, because an off-by-one changes no count.
       faceIdResolves: { undercutAtZ: 'cylinder' },
+      // WHERE the finding is, arithmetic from the construction: the Ø12 bore
+      // runs through X at y=20, z=15 of a 60x40x30 box, so its area-weighted
+      // centroid is the mid-span of the axis. This is the anchor a leader line
+      // is drawn to in the viewer and the PDF — if it drifts, every callout
+      // points at empty space while the counts stay green.
+      undercutRegionAtZ: { centroidXYZ: [30.0, 20.0, 15.0], draftDeg: 0.0 },
     },
   },
   {

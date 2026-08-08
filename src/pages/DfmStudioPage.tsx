@@ -5,7 +5,7 @@ import {
   Ruler, Layers, Boxes, Info, CheckCircle2, MinusCircle, ChevronRight,
 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
-import CadViewer3D from '../components/CadViewer3D';
+import CadViewer3D, { type CadViewerRef } from '../components/CadViewer3D';
 import { useAuth } from '../contexts/AuthContext';
 
 // DFM / DFA Studio. Upload a STEP or IGES part and get a manufacturability
@@ -81,6 +81,8 @@ const SEV_STYLE: Record<string, string> = {
 export default function DfmStudioPage() {
   const { token } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
+  // Reaches into the viewer to paint finding layers and capture report figures.
+  const viewerRef = useRef<CadViewerRef | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [material, setMaterial] = useState('');
   const [costProcess, setCostProcess] = useState('');
@@ -258,6 +260,46 @@ export default function DfmStudioPage() {
           {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
         </div>
 
+        {/* GEOMETRY FIRST. This viewer used to live inside the results block, so a
+            user stared at a form for up to 30 s with their part invisible, then
+            saw it only once the analysis returned. CadToCostPage has always done
+            it the other way round — "Independent of the parse/analyse flow
+            below" — and that is the right way round: the part appears the moment
+            it is chosen, and the findings paint onto it when they arrive. */}
+        {file && /\.(step|stp|igs|iges)$/i.test(file.name) && (
+          <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <p className="text-slate-500 text-xs uppercase tracking-wider">
+                {result ? 'Geometry — findings shown on the part' : 'Geometry'}
+              </p>
+              {result && (
+                <div className="flex items-center gap-1.5" role="group" aria-label="Highlight findings on the model">
+                  {([
+                    ['undercuts', `Undercuts (${draft.undercutFaceCount ?? 0})`],
+                    ['zeroDraft', `Zero-draft walls (${draft.zeroDraftFaceCount ?? 0})`],
+                    ['none', 'None'],
+                  ] as const).map(([k, label]) => (
+                    <button key={k} type="button" onClick={() => setHighlight(k)} aria-pressed={highlight === k}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${
+                        highlight === k
+                          ? 'border-gold-500/50 bg-gold-500/15 text-gold-300'
+                          : 'border-white/10 text-slate-400 hover:text-slate-200'}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <CadViewer3D ref={viewerRef} file={file} token={token} highlightFaceIds={highlightIds}
+              className="h-[420px] rounded-xl overflow-hidden" />
+            <p className="text-slate-600 text-[11px] mt-2">
+              {result
+                ? 'An undercut is occluded in both tool halves and buys a slide or a lifter. A zero-draft wall drags out but scuffs, and is fixable with a degree of taper. They are deliberately shown as different problems.'
+                : 'Orbit, section and measure the part now. Run the analysis and the findings will be painted onto these faces.'}
+            </p>
+          </div>
+        )}
+
         {result && (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
             {/* Export */}
@@ -295,36 +337,6 @@ export default function DfmStudioPage() {
                 </ul>
               </div>
             )}
-
-            {/* 3D view with the findings painted onto the actual faces. The
-                engine already returns undercutFaceIds / zeroDraftFaceIds. */}
-            <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-                <p className="text-slate-500 text-xs uppercase tracking-wider">Geometry — findings shown on the part</p>
-                <div className="flex items-center gap-1.5" role="group" aria-label="Highlight findings on the model">
-                  {([
-                    ['undercuts', `Undercuts (${draft.undercutFaceCount ?? 0})`],
-                    ['zeroDraft', `Zero-draft walls (${draft.zeroDraftFaceCount ?? 0})`],
-                    ['none', 'None'],
-                  ] as const).map(([k, label]) => (
-                    <button key={k} type="button" onClick={() => setHighlight(k)} aria-pressed={highlight === k}
-                      className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${
-                        highlight === k
-                          ? 'border-gold-500/50 bg-gold-500/15 text-gold-300'
-                          : 'border-white/10 text-slate-400 hover:text-slate-200'}`}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <CadViewer3D file={file} token={token} highlightFaceIds={highlightIds}
-                className="h-[420px] rounded-xl overflow-hidden" />
-              <p className="text-slate-600 text-[11px] mt-2">
-                An undercut is occluded in both tool halves and buys a slide or a lifter. A zero-draft wall
-                drags out but scuffs, and is fixable with a degree of taper. They are deliberately shown
-                as different problems.
-              </p>
-            </div>
 
             {/* Measured geometry — the evidence the findings rest on */}
             <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">

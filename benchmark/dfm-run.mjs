@@ -164,6 +164,16 @@ async function main() {
         record(fx.file, `sheet ${k}`, near(sm[k], want, 0.02), `${sm[k]} vs ${want}`);
       }
     }
+    if (t.undercutRegionAtZ !== undefined) {
+      const reg = (zAxis.undercutRegions || [])[0];
+      const w = t.undercutRegionAtZ;
+      const ok = !!reg && w.centroidXYZ.every((v, i) => Math.abs((reg.centroidXYZ?.[i] ?? 1e9) - v) <= 0.5)
+        && (w.draftDeg === undefined || Math.abs((reg.draftDeg ?? 1e9) - w.draftDeg) <= 0.5);
+      record(fx.file, 'undercut anchor', ok,
+        reg ? `centroid [${reg.centroidXYZ}] draft ${reg.draftDeg} vs [${w.centroidXYZ}] ${w.draftDeg}`
+          : 'no located region emitted');
+    }
+
     // ── Face-id resolution ───────────────────────────────────────────────────
     // Does the id an analysis reports land on the RIGHT SURFACE in the viewer's
     // own metadata? This is the only check that can catch an off-by-one, and an

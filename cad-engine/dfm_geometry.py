@@ -193,6 +193,29 @@ RERANK_MARGIN_PCT = 8.0
 AMBIGUOUS_MARGIN_PCT = 2.0
 
 
+#: How many located regions to emit per class. A part with 200 undercut faces
+#: does not need 200 callouts — the biggest by area are the ones worth drawing a
+#: leader line to, and the total count is reported separately so nothing is
+#: hidden by the cap.
+MAX_REGIONS = 12
+
+
+def _regions(face_areas, centroids, worst_draft):
+    """Turn per-face accumulations into located, sorted findings."""
+    out = []
+    for fid, area in sorted(face_areas.items(), key=lambda kv: -kv[1])[:MAX_REGIONS]:
+        c = centroids.get(fid)
+        if not c or c[3] <= 0:
+            continue
+        out.append({
+            "faceId": fid,
+            "centroidXYZ": [round(c[0] / c[3], 3), round(c[1] / c[3], 3), round(c[2] / c[3], 3)],
+            "areaMm2": round(area, 2),
+            "draftDeg": round(worst_draft[fid], 2) if fid in worst_draft else None,
+        })
+    return out
+
+
 def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
                    max_rays=DRAFT_RAY_BUDGET):
     """Classify every triangle against a draw axis. Area-weighted, four-way.
@@ -212,6 +235,24 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
 
     buckets = {"partingParallel": 0.0, "releasing": 0.0, "zeroDraft": 0.0, "undercut": 0.0}
     undercut_faces, zero_faces = {}, {}
+    # WHERE, not just how much. A finding that says "34 undercut regions" and
+    # cannot point at one leaves the engineer to hunt for them in CAD. The
+    # triangle centroids are already in `tess`; accumulating them area-weighted
+    # per face costs three multiply-adds and gives every finding an anchor a
+    # leader line can be drawn to.
+    centroids = {}          # faceId -> [sum(area*x), sum(area*y), sum(area*z), sum(area)]
+    worst_draft = {}        # faceId -> the least draft seen on it, in degrees
+
+    def _accumulate(fid, ar_, i_, deg):
+        c = centroids.get(fid)
+        if c is None:
+            c = centroids[fid] = [0.0, 0.0, 0.0, 0.0]
+        c[0] += tess["cx"][i_] * ar_
+        c[1] += tess["cy"][i_] * ar_
+        c[2] += tess["cz"][i_] * ar_
+        c[3] += ar_
+        if deg is not None and (fid not in worst_draft or deg < worst_draft[fid]):
+            worst_draft[fid] = deg
     drafts = []          # (draftDeg, area) over wall-like releasing faces only
     histogram = {}
 
@@ -250,6 +291,7 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
         if not vis:
             kind = "undercut"
             undercut_faces[tess["face"][i]] = undercut_faces.get(tess["face"][i], 0.0) + ar
+            _accumulate(tess["face"][i], ar, i, mag)
         elif mag >= parting_min:
             kind = "partingParallel"
         elif mag >= min_draft_deg:
@@ -260,6 +302,7 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
             kind = "zeroDraft"
             zero_faces[tess["face"][i]] = zero_faces.get(tess["face"][i], 0.0) + ar
             histogram[round(mag)] = histogram.get(round(mag), 0.0) + ar
+            _accumulate(tess["face"][i], ar, i, mag)
         buckets[kind] += ar
 
     total = tess["totalAreaMm2"] or 1.0
@@ -276,6 +319,11 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
         "minWallDraftDeg": round(min(d for d, _ in drafts), 2) if drafts else None,
         "maxWallDraftDeg": round(max(d for d, _ in drafts), 2) if drafts else None,
         "areaWeightedDraftDeg": round(sum(d * a for d, a in drafts) / sum(a for _, a in drafts), 2) if drafts else None,
+        # LOCATED findings — face id, where it is in space, how big it is, and
+        # the value that made it a finding. Everything a callout needs without
+        # re-deriving anything, and the same face ids the viewer paints by.
+        "undercutRegions": _regions(undercut_faces, centroids, worst_draft),
+        "zeroDraftRegions": _regions(zero_faces, centroids, worst_draft),
         "undercutFaceCount": len(undercut_faces),
         "undercutFaceIds": sorted(undercut_faces, key=undercut_faces.get, reverse=True)[:40],
         "zeroDraftFaceCount": len(zero_faces),

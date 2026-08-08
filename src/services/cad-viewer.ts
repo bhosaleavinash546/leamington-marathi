@@ -52,6 +52,26 @@ export interface CADViewerOptions {
   persist?: boolean;
 }
 
+/** Canonical camera positions, named so callers need not know the axis vectors. */
+export type NamedView = 'iso' | 'front' | 'back' | 'top' | 'bottom' | 'right' | 'left';
+
+export interface SnapshotOptions {
+  /** Pixel size of the capture. Defaults to 2x the on-screen viewport, so a
+   *  report figure is print-resolution rather than an upscaled UI panel. */
+  width?: number;
+  height?: number;
+  /** Move to this view before capturing. */
+  view?: NamedView;
+  mime?: string;
+  quality?: number;
+}
+
+export interface FaceLayerStyle {
+  /** 0xRRGGBB. Defaults to the selection blue. */
+  colour?: number;
+  opacity?: number;
+}
+
 export interface CADViewerHandle {
   loadFile(file: File): Promise<void>;
   getMeasurements(): MeasurementRecord[];
@@ -67,6 +87,20 @@ export interface CADViewerHandle {
    *  gate that resolves each reported id back to its surface type. */
   highlightFaces(faceIds: Iterable<number>): void;
   clearHighlight(): void;
+  /**
+   * Paint faces on a NAMED layer. Layers are independent, so several finding
+   * classes can be shown at once in different colours and a user's face
+   * selection never erases the analysis painted underneath it.
+   */
+  paintFaces(layer: string, faceIds: Iterable<number>, style?: FaceLayerStyle): void;
+  clearLayer(layer: string): void;
+  clearAllLayers(): void;
+  setView(name: NamedView): void;
+  fit(): void;
+  getCamera(): { position: [number, number, number]; target: [number, number, number] };
+  setCamera(c: { position: [number, number, number]; target: [number, number, number] }): void;
+  /** Render one frame at an explicit size and return it as a data URL. */
+  snapshot(opts?: SnapshotOptions): string;
   dispose(): void;
   el: HTMLElement;
 }
@@ -252,7 +286,17 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let grid: InstanceType<typeof THREE.GridHelper> | null = null;
   let bboxHelper: InstanceType<typeof THREE.Box3Helper> | null = null;
   let bboxLabels: Sprite3[] = [];
-  let highlight: Mesh3 | null = null;
+  /**
+   * Face overlays, keyed by LAYER. This used to be a single mesh, which meant
+   * the click-to-inspect path and the DFM findings overlay shared one slot: the
+   * moment a user clicked a face to read its diameter, every undercut highlight
+   * on the part vanished. Selection now lives on its own layer, so inspecting
+   * geometry never erases the analysis painted onto it.
+   */
+  const faceLayers = new Map<string, Mesh3>();
+  /** The layer plain `highlightFaces()` paints — the other pages' behaviour. */
+  const DEFAULT_LAYER = 'default';
+  const SELECTION_LAYER = 'selection';
   let meta: TessMeta | null = null;
   /** Face id -> metadata. Keyed by the engine's id, not by array position. */
   let faceById = new Map<number, FaceMeta>();
@@ -385,6 +429,45 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     controls.update();
   }
   const fit = () => setView([1, 0.8, 1]);
+  /** The toolbar's own view vectors, named so callers need not know the axes.
+   *  `top` is nudged off exactly-vertical because a camera looking straight down
+   *  its own up-vector has no defined orientation. */
+  const NAMED_VIEWS: Record<NamedView, [number, number, number]> = {
+    iso: [1, 0.8, 1], front: [0, 0, 1], back: [0, 0, -1],
+    top: [0, 1, 0.0001], bottom: [0, -1, 0.0001],
+    right: [1, 0, 0], left: [-1, 0, 0],
+  };
+
+  /**
+   * Render a frame at an explicit size and return it as a data URL.
+   *
+   * Rendered at the requested pixel size rather than the on-screen one so a
+   * report figure is print-resolution instead of a blown-up 420 px panel. The
+   * renderer is restored through the existing resize() afterwards, so the live
+   * canvas is untouched by the capture.
+   */
+  function snapshot(o: SnapshotOptions = {}): string {
+    const w = Math.max(64, Math.round(o.width ?? viewport.clientWidth * 2));
+    const h = Math.max(64, Math.round(o.height ?? viewport.clientHeight * 2));
+    if (o.view) setView(NAMED_VIEWS[o.view]);
+    const prevRatio = renderer.getPixelRatio();
+    try {
+      renderer.setPixelRatio(1);
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      scaleLabels();
+      renderer.render(scene, camera);
+      return renderer.domElement.toDataURL(o.mime ?? 'image/jpeg', o.quality ?? 0.92);
+    } finally {
+      // Always restore, even if toDataURL throws on a lost context — otherwise
+      // the live viewport is left at report resolution and looks broken.
+      renderer.setPixelRatio(prevRatio);
+      resize();
+      scaleLabels();
+      renderer.render(scene, camera);
+    }
+  }
 
   /** Frustum must track part size — fixed planes blank out metre-scale parts. */
   function updateFrustum(): void {
@@ -406,7 +489,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const planes = clipOn ? [clipPlane] : null;
     for (const m of bodyMats) m.clippingPlanes = planes;
     for (const e of bodyEdges) if (e) (e.material as InstanceType<typeof THREE.LineBasicMaterial>).clippingPlanes = planes;
-    if (highlight) (highlight.material as InstanceType<typeof THREE.MeshBasicMaterial>).clippingPlanes = planes;
+    // EVERY overlay layer, not just one. A section plane that cuts the part but
+    // leaves a finding highlight floating in the removed material is worse than
+    // no section at all — it puts the evidence somewhere the material is not.
+    for (const m of faceLayers.values()) {
+      (m.material as InstanceType<typeof THREE.MeshBasicMaterial>).clippingPlanes = planes;
+    }
   }
   function updateClipPlane(): void {
     const [nx, ny, nz] = AXIS_WORLD[clipAxis];
@@ -812,8 +900,14 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     else renderMeasureList();
   }
 
+  /**
+   * Clear the selection and default overlays — NOT every layer. A named finding
+   * layer survives, so clicking around the model to inspect it does not silently
+   * wipe the analysis that was painted on.
+   */
   function clearHighlight(): void {
-    if (highlight) { removeAndDispose(overlayGroup, highlight); highlight = null; }
+    clearLayer(SELECTION_LAYER);
+    clearLayer(DEFAULT_LAYER);
     faceChip.style.display = 'none';
   }
 
@@ -908,9 +1002,19 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     if (interactive) { measurementsChanged(); picks = []; } else renderMeasureList();
   }
 
-  function highlightFaces(faceIds: Set<number>): void {
-    clearHighlight();
-    if (!masterPositions || !triFaceAll) return;
+  /**
+   * Paint a set of B-rep faces on a named layer.
+   *
+   * Face ids are the engine's 1-based indexed-map ids — the same convention every
+   * analysis pass reports, gated by resolving each id back to its surface type.
+   * Layers are independent, so an "undercut" overlay and a "rib" overlay can be
+   * on screen at once in different colours, and a user's face selection sits on
+   * its own layer without erasing either.
+   */
+  function paintFaces(layer: string, faceIds: Set<number>,
+                      style?: { colour?: number; opacity?: number }): void {
+    clearLayer(layer);
+    if (!masterPositions || !triFaceAll || !faceIds.size) return;
     const tris: number[] = [];
     for (let t = 0; t < triFaceAll.length; t++) if (faceIds.has(triFaceAll[t])) tris.push(t);
     if (!tris.length) return;
@@ -919,10 +1023,32 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const hg = new THREE.BufferGeometry();
     hg.setAttribute('position', new THREE.BufferAttribute(hp, 3));
     hg.computeVertexNormals();
-    highlight = new THREE.Mesh(hg, new THREE.MeshBasicMaterial({ color: 0x4f8ef7, transparent: true, opacity: 0.55, depthTest: true, polygonOffset: true, polygonOffsetFactor: -2, side: THREE.DoubleSide }));
-    highlight.applyMatrix4(partGroup.matrixWorld);
-    overlayGroup.add(highlight);
+    const mesh = new THREE.Mesh(hg, new THREE.MeshBasicMaterial({
+      color: style?.colour ?? 0x4f8ef7,
+      transparent: true, opacity: style?.opacity ?? 0.55,
+      depthTest: true, polygonOffset: true, polygonOffsetFactor: -2,
+      side: THREE.DoubleSide,
+    }));
+    mesh.applyMatrix4(partGroup.matrixWorld);
+    overlayGroup.add(mesh);
+    faceLayers.set(layer, mesh);
+    // Section planes must cut the overlay too, or a clipped part shows a
+    // floating highlight hanging in the void where the material was removed.
     applyClipping();
+  }
+
+  function clearLayer(layer: string): void {
+    const m = faceLayers.get(layer);
+    if (m) { removeAndDispose(overlayGroup, m); faceLayers.delete(layer); }
+  }
+
+  function clearAllLayers(): void {
+    for (const layer of [...faceLayers.keys()]) clearLayer(layer);
+  }
+
+  /** Back-compat for the pages that just want "highlight these faces". */
+  function highlightFaces(faceIds: Set<number>): void {
+    paintFaces(DEFAULT_LAYER, faceIds);
   }
 
   function selectFace(triGlobal: number): void {
@@ -935,7 +1061,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const faceId = triFaceAll[triGlobal];
     const face = faceById.get(faceId);
     if (!face) return;
-    highlightFaces(new Set([faceId]));
+    // Its own layer: inspecting a face must not erase the findings overlay.
+    paintFaces(SELECTION_LAYER, new Set([faceId]));
 
     let triCount = 0;
     for (let t = 0; t < triFaceAll.length; t++) if (triFaceAll[t] === faceId) triCount++;
@@ -1126,8 +1253,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       case 'tool-angle': setTool('angle'); break;
       case 'clear': clearMeasurements(); statusHint.textContent = 'Cleared'; break;
       case 'snap': {
-        renderer.render(scene, camera);
-        const url = renderer.domElement.toDataURL('image/jpeg', 0.9);
+        // Through the same function the report capture uses, so the button and
+        // the export can never drift to different resolutions or encodings.
+        const url = snapshot();
         if (opts.onSnapshot) {
           opts.onSnapshot(url);
           statusHint.textContent = 'Snapshot attached to report';
@@ -1150,6 +1278,21 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     getMeasurements: measurementRecords,
     highlightFaces: (ids: Iterable<number>) => highlightFaces(new Set(ids)),
     clearHighlight,
+    paintFaces: (layer, ids, style) => paintFaces(layer, new Set(ids), style),
+    clearLayer,
+    clearAllLayers,
+    setView: (name: NamedView) => setView(NAMED_VIEWS[name]),
+    fit,
+    getCamera: () => ({
+      position: camera.position.toArray() as [number, number, number],
+      target: controls.target.toArray() as [number, number, number],
+    }),
+    setCamera(c) {
+      camera.position.set(...c.position);
+      controls.target.set(...c.target);
+      controls.update();
+    },
+    snapshot,
     el: root,
     dispose(): void {
       if (disposed) return;

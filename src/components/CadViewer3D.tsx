@@ -6,7 +6,7 @@
  * WebGL context + worker on unmount (gotcha #7 — survives React StrictMode's
  * double-mount and repeated file loads).
  */
-import { useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { createCADViewer, type CADViewerHandle, type MeasurementRecord } from '../services/cad-viewer';
 import '../styles/cad-viewer.css';
 
@@ -26,7 +26,26 @@ interface CadViewer3DProps {
   className?: string;
 }
 
-export default function CadViewer3D({ file, token, highlightFaceIds, onMeasurementsChange, className }: CadViewer3DProps) {
+/**
+ * What a parent can drive from outside. Every method waits for the CURRENT file
+ * to finish loading before it runs — a snapshot taken against a half-loaded
+ * scene is a picture of nothing, and a caller has no way to know that from the
+ * outside.
+ */
+export interface CadViewerRef {
+  snapshot(opts?: Parameters<CADViewerHandle['snapshot']>[0]): Promise<string | null>;
+  paintFaces(layer: string, faceIds: Iterable<number>,
+             style?: Parameters<CADViewerHandle['paintFaces']>[2]): Promise<void>;
+  clearLayer(layer: string): Promise<void>;
+  clearAllLayers(): Promise<void>;
+  setView(name: Parameters<CADViewerHandle['setView']>[0]): Promise<void>;
+  fit(): Promise<void>;
+  ready(): Promise<CADViewerHandle | null>;
+}
+
+const CadViewer3D = forwardRef<CadViewerRef, CadViewer3DProps>(function CadViewer3D(
+  { file, token, highlightFaceIds, onMeasurementsChange, className }: CadViewer3DProps, ref,
+) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const handleRef = useRef<CADViewerHandle | null>(null);
   const readyRef = useRef<Promise<CADViewerHandle> | null>(null);
@@ -87,5 +106,23 @@ export default function CadViewer3D({ file, token, highlightFaceIds, onMeasureme
     return () => { cancelled = true; };
   }, [highlightFaceIds, file]);
 
+  // Everything resolves off loadedRef, not readyRef: the viewer can exist while
+  // the mesh is still being tessellated server-side, and painting faces or
+  // capturing an image in that window silently produces nothing.
+  useImperativeHandle(ref, () => {
+    const settled = () => loadedRef.current ?? Promise.resolve(null);
+    return {
+      ready: settled,
+      async snapshot(opts) { const h = await settled(); return h ? h.snapshot(opts) : null; },
+      async paintFaces(layer, ids, style) { (await settled())?.paintFaces(layer, ids, style); },
+      async clearLayer(layer) { (await settled())?.clearLayer(layer); },
+      async clearAllLayers() { (await settled())?.clearAllLayers(); },
+      async setView(name) { (await settled())?.setView(name); },
+      async fit() { (await settled())?.fit(); },
+    };
+  }, []);
+
   return <div ref={hostRef} className={`cv3d-host ${className ?? ''}`} />;
-}
+});
+
+export default CadViewer3D;

@@ -528,3 +528,35 @@ Format: decision · why · what would change it.
     tessellation metadata the browser actually receives and its surface type asserted from
     construction (the undercut must be a cylinder). An off-by-one changes no count, which is
     why 92 green checks coexisted with a highlight that was wrong on every single part.
+
+44. **Face overlays are LAYERS, and every finding carries where it is (2026).**
+    *Why:* the viewer painted highlights into a single mesh held in one variable, and
+    `selectFace` called `clearHighlight()` before painting its own — so the instant a user
+    clicked a face to read its diameter, every undercut highlight on the part vanished. The
+    two paths shared one slot. Overlays are now a `Map` keyed by layer: selection has its
+    own, findings have theirs, and inspecting geometry never erases the analysis painted on
+    it. `applyClipping` iterates every layer, because a section plane that cuts the part but
+    leaves a highlight floating in the removed material puts the evidence where the material
+    is not. *Changes it:* `classify_draft` was throwing away the triangle centroids it
+    already had, so a finding could say "34 undercut regions" and point at none of them. It
+    now accumulates an area-weighted centroid per face and emits `undercutRegions` /
+    `zeroDraftRegions` — face id, position, area and the draft that made it a finding. Gated
+    against construction: the Ø12 bore through a 60x40x30 box must anchor at (30, 20, 15),
+    its axis mid-span, and it does exactly. An anchor that drifts would leave every callout
+    pointing at empty space while the counts stayed green — the same class of invisible
+    failure as the face-id off-by-one.
+
+45. **The viewer opens on upload, not after the analysis (2026).**
+    *Why:* `CadViewer3D` was mounted inside the results block, so a user chose a file and
+    then watched a form for up to 30 seconds with their own part invisible. `CadToCostPage`
+    had always done the opposite — the viewer sits above the analysis flow, commented
+    "Independent of the parse/analyse flow below" — and that is the right way round: the part
+    appears the moment it is chosen and the findings paint onto it when they arrive.
+    *Changes it:* the handle is now programmable. `setView`, `fit`, snapshot, section planes
+    and per-layer painting existed already as UI-only closures with no way in from outside;
+    they are exposed on `CADViewerHandle`, and `CadViewer3D` became a `forwardRef` so a page
+    can drive them. Every ref method resolves off the LOAD promise rather than the create
+    promise — a snapshot taken against a half-tessellated scene is a picture of nothing, and
+    a caller has no way to detect that from outside. The toolbar's own snapshot button now
+    routes through the same function as the report capture, so the two cannot drift to
+    different resolutions.
