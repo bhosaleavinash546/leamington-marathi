@@ -158,6 +158,9 @@ export const DFM_RULES = [
   },
   {
     id: 'mach-setup-count',
+    byMaterialFamily: {
+      titanium: { threshold: 2, source: 'Every titanium setup costs more than a steel one: the fixture must be more rigid, the cutting data are slower, and re-datuming a part that springs is harder. Fewer setups matter more.' },
+    },
     sourceStatus: 'engine-derived',
     process: 'machining',
     severity: 'medium',
@@ -339,6 +342,10 @@ export const DFM_RULES = [
   },
   {
     id: 'im-rib-thickness-min',
+    byMaterial: {
+      'PA66-GF30 (glass-filled)': { threshold: 0.5, source: 'A 30% glass compound is far more viscous than the unfilled resin, so a rib below half the wall will not fill and pack before the gate freezes.' },
+      'Polypropylene (PP)': { threshold: 0.3, source: 'PP is the easiest-flowing commodity resin and fills a thinner rib than any engineering grade.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'low',
@@ -354,6 +361,10 @@ export const DFM_RULES = [
   },
   {
     id: 'im-rib-height',
+    byMaterial: {
+      'POM (Acetal)': { threshold: 2.5, source: 'Acetal shrinks about 2%, so a tall rib pulls a visible sink on the opposite face long before it fails to fill.' },
+      'PA6 (Nylon)': { threshold: 2.5, source: 'Nylon shrinks heavily and a tall rib reads through as a sink line on the show surface.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'medium',
@@ -370,6 +381,10 @@ export const DFM_RULES = [
 
   {
     id: 'im-boss-height',
+    byMaterial: {
+      'PA66-GF30 (glass-filled)': { threshold: 2.5, source: 'A filled compound is stiff and abrasive; a tall boss cored in it wears the pin and will not pack to the top.' },
+      'Polycarbonate (PC)': { threshold: 3, source: 'PC is notch-sensitive, so a tall boss concentrates stress at its base and crazes under load rather than failing to fill.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'medium',
@@ -517,6 +532,9 @@ export const DFM_RULES = [
   },
   {
     id: 'hpdc-rib-thickness-min',
+    byMaterialFamily: {
+      magnesium: { threshold: 0.5, source: 'Magnesium is more fluid than aluminium and fills a thinner rib, which is a large part of why magnesium castings are ribbed rather than thickened.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'medium',
@@ -532,6 +550,9 @@ export const DFM_RULES = [
   },
   {
     id: 'hpdc-rib-height',
+    byMaterialFamily: {
+      magnesium: { threshold: 4, source: 'Magnesium fills a taller rib than aluminium at the same thickness, because it enters the die with lower viscosity.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'medium',
@@ -606,6 +627,10 @@ export const DFM_RULES = [
   },
   {
     id: 'sm-flange-length',
+    byMaterial: {
+      'Aluminium 6061': { threshold: 4, source: 'Minimum flange in 6061-T6: 4x thickness. The larger bend radius the alloy demands consumes more of the flange in the bend allowance, so less flat remains for the tooling to grip.' },
+      'Steel (high-strength)': { threshold: 4, source: 'Minimum flange in AHSS: 4x thickness, for the same reason — a larger minimum radius eats the flat.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'sheet-metal',
     severity: 'medium',
@@ -659,6 +684,10 @@ export const DFM_RULES = [
   },
   {
     id: 'sm-bend-to-bend',
+    byMaterial: {
+      'Aluminium 6061': { threshold: 6, source: 'Minimum flat between parallel bends in 6061-T6: 6x thickness. The bend radius is three times the mild-steel figure, so the land the brake needs grows with it.' },
+      'Steel (high-strength)': { threshold: 5, source: 'Minimum flat between parallel bends in AHSS: 5x thickness, and springback pulls the first bend out of angle as the second is formed.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'sheet-metal',
     severity: 'medium',
@@ -686,6 +715,9 @@ export const DFM_RULES = [
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: 'gdc-min-section',
+    byMaterialFamily: {
+      copper: { threshold: 3.5, source: 'Gravity-cast copper alloys chill hard against a steel mould, so the local minimum sits above the aluminium figure.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'gravity-die',
     severity: 'high',
@@ -701,6 +733,11 @@ export const DFM_RULES = [
   },
   {
     id: 'sand-min-section',
+    byMaterialFamily: {
+      ferrous: { threshold: 5.0, source: 'Sand-cast steel: the least fluid of the common cast metals, so a local web below 5 mm misruns even where the nominal wall is healthy.' },
+      castiron: { threshold: 4.0, source: 'Sand-cast grey iron: more fluid than steel thanks to its high carbon and silicon, so it carries a thinner local web.' },
+      copper: { threshold: 4.0, source: 'Sand-cast bronze and brass: fluid, but they oxidise on the pour, and a thin section skins over before it fills.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'sand-casting',
     severity: 'high',
@@ -716,6 +753,10 @@ export const DFM_RULES = [
   },
   {
     id: 'inv-min-section',
+    byMaterialFamily: {
+      ferrous: { threshold: 1.6, source: 'Investment-cast steel: the shell is preheated, but steel still misruns before aluminium does.' },
+      titanium: { threshold: 2.0, source: 'Investment-cast titanium: poured in vacuum and reactive with the shell, so a thin local section comes out with an alpha case that has to be machined off.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'investment-casting',
     severity: 'high',
@@ -1181,6 +1222,10 @@ export const DFM_RULES = [
   },
   {
     id: 'sand-tolerance-capability',
+    byMaterialFamily: {
+      ferrous: { threshold: 1.60, source: 'Sand-cast steel shrinks about 2% against aluminium\'s 1.2%, and the pattern allowance carries that error, so the achievable band is wider again.' },
+      castiron: { threshold: 1.00, source: 'Grey iron expands on graphite formation, partly cancelling its contraction, so it holds tighter as-cast than either steel or aluminium.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'sand-casting',
     severity: 'high',
@@ -1230,6 +1275,9 @@ export const DFM_RULES = [
   },
   {
     id: 'roll-tolerance-capability',
+    byMaterial: {
+      'Aluminium 6061': { threshold: 0.80, source: 'Roll-formed 6061-T6 springs back further than mild steel at every station, and the error accumulates along the profile.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'roll-forming',
     severity: 'high',
@@ -1476,6 +1524,9 @@ export const DFM_RULES = [
   },
   {
     id: 'gdc-wall-uniformity',
+    byMaterialFamily: {
+      copper: { threshold: 0.6, source: 'Copper alloys conduct heat away fastest, so the gate freezes early and a heavy section is cut off from its feeder sooner than in aluminium.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'gravity-die',
     severity: 'high',
@@ -1529,6 +1580,10 @@ export const DFM_RULES = [
   },
   {
     id: 'sand-draft-minimum',
+    byMaterialFamily: {
+      ferrous: { threshold: 3, source: 'Sand-cast steel shrinks about 2% — the most of any common cast metal — and drags hardest on the mould as it does, so more of the wall may sit below the nominal draft before the pattern draw becomes the binding problem.' },
+      castiron: { threshold: 7, source: 'Grey iron EXPANDS as graphite forms during freezing, so it releases from rammed sand far more readily than steel or aluminium. This is the one casting family where low draft is genuinely cheap.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'sand-casting',
     severity: 'high',
@@ -1628,6 +1683,9 @@ export const DFM_RULES = [
   },
   {
     id: 'inv-wall-uniformity',
+    byMaterialFamily: {
+      ferrous: { threshold: 0.6, source: 'Investment-cast steel has the widest freezing range of the common alloys, so an isolated heavy section stays liquid longest after its feed path has frozen.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'investment-casting',
     severity: 'medium',
@@ -1718,6 +1776,10 @@ export const DFM_RULES = [
   // ── Hydroforming ──────────────────────────────────────────────────────────
   {
     id: 'hydro-corner-radius',
+    byMaterialFamily: {
+      ferrous: { threshold: 3.0, source: 'Steel tube hydroforming: about 3 r/t before the corner thins to failure.' },
+      aluminium: { threshold: 4.0, source: 'Aluminium tube hydroforming: about 4 r/t. Lower uniform elongation than steel means the corner splits sooner, and this is the most common reason an aluminium hydroformed part fails at the prototype stage.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'hydroforming',
     severity: 'high',
@@ -1893,6 +1955,9 @@ export const DFM_RULES = [
   // ── Extrusion ─────────────────────────────────────────────────────────────
   {
     id: 'extr-section-uniformity',
+    byMaterialFamily: {
+      copper: { threshold: 0.25, source: 'Copper and brass extrude at far higher pressure than aluminium, so an unbalanced section deflects the die more and twists the profile worse.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'extrusion',
     severity: 'high',
@@ -2058,9 +2123,18 @@ export const UNWRITTEN_RULES = [
     proxy: '`mach-tool-access` measures shank clearance and reports it as a LOWER bound on the access problem.',
   },
   {
-    topic: 'Tolerance stack-up (machining)',
-    needs: 'GD&T and datum callouts, which live in the drawing or in PMI annotations — not in the solid geometry a STEP file carries.',
-    proxy: null,
+    topic: 'Tolerance STACK-UP along a dimensional chain',
+    needs: 'The datum reference frames and the chain of dimensions between them, so accumulated variation can be propagated feature to feature. Reading individual callouts is not the same problem: a part can pass every tolerance on the drawing and still fail at assembly because they add up.',
+    // This entry used to claim GD&T "lives in the drawing, not in the solid
+    // geometry a STEP file carries", which stopped being true when the AP242
+    // reader landed. A stale gap declaration is worse than none: it tells a
+    // reader the tool cannot see something it now measures.
+    proxy: 'Individual dimensions, geometric tolerances and datums ARE read from semantic AP242 PMI, and the tightest callout is checked against each process\'s capability. What is missing is the accumulation, not the reading.',
+  },
+  {
+    topic: 'Datum reference frames (AP242 PMI)',
+    needs: 'The link from each geometric tolerance to the datums it is measured from. The reader extracts datum labels, but on the round-trip fixture written by this repo none survived the write, so the datum path is IMPLEMENTED AND UNVERIFIED — it has never been proved against a file with datums in it.',
+    proxy: 'Datum COUNT is reported and is zero on every file tested so far, which is honest but untested. Treat a non-zero datum count from a vendor CAD export as unproven until a fixture confirms it.',
   },
   {
     topic: 'Sink and warp prediction (injection moulding)',

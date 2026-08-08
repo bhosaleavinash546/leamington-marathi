@@ -38,8 +38,18 @@ export interface DfmFinding {
   reason?: string;
   /** Whether this threshold was resolved for the chosen alloy, its family, or
    *  not at all. A generic band must not read like a material-specific one. */
-  thresholdBasis?: 'material' | 'material-family' | 'process-generic';
+  thresholdBasis?: 'material' | 'material-family' | 'process-generic' | 'customer-standard';
   thresholdMatchedOn?: string | null;
+  /** The features that break this rule, worst first. A finding that says
+   *  "max depth/dia is 8.2" sends a supplier hunting; one that names the hole
+   *  and its coordinates is a review document. */
+  instances?: Array<{
+    ratio?: number; diaMm?: number; depthMm?: number; count?: number;
+    thicknessMm?: number; heightMm?: number;
+    atXYZ?: number[] | null;
+  }>;
+  instanceCount?: number;
+  instanceTotal?: number;
   cost?: {
     priced: boolean;
     basis?: string;
@@ -111,12 +121,33 @@ export interface DfmReportData {
     evidence?: string[];
     notes?: string[];
   } | null;
+  /** Which features actually break a rule — diameter, depth, count, where. */
+  // (declared on DfmFinding below)
   /** Set when a NAMED process contradicts the measured geometry. */
   processConflict?: {
     chosenName: string;
     measuredName: string;
     evidence: string[];
   } | null;
+  /** Impossible material/process pair, caught server-side. */
+  materialProcessConflict?: { material: string; process: string; message: string } | null;
+  /** Set when the chosen process shapes nothing, so there are no findings. */
+  noDfmRulesReason?: string | null;
+  /** Company standards in force for this analysis, keyed by rule id. */
+  ruleOverrides?: Record<string, { enabled: boolean; threshold?: number | number[]; note?: string }> | null;
+  /** Every viable route for this material, judged and priced from one measurement. */
+  routes?: {
+    routes: Array<{
+      process: string; dfmFamilyName: string | null;
+      score: number | null; coveragePct: number; evaluatedCount: number; ruleCount: number;
+      findingCount: number; highSeverityCount: number; scoreCaveat?: string | null;
+      piecePriceEur: number | null; toolingEur: number | null; inputMassKg: number | null;
+      kgCo2e: number | null; cbamEur: number | null; costReason?: string; carbonReason?: string;
+    }>;
+    skipped: Array<{ process: string; reason: string }>;
+    basis: string;
+  } | null;
+  material?: string | null;
   fileName?: string;
   geometry?: Record<string, unknown>;
   dfm?: Record<string, unknown>;
@@ -161,6 +192,10 @@ const SOURCE_GRADE: Record<string, string> = {
   'standard-named': 'NAMED STANDARD, not read first-hand',
   'industry-consensus': 'INDUSTRY CONSENSUS, no primary source audited',
   'engine-derived': "THIS TOOL'S OWN COST MODEL",
+  // A company standard outranks a published guideline AND is a stronger claim,
+  // because someone accountable put their name to it. Printing it under the
+  // original citation would credit a handbook for a number it never gave.
+  'customer-standard': 'YOUR COMPANY STANDARD, set in this workspace',
 };
 
 const setFill = (d: jsPDF, c: RGB) => d.setFillColor(c[0], c[1], c[2]);
@@ -324,6 +359,35 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
       9, RED, CW, 4.2, 'bold');
     y += 2;
   }
+  if (data.materialProcessConflict) {
+    // Impossible pair. Checked server-side because the API is reachable without
+    // the picker that forbids it.
+    wrapped(`MATERIAL AND PROCESS DO NOT GO TOGETHER. ${data.materialProcessConflict.message}`,
+      9, RED, CW, 4.2, 'bold');
+    y += 2;
+  }
+  if (data.noDfmRulesReason) {
+    // An empty findings list because a process shapes nothing is not a clean
+    // sheet, and without this line the two are indistinguishable.
+    wrapped(`NO GEOMETRIC RULES APPLY. ${data.noDfmRulesReason}`, 9, AMBER, CW, 4.2, 'bold');
+    y += 2;
+  }
+  {
+    const ov = Object.entries(data.ruleOverrides ?? {});
+    if (ov.length) {
+      // A retuned threshold that leaves no trace is indistinguishable from a
+      // published one, and a report has to be reproducible a year later.
+      const off = ov.filter(([, v]) => v.enabled === false).map(([k]) => k);
+      const tuned = ov.filter(([, v]) => v.enabled !== false && v.threshold !== undefined);
+      wrapped('COMPANY STANDARDS WERE IN FORCE FOR THIS ANALYSIS. '
+        + (tuned.length ? `${tuned.length} threshold${tuned.length === 1 ? '' : 's'} retuned in this workspace` : '')
+        + (tuned.length && off.length ? '; ' : '')
+        + (off.length ? `${off.length} rule${off.length === 1 ? '' : 's'} switched off (${off.join(', ')})` : '')
+        + '. Each affected finding is marked with your standard as its source.',
+        9, INK, CW, 4.2, 'bold');
+      y += 2;
+    }
+  }
   if (!data.processFamily && !data.processConflict) {
     // Without this, a speculative sweep is indistinguishable from a targeted
     // analysis and the reader has no way to know some findings are for a process
@@ -481,6 +545,132 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
     }
   }
 
+  // ── What the file did and did not tell us about tolerances ────────────────
+  //
+  // THE ABSENCE IS THE POINT. Without this block a part whose tolerances were
+  // never exported shows its tolerance rules under NOT EVALUATED with the
+  // generic reason "no measurement available", which is true and useless. The
+  // sentence a reader needs — "your file carries no PMI; the tolerances are on
+  // a drawing this tool has never seen" — existed in the engine and was never
+  // printed.
+  {
+    const pmi = (data.dfm as Record<string, any> | undefined)?.pmi as Record<string, any> | undefined;
+    if (pmi) {
+      ensure(30);
+      sectionTitle('Tolerances', pmi.present ? 'Read from the model' : 'Not in this file');
+      if (pmi.present) {
+        wrapped(`${pmi.dimensionCount ?? 0} dimension${pmi.dimensionCount === 1 ? '' : 's'}, `
+          + `${pmi.geometricToleranceCount ?? 0} geometric tolerance${pmi.geometricToleranceCount === 1 ? '' : 's'} and `
+          + `${pmi.datumCount ?? 0} datum${pmi.datumCount === 1 ? '' : 's'} were read from the model's semantic PMI. `
+          + `The tightest total band called out is ${pmi.tightestToleranceMm} mm, and that is what the `
+          + 'process-capability rules below are measured against.', 9.2, BODY);
+        const gts = (pmi.geometricTolerances ?? []) as Array<Record<string, any>>;
+        if (gts.length) {
+          y += 1;
+          mono(7); setText(doc, MUT);
+          for (const g of gts.slice(0, 8)) {
+            ensure(4.4);
+            doc.text(fit(doc, `  ${g.typeName ?? 'tolerance'}  ${g.valueMm ?? '—'} mm`, CW), ML, y);
+            y += 4;
+          }
+        }
+      } else {
+        wrapped(String(pmi.reason ?? 'No semantic PMI was found in this file.'), 9.2, AMBER, CW, 4.2, 'bold');
+      }
+      y += 5;
+    }
+  }
+
+  // ── Tool reach ────────────────────────────────────────────────────────────
+  {
+    const ta = (data.dfm as Record<string, any> | undefined)?.toolAccess as Record<string, any> | undefined;
+    if (ta && Number.isFinite(ta.reachableAreaPct)) {
+      ensure(28);
+      sectionTitle('Tool reach', `${ta.reachableAreaPct}% of the surface a Ø${ta.toolDiaMm} mm cutter can reach`);
+      wrapped(String(ta.method ?? ''), 9.2, BODY);
+      y += 1;
+      // The limits travel with the number. A face this calls reachable can still
+      // be unreachable once the holder is on the tool, and a reader who is not
+      // told that will take the figure for more than it is.
+      if (ta.knownLimits) wrapped(String(ta.knownLimits), 8.8, AMBER, CW, 4.0, 'italic');
+      if (ta.excludedBecause) wrapped(String(ta.excludedBecause), 8.8, MUT, CW, 4.0, 'italic');
+      y += 5;
+    }
+  }
+
+  // ── Every viable route ────────────────────────────────────────────────────
+  //
+  // The single most useful page for a cost engineer, and until now it existed
+  // only on screen. Same measured geometry, each row judged by THAT process's
+  // own rule family and priced by the same engine.
+  if (data.routes?.routes?.length) {
+    newPage();
+    sectionTitle('Route comparison', `${data.routes.routes.length} viable processes for ${data.material ?? 'this material'}`);
+    wrapped(String(data.routes.basis), 8.8, MUT, CW, 4.0, 'italic');
+    y += 3;
+
+    const cols = [
+      { w: 52, label: 'Process', align: 'left' as const },
+      { w: 20, label: 'Score', align: 'right' as const },
+      { w: 18, label: 'Rules', align: 'right' as const },
+      { w: 26, label: 'EUR/part', align: 'right' as const },
+      { w: 28, label: 'Tooling', align: 'right' as const },
+      { w: 22, label: 'kg CO2e', align: 'right' as const },
+    ];
+    const drawRow = (cells: string[], bold: boolean, colour: RGB) => {
+      ensure(6);
+      let x = ML;
+      sans(8.2, bold ? 'bold' : 'normal'); setText(doc, colour);
+      for (let i = 0; i < cols.length; i++) {
+        const c = cols[i];
+        const t = fit(doc, cells[i] ?? '', c.w - 2);
+        doc.text(t, c.align === 'right' ? x + c.w - 2 : x, y, { align: c.align });
+        x += c.w;
+      }
+      y += 5;
+    };
+    drawRow(cols.map(c => c.label), true, MUT);
+    setDraw(doc, RULE, 0.3); doc.line(ML, y - 3.4, PW - MR, y - 3.4);
+
+    // Cheapest first. A route with no price sorts LAST rather than being read as
+    // zero, which would put every unpriceable option at the top.
+    const sorted = [...data.routes.routes].sort((a, b) => {
+      const av = a.piecePriceEur, bv = b.piecePriceEur;
+      if (!Number.isFinite(av as number) && !Number.isFinite(bv as number)) return 0;
+      if (!Number.isFinite(av as number)) return 1;
+      if (!Number.isFinite(bv as number)) return -1;
+      return (av as number) - (bv as number);
+    });
+    for (const r of sorted) {
+      const colour = r.score === null ? MUT : r.score >= 70 ? GREEN : r.score >= 40 ? AMBER : RED;
+      drawRow([
+        r.process,
+        // A score without its coverage invites comparison between a 9-of-9 check
+        // and a 1-of-9 one, so the two are never more than a column apart.
+        r.score === null ? '—' : String(r.score),
+        `${r.evaluatedCount}/${r.ruleCount}`,
+        r.piecePriceEur === null ? 'not priced' : `EUR ${r.piecePriceEur.toFixed(2)}`,
+        r.toolingEur === null ? '—' : `EUR ${Math.round(r.toolingEur).toLocaleString('en-GB')}`,
+        r.kgCo2e === null ? '—' : r.kgCo2e.toFixed(2),
+      ], false, colour);
+      if (r.highSeverityCount > 0 || r.scoreCaveat) {
+        mono(6.4); setText(doc, MUT); ensure(4);
+        const note = [r.highSeverityCount ? `${r.highSeverityCount} high-severity` : '', r.scoreCaveat ?? '']
+          .filter(Boolean).join(' · ');
+        doc.text(fit(doc, `    ${note}`, CW - 4), ML, y); y += 4;
+      }
+    }
+    y += 2;
+    setDraw(doc, RULE, 0.3); doc.line(ML, y, PW - MR, y); y += 5;
+    if (data.routes.skipped.length) {
+      // Named, not hidden: the absence of a process from this list looks like an
+      // oversight unless the list says why.
+      wrapped(`Not applicable to ${data.material}: ${data.routes.skipped.map(s => s.process).join(', ')}.`,
+        8.6, MUT, CW, 4.0, 'italic');
+    }
+    y += 4;
+  }
+
   // ── Per-process results ────────────────────────────────────────────────────
   for (const r of data.results) {
     if (!r.ruleCount) continue;
@@ -563,6 +753,35 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
         if (f.cost?.externalGuideline) {
           wrapped(f.cost.externalGuideline, 8.8, AMBER, CW - 9, 4.0, 'italic', ML + 4.5);
         }
+      }
+      // WHICH FEATURES BREAK IT. "max hole depth/diameter is 8.2" sends a
+      // supplier hunting through the model; naming the hole, how many there are
+      // and where the first one sits is a review document. Only the offenders
+      // are listed — putting all twenty holes under a "hole too deep" finding
+      // buries the two that are wrong.
+      if (f.instances?.length) {
+        mono(6.4, true); setText(doc, INK); ensure(5);
+        doc.text(fit(doc, `${f.instanceCount ?? f.instances.length} of ${f.instanceTotal ?? '?'} checked features break this:`, CW - 9), ML + 4.5, y);
+        y += 4;
+        mono(6.2); setText(doc, BODY);
+        for (const inst of f.instances.slice(0, 6)) {
+          ensure(4.2);
+          const dims = [
+            inst.diaMm != null ? `\u00d8${inst.diaMm}` : null,
+            inst.depthMm != null ? `x${inst.depthMm}` : null,
+            inst.thicknessMm != null ? `t${inst.thicknessMm}` : null,
+            inst.heightMm != null ? `h${inst.heightMm}` : null,
+          ].filter(Boolean).join(' ');
+          const at = inst.atXYZ?.length === 3 ? `at (${inst.atXYZ.map(v => Math.round(v)).join(', ')})` : '';
+          const n = inst.count && inst.count > 1 ? `${inst.count}x ` : '';
+          doc.text(fit(doc, `    ${n}${dims}  ratio ${inst.ratio ?? '—'}  ${at}`, CW - 12), ML + 4.5, y);
+          y += 4;
+        }
+        if (f.instances.length > 6) {
+          doc.text(fit(doc, `    ... and ${f.instances.length - 6} more`, CW - 12), ML + 4.5, y);
+          y += 4;
+        }
+        y += 1;
       }
       mono(6); setText(doc, MUT); ensure(5);
       doc.text(fit(doc, `SOURCE [${SOURCE_GRADE[f.sourceStatus || 'industry-consensus']}]: ${f.source}`, CW - 9), ML + 4.5, y); y += 4;

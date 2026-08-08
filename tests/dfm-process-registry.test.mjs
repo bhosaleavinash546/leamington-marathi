@@ -7,7 +7,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { MATERIALS, PROCESSES } from '../costing-engine.mjs';
-import { PROCESS_FAMILIES, DFM_RULES, resolveThreshold } from '../dfm-rule-catalogue.mjs';
+import { PROCESS_FAMILIES, DFM_RULES, UNWRITTEN_RULES, resolveThreshold } from '../dfm-rule-catalogue.mjs';
 import {
   PROCESS_TO_DFM_FAMILY, NO_DFM_REASON, dfmOptions, familyForSelection,
   processesForMaterial, materialsByFamily,
@@ -120,4 +120,61 @@ test('dfmOptions carries a process list for every selectable grade', () => {
         `${g} would show an empty process list`);
     }
   }
+});
+
+test('a company standard outranks every published guideline AND is graded higher', () => {
+  // The grade matters as much as the number. Printing a plant's own threshold
+  // under the original citation would credit a handbook for a value it never
+  // gave; 'customer-standard' says someone accountable put their name to it.
+  const geo = { dfm: { sheetMetal: { isSheetMetal: true, minBendRadiusToThickness: 1.5 } } };
+  const overrides = { 'sm-bend-radius': { enabled: true, threshold: 1.2, note: 'press shop trial, 2024' } };
+  const r = runDfmRules(geo, 'sheet-metal', { material: 'Aluminium 6061', overrides });
+  const row = [...r.findings, ...r.passed].find(f => f.id === 'sm-bend-radius');
+  assert.equal(row.threshold, 1.2, 'the company value must beat the 3.0 r/t material band');
+  assert.equal(row.thresholdBasis, 'customer-standard');
+  assert.equal(row.sourceStatus, 'customer-standard');
+  assert.match(row.source, /press shop trial/, 'the note becomes the source line');
+});
+
+test('a switched-off rule leaves the denominator, not just the numerator', () => {
+  // coveragePct means "what could not be MEASURED". Dragging it down for a check
+  // the plant deliberately does not run would corrupt that meaning.
+  const geo = { dfm: { sheetMetal: { isSheetMetal: true, minBendRadiusToThickness: 1.5 } } };
+  const on = runDfmRules(geo, 'sheet-metal');
+  const off = runDfmRules(geo, 'sheet-metal', { overrides: { 'sm-bend-radius': { enabled: false } } });
+  assert.equal(off.ruleCount, on.ruleCount - 1);
+  assert.deepEqual(off.disabledRuleIds, ['sm-bend-radius']);
+  assert.ok(!off.findings.some(f => f.id === 'sm-bend-radius'));
+  assert.ok(!off.notEvaluated.some(f => f.id === 'sm-bend-radius'), 'a disabled rule is not an unevaluated one');
+});
+
+test('material bands cover a real share of the catalogue, not a token few', () => {
+  // The claim "not generic" was once true of 7% of the rules. This pins the
+  // floor so it cannot quietly regress to a handful again.
+  const aware = DFM_RULES.filter(r => r.byMaterial || r.byMaterialFamily);
+  assert.ok(aware.length >= 40, `only ${aware.length} of ${DFM_RULES.length} rules vary by material`);
+  // And every band must be shaped like the rule it overrides, or it silently
+  // makes the rule unevaluatable on every part that selects that material.
+  for (const r of aware) {
+    for (const [, v] of Object.entries({ ...(r.byMaterial ?? {}), ...(r.byMaterialFamily ?? {}) })) {
+      assert.ok(v.source, `${r.id} has a material band with no source of its own`);
+      if (r.compare === 'between') {
+        assert.ok(Array.isArray(v.threshold) && v.threshold.length === 2
+          && v.threshold[0] <= v.threshold[1], `${r.id}: range rule needs [min, max]`);
+      } else {
+        assert.ok(Number.isFinite(v.threshold), `${r.id}: comparison rule needs a number`);
+      }
+    }
+  }
+});
+
+test('no declared gap claims the tool cannot see something it now measures', () => {
+  // A stale gap declaration is worse than none. This one said GD&T "lives in
+  // the drawing, not in the solid geometry a STEP file carries" for a week
+  // after the AP242 reader shipped.
+  const tolerance = UNWRITTEN_RULES.find(u => /tolerance/i.test(u.topic));
+  assert.ok(tolerance, 'the tolerance gap must still be declared — stack-up is genuinely missing');
+  assert.doesNotMatch(tolerance.needs, /not in the solid geometry a STEP file carries/,
+    'this claim stopped being true when semantic PMI became readable');
+  assert.ok(tolerance.proxy, 'the half that DOES work must be named as the proxy');
 });

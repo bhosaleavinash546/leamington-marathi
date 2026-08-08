@@ -873,3 +873,40 @@ Format: decision · why · what would change it.
     **Still true and still worth saying: every customer file supplied so far is a single
     solid, so the DFA path has never met a real multi-part STEP. The ten-solid fixture is the
     closest available substitute, not a replacement for one.**
+
+66. **The API knowing something is not the report saying it (2026).**
+    *Why:* an audit of what actually reaches `dfm-report.ts` found six things shipped to the
+    API and never printed: the route comparison, per-instance offenders, the PMI block, tool
+    reach, the company standards in force, and the material/process and no-rules banners. The
+    routing table — the headline of two waves — existed on screen and not in the document a
+    director is handed. Worst of the six was PMI: a file with no tolerances showed its
+    tolerance rules under NOT EVALUATED with the generic *"no measurement available for
+    tightestToleranceMm"*, while the sentence a reader actually needs — *"your file carries no
+    semantic PMI; the tolerances are on a drawing this tool has never seen"* — sat in the
+    engine and was never printed. *Changes it:* all six render, and the QA fixture grew two
+    payloads to exercise them — one carrying every block, one carrying the states that must
+    never look like a clean sheet (an impossible material/process pair, a process that shapes
+    nothing, and absent PMI). A `customer-standard` source grade was added at the same time:
+    it existed in the engine but had no label in the report, so a plant's own threshold would
+    have printed under the handbook citation it replaced.
+
+67. **A stale gap declaration is worse than no gap declaration (2026).**
+    *Why:* `UNWRITTEN_RULES` went on saying tolerance stack-up "needs GD&T and datum callouts,
+    which live in the drawing — not in the solid geometry a STEP file carries" for a week
+    after the AP242 reader shipped. A reader trusting that list would conclude the tool cannot
+    see something it now measures. *Changes it:* the entry is narrowed to what is genuinely
+    missing — accumulating variation along a dimensional CHAIN, which is a different problem
+    from reading individual callouts — with the working half named as its proxy. A new entry
+    declares the datum path IMPLEMENTED AND UNVERIFIED: the reader extracts datum labels, but
+    none survived the round-trip fixture, so a non-zero datum count from a vendor export is
+    unproven. A test now asserts no declared gap claims the tool cannot see what it measures.
+
+68. **Material bands: 22% to 38% of the catalogue (2026).**
+    *Why:* the claim "not generic" was true of 5 rules, then 24. *Changes it:* 42 of 111 rules
+    now vary by material, over 98 distinct thresholds, and a test pins the floor at 40 so it
+    cannot quietly regress — plus a shape check, because a band that is a number where the
+    rule wants `[min, max]` would silently make that rule unevaluatable for everyone who
+    selects that material. Grey iron is the one that best shows why this matters: it EXPANDS
+    as graphite forms during freezing, so it strips from rammed sand more readily than steel
+    or aluminium and holds a tighter as-cast tolerance than either — the opposite of what a
+    single "casting" threshold would say about it.

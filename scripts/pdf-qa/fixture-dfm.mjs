@@ -20,7 +20,16 @@ const finding = (over = {}) => ({
   rationale: over.rationale || LONG_RATIONALE,
   fix: over.fix || LONG_FIX,
   source: over.source || 'Aluminium HPDC design guidance (1.0 mm minimum, 2.0–3.5 mm recommended).',
+  // Passed through, or the customer-standard grade can never be exercised — the
+  // branch that prints "YOUR COMPANY STANDARD" instead of crediting a handbook
+  // for a number it never gave.
+  sourceStatus: over.sourceStatus,
   status: 'fail',
+  instances: over.instances,
+  instanceCount: over.instanceCount,
+  instanceTotal: over.instanceTotal,
+  thresholdBasis: over.thresholdBasis,
+  thresholdMatchedOn: over.thresholdMatchedOn,
   cost: over.cost ?? {
     priced: true,
     basis: 'computeShouldCost — cooling-limited cycle (base + k·wall²) and the mass change that comes with it',
@@ -47,6 +56,25 @@ export const DFM_RESULT = {
   },
   dfm: {
     wallThickness: { p5Mm: 2.1, p50Mm: 30.0, p95Mm: 61.4, spreadRatio: 1.98, uniformity: 'non-uniform', samples: 2841 },
+    // PMI PRESENT. The absent branch gets its own render below — that is the
+    // one whose wording matters most, and a fixture that only covers the happy
+    // path leaves it unverified.
+    pmi: {
+      present: true, reason: null,
+      dimensionCount: 12, geometricToleranceCount: 3, datumCount: 2,
+      tightestToleranceMm: 0.02,
+      geometricTolerances: [
+        { typeName: 'flatness', valueMm: 0.05 },
+        { typeName: 'true position', valueMm: 0.1 },
+        { typeName: 'perpendicularity', valueMm: 0.08 },
+      ],
+    },
+    toolAccess: {
+      toolDiaMm: 10, reachableAreaPct: 76.51, unreachableAreaPct: 23.49,
+      method: 'shank clearance: a Ø10 mm cylinder swept along each of 6 approach directions must clear the solid, tested with 4 circumference probes plus the axis',
+      knownLimits: 'The HOLDER, spindle nose and machine envelope are not modelled, so a face reported as reachable may still be unreachable on a real machine. Approach is limited to the six axis directions.',
+      excludedBecause: 'Cylindrical bores are excluded: a Ø8 hole is drilled by a Ø8 drill, not reached by the end mill.',
+    },
     draft: {
       drawDirectionXYZ: [0, 0, 1], undercutFaceCount: 3, zeroDraftFaceCount: 11,
       wallAreaBelowMinDraftPct: 41.2, minWallDraftDeg: 0.4, maxWallDraftDeg: 5.1,
@@ -86,6 +114,24 @@ export const DFM_RESULT = {
           id: 'hpdc-draft-minimum', title: 'Wall area below the minimum die-casting draft',
           measured: 41.2, unit: '% of wall area', thresholdText: '≤ 5 % of wall area',
           cost: { priced: false, reason: 'Insufficient draft shortens die life through galling; die life is a tooling-amortisation input, not a geometric one the engine derives.' },
+        }),
+        finding({
+          id: 'hpdc-core-ld', title: 'Cored hole beyond the core-pin slenderness limit',
+          severity: 'medium', measured: 14.2, unit: 'core L/D', thresholdText: '≤ 10 core L/D',
+          // The per-instance branch: named offenders with coordinates, and a
+          // count that says how many were CHECKED so a pass reads as a pass.
+          instanceCount: 3, instanceTotal: 9,
+          instances: [
+            { ratio: 14.2, diaMm: 5, depthMm: 71, count: 2, atXYZ: [42.5, -18.25, 6.125] },
+            { ratio: 12.8, diaMm: 6.5, depthMm: 83.2, count: 1, atXYZ: [-104.75, 62.5, 33] },
+            { ratio: 10.4, diaMm: 10, depthMm: 104, count: 4, atXYZ: [0, 0, -12.5] },
+          ],
+          // A company standard replacing a published guideline: a STRONGER
+          // grade, and it must not print under the original citation.
+          thresholdBasis: 'customer-standard', thresholdMatchedOn: 'company standard',
+          sourceStatus: 'customer-standard',
+          source: 'Company standard: our tool room will not run a core pin past 10 L/D after the 2023 die failures.',
+          cost: { priced: false, reason: 'Core-pin replacement frequency is a tooling-maintenance input, not a geometric one the engine derives.' },
         }),
         finding({
           id: 'hpdc-undercuts', title: 'Undercuts require slides or lifters in the die',
@@ -204,4 +250,57 @@ export const DFM_RESULT_MEASURED = {
     notes: [],
   },
   processConflict: null,
+};
+
+
+/** Company standards in force, plus the route table and the two conflict banners. */
+export const DFM_RESULT_FULL = {
+  ...DFM_RESULT,
+  partName: DFM_RESULT.partName + ' (full)',
+  processFamily: 'hpdc',
+  material: 'Aluminium A356 (cast)',
+  ruleOverrides: {
+    'hpdc-core-ld': { enabled: true, threshold: 10, note: 'our tool room will not run a core pin past 10 L/D' },
+    'hpdc-internal-radius': { enabled: false },
+  },
+  routes: {
+    basis: "Each row is the SAME measured geometry run through that process's own rule family, priced by computeShouldCost and carbon-scored on the cost engine's own input mass. Nothing is blended into a single ranking.",
+    skipped: [
+      { process: 'Injection Moulding', reason: 'incompatible' },
+      { process: 'Die Casting (Zinc)', reason: 'incompatible' },
+    ],
+    routes: [
+      { process: 'Extrusion', dfmFamilyName: 'Extrusion', score: 50, coveragePct: 100, evaluatedCount: 3, ruleCount: 3, findingCount: 2, highSeverityCount: 2, scoreCaveat: null, piecePriceEur: 3.18, toolingEur: 25000, inputMassKg: 1.009, kgCo2e: 5.2, cbamEur: null },
+      { process: 'Die Casting (Aluminium)', dfmFamilyName: 'High-pressure die casting (Al / Mg)', score: 13, coveragePct: 55.6, evaluatedCount: 5, ruleCount: 9, findingCount: 4, highSeverityCount: 3, scoreCaveat: 'Only 5 of 9 rules could be evaluated, so this score rests on a partial check.', piecePriceEur: 6.6, toolingEur: 141458.41, inputMassKg: 1.429, kgCo2e: 7.48, cbamEur: null },
+      { process: 'Sand Casting', dfmFamilyName: 'Sand casting', score: 33, coveragePct: 100, evaluatedCount: 10, ruleCount: 10, findingCount: 4, highSeverityCount: 2, scoreCaveat: null, piecePriceEur: 7.55, toolingEur: 28291.68, inputMassKg: 1.559, kgCo2e: 8.1, cbamEur: 0.648 },
+      // A route the cost model refused. It KEEPS ITS ROW: a table that drops
+      // what it failed on reads as "these are the options".
+      { process: 'Hydroforming', dfmFamilyName: 'Hydroforming', score: null, coveragePct: 0, evaluatedCount: 0, ruleCount: 3, findingCount: 0, highSeverityCount: 0, scoreCaveat: 'No rule in this family could be evaluated on this geometry, so there is no score — not a clean sheet.', piecePriceEur: null, toolingEur: null, inputMassKg: null, kgCo2e: null, cbamEur: null, costReason: 'Hydroforming needs a tube blank, and no tube geometry was recognised.' },
+      { process: 'Machining (CNC)', dfmFamilyName: 'Machining (CNC mill/turn)', score: 100, coveragePct: 60, evaluatedCount: 3, ruleCount: 5, findingCount: 0, highSeverityCount: 0, scoreCaveat: null, piecePriceEur: 27.54, toolingEur: 4000, inputMassKg: 1.906, kgCo2e: 9.98, cbamEur: null },
+    ],
+  },
+};
+
+/** The two states that must never be silently empty: an impossible pair, and a
+ *  process that shapes nothing. Both plus a file with NO PMI. */
+export const DFM_RESULT_NO_RULES = {
+  ...DFM_RESULT,
+  partName: DFM_RESULT.partName + ' (no rules)',
+  processFamily: null,
+  material: 'Steel (mild)',
+  materialProcessConflict: {
+    material: 'Steel (mild)', process: 'Injection Moulding',
+    message: 'Injection Moulding cannot be used with Steel (mild). The cost model lists this process as accepting only certain material families, and Steel (mild) is not one of them — so every threshold below was chosen for a route this part cannot take.',
+  },
+  noDfmRulesReason: 'Coating does not shape the part. Drainage and Faraday-cage rules need the rack orientation and bath chemistry, which are not in the geometry.',
+  dfm: {
+    ...DFM_RESULT.dfm,
+    pmi: {
+      present: false,
+      reason: 'This file carries no semantic PMI. That means the tolerances were not exported into the STEP — not that the part has none. They are on the drawing, and every tolerance rule below abstains rather than passing. Re-export as AP242 with semantic PMI to have them checked.',
+      dimensionCount: 0, geometricToleranceCount: 0, datumCount: 0, tightestToleranceMm: null,
+      geometricTolerances: [],
+    },
+    toolAccess: null,
+  },
 };

@@ -25,8 +25,10 @@ globalThis.document = {
 };
 
 const { exportDfmPdf, exportDfmXlsx } = await import('./dfm-report.bundle.mjs');
-const { DFM_RESULT, DFM_FIGURES, DFM_RESULT_CONFLICT, DFM_RESULT_MEASURED } =
-  await import('./fixture-dfm.mjs');
+const {
+  DFM_RESULT, DFM_FIGURES, DFM_RESULT_CONFLICT, DFM_RESULT_MEASURED,
+  DFM_RESULT_FULL, DFM_RESULT_NO_RULES,
+} = await import('./fixture-dfm.mjs');
 
 // Rendered TWICE on purpose. The no-figure call is the branch the harness has
 // always covered and must keep working — a browserless caller, and any code path
@@ -38,6 +40,12 @@ exportDfmPdf({ ...DFM_RESULT, partName: DFM_RESULT.partName + ' (annotated)' }, 
 // agreeing with the chosen family, and geometry contradicting it.
 exportDfmPdf(DFM_RESULT_MEASURED);
 exportDfmPdf(DFM_RESULT_CONFLICT);
+// Everything the API knows, on the page: route table, company standards,
+// per-instance offenders, PMI present, tool reach.
+exportDfmPdf(DFM_RESULT_FULL);
+// And the states that must never render as an empty clean sheet: an impossible
+// material/process pair, a process that shapes nothing, and a file with NO PMI.
+exportDfmPdf(DFM_RESULT_NO_RULES);
 
 let over = 0;
 for (const w of written) {
