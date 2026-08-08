@@ -732,3 +732,36 @@ Format: decision · why · what would change it.
     the part is dropped, with a skin tolerance scaled to the part so the anchor's own face is
     not counted as blocking itself. The legend is built from the surviving callouts, so it
     now lists what is actually marked on that view and nothing else.
+
+56. **The material and the process decide the threshold — one rule set is not four (2026).**
+    *Why:* the Studio hand-typed a ten-material, six-process subset of the tables already in
+    `costing-engine.mjs` and collapsed it into four DFM families. Two of the six mappings were
+    wrong: "Gravity Die Casting" was routed to the HPDC rules — a 1.0-3.5 mm wall band against
+    gravity's 3-8, so every gravity part failed the wall rule automatically and was priced for
+    a saving that cannot exist — and "Sand Casting" mapped to nothing, falling through to a
+    speculative sweep that judged a sand casting against injection-moulding rules. Every
+    threshold was also material-blind: one bend radius of 1 r/t for mild steel and 6061-T6
+    (which cracks below about 3), one HPDC wall band for aluminium, magnesium and zinc (which
+    fills at 0.6 mm), one moulding band for PP and 30% glass-filled PA66.
+    *Changes it:* `dfm-process-registry.mjs` derives the pickers and the routing from the cost
+    model's own `MATERIALS` and `PROCESSES` tables, so the two halves cannot drift again — a
+    test asserts every costing process is either routed to a family or carries a written reason
+    why it has no geometric rules. 4 rule families became 15 and 26 rules became 66, split so
+    that HPDC, zinc HPDC, gravity die, sand and investment casting each carry their own wall
+    band, draft angle, uniformity limit and core slenderness. Thresholds resolve grade → family
+    → generic, and a finding is STAMPED with which it got: a generic band and a band tuned to
+    6061-T6 look identical on a page unless the report says which, and the difference decides
+    whether the part cracks on the press. The picker only offers processes whose `families` tag
+    accepts the chosen material, so injection-moulding a steel bracket is unselectable rather
+    than warned about. The selector is labelled **Manufacturing process**, not "Costing
+    process" — as cost metadata it read as optional, so it was left unset and every part got a
+    speculative sweep.
+
+57. **Draft is a curve, not a point (2026).**
+    *Why:* `wallAreaBelowMinDraftPct` was computed against a hardcoded 1.0 degree and then
+    compared by rules that mean different angles — zinc die casting releases at 0.5, aluminium
+    wants 1-2, sand needs 1.5-3, a hot forging 5-7. Judging all of them at one cutoff is the
+    exact "generic DFM" the catalogue exists to avoid. *Changes it:* the classifier already
+    measures a draft angle per triangle, so it now emits the whole cumulative curve at 0.5, 1,
+    1.5, 2, 3, 5 and 7 degrees, and each rule names the angle it means in `draftCutoffDeg`.
+    Verified against the old figure: the 1-degree point reproduces the previous number exactly.
