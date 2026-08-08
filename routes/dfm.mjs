@@ -53,7 +53,49 @@ function rejectUnsupported(req, res) {
 
 const numOr = (v, d) => (Number.isFinite(Number(v)) ? Number(v) : d);
 
-export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
+//: Parts per batch. Each one forks an OCP process and takes 5-30 s, so a
+//: request is already a minutes-long operation at this size; a larger cap would
+//: reliably time out at the proxy rather than return a bigger table.
+const BATCH_MAX = 25;
+
+export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
+  // ── Company standards ──────────────────────────────────────────────────────
+  // A plant's own guideline outranks a published one, and this is how DFMPro
+  // gets bought: an organisation encodes ITS standards rather than accepting a
+  // vendor's. The catalogue is already pure data, so this is storage, not an
+  // engine change. Per-user rather than global — one workspace retuning a
+  // threshold must not silently change everyone else's reports.
+  try {
+    db?.exec(`CREATE TABLE IF NOT EXISTS dfm_rule_overrides (
+      user_id    TEXT NOT NULL,
+      rule_id    TEXT NOT NULL,
+      enabled    INTEGER NOT NULL DEFAULT 1,
+      threshold  TEXT,
+      note       TEXT,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (user_id, rule_id)
+    )`);
+  } catch { /* migration is best-effort, same as the rest of the schema block */ }
+
+  /** Overrides for one user, keyed by rule id, in the shape runDfmRules takes. */
+  function overridesFor(userId) {
+    if (!db || !userId) return undefined;
+    try {
+      const rows = db.prepare('SELECT rule_id, enabled, threshold, note FROM dfm_rule_overrides WHERE user_id = ?').all(userId);
+      if (!rows.length) return undefined;
+      const out = {};
+      for (const r of rows) {
+        let threshold;
+        // A stored threshold that no longer parses must not become a silent
+        // `undefined` that reads as "no override" — the rule then runs at the
+        // published value while the UI shows a company standard.
+        try { threshold = r.threshold == null ? undefined : JSON.parse(r.threshold); } catch { threshold = undefined; }
+        out[r.rule_id] = { enabled: r.enabled !== 0, threshold, note: r.note || undefined };
+      }
+      return out;
+    } catch { return undefined; }
+  }
+
   // Each call forks a Python OCP process; the bridge caps concurrency, this caps
   // request rate.
   const limit = rateLimit(Number(process.env.CV_DFM_RATE_MAX ?? 40), 10 * 60 * 1000);
@@ -68,6 +110,64 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
    */
   app.get('/api/dfm/options', requireAuth, (_req, res) => {
     res.json(dfmOptions());
+  });
+
+  /** This workspace's rule overrides, alongside the published defaults. */
+  app.get('/api/dfm/rule-overrides', requireAuth, (req, res) => {
+    res.json({ overrides: overridesFor(req.user?.id) ?? {} });
+  });
+
+  /**
+   * Set or clear one rule's company standard.
+   *
+   * A threshold of null clears the override and the published guideline returns.
+   * Shape is validated against the rule it targets: a `between` rule takes a
+   * two-number array and a comparison rule takes a number, and storing the wrong
+   * shape would make the rule silently unevaluatable on every future part.
+   */
+  app.put('/api/dfm/rule-overrides/:ruleId', requireAuth, (req, res) => {
+    if (!db) return res.status(503).json({ error: 'No database configured.' });
+    const rule = DFM_RULES.find(r => r.id === req.params.ruleId);
+    if (!rule) return res.status(404).json({ error: `Unknown rule: ${req.params.ruleId}` });
+
+    const { enabled = true, threshold = null, note = null } = req.body ?? {};
+    if (threshold !== null && threshold !== undefined) {
+      const wantsPair = rule.compare === 'between';
+      const ok = wantsPair
+        ? Array.isArray(threshold) && threshold.length === 2
+          && threshold.every(v => Number.isFinite(Number(v))) && Number(threshold[0]) <= Number(threshold[1])
+        : Number.isFinite(Number(threshold));
+      if (!ok) {
+        return res.status(400).json({
+          error: wantsPair
+            ? `"${rule.id}" is a range rule: give [min, max] with min <= max.`
+            : `"${rule.id}" is a ${rule.compare} rule: give a single number.`,
+        });
+      }
+    }
+    const stored = threshold === null || threshold === undefined ? null
+      : JSON.stringify(rule.compare === 'between' ? threshold.map(Number) : Number(threshold));
+    try {
+      db.prepare(`INSERT INTO dfm_rule_overrides (user_id, rule_id, enabled, threshold, note, updated_at)
+                  VALUES (?, ?, ?, ?, ?, ?)
+                  ON CONFLICT(user_id, rule_id) DO UPDATE SET
+                    enabled = excluded.enabled, threshold = excluded.threshold,
+                    note = excluded.note, updated_at = excluded.updated_at`)
+        .run(req.user.id, rule.id, enabled ? 1 : 0, stored,
+             note ? String(note).slice(0, 500) : null, new Date().toISOString());
+    } catch (e) {
+      return res.status(500).json({ error: `Could not save: ${e.message}` });
+    }
+    res.json({ ok: true, overrides: overridesFor(req.user.id) ?? {} });
+  });
+
+  app.delete('/api/dfm/rule-overrides/:ruleId', requireAuth, (req, res) => {
+    if (!db) return res.status(503).json({ error: 'No database configured.' });
+    try {
+      db.prepare('DELETE FROM dfm_rule_overrides WHERE user_id = ? AND rule_id = ?')
+        .run(req.user.id, req.params.ruleId);
+    } catch { /* deleting something absent is not an error */ }
+    res.json({ ok: true, overrides: overridesFor(req.user.id) ?? {} });
   });
 
   /** The catalogue, so the UI can show what will be checked and cite thresholds. */
@@ -166,7 +266,7 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
     // where mild steel needs 1, zinc fills a 0.6 mm wall where aluminium needs
     // 1.5. Passing it through is what makes the finding specific rather than
     // generic, and every finding records which basis it got.
-    const ruleOpts = { material };
+    const ruleOpts = { material, overrides: overridesFor(req.user?.id) };
     const ruleResults = family ? [runDfmRules(geo, family, ruleOpts)] : runAllDfmRules(geo, ruleOpts);
     const familyBasis = selected.basis === 'chosen'
       ? (selected.chosenProcess ? `chosen — ${selected.chosenProcess}` : 'chosen')
@@ -321,6 +421,11 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       materialProcessConflict,
       // The alloy the thresholds were resolved against, so the report can say
       // whether a number was tuned to this material or is the generic band.
+      // Which company standards were in force for this analysis, so a report can
+      // be reproduced later and a reader can see the catalogue was not the stock
+      // one. A retuned threshold that leaves no trace is indistinguishable from
+      // a published guideline.
+      ruleOverrides: ruleOpts.overrides ?? null,
       material: material || null,
       materialFamily: material ? familyOfMaterial(material) ?? null : null,
       // EVERY VIABLE ROUTE, not just the one that was chosen. The report answers
@@ -338,6 +443,94 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
     };
     if (useSSE) { emit({ type: 'result', result: payload }); return res.end(); }
     res.json(payload);
+  });
+
+  /**
+   * BATCH: many parts, one ranked answer.
+   *
+   * A plant head does not care about one bracket; they care about which twenty
+   * of five hundred are worst. The tool was strictly one-part-at-a-time, so the
+   * portfolio question could only be answered by uploading parts one by one and
+   * transcribing the results.
+   *
+   * Parts are analysed SEQUENTIALLY on purpose. Each one forks a Python OCP
+   * process and the bridge already caps concurrency; firing twenty at once would
+   * queue behind that cap anyway while holding twenty file buffers in memory. A
+   * part that fails keeps its row with the reason — a batch table that silently
+   * drops what it could not read reads as "these are your parts".
+   */
+  app.post('/api/dfm/batch', requireAuth, limit, upload.array('cadFiles', BATCH_MAX), async (req, res) => {
+    const files = Array.isArray(req.files) ? req.files : [];
+    if (!files.length) return res.status(400).json({ error: 'No files uploaded' });
+
+    const material = req.body?.material || undefined;
+    const region = req.body?.region || 'Germany';
+    const annualVolume = numOr(req.body?.annualVolume, 50000);
+    const chosenProcess = String(req.body?.costProcess || '').trim();
+    const overrides = overridesFor(req.user?.id);
+    const density = MATERIALS[material]?.density;
+
+    const rows = [];
+    for (const f of files) {
+      const ext = extOf(f.originalname);
+      const row = { fileName: f.originalname, partName: String(f.originalname).replace(/\.[^.]+$/, '') };
+      if (!BREP_FORMATS.includes(ext)) {
+        row.error = PROPRIETARY.includes(ext)
+          ? `.${ext} is a proprietary format that needs a licensed kernel — export as STEP.`
+          : 'DFM analysis needs B-rep geometry (STEP or IGES).';
+        rows.push(row);
+        continue;
+      }
+      let geo;
+      try {
+        geo = await analyzeGeometry(f.buffer, f.originalname, 120_000);
+      } catch (e) {
+        row.error = `Geometry engine failed: ${e.message}`;
+        rows.push(row);
+        continue;
+      }
+      if (geo.status !== 'success') { row.error = geo.error; rows.push(row); continue; }
+
+      row.volumeCm3 = geo.volume?.cm3 ?? null;
+      row.weightKg = density && geo.volume?.cm3 > 0
+        ? Math.round((geo.volume.cm3 * density) / 10) / 100 : null;
+      row.wallP50Mm = geo.dfm?.wallThickness?.p50Mm ?? null;
+      row.undercutRegions = geo.dfm?.draft?.undercutFaceCount ?? null;
+
+      const inferred = inferProcessFamily(geo);
+      const selected = familyForSelection({ process: chosenProcess });
+      const family = selected.family
+        || (inferred.confidence === 'measured' ? inferred.family : null);
+      row.measuredProcess = inferred.family;
+      row.processFamily = family;
+      if (family) {
+        const r = runDfmRules(geo, family, { material, overrides });
+        row.processName = r.processName;
+        row.score = r.score;
+        row.coveragePct = r.coveragePct;
+        row.findingCount = r.findings.length;
+        row.highSeverityCount = r.findings.filter(x => x.severity === 'high').length;
+        row.worstFinding = r.findings[0]?.title ?? null;
+      } else {
+        row.scoreReason = 'No process chosen and the geometry does not settle it, so this part was measured but not judged.';
+      }
+      // The cheapest viable route, which is the one number that makes a
+      // portfolio table actionable rather than merely a ranking of badness.
+      if (material && row.weightKg > 0) {
+        const { routes } = compareRoutes(geo, { material, region, annualVolume, weightKg: row.weightKg });
+        const priced = rankRoutes(routes, 'piecePriceEur').filter(r2 => Number.isFinite(r2.piecePriceEur));
+        row.bestRoute = priced[0] ? { process: priced[0].process, piecePriceEur: priced[0].piecePriceEur, score: priced[0].score } : null;
+        row.routeCount = routes.length;
+      }
+      rows.push(row);
+    }
+
+    res.json({
+      parts: rows,
+      analysedAt: new Date().toISOString(),
+      material: material || null,
+      basis: 'Each part measured independently by the same kernel and judged by the same rule family. Parts that could not be read keep their row with the reason rather than being dropped.',
+    });
   });
 
   /** Assembly DFA: decompose, then score. */

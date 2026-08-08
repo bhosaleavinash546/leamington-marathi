@@ -63,6 +63,19 @@ interface RouteRow {
   costReason?: string; carbonReason?: string;
 }
 interface AnalysisLimit { kind: string; severity: 'blocking' | 'warning'; message: string }
+interface RuleOverride { enabled: boolean; threshold?: number | number[]; note?: string }
+interface CatalogueRule {
+  id: string; process: string; severity: string; title: string; measure: string;
+  threshold: number | number[] | string; unit: string; source: string; sourceStatus?: string;
+}
+interface BatchPart {
+  fileName: string; partName: string; error?: string;
+  score?: number | null; coveragePct?: number; findingCount?: number; highSeverityCount?: number;
+  worstFinding?: string | null; measuredProcess?: string | null; processName?: string;
+  weightKg?: number | null; wallP50Mm?: number | null; scoreReason?: string;
+  bestRoute?: { process: string; piecePriceEur: number; score: number | null } | null;
+}
+interface BatchResponse { parts: BatchPart[]; basis: string; material: string | null }
 interface DfaResponse {
   decomposition?: Record<string, any>;
   dfa?: Record<string, any>;
@@ -156,6 +169,16 @@ export default function DfmStudioPage() {
   const [options, setOptions] = useState<DfmOptions | null>(null);
   const [routeSort, setRouteSort] = useState<'piecePriceEur' | 'score' | 'kgCo2e' | 'toolingEur'>('piecePriceEur');
   const [drawAxis, setDrawAxis] = useState<'' | 'x' | 'y' | 'z'>('');
+  // Company standards: this workspace's own thresholds, which outrank the
+  // published guidelines and are graded as the stronger claim they are.
+  const [overrides, setOverrides] = useState<Record<string, RuleOverride>>({});
+  const [catalogue, setCatalogue] = useState<CatalogueRule[]>([]);
+  const [showStandards, setShowStandards] = useState(false);
+  const [savingRule, setSavingRule] = useState('');
+  // Batch: many parts, one ranked answer.
+  const [batchFiles, setBatchFiles] = useState<File[]>([]);
+  const [batch, setBatch] = useState<BatchResponse | null>(null);
+  const batchInputRef = useRef<HTMLInputElement>(null);
   const [region, setRegion] = useState('Germany');
   const [annualVolume, setAnnualVolume] = useState(120000);
   const [loading, setLoading] = useState<'' | 'dfm' | 'dfa'>('');
@@ -384,6 +407,50 @@ export default function DfmStudioPage() {
     return () => { live = false; };
   }, [token]);
 
+  // The catalogue and this workspace's overrides, so the standards panel can
+  // show what WILL be checked and what has been retuned — before anything runs.
+  useEffect(() => {
+    if (!token) return;
+    const h = { Authorization: `Bearer ${token}` };
+    fetch('/api/dfm/rules', { headers: h }).then(r => (r.ok ? r.json() : null))
+      .then(d => { if (d?.rules) setCatalogue(d.rules); }).catch(() => {});
+    fetch('/api/dfm/rule-overrides', { headers: h }).then(r => (r.ok ? r.json() : null))
+      .then(d => { if (d?.overrides) setOverrides(d.overrides); }).catch(() => {});
+  }, [token]);
+
+  async function saveOverride(ruleId: string, body: RuleOverride | null) {
+    if (!token) return;
+    setSavingRule(ruleId);
+    try {
+      const res = await fetch(`/api/dfm/rule-overrides/${encodeURIComponent(ruleId)}`, {
+        method: body ? 'PUT' : 'DELETE',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        ...(body ? { body: JSON.stringify(body) } : {}),
+      });
+      const d = await res.json();
+      if (!res.ok) { setError(d.error || 'Could not save the standard.'); return; }
+      setOverrides(d.overrides ?? {});
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not save the standard.');
+    } finally { setSavingRule(''); }
+  }
+
+  async function analyseBatch() {
+    if (!batchFiles.length) return;
+    setLoading('dfm'); setError(''); setBatch(null);
+    try {
+      const fd = new FormData();
+      for (const f of batchFiles) fd.append('cadFiles', f);
+      for (const [k, v] of Object.entries({ material, costProcess, region, annualVolume: String(annualVolume) })) fd.append(k, v);
+      const res = await fetch('/api/dfm/batch', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || 'Batch analysis failed');
+      setBatch(d);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Batch analysis failed');
+    } finally { setLoading(''); }
+  }
+
   // Processes this material can actually take. Choosing ABS must not leave
   // "Sand Casting" selectable, and the tags for that already live in the cost
   // model, so the filter is a lookup rather than a second opinion.
@@ -606,6 +673,119 @@ export default function DfmStudioPage() {
             </span>
           </p>
 
+          {/* ── COMPANY STANDARDS ────────────────────────────────────────────
+              A plant's own guideline outranks a published one, and this is how a
+              DFM tool gets adopted: the organisation encodes ITS standards
+              rather than accepting a vendor's. The catalogue is pure data, so
+              this is storage — and an overridden threshold is graded
+              'customer-standard', a STRONGER claim than the industry consensus
+              it replaced, because someone accountable put their name to it. */}
+          <div className="mt-4 border-t border-white/10 pt-3">
+            <button type="button" onClick={() => setShowStandards(v => !v)}
+              className="flex items-center gap-2 text-xs text-slate-300 hover:text-white"
+              aria-expanded={showStandards}>
+              <ChevronRight size={13} className={`transition-transform ${showStandards ? 'rotate-90' : ''}`} aria-hidden="true" />
+              Company standards
+              <span className="text-slate-500">
+                {Object.keys(overrides).length
+                  ? `${Object.keys(overrides).length} rule${Object.keys(overrides).length === 1 ? '' : 's'} retuned or switched off`
+                  : `${catalogue.length} published rules, none changed`}
+              </span>
+            </button>
+            {showStandards && (
+              <div className="mt-3 max-h-80 overflow-y-auto pr-1">
+                <p className="text-slate-500 text-xs mb-2">
+                  Set your own threshold and it replaces the published guideline for every analysis
+                  you run, carrying your note as its source. Clear it and the published value returns.
+                  A rule switched off leaves the coverage figure too, so it cannot look like a rule
+                  that passed.
+                </p>
+                <table className="w-full text-xs">
+                  <tbody>
+                    {catalogue
+                      .filter(r => !selectedProcess?.dfmFamily || r.process === selectedProcess.dfmFamily)
+                      .map(r => {
+                        const ov = overrides[r.id];
+                        const isRange = Array.isArray(r.threshold);
+                        const shown = ov?.threshold ?? r.threshold;
+                        return (
+                          <tr key={r.id} className="border-b border-white/5">
+                            <td className="py-1.5 pr-2">
+                              <span className={ov?.enabled === false ? 'text-slate-500 line-through' : 'text-white'}>{r.title}</span>
+                              <span className="block text-slate-500">{r.id} · {r.unit}</span>
+                            </td>
+                            <td className="py-1.5 px-2 whitespace-nowrap">
+                              <input
+                                defaultValue={Array.isArray(shown) ? shown.join(', ') : String(shown)}
+                                onBlur={e => {
+                                  const raw = e.target.value.trim();
+                                  const parsed = isRange
+                                    ? raw.split(',').map(v => Number(v.trim()))
+                                    : Number(raw);
+                                  const original = Array.isArray(r.threshold) ? r.threshold.join(', ') : String(r.threshold);
+                                  if (raw === original) { void saveOverride(r.id, ov ? { ...ov, threshold: undefined } : null); return; }
+                                  if (Array.isArray(parsed) ? parsed.some(v => !Number.isFinite(v)) : !Number.isFinite(parsed)) return;
+                                  void saveOverride(r.id, { enabled: ov?.enabled !== false, threshold: parsed, note: ov?.note });
+                                }}
+                                className="w-24 bg-navy-800 border border-white/15 rounded px-2 py-1 text-white tabular-nums
+                                           focus:outline-none focus:border-gold-500/40"
+                                aria-label={`Threshold for ${r.title}`} />
+                              {ov?.threshold !== undefined && <span className="ml-2 text-gold-400">yours</span>}
+                            </td>
+                            <td className="py-1.5 px-2">
+                              <input
+                                defaultValue={ov?.note ?? ''}
+                                placeholder="Why — this becomes the source line"
+                                onBlur={e => {
+                                  const note = e.target.value.trim();
+                                  if (note === (ov?.note ?? '')) return;
+                                  void saveOverride(r.id, { enabled: ov?.enabled !== false, threshold: ov?.threshold, note });
+                                }}
+                                className="w-full bg-navy-800 border border-white/15 rounded px-2 py-1 text-slate-300
+                                           focus:outline-none focus:border-gold-500/40"
+                                aria-label={`Reason for the ${r.title} standard`} />
+                            </td>
+                            <td className="py-1.5 pl-2 text-right whitespace-nowrap">
+                              <label className="inline-flex items-center gap-1 text-slate-400">
+                                <input type="checkbox" checked={ov?.enabled !== false}
+                                  onChange={e => void saveOverride(r.id, { enabled: e.target.checked, threshold: ov?.threshold, note: ov?.note })}
+                                  className="accent-gold-500" />
+                                on
+                              </label>
+                              {savingRule === r.id && <span className="ml-2 text-slate-500">saving…</span>}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* ── BATCH ────────────────────────────────────────────────────────
+              A plant head does not care about one bracket; they care about which
+              twenty of five hundred are worst. */}
+          <div className="mt-3 border-t border-white/10 pt-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <button type="button" onClick={() => batchInputRef.current?.click()}
+                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-medium
+                           focus:outline-none focus:ring-2 focus:ring-gold-500/60">
+                {batchFiles.length ? `${batchFiles.length} parts chosen` : 'Choose many parts (portfolio scan)'}
+              </button>
+              <input ref={batchInputRef} type="file" multiple accept=".step,.stp,.iges,.igs" className="hidden"
+                onChange={e => setBatchFiles(Array.from(e.target.files ?? []))} />
+              {batchFiles.length > 0 && (
+                <button onClick={() => void analyseBatch()} disabled={loading !== ''}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gold-500/90 text-navy-950 font-semibold text-xs
+                             hover:bg-gold-400 disabled:opacity-50">
+                  {loading === 'dfm' ? <ButtonSpinner size={12} /> : <Boxes size={13} />} Scan all {batchFiles.length}
+                </button>
+              )}
+              <span className="text-slate-500 text-xs">Up to 25 parts, each measured by the same kernel and judged by the same rules.</span>
+            </div>
+          </div>
+
           <div className="flex flex-wrap gap-2 mt-4">
             <button onClick={analyse} disabled={!file || loading !== ''}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-500 text-navy-950 font-semibold text-sm hover:bg-gold-400 transition-colors disabled:opacity-50">
@@ -632,7 +812,69 @@ export default function DfmStudioPage() {
               <p className="text-slate-500 text-xs uppercase tracking-wider">
                 {result ? 'Geometry — findings shown on the part' : 'Geometry'}
               </p>
-              {result && (
+              {/* ── PORTFOLIO RESULTS ────────────────────────────────────────────────
+          Worst first, because the only reason to scan a portfolio is to find the
+          parts that need attention. A part that could not be read keeps its row
+          with the reason: a table that drops what it failed on reads as "these
+          are your parts". */}
+      {batch && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          className="bg-navy-900 border border-white/10 rounded-2xl p-5 mb-4">
+          <h3 className="text-white font-semibold text-sm flex items-center gap-2 mb-1">
+            <Boxes size={15} className="text-gold-400" aria-hidden="true" />
+            Portfolio scan — {batch.parts.length} parts
+          </h3>
+          <p className="text-slate-500 text-xs mb-3">{batch.basis}</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-slate-400 border-b border-white/10">
+                  <th className="text-left py-2 pr-3 font-medium">Part</th>
+                  <th className="text-right py-2 px-2 font-medium">DFM score</th>
+                  <th className="text-right py-2 px-2 font-medium">Rules run</th>
+                  <th className="text-left py-2 px-2 font-medium">Measured as</th>
+                  <th className="text-left py-2 px-2 font-medium">Worst finding</th>
+                  <th className="text-left py-2 pl-2 font-medium">Cheapest viable route</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...batch.parts].sort((a, b) => {
+                  // Unreadable parts first — they are the ones needing action,
+                  // then worst score, then the ones that could not be judged.
+                  if (a.error && !b.error) return -1;
+                  if (b.error && !a.error) return 1;
+                  const av = a.score ?? 1e9, bv = b.score ?? 1e9;
+                  return av - bv;
+                }).map(p => (
+                  <tr key={p.fileName} className="border-b border-white/5 align-top">
+                    <td className="py-2 pr-3 text-white">{p.partName}</td>
+                    {p.error ? (
+                      <td className="py-2 px-2 text-amber-400" colSpan={5}>{p.error}</td>
+                    ) : (
+                      <>
+                        <td className={`text-right py-2 px-2 tabular-nums ${p.score == null ? 'text-slate-500' : p.score >= 70 ? 'text-emerald-400' : p.score >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
+                          {p.score ?? '—'}
+                          {p.highSeverityCount ? <span className="block text-red-400/70">{p.highSeverityCount} high</span> : null}
+                        </td>
+                        <td className="text-right py-2 px-2 tabular-nums text-slate-400">
+                          {p.coveragePct == null ? <span title={p.scoreReason}>—</span> : `${p.coveragePct}%`}
+                        </td>
+                        <td className="py-2 px-2 text-slate-300">{p.measuredProcess ?? <span className="text-slate-500">unsettled</span>}</td>
+                        <td className="py-2 px-2 text-slate-400">{p.worstFinding ?? '—'}</td>
+                        <td className="py-2 pl-2 text-slate-300">
+                          {p.bestRoute ? `${p.bestRoute.process} — EUR ${p.bestRoute.piecePriceEur.toFixed(2)}` : '—'}
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+      )}
+
+      {result && (
                 <div className="flex items-center gap-1.5" role="group" aria-label="Highlight findings on the model">
                   {([
                     ['undercuts', `Undercuts (${draft.undercutFaceCount ?? 0})`],

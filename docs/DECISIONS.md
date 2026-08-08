@@ -765,3 +765,66 @@ Format: decision · why · what would change it.
     measures a draft angle per triangle, so it now emits the whole cumulative curve at 0.5, 1,
     1.5, 2, 3, 5 and 7 degrees, and each rule names the angle it means in `draftCutoffDeg`.
     Verified against the old figure: the 1-degree point reproduces the previous number exactly.
+
+58. **Every viable route, from one measurement (2026).**
+    *Why:* a DFM report answers "is this part good for the process you named". The question a
+    cost engineer arrives with is "which process should make it", and answering it needed no
+    new measurement — the geometry is measured once and each candidate is the existing rule
+    engine plus the existing cost engine plus the existing carbon model run with a different
+    process. *Changes it:* `dfm-routing.mjs` returns COLUMNS, never a blended ranking. Cost,
+    manufacturability and CO₂e are three questions in three units and one number would hide
+    the trade-off the reader came for. Carbon is fed the cost engine's own buy-to-fly mass
+    rather than the finished weight, so a sand casting at 55% yield carries the carbon of
+    everything it pours — on the finished weight every route would have shown the same figure.
+    Tooling is reported as the TOTAL cheque as well as the amortised slice, because two routes
+    at the same piece price are not the same decision when one needs a €141k die. A route the
+    cost model refuses keeps its row and its reason; a table that drops what it failed on
+    reads as "these are the options". On the real casting: machining scores 100 at €27.54 and
+    9.98 kg CO₂e, aluminium die casting scores 13 at €6.60.
+
+59. **A finding names the features that break it (2026).**
+    *Why:* "max hole depth/diameter is 8.2" sends a supplier hunting through the model.
+    *Changes it:* the ratio measures keep their offenders — diameter, depth, count and
+    coordinates, worst first — and a finding lists only the ones that actually fail, because
+    putting all twenty holes under a "hole too deep" finding buries the two that are wrong.
+    A passing rule lists nothing but still reports how many it checked, so a pass is visibly
+    a pass over something.
+
+60. **A plant's own standard outranks a published one, and is graded higher (2026).**
+    *Why:* this is how a DFM tool gets adopted — the organisation encodes ITS thresholds
+    rather than accepting a vendor's. *Changes it:* per-workspace overrides stored against the
+    rule id, validated against the rule's own shape (a `between` rule takes `[min, max]`, a
+    comparison rule takes a number) so a stored threshold cannot make a rule silently
+    unevaluatable. An overridden threshold carries `sourceStatus: 'customer-standard'` and the
+    author's note as its source line — a STRONGER grade than the industry consensus it
+    replaced, because someone accountable put their name to it, and crediting a handbook for a
+    number the handbook never gave would be the reverse. A rule switched off leaves the
+    denominator too: `coveragePct` means "what could not be measured", and dragging it down
+    for a check the plant deliberately does not run would corrupt that.
+
+61. **Tool accessibility is shank clearance, not line of sight — and bores are excluded (2026).**
+    *Why:* the check DFMPro leads its machining family with, and this engine had declared it
+    unwritten since the catalogue existed with setup count as the acknowledged proxy. Setup
+    count answers a different question. *Changes it:* for each of six approach directions, a
+    cylinder of the tool diameter is swept from each surface point to infinity and must clear
+    the solid — four circumference probes plus the axis. A pocket floor is VISIBLE down a 3 mm
+    slot and a 10 mm cutter still cannot get there, so a centre-ray test would call it
+    reachable every time. The union across directions is computed per triangle, not by adding
+    per-direction percentages, or a face reachable from three sides would count three times.
+    **Bores are excluded**, and without that exclusion the measure produced a false finding on
+    the most ordinary part there is: a plain plate with two drilled holes scored 7.2%
+    unreachable, because a Ø8 hole is not reachable by a Ø10 end mill and does not need to be —
+    it is drilled by a Ø8 drill. Bore slenderness is the drill-depth rule's job. The holder,
+    spindle nose and machine envelope are NOT modelled and that is published with the result:
+    this is a lower bound on the access problem. Gated by the strongest analytic truth
+    available — a convex solid must be exactly 100% reachable, since no material can lie
+    between a face and infinity along its own outward normal.
+
+62. **A batch is a portfolio, and an unreadable part keeps its row (2026).**
+    *Why:* a plant head does not care about one bracket; they care about which twenty of five
+    hundred are worst, and the tool was strictly one-part-at-a-time. *Changes it:* up to 25
+    parts per request, analysed sequentially because each forks a Python OCP process the
+    bridge already rate-limits — firing them in parallel would queue behind that cap while
+    holding 25 file buffers. Worst first, with the cheapest viable route per part so the table
+    is actionable rather than a ranking of badness. A part that could not be read keeps its
+    row with the reason.

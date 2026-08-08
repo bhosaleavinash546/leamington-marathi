@@ -213,6 +213,18 @@ async function main() {
       record(fx.file, 'sheet rules abstain', r.evaluatedCount === 0 && r.score === null,
         `${r.evaluatedCount}/${r.ruleCount} evaluated, score ${r.score}`);
     }
+    if (t.toolAccess !== undefined) {
+      const ta = g.dfm?.toolAccess || {};
+      for (const [k, want] of Object.entries(t.toolAccess)) {
+        record(fx.file, `tool access ${k}`, near(ta[k], want, 0.001), `${ta[k]} vs ${want}`);
+      }
+    }
+    if (t.toolAccessUnreachablePctMin !== undefined) {
+      const got = g.dfm?.toolAccess?.unreachableAreaPct;
+      record(fx.file, 'tool access unreachable',
+        Number.isFinite(got) && got >= t.toolAccessUnreachablePctMin,
+        `${got}% >= ${t.toolAccessUnreachablePctMin}% (a pocket narrower than the cutter must show)`);
+    }
     if (t.sheetMetalRulesAbstaining) {
       // A rule with nothing to measure must be NOT EVALUATED, never a fail.
       const r = runDfmRules(g, 'sheet-metal');

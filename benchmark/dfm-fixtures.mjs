@@ -148,7 +148,14 @@ export const DFM_FIXTURES = [
   {
     file: 'slot-and-pocket.step',
     what: '80x60x25 block with one closed pocket and one open-ended slot',
-    truth: { featureCounts: { pocket: 1, slot: 1 } },
+    truth: {
+      featureCounts: { pocket: 1, slot: 1 },
+      // The counterpart to the plate: this block HAS pockets narrower than the
+      // Ø10 default cutter, so some of its surface must be unreachable. A pair
+      // of one-sided assertions (convex = exactly 100, featured < 100) is what
+      // catches the measure failing open or failing closed.
+      toolAccessUnreachablePctMin: 5,
+    },
   },
   {
     file: 'through-hole-and-pocket.step',
@@ -203,6 +210,12 @@ export const DFM_FIXTURES = [
       // neighbours, so a narrowness-only chamfer test claimed all four. A
       // chamfer is OBLIQUE to what it joins; a plate wall is perpendicular.
       featureCounts: {},
+      // A CONVEX SOLID IS REACHABLE FROM EVERY SIDE, by definition: there is no
+      // material anywhere between a face and infinity along its own outward
+      // normal. Anything less than 100% here means the shank-clearance probes
+      // are striking the part they are supposed to clear, which would put a
+      // "cutter cannot reach this" finding on a flat plate.
+      toolAccess: { reachableAreaPct: 100, unreachableAreaPct: 0 },
     },
   },
   {

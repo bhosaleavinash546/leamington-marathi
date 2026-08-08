@@ -1031,6 +1031,36 @@ def analyze(filepath: str, draw_override=None) -> dict:
                     draft_info, draft_alts = None, []
                     _skipped.append("draft and undercut classification")
                     _stage("drawSweep", status="skipped", reason="time budget spent")
+                # TOOL ACCESSIBILITY. Declared UNWRITTEN since the catalogue
+                # existed, with setup count as the acknowledged proxy — and setup
+                # count answers a different question. Run last and only if the
+                # budget survived the draft sweep: it is the same ray machinery
+                # and a part that could not afford draft cannot afford this.
+                if _left() > 0:
+                    _stage("toolAccess", status="start")
+                    try:
+                        # Bores AND blends are excluded: a drilled hole is made
+                        # by a drill sized to it, and a fillet is left by the
+                        # cutter that made the corner rather than approached.
+                        _cyl_ids = set()
+                        try:
+                            if _aag:
+                                _cyl_ids = {fid for fid, meta in _aag["faces"].items()
+                                            if meta.get("type") == "CYLINDER"}
+                        except Exception:
+                            _cyl_ids = set()
+                        access_info = _dfm.tool_accessibility(
+                            tess, inter, exclude_faces=_cyl_ids | set(_blend_ids or ()))
+                        _stage("toolAccess", status="done",
+                               reachableAreaPct=(access_info or {}).get("reachableAreaPct"))
+                    except Exception as e:
+                        access_info = None
+                        _stage("toolAccess", status="skipped", reason=str(e)[:120])
+                else:
+                    access_info = None
+                    _skipped.append("tool accessibility")
+                    _stage("toolAccess", status="skipped", reason="time budget spent")
+
                 axes = [f["axisXYZ"] for f in (feature_table or []) if f.get("axisXYZ")]
                 setup_info = _dfm.setup_directions(axes) if axes else {
                     "estimatedSetupCount": 1,
@@ -1038,6 +1068,7 @@ def analyze(filepath: str, draw_override=None) -> dict:
                     "basis": "no discrete machined features recognised — single-setup assumption",
                 }
                 dfm_block = {
+                    "toolAccess": access_info,
                     "tessellation": {"triangles": tess["count"],
                                      "totalAreaMm2": round(tess["totalAreaMm2"], 1),
                                      "truncated": tess["truncated"]},

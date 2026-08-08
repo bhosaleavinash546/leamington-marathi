@@ -686,3 +686,157 @@ def setup_directions(feature_table_axes, tol_deg=15.0):
         ],
         "basis": "distinct feature access directions (not raw face normals)",
     }
+
+# ─── Tool accessibility ──────────────────────────────────────────────────────
+#
+# The check DFMPro leads its machining family with, and the one this engine has
+# declared as UNWRITTEN since the rule catalogue existed. "Setup count" was the
+# nearest thing measured, and setup count answers a different question: how many
+# times the part is re-fixtured, not whether a cutter can physically reach the
+# floor of a pocket once it is.
+#
+# WHAT THIS MEASURES, AND WHAT IT DOES NOT. For each candidate approach
+# direction, a surface point is REACHABLE when a cylinder of the tool's diameter,
+# swept from the point out to infinity along that direction, is clear of the
+# solid. That is a real tool-shank clearance test, not a line-of-sight test: a
+# pocket floor is visible down a 3 mm slot and a 10 mm cutter still cannot get
+# there. It does NOT model the holder, the spindle nose, or the machine envelope,
+# so a face this reports as reachable can still be unreachable on a real machine.
+# That limit is published with the result rather than left implied.
+#
+#: Rays around the shank circumference. Four plus the axis is enough to catch a
+#: wall the tool body would foul while keeping the cost near the draft sweep's.
+SHANK_PROBES = 4
+TOOL_ACCESS_RAY_BUDGET = 600
+
+
+def tool_accessibility(tess, inter, directions=None, tool_dia_mm=10.0, reach=1e5,
+                       max_rays=TOOL_ACCESS_RAY_BUDGET, exclude_faces=None):
+    """Fraction of surface area a cutter of `tool_dia_mm` can reach.
+
+    Returns per-direction reachability plus the union across directions — the
+    union is what matters, because a part is machined from several sides and a
+    face only has to be reachable from ONE of them.
+
+    `exclude_faces` LEAVES BORES OUT, and without it this measure produces false
+    findings on the most ordinary part there is. A Ø8 drilled hole is not
+    reachable by a Ø10 end mill and does not need to be: it is made by a Ø8 drill,
+    sized to it. Counting every bore interior as unreachable scored a plain plate
+    with two drilled holes at 7.2% unreachable, which is not a manufacturing
+    problem — it is the measure asking the wrong tool about the wrong feature.
+    Bore slenderness is covered by the drill-depth rule, which is where it
+    belongs.
+    """
+    from OCP.gp import gp_Dir, gp_Lin, gp_Pnt
+
+    n = tess["count"]
+    if n == 0:
+        return None
+    if directions is None:
+        directions = [(0, 0, 1), (0, 0, -1), (0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0)]
+    r = max(0.1, float(tool_dia_mm) / 2.0)
+    step = max(1, -(-n // max_rays)) if max_rays else 1
+
+    # A basis perpendicular to each direction, so the shank probes ring the axis.
+    def _perp(d):
+        a = (0.0, 0.0, 1.0) if abs(d[2]) < 0.9 else (1.0, 0.0, 0.0)
+        u = (d[1] * a[2] - d[2] * a[1], d[2] * a[0] - d[0] * a[2], d[0] * a[1] - d[1] * a[0])
+        m = math.sqrt(sum(c * c for c in u)) or 1.0
+        u = tuple(c / m for c in u)
+        v = (d[1] * u[2] - d[2] * u[1], d[2] * u[0] - d[0] * u[2], d[0] * u[1] - d[1] * u[0])
+        return u, v
+
+    skip = set(exclude_faces or ())
+    total_area = 0.0
+    reached_any = 0.0
+    excluded_area = 0.0
+    per_dir = []
+    sampled = [i for i in range(0, n, step) if tess["face"][i] not in skip]
+    for i in range(0, n, step):
+        if tess["face"][i] in skip:
+            excluded_area += tess["area"][i] * step
+    for i in sampled:
+        total_area += tess["area"][i] * step
+
+    for d in directions:
+        m = math.sqrt(sum(c * c for c in d)) or 1.0
+        dn = tuple(c / m for c in d)
+        u, v = _perp(dn)
+        reached = 0.0
+        for i in sampled:
+            ar = tess["area"][i] * step
+            nx, ny, nz = tess["nx"][i], tess["ny"][i], tess["nz"][i]
+            # A face pointing away from the approach cannot be cut by it.
+            if nx * dn[0] + ny * dn[1] + nz * dn[2] <= 0.0:
+                continue
+            # Start just off the surface so the ray does not strike its own facet.
+            px = tess["cx"][i] + nx * EPS_MM
+            py = tess["cy"][i] + ny * EPS_MM
+            pz = tess["cz"][i] + nz * EPS_MM
+            ok = _escapes(inter, px, py, pz, dn[0], dn[1], dn[2], reach)
+            if ok:
+                # THE SHANK, not just the line of sight. A pocket floor visible
+                # down a 3 mm slot is not reachable by a 10 mm cutter, and a
+                # centre-ray-only test calls it reachable every time.
+                for k in range(SHANK_PROBES):
+                    ang = 2 * math.pi * k / SHANK_PROBES
+                    ox = r * (math.cos(ang) * u[0] + math.sin(ang) * v[0])
+                    oy = r * (math.cos(ang) * u[1] + math.sin(ang) * v[1])
+                    oz = r * (math.cos(ang) * u[2] + math.sin(ang) * v[2])
+                    if not _escapes(inter, px + ox, py + oy, pz + oz,
+                                    dn[0], dn[1], dn[2], reach):
+                        ok = False
+                        break
+            if ok:
+                reached += ar
+        per_dir.append({
+            "directionXYZ": [round(c, 4) for c in dn],
+            "reachableAreaPct": round(100.0 * reached / total_area, 2) if total_area else 0.0,
+        })
+
+    # Union across directions, computed per triangle rather than by adding the
+    # per-direction percentages — a face reachable from three sides would
+    # otherwise be counted three times and the union could exceed 100%.
+    for i in sampled:
+        ar = tess["area"][i] * step
+        nx, ny, nz = tess["nx"][i], tess["ny"][i], tess["nz"][i]
+        px = tess["cx"][i] + nx * EPS_MM
+        py = tess["cy"][i] + ny * EPS_MM
+        pz = tess["cz"][i] + nz * EPS_MM
+        for d in directions:
+            m = math.sqrt(sum(c * c for c in d)) or 1.0
+            dn = tuple(c / m for c in d)
+            if nx * dn[0] + ny * dn[1] + nz * dn[2] <= 0.0:
+                continue
+            if not _escapes(inter, px, py, pz, dn[0], dn[1], dn[2], reach):
+                continue
+            u, v = _perp(dn)
+            blocked = False
+            for k in range(SHANK_PROBES):
+                ang = 2 * math.pi * k / SHANK_PROBES
+                ox = r * (math.cos(ang) * u[0] + math.sin(ang) * v[0])
+                oy = r * (math.cos(ang) * u[1] + math.sin(ang) * v[1])
+                oz = r * (math.cos(ang) * u[2] + math.sin(ang) * v[2])
+                if not _escapes(inter, px + ox, py + oy, pz + oz, dn[0], dn[1], dn[2], reach):
+                    blocked = True
+                    break
+            if not blocked:
+                reached_any += ar
+                break
+
+    return {
+        "toolDiaMm": round(float(tool_dia_mm), 2),
+        "reachableAreaPct": round(100.0 * reached_any / total_area, 2) if total_area else 0.0,
+        "unreachableAreaPct": round(100.0 - (100.0 * reached_any / total_area), 2) if total_area else 0.0,
+        "byDirection": per_dir,
+        "sampled": step > 1,
+        "trianglesTested": len(sampled),
+        "excludedAreaMm2": round(excluded_area, 1),
+        "excludedBecause": "Cylindrical bores are excluded: a Ø8 hole is drilled by a Ø8 drill, not reached by the end mill, and counting its interior as unreachable made a plain drilled plate look 7% unmachinable. Bore slenderness is the drill-depth rule's job.",
+        "method": f"shank clearance: a Ø{round(float(tool_dia_mm), 2)} mm cylinder swept along each of "
+                  f"{len(directions)} approach directions must clear the solid, tested with "
+                  f"{SHANK_PROBES} circumference probes plus the axis",
+        "knownLimits": "The HOLDER, spindle nose and machine envelope are not modelled, so a face "
+                       "reported as reachable may still be unreachable on a real machine. Approach "
+                       "is limited to the six axis directions.",
+    }

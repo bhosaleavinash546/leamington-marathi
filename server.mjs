@@ -3518,7 +3518,7 @@ const shouldCostApi = registerShouldCostRoutes(app, { db, requireAuth, rateLimit
 registerMarketplaceRoutes(app, { db, requireAuth, rateLimit });
 // 3D CAD viewer: STEP/IGES tessellation + geometry analysis via the OCCT engine.
 registerCadRoutes(app, { requireAuth, rateLimit });
-registerDfmRoutes(app, { requireAuth, rateLimit });
+registerDfmRoutes(app, { requireAuth, rateLimit, db });
 // Wiring-harness should-cost (deterministic parametric model).
 registerHarnessRoutes(app, { requireAuth, rateLimit });
 // Organisations & roles v1 (SaaS substrate: personal orgs, invites, role middleware).

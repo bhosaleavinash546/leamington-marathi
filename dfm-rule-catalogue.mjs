@@ -86,7 +86,24 @@ export const PROCESS_FAMILIES = {
  *
  * @returns {{threshold, source, basis: 'material'|'material-family'|'process-generic', matchedOn: string|null}}
  */
-export function resolveThreshold(rule, material, materialFamily) {
+export function resolveThreshold(rule, material, materialFamily, override) {
+  // A PLANT'S OWN STANDARD OUTRANKS EVERY PUBLISHED GUIDELINE, and it must say
+  // so. When a customer sets their own value it wins over the material band and
+  // the process band, and its provenance becomes 'customer-standard' — which is
+  // a STRONGER grade than the industry consensus it replaced, because someone
+  // accountable put their name to it. Presenting it under the original source
+  // string would credit a handbook for a number the handbook never gave.
+  if (override && override.threshold !== undefined && override.threshold !== null) {
+    return {
+      threshold: override.threshold,
+      source: override.note
+        ? `Company standard: ${override.note}`
+        : 'Company standard set in this workspace, replacing the published guideline.',
+      basis: 'customer-standard',
+      matchedOn: 'company standard',
+      sourceStatus: 'customer-standard',
+    };
+  }
   const byGrade = material && rule.byMaterial?.[material];
   if (byGrade) {
     return {
@@ -184,6 +201,22 @@ export const DFM_RULES = [
       'Past about 5x diameter a standard jobber drill stops clearing its own chips, so the cycle becomes a peck cycle — retract, clear, re-enter — and the tool wanders off centre. Past roughly 10x it is a gun-drilling or coolant-through operation on different equipment.',
     fix: 'Open the hole diameter, drill from both ends where the tolerance allows, or accept the deep-hole process and price it as one.',
     source: 'General machining design guidance (chip evacuation and drill L/D limits).',
+  },
+
+  {
+    id: 'mach-tool-access',
+    sourceStatus: 'industry-consensus',
+    process: 'machining',
+    severity: 'high',
+    title: 'Surface a standard cutter cannot reach',
+    measure: 'unreachableAreaPct',
+    compare: 'lte',
+    threshold: 2,
+    unit: '% of surface area',
+    rationale:
+      'A face a cutter cannot physically get to is not a machining problem to be priced — it is a feature that has to be made another way. The usual answers are EDM, a long-reach or custom tool, an extra setup, or a redesign, and all four cost more than the feature looks like it should.',
+    fix: 'Open the pocket or slot so a standard cutter fits, increase the internal corner radii, or split the feature so it can be approached from a face that is already being machined.',
+    source: 'General machining design guidance (tool reach and shank clearance). Measured by sweeping a cylinder of the tool diameter along each approach direction — the HOLDER and machine envelope are not modelled, so this is a lower bound on the access problem, not an upper one.',
   },
 
   // ── Injection moulding ─────────────────────────────────────────────────────
@@ -1283,9 +1316,9 @@ export const DFM_RULES = [
  */
 export const UNWRITTEN_RULES = [
   {
-    topic: 'Tool access and reachability (machining)',
-    needs: 'A reachability sweep per feature — which tool lengths and approach angles can physically get to each floor and wall without the holder fouling.',
-    proxy: 'Setup count is the closest thing the engine measures, and it is already a rule.',
+    topic: 'Tool HOLDER and machine-envelope collision (machining)',
+    needs: 'The holder geometry, the spindle nose and the machine work envelope. The shank-clearance sweep behind `mach-tool-access` now measures whether a cutter of a given diameter can reach each face along each approach direction, which is the larger half of this — but a face it calls reachable can still be unreachable once the holder is on the tool.',
+    proxy: '`mach-tool-access` measures shank clearance and reports it as a LOWER bound on the access problem.',
   },
   {
     topic: 'Tolerance stack-up (machining)',

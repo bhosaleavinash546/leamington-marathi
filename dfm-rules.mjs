@@ -111,6 +111,10 @@ export function extractMeasures(geo = {}) {
     wallP95Mm: num(wall.p95Mm),
     wallSpreadRatio: num(wall.spreadRatio),
     wallAreaBelowMinDraftPct: num(draft.wallAreaBelowMinDraftPct),
+    // Tool reach, from the shank-clearance sweep. Absent when the time budget
+    // spent before it ran, which is a "not evaluated", not a clean sheet.
+    unreachableAreaPct: num((dfm.toolAccess || {}).unreachableAreaPct),
+    reachableAreaPct: num((dfm.toolAccess || {}).reachableAreaPct),
     minWallDraftDeg: num(draft.minWallDraftDeg),
     undercutFaceCount: num(draft.undercutFaceCount),
     setupCount: num(setups.estimatedSetupCount),
@@ -206,12 +210,17 @@ function thresholdText(rule) {
  * @param {string} process  key of PROCESS_FAMILIES
  * @returns {{process, processName, findings, passed, notEvaluated, coveragePct, score}}
  */
-export function runDfmRules(geo, process, { material } = {}) {
+export function runDfmRules(geo, process, { material, overrides } = {}) {
   if (!PROCESS_FAMILIES[process]) {
     throw new Error(`Unknown process family: ${process}`);
   }
   const measures = extractMeasures(geo);
-  const rules = DFM_RULES.filter(r => r.process === process);
+  // A workspace can DISABLE a rule as well as retune it. A disabled rule is
+  // removed from the denominator too — leaving it in as "not evaluated" would
+  // drag the coverage figure down for a check the plant deliberately does not
+  // run, and coverage is supposed to mean "what could not be measured".
+  const rules = DFM_RULES.filter(
+    r => r.process === process && overrides?.[r.id]?.enabled !== false);
   // The alloy decides the threshold on the rules where it matters. When it is
   // not known the process-generic band is used and every finding says so —
   // "1.0-3.5 mm for die casting generally" is a different claim from
@@ -240,7 +249,7 @@ export function runDfmRules(geo, process, { material } = {}) {
     } else {
       value = measures[rule.measure];
     }
-    const picked = resolveThreshold(rule, material, materialFamily);
+    const picked = resolveThreshold(rule, material, materialFamily, overrides?.[rule.id]);
     const effective = { ...rule, threshold: picked.threshold };
     const { status, reason } = evaluate(effective, value);
     const row = {
@@ -255,7 +264,7 @@ export function runDfmRules(geo, process, { material } = {}) {
       rationale: rule.rationale,
       fix: rule.fix,
       source: picked.source,
-      sourceStatus: rule.sourceStatus,
+      sourceStatus: picked.sourceStatus ?? rule.sourceStatus,
       // WHICH material this threshold was tuned to, or that it was not tuned at
       // all. The report prints this beside the finding.
       thresholdBasis: picked.basis,
@@ -294,6 +303,11 @@ export function runDfmRules(geo, process, { material } = {}) {
     passed,
     notEvaluated,
     ruleCount: rules.length,
+    // Named, because a report that silently runs 60 of 69 rules looks identical
+    // to one that ran them all and found nothing.
+    disabledRuleIds: DFM_RULES
+      .filter(r => r.process === process && overrides?.[r.id]?.enabled === false)
+      .map(r => r.id),
     evaluatedCount: evaluated,
     coveragePct,
     // A score over rules nobody could evaluate would be meaningless, so it is
