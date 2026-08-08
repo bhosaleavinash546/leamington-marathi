@@ -234,10 +234,14 @@ export const DFM_FIXTURES = [
       // 13-face "pocket" — three protrusions reported as one depression.
       featureCounts: { rib: 3 },
       // Exact construction dimensions, emitted thickest-first.
+      // Anchors as well as dimensions. The ribs are built at x = 80, 10 and 45,
+      // each spanning y = 20..60, so the area-weighted centre of each sits at
+      // its own mid-thickness and at y = 40. A callout that drifts off these
+      // points at bare plate while every count stays green.
       ribs: [
-        { thicknessMm: 5.0, heightMm: 24.0, lengthMm: 40.0 },
-        { thicknessMm: 3.0, heightMm: 12.0, lengthMm: 40.0 },
-        { thicknessMm: 2.4, heightMm: 15.0, lengthMm: 40.0 },
+        { thicknessMm: 5.0, heightMm: 24.0, lengthMm: 40.0, centroidXY: [82.5, 40.0] },
+        { thicknessMm: 3.0, heightMm: 12.0, lengthMm: 40.0, centroidXY: [11.5, 40.0] },
+        { thicknessMm: 2.4, heightMm: 15.0, lengthMm: 40.0, centroidXY: [46.2, 40.0] },
       ],
       // Arithmetic against the 6.00 mm wall: 5.0/6, 2.4/6, 24/6.
       ribMeasures: {

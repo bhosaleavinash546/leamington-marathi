@@ -448,6 +448,23 @@ WALL_UNMEASURED_REASON = (
 WALL_RAY_BUDGET = 1000
 
 
+def _extreme_regions(located, thinnest=True, limit=8):
+    """The thinnest (or thickest) measured places, one per face."""
+    if not located:
+        return []
+    ordered = sorted(located, key=lambda r: r[0], reverse=not thinnest)
+    seen, out = set(), []
+    for d, x, y, z, fid in ordered:
+        if fid in seen:
+            continue
+        seen.add(fid)
+        out.append({"faceId": fid, "thicknessMm": round(d, 3),
+                    "atXYZ": [round(x, 3), round(y, 3), round(z, 3)]})
+        if len(out) >= limit:
+            break
+    return out
+
+
 def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4):
     """Ray-cast inward from triangle centroids; area-weighted distribution.
 
@@ -470,6 +487,12 @@ def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4):
     step = max(1, n // max_samples)
     opposed = -math.cos(math.radians(OPPOSED_TOL_DEG))
     samples = []          # (thickness, area)
+    # WHERE each measurement was taken, kept alongside it. The loop already has
+    # the point and the face in hand; discarding them meant a "1.2 mm thin wall"
+    # finding could not say which wall. Parallel list rather than a wider tuple
+    # so `_samples` keeps the exact shape area_below() and the rule engine
+    # already consume.
+    located = []          # (thickness, x, y, z, faceId)
 
     for i in range(0, n, step):
         nxi, nyi, nzi = tess["nx"][i], tess["ny"][i], tess["nz"][i]
@@ -490,6 +513,8 @@ def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4):
             d = math.dist((sx, sy, sz), (hit.X(), hit.Y(), hit.Z())) + EPS_MM
             if d > 1e-3:
                 samples.append((d, tess["area"][i]))
+                located.append((d, tess["cx"][i], tess["cy"][i], tess["cz"][i],
+                                tess["face"][i]))
         except Exception:
             continue
 
@@ -538,6 +563,13 @@ def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4):
         # without this module having to know any process threshold. Stripped
         # before serialisation by strip_private().
         "_samples": samples,
+        # The thinnest and thickest places, with their coordinates — the anchors
+        # a "wall below minimum" callout points at. Capped, because a report does
+        # not need 1000 leader lines, and de-duplicated per face so ten samples
+        # on one thin web produce one callout rather than ten stacked on top of
+        # each other.
+        "thinnestRegions": _extreme_regions(located, thinnest=True),
+        "thickestRegions": _extreme_regions(located, thinnest=False),
     }
 
 

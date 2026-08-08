@@ -142,6 +142,12 @@ def build_aag(shape):
         # exactly half its neighbours' mean area, which is precisely where an
         # area-only threshold would sit.
         aspect = 1.0
+        # The bounding-box CENTRE is kept as well as the aspect. It costs
+        # nothing — the box is already being computed — and it is what lets a
+        # recognised pocket or rib say WHERE it is. Without it every prismatic
+        # feature was a bag of face ids with no position, so a callout had
+        # nothing to point a leader line at.
+        centre = None
         try:
             from OCP.Bnd import Bnd_Box
             from OCP.BRepBndLib import BRepBndLib
@@ -149,6 +155,7 @@ def build_aag(shape):
             BRepBndLib.Add_s(f, bb)
             x0, y0, z0, x1, y1, z1 = bb.Get()
             dims = sorted([x1 - x0, y1 - y0, z1 - z0])
+            centre = ((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2)
             # dims[0] is the face's thickness (~0 for a plane); use the two
             # in-plane extents.
             if dims[2] > 1e-9:
@@ -168,6 +175,8 @@ def build_aag(shape):
         except Exception:
             pass
         faces[i] = {"id": i, "type": kind, "areaMm2": area, "aspect": round(aspect, 4)}
+        if centre:
+            faces[i]["centreXYZ"] = [round(c, 3) for c in centre]
         if normal:
             faces[i]["normal"] = normal
         if concavity:
@@ -437,6 +446,11 @@ def prismatic_features(aag):
             "kind": kind, "faceIds": sorted(comp), "faceCount": len(comp),
             "wallCount": walls, "concaveArcs": inner,
             "areaMm2": round(area, 1),
+            # Where the pocket/slot/step actually is, so a callout has something
+            # to point at. Area-weighted, so a pocket's large floor anchors it
+            # rather than the anchor drifting to whichever wall the mesher split
+            # into the most faces.
+            "centroidXYZ": centroid_of(aag, comp),
             # Rule-based recognition on clean prismatic geometry is reliable;
             # say so rather than implying a precision we cannot back.
             "confidence": "high" if planes >= 3 else "medium",
@@ -523,6 +537,11 @@ def group_stepped_holes(feature_table, cone_faces, extents=None):
             "featureDepthMm": (cone["heightMm"] if cone else large["depthMm"]),
             "includedAngleDeg": (cone["includedAngleDeg"] if cone else None),
             "axisXYZ": small["axisXYZ"],
+            # Carried through, not dropped. Losing it did more than cost an
+            # anchor: the sheet-metal flange logic keys off axisPointXYZ on hole
+            # rows, so every counterbored and countersunk hole was silently
+            # skipped there.
+            "axisPointXYZ": small.get("axisPointXYZ"),
             "count": min(f.get("count", 1) for _, f in family),
             "confidence": "high",
         })
@@ -568,6 +587,26 @@ def cone_features(shape):
         except Exception:
             continue
     return out
+
+
+def centroid_of(aag, face_ids):
+    """Area-weighted centre of a set of faces — a feature's anchor point.
+
+    Area-weighted rather than a plain mean so a pocket's large floor pulls the
+    anchor onto the pocket instead of it drifting toward whichever wall happens
+    to be split into the most faces by the mesher.
+    """
+    sx = sy = sz = wsum = 0.0
+    for fid in face_ids:
+        f = aag["faces"].get(fid)
+        c = f.get("centreXYZ") if f else None
+        if not c:
+            continue
+        w = max(f.get("areaMm2", 0.0), 1e-9)
+        sx += c[0] * w; sy += c[1] * w; sz += c[2] * w; wsum += w
+    if wsum <= 0:
+        return None
+    return [round(sx / wsum, 3), round(sy / wsum, 3), round(sz / wsum, 3)]
 
 
 # ─── Ribs ─────────────────────────────────────────────────────────────────────
@@ -750,6 +789,7 @@ def rib_features(shape, aag):
         ribs.append({
             "kind": "rib",
             "faceIds": sorted(own),
+            "centroidXYZ": centroid_of(aag, own),
             "baseFaceId": c["base"],
             "thicknessMm": round(c["thicknessMm"], 3),
             "heightMm": round(c["heightMm"], 3),

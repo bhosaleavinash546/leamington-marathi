@@ -560,3 +560,21 @@ Format: decision · why · what would change it.
     a caller has no way to detect that from outside. The toolbar's own snapshot button now
     routes through the same function as the report capture, so the two cannot drift to
     different resolutions.
+
+46. **Every located finding is gated against its construction coordinates (2026).**
+    *Why:* V2 gave findings positions, and a position is exactly the kind of value that can
+    drift without any test noticing — a callout anchored 20 mm off still renders, still
+    counts, and points at bare material. So each anchor is checked against arithmetic from
+    the fixture's own construction, not against what the engine said last time. The Ø12 bore
+    through a 60x40x30 box anchors at (30, 20, 15), its axis mid-span. The three ribs built
+    at x = 10, 45 and 80 spanning y = 20..60 anchor at 11.5 / 46.2 / 82.5, each at y = 40.
+    The blind-hole floor in a 10 mm plate reads 4.00 mm at the hole's own coordinates.
+    *Changes it:* three sources of position were already being computed and discarded.
+    `classify_draft` had the triangle centroids; `wall_thickness` had the ray origin and the
+    face for every sample; `build_aag` computed a bounding box per face and kept only its
+    aspect ratio. None of it survived to the wire, so a prismatic feature was a bag of face
+    ids with nowhere to point. Keeping what was already in hand cost nothing and is what
+    makes annotation possible at all. One real bug fell out en route: `axisPointXYZ` was
+    dropped when compound holes were assembled, and the sheet-metal flange logic keys off
+    that field on hole rows — so every counterbored and countersunk hole had been silently
+    skipped there.

@@ -230,6 +230,12 @@ async function main() {
           && (want.lengthMm === undefined || near(r.lengthMm, want.lengthMm, 0.02));
         record(fx.file, `rib ${i} t x h`, ok,
           `${r.thicknessMm} x ${r.heightMm} (len ${r.lengthMm}) vs ${want.thicknessMm} x ${want.heightMm}`);
+        if (want.centroidXY) {
+          const c = r.centroidXYZ || [];
+          const anchored = want.centroidXY.every((v, k) => Math.abs((c[k] ?? 1e9) - v) <= 0.5);
+          record(fx.file, `rib ${i} anchor`, anchored,
+            `[${c[0]}, ${c[1]}] vs [${want.centroidXY}]`);
+        }
       });
     }
     // Measures the rules are written against, checked directly. A rule can only
