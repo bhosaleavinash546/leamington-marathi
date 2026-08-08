@@ -126,6 +126,7 @@ export default function DfmStudioPage() {
   const [showCallouts, setShowCallouts] = useState(true);
   // Stages the engine has actually finished, newest last. Real events only.
   const [stages, setStages] = useState<any[]>([]);
+  const [explode, setExplode] = useState(0);
 
   const pick = useCallback((f: File | null) => {
     setFile(f); setResult(null); setDfa(null); setError(''); setAnswers({});
@@ -310,6 +311,39 @@ export default function DfmStudioPage() {
     return out;
   }, [dfmBlock]);
 
+  /**
+   * Shade the assembly by HANDLING TIME — the part that costs the most to pick
+   * up and orient reads hottest.
+   *
+   * Scaled against the slowest part on this assembly rather than an absolute
+   * band, because handling seconds mean nothing without a comparison: 4 s is
+   * slow for a bracket and fast for a wiring loom. Parts the engine could not
+   * time are simply left out of the map, so they stay neutral instead of being
+   * shaded as if they were quick.
+   */
+  useEffect(() => {
+    const rows = (dfa?.dfa as any)?.rows as any[] | undefined;
+    if (!rows?.length) { void viewerRef.current?.setBodyColours(null); return; }
+    // `time.handlingSec`, not `handlingS` — a wrong field name here would have
+    // shaded nothing at all and looked exactly like "no DFA result yet".
+    const times = rows.map(r => Number(r.time?.handlingSec)).filter(Number.isFinite);
+    const max = Math.max(...times, 0.001);
+    const m = new Map<number, number>();
+    for (const r of rows) {
+      const t = Number(r.time?.handlingSec);
+      if (!Number.isFinite(t)) continue;
+      const f = Math.min(1, t / max);
+      // Cool slate -> amber -> red as handling time climbs.
+      const red = Math.round(120 + 135 * f);
+      const green = Math.round(160 - 100 * f);
+      const blue = Math.round(190 - 150 * f);
+      m.set(Number(r.index), (red << 16) | (green << 8) | blue);
+    }
+    void viewerRef.current?.setBodyColours(m);
+  }, [dfa]);
+
+  useEffect(() => { void viewerRef.current?.setExplode(explode); }, [explode]);
+
   // Pin them as soon as an analysis lands, and clear them when it is replaced.
   useEffect(() => {
     void viewerRef.current?.setAnnotations(showCallouts ? annotations : []);
@@ -460,6 +494,19 @@ export default function DfmStudioPage() {
                       {label}
                     </button>
                   ))}
+                  {/* Explode, shown only when there is genuinely more than one
+                      solid to pull apart. On a single-part file the control
+                      would do nothing and imply the tool had found an assembly
+                      where there is none. */}
+                  {((dfa?.decomposition as any)?.solidCount ?? 0) > 1 && (
+                    <label className="flex items-center gap-2 text-[11px] text-slate-400">
+                      Explode
+                      <input type="range" min={0} max={100} value={explode * 100}
+                        onChange={e => setExplode(Number(e.target.value) / 100)}
+                        aria-label="Explode the assembly"
+                        className="w-20 accent-gold-500" />
+                    </label>
+                  )}
                   <button type="button" onClick={() => setShowCallouts(v => !v)}
                     aria-pressed={showCallouts}
                     className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${

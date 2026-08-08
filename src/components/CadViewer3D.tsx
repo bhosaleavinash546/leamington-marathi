@@ -43,6 +43,8 @@ export interface CadViewerRef {
   setAnnotations(items: Parameters<CADViewerHandle['setAnnotations']>[0]): Promise<void>;
   projectAnchors(): Promise<ReturnType<CADViewerHandle['projectAnchors']>>;
   flyTo(anchor: [number, number, number], opts?: { distance?: number }): Promise<void>;
+  setBodyColours(colours: Map<number, number> | null): Promise<void>;
+  setExplode(factor: number): Promise<void>;
   ready(): Promise<CADViewerHandle | null>;
 }
 
@@ -125,6 +127,8 @@ const CadViewer3D = forwardRef<CadViewerRef, CadViewer3DProps>(function CadViewe
       async setAnnotations(items) { (await settled())?.setAnnotations(items); },
       async projectAnchors() { return (await settled())?.projectAnchors() ?? []; },
       async flyTo(anchor, opts) { (await settled())?.flyTo(anchor, opts); },
+      async setBodyColours(colours) { (await settled())?.setBodyColours(colours); },
+      async setExplode(factor) { (await settled())?.setExplode(factor); },
     };
   }, []);
 

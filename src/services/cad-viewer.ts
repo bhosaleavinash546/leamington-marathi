@@ -139,6 +139,10 @@ export interface CADViewerHandle {
   projectAnchors(): ProjectedAnchor[];
   /** Ease the camera to look at a point in the part's own coordinates. */
   flyTo(anchor: [number, number, number], opts?: { distance?: number }): void;
+  /** Shade bodies by id (a body id is the DFA part index). null resets. */
+  setBodyColours(colours: Map<number, number> | null): void;
+  /** Slide bodies apart: 0 assembled, 1 fully exploded. */
+  setExplode(factor: number): void;
   dispose(): void;
   el: HTMLElement;
 }
@@ -351,6 +355,18 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let partSpan = { x: 0, y: 0, z: 0 };
   let edgesOn = true;
   let bodyVisible: boolean[] = [];
+  /**
+   * Which bodyId each mesh slot holds. Bodies are stored by SLOT (contiguous
+   * meshes) but addressed by ID everywhere else — and a DFA part index is a body
+   * id. Verified on the bolted-assembly fixture: viewer body 0 has 6 faces (the
+   * plate) and bodies 1-2 have 3 each (the pins), while the DFA reports 40000
+   * mm3 then 1257 twice, in that order. Both enumerate with the same
+   * TopExp_Explorer(TopAbs_SOLID) walk, so index N is part N.
+   */
+  let bodyIdOfSlot: number[] = [];
+  /** Body centroids in world space, for the exploded view. */
+  let bodyCentres: Array<InstanceType<typeof THREE.Vector3>> = [];
+  let explodeFactor = 0;
   let fileKey = '';
   let disposed = false;
   let loadSeq = 0;
@@ -672,6 +688,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     for (const m of bodyMeshes) removeAndDispose(partGroup, m);
     for (const e of bodyEdges) if (e) removeAndDispose(partGroup, e);
     bodyMeshes = []; bodyEdges = []; bodyMats = []; bodyVisible = [];
+    bodyIdOfSlot = []; bodyCentres = []; explodeFactor = 0;
     // A previous part's callouts would otherwise hang in space over the new one,
     // anchored to coordinates that no longer mean anything.
     clearCallouts();
@@ -737,6 +754,14 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         const mat = new THREE.MeshStandardMaterial({ color: 0xaeb6c2, metalness: 0.45, roughness: 0.5, side: THREE.DoubleSide });
         const mesh = new THREE.Mesh(geometry, mat);
         mesh.userData = { triOffset: triCursor, bodySlot: bi };
+        bodyIdOfSlot[bi] = bodyList[bi];
+        // Centroid of this body's own bounding box, kept for the explode: each
+        // body slides along the vector from the assembly centre to its own, so
+        // the parts separate the way a hand would pull them apart.
+        mesh.geometry.computeBoundingBox();
+        bodyCentres[bi] = mesh.geometry.boundingBox
+          ? mesh.geometry.boundingBox.getCenter(new THREE.Vector3())
+          : new THREE.Vector3();
         partGroup.add(mesh);
         bodyMeshes.push(mesh);
         bodyMats.push(mat);
@@ -1203,6 +1228,46 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     });
   }
 
+  // ── Assembly presentation ─────────────────────────────────────────────────
+
+  /**
+   * Colour bodies by id — used to shade an assembly by handling difficulty.
+   *
+   * A body id IS the DFA part index; both walk the solids with the same
+   * TopExp_Explorer. Bodies with no entry keep their default material, so a
+   * partial map shades what it knows and leaves the rest honestly neutral rather
+   * than defaulting everything to the low end of a scale.
+   */
+  function setBodyColours(colours: Map<number, number> | null): void {
+    for (let bi = 0; bi < bodyMats.length; bi++) {
+      const id = bodyIdOfSlot[bi];
+      const c = colours?.get(id);
+      bodyMats[bi].color.set(c ?? 0xb9c4d2);
+    }
+  }
+
+  /**
+   * Slide the bodies apart, 0 = assembled, 1 = fully exploded.
+   *
+   * Each body moves along the vector from the assembly centre to its own
+   * centroid, so parts separate outward the way a hand would pull them. A body
+   * sitting exactly at the centre has no direction to move in and stays put,
+   * which is correct — it is the thing everything else comes off.
+   */
+  function setExplode(factor: number): void {
+    explodeFactor = Math.max(0, Math.min(1, factor));
+    for (let bi = 0; bi < bodyMeshes.length; bi++) {
+      const c = bodyCentres[bi];
+      if (!c) continue;
+      const dir = c.clone();
+      if (dir.lengthSq() < 1e-9) continue;
+      const offset = dir.normalize().multiplyScalar(explodeFactor * partRadius * 1.1);
+      bodyMeshes[bi].position.copy(offset);
+      const e = bodyEdges[bi];
+      if (e) e.position.copy(offset);
+    }
+  }
+
   /** An anchor in the PART's own coordinates -> world space. */
   function toWorld(p: [number, number, number]): InstanceType<typeof THREE.Vector3> {
     return new THREE.Vector3(p[0], p[1], p[2])
@@ -1459,6 +1524,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     setAnnotations,
     projectAnchors,
     flyTo,
+    setBodyColours: (m) => setBodyColours(m),
+    setExplode,
     el: root,
     dispose(): void {
       if (disposed) return;

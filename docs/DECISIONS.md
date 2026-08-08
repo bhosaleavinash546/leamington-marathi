@@ -642,3 +642,21 @@ Format: decision · why · what would change it.
     capture takes, and once with a real data URI, proving jsPDF decodes it in node where
     there is no canvas. A PDF byte-size gate came with it: there was none, and the failure
     mode of embedded renders is a report too large to email.
+
+50. **A body id IS a DFA part index — verified, not assumed (2026).**
+    *Why:* shading an assembly by handling time means colouring viewer body N with part N's
+    figure, which is the same class of cross-producer correspondence that made the face-id
+    highlight wrong on every part. Both sides walk the solids with the same
+    `TopExp_Explorer(TopAbs_SOLID)`, so they should agree — but "should" is exactly what was
+    believed about faces. Checked empirically on `bolted-assembly.step`: the viewer reports
+    body 0 with 6 faces (a box — the plate) and bodies 1 and 2 with 3 each (a cylinder is
+    3 faces — the pins), while the DFA reports 40000 mm3 then 1257 twice, in that order. The
+    correspondence holds, and the reasoning is written down beside the code that relies on
+    it. *Changes it:* the assembly is shaded against the SLOWEST part on the same assembly
+    rather than an absolute scale, because handling seconds mean nothing without comparison
+    — 4 s is slow for a bracket and fast for a wiring loom. Parts the engine could not time
+    are left out of the colour map entirely and stay neutral, rather than being shaded as
+    though they were quick. The explode control only appears when there is genuinely more
+    than one solid: on a single-part file it would do nothing while implying the tool had
+    found an assembly. And a body sitting at the assembly centre has no direction to
+    explode along and stays put — correct, since it is the thing everything else comes off.
