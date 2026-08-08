@@ -73,6 +73,17 @@ export const DFM_FIXTURES = [
       // face 6 — a PLANE — while the bore was face 5. Every count-based check
       // passed throughout, because an off-by-one changes no count.
       faceIdResolves: { undercutAtZ: 'cylinder' },
+      // MESH QUALITY IS A GATED NUMBER NOW. The viewer meshed at 0.5 radians of
+      // angular deflection — 28.6 degrees, about thirteen segments around a full
+      // circle — so a Ø12 bore rendered as a visible polygon and the whole
+      // viewer read as "basic" next to CATIA. Nothing in this gate could see
+      // that, because every DFM measurement is taken on a SEPARATE, coarser
+      // tessellation and none of them cares how the part looks.
+      //
+      // The bore here is Ø12 and runs the full 60 mm through the box. At 0.15
+      // radians it must come back with at least 32 segments around it; at the
+      // old setting it would have had 13.
+      viewerMesh: { minSegmentsPerCircle: 32 },
       // WHERE the finding is, arithmetic from the construction: the Ø12 bore
       // runs through X at y=20, z=15 of a 60x40x30 box, so its area-weighted
       // centroid is the mid-span of the axis. This is the anchor a leader line

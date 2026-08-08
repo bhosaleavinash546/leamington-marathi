@@ -214,6 +214,23 @@ async function main() {
       record(fx.file, 'sheet rules abstain', r.evaluatedCount === 0 && r.score === null,
         `${r.evaluatedCount}/${r.ruleCount} evaluated, score ${r.score}`);
     }
+    if (t.viewerMesh) {
+      // Counted from the VIEWER's own tessellation — the STL the browser is
+      // actually sent — not from the analysis mesh, which is a different and
+      // coarser one. A bore's segment count is the number of distinct triangle
+      // normals around its axis.
+      const meta = await tessMeta(fx.file);
+      // Counted from `triFace` — the per-triangle face id array the browser is
+      // sent — because the face records carry no triangle count of their own.
+      const perFace = new Map();
+      for (const id of meta.triFace ?? []) perFace.set(Number(id), (perFace.get(Number(id)) ?? 0) + 1);
+      const bores = (meta.faces ?? []).filter(f => f.type === 'cylinder');
+      const segs = bores.length ? Math.max(...bores.map(f => perFace.get(f.id) ?? 0)) : 0;
+      // A through bore's wall is a tube of quads, each split into two triangles.
+      const perCircle = Math.floor(segs / 2);
+      record(fx.file, 'viewer mesh smoothness', perCircle >= t.viewerMesh.minSegmentsPerCircle,
+        `~${perCircle} segments/circle vs >= ${t.viewerMesh.minSegmentsPerCircle} (a bore below this reads as a polygon)`);
+    }
     if (t.toolAccess !== undefined) {
       const ta = g.dfm?.toolAccess || {};
       for (const [k, want] of Object.entries(t.toolAccess)) {

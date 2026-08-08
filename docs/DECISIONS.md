@@ -910,3 +910,51 @@ Format: decision · why · what would change it.
     as graphite forms during freezing, so it strips from rammed sand more readily than steel
     or aluminium and holds a tighter as-cast tolerance than either — the opposite of what a
     single "casting" threshold would say about it.
+
+69. **The viewer looked faceted for a shading reason, not a mesh reason (2026).**
+    *Why:* a user compared the 3D viewer against CATIA and SolidWorks and called it basic and
+    not HD. The instinct is to blame mesh density, and density WAS part of it — but the larger
+    cause was that an STL carries no shared vertices, so `computeVertexNormals()` produces one
+    normal per FACET. A cylinder tessellated into a thousand segments still renders as a
+    thousand flat strips, because each strip is lit as though it were flat. Welding every
+    vertex in the mesh is worse: it rounds off chamfers and the part turns to soap.
+    *Changes it:* normals are welded WITHIN a B-rep face and never across one. Every triangle
+    already carries the id of the face it came from, and a face boundary IS an edge — that is
+    what it means for two faces to meet — so this reproduces exactly the hard/soft split the
+    modeller drew, with no angle threshold to tune and no smoothing group to guess. Normals
+    accumulate as un-normalised cross products, which weights each by twice the triangle's
+    area for free, so a sliver cannot pull a vertex normal as hard as the large triangle
+    beside it.
+
+70. **Angular deflection is what "HD" means, and it was 28.6 degrees (2026).**
+    *Why:* the viewer meshed at 0.5 RADIANS of angular deflection — about thirteen segments
+    around a full circle, so a Ø13 bore rendered as a visible polygon. Nothing in the gate
+    could see it: every DFM measurement runs on a separate, coarser tessellation and none of
+    them cares how the part looks. *Changes it:* 0.15 rad (8.6 degrees, ~42 segments) and
+    linear deflection diag/1200. Measured on a real 218 mm casting, all settings meshing in
+    well under a second: diag/300 + 0.50 rad gave 6,929 triangles; diag/1200 + 0.20 gave
+    28,361; diag/2000 + 0.12 gave 72,977. Meshing time did not move, so the old numbers were
+    buying nothing. The gate now counts segments around a bore in the VIEWER's own
+    tessellation and fails below 32.
+
+71. **A metal with nothing to reflect renders as dead grey (2026).**
+    *Why:* the material was `MeshStandardMaterial` at metalness 0.45 with no `scene.environment`.
+    That is a physical metal in a void — it resolves to a uniform flat grey no matter how many
+    lamps are added, which is most of why the shading read as cheap plastic. *Changes it:*
+    `RoomEnvironment` through `PMREMGenerator` for image-based lighting, which ships inside
+    three itself so it costs no download and no asset pipeline, plus ACES tone mapping because
+    the lights run above 1.0 and were clipping highlights to flat white. The directional lamps
+    were dimmed to 0.9/0.25 — left at full strength on top of an environment they blow out
+    every highlight and flatten the form again.
+
+72. **Depth precision, backface culling and damping — the "not smooth" three (2026).**
+    *Why:* near/far was radius/1000 to radius*100, a ratio of 100,000:1, which spends most of a
+    24-bit depth buffer on empty space hundreds of part-lengths behind the model. Surfaces a
+    fraction of a millimetre apart then quantise to the same depth and flicker against each
+    other as the camera moves — and the edge overlay draws at exactly the surface depth, so it
+    shimmered on every orbit. *Changes it:* 4,000:1, plus polygon offset on the mesh so edges
+    win cleanly. Backfaces are culled unless a section plane is cutting (a clipped solid is an
+    open shell and needs them; a sealed one does not, and DoubleSide was doubling fragment work
+    for a surface nobody can see). Damping went 0.12 to 0.06 — the old value killed the glide
+    almost immediately, which is what made orbiting feel steppy — with rotate speed at 0.6 so a
+    full drag is about half a turn rather than a full one.

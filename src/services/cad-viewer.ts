@@ -150,8 +150,8 @@ export interface CADViewerHandle {
 // ── Pure measurement math + face palette ─────────────────────────────────────
 // Live in a framework-free .mjs (no three/DOM) so they run under `node --test`;
 // imported here for internal use and re-exported to preserve the viewer's API.
-import { dist3, circumcircle3, angle3, closestPointOnSegment, FACE_COLORS, FACE_TYPE_LABEL } from './cad-viewer-math.mjs';
-export { dist3, circumcircle3, angle3, closestPointOnSegment, FACE_COLORS, FACE_TYPE_LABEL };
+import { dist3, circumcircle3, angle3, closestPointOnSegment, smoothNormalsWithinFaces, FACE_COLORS, FACE_TYPE_LABEL } from './cad-viewer-math.mjs';
+export { dist3, circumcircle3, angle3, closestPointOnSegment, smoothNormalsWithinFaces, FACE_COLORS, FACE_TYPE_LABEL };
 
 // Measurement persistence (per file, LRU-capped)
 const PERSIST_PREFIX = 'cv3d:m:';
@@ -294,7 +294,17 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const statusHint = $('.cv3d-status-hint');
 
   // ── three.js scene ──
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+  const renderer = new THREE.WebGLRenderer({
+    canvas, antialias: true, preserveDrawingBuffer: true,
+    // Ask for the discrete GPU on a laptop with two. Without this a 50k-triangle
+    // part can land on the integrated chip and orbit at half the frame rate.
+    powerPreference: 'high-performance',
+  });
+  // ACES rather than the default linear clamp. The lights below run above 1.0 to
+  // give metal a highlight, and without tone mapping those highlights clip to
+  // flat white — which is most of why the shading read as "cheap plastic".
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.localClippingEnabled = true;
   const scene = new THREE.Scene();
@@ -302,14 +312,46 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 10000);
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
-  controls.dampingFactor = 0.12;
+  // 0.12 stops the glide almost immediately, which is what made orbiting feel
+  // steppy rather than fluid. 0.06 keeps roughly twice the coast without
+  // becoming floaty, and it is close to what SolidWorks and Creo settle at.
+  controls.dampingFactor = 0.06;
   controls.zoomToCursor = true; // CAD convention: zoom at the pointer, not the screen centre
+  // A full drag across the viewport should be about half a turn, not a full one:
+  // at the default the part spins past what the hand expects and has to be
+  // walked back, which reads as "twitchy" rather than fast.
+  controls.rotateSpeed = 0.6;
+  controls.zoomSpeed = 0.9;
+  controls.panSpeed = 0.8;
+  // OrbitControls dollies MULTIPLICATIVELY, so a wheel notch moves the same
+  // fraction of the remaining distance whether you are 5 mm or 5 m out. That is
+  // the behaviour that makes zoom feel controlled all the way in.
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.0));
-  const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
+  // IMAGE-BASED LIGHTING, and this is the other half of why the part looked
+  // flat. `MeshStandardMaterial` with metalness 0.45 is a PHYSICAL metal, and a
+  // metal shows you its surroundings — with no environment to reflect it
+  // resolves to a dead, uniform grey no matter how many lamps are added. Every
+  // professional CAD viewer lights the model from a studio environment for
+  // exactly this reason.
+  //
+  // `RoomEnvironment` ships inside three itself, so this costs no download and
+  // no asset pipeline: it is a procedural room with soft area lights, run once
+  // through PMREMGenerator into a prefiltered cube map.
+  {
+    const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js');
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    // Generated once and kept: regenerating per resize would stall the frame.
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    pmrem.dispose();
+  }
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 0.45));
+  // Dimmed against the old values: the environment now does most of the work,
+  // and leaving the lamps at full strength on top of it blows out every
+  // highlight and flattens the form again.
+  const keyLight = new THREE.DirectionalLight(0xffffff, 0.9);
   keyLight.position.set(1, 2, 1.5);
   scene.add(keyLight);
-  const rimLight = new THREE.DirectionalLight(0x88aaff, 0.35);
+  const rimLight = new THREE.DirectionalLight(0x88aaff, 0.25);
   rimLight.position.set(-1.5, -0.5, -1);
   scene.add(rimLight);
 
@@ -573,8 +615,15 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
   /** Frustum must track part size — fixed planes blank out metre-scale parts. */
   function updateFrustum(): void {
-    camera.near = Math.max(partRadius / 1000, 0.001);
-    camera.far = partRadius * 100;
+    // DEPTH PRECISION. near/far was radius/1000 to radius*100 — a ratio of
+    // 100,000:1, which spends most of a 24-bit depth buffer on empty space
+    // hundreds of part-lengths behind the model. Surfaces a fraction of a
+    // millimetre apart then quantise to the same depth and flicker against each
+    // other as the camera moves, which is exactly the "not smooth" symptom.
+    // 4,000:1 still clears any sane orbit distance and leaves the precision
+    // where the part actually is.
+    camera.near = Math.max(partRadius / 200, 0.001);
+    camera.far = partRadius * 20;
     camera.updateProjectionMatrix();
   }
 
@@ -589,7 +638,15 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   };
   function applyClipping(): void {
     const planes = clipOn ? [clipPlane] : null;
-    for (const m of bodyMats) m.clippingPlanes = planes;
+    for (const m of bodyMats) {
+      m.clippingPlanes = planes;
+      // Backfaces render ONLY while a section is cutting. A clipped solid is an
+      // open shell, so culling them leaves the cut hollow and you see straight
+      // through the part; unclipped they cost double the fragment work for a
+      // surface nobody can see.
+      m.side = clipOn ? THREE.DoubleSide : THREE.FrontSide;
+      m.needsUpdate = true;
+    }
     for (const e of bodyEdges) if (e) (e.material as InstanceType<typeof THREE.LineBasicMaterial>).clippingPlanes = planes;
     // EVERY overlay layer, not just one. A section plane that cuts the part but
     // leaves a finding highlight floating in the removed material is worse than
@@ -748,10 +805,28 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         const slice = masterPositions.subarray(triCursor * 9, (triCursor + nTris) * 9);
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.BufferAttribute(slice.slice(), 3));
-        geometry.computeVertexNormals();
+        // NOT computeVertexNormals(). An STL has no shared vertices, so three's
+        // own pass yields one normal per FACET and every curve renders as a fan
+        // of flat strips however finely it was meshed. Welding within each
+        // B-rep face — and never across one — gives the hard/soft split the
+        // modeller actually drew, with no angle threshold to tune.
+        geometry.setAttribute('normal', new THREE.BufferAttribute(
+          smoothNormalsWithinFaces(slice, triFaceAll, triCursor, nTris, partRadius * 1e-5), 3));
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
-        const mat = new THREE.MeshStandardMaterial({ color: 0xaeb6c2, metalness: 0.45, roughness: 0.5, side: THREE.DoubleSide });
+        const mat = new THREE.MeshStandardMaterial({
+          color: 0xaeb6c2, metalness: 0.45, roughness: 0.5,
+          // FRONT faces only. DoubleSide doubles the fragment work on a closed
+          // solid for nothing — you cannot see the inside of a sealed part. It
+          // is switched back on only while a section plane is cutting, which is
+          // the one case where the interior must render. See applyClipping().
+          side: THREE.FrontSide,
+          // The edge overlay draws at the same depth as the surface it outlines,
+          // so without an offset the two fight for the depth buffer and the
+          // lines flicker in and out as the part turns. That shimmer is a large
+          // part of what reads as "not smooth" while orbiting.
+          polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
+        });
         const mesh = new THREE.Mesh(geometry, mat);
         mesh.userData = { triOffset: triCursor, bodySlot: bi };
         bodyIdOfSlot[bi] = bodyList[bi];

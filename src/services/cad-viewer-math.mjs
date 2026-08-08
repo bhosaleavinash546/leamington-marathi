@@ -60,3 +60,85 @@ export const FACE_TYPE_LABEL = {
   plane: 'Planar (mill/face)', cylinder: 'Cylindrical (drill/bore/turn)', cone: 'Conical (chamfer/taper)',
   sphere: 'Spherical', torus: 'Toroidal (fillet)', freeform: 'Freeform (5-axis)', other: 'Other',
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SMOOTH NORMALS, WELDED WITHIN A B-REP FACE AND NEVER ACROSS ONE.
+//
+// This is the single reason the viewer looked faceted next to CATIA or
+// SolidWorks, and it had nothing to do with mesh density. An STL carries no
+// shared vertices — every triangle owns its three — so `computeVertexNormals()`
+// on that geometry produces one normal per FACET. A cylinder tessellated into a
+// thousand segments still renders as a thousand flat strips, because each strip
+// is lit as though it were flat.
+//
+// The naive fix, welding every vertex in the mesh, is worse: it smooths across
+// the sharp edge of a chamfer too, and the part turns into a bar of soap. CAD
+// viewers get this right because they know where the real edges are.
+//
+// So do we. Every triangle carries the id of the B-rep face it came from, and a
+// B-rep face boundary IS the edge — that is what it means for two faces to meet.
+// Welding within a face id and never across one therefore reproduces exactly the
+// hard/soft split the modeller drew: smooth around a bore, crisp at the chamfer,
+// with no angle threshold to tune and no shading group to guess.
+//
+// Normals are accumulated as UN-normalised cross products, which weights each
+// contribution by twice the triangle's area — a sliver triangle should not pull
+// a vertex normal as hard as the large one beside it.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * @param {Float32Array} positions   9 floats per triangle (non-indexed)
+ * @param {ArrayLike<number>} faceOfTri  B-rep face id per triangle
+ * @param {number} triOffset  index of the first triangle of this slice
+ * @param {number} triCount   how many triangles in this slice
+ * @param {number} weldTol    positions closer than this are the same vertex
+ * @returns {Float32Array} one normal per vertex, same layout as `positions`
+ */
+export function smoothNormalsWithinFaces(positions, faceOfTri, triOffset, triCount, weldTol) {
+  const normals = new Float32Array(triCount * 9);
+  // Quantising to the weld tolerance is what makes two vertices "the same".
+  // Too coarse and distinct vertices merge; too fine and a shared vertex written
+  // twice with different rounding never meets itself, which silently returns the
+  // faceted result this function exists to replace.
+  const q = weldTol > 0 ? 1 / weldTol : 1e4;
+  const acc = new Map();
+  const keyOf = (f, x, y, z) =>
+    `${f}|${Math.round(x * q)}|${Math.round(y * q)}|${Math.round(z * q)}`;
+
+  for (let t = 0; t < triCount; t++) {
+    const p = t * 9;
+    const f = faceOfTri[triOffset + t];
+    const ax = positions[p], ay = positions[p + 1], az = positions[p + 2];
+    const bx = positions[p + 3], by = positions[p + 4], bz = positions[p + 5];
+    const cx = positions[p + 6], cy = positions[p + 7], cz = positions[p + 8];
+    // (b-a) x (c-a), un-normalised: magnitude is twice the area, so the sum is
+    // area-weighted for free.
+    const ux = bx - ax, uy = by - ay, uz = bz - az;
+    const vx = cx - ax, vy = cy - ay, vz = cz - az;
+    const nx = uy * vz - uz * vy;
+    const ny = uz * vx - ux * vz;
+    const nz = ux * vy - uy * vx;
+    for (const [x, y, z] of [[ax, ay, az], [bx, by, bz], [cx, cy, cz]]) {
+      const k = keyOf(f, x, y, z);
+      const cur = acc.get(k);
+      if (cur) { cur[0] += nx; cur[1] += ny; cur[2] += nz; }
+      else acc.set(k, [nx, ny, nz]);
+    }
+  }
+
+  for (let t = 0; t < triCount; t++) {
+    const p = t * 9;
+    const f = faceOfTri[triOffset + t];
+    for (let v = 0; v < 3; v++) {
+      const o = p + v * 3;
+      const k = keyOf(f, positions[o], positions[o + 1], positions[o + 2]);
+      const n = acc.get(k);
+      if (!n) continue;
+      const m = Math.hypot(n[0], n[1], n[2]) || 1;
+      normals[o] = n[0] / m;
+      normals[o + 1] = n[1] / m;
+      normals[o + 2] = n[2] / m;
+    }
+  }
+  return normals;
+}

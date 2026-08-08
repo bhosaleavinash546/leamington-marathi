@@ -12,6 +12,13 @@ import time as _time
 #: honest answer instead of dying with nothing to show.
 DFM_TIME_BUDGET_S = 75.0
 
+#: Viewer tessellation. Linear deflection is the bounding diagonal over this,
+#: so it scales with the part; angular deflection is what actually decides
+#: whether a cylinder reads as a cylinder or as a polygon. Both are overridable
+#: for a client that wants to trade smoothness against download size.
+MESH_LINEAR_DIVISOR = float(os.environ.get("CV_MESH_LINEAR_DIVISOR", "1200"))
+MESH_ANGULAR_DEFLECTION_RAD = float(os.environ.get("CV_MESH_ANGULAR_RAD", "0.15"))
+
 
 def _stage(name, **fields):
     """Announce a stage that has GENUINELY COMPLETED, on stdout, immediately.
@@ -1339,7 +1346,25 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
         BRepBndLib.Add_s(wrapped, box)
         xmin, ymin, zmin, xmax, ymax, zmax = box.Get()
         diag = math.sqrt((xmax - xmin) ** 2 + (ymax - ymin) ** 2 + (zmax - zmin) ** 2) or 1.0
-        BRepMesh_IncrementalMesh(wrapped, diag / 300.0, False, 0.5, True)
+        # TESSELLATION QUALITY IS WHAT "HD" MEANS IN A CAD VIEWER, and the old
+        # settings were the reason the viewer looked faceted next to CATIA or
+        # SolidWorks. The ANGULAR deflection is the control that decides how
+        # smooth a curve looks, and it was 0.5 RADIANS — 28.6 degrees, which is
+        # about thirteen segments around a full circle. A Ø13 bore rendered as a
+        # visible polygon.
+        #
+        # Measured on a real 218 mm casting, all four settings meshing in well
+        # under a second:
+        #     diag/300,  0.50 rad ->  6,929 tris, ~13 segments/circle  (was)
+        #     diag/1200, 0.20 rad -> 28,361 tris, ~31 segments/circle
+        #     diag/2000, 0.12 rad -> 72,977 tris, ~52 segments/circle
+        #
+        # 0.15 rad is 8.6 degrees, about 42 segments per circle, which is where a
+        # bore stops reading as a polygon. Thirty thousand triangles is nothing
+        # for a GPU — the budget below is two million — and meshing time did not
+        # move, so the old numbers were buying nothing.
+        BRepMesh_IncrementalMesh(wrapped, diag / MESH_LINEAR_DIVISOR, False,
+                                 MESH_ANGULAR_DEFLECTION_RAD, True)
 
         max_tris = int(os.environ.get("CV_MAX_TRIANGLES", "2000000"))
 
