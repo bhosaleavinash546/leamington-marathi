@@ -46,16 +46,42 @@ export function extractMeasures(geo = {}) {
   // the kernel. Worst case across the part, so one bad hole is not averaged away
   // by twenty good ones.
   const table = Array.isArray(geo.featureTable) ? geo.featureTable : [];
+  // WHICH feature, not just the worst number. A finding that says "max hole
+  // depth/diameter is 8.2" sends a supplier hunting through the model; a finding
+  // that says "Ø6 x 49, four of them, first at (12, -30, 4)" is a review
+  // document. The rows already carry diameter, depth, count and per-instance
+  // positions, so the offenders are collected here alongside the ratio rather
+  // than being thrown away and re-derived nowhere.
+  const instancesOf = (kind, overKey, byKey) => table
+    .filter(f => f.kind === kind)
+    .map(f => ({
+      ratio: Math.round((Number(f[overKey]) / Number(f[byKey])) * 100) / 100,
+      diaMm: f.diaMm, depthMm: f.depthMm, through: f.through, count: f.count,
+      atXYZ: f.axisPointXYZ ?? null,
+      instancesXYZ: Array.isArray(f.instancesXYZ) ? f.instancesXYZ.slice(0, 8) : null,
+    }))
+    .filter(r => Number.isFinite(r.ratio) && r.ratio > 0)
+    .sort((a, b) => b.ratio - a.ratio);
+
   const ratioOverTable = (kind, overKey, byKey) => {
-    const vals = table
-      .filter(f => f.kind === kind)
-      .map(f => Number(f[overKey]) / Number(f[byKey]))
-      .filter(v => Number.isFinite(v) && v > 0);
-    return vals.length ? Math.round(Math.max(...vals) * 100) / 100 : undefined;
+    const vals = instancesOf(kind, overKey, byKey).map(r => r.ratio);
+    return vals.length ? Math.max(...vals) : undefined;
   };
 
   const ribs = Array.isArray(features.ribs) ? features.ribs : [];
   const nominalWall = num(wall.p50Mm);
+  const ribInstances = (key, ascending = false) => {
+    if (!ribs.length || !(nominalWall > 0)) return [];
+    return ribs
+      .map(r => ({
+        ratio: Math.round((Number(r[key]) / nominalWall) * 1000) / 1000,
+        thicknessMm: r.thicknessMm, heightMm: r.heightMm, lengthMm: r.lengthMm,
+        atXYZ: r.centroidXYZ ?? null,
+      }))
+      .filter(r => Number.isFinite(r.ratio) && r.ratio > 0)
+      .sort((a, b) => (ascending ? a.ratio - b.ratio : b.ratio - a.ratio));
+  };
+
   const ribRatio = (pick, key) => {
     if (!ribs.length || !(nominalWall > 0)) return undefined;
     const vals = ribs.map(r => Number(r[key])).filter(v => Number.isFinite(v) && v > 0);
@@ -99,6 +125,20 @@ export function extractMeasures(geo = {}) {
     // arithmetic. A raw distance would need a per-part formula the evaluator
     // cannot express, and the rule would abstain forever.
     holeToBendClearanceMm: num(sm.holeToBendClearanceMm),
+
+    // The offenders behind the ratio measures, in worst-first order. Consumed by
+    // runDfmRules to attach `instances` to a finding; stripped from the measure
+    // map itself so a rule can never accidentally be written against a list.
+    // Absent, not empty, when there is nothing to list — the same discipline
+    // every measure above follows. An empty object here would still read as
+    // "measured, and the answer was nothing".
+    _instances: nonEmpty({
+      maxHoleDepthToDia: instancesOf('hole', 'depthMm', 'diaMm'),
+      maxBossHeightToDia: instancesOf('boss', 'depthMm', 'diaMm'),
+      maxRibThicknessToWall: ribInstances('thicknessMm'),
+      minRibThicknessToWall: ribInstances('thicknessMm', true),
+      maxRibHeightToWall: ribInstances('heightMm'),
+    }),
 
     // THE DRAFT CURVE, not one point on it. `wallAreaBelowMinDraftPct` above is
     // measured against a hardcoded 1 degree, which is the right question for
@@ -167,9 +207,21 @@ export function runDfmRules(geo, process, { material } = {}) {
 
   for (const rule of rules) {
     // A draft rule names the angle it means; everything else reads a flat measure.
-    const value = rule.measure === 'wallAreaBelowDraftPct'
-      ? numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)])
-      : measures[rule.measure];
+    // A draft rule names the angle it means and reads that point off the curve.
+    // When the curve is absent — an analysis stored before it existed — the
+    // legacy `wallAreaBelowMinDraftPct` IS the 1-degree point and nothing else,
+    // so it substitutes for exactly that angle and for no other. Using it for a
+    // rule that asked about 5 degrees would be the original bug wearing a
+    // fallback, so the rule abstains instead.
+    let value;
+    if (rule.measure === 'wallAreaBelowDraftPct') {
+      value = numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
+      if (value === undefined && rule.draftCutoffDeg === 1.0) {
+        value = measures.wallAreaBelowMinDraftPct;
+      }
+    } else {
+      value = measures[rule.measure];
+    }
     const picked = resolveThreshold(rule, material, materialFamily);
     const effective = { ...rule, threshold: picked.threshold };
     const { status, reason } = evaluate(effective, value);
@@ -192,6 +244,16 @@ export function runDfmRules(geo, process, { material } = {}) {
       thresholdMatchedOn: picked.matchedOn,
       status,
     };
+    // The specific features that break this rule, worst first. Only the ones
+    // that actually fail — listing every hole under a "hole too deep" finding
+    // would bury the two that are wrong among the twenty that are fine.
+    const all = measures._instances?.[rule.measure];
+    if (Array.isArray(all) && all.length) {
+      const offenders = all.filter(inst => evaluate(effective, inst.ratio).status === 'fail');
+      if (offenders.length) row.instances = offenders.slice(0, 12);
+      row.instanceCount = offenders.length;
+      row.instanceTotal = all.length;
+    }
     if (status === 'fail') findings.push(row);
     else if (status === 'pass') passed.push(row);
     else {
@@ -242,6 +304,12 @@ export function runAllDfmRules(geo, opts) {
 }
 
 const numberOr = v => (Number.isFinite(Number(v)) ? Number(v) : undefined);
+
+/** The object, or undefined when every list in it is empty. */
+function nonEmpty(obj) {
+  const kept = Object.fromEntries(Object.entries(obj).filter(([, v]) => v?.length));
+  return Object.keys(kept).length ? kept : undefined;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // What the GEOMETRY says the process is.

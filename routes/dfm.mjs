@@ -17,6 +17,7 @@ import { runDfmRules, runAllDfmRules, inferProcessFamily, processFamilyConflict 
 import {
   dfmOptions, familyForSelection, familyOfMaterial, processesForMaterial,
 } from '../dfm-process-registry.mjs';
+import { compareRoutes, rankRoutes } from '../dfm-routing.mjs';
 import { priceFindings, summarisePricedImpact } from '../dfm-cost-impact.mjs';
 import { DFM_RULES, PROCESS_FAMILIES, UNWRITTEN_RULES } from '../dfm-rule-catalogue.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
@@ -307,6 +308,14 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       // whether a number was tuned to this material or is the generic band.
       material: material || null,
       materialFamily: material ? familyOfMaterial(material) ?? null : null,
+      // EVERY VIABLE ROUTE, not just the one that was chosen. The report answers
+      // "is this part good for the process you named"; the question a cost
+      // engineer actually arrives with is "which process should make it". Both
+      // are now on the page, from one measurement of the geometry.
+      routes: weightKg > 0 && material
+        ? compareRoutes(geo, { material, region: req.body?.region || 'Germany',
+            annualVolume: numOr(req.body?.annualVolume, 50000), weightKg })
+        : null,
       // Named when the chosen process shapes nothing, so the reader is told why
       // there are no findings instead of seeing an empty report.
       noDfmRulesReason: selected.basis === 'no-rules' ? selected.reason : null,

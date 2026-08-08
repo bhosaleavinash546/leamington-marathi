@@ -18,7 +18,12 @@ import { priceFindings, summarisePricedImpact } from '../dfm-cost-impact.mjs';
 const THICK_UNDRAFTED = {
   dfm: {
     wallThickness: { p5Mm: 4.6, p50Mm: 5.0, p95Mm: 5.4, spreadRatio: 0.16 },
-    draft: { wallAreaBelowMinDraftPct: 100, minWallDraftDeg: null, undercutFaceCount: 1 },
+    // Carries the curve AND the legacy single figure: production emits both, and
+    // an analysis stored before the curve existed carries only the latter.
+    draft: {
+      wallAreaBelowMinDraftPct: 100, minWallDraftDeg: null, undercutFaceCount: 1,
+      wallAreaBelowDraftPct: { '0.5': 100, '1': 100, '1.5': 100, '2': 100, '3': 100, '5': 100, '7': 100 },
+    },
     setups: { estimatedSetupCount: 5 },
     features: { prismatic: [] },
   },
@@ -27,7 +32,10 @@ const THICK_UNDRAFTED = {
 const GOOD_CASTING = {
   dfm: {
     wallThickness: { p5Mm: 2.4, p50Mm: 2.5, p95Mm: 2.6, spreadRatio: 0.08 },
-    draft: { wallAreaBelowMinDraftPct: 0, minWallDraftDeg: 3.0, undercutFaceCount: 0 },
+    draft: {
+      wallAreaBelowMinDraftPct: 0, minWallDraftDeg: 3.0, undercutFaceCount: 0,
+      wallAreaBelowDraftPct: { '0.5': 0, '1': 0, '1.5': 0, '2': 0, '3': 0, '5': 0, '7': 0 },
+    },
     setups: { estimatedSetupCount: 1 },
     features: { prismatic: [] },
   },

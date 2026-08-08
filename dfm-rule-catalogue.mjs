@@ -231,7 +231,10 @@ export const DFM_RULES = [
     process: 'injection-moulding',
     severity: 'high',
     title: 'Wall area below the minimum draft angle',
-    measure: 'wallAreaBelowMinDraftPct',
+    measure: 'wallAreaBelowDraftPct',
+    // 1 degree per side is the smooth-wall figure. Texture needs far more, and
+    // texture is not in the solid — see `rationale`.
+    draftCutoffDeg: 1.0,
     compare: 'lte',
     threshold: 5,
     unit: '% of wall area',
@@ -358,7 +361,8 @@ export const DFM_RULES = [
     process: 'hpdc',
     severity: 'high',
     title: 'Wall area below the minimum die-casting draft',
-    measure: 'wallAreaBelowMinDraftPct',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 1.0,
     compare: 'lte',
     threshold: 5,
     unit: '% of wall area',
