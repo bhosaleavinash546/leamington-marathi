@@ -618,3 +618,27 @@ Format: decision · why · what would change it.
     So every caller was marked gone before the analysis started and every progress event was
     swallowed, while the final result still went out. It watches `res.on('close')` now. The
     symptom is worth remembering: a stream that appeared to work and showed no progress.
+
+49. **The report carries the part with its findings marked ON it (2026).**
+    *Why:* this is the thing the incumbents do and we did not. A DFM report that says "34
+    undercut regions, 38.38% below minimum draft" makes a supplier open CAD to find out
+    where; DFMA and aPriori put the finding on the geometry. The export now captures the
+    viewer at 1400x1000 from three angles and embeds each with numbered markers on the
+    faces that caused the findings, plus a legend carrying each measured value.
+    NUMBERED MARKERS AND A LEGEND, not floating labels: labels placed at their anchors
+    collide the moment two findings are near each other, and the usual fixes — nudging,
+    leader elbows — fail on a dense casting. A numbered ring on the geometry and a numbered
+    list beneath is what an engineering drawing has always done and it never collides.
+    Off-screen anchors are DROPPED, never clamped to the frame edge, because a leader line
+    pointing off the picture is worse than none; a view with nothing visible says so.
+    *Changes it:* figures are the SECOND ARGUMENT to `exportDfmPdf`, not a field on the data
+    object. `deepPdfSafe` walks every string codepoint by codepoint with rope
+    concatenation, so a megabyte of base64 through it would visibly jank the export, and a
+    non-string image payload would be silently rebuilt as a plain object and destroyed.
+    Image data never enters the sanitiser. The markers are drawn as VECTOR over the raster,
+    which is both sharper in print and unavoidable: the viewer's own callouts are DOM and
+    never appear in a WebGL capture at all. And the headless QA harness now renders the
+    report TWICE — once without figures, the branch a browserless caller and any failed
+    capture takes, and once with a real data URI, proving jsPDF decodes it in node where
+    there is no canvas. A PDF byte-size gate came with it: there was none, and the failure
+    mode of embedded renders is a report too large to email.

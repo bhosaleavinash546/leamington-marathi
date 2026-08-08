@@ -66,6 +66,34 @@ export interface DfmProcessResult {
 
 export interface AnalysisLimit { kind: string; severity: 'blocking' | 'warning'; message: string }
 
+/**
+ * A rendered view of the part with its findings located on it.
+ *
+ * `callouts` carry NORMALISED 0..1 coordinates measured against the same camera
+ * that produced `dataUri`, so the marker lands on the face that caused the
+ * finding. They are drawn as VECTOR over the raster, which keeps callout text
+ * sharp at print resolution instead of upscaling screen pixels — and is forced
+ * anyway, because the viewer's own labels are DOM and never appear in a WebGL
+ * capture.
+ */
+export interface DfmFigure {
+  id: string;
+  view: string;
+  /** JPEG/PNG data URI straight from the viewer. */
+  dataUri: string;
+  width: number;
+  height: number;
+  callouts: Array<{
+    n: number;
+    /** 0..1 from the left / top of the image. */
+    x: number;
+    y: number;
+    label: string;
+    value?: string;
+    severity?: string;
+  }>;
+}
+
 export interface DfmReportData {
   partName?: string;
   analysisLimits?: AnalysisLimit[];
@@ -99,6 +127,11 @@ const SEV: Record<string, RGB> = { high: RED, medium: AMBER, low: TEAL };
 // out everywhere else — so the grade travels with the citation. 24 of the 26
 // rules are industry consensus: widely published, mutually consistent, and not
 // checked against a primary standard or any measured scrap data.
+const VIEW_LABEL: Record<string, string> = {
+  iso: 'Isometric', front: 'Front', back: 'Back', top: 'Top',
+  bottom: 'Bottom', right: 'Right', left: 'Left',
+};
+
 const SOURCE_GRADE: Record<string, string> = {
   'standard-named': 'NAMED STANDARD, not read first-hand',
   'industry-consensus': 'INDUSTRY CONSENSUS, no primary source audited',
@@ -125,7 +158,12 @@ function fit(doc: jsPDF, text: string, max: number): string {
   return `${s.trimEnd()}...`;
 }
 
-export function exportDfmPdf(dataIn: DfmReportData): void {
+export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): void {
+  // FIGURES ARE A SEPARATE ARGUMENT ON PURPOSE. deepPdfSafe walks every string
+  // in `dataIn` character by character with rope concatenation; a megabyte of
+  // base64 through that loop would visibly jank the export, and any non-string
+  // image payload would be silently rebuilt as a plain object and destroyed.
+  // Image data never enters the sanitiser — only its short labels do.
   const data: DfmReportData = deepPdfSafe(dataIn);
   const subject = pdfSafe(data.partName || data.fileName || 'Part');
   const today = new Date().toISOString().split('T')[0];
@@ -323,6 +361,75 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
       y += 5;
     });
     y += 2;
+  }
+
+  // ── Located evidence ───────────────────────────────────────────────────────
+  // The part, with the findings marked ON it. This is the difference between a
+  // report that asserts "34 undercut regions" and one a supplier can act on
+  // without opening CAD.
+  //
+  // NUMBERED MARKERS WITH A LEGEND, not floating labels. Labels placed at their
+  // anchors overlap the moment two findings are near each other, and the usual
+  // fixes (nudging, leader elbows) fail on a dense casting. A numbered ring on
+  // the geometry and a numbered list beneath is what an engineering drawing has
+  // always done, and it never collides.
+  if (figures.length) {
+    for (const fig of figures) {
+      if (!fig.dataUri) continue;
+      newPage();
+      sectionTitle('Located evidence', `${VIEW_LABEL[fig.view] ?? fig.view} view`);
+
+      const imgW = CW;
+      const imgH = Math.min(imgW * (fig.height / fig.width), 150);
+      ensure(imgH + 12);
+      const imgY = y;
+      try {
+        // JPEG, matching what the viewer produces. Format is passed explicitly
+        // because jsPDF sniffs otherwise and gets it wrong on some data URIs.
+        doc.addImage(fig.dataUri, fig.dataUri.includes('image/png') ? 'PNG' : 'JPEG',
+          ML, imgY, imgW, imgH);
+      } catch {
+        // A bad capture must not lose the report. Say so where the image was.
+        setFill(doc, PANEL); doc.rect(ML, imgY, imgW, imgH, 'F');
+        sans(9); setText(doc, MUT);
+        doc.text('This view could not be captured.', ML + 6, imgY + 10);
+      }
+      setDraw(doc, RULE, 0.3); doc.rect(ML, imgY, imgW, imgH);
+
+      // Markers, drawn as vector over the raster so they stay sharp in print.
+      for (const c of fig.callouts) {
+        const cx = ML + c.x * imgW;
+        const cy = imgY + c.y * imgH;
+        const col = SEV[c.severity ?? ''] ?? TEAL;
+        setDraw(doc, col, 0.5); setFill(doc, [255, 255, 255]);
+        doc.circle(cx, cy, 2.6, 'FD');
+        setText(doc, col); mono(6.4, true);
+        doc.text(String(c.n), cx, cy + 1.05, { align: 'center' });
+      }
+      y = imgY + imgH + 5;
+
+      if (fig.callouts.length) {
+        mono(6.2); setText(doc, MUT);
+        doc.text('WHAT IS MARKED, AND WHAT IT MEASURES', ML, y); y += 4.5;
+        for (const c of fig.callouts) {
+          ensure(5.2);
+          const col = SEV[c.severity ?? ''] ?? TEAL;
+          setDraw(doc, col, 0.4); setFill(doc, [255, 255, 255]);
+          doc.circle(ML + 2, y - 1.1, 2.4, 'FD');
+          setText(doc, col); mono(6.2, true);
+          doc.text(String(c.n), ML + 2, y - 0.25, { align: 'center' });
+          sans(9); setText(doc, INK);
+          doc.text(fit(doc, c.label, 60), ML + 7, y);
+          setText(doc, BODY);
+          doc.text(fit(doc, c.value ?? '', CW - 75), ML + 70, y);
+          y += 5;
+        }
+      } else {
+        wrapped('No located finding is visible from this angle. The markers are '
+          + 'dropped rather than pushed to the edge of the frame, because a leader '
+          + 'line pointing off the picture is worse than none.', 8.6, MUT, CW, 4, 'italic');
+      }
+    }
   }
 
   // ── Per-process results ────────────────────────────────────────────────────

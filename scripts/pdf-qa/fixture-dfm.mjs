@@ -140,3 +140,28 @@ export const DFM_RESULT = {
     },
   },
 };
+
+
+/**
+ * Annotated views, passed as the SECOND argument to exportDfmPdf.
+ *
+ * A flat placeholder image rather than a real render — this harness has no
+ * WebGL and never will. What it proves is that the report consumes a data URI
+ * as data, places markers at normalised coordinates, and paginates around the
+ * image. The `noCallouts` view exercises the "nothing visible from this angle"
+ * branch, which is the one a reader hits on a real part.
+ */
+export const DFM_FIGURES = [
+  {
+    id: 'iso', view: 'iso', width: 140, height: 100,
+    dataUri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAABkCAIAAADbtU+GAAABTElEQVR4nO3OQQ3AMADEsCApgKIYf1SDkOf1EckAzLlfHsd8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EPUDcXcPNAHVkcQAAAAASUVORK5CYII=',
+    callouts: [
+      { n: 1, x: 0.22, y: 0.31, label: 'Undercut', value: '2,256.45 mm2', severity: 'high' },
+      { n: 2, x: 0.68, y: 0.44, label: 'Zero draft', value: '0.4 deg', severity: 'medium' },
+      { n: 3, x: 0.51, y: 0.77, label: 'Thinnest wall', value: '2.1 mm', severity: 'medium' },
+      { n: 4, x: 0.95, y: 0.05, label: 'Rib 1 - a deliberately long label to test truncation', value: '4.85 x 28.4 mm', severity: 'info' },
+    ],
+  },
+  { id: 'front', view: 'front', width: 140, height: 100,
+    dataUri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAABkCAIAAADbtU+GAAABTElEQVR4nO3OQQ3AMADEsCApgKIYf1SDkOf1EckAzLlfHsd8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EPUDcXcPNAHVkcQAAAAASUVORK5CYII=', callouts: [] },
+];

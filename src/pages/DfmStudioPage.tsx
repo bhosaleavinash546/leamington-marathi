@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import CadViewer3D, { type CadViewerRef } from '../components/CadViewer3D';
+import type { DfmFigure } from '../services/dfm-report';
 import { useAuth } from '../contexts/AuthContext';
 
 // DFM / DFA Studio. Upload a STEP or IGES part and get a manufacturability
@@ -224,11 +225,51 @@ export default function DfmStudioPage() {
         dfa: dfa?.dfa ?? null,
         subject: { part: result.partName, material, process: costProcess },
       };
-      if (kind === 'pdf') mod.exportDfmPdf(payload as never);
+      if (kind === 'pdf') mod.exportDfmPdf(payload as never, await captureFigures());
       else await mod.exportDfmXlsx(payload as never);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Export failed');
     } finally { setExporting(''); }
+  }
+
+  /**
+   * Render the annotated views the PDF embeds as evidence.
+   *
+   * Two things happen per view and the ORDER matters: the snapshot moves the
+   * camera and captures, then the anchors are projected against THAT camera. Do
+   * it the other way round and every leader line is drawn for a view the reader
+   * is not looking at.
+   *
+   * The callouts themselves are deliberately NOT in the pixels. CSS2D labels are
+   * DOM and never appear in a WebGL capture, so the PDF gets the clean render and
+   * draws its markers as vector on top — sharp at print resolution rather than
+   * upscaled screen text.
+   */
+  async function captureFigures(): Promise<DfmFigure[]> {
+    const v = viewerRef.current;
+    if (!v || !file) return [];
+    const W = 1400, H = 1000;
+    const out: DfmFigure[] = [];
+    for (const view of ['iso', 'front', 'top'] as const) {
+      try {
+        const dataUri = await v.snapshot({ view, width: W, height: H });
+        if (!dataUri) continue;
+        const projected = await v.projectAnchors();
+        const byId = new Map(projected.map(p2 => [p2.id, p2]));
+        out.push({
+          id: view, view, width: W, height: H, dataUri,
+          // Off-screen anchors are DROPPED, never clamped to an edge: a clamped
+          // leader line points at a face that is not in the picture.
+          callouts: annotations.flatMap((a, i) => {
+            const p2 = byId.get(a.id);
+            if (!p2?.visible) return [];
+            return [{ n: i + 1, x: p2.x, y: p2.y, label: a.label, value: a.value ?? '', severity: a.severity ?? 'info' }];
+          }),
+        });
+      } catch { /* one bad view must not lose the whole export */ }
+    }
+    await v.setView('iso');
+    return out;
   }
 
   const dfmBlock = result?.dfm ?? {};
