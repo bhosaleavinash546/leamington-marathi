@@ -173,6 +173,14 @@ export const DFM_RULES = [
   },
   {
     id: 'mach-thin-web',
+    byMaterialFamily: {
+      ferrous: { threshold: 0.8, source: 'Minimum machined web in steel: 0.8 mm. Steel is three times stiffer than aluminium, so it deflects less under the same cutting force and tolerates a thinner web — the opposite of what "harder material, thicker wall" intuition suggests.' },
+      castiron: { threshold: 1.0, source: 'Minimum machined web in cast iron: 1.0 mm. Stiff, but brittle, so a thin web chips at the exit rather than deflecting.' },
+      titanium: { threshold: 1.2, source: 'Minimum machined web in titanium: 1.2 mm. Titanium is only half as stiff as steel and work-hardens under a rubbing tool, so a thin web chatters badly.' },
+      aluminium: { threshold: 1.0, source: 'Minimum machined web in aluminium: 1.0 mm. Low cutting forces offset the low stiffness.' },
+      magnesium: { threshold: 1.2, source: 'Minimum machined web in magnesium: 1.2 mm — the least stiff of the common structural metals.' },
+      plastic: { threshold: 2.0, source: 'Minimum machined web in an engineering thermoplastic: 2.0 mm. Two orders of magnitude less stiff than steel, and it heats and creeps away from the cutter.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'machining',
     severity: 'high',
@@ -189,6 +197,13 @@ export const DFM_RULES = [
 
   {
     id: 'mach-hole-depth-ratio',
+    byMaterialFamily: {
+      aluminium: { threshold: 6, source: 'Drill depth in aluminium: 6x diameter with a standard jobber drill. Short chips and high thermal conductivity keep the flutes clear further than in steel.' },
+      ferrous: { threshold: 4, source: 'Drill depth in steel: 4x diameter before pecking. Long stringy chips pack the flutes.' },
+      castiron: { threshold: 5, source: 'Drill depth in cast iron: 5x diameter. Graphite flake breaks the chip, which helps evacuation.' },
+      titanium: { threshold: 3, source: 'Drill depth in titanium: 3x diameter. Poor thermal conductivity puts the heat into the tool, not the chip, so the drill fails before the hole is finished.' },
+      plastic: { threshold: 6, source: 'Drill depth in thermoplastic: 6x diameter, limited by melting and re-welding of the chip rather than by tool wear.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'machining',
     severity: 'medium',
@@ -302,6 +317,13 @@ export const DFM_RULES = [
   // with its own fix.
   {
     id: 'im-rib-thickness-max',
+    byMaterial: {
+      'POM (Acetal)': { threshold: 0.5, source: 'Acetal shrinks about 2% — twice an amorphous resin — so a rib at 60% of the wall sinks visibly on the show face. 50% is the practical ceiling.' },
+      'PA6 (Nylon)': { threshold: 0.5, source: 'Nylon is semi-crystalline and shrinks heavily; a rib above half the wall reads through as a sink mark.' },
+      'PA66-GF30 (glass-filled)': { threshold: 0.6, source: 'Glass fill suppresses shrinkage in the flow direction, so a filled nylon tolerates a fuller rib than the unfilled resin.' },
+      'ABS': { threshold: 0.6, source: 'ABS is amorphous and shrinks about 0.5%, so it hides a fuller rib.' },
+      'Polycarbonate (PC)': { threshold: 0.6, source: 'PC is amorphous and low-shrink; the limit is sink on a gloss surface rather than the rib itself.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'medium',
@@ -390,6 +412,9 @@ export const DFM_RULES = [
   },
   {
     id: 'hpdc-draft-minimum',
+    byMaterialFamily: {
+      magnesium: { threshold: 8, source: 'Magnesium shrinks onto the die less than aluminium and releases more readily, so a larger share of wall area below the nominal draft is tolerable before ejection becomes the problem.' },
+    },
     sourceStatus: 'standard-named',
     process: 'hpdc',
     severity: 'high',
@@ -453,6 +478,9 @@ export const DFM_RULES = [
   },
   {
     id: 'hpdc-core-ld',
+    byMaterialFamily: {
+      magnesium: { threshold: 12, source: 'Magnesium enters the die cooler than aluminium and erodes core pins less, so a longer pin survives production.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'high',
@@ -543,6 +571,11 @@ export const DFM_RULES = [
   },
   {
     id: 'sm-hole-diameter',
+    byMaterial: {
+      'Stainless Steel 304': { threshold: 1.2, source: 'Minimum pierced hole in annealed 304: 1.2x thickness. Austenitic stainless work-hardens as the punch enters, so it needs a larger hole than mild steel to avoid punch breakage.' },
+      'Steel (high-strength)': { threshold: 1.5, source: 'Minimum pierced hole in AHSS/HSLA: 1.5x thickness and upward with yield strength — the punch force scales with strength and slender punches snap.' },
+      'Aluminium 6061': { threshold: 1.0, source: 'Minimum pierced hole in 6061: 1.0x thickness.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'sheet-metal',
     severity: 'medium',
@@ -589,6 +622,10 @@ export const DFM_RULES = [
 
   {
     id: 'sm-hole-to-hole',
+    byMaterial: {
+      'Steel (high-strength)': { threshold: 2.5, source: 'Minimum web between pierced holes in AHSS: 2.5x thickness. A high-strength web has less uniform elongation and tears rather than stretching.' },
+      'Stainless Steel 304': { threshold: 2.5, source: 'Minimum web between pierced holes in 304: 2.5x thickness, because the work-hardened rim of the first hole embrittles the web for the second.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'sheet-metal',
     severity: 'medium',
@@ -604,6 +641,9 @@ export const DFM_RULES = [
   },
   {
     id: 'sm-hole-to-edge',
+    byMaterial: {
+      'Steel (high-strength)': { threshold: 2.5, source: 'Minimum edge distance in AHSS: 2.5x thickness — the sheared edge is already work-hardened and cracks propagate from it.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'sheet-metal',
     severity: 'medium',
@@ -632,6 +672,672 @@ export const DFM_RULES = [
     fix: 'Open the land between the bends to at least 4t, or form them in one operation with a dedicated tool.',
     source: 'Sheet-metal design guidance (minimum flat between parallel bends).',
   },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DEPTH FOR THE FAMILIES THAT HAD ONLY A HEADLINE RULE.
+  //
+  // Gravity die, sand, investment, zinc HPDC, roll forming, hydroforming,
+  // forging and RTM each arrived with three or four rules — enough to say the
+  // family existed, not enough to review a part with. What follows is the same
+  // physics the older families already check, at each process's own numbers:
+  // the thinnest LOCAL section (a median wall can be healthy while one web
+  // misruns, and a misrun is scrap rather than a tolerance), rib proportions
+  // against the nominal wall, boss slenderness against the core that makes it,
+  // and section uniformity where the process cares.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'gdc-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'high',
+    title: 'Local section below the process minimum',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 2.5,
+    unit: 'mm',
+    rationale:
+      'Gravity casting fills under its own head. The MEDIAN wall can be healthy while one thin web misruns, and a misrun is scrap rather than a tolerance problem — so the thinnest place is checked separately from the nominal.',
+    fix: 'Thicken the thinnest region, or move the feature to where the section is already full.',
+    source: 'Process minimum-section guidance. Checked on the 5th-percentile wall, which is the thinnest measured place rather than the nominal.',
+  },
+  {
+    id: 'sand-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'sand-casting',
+    severity: 'high',
+    title: 'Local section below the process minimum',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 3.5,
+    unit: 'mm',
+    rationale:
+      'A sand mould is weak and the metal must carry itself through it. One thin web below about 3.5 mm in aluminium misruns or erodes the sand into the casting, whatever the median section says.',
+    fix: 'Thicken the thinnest region, or move the feature to where the section is already full.',
+    source: 'Process minimum-section guidance. Checked on the 5th-percentile wall, which is the thinnest measured place rather than the nominal.',
+  },
+  {
+    id: 'inv-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'investment-casting',
+    severity: 'high',
+    title: 'Local section below the process minimum',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 1.2,
+    unit: 'mm',
+    rationale:
+      'The preheated shell keeps metal fluid a long way, but below about 1.2 mm even investment casting misruns. This is the process floor, not the design target.',
+    fix: 'Thicken the thinnest region, or move the feature to where the section is already full.',
+    source: 'Process minimum-section guidance. Checked on the 5th-percentile wall, which is the thinnest measured place rather than the nominal.',
+  },
+  {
+    id: 'hpdc-zinc-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'high',
+    title: 'Local section below the process minimum',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'mm',
+    rationale:
+      'Zinc fills thinner than any other die-cast alloy, and 0.5 mm is roughly where even zinc stops. A local web thinner than the nominal wall is where a short shot starts.',
+    fix: 'Thicken the thinnest region, or move the feature to where the section is already full.',
+    source: 'Process minimum-section guidance. Checked on the 5th-percentile wall, which is the thinnest measured place rather than the nominal.',
+  },
+  {
+    id: 'rubber-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'rubber-moulding',
+    severity: 'high',
+    title: 'Local section below the process minimum',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 0.8,
+    unit: 'mm',
+    rationale:
+      'Uncured rubber is stiff and slow-flowing. A local section below about 0.8 mm will not fill before the compound scorches.',
+    fix: 'Thicken the thinnest region, or move the feature to where the section is already full.',
+    source: 'Process minimum-section guidance. Checked on the 5th-percentile wall, which is the thinnest measured place rather than the nominal.',
+  },
+  {
+    id: 'rtm-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'composite-rtm',
+    severity: 'high',
+    title: 'Local section below the process minimum',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 1.0,
+    unit: 'mm',
+    rationale:
+      'A laminate cannot be thinner than the plies it is built from. Below about 1 mm there are too few plies to lay up repeatably and the resin flow front stalls.',
+    fix: 'Thicken the thinnest region, or move the feature to where the section is already full.',
+    source: 'Process minimum-section guidance. Checked on the 5th-percentile wall, which is the thinnest measured place rather than the nominal.',
+  },
+  {
+    id: 'hydro-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'hydroforming',
+    severity: 'high',
+    title: 'Local section below the process minimum',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 0.8,
+    unit: 'mm',
+    rationale:
+      'The tube thins where it expands, and the thinnest surviving section is what bursts. It is the measure that predicts the failure, not the average.',
+    fix: 'Thicken the thinnest region, or move the feature to where the section is already full.',
+    source: 'Process minimum-section guidance. Checked on the 5th-percentile wall, which is the thinnest measured place rather than the nominal.',
+  },
+  {
+    id: 'forge-hot-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'forging-hot',
+    severity: 'medium',
+    title: 'Section varies more than the process tolerates',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.9,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'Metal flows from thick to thin under the die, and a large section change means the thin region fills last, against the most die chilling. It is also where the die cracks, because the pressure needed to fill it is highest.',
+    fix: 'Even out the section and add generous fillets so metal reaches the thin regions.',
+    source: 'Process section-uniformity guidance.',
+  },
+  {
+    id: 'forge-cold-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'forging-cold',
+    severity: 'medium',
+    title: 'Section varies more than the process tolerates',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.7,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'Cold forging work-hardens as it flows, so a large section change means the last region to fill is also the hardest to fill. Tool life is set by that region.',
+    fix: 'Even out the section, or split the shape across two blows with an intermediate anneal.',
+    source: 'Process section-uniformity guidance.',
+  },
+  {
+    id: 'rtm-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'composite-rtm',
+    severity: 'medium',
+    title: 'Section varies more than the process tolerates',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.8,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'Resin flows fastest through the thickest part of the preform, so an uneven laminate traps dry spots at the flow-front convergence. Thickness change is also where a laminate delaminates.',
+    fix: 'Even out the ply count, and taper thickness changes over at least 20:1 rather than stepping them.',
+    source: 'Process section-uniformity guidance.',
+  },
+  {
+    id: 'gdc-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'medium',
+    title: 'Undercuts complicate the tool',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'A permanent mould opens on a fixed axis. An undercut needs a loose piece or a sand core set into the steel die, which adds a core-making operation and a setting step to every cycle.',
+    fix: 'Re-orient the part on the mould split, or design the feature to be formed by the sand core that is already there.',
+    source: 'Process tooling guidance (split lines, loose pieces and cores).',
+  },
+  {
+    id: 'inv-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'investment-casting',
+    severity: 'low',
+    title: 'Undercuts complicate the tool',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'The ceramic shell is broken away, so the CASTING has no undercut problem — but the wax pattern still has to leave its own die, and that die is a two-part tool. An undercut moves the cost into the wax tooling rather than removing it.',
+    fix: 'Re-orient the pattern on its die split, or accept a loose piece in the wax tool.',
+    source: 'Process tooling guidance (split lines, loose pieces and cores).',
+  },
+  {
+    id: 'rubber-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'rubber-moulding',
+    severity: 'low',
+    title: 'Undercuts complicate the tool',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'Rubber strips off undercuts that would lock a rigid part in the tool — that elasticity is a genuine design freedom. Each one still slows demoulding and eventually tears the part, so the count is a cycle-time driver.',
+    fix: 'Keep undercuts shallow enough to strip, or split the tool where they are deep.',
+    source: 'Process tooling guidance (split lines, loose pieces and cores).',
+  },
+  {
+    id: 'gdc-rib-thickness-max',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'medium',
+    title: 'Rib heavier than the wall it stands on',
+    measure: 'maxRibThicknessToWall',
+    compare: 'lte',
+    threshold: 0.8,
+    unit: 'rib/wall',
+    rationale:
+      'A gravity casting freezes slowly, so a rib fuller than about 80% of the wall becomes a hot spot with no feed path and draws shrinkage into the junction.',
+    fix: 'Thin the rib, or add two thinner ribs instead of one heavy one.',
+    source: 'Casting rib-proportion guidance (rib thickness against nominal wall).',
+  },
+  {
+    id: 'gdc-rib-thickness-min',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'medium',
+    title: 'Rib too thin to fill before it freezes',
+    measure: 'minRibThicknessToWall',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'rib/wall',
+    rationale:
+      'A rib is the last thing to fill and the first thing to freeze, because it presents the most surface for its volume. Below this fraction of the nominal wall it will not fill reliably.',
+    fix: 'Thicken the rib towards the process minimum, or shorten it so the metal has less distance to travel.',
+    source: 'Casting rib-proportion guidance (fill limit against nominal wall).',
+  },
+  {
+    id: 'gdc-rib-height',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'low',
+    title: 'Rib taller than the wall can support',
+    measure: 'maxRibHeightToWall',
+    compare: 'lte',
+    threshold: 4,
+    unit: 'rib height/wall',
+    rationale:
+      'A tall rib must fill against die chilling along its whole length, and it also concentrates stress at its base where the section changes.',
+    fix: 'Reduce the rib height, or use more shorter ribs and generous base fillets.',
+    source: 'Casting rib-proportion guidance (height against nominal wall).',
+  },
+  {
+    id: 'sand-rib-thickness-max',
+    sourceStatus: 'industry-consensus',
+    process: 'sand-casting',
+    severity: 'medium',
+    title: 'Rib heavier than the wall it stands on',
+    measure: 'maxRibThicknessToWall',
+    compare: 'lte',
+    threshold: 1.0,
+    unit: 'rib/wall',
+    rationale:
+      'Sand cools slowest of all, so it tolerates the fullest ribs — but a rib heavier than the wall it stands on inverts the freezing order and pulls a shrinkage cavity into the joint.',
+    fix: 'Thin the rib, or add two thinner ribs instead of one heavy one.',
+    source: 'Casting rib-proportion guidance (rib thickness against nominal wall).',
+  },
+  {
+    id: 'sand-rib-thickness-min',
+    sourceStatus: 'industry-consensus',
+    process: 'sand-casting',
+    severity: 'medium',
+    title: 'Rib too thin to fill before it freezes',
+    measure: 'minRibThicknessToWall',
+    compare: 'gte',
+    threshold: 0.6,
+    unit: 'rib/wall',
+    rationale:
+      'A rib is the last thing to fill and the first thing to freeze, because it presents the most surface for its volume. Below this fraction of the nominal wall it will not fill reliably.',
+    fix: 'Thicken the rib towards the process minimum, or shorten it so the metal has less distance to travel.',
+    source: 'Casting rib-proportion guidance (fill limit against nominal wall).',
+  },
+  {
+    id: 'sand-rib-height',
+    sourceStatus: 'industry-consensus',
+    process: 'sand-casting',
+    severity: 'low',
+    title: 'Rib taller than the wall can support',
+    measure: 'maxRibHeightToWall',
+    compare: 'lte',
+    threshold: 4,
+    unit: 'rib height/wall',
+    rationale:
+      'A tall rib must fill against die chilling along its whole length, and it also concentrates stress at its base where the section changes.',
+    fix: 'Reduce the rib height, or use more shorter ribs and generous base fillets.',
+    source: 'Casting rib-proportion guidance (height against nominal wall).',
+  },
+  {
+    id: 'hpdc-zinc-rib-thickness-max',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'medium',
+    title: 'Rib heavier than the wall it stands on',
+    measure: 'maxRibThicknessToWall',
+    compare: 'lte',
+    threshold: 1.0,
+    unit: 'rib/wall',
+    rationale:
+      'Zinc fills thin ribs readily, which is why zinc parts are ribbed rather than thick. A rib heavier than the wall wastes that advantage and slows the cycle.',
+    fix: 'Thin the rib, or add two thinner ribs instead of one heavy one.',
+    source: 'Casting rib-proportion guidance (rib thickness against nominal wall).',
+  },
+  {
+    id: 'hpdc-zinc-rib-thickness-min',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'medium',
+    title: 'Rib too thin to fill before it freezes',
+    measure: 'minRibThicknessToWall',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'rib/wall',
+    rationale:
+      'A rib is the last thing to fill and the first thing to freeze, because it presents the most surface for its volume. Below this fraction of the nominal wall it will not fill reliably.',
+    fix: 'Thicken the rib towards the process minimum, or shorten it so the metal has less distance to travel.',
+    source: 'Casting rib-proportion guidance (fill limit against nominal wall).',
+  },
+  {
+    id: 'hpdc-zinc-rib-height',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'low',
+    title: 'Rib taller than the wall can support',
+    measure: 'maxRibHeightToWall',
+    compare: 'lte',
+    threshold: 5,
+    unit: 'rib height/wall',
+    rationale:
+      'A tall rib must fill against die chilling along its whole length, and it also concentrates stress at its base where the section changes.',
+    fix: 'Reduce the rib height, or use more shorter ribs and generous base fillets.',
+    source: 'Casting rib-proportion guidance (height against nominal wall).',
+  },
+  {
+    id: 'hpdc-zinc-boss-height',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'medium',
+    title: 'Boss taller than the core pin can hold',
+    measure: 'maxBossHeightToDia',
+    compare: 'lte',
+    threshold: 4,
+    unit: 'height/dia',
+    rationale:
+      'A tall boss is cored by a pin standing in the flow, and the taller it is the more it deflects and the sooner it erodes. Zinc is kinder to pins than aluminium but the geometry still governs.',
+    fix: 'Shorten the boss, widen it, or support it with ribs to its base.',
+    source: 'Die-casting boss-proportion guidance.',
+  },
+  {
+    id: 'gdc-boss-height',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'medium',
+    title: 'Boss taller than the core can hold',
+    measure: 'maxBossHeightToDia',
+    compare: 'lte',
+    threshold: 3,
+    unit: 'height/dia',
+    rationale:
+      'A gravity-cast boss is cored by steel or bonded sand and neither is injected against, but a slender core still floats and distorts as the metal rises around it.',
+    fix: 'Shorten the boss, widen it, or cast it solid and drill afterwards.',
+    source: 'Permanent-mould boss-proportion guidance.',
+  },
+  {
+    id: 'roll-hole-to-bend',
+    sourceStatus: 'industry-consensus',
+    process: 'roll-forming',
+    severity: 'high',
+    title: 'Hole too close to a formed corner',
+    measure: 'holeToBendClearanceMm',
+    compare: 'gte',
+    threshold: 0,
+    unit: 'mm clear of 2t+r',
+    rationale:
+      'A hole pre-punched in the strip distorts as the corner is worked up over successive stations. Roll forming spreads the deformation over more stations than a press brake, which helps, but the hole still pulls oval if it sits inside the bend allowance.',
+    fix: 'Move the hole clear of the forming zone, or pierce it after forming in a secondary station.',
+    source: 'Roll-forming design guidance (pre-punched features and the forming zone).',
+  },
+  {
+    id: 'roll-hole-diameter',
+    sourceStatus: 'industry-consensus',
+    process: 'roll-forming',
+    severity: 'medium',
+    title: 'Pierced hole smaller than the material thickness',
+    measure: 'minHoleDiaToThickness',
+    compare: 'gte',
+    threshold: 1,
+    unit: 'd/t',
+    rationale:
+      'A punch narrower than the sheet is thick buckles under the piercing load. This is a punch-strength limit and it is the same in the strip as it is in a press.',
+    fix: 'Open the hole to at least one material thickness, or drill it after forming.',
+    source: 'Sheet-metal piercing guidance (punch slenderness).',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TOLERANCE CAPABILITY — the family that could not exist until AP242 semantic
+  // PMI was readable.
+  //
+  // `tightestToleranceMm` is the smallest TOTAL tolerance band called out on the
+  // part, read from the STEP's own PMI. Each process declares the tightest band
+  // it holds economically WITHOUT a secondary operation, so a callout below that
+  // line is not a tolerance problem — it is a routing decision that has not been
+  // taken. A +/-0.05 mm bore on a sand casting is a machining operation, a
+  // fixture, a datum scheme and a second cost centre, and it is the single most
+  // common way a drawing quietly doubles a part's price.
+  //
+  // EVERY RULE HERE ABSTAINS ON A FILE WITH NO PMI, and that is the important
+  // half. Most STEP files in circulation carry none — the tolerances are on a
+  // drawing this tool has never seen — and reporting "no tolerance problems" for
+  // such a part would be the most dangerous sentence in the report.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'mach-tolerance-capability',
+    byMaterialFamily: {
+      titanium: { threshold: 0.08, source: 'Machining tolerance in titanium: about +/-0.04 mm. Low stiffness, springback and heat build-up all fight repeatability.' },
+      plastic: { threshold: 0.20, source: 'Machining tolerance in an engineering thermoplastic: about +/-0.1 mm. The part moves with temperature and moisture faster than the machine can hold it.' },
+      aluminium: { threshold: 0.05, source: 'Machining tolerance in aluminium: about +/-0.025 mm, routine on a rigid part.' },
+    },
+    sourceStatus: 'industry-consensus',
+    process: 'machining',
+    severity: 'high',
+    title: 'Tolerance tighter than machining holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.05,
+    unit: 'mm total band',
+    rationale:
+      'A general machining tolerance of +/-0.025 mm (0.05 total) is routine on a rigid part. Tighter than that needs grinding, temperature control or in-process gauging, and each is a different cost base — not a tighter setting on the same machine.',
+    fix: 'Open the tolerance to +/-0.025 mm or tighter only where the function needs it, and say WHICH feature needs it rather than applying a blanket tolerance to the drawing.',
+    source: 'General machining tolerance guidance (ISO 2768 fine class and shop practice).',
+  },
+  {
+    id: 'im-tolerance-capability',
+    byMaterial: {
+      'POM (Acetal)': { threshold: 0.35, source: 'Acetal shrinks about 2% and keeps moving for days after ejection, so its achievable band is far wider than an amorphous resin.' },
+      'PA6 (Nylon)': { threshold: 0.35, source: 'Nylon shrinks heavily AND absorbs moisture, so the part grows on the shelf; a machined-part tolerance cannot be held.' },
+      'PA66-GF30 (glass-filled)': { threshold: 0.30, source: 'Glass fill cuts shrinkage but makes it directional, so the band narrows without becoming isotropic.' },
+      'ABS': { threshold: 0.20, source: 'ABS is amorphous and low-shrink — the best of the commodity resins for dimensional control.' },
+      'Polycarbonate (PC)': { threshold: 0.20, source: 'PC is amorphous and dimensionally stable once dried.' },
+    },
+    sourceStatus: 'industry-consensus',
+    process: 'injection-moulding',
+    severity: 'high',
+    title: 'Tolerance tighter than injection moulding holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.2,
+    unit: 'mm total band',
+    rationale:
+      'Moulding tolerance is dominated by shrinkage, which varies with fill, pack and the batch of resin. About 0.2 mm total on a 50 mm dimension is normal for an engineering thermoplastic; a filled or semi-crystalline grade is worse, not better.',
+    fix: 'Open the tolerance, or machine the feature after moulding and price the secondary operation.',
+    source: 'Injection-moulding dimensional tolerance guidance (DIN 16901 / SPI commercial class).',
+  },
+  {
+    id: 'hpdc-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc',
+    severity: 'high',
+    title: 'Tolerance tighter than high-pressure die casting holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.2,
+    unit: 'mm total band',
+    rationale:
+      'As-cast linear tolerance is about +/-0.1 mm on a small dimension and grows with size. Anything tighter is machined after casting, which means a fixture, a datum scheme and a second cost centre.',
+    fix: 'Open the as-cast tolerance and machine only the features that need to be accurate, with the datums declared.',
+    source: 'NADCA Product Specification Standards, linear dimensional tolerances (as-cast).',
+  },
+  {
+    id: 'hpdc-zinc-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'high',
+    title: 'Tolerance tighter than high-pressure die casting holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.15,
+    unit: 'mm total band',
+    rationale:
+      'Zinc holds tighter as-cast tolerances than aluminium because it runs cooler and shrinks less onto the die — about +/-0.075 mm on a small dimension. That accuracy is one of the reasons to choose the alloy.',
+    fix: 'Take advantage of the alloy: hold the tolerance as-cast rather than adding a machining operation.',
+    source: 'Zinc die-casting dimensional tolerance guidance (tighter than aluminium by roughly a third).',
+  },
+  {
+    id: 'gdc-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'high',
+    title: 'Tolerance tighter than gravity die casting holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.6,
+    unit: 'mm total band',
+    rationale:
+      'A gravity casting cools slowly against a steel mould and moves as it does. About ISO 8062 CT8-10 is normal, which is roughly +/-0.3 mm on a 50 mm dimension.',
+    fix: 'Open the as-cast tolerance and machine the functional faces.',
+    source: 'ISO 8062 casting tolerance grades CT8-CT10 (permanent mould).',
+  },
+  {
+    id: 'sand-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'sand-casting',
+    severity: 'high',
+    title: 'Tolerance tighter than sand casting holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 1.2,
+    unit: 'mm total band',
+    rationale:
+      'Sand moves. The mould is rammed, the cores are set by hand and the casting contracts against a yielding medium, so ISO 8062 CT11-13 is the realistic band — roughly +/-0.6 mm on a 50 mm dimension.',
+    fix: 'Machine every functional surface and open everything else. A tight as-cast tolerance on a sand casting is a scrap rate, not a specification.',
+    source: 'ISO 8062 casting tolerance grades CT11-CT13 (sand, hand-moulded).',
+  },
+  {
+    id: 'inv-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'investment-casting',
+    severity: 'high',
+    title: 'Tolerance tighter than investment casting holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.3,
+    unit: 'mm total band',
+    rationale:
+      'The wax pattern is moulded to a machined die and the ceramic shell is rigid, so investment casting holds ISO 8062 CT5-7 — roughly +/-0.15 mm. This is the accuracy the process is bought for.',
+    fix: 'Hold the tolerance as-cast where you can; if it must be tighter, machine only that feature.',
+    source: 'ISO 8062 casting tolerance grades CT5-CT7 (investment).',
+  },
+  {
+    id: 'sm-tolerance-capability',
+    byMaterial: {
+      'Steel (high-strength)': { threshold: 0.60, source: 'Formed-feature tolerance in AHSS: springback rises with yield strength and varies coil to coil, so the achievable band is roughly half again the mild-steel figure.' },
+      'Aluminium 6061': { threshold: 0.60, source: 'Formed-feature tolerance in 6061-T6: high springback and low elongation widen the band against mild steel.' },
+    },
+    sourceStatus: 'industry-consensus',
+    process: 'sheet-metal',
+    severity: 'high',
+    title: 'Tolerance tighter than sheet metal / stamping holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.4,
+    unit: 'mm total band',
+    rationale:
+      'A formed feature carries springback, and springback varies with the coil, not just the tool. About +/-0.2 mm on a formed dimension is normal; a pierced hole in the flat is far better than a formed feature and should be toleranced separately.',
+    fix: 'Tolerance pierced features tightly and formed features loosely, and datum from the pierced ones.',
+    source: 'Sheet-metal forming tolerance guidance (springback-dominated, formed vs pierced features).',
+  },
+  {
+    id: 'roll-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'roll-forming',
+    severity: 'high',
+    title: 'Tolerance tighter than roll forming holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.6,
+    unit: 'mm total band',
+    rationale:
+      'A roll-formed profile is worked gradually through many stations and springs back at every one, so cross-section tolerance is looser than a press brake and length tolerance depends on the flying cut.',
+    fix: 'Open the profile tolerance and add a secondary operation for anything that must locate.',
+    source: 'Roll-forming dimensional tolerance guidance.',
+  },
+  {
+    id: 'hydro-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'hydroforming',
+    severity: 'high',
+    title: 'Tolerance tighter than hydroforming holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'mm total band',
+    rationale:
+      'The tube conforms to the die under pressure, so the formed shape is repeatable, but the wall thins unevenly and the ends move as the tube is fed. About +/-0.25 mm is realistic.',
+    fix: 'Tolerance from the die-formed faces, not from the tube ends.',
+    source: 'Tube hydroforming tolerance guidance.',
+  },
+  {
+    id: 'forge-hot-tolerance-capability',
+    byMaterialFamily: {
+      aluminium: { threshold: 0.60, source: 'Aluminium forgings run cooler and shrink less on cooling, so they hold roughly half the band of a steel forging.' },
+      titanium: { threshold: 1.40, source: 'Titanium forgings run hottest and the dies wear fastest, so the as-forged band is the widest of the three.' },
+    },
+    sourceStatus: 'industry-consensus',
+    process: 'forging-hot',
+    severity: 'high',
+    title: 'Tolerance tighter than forging holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 1.0,
+    unit: 'mm total band',
+    rationale:
+      'A hot forging shrinks as it cools, the dies wear, and the flash line moves with die closure. About +/-0.5 mm is the realistic as-forged band, and it grows across the parting line.',
+    fix: 'Machine every functional surface. As-forged tolerances belong on the non-functional envelope only.',
+    source: 'Closed-die hot forging tolerance guidance (die wear and thermal contraction).',
+  },
+  {
+    id: 'forge-cold-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'forging-cold',
+    severity: 'high',
+    title: 'Tolerance tighter than forging holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.2,
+    unit: 'mm total band',
+    rationale:
+      'Cold forging holds far tighter than hot because nothing shrinks on cooling — about +/-0.1 mm — and that accuracy is most of the reason to pay for the tooling.',
+    fix: 'Hold the tolerance as-forged; adding a machining operation gives away the advantage that justified the process.',
+    source: 'Cold forging / cold heading tolerance guidance.',
+  },
+  {
+    id: 'extr-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'extrusion',
+    severity: 'high',
+    title: 'Tolerance tighter than extrusion holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'mm total band',
+    rationale:
+      'An extruded profile is pulled through a die that wears and deflects, and it twists and bows as it cools on the run-out table. Straightness and twist usually bind before the section tolerance does.',
+    fix: 'Tolerance the section loosely and specify straightness and twist separately; machine any locating feature.',
+    source: 'Aluminium extrusion tolerance guidance (EN 12020 / supplier standard practice).',
+  },
+  {
+    id: 'rubber-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'rubber-moulding',
+    severity: 'high',
+    title: 'Tolerance tighter than rubber moulding holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'mm total band',
+    rationale:
+      'Rubber shrinks heavily on cure and keeps moving afterwards, and it deforms under its own measurement. Tolerances are graded (RMA A/B/C) and even the closest is loose against a rigid part.',
+    fix: 'Use a graded rubber tolerance class rather than a machined-part tolerance, and dimension in the free state.',
+    source: 'RMA rubber dimensional tolerance classes.',
+  },
+  {
+    id: 'rtm-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'composite-rtm',
+    severity: 'high',
+    title: 'Tolerance tighter than composite layup / rtm holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'mm total band',
+    rationale:
+      'A laminate takes the tool surface accurately on the tool side and the bag or second tool side less so, and it springs in as it cures off a corner. Thickness varies with fibre volume fraction.',
+    fix: 'Tolerance from the tool face, and allow for spring-in at every corner.',
+    source: 'Composite moulding tolerance guidance (tool-side vs bag-side, cure spring-in).',
+  },
+
   // ═══════════════════════════════════════════════════════════════════════════
   // THE CASTING FAMILIES ARE NOT ONE FAMILY.
   //
@@ -732,6 +1438,10 @@ export const DFM_RULES = [
   // ── Gravity die casting (permanent mould) ─────────────────────────────────
   {
     id: 'gdc-wall-thickness-range',
+    byMaterialFamily: {
+      copper: { threshold: [4.0, 10.0], source: 'Gravity-cast brass and bronze: a fuller section than aluminium. The alloys are denser and pour hotter, so a thin wall erodes the mould and a heavy one still feeds.' },
+      aluminium: { threshold: [3.0, 8.0], source: 'Gravity / permanent-mould aluminium: 3 mm practical minimum, 4-6 mm typical.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'gravity-die',
     severity: 'high',
@@ -747,6 +1457,9 @@ export const DFM_RULES = [
   },
   {
     id: 'gdc-draft-minimum',
+    byMaterialFamily: {
+      copper: { threshold: 3, source: 'Copper-alloy gravity castings grip the die harder as they contract and need more draft than aluminium; a tighter allowance on short-run tooling is common practice.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'gravity-die',
     severity: 'high',
@@ -795,6 +1508,12 @@ export const DFM_RULES = [
   // ── Sand casting ──────────────────────────────────────────────────────────
   {
     id: 'sand-wall-thickness-range',
+    byMaterialFamily: {
+      castiron: { threshold: [5.0, 15.0], source: 'Sand-cast grey iron: about 5 mm minimum; graphite expansion on freezing feeds the section, so iron tolerates heavier walls than aluminium.' },
+      ferrous: { threshold: [6.0, 18.0], source: 'Sand-cast steel: about 6 mm minimum. Steel has the highest freezing range and the worst fluidity of the common cast metals, so thin sections misrun.' },
+      aluminium: { threshold: [4.0, 12.0], source: 'Sand-cast aluminium: about 4 mm minimum, 5-10 mm typical.' },
+      copper: { threshold: [5.0, 12.0], source: 'Sand-cast bronze and brass: about 5 mm minimum.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'sand-casting',
     severity: 'high',
@@ -873,6 +1592,11 @@ export const DFM_RULES = [
   // ── Investment casting ────────────────────────────────────────────────────
   {
     id: 'inv-wall-thickness-range',
+    byMaterialFamily: {
+      ferrous: { threshold: [2.0, 6.0], source: 'Investment-cast steel: about 2 mm minimum. Steel is less fluid than aluminium even into a preheated shell.' },
+      titanium: { threshold: [2.5, 8.0], source: 'Investment-cast titanium: about 2.5 mm minimum. It must be poured in vacuum and reacts with the shell, so thin sections come out with an alpha case.' },
+      aluminium: { threshold: [1.5, 5.0], source: 'Investment-cast aluminium: about 1.5 mm minimum.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'investment-casting',
     severity: 'high',
@@ -1045,6 +1769,10 @@ export const DFM_RULES = [
   // ── Hot forging ───────────────────────────────────────────────────────────
   {
     id: 'forge-hot-draft-minimum',
+    byMaterialFamily: {
+      aluminium: { threshold: 10, source: 'Aluminium forges at a lower temperature and shrinks onto the die far less than steel, so it strips with about 3 degrees where steel wants 5-7 — a larger share of wall below the steel figure is acceptable.' },
+      titanium: { threshold: 3, source: 'Titanium forgings are hot, reactive and grip the die hard; they need MORE draft than steel, so less of the wall may sit below the nominal.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'forging-hot',
     severity: 'high',
@@ -1061,6 +1789,11 @@ export const DFM_RULES = [
   },
   {
     id: 'forge-hot-min-web',
+    byMaterialFamily: {
+      aluminium: { threshold: 2.5, source: 'Aluminium has the lowest flow stress of the common forged metals and fills a thinner web.' },
+      ferrous: { threshold: 3.5, source: 'Steel forgings: 3.5 mm minimum web. Higher flow stress and more die chilling.' },
+      titanium: { threshold: 5.0, source: 'Titanium forgings: 5 mm minimum web. Very high flow stress in a narrow temperature window, and the dies must be heated.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'forging-hot',
     severity: 'high',
@@ -1124,6 +1857,10 @@ export const DFM_RULES = [
   },
   {
     id: 'forge-cold-min-web',
+    byMaterialFamily: {
+      ferrous: { threshold: 2.0, source: 'Cold-forged steel: 2 mm minimum web. Work hardening drives forming pressure up sharply as the section thins.' },
+      aluminium: { threshold: 1.2, source: 'Cold-forged aluminium: 1.2 mm minimum web — the softest of the commonly cold-formed metals.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'forging-cold',
     severity: 'high',

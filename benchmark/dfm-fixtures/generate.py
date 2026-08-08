@@ -455,6 +455,168 @@ def bolted_assembly(outdir):
     return _write(comp, os.path.join(outdir, "bolted-assembly.step")), 3
 
 
+
+def pmi_toleranced_block(outdir):
+    """50x30x20 block carrying SEMANTIC PMI: a 50 +/- 0.010 dimension and a
+    0.05 flatness callout, written as AP242.
+
+    THE ONLY FIXTURE HERE WHOSE TRUTH IS NOT GEOMETRY. Tolerances are not in the
+    shape — they are annotations beside it, and only AP242 with semantic PMI
+    carries them at all. Everything else in this directory would read identically
+    with the PMI stripped, so without this file the reader could return nothing
+    on every part and the gate would stay green.
+
+    Truth by construction: total dimensional tolerance band = 0.010 + 0.010 =
+    0.020 mm, flatness = 0.050 mm, so the tightest callout on the part is 0.020.
+
+    Two things had to be right for this to round-trip and both were wrong first
+    time: the STEP controller must be initialised before `write.step.schema` is
+    settable (it silently stayed AP214 and dropped every PMI entity), and a
+    dimension must relate TWO SHAPE ASPECTS — written against the top-level shape
+    it lands in the file with nothing to attach to and OCCT's reader discards it.
+    """
+    from OCP.STEPCAFControl import STEPCAFControl_Writer
+    from OCP.STEPControl import STEPControl_Controller
+    from OCP.TCollection import TCollection_ExtendedString, TCollection_HAsciiString
+    from OCP.TColStd import TColStd_HArray1OfReal
+    from OCP.TDocStd import TDocStd_Document
+    from OCP.TopAbs import TopAbs_FACE
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopoDS import TopoDS
+    from OCP.XCAFDimTolObjects import (XCAFDimTolObjects_DimensionObject,
+                                       XCAFDimTolObjects_DimensionType,
+                                       XCAFDimTolObjects_GeomToleranceObject,
+                                       XCAFDimTolObjects_GeomToleranceType)
+    from OCP.XCAFDoc import (XCAFDoc_Dimension, XCAFDoc_DocumentTool,
+                             XCAFDoc_GeomTolerance)
+
+    doc = TDocStd_Document(TCollection_ExtendedString("pmi"))
+    sht = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
+    dtt = XCAFDoc_DocumentTool.DimTolTool_s(doc.Main())
+    box = BRepPrimAPI_MakeBox(50.0, 30.0, 20.0).Shape()
+    lab = sht.AddShape(box, False)
+
+    ex, faces = TopExp_Explorer(box, TopAbs_FACE), []
+    while ex.More():
+        faces.append(TopoDS.Face_s(ex.Current()))
+        ex.Next()
+    fl1 = sht.AddSubShape(lab, faces[0])
+    fl2 = sht.AddSubShape(lab, faces[1])
+
+    dl = dtt.AddDimension()
+    dobj = XCAFDimTolObjects_DimensionObject()
+    dobj.SetType(XCAFDimTolObjects_DimensionType.XCAFDimTolObjects_DimensionType_Location_LinearDistance)
+    arr = TColStd_HArray1OfReal(1, 1)
+    arr.SetValue(1, 50.0)
+    dobj.SetValues(arr)
+    dobj.SetUpperTolValue(0.010)
+    dobj.SetLowerTolValue(0.010)
+    XCAFDoc_Dimension.Set_s(dl).SetObject(dobj)
+    dtt.SetDimension(fl1, fl2, dl)
+
+    gl = dtt.AddGeomTolerance()
+    gobj = XCAFDimTolObjects_GeomToleranceObject()
+    gobj.SetType(XCAFDimTolObjects_GeomToleranceType.XCAFDimTolObjects_GeomToleranceType_Flatness)
+    gobj.SetValue(0.05)
+    XCAFDoc_GeomTolerance.Set_s(gl).SetObject(gobj)
+    dtt.SetGeomTolerance(fl1, gl)
+
+    STEPControl_Controller.Init_s()
+    if not Interface_Static.SetCVal_s("write.step.schema", "AP242DIS"):
+        raise RuntimeError("AP242 schema unavailable — PMI cannot be written")
+    Interface_Static.SetCVal_s("write.step.product.name", "pmi-toleranced-block.step")
+    w = STEPCAFControl_Writer()
+    w.SetDimTolMode(True)
+    w.Transfer(doc)
+    path = os.path.join(outdir, "pmi-toleranced-block.step")
+    w.Write(path)
+    # Restore the schema, or every fixture written after this one changes.
+    Interface_Static.SetCVal_s("write.step.schema", "AP214IS")
+    with open(path, "rb") as fh:
+        data = fh.read()
+    data, n = _STAMP_RE.subn(rb"\g<1>" + _EPOCH_STAMP.encode() + rb"\g<2>", data, count=1)
+    if n == 1:
+        with open(path, "wb") as fh:
+            fh.write(data)
+    return path, {"tightestToleranceMm": 0.020, "flatnessMm": 0.050}
+
+
+
+def seat_bracket_assembly(outdir):
+    """A ten-solid sub-assembly with the variety a real one has.
+
+    STATED PLAINLY: this is still SYNTHETIC. Every customer file supplied so far
+    has been a single solid, so the DFA path has never met a real multi-part STEP
+    and this fixture is the closest available substitute — not a substitute for
+    one. What it does do is exercise the parts of the analysis a three-solid
+    plate-and-two-pins fixture never touched:
+
+      * TEN solids, SIX distinct types, with instance groups of four (bolts) and
+        two (washers). Grouping must find both without merging them.
+      * A washer is a thin annular disc: a body of revolution AND rotationally
+        symmetric about its own plane, so alpha and beta must both resolve — the
+        hardest symmetry case in Boothroyd's scheme and the one that decides
+        whether handling time is 1.5 s or 4 s.
+      * A dowel is small and slender, which is where the handling model's size
+        and thickness penalties live.
+      * The base plate is DELIBERATELY asymmetric (an offset notch), so its
+        alpha must come back 360 rather than 180 — a symmetric answer here means
+        the rotation test is measuring the bounding box, not the shape.
+      * Two parts touch nothing (the cover sits proud), so contact detection has
+        to report a real number rather than assuming a chain.
+
+    Truth by construction: 10 solids, 6 distinct types, largest instance group 4.
+    """
+    from OCP.TopoDS import TopoDS_Builder, TopoDS_Compound
+
+    solids = []
+
+    # 1. Stamped base plate, 120 x 80 x 3, with an OFFSET notch that breaks every
+    #    symmetry it would otherwise have.
+    plate = BRepPrimAPI_MakeBox(120.0, 80.0, 3.0).Shape()
+    notch = BRepPrimAPI_MakeBox(gp_Pnt(90.0, 60.0, -1.0), 30.0, 25.0, 5.0).Shape()
+    plate = BRepAlgoAPI_Cut(plate, notch).Shape()
+    for x, y in ((15, 15), (105, 15), (15, 65)):
+        bore = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y, -1), gp_Dir(0, 0, 1)), 4.5, 5.0).Shape()
+        plate = BRepAlgoAPI_Cut(plate, bore).Shape()
+    solids.append(plate)
+
+    # 2. Cast housing, a chunky block with a bore — a different part type.
+    housing = BRepPrimAPI_MakeBox(gp_Pnt(30.0, 20.0, 3.0), 50.0, 40.0, 35.0).Shape()
+    hbore = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(55.0, 40.0, 2.0), gp_Dir(0, 0, 1)), 12.0, 40.0).Shape()
+    solids.append(BRepAlgoAPI_Cut(housing, hbore).Shape())
+
+    # 3-6. FOUR identical M8 bolts. Identical geometry, so their shape signatures
+    #      must collide or instance grouping cannot work at all.
+    for x, y in ((15, 15), (105, 15), (15, 65), (105, 65)):
+        shank = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y, 3.0), gp_Dir(0, 0, 1)), 4.0, 30.0).Shape()
+        head = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y, 33.0), gp_Dir(0, 0, 1)), 7.0, 6.0).Shape()
+        solids.append(BRepAlgoAPI_Fuse(shank, head).Shape())
+
+    # 7-8. TWO identical washers. A thin annulus: a body of revolution that also
+    #      flips end for end, which is the alpha=0/beta=0 corner of the scheme.
+    for x, y in ((15, 15), (105, 15)):
+        outer = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y, 33.0), gp_Dir(0, 0, 1)), 8.0, 1.5).Shape()
+        inner = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y, 32.0), gp_Dir(0, 0, 1)), 4.2, 4.0).Shape()
+        solids.append(BRepAlgoAPI_Cut(outer, inner).Shape())
+
+    # 9. A small slender dowel — where the handling model's size penalty lives.
+    solids.append(BRepPrimAPI_MakeCylinder(
+        gp_Ax2(gp_Pnt(60.0, 12.0, 3.0), gp_Dir(0, 0, 1)), 1.5, 14.0).Shape())
+
+    # 10. A cover that touches NOTHING, sitting proud above the housing.
+    solids.append(BRepPrimAPI_MakeBox(gp_Pnt(30.0, 20.0, 45.0), 50.0, 40.0, 2.0).Shape())
+
+    comp = TopoDS_Compound()
+    bld = TopoDS_Builder()
+    bld.MakeCompound(comp)
+    for sh in solids:
+        bld.Add(comp, sh)
+    return _write(comp, os.path.join(outdir, "seat-bracket-assembly.step")), {
+        "solids": 10, "distinctTypes": 6, "largestInstanceGroup": 4,
+    }
+
+
 def main():
     outdir = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__))
     os.makedirs(outdir, exist_ok=True)
@@ -470,7 +632,8 @@ def main():
                # APPENDED, not inserted. OCCT stamps a running part number into
                # PRODUCT(), so inserting a fixture renumbers every file written
                # after it and the whole set churns for no geometric reason.
-               curved_wall_plate, sheet_hole_through):
+               curved_wall_plate, sheet_hole_through, pmi_toleranced_block,
+               seat_bracket_assembly):
         path, truth = fn(outdir)
         print(f"  {os.path.basename(path):26s}  analytic truth: {truth}")
     print(f"wrote fixtures to {outdir}")

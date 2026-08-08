@@ -947,6 +947,16 @@ def analyze(filepath: str, draw_override=None) -> dict:
             _blend_ids, _aag = _fr.blend_face_ids(wrapped)
         except Exception:
             pass
+        # SEMANTIC PMI. Read from the file, not from the shape — tolerances are
+        # annotations beside the geometry and only AP242 carries them. Absent is
+        # reported WITH ITS REASON so the tolerance rules abstain instead of
+        # passing a part whose tolerances live on a drawing.
+        try:
+            import pmi_extract as _pmi
+            pmi_block = _pmi.extract_pmi(filepath)
+        except Exception as _e:
+            pmi_block = {"present": False, "reason": f"PMI could not be read: {_e}"}
+
         # Through-vs-blind is decided by classifying a point just past each end
         # of the bore against the solid. Building the classifier once here keeps
         # its internal BVH warm across every hole on the part.
@@ -1068,6 +1078,7 @@ def analyze(filepath: str, draw_override=None) -> dict:
                     "basis": "no discrete machined features recognised — single-setup assumption",
                 }
                 dfm_block = {
+                    "pmi": pmi_block,
                     "toolAccess": access_info,
                     "tessellation": {"triangles": tess["count"],
                                      "totalAreaMm2": round(tess["totalAreaMm2"], 1),

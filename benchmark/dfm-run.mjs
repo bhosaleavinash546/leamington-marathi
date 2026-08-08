@@ -17,8 +17,9 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES } from './dfm-fixtures.mjs';
+import { DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES, PMI_FIXTURES } from './dfm-fixtures.mjs';
 import { extractMeasures, runDfmRules } from '../dfm-rules.mjs';
+import { analyseDfa } from '../dfa-engine.mjs';
 import { analyzeGeometry, tessellateToSTL } from '../cad-engine/cad-geometry-bridge.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -381,6 +382,56 @@ async function main() {
     }
   }
 
+  // ── Semantic PMI (AP242) ──────────────────────────────────────────────────
+  // Tolerances are not in the shape, so nothing else in this gate can catch a
+  // PMI reader that silently returns nothing on every file.
+  for (const fx of PMI_FIXTURES) {
+    // `--json` must emit JSON and nothing else: the geometry test parses this
+    // process's whole stdout, so one stray header line fails the suite with a
+    // parse error rather than a useful message.
+    if (!AS_JSON) console.log(`\n  ${fx.file}  (PMI)`);
+    let g;
+    try {
+      g = await analyzeGeometry(await readFile(join(FIXDIR, fx.file)), fx.file);
+    } catch (e) {
+      record(fx.file, 'analyze for PMI', false, `bridge threw: ${e.message}`);
+      continue;
+    }
+    const pmi = g.dfm?.pmi || {};
+    const t = fx.truth;
+    record(fx.file, 'pmi present', pmi.present === t.present, `${pmi.present} vs ${t.present}`);
+    if (t.tightestToleranceMm !== undefined) {
+      record(fx.file, 'tightest tolerance', near(pmi.tightestToleranceMm, t.tightestToleranceMm, 0.001),
+        `${pmi.tightestToleranceMm} vs ${t.tightestToleranceMm} mm`);
+    }
+    if (t.dimensionCount !== undefined) {
+      record(fx.file, 'dimension count', pmi.dimensionCount === t.dimensionCount,
+        `${pmi.dimensionCount} vs ${t.dimensionCount}`);
+    }
+    if (t.geometricToleranceCount !== undefined) {
+      record(fx.file, 'geom tolerance count', pmi.geometricToleranceCount === t.geometricToleranceCount,
+        `${pmi.geometricToleranceCount} vs ${t.geometricToleranceCount}`);
+    }
+    if (t.geomToleranceTypeName !== undefined) {
+      const got = pmi.geometricTolerances?.[0];
+      record(fx.file, 'geom tolerance type', got?.typeName === t.geomToleranceTypeName,
+        `${got?.typeName} vs ${t.geomToleranceTypeName} (a guessed enum map read flatness as symmetry)`);
+      record(fx.file, 'geom tolerance value', near(got?.valueMm, t.geomToleranceValueMm, 0.001),
+        `${got?.valueMm} vs ${t.geomToleranceValueMm} mm`);
+    }
+    if (t.reasonMatches) {
+      record(fx.file, 'absence explains itself', String(pmi.reason || '').includes(t.reasonMatches),
+        pmi.reason ? 'reason given' : 'NO REASON — reads as "no tolerance problems"');
+    }
+    for (const fam of t.toleranceRulesAbstain || []) {
+      const r = runDfmRules(g, fam);
+      const row = [...r.findings, ...r.passed, ...r.notEvaluated]
+        .find(f => f.measure === 'tightestToleranceMm');
+      record(fx.file, `${fam} tolerance rule abstains`, row?.status === 'not-evaluated',
+        row ? `${row.status} at ${row.measured}` : 'rule missing entirely');
+    }
+  }
+
   // ── Assembly decomposition / DFA ───────────────────────────────────────────
   for (const fx of DFA_FIXTURES) {
     let d;
@@ -411,6 +462,24 @@ async function main() {
     if (t.contacts !== undefined) {
       record(fx.file, 'contacts', (d.contacts || []).length === t.contacts,
         `${(d.contacts || []).length} vs ${t.contacts}`);
+    }
+    if (t.dfaMinParts) {
+      // The theoretical minimum drives the design-efficiency figure, which is
+      // the one number a DFA review is remembered by. It must count the BASE
+      // part whether or not the base answered yes to any of the three questions.
+      const blank = () => Object.fromEntries((d.parts || [])
+        .map(p => [p.index, { moves: false, differentMaterial: false, mustSeparate: false }]));
+      const withHousing = blank();
+      withHousing[1] = { moves: false, differentMaterial: true, mustSeparate: false };
+      const a = analyseDfa(d, { answers: withHousing });
+      record(fx.file, 'min parts counts the base', a.theoreticalMinParts === t.dfaMinParts.housingNecessary,
+        `${a.theoreticalMinParts} vs ${t.dfaMinParts.housingNecessary} (base + housing)`);
+      const b = analyseDfa(d, { answers: blank() });
+      record(fx.file, 'min parts floor', b.theoreticalMinParts === t.dfaMinParts.nothingNecessary,
+        `${b.theoreticalMinParts} vs ${t.dfaMinParts.nothingNecessary} (the base alone)`);
+      record(fx.file, 'efficiency follows the minimum',
+        a.designEfficiencyPct > b.designEfficiencyPct,
+        `${a.designEfficiencyPct}% vs ${b.designEfficiencyPct}% — a wrong minimum halves the headline figure`);
     }
   }
 

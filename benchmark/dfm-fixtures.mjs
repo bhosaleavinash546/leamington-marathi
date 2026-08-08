@@ -344,6 +344,41 @@ export const DFM_FIXTURES = [
  * and never a stack-trace fragment, kernel internals, or a number computed at a
  * scale nobody checked.
  */
+export const PMI_FIXTURES = [
+  {
+    file: 'pmi-toleranced-block.step',
+    what: '50x30x20 block carrying semantic AP242 PMI: 50 +/- 0.010 and 0.05 flatness',
+    truth: {
+      // THE ONLY TRUTH HERE THAT IS NOT GEOMETRY. Every other fixture would read
+      // identically with its PMI stripped, so without this one the reader could
+      // return nothing on every part and the gate would stay green.
+      present: true,
+      // 0.010 + 0.010 = 0.020 total band, and it is tighter than the 0.05
+      // flatness, so it is the tightest callout on the part.
+      tightestToleranceMm: 0.02,
+      dimensionCount: 1,
+      geometricToleranceCount: 1,
+      // Read from OCCT's own enum rather than a hand-typed map — the first
+      // hand-written map returned "symmetry" for a flatness callout.
+      geomToleranceTypeName: 'flatness',
+      geomToleranceValueMm: 0.05,
+    },
+  },
+  {
+    file: 'thin-plate.step',
+    what: 'A plain plate with NO PMI — the answer that matters most',
+    truth: {
+      present: false,
+      // A part with no PMI in the file is not a part with no tolerances: they
+      // are on a drawing this tool has never seen. Every tolerance rule must
+      // ABSTAIN, and "no tolerance problems found" would be the single most
+      // dangerous sentence the report could print.
+      reasonMatches: 'not that the part has none',
+      toleranceRulesAbstain: ['machining', 'sand-casting', 'hpdc'],
+    },
+  },
+];
+
 export const DEGENERATE_FIXTURES = [
   {
     file: 'degenerate-surface-only.step',
@@ -402,6 +437,42 @@ export const DFA_FIXTURES = [
       },
       // Both pins touch the plate; the pins do not touch each other.
       contacts: 2,
+    },
+  },
+  {
+    file: 'seat-bracket-assembly.step',
+    what: 'Ten solids, six types: stamped plate + cast housing + 4 bolts + 2 washers + dowel + cover',
+    truth: {
+      // STILL SYNTHETIC, and that is stated in the generator too. Every customer
+      // file supplied so far has been a single solid, so the DFA path has never
+      // met a real multi-part STEP. This is the closest available substitute.
+      solidCount: 10,
+      distinctPartTypes: 6,
+      largestInstanceGroup: 4,
+      symmetry: {
+        // The base plate carries an OFFSET notch, so it must come back fully
+        // asymmetric. A 180 here would mean the rotation test is measuring the
+        // bounding box rather than the shape.
+        0: { continuous: false, totalDeg: 720 },
+        // A bolt is a body of revolution that does NOT flip end for end — the
+        // head is on one end — so alpha 360, beta 0.
+        2: { continuous: true, totalDeg: 360 },
+        // A washer is a body of revolution that DOES flip: alpha 180, beta 0.
+        // The hardest case in Boothroyd's scheme, and the one that decides
+        // whether handling is 1.5 s or 4 s.
+        6: { continuous: true, totalDeg: 180 },
+      },
+      // Bolts pass through clearance holes and touch only their washers; the
+      // cover sits proud and touches nothing at all.
+      contacts: 4,
+      // THE BASE PART IS ALWAYS NECESSARY — assembly has to start somewhere, and
+      // Boothroyd's three questions are asked of a part relative to those
+      // ALREADY assembled. With the housing marked a different material and the
+      // base answered no to all three, the minimum is 2, not 1. A
+      // `Math.max(1, necessaryCount)` floor gave 1 and halved the design
+      // efficiency; the three-solid fixture could not show it, because there the
+      // one necessary part WAS the base.
+      dfaMinParts: { housingNecessary: 2, nothingNecessary: 1 },
     },
   },
 ];

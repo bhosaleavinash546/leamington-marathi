@@ -828,3 +828,48 @@ Format: decision · why · what would change it.
     holding 25 file buffers. Worst first, with the cheapest viable route per part so the table
     is actionable rather than a ranking of badness. A part that could not be read keeps its
     row with the reason.
+
+63. **Tolerances are read, not guessed — and their absence is the important answer (2026).**
+    *Why:* tolerance stack-up was UNWRITTEN because the measurement did not exist. Everything
+    else this tool measures comes from the SHAPE; tolerances are annotations beside it, and
+    only AP242 with semantic PMI carries them at all. *Changes it:* `cad-engine/pmi_extract.py`
+    reads dimensions, geometric tolerances and datums through `STEPCAFControl_Reader` with GDT
+    mode — OCCT's own PMI path, not a hand-rolled parse of the STEP text — and 15 new
+    tolerance-capability rules, one per process family, compare the tightest callout against
+    the band that process holds without a secondary operation. A ±0.05 bore on a sand casting
+    is a machining operation, a fixture and a second cost centre, and it is the commonest way
+    a drawing quietly doubles a price. **`present: false` always travels with a reason and
+    every tolerance rule ABSTAINS**: most STEP files carry no PMI, the tolerances are on a
+    drawing this tool has never seen, and "no tolerance problems found" would be the single
+    most dangerous sentence the report could print. Two things had to be right for the gate
+    fixture to round-trip and both were wrong first: the STEP controller must be initialised
+    before `write.step.schema` is settable (it silently stayed AP214 and dropped every PMI
+    entity), and a dimension must relate TWO shape aspects or OCCT's reader discards it. The
+    geometric-tolerance names are read from OCCT's own enum — a hand-typed map returned
+    "symmetry" for a flatness callout.
+
+64. **The material decides the threshold on a quarter of the catalogue (2026).**
+    *Why:* the resolution machinery shipped with only 5 rules using it, so "not generic" was
+    true of 7% of the rules. *Changes it:* 24 of 111 rules now carry material bands, 69
+    distinct material-specific thresholds. Some invert the intuition and that is the point:
+    the minimum machined web in STEEL (0.8 mm) is thinner than in aluminium (1.0 mm), because
+    steel is three times stiffer and deflects less under the same cutting force. Drill depth
+    runs 6×D in aluminium and 3×D in titanium; sand-cast minimum wall runs 4 mm in aluminium
+    and 6 mm in steel; acetal takes a 50% rib where ABS takes 60%, because it shrinks twice as
+    much and sinks. A generic band and a band tuned to the alloy are still stamped differently
+    on every finding.
+
+65. **The base part is always necessary (2026).**
+    *Why:* found by building a ten-solid assembly, which is what item 3 was for. Boothroyd's
+    three questions are asked of a part RELATIVE TO THOSE ALREADY ASSEMBLED, and the first
+    part has nothing to be assembled to — assembly has to start somewhere. The engine counted
+    only YES answers behind a `Math.max(1, necessaryCount)` floor, which is correct only while
+    no OTHER part is necessary. On a bracket with the housing marked a different material and
+    the base answered no to all three, the theoretical minimum came back 1 instead of 2 and
+    the design efficiency it drives was reported at 9.2% instead of 18.3% — half its true
+    value, on the one number a DFA review is remembered by. The three-solid fixture could not
+    show it, because there the single necessary part WAS the base. *Changes it:* the base is
+    counted whether or not its own answers say so, and the gate asserts all three cases.
+    **Still true and still worth saying: every customer file supplied so far is a single
+    solid, so the DFA path has never met a real multi-part STEP. The ten-solid fixture is the
+    closest available substitute, not a replacement for one.**

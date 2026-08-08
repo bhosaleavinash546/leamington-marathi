@@ -187,7 +187,21 @@ export function analyseDfa(decomposition, opts = {}) {
   // The index is only meaningful once the questions are answered. Reporting one
   // from proposals would be scoring the design against a guess.
   const complete = unconfirmed.length === 0 && totalParts > 0;
-  const theoreticalMin = complete ? Math.max(1, necessaryCount) : null;
+  // THE BASE PART ALWAYS COUNTS. Boothroyd's three questions are asked of a part
+  // RELATIVE TO THOSE ALREADY ASSEMBLED, and the first part has nothing to be
+  // assembled to — assembly has to start somewhere, so the base is necessary by
+  // definition however its three answers come back.
+  //
+  // This was covered by a `Math.max(1, necessaryCount)` floor, which is right
+  // only while NO other part is necessary. Found on a ten-part bracket where the
+  // housing was marked a different material and the base was not: the count came
+  // back 1 instead of 2, and the design efficiency it drives was therefore
+  // reported at half its true value. The three-solid fixture could not show it —
+  // there, the one necessary part WAS the base.
+  const basePart = scored[0];
+  const theoreticalMin = complete
+    ? necessaryCount + (basePart && basePart.necessary === true ? 0 : 1)
+    : null;
   const idealTimeSec = complete ? round2(theoreticalMin * model.idealPartSec) : null;
   const designEfficiencyPct = complete && totalTimeSec > 0
     ? Math.round((idealTimeSec / totalTimeSec) * 1000) / 10

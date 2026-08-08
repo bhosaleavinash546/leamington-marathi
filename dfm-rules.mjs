@@ -114,6 +114,13 @@ export function extractMeasures(geo = {}) {
     // Tool reach, from the shank-clearance sweep. Absent when the time budget
     // spent before it ran, which is a "not evaluated", not a clean sheet.
     unreachableAreaPct: num((dfm.toolAccess || {}).unreachableAreaPct),
+    // The tightest TOTAL tolerance band called out on the part, from the STEP's
+    // own semantic PMI. Absent on any file without AP242 PMI — which is most of
+    // them — so every tolerance rule abstains rather than passing a part whose
+    // tolerances are on a drawing this tool has never seen.
+    tightestToleranceMm: num((dfm.pmi || {}).tightestToleranceMm),
+    pmiDimensionCount: num((dfm.pmi || {}).dimensionCount),
+    pmiGeomToleranceCount: num((dfm.pmi || {}).geometricToleranceCount),
     reachableAreaPct: num((dfm.toolAccess || {}).reachableAreaPct),
     minWallDraftDeg: num(draft.minWallDraftDeg),
     undercutFaceCount: num(draft.undercutFaceCount),
