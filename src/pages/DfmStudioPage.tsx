@@ -58,8 +58,26 @@ interface DfaResponse {
   analysisLimits?: AnalysisLimit[];
 }
 
-const MATERIALS = ['', 'Aluminium A356 (cast)', 'Aluminium 6061', 'Steel (mild)', 'Steel (high-strength)', 'Stainless Steel 304', 'Zinc (ZAMAK 5)', 'Magnesium AZ31', 'ABS', 'PA66-GF30 (glass-filled)', 'Polypropylene (PP)'];
-const COST_PROCESSES = ['', 'Die Casting (Aluminium)', 'Injection Moulding', 'Machining (CNC)', 'Stamping / Deep Drawing', 'Gravity Die Casting', 'Sand Casting'];
+// MATERIALS and PROCESSES ARE NOT DECLARED HERE ANY MORE. This page used to
+// carry a hand-typed ten-material, six-process subset of the tables in
+// costing-engine.mjs, and the two drifted: four fifths of the material list was
+// missing, "Gravity Die Casting" was routed to the high-pressure die-casting
+// rules (a 1.0-3.5 mm wall band against gravity's 3-8) and "Sand Casting" was
+// routed to nothing at all. Both lists now come from GET /api/dfm/options, which
+// derives them from the cost model's own tables, so there is one list rather
+// than two that agree until someone edits one of them.
+interface ProcessOption {
+  name: string;
+  dfmFamily: string | null;
+  dfmFamilyName: string | null;
+  noDfmReason: string | null;
+}
+interface DfmOptions {
+  materialFamilies: Array<{ family: string; label: string; grades: string[] }>;
+  processesForMaterial: Record<string, ProcessOption[]>;
+  allProcesses: ProcessOption[];
+}
+
 const REGIONS = ['Germany', 'UK', 'Czech Republic', 'Spain', 'Mexico', 'USA', 'China', 'India'];
 
 type DfaQuestion = 'moves' | 'differentMaterial' | 'mustSeparate';
@@ -119,6 +137,7 @@ export default function DfmStudioPage() {
   const [file, setFile] = useState<File | null>(null);
   const [material, setMaterial] = useState('');
   const [costProcess, setCostProcess] = useState('');
+  const [options, setOptions] = useState<DfmOptions | null>(null);
   const [region, setRegion] = useState('Germany');
   const [annualVolume, setAnnualVolume] = useState(120000);
   const [loading, setLoading] = useState<'' | 'dfm' | 'dfa'>('');
@@ -329,6 +348,38 @@ export default function DfmStudioPage() {
    * time are simply left out of the map, so they stay neutral instead of being
    * shaded as if they were quick.
    */
+  // One fetch, on mount. The lists come from the server's own tables so this
+  // page can never again disagree with the cost model about what a material is
+  // or which processes can make it.
+  useEffect(() => {
+    if (!token) return;
+    let live = true;
+    fetch('/api/dfm/options', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => (r.ok ? r.json() : null))
+      .then(o => { if (live && o) setOptions(o); })
+      .catch(() => { /* the selects fall back to disabled, never to a stale copy */ });
+    return () => { live = false; };
+  }, [token]);
+
+  // Processes this material can actually take. Choosing ABS must not leave
+  // "Sand Casting" selectable, and the tags for that already live in the cost
+  // model, so the filter is a lookup rather than a second opinion.
+  const processOptions: ProcessOption[] = useMemo(() => {
+    if (!options) return [];
+    return (material ? options.processesForMaterial[material] : options.allProcesses) ?? [];
+  }, [options, material]);
+
+  const selectedProcess = useMemo(
+    () => processOptions.find(p => p.name === costProcess) ?? null,
+    [processOptions, costProcess]);
+
+  // A process that the newly-chosen material cannot take is cleared rather than
+  // left showing, so the form can never submit a combination the picker forbids.
+  useEffect(() => {
+    if (!costProcess || !processOptions.length) return;
+    if (!processOptions.some(p => p.name === costProcess)) setCostProcess('');
+  }, [processOptions, costProcess]);
+
   useEffect(() => {
     const rows = (dfa?.dfa as any)?.rows as any[] | undefined;
     if (!rows?.length) { void viewerRef.current?.setBodyColours(null); return; }
@@ -439,13 +490,38 @@ export default function DfmStudioPage() {
             <label className="text-xs text-slate-400">Material
               <select value={material} onChange={e => setMaterial(e.target.value)}
                 className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
-                {MATERIALS.map(m => <option key={m} value={m}>{m || 'Not set (cost impact unavailable)'}</option>)}
+                <option value="">Not set — thresholds stay generic</option>
+                {options?.materialFamilies.map(f => (
+                  <optgroup key={f.family} label={f.label}>
+                    {f.grades.map(g => <option key={g} value={g}>{g}</option>)}
+                  </optgroup>
+                ))}
               </select>
             </label>
-            <label className="text-xs text-slate-400">Costing process
+            {/* MANUFACTURING process, not "costing process". This selector drives
+                which rule family judges the part — sheet metal, die casting,
+                sand casting and forging are different rulesets with different
+                thresholds — as well as the cost model. Labelling it "costing"
+                made it read as optional metadata, so it was left at "Not set"
+                and every part got a speculative sweep of all families. */}
+            <label className="text-xs text-slate-400">Manufacturing process
               <select value={costProcess} onChange={e => setCostProcess(e.target.value)}
                 className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
-                {COST_PROCESSES.map(p => <option key={p} value={p}>{p || 'Not set'}</option>)}
+                <option value="">Not set — every rule family run speculatively</option>
+                {processOptions.filter(p => p.dfmFamily).length > 0 && (
+                  <optgroup label="Shapes the part — DFM rules apply">
+                    {processOptions.filter(p => p.dfmFamily).map(p => (
+                      <option key={p.name} value={p.name}>{p.name}</option>
+                    ))}
+                  </optgroup>
+                )}
+                {processOptions.filter(p => !p.dfmFamily).length > 0 && (
+                  <optgroup label="No geometric DFM rules">
+                    {processOptions.filter(p => !p.dfmFamily).map(p => (
+                      <option key={p.name} value={p.name}>{p.name}</option>
+                    ))}
+                  </optgroup>
+                )}
               </select>
             </label>
             <label className="text-xs text-slate-400">Region
@@ -460,6 +536,28 @@ export default function DfmStudioPage() {
                 className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40" />
             </label>
           </div>
+
+          {/* WHAT THE CHOICE WILL DO, before the analysis runs. The selectors
+              were previously silent about their own effect, so there was no way
+              to tell that leaving the process unset meant every rule family got
+              run speculatively against the part. */}
+          <p className="mt-2 text-xs text-slate-400 flex items-start gap-2">
+            <Info size={13} className="shrink-0 mt-0.5 text-gold-400" aria-hidden="true" />
+            <span>
+              {selectedProcess?.dfmFamily ? (
+                <>Will run the <strong className="text-white">{selectedProcess.dfmFamilyName}</strong> ruleset
+                  {material
+                    ? <> with thresholds for <strong className="text-white">{material}</strong> where the alloy changes them.</>
+                    : <>. Pick a material and the thresholds that depend on it — bend radius, minimum wall — are resolved for that alloy instead of the generic band.</>}
+                </>
+              ) : selectedProcess ? (
+                <span className="text-amber-400/90">{selectedProcess.noDfmReason}</span>
+              ) : (
+                <>No process chosen, so every rule family will be run speculatively and some findings will be for
+                  processes this part will never see. Choosing one is what makes the analysis specific.</>
+              )}
+            </span>
+          </p>
 
           <div className="flex flex-wrap gap-2 mt-4">
             <button onClick={analyse} disabled={!file || loading !== ''}

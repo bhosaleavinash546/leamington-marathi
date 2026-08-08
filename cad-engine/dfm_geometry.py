@@ -216,6 +216,13 @@ def _regions(face_areas, centroids, worst_draft):
     return out
 
 
+#: The draft angles the rule catalogue asks about. Zinc HPDC releases at 0.5
+#: degrees, investment casting 0.5-1, aluminium HPDC 1-2, sand casting 1.5-3,
+#: forging 3-7. One cutoff cannot serve them and guessing between them is what
+#: made the draft finding generic.
+DRAFT_CUTOFFS_DEG = (0.5, 1.0, 1.5, 2.0, 3.0, 5.0, 7.0)
+
+
 def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
                    max_rays=DRAFT_RAY_BUDGET):
     """Classify every triangle against a draw axis. Area-weighted, four-way.
@@ -255,6 +262,16 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
             worst_draft[fid] = deg
     drafts = []          # (draftDeg, area) over wall-like releasing faces only
     histogram = {}
+    # EVERY wall triangle's draft, not just the ones above the cutoff. The
+    # single "% of wall below 1 degree" figure was computed against a hardcoded
+    # 1.0 and then compared by rules that need different angles: zinc die
+    # casting releases at 0.5 degrees, aluminium wants 1-2, sand casting 1.5-3,
+    # a hot forging 5-7. Judging all of them against one cutoff is the exact
+    # "generic DFM" this catalogue exists to avoid, so the whole curve is
+    # emitted from the drafts already being measured. Undercut area is below
+    # EVERY cutoff by definition and is carried separately.
+    wall_drafts = []     # (draftDeg, area) over releasing AND zero-draft faces
+    undercut_area = 0.0
 
     # Stride over the triangles when there are more than the ray budget allows.
     # step == 1 below the budget, so every fixture and every small part is a
@@ -290,6 +307,7 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
 
         if not vis:
             kind = "undercut"
+            undercut_area += ar
             undercut_faces[tess["face"][i]] = undercut_faces.get(tess["face"][i], 0.0) + ar
             _accumulate(tess["face"][i], ar, i, mag)
         elif mag >= parting_min:
@@ -297,9 +315,11 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
         elif mag >= min_draft_deg:
             kind = "releasing"
             drafts.append((mag, ar))
+            wall_drafts.append((mag, ar))
             histogram[round(mag)] = histogram.get(round(mag), 0.0) + ar
         else:
             kind = "zeroDraft"
+            wall_drafts.append((mag, ar))
             zero_faces[tess["face"][i]] = zero_faces.get(tess["face"][i], 0.0) + ar
             histogram[round(mag)] = histogram.get(round(mag), 0.0) + ar
             _accumulate(tess["face"][i], ar, i, mag)
@@ -307,6 +327,10 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
 
     total = tess["totalAreaMm2"] or 1.0
     wall_area = buckets["releasing"] + buckets["zeroDraft"] + buckets["undercut"]
+    below = {}
+    for cut in DRAFT_CUTOFFS_DEG:
+        short = undercut_area + sum(a for d, a in wall_drafts if d < cut)
+        below[f"{cut:g}"] = round(100.0 * short / wall_area, 2) if wall_area > 0 else 0.0
     return {
         "drawDirectionXYZ": [round(dx, 6), round(dy, 6), round(dz, 6)],
         "minDraftDeg": min_draft_deg,
@@ -316,6 +340,10 @@ def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
         # This is the number a die caster asks for.
         "wallAreaBelowMinDraftPct": round(
             100.0 * (buckets["zeroDraft"] + buckets["undercut"]) / wall_area, 2) if wall_area > 0 else 0.0,
+        # The same question asked at every angle a process might require, so a
+        # zinc rule and a forging rule each get the number they actually mean
+        # instead of sharing one cutoff neither of them chose.
+        "wallAreaBelowDraftPct": below,
         "minWallDraftDeg": round(min(d for d, _ in drafts), 2) if drafts else None,
         "maxWallDraftDeg": round(max(d for d, _ in drafts), 2) if drafts else None,
         "areaWeightedDraftDeg": round(sum(d * a for d, a in drafts) / sum(a for _, a in drafts), 2) if drafts else None,

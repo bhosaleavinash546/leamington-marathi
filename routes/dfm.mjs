@@ -14,6 +14,9 @@
 import multer from 'multer';
 import { analyzeGeometry, decomposeAssembly } from '../cad-engine/cad-geometry-bridge.mjs';
 import { runDfmRules, runAllDfmRules, inferProcessFamily, processFamilyConflict } from '../dfm-rules.mjs';
+import {
+  dfmOptions, familyForSelection, familyOfMaterial, processesForMaterial,
+} from '../dfm-process-registry.mjs';
 import { priceFindings, summarisePricedImpact } from '../dfm-cost-impact.mjs';
 import { DFM_RULES, PROCESS_FAMILIES, UNWRITTEN_RULES } from '../dfm-rule-catalogue.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
@@ -53,6 +56,18 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
   // Each call forks a Python OCP process; the bridge caps concurrency, this caps
   // request rate.
   const limit = rateLimit(Number(process.env.CV_DFM_RATE_MAX ?? 40), 10 * 60 * 1000);
+
+  /**
+   * The pickers, served from the SAME tables the cost model uses.
+   *
+   * The Studio page used to hand-type a ten-material, six-process subset of
+   * costing-engine.mjs and it drifted: two of its six processes were routed to
+   * the wrong DFM rules and four fifths of the material list was missing. The
+   * page now renders whatever this returns, so there is one list, not two.
+   */
+  app.get('/api/dfm/options', requireAuth, (_req, res) => {
+    res.json(dfmOptions());
+  });
 
   /** The catalogue, so the UI can show what will be checked and cite thresholds. */
   app.get('/api/dfm/rules', requireAuth, (_req, res) => {
@@ -110,38 +125,51 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       return res.status(422).json({ error: geo.error });
     }
 
-    // Which rule families to run. If the user named a costing process, the DFM
-    // family follows from it — running injection-moulding rules on an aluminium
-    // die casting produces findings for a process the part will never see, and
-    // prices a "saving" against it. A live run on a die-cast bracket did exactly
-    // that: EUR 36,000/yr of moulding savings on a part nobody will mould.
-    const COST_TO_FAMILY = {
-      'Die Casting (Aluminium)': 'hpdc',
-      'Die Casting (Zinc)': 'hpdc',
-      'Gravity Die Casting': 'hpdc',
-      'Injection Moulding': 'injection-moulding',
-      'Machining (CNC)': 'machining',
-      'Machining (secondary ops)': 'machining',
-      'Stamping / Deep Drawing': 'sheet-metal',
-      'Lamination Stamping (Electrical Steel)': 'sheet-metal',
-    };
+    // WHICH RULE FAMILY JUDGES THIS PART.
+    //
+    // The mapping used to be a six-entry literal in this file, and two of its
+    // entries were wrong: "Gravity Die Casting" was routed to the HPDC rules
+    // (which want a 1.0-3.5 mm wall, against gravity's 3-8) and "Sand Casting"
+    // mapped to nothing, so it fell through to a speculative sweep of all
+    // families. dfm-process-registry.mjs now derives the routing from the same
+    // process table the cost model uses, so the two halves cannot drift again.
     const explicit = String(req.body?.process || '').trim();
-    const derived = COST_TO_FAMILY[req.body?.costProcess];
-    // What the GEOMETRY says, independently of what anybody typed. A live report
-    // measured 38 bends and a uniform 1.60 mm wall on a seat cross member and
-    // still opened with "no process specified, every family run speculatively",
-    // then listed machining findings against a pressing. The measurement is used
-    // to CHOOSE the family when nobody named one, and to CONTRADICT one when it
-    // was named and the geometry disagrees. It never silently overrides.
+    const chosenProcess = String(req.body?.costProcess || '').trim();
+    const material = req.body?.material || undefined;
+    const selected = familyForSelection({ process: chosenProcess, dfmProcess: explicit });
+
+    // What the GEOMETRY says, independently of what anybody chose. Used to pick
+    // the family when nobody named one, and to CONTRADICT one when it was named
+    // and the geometry disagrees. It never silently overrides a choice.
     const inferred = inferProcessFamily(geo);
     const measuredOnly = inferred.confidence === 'measured' ? inferred.family : null;
-    const family = PROCESS_FAMILIES[explicit] ? explicit : (derived || measuredOnly);
-    const conflict = processFamilyConflict(explicit || derived || null, inferred);
-    const ruleResults = family ? [runDfmRules(geo, family)] : runAllDfmRules(geo);
-    const familyBasis = PROCESS_FAMILIES[explicit] ? 'chosen'
-      : derived ? 'derived from the costing process'
+    const family = selected.family || measuredOnly;
+    const conflict = processFamilyConflict(selected.family, inferred);
+
+    // The ALLOY decides the threshold wherever it matters — 6061-T6 needs 3 r/t
+    // where mild steel needs 1, zinc fills a 0.6 mm wall where aluminium needs
+    // 1.5. Passing it through is what makes the finding specific rather than
+    // generic, and every finding records which basis it got.
+    const ruleOpts = { material };
+    const ruleResults = family ? [runDfmRules(geo, family, ruleOpts)] : runAllDfmRules(geo, ruleOpts);
+    const familyBasis = selected.basis === 'chosen'
+      ? (selected.chosenProcess ? `chosen — ${selected.chosenProcess}` : 'chosen')
+      : selected.basis === 'no-rules' ? selected.reason
         : measuredOnly ? `measured from the geometry — ${inferred.evidence.join('; ')}`
           : 'no process given — every family run speculatively, so findings may not all apply';
+
+    // An impossible material/process pair should never have been selectable, but
+    // the API is reachable without the UI, so it is checked here too.
+    let materialProcessConflict = null;
+    if (material && chosenProcess) {
+      const allowed = processesForMaterial(material).some(p => p.name === chosenProcess);
+      if (!allowed) {
+        materialProcessConflict = {
+          material, process: chosenProcess,
+          message: `${chosenProcess} cannot be used with ${material}. The cost model lists this process as accepting only certain material families, and ${material} is not one of them — so every threshold below was chosen for a route this part cannot take.`,
+        };
+      }
+    }
 
     // Mass is derived from the kernel-measured volume and the chosen material,
     // never taken from the request: a typed weight could silently disagree with
@@ -274,6 +302,14 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       // the geometry itself says about how this part is made.
       measuredProcess: inferred,
       processConflict: conflict,
+      materialProcessConflict,
+      // The alloy the thresholds were resolved against, so the report can say
+      // whether a number was tuned to this material or is the generic band.
+      material: material || null,
+      materialFamily: material ? familyOfMaterial(material) ?? null : null,
+      // Named when the chosen process shapes nothing, so the reader is told why
+      // there are no findings instead of seeing an empty report.
+      noDfmRulesReason: selected.basis === 'no-rules' ? selected.reason : null,
       analysedAt: new Date().toISOString(),
     };
     if (useSSE) { emit({ type: 'result', result: payload }); return res.end(); }

@@ -42,9 +42,70 @@ export const SEVERITIES = ['high', 'medium', 'low'];
 export const PROCESS_FAMILIES = {
   machining: 'Machining (CNC mill/turn)',
   'injection-moulding': 'Injection moulding',
-  hpdc: 'High-pressure die casting',
+  hpdc: 'High-pressure die casting (Al / Mg)',
+  'hpdc-zinc': 'High-pressure die casting (Zinc)',
+  'gravity-die': 'Gravity die casting',
+  'sand-casting': 'Sand casting',
+  'investment-casting': 'Investment casting',
   'sheet-metal': 'Sheet metal / stamping',
+  'roll-forming': 'Roll forming',
+  hydroforming: 'Hydroforming',
+  'forging-hot': 'Forging (hot)',
+  'forging-cold': 'Forging (cold)',
+  extrusion: 'Extrusion',
+  'rubber-moulding': 'Rubber moulding',
+  'composite-rtm': 'Composite layup / RTM',
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MATERIAL-SPECIFIC THRESHOLDS
+//
+// A threshold that ignores the material is a generic threshold, and a generic
+// threshold produces a generic finding. Three of these were wrong enough to
+// matter on real parts:
+//
+//   * one HPDC wall band of 1.0-3.5 mm covered aluminium, magnesium and zinc.
+//     Zinc fills a 0.6 mm section; aluminium needs 1.5. The same band cannot be
+//     right for both, and on zinc it hid a genuine lightweighting opportunity.
+//   * one injection-moulding band of 1.0-3.0 mm covered PP and PA66-GF30. A
+//     30% glass-filled nylon needs a fuller wall to fill and pack.
+//   * one sheet-metal bend radius of 1 r/t covered mild steel and 6061-T6.
+//     6061-T6 cracks below about 3 r/t; judging it at 1 passes a part that will
+//     split on the press.
+//
+// A rule may therefore carry `byMaterial` (exact grade) and `byMaterialFamily`
+// (the costing engine's family tag), each with its OWN source string. `threshold`
+// remains the band used when the material is not known — and when that fallback
+// is used the finding is stamped `thresholdBasis: 'process-generic'` so the
+// report can say the number was not tuned to the alloy, rather than implying it
+// was. Resolution order: grade, then family, then generic.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Pick the threshold for a rule given the chosen material.
+ *
+ * @returns {{threshold, source, basis: 'material'|'material-family'|'process-generic', matchedOn: string|null}}
+ */
+export function resolveThreshold(rule, material, materialFamily) {
+  const byGrade = material && rule.byMaterial?.[material];
+  if (byGrade) {
+    return {
+      threshold: byGrade.threshold, source: byGrade.source ?? rule.source,
+      basis: 'material', matchedOn: material,
+    };
+  }
+  const byFamily = materialFamily && rule.byMaterialFamily?.[materialFamily];
+  if (byFamily) {
+    return {
+      threshold: byFamily.threshold, source: byFamily.source ?? rule.source,
+      basis: 'material-family', matchedOn: materialFamily,
+    };
+  }
+  return {
+    threshold: rule.threshold, source: rule.source,
+    basis: 'process-generic', matchedOn: null,
+  };
+}
 
 export const DFM_RULES = [
   // ── Machining ──────────────────────────────────────────────────────────────
@@ -128,6 +189,14 @@ export const DFM_RULES = [
   // ── Injection moulding ─────────────────────────────────────────────────────
   {
     id: 'im-wall-thickness-range',
+    byMaterial: {
+      'Polypropylene (PP)': { threshold: [0.8, 3.0], source: 'PP moulding guidance: 0.8 mm minimum, 1.5-3.0 mm typical. PP is one of the easiest-flowing commodity resins.' },
+      'ABS': { threshold: [1.2, 3.5], source: 'ABS moulding guidance: 1.2 mm minimum, 1.5-3.5 mm typical.' },
+      'PA6 (Nylon)': { threshold: [0.8, 3.0], source: 'PA6 moulding guidance: 0.8 mm minimum, 1.0-3.0 mm typical; nylon flows well but is moisture-sensitive.' },
+      'PA66-GF30 (glass-filled)': { threshold: [1.5, 4.0], source: '30% glass-filled PA66 moulding guidance: 1.5 mm minimum. A short-glass compound is far more viscous than the unfilled resin and needs a fuller wall to fill and pack.' },
+      'POM (Acetal)': { threshold: [0.8, 3.0], source: 'POM moulding guidance: 0.8 mm minimum, 1.5-3.0 mm typical. Acetal shrinks heavily, so a thick section sinks badly.' },
+      'Polycarbonate (PC)': { threshold: [1.0, 4.0], source: 'PC moulding guidance: 1.0 mm minimum, 1.5-4.0 mm typical; PC is viscous but tolerates a thicker section than most commodity resins.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'high',
@@ -260,6 +329,16 @@ export const DFM_RULES = [
   // ── High-pressure die casting ──────────────────────────────────────────────
   {
     id: 'hpdc-wall-thickness-range',
+    byMaterialFamily: {
+      aluminium: {
+        threshold: [1.5, 4.0],
+        source: 'Aluminium HPDC design guidance: 1.5 mm practical minimum for a small part, 2.5-4.0 mm typical nominal. Aluminium freezes fast and will not run a 1 mm section reliably at production yield.',
+      },
+      magnesium: {
+        threshold: [1.3, 3.5],
+        source: 'Magnesium HPDC design guidance: magnesium has lower viscosity and higher fluidity than aluminium, so it fills a thinner section — 1.3 mm minimum, 2.0-3.5 mm typical nominal.',
+      },
+    },
     sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'high',
@@ -405,6 +484,13 @@ export const DFM_RULES = [
   // ── Sheet metal / stamping ─────────────────────────────────────────────────
   {
     id: 'sm-bend-radius',
+    byMaterial: {
+      'Aluminium 6061': { threshold: 3.0, source: 'Bend-radius guidance for 6061 in the T6 temper: 3 r/t minimum across the grain. 6061-T6 has low elongation and splits at the tight radii mild steel tolerates — the single most common material-blind DFM error on an aluminium bracket.' },
+      'Aluminium 7075': { threshold: 4.0, source: 'Bend-radius guidance for 7075-T6: 4 r/t minimum and often more. 7075 is a bending-hostile alloy and is normally formed in the O or W temper and aged afterwards.' },
+      'Steel (high-strength)': { threshold: 2.0, source: 'Bend-radius guidance for AHSS / high-strength low-alloy grades: 2 r/t and upward with strength. Higher yield means less uniform elongation before the outer fibre splits.' },
+      'Stainless Steel 304': { threshold: 1.0, source: 'Bend-radius guidance for annealed 304: 1 r/t. Austenitic stainless work-hardens rapidly, so springback is large even though the minimum radius is not.' },
+      'Steel (mild)': { threshold: 1.0, source: 'Bend-radius guidance for mild steel: 1 r/t, and 0.5 r/t is achievable on thin gauge with a sharp punch.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'sheet-metal',
     severity: 'medium',
@@ -463,6 +549,674 @@ export const DFM_RULES = [
     fix: 'Lengthen the flange to at least 3x thickness, or form it as part of a larger feature and trim after.',
     source: 'Sheet-metal design guidance (minimum flange ~3x thickness).',
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // THE CASTING FAMILIES ARE NOT ONE FAMILY.
+  //
+  // Every casting rule below used to be borrowed from high-pressure die casting:
+  // "Gravity Die Casting" was routed to the HPDC rules and "Sand Casting" to
+  // nothing at all. The wall bands alone show why that cannot stand — HPDC 1.5-4,
+  // gravity 3-8, sand 4-12, investment 1.5-6 mm. A gravity casting judged at the
+  // HPDC band fails the wall rule on every part, automatically, and is then
+  // priced for a saving that does not exist.
+  //
+  // The physics behind the spread is heat. A die casting is injected into cooled
+  // steel and freezes in milliseconds, so a thin section fills and a thick one
+  // traps porosity. Sand insulates, so the casting cools slowly: thin sections
+  // misrun before they fill, and thick ones are feedable through risers. Draft
+  // follows the same logic — steel dies release at 1 degree, rammed sand needs
+  // 1.5-3 to strip without tearing, and a wax pattern in investment casting
+  // needs almost none.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ── High-pressure die casting, zinc (hot chamber) ──────────────────────────
+  {
+    id: 'hpdc-zinc-wall-thickness-range',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'high',
+    title: 'Wall thickness outside the zinc die-casting range',
+    measure: 'wallP50Mm',
+    compare: 'between',
+    threshold: [0.6, 3.0],
+    unit: 'mm',
+    rationale:
+      'Zinc runs at a far lower melting point than aluminium in a hot-chamber machine, so it fills sections aluminium cannot — 0.6 mm is routine and 0.4 mm is achievable on small parts. That thinness is the reason to choose zinc at all. Above about 3 mm the section is heavy, slow to freeze and porous, and the material cost of a dense alloy starts to dominate.',
+    fix: 'Take advantage of the alloy: thin the nominal wall towards 1.0-1.5 mm and add ribs for stiffness. A zinc part left at an aluminium wall is paying for metal it does not need.',
+    source: 'Zinc hot-chamber die-casting design guidance (ZAMAK): 0.6 mm practical minimum, 1.0-2.0 mm typical nominal.',
+  },
+  {
+    id: 'hpdc-zinc-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'medium',
+    title: 'Wall area below the minimum zinc die-casting draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 0.5,
+    compare: 'lte',
+    threshold: 5,
+    unit: '% of wall area',
+    rationale:
+      'Zinc shrinks onto the die much less than aluminium and runs cooler, so it strips with about half the draft. Half a degree on an external wall is normal practice and holding an aluminium part\'s 1-2 degrees on a zinc part gives away dimensional accuracy for nothing.',
+    fix: 'Allow 0.5 degrees on external walls and 1 degree on internal walls and cores.',
+    source: 'Zinc die-casting design guidance (draft constants roughly half the aluminium values).',
+  },
+  {
+    id: 'hpdc-zinc-wall-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'medium',
+    title: 'Non-uniform wall thickness',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.6,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'A heavy section beside a thin one is the last place to freeze and has no feed path once the gate solidifies, so it draws shrinkage porosity and distorts as the two sections contract at different times.',
+    fix: 'Core out the heavy sections to a uniform nominal wall and blend the transitions rather than stepping them.',
+    source: 'Die-casting design guidance (uniform section thickness).',
+  },
+  {
+    id: 'hpdc-zinc-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'medium',
+    title: 'Undercuts require slides or lifters in the die',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'An undercut needs a slide or a loose core, which adds die cost and maintenance. Zinc dies carry slides more readily than aluminium dies because the alloy is far kinder to the tooling, so this is a cost question rather than a feasibility one.',
+    fix: 'Re-orient the part on the parting line, or split the feature so it forms between the two die halves.',
+    source: 'Die-casting design guidance (side actions and loose cores).',
+  },
+  {
+    id: 'hpdc-zinc-core-ld',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'medium',
+    title: 'Cored hole beyond the core-pin slenderness limit',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 12,
+    unit: 'core L/D',
+    rationale:
+      'A cast hole is made by a steel pin standing in the flow. Zinc enters cooler than aluminium, so the pin survives a longer reach before it bends or erodes, but a slender pin is still the first thing in the die to fail.',
+    fix: 'Shorten the cored hole, open its diameter, or cast it partly and drill the rest.',
+    source: 'Zinc die-casting design guidance (core-pin length-to-diameter limits).',
+  },
+
+  // ── Gravity die casting (permanent mould) ─────────────────────────────────
+  {
+    id: 'gdc-wall-thickness-range',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'high',
+    title: 'Wall thickness outside the gravity die-casting range',
+    measure: 'wallP50Mm',
+    compare: 'between',
+    threshold: [3.0, 8.0],
+    unit: 'mm',
+    rationale:
+      'Gravity casting fills under its own head, not under pressure, so a thin section misruns before it fills — 3 mm is about the practical floor and 4-6 mm is normal. Because the mould is steel and cools quickly, sections beyond about 8 mm need risering to stay sound. This band is nothing like the die-casting band, and judging a gravity part at 1.0-3.5 mm fails it automatically.',
+    fix: 'Hold 4-6 mm as the nominal wall. If the design needs a section thinner than 3 mm, gravity casting is the wrong process — look at high-pressure die casting.',
+    source: 'Gravity / permanent-mould aluminium casting design guidance: 3 mm practical minimum, 4-6 mm typical.',
+  },
+  {
+    id: 'gdc-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'high',
+    title: 'Wall area below the minimum gravity die-casting draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 1.5,
+    compare: 'lte',
+    threshold: 5,
+    unit: '% of wall area',
+    rationale:
+      'The casting solidifies slowly against a steel mould and grips it hard as it contracts, so it needs more draft than a die casting to strip without tearing or scoring the tool.',
+    fix: 'Allow 1.5-2 degrees on external walls and 2-3 degrees on internal walls and cores.',
+    source: 'Permanent-mould casting design guidance (draft above die-casting values because of the longer contact time).',
+  },
+  {
+    id: 'gdc-wall-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'high',
+    title: 'Non-uniform wall thickness',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.7,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'Gravity casting relies on directional solidification: metal must freeze progressively towards a riser. An isolated heavy section freezes last with no feed path and draws a shrinkage cavity, which is the dominant defect in this process.',
+    fix: 'Taper the section towards the risers so the casting freezes progressively, and core out isolated heavy masses.',
+    source: 'Permanent-mould casting design guidance (directional solidification and riser feeding).',
+  },
+  {
+    id: 'gdc-core-ld',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'medium',
+    title: 'Cored hole beyond the core slenderness limit',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 6,
+    unit: 'core L/D',
+    rationale:
+      'Gravity die cores are steel or bonded sand and are not injected against, but a slender core still floats, distorts or breaks on extraction, and a sand core has no strength to spare.',
+    fix: 'Shorten the cored hole, open its diameter, or drill it after casting.',
+    source: 'Permanent-mould casting design guidance (core slenderness limits).',
+  },
+
+  // ── Sand casting ──────────────────────────────────────────────────────────
+  {
+    id: 'sand-wall-thickness-range',
+    sourceStatus: 'industry-consensus',
+    process: 'sand-casting',
+    severity: 'high',
+    title: 'Wall thickness outside the sand-casting range',
+    measure: 'wallP50Mm',
+    compare: 'between',
+    threshold: [4.0, 12.0],
+    unit: 'mm',
+    rationale:
+      'Sand insulates, so the metal stays liquid longer and fills a long path — but the mould is weak and the section must carry itself, and below about 4 mm in aluminium (5 mm in iron) the casting misruns or the sand erodes. Because cooling is slow, sand tolerates far heavier sections than any die process.',
+    fix: 'Hold 5-8 mm as the nominal wall. A part needing a 2 mm wall is not a sand casting.',
+    source: 'Sand-casting design guidance: about 4 mm minimum in aluminium and 5 mm in grey iron; 5-10 mm typical nominal.',
+  },
+  {
+    id: 'sand-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'sand-casting',
+    severity: 'high',
+    title: 'Wall area below the minimum sand-casting draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 1.5,
+    compare: 'lte',
+    threshold: 5,
+    unit: '% of wall area',
+    rationale:
+      'The pattern is drawn out of rammed sand. Without taper it tears the mould wall on the way out, and the casting carries the damage. Sand needs the most draft of any casting process.',
+    fix: 'Allow 1.5-3 degrees on all drawn surfaces, and more on deep pockets.',
+    source: 'Sand-casting design guidance (pattern draw taper, typically 1.5-3 degrees).',
+  },
+  {
+    id: 'sand-wall-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'sand-casting',
+    severity: 'medium',
+    title: 'Non-uniform wall thickness',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.9,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'Slow cooling in sand gives a heavy section time to feed from a riser, so sand tolerates more section change than any die process — but an isolated hot spot with no feed path still draws shrinkage.',
+    fix: 'Taper sections towards the risers and avoid isolated heavy bosses far from a feed path.',
+    source: 'Sand-casting design guidance (feeding distance and hot spots).',
+  },
+  {
+    id: 'sand-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'sand-casting',
+    severity: 'low',
+    title: 'Undercuts require a core or a loose pattern piece',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'Sand casting handles undercuts more cheaply than any die process — a core box or a loose pattern piece, not a hydraulic slide in hardened steel. Each one still adds a core to make, set and remove, so the count is a cost driver rather than a feasibility limit.',
+    fix: 'Where a core is unavoidable, design it to be set on prints at both ends so it cannot float.',
+    source: 'Sand-casting design guidance (cores and loose pieces).',
+  },
+  {
+    id: 'sand-core-ld',
+    sourceStatus: 'industry-consensus',
+    process: 'sand-casting',
+    severity: 'medium',
+    title: 'Cored hole beyond the sand-core slenderness limit',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 4,
+    unit: 'core L/D',
+    rationale:
+      'A bonded sand core has almost no strength in bending and is buoyant in liquid metal. A slender core floats, sags or washes away, and the hole ends up bent or absent.',
+    fix: 'Open the hole, support the core on prints at both ends, or drill after casting.',
+    source: 'Sand-casting design guidance (core strength and buoyancy).',
+  },
+
+  // ── Investment casting ────────────────────────────────────────────────────
+  {
+    id: 'inv-wall-thickness-range',
+    sourceStatus: 'industry-consensus',
+    process: 'investment-casting',
+    severity: 'high',
+    title: 'Wall thickness outside the investment-casting range',
+    measure: 'wallP50Mm',
+    compare: 'between',
+    threshold: [1.5, 6.0],
+    unit: 'mm',
+    rationale:
+      'The ceramic shell is preheated before pouring, so the metal stays fluid and fills thinner than sand allows — about 1.5 mm routinely and under 1 mm on small parts. Heavy sections are limited by feeding, as in any gravity process.',
+    fix: 'Hold 2-4 mm as the nominal wall; investment casting is chosen for thin, complex sections, so leaving a heavy wall wastes the process.',
+    source: 'Investment-casting design guidance: about 1.5 mm general minimum, 2-4 mm typical.',
+  },
+  {
+    id: 'inv-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'investment-casting',
+    severity: 'low',
+    title: 'Wall area below the minimum investment-casting draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 0.5,
+    compare: 'lte',
+    threshold: 10,
+    unit: '% of wall area',
+    rationale:
+      'Nothing is drawn out of the ceramic shell — it is broken away. Draft is needed only to release the wax pattern from its own die, and zero-draft walls are routinely cast. This is the reason to choose investment casting for a part that cannot carry draft.',
+    fix: 'Allow a nominal 0.5 degrees where it costs nothing; genuinely zero-draft walls are acceptable and should be discussed with the founder rather than redesigned.',
+    source: 'Investment-casting design guidance (draft needed only for wax-pattern release).',
+  },
+  {
+    id: 'inv-wall-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'investment-casting',
+    severity: 'medium',
+    title: 'Non-uniform wall thickness',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.7,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'The shell is a poor conductor, so an isolated heavy section stays liquid after its feed path has frozen and draws a shrinkage cavity.',
+    fix: 'Blend section changes and place heavy masses where a feeder can reach them.',
+    source: 'Investment-casting design guidance (feeding and hot spots).',
+  },
+  {
+    id: 'inv-core-ld',
+    sourceStatus: 'industry-consensus',
+    process: 'investment-casting',
+    severity: 'high',
+    title: 'Cored hole beyond the ceramic-core slenderness limit',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 4,
+    unit: 'core L/D',
+    rationale:
+      'An investment-cast internal passage is made by a ceramic core that has to survive wax injection, shell building, burnout and pouring, and then be leached out. Ceramic cores are the most fragile of any casting process.',
+    fix: 'Open the passage, shorten it, or accept a drilled hole after casting.',
+    source: 'Investment-casting design guidance (ceramic core fragility).',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FORMING FAMILIES. Roll forming and hydroforming are NOT press-brake
+  // stamping, and the difference is the defining constraint of each: a roll
+  // former can only make a CONSTANT cross-section, and a hydroformed tube can
+  // only expand so far before it splits.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ── Roll forming ──────────────────────────────────────────────────────────
+  {
+    id: 'roll-section-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'roll-forming',
+    severity: 'high',
+    title: 'Section is not constant along the part',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.15,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'A roll former makes ONE profile continuously and cuts it to length. It cannot vary the section along the run — that is the whole nature of the process, and it is why roll forming is cheap per metre. A part whose section changes cannot be roll formed at all.',
+    fix: 'Hold one constant profile and put any variation into secondary punching, or move to press-brake forming or stamping.',
+    source: 'Roll-forming design guidance (constant cross-section is inherent to the process).',
+  },
+  {
+    id: 'roll-bend-radius',
+    sourceStatus: 'industry-consensus',
+    process: 'roll-forming',
+    severity: 'medium',
+    title: 'Inside bend radius below one material thickness',
+    measure: 'minBendRadiusToThickness',
+    compare: 'gte',
+    threshold: 1.0,
+    unit: 'r/t',
+    byMaterial: {
+      'Aluminium 6061': { threshold: 3.0, source: 'Roll-forming guidance for 6061-T6: as in press braking, 3 r/t minimum across the grain.' },
+      'Steel (high-strength)': { threshold: 2.0, source: 'Roll-forming guidance for high-strength grades: 2 r/t and upward with yield strength.' },
+    },
+    rationale:
+      'Roll forming works the bend up gradually over many stations, so it is gentler than a press brake — but the outer fibre still has to stretch, and below about 1 r/t it splits.',
+    fix: 'Open the corner radius, or add stations so the bend is developed over a longer run.',
+    source: 'Roll-forming design guidance (minimum inside radius about 1 r/t for mild steel).',
+  },
+  {
+    id: 'roll-flange-length',
+    sourceStatus: 'industry-consensus',
+    process: 'roll-forming',
+    severity: 'medium',
+    title: 'Flange too short for the rolls to grip',
+    measure: 'minFlangeToThickness',
+    compare: 'gte',
+    threshold: 3,
+    unit: 'flange/t',
+    rationale:
+      'A short flange has nothing for the rolls to hold and wanders, so the profile is out of tolerance along its length.',
+    fix: 'Lengthen the flange to at least three material thicknesses, or form it in a secondary operation.',
+    source: 'Roll-forming design guidance (minimum flange length).',
+  },
+
+  // ── Hydroforming ──────────────────────────────────────────────────────────
+  {
+    id: 'hydro-corner-radius',
+    sourceStatus: 'industry-consensus',
+    process: 'hydroforming',
+    severity: 'high',
+    title: 'Corner radius too tight for the forming pressure available',
+    measure: 'minBendRadiusToThickness',
+    compare: 'gte',
+    threshold: 3.0,
+    unit: 'r/t',
+    rationale:
+      'A hydroformed corner is filled by internal pressure pushing the wall into the die, and the pressure needed rises as the radius falls. Below about 3 r/t the tube thins and splits at the corner before the die is filled.',
+    fix: 'Open the corner radii, or accept a two-stage form with an intermediate anneal.',
+    source: 'Tube hydroforming design guidance (corner radius against forming pressure and wall thinning).',
+  },
+  {
+    id: 'hydro-section-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'hydroforming',
+    severity: 'high',
+    title: 'Section varies more than the expansion limit allows',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.3,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'A hydroformed part starts as a tube of one wall thickness and thins wherever it expands. A large variation in the finished section means a large expansion ratio somewhere, and past roughly 30-40% expansion the wall splits.',
+    fix: 'Reduce the largest expansion, start from a pre-bent tube closer to the final shape, or use a thicker starting gauge.',
+    source: 'Tube hydroforming design guidance (expansion ratio and wall thinning limits).',
+  },
+  {
+    id: 'hydro-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'hydroforming',
+    severity: 'high',
+    title: 'Undercuts prevent the die from opening',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'The formed tube is trapped in a two-part die that must open along one axis. An undercut locks the part in the tool.',
+    fix: 'Re-orient the part relative to the die parting line, or split the feature so it forms between the halves.',
+    source: 'Hydroforming design guidance (die opening and part extraction).',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BULK FORMING AND EXTRUSION.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ── Hot forging ───────────────────────────────────────────────────────────
+  {
+    id: 'forge-hot-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'forging-hot',
+    severity: 'high',
+    title: 'Wall area below the minimum hot-forging draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 5.0,
+    compare: 'lte',
+    threshold: 5,
+    unit: '% of wall area',
+    rationale:
+      'A hot forging shrinks onto the die as it cools and is knocked out mechanically, so it needs far more draft than any casting — 3 degrees on external surfaces and 5-7 on internal ones is normal. This is the single largest difference between forging and casting geometry.',
+    fix: 'Allow 3 degrees on external walls and 5-7 degrees on internal walls and pockets.',
+    source: 'Closed-die hot forging design guidance (draft typically 3 degrees external, 5-7 degrees internal).',
+  },
+  {
+    id: 'forge-hot-min-web',
+    sourceStatus: 'industry-consensus',
+    process: 'forging-hot',
+    severity: 'high',
+    title: 'Web too thin to forge',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 3.0,
+    unit: 'mm',
+    rationale:
+      'Metal must flow to fill a thin web, and a thin web chills against the die before it fills. It also drives forging load up sharply, because the thinner the web the higher the pressure needed to make the material move.',
+    fix: 'Thicken the web to at least 3 mm, or machine the thin region after forging.',
+    source: 'Closed-die forging design guidance (minimum web thickness and forging load).',
+  },
+  {
+    id: 'forge-hot-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'forging-hot',
+    severity: 'high',
+    title: 'Undercuts cannot be forged',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'A forging die has two halves and no slides. There is no forging equivalent of a side action: an undercut simply cannot be forged and must be machined afterwards.',
+    fix: 'Remove the undercut from the forged shape and machine it as a secondary operation, or re-orient the part on the parting line.',
+    source: 'Closed-die forging design guidance (two-part dies, no side actions).',
+  },
+  {
+    id: 'forge-hot-rib-height',
+    sourceStatus: 'industry-consensus',
+    process: 'forging-hot',
+    severity: 'medium',
+    title: 'Rib too tall for the metal to fill',
+    measure: 'maxRibHeightToWall',
+    compare: 'lte',
+    threshold: 4,
+    unit: 'rib height / wall',
+    rationale:
+      'A tall, thin rib is the hardest thing to fill in a forging: the metal must flow furthest against the most die chilling, and an unfilled rib is scrap.',
+    fix: 'Reduce the rib height, thicken it, or add generous fillets at its base so metal reaches the top.',
+    source: 'Closed-die forging design guidance (rib height-to-width and die filling).',
+  },
+
+  // ── Cold forging ──────────────────────────────────────────────────────────
+  {
+    id: 'forge-cold-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'forging-cold',
+    severity: 'low',
+    title: 'Wall area below the minimum cold-forging draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 0.5,
+    compare: 'lte',
+    threshold: 10,
+    unit: '% of wall area',
+    rationale:
+      'A cold forging does not shrink onto the die the way a hot one does, and it is ejected by a knock-out pin rather than being drawn. Near-zero draft is normal, which is a large part of why cold forging holds tolerances that hot forging cannot.',
+    fix: 'Allow 0.5 degrees where the function permits; zero-draft walls are usually acceptable here.',
+    source: 'Cold forging / cold heading design guidance (draft near zero because there is no thermal shrink onto the die).',
+  },
+  {
+    id: 'forge-cold-min-web',
+    sourceStatus: 'industry-consensus',
+    process: 'forging-cold',
+    severity: 'high',
+    title: 'Web too thin for the forming load available',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 1.5,
+    unit: 'mm',
+    rationale:
+      'Cold forging works the material below its recrystallisation temperature, so it work-hardens as it flows. A thin web needs very high pressure to fill and is where the tool cracks.',
+    fix: 'Thicken the web, add an intermediate anneal, or machine the thin region afterwards.',
+    source: 'Cold forging design guidance (forming pressure and tool life against web thickness).',
+  },
+  {
+    id: 'forge-cold-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'forging-cold',
+    severity: 'high',
+    title: 'Undercuts cannot be cold forged',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'The part is ejected from a closed die by a knock-out pin along one axis. An undercut locks it in the tool.',
+    fix: 'Machine the undercut as a secondary operation, or re-orient the part on the die axis.',
+    source: 'Cold forging design guidance (axial ejection).',
+  },
+
+  // ── Extrusion ─────────────────────────────────────────────────────────────
+  {
+    id: 'extr-section-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'extrusion',
+    severity: 'high',
+    title: 'Section is not uniform enough for the die to run balanced',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.35,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'Metal flows faster through a thick part of the die than a thin one. A profile whose wall varies sharply comes out twisted or bowed, and the die has to be corrected by trial — which is why extruders charge more for an unbalanced section and reject the worst of them outright.',
+    fix: 'Even out the wall across the profile, and where a thick region is structurally necessary, blend into it rather than stepping.',
+    source: 'Aluminium extrusion design guidance (balanced metal flow and die correction).',
+  },
+  {
+    id: 'extr-min-wall',
+    sourceStatus: 'industry-consensus',
+    process: 'extrusion',
+    severity: 'high',
+    title: 'Wall thinner than the die can hold',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 1.0,
+    unit: 'mm',
+    byMaterialFamily: {
+      copper: { threshold: 1.5, source: 'Copper and brass extrusion guidance: a higher minimum than aluminium because the extrusion pressure and die wear are both greater.' },
+    },
+    rationale:
+      'The die tongue that forms a thin wall is unsupported and deflects under extrusion pressure. Below about 1 mm in a solid aluminium profile the tongue chatters or breaks, and a hollow profile needs more again.',
+    fix: 'Thicken the thinnest wall to 1.5-2 mm, especially on any hollow section.',
+    source: 'Aluminium extrusion design guidance: about 1.0 mm minimum for a solid profile, 1.5-2.0 mm for a hollow.',
+  },
+  {
+    id: 'extr-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'extrusion',
+    severity: 'high',
+    title: 'Feature blocks the profile leaving the die',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'An extrusion is a constant profile pushed through a fixed opening. Any feature that is not open along the extrusion axis cannot exist in the extruded shape and must be machined afterwards.',
+    fix: 'Remove the feature from the profile and machine it after extrusion, or reconsider the extrusion axis.',
+    source: 'Extrusion design guidance (constant profile along the extrusion axis).',
+  },
+
+  // ── Rubber moulding ───────────────────────────────────────────────────────
+  {
+    id: 'rubber-wall-thickness-range',
+    sourceStatus: 'industry-consensus',
+    process: 'rubber-moulding',
+    severity: 'medium',
+    title: 'Wall thickness outside the practical rubber-moulding range',
+    measure: 'wallP50Mm',
+    compare: 'between',
+    threshold: [1.0, 6.0],
+    unit: 'mm',
+    rationale:
+      'Rubber cures from the outside in, and cure time rises with the square of the section — a thick part is a slow part and risks an under-cured core. Below about 1 mm the uncured compound will not fill reliably.',
+    fix: 'Hold 2-4 mm as the nominal section and hollow out heavy masses.',
+    source: 'Rubber moulding design guidance (cure time against section thickness).',
+  },
+  {
+    id: 'rubber-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'rubber-moulding',
+    severity: 'low',
+    title: 'Wall area below the minimum rubber-moulding draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 0.5,
+    compare: 'lte',
+    threshold: 15,
+    unit: '% of wall area',
+    rationale:
+      'Rubber is elastic and strips off modest undercuts and zero-draft walls that would lock a rigid part in the tool. Draft helps but is rarely the constraint.',
+    fix: 'Allow 0.5-1 degree where it is free; a zero-draft rubber wall is usually acceptable.',
+    source: 'Rubber moulding design guidance (elastic recovery permits low draft).',
+  },
+  {
+    id: 'rubber-wall-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'rubber-moulding',
+    severity: 'medium',
+    title: 'Non-uniform section cures unevenly',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.8,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'The cure is set by the thickest section, so a part with one heavy region holds the whole press open while the thin regions over-cure and lose elongation.',
+    fix: 'Even out the section, or hollow the heavy region.',
+    source: 'Rubber moulding design guidance (cure uniformity).',
+  },
+
+  // ── Composite layup / RTM ─────────────────────────────────────────────────
+  {
+    id: 'rtm-wall-thickness-range',
+    sourceStatus: 'industry-consensus',
+    process: 'composite-rtm',
+    severity: 'medium',
+    title: 'Laminate thickness outside the practical RTM range',
+    measure: 'wallP50Mm',
+    compare: 'between',
+    threshold: [1.5, 10.0],
+    unit: 'mm',
+    rationale:
+      'A laminate is built from plies of finite thickness, so a very thin wall has too few plies to be laid up repeatably, and a very thick one is slow to wet out and exotherms as it cures.',
+    fix: 'Hold 2-5 mm and vary stiffness through the lay-up and ply orientation rather than through thickness.',
+    source: 'RTM / resin-transfer moulding design guidance (ply count and cure exotherm).',
+  },
+  {
+    id: 'rtm-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'composite-rtm',
+    severity: 'medium',
+    title: 'Wall area below the minimum RTM draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 1.0,
+    compare: 'lte',
+    threshold: 5,
+    unit: '% of wall area',
+    rationale:
+      'A cured laminate is stiff and grips a matched tool hard. Without draft it cannot be released without damaging the part or the tool surface.',
+    fix: 'Allow 1-3 degrees on all tool-contact surfaces.',
+    source: 'Composite tooling design guidance (part release from matched moulds).',
+  },
+  {
+    id: 'rtm-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'composite-rtm',
+    severity: 'high',
+    title: 'Undercuts trap the cured part in the tool',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'A cured laminate has no give. An undercut needs a split or collapsible tool, which multiplies tooling cost and cycle time.',
+    fix: 'Re-orient the part on the tool split line, or bond the undercut feature on as a secondary part.',
+    source: 'Composite tooling design guidance (split tools and collapsible cores).',
+  },
+
 ];
 
 /**

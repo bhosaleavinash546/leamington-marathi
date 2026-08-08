@@ -12,7 +12,8 @@
 // exactly the failure mode the whole feature exists to avoid. `coveragePct`
 // makes the size of that gap impossible to miss.
 // ─────────────────────────────────────────────────────────────────────────────
-import { DFM_RULES, PROCESS_FAMILIES, SEVERITIES } from './dfm-rule-catalogue.mjs';
+import { DFM_RULES, PROCESS_FAMILIES, SEVERITIES, resolveThreshold } from './dfm-rule-catalogue.mjs';
+import { MATERIALS } from './costing-engine.mjs';
 
 /**
  * Pull the values rules are written against out of a measured-geometry blob.
@@ -99,6 +100,13 @@ export function extractMeasures(geo = {}) {
     // cannot express, and the rule would abstain forever.
     holeToBendClearanceMm: num(sm.holeToBendClearanceMm),
 
+    // THE DRAFT CURVE, not one point on it. `wallAreaBelowMinDraftPct` above is
+    // measured against a hardcoded 1 degree, which is the right question for
+    // aluminium die casting and the wrong one for zinc (0.5), sand (1.5-3) and
+    // hot forging (5-7). Each rule names the angle it actually means in
+    // `draftCutoffDeg` and the evaluator reads that point off this curve.
+    _draftCurve: draft.wallAreaBelowDraftPct || undefined,
+
     // Still deliberately absent, and it matters that they are absent rather
     // than defaulted — pocket depth/width needs bounded boxes the recogniser
     // does not yet produce, and internal corner radius needs tool-access
@@ -140,20 +148,31 @@ function thresholdText(rule) {
  * @param {string} process  key of PROCESS_FAMILIES
  * @returns {{process, processName, findings, passed, notEvaluated, coveragePct, score}}
  */
-export function runDfmRules(geo, process) {
+export function runDfmRules(geo, process, { material } = {}) {
   if (!PROCESS_FAMILIES[process]) {
     throw new Error(`Unknown process family: ${process}`);
   }
   const measures = extractMeasures(geo);
   const rules = DFM_RULES.filter(r => r.process === process);
+  // The alloy decides the threshold on the rules where it matters. When it is
+  // not known the process-generic band is used and every finding says so —
+  // "1.0-3.5 mm for die casting generally" is a different claim from
+  // "1.5-4.0 mm for this aluminium", and presenting them identically is how a
+  // generic report passes itself off as a specific one.
+  const materialFamily = material ? MATERIALS[material]?.family : undefined;
 
   const findings = [];
   const passed = [];
   const notEvaluated = [];
 
   for (const rule of rules) {
-    const value = measures[rule.measure];
-    const { status, reason } = evaluate(rule, value);
+    // A draft rule names the angle it means; everything else reads a flat measure.
+    const value = rule.measure === 'wallAreaBelowDraftPct'
+      ? numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)])
+      : measures[rule.measure];
+    const picked = resolveThreshold(rule, material, materialFamily);
+    const effective = { ...rule, threshold: picked.threshold };
+    const { status, reason } = evaluate(effective, value);
     const row = {
       id: rule.id,
       title: rule.title,
@@ -161,12 +180,16 @@ export function runDfmRules(geo, process) {
       measure: rule.measure,
       measured: value,
       unit: rule.unit,
-      threshold: rule.threshold,
-      thresholdText: thresholdText(rule),
+      threshold: picked.threshold,
+      thresholdText: thresholdText(effective),
       rationale: rule.rationale,
       fix: rule.fix,
-      source: rule.source,
+      source: picked.source,
       sourceStatus: rule.sourceStatus,
+      // WHICH material this threshold was tuned to, or that it was not tuned at
+      // all. The report prints this beside the finding.
+      thresholdBasis: picked.basis,
+      thresholdMatchedOn: picked.matchedOn,
       status,
     };
     if (status === 'fail') findings.push(row);
@@ -214,9 +237,11 @@ export function scoreOf(findings, evaluatedCount) {
 }
 
 /** Run every process family — used when the process is not yet decided. */
-export function runAllDfmRules(geo) {
-  return Object.keys(PROCESS_FAMILIES).map(p => runDfmRules(geo, p));
+export function runAllDfmRules(geo, opts) {
+  return Object.keys(PROCESS_FAMILIES).map(p => runDfmRules(geo, p, opts));
 }
+
+const numberOr = v => (Number.isFinite(Number(v)) ? Number(v) : undefined);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // What the GEOMETRY says the process is.

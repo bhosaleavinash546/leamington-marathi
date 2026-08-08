@@ -36,6 +36,10 @@ export interface DfmFinding {
   sourceStatus?: string;
   status: 'fail' | 'pass' | 'not-evaluated';
   reason?: string;
+  /** Whether this threshold was resolved for the chosen alloy, its family, or
+   *  not at all. A generic band must not read like a material-specific one. */
+  thresholdBasis?: 'material' | 'material-family' | 'process-generic';
+  thresholdMatchedOn?: string | null;
   cost?: {
     priced: boolean;
     basis?: string;
@@ -562,6 +566,16 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
       }
       mono(6); setText(doc, MUT); ensure(5);
       doc.text(fit(doc, `SOURCE [${SOURCE_GRADE[f.sourceStatus || 'industry-consensus']}]: ${f.source}`, CW - 9), ML + 4.5, y); y += 4;
+      // WHICH MATERIAL THIS NUMBER IS FOR. A 3 r/t bend radius for 6061-T6 and a
+      // generic 1 r/t band look identical on the page unless the report says
+      // which it is, and the difference decides whether the part cracks.
+      if (f.thresholdBasis) {
+        mono(6); setText(doc, f.thresholdBasis === 'process-generic' ? AMBER : GREEN); ensure(5);
+        doc.text(fit(doc, f.thresholdBasis === 'process-generic'
+          ? 'THRESHOLD: process-generic — no material was given, so this is the band for the process as a whole, not for your alloy'
+          : `THRESHOLD: resolved for ${f.thresholdMatchedOn}`, CW - 9), ML + 4.5, y);
+        y += 4;
+      }
       setDraw(doc, RULE, 0.2); doc.line(ML, y + 1, PW - MR, y + 1);
       y += 8;
     }
