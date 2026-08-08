@@ -271,6 +271,39 @@ export const DFM_FIXTURES = [
       },
     },
   },
+  {
+    file: 'curved-wall-plate.step',
+    what: '80x40x10 plate with a semicircular R20 end and one Ø6 through hole',
+    truth: {
+      // Volume is arithmetic from the construction: box + half-cylinder - bore
+      // = 80*40*10 + pi*20^2/2*10 - pi*3^2*10 = 32000 + 6283.19 - 282.74.
+      volumeMm3: 38000.45,
+      // THE POINT OF THIS FIXTURE. The rounded end is a cylindrical face of
+      // radius 20 sweeping exactly 180 degrees. It is a wall. Until the engine
+      // was taught that a hole or a boss must close a FULL revolution, it
+      // accepted any cylindrical face, and on a real aluminium casting it
+      // reported the part's own 63-degree outer wall as "boss Ø100 x 25.8" and
+      // thirteen more like it. Zero bosses here, and exactly one hole.
+      bosses: 0,
+      holes: [{ diaMm: 6.0, through: true }],
+      // No pocket, slot or step: the plate is solid apart from the bore, and the
+      // bore is reported by the cylinder pass, not the graph.
+      featureCounts: { 'through-hole': 1 },
+    },
+  },
+  {
+    file: 'sheet-hole-through.step',
+    what: '1.5 mm L-bracket, 40 mm upstand, Ø5 hole through the base',
+    truth: {
+      // THE POINT OF THIS FIXTURE. The bore is 1.5 mm deep and the part spans
+      // 40 mm along the bore axis, so a through/blind test that compares depth
+      // against the bounding box calls it blind. That is exactly what put
+      // "hole Ø6 depth 1.6 through: false" into a report on a 1.6 mm seat cross
+      // member — every hole in the pressing was called blind.
+      holes: [{ diaMm: 5.0, depthMm: 1.5, through: true }],
+      bosses: 0,
+    },
+  },
 ];
 
 /**

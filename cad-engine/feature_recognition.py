@@ -88,6 +88,50 @@ def _edge_sense_in(face, edge):
     return 1.0
 
 
+def _mean_normal(face, samples=4):
+    """(mean outward unit normal, coherence) for a face of ANY surface type.
+
+    Sampled on a UV grid rather than taken from the surface definition, so a
+    cylinder, a cone and a NURBS patch all answer the same question: which way
+    does this face broadly look? Coherence is the length of the mean of the unit
+    normals — 1.0 for a plane, and near 0 for a face that wraps around, which is
+    the caller's signal that the mean direction carries no information.
+    """
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.BRepLProp import BRepLProp_SLProps
+    from OCP.TopAbs import TopAbs_REVERSED
+    try:
+        ad = BRepAdaptor_Surface(face)
+        u0, u1 = ad.FirstUParameter(), ad.LastUParameter()
+        v0, v1 = ad.FirstVParameter(), ad.LastVParameter()
+        for t in (u0, u1, v0, v1):
+            if not math.isfinite(t):
+                return None, 0.0
+        sign = -1.0 if face.Orientation() == TopAbs_REVERSED else 1.0
+        acc, n = [0.0, 0.0, 0.0], 0
+        for iu in range(samples):
+            for iv in range(samples):
+                u = u0 + (u1 - u0) * (iu + 0.5) / samples
+                v = v0 + (v1 - v0) * (iv + 0.5) / samples
+                props = BRepLProp_SLProps(ad, u, v, 1, 1e-6)
+                if not props.IsNormalDefined():
+                    continue
+                d = props.Normal()
+                acc[0] += d.X() * sign
+                acc[1] += d.Y() * sign
+                acc[2] += d.Z() * sign
+                n += 1
+        if not n:
+            return None, 0.0
+        mean = [c / n for c in acc]
+        coherence = math.sqrt(sum(c * c for c in mean))
+        if coherence < 1e-9:
+            return None, 0.0
+        return [c / coherence for c in mean], coherence
+    except Exception:
+        return None, 0.0
+
+
 def build_aag(shape):
     """Faces, their surface types and areas, plus convexity-labelled arcs."""
     from OCP.BRepAdaptor import BRepAdaptor_Curve, BRepAdaptor_Surface
@@ -174,11 +218,23 @@ def build_aag(shape):
                 normal = (d.X() * s, d.Y() * s, d.Z() * s)
         except Exception:
             pass
+        # Mean outward normal for ANY face type, by sampling. The planar normal
+        # above is exact and covers the chamfer test, but a casting is mostly
+        # cylinders and freeform: 39 of that part's 230 faces are planar, so a
+        # planes-only normal leaves the tool-approach test with nothing to
+        # measure on exactly the parts that need it. `normalCoherence` is the
+        # length of the mean unit normal — 1.0 for a plane, ~0 for a face that
+        # wraps right around — and it is what says whether the mean means
+        # anything at all.
+        mean_normal, coherence = _mean_normal(f)
         faces[i] = {"id": i, "type": kind, "areaMm2": area, "aspect": round(aspect, 4)}
         if centre:
             faces[i]["centreXYZ"] = [round(c, 3) for c in centre]
         if normal:
             faces[i]["normal"] = normal
+        if mean_normal:
+            faces[i]["meanNormal"] = [round(c, 4) for c in mean_normal]
+            faces[i]["normalCoherence"] = round(coherence, 4)
         if concavity:
             faces[i]["blendConcavity"] = concavity
 
@@ -415,6 +471,59 @@ def collapse_blends(aag, blend_ids):
 
 # ─── Prismatic features (pockets, slots, steps) ───────────────────────────────
 
+#: A pocket, slot or step is a volume a tool reaches from ONE direction: every
+#: face of it must be visible from that direction, so the outward normals fit
+#: inside a hemisphere. 90° is the geometric limit; the margin allows for the
+#: draft and near-tangent walls that real parts have. Without this test the
+#: concave decomposition happily merged the entire interior of an aluminium
+#: casting into a single 43-face "pocket" of 14,716 mm² — 23% of the part's
+#: whole skin, wrapping right around it, and reported with "high" confidence.
+SINGLE_APPROACH_MAX_DEG = 100.0
+
+#: Every concave junction between two faces is a component of the graph, and on
+#: a folded pressing there are dozens of them that are simply where two walls
+#: meet. A recognised feature has to be big enough for a tool to enter: the
+#: floor of the smallest practical end mill, Ø3, is 7.1 mm². Components below
+#: this are junctions, not features, and 12 of them appeared as "steps" of 3 to
+#: 65 mm² on a seat cross member.
+MIN_FEATURE_AREA_MM2 = 7.1
+
+
+def _approach_span_deg(aag, comp):
+    """Smallest cone half-angle that contains every planar normal of `comp`.
+
+    Returns None when the component has too few planar faces to decide — an
+    unmeasurable component is left alone rather than rejected on a guess.
+    """
+    normals = []
+    for f in comp:
+        meta = aag["faces"][f]
+        n = meta.get("normal") or meta.get("meanNormal")
+        # A face that wraps more than about a hemisphere has no "direction" for
+        # this test — that is the bore of a hole, and it is measured by the
+        # cylinder pass, not looked at from outside.
+        if not n or meta["areaMm2"] <= 0:
+            continue
+        if not meta.get("normal") and (meta.get("normalCoherence") or 0) < 0.5:
+            continue
+        normals.append((n, meta["areaMm2"]))
+    if len(normals) < 3:
+        return None
+    total = sum(a for _n, a in normals) or 1.0
+    mean = [sum(n[k] * a for n, a in normals) / total for k in range(3)]
+    mag = math.sqrt(sum(c * c for c in mean))
+    candidates = [n for n, _a in sorted(normals, key=lambda p: -p[1])[:8]]
+    if mag > 1e-6:
+        candidates.append(tuple(c / mag for c in mean))
+    best = None
+    for d in candidates:
+        worst = max(math.degrees(math.acos(max(-1.0, min(1.0,
+                    sum(n[k] * d[k] for k in range(3)))))) for n, _a in normals)
+        if best is None or worst < best:
+            best = worst
+    return round(best, 1)
+
+
 def prismatic_features(aag):
     """Concave-connected components, classified pocket / slot / step.
 
@@ -422,6 +531,11 @@ def prismatic_features(aag):
     both ends, so fewer of its walls close on each other. The discriminator is
     how many of the component's own faces are mutually adjacent by a concave arc
     versus how many open onto the outer skin.
+
+    Two physical gates keep the graph's artefacts out of the feature list: the
+    component must be reachable from a SINGLE tool approach direction, and it
+    must be larger than the smallest tool that could make it. Both were added
+    after real parts: see SINGLE_APPROACH_MAX_DEG and MIN_FEATURE_AREA_MM2.
     """
     out = []
     for comp in _components(aag["arcs"], "concave"):
@@ -433,6 +547,23 @@ def prismatic_features(aag):
         # reports it with exact dimensions, so it is not a prismatic feature.
         if cyls >= 1 and planes <= 1:
             continue
+        # Pocket, slot and step are PRISMATIC features: each is bounded by at
+        # least one planar floor or wall. A component of nothing but freeform
+        # patches is the transition between two formed surfaces — which is what
+        # every one of the twelve phantom "steps" on a stamped seat cross member
+        # turned out to be, two of them a TORUS meeting a NURBS.
+        if planes < 1:
+            continue
+        # And it must be big enough for a tool to enter in at least two of its
+        # faces; a pair of 5 mm² slivers is a junction between faces, not a
+        # feature with a floor and a wall.
+        if sum(1 for f in comp if aag["faces"][f]["areaMm2"] >= MIN_FEATURE_AREA_MM2) < 2:
+            continue
+        if area < MIN_FEATURE_AREA_MM2:
+            continue
+        approach = _approach_span_deg(aag, comp)
+        if approach is not None and approach > SINGLE_APPROACH_MAX_DEG:
+            continue                  # wraps the part — not a single-setup volume
         # Count how many walls of this component close on each other. A closed
         # rectangular pocket has all four; a through slot has only two.
         inner = sum(1 for arc in aag["arcs"]
@@ -451,6 +582,10 @@ def prismatic_features(aag):
             # rather than the anchor drifting to whichever wall the mesher split
             # into the most faces.
             "centroidXYZ": centroid_of(aag, comp),
+            # The measured approach span, published rather than merely used: a
+            # feature at 95° is a shallow pocket with drafted walls, and a
+            # reviewer is entitled to see how close to the limit it sat.
+            "approachSpanDeg": approach,
             # Rule-based recognition on clean prismatic geometry is reliable;
             # say so rather than implying a precision we cannot back.
             "confidence": "high" if planes >= 3 else "medium",

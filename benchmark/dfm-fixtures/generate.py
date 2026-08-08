@@ -383,6 +383,59 @@ def unreadable_files(outdir):
     return junk, "not readable geometry"
 
 
+def curved_wall_plate(outdir):
+    """80x40x10 plate with a SEMICIRCULAR end (R20), and one real Ø6 through hole.
+
+    The rounded end is a cylindrical face of radius 20 sweeping exactly 180° —
+    half the fused cylinder lies inside the box, so the other half is the wall
+    you can see. It is a WALL, not a boss: nothing was turned, nothing is
+    drilled, and no tool ever went round it.
+
+    Truth by construction:
+      * bosses = 0. The engine accepted any cylindrical face as a hole or boss
+        until it was taught to require a full revolution, and on a real
+        aluminium casting that turned the part's own 63°-sweep outer wall into a
+        "boss Ø100 x 25.8".
+      * holes = exactly one, Ø6, through (10 mm bore in a 10 mm plate).
+      * volume = 80*40*10 + pi*20^2/2*10 - pi*3^2*10.
+    """
+    L, W, T, R, d = 80.0, 40.0, 10.0, 20.0, 3.0
+    box = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), L, W, T).Shape()
+    # Centre on the mid-point of the far end face, so exactly half of it shows.
+    cap = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(L, W / 2, 0), gp_Dir(0, 0, 1)), R, T).Shape()
+    body = BRepAlgoAPI_Fuse(box, cap).Shape()
+    bore = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(25, W / 2, -1), gp_Dir(0, 0, 1)), d, T + 2).Shape()
+    shape = BRepAlgoAPI_Cut(body, bore).Shape()
+    vol = L * W * T + math.pi * R * R / 2 * T - math.pi * d * d * T
+    return _write(shape, os.path.join(outdir, "curved-wall-plate.step")), {
+        "bosses": 0, "holes": 1, "volumeMm3": round(vol, 1),
+    }
+
+
+def sheet_hole_through(outdir):
+    """1.5 mm L-bracket, 100 mm long, with a 40 mm upstand — and a Ø5 hole
+    through the 1.5 mm base.
+
+    The point is the SHAPE of the part around the hole. The bore is 1.5 mm deep
+    and the part's extent along the bore axis is 40 mm, so a through/blind test
+    that compares depth to the bounding box calls this hole BLIND — which is
+    what the engine did, and what put "hole Ø6 depth 1.6 through: false" in a
+    report on a 1.6 mm seat cross member.
+
+    Truth by construction: one hole, Ø5, depth 1.5 (= sheet thickness), THROUGH.
+    """
+    t, L, W, H, d = 1.5, 100.0, 60.0, 40.0, 2.5
+    base = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), L, W, t).Shape()
+    upstand = BRepPrimAPI_MakeBox(gp_Pnt(0, W - t, 0), L, t, H).Shape()
+    body = BRepAlgoAPI_Fuse(base, upstand).Shape()
+    bore = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(50, 20, -1), gp_Dir(0, 0, 1)), d, t + 2).Shape()
+    shape = BRepAlgoAPI_Cut(body, bore).Shape()
+    return _write(shape, os.path.join(outdir, "sheet-hole-through.step")), {
+        "hole": {"diaMm": 2 * d, "depthMm": t, "through": True},
+        "axisExtentMm": H,
+    }
+
+
 def bolted_assembly(outdir):
     """A 3-solid assembly: one 80x50x10 plate and TWO identical Ø8 x 25 pins.
 
@@ -413,7 +466,11 @@ def main():
                # these four crashed, returned kernel internals, or produced
                # confident nonsense — which is exactly how a 100% gate coexisted
                # with four live bugs.
-               surface_only, metres_part, unreadable_files):
+               surface_only, metres_part, unreadable_files,
+               # APPENDED, not inserted. OCCT stamps a running part number into
+               # PRODUCT(), so inserting a fixture renumbers every file written
+               # after it and the whole set churns for no geometric reason.
+               curved_wall_plate, sheet_hole_through):
         path, truth = fn(outdir)
         print(f"  {os.path.basename(path):26s}  analytic truth: {truth}")
     print(f"wrote fixtures to {outdir}")

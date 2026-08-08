@@ -44,21 +44,148 @@ signal.alarm(110)
 
 # ─── Surface / edge type classification ──────────────────────────────────────
 
-def _extract_feature_table(wrapped, extents, skip_faces=None):
+#: A drilled hole or a turned boss is a body of revolution: its cylindrical wall
+#: closes through a FULL 360°. A curved wall, a filleted corner or the rounded
+#: end of a casting is a cylindrical face too, and the kernel reports a radius
+#: and a depth for it just as happily — the sweep angle is the only thing that
+#: tells them apart. Measured on a real aluminium casting, the fourteen largest
+#: cylindrical faces swept 20°–126° and every one of them was reported as a
+#: hole or a boss (a "boss Ø100×25.8" that was the outer wall of the part).
+#: Tolerance is 15°, i.e. a wall must close to within 4% of a revolution: real
+#: bores come in at exactly 360°, whole or split by the modeller into arcs that
+#: sum to 360°, so the margin is there for seam slivers, not for judgement.
+FULL_REVOLUTION_TOL_DEG = 15.0
+
+#: Two coaxial same-radius faces belong to the same bore when their axial spans
+#: touch or overlap. A hole split at mid-depth leaves faces that meet exactly;
+#: a hole passing through two walls leaves a real air gap between them, and
+#: those must stay two features or a 5 mm bore in each of two 3 mm walls 40 mm
+#: apart becomes one 46 mm-deep hole that does not exist.
+COAXIAL_GAP_TOL_MM = 0.02
+
+
+def _cyl_arc(face, ad, cyl, frame):
+    """Angular interval this face covers around its axis, in the GROUP's frame.
+
+    Faces of one bore each carry their own parametric origin (the cylinder's
+    XDirection), so raw U bounds from two half-cylinders are not comparable and
+    cannot simply be added. Both are re-expressed here as angles in a single
+    frame built from the group's axis, which makes the union well defined
+    whether the modeller split the bore in U, in V, or not at all.
+    """
+    from OCP.gp import gp_Vec
+    u0, u1 = ad.FirstUParameter(), ad.LastUParameter()
+    v0, v1 = ad.FirstVParameter(), ad.LastVParameter()
+    sweep = abs(u1 - u0)
+    if not math.isfinite(sweep) or sweep <= 1e-9:
+        return None
+    sweep = min(sweep, 2 * math.pi)
+    vmid = (v0 + v1) / 2.0
+    origin, xc, yc = frame
+
+    def ang_at(u):
+        pt = ad.Value(u, vmid)
+        v = gp_Vec(origin, pt)
+        return math.atan2(v.Dot(gp_Vec(yc)), v.Dot(gp_Vec(xc)))
+
+    a0 = ang_at(min(u0, u1))
+    # Which way the parametrisation turns in the canonical frame is a property
+    # of the surface's handedness AND of the sign flip applied when the group's
+    # axis was canonicalised. Sampling it is shorter than deriving it and cannot
+    # get the two flips the wrong way round.
+    probe = min(u0, u1) + min(sweep * 0.05, 0.02)
+    delta = (ang_at(probe) - a0 + math.pi) % (2 * math.pi) - math.pi
+    return (a0, a0 + sweep) if delta >= 0 else (a0 - sweep, a0)
+
+
+def _arc_union_deg(arcs):
+    """Total angle covered by a set of arcs, counting overlap once."""
+    spans = []
+    for lo, hi in arcs:
+        width = min(max(hi - lo, 0.0), 2 * math.pi)
+        lo = lo % (2 * math.pi)
+        hi = lo + width
+        if hi <= 2 * math.pi:
+            spans.append((lo, hi))
+        else:
+            spans.append((lo, 2 * math.pi))
+            spans.append((0.0, hi - 2 * math.pi))
+    spans.sort()
+    total, cur_lo, cur_hi = 0.0, None, None
+    for lo, hi in spans:
+        if cur_hi is None or lo > cur_hi + 1e-9:
+            if cur_hi is not None:
+                total += cur_hi - cur_lo
+            cur_lo, cur_hi = lo, hi
+        else:
+            cur_hi = max(cur_hi, hi)
+    if cur_hi is not None:
+        total += cur_hi - cur_lo
+    return math.degrees(min(total, 2 * math.pi))
+
+
+#: Two half-cylinders of one bore reach us as separate STEP faces, each with its
+#: own AXIS2_PLACEMENT_3D, and those placements agree only to the file's write
+#: precision. Grouping on an exact rounded key therefore splits real holes: on the
+#: seat cross member the two halves of a Ø4.4 hole differed in the fourth decimal
+#: of their axis location and were counted as two 180° arcs that each failed the
+#: revolution test. Axes are clustered with a tolerance instead.
+AXIS_POS_TOL_MM = 0.05
+AXIS_ANG_TOL_DEG = 0.25
+RADIUS_TOL_MM = 0.01
+
+
+def _canonical_axis(d, p):
+    """(direction, foot point) for an axis LINE — independent of which of the two
+    opposite directions, and which point along it, the kernel happened to give."""
+    v = [d.X(), d.Y(), d.Z()]
+    for c in v:                       # sign-canonical: first non-zero is positive
+        if abs(c) > 1e-9:
+            if c < 0:
+                v = [-x for x in v]
+            break
+    n = math.sqrt(sum(x * x for x in v)) or 1.0
+    v = [x / n for x in v]
+    q = [p.X(), p.Y(), p.Z()]
+    t = sum(a * b for a, b in zip(q, v))
+    foot = [a - t * b for a, b in zip(q, v)]     # closest point on the line to the origin
+    return tuple(v), tuple(foot)
+
+
+def _same_axis(a, b):
+    """True when two (direction, foot, radius) triples describe the same cylinder
+    surface to within file-write precision."""
+    (da, fa, ra), (db, fb, rb) = a, b
+    if abs(ra - rb) > RADIUS_TOL_MM:
+        return False
+    if abs(sum(x * y for x, y in zip(da, db))) < math.cos(math.radians(AXIS_ANG_TOL_DEG)):
+        return False
+    delta = [q - p for p, q in zip(fa, fb)]
+    along = sum(x * y for x, y in zip(delta, da))
+    perp2 = max(0.0, sum(x * x for x in delta) - along * along)
+    return math.sqrt(perp2) <= AXIS_POS_TOL_MM and abs(along) <= AXIS_POS_TOL_MM
+
+
+def _extract_feature_table(wrapped, extents, skip_faces=None, solid_classifier=None):
     """Exact hole/boss feature table from B-rep cylindrical faces.
 
-    Per cylinder face: diameter (exact kernel radius ×2), DEPTH from the
-    cylinder's V-parameter span (V is arc length along the axis — exact),
-    hole-vs-boss from concavity (face orientation XOR axis handedness), and
-    through/blind by comparing depth to the bbox extent projected onto the
-    axis. Faces split by booleans (half-cylinders) share the same underlying
-    axis, so instances are deduped by (axis point, direction) before counting.
+    Cylindrical faces are grouped by AXIS LINE + RADIUS, then split into bores
+    by axial overlap, and a group is only reported as a hole or a boss when its
+    faces together close a full revolution (see FULL_REVOLUTION_TOL_DEG). This
+    is what keeps curved walls, filleted corners and the rounded ends of castings
+    out of the feature table.
+
+    Per accepted bore: diameter (exact kernel radius ×2), DEPTH from the union of
+    the V-parameter spans (V is arc length along the axis — exact), hole-vs-boss
+    from concavity (face orientation XOR axis handedness), and through/blind by
+    CLASSIFYING a point just beyond each end of the bore against the solid.
     Returns rows grouped by (kind, diameter, depth, through) with counts.
     """
-    from OCP.TopAbs import TopAbs_FACE, TopAbs_Orientation
+    from OCP.TopAbs import TopAbs_FACE, TopAbs_Orientation, TopAbs_State
     from OCP.TopoDS import TopoDS
     from OCP.BRepAdaptor import BRepAdaptor_Surface
     from OCP.GeomAbs import GeomAbs_SurfaceType
+    from OCP.gp import gp_Pnt, gp_Dir, gp_Ax2
 
     from OCP.TopTools import TopTools_IndexedMapOfShape
     from OCP.TopExp import TopExp
@@ -71,7 +198,7 @@ def _extract_feature_table(wrapped, extents, skip_faces=None):
     fmap = TopTools_IndexedMapOfShape()
     TopExp.MapShapes_s(wrapped, TopAbs_FACE, fmap)
 
-    instances, axes = {}, {}
+    groups = {}
     for _i in range(1, fmap.Size() + 1):
         if _i in skip:
             continue
@@ -82,46 +209,134 @@ def _extract_feature_table(wrapped, extents, skip_faces=None):
                 continue
             cyl = ad.Cylinder()
             r = cyl.Radius()
-            depth = abs(ad.LastVParameter() - ad.FirstVParameter())
-            if depth <= 0.01 or not math.isfinite(depth):
+            if not math.isfinite(r) or r <= 1e-6:
+                continue
+            v0, v1 = ad.FirstVParameter(), ad.LastVParameter()
+            if not (math.isfinite(v0) and math.isfinite(v1)) or abs(v1 - v0) <= 0.01:
                 continue
             ax = cyl.Axis()
-            d = ax.Direction()
-            p = ax.Location()
-            axis_extent = abs(d.X()) * extents[0] + abs(d.Y()) * extents[1] + abs(d.Z()) * extents[2]
-            through = axis_extent > 0 and depth >= axis_extent - max(0.1, axis_extent * 0.02)
+            d, p = ax.Direction(), ax.Location()
+            dc, foot = _canonical_axis(d, p)
+            # Axial coordinates of the face's V-span, measured along the CANONICAL
+            # direction so spans from oppositely-oriented faces are comparable.
+            base = p.X() * dc[0] + p.Y() * dc[1] + p.Z() * dc[2]
+            sign = 1.0 if (d.X() * dc[0] + d.Y() * dc[1] + d.Z() * dc[2]) > 0 else -1.0
+            s0, s1 = base + sign * v0, base + sign * v1
             reversed_param = not cyl.Position().Direct()
             reversed_face = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
             hole = reversed_face != reversed_param
-            # identity: same axis + radius + span = same physical feature
-            ident = (round(p.X(), 2), round(p.Y(), 2), round(p.Z(), 2),
-                     round(d.X(), 3), round(d.Y(), 3), round(d.Z(), 3),
-                     round(r, 3), round(depth, 1), hole)
-            key = ('hole' if hole else 'boss', round(r * 2, 2), round(depth, 1), bool(through))
+            key = (dc, foot, r)
+            slot = next((g for g in groups if _same_axis(g, key)), None)
+            if slot is None:
+                slot = key
+                groups[slot] = []
+            groups[slot].append((min(s0, s1), max(s0, s1), hole, face, ad, cyl))
+        except Exception:
+            continue
+
+    instances, axes = {}, {}
+    for (dc, foot, r), members in groups.items():
+        # One frame per GROUP, taken from the group's representative axis, so
+        # every member is measured against exactly the same angular zero.
+        try:
+            axis2 = gp_Ax2(gp_Pnt(foot[0], foot[1], foot[2]), gp_Dir(dc[0], dc[1], dc[2]))
+            frame = (axis2.Location(), axis2.XDirection(), axis2.YDirection())
+        except Exception:
+            continue
+        members.sort(key=lambda m: m[0])
+        # Cluster by axial overlap: touching or overlapping spans are one bore.
+        clusters, cur = [], [members[0]]
+        for m in members[1:]:
+            if m[0] <= max(c[1] for c in cur) + COAXIAL_GAP_TOL_MM:
+                cur.append(m)
+            else:
+                clusters.append(cur)
+                cur = [m]
+        clusters.append(cur)
+
+        for cluster in clusters:
+            arcs = []
+            for _s0, _s1, _h, face, ad, cyl in cluster:
+                arc = _cyl_arc(face, ad, cyl, frame)
+                if arc:
+                    arcs.append(arc)
+            if not arcs:
+                continue
+            if _arc_union_deg(arcs) < 360.0 - FULL_REVOLUTION_TOL_DEG:
+                continue                     # a wall, not a body of revolution
+            s_lo = min(c[0] for c in cluster)
+            s_hi = max(c[1] for c in cluster)
+            depth = s_hi - s_lo
+            if depth <= 0.01:
+                continue
+            # Concavity: weight by arc so a bore split into a 350° face and a
+            # 10° sliver is not decided by the sliver.
+            hole_w = sum((c[1] - c[0]) for c in cluster if c[2])
+            hole = hole_w * 2 >= sum((c[1] - c[0]) for c in cluster)
+            mid = [foot[k] + ((s_lo + s_hi) / 2.0) * dc[k] for k in range(3)]
+            through = None
+            if hole:
+                through = _bore_is_through(solid_classifier, foot, dc, s_lo, s_hi, depth,
+                                           extents)
+            key = ('hole' if hole else 'boss', round(r * 2, 2), round(depth, 1),
+                   bool(through) if through is not None else None)
+            ident = tuple(round(v, 2) for v in (s_lo, s_hi) + foot + dc)
             instances.setdefault(key, set()).add(ident)
             # Axis direction is what a machining SETUP is counted from — a part
             # is re-fixtured to reach features approached from a new direction.
             # The axis POINT is needed too: two holes can share a direction and
             # be nowhere near each other, and without the point a stepped-hole
             # grouper happily merges them into one counterbore.
-            axes.setdefault(key, ((round(d.X(), 4), round(d.Y(), 4), round(d.Z(), 4)),
-                                  (round(p.X(), 4), round(p.Y(), 4), round(p.Z(), 4))))
-        except Exception:
-            continue
+            axes.setdefault(key, (tuple(round(v, 4) for v in dc),
+                                  tuple(round(v, 4) for v in mid), []))
+            axes[key][2].append([round(v, 3) for v in mid])
 
     rows = []
-    for (kind, dia, depth, through), idents in instances.items():
+    for key, idents in instances.items():
+        kind, dia, depth, through = key
+        anchor = axes.get(key)
         rows.append({
             "kind": kind,
             "diaMm": dia,
             "depthMm": depth,
             "through": through if kind == "hole" else None,
             "count": len(idents),
-            "axisXYZ": list(axes.get((kind, dia, depth, through), (None, None))[0] or ()) or None,
-            "axisPointXYZ": list(axes.get((kind, dia, depth, through), (None, None))[1] or ()) or None,
+            "axisXYZ": list(anchor[0]) if anchor else None,
+            "axisPointXYZ": list(anchor[1]) if anchor else None,
+            "instancesXYZ": anchor[2][:24] if anchor else None,
         })
     rows.sort(key=lambda r: (r["kind"], r["diaMm"], r["depthMm"]))
     return rows
+
+
+def _bore_is_through(classifier, foot, dc, s_lo, s_hi, depth, extents):
+    """Through/blind by CLASSIFYING material just past each end of the bore.
+
+    The old test compared the bore's depth to the part's bounding-box extent
+    along the axis. On anything but a plate that is wrong in both directions: a
+    Ø1.6 hole through 1.6 mm sheet inside a 341 mm pressing was reported blind,
+    because the axis extent it was measured against was the whole part. What
+    decides is whether there is material immediately beyond the bore, which is a
+    question for the solid classifier, not the bounding box.
+
+    Returns None — not False — when no classifier is available, so the honest
+    "not determined" survives to the caller instead of becoming a confident
+    "blind".
+    """
+    if classifier is None:
+        return None
+    from OCP.TopAbs import TopAbs_State
+    from OCP.gp import gp_Pnt
+    eps = max(0.01, min(0.15, depth * 0.05))
+    try:
+        for s, direction in ((s_lo, -1.0), (s_hi, 1.0)):
+            probe = [foot[k] + (s + direction * eps) * dc[k] for k in range(3)]
+            classifier.Perform(gp_Pnt(*probe), 1e-7)
+            if classifier.State() == TopAbs_State.TopAbs_IN:
+                return False              # material past this end → blind
+        return True
+    except Exception:
+        return None
 
 
 def _classify_faces(faces):
@@ -726,9 +941,19 @@ def analyze(filepath: str) -> dict:
             _blend_ids, _aag = _fr.blend_face_ids(wrapped)
         except Exception:
             pass
+        # Through-vs-blind is decided by classifying a point just past each end
+        # of the bore against the solid. Building the classifier once here keeps
+        # its internal BVH warm across every hole on the part.
+        _classifier = None
+        try:
+            from OCP.BRepClass3d import BRepClass3d_SolidClassifier
+            _classifier = BRepClass3d_SolidClassifier(wrapped)
+        except Exception:
+            _classifier = None
         try:
             feature_table = _extract_feature_table(wrapped, (x_sz, y_sz, z_sz),
-                                                   skip_faces=_blend_ids)
+                                                   skip_faces=_blend_ids,
+                                                   solid_classifier=_classifier)
         except Exception:
             feature_table = []
         try:
