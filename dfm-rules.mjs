@@ -166,6 +166,7 @@ export function runDfmRules(geo, process) {
       rationale: rule.rationale,
       fix: rule.fix,
       source: rule.source,
+      sourceStatus: rule.sourceStatus,
       status,
     };
     if (status === 'fail') findings.push(row);

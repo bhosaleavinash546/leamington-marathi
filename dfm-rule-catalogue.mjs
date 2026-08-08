@@ -12,9 +12,28 @@
 // cannot be measured on a given part is reported as NOT EVALUATED — never as a
 // pass. Silence about an unchecked rule reads as a clean bill of health.
 //
-// Thresholds are industry design-guideline values, not laws of physics. They are
-// starting points for a conversation with a supplier: a good foundry will beat
-// several of them, and a marginal one will miss them. The report says so.
+// PROVENANCE IS GRADED, BECAUSE IT IS UNEVEN. Every rule carries a `source`
+// string, and until this grading existed each one read like a citation while
+// being an attribution written from engineering knowledge — "Die-casting design
+// guidance", with no standard, author or page behind it. `sourceStatus` says
+// which of three things a threshold actually rests on:
+//
+//   'standard-named'     a specific published standard is named (e.g. NADCA
+//                        S-4A-7) and its value was corroborated. The standards
+//                        themselves are paywalled and have NOT been read
+//                        first-hand, so even this grade is "named", not "audited".
+//   'industry-consensus'  multiple independent suppliers and design guides agree,
+//                        but no primary standard was consulted. This is most of
+//                        the catalogue. Some of these values are actively
+//                        DISPUTED by practising manufacturers and say so.
+//   'engine-derived'     the threshold comes from our own cost model, so it is
+//                        verifiable in this repository.
+//
+// None of these thresholds has been validated against a controlled study, a
+// supplier's own standards, or measured scrap data. They are screening values:
+// good enough to rank parts and open a conversation, not to specify one. A tool
+// that prints "SOURCE:" beside an unaudited number is making a claim it has not
+// earned, which is the same failure this feature calls out everywhere else.
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Severity drives ordering and colour in the report, nothing else. */
@@ -31,6 +50,7 @@ export const DFM_RULES = [
   // ── Machining ──────────────────────────────────────────────────────────────
   {
     id: 'mach-pocket-depth-ratio',
+    sourceStatus: 'industry-consensus',
     process: 'machining',
     severity: 'high',
     title: 'Deep pocket relative to its width',
@@ -45,6 +65,7 @@ export const DFM_RULES = [
   },
   {
     id: 'mach-internal-corner-radius',
+    sourceStatus: 'industry-consensus',
     process: 'machining',
     severity: 'medium',
     title: 'Internal corner radius forces a small cutter',
@@ -59,6 +80,7 @@ export const DFM_RULES = [
   },
   {
     id: 'mach-setup-count',
+    sourceStatus: 'engine-derived',
     process: 'machining',
     severity: 'medium',
     title: 'Features approached from many directions',
@@ -73,6 +95,7 @@ export const DFM_RULES = [
   },
   {
     id: 'mach-thin-web',
+    sourceStatus: 'industry-consensus',
     process: 'machining',
     severity: 'high',
     title: 'Thin web will chatter or deflect under the cutter',
@@ -88,6 +111,7 @@ export const DFM_RULES = [
 
   {
     id: 'mach-hole-depth-ratio',
+    sourceStatus: 'industry-consensus',
     process: 'machining',
     severity: 'medium',
     title: 'Hole deeper than five diameters',
@@ -104,6 +128,7 @@ export const DFM_RULES = [
   // ── Injection moulding ─────────────────────────────────────────────────────
   {
     id: 'im-wall-thickness-range',
+    sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'high',
     title: 'Wall thickness outside the practical moulding range',
@@ -118,6 +143,7 @@ export const DFM_RULES = [
   },
   {
     id: 'im-wall-uniformity',
+    sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'medium',
     title: 'Non-uniform wall thickness',
@@ -132,6 +158,7 @@ export const DFM_RULES = [
   },
   {
     id: 'im-draft-minimum',
+    sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'high',
     title: 'Wall area below the minimum draft angle',
@@ -147,6 +174,7 @@ export const DFM_RULES = [
   },
   {
     id: 'im-undercuts',
+    sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'high',
     title: 'Undercuts require side actions',
@@ -169,6 +197,7 @@ export const DFM_RULES = [
   // with its own fix.
   {
     id: 'im-rib-thickness-max',
+    sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'medium',
     title: 'Rib too thick at its base for the wall it stands on',
@@ -179,10 +208,11 @@ export const DFM_RULES = [
     rationale:
       'A rib meeting the wall at more than about 60% of the wall thickness makes a heavy junction that is the last place to solidify. It shows as a sink mark on the opposite — usually visible — surface, and as a void inside the section.',
     fix: 'Thin the rib to 40–60% of the nominal wall and add more ribs, or gusset it, if stiffness is lost.',
-    source: 'Injection-moulding design guidance (rib base 40–60% of nominal wall).',
+    source: 'Injection-moulding design guidance (rib base 40-60% of nominal wall). Widely published, and actively DISPUTED by practising moulders — Mack Molding publish "Why 60% Rib-to-Wall Ratio is NOT Sacred", arguing the limit depends on resin, texture and whether the opposite face is cosmetic. Treat as a screening threshold, not a specification.',
   },
   {
     id: 'im-rib-thickness-min',
+    sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'low',
     title: 'Rib too thin to fill reliably',
@@ -193,10 +223,11 @@ export const DFM_RULES = [
     rationale:
       'A rib much below 40% of the wall is a narrow, high-resistance flow path off the main cavity. It fills late or not at all, and a short-shot rib contributes none of the stiffness it was drawn for.',
     fix: 'Take the rib back up to 40% of the wall, or delete it and thicken the wall locally instead.',
-    source: 'Injection-moulding design guidance (rib base 40–60% of nominal wall).',
+    source: 'Injection-moulding design guidance (rib base 40-60% of nominal wall). See the rib-thickness-max note: the 60% figure is disputed by practising moulders and depends on resin and cosmetics.',
   },
   {
     id: 'im-rib-height',
+    sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'medium',
     title: 'Rib taller than three wall thicknesses',
@@ -212,6 +243,7 @@ export const DFM_RULES = [
 
   {
     id: 'im-boss-height',
+    sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'medium',
     title: 'Boss taller than three times its diameter',
@@ -228,6 +260,7 @@ export const DFM_RULES = [
   // ── High-pressure die casting ──────────────────────────────────────────────
   {
     id: 'hpdc-wall-thickness-range',
+    sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'high',
     title: 'Wall thickness outside the die-casting range',
@@ -238,10 +271,11 @@ export const DFM_RULES = [
     rationale:
       'Below about 1 mm the die will not fill reliably and cold shuts appear; above about 3.5 mm the section traps porosity as it solidifies and holds the cycle open.',
     fix: 'Hold a uniform nominal wall in the 2.0–3.5 mm band and core out heavy sections.',
-    source: 'Aluminium HPDC design guidance (1.0 mm minimum, 2.0–3.5 mm recommended).',
+    source: 'Aluminium HPDC design guidance (1.0 mm minimum, 2.0-3.5 mm recommended). Widely published and mutually consistent across die-casting suppliers; NOT audited against NADCA or a foundry standard.',
   },
   {
     id: 'hpdc-draft-minimum',
+    sourceStatus: 'standard-named',
     process: 'hpdc',
     severity: 'high',
     title: 'Wall area below the minimum die-casting draft',
@@ -252,11 +286,12 @@ export const DFM_RULES = [
     rationale:
       'Aluminium shrinks onto the die steel as it solidifies, so a die casting needs more draft than a moulding. Insufficient draft galls the die surface and shortens die life as well as risking ejector distortion.',
     fix: 'Allow 1 to 2 degrees on external walls and 2 to 3 degrees on internal walls and cores; use 3 to 5 degrees on deep features.',
-    source: 'Aluminium HPDC design guidance (1–2 deg external, 2–3 deg internal, 3–5 deg deep).',
+    source: 'NADCA Product Specification Standards, S-4A-7 (Draft Constants). NADCA standard tolerances give 1 deg minimum on outside surfaces and 2 deg on inside; the 1 deg threshold used here is the outside-wall figure. Designation and values corroborated from secondary summaries — the standard itself is paywalled and has NOT been read.',
     measuredAt: { minDraftDeg: 1.0 },
   },
   {
     id: 'hpdc-internal-radius',
+    sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'medium',
     title: 'Sharp internal corners concentrate stress and restrict flow',
@@ -267,10 +302,11 @@ export const DFM_RULES = [
     rationale:
       'A sharp internal corner is a hot spot in the casting and a stress raiser in the die, where it becomes the first place a heat-check crack starts.',
     fix: 'Fillet internal corners to at least 1.5 times the adjacent wall thickness, and never below about 1.6 mm.',
-    source: 'Die-casting design guidance (minimum ~1.6 mm fillet; 1.5x wall preferred).',
+    source: 'Die-casting design guidance (minimum ~1.6 mm fillet; 1.5x wall preferred). Industry consensus, no primary source audited.',
   },
   {
     id: 'hpdc-undercuts',
+    sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'high',
     title: 'Undercuts require slides or lifters in the die',
@@ -286,6 +322,7 @@ export const DFM_RULES = [
 
   {
     id: 'hpdc-wall-uniformity',
+    sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'medium',
     title: 'Non-uniform wall thickness',
@@ -300,6 +337,7 @@ export const DFM_RULES = [
   },
   {
     id: 'hpdc-core-ld',
+    sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'high',
     title: 'Cored hole beyond the core-pin slenderness limit',
@@ -320,6 +358,7 @@ export const DFM_RULES = [
   // matters less on a casting that is machined or hidden.
   {
     id: 'hpdc-rib-thickness-max',
+    sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'medium',
     title: 'Rib heavier than the wall it stands on',
@@ -334,6 +373,7 @@ export const DFM_RULES = [
   },
   {
     id: 'hpdc-rib-thickness-min',
+    sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'medium',
     title: 'Rib too thin to fill before it freezes',
@@ -348,6 +388,7 @@ export const DFM_RULES = [
   },
   {
     id: 'hpdc-rib-height',
+    sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'medium',
     title: 'Rib taller than three wall thicknesses',
@@ -364,6 +405,7 @@ export const DFM_RULES = [
   // ── Sheet metal / stamping ─────────────────────────────────────────────────
   {
     id: 'sm-bend-radius',
+    sourceStatus: 'industry-consensus',
     process: 'sheet-metal',
     severity: 'medium',
     title: 'Inside bend radius below one material thickness',
@@ -378,6 +420,7 @@ export const DFM_RULES = [
   },
   {
     id: 'sm-hole-diameter',
+    sourceStatus: 'industry-consensus',
     process: 'sheet-metal',
     severity: 'medium',
     title: 'Punched hole smaller than the material thickness',
@@ -392,6 +435,7 @@ export const DFM_RULES = [
   },
   {
     id: 'sm-hole-to-bend',
+    sourceStatus: 'industry-consensus',
     process: 'sheet-metal',
     severity: 'high',
     title: 'Hole too close to a bend line',
@@ -406,6 +450,7 @@ export const DFM_RULES = [
   },
   {
     id: 'sm-flange-length',
+    sourceStatus: 'industry-consensus',
     process: 'sheet-metal',
     severity: 'medium',
     title: 'Flange too short to form',

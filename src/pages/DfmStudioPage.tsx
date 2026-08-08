@@ -20,7 +20,7 @@ import { useAuth } from '../contexts/AuthContext';
 interface Finding {
   id: string; title: string; severity: 'high' | 'medium' | 'low';
   measure: string; measured?: number; unit: string; thresholdText: string;
-  rationale: string; fix: string; source: string; status: string; reason?: string;
+  rationale: string; fix: string; source: string; sourceStatus?: string; status: string; reason?: string;
   cost?: {
     priced: boolean; basis?: string; changeDescription?: string;
     asDrawnEur?: number; improvedEur?: number; deltaEur?: number; annualDeltaEur?: number;
@@ -62,6 +62,15 @@ const DFA_QUESTIONS: { key: DfaQuestion; label: string; hint: string }[] = [
   { key: 'differentMaterial', label: 'Material', hint: 'Must it be a different material for a fundamental reason?' },
   { key: 'mustSeparate', label: 'Separable', hint: 'Must it be separable for assembly or service?' },
 ];
+
+// What a threshold actually rests on. 24 of the 26 rules are industry consensus:
+// widely published, mutually consistent, and never checked against a primary
+// standard or measured scrap data.
+const SOURCE_GRADE: Record<string, string> = {
+  'standard-named': 'Named standard, not read first-hand',
+  'industry-consensus': 'Industry consensus — no primary source audited',
+  'engine-derived': "This tool's own cost model",
+};
 
 const SEV_STYLE: Record<string, string> = {
   high: 'border-red-500/40 bg-red-500/10 text-red-300',
@@ -476,7 +485,15 @@ export default function DfmStudioPage() {
                         {f.cost?.externalGuideline && <span className="block mt-1 text-amber-400/80 italic">{f.cost.externalGuideline}</span>}
                       </p>
                     )}
-                    <p className="text-slate-600 text-[10px] mt-2">Source: {f.source}</p>
+                    {/* The grade travels with the citation. "Source:" beside an
+                        unaudited number claims an authority this tool has not
+                        earned — the same failure it flags everywhere else. */}
+                    <p className="text-slate-600 text-[10px] mt-2">
+                      <span className="uppercase tracking-wider text-amber-500/70">
+                        {SOURCE_GRADE[f.sourceStatus || 'industry-consensus']}
+                      </span>
+                      {' · '}{f.source}
+                    </p>
                   </div>
                 ))}
                 {/* Only an all-clear when something was actually checked. With

@@ -485,3 +485,25 @@ Format: decision · why · what would change it.
     UPPER BOUND / CEILING whenever an upper-bound finding contributes to the total. A
     six-figure number that quietly assumes the most flattering redesign available is the
     single easiest way for this tool to lose a room's trust.
+
+42. **Threshold provenance is GRADED, because it is uneven (2026).**
+    *Why:* asked whether the thresholds had been compared against a proper reference, the
+    answer was no. All 26 `source` strings read like citations — "Die-casting design
+    guidance", "General machining design guidance" — and not one named a standard, an author,
+    a page or a document number. They were written from engineering knowledge and printed
+    under a `SOURCE:` label, which claims an authority the tool had not earned. That is the
+    same failure this feature calls out everywhere else, committed by the feature itself.
+    `sourceStatus` now grades each one: `standard-named` (1 rule — NADCA S-4A-7 for
+    die-casting draft, designation and values corroborated, standard paywalled and NOT read
+    first-hand), `industry-consensus` (24 rules — widely published and mutually consistent
+    across suppliers, no primary source audited), `engine-derived` (1 rule — from our own
+    cost model, verifiable in this repo). The grade prints beside the source on the page and
+    in the PDF, and a standing paragraph on the report's first page separates the two kinds
+    of number: the geometry is measured and reproducible, the guideline values it is compared
+    against are not of the same standing. *Changes it:* where a value is DISPUTED, the rule
+    says so. Mack Molding publish "Why 60% Rib-to-Wall Ratio is NOT Sacred", arguing the
+    limit depends on resin, texture and whether the opposite face is cosmetic — so the two
+    rib-thickness rules carry that dissent in their own source text rather than presenting a
+    contested number as settled. None of these thresholds has been validated against
+    controlled trials or measured scrap data; they are screening values, and the report now
+    says which is which.

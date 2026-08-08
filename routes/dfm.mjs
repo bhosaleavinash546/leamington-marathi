@@ -61,7 +61,7 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       rules: DFM_RULES.map(r => ({
         id: r.id, process: r.process, severity: r.severity, title: r.title,
         measure: r.measure, threshold: r.threshold, unit: r.unit,
-        rationale: r.rationale, fix: r.fix, source: r.source,
+        rationale: r.rationale, fix: r.fix, source: r.source, sourceStatus: r.sourceStatus,
       })),
       timeModel: { version: TIME_MODEL.version, basis: TIME_MODEL.basis },
       // Named so a reader can see the SHAPE of the gap, not just the rules that

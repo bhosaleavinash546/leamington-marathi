@@ -33,6 +33,7 @@ export interface DfmFinding {
   rationale: string;
   fix: string;
   source: string;
+  sourceStatus?: string;
   status: 'fail' | 'pass' | 'not-evaluated';
   reason?: string;
   cost?: {
@@ -92,6 +93,17 @@ const RED: RGB = [185, 28, 28];
 const TEAL: RGB = [13, 148, 136];
 
 const SEV: Record<string, RGB> = { high: RED, medium: AMBER, low: TEAL };
+
+// How much a threshold is actually worth. Printing "SOURCE:" beside a number
+// nobody audited is a claim this tool has not earned — the same failure it calls
+// out everywhere else — so the grade travels with the citation. 24 of the 26
+// rules are industry consensus: widely published, mutually consistent, and not
+// checked against a primary standard or any measured scrap data.
+const SOURCE_GRADE: Record<string, string> = {
+  'standard-named': 'NAMED STANDARD, not read first-hand',
+  'industry-consensus': 'INDUSTRY CONSENSUS, no primary source audited',
+  'engine-derived': "THIS TOOL'S OWN COST MODEL",
+};
 
 const setFill = (d: jsPDF, c: RGB) => d.setFillColor(c[0], c[1], c[2]);
 const setText = (d: jsPDF, c: RGB) => d.setTextColor(c[0], c[1], c[2]);
@@ -221,7 +233,9 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
   y += 2;
   wrapped('Rules report in three states, not two: failed, passed, and NOT EVALUATED. A rule whose measurement this part does not provide is listed as unevaluated with the reason, never as a pass — so the coverage figure beside each score tells you how much of the catalogue actually ran.', 9.2, BODY);
   y += 2;
-  wrapped('Thresholds are industry design guidelines with their source cited, not laws of physics. A capable supplier will beat several of them. Treat a finding as the start of a conversation, not a verdict.', 9, MUT, CW, 4.2, 'italic');
+  // The geometry is measured. The THRESHOLDS it is measured against are not, and
+  // saying so is the difference between a screening tool and a false authority.
+  wrapped('A word on the thresholds, separate from the measurements. Every dimension in this report was measured from your CAD file and is reproducible. The guideline values those dimensions are compared against are NOT of the same standing: 24 of the 26 rules rest on industry consensus — widely published and mutually consistent across suppliers and design guides, but not audited against a primary standard, and not validated against controlled trials or measured scrap data. One names a published standard (NADCA S-4A-7) that has not been read first-hand; one comes from this tool\'s own cost model. Each finding carries its grade. Some values are actively disputed by practising manufacturers. Treat a finding as a screening result that opens a conversation with your supplier — not as a specification, and not as a verdict.', 9, MUT, CW, 4.2, 'italic');
   y += 2;
   if (!data.processFamily) {
     // Without this, a speculative sweep is indistinguishable from a targeted
@@ -395,7 +409,7 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
         }
       }
       mono(6); setText(doc, MUT); ensure(5);
-      doc.text(fit(doc, `SOURCE: ${f.source}`, CW - 9), ML + 4.5, y); y += 4;
+      doc.text(fit(doc, `SOURCE [${SOURCE_GRADE[f.sourceStatus || 'industry-consensus']}]: ${f.source}`, CW - 9), ML + 4.5, y); y += 4;
       setDraw(doc, RULE, 0.2); doc.line(ML, y + 1, PW - MR, y + 1);
       y += 8;
     }
