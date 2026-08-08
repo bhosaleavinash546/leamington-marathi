@@ -148,6 +148,9 @@ export interface DfmReportData {
     basis: string;
   } | null;
   material?: string | null;
+  /** Rule-catalogue provenance, counted server-side. */
+  catalogue?: { total: number; byGrade: Record<string, number> } | null;
+  /** Apertures read from the topology — holes that are not cylinders. */
   fileName?: string;
   geometry?: Record<string, unknown>;
   dfm?: Record<string, unknown>;
@@ -219,6 +222,14 @@ function fit(doc: jsPDF, text: string, max: number): string {
 }
 
 export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): void {
+  // Provenance counted by the SERVER that ran the rules and sent with the
+  // analysis, so the sentence describing the catalogue cannot fall out of date
+  // the way "24 of the 26 rules" did — it said that on every report long after
+  // the catalogue reached 111. Counting here would mean bundling the whole
+  // catalogue into the browser for one sentence.
+  const gradeCounts: Record<string, number> = dataIn.catalogue?.byGrade ?? {};
+  const totalCatalogueRules = dataIn.catalogue?.total
+    ?? Object.values(gradeCounts).reduce((a, b) => a + b, 0);
   // FIGURES ARE A SEPARATE ARGUMENT ON PURPOSE. deepPdfSafe walks every string
   // in `dataIn` character by character with rope concatenation; a megabyte of
   // base64 through that loop would visibly jank the export, and any non-string
@@ -333,7 +344,10 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
   y += 2;
   // The geometry is measured. The THRESHOLDS it is measured against are not, and
   // saying so is the difference between a screening tool and a false authority.
-  wrapped('A word on the thresholds, separate from the measurements. Every dimension in this report was measured from your CAD file and is reproducible. The guideline values those dimensions are compared against are NOT of the same standing: 24 of the 26 rules rest on industry consensus — widely published and mutually consistent across suppliers and design guides, but not audited against a primary standard, and not validated against controlled trials or measured scrap data. One names a published standard (NADCA S-4A-7) that has not been read first-hand; one comes from this tool\'s own cost model. Each finding carries its grade. Some values are actively disputed by practising manufacturers. Treat a finding as a screening result that opens a conversation with your supplier — not as a specification, and not as a verdict.', 9, MUT, CW, 4.2, 'italic');
+  // COUNTED, NOT TYPED. This sentence said "24 of the 26 rules" on every report
+    // long after the catalogue reached 111, because it was a string literal. A
+    // provenance claim that is itself out of date is worse than no claim.
+    wrapped(`A word on the thresholds, separate from the measurements. Every dimension in this report was measured from your CAD file and is reproducible. The guideline values those dimensions are compared against are NOT of the same standing: ${gradeCounts['industry-consensus'] ?? 0} of the ${totalCatalogueRules} rules rest on industry consensus — widely published and mutually consistent across suppliers and design guides, but not audited against a primary standard, and not validated against controlled trials or measured scrap data. ${gradeCounts['standard-named'] ?? 0} name a published standard that has not been read first-hand; ${gradeCounts['engine-derived'] ?? 0} comes from this tool's own cost model. Each finding carries its grade. Some values are actively disputed by practising manufacturers. Treat a finding as a screening result that opens a conversation with your supplier — not as a specification, and not as a verdict.`, 9, MUT, CW, 4.2, 'italic');
   y += 2;
   // What the GEOMETRY says the process is. This paragraph exists because a live
   // report on a 1.6 mm seat cross member opened with "no process specified,
@@ -427,6 +441,13 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
     ['UNDERCUT REGIONS', draft.undercutFaceCount != null ? String(draft.undercutFaceCount) : '—'],
     ['WALL AREA BELOW MIN DRAFT', draft.wallAreaBelowMinDraftPct != null ? `${draft.wallAreaBelowMinDraftPct} %` : '—'],
     ['UNCLASSIFIED AREA', feats.unclassifiedAreaPct != null ? `${feats.unclassifiedAreaPct} %` : '—'],
+    // APERTURES. The hole table only ever showed round holes, so a stamping with
+    // twenty-six slots and shaped cut-outs read as a part with no holes at all.
+    ['HOLES & CUT-OUTS', (dfm.apertures?.count ?? 0) > 0
+      ? `${dfm.apertures.count} (${dfm.apertures.circularCount} round, ${dfm.apertures.nonCircularCount} shaped)`
+      : 'none'],
+    ['INTERNAL CUT LENGTH', dfm.apertures?.totalCutLengthMm
+      ? `${dfm.apertures.totalCutLengthMm} mm` : '—'],
   ];
   ensure(Math.ceil(measured.length / 2) * 9 + 8);
   mono(7, true); setText(doc, GOLD);
@@ -442,6 +463,22 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
     doc.text(fit(doc, v, CW / 2 - 8), x, y + row * 9 + 5);
   });
   y += rows * 9 + 4;
+
+  // HOW MUCH THE WALL FIGURE IS WORTH, immediately under it. The percentiles
+  // were printed as bare facts. On a real part they came back three times the
+  // 2V/A reference on rays covering half the surface, and the reader had no way
+  // to know either — so the one number that drives the wall, uniformity and
+  // rib rules looked exactly as solid as a bounding box.
+  if (wall.referenceWallMm != null) {
+    y += 2;
+    wrapped(`Cross-check: 2V/A gives ${wall.referenceWallMm} mm against the ray-cast median of `
+      + `${wall.p50Mm} mm, from rays covering ${wall.measuredAreaPct}% of the surface. `
+      + `${wall.referenceBasis ?? ''}`, 8.6, MUT, CW, 4.0, 'italic');
+  }
+  if (wall.confidenceNote) {
+    wrapped(String(wall.confidenceNote), 8.8, AMBER, CW, 4.0, 'bold');
+    y += 2;
+  }
 
   // ── Ribs ───────────────────────────────────────────────────────────────────
   // The rib rules compare ratios, so the ratios are what the report has to show.

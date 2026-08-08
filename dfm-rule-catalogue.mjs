@@ -725,6 +725,26 @@ export const DFM_RULES = [
     fix: 'Open the land between the bends to at least 4t, or form them in one operation with a dedicated tool.',
     source: 'Sheet-metal design guidance (minimum flat between parallel bends).',
   },
+  {
+    id: 'sm-min-aperture',
+    sourceStatus: 'industry-consensus',
+    process: 'sheet-metal',
+    severity: 'medium',
+    title: 'Cut-out smaller than the material thickness',
+    measure: 'minApertureToThickness',
+    compare: 'gte',
+    threshold: 1,
+    unit: 'size/t',
+    byMaterial: {
+      'Steel DP980 (dual-phase)': { threshold: 1.5, source: 'Minimum aperture in DP980: 1.5x thickness. Punch force scales with strength and a slender punch snaps whatever its shape.' },
+      'Stainless Steel 304': { threshold: 1.2, source: 'Minimum aperture in 304: 1.2x thickness — austenitic stainless work-hardens against the punch as it enters.' },
+    },
+    rationale:
+      'A punch narrower than the sheet is thick buckles under the piercing load, and the shape of the aperture does not change that — a 3 mm slot in 4 mm plate breaks the same punch a 3 mm hole would. This is the same limit `sm-hole-diameter` applies to round holes, extended to the slots, obrounds and shaped cut-outs that make up most of a real stamping.',
+    fix: 'Open the smallest cut-out to at least one material thickness across, or laser it rather than piercing it and price the slower operation.',
+    source: 'Sheet-metal piercing guidance (punch slenderness), applied to the aperture\'s size rather than to a diameter it may not have.',
+  },
+
   // ═══════════════════════════════════════════════════════════════════════════
   // DEPTH FOR THE FAMILIES THAT HAD ONLY A HEADLINE RULE.
   //

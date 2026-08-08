@@ -231,6 +231,12 @@ async function main() {
       record(fx.file, 'viewer mesh smoothness', perCircle >= t.viewerMesh.minSegmentsPerCircle,
         `~${perCircle} segments/circle vs >= ${t.viewerMesh.minSegmentsPerCircle} (a bore below this reads as a polygon)`);
     }
+    if (t.apertures) {
+      const a = g.dfm?.apertures || {};
+      for (const [k, want] of Object.entries(t.apertures)) {
+        record(fx.file, `aperture ${k}`, near(a[k], want, 0.01), `${a[k]} vs ${want}`);
+      }
+    }
     if (t.toolAccess !== undefined) {
       const ta = g.dfm?.toolAccess || {};
       for (const [k, want] of Object.entries(t.toolAccess)) {

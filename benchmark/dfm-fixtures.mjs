@@ -117,6 +117,11 @@ export const DFM_FIXTURES = [
       bosses: 1,
       holes: [{ diaMm: 6.0, through: true }],
       featureCounts: { 'through-hole': 1, boss: 1 },
+      // ONE through hole, so ONE aperture — not two. A through hole leaves an
+      // inner wire on the face it enters AND the face it exits, and counting
+      // both doubles every aperture on the part. Perimeter is pi * 6 = 18.85 mm
+      // and the equivalent diameter is therefore exactly the 6.0 it started as.
+      apertures: { count: 1, circularCount: 1, totalCutLengthMm: 18.85, smallestApertureMm: 6.0 },
       notSheetMetal: true,
       // The boss is a cylinder and the through hole is a cylinder, so every
       // recognised cylindrical feature id must land on one.
@@ -161,6 +166,13 @@ export const DFM_FIXTURES = [
     what: '80x60x25 block with one closed pocket and one open-ended slot',
     truth: {
       featureCounts: { pocket: 1, slot: 1 },
+      // APERTURES, from the topology rather than the wall geometry. The block's
+      // pocket is blind and its slot runs out of both ends, so NEITHER creates
+      // an inner wire — there is no hole through this part and the aperture
+      // count must be zero. A recogniser that counted pockets as apertures
+      // would fail here, which is the point: an aperture is a hole THROUGH a
+      // face, not a recess in one.
+      apertures: { count: 0 },
       // The counterpart to the plate: this block HAS pockets narrower than the
       // Ø10 default cutter, so some of its surface must be unreachable. A pair
       // of one-sided assertions (convex = exactly 100, featured < 100) is what
@@ -255,7 +267,13 @@ export const DFM_FIXTURES = [
       // measured gap of 0 mm, on a bracket that has nothing to measure — the
       // exact "an absent measurement became a confident finding" failure the
       // three-state discipline exists to prevent.
-      sheetMetalRulesEvaluated: 5,
+      // SIX of nine. The Ø4 hole is now measurable as an APERTURE as well as a
+      // cylinder — perimeter pi*4 = 12.566 mm, so equivalent diameter 4.00 and
+      // 4.00 / 2.00 mm sheet = 2.0 size/t, which clears the 1.0 punch-strength
+      // floor. Before apertures existed the same hole could only be seen by the
+      // cylinder pass, and every spacing rule keyed off it stayed silent on any
+      // part whose openings were not round.
+      sheetMetalRulesEvaluated: 6,
       sheetMetalRulesAbstaining: ['sm-hole-to-hole', 'sm-bend-to-bend'],
     },
   },

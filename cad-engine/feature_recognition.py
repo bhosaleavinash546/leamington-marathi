@@ -958,7 +958,7 @@ SHEET_T_TOL_FRAC = 0.10
 SHEET_WALL_AGREE = 1.35
 
 
-def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None):
+def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_block=None):
     """Bends, sheet thickness and flange lengths from B-rep geometry.
 
     A bend is a PAIR of coaxial cylinders sweeping the same angle: the inside
@@ -1150,6 +1150,19 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None):
     # not centre distances, so the rule can be a flat "at least 2t" instead of a
     # per-hole formula the evaluator cannot express.
     hole_pts = []          # (x, y, z, radius)
+    # APERTURES COUNT AS HOLES HERE. Spacing rules do not care whether the
+    # opening is round: a punch tears the web between two slots exactly as it
+    # does between two bores. Keying these off the cylinder table alone left
+    # FIVE of nine sheet rules abstaining on a bracket with twenty-six cut-outs —
+    # the rules a stamping engineer actually asks for, silent on the part that
+    # needed them. Radius is the equivalent radius from the perimeter, which
+    # under-states a long slot's width and is therefore the conservative choice
+    # for a MINIMUM-gap test.
+    for ap in ((aperture_block or {}).get("apertures") or []):
+        c = ap.get("centroidXYZ")
+        r = (ap.get("circleDiaMm") or ap.get("equivalentDiaMm") or 0) / 2.0
+        if c and len(c) == 3 and r > 0:
+            hole_pts.append((c[0], c[1], c[2], r))
     for row in (feature_table or []):
         if row.get("kind") != "hole":
             continue
@@ -1220,6 +1233,9 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None):
     # evaluated arithmetically instead of carrying an unevaluatable formula.
     clearance = None
     hole_dia = None
+    # Same generalisation for hole-to-bend: an aperture near a bend line distorts
+    # as the bend is worked up whatever its shape.
+    bend_probe = [(p3[0], p3[1], p3[2], p3[3] * 2) for p3 in hole_pts]
     for row in (feature_table or []):
         if row.get("kind") != "hole" or not row.get("axisPointXYZ"):
             continue
@@ -1233,6 +1249,19 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None):
             perp = math.sqrt(max(0.0, sum(x * x for x in delta) - along * along))
             required = 2 * thickness + b["insideRadiusMm"]
             c = perp - required
+            if clearance is None or c < clearance:
+                clearance = c
+
+    # Apertures reach the bend-clearance test too, and set the minimum opening
+    # size when there is no round hole to set it.
+    for (ax, ay, az, adia) in bend_probe:
+        if hole_dia is None or adia < hole_dia:
+            hole_dia = adia
+        for b in bends:
+            delta = [q - p for p, q in zip(b["axisPointXYZ"], (ax, ay, az))]
+            along = sum(x * u for x, u in zip(delta, b["axisXYZ"]))
+            perp = math.sqrt(max(0.0, sum(x * x for x in delta) - along * along))
+            c = perp - (2 * thickness + b["insideRadiusMm"])
             if clearance is None or c < clearance:
                 clearance = c
 
@@ -1364,4 +1393,182 @@ def recognise(shape, feature_table, extents=None, aag=None):
             "base. A rib with curved sides, or one standing on a freeform wall, "
             "is not recognised and its proportions are therefore not checked.",
         ],
+    }
+
+
+# ─── Apertures: holes that are not cylinders ─────────────────────────────────
+#
+# WHY THIS EXISTS. The hole table comes from the cylinder pass, which requires a
+# full revolution — the test that stopped curved walls being reported as bores.
+# It is right about cylinders and blind to everything else, and on a real stamped
+# bracket that blindness reported ZERO holes on a part with FIFTY-TWO apertures:
+# slots, obrounds and shaped cut-outs trimmed through freeform surfaces, whose
+# walls are B-spline strips rather than cylinders. Not one of them was circular,
+# so not one was found.
+#
+# The topology already knows. A face with an INNER WIRE has a hole in it — that
+# is what an inner wire means — regardless of what surface the wall happens to
+# be. Reading apertures from the wires rather than from the wall geometry finds
+# every one of them and needs no new measurement.
+#
+# This does NOT replace the cylinder pass. A round hole still comes from there
+# with its exact kernel diameter and its through/blind classification; an
+# aperture carries perimeter, enclosed area and an equivalent diameter, which is
+# what a non-circular cut-out actually has. Both are reported, and a circular
+# aperture is matched back to its cylinder row rather than double-counted.
+
+#: Two inner wires belong to the same through aperture when their centroids sit
+#: within this multiple of the wall thickness of each other, measured along the
+#: aperture axis. A through hole in sheet leaves one wire on the top face and one
+#: on the bottom; counting them separately doubles every aperture on the part.
+APERTURE_PAIR_TOL = 3.0
+
+
+def _wire_metrics(wire):
+    """(perimeter, centroid, circular?) for a closed wire, from its edges."""
+    from OCP.BRep import BRep_Tool
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.BRepGProp import BRepGProp
+    from OCP.GeomAbs import GeomAbs_CurveType
+    from OCP.GProp import GProp_GProps
+    from OCP.TopAbs import TopAbs_EDGE, TopAbs_VERTEX
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopoDS import TopoDS
+
+    props = GProp_GProps()
+    try:
+        BRepGProp.LinearProperties_s(wire, props)
+        perimeter = abs(props.Mass())
+        c = props.CentreOfMass()
+        centroid = (c.X(), c.Y(), c.Z())
+    except Exception:
+        return None
+    if not (perimeter > 0) or not math.isfinite(perimeter):
+        return None
+
+    # Circular when every edge is a circle of one radius — that is the case the
+    # cylinder pass already owns, and it must not be reported twice.
+    radii, kinds = set(), set()
+    ex = TopExp_Explorer(wire, TopAbs_EDGE)
+    while ex.More():
+        try:
+            ad = BRepAdaptor_Curve(TopoDS.Edge_s(ex.Current()))
+            kinds.add(ad.GetType())
+            if ad.GetType() == GeomAbs_CurveType.GeomAbs_Circle:
+                radii.add(round(ad.Circle().Radius(), 3))
+        except Exception:
+            pass
+        ex.Next()
+    circular = kinds == {GeomAbs_CurveType.GeomAbs_Circle} and len(radii) == 1
+    return {
+        "perimeterMm": round(perimeter, 2),
+        "centroidXYZ": [round(v, 3) for v in centroid],
+        "circular": circular,
+        "circleDiaMm": round(2 * next(iter(radii)), 2) if circular and radii else None,
+    }
+
+
+def apertures(shape, wall_mm=None):
+    """Every hole through the part, read from the topology rather than the walls.
+
+    Returns per-aperture perimeter, enclosed area, equivalent diameter and
+    centroid, plus the part totals a stamping is costed and toleranced against.
+    """
+    from OCP.BRepTools import BRepTools
+    from OCP.TopAbs import TopAbs_FACE, TopAbs_WIRE
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopoDS import TopoDS
+
+    found = []
+    ex = TopExp_Explorer(shape, TopAbs_FACE)
+    while ex.More():
+        face = TopoDS.Face_s(ex.Current())
+        ex.Next()
+        try:
+            outer = BRepTools.OuterWire_s(face)
+        except Exception:
+            continue
+        we = TopExp_Explorer(face, TopAbs_WIRE)
+        while we.More():
+            w = we.Value()
+            we.Next()
+            if w.IsSame(outer):
+                continue
+            m = _wire_metrics(w)
+            if m:
+                found.append(m)
+
+    # A through aperture leaves a wire on the face it enters AND the face it
+    # exits. Pairing them by centroid distance and matching perimeter is what
+    # stops every hole being counted twice.
+    tol = max(0.5, (wall_mm or 1.0) * APERTURE_PAIR_TOL)
+    used, merged, unpaired = set(), [], 0
+    for i, a in enumerate(found):
+        if i in used:
+            continue
+        partner = None
+        for j in range(i + 1, len(found)):
+            if j in used:
+                continue
+            b = found[j]
+            d = math.dist(a["centroidXYZ"], b["centroidXYZ"])
+            if d <= tol and abs(a["perimeterMm"] - b["perimeterMm"]) <= 0.05 * max(a["perimeterMm"], b["perimeterMm"]):
+                partner = j
+                break
+        used.add(i)
+        # AN APERTURE IS A HOLE THROUGH THE PART, and only a PAIRED wire is one.
+        # An inner wire on its own is something else, and the gate found two of
+        # them: the ring where a BOSS rises out of a face (the region inside it
+        # is the boss, not air) and the mouth of a BLIND POCKET (air, but it does
+        # not come out the other side). Counting either inflated a plate with one
+        # Ø6 hole to two apertures and 69 mm of "cut length" that included the
+        # Ø16 boss base. A through opening leaves a wire where it enters AND
+        # where it exits; nothing else does.
+        if partner is None:
+            unpaired += 1
+            continue
+        used.add(partner)
+        # Equivalent diameter from the ENCLOSED AREA of a circle with the same
+        # perimeter is wrong for a slot, so the honest figure for a non-circular
+        # aperture is its narrowest practical dimension — and the perimeter is
+        # what a punch and a laser are actually charged by. Both are reported;
+        # neither pretends to be the other.
+        eq = a["perimeterMm"] / math.pi
+        merged.append({
+            "perimeterMm": a["perimeterMm"],
+            "equivalentDiaMm": round(eq, 2),
+            "circular": a["circular"],
+            "circleDiaMm": a["circleDiaMm"],
+            "through": partner is not None,
+            "centroidXYZ": a["centroidXYZ"],
+        })
+
+    if not merged:
+        return {
+            "count": 0, "apertures": [], "unpairedWireCount": unpaired,
+            "reason": (f"No hole passes through this part. {unpaired} inner wire(s) were found and none "
+                       "paired with an opening on the far side, so they are boss bases or blind recesses "
+                       "rather than apertures — the pocket and slot recogniser owns those.") if unpaired
+                      else "No face on this part carries an inner wire, so there is no aperture to report.",
+        }
+    circular = [a for a in merged if a["circular"]]
+    total_cut = sum(a["perimeterMm"] for a in merged)
+    smallest = min(a["equivalentDiaMm"] for a in merged)
+    return {
+        "count": len(merged),
+        "circularCount": len(circular),
+        "nonCircularCount": len(merged) - len(circular),
+        "throughCount": sum(1 for a in merged if a["through"]),
+        # The internal cut length. Press tonnage and laser time are both charged
+        # by perimeter, and this is the half of it that lives inside the blank —
+        # the outer profile is the other half and needs the flat pattern.
+        "totalCutLengthMm": round(total_cut, 1),
+        "smallestApertureMm": round(smallest, 2),
+        "apertures": sorted(merged, key=lambda a: a["equivalentDiaMm"])[:40],
+        # Named rather than dropped silently: an unpaired wire is a boss base or
+        # a blind recess, and a reader who counts openings on the model should be
+        # able to reconcile that count with this one.
+        "unpairedWireCount": unpaired,
+        "method": "inner wires of every face: an inner wire IS a hole, whatever surface its wall is made of",
+        "knownLimits": "Perimeter and centroid are exact. `equivalentDiaMm` is the diameter of a circle of the same PERIMETER, which understates a long slot's width — it is a size ranking, not a width measurement. The OUTER profile is not included, so this is internal cut length only.",
     }

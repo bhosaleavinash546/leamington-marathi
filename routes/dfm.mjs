@@ -426,6 +426,16 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
       // one. A retuned threshold that leaves no trace is indistinguishable from
       // a published guideline.
       ruleOverrides: ruleOpts.overrides ?? null,
+      // Counted here, beside the catalogue that produced the findings, so the
+      // report's provenance sentence can never drift from the ruleset again.
+      catalogue: {
+        total: DFM_RULES.length,
+        byGrade: DFM_RULES.reduce((acc, r) => {
+          const g = r.sourceStatus || 'industry-consensus';
+          acc[g] = (acc[g] ?? 0) + 1;
+          return acc;
+        }, {}),
+      },
       material: material || null,
       materialFamily: material ? familyOfMaterial(material) ?? null : null,
       // EVERY VIABLE ROUTE, not just the one that was chosen. The report answers

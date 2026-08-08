@@ -119,6 +119,19 @@ export function extractMeasures(geo = {}) {
     // them — so every tolerance rule abstains rather than passing a part whose
     // tolerances are on a drawing this tool has never seen.
     tightestToleranceMm: num((dfm.pmi || {}).tightestToleranceMm),
+    // APERTURES, read from the topology rather than the wall geometry. The
+    // cylinder pass finds round holes exactly and is blind to everything else,
+    // and on a stamped bracket that blindness reported zero holes on a part
+    // with twenty-six cut-outs. As a ratio of the sheet, because that is how
+    // the punch-strength guideline is written.
+    minApertureToThickness: (() => {
+      const a = dfm.apertures || {};
+      const t = num(sm.thicknessMm);
+      const min = num(a.smallestApertureMm);
+      return t > 0 && min > 0 ? Math.round((min / t) * 100) / 100 : undefined;
+    })(),
+    apertureCount: num((dfm.apertures || {}).count),
+    internalCutLengthMm: num((dfm.apertures || {}).totalCutLengthMm),
     pmiDimensionCount: num((dfm.pmi || {}).dimensionCount),
     pmiGeomToleranceCount: num((dfm.pmi || {}).geometricToleranceCount),
     reachableAreaPct: num((dfm.toolAccess || {}).reachableAreaPct),

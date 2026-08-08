@@ -304,7 +304,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   // give metal a highlight, and without tone mapping those highlights clip to
   // flat white — which is most of why the shading read as "cheap plastic".
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  // Trimmed below 1.0: the environment adds light of its own, and at 1.05 the
+  // part washed out toward white instead of reading as grey metal.
+  renderer.toneMappingExposure = 0.92;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.localClippingEnabled = true;
   const scene = new THREE.Scene();
@@ -815,7 +817,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
         const mat = new THREE.MeshStandardMaterial({
-          color: 0xaeb6c2, metalness: 0.45, roughness: 0.5,
+          // A NEUTRAL MACHINED GREY. 0xaeb6c2 is a light BLUE-grey (blue channel
+          // well above red), and once the studio environment and ACES tone
+          // mapping went in it lifted to something closer to white than to
+          // metal. This is a neutral mid-grey at the value CAD viewers actually
+          // use, with the metalness pulled back so the environment reads as a
+          // soft sheen rather than a mirror.
+          color: 0x8f9499, metalness: 0.25, roughness: 0.55,
           // FRONT faces only. DoubleSide doubles the fragment work on a closed
           // solid for nothing — you cannot see the inside of a sealed part. It
           // is switched back on only while a section plane is cutting, which is

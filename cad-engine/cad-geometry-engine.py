@@ -1084,8 +1084,19 @@ def analyze(filepath: str, draw_override=None) -> dict:
                     "accessDirections": [],
                     "basis": "no discrete machined features recognised — single-setup assumption",
                 }
+                # APERTURES, read from the topology. The cylinder pass finds
+                # round holes exactly and is blind to everything else; on a real
+                # stamped bracket that blindness reported ZERO holes on a part
+                # with fifty-two cut-outs, none of them circular.
+                try:
+                    aperture_block = _fr.apertures(
+                        wrapped, wall_mm=(wall_stats or {}).get("p50Mm"))
+                except Exception as _e:
+                    aperture_block = {"count": 0, "reason": f"Apertures could not be read: {_e}"}
+
                 dfm_block = {
                     "pmi": pmi_block,
+                    "apertures": aperture_block,
                     "toolAccess": access_info,
                     "tessellation": {"triangles": tess["count"],
                                      "totalAreaMm2": round(tess["totalAreaMm2"], 1),
@@ -1131,13 +1142,44 @@ def analyze(filepath: str, draw_override=None) -> dict:
                        unclassifiedAreaPct=(dfm_block.get("features") or {}).get("unclassifiedAreaPct"))
                 dfm_block["sheetMetal"] = _fr.sheet_metal_features(
                     wrapped, feature_table,
-                    wall_p50_mm=(wall_stats or {}).get("p50Mm"))
+                    wall_p50_mm=(wall_stats or {}).get("p50Mm"),
+                    aperture_block=aperture_block)
                 _stage("sheetMetal", status="done",
                        isSheetMetal=(dfm_block.get("sheetMetal") or {}).get("isSheetMetal"))
             except Exception as e:
                 (dfm_block or {}).setdefault("featuresError", f"{e}")
         except Exception as e:
             dfm_block = {"status": "error", "error": f"DFM analysis failed: {e}"}
+        # HOW MUCH THE WALL FIGURE IS WORTH. The percentiles were printed as
+        # bare facts. On a real part they came back at 32 mm against a 2V/A
+        # reference of 10.35 — a factor of three — on rays covering 6.3% of the
+        # surface, and nothing in the report said either number. 2V/A is exact
+        # for a thin uniform shell and only indicative for a chunky part, so a
+        # disagreement is not proof the ray cast is wrong; it IS proof the reader
+        # should be told before quoting the figure.
+        try:
+            if wall_stats and sa_mm2 > 0:
+                ref = 2.0 * volume_mm3 / sa_mm2
+                wall_stats["referenceWallMm"] = round(ref, 2)
+                wall_stats["referenceBasis"] = ("2V/A, exact for a thin uniform shell and "
+                                                "indicative otherwise — an independent check on the ray cast")
+                p50 = wall_stats.get("p50Mm") or 0
+                cover = wall_stats.get("measuredAreaPct") or 0
+                notes = []
+                if ref > 0 and p50 > 0 and (p50 / ref > 2.0 or ref / p50 > 2.0):
+                    notes.append(f"the ray-cast median ({p50} mm) and the 2V/A reference "
+                                 f"({round(ref, 2)} mm) differ by more than a factor of two")
+                if cover and cover < 15:
+                    notes.append(f"the rays returned a valid opposed-face hit over only {cover}% "
+                                 "of the surface, so the percentiles rest on that fraction")
+                wall_stats["confidenceNote"] = (
+                    "TREAT THE WALL FIGURES WITH CAUTION: " + "; ".join(notes) +
+                    ". This happens on chunky or heavily freeform parts, where 'wall thickness' "
+                    "is not a well-posed question — check the section on the model before quoting it."
+                ) if notes else None
+        except Exception:
+            pass
+
         if wall_stats is None:
             try:
                 wall_stats = _compute_wall_thickness(shape, faces)

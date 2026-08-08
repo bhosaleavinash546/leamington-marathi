@@ -553,7 +553,15 @@ def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4, max_wall
                 rejected += 1
                 continue
             if d > 1e-3:
-                samples.append((d, tess["area"][i]))
+                # WEIGHTED BY THE STRIDE, as classify_draft has always done. Each
+                # sampled triangle stands for the `step` triangles it was chosen
+                # from, so an unweighted area makes `measuredAreaPct` read 1/step
+                # of the truth: a part where nearly every ray succeeded reported
+                # "6.3% of the surface measured" and looked untrustworthy for a
+                # reason that was pure arithmetic. The percentiles themselves are
+                # unaffected — a constant factor cancels in a weighted quantile —
+                # but the figure a reader judges them BY was wrong.
+                samples.append((d, tess["area"][i] * step))
                 located.append((d, tess["cx"][i], tess["cy"][i], tess["cz"][i],
                                 tess["face"][i]))
         except Exception:
@@ -592,7 +600,10 @@ def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4, max_wall
         "minMm": round(min(v for v, _ in samples), 2),
         "maxMm": round(max(v for v, _ in samples), 2),
         "characteristicMm": round(p50, 2),
-        "measuredAreaPct": round(100.0 * measured / (tess["totalAreaMm2"] or 1.0), 1),
+        # Capped: the stride is an integer estimate of a fractional sampling
+        # rate, so a part whose successful rays happen to sit on larger-than-
+        # average triangles can extrapolate just past 100%.
+        "measuredAreaPct": min(100.0, round(100.0 * measured / (tess["totalAreaMm2"] or 1.0), 1)),
         # Published, not hidden. A part where a third of the rays exceeded the
         # smallest overall dimension is one whose wall figure deserves a second
         # look, and the reader can only know that if the number is on the page.

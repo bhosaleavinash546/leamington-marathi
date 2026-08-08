@@ -1023,3 +1023,58 @@ Format: decision · why · what would change it.
     *Changes it:* the constant is now empty by design. A short stale list looks authoritative
     and silently hides materials the engine costs perfectly well; an empty one makes the
     missing fetch visible instead.
+
+76. **A hole is an inner wire, not a cylinder (2026).**
+    *Why:* a manufacturing head reviewed two reports and the stamped Seat Locking Bracket
+    came back with **zero holes**. It has twenty-six. The hole table comes from the cylinder
+    pass, which requires a full revolution — the test that correctly stopped curved walls
+    being reported as bores — and every opening on that bracket is a slot, obround or shaped
+    cut-out trimmed through a freeform surface, so not one of its walls is a cylinder. Five
+    of nine sheet-metal rules abstained as a result: hole-to-edge, hole-to-hole, hole-to-bend
+    and minimum hole size all key off the hole table, and they were silent on exactly the
+    part that needed them. *Changes it:* the topology already knows. A face with an INNER
+    WIRE has a hole in it — that is what an inner wire means — whatever surface the wall is
+    made of. `apertures()` reads them and reports perimeter, equivalent diameter, centroid
+    and total internal cut length, which also closes half of the declared press-tonnage gap.
+    **Only PAIRED wires count**, and the gate is what forced that: an unpaired wire is the
+    ring where a boss rises out of a face or the mouth of a blind pocket, and counting either
+    turned a plate with one Ø6 hole into two apertures with 69 mm of cut length that included
+    the Ø16 boss base. A through opening leaves a wire where it enters and where it exits;
+    nothing else does. Apertures feed the spacing rules, so the bracket went from 3 of 8
+    rules evaluated and one finding to **8 of 9 and three findings** — including a cut-out
+    sitting 7.79 mm inside the bend allowance, which is a real scrap risk that was invisible.
+
+77. **`measuredAreaPct` was understated by exactly the sampling stride (2026).**
+    *Why:* `classify_draft` weights each sampled triangle by the `step` it was chosen from;
+    `wall_thickness` did not. Its coverage figure therefore read 1/step of the truth — a
+    part where nearly every ray succeeded reported "6.3% of the surface measured" and looked
+    untrustworthy for a reason that was pure arithmetic. The percentiles themselves are
+    unaffected, because a constant factor cancels in a weighted quantile; the number a reader
+    JUDGES them by was wrong. *Changes it:* stride-weighted and capped at 100%. The bracket
+    now reads 100%, the cross member 89%, and the part where the figure genuinely is thin
+    reads 51%.
+
+78. **The wall figure now carries an independent cross-check (2026).**
+    *Why:* Part1's report printed "WALL p5/p50/p95 7.08 / 27.06 / 34.31 mm" as bare fact. The
+    2V/A reference for that part is 10.35 mm — a factor of three — and nothing said so. 2V/A
+    is exact for a thin uniform shell and only indicative for a chunky one, so a disagreement
+    is not proof the ray cast is wrong; it IS proof the reader should be told before quoting
+    the number that drives the wall, uniformity and rib rules. *Changes it:* the reference and
+    the coverage are printed under the percentiles, and a disagreement of more than 2× or
+    coverage below 15% raises a caution naming which. The bracket and cross member, where the
+    ray cast is right, pass clean.
+
+79. **A provenance sentence that is itself out of date (2026).**
+    *Why:* every report's cover said "24 of the 26 rules rest on industry consensus" — a
+    string literal, still there long after the catalogue reached 111. A claim about how much
+    to trust the numbers, which was itself untrue. *Changes it:* counted server-side beside
+    the catalogue that produced the findings and sent with the analysis, so it cannot drift
+    again. It now reads 109 of 111. Counting in the browser would have meant bundling the
+    whole catalogue for one sentence.
+
+80. **The viewer read as white because of the lighting I added (2026).**
+    *Why:* the base colour was `0xaeb6c2` — a light BLUE-grey, blue channel well above red —
+    and once the studio environment and ACES tone mapping went in at exposure 1.05 it lifted
+    to something closer to white than to metal. *Changes it:* a neutral `0x8f9499` at the
+    value CAD viewers actually use, metalness pulled back from 0.45 to 0.25 so the
+    environment reads as a soft sheen rather than a mirror, and exposure trimmed to 0.92.
