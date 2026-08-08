@@ -987,3 +987,39 @@ Format: decision · why · what would change it.
     a real browser against a real server — Step 2 hidden before upload, process list
     narrowing from 20 aluminium routes to 3 for ABS, the chosen process clearing when the
     material can no longer take it, and the opt-out releasing on the next selection.
+
+74. **A picker that cannot name the alloy forces the wrong one (2026).**
+    *Why:* the material list named roughly one grade per family, and for three families it
+    was the wrong grade for the process that family is actually used by. **A356 is a gravity
+    and sand-casting alloy**, and the tool offered it for high-pressure die casting where the
+    production alloy is A380/ADC12. **AZ31 is a wrought magnesium**; die-cast magnesium is
+    AZ91D. ZAMAK 5 was listed without ZAMAK 3, the commoner of the two. Body-in-white had no
+    dual-phase or press-hardened grade at all, sheet aluminium had no 5052, and the composite
+    family had carbon fibre but not glass — which is far more common in automotive. A user
+    whose part is A380 had to pick A356, and every material-specific threshold downstream was
+    then resolved for the wrong metal. *Changes it:* 23 grades to 50, all mapping to existing
+    family tags so no process routing changed. Densities are physical constants; prices are
+    indicative €/kg on the same static-library basis as the originals, which the commodity
+    bridge overrides where a live index exists.
+    Carbon coverage went from 19 of 23 to **49 of 50**. FKM is the single deliberate
+    omission: published fluoroelastomer factors vary by more than an order of magnitude, and
+    `computeCarbon` already returns null with a reason rather than borrowing a neighbour's
+    number. Every added iron, steel and aluminium grade is also listed in `MATERIAL_FAMILY`,
+    because CBAM scope follows the family and an unlisted import would quietly escape the
+    levy estimate.
+    **The grades move numbers, not just labels.** 42 rules now carry 131 distinct
+    material-specific thresholds, up from 98. Bend radius alone now reads 5052 at 1 r/t,
+    mild steel 1, DP600 2.5, 6061-T6 3, DP980 4, and 22MnB5 at 6 — the last because a
+    press-hardened part is formed hot and quenched in the die at ~1500 MPa and is not cold
+    formed at all, so a cold bend in the CAD is a design error rather than a tight radius. A
+    test asserts that ladder rises and that each grade carries its own source rather than
+    borrowing the rule's.
+
+75. **A stale hardcoded copy of a list is worse than no copy (2026).**
+    *Why:* `src/constants/costing.ts` held `FALLBACK_MATERIALS`, a hand-typed mirror of the
+    engine's table, under a comment warning it would drift. It had already drifted four
+    materials behind — Copper, Electrical Steel, EPDM and Glass were unreachable from any
+    page that fell back to it — and this change would have taken it to twenty-seven behind.
+    *Changes it:* the constant is now empty by design. A short stale list looks authoritative
+    and silently hides materials the engine costs perfectly well; an empty one makes the
+    missing fetch visible instead.

@@ -28,6 +28,50 @@ export const MATERIAL_CO2E_PER_KG = {
   'POM (Acetal)': 3.2,
   'Polycarbonate (PC)': 3.8,
   'CFRP (Carbon Fibre)': 26.0,
+
+  // ── The grades added alongside them ──────────────────────────────────────
+  // Same basis as above: indicative cradle-to-gate factors on an EU consumption
+  // mix. A material with NO factor here reports its carbon as unavailable with a
+  // reason rather than borrowing a neighbour's number, so this list only has to
+  // be honest, not exhaustive.
+  // These four predate this batch and had no factor at all, so every carbon
+  // figure for a copper busbar, a motor lamination, a seal or a window came back
+  // "not estimated". Honest, but avoidable.
+  'Copper (Cu-ETP)': 4.0,               // EU mix; primary ~4.5, secondary far lower
+  'Electrical Steel (M250-35A)': 2.6,   // above mild steel: silicon alloying + anneal
+  'EPDM Rubber': 3.0,
+  'Glass (Soda-lime, automotive)': 1.2,
+
+  'Stainless Steel 316L': 5.2,          // higher Ni and Mo than 304
+  'Stainless Steel 430': 3.4,           // ferritic, no nickel — markedly lower
+  'Steel DP600 (dual-phase)': 2.3,
+  'Steel DP980 (dual-phase)': 2.4,
+  'Steel 22MnB5 (press-hardened)': 2.4,
+  'Steel 42CrMo4 / 4140': 2.5,
+  'Steel 16MnCr5 (case-hardening)': 2.4,
+  'Cast Iron (CGI / GJV-450)': 1.8,
+  'Aluminium A380 / ADC12 (die-cast)': 4.5,  // predominantly secondary metal
+  'Aluminium 5052 (sheet)': 7.2,
+  'Aluminium 6082': 7.0,
+  'Magnesium AZ91D (die-cast)': 14.0,
+  'Zinc (ZAMAK 3)': 3.2,
+  'Bronze (CuSn8)': 4.0,
+  'PC/ABS blend': 3.6,
+  'PBT': 4.0,
+  'PP-T20 (talc-filled)': 1.7,          // mineral filler displaces polymer
+  'PET': 2.6,
+  'PPS': 7.5,
+  'PEEK': 30.0,
+  'TPU (thermoplastic PU)': 4.6,
+  'HDPE': 1.8,
+  'NBR (Nitrile) Rubber': 3.0,
+  'Silicone (VMQ) Rubber': 6.0,
+  'GFRP (Glass Fibre)': 5.5,
+  'SMC (Sheet Moulding Compound)': 3.5,
+  // FKM has no factor here on purpose: fluoroelastomer production is dominated
+  // by fluorochemical feedstock whose published figures vary by more than an
+  // order of magnitude, and a number that uncertain would be worse than the
+  // honest "not estimated" the caller already handles.
 };
 
 // Process electricity/fuel intensity, kWh per kg of PART processed (indicative).
@@ -80,6 +124,15 @@ const MATERIAL_FAMILY = {
   'Steel (mild)': 'ferrous', 'Steel (high-strength)': 'ferrous', 'Stainless Steel 304': 'ferrous',
   'Cast Iron (Grey)': 'castiron', 'Cast Iron (Ductile/GJS)': 'castiron',
   'Aluminium 6061': 'aluminium', 'Aluminium 7075': 'aluminium', 'Aluminium A356 (cast)': 'aluminium',
+  // CBAM scope follows the FAMILY, so every added iron, steel and aluminium
+  // grade has to be listed or an import quietly escapes the levy estimate.
+  'Stainless Steel 316L': 'ferrous', 'Stainless Steel 430': 'ferrous',
+  'Steel DP600 (dual-phase)': 'ferrous', 'Steel DP980 (dual-phase)': 'ferrous',
+  'Steel 22MnB5 (press-hardened)': 'ferrous', 'Steel 42CrMo4 / 4140': 'ferrous',
+  'Steel 16MnCr5 (case-hardening)': 'ferrous',
+  'Cast Iron (CGI / GJV-450)': 'castiron',
+  'Aluminium A380 / ADC12 (die-cast)': 'aluminium', 'Aluminium 5052 (sheet)': 'aluminium',
+  'Aluminium 6082': 'aluminium',
 };
 
 /**

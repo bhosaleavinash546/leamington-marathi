@@ -178,3 +178,70 @@ test('no declared gap claims the tool cannot see something it now measures', () 
     'this claim stopped being true when semantic PMI became readable');
   assert.ok(tolerance.proxy, 'the half that DOES work must be named as the proxy');
 });
+
+// ── Every material must be a complete, usable entry ──────────────────────────
+//
+// A material is not "added" when its name is in a list. It has to carry a
+// density and a price for the cost engine, a family the process table accepts,
+// and at least one process that can actually shape it — otherwise choosing it
+// leads to a dead end or a silently wrong cost.
+
+test('every material is complete enough to cost', async () => {
+  for (const [name, m] of Object.entries(MATERIALS)) {
+    assert.ok(m.density > 0, `${name}: no density — the kernel volume cannot become a mass`);
+    assert.ok(m.price > 0, `${name}: no price`);
+    assert.ok(Number.isFinite(m.scrapRecovery), `${name}: no scrap recovery`);
+    assert.ok(m.family, `${name}: no family — no process can accept it`);
+  }
+});
+
+test('every material reaches at least one process that shapes it', () => {
+  const shaping = new Set(Object.entries(PROCESS_TO_DFM_FAMILY)
+    .filter(([, f]) => f).map(([n]) => n));
+  const deadEnds = [];
+  for (const name of Object.keys(MATERIALS)) {
+    const usable = Object.entries(PROCESSES).filter(([pn, spec]) =>
+      shaping.has(pn) && Array.isArray(spec.families) && spec.families.includes(MATERIALS[name].family));
+    if (!usable.length) deadEnds.push(name);
+  }
+  // Glass is the one honest exception: its only process, Glass Forming, is
+  // declared as carrying no geometric DFM rules because bend radius and stress
+  // limits need the forming schedule, not the solid.
+  assert.deepEqual(deadEnds, ['Glass (Soda-lime, automotive)'],
+    `materials with no shaping process: ${deadEnds.join(', ')}`);
+});
+
+test('a die-casting alloy exists for every die-casting family', () => {
+  // The list named A356 — a GRAVITY and sand-casting alloy — and offered it for
+  // high-pressure die casting, where the production alloy is A380/ADC12. Same
+  // for magnesium: AZ31 is wrought, AZ91D is the die-cast grade. Picking a
+  // near-miss resolves every material-specific threshold for the wrong metal.
+  assert.ok(MATERIALS['Aluminium A380 / ADC12 (die-cast)'], 'no aluminium HPDC alloy');
+  assert.ok(MATERIALS['Magnesium AZ91D (die-cast)'], 'no magnesium HPDC alloy');
+  assert.ok(MATERIALS['Zinc (ZAMAK 3)'], 'ZAMAK 3 is the commoner zinc die-casting alloy');
+});
+
+test('the added sheet grades actually move the bend radius', () => {
+  // The point of naming a grade is that it changes a number. A ladder that does
+  // not rise means the grades were added as labels only.
+  const bend = DFM_RULES.find(r => r.id === 'sm-bend-radius');
+  const rt = m => resolveThreshold(bend, m, null).threshold;
+  assert.equal(rt('Aluminium 5052 (sheet)'), 1.0, '5052 is the formable sheet grade');
+  assert.ok(rt('Steel DP600 (dual-phase)') > rt('Steel (mild)'));
+  assert.ok(rt('Steel DP980 (dual-phase)') > rt('Steel DP600 (dual-phase)'));
+  assert.ok(rt('Steel 22MnB5 (press-hardened)') > rt('Steel DP980 (dual-phase)'),
+    'a fully martensitic press-hardened part is not cold formed at all');
+  // And each carries its OWN source, not the rule's generic one.
+  for (const m of ['Steel DP600 (dual-phase)', 'Aluminium 5052 (sheet)']) {
+    assert.notEqual(resolveThreshold(bend, m, null).source, bend.source, `${m} borrowed the generic source`);
+  }
+});
+
+test('carbon is either estimated or explicitly declined, never guessed', async () => {
+  const { MATERIAL_CO2E_PER_KG } = await import('../carbon.mjs');
+  const missing = Object.keys(MATERIALS).filter(m => !Number.isFinite(MATERIAL_CO2E_PER_KG[m]));
+  // FKM alone: published fluoroelastomer figures vary by more than an order of
+  // magnitude, and computeCarbon already returns null with a reason for it.
+  assert.deepEqual(missing, ['FKM (Viton) Rubber'],
+    `materials with no CO2e factor and no stated reason: ${missing.join(', ')}`);
+});

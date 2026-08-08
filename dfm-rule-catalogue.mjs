@@ -241,6 +241,14 @@ export const DFM_RULES = [
   {
     id: 'im-wall-thickness-range',
     byMaterial: {
+      'PC/ABS blend': { threshold: [1.2, 3.5], source: 'PC/ABS moulding guidance: 1.2 mm minimum. The blend flows better than neat PC and holds a fuller wall than ABS alone, which is why it dominates automotive interior trim.' },
+      'PBT': { threshold: [0.8, 3.0], source: 'PBT moulding guidance: 0.8 mm minimum. Very fluid, which is why it fills the thin walls of an electrical connector body.' },
+      'PP-T20 (talc-filled)': { threshold: [1.2, 4.0], source: '20% talc-filled PP: a fuller wall than neat PP. Mineral filler raises viscosity, and the compound is chosen for stiffness in thick bumper and trim sections.' },
+      'PET': { threshold: [1.0, 3.5], source: 'PET moulding guidance: 1.0 mm minimum; crystallisation rate makes the wall and the mould temperature interdependent.' },
+      'PPS': { threshold: [0.8, 3.0], source: 'PPS moulding guidance: 0.8 mm minimum. Extremely fluid at melt temperature — it is chosen for thin, hot, chemically-attacked parts.' },
+      'PEEK': { threshold: [1.0, 4.0], source: 'PEEK moulding guidance: 1.0 mm minimum, and every millimetre is expensive — the resin is the dominant cost, so a thick wall here is a direct piece-price problem.' },
+      'TPU (thermoplastic PU)': { threshold: [1.0, 4.0], source: 'TPU moulding guidance: 1.0 mm minimum; a soft, high-viscosity melt that needs a generous gate as well as a generous wall.' },
+      'HDPE': { threshold: [1.0, 5.0], source: 'HDPE moulding guidance: 1.0 mm minimum, and it tolerates a heavier wall than most because it is cheap and dimensionally forgiving.' },
       'Polypropylene (PP)': { threshold: [0.8, 3.0], source: 'PP moulding guidance: 0.8 mm minimum, 1.5-3.0 mm typical. PP is one of the easiest-flowing commodity resins.' },
       'ABS': { threshold: [1.2, 3.5], source: 'ABS moulding guidance: 1.2 mm minimum, 1.5-3.5 mm typical.' },
       'PA6 (Nylon)': { threshold: [0.8, 3.0], source: 'PA6 moulding guidance: 0.8 mm minimum, 1.0-3.0 mm typical; nylon flows well but is moisture-sensitive.' },
@@ -321,6 +329,9 @@ export const DFM_RULES = [
   {
     id: 'im-rib-thickness-max',
     byMaterial: {
+      'PBT': { threshold: 0.5, source: 'PBT is semi-crystalline and shrinks heavily; a rib above half the wall reads through the show face as a sink line.' },
+      'HDPE': { threshold: 0.5, source: 'HDPE has the highest shrinkage of the commodity resins — a full-thickness rib sinks visibly.' },
+      'PP-T20 (talc-filled)': { threshold: 0.6, source: 'Talc suppresses shrinkage, so the filled compound hides a fuller rib than neat PP.' },
       'POM (Acetal)': { threshold: 0.5, source: 'Acetal shrinks about 2% — twice an amorphous resin — so a rib at 60% of the wall sinks visibly on the show face. 50% is the practical ceiling.' },
       'PA6 (Nylon)': { threshold: 0.5, source: 'Nylon is semi-crystalline and shrinks heavily; a rib above half the wall reads through as a sink mark.' },
       'PA66-GF30 (glass-filled)': { threshold: 0.6, source: 'Glass fill suppresses shrinkage in the flow direction, so a filled nylon tolerates a fuller rib than the unfilled resin.' },
@@ -571,6 +582,13 @@ export const DFM_RULES = [
   {
     id: 'sm-bend-radius',
     byMaterial: {
+      'Steel DP600 (dual-phase)': { threshold: 2.5, source: 'Bend-radius guidance for DP600: 2.5 r/t. A dual-phase steel gets its strength from hard martensite islands in soft ferrite, and those islands are where a tight bend initiates the crack.' },
+      'Steel DP980 (dual-phase)': { threshold: 4.0, source: 'Bend-radius guidance for DP980: 4 r/t and upward. At this strength level the uniform elongation is small enough that bendability, not springback, is the binding constraint.' },
+      'Steel 22MnB5 (press-hardened)': { threshold: 6.0, source: 'A press-hardened 22MnB5 part is formed HOT and quenched in the die; the finished part is fully martensitic at about 1500 MPa and is not cold formed at all. Any bend in the CAD must have been made in the hot stage — this figure exists to flag a feature that assumes cold forming of a grade that cannot be cold formed.' },
+      'Stainless Steel 316L': { threshold: 1.0, source: 'Bend-radius guidance for annealed 316L: 1 r/t, as 304. Austenitic stainless work-hardens rapidly, so springback is large even where the minimum radius is not.' },
+      'Stainless Steel 430': { threshold: 1.5, source: 'Bend-radius guidance for ferritic 430: 1.5 r/t. Ferritic stainless has lower ductility than the austenitic grades and is more prone to orange-peel and edge cracking.' },
+      'Aluminium 5052 (sheet)': { threshold: 1.0, source: 'Bend-radius guidance for 5052-H32: 1 r/t. Its formability is precisely why 5052 is the default aluminium sheet grade — three times better than 6061-T6 on this measure.' },
+      'Aluminium 6082': { threshold: 3.0, source: 'Bend-radius guidance for 6082-T6: 3 r/t, as 6061-T6. The European structural equivalent behaves the same way in bending.' },
       'Aluminium 6061': { threshold: 3.0, source: 'Bend-radius guidance for 6061 in the T6 temper: 3 r/t minimum across the grain. 6061-T6 has low elongation and splits at the tight radii mild steel tolerates — the single most common material-blind DFM error on an aluminium bracket.' },
       'Aluminium 7075': { threshold: 4.0, source: 'Bend-radius guidance for 7075-T6: 4 r/t minimum and often more. 7075 is a bending-hostile alloy and is normally formed in the O or W temper and aged afterwards.' },
       'Steel (high-strength)': { threshold: 2.0, source: 'Bend-radius guidance for AHSS / high-strength low-alloy grades: 2 r/t and upward with strength. Higher yield means less uniform elongation before the outer fibre splits.' },
@@ -593,6 +611,9 @@ export const DFM_RULES = [
   {
     id: 'sm-hole-diameter',
     byMaterial: {
+      'Steel DP980 (dual-phase)': { threshold: 1.5, source: 'Minimum pierced hole in DP980: 1.5x thickness. Punch force scales with strength and slender punches snap.' },
+      'Steel 22MnB5 (press-hardened)': { threshold: 2.5, source: 'A hardened 22MnB5 part is not pierced at all — holes are cut before hardening or lasered afterwards. This threshold flags a hole that assumes conventional piercing of a martensitic grade.' },
+      'Stainless Steel 316L': { threshold: 1.2, source: 'Minimum pierced hole in 316L: 1.2x thickness, as 304 — the austenitic work-hardening rim is what sets it.' },
       'Stainless Steel 304': { threshold: 1.2, source: 'Minimum pierced hole in annealed 304: 1.2x thickness. Austenitic stainless work-hardens as the punch enters, so it needs a larger hole than mild steel to avoid punch breakage.' },
       'Steel (high-strength)': { threshold: 1.5, source: 'Minimum pierced hole in AHSS/HSLA: 1.5x thickness and upward with yield strength — the punch force scales with strength and slender punches snap.' },
       'Aluminium 6061': { threshold: 1.0, source: 'Minimum pierced hole in 6061: 1.0x thickness.' },
@@ -648,6 +669,7 @@ export const DFM_RULES = [
   {
     id: 'sm-hole-to-hole',
     byMaterial: {
+      'Steel DP980 (dual-phase)': { threshold: 2.5, source: 'Minimum web between pierced holes in DP980: 2.5x thickness — a high-strength web tears rather than stretching.' },
       'Steel (high-strength)': { threshold: 2.5, source: 'Minimum web between pierced holes in AHSS: 2.5x thickness. A high-strength web has less uniform elongation and tears rather than stretching.' },
       'Stainless Steel 304': { threshold: 2.5, source: 'Minimum web between pierced holes in 304: 2.5x thickness, because the work-hardened rim of the first hole embrittles the web for the second.' },
     },
@@ -667,6 +689,8 @@ export const DFM_RULES = [
   {
     id: 'sm-hole-to-edge',
     byMaterial: {
+      'Steel DP600 (dual-phase)': { threshold: 2.5, source: 'Minimum edge distance in DP600: 2.5x thickness. Dual-phase sheared edges carry micro-cracks at the ferrite/martensite boundaries and are notoriously sensitive to edge stretching.' },
+      'Steel DP980 (dual-phase)': { threshold: 3.0, source: 'Minimum edge distance in DP980: 3x thickness. Sheared-edge ductility is the classic failure mode of the highest-strength dual-phase grades.' },
       'Steel (high-strength)': { threshold: 2.5, source: 'Minimum edge distance in AHSS: 2.5x thickness — the sheared edge is already work-hardened and cracks propagate from it.' },
     },
     sourceStatus: 'industry-consensus',
@@ -1156,6 +1180,12 @@ export const DFM_RULES = [
   {
     id: 'im-tolerance-capability',
     byMaterial: {
+      'PC/ABS blend': { threshold: 0.22, source: 'PC/ABS: amorphous-dominated and low-shrink, so it holds close to neat PC.' },
+      'PBT': { threshold: 0.35, source: 'PBT is semi-crystalline and shrinks about 1.8%, so its achievable band is far wider than an amorphous resin of the same stiffness.' },
+      'PP-T20 (talc-filled)': { threshold: 0.30, source: '20% talc cuts PP shrinkage by roughly a third and makes it more isotropic, so the filled compound holds tighter than the neat resin.' },
+      'HDPE': { threshold: 0.50, source: 'HDPE shrinks 1.5-3% and keeps moving after ejection — the widest band of the common moulding resins.' },
+      'PEEK': { threshold: 0.25, source: 'PEEK is dimensionally stable once crystallised, and parts are usually annealed, so it holds tighter than most semi-crystallines.' },
+      'PPS': { threshold: 0.25, source: 'PPS shrinks little and is highly stable at temperature, which is much of its appeal.' },
       'POM (Acetal)': { threshold: 0.35, source: 'Acetal shrinks about 2% and keeps moving for days after ejection, so its achievable band is far wider than an amorphous resin.' },
       'PA6 (Nylon)': { threshold: 0.35, source: 'Nylon shrinks heavily AND absorbs moisture, so the part grows on the shelf; a machined-part tolerance cannot be held.' },
       'PA66-GF30 (glass-filled)': { threshold: 0.30, source: 'Glass fill cuts shrinkage but makes it directional, so the band narrows without becoming isotropic.' },
@@ -1257,6 +1287,9 @@ export const DFM_RULES = [
   {
     id: 'sm-tolerance-capability',
     byMaterial: {
+      'Steel DP980 (dual-phase)': { threshold: 0.80, source: 'Formed-feature tolerance in DP980: springback rises steeply with yield strength and varies coil to coil, so the achievable band is roughly double the mild-steel figure.' },
+      'Steel 22MnB5 (press-hardened)': { threshold: 0.30, source: 'A press-hardened part is quenched in the die and holds its shape unusually well — hot forming removes springback almost entirely, which is a large part of why the process is used.' },
+      'Aluminium 5052 (sheet)': { threshold: 0.40, source: 'Formed-feature tolerance in 5052-H32: closer to mild steel than to 6061-T6, because springback scales with yield strength and 5052 is a soft alloy.' },
       'Steel (high-strength)': { threshold: 0.60, source: 'Formed-feature tolerance in AHSS: springback rises with yield strength and varies coil to coil, so the achievable band is roughly half again the mild-steel figure.' },
       'Aluminium 6061': { threshold: 0.60, source: 'Formed-feature tolerance in 6061-T6: high springback and low elongation widen the band against mild steel.' },
     },

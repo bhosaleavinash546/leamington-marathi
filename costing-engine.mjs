@@ -48,6 +48,59 @@ export const MATERIALS = {
   'Electrical Steel (M250-35A)': { density: 7.65, price: 1.45, scrapRecovery: 0.20, family: 'electricalsteel' },
   'EPDM Rubber':              { density: 1.20, price: 2.40, scrapRecovery: 0.00, family: 'elastomer' },
   'Glass (Soda-lime, automotive)': { density: 2.50, price: 0.85, scrapRecovery: 0.15, family: 'glass' },
+  // ── Standard grades a cost engineer expects to find ──────────────────────
+  //
+  // The list above named ONE alloy per family and several of them were the wrong
+  // one for the process that family is actually used by: A356 is a gravity /
+  // sand-casting alloy and the tool offered it for high-pressure die casting,
+  // where the production alloy is A380/ADC12; AZ31 is a WROUGHT magnesium and
+  // die-cast magnesium is AZ91D; ZAMAK 5 was listed without ZAMAK 3, which is
+  // the more common of the two. A picker that cannot name the alloy the part is
+  // actually made from forces the user to pick a near-miss, and every
+  // material-specific threshold downstream is then resolved for the wrong metal.
+  //
+  // Densities are physical constants. PRICES ARE INDICATIVE €/kg on the same
+  // basis as the entries above — a static library the commodity bridge overrides
+  // where a live index exists — and they move with the market, so they are a
+  // starting point for a should-cost, not a quotation.
+
+  // Steels: the body-in-white and driveline grades
+  'Stainless Steel 316L':     { density: 8.00, price: 4.10, scrapRecovery: 0.35, family: 'ferrous' },
+  'Stainless Steel 430':      { density: 7.70, price: 2.20, scrapRecovery: 0.35, family: 'ferrous' },
+  'Steel DP600 (dual-phase)': { density: 7.85, price: 0.95, scrapRecovery: 0.20, family: 'ferrous' },
+  'Steel DP980 (dual-phase)': { density: 7.85, price: 1.25, scrapRecovery: 0.20, family: 'ferrous' },
+  'Steel 22MnB5 (press-hardened)': { density: 7.85, price: 1.35, scrapRecovery: 0.20, family: 'ferrous' },
+  'Steel 42CrMo4 / 4140':     { density: 7.85, price: 1.30, scrapRecovery: 0.20, family: 'ferrous' },
+  'Steel 16MnCr5 (case-hardening)': { density: 7.85, price: 1.20, scrapRecovery: 0.20, family: 'ferrous' },
+  'Cast Iron (CGI / GJV-450)': { density: 7.10, price: 0.85, scrapRecovery: 0.25, family: 'castiron' },
+
+  // Aluminium: the die-casting alloy the family was missing, plus sheet and
+  // European structural extrusion
+  'Aluminium A380 / ADC12 (die-cast)': { density: 2.71, price: 2.45, scrapRecovery: 0.50, family: 'aluminium' },
+  'Aluminium 5052 (sheet)':   { density: 2.68, price: 3.05, scrapRecovery: 0.50, family: 'aluminium' },
+  'Aluminium 6082':           { density: 2.70, price: 2.95, scrapRecovery: 0.50, family: 'aluminium' },
+  'Magnesium AZ91D (die-cast)': { density: 1.81, price: 3.40, scrapRecovery: 0.30, family: 'magnesium' },
+  'Zinc (ZAMAK 3)':           { density: 6.60, price: 2.85, scrapRecovery: 0.50, family: 'zinc' },
+  'Bronze (CuSn8)':           { density: 8.80, price: 8.50, scrapRecovery: 0.60, family: 'copper' },
+
+  // Thermoplastics: interior, connector, under-bonnet and blow-moulded grades
+  'PC/ABS blend':             { density: 1.12, price: 2.90, scrapRecovery: 0.10, family: 'plastic' },
+  'PBT':                      { density: 1.31, price: 3.10, scrapRecovery: 0.10, family: 'plastic' },
+  'PP-T20 (talc-filled)':     { density: 1.05, price: 1.75, scrapRecovery: 0.10, family: 'plastic' },
+  'PET':                      { density: 1.38, price: 1.85, scrapRecovery: 0.10, family: 'plastic' },
+  'PPS':                      { density: 1.35, price: 12.0, scrapRecovery: 0.10, family: 'plastic' },
+  'PEEK':                     { density: 1.30, price: 90.0, scrapRecovery: 0.10, family: 'plastic' },
+  'TPU (thermoplastic PU)':   { density: 1.20, price: 4.60, scrapRecovery: 0.10, family: 'plastic' },
+  'HDPE':                     { density: 0.95, price: 1.45, scrapRecovery: 0.10, family: 'plastic' },
+
+  // Elastomers: the three seal compounds EPDM does not cover
+  'NBR (Nitrile) Rubber':     { density: 1.25, price: 3.40, scrapRecovery: 0.00, family: 'elastomer' },
+  'Silicone (VMQ) Rubber':    { density: 1.15, price: 7.50, scrapRecovery: 0.00, family: 'elastomer' },
+  'FKM (Viton) Rubber':       { density: 1.85, price: 32.0, scrapRecovery: 0.00, family: 'elastomer' },
+
+  // Composites: glass fibre is far more common in automotive than carbon
+  'GFRP (Glass Fibre)':       { density: 1.90, price: 4.50, scrapRecovery: 0.00, family: 'composite' },
+  'SMC (Sheet Moulding Compound)': { density: 1.85, price: 3.20, scrapRecovery: 0.00, family: 'composite' },
 };
 
 // ─── Region database ──────────────────────────────────────────────────────────
