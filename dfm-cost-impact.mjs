@@ -142,10 +142,35 @@ function priceRibThickness(finding, ctx) {
   };
 }
 
+/**
+ * Wall spread above which a part has no single nominal wall, so a "thin the wall"
+ * saving cannot be modelled. Deliberately the SAME number the uniformity rules
+ * use as their threshold: a part that fails uniformity is by definition a part
+ * whose median is not a wall, and the two must not be able to disagree.
+ */
+const NO_NOMINAL_WALL_SPREAD = 0.6;
+
 /** Cost impact of bringing an out-of-range wall back into the process band. */
 function priceWallThickness(finding, ctx) {
-  const { material, process, region, annualVolume, weightKg, library } = ctx;
+  const { material, process, region, annualVolume, weightKg, library, wallSpreadRatio } = ctx;
   const measured = Number(finding.measured);
+  // NO NOMINAL WALL, NO WALL SAVING. This pricer models coring a uniform section
+  // down to the band edge. On a part whose section runs 4.95 to 44 mm the p50 is
+  // a median, not a nominal wall, and there is no "the wall" to core: the
+  // engine still priced it, at EUR 328,800/yr, on a bracket a foundry would
+  // laugh at. The finding itself stands — that section IS out of band — but the
+  // saving is withheld with a reason, and the non-uniformity finding beside it
+  // is the one that actually describes the problem.
+  if (Number(wallSpreadRatio) > NO_NOMINAL_WALL_SPREAD) {
+    return {
+      priced: false,
+      reason: `Not priced: the section is not uniform enough to have a nominal wall `
+        + `(measured spread (p95-p5)/p50 = ${Number(wallSpreadRatio).toFixed(2)}, against `
+        + `${NO_NOMINAL_WALL_SPREAD} for a part with one). Reducing "the wall" assumes there `
+        + `is one to reduce. Fix the section uniformity first — see the non-uniform wall `
+        + `finding — and the wall band becomes a question worth pricing.`,
+    };
+  }
   const [lo, hi] = finding.threshold;
   if (!material || !process || !(weightKg > 0) || !Number.isFinite(measured)) return null;
   // Target the nearest edge of the acceptable band — the smallest change that

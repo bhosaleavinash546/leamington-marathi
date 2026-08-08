@@ -465,7 +465,7 @@ def _extreme_regions(located, thinnest=True, limit=8):
     return out
 
 
-def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4):
+def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4, max_wall_mm=None):
     """Ray-cast inward from triangle centroids; area-weighted distribution.
 
     Two rules make this trustworthy where the old version was not:
@@ -493,6 +493,7 @@ def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4):
     # so `_samples` keeps the exact shape area_below() and the rule engine
     # already consume.
     located = []          # (thickness, x, y, z, faceId)
+    rejected = 0          # readings above the part's smallest overall dimension
 
     for i in range(0, n, step):
         nxi, nyi, nzi = tess["nx"][i], tess["ny"][i], tess["nz"][i]
@@ -511,6 +512,18 @@ def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4):
             # Add back the start offset: the ray began EPS_MM inside the surface,
             # so the raw distance under-reads every wall by exactly that much.
             d = math.dist((sx, sy, sz), (hit.X(), hit.Y(), hit.Z())) + EPS_MM
+            # A WALL cannot be thicker than the part's smallest overall
+            # dimension. Some rays run the length of a parallel channel and come
+            # back with the part's own size — on a 1.6 mm pressing 341 mm long,
+            # one returned 85.3 mm. Those readings are real distances but they
+            # are not wall thicknesses, and a handful of them landing in or out
+            # of the sample is enough to swing the p95 from 1.61 mm ("uniform")
+            # to 5.67 mm ("non-uniform") when the mesh changes by 18 triangles.
+            # Both figures reached a report on the same part. Rejecting them is
+            # physics, not smoothing: the ceiling is a measured bound.
+            if max_wall_mm and d > max_wall_mm * 1.001:
+                rejected += 1
+                continue
             if d > 1e-3:
                 samples.append((d, tess["area"][i]))
                 located.append((d, tess["cx"][i], tess["cy"][i], tess["cz"][i],
@@ -552,6 +565,11 @@ def wall_thickness(tess, inter, max_samples=WALL_RAY_BUDGET, reach=1e4):
         "maxMm": round(max(v for v, _ in samples), 2),
         "characteristicMm": round(p50, 2),
         "measuredAreaPct": round(100.0 * measured / (tess["totalAreaMm2"] or 1.0), 1),
+        # Published, not hidden. A part where a third of the rays exceeded the
+        # smallest overall dimension is one whose wall figure deserves a second
+        # look, and the reader can only know that if the number is on the page.
+        "raysRejectedOverPartSize": rejected,
+        "maxWallBoundMm": round(max_wall_mm, 2) if max_wall_mm else None,
         "confidence": "measured",
         # Legacy keys — the manufacturability score and CNC estimate read these.
         # Area-weighted now, so they mean what their names always claimed.

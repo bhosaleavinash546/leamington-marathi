@@ -25,7 +25,8 @@ globalThis.document = {
 };
 
 const { exportDfmPdf, exportDfmXlsx } = await import('./dfm-report.bundle.mjs');
-const { DFM_RESULT, DFM_FIGURES } = await import('./fixture-dfm.mjs');
+const { DFM_RESULT, DFM_FIGURES, DFM_RESULT_CONFLICT, DFM_RESULT_MEASURED } =
+  await import('./fixture-dfm.mjs');
 
 // Rendered TWICE on purpose. The no-figure call is the branch the harness has
 // always covered and must keep working — a browserless caller, and any code path
@@ -33,6 +34,10 @@ const { DFM_RESULT, DFM_FIGURES } = await import('./fixture-dfm.mjs');
 // node, where there is no canvas and jsPDF must decode the data URI itself.
 exportDfmPdf(DFM_RESULT);
 exportDfmPdf({ ...DFM_RESULT, partName: DFM_RESULT.partName + ' (annotated)' }, DFM_FIGURES);
+// The two process-family states the cover has to render differently: geometry
+// agreeing with the chosen family, and geometry contradicting it.
+exportDfmPdf(DFM_RESULT_MEASURED);
+exportDfmPdf(DFM_RESULT_CONFLICT);
 
 let over = 0;
 for (const w of written) {

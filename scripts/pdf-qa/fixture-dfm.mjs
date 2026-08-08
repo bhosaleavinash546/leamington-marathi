@@ -165,3 +165,43 @@ export const DFM_FIGURES = [
   { id: 'front', view: 'front', width: 140, height: 100,
     dataUri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAABkCAIAAADbtU+GAAABTElEQVR4nO3OQQ3AMADEsCApgKIYf1SDkOf1EckAzLlfHsd8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EPUDcXcPNAHVkcQAAAAASUVORK5CYII=', callouts: [] },
 ];
+
+
+/**
+ * The most dangerous state the cover can be in: a NAMED process that the
+ * geometry CONTRADICTS. Every finding below is then judged against the wrong
+ * family and every cost priced for a process the part will never see. It is
+ * also the longest block on the page and the one most likely to collide with
+ * what follows, so it gets its own render rather than riding on the fixture
+ * every other variant shares.
+ */
+export const DFM_RESULT_CONFLICT = {
+  ...DFM_RESULT,
+  partName: DFM_RESULT.partName + ' (process conflict)',
+  processFamily: 'hpdc',
+  processFamilyBasis: 'derived from the costing process',
+  measuredProcess: {
+    family: 'sheet-metal', confidence: 'measured',
+    evidence: ['38 bends recognised, sheet thickness 1.602 mm', 'wall p50 1.6 mm, uniform'],
+    notes: [],
+  },
+  processConflict: {
+    chosenName: 'High-pressure die casting',
+    measuredName: 'Sheet metal / stamping',
+    evidence: ['38 bends recognised, sheet thickness 1.602 mm', 'wall p50 1.6 mm, uniform'],
+  },
+};
+
+/** The benign counterpart: geometry and process agree, and the cover says so. */
+export const DFM_RESULT_MEASURED = {
+  ...DFM_RESULT,
+  partName: DFM_RESULT.partName + ' (measured process)',
+  processFamily: 'sheet-metal',
+  processFamilyBasis: 'measured from the geometry',
+  measuredProcess: {
+    family: 'sheet-metal', confidence: 'measured',
+    evidence: ['38 bends recognised, sheet thickness 1.602 mm', 'wall p50 1.6 mm, uniform'],
+    notes: [],
+  },
+  processConflict: null,
+};

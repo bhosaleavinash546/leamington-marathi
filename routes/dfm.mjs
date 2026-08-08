@@ -13,7 +13,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import multer from 'multer';
 import { analyzeGeometry, decomposeAssembly } from '../cad-engine/cad-geometry-bridge.mjs';
-import { runDfmRules, runAllDfmRules } from '../dfm-rules.mjs';
+import { runDfmRules, runAllDfmRules, inferProcessFamily, processFamilyConflict } from '../dfm-rules.mjs';
 import { priceFindings, summarisePricedImpact } from '../dfm-cost-impact.mjs';
 import { DFM_RULES, PROCESS_FAMILIES, UNWRITTEN_RULES } from '../dfm-rule-catalogue.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
@@ -127,11 +127,21 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
     };
     const explicit = String(req.body?.process || '').trim();
     const derived = COST_TO_FAMILY[req.body?.costProcess];
-    const family = PROCESS_FAMILIES[explicit] ? explicit : derived;
+    // What the GEOMETRY says, independently of what anybody typed. A live report
+    // measured 38 bends and a uniform 1.60 mm wall on a seat cross member and
+    // still opened with "no process specified, every family run speculatively",
+    // then listed machining findings against a pressing. The measurement is used
+    // to CHOOSE the family when nobody named one, and to CONTRADICT one when it
+    // was named and the geometry disagrees. It never silently overrides.
+    const inferred = inferProcessFamily(geo);
+    const measuredOnly = inferred.confidence === 'measured' ? inferred.family : null;
+    const family = PROCESS_FAMILIES[explicit] ? explicit : (derived || measuredOnly);
+    const conflict = processFamilyConflict(explicit || derived || null, inferred);
     const ruleResults = family ? [runDfmRules(geo, family)] : runAllDfmRules(geo);
     const familyBasis = PROCESS_FAMILIES[explicit] ? 'chosen'
       : derived ? 'derived from the costing process'
-        : 'no process given — every family run speculatively, so findings may not all apply';
+        : measuredOnly ? `measured from the geometry — ${inferred.evidence.join('; ')}`
+          : 'no process given — every family run speculatively, so findings may not all apply';
 
     // Mass is derived from the kernel-measured volume and the chosen material,
     // never taken from the request: a typed weight could silently disagree with
@@ -169,6 +179,12 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       // described in words.
       ribs: geo.dfm?.features?.ribs,
       nominalWallMm: geo.dfm?.wallThickness?.p50Mm,
+      // The measured spread of the section. A "reduce the wall to 3.5 mm"
+      // saving is only meaningful when there IS a nominal wall to reduce; on a
+      // chunky bracket whose section runs 4.95 to 44 mm the median is not a
+      // wall at all, and pricing it as one produced a EUR 328,800/yr headline
+      // from a category error. The pricer needs this to refuse.
+      wallSpreadRatio: geo.dfm?.wallThickness?.spreadRatio,
     };
 
     // Every way the analysis was LIMITED, gathered in one place. These were all
@@ -254,6 +270,10 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
       analysisLimits: limits,
       processFamily: family || null,
       processFamilyBasis: familyBasis,
+      // Published whether or not it was used, so a reader can always see what
+      // the geometry itself says about how this part is made.
+      measuredProcess: inferred,
+      processConflict: conflict,
       analysedAt: new Date().toISOString(),
     };
     if (useSSE) { emit({ type: 'result', result: payload }); return res.end(); }

@@ -8,7 +8,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { DFM_RULES, PROCESS_FAMILIES, rulesFor } from '../dfm-rule-catalogue.mjs';
-import { extractMeasures, runDfmRules, runAllDfmRules, scoreOf } from '../dfm-rules.mjs';
+import {
+  extractMeasures, runDfmRules, runAllDfmRules, scoreOf,
+  inferProcessFamily, processFamilyConflict,
+} from '../dfm-rules.mjs';
 import { priceFindings, summarisePricedImpact } from '../dfm-cost-impact.mjs';
 
 /** A part measured like the engine measures one: 5 mm wall, no draft, 1 undercut. */
@@ -258,4 +261,80 @@ test('rib pricing declines rather than guessing when the wall is unknown', () =>
     ribs: RIBBED.dfm.features.ribs,          // ribs known, wall not
   });
   assert.equal(out.cost.priced, false);
+});
+
+// ── What the geometry says the process is ────────────────────────────────────
+// A live report on a 1.6 mm seat cross member measured 38 bends and a uniform
+// 1.60 mm wall, then opened with "no process specified, every family run
+// speculatively" and judged a pressing against machining rules. The measurement
+// was in the payload; nothing read it.
+
+const PRESSING = {
+  dfm: {
+    wallThickness: { p5Mm: 1.46, p50Mm: 1.6, p95Mm: 1.61, spreadRatio: 0.09, uniformity: 'uniform' },
+    draft: { areaPct: { releasing: 12, undercut: 3 } },
+    sheetMetal: { isSheetMetal: true, bendCount: 38, thicknessMm: 1.602 },
+    features: { counts: { 'through-hole': 7 } },
+  },
+};
+const CHUNKY_CASTING = {
+  dfm: {
+    wallThickness: { p5Mm: 4.95, p50Mm: 15.84, p95Mm: 44, spreadRatio: 2.466, uniformity: 'non-uniform' },
+    draft: { areaPct: { releasing: 54.38, undercut: 6.94 } },
+    sheetMetal: { isSheetMetal: false, reason: 'Bend radii imply a 4.8 mm sheet, but the wall measures 15.84 mm.' },
+    features: { counts: { slot: 1 } },
+  },
+};
+
+test('a folded pressing is MEASURED as sheet metal, not guessed at', () => {
+  const got = inferProcessFamily(PRESSING);
+  assert.equal(got.family, 'sheet-metal');
+  assert.equal(got.confidence, 'measured');
+  assert.match(got.evidence.join(' '), /38 bends/);
+});
+
+test('a drafted thick-section part stops at "tooled" and refuses to name the family', () => {
+  // Geometry cannot tell a die casting from an injection moulding: the material
+  // does. Guessing one would put the wrong rule family on the report.
+  const got = inferProcessFamily(CHUNKY_CASTING);
+  assert.equal(got.family, null);
+  assert.equal(got.confidence, 'indicative');
+  assert.match(got.notes.join(' '), /cannot tell a die casting from an injection moulding/);
+});
+
+test('machining is asserted from positive evidence, never as the leftover bucket', () => {
+  const nothing = inferProcessFamily({ dfm: { wallThickness: {}, draft: {}, features: {} } });
+  assert.equal(nothing.family, null);
+  assert.equal(nothing.confidence, null);
+});
+
+test('a named process that the geometry contradicts raises a conflict', () => {
+  const conflict = processFamilyConflict('machining', inferProcessFamily(PRESSING));
+  assert.equal(conflict.measured, 'sheet-metal');
+  assert.match(conflict.measuredName, /Sheet metal/);
+  // and agreement is silent
+  assert.equal(processFamilyConflict('sheet-metal', inferProcessFamily(PRESSING)), null);
+  // an INDICATIVE reading must never contradict a named process — it is not
+  // certain enough to tell a user their process is wrong.
+  assert.equal(processFamilyConflict('machining', inferProcessFamily(CHUNKY_CASTING)), null);
+});
+
+test('no nominal wall, no wall saving', () => {
+  // The pricer models coring a uniform section down to the band edge. On a part
+  // whose section runs 4.95 to 44 mm there is no "the wall" to core, and pricing
+  // it anyway produced a EUR 328,800/yr headline on a bracket no foundry would
+  // recognise. The FINDING stands; the saving is withheld with its reason.
+  const finding = { id: 'hpdc-wall-thickness-range', threshold: [1.0, 3.5], measured: 15.84 };
+  const base = {
+    material: 'Aluminium A356 (cast)', process: 'Die Casting (Aluminium)',
+    region: 'Germany', annualVolume: 50000, weightKg: 1.2,
+  };
+  const [out] = priceFindings([finding], { ...base, wallSpreadRatio: 2.466 });
+  assert.equal(out.cost.priced, false);
+  assert.match(out.cost.reason, /not uniform enough to have a nominal wall/);
+  // A part that DOES have a nominal wall is still priced, or the fix would have
+  // silently disabled the rule's whole cost path.
+  const [ok] = priceFindings([{ ...finding, measured: 5.0 }], { ...base, wallSpreadRatio: 0.16 });
+  assert.equal(ok.cost.priced, true);
+  assert.ok(ok.cost.annualDeltaEur > 0);
 });

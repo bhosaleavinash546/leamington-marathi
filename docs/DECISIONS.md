@@ -660,3 +660,75 @@ Format: decision · why · what would change it.
     than one solid: on a single-part file it would do nothing while implying the tool had
     found an assembly. And a body sitting at the assembly centre has no direction to
     explode along and stays put — correct, since it is the thing everything else comes off.
+
+51. **A hole must close a full revolution; through-vs-blind is classified, not compared to
+    a bounding box (2026).**
+    *Why:* two real automotive parts were run through the Studio and both feature tables
+    were wrong. `_extract_feature_table` accepted ANY cylindrical face as a hole or boss and
+    never asked whether the surface closes. On the aluminium casting the fourteen largest
+    cylindrical faces swept 20–126° — curved walls, filleted corners, the rounded end of the
+    part — and every one became a feature, including a "boss Ø100 × 25.8" that is the
+    casting's own outer wall. A drilled hole or a turned boss is a body of revolution: 360°,
+    whole or split by the modeller into arcs that sum to 360. A wall never closes.
+    *Changes it:* cylindrical faces are grouped by axis line and radius, split into bores by
+    axial overlap, and re-expressed in ONE angular frame per group — each STEP face carries
+    its own parametric origin, so raw U bounds from two half-cylinders cannot simply be
+    added. Grouping is by TOLERANCE, not a rounded key: the two halves of one bore reach us
+    with separate `AXIS2_PLACEMENT_3D`s that agree only to write precision, and an exact key
+    split a real Ø4.4 hole into two 180° arcs that each failed the test. Through/blind now
+    classifies a point just past each end of the bore against the solid; the old test
+    compared depth to the part's bbox extent along the axis, which called every hole in a
+    1.6 mm pressing blind because the extent it measured against was the whole 341 mm part.
+
+52. **A prismatic feature is single-approach, planar-bounded and bigger than the cutter
+    (2026).**
+    *Why:* the concave-arc decomposition finds concave junctions, and a junction is not a
+    feature. It merged the entire interior of a casting into one 43-face "pocket" of
+    14,716 mm² — 23% of the part's whole skin, wrapping around it, reported with "high"
+    confidence — and found twelve "steps" of 3–65 mm² on a stamped cross member, two of them
+    a torus meeting a NURBS patch. *Changes it:* three physical gates. A pocket, slot or step
+    is a volume a tool reaches from ONE direction, so every face normal must fit inside a
+    cone of 100° (90° is the geometric limit; the margin is for draft). It is bounded by at
+    least one PLANAR face — freeform meeting freeform is a formed-surface transition. And at
+    least two of its faces must exceed the floor area of the smallest practical end mill.
+    Face normals are SAMPLED for every surface type, because 39 of that casting's 230 faces
+    are planar and a planes-only test had nothing to measure on the parts that needed it.
+    Casting 4 → 1 feature, cross member 21 → 3.
+
+53. **The geometry gets a vote on what process this is (2026).**
+    *Why:* a live report on a 1.6 mm seat cross member opened with "no manufacturing process
+    was specified, so EVERY rule family was run speculatively" and then judged a pressing
+    against machining rules — while the same analysis had already recognised 38 bends and a
+    uniform 1.60 mm wall. The measurement was in the payload; nothing read it.
+    *Changes it:* `inferProcessFamily` is a measurement, not a guess. Folded sheet is
+    asserted only when bend recognition and the independent ray-cast wall agree. Draft plus a
+    thick section says the part leaves a TOOL and stops there — geometry cannot tell a die
+    casting from an injection moulding, the material does, and naming one would put the wrong
+    family on the report. Machining is asserted from positive evidence (constant section,
+    prismatic features, no draft), never as the leftover bucket. It chooses the family when
+    nobody named one, and it CONTRADICTS a named one — loudly, on the cover — but only from
+    a `measured` reading, never an indicative one.
+
+54. **No nominal wall, no wall saving (2026).**
+    *Why:* `priceWallThickness` models coring a uniform section down to the band edge. On a
+    bracket whose section runs 4.95 to 44 mm the p50 is a median, not a nominal wall, and
+    there is no "the wall" to core — but the engine priced it anyway, at EUR 328,800/yr, and
+    that number was the largest thing on the report's cover. The arithmetic was right and the
+    conclusion was a category error. *Changes it:* the pricer refuses above the same spread
+    threshold the uniformity rules use, so the two can never disagree, and states why. The
+    FINDING stands — that section is out of band — and the non-uniformity finding beside it
+    is the one that actually describes the problem. Also: a wall reading above the part's
+    smallest overall dimension is rejected outright, since nothing inside a part can be
+    thicker than its narrowest span; one ray on that cross member returned 85.3 mm on 1.6 mm
+    sheet, and a handful of those landing in or out of a sample swung the p95 from 1.61 mm
+    ("uniform") to 5.67 mm ("non-uniform") between two runs of the same file.
+
+55. **A marker for a face you cannot see is a lie (2026).**
+    *Why:* `projectAnchors` projected every anchor and reported it visible if it was inside
+    the frustum. A finding on the far side of the part therefore drew its marker exactly
+    where it would sit if it were on the near side, and the report's evidence page carried 43
+    of them, on both the isometric and the front view, with an identical 43-line legend under
+    each. *Changes it:* the camera's own ray is cast at each anchor and anything occluded by
+    the part is dropped, with a skin tolerance scaled to the part so the anchor's own face is
+    not counted as blocking itself. The legend is built from the surviving callouts, so it
+    now lists what is actually marked on that view and nothing else.

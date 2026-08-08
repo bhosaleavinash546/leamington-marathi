@@ -4,7 +4,7 @@ CostVision CAD Geometry Engine — Open CASCADE (OCCT) via CadQuery
 Extracts precise geometric properties from STEP / IGES files.
 Output: single-line JSON to stdout.
 """
-import sys, json, os, math, signal, random
+import sys, json, os, math, signal
 import time as _time
 
 #: Seconds of geometry work before stages start being skipped WITH A REASON. The
@@ -425,7 +425,13 @@ def _compute_wall_thickness(shape, faces, max_samples: int = 30) -> dict:
     if not planar_outer:
         return None
 
-    sample = random.sample(planar_outer, min(max_samples, len(planar_outer)))
+    # DETERMINISTIC stride, not random.sample. This is the fallback wall figure,
+    # used when the tessellation path fails, and it was drawing an UNSEEDED
+    # random subset — so the same file analysed twice produced two different wall
+    # thicknesses, in a report whose first page tells the reader every dimension
+    # is reproducible. A stride samples the same faces every time.
+    _stride = max(1, len(planar_outer) // max_samples)
+    sample = planar_outer[::_stride][:max_samples]
     thicknesses = []
 
     for face in sample:
@@ -979,7 +985,11 @@ def analyze(filepath: str) -> dict:
                 inter.Load(wrapped, 1e-4)
                 if _left() > 0:
                     _stage("wallThickness", status="start")
-                    wall_stats = _dfm.wall_thickness(tess, inter)
+                    # The smallest overall dimension is a hard physical ceiling
+                    # on any wall thickness — nothing inside the part can be
+                    # thicker than the part's own narrowest span.
+                    wall_stats = _dfm.wall_thickness(
+                        tess, inter, max_wall_mm=min(x_sz, y_sz, z_sz))
                     _stage("wallThickness", status="done",
                            p50Mm=(wall_stats or {}).get("p50Mm"),
                            samples=(wall_stats or {}).get("samples"))

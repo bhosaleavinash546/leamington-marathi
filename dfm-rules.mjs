@@ -217,3 +217,109 @@ export function scoreOf(findings, evaluatedCount) {
 export function runAllDfmRules(geo) {
   return Object.keys(PROCESS_FAMILIES).map(p => runDfmRules(geo, p));
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// What the GEOMETRY says the process is.
+//
+// This exists because a live report got it exactly backwards. A 1.6 mm seat
+// cross member was measured as folded sheet — 38 recognised bends, wall p50
+// 1.60 mm, uniform — and the report still opened with "no manufacturing process
+// was specified, so EVERY rule family was run speculatively" and then listed
+// machining findings against it. The tool knew better than the report it wrote.
+//
+// This is an INFERENCE from measurements, not a substitute for the user telling
+// us. It never overrides an explicit or cost-derived family; it corroborates one
+// and it CONTRADICTS one, loudly, when the geometry disagrees. Where the
+// evidence is thin it says `null` rather than picking the likeliest — the same
+// three-state discipline the rules themselves follow.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Uniform wall at or below this reads as sheet, not as a cast section. */
+const SHEET_MAX_WALL_MM = 6.0;
+/** Wall spread (p95/p50 - 1) below this is a constant-section part. */
+const UNIFORM_SPREAD_MAX = 0.35;
+/**
+ * Tapered wall area that says the part was designed to leave a tool. Draft costs
+ * a designer nothing but tool release, so a quarter of the wall being tapered is
+ * a deliberate act; a machined block has no reason for any. Both this and the
+ * undercut ceiling are judgement, not a standard — which is why the measured
+ * percentages are published in `evidence` for the reader to weigh.
+ */
+const TOOLED_RELEASING_MIN_PCT = 25;
+const TOOLED_UNDERCUT_MAX_PCT = 15;
+
+/**
+ * @returns {{family: string|null, confidence: 'measured'|'indicative'|null,
+ *            evidence: string[], notes: string[]}}
+ */
+export function inferProcessFamily(geo = {}) {
+  const dfm = geo.dfm || {};
+  const wall = dfm.wallThickness || geo.wallThickness || {};
+  const sm = dfm.sheetMetal || {};
+  const draft = dfm.draft || geo.draftAnalysis || {};
+  const evidence = [], notes = [];
+  const p50 = Number(wall.p50Mm);
+  const p95 = Number(wall.p95Mm);
+  const spread = Number.isFinite(p50) && p50 > 0 && Number.isFinite(p95)
+    ? p95 / p50 - 1 : undefined;
+
+  // 1. Folded sheet. Bend recognition pairs coaxial cylinders and derives the
+  //    thickness as (outer radius - inner radius); it is only trusted when that
+  //    derived thickness AGREES with the independently ray-cast wall, so
+  //    isSheetMetal is already a two-measurement result.
+  if (sm.isSheetMetal && sm.bendCount > 0) {
+    evidence.push(`${sm.bendCount} bends recognised, sheet thickness ${sm.thicknessMm} mm`);
+    if (Number.isFinite(p50)) evidence.push(`wall p50 ${p50} mm, ${wall.uniformity ?? 'uniformity unknown'}`);
+    return { family: 'sheet-metal', confidence: 'measured', evidence, notes };
+  }
+  if (sm.reason) notes.push(sm.reason);
+
+  // 2. Cast or moulded. The discriminator is DRAFT: a part built to leave a
+  //    tool has it and a machined part does not. Which of casting and moulding
+  //    is not a geometric question — aluminium and polypropylene make the same
+  //    shape — so this stops at "tooled" and says so.
+  const releasing = Number(draft.areaPct?.releasing);
+  const undercut = Number(draft.areaPct?.undercut);
+  const drafted = Number.isFinite(releasing) && releasing >= TOOLED_RELEASING_MIN_PCT
+    && Number.isFinite(undercut) && undercut <= TOOLED_UNDERCUT_MAX_PCT;
+  const thickSection = Number.isFinite(p50) && p50 > SHEET_MAX_WALL_MM;
+  if (drafted && thickSection) {
+    evidence.push(`${releasing}% of wall area is tapered and releases along the best draw direction; ${undercut}% is undercut`);
+    evidence.push(`wall p50 ${p50} mm`);
+    notes.push('Draft says the part leaves a tool, but geometry cannot tell a die casting from an injection moulding — the material does. Pick the family.');
+    return { family: null, confidence: 'indicative', evidence, notes };
+  }
+
+  // 3. Machined. Asserted only from POSITIVE evidence — a constant section with
+  //    prismatic features and no draft — never as the leftover bucket. "Nothing
+  //    else matched" is not a measurement.
+  const feats = dfm.features?.counts || {};
+  const prismatic = (feats.pocket || 0) + (feats.slot || 0) + (feats.step || 0);
+  const bores = (feats['through-hole'] || 0) + (feats['blind-hole'] || 0)
+    + (feats['counterbored-hole'] || 0) + (feats['countersunk-hole'] || 0);
+  if (Number.isFinite(spread) && spread <= UNIFORM_SPREAD_MAX
+      && !drafted && (prismatic + bores) > 0) {
+    evidence.push(`wall spread p95/p50 = ${(spread + 1).toFixed(2)}, no releasing draft`);
+    evidence.push(`${prismatic} prismatic feature${prismatic === 1 ? '' : 's'}, ${bores} bore${bores === 1 ? '' : 's'}`);
+    return { family: 'machining', confidence: 'indicative', evidence, notes };
+  }
+
+  notes.push('The measured geometry does not point clearly at one process family.');
+  return { family: null, confidence: null, evidence, notes };
+}
+
+/**
+ * Compare what the user (or the costing process) said against what the geometry
+ * measures. Returns null when they agree or when there is nothing to compare.
+ */
+export function processFamilyConflict(chosen, inferred) {
+  if (!chosen || !inferred?.family || chosen === inferred.family) return null;
+  if (inferred.confidence !== 'measured') return null;   // only contradict on measurement
+  return {
+    chosen,
+    measured: inferred.family,
+    chosenName: PROCESS_FAMILIES[chosen] || chosen,
+    measuredName: PROCESS_FAMILIES[inferred.family] || inferred.family,
+    evidence: inferred.evidence,
+  };
+}

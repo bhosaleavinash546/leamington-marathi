@@ -99,6 +99,20 @@ export interface DfmReportData {
   analysisLimits?: AnalysisLimit[];
   processFamily?: string | null;
   processFamilyBasis?: string;
+  /** What the geometry itself says the process is — published whether or not it
+   *  was the family the rules ran against. */
+  measuredProcess?: {
+    family?: string | null;
+    confidence?: 'measured' | 'indicative' | null;
+    evidence?: string[];
+    notes?: string[];
+  } | null;
+  /** Set when a NAMED process contradicts the measured geometry. */
+  processConflict?: {
+    chosenName: string;
+    measuredName: string;
+    evidence: string[];
+  } | null;
   fileName?: string;
   geometry?: Record<string, unknown>;
   dfm?: Record<string, unknown>;
@@ -130,6 +144,13 @@ const SEV: Record<string, RGB> = { high: RED, medium: AMBER, low: TEAL };
 const VIEW_LABEL: Record<string, string> = {
   iso: 'Isometric', front: 'Front', back: 'Back', top: 'Top',
   bottom: 'Bottom', right: 'Right', left: 'Left',
+};
+
+const FAMILY_LABEL: Record<string, string> = {
+  machining: 'machined (CNC mill/turn)',
+  'injection-moulding': 'injection moulded',
+  hpdc: 'high-pressure die cast',
+  'sheet-metal': 'sheet metal / stamped',
 };
 
 const SOURCE_GRADE: Record<string, string> = {
@@ -275,11 +296,35 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
   // saying so is the difference between a screening tool and a false authority.
   wrapped('A word on the thresholds, separate from the measurements. Every dimension in this report was measured from your CAD file and is reproducible. The guideline values those dimensions are compared against are NOT of the same standing: 24 of the 26 rules rest on industry consensus — widely published and mutually consistent across suppliers and design guides, but not audited against a primary standard, and not validated against controlled trials or measured scrap data. One names a published standard (NADCA S-4A-7) that has not been read first-hand; one comes from this tool\'s own cost model. Each finding carries its grade. Some values are actively disputed by practising manufacturers. Treat a finding as a screening result that opens a conversation with your supplier — not as a specification, and not as a verdict.', 9, MUT, CW, 4.2, 'italic');
   y += 2;
-  if (!data.processFamily) {
+  // What the GEOMETRY says the process is. This paragraph exists because a live
+  // report on a 1.6 mm seat cross member opened with "no process specified,
+  // every family run speculatively" and then judged a pressing against machining
+  // rules — while the same analysis had already recognised 38 bends and a
+  // uniform 1.60 mm wall. The measurement was in the payload; the report simply
+  // did not say it.
+  const mp = data.measuredProcess;
+  if (mp?.confidence === 'measured' && mp.family && !data.processConflict) {
+    wrapped(`MEASURED FROM THE GEOMETRY: this part is ${FAMILY_LABEL[mp.family] ?? mp.family}. ${(mp.evidence ?? []).join('; ')}. The rules below were run for that family.`,
+      9, INK, CW, 4.2, 'bold');
+    y += 2;
+  } else if (mp?.confidence === 'indicative' && (mp.evidence ?? []).length) {
+    wrapped(`WHAT THE GEOMETRY SUGGESTS: ${(mp.evidence ?? []).join('; ')}. ${(mp.notes ?? []).join(' ')}`,
+      9, AMBER, CW, 4.2, 'normal');
+    y += 2;
+  }
+  if (data.processConflict) {
+    // A named process that the geometry contradicts is the most dangerous state
+    // this report can be in: every finding below is judged against the wrong
+    // family and every cost figure is priced for a process the part will not see.
+    wrapped(`PROCESS CONFLICT — READ BEFORE THE FINDINGS. You asked for ${data.processConflict.chosenName}, but the geometry measures as ${data.processConflict.measuredName}: ${data.processConflict.evidence.join('; ')}. Either the process is wrong or the CAD is; until that is settled, treat every finding and every cost below as unreliable.`,
+      9, RED, CW, 4.2, 'bold');
+    y += 2;
+  }
+  if (!data.processFamily && !data.processConflict) {
     // Without this, a speculative sweep is indistinguishable from a targeted
     // analysis and the reader has no way to know some findings are for a process
     // the part will never see.
-    wrapped('No manufacturing process was specified, so EVERY rule family below was run speculatively. Some findings will be for processes this part will never see, and their cost figures should not be added together.', 9, AMBER, CW, 4.2, 'bold');
+    wrapped('No manufacturing process was specified and the geometry does not settle it, so EVERY rule family below was run speculatively. Some findings will be for processes this part will never see, and their cost figures should not be added together.', 9, AMBER, CW, 4.2, 'bold');
     y += 2;
   }
   y += 4;

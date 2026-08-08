@@ -41,6 +41,14 @@ interface DfmResponse {
   results: ProcessResult[];
   processFamily?: string | null;
   processFamilyBasis?: string;
+  /** What the geometry itself measures the process to be. */
+  measuredProcess?: {
+    family: string | null;
+    confidence: 'measured' | 'indicative' | null;
+    evidence: string[];
+    notes: string[];
+  } | null;
+  processConflict?: { chosenName: string; measuredName: string; evidence: string[] } | null;
   analysisLimits?: AnalysisLimit[];
 }
 interface AnalysisLimit { kind: string; severity: 'blocking' | 'warning'; message: string }
@@ -686,12 +694,28 @@ export default function DfmStudioPage() {
 
             {/* Which rule families ran, and why. Without this a reader cannot
                 tell a targeted analysis from a speculative sweep. */}
+            {result.processConflict && (
+              <p className="text-red-400 text-xs flex items-start gap-2 font-semibold">
+                <AlertTriangle size={13} className="shrink-0 mt-0.5" />
+                Process conflict: you asked for {result.processConflict.chosenName}, but the
+                geometry measures as {result.processConflict.measuredName} —{' '}
+                {result.processConflict.evidence.join('; ')}. Every finding below is judged
+                against the family you chose.
+              </p>
+            )}
+            {result.measuredProcess?.confidence === 'measured' && !result.processConflict && (
+              <p className="text-slate-300 text-xs flex items-start gap-2">
+                <Info size={13} className="shrink-0 mt-0.5 text-gold-400" />
+                Process measured from the geometry: {result.measuredProcess.evidence.join('; ')}.
+                The rules below were run for that family.
+              </p>
+            )}
             {!result.processFamily && (
               <p className="text-amber-400/90 text-xs flex items-start gap-2">
                 <AlertTriangle size={13} className="shrink-0 mt-0.5" />
-                No costing process was chosen, so every rule family was run speculatively —
-                some findings below will be for processes this part will never see. Pick a
-                costing process to narrow it.
+                No costing process was chosen and the geometry does not settle it, so every rule
+                family was run speculatively — some findings below will be for processes this
+                part will never see. Pick a costing process to narrow it.
               </p>
             )}
 

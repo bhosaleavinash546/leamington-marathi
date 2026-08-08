@@ -1214,16 +1214,43 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
    */
   function projectAnchors(): ProjectedAnchor[] {
     camera.updateMatrixWorld();
+    const targets = bodyMeshes.filter(m => m.visible);
+    const camPos = camera.getWorldPosition(new THREE.Vector3());
+    const dir = new THREE.Vector3();
     return annotations.map((a) => {
-      const v = toWorld(a.anchorXYZ).project(camera);
+      const world = toWorld(a.anchorXYZ);
+      const v = world.clone().project(camera);
+      const inFrustum = v.z < 1 && Math.abs(v.x) <= 1 && Math.abs(v.y) <= 1;
+      // OCCLUSION. Projection alone puts a marker for a feature on the FAR side
+      // of the part exactly where it would be if it were on the near side, so a
+      // reader is told an undercut is on a face they can see when it is behind
+      // 100 mm of aluminium. A report page carrying 43 markers, every one of
+      // them drawn as though visible, is what made this obvious. Cast the
+      // camera's own ray and ask whether anything is in the way.
+      let occluded = false;
+      if (inFrustum && targets.length) {
+        dir.copy(world).sub(camPos);
+        const reach = dir.length();
+        if (reach > 1e-6) {
+          raycaster.set(camPos, dir.normalize());
+          raycaster.near = 0;
+          raycaster.far = reach;
+          const hits = raycaster.intersectObjects(targets, false);
+          // Tolerance is scaled to the part, not absolute: the anchor sits ON a
+          // surface, so its own face is a legitimate hit at distance ~= reach.
+          const skin = Math.max(0.25, reach * 0.004);
+          occluded = hits.some(h => h.distance < reach - skin);
+          raycaster.far = Infinity;
+        }
+      }
       return {
         id: a.id,
         x: (v.x + 1) / 2,
         y: (1 - v.y) / 2,
-        // Outside the frustum, or behind the camera. The caller must drop these
-        // rather than clamp them to an edge, which would point a leader line at
-        // a face that is not in the picture.
-        visible: v.z < 1 && Math.abs(v.x) <= 1 && Math.abs(v.y) <= 1,
+        // Outside the frustum, behind the camera, or hidden by the part itself.
+        // The caller must drop these rather than clamp them to an edge, which
+        // would point a leader line at a face that is not in the picture.
+        visible: inFrustum && !occluded,
       };
     });
   }
