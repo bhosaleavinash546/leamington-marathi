@@ -62,6 +62,9 @@ export interface CADViewerHandle {
    * Face ids are the same indices the analysis returns (undercutFaceIds etc.).
    * No-op on an STL, which carries no face topology.
    */
+  /** Paint B-rep faces by id. Ids are 1-based TopTools_IndexedMapOfShape
+   *  indices — the SAME convention every analysis pass reports, verified by a
+   *  gate that resolves each reported id back to its surface type. */
   highlightFaces(faceIds: Iterable<number>): void;
   clearHighlight(): void;
   dispose(): void;
@@ -251,6 +254,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let bboxLabels: Sprite3[] = [];
   let highlight: Mesh3 | null = null;
   let meta: TessMeta | null = null;
+  /** Face id -> metadata. Keyed by the engine's id, not by array position. */
+  let faceById = new Map<number, FaceMeta>();
   let triFaceAll: Uint32Array | null = null;   // reordered per-triangle face ids
   let masterPositions: Float32Array | null = null; // reordered, centred positions
   let partRadius = 1;
@@ -508,7 +513,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     // ── group triangles by body (stable) so each body is a contiguous mesh ──
     const srcTriFace = meta ? meta.triFace : null;
     const faceOf = (t: number) => (srcTriFace ? Number(srcTriFace[t]) : 0);
-    const bodyOf = (t: number) => (meta ? (meta.faces[faceOf(t)]?.bodyId ?? 0) : 0);
+    // LOOK FACES UP BY ID, NEVER BY ARRAY POSITION. Face ids are 1-based indexed
+    // map indices and the array now also carries untriangulated faces, so
+    // `faces[id]` is off by one and drifts further on any part with a face the
+    // mesher could not handle. Position-indexing is what made the analysis
+    // highlight the wrong face on every upload.
+    faceById = new Map((meta?.faces ?? []).map(f => [f.id, f]));
+    const bodyOf = (t: number) => faceById.get(faceOf(t))?.bodyId ?? 0;
     const bodyIds = new Set<number>();
     for (let t = 0; t < triangles; t++) bodyIds.add(bodyOf(t));
     const bodyList = [...bodyIds].sort((a, b) => a - b);
@@ -922,7 +933,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       return;
     }
     const faceId = triFaceAll[triGlobal];
-    const face = meta.faces[faceId];
+    const face = faceById.get(faceId);
     if (!face) return;
     highlightFaces(new Set([faceId]));
 
@@ -1010,7 +1021,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           const nTris = (mesh.geometry.getAttribute('position') as InstanceType<typeof THREE.BufferAttribute>).count / 3;
           const colors = new Float32Array(nTris * 9);
           for (let t = 0; t < nTris; t++) {
-            const f = meta.faces[triFaceAll[triOffset + t]];
+            const f = faceById.get(triFaceAll[triOffset + t]);
             const col = FACE_COLORS[f?.type ?? 'other'] ?? FACE_COLORS.other;
             for (let v = 0; v < 3; v++) colors.set(col, t * 9 + v * 3);
           }

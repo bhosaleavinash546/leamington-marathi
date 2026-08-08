@@ -66,6 +66,13 @@ export const DFM_FIXTURES = [
       // undercuts is the classification error this fixture exists to catch: an
       // early probe scored a clean box 62.6% undercut by doing exactly that.
       zeroDraftFaceCountAtZ: 4,
+      // A FACE ID MUST RESOLVE TO THE RIGHT SURFACE. The undercut on this part
+      // is the cylindrical bore, so the id the analysis reports must land on a
+      // CYLINDER in the viewer's own face metadata. Four producers in this
+      // pipeline used to number faces differently and the viewer highlighted
+      // face 6 — a PLANE — while the bore was face 5. Every count-based check
+      // passed throughout, because an off-by-one changes no count.
+      faceIdResolves: { undercutAtZ: 'cylinder' },
     },
   },
   {
@@ -94,6 +101,9 @@ export const DFM_FIXTURES = [
       holes: [{ diaMm: 6.0, through: true }],
       featureCounts: { 'through-hole': 1, boss: 1 },
       notSheetMetal: true,
+      // The boss is a cylinder and the through hole is a cylinder, so every
+      // recognised cylindrical feature id must land on one.
+      faceIdResolves: { featureTableCylinders: 'cylinder' },
       // Slenderness ratios, arithmetic from the construction: the boss is
       // Ø16 x 12 high, and the hole runs Ø6 through the full 8 + 12 = 20 mm.
       // These drive the boss-height, drill-depth and core-pin rules.

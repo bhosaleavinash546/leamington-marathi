@@ -52,19 +52,35 @@ def tessellate(shape, deflection=0.1, angular=0.5, max_triangles=400_000):
     from OCP.BRepMesh import BRepMesh_IncrementalMesh
     from OCP.gp import gp_Vec
     from OCP.TopAbs import TopAbs_FACE, TopAbs_REVERSED
-    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopExp import TopExp
     from OCP.TopLoc import TopLoc_Location
     from OCP.TopoDS import TopoDS
+    from OCP.TopTools import TopTools_IndexedMapOfShape
 
     BRepMesh_IncrementalMesh(shape, deflection, False, angular, True)
 
     area, nx, ny, nz, cx, cy, cz, fidx = [], [], [], [], [], [], [], []
     total = 0.0
-    face_i = 0
-    ex = TopExp_Explorer(shape, TopAbs_FACE)
-    while ex.More():
-        face = TopoDS.Face_s(ex.Current())
-        face_i += 1
+    # THE INDEXED MAP, NOT AN EXPLORER — and the difference was a live bug.
+    #
+    # A face id emitted here is used to paint that face in the 3D viewer, so it
+    # has to mean the same thing as the viewer's id. This loop used to be a
+    # TopExp_Explorer with its own 1-based counter, while the viewer numbers
+    # faces 0-based off a TopTools_IndexedMapOfShape. Checked against known truth
+    # on box-side-hole.step, whose single undercut IS the cylindrical bore: the
+    # analysis reported face 6, the viewer highlighted its face 6 — a PLANE — and
+    # the bore is face 5. Every undercut highlight in the product pointed one
+    # face off.
+    #
+    # The two enumerations also differ in kind, not just origin: MapShapes
+    # deduplicates by TShape+location+orientation, an explorer does not, so a face
+    # shared between two solids of a compound is visited twice by one and once by
+    # the other. Everything now agrees on ONE convention — 1-based indexed map,
+    # the same one feature_recognition.build_aag and _extract_feature_table use.
+    fmap = TopTools_IndexedMapOfShape()
+    TopExp.MapShapes_s(shape, TopAbs_FACE, fmap)
+    for face_i in range(1, fmap.Size() + 1):
+        face = TopoDS.Face_s(fmap.FindKey(face_i))
         loc = TopLoc_Location()
         tri = BRep_Tool.Triangulation_s(face, loc)
         if tri is not None:
@@ -95,11 +111,14 @@ def tessellate(shape, deflection=0.1, angular=0.5, max_triangles=400_000):
                     break
         if len(area) >= max_triangles:
             break
-        ex.Next()
 
     return {"area": area, "nx": nx, "ny": ny, "nz": nz, "cx": cx, "cy": cy, "cz": cz,
             "face": fidx, "count": len(area), "totalAreaMm2": total,
             "deflection": deflection,
+            #: 1-based indexed-map face ids. Stated on the payload so a consumer
+            #: never has to guess which of the four conventions this is.
+            "faceIdBase": 1,
+            "faceIdOrder": "TopTools_IndexedMapOfShape",
             "truncated": len(area) >= max_triangles}
 
 

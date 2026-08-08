@@ -507,3 +507,24 @@ Format: decision · why · what would change it.
     contested number as settled. None of these thresholds has been validated against
     controlled trials or measured scrap data; they are screening values, and the report now
     says which is which.
+
+43. **One face-id convention, and a gate that resolves ids to surfaces (2026).**
+    *Why:* four passes numbered faces four different ways and two of them were wired
+    together, so the 3D highlight painted the WRONG FACE on every part ever uploaded.
+    `dfm_geometry.tessellate` counted with a `TopExp_Explorer` (1-based, incrementing before
+    the triangulation check); `feature_recognition.build_aag` and `_extract_feature_table`
+    used a 1-based `TopTools_IndexedMapOfShape`; the viewer's `tessellate_to_stl` used a
+    SEPARATE 0-based counter that advanced only on faces the mesher handled. Proven against
+    known truth on `box-side-hole.step`, whose single undercut IS the cylindrical bore: the
+    analysis reported face 6, the viewer painted its face 6 — a PLANE — and the bore was
+    face 5. The two enumerations also differ in kind, not just origin: `MapShapes`
+    deduplicates by TShape+location+orientation and an explorer does not, so the error grows
+    on compounds. Everything now uses the 1-based indexed map, untriangulated faces keep
+    their slot with `meshed: false` so numbering stays dense, and the payload declares
+    `faceIdBase` / `faceIdOrder` so no consumer has to infer it. *Changes it:* the viewer
+    looked faces up as `meta.faces[faceId]` — BY ARRAY POSITION — in three places, which
+    would have relocated the bug rather than fixed it; it now keys a Map by the engine's id.
+    And the gate no longer counts, it RESOLVES: each reported id is looked up in the
+    tessellation metadata the browser actually receives and its surface type asserted from
+    construction (the undercut must be a cylinder). An off-by-one changes no count, which is
+    why 92 green checks coexisted with a highlight that was wrong on every single part.

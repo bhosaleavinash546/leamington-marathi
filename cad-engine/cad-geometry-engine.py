@@ -1001,8 +1001,9 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
 
         max_tris = int(os.environ.get("CV_MAX_TRIANGLES", "2000000"))
 
-        # Stable face ids via an indexed map (1-based) — the same map is used to
-        # assign faces to solids, so viewer face ids and body ids stay consistent.
+        # Stable face ids via an indexed map, 1-BASED and equal to the map index —
+        # the same map assigns faces to solids, so face ids and body ids stay
+        # consistent, and the same index is what every analysis pass reports.
         face_map = TopTools_IndexedMapOfShape()
         TopExp.MapShapes_s(wrapped, TopAbs_FACE, face_map)
 
@@ -1027,13 +1028,33 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
         tri_face_ids = []   # per-triangle source face id — lets the viewer map a click back to the B-rep
         faces_meta = []     # per-face exact kernel data: type, radii, area, body, hole/boss
         skipped_faces = 0   # faces with no/failed triangulation — mesh has holes there
-        face_id = 0
+        # THE FACE ID IS THE MAP INDEX. It used to be a separate 0-based counter
+        # that advanced only on successfully triangulated faces, which made the
+        # viewer's ids disagree with every other producer in the pipeline by one
+        # — and by more than one on any part with an untriangulated face. The
+        # analysis then highlighted the wrong face on every upload. Now the id IS
+        # `map_idx`, the same 1-based TopTools_IndexedMapOfShape index that
+        # dfm_geometry.tessellate, feature_recognition.build_aag and
+        # _extract_feature_table all use, so a face id means one thing.
+        #
+        # Untriangulated faces keep their slot with a null mesh rather than being
+        # squeezed out, so the numbering stays dense and aligned.
         for map_idx in range(1, face_map.Extent() + 1):
+            face_id = map_idx
             face = TopoDS.Face_s(face_map.FindKey(map_idx))
             loc = TopLoc_Location()
             tri = BRep_Tool.Triangulation_s(face, loc)
             if tri is None:
                 skipped_faces += 1
+                faces_meta.append({
+                    "id": face_id, "type": "untriangulated",
+                    "radiusMm": None, "radius2Mm": None, "angleDeg": None,
+                    "depthMm": None, "areaCm2": None,
+                    "bodyId": face_body.get(map_idx, -1), "hole": None,
+                    # No triangles, so nothing to paint — said explicitly so the
+                    # viewer can grey the row rather than silently omit the face.
+                    "meshed": False,
+                })
                 continue
             # exact B-rep metadata for this face
             ftype = "other"
@@ -1092,6 +1113,7 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
                 "areaCm2": round(area_cm2, 4) if area_cm2 is not None else None,
                 "bodyId": face_body.get(map_idx, -1),
                 "hole": hole,
+                "meshed": True,
             })
 
             trsf = loc.Transformation()
@@ -1119,7 +1141,6 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
                     pts[1], pts[2] = pts[2], pts[1]
                 tris.append(pts)
                 tri_face_ids.append(face_id)
-            face_id += 1
 
         if not tris:
             return {"status": "error", "error": "Meshing produced no triangles"}
@@ -1140,7 +1161,13 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
         if with_meta:
             with open(out_path + ".json", "w") as jf:
                 json.dump({"triFace": tri_face_ids, "faces": faces_meta,
-                           "bodies": bodies, "skippedFaces": skipped_faces}, jf)
+                           "bodies": bodies, "skippedFaces": skipped_faces,
+                           # Declared on the wire so a consumer never has to
+                           # infer which face-id convention this is. Four
+                           # producers in this pipeline once disagreed and the
+                           # viewer highlighted the wrong face on every part.
+                           "faceIdBase": 1,
+                           "faceIdOrder": "TopTools_IndexedMapOfShape"}, jf)
 
         return {"status": "success", "triangles": len(tris), "stlBytes": os.path.getsize(out_path),
                 "faces": len(faces_meta), "bodies": bodies, "skippedFaces": skipped_faces}

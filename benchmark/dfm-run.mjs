@@ -19,7 +19,7 @@ import { dirname, join } from 'node:path';
 
 import { DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES } from './dfm-fixtures.mjs';
 import { extractMeasures, runDfmRules } from '../dfm-rules.mjs';
-import { analyzeGeometry } from '../cad-engine/cad-geometry-bridge.mjs';
+import { analyzeGeometry, tessellateToSTL } from '../cad-engine/cad-geometry-bridge.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXDIR = join(HERE, 'dfm-fixtures');
@@ -40,6 +40,25 @@ const checks = [];
 const record = (fixture, name, ok, detail) => checks.push({ fixture, name, ok, detail });
 const near = (got, want, tolPct) =>
   Number.isFinite(got) && Math.abs(got - want) <= Math.abs(want) * tolPct + 1e-9;
+
+/**
+ * The tessellation metadata the VIEWER receives — the other half of every
+ * face-id claim. Run through the production bridge so the gate checks what the
+ * browser actually gets, not a re-derivation of it.
+ */
+const tessCache = new Map();
+async function tessMeta(file) {
+  if (tessCache.has(file)) return tessCache.get(file);
+  let meta = null;
+  try {
+    const r = await tessellateToSTL(await readFile(join(FIXDIR, file)), file, { withMeta: true });
+    meta = r?.status === 'success' ? r.meta : null;
+  } catch {
+    meta = null;
+  }
+  tessCache.set(file, meta);
+  return meta;
+}
 
 /** Re-run the draft classification along a forced axis via the Python module. */
 function draftAlong(file, axis) {
@@ -143,6 +162,33 @@ async function main() {
       const sm = g.dfm?.sheetMetal || {};
       for (const [k, want] of Object.entries(t.sheetMetal)) {
         record(fx.file, `sheet ${k}`, near(sm[k], want, 0.02), `${sm[k]} vs ${want}`);
+      }
+    }
+    // ── Face-id resolution ───────────────────────────────────────────────────
+    // Does the id an analysis reports land on the RIGHT SURFACE in the viewer's
+    // own metadata? This is the only check that can catch an off-by-one, and an
+    // off-by-one is exactly what shipped: the undercut on box-side-hole is the
+    // cylindrical bore, the analysis said face 6, and the viewer painted its
+    // face 6 — a PLANE. Every count in this gate was green throughout.
+    if (t.faceIdResolves !== undefined) {
+      const meta = await tessMeta(fx.file);
+      if (!meta) {
+        record(fx.file, 'face id resolves', false, 'tessellation metadata unavailable');
+      } else {
+        const byId = new Map((meta.faces || []).map(f => [f.id, f]));
+        record(fx.file, 'face id base', meta.faceIdBase === 1,
+          `faceIdBase=${meta.faceIdBase} order=${meta.faceIdOrder}`);
+        for (const [what, wantType] of Object.entries(t.faceIdResolves)) {
+          const ids = what === 'undercutAtZ' ? (zAxis.undercutFaceIds || [])
+            : what === 'featureTableCylinders'
+              ? (g.featureTable || []).flatMap(r => (r.kind === 'hole' || r.kind === 'boss') && r.faceIds ? r.faceIds : [])
+              : [];
+          if (!ids.length && what === 'featureTableCylinders') continue;  // no ids exported yet
+          const types = ids.map(i => byId.get(i)?.type ?? 'MISSING');
+          record(fx.file, `face id -> ${what}`,
+            types.length > 0 && types.every(ty => ty === wantType),
+            `ids [${ids}] resolve to [${types}], expected all ${wantType}`);
+        }
       }
     }
     if (t.notSheetMetal) {
