@@ -554,6 +554,51 @@ export const DFM_RULES = [
     source: 'Sheet-metal design guidance (minimum flange ~3x thickness).',
   },
 
+  {
+    id: 'sm-hole-to-hole',
+    sourceStatus: 'industry-consensus',
+    process: 'sheet-metal',
+    severity: 'medium',
+    title: 'Holes too close together',
+    measure: 'minHoleToHoleToThickness',
+    compare: 'gte',
+    threshold: 2,
+    unit: 'gap/t',
+    rationale:
+      'The web of material between two punched holes is pulled in both directions as each is pierced. Below about two material thicknesses it distorts, tears, or wears the punch and die out of tolerance early.',
+    fix: 'Move the holes apart to at least 2t edge-to-edge, or pierce them in separate stations so the web is not loaded twice at once.',
+    source: 'Sheet-metal design guidance (minimum web between pierced holes, typically 2t).',
+  },
+  {
+    id: 'sm-hole-to-edge',
+    sourceStatus: 'industry-consensus',
+    process: 'sheet-metal',
+    severity: 'medium',
+    title: 'Hole too close to the part edge',
+    measure: 'minHoleToEdgeToThickness',
+    compare: 'gte',
+    threshold: 2,
+    unit: 'gap/t',
+    rationale:
+      'A hole pierced near a trimmed edge pushes material sideways with nothing to react against, so the edge bulges and the hole goes oval. Below about two thicknesses the web can shear away entirely.',
+    fix: 'Move the hole inboard to at least 2t from the edge, or pierce it before the blank is trimmed.',
+    source: 'Sheet-metal design guidance (minimum edge distance for a pierced hole, typically 2t).',
+  },
+  {
+    id: 'sm-bend-to-bend',
+    sourceStatus: 'industry-consensus',
+    process: 'sheet-metal',
+    severity: 'medium',
+    title: 'Parallel bends too close to form',
+    measure: 'minBendToBendToThickness',
+    compare: 'gte',
+    threshold: 4,
+    unit: 'flat/t',
+    rationale:
+      'A press brake needs flat material to clamp between two bends. When the land between parallel bends falls below roughly four thicknesses there is nothing for the tooling to hold, and the second bend pulls the first out of angle.',
+    fix: 'Open the land between the bends to at least 4t, or form them in one operation with a dedicated tool.',
+    source: 'Sheet-metal design guidance (minimum flat between parallel bends).',
+  },
   // ═══════════════════════════════════════════════════════════════════════════
   // THE CASTING FAMILIES ARE NOT ONE FAMILY.
   //

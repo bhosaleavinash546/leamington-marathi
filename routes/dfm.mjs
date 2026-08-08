@@ -118,9 +118,24 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
     let clientGone = false;
     if (useSSE) res.on('close', () => { clientGone = true; });
 
+    // A DRAW DIRECTION THE ENGINEER PINNED. The sweep picks the axis with the
+    // least undercut area, which is the right default and the wrong answer when
+    // the tool split is already decided — by an existing die, a mating part, or
+    // a foundry who has said where the parting line goes. Measuring draft along
+    // an axis the part will never be drawn on produces findings for a tool that
+    // does not exist.
+    let pinnedDraw = null;
+    try {
+      const raw = req.body?.drawDirection ? JSON.parse(req.body.drawDirection) : null;
+      if (Array.isArray(raw) && raw.length === 3 && raw.every(v => Number.isFinite(Number(v)))) {
+        pinnedDraw = raw.map(Number);
+      }
+    } catch { pinnedDraw = null; }
+
     const geo = await analyzeGeometry(
       req.file.buffer, req.file.originalname, 120_000,
-      useSSE ? (ev) => { if (!clientGone) emit({ type: 'stage', ...ev }); } : null);
+      useSSE ? (ev) => { if (!clientGone) emit({ type: 'stage', ...ev }); } : null,
+      pinnedDraw);
     if (geo.status !== 'success') {
       if (useSSE) { emit({ type: 'error', error: geo.error }); return res.end(); }
       return res.status(422).json({ error: geo.error });

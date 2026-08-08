@@ -1142,6 +1142,79 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None):
             if run > thickness * 1.5 and (flange is None or run < flange):
                 flange = run
 
+    # ── Hole-to-hole and hole-to-edge ────────────────────────────────────────
+    # DFMPro's sheet-metal list leads with these two after bend radius, and both
+    # are pure arithmetic on data already in hand: the feature table carries a
+    # per-instance position for every hole, and the part's own boundary is its
+    # bounding box in the sheet plane. They are reported as EDGE-TO-EDGE gaps,
+    # not centre distances, so the rule can be a flat "at least 2t" instead of a
+    # per-hole formula the evaluator cannot express.
+    hole_pts = []          # (x, y, z, radius)
+    for row in (feature_table or []):
+        if row.get("kind") != "hole":
+            continue
+        r = float(row.get("diaMm") or 0) / 2.0
+        if r <= 0:
+            continue
+        pts = row.get("instancesXYZ") or ([row["axisPointXYZ"]] if row.get("axisPointXYZ") else [])
+        for p3 in pts:
+            if p3 and len(p3) == 3:
+                hole_pts.append((p3[0], p3[1], p3[2], r))
+
+    hole_gap = None
+    for i in range(len(hole_pts)):
+        for j in range(i + 1, len(hole_pts)):
+            ax, ay, az, ar = hole_pts[i]
+            bx, by, bz, br = hole_pts[j]
+            gap = math.dist((ax, ay, az), (bx, by, bz)) - ar - br
+            # A negative gap means the two "holes" overlap, which on a real part
+            # means they are one feature the cylinder pass split — not a
+            # violation, so it is not allowed to become the reported minimum.
+            if gap > 0 and (hole_gap is None or gap < hole_gap):
+                hole_gap = gap
+
+    # Distance from each hole's edge to the part's outer boundary. The bounding
+    # box is a LOWER bound on the true trim distance — a hole near a concave
+    # cut-out is closer to material's end than this says — so the measure is
+    # published with that stated rather than presented as exact.
+    edge_gap = None
+    try:
+        bb = Bnd_Box()
+        BRepBndLib.Add_s(shape, bb)
+        x0, y0, z0, x1, y1, z1 = bb.Get()
+        for (hx, hy, hz, hr) in hole_pts:
+            # Only the two axes that span the SHEET, not the one across its
+            # thickness: a hole is always ~t/2 from the face it passes through
+            # and that is not an edge distance.
+            spans = sorted([(x1 - x0, hx - x0, x1 - hx),
+                            (y1 - y0, hy - y0, y1 - hy),
+                            (z1 - z0, hz - z0, z1 - hz)], key=lambda s: -s[0])[:2]
+            for _span, lo, hi in spans:
+                d = min(lo, hi) - hr
+                if d >= 0 and (edge_gap is None or d < edge_gap):
+                    edge_gap = d
+    except Exception:
+        edge_gap = None
+
+    # ── Bend-to-bend ─────────────────────────────────────────────────────────
+    # Two parallel bends too close together cannot both be formed: the press
+    # brake needs flat material to clamp between them. Measured as the
+    # perpendicular distance between parallel bend LINES, minus the two inside
+    # radii, so it is the flat land that actually has to exist.
+    bend_gap = None
+    for i in range(len(bends)):
+        for j in range(i + 1, len(bends)):
+            a, b = bends[i], bends[j]
+            ua, ub = a["axisXYZ"], b["axisXYZ"]
+            if abs(sum(x * y for x, y in zip(ua, ub))) < math.cos(math.radians(5.0)):
+                continue                      # not parallel: not the same clamp
+            delta = [q - p for p, q in zip(a["axisPointXYZ"], b["axisPointXYZ"])]
+            along = sum(x * y for x, y in zip(delta, ua))
+            perp = math.sqrt(max(0.0, sum(x * x for x in delta) - along * along))
+            flat = perp - a["insideRadiusMm"] - b["insideRadiusMm"]
+            if flat > 0 and (bend_gap is None or flat < bend_gap):
+                bend_gap = flat
+
     # Hole-to-bend: perpendicular distance from each hole axis to each bend line,
     # reported as CLEARANCE against the 2t + r guideline so the rule can be
     # evaluated arithmetically instead of carrying an unevaluatable formula.
@@ -1174,6 +1247,14 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None):
         "minFlangeToThickness": round(flange / thickness, 3) if flange else None,
         "minHoleDiaToThickness": round(hole_dia / thickness, 3) if hole_dia else None,
         "holeToBendClearanceMm": round(clearance, 2) if clearance is not None else None,
+        # Edge-to-edge gaps, so a rule can be a flat multiple of t.
+        "minHoleToHoleMm": round(hole_gap, 2) if hole_gap is not None else None,
+        "minHoleToHoleToThickness": round(hole_gap / thickness, 2) if hole_gap is not None else None,
+        "minHoleToEdgeMm": round(edge_gap, 2) if edge_gap is not None else None,
+        "minHoleToEdgeToThickness": round(edge_gap / thickness, 2) if edge_gap is not None else None,
+        "minHoleToEdgeBasis": "distance to the bounding box in the two sheet-plane axes — a LOWER bound on the true trim distance, since a hole beside a concave cut-out is nearer the edge than this says",
+        "minBendToBendMm": round(bend_gap, 2) if bend_gap is not None else None,
+        "minBendToBendToThickness": round(bend_gap / thickness, 2) if bend_gap is not None else None,
         "method": "paired coaxial cylinders; thickness = outer radius - inner radius",
     }
 

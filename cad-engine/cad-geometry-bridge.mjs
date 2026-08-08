@@ -41,7 +41,8 @@ async function acquirePython() {
   };
 }
 
-export async function analyzeGeometry(buffer, filename, timeoutMs = 120_000, onStage = null) {
+export async function analyzeGeometry(buffer, filename, timeoutMs = 120_000, onStage = null,
+                                      drawDirection = null) {
   const tmpPath = join(tmpdir(), `cv-cad-${randomBytes(8).toString('hex')}.${safeExt(filename)}`);
 
   const release = await acquirePython();
@@ -49,7 +50,7 @@ export async function analyzeGeometry(buffer, filename, timeoutMs = 120_000, onS
     await writeFile(tmpPath, buffer);
     // `onStage` is optional and every existing caller omits it, so the
     // non-streaming path — the benchmark included — is byte-for-byte unchanged.
-    return await _runPython(tmpPath, timeoutMs, PYTHON_SCRIPT, onStage);
+    return await _runPython(tmpPath, timeoutMs, PYTHON_SCRIPT, onStage, drawDirection);
   } finally {
     release();
     unlink(tmpPath).catch(() => {});
@@ -114,7 +115,7 @@ export function describeUnparseable(raw, stderr = '') {
     + 'Check that it is a valid STEP or IGES export.';
 }
 
-function _runPython(tmpPath, timeoutMs, script = PYTHON_SCRIPT, onStage = null) {
+function _runPython(tmpPath, timeoutMs, script = PYTHON_SCRIPT, onStage = null, drawDirection = null) {
   return new Promise((resolve) => {
     let stdout = '';
     let stderr = '';
@@ -128,7 +129,16 @@ function _runPython(tmpPath, timeoutMs, script = PYTHON_SCRIPT, onStage = null) 
       if (!settled) { settled = true; resolve(result); }
     };
 
-    const child = spawn('python3', [script, tmpPath], {
+    // A draw direction the USER pinned, rather than the one the sweep would
+    // pick. Validated here rather than trusted: a malformed vector must not
+    // reach the engine and silently become a zero-length axis, which would
+    // classify every face as zero-draft.
+    const pinned = Array.isArray(drawDirection) && drawDirection.length === 3
+      && drawDirection.every(v => Number.isFinite(Number(v)))
+      && drawDirection.some(v => Math.abs(Number(v)) > 1e-9)
+      ? ['--draw', drawDirection.map(Number).join(',')]
+      : [];
+    const child = spawn('python3', [script, tmpPath, ...pinned], {
       env: { ...process.env },
     });
 

@@ -91,6 +91,11 @@ interface DfmOptions {
 
 const REGIONS = ['Germany', 'UK', 'Czech Republic', 'Spain', 'Mexico', 'USA', 'China', 'India'];
 
+/** Pinned draw directions. Blank means "sweep for the best one". */
+const DRAW_AXES: Record<string, [number, number, number]> = {
+  x: [1, 0, 0], y: [0, 1, 0], z: [0, 0, 1],
+};
+
 type DfaQuestion = 'moves' | 'differentMaterial' | 'mustSeparate';
 /** Boothroyd's three questions. Geometry proposes them; only a human can answer.
  *  Without this UI the engine never received answers, so the DFA index and the
@@ -150,6 +155,7 @@ export default function DfmStudioPage() {
   const [costProcess, setCostProcess] = useState('');
   const [options, setOptions] = useState<DfmOptions | null>(null);
   const [routeSort, setRouteSort] = useState<'piecePriceEur' | 'score' | 'kgCo2e' | 'toolingEur'>('piecePriceEur');
+  const [drawAxis, setDrawAxis] = useState<'' | 'x' | 'y' | 'z'>('');
   const [region, setRegion] = useState('Germany');
   const [annualVolume, setAnnualVolume] = useState(120000);
   const [loading, setLoading] = useState<'' | 'dfm' | 'dfa'>('');
@@ -200,6 +206,11 @@ export default function DfmStudioPage() {
     // kernel-measured volume and the chosen material, so a value typed here
     // could silently disagree with the geometry the findings are based on.
     for (const [k, v] of Object.entries({ material, costProcess, region, annualVolume: String(annualVolume) })) fd.append(k, v);
+    // A pinned draw direction, when the tool split is already decided. Left
+    // blank the engine sweeps for the axis with the least undercut, which is
+    // the right default and the wrong answer once a foundry has told you where
+    // the parting line goes.
+    if (drawAxis) fd.append('drawDirection', JSON.stringify(DRAW_AXES[drawAxis]));
     try {
       const r = await fetch('/api/dfm/analyze', {
         method: 'POST',
@@ -513,7 +524,7 @@ export default function DfmStudioPage() {
               tabIndex={-1} aria-hidden="true" onChange={e => pick(e.target.files?.[0] ?? null)} />
           </div>
 
-          <div className="grid sm:grid-cols-4 gap-3 mt-4">
+          <div className="grid sm:grid-cols-5 gap-3 mt-4">
             <label className="text-xs text-slate-400">Material
               <select value={material} onChange={e => setMaterial(e.target.value)}
                 className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
@@ -555,6 +566,15 @@ export default function DfmStudioPage() {
               <select value={region} onChange={e => setRegion(e.target.value)}
                 className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
                 {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </label>
+            <label className="text-xs text-slate-400">Draw / parting direction
+              <select value={drawAxis} onChange={e => setDrawAxis(e.target.value as '' | 'x' | 'y' | 'z')}
+                className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
+                <option value="">Find the best (least undercut)</option>
+                <option value="x">Pin to +X</option>
+                <option value="y">Pin to +Y</option>
+                <option value="z">Pin to +Z</option>
               </select>
             </label>
             <label className="text-xs text-slate-400">Annual volume
@@ -819,6 +839,35 @@ export default function DfmStudioPage() {
 
             {/* Which rule families ran, and why. Without this a reader cannot
                 tell a targeted analysis from a speculative sweep. */}
+            {/* A PINNED AXIS MUST STATE ITS COST. Choosing the draw direction is
+                often right — the die exists, the foundry has decided — but it
+                can silently make every draft and undercut figure worse than the
+                part needs to be, and the reader has no way to know unless the
+                page says what the best available axis would have given. */}
+            {(result.dfm?.draft as any)?.drawDirectionChosenBy === 'user'
+              && (result.dfm?.draft as any)?.bestAvailable && (
+              <p className="text-xs flex items-start gap-2 text-slate-300">
+                <Info size={13} className="shrink-0 mt-0.5 text-gold-400" aria-hidden="true" />
+                Draft measured along the direction you pinned,
+                [{((result.dfm?.draft as any).drawDirectionXYZ ?? []).join(', ')}], which leaves{' '}
+                <strong className="text-white">{(result.dfm?.draft as any).areaPct?.undercut}%</strong> undercut area.
+                {(() => {
+                  const best = (result.dfm?.draft as any).bestAvailable;
+                  const mine = Number((result.dfm?.draft as any).areaPct?.undercut);
+                  const bestPct = Number(best.undercutAreaPct);
+                  if (!Number.isFinite(bestPct) || bestPct >= mine - 0.01) {
+                    return <> That is the best axis available, so nothing was given up.</>;
+                  }
+                  return (
+                    <span className="text-amber-400/90">
+                      {' '}Drawing along [{(best.drawDirectionXYZ ?? []).join(', ')}] instead would leave {bestPct}% —
+                      pinning this axis costs {(mine - bestPct).toFixed(2)} points of undercut area.
+                    </span>
+                  );
+                })()}
+              </p>
+            )}
+
             {result.processConflict && (
               <p className="text-red-400 text-xs flex items-start gap-2 font-semibold">
                 <AlertTriangle size={13} className="shrink-0 mt-0.5" />

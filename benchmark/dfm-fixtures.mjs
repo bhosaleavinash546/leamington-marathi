@@ -218,8 +218,21 @@ export const DFM_FIXTURES = [
         minInsideRadiusMm: 3.0,
         minBendRadiusToThickness: 1.5,
         minFlangeToThickness: 20.0,
+        // Hole edge to the part edge, arithmetic from the construction: the
+        // Ø4 hole sits at x = 42 on a leg running x = 0 to 50 plus the bend's
+        // outer radius, so the nearest edge is 13.03 mm away and the hole's own
+        // radius takes 2 off it. 11.03 / 2 mm sheet = 5.52 t.
+        minHoleToEdgeMm: 11.03,
+        minHoleToEdgeToThickness: 5.52,
       },
-      sheetMetalRulesEvaluated: 4,
+      // Five of seven. ONE hole cannot be too close to another hole and ONE bend
+      // cannot be too close to another bend, so those two rules must ABSTAIN.
+      // Before `num()` stopped coercing null to zero they both FAILED here, at a
+      // measured gap of 0 mm, on a bracket that has nothing to measure — the
+      // exact "an absent measurement became a confident finding" failure the
+      // three-state discipline exists to prevent.
+      sheetMetalRulesEvaluated: 5,
+      sheetMetalRulesAbstaining: ['sm-hole-to-hole', 'sm-bend-to-bend'],
     },
   },
   {

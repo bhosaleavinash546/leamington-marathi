@@ -213,6 +213,17 @@ async function main() {
       record(fx.file, 'sheet rules abstain', r.evaluatedCount === 0 && r.score === null,
         `${r.evaluatedCount}/${r.ruleCount} evaluated, score ${r.score}`);
     }
+    if (t.sheetMetalRulesAbstaining) {
+      // A rule with nothing to measure must be NOT EVALUATED, never a fail.
+      const r = runDfmRules(g, 'sheet-metal');
+      const abstaining = new Set(r.notEvaluated.map(f => f.id));
+      for (const id of t.sheetMetalRulesAbstaining) {
+        record(fx.file, `abstains: ${id}`, abstaining.has(id),
+          abstaining.has(id) ? 'not evaluated, with a reason'
+            : `WRONGLY ${[...r.findings, ...r.passed].find(f => f.id === id)?.status} at measured `
+              + `${[...r.findings, ...r.passed].find(f => f.id === id)?.measured}`);
+      }
+    }
     if (t.sheetMetalRulesEvaluated !== undefined) {
       // The point of the wave: this family used to evaluate 0 of 4 on every part.
       const r = runDfmRules(g, 'sheet-metal');

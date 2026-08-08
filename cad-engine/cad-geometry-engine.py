@@ -848,7 +848,7 @@ class _ShapeShim:
         return self._unique(TopAbs_EDGE, _EdgeShim, TopoDS.Edge_s)
 
 
-def analyze(filepath: str) -> dict:
+def analyze(filepath: str, draw_override=None) -> dict:
     try:
         from OCP.BRepGProp import BRepGProp
         from OCP.GProp import GProp_GProps
@@ -998,8 +998,30 @@ def analyze(filepath: str) -> dict:
                     _stage("wallThickness", status="skipped",
                            reason="time budget spent")
                 if _left() > 0:
-                    _stage("drawSweep", status="start", candidates=3)
-                    draft_info, draft_alts = _dfm.choose_draw_direction(tess, inter)
+                    # A USER-SPECIFIED DRAW DIRECTION WINS OVER THE SWEEP.
+                    # The sweep picks the axis with the least undercut area,
+                    # which is the right default and the wrong answer whenever
+                    # the tool split is already decided — by an existing die, by
+                    # a mating part, or by a foundry who has told you where the
+                    # parting line goes. Measuring draft against an axis the part
+                    # will never be drawn along produces findings for a tool that
+                    # does not exist.
+                    _stage("drawSweep", status="start",
+                           candidates=1 if draw_override else 3)
+                    if draw_override:
+                        draft_info = _dfm.classify_draft(tess, inter, draw_override)
+                        draft_info["drawDirectionChosenBy"] = "user"
+                        # The sweep still runs, coarsely, so the report can say
+                        # what the chosen axis COSTS against the best available.
+                        _best, draft_alts = _dfm.choose_draw_direction(tess, inter)
+                        draft_info["bestAvailable"] = {
+                            "drawDirectionXYZ": (_best or {}).get("drawDirectionXYZ"),
+                            "undercutAreaPct": ((_best or {}).get("areaPct") or {}).get("undercut"),
+                        }
+                    else:
+                        draft_info, draft_alts = _dfm.choose_draw_direction(tess, inter)
+                        if draft_info is not None:
+                            draft_info["drawDirectionChosenBy"] = "swept"
                     _stage("drawSweep", status="done",
                            drawDirectionXYZ=(draft_info or {}).get("drawDirectionXYZ"),
                            undercutAreaPct=((draft_info or {}).get("areaPct") or {}).get("undercut"),
@@ -1464,7 +1486,17 @@ if __name__ == "__main__":
     if not os.path.exists(fp):
         print(json.dumps({"status": "error", "error": f"File not found: {fp}"}))
         sys.exit(1)
-    result = analyze(fp)
+    # Optional: --draw x,y,z pins the draw direction instead of sweeping for it.
+    draw = None
+    for i, a in enumerate(sys.argv):
+        if a == "--draw" and i + 1 < len(sys.argv):
+            try:
+                parts = [float(v) for v in sys.argv[i + 1].split(",")]
+                if len(parts) == 3 and any(abs(v) > 1e-9 for v in parts):
+                    draw = tuple(parts)
+            except Exception:
+                draw = None
+    result = analyze(fp, draw_override=draw)
     try:
         import dfm_geometry as _dfm
         result = _dfm.strip_private(result)   # raw ray samples stay server-side

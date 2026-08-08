@@ -33,7 +33,19 @@ export function extractMeasures(geo = {}) {
   // measures stay undefined and the rules abstain — which is the correct answer
   // for a casting, not a pass.
   const sm = dfm.sheetMetal && dfm.sheetMetal.isSheetMetal ? dfm.sheetMetal : {};
-  const num = v => (Number.isFinite(Number(v)) ? Number(v) : undefined);
+  // NULL IS NOT ZERO. `Number(null)` is 0 and passes `Number.isFinite`, so a
+  // measurement the recogniser explicitly reported as absent arrived at the rule
+  // engine as a hard zero — and a zero fails every "must be at least" rule. A
+  // bracket with ONE hole failed "holes too close together" at a measured gap of
+  // 0 mm, and the same trap sat under minFlangeToThickness and every other
+  // measure the recogniser returns as null when it has nothing to report. An
+  // absent measurement must reach the rules as undefined so the rule ABSTAINS,
+  // which is the whole three-state discipline this file is built on.
+  const num = (v) => {
+    if (v === null || v === undefined || v === '') return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
 
   // Rib proportions are RATIOS against the nominal wall, and the wall is the
   // measured p50 — so the ratio is computed here, at the one place both numbers
@@ -125,6 +137,12 @@ export function extractMeasures(geo = {}) {
     // arithmetic. A raw distance would need a per-part formula the evaluator
     // cannot express, and the rule would abstain forever.
     holeToBendClearanceMm: num(sm.holeToBendClearanceMm),
+    // As RATIOS of the measured sheet thickness, because that is how every
+    // sheet-metal guideline is written and it makes the rule a flat number
+    // instead of a per-part formula the evaluator cannot express.
+    minHoleToHoleToThickness: num(sm.minHoleToHoleToThickness),
+    minHoleToEdgeToThickness: num(sm.minHoleToEdgeToThickness),
+    minBendToBendToThickness: num(sm.minBendToBendToThickness),
 
     // The offenders behind the ratio measures, in worst-first order. Consumed by
     // runDfmRules to attach `instances` to a finding; stripped from the measure
