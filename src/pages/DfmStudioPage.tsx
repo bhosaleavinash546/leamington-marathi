@@ -169,6 +169,12 @@ export default function DfmStudioPage() {
   const [options, setOptions] = useState<DfmOptions | null>(null);
   const [routeSort, setRouteSort] = useState<'piecePriceEur' | 'score' | 'kgCo2e' | 'toolingEur'>('piecePriceEur');
   const [drawAxis, setDrawAxis] = useState<'' | 'x' | 'y' | 'z'>('');
+  // The deliberate opt-out. Blocking the analysis with no way past it would be
+  // worse than the problem: a quick generic look is a legitimate thing to want,
+  // and this repo's standing rule is that the honest-degradation path stays
+  // REACHABLE and clearly labelled rather than being hidden. It just stops being
+  // the thing that happens when you press the obvious button without reading.
+  const [runGeneric, setRunGeneric] = useState(false);
   // Company standards: this workspace's own thresholds, which outrank the
   // published guidelines and are graded as the stronger claim they are.
   const [overrides, setOverrides] = useState<Record<string, RuleOverride>>({});
@@ -474,6 +480,9 @@ export default function DfmStudioPage() {
     });
   }, [result, routeSort]);
 
+  // A file alone is no longer enough. `runGeneric` is the explicit way past it.
+  const canAnalyse = !!file && (runGeneric || (!!material && !!costProcess));
+
   const selectedProcess = useMemo(
     () => processOptions.find(p => p.name === costProcess) ?? null,
     [processOptions, costProcess]);
@@ -484,6 +493,13 @@ export default function DfmStudioPage() {
     if (!costProcess || !processOptions.length) return;
     if (!processOptions.some(p => p.name === costProcess)) setCostProcess('');
   }, [processOptions, costProcess]);
+
+  // Naming a material or a process means you no longer want the generic run, so
+  // the opt-out releases itself rather than silently persisting into an analysis
+  // the user has since told us how to make specific.
+  useEffect(() => {
+    if (material || costProcess) setRunGeneric(false);
+  }, [material, costProcess]);
 
   useEffect(() => {
     const rows = (dfa?.dfa as any)?.rows as any[] | undefined;
@@ -565,6 +581,10 @@ export default function DfmStudioPage() {
 
         {/* Input */}
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-6 mb-6">
+          <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-3">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold-500 text-navy-950 text-[11px] font-bold">1</span>
+            The part
+          </h2>
           {/* The drop target stays a div because dragging has no keyboard
               equivalent — but the CHOOSE action is a real button, so the page is
               operable without a mouse. It was a bare div with onClick, which no
@@ -591,87 +611,122 @@ export default function DfmStudioPage() {
               tabIndex={-1} aria-hidden="true" onChange={e => pick(e.target.files?.[0] ?? null)} />
           </div>
 
-          <div className="grid sm:grid-cols-5 gap-3 mt-4">
-            <label className="text-xs text-slate-400">Material
-              <select value={material} onChange={e => setMaterial(e.target.value)}
-                className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
-                <option value="">Not set — thresholds stay generic</option>
-                {options?.materialFamilies.map(f => (
-                  <optgroup key={f.family} label={f.label}>
-                    {f.grades.map(g => <option key={g} value={g}>{g}</option>)}
-                  </optgroup>
-                ))}
-              </select>
-            </label>
-            {/* MANUFACTURING process, not "costing process". This selector drives
-                which rule family judges the part — sheet metal, die casting,
-                sand casting and forging are different rulesets with different
-                thresholds — as well as the cost model. Labelling it "costing"
-                made it read as optional metadata, so it was left at "Not set"
-                and every part got a speculative sweep of all families. */}
-            <label className="text-xs text-slate-400">Manufacturing process
-              <select value={costProcess} onChange={e => setCostProcess(e.target.value)}
-                className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
-                <option value="">Not set — every rule family run speculatively</option>
-                {processOptions.filter(p => p.dfmFamily).length > 0 && (
-                  <optgroup label="Shapes the part — DFM rules apply">
-                    {processOptions.filter(p => p.dfmFamily).map(p => (
-                      <option key={p.name} value={p.name}>{p.name}</option>
-                    ))}
-                  </optgroup>
-                )}
-                {processOptions.filter(p => !p.dfmFamily).length > 0 && (
-                  <optgroup label="No geometric DFM rules">
-                    {processOptions.filter(p => !p.dfmFamily).map(p => (
-                      <option key={p.name} value={p.name}>{p.name}</option>
-                    ))}
-                  </optgroup>
-                )}
-              </select>
-            </label>
-            <label className="text-xs text-slate-400">Region
-              <select value={region} onChange={e => setRegion(e.target.value)}
-                className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
-                {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
-              </select>
-            </label>
-            <label className="text-xs text-slate-400">Draw / parting direction
-              <select value={drawAxis} onChange={e => setDrawAxis(e.target.value as '' | 'x' | 'y' | 'z')}
-                className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
-                <option value="">Find the best (least undercut)</option>
-                <option value="x">Pin to +X</option>
-                <option value="y">Pin to +Y</option>
-                <option value="z">Pin to +Z</option>
-              </select>
-            </label>
-            <label className="text-xs text-slate-400">Annual volume
-              <input type="number" value={annualVolume} min={1}
-                onChange={e => setAnnualVolume(Math.max(1, Number(e.target.value) || 1))}
-                className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40" />
-            </label>
-          </div>
+          {/* ── STEP 2 — HOW IT'S MADE ───────────────────────────────────────
+              These two selectors decide WHICH RULE FAMILY judges the part, and
+              they used to sit as two cells of a five-column row of settings
+              below a large dropzone, in small muted text, both defaulting to
+              "Not set". The consequence was silent: upload, press Analyse, and
+              get a speculative sweep of all fifteen families with findings for
+              processes the part will never see — with no moment where anyone was
+              asked. That is the report that reaches a director.
 
-          {/* WHAT THE CHOICE WILL DO, before the analysis runs. The selectors
-              were previously silent about their own effect, so there was no way
-              to tell that leaving the process unset meant every rule family got
-              run speculatively against the part. */}
-          <p className="mt-2 text-xs text-slate-400 flex items-start gap-2">
-            <Info size={13} className="shrink-0 mt-0.5 text-gold-400" aria-hidden="true" />
-            <span>
-              {selectedProcess?.dfmFamily ? (
-                <>Will run the <strong className="text-white">{selectedProcess.dfmFamilyName}</strong> ruleset
-                  {material
-                    ? <> with thresholds for <strong className="text-white">{material}</strong> where the alloy changes them.</>
-                    : <>. Pick a material and the thresholds that depend on it — bend radius, minimum wall — are resolved for that alloy instead of the generic band.</>}
-                </>
-              ) : selectedProcess ? (
-                <span className="text-amber-400/90">{selectedProcess.noDfmReason}</span>
-              ) : (
-                <>No process chosen, so every rule family will be run speculatively and some findings will be for
-                  processes this part will never see. Choosing one is what makes the analysis specific.</>
-              )}
-            </span>
-          </p>
+              So they are now a STEP, they appear once there is a part to apply
+              them to, and the analyse button waits for them. */}
+          {file && (
+            <div className="mt-5 border-t border-white/10 pt-4">
+              <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold-500 text-navy-950 text-[11px] font-bold">2</span>
+                How is this part made?
+              </h2>
+              <p className="text-xs text-slate-400 mb-3">
+                Sheet metal, die casting, sand casting and forging are different rulesets with
+                different thresholds — and the alloy moves them again. This is what makes the
+                analysis specific rather than generic.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <label className="text-sm text-slate-200 font-medium">Material
+                  <select value={material} onChange={e => setMaterial(e.target.value)}
+                    className={`mt-1.5 w-full bg-navy-800 border rounded-lg px-3 py-2.5 text-white text-sm
+                                focus:outline-none focus:border-gold-500/60 ${material ? 'border-white/15' : 'border-amber-500/50'}`}>
+                    {/* Short, because a ~200 px select truncated the old label
+                        mid-sentence. What it COSTS you to leave it unset is said
+                        in full in the line below, where there is room for it. */}
+                    <option value="">Choose a material</option>
+                    {options?.materialFamilies.map(f => (
+                      <optgroup key={f.family} label={f.label}>
+                        {f.grades.map(g => <option key={g} value={g}>{g}</option>)}
+                      </optgroup>
+                    ))}
+                  </select>
+                </label>
+                {/* MANUFACTURING process, not "costing process". Labelling it
+                    "costing" made it read as optional metadata, so it was left
+                    unset and every part got a speculative sweep. */}
+                <label className="text-sm text-slate-200 font-medium">Manufacturing process
+                  <select value={costProcess} onChange={e => setCostProcess(e.target.value)}
+                    disabled={!material}
+                    className={`mt-1.5 w-full bg-navy-800 border rounded-lg px-3 py-2.5 text-white text-sm
+                                focus:outline-none focus:border-gold-500/60 disabled:opacity-50
+                                ${costProcess ? 'border-white/15' : 'border-amber-500/50'}`}>
+                    <option value="">{material ? 'Choose a process' : 'Choose a material first'}</option>
+                    {processOptions.filter(p => p.dfmFamily).length > 0 && (
+                      <optgroup label="Shapes the part — DFM rules apply">
+                        {processOptions.filter(p => p.dfmFamily).map(p => (
+                          <option key={p.name} value={p.name}>{p.name}</option>
+                        ))}
+                      </optgroup>
+                    )}
+                    {processOptions.filter(p => !p.dfmFamily).length > 0 && (
+                      <optgroup label="No geometric DFM rules">
+                        {processOptions.filter(p => !p.dfmFamily).map(p => (
+                          <option key={p.name} value={p.name}>{p.name}</option>
+                        ))}
+                      </optgroup>
+                    )}
+                  </select>
+                </label>
+              </div>
+
+              {/* WHAT THE CHOICE WILL DO, before the analysis runs. */}
+              <p className="mt-3 text-xs text-slate-400 flex items-start gap-2">
+                <Info size={13} className="shrink-0 mt-0.5 text-gold-400" aria-hidden="true" />
+                <span>
+                  {selectedProcess?.dfmFamily ? (
+                    <>Will run the <strong className="text-white">{selectedProcess.dfmFamilyName}</strong> ruleset
+                      {material
+                        ? <> with thresholds for <strong className="text-white">{material}</strong> where the alloy changes them.</>
+                        : <>. Pick a material and the thresholds that depend on it — bend radius, minimum wall — are resolved for that alloy instead of the generic band.</>}
+                    </>
+                  ) : selectedProcess ? (
+                    <span className="text-amber-400/90">{selectedProcess.noDfmReason}</span>
+                  ) : (
+                    <>Until a process is chosen, every rule family runs speculatively and some findings
+                      will be for processes this part will never see.</>
+                  )}
+                </span>
+              </p>
+
+              {/* ── Costing & advanced ────────────────────────────────────────
+                  Deliberately quieter. These scale figures or override a default
+                  the engine would otherwise measure for itself; none of them
+                  decides which rules run. */}
+              <p className="mt-4 mb-2 text-[11px] uppercase tracking-wide text-slate-500 font-medium">
+                Costing &amp; advanced
+              </p>
+              <div className="grid sm:grid-cols-3 gap-3">
+                <label className="text-xs text-slate-400">Region
+                  <select value={region} onChange={e => setRegion(e.target.value)}
+                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
+                    {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </label>
+                <label className="text-xs text-slate-400">Annual volume
+                  <input type="number" value={annualVolume} min={1}
+                    onChange={e => setAnnualVolume(Math.max(1, Number(e.target.value) || 1))}
+                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40" />
+                </label>
+                <label className="text-xs text-slate-400">Draw / parting direction
+                  <select value={drawAxis} onChange={e => setDrawAxis(e.target.value as '' | 'x' | 'y' | 'z')}
+                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
+                    <option value="">Find the best (least undercut)</option>
+                    <option value="x">Pin to +X</option>
+                    <option value="y">Pin to +Y</option>
+                    <option value="z">Pin to +Z</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          )}
 
           {/* ── COMPANY STANDARDS ────────────────────────────────────────────
               A plant's own guideline outranks a published one, and this is how a
@@ -786,9 +841,21 @@ export default function DfmStudioPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 mt-4">
-            <button onClick={analyse} disabled={!file || loading !== ''}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-500 text-navy-950 font-semibold text-sm hover:bg-gold-400 transition-colors disabled:opacity-50">
+          {/* THE GATE. `Analyse` used to enable on the file alone, so the shortest
+              path through this page produced a speculative sweep across all
+              fifteen rule families with findings for processes the part will
+              never see. It now waits for the two answers that decide which rules
+              run — or for an explicit, labelled decision to go without them. */}
+          <div className="flex flex-wrap gap-2 mt-5">
+            <button onClick={analyse} disabled={!canAnalyse || loading !== ''}
+              /* `disabled:opacity-50` alone leaves a bright gold button still
+                 reading as clickable — checked against a real render. A disabled
+                 PRIMARY has to lose its fill, not just some of its alpha, or the
+                 gate is invisible until you click and nothing happens. */
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-500 text-navy-950 font-semibold text-sm
+                         hover:bg-gold-400 transition-colors
+                         disabled:bg-transparent disabled:text-slate-500 disabled:border disabled:border-white/15
+                         disabled:cursor-not-allowed disabled:hover:bg-transparent">
               {loading === 'dfm' ? <ButtonSpinner size={14} /> : <Ruler size={15} />} Analyse manufacturability
             </button>
             <button onClick={() => void analyseAssembly()} disabled={!file || loading !== ''}
@@ -797,6 +864,30 @@ export default function DfmStudioPage() {
               {loading === 'dfa' ? <ButtonSpinner size={14} /> : <Boxes size={15} />} Analyse assembly (DFA)
             </button>
           </div>
+          {file && !canAnalyse && (
+            <p className="mt-2.5 text-xs text-amber-400/90 flex items-start gap-2">
+              <AlertTriangle size={13} className="shrink-0 mt-0.5" aria-hidden="true" />
+              <span>
+                Choose {[!material && 'a material', !costProcess && 'a manufacturing process']
+                  .filter(Boolean).join(' and ')} to run the analysis against the right rules.
+                {' '}
+                <button type="button" onClick={() => setRunGeneric(true)}
+                  className="underline underline-offset-2 hover:text-amber-300 focus:outline-none
+                             focus:ring-2 focus:ring-amber-400/60 rounded">
+                  Or run it generically — every rule family, speculatively
+                </button>.
+              </span>
+            </p>
+          )}
+          {file && runGeneric && !(material && costProcess) && (
+            <p className="mt-2.5 text-xs text-amber-400/90 flex items-start gap-2">
+              <AlertTriangle size={13} className="shrink-0 mt-0.5" aria-hidden="true" />
+              <span>
+                Running generically. Every rule family will be applied, so some findings will be for
+                processes this part will never see and their cost figures must not be added together.
+              </span>
+            </p>
+          )}
           {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
         </div>
 

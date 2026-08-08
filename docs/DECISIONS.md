@@ -958,3 +958,32 @@ Format: decision · why · what would change it.
     for a surface nobody can see). Damping went 0.12 to 0.06 — the old value killed the glide
     almost immediately, which is what made orbiting feel steppy — with rotate speed at 0.6 so a
     full drag is about half a turn rather than a full one.
+
+73. **"How is this part made?" is a step, not a setting (2026).**
+    *Why:* the material and manufacturing-process selectors were built, cascading and wired
+    into the thresholds — and still easy to miss entirely. They sat as two cells of a
+    five-column row below a visually dominant dashed dropzone, in `text-xs text-slate-400`
+    on a near-identical dark card, both defaulting to "Not set" with labels too long for a
+    200 px select so they truncated mid-sentence. `Analyse` was enabled on the file alone.
+    The shortest path through the page was therefore upload → Analyse → a speculative sweep
+    across all fifteen rule families, with findings for processes the part will never see and
+    no moment where anyone was asked. *Changes it:* the card is two numbered steps. Step 2
+    appears once there is a part to apply it to, gives Material and Manufacturing process a
+    two-column row at `text-sm`, and borders them amber while unset. The process select is
+    DISABLED until a material is chosen, because the list it would show is meaningless
+    without one. Region, annual volume and draw direction drop to a quieter "Costing &
+    advanced" row — they scale figures or override a measured default; they do not decide
+    which rules run.
+    **The generic path stays reachable and labelled.** `Analyse` waits for both answers, but
+    an underlined "Or run it generically — every rule family, speculatively" sets an explicit
+    flag, and taking it raises its own warning. Blocking with no way past would have been the
+    worse failure: a quick generic look is legitimate, it just should not be what happens
+    when someone presses the obvious button without reading. Naming either selector afterwards
+    releases the flag, so an opt-out cannot persist into an analysis the user has since told
+    us how to make specific.
+    Two things were only visible in a real render and neither would have shown in a unit
+    test: `disabled:opacity-50` left a bright gold primary still reading as clickable, so a
+    disabled Analyse now loses its fill entirely; and the whole flow was verified by driving
+    a real browser against a real server — Step 2 hidden before upload, process list
+    narrowing from 20 aluminium routes to 3 for ABS, the chosen process clearing when the
+    material can no longer take it, and the opt-out releasing on the next selection.
