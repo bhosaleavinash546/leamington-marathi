@@ -452,3 +452,20 @@ Format: decision · why · what would change it.
     `plate-two-holes` now gate it, asserting both that the part is refused AND that the
     sheet-metal family then evaluates nothing. Rib recognition was tightened the same way:
     at a 1.0 height/thickness gate it called a 25.5 x 26.4 mm lump on a machined block a rib.
+
+40. **When two draw directions score alike, that is reported, not resolved (2026).**
+    *Why:* the coarse ranking that made the sweep affordable could not separate close
+    candidates, and the choice changes every number downstream. Measured on a real die-cast
+    bracket: the winning axis flipped X -> Z -> X as the ranking budget went 250 -> 600 ->
+    2000, because at full resolution those two sit 0.59 points apart on undercut area
+    (6.94% vs 7.53%) — and the reported wall-area-below-draft swung 38% to 75% with it.
+    Two fixes, and the second matters more than the first. Any candidate within 8 points of
+    the coarse leader is now re-measured at FULL budget before the winner is chosen, so the
+    ranking no longer depends on the sampling rate. And when the top two remain within 2
+    points after that full measurement, the result carries `drawDirectionAmbiguous` with the
+    margin, and the report says the parting direction is a DESIGN DECISION rather than a
+    geometric conclusion. On the six real parts the margins came out 0.59 (ambiguous), 9.1,
+    11.6, 17.5 and 49.9 — so exactly one part is genuinely a judgement call and it says so.
+    *Changes it:* a tool that silently picks one of two near-equal partings and prints its
+    draft percentages as fact is hiding a decision the toolmaker owns. Surfacing the tie is
+    more useful than resolving it.

@@ -166,6 +166,12 @@ DRAFT_RAY_BUDGET = 2000
 #: as a fine one. The winner is then re-classified at the full budget, so the
 #: numbers a user reads come from the fine pass, not the ranking pass.
 DRAFT_SWEEP_RAY_BUDGET = 250
+#: Coarse-ranking candidates within this many percentage points of the leader are
+#: re-measured at full budget before the winner is chosen.
+RERANK_MARGIN_PCT = 8.0
+#: Two directions this close after a FULL measurement are a design decision, not
+#: a geometric fact, and the report says so.
+AMBIGUOUS_MARGIN_PCT = 2.0
 
 
 def classify_draft(tess, inter, draw, min_draft_deg=1.0, reach=1e5,
@@ -298,12 +304,42 @@ def choose_draw_direction(tess, inter, candidates=None, min_draft_deg=1.0):
             "result": r,
         })
     scored.sort(key=lambda s: (s["undercutAreaPct"], s["zeroDraftAreaPct"]))
+
+    # A COARSE RANKING CANNOT SEPARATE CLOSE CANDIDATES, and picking wrong here
+    # changes every number downstream. Measured on a real die-cast bracket: the
+    # winner flipped X -> Z -> X as the ranking budget went 250 -> 600 -> 2000,
+    # because at full resolution those two axes sit 0.6 points apart (6.94% vs
+    # 7.53% undercut). The reported wall-area-below-draft swung 38% to 75% with
+    # it. So any candidate within RERANK_MARGIN_PCT of the coarse leader is
+    # re-measured at the FULL budget and the winner chosen from those.
+    contenders = [s for s in scored
+                  if s["undercutAreaPct"] <= scored[0]["undercutAreaPct"] + RERANK_MARGIN_PCT]
+    if scored[0]["result"].get("sampled") or len(contenders) > 1:
+        refined = []
+        for s in contenders:
+            raw = next(c for c in candidates if _same_axis(c, s["drawDirectionXYZ"]))
+            r = classify_draft(tess, inter, raw, min_draft_deg=min_draft_deg)
+            refined.append({
+                "drawDirectionXYZ": r["drawDirectionXYZ"],
+                "undercutAreaPct": r["areaPct"]["undercut"],
+                "zeroDraftAreaPct": r["areaPct"]["zeroDraft"],
+                "result": r,
+            })
+        refined.sort(key=lambda s: (s["undercutAreaPct"], s["zeroDraftAreaPct"]))
+        # Keep the refined figures in the alternatives list too, so the report
+        # never shows a coarse number beside a fine one.
+        by_axis = {tuple(s["drawDirectionXYZ"]): s for s in refined}
+        scored = [by_axis.get(tuple(s["drawDirectionXYZ"]), s) for s in scored]
+        scored.sort(key=lambda s: (s["undercutAreaPct"], s["zeroDraftAreaPct"]))
+
     best = scored[0]
-    if best["result"].get("sampled"):
-        best["result"] = classify_draft(
-            tess, inter, [c for c in candidates
-                          if _same_axis(c, best["result"]["drawDirectionXYZ"])][0],
-            min_draft_deg=min_draft_deg)
+    # When two directions are still this close after a full measurement, the
+    # parting direction is a DESIGN DECISION, not something the geometry
+    # settles. Saying so is more useful to a toolmaker than silently choosing.
+    if len(scored) > 1:
+        margin = scored[1]["undercutAreaPct"] - scored[0]["undercutAreaPct"]
+        best["result"]["drawDirectionMarginPct"] = round(margin, 2)
+        best["result"]["drawDirectionAmbiguous"] = margin < AMBIGUOUS_MARGIN_PCT
     return best["result"], [
         {k: s[k] for k in ("drawDirectionXYZ", "undercutAreaPct", "zeroDraftAreaPct")}
         for s in scored

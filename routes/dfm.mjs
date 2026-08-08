@@ -161,6 +161,15 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit }) {
         message: geo.dfm.budgetExceeded.message,
       });
     }
+    if (geo.dfm?.draft?.drawDirectionAmbiguous) {
+      // Two parting directions within a couple of points is a DESIGN decision,
+      // not something the geometry settles. Silently picking one and reporting
+      // its draft percentages as fact hides a choice the toolmaker owns.
+      limits.push({
+        kind: 'drawDirection', severity: 'warning',
+        message: `Two draw directions score within ${geo.dfm.draft.drawDirectionMarginPct} percentage points of each other on undercut area, so the parting direction is a design decision rather than a geometric conclusion. The draft figures below are for the one shown; see the alternatives before treating them as settled.`,
+      });
+    }
     if (geo.dfm?.draft?.sampled) {
       // A percentage that quietly changes from a census to an estimate as parts
       // get bigger is the sort of number this feature exists not to produce.
