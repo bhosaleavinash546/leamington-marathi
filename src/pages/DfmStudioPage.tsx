@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Upload, ShieldCheck, AlertTriangle, HelpCircle, FileDown, Table2,
@@ -98,6 +98,7 @@ export default function DfmStudioPage() {
   // showing WHERE leaves the engineer to hunt for them.
   const [highlight, setHighlight] = useState<'undercuts' | 'zeroDraft' | 'none'>('undercuts');
   const [answers, setAnswers] = useState<Record<number, Partial<Record<DfaQuestion, boolean>>>>({});
+  const [showCallouts, setShowCallouts] = useState(true);
 
   const pick = useCallback((f: File | null) => {
     setFile(f); setResult(null); setDfa(null); setError(''); setAnswers({});
@@ -172,6 +173,75 @@ export default function DfmStudioPage() {
   const wall = dfmBlock.wallThickness ?? {};
   const draft = dfmBlock.draft ?? {};
   const feats = dfmBlock.features ?? {};
+  // ── Callouts, built from the engine's LOCATED findings ────────────────────
+  // Everything here carries its own coordinates and its own measured value, so
+  // a callout never re-derives anything — it reads what the analysis measured
+  // and pins it to the face that produced it.
+  const annotations = useMemo(() => {
+    const out: { id: string; anchorXYZ: [number, number, number]; label: string; value?: string; severity?: 'high' | 'medium' | 'low' | 'info'; faceIds?: number[] }[] = [];
+    const d = dfmBlock.draft ?? {};
+    const w = dfmBlock.wallThickness ?? {};
+    const f = dfmBlock.features ?? {};
+    for (const [i, r] of ((d.undercutRegions ?? []) as any[]).entries()) {
+      out.push({ id: `undercut-${i}`, anchorXYZ: r.centroidXYZ, label: 'Undercut',
+        value: `${r.areaMm2} mm²`, severity: 'high', faceIds: [r.faceId] });
+    }
+    for (const [i, r] of ((d.zeroDraftRegions ?? []) as any[]).slice(0, 6).entries()) {
+      out.push({ id: `zerodraft-${i}`, anchorXYZ: r.centroidXYZ, label: 'Zero draft',
+        value: `${r.draftDeg}°`, severity: 'medium', faceIds: [r.faceId] });
+    }
+    for (const [i, r] of ((w.thinnestRegions ?? []) as any[]).slice(0, 4).entries()) {
+      out.push({ id: `thin-${i}`, anchorXYZ: r.atXYZ, label: 'Thinnest wall',
+        value: `${r.thicknessMm} mm`, severity: 'medium', faceIds: [r.faceId] });
+    }
+    for (const [i, r] of ((f.ribs ?? []) as any[]).entries()) {
+      if (!r.centroidXYZ) continue;
+      out.push({ id: `rib-${i}`, anchorXYZ: r.centroidXYZ, label: `Rib ${i + 1}`,
+        value: `${r.thicknessMm} × ${r.heightMm} mm`, severity: 'info', faceIds: r.faceIds });
+    }
+    for (const [i, p] of ((f.prismatic ?? []) as any[]).entries()) {
+      if (!p.centroidXYZ) continue;
+      out.push({ id: `prismatic-${i}`, anchorXYZ: p.centroidXYZ, label: p.kind,
+        value: `${p.areaMm2} mm²`, severity: 'info', faceIds: p.faceIds });
+    }
+    return out;
+  }, [dfmBlock]);
+
+  // Pin them as soon as an analysis lands, and clear them when it is replaced.
+  useEffect(() => {
+    void viewerRef.current?.setAnnotations(showCallouts ? annotations : []);
+  }, [annotations, showCallouts]);
+
+  /**
+   * Which located finding backs a rule id. A rule is a THRESHOLD; an anchor is a
+   * PLACE. They are different things, so the mapping is explicit rather than
+   * inferred — and a rule with no located evidence simply gets no button.
+   */
+  function anchorFor(ruleId: string) {
+    const first = (prefix: string) => annotations.find(a => a.id.startsWith(prefix));
+    if (ruleId.endsWith('-undercuts')) return first('undercut-');
+    if (ruleId.endsWith('-draft-minimum')) return first('zerodraft-');
+    if (ruleId.includes('wall-thickness') || ruleId.includes('thin-web')
+        || ruleId.includes('wall-uniformity')) return first('thin-');
+    if (ruleId.includes('rib-')) return first('rib-');
+    if (ruleId.includes('pocket')) return first('prismatic-');
+    return undefined;
+  }
+
+  /** Fly to a finding's anchor and make sure its callout is on screen. */
+  function showOnModel(ruleId: string) {
+    const a = anchorFor(ruleId);
+    if (!a) return;
+    setShowCallouts(true);
+    void viewerRef.current?.flyTo(a.anchorXYZ);
+    if (a.faceIds?.length) {
+      void viewerRef.current?.paintFaces('finding', a.faceIds, { colour: 0xf59e0b, opacity: 0.7 });
+    }
+    viewerRef.current?.ready().then(() => {
+      document.querySelector('.cv3d-host')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
   const highlightIds: number[] | null =
     highlight === 'undercuts' ? (draft.undercutFaceIds ?? null)
       : highlight === 'zeroDraft' ? (draft.zeroDraftFaceIds ?? null)
@@ -287,6 +357,14 @@ export default function DfmStudioPage() {
                       {label}
                     </button>
                   ))}
+                  <button type="button" onClick={() => setShowCallouts(v => !v)}
+                    aria-pressed={showCallouts}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${
+                      showCallouts
+                        ? 'border-gold-500/50 bg-gold-500/15 text-gold-300'
+                        : 'border-white/10 text-slate-400 hover:text-slate-200'}`}>
+                    Callouts ({annotations.length})
+                  </button>
                 </div>
               )}
             </div>
@@ -471,7 +549,21 @@ export default function DfmStudioPage() {
                   <div key={f.id} className={`rounded-xl border p-4 mb-3 ${SEV_STYLE[f.severity]}`}>
                     <div className="flex items-start justify-between gap-3 mb-1">
                       <h4 className="text-white font-semibold text-sm">{f.title}</h4>
-                      <span className="text-[10px] font-bold uppercase tracking-wider shrink-0">{f.severity}</span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {/* THE POINT OF THE WHOLE WAVE: a finding that can show
+                            you the face that caused it. Only offered when the
+                            engine actually located this kind of finding — a
+                            button that flies to nowhere is worse than none. */}
+                        {anchorFor(f.id) && (
+                          <button type="button" onClick={() => showOnModel(f.id)}
+                            className="px-2 py-0.5 rounded-md border border-current/40 text-[10px]
+                                       font-semibold uppercase tracking-wider hover:bg-white/10
+                                       focus:outline-none focus:ring-2 focus:ring-gold-500/60">
+                            Show on model
+                          </button>
+                        )}
+                        <span className="text-[10px] font-bold uppercase tracking-wider">{f.severity}</span>
+                      </div>
                     </div>
                     <p className="text-xs opacity-90 mb-2">
                       Measured <span className="font-semibold">{f.measured ?? '—'} {f.unit}</span> · guideline {f.thresholdText}

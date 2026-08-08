@@ -66,6 +66,38 @@ export interface SnapshotOptions {
   quality?: number;
 }
 
+/**
+ * A located finding, pinned to the geometry that caused it.
+ *
+ * `anchorXYZ` is in the PART's own coordinates — exactly what the analysis
+ * emits (`undercutRegions[].centroidXYZ`, `ribs[].centroidXYZ`,
+ * `thinnestRegions[].atXYZ`, `bends[].axisPointXYZ`). The viewer applies the
+ * centring offset and part rotation itself, so a caller never has to know the
+ * scene graph.
+ */
+export interface Annotation {
+  id: string;
+  anchorXYZ: [number, number, number];
+  /** What it is: "Undercut", "Rib 1", "Thin wall". */
+  label: string;
+  /** The measured value, already formatted with its unit. */
+  value?: string;
+  severity?: 'high' | 'medium' | 'low' | 'info';
+  /** Faces to paint alongside the callout, if any. */
+  faceIds?: number[];
+}
+
+/** Where an anchor currently sits on screen, normalised 0..1 from top-left. */
+export interface ProjectedAnchor {
+  id: string;
+  x: number;
+  y: number;
+  /** False when the anchor is off-screen or behind the camera. Callers must
+   *  DROP these, not clamp them — a clamped leader line points at a face that
+   *  is not in the picture. */
+  visible: boolean;
+}
+
 export interface FaceLayerStyle {
   /** 0xRRGGBB. Defaults to the selection blue. */
   colour?: number;
@@ -101,6 +133,12 @@ export interface CADViewerHandle {
   setCamera(c: { position: [number, number, number]; target: [number, number, number] }): void;
   /** Render one frame at an explicit size and return it as a data URL. */
   snapshot(opts?: SnapshotOptions): string;
+  /** Pin callouts to the geometry. Replaces any previous set. */
+  setAnnotations(items: Annotation[]): void;
+  /** Screen positions of the current annotations, for drawing over a capture. */
+  projectAnchors(): ProjectedAnchor[];
+  /** Ease the camera to look at a point in the part's own coordinates. */
+  flyTo(anchor: [number, number, number], opts?: { distance?: number }): void;
   dispose(): void;
   el: HTMLElement;
 }
@@ -165,6 +203,11 @@ const cvIcon = (name: string) =>
 export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions = {}): Promise<CADViewerHandle> {
   const THREE = await import('three');
   const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
+  // Ships with the installed three build — no new dependency, same lazy-import
+  // pattern as OrbitControls above. DOM labels rather than sprites so callout
+  // typography stays crisp at any zoom and can carry real markup.
+  const { CSS2DRenderer, CSS2DObject } =
+    await import('three/examples/jsm/renderers/CSS2DRenderer.js');
 
   // ── DOM scaffold ──
   const root = document.createElement('div');
@@ -303,6 +346,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let triFaceAll: Uint32Array | null = null;   // reordered per-triangle face ids
   let masterPositions: Float32Array | null = null; // reordered, centred positions
   let partRadius = 1;
+  /** Offset the mesh was re-centred by — needed to map part coords to world. */
+  const partCentre = new THREE.Vector3();
   let partSpan = { x: 0, y: 0, z: 0 };
   let edgesOn = true;
   let bodyVisible: boolean[] = [];
@@ -406,7 +451,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     requestAnimationFrame(tick);
     controls.update();
     scaleLabels();
+    stepFly();
     renderer.render(scene, camera);
+    if (calloutObjects.length) labelRenderer.render(scene, camera);
   }
 
   function resize(): void {
@@ -414,9 +461,22 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     if (w === 0 || h === 0) return;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // tracks monitor moves
     renderer.setSize(w, h, false);
+    labelRenderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
+  // The DOM label layer sits over the canvas. pointer-events are off on the
+  // container so orbiting still works through it; individual callouts opt back
+  // in via CSS when they need to be clickable.
+  const labelRenderer = new CSS2DRenderer();
+  labelRenderer.domElement.className = 'cv3d-labels';
+  // Hidden from assistive tech ON PURPOSE. Every value in a callout also appears
+  // as text in the findings list, so exposing the overlay would read the whole
+  // analysis out twice — once as prose, once as floating fragments with no
+  // structure. The 3D layer is a visual aid to text that is already accessible.
+  labelRenderer.domElement.setAttribute('aria-hidden', 'true');
+  viewport.appendChild(labelRenderer.domElement);
+
   const ro = new ResizeObserver(resize);
   ro.observe(viewport);
 
@@ -429,6 +489,32 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     controls.update();
   }
   const fit = () => setView([1, 0.8, 1]);
+
+  /**
+   * Ease the camera to look at a point in the part's own coordinates.
+   *
+   * Tweened rather than teleported: on a busy casting, jumping the view leaves
+   * the engineer re-orienting themselves every time they click a finding, which
+   * is exactly the friction this is supposed to remove.
+   */
+  let fly: { from: Vec3; to: Vec3; fromT: Vec3; toT: Vec3; t: number } | null = null;
+  function flyTo(anchor: [number, number, number], opts: { distance?: number } = {}): void {
+    const target = toWorld(anchor);
+    const d = opts.distance ?? partRadius * 1.5;
+    const dir = camera.position.clone().sub(controls.target).normalize();
+    fly = {
+      from: camera.position.clone(), to: target.clone().addScaledVector(dir, d),
+      fromT: controls.target.clone(), toT: target.clone(), t: 0,
+    };
+  }
+  function stepFly(): void {
+    if (!fly) return;
+    fly.t = Math.min(1, fly.t + 0.06);
+    const e = 1 - (1 - fly.t) ** 3;      // ease-out cubic
+    camera.position.lerpVectors(fly.from, fly.to, e);
+    controls.target.lerpVectors(fly.fromT, fly.toT, e);
+    if (fly.t >= 1) fly = null;
+  }
   /** The toolbar's own view vectors, named so callers need not know the axes.
    *  `top` is nudged off exactly-vertical because a camera looking straight down
    *  its own up-vector has no defined orientation. */
@@ -586,12 +672,22 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     for (const m of bodyMeshes) removeAndDispose(partGroup, m);
     for (const e of bodyEdges) if (e) removeAndDispose(partGroup, e);
     bodyMeshes = []; bodyEdges = []; bodyMats = []; bodyVisible = [];
+    // A previous part's callouts would otherwise hang in space over the new one,
+    // anchored to coordinates that no longer mean anything.
+    clearCallouts();
+    annotations = [];
     removeAndDispose(partGroup, grid); grid = null;
     if (bboxHelper) { removeAndDispose(partGroup, bboxHelper); bboxHelper = null; }
     bboxLabels.forEach(l => removeAndDispose(scene, l)); bboxLabels = [];
 
     // centre at origin
     const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2, cz = (minZ + maxZ) / 2;
+    // REMEMBERED, because the analysis reports anchors in the part's own
+    // coordinates and the mesh here is both re-centred on this offset and
+    // rotated -90 deg on X by partGroup. An anchor placed without undoing both
+    // lands somewhere else entirely, and a callout pointing confidently at the
+    // wrong place is worse than no callout.
+    partCentre.set(cx, cy, cz);
     partSpan = { x: maxX - minX, y: maxY - minY, z: maxZ - minZ };
     partRadius = Math.hypot(partSpan.x, partSpan.y, partSpan.z) / 2 || 1;
     for (let i = 0; i < positions.length; i += 3) {
@@ -1047,6 +1143,73 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   }
 
   /** Back-compat for the pages that just want "highlight these faces". */
+  // ── Callouts ──────────────────────────────────────────────────────────────
+  /**
+   * A located finding, pinned to the geometry that caused it.
+   *
+   * NOTE for the report path: CSS2D labels are DOM, so they do NOT appear in
+   * `renderer.domElement.toDataURL()`. A PDF figure therefore captures the clean
+   * 3D image and draws its callouts as vector on top, using `projectAnchors()`
+   * below — which is also why the label text and its anchor travel together.
+   */
+  let annotations: Annotation[] = [];
+  const calloutObjects: Array<InstanceType<typeof CSS2DObject>> = [];
+
+  function clearCallouts(): void {
+    for (const o of calloutObjects) { o.element.remove(); scene.remove(o); }
+    calloutObjects.length = 0;
+  }
+
+  function setAnnotations(items: Annotation[]): void {
+    clearCallouts();
+    annotations = items ?? [];
+    for (const a of annotations) {
+      const el = document.createElement('div');
+      el.className = 'cv3d-callout';
+      el.dataset.sev = a.severity ?? 'info';
+      el.innerHTML =
+        '<span class="cv3d-callout-dot"></span>'
+        + `<span class="cv3d-callout-body"><b></b><i></i></span>`;
+      (el.querySelector('b') as HTMLElement).textContent = a.label;
+      (el.querySelector('i') as HTMLElement).textContent = a.value ?? '';
+      const obj = new CSS2DObject(el);
+      obj.position.copy(toWorld(a.anchorXYZ));
+      // Hide behind the part rather than floating over it — a callout for a
+      // feature on the far side reads as one on the near side otherwise.
+      obj.center.set(0, 1);
+      scene.add(obj);
+      calloutObjects.push(obj);
+    }
+  }
+
+  /**
+   * Where each anchor currently sits on screen, normalised 0..1 from the top
+   * left. This is what lets the PDF draw crisp vector leader lines over a
+   * raster capture instead of baking labels into the pixels.
+   */
+  function projectAnchors(): ProjectedAnchor[] {
+    camera.updateMatrixWorld();
+    return annotations.map((a) => {
+      const v = toWorld(a.anchorXYZ).project(camera);
+      return {
+        id: a.id,
+        x: (v.x + 1) / 2,
+        y: (1 - v.y) / 2,
+        // Outside the frustum, or behind the camera. The caller must drop these
+        // rather than clamp them to an edge, which would point a leader line at
+        // a face that is not in the picture.
+        visible: v.z < 1 && Math.abs(v.x) <= 1 && Math.abs(v.y) <= 1,
+      };
+    });
+  }
+
+  /** An anchor in the PART's own coordinates -> world space. */
+  function toWorld(p: [number, number, number]): InstanceType<typeof THREE.Vector3> {
+    return new THREE.Vector3(p[0], p[1], p[2])
+      .sub(partCentre)
+      .applyMatrix4(partGroup.matrixWorld);
+  }
+
   function highlightFaces(faceIds: Set<number>): void {
     paintFaces(DEFAULT_LAYER, faceIds);
   }
@@ -1293,6 +1456,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       controls.update();
     },
     snapshot,
+    setAnnotations,
+    projectAnchors,
+    flyTo,
     el: root,
     dispose(): void {
       if (disposed) return;
@@ -1309,6 +1475,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       renderer.dispose();
       try { renderer.forceContextLoss(); } catch { /* context may already be gone */ }
       if (edgeWorker) { edgeWorker.terminate(); edgeWorker = null; }
+      clearCallouts();
+      labelRenderer.domElement.remove();
       root.remove();
     },
   };

@@ -40,6 +40,9 @@ export interface CadViewerRef {
   clearAllLayers(): Promise<void>;
   setView(name: Parameters<CADViewerHandle['setView']>[0]): Promise<void>;
   fit(): Promise<void>;
+  setAnnotations(items: Parameters<CADViewerHandle['setAnnotations']>[0]): Promise<void>;
+  projectAnchors(): Promise<ReturnType<CADViewerHandle['projectAnchors']>>;
+  flyTo(anchor: [number, number, number], opts?: { distance?: number }): Promise<void>;
   ready(): Promise<CADViewerHandle | null>;
 }
 
@@ -119,6 +122,9 @@ const CadViewer3D = forwardRef<CadViewerRef, CadViewer3DProps>(function CadViewe
       async clearAllLayers() { (await settled())?.clearAllLayers(); },
       async setView(name) { (await settled())?.setView(name); },
       async fit() { (await settled())?.fit(); },
+      async setAnnotations(items) { (await settled())?.setAnnotations(items); },
+      async projectAnchors() { return (await settled())?.projectAnchors() ?? []; },
+      async flyTo(anchor, opts) { (await settled())?.flyTo(anchor, opts); },
     };
   }, []);
 

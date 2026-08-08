@@ -578,3 +578,24 @@ Format: decision · why · what would change it.
     dropped when compound holes were assembled, and the sheet-metal flange logic keys off
     that field on hole rows — so every counterbored and countersunk hole had been silently
     skipped there.
+
+47. **Callouts are DOM, and deliberately not in the pixels (2026).**
+    *Why:* findings are now pinned to the geometry that caused them — a ring on the face, a
+    leader line, the label and its measured value, coloured by severity. `CSS2DRenderer`
+    does the pinning and ships inside the installed `three`, so it is a lazy import beside
+    the existing `OrbitControls` one and not a new dependency. DOM labels rather than
+    canvas sprites because sprite text blurs on zoom and cannot carry markup. *Changes it:*
+    this has a consequence the PDF work depends on. `renderer.domElement.toDataURL()`
+    captures the WebGL canvas ONLY — a DOM overlay is not in it. So a report figure cannot
+    just screenshot the annotated view; it captures the clean render and draws its callouts
+    as VECTOR on top, using `projectAnchors()` to place them. That is the better outcome
+    anyway: callout text ends up sharp at print resolution instead of upscaled screen
+    pixels. `projectAnchors` returns a `visible` flag and the caller must DROP the
+    off-screen ones rather than clamp them, because a clamped leader line points at a face
+    that is not in the picture.
+    *Also:* an anchor arrives in the PART's own coordinates while the mesh is both
+    re-centred on a discarded offset and rotated -90 deg on X by `partGroup`. Both
+    transforms are undone in one place (`toWorld`), and the centring offset — previously a
+    local const, thrown away after use — is now remembered. Without it every callout would
+    have been pinned confidently to the wrong place, which is precisely the failure the
+    face-id work existed to end.

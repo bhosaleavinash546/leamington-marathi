@@ -118,3 +118,64 @@
 .cv3d-status-hint { margin-left: auto; }
 
 .cv3d--compact .cv3d-toolbar button { min-width: 26px; height: 26px; font-size: 12px; }
+
+/* ── Finding callouts ──────────────────────────────────────────────────────
+   DOM labels pinned to 3D anchors by CSS2DRenderer. The container must not
+   swallow pointer events or the part becomes un-orbitable through it; the
+   callout body opts back in so it can be read and hovered.
+
+   These are DELIBERATELY not baked into the WebGL canvas: a PDF figure captures
+   the clean render and draws its callouts as vector on top, so report text is
+   sharp at print resolution instead of upscaled screen pixels. */
+.cv3d-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.cv3d-callout {
+  position: relative;
+  pointer-events: none;
+  transform: translate(0, 0);
+  font: 500 11px/1.35 ui-sans-serif, system-ui, sans-serif;
+  white-space: nowrap;
+}
+/* The anchor point itself — a small ring sitting exactly on the geometry. */
+.cv3d-callout-dot {
+  position: absolute;
+  left: -4px; bottom: -4px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 2px rgb(0 0 0 / 0.55);
+}
+/* The label, offset up-and-right, with a leader line back to the dot. */
+.cv3d-callout-body {
+  position: absolute;
+  left: 14px; bottom: 14px;
+  display: block;
+  padding: 3px 7px;
+  border-radius: 6px;
+  border: 1px solid currentColor;
+  background: rgb(9 14 26 / 0.92);
+  color: #e8eef7;
+  pointer-events: auto;
+}
+.cv3d-callout-body b { font-weight: 600; }
+.cv3d-callout-body i { font-style: normal; opacity: 0.75; margin-left: 6px; }
+/* The leader: a hairline from the dot to the label corner. */
+.cv3d-callout-body::before {
+  content: '';
+  position: absolute;
+  left: -11px; bottom: -11px;
+  width: 15px; height: 15px;
+  border-left: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: rotate(45deg);
+  transform-origin: bottom left;
+  opacity: 0.8;
+}
+.cv3d-callout[data-sev='high']   { color: #f87171; }
+.cv3d-callout[data-sev='medium'] { color: #fbbf24; }
+.cv3d-callout[data-sev='low']    { color: #2dd4bf; }
+.cv3d-callout[data-sev='info']   { color: #7dd3fc; }
