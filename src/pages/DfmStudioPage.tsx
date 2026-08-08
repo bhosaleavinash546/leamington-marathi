@@ -24,7 +24,7 @@ interface Finding {
   cost?: {
     priced: boolean; basis?: string; changeDescription?: string;
     asDrawnEur?: number; improvedEur?: number; deltaEur?: number; annualDeltaEur?: number;
-    reason?: string; externalGuideline?: string;
+    reason?: string; externalGuideline?: string; upperBound?: boolean; caveat?: string;
   };
 }
 interface ProcessResult {
@@ -461,6 +461,14 @@ export default function DfmStudioPage() {
                       <p className="text-emerald-300 text-xs">
                         <span className="text-slate-500">Cost impact:</span> {f.cost.changeDescription} saves €{f.cost.deltaEur}/part
                         {f.cost.annualDeltaEur ? ` (€${f.cost.annualDeltaEur.toLocaleString()}/yr)` : ''} — {f.cost.basis}
+                        {/* A ceiling must never be shown as a forecast. This is
+                            the number a director remembers. */}
+                        {f.cost.caveat && (
+                          <span className="block mt-1 text-amber-400/90 italic not-italic">
+                            <span className="font-semibold uppercase text-[10px] tracking-wider">Upper bound — </span>
+                            {f.cost.caveat}
+                          </span>
+                        )}
                       </p>
                     ) : (
                       <p className="text-slate-500 text-xs">

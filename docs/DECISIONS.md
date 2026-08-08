@@ -469,3 +469,19 @@ Format: decision · why · what would change it.
     *Changes it:* a tool that silently picks one of two near-equal partings and prints its
     draft percentages as fact is hiding a decision the toolmaker owns. Surfacing the tie is
     more useful than resolving it.
+
+41. **A saving that needs a drastic redesign is labelled a CEILING, at the top (2026).**
+    *Why:* the wall-thickness pricer scales mass by the thickness ratio, which is the right
+    first-order physics for coring a section out. On a real die-cast bracket measuring a
+    15.84 mm median wall, taking it to the 3.5 mm band implies removing 78% of the part's
+    mass, and the engine priced that at EUR 411,000/yr — a correct calculation and an
+    indefensible conclusion, because nobody cores a structural bracket down to nothing. The
+    finding stands; the figure now carries `upperBound` and a caveat saying it is reached
+    only if the heavy sections can be cored to the nominal wall throughout, and that a
+    structural part recovers the fraction its loads allow. *Changes it:* the caveat is not
+    enough on its own. The first render put a clean "EUR 411,000" in a green cover tile with
+    the qualification three pages away — and the cover number is what a reader carries out of
+    the room. Both headline positions, the cover tile and the per-process header, now read
+    UPPER BOUND / CEILING whenever an upper-bound finding contributes to the total. A
+    six-figure number that quietly assumes the most flattering redesign available is the
+    single easiest way for this tool to lose a room's trust.

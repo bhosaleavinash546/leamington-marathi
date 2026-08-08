@@ -45,6 +45,8 @@ export interface DfmFinding {
     annualDeltaEur?: number;
     reason?: string;
     externalGuideline?: string;
+    upperBound?: boolean;
+    caveat?: string;
   };
 }
 
@@ -172,6 +174,11 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
   const totalRules = data.results.reduce((s, r) => s + r.ruleCount, 0);
   const totalEvaluated = data.results.reduce((s, r) => s + r.evaluatedCount, 0);
   const pricedTotal = data.results.reduce((s, r) => s + (r.impact?.annualEur || 0), 0);
+  // Is that headline figure a CEILING? A tile reading a clean six-figure number
+  // is what a reader carries out of the room, and the caveat explaining that it
+  // assumes the most aggressive redesign available sits three pages away. Where
+  // an upper-bound finding contributes, the label says so at the top.
+  const hasUpperBound = data.results.some(r => r.findings.some(f => f.cost?.upperBound));
 
   // ── Cover ──────────────────────────────────────────────────────────────────
   setFill(doc, NAVY); doc.rect(0, 0, PW, 74, 'F');
@@ -194,7 +201,8 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
     [String(allFindings.length), 'FINDINGS', allFindings.length ? RED : GREEN],
     [String(allFindings.filter(f => f.severity === 'high').length), 'HIGH SEVERITY', RED],
     [String(totalUnevaluated), 'NOT EVALUATED', MUT],
-    [pricedTotal ? eur(pricedTotal).replace('EUR ', '€') : '—', 'PRICED / YEAR', GREEN],
+    [pricedTotal ? eur(pricedTotal).replace('EUR ', '€') : '—',
+      hasUpperBound ? 'PRICED / YR - UPPER BOUND' : 'PRICED / YEAR', GREEN],
   ];
   const tw = (CW - 9) / 4;
   tiles.forEach(([v, l, c], i) => {
@@ -316,7 +324,8 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
     mono(6.2); setText(doc, MUT);
     doc.text('MANUFACTURABILITY SCORE', ML + 4, y);
     doc.text('RULE COVERAGE', ML + 70, y);
-    doc.text('PRICED IMPACT / YEAR', ML + 122, y);
+    doc.text(r.findings.some(f => f.cost?.upperBound)
+      ? 'PRICED IMPACT / YR (CEILING)' : 'PRICED IMPACT / YEAR', ML + 122, y);
     sans(11, 'bold'); setText(doc, r.score == null ? MUT : r.score >= 80 ? GREEN : r.score >= 50 ? AMBER : RED);
     doc.text(r.score == null ? 'not scored' : `${r.score} / 100`, ML + 4, y + 5.5);
     setText(doc, INK);
@@ -347,6 +356,7 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
         + 3.8 + measure(f.fix, 9.1, CW - 9, 4.1) + 1      // "WHAT TO DO" + body
         + 3.8 + measure(costText, 9.1, CW - 9, 4.1)      // "COST IMPACT" + body
         + (f.cost?.externalGuideline ? measure(f.cost.externalGuideline, 8.8, CW - 9, 4.0, 'italic') : 0)
+        + (f.cost?.caveat ? measure(f.cost.caveat, 8.8, CW - 9, 4.0, 'italic') + 1 : 0)
         + 4 + 8;                                          // source line + rule
       ensure(cardH);
       const top = y - 4;
@@ -375,6 +385,9 @@ export function exportDfmPdf(dataIn: DfmReportData): void {
       doc.text('COST IMPACT', ML + 4.5, y); y += 3.8;
       if (f.cost?.priced) {
         wrapped(costText, 9.1, GREEN, CW - 9, 4.1, 'normal', ML + 4.5);
+        // An upper bound printed in the same green as an achievable saving is
+        // how a ceiling becomes a commitment in somebody's memory.
+        if (f.cost.caveat) wrapped(f.cost.caveat, 8.8, AMBER, CW - 9, 4.0, 'italic', ML + 4.5);
       } else {
         wrapped(costText, 9.1, MUT, CW - 9, 4.1, 'normal', ML + 4.5);
         if (f.cost?.externalGuideline) {

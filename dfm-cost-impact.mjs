@@ -23,6 +23,10 @@ import { stampingFeatureCost } from './stamping-feature-cost.mjs';
 
 const round2 = n => Math.round(n * 100) / 100;
 
+//: Below this mass ratio the "saving" implies a redesign so aggressive that the
+//: figure is a ceiling rather than a forecast, and it is labelled as one.
+const DRASTIC_MASS_RATIO = 0.6;
+
 /**
  * Per-rule pricers. Each returns a delta object or null when it cannot price
  * this particular part. Returning null is a normal outcome, not an error.
@@ -161,6 +165,19 @@ function priceWallThickness(finding, ctx) {
   } catch {
     return null;
   }
+  // HOW BIG A CHANGE IS THIS, REALLY? The mass is scaled by the thickness ratio,
+  // which is the right first-order physics for coring a section out — but on a
+  // real die-cast bracket measuring a 15.84 mm median wall, bringing it to
+  // 3.5 mm implies removing 78% of the part's mass, and the engine happily
+  // prices that at EUR 411,000/yr. The arithmetic is correct and the conclusion
+  // is not: nobody cores a structural bracket down to nothing.
+  //
+  // The finding stands — that wall IS out of band — but the figure has to be
+  // labelled as the CEILING it is, reached only if the whole section can be
+  // cored to the nominal wall. A number a director will remember must not
+  // quietly assume the most flattering redesign in existence.
+  const massRatio = target / measured;
+  const drastic = massRatio < DRASTIC_MASS_RATIO;
   return {
     priced: true,
     basis: 'computeShouldCost — cooling-limited cycle (base + k·wall²) and the mass change that comes with it',
@@ -169,6 +186,14 @@ function priceWallThickness(finding, ctx) {
     improvedEur: round2(improved.totalShouldCost),
     deltaEur: round2(asDrawn.totalShouldCost - improved.totalShouldCost),
     annualDeltaEur: annualVolume ? round2((asDrawn.totalShouldCost - improved.totalShouldCost) * annualVolume) : null,
+    ...(drastic ? {
+      upperBound: true,
+      caveat: `This is a CEILING, not a forecast. Reaching ${target} mm means removing `
+        + `${Math.round((1 - massRatio) * 100)}% of the part's mass, which assumes the heavy `
+        + 'sections can be cored out to the nominal wall throughout. A structural part will '
+        + 'recover only the fraction its loads allow — take this figure to a casting engineer '
+        + 'as the size of the prize, not as a committed saving.',
+    } : {}),
   };
 }
 
