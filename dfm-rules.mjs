@@ -289,6 +289,11 @@ export function runDfmRules(geo, process, { material, overrides } = {}) {
       // all. The report prints this beside the finding.
       thresholdBasis: picked.basis,
       thresholdMatchedOn: picked.matchedOn,
+      // The alloy that WAS in play, independently of whether this rule had a
+      // band for it. Without it the report cannot tell "no material was given"
+      // apart from "this rule is alloy-independent", and it used to assert the
+      // first on reports whose cover named the second.
+      thresholdMaterial: material ?? null,
       status,
     };
     // The specific features that break this rule, worst first. Only the ones

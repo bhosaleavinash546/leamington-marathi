@@ -1078,3 +1078,30 @@ Format: decision · why · what would change it.
     to something closer to white than to metal. *Changes it:* a neutral `0x8f9499` at the
     value CAD viewers actually use, metalness pulled back from 0.45 to 0.25 so the
     environment reads as a soft sheen rather than a mirror, and exposure trimmed to 0.92.
+
+81. **The chosen process leads the report; the alternatives follow it (2026).**
+    *Why:* a manufacturing head read two reports and concluded the tool was ignoring the
+    material and process they had selected — "it's giving all the different manufacturing
+    process details". The ENGINE was never generic: `routes/dfm.mjs` runs one family when a
+    process is chosen, and both reports carried exactly one findings section. The REPORT said
+    otherwise. Route comparison — nine processes on a full page — was printed BEFORE the
+    chosen process's findings, and no row in it was marked as the reader's own, so the page
+    read as a survey of every process rather than as alternatives to one. Ordering was making
+    a claim the engine never made. *Changes it:* the per-process findings now come first in
+    both the PDF and the Studio page; the table is retitled "Alternative routes — your route
+    is X, against the other N"; the chosen row is marked in place (never lifted to the top —
+    where it sits in a cheapest-first list IS the answer); every other row carries its
+    piece-price and tooling delta against it; and a closing sentence names the cheapest
+    alternative with what the switch costs, or says plainly that nothing prices below the
+    chosen route. The cover gains one line naming the route, the ruleset it ran and where the
+    alternatives are.
+
+82. **"process-generic" was one sentence covering two different claims (2026).**
+    *Why:* the bracket report's cover read STEEL (MILD) · STAMPING / DEEP DRAWING, and the
+    finding beneath it read "THRESHOLD: process-generic — no material was given". The alloy
+    HAD been given and used; this rule simply carries no alloy-specific band. Telling a reader
+    their input was missing when it was not is how a correct analysis loses their trust — and
+    it is the sentence that most directly fed the complaint above. *Changes it:* the material
+    in play travels on the finding as `thresholdMaterial` whether or not the rule had a band
+    for it, so the report can distinguish "you gave no alloy" from "this rule is
+    alloy-independent". Both remain amber; only one of them is the reader's fault.

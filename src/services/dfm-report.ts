@@ -40,6 +40,10 @@ export interface DfmFinding {
    *  not at all. A generic band must not read like a material-specific one. */
   thresholdBasis?: 'material' | 'material-family' | 'process-generic' | 'customer-standard';
   thresholdMatchedOn?: string | null;
+  /** The material that WAS in play when the threshold was resolved, whether or
+   *  not the rule had a band for it. Without this a generic band cannot tell
+   *  "you gave no alloy" apart from "this rule is alloy-independent". */
+  thresholdMaterial?: string | null;
   /** The features that break this rule, worst first. A finding that says
    *  "max depth/dia is 8.2" sends a supplier hunting; one that names the hole
    *  and its coordinates is a review document. */
@@ -143,6 +147,10 @@ export interface DfmReportData {
       findingCount: number; highSeverityCount: number; scoreCaveat?: string | null;
       piecePriceEur: number | null; toolingEur: number | null; inputMassKg: number | null;
       kgCo2e: number | null; cbamEur: number | null; costReason?: string; carbonReason?: string;
+      /** True on the ONE row the user actually selected. */
+      isChosen?: boolean;
+      /** Piece-price and tooling difference against the chosen route, when there is one. */
+      deltaPieceEur?: number | null; deltaToolingEur?: number | null;
     }>;
     skipped: Array<{ process: string; reason: string }>;
     basis: string;
@@ -340,6 +348,30 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
   doc.text('How to read this report', ML, y); y += 5.5;
   wrapped('Every geometric figure here was measured from your CAD file by an OpenCascade kernel — draft angles and wall thickness on the tessellation, holes and features from the B-rep topology. Every cost figure was computed by the same deterministic engines the rest of BrainSpark uses. The AI wrote none of the numbers.', 9.2, BODY);
   y += 2;
+  // WHAT THIS REPORT IS ABOUT, IN ONE SENTENCE. The engine has always run only
+  // the chosen family's rules — but the report never said so in the reader's
+  // words, and it printed nine alternative processes before the chosen one's
+  // findings. A manufacturing head read that as "it is giving me all the
+  // different processes", which is exactly what the page looked like.
+  {
+    const ran = data.results.filter(r => r.ruleCount > 0);
+    if (ran.length === 1 && data.subject?.process) {
+      wrapped(`WHAT WAS ANALYSED: you chose ${data.subject.process}`
+        + (data.material ? ` in ${data.material}` : '')
+        + `, so this report runs the ${ran[0].processName} ruleset and nothing else — `
+        + `${ran[0].ruleCount} rules, of which ${ran[0].evaluatedCount} could be evaluated on this geometry. `
+        + 'Every finding below belongs to that route. Other processes appear once, near the end, under '
+        + '"Alternative routes", and only to answer whether a different route would be cheaper.',
+        9, INK, CW, 4.2, 'bold');
+      y += 2;
+    } else if (ran.length > 1) {
+      wrapped(`WHAT WAS ANALYSED: no single manufacturing process was settled, so ${ran.length} rule families were `
+        + 'run speculatively and some findings below will be for a process this part will never see. '
+        + 'Choose a material and a manufacturing process to narrow this to one route.',
+        9, AMBER, CW, 4.2, 'bold');
+      y += 2;
+    }
+  }
   wrapped('Rules report in three states, not two: failed, passed, and NOT EVALUATED. A rule whose measurement this part does not provide is listed as unevaluated with the reason, never as a pass — so the coverage figure beside each score tells you how much of the catalogue actually ran.', 9.2, BODY);
   y += 2;
   // The geometry is measured. The THRESHOLDS it is measured against are not, and
@@ -635,78 +667,6 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
     }
   }
 
-  // ── Every viable route ────────────────────────────────────────────────────
-  //
-  // The single most useful page for a cost engineer, and until now it existed
-  // only on screen. Same measured geometry, each row judged by THAT process's
-  // own rule family and priced by the same engine.
-  if (data.routes?.routes?.length) {
-    newPage();
-    sectionTitle('Route comparison', `${data.routes.routes.length} viable processes for ${data.material ?? 'this material'}`);
-    wrapped(String(data.routes.basis), 8.8, MUT, CW, 4.0, 'italic');
-    y += 3;
-
-    const cols = [
-      { w: 52, label: 'Process', align: 'left' as const },
-      { w: 20, label: 'Score', align: 'right' as const },
-      { w: 18, label: 'Rules', align: 'right' as const },
-      { w: 26, label: 'EUR/part', align: 'right' as const },
-      { w: 28, label: 'Tooling', align: 'right' as const },
-      { w: 22, label: 'kg CO2e', align: 'right' as const },
-    ];
-    const drawRow = (cells: string[], bold: boolean, colour: RGB) => {
-      ensure(6);
-      let x = ML;
-      sans(8.2, bold ? 'bold' : 'normal'); setText(doc, colour);
-      for (let i = 0; i < cols.length; i++) {
-        const c = cols[i];
-        const t = fit(doc, cells[i] ?? '', c.w - 2);
-        doc.text(t, c.align === 'right' ? x + c.w - 2 : x, y, { align: c.align });
-        x += c.w;
-      }
-      y += 5;
-    };
-    drawRow(cols.map(c => c.label), true, MUT);
-    setDraw(doc, RULE, 0.3); doc.line(ML, y - 3.4, PW - MR, y - 3.4);
-
-    // Cheapest first. A route with no price sorts LAST rather than being read as
-    // zero, which would put every unpriceable option at the top.
-    const sorted = [...data.routes.routes].sort((a, b) => {
-      const av = a.piecePriceEur, bv = b.piecePriceEur;
-      if (!Number.isFinite(av as number) && !Number.isFinite(bv as number)) return 0;
-      if (!Number.isFinite(av as number)) return 1;
-      if (!Number.isFinite(bv as number)) return -1;
-      return (av as number) - (bv as number);
-    });
-    for (const r of sorted) {
-      const colour = r.score === null ? MUT : r.score >= 70 ? GREEN : r.score >= 40 ? AMBER : RED;
-      drawRow([
-        r.process,
-        // A score without its coverage invites comparison between a 9-of-9 check
-        // and a 1-of-9 one, so the two are never more than a column apart.
-        r.score === null ? '—' : String(r.score),
-        `${r.evaluatedCount}/${r.ruleCount}`,
-        r.piecePriceEur === null ? 'not priced' : `EUR ${r.piecePriceEur.toFixed(2)}`,
-        r.toolingEur === null ? '—' : `EUR ${Math.round(r.toolingEur).toLocaleString('en-GB')}`,
-        r.kgCo2e === null ? '—' : r.kgCo2e.toFixed(2),
-      ], false, colour);
-      if (r.highSeverityCount > 0 || r.scoreCaveat) {
-        mono(6.4); setText(doc, MUT); ensure(4);
-        const note = [r.highSeverityCount ? `${r.highSeverityCount} high-severity` : '', r.scoreCaveat ?? '']
-          .filter(Boolean).join(' · ');
-        doc.text(fit(doc, `    ${note}`, CW - 4), ML, y); y += 4;
-      }
-    }
-    y += 2;
-    setDraw(doc, RULE, 0.3); doc.line(ML, y, PW - MR, y); y += 5;
-    if (data.routes.skipped.length) {
-      // Named, not hidden: the absence of a process from this list looks like an
-      // oversight unless the list says why.
-      wrapped(`Not applicable to ${data.material}: ${data.routes.skipped.map(s => s.process).join(', ')}.`,
-        8.6, MUT, CW, 4.0, 'italic');
-    }
-    y += 4;
-  }
 
   // ── Per-process results ────────────────────────────────────────────────────
   for (const r of data.results) {
@@ -825,11 +785,20 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
       // WHICH MATERIAL THIS NUMBER IS FOR. A 3 r/t bend radius for 6061-T6 and a
       // generic 1 r/t band look identical on the page unless the report says
       // which it is, and the difference decides whether the part cracks.
+      //
+      // "process-generic" had ONE sentence for TWO different situations, and it
+      // asserted the wrong one on every report where a material WAS chosen: the
+      // cover read STEEL (MILD) and the finding beneath it read "no material was
+      // given". The alloy had been passed and used; this rule simply has no
+      // alloy-specific band, which is a different — and defensible — statement.
       if (f.thresholdBasis) {
         mono(6); setText(doc, f.thresholdBasis === 'process-generic' ? AMBER : GREEN); ensure(5);
-        doc.text(fit(doc, f.thresholdBasis === 'process-generic'
-          ? 'THRESHOLD: process-generic — no material was given, so this is the band for the process as a whole, not for your alloy'
-          : `THRESHOLD: resolved for ${f.thresholdMatchedOn}`, CW - 9), ML + 4.5, y);
+        const line = f.thresholdBasis !== 'process-generic'
+          ? `THRESHOLD: resolved for ${f.thresholdMatchedOn}`
+          : f.thresholdMaterial
+            ? `THRESHOLD: process-generic — ${f.thresholdMaterial} was applied, but this rule carries no alloy-specific band, so the process-wide value stands`
+            : 'THRESHOLD: process-generic — no material was given, so this is the band for the process as a whole, not for your alloy';
+        doc.text(fit(doc, line, CW - 9), ML + 4.5, y);
         y += 4;
       }
       setDraw(doc, RULE, 0.2); doc.line(ML, y + 1, PW - MR, y + 1);
@@ -871,6 +840,138 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
       }
       y += 3;
     }
+  }
+
+  // ── Alternative routes ────────────────────────────────────────────────────
+  //
+  // This section USED TO COME FIRST, and a reader opening the report met nine
+  // processes before meeting the one they had chosen. The complaint was exact:
+  // "it's giving all the different manufacturing process details". The rules
+  // were never generic — only one family ever ran — but the running order said
+  // otherwise, so the chosen process now leads and this is explicitly the
+  // ALTERNATIVES to it, named as such, with the chosen row marked in place.
+  if (data.routes?.routes?.length) {
+    newPage();
+    const chosenRow = data.routes.routes.find(r => r.isChosen) ?? null;
+    sectionTitle('Alternative routes',
+      chosenRow
+        ? `Your route is ${chosenRow.process}, against the other ${data.routes.routes.length - 1}`
+        : `${data.routes.routes.length} viable processes for ${data.material ?? 'this material'}`);
+    wrapped(chosenRow
+      ? 'The findings above are YOUR route and nobody else\'s. This page exists only to answer the next '
+        + 'question — would another process make the same geometry for less. Each row is the same measured '
+        + 'geometry run through THAT process\'s own rule family, priced by computeShouldCost and carbon-scored '
+        + 'by computeCarbon on the cost engine\'s own input mass. Nothing is blended into a single ranking.'
+      : String(data.routes.basis), 8.8, MUT, CW, 4.0, 'italic');
+    y += 3;
+
+    const cols = [
+      { w: 52, label: 'Process', align: 'left' as const },
+      { w: 20, label: 'Score', align: 'right' as const },
+      { w: 18, label: 'Rules', align: 'right' as const },
+      { w: 26, label: 'EUR/part', align: 'right' as const },
+      { w: 28, label: 'Tooling', align: 'right' as const },
+      { w: 22, label: 'kg CO2e', align: 'right' as const },
+    ];
+    const drawRow = (cells: string[], bold: boolean, colour: RGB) => {
+      ensure(6);
+      let x = ML;
+      sans(8.2, bold ? 'bold' : 'normal'); setText(doc, colour);
+      for (let i = 0; i < cols.length; i++) {
+        const c = cols[i];
+        const t = fit(doc, cells[i] ?? '', c.w - 2);
+        doc.text(t, c.align === 'right' ? x + c.w - 2 : x, y, { align: c.align });
+        x += c.w;
+      }
+      y += 5;
+    };
+    drawRow(cols.map(c => c.label), true, MUT);
+    setDraw(doc, RULE, 0.3); doc.line(ML, y - 3.4, PW - MR, y - 3.4);
+
+    // Cheapest first. A route with no price sorts LAST rather than being read as
+    // zero, which would put every unpriceable option at the top.
+    const sorted = [...data.routes.routes].sort((a, b) => {
+      const av = a.piecePriceEur, bv = b.piecePriceEur;
+      if (!Number.isFinite(av as number) && !Number.isFinite(bv as number)) return 0;
+      if (!Number.isFinite(av as number)) return 1;
+      if (!Number.isFinite(bv as number)) return -1;
+      return (av as number) - (bv as number);
+    });
+    for (const r of sorted) {
+      const colour = r.score === null ? MUT : r.score >= 70 ? GREEN : r.score >= 40 ? AMBER : RED;
+      // The chosen route is drawn in place, on a band, rather than lifted to the
+      // top: its position in a cheapest-first list IS the answer to "should I
+      // have picked something else", and moving it would destroy that.
+      if (r.isChosen) {
+        setFill(doc, PANEL); doc.rect(ML - 2, y - 3.6, CW + 4, 5.6, 'F');
+      }
+      drawRow([
+        r.process,
+        // A score without its coverage invites comparison between a 9-of-9 check
+        // and a 1-of-9 one, so the two are never more than a column apart.
+        r.score === null ? '—' : String(r.score),
+        `${r.evaluatedCount}/${r.ruleCount}`,
+        r.piecePriceEur === null ? 'not priced' : `EUR ${r.piecePriceEur.toFixed(2)}`,
+        r.toolingEur === null ? '—' : `EUR ${Math.round(r.toolingEur).toLocaleString('en-GB')}`,
+        r.kgCo2e === null ? '—' : r.kgCo2e.toFixed(2),
+      ], !!r.isChosen, colour);
+      // A delta is only meaningful against the route you are actually on, so it
+      // is printed on the alternatives and never on the chosen row itself.
+      const delta = !r.isChosen && Number.isFinite(r.deltaPieceEur as number)
+        ? `${(r.deltaPieceEur as number) < 0 ? '−' : '+'}EUR ${Math.abs(r.deltaPieceEur as number).toFixed(2)}/part vs your route`
+          + (Number.isFinite(r.deltaToolingEur as number)
+            ? `, ${(r.deltaToolingEur as number) < 0 ? '−' : '+'}EUR ${Math.abs(Math.round(r.deltaToolingEur as number)).toLocaleString('en-GB')} tooling`
+            : '')
+        : '';
+      const note = [
+        r.isChosen ? 'YOUR ROUTE — the findings above are this one' : '',
+        delta,
+        r.highSeverityCount ? `${r.highSeverityCount} high-severity` : '',
+        r.scoreCaveat ?? '',
+      ].filter(Boolean).join(' · ');
+      if (note) {
+        mono(6.4); setText(doc, r.isChosen ? GOLD : MUT); ensure(4);
+        doc.text(fit(doc, `    ${note}`, CW - 4), ML, y); y += 4;
+      }
+    }
+    y += 2;
+    setDraw(doc, RULE, 0.3); doc.line(ML, y, PW - MR, y); y += 5;
+
+    // THE ONE SENTENCE A COST ENGINEER READS. A table of nine rows without it
+    // leaves the reader to do the arithmetic that produced the table.
+    if (chosenRow && Number.isFinite(chosenRow.piecePriceEur as number)) {
+      const cheaper = sorted.filter(r => !r.isChosen
+        && Number.isFinite(r.piecePriceEur as number)
+        && (r.piecePriceEur as number) < (chosenRow.piecePriceEur as number));
+      if (!cheaper.length) {
+        wrapped(`No viable route prices below ${chosenRow.process} on this geometry, so the piece price is not `
+          + 'the lever here — the findings above are.', 9, GREEN, CW, 4.2, 'bold');
+      } else {
+        const best = cheaper[0];
+        // Cheaper is not automatically better, and a report that says "switch"
+        // without naming what the switch costs is a sales pitch.
+        wrapped(`${best.process} prices ${((chosenRow.piecePriceEur as number) - (best.piecePriceEur as number)).toFixed(2)} EUR/part `
+          + `below ${chosenRow.process}`
+          + (Number.isFinite(best.toolingEur as number) && Number.isFinite(chosenRow.toolingEur as number)
+            ? ` on ${(best.toolingEur as number) < (chosenRow.toolingEur as number) ? 'lower' : 'higher'} tooling `
+              + `(EUR ${Math.round(best.toolingEur as number).toLocaleString('en-GB')} against `
+              + `EUR ${Math.round(chosenRow.toolingEur as number).toLocaleString('en-GB')})`
+            : '')
+          + `, and scores ${best.score === null ? 'nothing — no rule in its family could be evaluated' : best.score} `
+          + `over ${best.evaluatedCount} of ${best.ruleCount} rules`
+          + (best.highSeverityCount ? ` with ${best.highSeverityCount} high-severity finding${best.highSeverityCount === 1 ? '' : 's'}` : '')
+          + '. That is a quotation to ask for, not a decision this tool has taken for you.',
+          9, BODY, CW, 4.2);
+      }
+      y += 3;
+    }
+    if (data.routes.skipped.length) {
+      // Named, not hidden: the absence of a process from this list looks like an
+      // oversight unless the list says why.
+      wrapped(`Not applicable to ${data.material}: ${data.routes.skipped.map(s => s.process).join(', ')}.`,
+        8.6, MUT, CW, 4.0, 'italic');
+    }
+    y += 4;
   }
 
   // ── DFA ────────────────────────────────────────────────────────────────────

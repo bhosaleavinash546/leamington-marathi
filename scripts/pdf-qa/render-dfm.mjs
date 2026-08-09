@@ -27,7 +27,7 @@ globalThis.document = {
 const { exportDfmPdf, exportDfmXlsx } = await import('./dfm-report.bundle.mjs');
 const {
   DFM_RESULT, DFM_FIGURES, DFM_RESULT_CONFLICT, DFM_RESULT_MEASURED,
-  DFM_RESULT_FULL, DFM_RESULT_NO_RULES,
+  DFM_RESULT_FULL, DFM_RESULT_NO_RULES, DFM_RESULT_CHOSEN,
 } = await import('./fixture-dfm.mjs');
 
 // Rendered TWICE on purpose. The no-figure call is the branch the harness has
@@ -46,6 +46,11 @@ exportDfmPdf(DFM_RESULT_FULL);
 // And the states that must never render as an empty clean sheet: an impossible
 // material/process pair, a process that shapes nothing, and a file with NO PMI.
 exportDfmPdf(DFM_RESULT_NO_RULES);
+// The ordinary case: ONE material, ONE process, ONE rule family. The report has
+// to say so on the cover page and put that family's findings before the
+// alternatives — the ordering that made a real reader think the selection was
+// being ignored.
+exportDfmPdf(DFM_RESULT_CHOSEN);
 
 let over = 0;
 for (const w of written) {

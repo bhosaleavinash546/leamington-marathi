@@ -50,7 +50,11 @@ interface DfmResponse {
   } | null;
   material?: string | null;
   processConflict?: { chosenName: string; measuredName: string; evidence: string[] } | null;
-  routes?: { routes: RouteRow[]; skipped: Array<{ process: string; reason: string }>; basis: string } | null;
+  routes?: {
+    routes: RouteRow[]; skipped: Array<{ process: string; reason: string }>; basis: string;
+    /** The route the user chose, so the table can mark it rather than reading as a survey. */
+    chosenProcess?: string | null;
+  } | null;
   analysisLimits?: AnalysisLimit[];
 }
 interface RouteRow {
@@ -61,6 +65,8 @@ interface RouteRow {
   piecePriceEur: number | null; toolingEur: number | null; annualEur: number | null;
   inputMassKg: number | null; kgCo2e: number | null; cbamEur: number | null;
   costReason?: string; carbonReason?: string;
+  isChosen?: boolean;
+  deltaPieceEur?: number | null; deltaToolingEur?: number | null;
 }
 interface AnalysisLimit { kind: string; severity: 'blocking' | 'warning'; message: string }
 interface RuleOverride { enabled: boolean; threshold?: number | number[]; note?: string }
@@ -1226,100 +1232,6 @@ export default function DfmStudioPage() {
               </p>
             )}
 
-            {/* ── EVERY VIABLE ROUTE ─────────────────────────────────────────
-                The report answers "is this part good for the process you named".
-                The question a cost engineer arrives with is "which process
-                should make it". Both come from one measurement of the geometry:
-                each row is that geometry judged by THAT process's own rule
-                family and priced by the same cost engine.
-
-                Deliberately not ranked by a blended score. Cost, manufacturability
-                and CO2e are three different questions in three different units,
-                and one number would hide the trade-off the reader is here for. */}
-            {result.routes && result.routes.routes.length > 0 && (
-              <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
-                <div className="flex items-baseline justify-between flex-wrap gap-2 mb-1">
-                  <h3 className="text-white font-semibold text-sm flex items-center gap-2">
-                    <Layers size={15} className="text-gold-400" aria-hidden="true" />
-                    Route comparison — {result.routes.routes.length} viable processes
-                  </h3>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="text-slate-500">Sort by</span>
-                    {(['piecePriceEur', 'score', 'kgCo2e', 'toolingEur'] as const).map(k => (
-                      <button key={k} onClick={() => setRouteSort(k)}
-                        className={`px-2 py-0.5 rounded ${routeSort === k ? 'bg-gold-500 text-navy-950 font-semibold' : 'bg-white/10 text-slate-300 hover:bg-white/15'}`}>
-                        {{ piecePriceEur: 'Cost', score: 'DFM score', kgCo2e: 'CO2e', toolingEur: 'Tooling' }[k]}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-slate-500 text-xs mb-3">{result.routes.basis}</p>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="text-slate-400 border-b border-white/10">
-                        <th className="text-left py-2 pr-3 font-medium">Process</th>
-                        <th className="text-right py-2 px-2 font-medium">DFM score</th>
-                        <th className="text-right py-2 px-2 font-medium">Rules run</th>
-                        <th className="text-right py-2 px-2 font-medium">EUR / part</th>
-                        <th className="text-right py-2 px-2 font-medium">Tooling</th>
-                        <th className="text-right py-2 px-2 font-medium">Buy-to-fly</th>
-                        <th className="text-right py-2 pl-2 font-medium">kg CO2e</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedRoutes.map(r => (
-                        <tr key={r.process} className="border-b border-white/5 align-top">
-                          <td className="py-2 pr-3">
-                            <span className="text-white">{r.process}</span>
-                            {r.topFindings?.[0] && (
-                              <span className="block text-slate-500 mt-0.5">
-                                worst: {r.topFindings[0].title} ({r.topFindings[0].measured} vs {r.topFindings[0].thresholdText})
-                              </span>
-                            )}
-                          </td>
-                          {/* A score without its coverage invites comparison
-                              between a 9-of-9 check and a 1-of-9 one. */}
-                          <td className={`text-right py-2 px-2 tabular-nums ${r.score === null ? 'text-slate-500' : r.score >= 70 ? 'text-emerald-400' : r.score >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
-                            {r.score === null ? '—' : r.score}
-                            {r.highSeverityCount > 0 && <span className="block text-red-400/70">{r.highSeverityCount} high</span>}
-                          </td>
-                          <td className="text-right py-2 px-2 tabular-nums text-slate-400">
-                            {r.evaluatedCount}/{r.ruleCount}
-                            {r.scoreCaveat && <span className="block text-amber-400/70" title={r.scoreCaveat}>partial</span>}
-                          </td>
-                          <td className="text-right py-2 px-2 tabular-nums text-white">
-                            {r.piecePriceEur === null
-                              ? <span className="text-slate-500" title={r.costReason}>not priced</span>
-                              : `EUR ${r.piecePriceEur.toFixed(2)}`}
-                          </td>
-                          <td className="text-right py-2 px-2 tabular-nums text-slate-300">
-                            {r.toolingEur === null ? '—' : `EUR ${Math.round(r.toolingEur).toLocaleString('en-GB')}`}
-                          </td>
-                          <td className="text-right py-2 px-2 tabular-nums text-slate-400">
-                            {r.inputMassKg === null ? '—' : `${r.inputMassKg.toFixed(2)} kg`}
-                          </td>
-                          <td className="text-right py-2 pl-2 tabular-nums text-slate-300">
-                            {r.kgCo2e === null
-                              ? <span className="text-slate-500" title={r.carbonReason}>—</span>
-                              : r.kgCo2e.toFixed(2)}
-                            {r.cbamEur ? <span className="block text-amber-400/70">CBAM EUR {r.cbamEur}</span> : null}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {/* Named, not hidden: the absence of sand casting from a list
-                    looks like an oversight unless the list says why. */}
-                {result.routes.skipped.length > 0 && (
-                  <p className="text-slate-500 text-xs mt-3">
-                    Not applicable to {result.material}: {result.routes.skipped.map(s => s.process).join(', ')}.
-                  </p>
-                )}
-              </div>
-            )}
-
             {/* Per-process results */}
             {result.results.filter(r => r.ruleCount > 0).map(r => (
               <div key={r.process} className="bg-navy-900 border border-white/10 rounded-2xl p-5">
@@ -1437,6 +1349,117 @@ export default function DfmStudioPage() {
                 )}
               </div>
             ))}
+
+            {/* ── EVERY VIABLE ROUTE ─────────────────────────────────────────
+                The report answers "is this part good for the process you named".
+                The question a cost engineer arrives with is "which process
+                should make it". Both come from one measurement of the geometry:
+                each row is that geometry judged by THAT process's own rule
+                family and priced by the same cost engine.
+
+                Deliberately not ranked by a blended score. Cost, manufacturability
+                and CO2e are three different questions in three different units,
+                and one number would hide the trade-off the reader is here for. */}
+            {result.routes && result.routes.routes.length > 0 && (
+              <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+                <div className="flex items-baseline justify-between flex-wrap gap-2 mb-1">
+                  <h3 className="text-white font-semibold text-sm flex items-center gap-2">
+                    <Layers size={15} className="text-gold-400" aria-hidden="true" />
+                    {result.routes.chosenProcess
+                      ? <>Alternative routes — {result.routes.chosenProcess} against the other {result.routes.routes.length - 1}</>
+                      : <>Route comparison — {result.routes.routes.length} viable processes</>}
+                  </h3>
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="text-slate-500">Sort by</span>
+                    {(['piecePriceEur', 'score', 'kgCo2e', 'toolingEur'] as const).map(k => (
+                      <button key={k} onClick={() => setRouteSort(k)}
+                        className={`px-2 py-0.5 rounded ${routeSort === k ? 'bg-gold-500 text-navy-950 font-semibold' : 'bg-white/10 text-slate-300 hover:bg-white/15'}`}>
+                        {{ piecePriceEur: 'Cost', score: 'DFM score', kgCo2e: 'CO2e', toolingEur: 'Tooling' }[k]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <p className="text-slate-500 text-xs mb-3">{result.routes.basis}</p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="text-slate-400 border-b border-white/10">
+                        <th className="text-left py-2 pr-3 font-medium">Process</th>
+                        <th className="text-right py-2 px-2 font-medium">DFM score</th>
+                        <th className="text-right py-2 px-2 font-medium">Rules run</th>
+                        <th className="text-right py-2 px-2 font-medium">EUR / part</th>
+                        <th className="text-right py-2 px-2 font-medium">Tooling</th>
+                        <th className="text-right py-2 px-2 font-medium">Buy-to-fly</th>
+                        <th className="text-right py-2 pl-2 font-medium">kg CO2e</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sortedRoutes.map(r => (
+                        <tr key={r.process}
+                          className={`border-b border-white/5 align-top ${r.isChosen ? 'bg-gold-500/10' : ''}`}>
+                          <td className="py-2 pr-3">
+                            <span className={r.isChosen ? 'text-gold-300 font-semibold' : 'text-white'}>{r.process}</span>
+                            {/* Marked in place, not lifted to the top: where the
+                                chosen route SITS in a cheapest-first list is the
+                                answer to "should I have picked something else". */}
+                            {r.isChosen && (
+                              <span className="block text-gold-400/90 mt-0.5">
+                                your route — the findings above are this one
+                              </span>
+                            )}
+                            {!r.isChosen && Number.isFinite(r.deltaPieceEur as number) && (
+                              <span className={`block mt-0.5 ${(r.deltaPieceEur as number) < 0 ? 'text-emerald-400/80' : 'text-slate-500'}`}>
+                                {(r.deltaPieceEur as number) < 0 ? '−' : '+'}€{Math.abs(r.deltaPieceEur as number).toFixed(2)}/part vs your route
+                              </span>
+                            )}
+                            {r.topFindings?.[0] && (
+                              <span className="block text-slate-500 mt-0.5">
+                                worst: {r.topFindings[0].title} ({r.topFindings[0].measured} vs {r.topFindings[0].thresholdText})
+                              </span>
+                            )}
+                          </td>
+                          {/* A score without its coverage invites comparison
+                              between a 9-of-9 check and a 1-of-9 one. */}
+                          <td className={`text-right py-2 px-2 tabular-nums ${r.score === null ? 'text-slate-500' : r.score >= 70 ? 'text-emerald-400' : r.score >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
+                            {r.score === null ? '—' : r.score}
+                            {r.highSeverityCount > 0 && <span className="block text-red-400/70">{r.highSeverityCount} high</span>}
+                          </td>
+                          <td className="text-right py-2 px-2 tabular-nums text-slate-400">
+                            {r.evaluatedCount}/{r.ruleCount}
+                            {r.scoreCaveat && <span className="block text-amber-400/70" title={r.scoreCaveat}>partial</span>}
+                          </td>
+                          <td className="text-right py-2 px-2 tabular-nums text-white">
+                            {r.piecePriceEur === null
+                              ? <span className="text-slate-500" title={r.costReason}>not priced</span>
+                              : `EUR ${r.piecePriceEur.toFixed(2)}`}
+                          </td>
+                          <td className="text-right py-2 px-2 tabular-nums text-slate-300">
+                            {r.toolingEur === null ? '—' : `EUR ${Math.round(r.toolingEur).toLocaleString('en-GB')}`}
+                          </td>
+                          <td className="text-right py-2 px-2 tabular-nums text-slate-400">
+                            {r.inputMassKg === null ? '—' : `${r.inputMassKg.toFixed(2)} kg`}
+                          </td>
+                          <td className="text-right py-2 pl-2 tabular-nums text-slate-300">
+                            {r.kgCo2e === null
+                              ? <span className="text-slate-500" title={r.carbonReason}>—</span>
+                              : r.kgCo2e.toFixed(2)}
+                            {r.cbamEur ? <span className="block text-amber-400/70">CBAM EUR {r.cbamEur}</span> : null}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {/* Named, not hidden: the absence of sand casting from a list
+                    looks like an oversight unless the list says why. */}
+                {result.routes.skipped.length > 0 && (
+                  <p className="text-slate-500 text-xs mt-3">
+                    Not applicable to {result.material}: {result.routes.skipped.map(s => s.process).join(', ')}.
+                  </p>
+                )}
+              </div>
+            )}
+
           </motion.div>
         )}
 

@@ -181,3 +181,87 @@ test('an analysis stored before the draft curve existed still evaluates at 1 deg
   assert.ok(forge.notEvaluated.some(f => f.id === 'forge-hot-draft-minimum'),
     'a 5-degree rule must not silently reuse the 1-degree figure');
 });
+
+// ── The chosen route must be findable in its own comparison ─────────────────
+//
+// A manufacturing head read a report that named STEEL (MILD) · STAMPING on its
+// cover, then printed nine processes before the stamping findings, and concluded
+// the tool was ignoring the selection. The rules were never generic — only the
+// sheet-metal family ever ran — but nothing in the table said which row was
+// theirs, so the page read as a survey of every process.
+
+test('the chosen process is marked in the route table, and only that one', () => {
+  const { routes, chosenProcess } = compareRoutes(CASTING, {
+    material: 'Aluminium A356 (cast)', weightKg: 0.86, chosenProcess: 'Sand Casting',
+  });
+  const chosen = routes.filter(r => r.isChosen);
+  assert.equal(chosen.length, 1, 'exactly one row is the chosen route');
+  assert.equal(chosen[0].process, 'Sand Casting');
+  assert.equal(chosenProcess, 'Sand Casting');
+  assert.ok(routes.some(r => !r.isChosen), 'the alternatives are still there');
+});
+
+test('with no process chosen no row claims to be the one', () => {
+  const { routes, chosenProcess } = compareRoutes(CASTING, {
+    material: 'Aluminium A356 (cast)', weightKg: 0.86,
+  });
+  assert.equal(chosenProcess, null);
+  assert.equal(routes.filter(r => r.isChosen).length, 0);
+  for (const r of routes) assert.equal(r.deltaPieceEur, undefined,
+    'a delta against nothing is not a number');
+});
+
+test('every alternative is priced as a difference from the chosen route', () => {
+  const { routes } = compareRoutes(CASTING, {
+    material: 'Aluminium A356 (cast)', weightKg: 0.86, chosenProcess: 'Sand Casting',
+  });
+  const chosen = routes.find(r => r.isChosen);
+  assert.ok(Number.isFinite(chosen.piecePriceEur));
+  assert.equal(chosen.deltaPieceEur, undefined, 'the chosen route has no delta against itself');
+  for (const r of routes) {
+    if (r.isChosen) continue;
+    if (!Number.isFinite(r.piecePriceEur)) { assert.equal(r.deltaPieceEur, null); continue; }
+    // The delta is arithmetic on the two prices, not a second estimate.
+    assert.equal(r.deltaPieceEur, Math.round((r.piecePriceEur - chosen.piecePriceEur) * 100) / 100);
+  }
+});
+
+test('the basis sentence names the chosen route as the subject, not one of many', () => {
+  const { basis } = compareRoutes(CASTING, {
+    material: 'Aluminium A356 (cast)', weightKg: 0.86, chosenProcess: 'Sand Casting',
+  });
+  assert.match(basis, /Your route is Sand Casting/);
+  assert.match(basis, /alternative to yours/);
+});
+
+test('a chosen process the material cannot take marks nothing', () => {
+  // Injection Moulding is not offered for A356, so no row can be it. The table
+  // must not invent a marked row to satisfy the request.
+  const { routes, chosenProcess } = compareRoutes(CASTING, {
+    material: 'Aluminium A356 (cast)', weightKg: 0.86, chosenProcess: 'Injection Moulding',
+  });
+  assert.equal(chosenProcess, null);
+  assert.equal(routes.filter(r => r.isChosen).length, 0);
+});
+
+test('a finding records the material that was in play even when the rule ignores it', async () => {
+  // `thresholdBasis: 'process-generic'` covered two different situations and the
+  // report asserted the wrong one: covers that read STEEL (MILD) carried findings
+  // that read "no material was given". The material now travels with the row.
+  const sheet = {
+    dfm: {
+      wallThickness: { p50Mm: 1.6 },
+      sheetMetal: { isSheetMetal: true, thicknessMm: 1.6, minBendToBendToThickness: 1 },
+      features: {},
+    },
+  };
+  const withMaterial = runDfmRules(sheet, 'sheet-metal', { material: 'Steel (mild)' });
+  const f = withMaterial.findings.find(x => x.id === 'sm-bend-to-bend');
+  assert.ok(f, 'the bend-land rule fires at 1 flat/t');
+  assert.equal(f.thresholdBasis, 'process-generic', 'mild steel has no band on this rule');
+  assert.equal(f.thresholdMaterial, 'Steel (mild)', 'but the alloy WAS given and must say so');
+
+  const without = runDfmRules(sheet, 'sheet-metal');
+  const g = without.findings.find(x => x.id === 'sm-bend-to-bend');
+  assert.equal(g.thresholdMaterial, null, 'and when it was not given, that is a different claim');
+});

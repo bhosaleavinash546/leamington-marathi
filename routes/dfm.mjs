@@ -444,7 +444,10 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
       // are now on the page, from one measurement of the geometry.
       routes: weightKg > 0 && material
         ? compareRoutes(geo, { material, region: req.body?.region || 'Germany',
-            annualVolume: numOr(req.body?.annualVolume, 50000), weightKg })
+            annualVolume: numOr(req.body?.annualVolume, 50000), weightKg,
+            // So the table can mark the row the user is standing on and price
+            // every other row as a difference from it.
+            chosenProcess: chosenProcess || null })
         : null,
       // Named when the chosen process shapes nothing, so the reader is told why
       // there are no findings instead of seeing an empty report.
@@ -527,7 +530,14 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
       // The cheapest viable route, which is the one number that makes a
       // portfolio table actionable rather than merely a ranking of badness.
       if (material && row.weightKg > 0) {
-        const { routes } = compareRoutes(geo, { material, region, annualVolume, weightKg: row.weightKg });
+        const { routes } = compareRoutes(geo, {
+          material, region, annualVolume, weightKg: row.weightKg,
+          chosenProcess: chosenProcess || null,
+        });
+        // What switching would actually be worth on THIS part, rather than a
+        // cheapest-route name the reader has to price against their own by hand.
+        const chosenRow = routes.find(r2 => r2.isChosen) ?? null;
+        row.chosenRoutePieceEur = chosenRow?.piecePriceEur ?? null;
         const priced = rankRoutes(routes, 'piecePriceEur').filter(r2 => Number.isFinite(r2.piecePriceEur));
         row.bestRoute = priced[0] ? { process: priced[0].process, piecePriceEur: priced[0].piecePriceEur, score: priced[0].score } : null;
         row.routeCount = routes.length;

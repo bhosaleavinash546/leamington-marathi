@@ -264,19 +264,23 @@ export const DFM_RESULT_FULL = {
     'hpdc-internal-radius': { enabled: false },
   },
   routes: {
-    basis: "Each row is the SAME measured geometry run through that process's own rule family, priced by computeShouldCost and carbon-scored on the cost engine's own input mass. Nothing is blended into a single ranking.",
+    // The route the reader is standing on. The fixture carries one so the
+    // report's "your route / alternatives" framing is exercised, and so a
+    // regression that loses the marking shows up as a rendered page.
+    chosenProcess: 'Die Casting (Aluminium)',
+    basis: "Your route is Die Casting (Aluminium). Every other row is the SAME measured geometry run through THAT process's own rule family, priced by computeShouldCost and carbon-scored on the cost engine's own input mass — offered as an alternative to yours, not as a competing analysis of it. Nothing is blended into a single ranking.",
     skipped: [
       { process: 'Injection Moulding', reason: 'incompatible' },
       { process: 'Die Casting (Zinc)', reason: 'incompatible' },
     ],
     routes: [
-      { process: 'Extrusion', dfmFamilyName: 'Extrusion', score: 50, coveragePct: 100, evaluatedCount: 3, ruleCount: 3, findingCount: 2, highSeverityCount: 2, scoreCaveat: null, piecePriceEur: 3.18, toolingEur: 25000, inputMassKg: 1.009, kgCo2e: 5.2, cbamEur: null },
-      { process: 'Die Casting (Aluminium)', dfmFamilyName: 'High-pressure die casting (Al / Mg)', score: 13, coveragePct: 55.6, evaluatedCount: 5, ruleCount: 9, findingCount: 4, highSeverityCount: 3, scoreCaveat: 'Only 5 of 9 rules could be evaluated, so this score rests on a partial check.', piecePriceEur: 6.6, toolingEur: 141458.41, inputMassKg: 1.429, kgCo2e: 7.48, cbamEur: null },
-      { process: 'Sand Casting', dfmFamilyName: 'Sand casting', score: 33, coveragePct: 100, evaluatedCount: 10, ruleCount: 10, findingCount: 4, highSeverityCount: 2, scoreCaveat: null, piecePriceEur: 7.55, toolingEur: 28291.68, inputMassKg: 1.559, kgCo2e: 8.1, cbamEur: 0.648 },
+      { process: 'Extrusion', deltaPieceEur: -3.42, deltaToolingEur: -116458.41, dfmFamilyName: 'Extrusion', score: 50, coveragePct: 100, evaluatedCount: 3, ruleCount: 3, findingCount: 2, highSeverityCount: 2, scoreCaveat: null, piecePriceEur: 3.18, toolingEur: 25000, inputMassKg: 1.009, kgCo2e: 5.2, cbamEur: null },
+      { process: 'Die Casting (Aluminium)', dfmFamilyName: 'High-pressure die casting (Al / Mg)', score: 13, coveragePct: 55.6, evaluatedCount: 5, ruleCount: 9, findingCount: 4, highSeverityCount: 3, scoreCaveat: 'Only 5 of 9 rules could be evaluated, so this score rests on a partial check.', piecePriceEur: 6.6, toolingEur: 141458.41, inputMassKg: 1.429, kgCo2e: 7.48, cbamEur: null, isChosen: true },
+      { process: 'Sand Casting', deltaPieceEur: 0.95, deltaToolingEur: -113166.73, dfmFamilyName: 'Sand casting', score: 33, coveragePct: 100, evaluatedCount: 10, ruleCount: 10, findingCount: 4, highSeverityCount: 2, scoreCaveat: null, piecePriceEur: 7.55, toolingEur: 28291.68, inputMassKg: 1.559, kgCo2e: 8.1, cbamEur: 0.648 },
       // A route the cost model refused. It KEEPS ITS ROW: a table that drops
       // what it failed on reads as "these are the options".
-      { process: 'Hydroforming', dfmFamilyName: 'Hydroforming', score: null, coveragePct: 0, evaluatedCount: 0, ruleCount: 3, findingCount: 0, highSeverityCount: 0, scoreCaveat: 'No rule in this family could be evaluated on this geometry, so there is no score — not a clean sheet.', piecePriceEur: null, toolingEur: null, inputMassKg: null, kgCo2e: null, cbamEur: null, costReason: 'Hydroforming needs a tube blank, and no tube geometry was recognised.' },
-      { process: 'Machining (CNC)', dfmFamilyName: 'Machining (CNC mill/turn)', score: 100, coveragePct: 60, evaluatedCount: 3, ruleCount: 5, findingCount: 0, highSeverityCount: 0, scoreCaveat: null, piecePriceEur: 27.54, toolingEur: 4000, inputMassKg: 1.906, kgCo2e: 9.98, cbamEur: null },
+      { process: 'Hydroforming', deltaPieceEur: null, deltaToolingEur: null, dfmFamilyName: 'Hydroforming', score: null, coveragePct: 0, evaluatedCount: 0, ruleCount: 3, findingCount: 0, highSeverityCount: 0, scoreCaveat: 'No rule in this family could be evaluated on this geometry, so there is no score — not a clean sheet.', piecePriceEur: null, toolingEur: null, inputMassKg: null, kgCo2e: null, cbamEur: null, costReason: 'Hydroforming needs a tube blank, and no tube geometry was recognised.' },
+      { process: 'Machining (CNC)', deltaPieceEur: 20.94, deltaToolingEur: -137458.41, dfmFamilyName: 'Machining (CNC mill/turn)', score: 100, coveragePct: 60, evaluatedCount: 3, ruleCount: 5, findingCount: 0, highSeverityCount: 0, scoreCaveat: null, piecePriceEur: 27.54, toolingEur: 4000, inputMassKg: 1.906, kgCo2e: 9.98, cbamEur: null },
     ],
   },
 };
@@ -304,3 +308,17 @@ export const DFM_RESULT_NO_RULES = {
     toolAccess: null,
   },
 };
+
+/** THE ORDINARY CASE, and the one the whole redesign is about: one material,
+ *  one manufacturing process, one rule family. The report must open by saying
+ *  which route it is analysing, put that route's findings first, and reach the
+ *  alternatives only afterwards. A manufacturing head reading the old order —
+ *  nine processes, then the chosen one — concluded the selection was ignored. */
+export const DFM_RESULT_CHOSEN = {
+  ...DFM_RESULT,
+  partName: DFM_RESULT.partName + ' (one chosen route)',
+  processFamily: 'hpdc',
+  results: DFM_RESULT.results.filter(r => r.process === 'hpdc'),
+  routes: DFM_RESULT_FULL.routes,
+};
+

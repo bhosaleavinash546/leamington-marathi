@@ -34,7 +34,14 @@ import { processesForMaterial } from './dfm-process-registry.mjs';
  * @returns {{routes: Array, skipped: Array, basis: string}}
  */
 export function compareRoutes(geo, opts = {}) {
-  const { material, region = 'Germany', annualVolume = 50_000, weightKg, library = null } = opts;
+  const {
+    material, region = 'Germany', annualVolume = 50_000, weightKg, library = null,
+    // The process the user actually picked. It is compared here — not shown as
+    // one anonymous row among nine — because "which of these am I on" is the
+    // first question anybody asks of this table, and a reader who cannot answer
+    // it reads the whole page as a generic survey of every process.
+    chosenProcess = null,
+  } = opts;
   if (!material) {
     return {
       routes: [], skipped: [],
@@ -54,6 +61,7 @@ export function compareRoutes(geo, opts = {}) {
       process: candidate.name,
       dfmFamily: candidate.dfmFamily,
       dfmFamilyName: candidate.dfmFamilyName,
+      isChosen: !!chosenProcess && candidate.name === chosenProcess,
     };
 
     // ── Manufacturability, judged by THIS process's own rules ───────────────
@@ -134,6 +142,21 @@ export function compareRoutes(geo, opts = {}) {
     routes.push(row);
   }
 
+  // ── What each alternative is worth AGAINST the route you are on ───────────
+  // An absolute price answers "what does this cost"; only a delta answers "is it
+  // worth changing". It is left null when the chosen route could not be priced,
+  // because a difference from an unknown is not a number.
+  const chosenRow = routes.find(r => r.isChosen) ?? null;
+  if (chosenRow && Number.isFinite(chosenRow.piecePriceEur)) {
+    for (const r of routes) {
+      if (r.isChosen) continue;
+      r.deltaPieceEur = Number.isFinite(r.piecePriceEur)
+        ? round2(r.piecePriceEur - chosenRow.piecePriceEur) : null;
+      r.deltaToolingEur = Number.isFinite(r.toolingEur) && Number.isFinite(chosenRow.toolingEur)
+        ? round2(r.toolingEur - chosenRow.toolingEur) : null;
+    }
+  }
+
   // Processes the material cannot take at all. Named, not hidden: "sand casting
   // is not on this list" is information, and its absence looks like an oversight.
   for (const [name, why] of unsuitableFor(material)) skipped.push({ process: name, reason: why });
@@ -141,7 +164,10 @@ export function compareRoutes(geo, opts = {}) {
   return {
     routes,
     skipped,
-    basis: 'Each row is the SAME measured geometry run through that process\'s own rule family, priced by computeShouldCost and carbon-scored by computeCarbon on the cost engine\'s own input mass. Nothing is blended into a single ranking: cost, manufacturability and CO2e are three different questions.',
+    chosenProcess: chosenRow ? chosenRow.process : null,
+    basis: chosenRow
+      ? `Your route is ${chosenRow.process}. Every other row is the SAME measured geometry run through THAT process's own rule family, priced by computeShouldCost and carbon-scored by computeCarbon on the cost engine's own input mass — offered as an alternative to yours, not as a competing analysis of it. Nothing is blended into a single ranking: cost, manufacturability and CO2e are three different questions.`
+      : 'Each row is the SAME measured geometry run through that process\'s own rule family, priced by computeShouldCost and carbon-scored by computeCarbon on the cost engine\'s own input mass. Nothing is blended into a single ranking: cost, manufacturability and CO2e are three different questions.',
   };
 }
 
