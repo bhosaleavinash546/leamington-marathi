@@ -158,6 +158,7 @@ def build_aag(shape):
         f = TopoDS.Face_s(fmap.FindKey(i))
         kind = "FREEFORM"
         concavity = None
+        radius = None
         try:
             ad = BRepAdaptor_Surface(f)
             kind = TYPE.get(ad.GetType(), "FREEFORM")
@@ -172,6 +173,12 @@ def build_aag(shape):
                 concavity = "concave" if (
                     (f.Orientation() == _REV) != (not cyl.Position().Direct())
                 ) else "convex"
+                # THE RADIUS ITSELF, which was computed and thrown away. A fillet
+                # reported without it cannot answer the one question a machinist
+                # asks of an internal corner — what cutter fits — and
+                # `mach-internal-corner-radius` had therefore reported NOT
+                # EVALUATED on every part since the day it was written.
+                radius = cyl.Radius()
         except Exception:
             pass
         props = GProp_GProps()
@@ -186,6 +193,7 @@ def build_aag(shape):
         # exactly half its neighbours' mean area, which is precisely where an
         # area-only threshold would sit.
         aspect = 1.0
+        box = None
         # The bounding-box CENTRE is kept as well as the aspect. It costs
         # nothing — the box is already being computed — and it is what lets a
         # recognised pocket or rib say WHERE it is. Without it every prismatic
@@ -200,6 +208,7 @@ def build_aag(shape):
             x0, y0, z0, x1, y1, z1 = bb.Get()
             dims = sorted([x1 - x0, y1 - y0, z1 - z0])
             centre = ((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2)
+            box = (x0, y0, z0, x1, y1, z1)
             # dims[0] is the face's thickness (~0 for a plane); use the two
             # in-plane extents.
             if dims[2] > 1e-9:
@@ -237,6 +246,19 @@ def build_aag(shape):
             faces[i]["normalCoherence"] = round(coherence, 4)
         if concavity:
             faces[i]["blendConcavity"] = concavity
+        if radius is not None:
+            faces[i]["radiusMm"] = round(radius, 4)
+        if centre is not None:
+            # The face's own extents, sorted. `dims[2]` is its longest span and
+            # `dims[0]` its thickness.
+            faces[i]["extentsMm"] = [round(d, 3) for d in dims]
+        if box is not None:
+            # And the box UNSORTED, per axis. The sorted extents above cannot be
+            # mapped back to X, Y and Z, so a feature built from several faces
+            # cannot be given a real bounding box from them — the first attempt
+            # reconstructed one from the centre and the largest span and made a
+            # 25 mm pocket look 74 mm wide.
+            faces[i]["bboxMm"] = [round(v, 3) for v in box]
 
     emap = TopTools_IndexedDataMapOfShapeListOfShape()
     TopExp.MapShapesAndAncestors_s(shape, TopAbs_EDGE, TopAbs_FACE, emap)
@@ -394,8 +416,16 @@ def find_blends(aag):
     for fid, f in aag["faces"].items():
         tan = tangent_nbrs.get(fid, set())
         if fid in fillet_ids:
+            # A fillet's RADIUS and which way it curves. An internal corner
+            # (concave — material outside the cylinder) is a tool-access
+            # constraint: no cutter smaller than twice that radius will reach
+            # into it. An external edge round (convex) is not a constraint at
+            # all, and reporting the two as one number would let a 0.5 mm edge
+            # break masquerade as an unmachinable corner.
             fillets.append({"faceId": fid, "type": f["type"],
                             "areaMm2": round(f["areaMm2"], 1),
+                            "radiusMm": f.get("radiusMm"),
+                            "concavity": f.get("blendConcavity"),
                             "joins": sorted(tan), "confidence": "medium"})
             continue
         cvx = convex_nbrs.get(fid, set())
@@ -524,6 +554,56 @@ def _approach_span_deg(aag, comp):
     return round(best, 1)
 
 
+
+def _component_extents(aag, comp):
+    """Real axis-aligned box of a recognised feature: [dx, dy, dz], unsorted.
+
+    Built from the per-face boxes the graph stores, so no new kernel call is
+    needed. Returns None when any face is missing its box rather than filling
+    the gap with a zero — a zero width would make every pocket infinitely
+    slender and fail the rule on parts nobody measured.
+    """
+    lo = [None, None, None]
+    hi = [None, None, None]
+    for fid in comp:
+        b = (aag["faces"].get(fid) or {}).get("bboxMm")
+        if not b or len(b) != 6:
+            return None
+        for k in range(3):
+            lo[k] = b[k] if lo[k] is None else min(lo[k], b[k])
+            hi[k] = b[k + 3] if hi[k] is None else max(hi[k], b[k + 3])
+    if any(v is None for v in lo):
+        return None
+    return [round(hi[k] - lo[k], 3) for k in range(3)]
+
+
+def _pocket_depth_axis(aag, comp):
+    """Which axis a pocket is CUT ALONG, from its floor.
+
+    The floor is the largest planar face in the component and the cutter comes
+    in along its normal, so the depth is the component's span on that axis and
+    the width is the narrower of the other two. Guessing instead — taking the
+    smallest span as the width and the middle as the depth — gets a wide shallow
+    pocket exactly backwards.
+
+    Returns None when no planar face carries a usable axis-aligned normal, and
+    the slenderness measure then abstains rather than picking an axis at random.
+    """
+    best_area, axis = 0.0, None
+    for fid in comp:
+        f = aag["faces"].get(fid) or {}
+        if f.get("type") != "PLANE":
+            continue
+        n = f.get("normal")
+        if not n or f.get("areaMm2", 0) <= best_area:
+            continue
+        for k in range(3):
+            if abs(n[k]) > 0.999:
+                best_area, axis = f["areaMm2"], k
+                break
+    return axis
+
+
 def prismatic_features(aag):
     """Concave-connected components, classified pocket / slot / step.
 
@@ -582,6 +662,13 @@ def prismatic_features(aag):
             # rather than the anchor drifting to whichever wall the mesher split
             # into the most faces.
             "centroidXYZ": centroid_of(aag, comp),
+            # HOW BIG IT IS, not merely where. `mach-pocket-depth-ratio` has
+            # abstained on every part ever analysed because the recogniser
+            # published an area and a centroid and no extents — so a pocket
+            # could be named and located but never judged for slenderness.
+            # Sorted ascending: [narrowest, middle, longest].
+            "extentsMm": _component_extents(aag, comp),
+            "depthAxis": _pocket_depth_axis(aag, comp),
             # The measured approach span, published rather than merely used: a
             # feature at 95° is a shallow pocket with drafted walls, and a
             # reviewer is entitled to see how close to the limit it sat.
@@ -1304,6 +1391,48 @@ def blend_face_ids(shape, aag=None):
     return ({f["faceId"] for f in fillets} | {f["faceId"] for f in chamfers}), aag
 
 
+
+def _min_concave_fillet_radius(fillets):
+    """Smallest INTERNAL corner radius on the part, in mm, or None.
+
+    None rather than 0 when there is no concave fillet: a part machined with
+    sharp internal corners in CAD has not been measured as having a small
+    corner, it has been measured as having none, and the rule must abstain
+    rather than fail it at zero.
+    """
+    radii = [f["radiusMm"] for f in fillets
+             if f.get("concavity") == "concave"
+             and isinstance(f.get("radiusMm"), (int, float))
+             and f["radiusMm"] > 0]
+    return round(min(radii), 3) if radii else None
+
+
+def _max_pocket_slenderness(prismatic):
+    """Worst depth/width over recognised pockets and slots, or None.
+
+    Depth is the span along the axis the cutter comes in on — taken from the
+    floor's normal, not guessed — and width is the narrower of the two spans
+    across it, because that is what the cutter has to fit through. A feature
+    whose depth axis could not be established is SKIPPED rather than measured
+    against an axis chosen at random.
+    """
+    worst = None
+    for p in prismatic:
+        if p.get("kind") not in ("pocket", "slot"):
+            continue
+        ext = p.get("extentsMm")
+        axis = p.get("depthAxis")
+        if not ext or len(ext) != 3 or axis is None:
+            continue
+        depth = ext[axis]
+        width = min(ext[k] for k in range(3) if k != axis)
+        if width > 0 and depth > 0:
+            ratio = depth / width
+            if worst is None or ratio > worst:
+                worst = ratio
+    return round(worst, 2) if worst is not None else None
+
+
 def recognise(shape, feature_table, extents=None, aag=None):
     """Hybrid recognition. `feature_table` is the exact analytic cylinder pass.
 
@@ -1378,6 +1507,18 @@ def recognise(shape, feature_table, extents=None, aag=None):
         "prismatic": prismatic,
         "ribs": ribs,
         "fillets": fillets,
+        # ── The two measures the machining rules were written against and never
+        # got. `mach-internal-corner-radius` and `mach-pocket-depth-ratio` have
+        # reported NOT EVALUATED on every part ever analysed, because nothing
+        # produced their measurements — on the filleted-pocket fixture the whole
+        # machining family evaluated 0 of 7 rules. Both are derived here from
+        # data the recogniser already had and was discarding.
+        #
+        # CONCAVE fillets only. An external edge round is not a tool-access
+        # constraint, and a part whose only blend is a 0.5 mm edge break must not
+        # read as needing a 1 mm cutter.
+        "minInternalCornerRadiusMm": _min_concave_fillet_radius(fillets),
+        "maxPocketDepthToWidth": _max_pocket_slenderness(prismatic),
         "chamfers": chamfers,
         # Cylindrical features are found analytically, so their faces are named
         # even though the graph pass never touched them; the remainder here is

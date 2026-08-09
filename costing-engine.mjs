@@ -425,6 +425,50 @@ export const PROCESSES = {
     families: ['ferrous', 'castiron', 'aluminium', 'magnesium', 'titanium', 'copper', 'zinc', 'plastic'],
     finishPct: 0.20,
   },
+  // ── The machining split ───────────────────────────────────────────────────
+  //
+  // `Machining (CNC)` priced a turned shaft, a wire-cut die plate, a gun-drilled
+  // manifold and a broached spline at one rate. They differ by more than an
+  // order of magnitude in cycle time per part and by two in tooling.
+  'Turning (CNC)': {
+    // A lathe is cheaper per hour than a machining centre and far faster per
+    // part on a round component: one setup, one axis of rotation, and bar feed
+    // instead of a fixture.
+    machineRate: 65, operators: 0.3, cavities: 1, utilisation: 0.80, scrapPct: 0.02,
+    setupHr: 1.0, batch: 500, toolLife: 5_000_000,
+    cycleBase: 90, cyclePerKg: 500, toolingBase: 1_500, toolingPerKg: 0,
+    families: ['ferrous', 'castiron', 'aluminium', 'copper', 'titanium', 'plastic'],
+    finishPct: 0.04, returnsRecovery: 0.85,
+  },
+  'Wire EDM': {
+    // Slow, unattended, and priced by the hour of spark time. The machine runs
+    // lights-out, so the operator load is a fraction of a machining centre's —
+    // but the cut rate is measured in square millimetres per minute.
+    machineRate: 75, operators: 0.15, cavities: 1, utilisation: 0.85, scrapPct: 0.01,
+    setupHr: 1.5, batch: 50, toolLife: 5_000_000,
+    cycleBase: 300, cyclePerKg: 1800, toolingBase: 800, toolingPerKg: 0,
+    families: ['ferrous', 'aluminium', 'copper', 'titanium'],
+    finishPct: 0.02, returnsRecovery: 0.85,
+  },
+  'Deep-Hole / Gun Drilling': {
+    // A dedicated machine with high-pressure through-coolant. The cost is in the
+    // machine and the cycle, not in tooling — one gun drill per diameter.
+    machineRate: 95, operators: 0.4, cavities: 1, utilisation: 0.75, scrapPct: 0.03,
+    setupHr: 1.5, batch: 200, toolLife: 2_000_000,
+    cycleBase: 150, cyclePerKg: 300, toolingBase: 2_500, toolingPerKg: 0,
+    families: ['ferrous', 'castiron', 'aluminium', 'titanium', 'copper'],
+    finishPct: 0.05, returnsRecovery: 0.85,
+  },
+  'Broaching': {
+    // The inverse of wire EDM: a very expensive tool and a cycle measured in
+    // seconds. A broach is worth cutting only when the volume pays for it, which
+    // is exactly the trade-off the route table exists to show.
+    machineRate: 70, operators: 0.4, cavities: 1, utilisation: 0.80, scrapPct: 0.02,
+    setupHr: 1.5, batch: 2000, toolLife: 250_000,
+    cycleBase: 15, cyclePerKg: 40, toolingBase: 18_000, toolingPerKg: 3_000,
+    families: ['ferrous', 'castiron', 'aluminium', 'copper'],
+    finishPct: 0.03, returnsRecovery: 0.85,
+  },
   'Extrusion': {
     machineRate: 90, operators: 0.5, cavities: 1, utilisation: 0.85, scrapPct: 0.03,
     setupHr: 1.5, batch: 8000, toolLife: 2_000_000,

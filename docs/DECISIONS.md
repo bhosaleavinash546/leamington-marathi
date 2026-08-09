@@ -1234,3 +1234,55 @@ Format: decision · why · what would change it.
     to say where the figure came from and, where it was positioned relative to a neighbour in
     this catalogue rather than quoted, to say DERIVED. No threshold moved; only the provenance
     text. The assertion now guards the whole catalogue.
+
+94. **Two machining rules had never produced a finding on any part (2026).**
+    *Why:* `mach-internal-corner-radius` and `mach-pocket-depth-ratio` were written against
+    measurements nothing computed. On the filleted-pocket fixture the ENTIRE machining family
+    evaluated 0 of 7 rules and scored `null`. The recogniser had both numbers and was throwing
+    them away: a fillet's radius came off the kernel in `build_aag` and was never stored, and a
+    prismatic pocket published an area and a centroid but no extents — so a pocket could be
+    named and located and never judged. *Changes it:* the AAG carries `radiusMm` and the real
+    per-axis face box; fillets carry radius AND concavity; pockets carry extents and a depth
+    axis. The same fixture now evaluates 5 of 7 and scores 75.
+    *Concave only.* An external edge round is not a tool-access constraint, and a part whose
+    only blend is a 0.5 mm edge break must not read as needing a 1 mm cutter.
+
+95. **The pocket depth axis is read from the floor, not guessed (2026).**
+    *Why:* the first version took the middle of three sorted box spans as the depth and the
+    smallest as the width, which gets a wide shallow pocket exactly backwards. *Changes it:*
+    the floor is the largest planar face in the component and the cutter comes in along its
+    normal, so the depth is the span on that axis. A feature whose depth axis cannot be
+    established is SKIPPED rather than measured against an axis chosen at random. Checked
+    against the fixture arithmetic: `filleted-slot` cuts 12 mm deep, the recogniser sees the
+    wall starting one R2 fillet above the floor, so 10 mm over a 15 mm opening = 0.67.
+
+96. **The machining split: one family judged four processes (2026).**
+    *Why:* `machining` covered a turned shaft, a wire-cut die plate, a gun-drilled manifold and
+    a broached spline with seven thresholds. The internal corner alone spans two orders of
+    magnitude across them — 3 mm for an end mill, 0.4 for a turning insert nose, 0.15 for a
+    wire — and the hole depth limit spans twenty times: 5:1 generic against 100:1 gun-drilled.
+    A fuel rail was failing the rule the deep-hole process exists to beat. *Changes it:* four
+    new families — turning, wire EDM, deep-hole/gun drilling, broaching — with `machining` kept
+    as the generic mill/turn route for a part that is genuinely both. Rules 174 → 191,
+    families 26 → 30, cost processes 40 → 44.
+    *New measures:* `blindHoleCount` (a COUNT, because wire EDM and broaching cannot make a
+    blind feature AT ALL and "the worst blind hole is 0.75 L/D" cannot say "there is one"),
+    `maxHoleDiaMm` (broaching runs 10-100 mm and a gun drill 1-30; a rule that can only warn
+    about small features cannot route a large one) and `slendernessLtoD`.
+
+97. **The benchmark caught a shaft that was a flat plate (2026).**
+    *Why:* `slendernessLtoD` gated on 60% axisymmetric. A 60x40x10 plate scores 69.7% — its
+    two large faces are perpendicular to Z and count toward the figure — so the measure took
+    the 10 mm thickness over the 60 mm width and reported a 0.17 L/D shaft. Review did not
+    catch it; the gate did, on the first run after the fixture was written. *Changes it:* the
+    bar is the SAME 90% the catalogue's two body-of-revolution rules use. Three uses of one
+    geometric judgement must share one threshold, and an invented fourth constant is how they
+    drift apart.
+
+98. **Sinker EDM is declared, not shipped (2026).**
+    *Why:* it is the exact inverse of wire EDM — the process that CAN make a blind pocket with
+    a sharp corner — and the research found neither of the two numbers that would distinguish
+    it: the smallest corner a shaped electrode can burn, and the deepest rib an electrode can
+    carry without arcing. A family that copied the wire-EDM thresholds would be worse than
+    none. *Changes it:* declared in `UNWRITTEN_RULES`, and the gap is covered in practice —
+    a blind sharp-cornered pocket now surfaces as a wire-EDM finding whose FIX names sinker EDM.

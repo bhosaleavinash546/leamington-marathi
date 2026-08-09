@@ -235,6 +235,53 @@ export function extractMeasures(geo = {}) {
     // catalogue could not ask about it.
     minHoleDiaMm: smallestOf('hole', 'diaMm'),
     minBossDiaMm: smallestOf('boss', 'diaMm'),
+    // The LARGEST bore too, because some processes have a ceiling as well as a
+    // floor: broaching runs 10-100 mm and a gun drill 1-30, above which the job
+    // moves to BTA. A rule that can only warn about small features cannot route
+    // a large one.
+    maxHoleDiaMm: (() => {
+      const vals = sizeInstances('hole', 'diaMm').map(r => r.ratio);
+      return vals.length ? Math.round(Math.max(...vals) * 100) / 100 : undefined;
+    })(),
+    // HOW MANY blind features there are, not how deep the worst one is. Wire
+    // EDM threads a wire through the part and broaching pulls a tool straight
+    // through it: neither can make a blind feature AT ALL, and "the worst blind
+    // hole is 2.5 L/D" cannot express "there is one".
+    blindHoleCount: (() => {
+      const n = table.filter(f => f.kind === 'hole' && f.through === false)
+        .reduce((a, f) => a + (Number(f.count) || 1), 0);
+      // Absent, not zero, when the through/blind flag was never resolved — a
+      // hard 0 would clear the wire-EDM and broaching rules on a part whose
+      // holes were never classified.
+      return table.some(f => f.kind === 'hole' && typeof f.through === 'boolean') ? n : undefined;
+    })(),
+
+    // ── SLENDERNESS of a turned part, along its own axis of revolution ──
+    // A shaft is held in a chuck at one end. Past about three diameters
+    // unsupported it whips; a tailstock takes it further and a steady rest
+    // further still. The axis comes from the revolution measure written for
+    // centrifugal casting, so this abstains on a part with no clear axis rather
+    // than measuring the longest box side of a bracket and calling it a shaft.
+    slendernessLtoD: (() => {
+      const rev = dfm.revolution || {};
+      const axis = rev.axisXYZ;
+      const bb = geo.boundingBox || {};
+      const ext = [num(bb.xMm), num(bb.yMm), num(bb.zMm)];
+      if (!Array.isArray(axis) || ext.some(v => !(v > 0))) return undefined;
+      // Only meaningful on a part that IS a body of revolution, and the bar is
+      // the SAME 90% the catalogue's two body-of-revolution rules use. A first
+      // draft gated at 60% and the benchmark caught it immediately: a flat
+      // 60x40x10 plate scores 69.7% axisymmetric — its two large faces are
+      // perpendicular to Z and count toward the figure — so the measure took the
+      // 10 mm thickness over the 60 mm width and reported a 0.17 L/D shaft.
+      // Three uses of the same geometric judgement must share one threshold.
+      if (!(num(rev.axisymmetricAreaPct) >= 90)) return undefined;
+      let k = -1;
+      for (let i = 0; i < 3; i++) if (Math.abs(Number(axis[i])) > 0.999) k = i;
+      if (k < 0) return undefined;
+      const dia = Math.max(...ext.filter((_, i) => i !== k));
+      return dia > 0 ? Math.round((ext[k] / dia) * 100) / 100 : undefined;
+    })(),
 
     // ── Ribs, as proportions of the nominal wall ──
     maxRibThicknessToWall: ribRatio(Math.max, 'thicknessMm'),
@@ -283,12 +330,20 @@ export function extractMeasures(geo = {}) {
     // `draftCutoffDeg` and the evaluator reads that point off this curve.
     _draftCurve: draft.wallAreaBelowDraftPct || undefined,
 
-    // Still deliberately absent, and it matters that they are absent rather
-    // than defaulted — pocket depth/width needs bounded boxes the recogniser
-    // does not yet produce, and internal corner radius needs tool-access
-    // reasoning. Substituting any default would manufacture a pass on a part
-    // nobody measured:
-    //   maxPocketDepthToWidth, minInternalCornerRadiusMm
+    // ── The two measures that were absent for the whole life of the rules ──
+    //
+    // `mach-pocket-depth-ratio` and `mach-internal-corner-radius` were written
+    // against measurements nothing produced, so both reported NOT EVALUATED on
+    // every part ever analysed — on the filleted-pocket fixture the entire
+    // machining family evaluated 0 of 7 rules. The recogniser had the data and
+    // was discarding it: a fillet's radius came off the kernel and was dropped,
+    // and a pocket carried an area and a centroid but no extents.
+    //
+    // Both stay UNDEFINED when the recogniser has nothing, which is the whole
+    // three-state discipline: a part with no concave fillet has not been
+    // measured as having a small corner, it has been measured as having none.
+    minInternalCornerRadiusMm: num(features.minInternalCornerRadiusMm),
+    maxPocketDepthToWidth: num(features.maxPocketDepthToWidth),
   };
 }
 

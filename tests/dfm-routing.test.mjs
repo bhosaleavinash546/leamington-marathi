@@ -662,3 +662,169 @@ test('the three new unwritten rules are declared with what they need', async () 
     assert.ok(row.needs && row.proxy, 'and must say what it needs and what stands in for it');
   }
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// THE MACHINING SPLIT
+//
+// One family judged a turned shaft, a wire-cut die plate, a gun-drilled
+// manifold and a broached spline by seven thresholds. The internal corner alone
+// spans two orders of magnitude across them: 3 mm for an end mill, 0.15 for a
+// wire. And TWO of those seven rules had never produced a value on any part.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test('the two dead machining measures now have values', () => {
+  // `mach-pocket-depth-ratio` and `mach-internal-corner-radius` were written
+  // against measurements nothing computed. Both reported NOT EVALUATED on every
+  // part ever analysed; the recogniser had the data and was discarding it.
+  const part = {
+    dfm: {
+      features: { minInternalCornerRadiusMm: 2.0, maxPocketDepthToWidth: 6.0 },
+      wallThickness: { p50Mm: 8, p5Mm: 8 }, draft: {},
+    },
+  };
+  const m = extractMeasures(part);
+  assert.equal(m.minInternalCornerRadiusMm, 2.0);
+  assert.equal(m.maxPocketDepthToWidth, 6.0);
+
+  const r = runDfmRules(part, 'machining', { material: 'Steel (mild)' });
+  const corner = [...r.findings, ...r.passed].find(f => f.id === 'mach-internal-corner-radius');
+  const pocket = [...r.findings, ...r.passed].find(f => f.id === 'mach-pocket-depth-ratio');
+  assert.ok(corner, 'the corner rule must no longer abstain');
+  assert.ok(pocket, 'nor the pocket rule');
+  assert.equal(corner.status, 'fail', '2 mm is under the 3 mm end-mill limit');
+  assert.equal(pocket.status, 'fail', '6:1 is past the 4:1 pocket limit');
+});
+
+test('a part with no concave fillet ABSTAINS rather than failing at zero', () => {
+  // The whole three-state discipline. A part drawn with sharp internal corners
+  // has not been measured as having a tiny corner; it has been measured as
+  // having none, and a hard 0 would fail every "at least" rule on it.
+  const sharp = { dfm: { features: {}, wallThickness: { p50Mm: 8, p5Mm: 8 }, draft: {} } };
+  assert.equal(extractMeasures(sharp).minInternalCornerRadiusMm, undefined);
+  const r = runDfmRules(sharp, 'machining', { material: 'Steel (mild)' });
+  assert.ok(r.notEvaluated.some(f => f.id === 'mach-internal-corner-radius'));
+});
+
+test('ONE corner, THREE machining families, thresholds two orders of magnitude apart', () => {
+  const part = { dfm: { features: { minInternalCornerRadiusMm: 2.0 }, wallThickness: { p50Mm: 8, p5Mm: 8 }, draft: {} } };
+  const verdict = (fam, id) => {
+    const r = runDfmRules(part, fam, { material: 'Steel (mild)' });
+    return [...r.findings, ...r.passed].find(f => f.id === id)?.status;
+  };
+  // An end mill cannot make a 2 mm corner at this catalogue's limit; a turning
+  // insert nose makes it easily; a wire makes one twenty times finer.
+  assert.equal(verdict('machining', 'mach-internal-corner-radius'), 'fail');
+  assert.equal(verdict('turning', 'turn-internal-corner-radius'), 'pass');
+  assert.equal(verdict('wire-edm', 'wedm-internal-corner-radius'), 'pass');
+});
+
+test('through-only processes reject a blind feature by COUNT, not by ratio', () => {
+  const withBlind = {
+    featureTable: [
+      { kind: 'hole', diaMm: 20, depthMm: 15, through: false, count: 1 },
+      { kind: 'hole', diaMm: 20, depthMm: 60, through: true, count: 1 },
+    ],
+    dfm: { wallThickness: { p50Mm: 8, p5Mm: 8 }, draft: {}, features: {} },
+  };
+  const m = extractMeasures(withBlind);
+  assert.equal(m.blindHoleCount, 1);
+  for (const [fam, id] of [['wire-edm', 'wedm-no-blind-features'], ['broaching', 'broach-no-blind']]) {
+    const r = runDfmRules(withBlind, fam, { material: 'Steel (mild)' });
+    assert.ok(r.findings.some(f => f.id === id), `${fam} must reject a blind feature`);
+  }
+});
+
+test('a part whose holes were never classified abstains rather than reading as zero blind', () => {
+  // `Number(null) === 0` again: a hard 0 would clear the wire-EDM and broaching
+  // rules on a part nobody classified.
+  const unclassified = {
+    featureTable: [{ kind: 'hole', diaMm: 20, depthMm: 15, count: 1 }],   // no `through` flag
+    dfm: { wallThickness: { p50Mm: 8, p5Mm: 8 }, draft: {}, features: {} },
+  };
+  assert.equal(extractMeasures(unclassified).blindHoleCount, undefined);
+  const r = runDfmRules(unclassified, 'wire-edm', { material: 'Steel (mild)' });
+  assert.ok(r.notEvaluated.some(f => f.id === 'wedm-no-blind-features'));
+});
+
+test('gun drilling reaches twenty times further than the generic machining limit', async () => {
+  const { DFM_RULES } = await import('../dfm-rule-catalogue.mjs');
+  const th = id => DFM_RULES.find(r => r.id === id)?.threshold;
+  assert.equal(th('mach-hole-depth-ratio'), 5);
+  assert.equal(th('gundrill-hole-ld'), 100);
+  // A fuel rail judged at 5:1 fails the rule the process was invented to beat.
+  const deep = {
+    featureTable: [{ kind: 'hole', diaMm: 6, depthMm: 300, through: true, count: 1 }],
+    dfm: { wallThickness: { p50Mm: 10, p5Mm: 10 }, draft: {}, features: {} },
+  };
+  const generic = runDfmRules(deep, 'machining', { material: 'Steel (mild)' });
+  const gun = runDfmRules(deep, 'deep-hole-drilling', { material: 'Steel (mild)' });
+  assert.ok(generic.findings.some(f => f.measure === 'maxHoleDepthToDia'), '50:1 fails a twist drill');
+  assert.ok(!gun.findings.some(f => f.measure === 'maxHoleDepthToDia'), 'and is routine for a gun drill');
+});
+
+test('broaching has a ceiling as well as a floor, and both fire', () => {
+  const mk = dia => ({
+    featureTable: [{ kind: 'hole', diaMm: dia, depthMm: dia * 2, through: true, count: 1 }],
+    dfm: { wallThickness: { p50Mm: 20, p5Mm: 20 }, draft: {}, features: {} },
+  });
+  const tooSmall = runDfmRules(mk(6), 'broaching', { material: 'Steel (mild)' });
+  const justRight = runDfmRules(mk(40), 'broaching', { material: 'Steel (mild)' });
+  const tooBig = runDfmRules(mk(150), 'broaching', { material: 'Steel (mild)' });
+  assert.ok(tooSmall.findings.some(f => f.id === 'broach-min-dia'), 'a Ø6 broach snaps');
+  assert.equal(justRight.findings.length, 0, 'Ø40 through is exactly what broaching is for');
+  assert.ok(tooBig.findings.some(f => f.id === 'broach-max-dia'), 'a Ø150 broach outgrows the machine');
+});
+
+test('the lathe slenderness measure abstains on anything that is not round', () => {
+  // Caught by the benchmark, not by review: a first draft gated at 60%
+  // axisymmetric and a flat 60x40x10 plate scores 69.7% — its two large faces
+  // are perpendicular to Z — so the measure reported a 0.17 L/D "shaft".
+  const plate = {
+    boundingBox: { xMm: 60, yMm: 40, zMm: 10 },
+    dfm: { revolution: { axisymmetricAreaPct: 69.7, axisXYZ: [0, 0, 1] }, wallThickness: { p50Mm: 10 }, draft: {}, features: {} },
+  };
+  assert.equal(extractMeasures(plate).slendernessLtoD, undefined);
+
+  const shaft = {
+    boundingBox: { xMm: 20, yMm: 20, zMm: 200 },
+    dfm: { revolution: { axisymmetricAreaPct: 98, axisXYZ: [0, 0, 1] }, wallThickness: { p50Mm: 10 }, draft: {}, features: {} },
+  };
+  assert.equal(extractMeasures(shaft).slendernessLtoD, 10);
+  const r = runDfmRules(shaft, 'turning', { material: 'Steel (mild)' });
+  assert.ok(r.findings.some(f => f.id === 'turn-slenderness'), '10:1 needs a steady rest');
+});
+
+test('the four machining routes are offered, priced, carbon-scored and routed', async () => {
+  const { processesForMaterial } = await import('../dfm-process-registry.mjs');
+  const { PROCESS_FAMILIES } = await import('../dfm-rule-catalogue.mjs');
+  const { PROCESSES, computeShouldCost } = await import('../costing-engine.mjs');
+  const { PROCESS_KWH_PER_KG } = await import('../carbon.mjs');
+  const offered = new Map(processesForMaterial('Steel (mild)').map(p => [p.name, p]));
+  for (const [name, fam] of [
+    ['Turning (CNC)', 'turning'],
+    ['Wire EDM', 'wire-edm'],
+    ['Deep-Hole / Gun Drilling', 'deep-hole-drilling'],
+    ['Broaching', 'broaching'],
+  ]) {
+    assert.ok(offered.has(name), `${name} must be selectable`);
+    assert.equal(offered.get(name).dfmFamily, fam);
+    assert.ok(PROCESS_FAMILIES[fam]);
+    assert.ok(PROCESSES[name]);
+    assert.ok(Number.isFinite(PROCESS_KWH_PER_KG[name]), `${name} would show a blank CO2e column`);
+    assert.ok(computeShouldCost({ material: 'Steel (mild)', process: name, weightKg: 0.4, annualVolume: 20_000, region: 'Germany' }).totalShouldCost > 0);
+  }
+  // Wire EDM must price ABOVE general machining on the same part — it is the
+  // slowest route in the catalogue, and a table that showed it cheaper would
+  // send an engineer down it for the wrong reason.
+  const base = { material: 'Steel (mild)', weightKg: 0.4, annualVolume: 20_000, region: 'Germany' };
+  const edm = computeShouldCost({ ...base, process: 'Wire EDM' }).totalShouldCost;
+  const cnc = computeShouldCost({ ...base, process: 'Machining (CNC)' }).totalShouldCost;
+  assert.ok(edm > cnc, `wire EDM (${edm}) must price above CNC (${cnc})`);
+});
+
+test('sinker EDM is declared unwritten rather than copied from wire EDM', async () => {
+  const { UNWRITTEN_RULES, PROCESS_FAMILIES } = await import('../dfm-rule-catalogue.mjs');
+  assert.ok(!PROCESS_FAMILIES['sinker-edm'], 'it must not exist as a family');
+  const row = UNWRITTEN_RULES.find(u => /SINKER/i.test(u.topic));
+  assert.ok(row && row.needs && row.proxy, 'and must be declared with what it needs');
+});

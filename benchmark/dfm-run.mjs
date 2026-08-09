@@ -17,7 +17,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { CASTING_FIXTURES, DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES, PMI_FIXTURES, SHEET_FORMING_FIXTURES } from './dfm-fixtures.mjs';
+import { CASTING_FIXTURES, DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES, MACHINING_FIXTURES, PMI_FIXTURES, SHEET_FORMING_FIXTURES } from './dfm-fixtures.mjs';
 import { extractMeasures, runDfmRules } from '../dfm-rules.mjs';
 import { DFM_RULES } from '../dfm-rule-catalogue.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
@@ -581,6 +581,59 @@ async function main() {
         record(fx.file, `${id} base threshold`, rule?.threshold === want,
           `${rule?.threshold} vs ${want} — identical thresholds would mean a copied family`);
       }
+    }
+  }
+
+
+  // ── Machining: the two measures that had never produced a value ───────────
+  for (const fx of MACHINING_FIXTURES) {
+    if (!AS_JSON) console.log(`\n  ${fx.file}  (machining)`);
+    let g;
+    try {
+      g = await analyzeGeometry(await readFile(join(FIXDIR, fx.file)), fx.file);
+    } catch (e) {
+      record(fx.file, 'analyze for machining', false, `bridge threw: ${e.message}`);
+      continue;
+    }
+    const t = fx.truth;
+    const m = extractMeasures(g);
+
+    for (const [key, tol] of [['minInternalCornerRadiusMm', 0.02], ['maxPocketDepthToWidth', 0.02],
+      ['maxHoleDiaMm', 0.02], ['minHoleDiaMm', 0.02], ['slendernessLtoD', 0.02]]) {
+      if (t[key] === undefined) continue;
+      record(fx.file, key, near(m[key], t[key], tol), `${m[key]} vs ${t[key]}`);
+    }
+    if (t.blindHoleCount !== undefined) {
+      record(fx.file, 'blind feature count', m.blindHoleCount === t.blindHoleCount,
+        `${m.blindHoleCount} vs ${t.blindHoleCount}`);
+    }
+    if (t.slendernessAbsent) {
+      // ABSENT, not a number. The longest side of a bracket is not a shaft.
+      record(fx.file, 'slenderness abstains on a flat part', m.slendernessLtoD === undefined,
+        m.slendernessLtoD === undefined ? 'undefined' : `${m.slendernessLtoD} — a box side read as a shaft`);
+    }
+    for (const v of t.cornerVerdicts || []) {
+      const r = runDfmRules(g, v.family, { material: 'Steel (mild)' });
+      const row = [...r.findings, ...r.passed, ...r.notEvaluated].find(f => f.id === v.ruleId);
+      record(fx.file, `${v.family} corner rule`, row?.status === v.status,
+        row ? `${row.status} at ${row.measured} mm against ${row.thresholdText} (expected ${v.status})`
+            : 'rule missing entirely');
+    }
+    for (const [id, want] of Object.entries(t.cornerThresholds || {})) {
+      const rule = DFM_RULES.find(r => r.id === id);
+      record(fx.file, `${id} threshold`, rule?.threshold === want,
+        `${rule?.threshold} vs ${want} — a cosmetic split would show identical numbers`);
+    }
+    for (const v of t.blindRejectedBy || []) {
+      const r = runDfmRules(g, v.family, { material: 'Steel (mild)' });
+      const row = r.findings.find(f => f.id === v.ruleId);
+      record(fx.file, `${v.family} rejects the blind feature`, !!row,
+        row ? `fails at ${row.measured} ${row.unit}` : 'no finding — a blind hole passed a through-only process');
+    }
+    if (t.broachingAcceptsIt) {
+      const r = runDfmRules(g, 'broaching', { material: 'Steel (mild)' });
+      record(fx.file, 'broaching accepts a through bore in range', r.findings.length === 0,
+        r.findings.length ? `${r.findings.map(f => f.title).join('; ')}` : `${r.evaluatedCount}/${r.ruleCount} evaluated, none failed`);
     }
   }
 

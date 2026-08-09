@@ -77,6 +77,16 @@ export const PROCESS_FAMILIES = {
   'metal-spinning': 'Metal spinning',
   'cold-heading': 'Cold heading / upsetting',
   'open-die-forging': 'Open-die forging',
+  // ── The machining split ──────────────────────────────────────────────────
+  // `machining` judged a turned shaft, a wire-cut die plate, a gun-drilled
+  // manifold and a broached spline by one set of seven thresholds. The corner
+  // radius alone spans two orders of magnitude across them: 3 mm for an end
+  // mill, 0.15 mm for a wire. `machining` stays as the generic mill/turn route
+  // for a part that is genuinely both.
+  turning: 'Turning (CNC lathe)',
+  'wire-edm': 'Wire EDM',
+  'deep-hole-drilling': 'Deep-hole / gun drilling',
+  broaching: 'Broaching',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3264,6 +3274,296 @@ export const DFM_RULES = [
     source: 'Open-die forging tool practice: flat tools approach and separate along one axis. Derived from the process, not quoted from a design guide.',
   },
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TURNING (CNC lathe)
+  //
+  // Split out of `machining` because a lathe's constraints are not a mill's. A
+  // turned internal corner is the TOOL NOSE — 0.4 mm on a standard insert —
+  // where a milled one is the cutter radius at 3 mm and up. And a shaft has a
+  // failure mode a milled block does not have at all: it whips.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'turn-slenderness',
+    sourceStatus: 'industry-consensus',
+    process: 'turning',
+    severity: 'high',
+    title: 'Shaft too slender to turn without extra support',
+    measure: 'slendernessLtoD',
+    compare: 'lte',
+    threshold: 8,
+    unit: 'length/dia',
+    rationale:
+      'A bar held in the chuck at one end deflects away from the tool and chatters. Past about three diameters it needs a tailstock, and past roughly eight it needs a steady rest — another setup, another fixture and a cycle that is no longer a simple turn.',
+    fix: 'Shorten the part, increase the diameter, or accept the steady rest and cost the extra setup.',
+    source: 'Turning practice: a slender workpiece whips without support; a tailstock extends the workable ratio and a steady rest extends it further. The 8:1 figure is the commonly-quoted tailstock-supported limit. Reported from practitioner discussion rather than a design standard, and it is the threshold in this family most worth checking against your own machines.',
+  },
+  {
+    id: 'turn-internal-corner-radius',
+    sourceStatus: 'industry-consensus',
+    process: 'turning',
+    severity: 'medium',
+    title: 'Internal corner sharper than a standard insert nose',
+    measure: 'minInternalCornerRadiusMm',
+    compare: 'gte',
+    threshold: 0.4,
+    unit: 'mm',
+    rationale:
+      'A turned internal corner is the radius of the insert nose that cut it. Standard ISO turning inserts come at 0.2, 0.4, 0.8 and 1.2 mm, and the smaller the nose the weaker the edge and the poorer the finish. Below 0.4 mm the corner is a grinding or EDM feature, not a turned one — and this is where turning beats milling by an order of magnitude, because a milled corner starts at the cutter radius.',
+    fix: 'Open the corner to at least 0.4 mm, or accept a 0.2 mm nose and the reduced feed and edge life that come with it.',
+    source: 'Standard ISO turning insert nose radii (0.2 / 0.4 / 0.8 / 1.2 mm); the corner a turned feature carries is the nose radius of the insert that produced it. Widely published across insert catalogues; no primary standard audited.',
+  },
+  {
+    id: 'turn-hole-depth-ratio',
+    sourceStatus: 'industry-consensus',
+    process: 'turning',
+    severity: 'medium',
+    title: 'Bore too deep for a boring bar',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 4,
+    unit: 'depth/dia',
+    rationale:
+      'A bore on a lathe is opened by a boring bar cantilevered from the turret. The bar has to fit inside the hole, so its own slenderness is set by the feature it is cutting, and past about four diameters it chatters and leaves a tapered bore.',
+    fix: 'Open the diameter, shorten the bore, or use a damped or carbide bar and accept the tooling cost.',
+    source: 'Boring-bar practice: a steel bar is used to about 4:1 overhang and a carbide or damped bar beyond that. Positioned just below the general machining hole limit used elsewhere in this catalogue (5:1), because a boring bar is more constrained than a drill. DERIVED from that ordering, not quoted.',
+  },
+  {
+    id: 'turn-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'turning',
+    severity: 'high',
+    title: 'Tolerance tighter than turning holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.02,
+    unit: 'mm total band',
+    rationale:
+      'A lathe holds a diameter better than a mill holds a position: the part spins on one axis and the tool moves on two. Below about 0.02 mm total the feature is ground or honed, not turned.',
+    fix: 'Open the tolerance, or add a grinding operation and leave stock for it.',
+    source: 'Turning is quoted as holding tighter diametral tolerances than general milling. Positioned below the 0.05 mm general-machining band used elsewhere in this catalogue. DERIVED from that ordering; no primary standard audited.',
+  },
+  {
+    id: 'turn-thin-web',
+    sourceStatus: 'industry-consensus',
+    process: 'turning',
+    severity: 'medium',
+    title: 'Wall too thin to hold in a chuck',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 1.5,
+    unit: 'mm',
+    rationale:
+      'A thin-walled turned part distorts in the chuck jaws before the tool touches it, and springs back out of round when it is released. The bore that measured perfectly in the machine is oval on the bench.',
+    fix: 'Thicken the wall, or use soft jaws or an expanding mandrel and cost the fixture.',
+    source: 'The same thin-web limit the general machining family uses (1.5 mm), which is a cutting-force argument that applies equally to a lathe. Shared deliberately rather than restated with a different number.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // WIRE EDM
+  //
+  // The family that most justifies splitting `machining`. A wire cuts an
+  // internal corner at 0.15 mm where an end mill needs 3 — twenty times finer —
+  // and it does it in hardened steel with no cutting force at all. What it
+  // cannot do is anything blind: the wire has to thread through the part and
+  // come out the other side.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'wedm-internal-corner-radius',
+    sourceStatus: 'industry-consensus',
+    process: 'wire-edm',
+    severity: 'medium',
+    title: 'Internal corner sharper than the wire can turn',
+    measure: 'minInternalCornerRadiusMm',
+    compare: 'gte',
+    threshold: 0.15,
+    unit: 'mm',
+    rationale:
+      'The smallest inside corner a wire can leave is its own radius plus the spark gap — about 0.15 mm on a standard 0.25 mm wire. This is the number that decides whether a die plate is wire-cut or milled: an end mill cannot go below its own radius, and that is twenty times coarser.',
+    fix: 'Open the corner to at least 0.15 mm, or specify a finer wire (0.10 mm reaches about 0.06 mm) and accept the slower cut.',
+    source: 'Wire EDM design guidance: minimum internal corner radius is approximately the wire RADIUS plus the spark gap — a 0.25 mm wire gives roughly 0.13-0.15 mm, and a 0.10 mm wire about 0.06 mm at reduced cutting speed. Consistent across several EDM suppliers; no primary standard audited.',
+  },
+  {
+    id: 'wedm-no-blind-features',
+    sourceStatus: 'industry-consensus',
+    process: 'wire-edm',
+    severity: 'high',
+    title: 'Blind features cannot be wire-cut',
+    measure: 'blindHoleCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'blind features',
+    rationale:
+      'Wire EDM threads a wire through a start hole and cuts a profile straight through the part. There is no way to stop part-way and leave a floor. A blind feature on a wire-cut part is a separate milling or sinker-EDM operation, and it is usually the one nobody quoted.',
+    fix: 'Take the feature through, or quote the blind feature as a separate operation — sinker EDM if the corner needs to stay sharp, milling if it does not.',
+    source: 'Wire EDM process guidance: the wire cuts a through profile and cannot produce a blind pocket or hole. Derived from the process, not quoted from a design guide.',
+  },
+  {
+    id: 'wedm-thin-web',
+    sourceStatus: 'industry-consensus',
+    process: 'wire-edm',
+    severity: 'medium',
+    title: 'Web too thin even for a no-force process',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 0.2,
+    unit: 'mm',
+    rationale:
+      'The wire exerts no cutting force, which is exactly why wire EDM leaves webs a milling cutter would tear off — the general machining limit of 1.5 mm does not apply here and applying it would reject a part the process handles easily. What does still apply is the flushing pressure and the part\'s own handling: below about 0.2 mm the web bends when the part is taken out of the tank.',
+    fix: 'Thicken the web, or leave tabs and remove them after the part is out of the machine.',
+    source: 'Wire EDM removes material by spark erosion with no mechanical cutting force, so its thin-web limit is set by flushing and handling rather than by deflection. The value is positioned an order of magnitude below the 1.5 mm milling limit used elsewhere in this catalogue. DERIVED from that ordering, not quoted.',
+  },
+  {
+    id: 'wedm-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'wire-edm',
+    severity: 'high',
+    title: 'Tolerance tighter than wire EDM holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.01,
+    unit: 'mm total band',
+    rationale:
+      'Wire EDM is the most accurate route in this catalogue and this is where it earns its cycle time — but it is not unlimited, and below about 0.01 mm total the part is being jig-ground or lapped.',
+    fix: 'Open the tolerance, or move that feature to grinding.',
+    source: 'Wire EDM is quoted as holding beyond +/-0.005 mm with multi-pass skim cutting. The total band used here is twice that single-sided figure. No primary standard audited.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DEEP-HOLE / GUN DRILLING
+  //
+  // The generic machining family caps a hole at 5 diameters. A gun drill runs
+  // to 100 and beyond — twenty times further — and a fuel rail or an injector
+  // body judged at 5:1 fails a rule the process was invented to beat.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'gundrill-hole-ld',
+    sourceStatus: 'industry-consensus',
+    process: 'deep-hole-drilling',
+    severity: 'high',
+    title: 'Hole deeper than a gun drill reaches',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 100,
+    unit: 'depth/dia',
+    rationale:
+      'A gun drill is a single-flute tool with coolant fed down its centre and chips carried out along an external vee. That is what lets it run to a hundred diameters where a twist drill is finished at five to ten. Past a hundred the tool wanders and the bore runs off, and the job needs BTA or a counter-bored approach from both ends.',
+    fix: 'Shorten the hole, open the diameter, or drill from both ends and accept the step where they meet.',
+    source: 'Deep-hole drilling guidance: gun drills reach depth-to-diameter ratios of 100:1 and beyond, against roughly 5-10:1 for a conventional twist drill; past about 40:1 a dedicated deep-hole machine gives markedly better accuracy. Consistent across deep-hole machine builders; no primary standard audited.',
+  },
+  {
+    id: 'gundrill-min-dia',
+    sourceStatus: 'industry-consensus',
+    process: 'deep-hole-drilling',
+    severity: 'medium',
+    title: 'Hole below the gun-drill diameter range',
+    measure: 'minHoleDiaMm',
+    compare: 'gte',
+    threshold: 1.0,
+    unit: 'mm dia',
+    rationale:
+      'A gun drill has to carry a coolant passage down its own centre, so there is a diameter below which there is no tool. Under about 1 mm the hole is EDM-drilled, not gun-drilled.',
+    fix: 'Open the hole to at least 1 mm, or quote it as a fast-hole EDM feature.',
+    source: 'Gun drilling is quoted for diameters of about 1-30 mm, most commonly 2-20 mm. Consistent across deep-hole tooling suppliers; no primary standard audited.',
+  },
+  {
+    id: 'gundrill-max-dia',
+    sourceStatus: 'industry-consensus',
+    process: 'deep-hole-drilling',
+    severity: 'medium',
+    title: 'Hole above the gun-drill diameter range',
+    measure: 'maxHoleDiaMm',
+    compare: 'lte',
+    threshold: 30,
+    unit: 'mm dia',
+    rationale:
+      'Above about 30 mm the chip volume outgrows the vee flute and the process changes: BTA takes the chips back through the middle of the tool instead. It is a different machine and a different quotation, not a bigger gun drill.',
+    fix: 'Quote the large bore as BTA or trepanning; the small ones can stay on the gun drill.',
+    source: 'Gun drilling is quoted for diameters of about 1-30 mm; larger deep holes move to BTA or ejector drilling. Consistent across deep-hole machine builders; no primary standard audited.',
+  },
+  {
+    id: 'gundrill-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'deep-hole-drilling',
+    severity: 'high',
+    title: 'Tolerance tighter than a gun-drilled bore holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.05,
+    unit: 'mm total band',
+    rationale:
+      'A gun-drilled bore is straight and round to a degree no twist drill approaches, but it is still a drilled hole a long way from its entry. A tighter band than the general machining limit means honing or reaming after it.',
+    fix: 'Open the tolerance, or hone the bore and leave stock for it.',
+    source: 'The general machining band used elsewhere in this catalogue (0.05 mm total), applied unchanged because a gun-drilled bore is a drilled feature. Shared deliberately rather than restated with a different number.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BROACHING
+  //
+  // Four rules from one well-stated source, and every one of them is a routing
+  // decision rather than a cost warning: broaching either fits the feature or
+  // it does not.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'broach-no-blind',
+    sourceStatus: 'industry-consensus',
+    process: 'broaching',
+    severity: 'high',
+    title: 'Blind features cannot be broached',
+    measure: 'blindHoleCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'blind features',
+    rationale:
+      'A broach is pulled or pushed straight through the workpiece, each tooth taking a little more than the last. There is nowhere for it to stop and nowhere for the chips to go if it does. A blind feature is a milling, EDM or rotary-broaching job.',
+    fix: 'Take the feature through, or use rotary broaching, which can form a blind profile to a shallow depth.',
+    source: 'Broaching process guidance: blind holes, deep holes, stepped holes and obstructed outer surfaces cannot be processed by broaching. No primary standard audited.',
+  },
+  {
+    id: 'broach-hole-ld',
+    sourceStatus: 'industry-consensus',
+    process: 'broaching',
+    severity: 'high',
+    title: 'Hole too deep to broach',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 5,
+    unit: 'depth/dia',
+    rationale:
+      'The broach has to be longer than the feature by its whole cutting length, and it carries every chip it has cut along with it. Past about five diameters the tool is unwieldy, the chip packing is unmanageable and the pull load rises past what the machine will give.',
+    fix: 'Shorten the feature, open it, or broach from both ends.',
+    source: 'Broaching process guidance: the depth-to-diameter ratio of a broached hole is generally not more than 5. No primary standard audited.',
+  },
+  {
+    id: 'broach-min-dia',
+    sourceStatus: 'industry-consensus',
+    process: 'broaching',
+    severity: 'medium',
+    title: 'Feature below the broachable size range',
+    measure: 'minHoleDiaMm',
+    compare: 'gte',
+    threshold: 10,
+    unit: 'mm dia',
+    rationale:
+      'A broach small enough for a fine hole has no cross-section left to carry the pull load, and it snaps inside the part.',
+    fix: 'Open the feature, or produce it by wire EDM — which is what most small internal splines and keyways actually are.',
+    source: 'Broaching process guidance: broached hole diameters run generally from 10 to 100 mm. No primary standard audited.',
+  },
+  {
+    id: 'broach-max-dia',
+    sourceStatus: 'industry-consensus',
+    process: 'broaching',
+    severity: 'medium',
+    title: 'Feature above the broachable size range',
+    measure: 'maxHoleDiaMm',
+    compare: 'lte',
+    threshold: 100,
+    unit: 'mm dia',
+    rationale:
+      'Above about 100 mm the broach and the load needed to pull it both outgrow the standard machine, and the feature is bored or milled instead.',
+    fix: 'Bore or mill the large feature; broaching stays worthwhile on the small ones.',
+    source: 'Broaching process guidance: broached hole diameters run generally from 10 to 100 mm. No primary standard audited.',
+  },
+
 ];
 
 /**
@@ -3280,6 +3580,11 @@ export const DFM_RULES = [
  * reader to infer that the catalogue is complete.
  */
 export const UNWRITTEN_RULES = [
+  {
+    topic: 'SINKER (ram) EDM as its own family',
+    needs: 'Sourced numbers for the two limits that would distinguish it: the smallest internal corner a shaped electrode can burn, and the deepest rib an electrode can carry without arcing. The research found neither. Sinker EDM is the exact inverse of wire EDM — it is the process that CAN make a blind pocket with a sharp corner — so a family that merely copied the wire-EDM thresholds would be worse than none.',
+    proxy: 'None. Sinker EDM is not offered. The two processes it competes with, wire EDM and milling, are both in the catalogue, and a blind sharp-cornered pocket now surfaces as a wire-EDM finding ("blind features cannot be wire-cut") that names sinker EDM in its fix.',
+  },
   {
     topic: 'Tube bending — bend radius against tube OD, and wall thinning round the bend',
     needs: 'The part recognised AS a tube: a circular section swept along a centreline, so the outside diameter, the wall and the centreline radius can be read separately. The engine finds cylinders and it finds bends between planar flanges; it has no swept-section recogniser, and a bent tube is neither a body of revolution nor folded sheet.',

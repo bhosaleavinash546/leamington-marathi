@@ -109,6 +109,12 @@ export const PROCESS_KWH_PER_KG = {
   'Composite Layup (RTM)': 1.2,
   'Machining (CNC)': 1.5,           // per kg of finished part (billet route)
   'Machining (secondary ops)': 0.4,
+  // The machining split. Each relative to general CNC (1.5 kWh/kg of finished
+  // part), scaled by how long the machine runs to remove the same metal.
+  'Turning (CNC)': 0.9,                      // fewer axes, higher removal rate, less air-cutting
+  'Wire EDM': 12.0,                          // spark erosion over many hours; by far the most intense route here
+  'Deep-Hole / Gun Drilling': 2.2,           // high-pressure coolant pumps run continuously
+  'Broaching': 0.2,                          // one stroke, seconds long
   'Extrusion': 0.5,
   'MIG Welding Assembly': 0.3,
   'Resistance Spot Welding': 0.2,

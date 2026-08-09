@@ -629,3 +629,94 @@ export const SHEET_FORMING_FIXTURES = [
     },
   },
 ];
+
+
+/**
+ * MACHINING FIXTURES — the two measures that had NEVER produced a value.
+ *
+ * `mach-internal-corner-radius` and `mach-pocket-depth-ratio` were written
+ * against measurements nothing computed, so both reported NOT EVALUATED on
+ * every part ever analysed: on filleted-pocket the whole machining family
+ * evaluated 0 of 7 rules and scored `null`. The recogniser had the data and was
+ * discarding it — a fillet's radius came off the kernel and was dropped, and a
+ * pocket carried an area and a centroid but no extents.
+ *
+ * Truth is analytic from generate.py, including the fillet allowance: the
+ * recogniser measures the pocket WALL, which starts one fillet radius above the
+ * floor, so the depth it sees is the cut depth minus one radius. That is stated
+ * here rather than papered over, because it is the difference between a fixture
+ * that documents behaviour and one that was copied from an engine run.
+ */
+export const MACHINING_FIXTURES = [
+  {
+    file: 'filleted-pocket.step',
+    what: '80x60x30 block, 50x30 pocket cut from z=12, R3 fillets on every edge',
+    truth: {
+      // R3 on every edge, and only the CONCAVE ones are internal corners.
+      minInternalCornerRadiusMm: 3.0,
+      // Pocket walls: 50 x 30 opening. Cut depth 30 - 12 = 18; the wall the
+      // recogniser sees starts one R3 fillet above the floor, so 15. Depth axis
+      // is Z (the floor's normal), width is the narrower opening span, 30.
+      maxPocketDepthToWidth: 0.5,
+      // At exactly 3 mm the milling rule is on its threshold and passes.
+      cornerVerdicts: [{ family: 'machining', ruleId: 'mach-internal-corner-radius', status: 'pass' }],
+    },
+  },
+  {
+    file: 'filleted-slot.step',
+    what: '80x60x30 block, 15 mm through slot from z=18, R2 fillets',
+    truth: {
+      minInternalCornerRadiusMm: 2.0,
+      // Cut depth 30 - 18 = 12, less one R2 fillet = 10, over a 15 mm width.
+      maxPocketDepthToWidth: 0.67,
+      // THE CROSS-FAMILY CHECK FOR THIS TRANCHE. One 2 mm corner, three
+      // families, and the answers differ by two orders of magnitude in
+      // threshold: an end mill cannot make it, an insert nose can, and a wire
+      // can make one twenty times finer. If the machining split were cosmetic
+      // all three would agree.
+      cornerVerdicts: [
+        { family: 'machining', ruleId: 'mach-internal-corner-radius', status: 'fail' },
+        { family: 'turning', ruleId: 'turn-internal-corner-radius', status: 'pass' },
+        { family: 'wire-edm', ruleId: 'wedm-internal-corner-radius', status: 'pass' },
+      ],
+      cornerThresholds: {
+        'mach-internal-corner-radius': 3,
+        'turn-internal-corner-radius': 0.4,
+        'wedm-internal-corner-radius': 0.15,
+      },
+    },
+  },
+  {
+    file: 'plate-two-holes.step',
+    what: '60x40x10 plate: one Ø10 through, one Ø8 blind 6 deep',
+    truth: {
+      // Blind features are a COUNT, not a worst-case ratio: wire EDM and
+      // broaching cannot make one at all, and "the worst blind hole is 0.75 L/D"
+      // cannot express "there is one".
+      blindHoleCount: 1,
+      maxHoleDiaMm: 10.0,
+      minHoleDiaMm: 8.0,
+      // Both processes thread or pull a tool straight through the part.
+      blindRejectedBy: [
+        { family: 'wire-edm', ruleId: 'wedm-no-blind-features' },
+        { family: 'broaching', ruleId: 'broach-no-blind' },
+      ],
+      // A flat plate is not a body of revolution, so the turning slenderness
+      // measure must ABSTAIN rather than call the 60 mm box side a shaft.
+      slendernessAbsent: true,
+    },
+  },
+  {
+    file: 'bushing-tube.step',
+    what: 'OD 60 / L 50 bushing — round, so the lathe slenderness measure applies',
+    truth: {
+      // 50 long over a 60 diameter = 0.83. Well inside the 8:1 limit, so the
+      // rule is seen PASSING rather than only failing.
+      slendernessLtoD: 0.83,
+      // The Ø40 bore is above broaching's 10 mm floor and below its 100 mm
+      // ceiling, and it is through — so broaching accepts it.
+      blindHoleCount: 0,
+      broachingAcceptsIt: true,
+    },
+  },
+];

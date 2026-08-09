@@ -51,6 +51,10 @@ export const MATERIAL_FAMILIES = {
 export const PROCESS_TO_DFM_FAMILY = {
   // ── Shape-forming ────────────────────────────────────────────────────────
   'Machining (CNC)': 'machining',
+  'Turning (CNC)': 'turning',
+  'Wire EDM': 'wire-edm',
+  'Deep-Hole / Gun Drilling': 'deep-hole-drilling',
+  'Broaching': 'broaching',
   'Injection Moulding': 'injection-moulding',
   'Die Casting (Aluminium)': 'hpdc',
   'Die Casting (Zinc)': 'hpdc-zinc',
