@@ -851,3 +851,86 @@ def tool_accessibility(tess, inter, directions=None, tool_dia_mm=10.0, reach=1e5
                        "reported as reachable may still be unreachable on a real machine. Approach "
                        "is limited to the six axis directions.",
     }
+
+
+# ── Additive: overhang against the build direction ───────────────────────────
+#
+# The archetypal DfAM question, and the one measure in this file that is NOT a
+# tooling-access question. In powder-bed fusion there is no die and no draw: the
+# constraint is that a downward-facing surface has nothing under it but loose
+# powder. Below roughly 45 degrees from the build plate the melt pool sinks into
+# that powder, the surface dross-forms, and the feature needs a support that has
+# to be cut off afterwards.
+#
+# Deliberately built as a CURVE, exactly like the draft curve, because 45 is a
+# rule of thumb and not a constant: some alloys and parameter sets self-support
+# to 30, lattice struts want better than 25, and a rule that hardcodes one angle
+# cannot express any of that. Each rule names the angle it means.
+OVERHANG_CUTOFFS_DEG = (20.0, 30.0, 40.0, 45.0, 50.0, 60.0)
+
+
+def overhang(tess, build=(0.0, 0.0, 1.0)):
+    """Area share of the surface that is a DOWNWARD-facing overhang, by angle.
+
+    A triangle is downward-facing when its outward normal has a component
+    against the build direction. Its angle from the build PLATE is
+    90 - angle(normal, -build); the surface is self-supporting while that angle
+    is at or above the cutoff, and needs support below it.
+
+    Returns None when the tessellation carries no usable area, so the rules
+    abstain rather than reading an unmeasured part as 0% overhang — which would
+    pass every additive part ever uploaded.
+    """
+    bx, by, bz = build
+    bm = math.sqrt(bx * bx + by * by + bz * bz) or 1.0
+    bx, by, bz = bx / bm, by / bm, bz / bm
+
+    total = tess.get("totalAreaMm2") or 0.0
+    n = tess.get("count") or 0
+    if not n or total <= 0:
+        return None
+
+    below = {c: 0.0 for c in OVERHANG_CUTOFFS_DEG}
+    down_area = 0.0
+    worst_deg = None
+    for i in range(n):
+        ar = tess["area"][i]
+        if ar <= 0:
+            continue
+        nx, ny, nz = tess["nx"][i], tess["ny"][i], tess["nz"][i]
+        # Component along the build axis. Negative means the face looks down.
+        d = nx * bx + ny * by + nz * bz
+        if d >= 0:
+            continue
+        down_area += ar
+        # Angle of the SURFACE from the build plate: a floor-parallel face reads
+        # 0 (the worst possible overhang) and a vertical wall reads 90.
+        # `c` is how squarely the face looks straight down: 1 for a flat floor,
+        # 0 for a vertical wall. acos(c) is therefore the surface's angle from
+        # the build plate directly — flat reads 0, vertical reads 90.
+        c = min(1.0, max(0.0, -d))
+        surface_deg = math.degrees(math.acos(c))
+        if worst_deg is None or surface_deg < worst_deg:
+            worst_deg = surface_deg
+        for cut in OVERHANG_CUTOFFS_DEG:
+            if surface_deg < cut:
+                below[cut] += ar
+
+    return {
+        "buildDirectionXYZ": [round(v, 4) for v in (bx, by, bz)],
+        "downFacingAreaPct": round(100.0 * down_area / total, 2),
+        # The curve. `overhangAreaBelowDeg["45"]` is the share of the whole
+        # surface that is a downward face lying flatter than 45 degrees.
+        "overhangAreaBelowDeg": {
+            str(c).rstrip("0").rstrip(".") if c % 1 == 0 else str(c): round(100.0 * below[c] / total, 2)
+            for c in OVERHANG_CUTOFFS_DEG
+        },
+        "shallowestOverhangDeg": round(worst_deg, 2) if worst_deg is not None else None,
+        "basis": ("Area-weighted over the tessellation. A triangle is an overhang when its outward "
+                  "normal has a component against the build direction; the angle reported is the "
+                  "surface's own angle from the build plate, so a flat downward face reads 0 and a "
+                  "vertical wall reads 90. Support is needed below the cutoff each rule names."),
+        "knownLimits": ("The build direction is assumed to be +Z as the part is modelled. Re-orienting "
+                        "a part on the plate is the first thing an AM engineer does, so this is a "
+                        "measure of the part AS DRAWN, not of the best available orientation."),
+    }

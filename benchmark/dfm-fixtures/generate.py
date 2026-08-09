@@ -674,6 +674,52 @@ def fine_cored_holes(outdir):
     return _write(s, os.path.join(outdir, "fine-cored-holes.step")), round(vol, 1)
 
 
+def overhang_wedge(outdir):
+    """A wedge whose ONE sloped face is EXACTLY 30 degrees from the build plate.
+
+    Built as a right prism on a triangular section: 60 long (Y), with a section
+    that rises 40 in Z over 40*sqrt(3) in X. The sloped face therefore stands at
+    exactly atan(40 / (40*sqrt(3))) = 30.000 deg from horizontal, and it is
+    oriented to face DOWNWARD so it is an overhang rather than an upskin.
+
+    Truth by construction, for the +Z build direction. The sloped face is the
+    ONLY down-facing surface on the part — the top is an upskin and the other
+    three faces are vertical — so the figures are exact areas, not samples:
+
+      sloped face  = hypot(b, h) * L = 80 * 60          = 4800.0 mm^2
+      top          = b * L                              = 4156.9
+      left wall    = h * L                              = 2400.0
+      two ends     = b * h                              = 2771.3
+      total                                             = 14128.2
+
+      downFacingAreaPct = 4800 / 14128.2 = 33.97 %
+
+    And because the face is at EXACTLY 30 deg it straddles the curve rather
+    than sitting at one end: below the 40/45/50/60 cutoffs it is the whole
+    33.97, and below the 20 cutoff it is zero.
+
+    This is the fixture the LPBF overhang rule needs. Without it the rule could
+    be hardcoded to any constant and every other fixture would still pass.
+    """
+    h = 40.0
+    b = 40.0 * math.sqrt(3.0)          # tan(30) = h / b
+    L = 60.0
+    # Section in the XZ plane, extruded along +Y, with the material ABOVE the
+    # slope so the sloped face looks DOWN. The first draft put the material
+    # below it and the face was an upskin — the engine correctly reported the
+    # part as having no overhang but the flat base, which is not what this
+    # fixture is for.
+    pts = [(0.0, 0.0, 0.0), (b, 0.0, h), (0.0, 0.0, h)]
+    wire = _wire(pts)
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakePrism
+    from OCP.gp import gp_Vec
+    face = BRepBuilderAPI_MakeFace(wire).Face()
+    solid = BRepPrimAPI_MakePrism(face, gp_Vec(0, L, 0)).Shape()
+    vol = 0.5 * b * h * L
+    return _write(solid, os.path.join(outdir, "overhang-wedge.step")), round(vol, 1)
+
+
 def main():
     outdir = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__))
     os.makedirs(outdir, exist_ok=True)
@@ -693,7 +739,11 @@ def main():
                seat_bracket_assembly,
                # Appended for the casting tranche: a true body of revolution, and a
                # block whose blind and through holes sit either side of the split.
-               bushing_tube, fine_cored_holes):
+               bushing_tube, fine_cored_holes,
+               # Appended for the additive tranche: one face at exactly 30 deg
+               # from the build plate, so the overhang curve has a fixture that
+               # straddles it rather than sitting at one end.
+               overhang_wedge):
         path, truth = fn(outdir)
         print(f"  {os.path.basename(path):26s}  analytic truth: {truth}")
     print(f"wrote fixtures to {outdir}")

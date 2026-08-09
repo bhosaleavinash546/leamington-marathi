@@ -1258,10 +1258,20 @@ def analyze(filepath: str, draw_override=None) -> dict:
                 except Exception as _e:
                     revolution_block = {"reason": f"Axisymmetry could not be measured: {_e}"}
 
+                # OVERHANG against the build direction. The one DFM question in
+                # this engine that is not about a tool or a die: powder-bed
+                # fusion has no draw, only gravity and loose powder under a
+                # downward-facing surface.
+                try:
+                    overhang_block = _dfm.overhang(tess)
+                except Exception as _e:
+                    overhang_block = {"reason": f"Overhang could not be measured: {_e}"}
+
                 dfm_block = {
                     "pmi": pmi_block,
                     "apertures": aperture_block,
                     "revolution": revolution_block,
+                    "overhang": overhang_block,
                     "toolAccess": access_info,
                     "tessellation": {"triangles": tess["count"],
                                      "totalAreaMm2": round(tess["totalAreaMm2"], 1),

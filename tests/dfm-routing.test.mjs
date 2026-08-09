@@ -828,3 +828,144 @@ test('sinker EDM is declared unwritten rather than copied from wire EDM', async 
   const row = UNWRITTEN_RULES.find(u => /SINKER/i.test(u.topic));
   assert.ok(row && row.needs && row.proxy, 'and must be declared with what it needs');
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PLASTICS BEYOND INJECTION MOULDING, AND THE POWDER / ADDITIVE ROUTES
+//
+// The additive family is the first in this catalogue whose governing rule is
+// not about a tool or a die at all. There is no draw and no ejection: the
+// constraint is gravity, and what sits under a downward-facing surface.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test('the five new routes are offered, priced, carbon-scored and routed', async () => {
+  const { processesForMaterial } = await import('../dfm-process-registry.mjs');
+  const { PROCESS_FAMILIES } = await import('../dfm-rule-catalogue.mjs');
+  const { PROCESSES, computeShouldCost } = await import('../costing-engine.mjs');
+  const { PROCESS_KWH_PER_KG } = await import('../carbon.mjs');
+  for (const [name, fam, material] of [
+    ['Thermoforming', 'thermoforming', 'ABS'],
+    ['Rotational Moulding', 'rotational-moulding', 'HDPE'],
+    ['Powder Metallurgy (Press & Sinter)', 'powder-metallurgy', 'Steel (mild)'],
+    ['Metal Injection Moulding (MIM)', 'mim', 'Steel (mild)'],
+    ['Laser Powder Bed Fusion (DMLS/SLM)', 'lpbf', 'Titanium Ti-6Al-4V'],
+  ]) {
+    const offered = new Map(processesForMaterial(material).map(p => [p.name, p]));
+    assert.ok(offered.has(name), `${name} must be selectable for ${material}`);
+    assert.equal(offered.get(name).dfmFamily, fam);
+    assert.ok(PROCESS_FAMILIES[fam]);
+    assert.ok(PROCESSES[name]);
+    assert.ok(Number.isFinite(PROCESS_KWH_PER_KG[name]), `${name} would show a blank CO2e column`);
+    assert.ok(computeShouldCost({ material, process: name, weightKg: 0.3, annualVolume: 5_000, region: 'Germany' }).totalShouldCost > 0);
+  }
+});
+
+test('the overhang curve is a CURVE, and each rule names the angle it means', async () => {
+  const { DFM_RULES } = await import('../dfm-rule-catalogue.mjs');
+  // 45 degrees is a rule of thumb, not a constant — some alloys and parameter
+  // sets self-support to 30. A rule reading the curve without naming its angle
+  // is the same bug the draft rules had before `draftCutoffDeg`.
+  for (const r of DFM_RULES.filter(r => r.measure === 'overhangAreaBelowDeg')) {
+    assert.ok(Number.isFinite(r.overhangCutoffDeg), `${r.id} reads the curve without naming an angle`);
+  }
+  const part = {
+    dfm: { overhang: { overhangAreaBelowDeg: { 30: 2, 45: 28, 60: 40 }, downFacingAreaPct: 45 },
+      wallThickness: { p50Mm: 3, p5Mm: 3 }, draft: {}, features: {} },
+  };
+  const r = runDfmRules(part, 'lpbf', { material: 'Titanium Ti-6Al-4V' });
+  const row = [...r.findings, ...r.passed].find(f => f.id === 'lpbf-overhang-45');
+  // It must read the 45 point (28), not the 30 point (2) or the 60 point (40).
+  assert.equal(row.measured, 28);
+  assert.equal(row.status, 'fail');
+});
+
+test('an unmeasured overhang abstains rather than reading as a clean 0%', () => {
+  // A hard 0 would pass every additive part ever uploaded.
+  const part = {
+    dfm: { overhang: { reason: 'kernel refused' }, wallThickness: { p50Mm: 3, p5Mm: 3 }, draft: {}, features: {} },
+  };
+  assert.equal(extractMeasures(part)._overhangCurve, undefined);
+  const r = runDfmRules(part, 'lpbf', { material: 'Titanium Ti-6Al-4V' });
+  assert.ok(r.notEvaluated.some(f => f.id === 'lpbf-overhang-45'));
+});
+
+test('powder metallurgy is judged on the SINGLE press axis, which is its whole constraint', () => {
+  const oneAxis = {
+    dfm: { setups: { estimatedSetupCount: 1 }, wallThickness: { p5Mm: 4, p50Mm: 6 },
+      draft: { undercutFaceCount: 0 }, features: {} },
+  };
+  const crossFeature = {
+    dfm: { setups: { estimatedSetupCount: 3 }, wallThickness: { p5Mm: 4, p50Mm: 6 },
+      draft: { undercutFaceCount: 0 }, features: {} },
+  };
+  const idsOf = geo => runDfmRules(geo, 'powder-metallurgy', { material: 'Steel (mild)' }).findings.map(f => f.id);
+  assert.ok(!idsOf(oneAxis).includes('pm-single-press-axis'), 'a one-direction part presses');
+  assert.ok(idsOf(crossFeature).includes('pm-single-press-axis'),
+    'a cross hole cannot be pressed — it is secondary machining nobody quoted');
+});
+
+test('MIM has a MAXIMUM wall, which no plastic moulding rule has', async () => {
+  const { DFM_RULES } = await import('../dfm-rule-catalogue.mjs');
+  assert.ok(DFM_RULES.find(r => r.id === 'mim-max-wall'), 'the binder has to get out of the middle');
+  const chunky = {
+    dfm: { wallThickness: { p5Mm: 3, p50Mm: 18 }, draft: { undercutFaceCount: 0 }, features: {} },
+  };
+  const r = runDfmRules(chunky, 'mim', { material: 'Steel (mild)' });
+  assert.ok(r.findings.some(f => f.id === 'mim-max-wall'), '18 mm is past the 12.5 mm debinding limit');
+});
+
+test('rotational moulding is the only family with a wall WINDOW, not a floor', () => {
+  const idsFor = (p5, p50) => runDfmRules({
+    dfm: { wallThickness: { p5Mm: p5, p50Mm: p50 }, draft: { undercutFaceCount: 0 }, features: {} },
+  }, 'rotational-moulding', { material: 'HDPE' }).findings.map(f => f.id);
+  assert.ok(idsFor(1.5, 2.0).includes('rm-min-wall'), 'below 3 mm the powder may not bridge at all');
+  assert.ok(idsFor(4.0, 14.0).includes('rm-max-wall'), 'above 10 mm the inside never fuses');
+  assert.equal(idsFor(4.0, 6.0).length, 0, '4-6 mm is exactly where the process lives');
+});
+
+test('thermoforming and deep drawing ask the SAME question with different answers', async () => {
+  const { DFM_RULES } = await import('../dfm-rule-catalogue.mjs');
+  const tf = DFM_RULES.find(r => r.id === 'tf-draw-ratio');
+  const dd = DFM_RULES.find(r => r.id === 'dd-draw-depth');
+  assert.equal(tf.measure, dd.measure, 'one geometric question');
+  // A sheet stretched over a tool and a blank drawn into a die are not the same
+  // limit, and the base thresholds must not have been copied.
+  assert.notEqual(tf.threshold, dd.threshold);
+});
+
+test('three more gaps are declared rather than filled with invented numbers', async () => {
+  const { UNWRITTEN_RULES, PROCESS_FAMILIES } = await import('../dfm-rule-catalogue.mjs');
+  for (const pattern of [/PERCENTAGE of dimension/i, /BUILD ORIENTATION/i, /BLOW MOULDING/i]) {
+    const row = UNWRITTEN_RULES.find(u => pattern.test(u.topic));
+    assert.ok(row && row.needs && row.proxy, `${pattern} must be declared with what it needs`);
+  }
+  assert.ok(!PROCESS_FAMILIES['blow-moulding'], 'blow moulding must not exist as a copied family');
+});
+
+test('the whole catalogue still holds its own invariants', async () => {
+  const { DFM_RULES, PROCESS_FAMILIES } = await import('../dfm-rule-catalogue.mjs');
+  const counts = {};
+  for (const r of DFM_RULES) counts[r.process] = (counts[r.process] || 0) + 1;
+  for (const fam of Object.keys(PROCESS_FAMILIES)) {
+    assert.ok(counts[fam] >= 3, `${fam} has ${counts[fam] || 0} rules`);
+  }
+  for (const r of DFM_RULES) {
+    assert.ok(PROCESS_FAMILIES[r.process], `${r.id} belongs to unknown family ${r.process}`);
+    assert.ok(r.source && r.source.length > 40, `${r.id} must carry a real source string`);
+    assert.ok(r.fix && r.rationale, `${r.id} must tell the reader what to do about it`);
+    assert.ok(['high', 'medium', 'low'].includes(r.severity), `${r.id} has an odd severity`);
+  }
+  const ids = DFM_RULES.map(r => r.id);
+  assert.equal(new Set(ids).size, ids.length, 'duplicate rule id');
+});
+
+test('every shaping process in the cost model is either routed or explained', async () => {
+  const { PROCESS_TO_DFM_FAMILY, NO_DFM_REASON } = await import('../dfm-process-registry.mjs');
+  const { PROCESSES } = await import('../costing-engine.mjs');
+  for (const name of Object.keys(PROCESSES)) {
+    assert.ok(name in PROCESS_TO_DFM_FAMILY,
+      `${name} is priced but the DFM registry has never heard of it — it would vanish from the route table`);
+    if (PROCESS_TO_DFM_FAMILY[name] === null) {
+      assert.ok(NO_DFM_REASON[name], `${name} carries no rules and no reason`);
+    }
+  }
+});

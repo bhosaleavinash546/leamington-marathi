@@ -106,6 +106,12 @@ export const PROCESS_KWH_PER_KG = {
   'Hydroforming': 0.2,
   'Laser Cutting + Bending': 0.35,
   'Injection Moulding': 0.9,
+  // Plastics beyond injection moulding, and the powder/additive routes.
+  'Thermoforming': 0.7,                      // sheet reheat, but no melt and no high pressure
+  'Rotational Moulding': 2.6,                // the whole mould is heated and cooled with the part inside
+  'Powder Metallurgy (Press & Sinter)': 2.0, // the press is trivial; the sintering belt is not
+  'Metal Injection Moulding (MIM)': 4.5,     // mould + debind + a long high-temperature sinter
+  'Laser Powder Bed Fusion (DMLS/SLM)': 35.0, // by far the most energy-intense route in this table
   'Composite Layup (RTM)': 1.2,
   'Machining (CNC)': 1.5,           // per kg of finished part (billet route)
   'Machining (secondary ops)': 0.4,

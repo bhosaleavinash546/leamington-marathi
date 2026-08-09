@@ -720,3 +720,46 @@ export const MACHINING_FIXTURES = [
     },
   },
 ];
+
+
+/**
+ * ADDITIVE / OVERHANG FIXTURES.
+ *
+ * `overhang()` is the first measure in this engine that is not about a tool or
+ * a die. Powder-bed fusion has no draw: the constraint is gravity and what sits
+ * under a downward-facing surface. Without a fixture at a KNOWN angle the rule
+ * could be hardcoded to any constant and every other fixture in this gate would
+ * still pass.
+ *
+ * The wedge's areas are exact, not sampled — the sloped face is the only
+ * down-facing surface on the part, so the percentage is arithmetic:
+ *   sloped 80*60 = 4800; top 69.282*60 = 4156.9; wall 40*60 = 2400;
+ *   two ends 69.282*40 = 2771.3; total 14128.2 -> 4800/14128.2 = 33.97%.
+ */
+export const ADDITIVE_FIXTURES = [
+  {
+    file: 'overhang-wedge.step',
+    what: 'Prism whose one sloped face stands at EXACTLY 30 deg from the build plate',
+    truth: {
+      downFacingAreaPct: 33.97,
+      shallowestOverhangDeg: 30.0,
+      // The point of a CURVE rather than one number: the same face is an
+      // overhang at 45 and is not one at 20. A rule that hardcoded 45 could not
+      // be told to ask about 30, which some alloys and parameter sets reach.
+      overhangCurve: { 20: 0, 30: 0, 40: 33.97, 45: 33.97, 60: 33.97 },
+      // 33.97% of the surface needing support fails the 10% limit.
+      lpbfOverhangRule: 'fail',
+    },
+  },
+  {
+    file: 'plate-two-holes.step',
+    what: '60x40x10 plate flat on the plate — the worst possible overhang case',
+    truth: {
+      // The whole underside is a flat downward face at 0 deg from the plate.
+      // It is below EVERY cutoff, which is the correct answer and the reason an
+      // AM engineer tips a plate up before building it.
+      shallowestOverhangDeg: 0.0,
+      lpbfOverhangRule: 'fail',
+    },
+  },
+];

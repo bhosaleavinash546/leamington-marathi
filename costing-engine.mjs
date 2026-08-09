@@ -389,6 +389,54 @@ export const PROCESSES = {
       { maxClampT: 1000, rate: 95 }, { maxClampT: 2000, rate: 140 }, { maxClampT: 99999, rate: 190 },
     ],
   },
+  // ── Plastics beyond injection moulding, and the powder/additive routes ────
+  'Thermoforming': {
+    // One tool face, low pressure, and a trim operation afterwards. The tooling
+    // is a fraction of an injection mould, which is why it wins at low volume
+    // and on large panels an injection press could not hold.
+    machineRate: 55, operators: 0.8, cavities: 1, utilisation: 0.70, scrapPct: 0.08,
+    setupHr: 1.0, batch: 500, toolLife: 200_000,
+    cycleBase: 45, cyclePerKg: 30, toolingBase: 9_000, toolingPerKg: 4_000,
+    families: ['plastic'],
+    finishPct: 0.15, returnsRecovery: 0.60,
+  },
+  'Rotational Moulding': {
+    // The longest cycle of any plastics route: the whole mould is heated and
+    // cooled with the part inside it. Tooling is cheap sheet or cast aluminium.
+    machineRate: 45, operators: 1.0, cavities: 1, utilisation: 0.60, scrapPct: 0.05,
+    setupHr: 1.5, batch: 100, toolLife: 100_000,
+    cycleBase: 900, cyclePerKg: 240, toolingBase: 12_000, toolingPerKg: 5_000,
+    families: ['plastic'],
+    finishPct: 0.10, returnsRecovery: 0.60,
+  },
+  'Powder Metallurgy (Press & Sinter)': {
+    // Near-net at very high rate off a compaction press, then a sintering belt.
+    // Material utilisation is the headline: what is pressed is what ships.
+    machineRate: 70, operators: 0.3, cavities: 1, utilisation: 0.97, scrapPct: 0.03,
+    setupHr: 2.5, batch: 10000, toolLife: 500_000,
+    cycleBase: 6, cyclePerKg: 12, toolingBase: 35_000, toolingPerKg: 15_000,
+    families: ['ferrous', 'copper'],
+    finishPct: 0.06, returnsRecovery: 0.80,
+  },
+  'Metal Injection Moulding (MIM)': {
+    // An injection mould plus debinding and sintering — days of furnace time
+    // per batch, and a feedstock that costs several times the base powder.
+    machineRate: 85, operators: 0.5, cavities: 4, utilisation: 0.85, scrapPct: 0.05,
+    setupHr: 3.0, batch: 20000, toolLife: 1_000_000,
+    cycleBase: 25, cyclePerKg: 60, toolingBase: 55_000, toolingPerKg: 60_000,
+    families: ['ferrous', 'titanium', 'copper'],
+    finishPct: 0.08, returnsRecovery: 0.70,
+  },
+  'Laser Powder Bed Fusion (DMLS/SLM)': {
+    // Priced by machine-hour and build height, not by part. Tooling is zero,
+    // which is the whole proposition — and the piece price never falls with
+    // volume, which is the whole limitation.
+    machineRate: 95, operators: 0.35, cavities: 1, utilisation: 0.80, scrapPct: 0.05,
+    setupHr: 3.0, batch: 20, toolLife: 5_000_000,
+    cycleBase: 600, cyclePerKg: 9000, toolingBase: 0, toolingPerKg: 0,
+    families: ['ferrous', 'aluminium', 'titanium', 'copper'],
+    finishPct: 0.30, returnsRecovery: 0.50,
+  },
   'Composite Layup (RTM)': {
     machineRate: 60, operators: 1.5, cavities: 1, utilisation: 0.90, scrapPct: 0.05,
     setupHr: 2.0, batch: 300, toolLife: 40_000,

@@ -17,7 +17,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { CASTING_FIXTURES, DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES, MACHINING_FIXTURES, PMI_FIXTURES, SHEET_FORMING_FIXTURES } from './dfm-fixtures.mjs';
+import { ADDITIVE_FIXTURES, CASTING_FIXTURES, DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES, MACHINING_FIXTURES, PMI_FIXTURES, SHEET_FORMING_FIXTURES } from './dfm-fixtures.mjs';
 import { extractMeasures, runDfmRules } from '../dfm-rules.mjs';
 import { DFM_RULES } from '../dfm-rule-catalogue.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
@@ -634,6 +634,39 @@ async function main() {
       const r = runDfmRules(g, 'broaching', { material: 'Steel (mild)' });
       record(fx.file, 'broaching accepts a through bore in range', r.findings.length === 0,
         r.findings.length ? `${r.findings.map(f => f.title).join('; ')}` : `${r.evaluatedCount}/${r.ruleCount} evaluated, none failed`);
+    }
+  }
+
+
+  // ── Additive: overhang against the build direction ────────────────────────
+  for (const fx of ADDITIVE_FIXTURES) {
+    if (!AS_JSON) console.log(`\n  ${fx.file}  (additive)`);
+    let g;
+    try {
+      g = await analyzeGeometry(await readFile(join(FIXDIR, fx.file)), fx.file);
+    } catch (e) {
+      record(fx.file, 'analyze for additive', false, `bridge threw: ${e.message}`);
+      continue;
+    }
+    const t = fx.truth;
+    const o = g.dfm?.overhang || {};
+    if (t.downFacingAreaPct !== undefined) {
+      record(fx.file, 'down-facing area', near(o.downFacingAreaPct, t.downFacingAreaPct, 0.3),
+        `${o.downFacingAreaPct}% vs ${t.downFacingAreaPct}% by construction`);
+    }
+    if (t.shallowestOverhangDeg !== undefined) {
+      record(fx.file, 'shallowest overhang', near(o.shallowestOverhangDeg, t.shallowestOverhangDeg, 0.2),
+        `${o.shallowestOverhangDeg} deg vs ${t.shallowestOverhangDeg}`);
+    }
+    for (const [deg, want] of Object.entries(t.overhangCurve || {})) {
+      const got = o.overhangAreaBelowDeg?.[deg];
+      record(fx.file, `overhang below ${deg} deg`, near(got, want, 0.3), `${got}% vs ${want}%`);
+    }
+    if (t.lpbfOverhangRule) {
+      const r = runDfmRules(g, 'lpbf', { material: 'Titanium Ti-6Al-4V' });
+      const row = [...r.findings, ...r.passed, ...r.notEvaluated].find(f => f.id === 'lpbf-overhang-45');
+      record(fx.file, 'lpbf overhang rule', row?.status === t.lpbfOverhangRule,
+        row ? `${row.status} at ${row.measured}% (expected ${t.lpbfOverhangRule})` : 'rule missing entirely');
     }
   }
 

@@ -87,6 +87,16 @@ export const PROCESS_FAMILIES = {
   'wire-edm': 'Wire EDM',
   'deep-hole-drilling': 'Deep-hole / gun drilling',
   broaching: 'Broaching',
+  // ── Plastics beyond injection moulding ───────────────────────────────────
+  thermoforming: 'Thermoforming (vacuum / pressure)',
+  'rotational-moulding': 'Rotational moulding',
+  // ── Powder and additive ──────────────────────────────────────────────────
+  // The additive family is the first in this catalogue whose governing rule is
+  // not about a tool or a die at all. Powder-bed fusion has no draw: the
+  // constraint is gravity, and what is under a downward-facing surface.
+  'powder-metallurgy': 'Powder metallurgy (press & sinter)',
+  mim: 'Metal injection moulding (MIM)',
+  lpbf: 'Laser powder bed fusion (DMLS / SLM)',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3564,6 +3574,370 @@ export const DFM_RULES = [
     source: 'Broaching process guidance: broached hole diameters run generally from 10 to 100 mm. No primary standard audited.',
   },
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // THERMOFORMING
+  //
+  // A heated sheet pulled over or into a tool. Its governing number is the DRAW
+  // RATIO, and it is the same measure deep drawing uses — depth over width —
+  // which is the point: two processes, one geometric question, thresholds four
+  // times apart.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'tf-draw-ratio',
+    sourceStatus: 'industry-consensus',
+    process: 'thermoforming',
+    severity: 'high',
+    title: 'Draw deeper than the sheet will stretch evenly',
+    measure: 'drawDepthToWidth',
+    compare: 'lte',
+    threshold: 1.0,
+    unit: 'depth/width',
+    rationale:
+      'The sheet is one thickness before forming and it has to cover the whole tool. Everything drawn deep is drawn thin, and past a depth equal to the width the corners of the part carry a fraction of the wall the flange still has. Beyond this the part needs plug assist — a second tool that pre-stretches the sheet — and that is a different quotation.',
+    fix: 'Reduce the depth, widen the part, or accept plug-assisted forming and cost the plug.',
+    source: 'Thermoforming design guidance: for depth-to-width ratios exceeding 1:1, plug-assisted female forming is normally needed to keep material distribution acceptable; 3:1 is quoted as the outer limit. The 1:1 point is used because it is where the PROCESS changes rather than where it fails. No primary standard audited.',
+  },
+  {
+    id: 'tf-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'thermoforming',
+    draftCutoffDeg: 2.0,
+    severity: 'high',
+    title: 'Wall area below the minimum thermoforming draft',
+    measure: 'wallAreaBelowDraftPct',
+    compare: 'lte',
+    threshold: 5,
+    unit: '% of wall area',
+    rationale:
+      'The sheet shrinks onto the tool as it cools. On a male tool it grips hard and needs 4-6 degrees; on a female tool it pulls away and 1.5-2 will do. Two degrees is the floor either way, and a vertical wall on a male tool will not come off at all.',
+    fix: 'Add at least 2° to every drawn wall — and 4-6° if the part forms over a male tool rather than into a cavity.',
+    source: 'Thermoforming design guidance: 1.5-2° on vertical female features (part formed into the mould) and 4-6° on male features (part formed over the mould). The lower figure is used as the floor because this engine cannot tell male tooling from female. No primary standard audited.',
+  },
+  {
+    id: 'tf-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'thermoforming',
+    severity: 'high',
+    title: 'Undercuts trap the sheet on the tool',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'A formed sheet is stripped off the tool along the draw axis while it is still warm. A re-entrant feature holds it, and the part tears or stays on the tool.',
+    fix: 'Remove the re-entrant feature, or use a split or collapsible tool and cost it.',
+    source: 'Thermoforming tool practice: the part is stripped along the draw axis. Derived from the process, not quoted from a design guide.',
+  },
+  {
+    id: 'tf-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'thermoforming',
+    severity: 'high',
+    title: 'Tolerance tighter than thermoforming holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 1.0,
+    unit: 'mm total band',
+    rationale:
+      'Only one face of a thermoformed part touches the tool; the other is free and its position depends on how the sheet happened to thin. Anything tight is trimmed or machined afterwards, not formed.',
+    fix: 'Put the tight dimension on the tool side, or trim it after forming.',
+    source: 'Thermoforming is the loosest of the plastic-forming routes in this catalogue: the sheet contacts one tool face only and the wall thins unevenly. Positioned above the rotational-moulding and injection-moulding bands used elsewhere here. DERIVED from that ordering, not quoted.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ROTATIONAL MOULDING
+  //
+  // Powder tumbled in a heated mould. No pressure at all, so it makes hollow
+  // parts nothing else can — and its wall band is a WINDOW, not a floor: too
+  // thin and the powder never bridges, too thick and the inside never fuses.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'rm-min-wall',
+    sourceStatus: 'industry-consensus',
+    process: 'rotational-moulding',
+    severity: 'high',
+    title: 'Wall thinner than rotational moulding can build',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 3.0,
+    unit: 'mm',
+    rationale:
+      'The wall is built by powder sticking to a hot mould, tumble after tumble. There is no pressure to push it anywhere. Below about 3 mm the coverage is a matter of luck, and the risk is not a thin wall but a hole.',
+    fix: 'Thicken the wall to at least 3 mm, or blow-mould the part instead.',
+    source: 'Rotational moulding design guidance: use a minimum wall of 3 mm and a maximum of 10 mm; below roughly 1.9 mm (0.075 in) areas of the part risk inadequate or zero thickness. No primary standard audited.',
+  },
+  {
+    id: 'rm-max-wall',
+    sourceStatus: 'industry-consensus',
+    process: 'rotational-moulding',
+    severity: 'medium',
+    title: 'Wall thicker than the cycle will fuse',
+    measure: 'wallP50Mm',
+    compare: 'lte',
+    threshold: 10.0,
+    unit: 'mm',
+    rationale:
+      'Heat reaches the powder through the mould, so a thick wall means a long cycle and an inner surface that is still fusing while the outer one degrades. This is one of the few processes with a MAXIMUM wall as well as a minimum.',
+    fix: 'Thin the wall and add ribs or a kiss-off, or move to a pressure process.',
+    source: 'Rotational moulding design guidance: minimum 3 mm, maximum 10 mm nominal wall. No primary standard audited.',
+  },
+  {
+    id: 'rm-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'rotational-moulding',
+    draftCutoffDeg: 1.0,
+    severity: 'medium',
+    title: 'Wall area below the minimum rotational-moulding draft',
+    measure: 'wallAreaBelowDraftPct',
+    compare: 'lte',
+    threshold: 5,
+    unit: '% of wall area',
+    rationale:
+      'The part shrinks onto the mould as it cools and has to be pulled off by hand. A degree or two of taper is what makes that possible without a puller.',
+    fix: 'Add 1-2° of draft to every vertical wall; more on a textured surface.',
+    source: 'Rotational moulding design guidance: draft angles of generally 1-2°, varying with the shrinkage of the polymer. No primary standard audited.',
+  },
+  {
+    id: 'rm-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'rotational-moulding',
+    severity: 'high',
+    title: 'Undercuts cannot be pulled from a rotational mould',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'A rotational mould is a shell that splits and is opened by hand. There is no ejection mechanism and no slide, so a re-entrant feature has to come off by flexing the part — which works on a thin flexible wall and not on anything else.',
+    fix: 'Remove the re-entrant feature, or design it shallow enough that the part flexes off.',
+    source: 'Rotational moulding tool practice: split shell moulds opened manually, with no ejection system. Derived from the process, not quoted from a design guide.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // POWDER METALLURGY (press & sinter)
+  //
+  // The most geometrically constrained process in this catalogue, and its
+  // constraint is the cleanest: powder is compacted and ejected along ONE axis,
+  // so anything not visible along that axis does not exist. It is also the only
+  // family here that needs NO draft — the part is pushed straight out by the
+  // punch that formed it — and saying so is as useful as any warning.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'pm-single-press-axis',
+    sourceStatus: 'industry-consensus',
+    process: 'powder-metallurgy',
+    severity: 'high',
+    title: 'Features approached from more than the press axis',
+    measure: 'setupCount',
+    compare: 'lte',
+    threshold: 1,
+    unit: 'directions',
+    rationale:
+      'Compaction and ejection both happen along one vertical axis. A feature that needs a second approach direction — a cross hole, a side pocket, a transverse slot — cannot be pressed at all. It is a machining operation on a sintered blank, and it is usually the one missing from the quotation.',
+    fix: 'Move the feature onto the press axis, or quote the cross-feature as secondary machining.',
+    source: 'Powder metallurgy design guidance: because powder compaction and ejection both occur along a vertical axis, there can be no obstructions in the press direction; undercuts and transverse holes cannot be formed directly and must be produced by secondary machining. No primary standard audited.',
+  },
+  {
+    id: 'pm-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'powder-metallurgy',
+    severity: 'high',
+    title: 'Undercuts cannot be pressed',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'The same single-axis argument, in the other direction: the compact is ejected by the punch that formed it and nothing can be re-entrant to that motion.',
+    fix: 'Remove the undercut, or machine it into the sintered part.',
+    source: 'Powder metallurgy design guidance: no obstructions in the press direction; undercuts must be produced by secondary machining. No primary standard audited.',
+  },
+  {
+    id: 'pm-min-wall',
+    sourceStatus: 'industry-consensus',
+    process: 'powder-metallurgy',
+    severity: 'high',
+    title: 'Wall thinner than the tooling will survive',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 1.52,
+    unit: 'mm',
+    rationale:
+      'A thin wall in the part is a thin blade in the die, and that blade takes the full compaction pressure on every stroke. The limit is set by tool life, not by the powder.',
+    fix: 'Thicken the wall to at least 1.5 mm; a long thin wall is worse than a short one at the same thickness.',
+    source: 'Powder metallurgy design guidance: wall thickness should not be less than 1.52 mm (0.060 in), and long thin walls make the tooling fragile and shorten its service life. No primary standard audited.',
+  },
+  {
+    id: 'pm-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'powder-metallurgy',
+    severity: 'high',
+    title: 'Tolerance tighter than pressing and sintering holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.1,
+    unit: 'mm total band',
+    rationale:
+      'In the press plane the die sets the dimension and PM is very repeatable — that is why it competes with machining at all. Along the press axis the fill and the sintering shrinkage both move it. A band under about 0.1 mm total is sized or machined afterwards.',
+    fix: 'Open the tolerance, or add a sizing operation and cost it.',
+    source: 'Powder metallurgy is dimensionally repeatable in the press plane and less so along the press axis, where fill variation and sintering shrinkage act. Positioned between the cold-forging and general-machining bands used elsewhere in this catalogue. DERIVED from that ordering, not quoted.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // METAL INJECTION MOULDING
+  //
+  // Powder in a polymer binder, injected like a plastic and then debound and
+  // sintered. Geometrically it is an injection moulding — undercuts, corner
+  // radii, thin walls all behave the same way — with ONE limit no plastic has:
+  // a maximum wall, because the binder has to get out of the middle.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'mim-max-wall',
+    sourceStatus: 'industry-consensus',
+    process: 'mim',
+    severity: 'high',
+    title: 'Section too thick to debind',
+    measure: 'wallP50Mm',
+    compare: 'lte',
+    threshold: 12.5,
+    unit: 'mm',
+    rationale:
+      'Every gram of binder in the middle of the part has to travel out through the part to get away. Past about 12.5 mm the centre is still debinding when the outside has started to sinter, and the result is a part with a core defect nobody can see.',
+    fix: 'Core out the heavy section, or split the part — 1.3 to 6.3 mm is where MIM is comfortable.',
+    source: 'MIM design guidance: wall thicknesses of 1.3-6.3 mm are preferred, and sections thicker than 12.5 mm should be avoided. No primary standard audited.',
+  },
+  {
+    id: 'mim-min-wall',
+    sourceStatus: 'industry-consensus',
+    process: 'mim',
+    severity: 'high',
+    title: 'Wall thinner than a MIM feedstock will fill',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'mm',
+    rationale:
+      'A MIM feedstock is a metal powder in a binder — far more viscous than a neat polymer. Below about 0.5 mm it will not fill, and what does fill will not survive debinding.',
+    fix: 'Thicken the section to at least 0.5 mm.',
+    source: 'MIM design guidance: minimum wall thickness 0.5 mm. No primary standard audited.',
+  },
+  {
+    id: 'mim-corner-radius',
+    sourceStatus: 'industry-consensus',
+    process: 'mim',
+    severity: 'medium',
+    title: 'Internal corner sharper than a MIM part will survive',
+    measure: 'minInternalCornerRadiusMm',
+    compare: 'gte',
+    threshold: 0.2,
+    unit: 'mm',
+    rationale:
+      'A sharp internal corner is a stress raiser in the green part, which is chalk-fragile between moulding and sintering. It cracks there while it is being handled, long before anyone loads it.',
+    fix: 'Put a radius of at least 0.2 mm in every internal corner.',
+    source: 'MIM design guidance: corner radius greater than 0.2 mm. No primary standard audited.',
+  },
+  {
+    id: 'mim-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'mim',
+    severity: 'medium',
+    title: 'Undercuts need a slide or a collapsible core',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'MIM CAN mould an undercut — with a slide, or a collapsible core — which is the one thing it does that press-and-sinter cannot. What it cannot do is make it cheap: the mechanism costs tooling and brings flash with it.',
+    fix: 'Remove the undercut, or accept the slide and cost it — it is still likely cheaper than the machining press-and-sinter would need.',
+    source: 'MIM design guidance: undercuts can be moulded using slides or collapsible cores — an advantage over conventional powder metallurgy — but the added cost and potential flashing mean internal undercuts are avoided in most MIM designs. No primary standard audited.',
+  },
+  {
+    id: 'mim-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'mim',
+    severity: 'high',
+    title: 'Tolerance tighter than MIM holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.1,
+    unit: 'mm total band',
+    rationale:
+      'A MIM part shrinks by around a fifth on sintering, uniformly if everything went right. The tolerance is a percentage of the dimension, so a band that is generous on a 40 mm feature is impossible on a 4 mm one.',
+    fix: 'Open the tolerance, or machine the one feature that needs it after sintering.',
+    source: 'MIM tolerances are quoted as a PERCENTAGE of dimension (of order +/-0.3%), which this engine cannot express — it reads one tightest band in millimetres. The flat value here is a screening figure only; see UNWRITTEN_RULES for what a percentage-of-dimension rule would need. DERIVED, not quoted.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LASER POWDER BED FUSION (DMLS / SLM)
+  //
+  // The first family in this catalogue whose governing rule is not about a tool
+  // or a die. There is no draw and no ejection: the constraint is gravity, and
+  // what sits under a downward-facing surface. Nothing in the engine could
+  // measure that, so `overhang()` was written for it — a curve, like the draft
+  // curve, because 45 degrees is a rule of thumb and not a constant.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'lpbf-overhang-45',
+    sourceStatus: 'industry-consensus',
+    process: 'lpbf',
+    overhangCutoffDeg: 45.0,
+    severity: 'high',
+    title: 'Downward surface too shallow to build without support',
+    measure: 'overhangAreaBelowDeg',
+    compare: 'lte',
+    threshold: 10,
+    unit: '% of surface area',
+    rationale:
+      'A downward-facing surface is built onto loose powder, and loose powder does not conduct heat away. Below about 45 degrees from the plate the melt pool sinks in, the surface dross-forms and the geometry drifts — so the region needs a support, which has to be built, cut off, and the witness dressed. Support is not a small cost: it is often the largest single line in an AM quotation.',
+    fix: 'Re-orient the part on the plate, add a self-supporting chamfer to shallow faces, or re-model horizontal holes as teardrops — a teardrop whose top angle stays at or above 45° builds at almost any diameter.',
+    source: 'Powder-bed fusion design guidance: 45° is the widely-used self-supporting threshold, and teardrop features with a 45° top angle show no significant material fall-in. Material and parameter dependent — some alloy and parameter sets self-support below this, and lattice struts want better than 25°. The rule reads the 45° point off a curve so a different angle can be asked for. No primary standard audited.',
+  },
+  {
+    id: 'lpbf-min-hole',
+    sourceStatus: 'industry-consensus',
+    process: 'lpbf',
+    severity: 'medium',
+    title: 'Hole too small to build open',
+    measure: 'minHoleDiaMm',
+    compare: 'gte',
+    threshold: 1.5,
+    unit: 'mm dia',
+    rationale:
+      'A hole below about 1.5 mm closes as the melt pool bridges it, and whatever does stay open is full of partly-sintered powder that has to be got out. Under 4 mm the diameter deviates enough that a fit is not safe to specify as-built.',
+    fix: 'Open the hole to at least 1.5 mm — and to 4 mm if the diameter matters — or build it undersize and ream it.',
+    source: 'Powder-bed fusion study data: holes at Ø1.5 mm remained fully open, while holes below Ø4 mm showed high diameter deviation. Alloy dependent. No primary standard audited.',
+  },
+  {
+    id: 'lpbf-min-wall',
+    sourceStatus: 'industry-consensus',
+    process: 'lpbf',
+    severity: 'high',
+    title: 'Wall thinner than the melt pool can stand up',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 0.4,
+    unit: 'mm',
+    rationale:
+      'A wall a laser-track wide has nothing to conduct heat into but the track below it. It warps as it builds and it may not survive depowdering.',
+    fix: 'Thicken the wall to at least 0.4 mm, and to 0.6 mm if it is tall or free-standing.',
+    source: 'Powder-bed fusion design guidance: a strut or thin-wall diameter of at least 0.4-0.6 mm should be chosen. No primary standard audited.',
+  },
+  {
+    id: 'lpbf-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'lpbf',
+    severity: 'high',
+    title: 'Tolerance tighter than an as-built surface holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.2,
+    unit: 'mm total band',
+    rationale:
+      'An as-built powder-bed surface carries partly-melted powder and the part moves as residual stress relaxes on cutting from the plate. Every tight feature on an AM part is machined afterwards, and the stock for it has to be in the model.',
+    fix: 'Open the tolerance, or add machining stock on that feature and quote the operation.',
+    source: 'As-built powder-bed fusion surfaces are quoted well looser than machined ones, with diameter deviation significant below Ø4 mm. Positioned above the general machining band used elsewhere in this catalogue. DERIVED from that ordering, not quoted.',
+  },
+
 ];
 
 /**
@@ -3580,6 +3954,21 @@ export const DFM_RULES = [
  * reader to infer that the catalogue is complete.
  */
 export const UNWRITTEN_RULES = [
+  {
+    topic: 'Tolerance expressed as a PERCENTAGE of dimension (MIM, and casting CT grades)',
+    needs: 'A per-feature tolerance chain rather than one tightest band. MIM is quoted at roughly +/-0.3% of the dimension and ISO 8062 casting grades are the same idea — a band that is generous on a 40 mm feature is impossible on a 4 mm one. This engine reads ONE tightest callout in millimetres from the PMI, so it cannot ask "is this band achievable FOR THIS SIZE".',
+    proxy: '`mim-tolerance-capability` and every `*-tolerance-capability` rule use a flat millimetre screening value and say so. A part whose tight band sits on a small feature will pass when it should fail.',
+  },
+  {
+    topic: 'Best BUILD ORIENTATION for an additive part',
+    needs: 'A sweep over candidate build directions, scoring support area, height and down-facing area for each — the additive equivalent of the draw-direction sweep this engine already does for moulding. `overhang()` measures the part AS DRAWN along +Z, and re-orienting on the plate is the first thing an AM engineer does.',
+    proxy: 'The overhang figure is a measure of the model in its modelled orientation, and the rule says so. A part that fails at 45° may be entirely self-supporting once tipped.',
+  },
+  {
+    topic: 'BLOW MOULDING as a family',
+    needs: 'Sourced numbers for the blow ratio and for pinch-off geometry. The research turned up neither, and blow moulding competes directly with rotational moulding — a family built from rotomoulding\'s numbers with a different name would make the comparison between them meaningless, which is exactly what the route table exists to support.',
+    proxy: 'None. Blow moulding is not offered; rotational moulding is, and carries the hollow-part question for now.',
+  },
   {
     topic: 'SINKER (ram) EDM as its own family',
     needs: 'Sourced numbers for the two limits that would distinguish it: the smallest internal corner a shaped electrode can burn, and the deepest rib an electrode can carry without arcing. The research found neither. Sinker EDM is the exact inverse of wire EDM — it is the process that CAN make a blind pocket with a sharp corner — so a family that merely copied the wire-EDM thresholds would be worse than none.',

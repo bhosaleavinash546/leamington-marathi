@@ -1286,3 +1286,57 @@ Format: decision · why · what would change it.
     carry without arcing. A family that copied the wire-EDM thresholds would be worse than
     none. *Changes it:* declared in `UNWRITTEN_RULES`, and the gap is covered in practice —
     a blind sharp-cornered pocket now surfaces as a wire-EDM finding whose FIX names sinker EDM.
+
+99. **The first DFM measure in this engine that is not about a tool (2026).**
+    *Why:* every rule up to now asked "can a tool reach this / can a die release this". Powder-bed
+    fusion has no draw and no ejection. Its governing constraint is gravity: a downward-facing
+    surface is built onto loose powder, which conducts no heat, so below roughly 45° from the
+    build plate the melt pool sinks in and the region needs a support that has to be built, cut
+    off and dressed. Nothing in the engine could measure that. *Changes it:* `overhang()` in
+    `dfm_geometry.py`, area-weighted over the tessellation, reporting the surface's own angle
+    from the plate — a flat downward face reads 0 and a vertical wall 90.
+    *Built as a CURVE, like the draft curve, on purpose.* 45° is a rule of thumb, not a
+    constant: some alloys and parameter sets self-support lower, and lattice struts want better
+    than 25°. Each rule names its angle in `overhangCutoffDeg`, so a family can never be
+    silently judged at an angle its source never quoted.
+    *And it says what it cannot see:* the build direction is +Z as modelled. Re-orienting on
+    the plate is the first thing an AM engineer does, and best-orientation search is declared
+    in `UNWRITTEN_RULES` rather than implied.
+
+100. **A fixture at a KNOWN angle, or the rule could be any constant (2026).**
+    *Why:* with no fixture whose overhang angle is known by construction, `lpbf-overhang-45`
+    could have been hardcoded to any number and every other check in the gate would still pass.
+    *Changes it:* `overhang-wedge.step` — a prism whose one sloped face stands at exactly 30.000°
+    from the plate and is the ONLY down-facing surface on the part, so the percentage is
+    arithmetic rather than a sample: 4800 / 14128.2 = 33.97%. The engine returns 33.97% and
+    30.0°, and the curve straddles correctly — zero below the 20° and 30° cutoffs, the full
+    33.97 below 40° and above.
+    *The first draft of the fixture was upside down.* The material sat below the slope, making
+    it an upskin, and the engine correctly reported the part as having no overhang but its flat
+    base. The fixture was wrong, not the engine — which is the outcome the discipline is for.
+
+101. **Plastics and powder: five processes, five families (2026).**
+    *Why:* the catalogue had one plastics family (injection moulding) and no powder route at
+    all, so a thermoformed panel, a rotomoulded tank, a sintered gear and a MIM latch were all
+    unquotable and unjudgeable. *Changes it:* thermoforming, rotational moulding, powder
+    metallurgy, MIM and LPBF. Rules 191 → 212, families 30 → 35, cost processes 44 → 49.
+    Three of these carry a limit no other family in the catalogue has:
+      * **rotational moulding** has a wall WINDOW, not a floor — 3 mm minimum because the powder
+        may not bridge at all, 10 mm maximum because the inside never fuses;
+      * **MIM** has a maximum wall (12.5 mm) because the binder has to travel out through the
+        part;
+      * **powder metallurgy** is judged on `setupCount ≤ 1` — compaction and ejection both run
+        on one axis, so a cross hole is not a cost warning, it is secondary machining nobody
+        quoted.
+    *Thermoforming and deep drawing share `drawDepthToWidth`* — one geometric question, two
+    processes, thresholds deliberately not copied from each other.
+
+102. **Three more gaps declared rather than filled (2026).**
+    *Why:* percentage-of-dimension tolerance (MIM at ±0.3%, and ISO 8062 CT grades) cannot be
+    expressed by an engine that reads one tightest band in millimetres — a band that is generous
+    on a 40 mm feature is impossible on a 4 mm one, and every `*-tolerance-capability` rule in
+    this catalogue is a flat screening value because of it. Best build orientation needs a
+    direction sweep. Blow moulding turned up no sourced blow-ratio or pinch-off numbers, and it
+    competes head-on with rotational moulding — a family built from rotomoulding's figures with
+    a different name would make exactly the comparison the route table exists to support
+    meaningless. All three are in `UNWRITTEN_RULES`, which now runs to 15 entries.

@@ -180,6 +180,10 @@ export function extractMeasures(geo = {}) {
     // could not measure it — never defaulted, because 0 would fail every part
     // and 100 would pass every part.
     axisymmetricAreaPct: num((dfm.revolution || {}).axisymmetricAreaPct),
+    // How much of the surface faces DOWN at all, against the build direction.
+    // The curve below is what the rules actually read; this is the headline.
+    downFacingAreaPct: num((dfm.overhang || {}).downFacingAreaPct),
+    shallowestOverhangDeg: num((dfm.overhang || {}).shallowestOverhangDeg),
 
     // ── HOW DEEP THE DRAW IS, as a proxy for the draw ratio ──────────────────
     //
@@ -330,6 +334,14 @@ export function extractMeasures(geo = {}) {
     // `draftCutoffDeg` and the evaluator reads that point off this curve.
     _draftCurve: draft.wallAreaBelowDraftPct || undefined,
 
+    // THE OVERHANG CURVE, same shape and same discipline as the draft curve.
+    // 45 degrees is a rule of thumb, not a constant: some alloys and parameter
+    // sets self-support to 30, and lattice struts want better than 25. Each
+    // rule names the angle it means in `overhangCutoffDeg` and the evaluator
+    // reads that point off this curve — so a family cannot silently be judged
+    // at an angle its source never quoted.
+    _overhangCurve: (dfm.overhang || {}).overhangAreaBelowDeg || undefined,
+
     // ── The two measures that were absent for the whole life of the rules ──
     //
     // `mach-pocket-depth-ratio` and `mach-internal-corner-radius` were written
@@ -410,7 +422,9 @@ export function runDfmRules(geo, process, { material, overrides } = {}) {
     // rule that asked about 5 degrees would be the original bug wearing a
     // fallback, so the rule abstains instead.
     let value;
-    if (rule.measure === 'wallAreaBelowDraftPct') {
+    if (rule.measure === 'overhangAreaBelowDeg') {
+      value = numberOr(measures._overhangCurve?.[String(rule.overhangCutoffDeg)]);
+    } else if (rule.measure === 'wallAreaBelowDraftPct') {
       value = numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
       if (value === undefined && rule.draftCutoffDeg === 1.0) {
         value = measures.wallAreaBelowMinDraftPct;
