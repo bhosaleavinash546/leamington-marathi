@@ -76,6 +76,133 @@ export function pickMachiningCentreId(p: {
   return p.principalDirections >= 4 ? 'mach-vmc5' : 'mach-vmc3';
 }
 
+// ─── Gear cutting and finishing ──────────────────────────────────────────────
+
+/**
+ * Gear machines are tiered by WORKPIECE SIZE, not by force.
+ *
+ * A hobber is rated by the largest gear it can swing and the coarsest module it
+ * can cut, and the two are correlated but not interchangeable: a wide, coarse
+ * truck gear and a large-diameter, fine ring gear can need the same machine for
+ * different reasons. So each tier carries both limits and the part must clear
+ * both — picking on diameter alone puts a module 10 gear on a machine whose
+ * drive cannot take the cut.
+ *
+ * Capacities here are the machine CLASSES the rate library carries. Real
+ * machine-builder envelopes belong in the plant's own data; these are the
+ * boundaries between the classes, not a claim about any one builder's model.
+ */
+export interface GearMachineEnvelope {
+  id: string;
+  maxModuleMm: number;
+  maxDiameterMm: number;
+  maxFaceWidthMm: number;
+}
+
+/** Ascending by capability, so the first that fits is the smallest that fits. */
+const GEAR_HOBBER_TIERS: readonly GearMachineEnvelope[] = [
+  { id: 'gear-hob-small', maxModuleMm: 4, maxDiameterMm: 200, maxFaceWidthMm: 150 },
+  { id: 'gear-hob-medium', maxModuleMm: 8, maxDiameterMm: 500, maxFaceWidthMm: 300 },
+  { id: 'gear-hob-large', maxModuleMm: 25, maxDiameterMm: 1600, maxFaceWidthMm: 700 },
+];
+
+const GEAR_SHAPER_TIERS: readonly GearMachineEnvelope[] = [
+  { id: 'gear-shaper-small', maxModuleMm: 6, maxDiameterMm: 300, maxFaceWidthMm: 120 },
+  { id: 'gear-shaper-large', maxModuleMm: 12, maxDiameterMm: 800, maxFaceWidthMm: 250 },
+];
+
+const GEAR_SKIVER_TIERS: readonly GearMachineEnvelope[] = [
+  { id: 'gear-skive-small', maxModuleMm: 4, maxDiameterMm: 250, maxFaceWidthMm: 100 },
+  { id: 'gear-skive-medium', maxModuleMm: 8, maxDiameterMm: 600, maxFaceWidthMm: 200 },
+];
+
+const GEAR_GRINDER_TIERS: readonly GearMachineEnvelope[] = [
+  { id: 'gear-grind-generating', maxModuleMm: 6, maxDiameterMm: 400, maxFaceWidthMm: 200 },
+  { id: 'gear-grind-profile', maxModuleMm: 12, maxDiameterMm: 1200, maxFaceWidthMm: 500 },
+];
+
+/** Fixed-envelope machines — one class each, so no ladder. */
+export const GEAR_FIXED_MACHINES = {
+  broach: 'gear-broach',
+  hone: 'gear-hone',
+  shave: 'gear-shave',
+  deburr: 'gear-deburr',
+  inspect: 'gear-checker',
+  mill: 'mach-vmc5',
+} as const;
+
+/** Sentinel for an operation bought by weight rather than run on a rated machine. */
+export const HEAT_TREAT_NOT_A_MACHINE = 'furnace-subcontract';
+
+export interface GearMachinePick {
+  machineId: string;
+  envelope: GearMachineEnvelope | null;
+  /** Set when nothing in the class covers the gear. The costing must stop. */
+  blocked?: string;
+}
+
+/**
+ * Smallest machine of the class that covers module, diameter AND face width.
+ *
+ * Returns `blocked` rather than falling back to the largest tier. That differs
+ * on purpose from `pickTier` above, which is right for presses — a part needing
+ * more tonnage than any press in the library is still a press job, just a bigger
+ * one. A gear beyond the largest hobber is not a hobbing job at all, and
+ * silently costing it on the biggest machine would state a cycle time for an
+ * operation the shop cannot perform.
+ */
+function pickGearTier(
+  tiers: readonly GearMachineEnvelope[],
+  className: string,
+  p: { normalModuleMm: number; outerDiameterMm: number; faceWidthMm: number },
+): GearMachinePick {
+  const fit = tiers.find(t =>
+    p.normalModuleMm <= t.maxModuleMm
+    && p.outerDiameterMm <= t.maxDiameterMm
+    && p.faceWidthMm <= t.maxFaceWidthMm);
+  if (fit) return { machineId: fit.id, envelope: fit };
+
+  const biggest = tiers[tiers.length - 1];
+  return {
+    machineId: biggest.id,
+    envelope: biggest,
+    blocked: `No ${className} in the library covers module ${p.normalModuleMm} mm × `
+      + `Ø${p.outerDiameterMm.toFixed(0)} mm × ${p.faceWidthMm} mm face. The largest is `
+      + `${biggest.id} (module ${biggest.maxModuleMm}, Ø${biggest.maxDiameterMm}, face `
+      + `${biggest.maxFaceWidthMm}). Add the machine to the rate library, or confirm the gear is `
+      + `sub-contracted.`,
+  };
+}
+
+/** Machine for a gear cutting or finishing operation. */
+export function pickGearMachineId(
+  process: string,
+  p: { normalModuleMm: number; outerDiameterMm: number; faceWidthMm: number },
+): GearMachinePick {
+  switch (process) {
+    case 'hobbing':  return pickGearTier(GEAR_HOBBER_TIERS, 'gear hobber', p);
+    case 'shaping':  return pickGearTier(GEAR_SHAPER_TIERS, 'gear shaper', p);
+    case 'skiving':  return pickGearTier(GEAR_SKIVER_TIERS, 'power skiving machine', p);
+    case 'grinding': return pickGearTier(GEAR_GRINDER_TIERS, 'gear grinder', p);
+    case 'broaching':     return { machineId: GEAR_FIXED_MACHINES.broach, envelope: null };
+    case 'honing':        return { machineId: GEAR_FIXED_MACHINES.hone, envelope: null };
+    case 'shaving':       return { machineId: GEAR_FIXED_MACHINES.shave, envelope: null };
+    case 'deburr':        return { machineId: GEAR_FIXED_MACHINES.deburr, envelope: null };
+    case 'inspection':    return { machineId: GEAR_FIXED_MACHINES.inspect, envelope: null };
+    case 'milling_5ax':   return { machineId: GEAR_FIXED_MACHINES.mill, envelope: null };
+    // Heat treat is bought by weight from a sub-contract furnace, not run on a
+    // machine we rate. Returning a machine id here would put a real machine's
+    // name against zero cycle time on the operation sheet, which reads as a
+    // costing error rather than as "this is not a machine operation".
+    case 'case_hardening': return { machineId: HEAT_TREAT_NOT_A_MACHINE, envelope: null };
+    default:
+      return {
+        machineId: GEAR_FIXED_MACHINES.mill, envelope: null,
+        blocked: `No machine class is mapped to gear process "${process}".`,
+      };
+  }
+}
+
 /** Physics inputs for the dispatcher — each commodity reads only the field it needs. */
 export interface MachineSizingParams {
   /** injection moulding: estimated clamp tonnage. */

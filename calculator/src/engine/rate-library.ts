@@ -670,6 +670,169 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       'UK',
       'UK Tier-2 CNC cylindrical grinder. Target £55/hr (precision, high coolant cost). Jun 2026'
     ),
+
+    // ── Gear cutting and finishing ────────────────────────────────────────────
+    // Tiered by workpiece envelope (module × diameter × face width), not force —
+    // see GEAR_HOBBER_TIERS et al in machine-sizing.ts. The build-ups follow the
+    // same shape as every other machine here, but the CLASS BOUNDARIES and these
+    // rates are representative: no machine-builder catalogue was reachable from
+    // the build environment. Replace with the plant's own machine list and £/hr
+    // before quoting — `gearDataWarning()` says so on every gear estimate.
+    makeMachine(
+      'gear-hob-small',
+      'CNC Gear Hobber — small (≤m4, ≤Ø200)',
+      {
+        annualDepreciation: 62000, maintenance: 32000, energy: 26000, floorSpace: 11000,
+        indirectSupport: 30000, financeCost: 21000,
+        annualAvailableHours: 4000, machineUtilization: 0.80,
+      },
+      'UK',
+      'REPRESENTATIVE — UK small CNC hobber class. Target ~£56/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-hob-medium',
+      'CNC Gear Hobber — medium (≤m8, ≤Ø500)',
+      {
+        annualDepreciation: 88000, maintenance: 42000, energy: 34000, floorSpace: 16000,
+        indirectSupport: 40000, financeCost: 23500,
+        annualAvailableHours: 4000, machineUtilization: 0.78,
+      },
+      'UK',
+      'REPRESENTATIVE — UK medium CNC hobber class. Target ~£78/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-hob-large',
+      'CNC Gear Hobber — large (≤m25, ≤Ø1600)',
+      {
+        annualDepreciation: 150000, maintenance: 62000, energy: 52000, floorSpace: 30000,
+        indirectSupport: 58000, financeCost: 32000,
+        annualAvailableHours: 3800, machineUtilization: 0.70,
+      },
+      'UK',
+      'REPRESENTATIVE — UK large CNC hobber class. Target ~£140/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-shaper-small',
+      'CNC Gear Shaper — small (≤m6, ≤Ø300)',
+      {
+        annualDepreciation: 58000, maintenance: 34000, energy: 24000, floorSpace: 11000,
+        indirectSupport: 30000, financeCost: 20500,
+        annualAvailableHours: 4000, machineUtilization: 0.78,
+      },
+      'UK',
+      'REPRESENTATIVE — UK small CNC shaper class. Target ~£56/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-shaper-large',
+      'CNC Gear Shaper — large (≤m12, ≤Ø800)',
+      {
+        annualDepreciation: 95000, maintenance: 48000, energy: 36000, floorSpace: 20000,
+        indirectSupport: 42000, financeCost: 25000,
+        annualAvailableHours: 3800, machineUtilization: 0.74,
+      },
+      'UK',
+      'REPRESENTATIVE — UK large CNC shaper class. Target ~£95/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-skive-small',
+      'Power Skiving Machine — small (≤m4, ≤Ø250)',
+      {
+        annualDepreciation: 110000, maintenance: 46000, energy: 32000, floorSpace: 14000,
+        indirectSupport: 42000, financeCost: 27000,
+        annualAvailableHours: 4000, machineUtilization: 0.80,
+      },
+      'UK',
+      'REPRESENTATIVE — UK small power skiving class. Target ~£85/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-skive-medium',
+      'Power Skiving Machine — medium (≤m8, ≤Ø600)',
+      {
+        annualDepreciation: 155000, maintenance: 60000, energy: 44000, floorSpace: 22000,
+        indirectSupport: 54000, financeCost: 33000,
+        annualAvailableHours: 4000, machineUtilization: 0.78,
+      },
+      'UK',
+      'REPRESENTATIVE — UK medium power skiving class. Target ~£120/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-broach',
+      'Vertical Internal Gear Broach',
+      {
+        annualDepreciation: 72000, maintenance: 38000, energy: 30000, floorSpace: 18000,
+        indirectSupport: 34000, financeCost: 22000,
+        annualAvailableHours: 4000, machineUtilization: 0.85,
+      },
+      'UK',
+      'REPRESENTATIVE — UK internal gear/spline broach class. Target ~£63/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-grind-generating',
+      'Generating Gear Grinder (threaded wheel, ≤m6)',
+      {
+        annualDepreciation: 165000, maintenance: 68000, energy: 55000, floorSpace: 22000,
+        indirectSupport: 58000, financeCost: 35000,
+        annualAvailableHours: 4000, machineUtilization: 0.78,
+      },
+      'UK',
+      'REPRESENTATIVE — UK generating (threaded-wheel) gear grinder class. Target ~£130/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-grind-profile',
+      'Profile Gear Grinder (form wheel, ≤m12)',
+      {
+        annualDepreciation: 190000, maintenance: 78000, energy: 62000, floorSpace: 28000,
+        indirectSupport: 66000, financeCost: 40000,
+        annualAvailableHours: 3800, machineUtilization: 0.72,
+      },
+      'UK',
+      'REPRESENTATIVE — UK profile (form-wheel) gear grinder class. Target ~£170/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-shave',
+      'Gear Shaving Machine',
+      {
+        annualDepreciation: 48000, maintenance: 26000, energy: 20000, floorSpace: 10000,
+        indirectSupport: 26000, financeCost: 18000,
+        annualAvailableHours: 4000, machineUtilization: 0.80,
+      },
+      'UK',
+      'REPRESENTATIVE — UK gear shaving class. Target ~£45/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-hone',
+      'Gear Honing Machine',
+      {
+        annualDepreciation: 96000, maintenance: 44000, energy: 30000, floorSpace: 14000,
+        indirectSupport: 38000, financeCost: 25000,
+        annualAvailableHours: 4000, machineUtilization: 0.78,
+      },
+      'UK',
+      'REPRESENTATIVE — UK gear honing class (NVH finishing). Target ~£80/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-deburr',
+      'Gear Chamfer / Deburr Cell',
+      {
+        annualDepreciation: 26000, maintenance: 14000, energy: 12000, floorSpace: 8000,
+        indirectSupport: 18000, financeCost: 9000,
+        annualAvailableHours: 4000, machineUtilization: 0.82,
+      },
+      'UK',
+      'REPRESENTATIVE — UK chamfer/deburr cell class. Target ~£26/hr. Replace with plant data.'
+    ),
+    makeMachine(
+      'gear-checker',
+      'CNC Gear Checker (profile / lead / pitch)',
+      {
+        annualDepreciation: 58000, maintenance: 22000, energy: 10000, floorSpace: 12000,
+        indirectSupport: 30000, financeCost: 15000,
+        annualAvailableHours: 4000, machineUtilization: 0.65,
+      },
+      'UK',
+      'REPRESENTATIVE — UK CNC gear metrology class (Klingelnberg/Gleason type). Target ~£56/hr. Replace with plant data.'
+    ),
+
     makeMachine(
       'bench-assembly',
       'Assembly Workbench',

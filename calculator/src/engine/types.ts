@@ -12,6 +12,7 @@ export type CommodityType =
   | 'rotational_moulding'
   | 'casting'
   | 'forging'
+  | 'gear'
   | 'painting'
   | 'biw_assembly'
   | 'pcb_fab'
