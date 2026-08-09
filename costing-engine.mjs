@@ -138,6 +138,82 @@ export const PROCESSES = {
     cycleBase: 3, cyclePerKg: 1.2, toolingBase: 180_000, toolingPerKg: 90_000,
     families: ['ferrous', 'aluminium'],
   },
+  // ── The sheet and bulk-forming specialisations ────────────────────────────
+  //
+  // Each was previously reachable only by selecting the generic neighbour, which
+  // priced a different press, a different die and a different cycle. Every
+  // parameter is set RELATIVE to that neighbour with the physical reason stated.
+  'Fine Blanking': {
+    // A triple-action press with a V-ring and a counter-punch: three times the
+    // die cost of a conventional blanking tool, a slower stroke rate because the
+    // clamp has to set before the cut, and in exchange a sheared face over the
+    // full thickness that no longer needs a secondary broach or ream.
+    machineRate: 95, operators: 0.4, cavities: 1, utilisation: 0.72, scrapPct: 0.03,
+    setupHr: 3.0, batch: 5000, toolLife: 800_000,
+    cycleBase: 20, cyclePerKg: 8, toolingBase: 60_000, toolingPerKg: 30_000,
+    families: ['ferrous', 'aluminium', 'copper'],
+    finishPct: 0.04, returnsRecovery: 0.92,
+  },
+  'Hot Stamping (Press Hardening)': {
+    // Blank, austenitise at 900+ C, form and quench in a water-cooled die. The
+    // furnace is a continuous energy cost the press line does not have, the die
+    // carries cooling channels, and every hole after quench is a laser hole.
+    machineRate: 155, operators: 0.6, cavities: 1, utilisation: 0.62, scrapPct: 0.04,
+    setupHr: 4.0, batch: 3000, toolLife: 400_000,
+    cycleBase: 30, cyclePerKg: 9, toolingBase: 260_000, toolingPerKg: 85_000,
+    families: ['ferrous'],
+    finishPct: 0.12, returnsRecovery: 0.88,
+  },
+  'Deep Drawing (Multi-stage)': {
+    // A transfer or progressive line with a die per stage. Tooling scales with
+    // the number of draws, which is what the depth-to-width rule is really
+    // warning about — every redraw is another station to buy and to run.
+    machineRate: 105, operators: 0.5, cavities: 1, utilisation: 0.70, scrapPct: 0.04,
+    setupHr: 3.0, batch: 5000, toolLife: 700_000,
+    cycleBase: 25, cyclePerKg: 10, toolingBase: 95_000, toolingPerKg: 45_000,
+    families: ['ferrous', 'aluminium', 'copper'],
+    finishPct: 0.08, returnsRecovery: 0.92,
+  },
+  'Metal Spinning': {
+    // A mandrel and a roller. The tooling is one turned mandrel, which is why
+    // spinning wins at low volume and loses at high — the cycle is long and it
+    // is one operator per machine.
+    machineRate: 70, operators: 1.0, cavities: 1, utilisation: 0.60, scrapPct: 0.04,
+    setupHr: 1.5, batch: 200, toolLife: 200_000,
+    cycleBase: 90, cyclePerKg: 40, toolingBase: 6_000, toolingPerKg: 2_500,
+    families: ['ferrous', 'aluminium', 'copper'],
+    finishPct: 0.10, returnsRecovery: 0.90,
+  },
+  'Cold Heading / Upsetting': {
+    // The cheapest metal-forming process per part that exists, and the reason
+    // fasteners are not machined: multi-station machines running hundreds of
+    // parts a minute off coil, with near-zero material loss.
+    machineRate: 60, operators: 0.25, cavities: 1, utilisation: 0.95, scrapPct: 0.02,
+    setupHr: 2.5, batch: 20000, toolLife: 1_000_000,
+    cycleBase: 3, cyclePerKg: 2, toolingBase: 12_000, toolingPerKg: 5_000,
+    families: ['ferrous', 'aluminium', 'copper'],
+    finishPct: 0.03, returnsRecovery: 0.92,
+  },
+  'Open-Die Forging': {
+    // Flat tools and a manipulator. No die cavity to pay for, and a machining
+    // allowance measured in centimetres — the mass is in the cost whether it
+    // ends up in the part or in the swarf, which is what `utilisation` carries.
+    machineRate: 110, operators: 2.0, cavities: 1, utilisation: 0.45, scrapPct: 0.04,
+    setupHr: 1.5, batch: 50, toolLife: 500_000,
+    cycleBase: 180, cyclePerKg: 45, toolingBase: 6_000, toolingPerKg: 2_000,
+    families: ['ferrous', 'aluminium', 'titanium', 'copper'],
+    finishPct: 0.25, returnsRecovery: 0.90,
+  },
+  'Tube Bending': {
+    // Priced, and deliberately NOT judged: see PROCESS_TO_DFM_FAMILY, where it
+    // is the one shaping process routed to no rule family because tube
+    // recognition is not built. A CNC bender with one tool set per radius.
+    machineRate: 70, operators: 0.6, cavities: 1, utilisation: 0.75, scrapPct: 0.04,
+    setupHr: 1.0, batch: 500, toolLife: 300_000,
+    cycleBase: 35, cyclePerKg: 25, toolingBase: 9_000, toolingPerKg: 2_000,
+    families: ['ferrous', 'aluminium', 'copper'],
+    finishPct: 0.06, returnsRecovery: 0.92,
+  },
   'Roll Forming': {
     machineRate: 70, operators: 0.5, cavities: 1, utilisation: 0.88, scrapPct: 0.02,
     setupHr: 2.0, batch: 6000, toolLife: 3_000_000,

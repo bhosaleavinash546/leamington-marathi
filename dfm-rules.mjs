@@ -180,6 +180,36 @@ export function extractMeasures(geo = {}) {
     // could not measure it — never defaulted, because 0 would fail every part
     // and 100 would pass every part.
     axisymmetricAreaPct: num((dfm.revolution || {}).axisymmetricAreaPct),
+
+    // ── HOW DEEP THE DRAW IS, as a proxy for the draw ratio ──────────────────
+    //
+    // The real deep-drawing limit is the LIMITING DRAW RATIO — blank diameter
+    // over punch diameter — and neither of those exists in a finished solid: the
+    // blank is not in the model and the punch is not either. What IS in the
+    // model is how deep the cup is against how wide it is, which is the ratio
+    // every design guide quotes alongside the LDR (0.5-0.75 in one operation,
+    // approaching 1.0 in a very ductile alloy).
+    //
+    // It is a PROXY and the rule says so. It is also only honest when the draw
+    // direction is an axis of the bounding box: measured along a skewed axis the
+    // box extents stop describing the cup, so the measure ABSTAINS rather than
+    // returning a number computed against the wrong span.
+    drawDepthToWidth: (() => {
+      const bb = geo.boundingBox || {};
+      const ext = [num(bb.xMm), num(bb.yMm), num(bb.zMm)];
+      if (ext.some(v => !(v > 0))) return undefined;
+      const dir = draft.drawDirectionXYZ;
+      if (!Array.isArray(dir) || dir.length !== 3) return undefined;
+      const mag = Math.hypot(...dir.map(Number));
+      if (!(mag > 0)) return undefined;
+      const unit = dir.map(v => Number(v) / mag);
+      let axis = -1;
+      for (let i = 0; i < 3; i++) if (Math.abs(unit[i]) > 0.999) axis = i;
+      if (axis < 0) return undefined;             // skewed draw — the box no longer describes the cup
+      const depth = ext[axis];
+      const width = Math.min(...ext.filter((_, i) => i !== axis));
+      return width > 0 ? Math.round((depth / width) * 100) / 100 : undefined;
+    })(),
     internalCutLengthMm: num((dfm.apertures || {}).totalCutLengthMm),
     pmiDimensionCount: num((dfm.pmi || {}).dimensionCount),
     pmiGeomToleranceCount: num((dfm.pmi || {}).geometricToleranceCount),

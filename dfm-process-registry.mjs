@@ -71,6 +71,12 @@ export const PROCESS_TO_DFM_FAMILY = {
   // the same thing the HPDC family already says correctly.
   'Vacuum-Assisted Die Casting': 'hpdc',
   'Stamping / Deep Drawing': 'sheet-metal',
+  'Fine Blanking': 'fine-blanking',
+  'Hot Stamping (Press Hardening)': 'hot-stamping',
+  'Deep Drawing (Multi-stage)': 'deep-drawing',
+  'Metal Spinning': 'metal-spinning',
+  'Cold Heading / Upsetting': 'cold-heading',
+  'Open-Die Forging': 'open-die-forging',
   'Laser Cutting + Bending': 'sheet-metal',
   'Lamination Stamping (Electrical Steel)': 'sheet-metal',
   'Roll Forming': 'roll-forming',
@@ -82,6 +88,13 @@ export const PROCESS_TO_DFM_FAMILY = {
   'Composite Layup (RTM)': 'composite-rtm',
 
   // ── Not shape-forming. The reason travels with the null. ────────────────
+  //
+  // Tube bending IS shape-forming, and it is the one exception here: it is
+  // priced like any other route and carries no rule family because the engine
+  // cannot recognise a tube. Inventing a family whose every rule reported NOT
+  // EVALUATED would have added six rules to the catalogue count and judged
+  // nothing.
+  'Tube Bending': null,
   'Machining (secondary ops)': null,
   'Glass Forming (Bend + Temper)': null,
   'MIG Welding Assembly': null,
@@ -96,6 +109,8 @@ export const PROCESS_TO_DFM_FAMILY = {
 
 /** Why a non-shaping process carries no geometric DFM rules. Printed, not hidden. */
 export const NO_DFM_REASON = {
+  'Tube Bending':
+    'Tube bending is judged on bend radius against tube outside diameter and on wall thinning round the bend, and both need the part to be recognised AS a tube — a swept circular section with a centreline. That recogniser is not built, so this process is priced and carbon-scored but not judged. It is the only shaping process in this tool without a rule family, and it is named here rather than left to look like an oversight.',
   'Machining (secondary ops)':
     'A secondary machining operation is judged against the machining rules for the whole part — pick "Machining (CNC)" to run them.',
   'Glass Forming (Bend + Temper)':

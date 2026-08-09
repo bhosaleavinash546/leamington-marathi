@@ -17,8 +17,9 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { CASTING_FIXTURES, DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES, PMI_FIXTURES } from './dfm-fixtures.mjs';
+import { CASTING_FIXTURES, DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES, PMI_FIXTURES, SHEET_FORMING_FIXTURES } from './dfm-fixtures.mjs';
 import { extractMeasures, runDfmRules } from '../dfm-rules.mjs';
+import { DFM_RULES } from '../dfm-rule-catalogue.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
 import { analyzeGeometry, tessellateToSTL } from '../cad-engine/cad-geometry-bridge.mjs';
 
@@ -527,6 +528,59 @@ async function main() {
       const row = [...r.findings, ...r.passed].find(f => f.measure === 'minHoleDiaMm');
       record(fx.file, `${fam} accepts the fine bore`, row?.status === 'pass',
         row ? `${row.status} at ${row.measured} ${row.unit}` : 'rule missing entirely');
+    }
+  }
+
+
+  // ── Sheet & bulk forming: one geometry, different families, different answers ─
+  // A family copied from its neighbour and renamed would pass every isolated
+  // check in this gate. Only a cross-family comparison catches it.
+  for (const fx of SHEET_FORMING_FIXTURES) {
+    if (!AS_JSON) console.log(`\n  ${fx.file}  (sheet/bulk forming)`);
+    let g;
+    try {
+      g = await analyzeGeometry(await readFile(join(FIXDIR, fx.file)), fx.file);
+    } catch (e) {
+      record(fx.file, 'analyze for forming', false, `bridge threw: ${e.message}`);
+      continue;
+    }
+    const t = fx.truth;
+    const m = extractMeasures(g);
+
+    if (t.drawDepthToWidth !== undefined) {
+      record(fx.file, 'draw depth/width', near(m.drawDepthToWidth, t.drawDepthToWidth, 0.01),
+        `${m.drawDepthToWidth} vs ${t.drawDepthToWidth} from the box extents`);
+    }
+    if (t.minBendRadiusToThickness !== undefined) {
+      record(fx.file, 'bend r/t', near(m.minBendRadiusToThickness, t.minBendRadiusToThickness, 0.01),
+        `${m.minBendRadiusToThickness} vs ${t.minBendRadiusToThickness}`);
+    }
+    if (t.deepDrawingDepthRulePasses !== undefined) {
+      const row = [...(() => { const r = runDfmRules(g, 'deep-drawing', { material: 'Steel (mild)' });
+        return [...r.findings, ...r.passed, ...r.notEvaluated]; })()].find(f => f.id === 'dd-draw-depth');
+      record(fx.file, 'deep-draw depth rule', row?.status === (t.deepDrawingDepthRulePasses ? 'pass' : 'fail'),
+        row ? `${row.status} at ${row.measured} ${row.unit}` : 'rule missing entirely');
+    }
+    if (t.spinningBlocked !== undefined) {
+      const r = runDfmRules(g, 'metal-spinning', { material: 'Steel (mild)' });
+      const blocked = (r.blockers || []).length > 0;
+      record(fx.file, `spinning ${t.spinningBlocked ? 'BLOCKED' : 'not blocked'}`, blocked === t.spinningBlocked,
+        blocked ? `blocked: ${r.blockedReason}` : `viable at ${m.axisymmetricAreaPct}% axisymmetric`);
+    }
+    for (const v of t.bendRadiusVerdicts || []) {
+      const r = runDfmRules(g, v.family, { material: v.material });
+      const row = [...r.findings, ...r.passed, ...r.notEvaluated].find(f => f.id === v.ruleId);
+      record(fx.file, `${v.family} ${v.ruleId}`, row?.status === v.status,
+        row ? `${row.status} at ${row.measured} ${row.unit} against ${row.thresholdText} (expected ${v.status})`
+            : 'rule missing entirely');
+    }
+    if (t.thresholdSpread) {
+      // The verdicts above are only meaningful if the numbers behind them differ.
+      for (const [id, want] of Object.entries(t.thresholdSpread)) {
+        const rule = DFM_RULES.find(r => r.id === id);
+        record(fx.file, `${id} base threshold`, rule?.threshold === want,
+          `${rule?.threshold} vs ${want} — identical thresholds would mean a copied family`);
+      }
     }
   }
 

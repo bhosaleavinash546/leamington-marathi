@@ -94,6 +94,15 @@ export const PROCESS_KWH_PER_KG = {
   'Forging (Cold)': 0.25,
   'Stamping / Deep Drawing': 0.15,
   'Roll Forming': 0.12,
+  // Sheet and bulk-forming specialisations, each relative to the neighbour whose
+  // press and heat it shares.
+  'Fine Blanking': 0.2,                      // stamping + the clamp and counter-punch actions
+  'Hot Stamping (Press Hardening)': 1.9,     // austenitising furnace to 900+ C dominates everything else here
+  'Deep Drawing (Multi-stage)': 0.3,         // stamping, times the number of draw stations
+  'Metal Spinning': 0.45,                    // long cycle, one machine, one part
+  'Cold Heading / Upsetting': 0.08,          // the lowest-energy metal-forming route in this table
+  'Open-Die Forging': 0.6,                   // hot forging's induction heat, over a longer manipulated cycle
+  'Tube Bending': 0.1,                       // cold, and the press does little work per part
   'Hydroforming': 0.2,
   'Laser Cutting + Bending': 0.35,
   'Injection Moulding': 0.9,

@@ -1175,3 +1175,62 @@ Format: decision · why · what would change it.
     consensus; where a value was positioned between two neighbours in this catalogue rather
     than quoted, the source string says DERIVED and names it as the first threshold a foundry
     review should correct.
+
+88. **The sheet & bulk tranche: `sheet-metal` was three processes wearing one set of
+    numbers (2026).**
+    *Why:* blanking, bending and drawing shared nine thresholds. They are not the same
+    process. Fine blanking pierces a hole at 0.65 t where conventional blanking needs 1.0 —
+    the capability the triple-action press is bought for, and the catalogue was flagging
+    perfectly sound fine-blanked parts against the conventional figure while passing
+    tolerances fine blanking could never hold. Press-hardened 22MnB5 wants 6 r/t where mild
+    steel wants 1. And a drawn cup fails on depth-to-diameter, which no sheet rule asked about
+    at all. *Changes it:* six new families — fine blanking, hot stamping, deep drawing, metal
+    spinning, cold heading, open-die forging — plus seven cost processes. Rules 148 → 174,
+    families 20 → 26, cost processes 33 → 40. Mild steel now offers 18 shaping routes.
+    *Measured on the real seat bracket:* the same geometry scores 51 under conventional
+    stamping and 88 under fine blanking, and its 1.187 r/t bend passes in mild steel and fails
+    at 6 r/t in press-hardened 22MnB5. That difference is the whole product.
+
+89. **Hot stamping reuses the sheet family's own 22MnB5 numbers rather than restating
+    them (2026).**
+    *Why:* `sheet-metal` already carried `byMaterial` entries for 22MnB5 on bend radius (6
+    r/t), hole diameter (2.5 d/t) and tolerance (0.3 mm). Writing independent numbers in the
+    new family would have created two places that could disagree about one alloy. *Changes
+    it:* those three figures are the `hot-stamping` family's BASE thresholds, and each source
+    string says where it came from. Note the tolerance is TIGHTER than cold stamping's 0.4 mm,
+    not looser — quenching in the closed die removes the springback that drives cold-stamped
+    variation.
+
+90. **A cross-family check, because per-family checks cannot catch a copied family (2026).**
+    *Why:* every gate check to this point tested one family in isolation. A family duplicated
+    from its neighbour and renamed would pass all of them — and with six new families landing
+    at once that is the most likely way this tranche goes wrong. *Changes it:* the gate now
+    runs ONE geometry (`folded-bracket`, r/t = 1.5 by construction) through three families and
+    asserts three different verdicts, then asserts the three thresholds behind them are
+    genuinely different numbers. A copied family fails both halves.
+
+91. **Tube bending is the one shaping process priced but not judged (2026).**
+    *Why:* its two real rules — bend radius against tube OD, and wall thinning round the bend —
+    both need the part recognised AS a tube: a circular section swept along a centreline. The
+    engine has no swept-section recogniser, and a bent tube is neither a body of revolution nor
+    folded sheet. *Changes it:* the process is in the cost model and the carbon table with
+    `dfmFamily: null` and a reason the picker prints. Inventing a family whose every rule
+    reported NOT EVALUATED would have added six to the catalogue count and judged nothing.
+
+92. **The blocking concept found its second user, which is when it stopped being a
+    special case (2026).**
+    *Why:* `cent-body-of-revolution` was the only blocking rule and could fairly have been
+    called a one-off. Metal spinning asks exactly the same question for exactly the same
+    reason — a rotating mandrel and a following roller generate only surfaces of revolution —
+    and reuses both the measure and the 90% threshold. Two independent families now depend on
+    it, and the gate checks the same rule PASSING on `bushing-tube` and BLOCKING on
+    `plate-two-holes`.
+
+93. **Six rules had source strings that said nothing (2026).**
+    *Why:* a completeness test written for the new families ("every rule carries a real source,
+    a rationale and a fix") failed on six PRE-EXISTING rules whose provenance read
+    "Die-casting design guidance." or "Process section-uniformity guidance." — true, and
+    useless to a reader deciding how much to trust the number. *Changes it:* all six rewritten
+    to say where the figure came from and, where it was positioned relative to a neighbour in
+    this catalogue rather than quoted, to say DERIVED. No threshold moved; only the provenance
+    text. The assertion now guards the whole catalogue.

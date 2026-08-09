@@ -506,3 +506,159 @@ test('a round part makes the same route viable — the flag tracks geometry, not
   assert.notEqual(cent.viable, false);
   assert.equal(cent.blockedReason, null);
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// THE SHEET & BULK TRANCHE
+//
+// `sheet-metal` covered blanking, bending and drawing with one set of numbers.
+// Three of those are different processes: fine blanking pierces at 0.65 t where
+// conventional blanking needs 1.0; press-hardened 22MnB5 wants 6 r/t where mild
+// steel wants 1; and a drawn cup fails on depth-to-diameter, which no sheet rule
+// asked about.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test('the new forming processes are offered, priced, carbon-scored and routed', async () => {
+  const { processesForMaterial } = await import('../dfm-process-registry.mjs');
+  const { PROCESS_FAMILIES } = await import('../dfm-rule-catalogue.mjs');
+  const { PROCESSES, computeShouldCost } = await import('../costing-engine.mjs');
+  const { PROCESS_KWH_PER_KG } = await import('../carbon.mjs');
+  const offered = new Map(processesForMaterial('Steel (mild)').map(p => [p.name, p]));
+  for (const [name, fam] of [
+    ['Fine Blanking', 'fine-blanking'],
+    ['Hot Stamping (Press Hardening)', 'hot-stamping'],
+    ['Deep Drawing (Multi-stage)', 'deep-drawing'],
+    ['Metal Spinning', 'metal-spinning'],
+    ['Cold Heading / Upsetting', 'cold-heading'],
+    ['Open-Die Forging', 'open-die-forging'],
+  ]) {
+    assert.ok(offered.has(name), `${name} must be selectable for mild steel`);
+    assert.equal(offered.get(name).dfmFamily, fam);
+    assert.ok(PROCESS_FAMILIES[fam], `${fam} must be a real rule family`);
+    assert.ok(PROCESSES[name], `${name} must be in the cost model`);
+    assert.ok(Number.isFinite(PROCESS_KWH_PER_KG[name]), `${name} would show a blank CO2e column`);
+    const c = computeShouldCost({ material: 'Steel (mild)', process: name, weightKg: 0.4, annualVolume: 100_000, region: 'Germany' });
+    assert.ok(c.totalShouldCost > 0, `${name} must price`);
+  }
+});
+
+test('tube bending is priced but explicitly NOT judged', async () => {
+  const { processesForMaterial } = await import('../dfm-process-registry.mjs');
+  const { PROCESSES } = await import('../costing-engine.mjs');
+  const row = processesForMaterial('Steel (mild)').find(p => p.name === 'Tube Bending');
+  assert.ok(row, 'it is a real route and must be offered');
+  assert.ok(PROCESSES['Tube Bending'], 'and it must price');
+  // The honest half: no family, and a reason that names what is missing.
+  assert.equal(row.dfmFamily, null);
+  assert.match(row.noDfmReason, /recognised AS a tube/);
+});
+
+test('ONE geometry, THREE families, three different verdicts on the same measure', () => {
+  // The central claim of the tranche. A family copied from its neighbour and
+  // renamed would return the same answer for all three and this is the only
+  // test that would notice.
+  const bracket = {
+    dfm: {
+      sheetMetal: { isSheetMetal: true, thicknessMm: 2, minBendRadiusToThickness: 1.5 },
+      wallThickness: { p50Mm: 2 }, draft: {}, features: {},
+    },
+  };
+  const verdict = (fam, id, material) => {
+    const r = runDfmRules(bracket, fam, { material });
+    return [...r.findings, ...r.passed, ...r.notEvaluated].find(f => f.id === id)?.status;
+  };
+  // 1.5 r/t: fine for mild steel, fine as a fine-blanking corner, and a crack
+  // waiting to happen in press-hardened martensite.
+  assert.equal(verdict('sheet-metal', 'sm-bend-radius', 'Steel (mild)'), 'pass');
+  assert.equal(verdict('fine-blanking', 'fb-corner-radius', 'Steel (mild)'), 'pass');
+  assert.equal(verdict('hot-stamping', 'hs-bend-radius', 'Steel 22MnB5 (press-hardened)'), 'fail');
+});
+
+test('fine blanking is more permissive than conventional blanking, in the right direction', async () => {
+  const { DFM_RULES } = await import('../dfm-rule-catalogue.mjs');
+  const th = id => DFM_RULES.find(r => r.id === id)?.threshold;
+  // The whole reason to pay for a triple-action press: finer holes, narrower
+  // webs, closer edges, a tighter band. If any of these were COPIED from the
+  // sheet-metal family the process would be indistinguishable from stamping.
+  assert.ok(th('fb-hole-diameter') < th('sm-hole-diameter'), 'fine blanking pierces finer');
+  assert.ok(th('fb-hole-to-hole') < th('sm-hole-to-hole'), 'and leaves narrower webs');
+  assert.ok(th('fb-hole-to-edge') < th('sm-hole-to-edge'), 'and goes closer to the edge');
+  assert.ok(th('fb-tolerance-capability') < th('sm-tolerance-capability'), 'and holds a tighter band');
+});
+
+test('the draw-depth proxy abstains on a skewed draw rather than measuring the wrong span', () => {
+  const skewed = {
+    boundingBox: { xMm: 60, yMm: 40, zMm: 10 },
+    dfm: { wallThickness: { p50Mm: 3 }, draft: { drawDirectionXYZ: [0.577, 0.577, 0.577] }, features: {} },
+  };
+  assert.equal(extractMeasures(skewed).drawDepthToWidth, undefined,
+    'along a skewed axis the box extents stop describing the cup');
+
+  const axial = { ...skewed, dfm: { ...skewed.dfm, draft: { drawDirectionXYZ: [0, 0, 1] } } };
+  // 10 deep over the narrower 40 span = 0.25.
+  assert.equal(extractMeasures(axial).drawDepthToWidth, 0.25);
+});
+
+test('the deep-draw depth rule tracks the alloy, because the draw ratio does', () => {
+  const deepCup = {
+    boundingBox: { xMm: 50, yMm: 50, zMm: 40 },   // 40/50 = 0.8
+    dfm: { wallThickness: { p50Mm: 1.5, spreadRatio: 0.2 }, draft: { drawDirectionXYZ: [0, 0, 1] }, features: {} },
+  };
+  const statusFor = material => {
+    const r = runDfmRules(deepCup, 'deep-drawing', { material });
+    return [...r.findings, ...r.passed].find(f => f.id === 'dd-draw-depth')?.status;
+  };
+  // First-draw limiting ratio is 2.0:1 for steel and 1.6:1 for aluminium, so the
+  // same 0.8 cup is one operation in mild steel and is not in 5052.
+  assert.equal(statusFor('Steel (mild)'), 'pass', 'mild steel approaches 1.0 in one draw');
+  assert.equal(statusFor('Aluminium 5052 (sheet)'), 'fail', 'aluminium draws less');
+  assert.equal(statusFor('Steel (high-strength)'), 'fail', 'HSS has less elongation to give the wall');
+});
+
+test('metal spinning blocks a flat part and clears a round one', () => {
+  const mk = pct => ({
+    dfm: { revolution: { axisymmetricAreaPct: pct }, wallThickness: { p50Mm: 2 },
+      draft: { undercutFaceCount: 0 }, features: {} },
+  });
+  assert.equal(runDfmRules(mk(70), 'metal-spinning').blockers.length, 1, 'a bracket cannot be spun');
+  assert.equal(runDfmRules(mk(99), 'metal-spinning').blockers.length, 0, 'a shell can');
+  // The blocking concept is now used by two independent families, which is the
+  // point at which it stops being a special case for one rule.
+  assert.equal(runDfmRules(mk(70), 'centrifugal').blockers.length, 1);
+});
+
+test('open-die forging is looser than closed-die on every axis it shares', async () => {
+  const { DFM_RULES } = await import('../dfm-rule-catalogue.mjs');
+  const th = id => DFM_RULES.find(r => r.id === id)?.threshold;
+  const cut = id => DFM_RULES.find(r => r.id === id)?.draftCutoffDeg;
+  // Judging an open-die forging by closed-die numbers condemns it on every rule
+  // at once, which is what happened while there was only one hot-forging family.
+  assert.ok(th('odf-tolerance-capability') > th('forge-hot-tolerance-capability'), 'looser band');
+  assert.ok(th('odf-min-web') > th('forge-hot-min-web'), 'thicker minimum section');
+  assert.ok(th('odf-uniformity') > th('forge-hot-uniformity'), 'more section variation tolerated');
+  assert.ok(cut('odf-draft-minimum') > cut('forge-hot-draft-minimum'), 'more draft required');
+});
+
+test('every family in the catalogue has rules, and every rule has a home', async () => {
+  const { DFM_RULES, PROCESS_FAMILIES } = await import('../dfm-rule-catalogue.mjs');
+  const counts = {};
+  for (const r of DFM_RULES) counts[r.process] = (counts[r.process] || 0) + 1;
+  for (const fam of Object.keys(PROCESS_FAMILIES)) {
+    assert.ok(counts[fam] >= 3, `${fam} has ${counts[fam] || 0} rules — a named family that judges nothing`);
+  }
+  for (const r of DFM_RULES) {
+    assert.ok(PROCESS_FAMILIES[r.process], `${r.id} belongs to unknown family ${r.process}`);
+    assert.ok(r.source && r.source.length > 40, `${r.id} must carry a real source string`);
+    assert.ok(r.fix && r.rationale, `${r.id} must tell the reader what to do about it`);
+  }
+  const ids = DFM_RULES.map(r => r.id);
+  assert.equal(new Set(ids).size, ids.length, 'duplicate rule id');
+});
+
+test('the three new unwritten rules are declared with what they need', async () => {
+  const { UNWRITTEN_RULES } = await import('../dfm-rule-catalogue.mjs');
+  for (const pattern of [/Tube bending/i, /Corner ANGLE/i, /LIMITING DRAW RATIO/i]) {
+    const row = UNWRITTEN_RULES.find(u => pattern.test(u.topic));
+    assert.ok(row, `${pattern} must be declared, not silently absent`);
+    assert.ok(row.needs && row.proxy, 'and must say what it needs and what stands in for it');
+  }
+});

@@ -566,3 +566,66 @@ export const CASTING_FIXTURES = [
     },
   },
 ];
+
+
+/**
+ * SHEET & BULK FORMING FIXTURES — the tranche's central claim, tested.
+ *
+ * The claim is that a process family is not a label: the SAME measured geometry
+ * must reach DIFFERENT verdicts under different families, and the differences
+ * must be the ones the design guides give. A gate that only checks each family
+ * in isolation cannot catch a family that was copied from its neighbour and
+ * renamed, which is the failure mode this tranche is most exposed to.
+ *
+ * Truth is analytic throughout: the box extents come from generate.py, the
+ * bend radius and thickness from the folded-bracket construction, and the
+ * threshold pairs from the catalogue's own published sources.
+ */
+export const SHEET_FORMING_FIXTURES = [
+  {
+    file: 'plate-two-holes.step',
+    what: '60x40x10 plate — the draw-depth proxy on a known box',
+    truth: {
+      // Draw direction is +Z (swept, and the fixture has zero draft on all four
+      // vertical walls). Depth along Z = 10; the narrower perpendicular extent
+      // is 40. 10/40 = 0.25 exactly.
+      drawDepthToWidth: 0.25,
+      // 0.25 is far inside every deep-drawing limit, so the rule must PASS —
+      // the fixture proves the measure is wired, not that it can fail.
+      deepDrawingDepthRulePasses: true,
+      // A rectangular plate is not a body of revolution. Spinning is blocked,
+      // and BLOCKED is a different state from a low score.
+      spinningBlocked: true,
+    },
+  },
+  {
+    file: 'bushing-tube.step',
+    what: 'OD 60 / ID 40 / L 50 bushing — round, so spinning is NOT blocked',
+    truth: {
+      // The same rule, the same threshold, the opposite verdict — driven only by
+      // the geometry. Without this row the blocking rule could be hardcoded to
+      // fail and the gate would never notice.
+      spinningBlocked: false,
+    },
+  },
+  {
+    file: 'folded-bracket.step',
+    what: '2 mm folded bracket, R3 inside bend (r/t = 1.5)',
+    truth: {
+      minBendRadiusToThickness: 1.5,
+      // THE CENTRAL CHECK OF THE TRANCHE. One geometry, one measurement, two
+      // families, opposite answers — because press-hardened 22MnB5 wants 6 r/t
+      // where mild steel wants 1. A family copied from its neighbour and renamed
+      // would return the same verdict for both and fail here.
+      bendRadiusVerdicts: [
+        { family: 'sheet-metal', material: 'Steel (mild)', ruleId: 'sm-bend-radius', status: 'pass' },
+        { family: 'hot-stamping', material: 'Steel 22MnB5 (press-hardened)', ruleId: 'hs-bend-radius', status: 'fail' },
+        // Fine blanking asks the same measure as a CUTTING question, not a
+        // forming one, and its floor is half a thickness.
+        { family: 'fine-blanking', material: 'Steel (mild)', ruleId: 'fb-corner-radius', status: 'pass' },
+      ],
+      // And the thresholds those verdicts rest on really are different numbers.
+      thresholdSpread: { 'sm-bend-radius': 1, 'hs-bend-radius': 6, 'fb-corner-radius': 0.5 },
+    },
+  },
+];

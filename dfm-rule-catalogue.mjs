@@ -65,6 +65,18 @@ export const PROCESS_FAMILIES = {
   'semi-solid': 'Semi-solid casting (thixo / rheo)',
   'shell-mould': 'Shell mould casting',
   centrifugal: 'Centrifugal casting',
+  // ── The sheet and bulk-forming families ──────────────────────────────────
+  // `sheet-metal` covered blanking, bending and drawing with one set of
+  // thresholds. Three of those are different processes with different limits:
+  // fine blanking pierces a hole at 0.65 t where conventional blanking needs
+  // 1.0; press-hardened 22MnB5 wants 6 r/t where mild steel wants 1; and a
+  // drawn cup fails on depth-to-diameter, a question no sheet rule asked.
+  'fine-blanking': 'Fine blanking',
+  'hot-stamping': 'Hot stamping / press hardening',
+  'deep-drawing': 'Deep drawing (multi-stage)',
+  'metal-spinning': 'Metal spinning',
+  'cold-heading': 'Cold heading / upsetting',
+  'open-die-forging': 'Open-die forging',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -494,7 +506,7 @@ export const DFM_RULES = [
     rationale:
       'A die-cast undercut needs a slide or a loose core. Both add die cost and maintenance, and a loose core adds a manual handling step to every shot.',
     fix: 'Reorient the part to the draw, move the parting line, or price the slide explicitly.',
-    source: 'Die-casting design guidance.',
+    source: 'Die casting tool design: the die opens along one axis, so a re-entrant feature needs a slide or a lifter — a cam mechanism, its wear parts and the cycle time to move it. Derived from the process, not quoted from a design guide.',
   },
 
   {
@@ -897,7 +909,7 @@ export const DFM_RULES = [
     rationale:
       'Metal flows from thick to thin under the die, and a large section change means the thin region fills last, against the most die chilling. It is also where the die cracks, because the pressure needed to fill it is highest.',
     fix: 'Even out the section and add generous fillets so metal reaches the thin regions.',
-    source: 'Process section-uniformity guidance.',
+    source: 'Casting and forging design guidance on gradual section change. A hot forging fills by displacing metal between closing dies rather than by flowing into a cavity, so it tolerates MORE section variation than a die casting and less than a machined part — this band sits between the two used elsewhere in this catalogue. DERIVED from that ordering, not quoted.'
   },
   {
     id: 'forge-cold-uniformity',
@@ -912,7 +924,7 @@ export const DFM_RULES = [
     rationale:
       'Cold forging work-hardens as it flows, so a large section change means the last region to fill is also the hardest to fill. Tool life is set by that region.',
     fix: 'Even out the section, or split the shape across two blows with an intermediate anneal.',
-    source: 'Process section-uniformity guidance.',
+    source: 'The same section-change guidance as hot forging, tightened because cold metal work-hardens as it moves: the load needed to fill a section change rises with every millimetre the metal travels, and the press has a limit the furnace removes in hot work. DERIVED from the hot-forging band in this catalogue, not quoted.'
   },
   {
     id: 'rtm-uniformity',
@@ -927,7 +939,7 @@ export const DFM_RULES = [
     rationale:
       'Resin flows fastest through the thickest part of the preform, so an uneven laminate traps dry spots at the flow-front convergence. Thickness change is also where a laminate delaminates.',
     fix: 'Even out the ply count, and taper thickness changes over at least 20:1 rather than stepping them.',
-    source: 'Process section-uniformity guidance.',
+    source: 'Composite design guidance on uniform laminate thickness. A resin-transfer laminate is built from plies of a fixed thickness, so a section change is a ply drop — a stress raiser and a resin-rich pocket. The band sits with the bulk-forming families in this catalogue rather than the casting ones. DERIVED from that ordering, not quoted.'
   },
   {
     id: 'gdc-undercuts',
@@ -1122,7 +1134,7 @@ export const DFM_RULES = [
     rationale:
       'A tall boss is cored by a pin standing in the flow, and the taller it is the more it deflects and the sooner it erodes. Zinc is kinder to pins than aluminium but the geometry still governs.',
     fix: 'Shorten the boss, widen it, or support it with ribs to its base.',
-    source: 'Die-casting boss-proportion guidance.',
+    source: 'Die casting boss guidance: a boss is cored by a pin standing in the die and the same slenderness argument applies as to a cored hole, with zinc holding the finest pins of the die-casting alloys. The 4:1 figure sits above the aluminium core-pin limit used elsewhere in this catalogue because a boss pin is supported by the surrounding cavity where a through-core pin is not. DERIVED from that ordering; no primary standard audited.'
   },
   {
     id: 'gdc-boss-height',
@@ -1367,7 +1379,7 @@ export const DFM_RULES = [
     rationale:
       'The tube conforms to the die under pressure, so the formed shape is repeatable, but the wall thins unevenly and the ends move as the tube is fed. About +/-0.25 mm is realistic.',
     fix: 'Tolerance from the die-formed faces, not from the tube ends.',
-    source: 'Tube hydroforming tolerance guidance.',
+    source: 'Tube hydroforming holds a permanent-die class of tolerance on the formed section because the tube is pressed against a steel die, but the tube diameter, wall and length going in all vary, and that variation carries through. The band sits between the stamping and casting families used elsewhere in this catalogue. DERIVED from that ordering; no primary standard audited.'
   },
   {
     id: 'forge-hot-tolerance-capability',
@@ -2801,6 +2813,457 @@ export const DFM_RULES = [
     source: 'Centrifugal casting is quoted at radial tolerance CT3-CT8 (±0.1-0.5%) with a surface finish of Ra 3-8 µm. The value here takes the loose end of that band as a screening figure; no primary standard audited.',
   },
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FINE BLANKING
+  //
+  // The process the seat-mechanism and brake plates in this catalogue's world
+  // are actually made by, and it was being judged by conventional blanking's
+  // thresholds — which are the WRONG WAY ROUND. A V-ring holds the sheet, a
+  // counter-punch backs it and the clearance is a fraction of conventional, so
+  // fine blanking pierces FINER holes, leaves NARROWER webs and holds a band an
+  // order of magnitude tighter. Judging it by `sheet-metal` flagged parts that
+  // were perfectly sound and passed tolerances it could never hold.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'fb-hole-diameter',
+    sourceStatus: 'industry-consensus',
+    process: 'fine-blanking',
+    severity: 'medium',
+    title: 'Pierced hole below the fine-blanking minimum',
+    measure: 'minHoleDiaToThickness',
+    compare: 'gte',
+    threshold: 0.65,
+    unit: 'd/t',
+    rationale:
+      'The V-ring grips the sheet and the counter-punch supports it, so the material does not flow away from the punch the way it does in conventional blanking. That is what lets a fine-blanked hole go below one thickness — but the punch is still a slender column under load and it breaks below about 0.65 of the sheet.',
+    fix: 'Open the hole to at least 0.65 of the sheet thickness, or drill it as a secondary operation.',
+    source: 'Fine blanking design guidance: hole diameter approximately 60-65% of material thickness. NOTE — a second guide quotes minimum hole diameter >= 1.2 x thickness, which is nearly twice this figure and closer to the conventional-blanking rule. The two are in genuine conflict; the more permissive figure is used because going finer than conventional blanking is the capability fine blanking is bought for, and the finding should be treated as a screening result to put to your press shop. No primary standard audited.',
+  },
+  {
+    id: 'fb-corner-radius',
+    sourceStatus: 'industry-consensus',
+    process: 'fine-blanking',
+    severity: 'medium',
+    title: 'Internal corner sharper than the sheet can be cut to',
+    measure: 'minBendRadiusToThickness',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'r/t',
+    rationale:
+      'A sharp internal corner concentrates the cutting stress into a point on the tool. The tool cracks there first, and the part carries a tear-out where a clean sheared face was specified.',
+    fix: 'Put a radius of at least half the sheet thickness in every internal corner; an obtuse corner can go smaller, an acute one needs more.',
+    source: 'Fine blanking design guidance: minimum inside radius 0.5 x sheet thickness to spread stress evenly and avoid cracks; corner radius by angle — obtuse 5-10% of thickness, right angle 10-15%, acute 25-30%. The single 0.5t figure is used because the corner ANGLE is not measured by this engine (see UNWRITTEN_RULES). No primary standard audited.',
+  },
+  {
+    id: 'fb-hole-to-edge',
+    sourceStatus: 'industry-consensus',
+    process: 'fine-blanking',
+    severity: 'medium',
+    title: 'Hole too close to the blanked edge',
+    measure: 'minHoleToEdgeToThickness',
+    compare: 'gte',
+    threshold: 1.5,
+    unit: 'gap/t',
+    rationale:
+      'The V-ring clamps just outside the cut line, so the material between a hole and the edge is held far better than in conventional blanking — but it is still the narrowest section on the part and it is where the blank will bow if it goes too thin.',
+    fix: 'Move the hole inboard to at least 1.5 thicknesses from the edge.',
+    source: 'Fine blanking design guidance: keep holes at least 1.5-2 x sheet thickness from the nearest edge, against 2t for conventional blanking. No primary standard audited.',
+  },
+  {
+    id: 'fb-hole-to-hole',
+    sourceStatus: 'industry-consensus',
+    process: 'fine-blanking',
+    severity: 'medium',
+    title: 'Web between features narrower than the sheet is thick',
+    measure: 'minHoleToHoleToThickness',
+    compare: 'gte',
+    threshold: 1.0,
+    unit: 'gap/t',
+    rationale:
+      'The web between two pierced features is unsupported on both sides while both punches are in the sheet. Below one thickness it collapses, and the two holes break through into one.',
+    fix: 'Open the web to at least one sheet thickness, or combine the two features into one aperture.',
+    source: 'Fine blanking design guidance: maintain webs >= material thickness between adjacent features. Against 2t for conventional blanking. No primary standard audited.',
+  },
+  {
+    id: 'fb-min-aperture',
+    sourceStatus: 'industry-consensus',
+    process: 'fine-blanking',
+    severity: 'medium',
+    title: 'Cut-out smaller than the fine-blanking minimum',
+    measure: 'minApertureToThickness',
+    compare: 'gte',
+    threshold: 0.65,
+    unit: 'size/t',
+    rationale:
+      'A non-round aperture is cut by a shaped punch, and a slender punch snaps whatever its outline. The same floor applies as to a round hole.',
+    fix: 'Open the aperture to at least 0.65 of the sheet thickness across its narrowest span.',
+    source: 'Fine blanking design guidance on minimum feature size, applied to non-circular apertures on the same basis as pierced holes. No primary standard audited.',
+  },
+  {
+    id: 'fb-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'fine-blanking',
+    severity: 'high',
+    title: 'Tolerance tighter than fine blanking holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.06,
+    unit: 'mm total band',
+    rationale:
+      'This is where fine blanking earns its tooling cost: a clean sheared face over the full thickness and a band an order of magnitude tighter than conventional stamping. It is not machining, and a band under about 0.06 mm total still belongs to a grinder.',
+    fix: 'Open the tolerance, or grind that feature after blanking.',
+    source: 'Fine blanking is quoted as repeatably holding +/-0.01 to 0.03 mm depending on sheet type and thickness. The LOOSE end of that band (0.03 either way = 0.06 total) is used, so the rule flags only what is clearly outside the process. No primary standard audited.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // HOT STAMPING / PRESS HARDENING
+  //
+  // A B-pillar or a door-ring is formed AUSTENITIC and quenched hard in the die,
+  // and every geometric limit that matters applies to the part AFTER quench,
+  // when it is 1500 MPa martensite. The `sheet-metal` family already carried
+  // 22MnB5 numbers on three of its rules; those are reused here as the family's
+  // BASE thresholds rather than restated with different values, because the two
+  // must not be able to disagree about the same alloy.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'hs-bend-radius',
+    sourceStatus: 'industry-consensus',
+    process: 'hot-stamping',
+    severity: 'high',
+    title: 'Bend radius below what press-hardened steel tolerates',
+    measure: 'minBendRadiusToThickness',
+    compare: 'gte',
+    threshold: 6,
+    unit: 'r/t',
+    rationale:
+      'The radius is formed hot and soft, but it is quenched to martensite in the same die and lives its life at 1500 MPa. A tight radius carries the residual stress of the quench on top of the forming strain, and it is where a hydrogen-assisted crack starts.',
+    fix: 'Open the radius to at least six thicknesses, or move the bend to a region that stays soft (a tailored or partially-quenched blank).',
+    source: 'The 22MnB5 (press-hardened) figure carried by the sheet-metal bend rule in this same catalogue: 6 r/t. It is the base threshold here because hot stamping IS that alloy, so the two families cannot disagree about it. No primary standard audited.',
+  },
+  {
+    id: 'hs-hole-diameter',
+    sourceStatus: 'industry-consensus',
+    process: 'hot-stamping',
+    severity: 'high',
+    title: 'Hole too small to pierce in press-hardened steel',
+    measure: 'minHoleDiaToThickness',
+    compare: 'gte',
+    threshold: 2.5,
+    unit: 'd/t',
+    rationale:
+      'A hole in a press-hardened part is either pierced hot before quench, when its position moves with the shrinkage, or cut by laser afterwards at a cost per hole. Neither route makes a small hole cheap, and a punch driven through martensite chips.',
+    fix: 'Open the hole to at least 2.5 thicknesses, or accept laser trimming and cost it per hole.',
+    source: 'The 22MnB5 (press-hardened) figure carried by the sheet-metal hole rule in this same catalogue: 2.5 d/t. No primary standard audited.',
+  },
+  {
+    id: 'hs-hole-to-hole',
+    sourceStatus: 'industry-consensus',
+    process: 'hot-stamping',
+    severity: 'medium',
+    title: 'Pierced holes too close for a hot-formed part',
+    measure: 'minHoleToHoleToThickness',
+    compare: 'gte',
+    threshold: 1.5,
+    unit: 'gap/t',
+    rationale:
+      'Holes closer than about 1.5 thicknesses distort each other as they are pierced, and on a part that then shrinks through a quench the position error and the distortion add.',
+    fix: 'Open the gap to at least 1.5 thicknesses, or loosen the position tolerance between them to cover springback and bend variation.',
+    source: 'Stamping design guidance: hole spacing of at least 1.5 x material thickness to avoid distortion; same-plane piercing holds close position, and holes closer than that or on different planes need a loosened band. No primary standard audited.',
+  },
+  {
+    id: 'hs-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'hot-stamping',
+    severity: 'high',
+    title: 'Tolerance tighter than hot stamping holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.3,
+    unit: 'mm total band',
+    rationale:
+      'Quenching in the die is what makes hot stamping DIMENSIONALLY good — the part is held while it transforms, so there is almost no springback and very little warping. It is still a phase transformation inside a closing tool, and a band under about 0.3 mm total is a machining or laser requirement.',
+    fix: 'Open the tolerance, or laser-cut that feature after quench.',
+    source: 'The 22MnB5 (press-hardened) figure carried by the sheet-metal tolerance rule in this same catalogue: 0.3 mm total band — TIGHTER than the 0.4 mm mild-steel stamping band, because quenching in the die removes the springback that drives cold-stamped variation. No primary standard audited.',
+  },
+  {
+    id: 'hs-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'hot-stamping',
+    severity: 'high',
+    title: 'Undercuts cannot be drawn from a quenching die',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'The die must stay closed on the part until the quench is complete and then open cleanly. An undercut needs a slide that has to be water-cooled like the rest of the tool and has to move against a part that is gripping it as it shrinks.',
+    fix: 'Re-orient the part on the die axis, or cut the undercut feature by laser afterwards.',
+    source: 'Press-hardening tool design: the part is quenched in the closed die and then drawn, so the tool geometry must release a shrinking, hardening part. Derived from the process, not quoted from a design guide.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DEEP DRAWING (multi-stage)
+  //
+  // Split out of `sheet-metal` because a drawn cup fails on a question no sheet
+  // rule asked: how DEEP it is for how wide. Blanking and bending do not care;
+  // drawing cares about almost nothing else.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'dd-draw-depth',
+    sourceStatus: 'industry-consensus',
+    process: 'deep-drawing',
+    severity: 'high',
+    title: 'Too deep to draw in one operation',
+    measure: 'drawDepthToWidth',
+    compare: 'lte',
+    threshold: 0.75,
+    unit: 'depth/width',
+    byMaterial: {
+      'Steel (mild)': { threshold: 1.0, source: 'Low-carbon steel is at the ductile end and can approach or slightly exceed a depth/diameter of 1.0 in a single operation under optimised conditions. First-draw limiting ratio 2.0:1 for steel.' },
+      'Aluminium 5052 (sheet)': { threshold: 0.6, source: 'Aluminium draws less than steel: a first-draw limiting ratio of 1.6:1 against steel\'s 2.0:1, so the depth reachable in one operation is correspondingly lower.' },
+      'Steel (high-strength)': { threshold: 0.5, source: 'A higher-strength sheet has less uniform elongation to give the wall, so the first draw takes less depth before the cup wall thins to a split.' },
+    },
+    rationale:
+      'A cup deeper than about three quarters of its width cannot be drawn in one hit: the wall thins until it splits at the punch nose. Past that limit the part needs redraws, and every redraw is another die, another station and an anneal if the alloy work-hardens.',
+    fix: 'Reduce the depth, widen the part, or plan for redraws — the first draw takes the most, and each redraw after it takes 1.3-1.5:1, not 2:1.',
+    source: 'Deep drawing design guidance: maximum depth-to-diameter in a SINGLE operation is 0.5-0.75 for most metals, approaching or slightly exceeding 1.0 for highly ductile low-carbon steel and aluminium; limiting draw ratio 1.8-2.3 for most steels, redraw ratios 1.3-1.5:1 per stage. MEASURED HERE AS A PROXY: this rule reads bounding-box depth over the narrower box width, not blank diameter over punch diameter — the blank and the punch are not in a finished solid. See UNWRITTEN_RULES for what that proxy cannot see. No primary standard audited.',
+  },
+  {
+    id: 'dd-wall-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'deep-drawing',
+    severity: 'medium',
+    title: 'Wall variation beyond what drawing produces',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.4,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'Drawing THINS the cup wall and thickens the flange, so a drawn part legitimately varies where a blanked one does not — but the variation comes from the draw, not from the drawing office. A section change the sheet never had is a machining feature on a pressing.',
+    fix: 'Check whether the thick or thin region is a drawn consequence or a designed one; a designed section change on a drawn part is not a pressing.',
+    source: 'Deep drawing thins the wall progressively toward the punch nose while the flange thickens. The band here is positioned above the flat-sheet families in this catalogue and below the casting families; DERIVED from that ordering, not quoted.',
+  },
+  {
+    id: 'dd-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'deep-drawing',
+    severity: 'high',
+    title: 'Tolerance tighter than deep drawing holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'mm total band',
+    rationale:
+      'A drawn wall is formed between a punch and a die with clearance in between and it springs back when the punch withdraws. It is looser than a blanked edge, not tighter.',
+    fix: 'Open the tolerance, or add an ironing or sizing station on the feature that needs it.',
+    source: 'Positioned above the 0.4 mm flat-stamping band used elsewhere in this catalogue, because a drawn wall adds springback the blanked edge does not have. DERIVED from that ordering, not quoted.',
+  },
+  {
+    id: 'dd-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'deep-drawing',
+    severity: 'high',
+    title: 'Undercuts cannot be drawn off the punch',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'The cup is stripped off the punch along the draw axis. A re-entrant feature holds it there, and the strip either tears the wall or leaves the part on the tool.',
+    fix: 'Re-orient the part on the draw axis, or form the feature in a separate cam operation after the draw.',
+    source: 'Drawing tool design: the part is stripped along the draw axis, so a re-entrant feature cannot be produced by the draw itself. Derived from the process, not quoted from a design guide.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // METAL SPINNING
+  //
+  // The second family whose FIRST question is shape rather than dimension, and
+  // the second use of the axisymmetry measure written for centrifugal casting.
+  // A spinning mandrel rotates: a lug or a flat cannot be formed by that motion
+  // at all, so the rule is a BLOCKER and not a score.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'spin-body-of-revolution',
+    blocking: true,
+    sourceStatus: 'engine-derived',
+    process: 'metal-spinning',
+    severity: 'high',
+    title: 'Part is not a body of revolution',
+    measure: 'axisymmetricAreaPct',
+    compare: 'gte',
+    threshold: 90,
+    unit: '% of surface area',
+    rationale:
+      'Spinning forms the part by pressing a roller against a blank rotating on a mandrel. Every surface it can make is a surface of revolution about the mandrel axis. A flat, a lug or a bolt boss is not reachable by that motion — not expensively, but at all.',
+    fix: 'Spin an axisymmetric shell and add the non-axisymmetric features as a secondary operation, or press the part instead.',
+    source: 'Derived from the process kinematics rather than from a design guide: a rotating mandrel and a following roller generate only surfaces of revolution about the mandrel axis. The 90% threshold allows small secondary features on an otherwise round part; it is this tool\'s own screening value, shared with the centrifugal-casting rule for the same reason.',
+  },
+  {
+    id: 'spin-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'metal-spinning',
+    severity: 'high',
+    title: 'Undercuts cannot be drawn off the mandrel',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'The finished shell is pulled off the mandrel along its axis. A re-entrant profile locks it on, and the only ways out are a collapsible mandrel — an expensive, wearing assembly — or scrapping the part.',
+    fix: 'Remove the re-entrant profile, or budget for a collapsible or segmented mandrel.',
+    source: 'Metal spinning tool practice: the shell is drawn off the mandrel along the spin axis, so a re-entrant profile needs a collapsible mandrel. Derived from the process, not quoted from a design guide.',
+  },
+  {
+    id: 'spin-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'metal-spinning',
+    severity: 'high',
+    title: 'Tolerance tighter than spinning holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.8,
+    unit: 'mm total band',
+    rationale:
+      'The roller follows a path against a blank whose thickness is changing under it. CNC spinning is repeatable on round shapes, but the wall thins by a quarter to a third as it forms and the band reflects that.',
+    fix: 'Open the tolerance, or machine the feature that needs it after spinning — the stock is there, because the blank was specified thicker.',
+    source: 'Metal spinning is quoted at tolerances of about 1/32 inch (0.79 mm), with material specified 25-30% thicker than the finished wall to allow for thinning. No primary standard audited.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COLD HEADING / UPSETTING
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'ch-upset-ratio',
+    sourceStatus: 'industry-consensus',
+    process: 'cold-heading',
+    severity: 'high',
+    title: 'Head too tall to upset in one blow',
+    measure: 'maxBossHeightToDia',
+    compare: 'lte',
+    threshold: 2.5,
+    unit: 'upset L/D',
+    rationale:
+      'Cold heading forms the head by upsetting an unsupported length of wire. Past about two and a half wire diameters that free length buckles sideways instead of spreading, and the head folds over rather than filling.',
+    fix: 'Reduce the head volume, or plan a two-blow sequence — a second blow reaches roughly four and a half diameters, and enclosing the blank in a die cavity extends the first.',
+    source: 'Cold heading practice: unsupported lengths of up to 2 to 2.5 x blank diameter can be upset in one blow in steel; enclosing the blank in a cavity of 1.5 x diameter allows more, and a two-blow sequence reaches about 4.5 diameters. MEASURED HERE AS A PROXY: the engine reads the recognised BOSS height over its diameter on the finished part, which is not the same thing as the free wire length before upsetting. No primary standard audited.',
+  },
+  {
+    id: 'ch-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'cold-heading',
+    severity: 'high',
+    title: 'Undercuts cannot be ejected from a heading die',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'A headed part is knocked out of the die along the wire axis by a pin. A re-entrant feature holds it in the cavity, and heading machines run too fast to unload one part at a time.',
+    fix: 'Remove the re-entrant feature, or machine it in afterwards — a cold-headed blank machines easily.',
+    source: 'Cold heading tool practice: the part is ejected along the die axis by a knock-out pin. Derived from the process, not quoted from a design guide.',
+  },
+  {
+    id: 'ch-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'cold-heading',
+    severity: 'high',
+    title: 'Tolerance tighter than cold heading holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.2,
+    unit: 'mm total band',
+    rationale:
+      'Cold forming in a closed die is accurate and repeatable — that is why fasteners are made this way and not machined. Below about 0.2 mm total the feature is being ground or rolled, not headed.',
+    fix: 'Open the tolerance, or grind the feature after heading.',
+    source: 'The cold-forging tolerance band used elsewhere in this catalogue (0.2 mm total), applied to cold heading as the same class of closed-die cold forming. DERIVED from that neighbour, not quoted.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // OPEN-DIE FORGING
+  //
+  // The catalogue had ONE hot-forging family and it carried closed-die numbers.
+  // Open-die forging makes a shape between flat or simply-contoured tools with
+  // the workpiece manipulated between blows: it takes far more draft, holds a
+  // far looser band, and leaves far more stock. Judging an open-die forging by
+  // closed-die thresholds condemns it on every rule at once.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'odf-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'open-die-forging',
+    draftCutoffDeg: 7.0,
+    severity: 'high',
+    title: 'Wall area below the minimum open-die forging draft',
+    measure: 'wallAreaBelowDraftPct',
+    compare: 'lte',
+    threshold: 5,
+    unit: '% of wall area',
+    rationale:
+      'The workpiece is turned and repositioned between blows against tools that are flat or barely contoured. Nothing about that process produces a near-vertical wall, and asking for one means the wall is machined afterwards out of stock that has to be there.',
+    fix: 'Open the taper to at least 7°, or accept that the face is a machined face and leave stock for it.',
+    source: 'Forging draft guidance, taken at the top of the hot-forging band (the closed-die family in this catalogue reads the 5° point). Open-die work is manipulated between simple tools and takes more taper than closed-die, so the 7° point is read instead. DERIVED from that ordering, not quoted.',
+  },
+  {
+    id: 'odf-min-web',
+    sourceStatus: 'industry-consensus',
+    process: 'open-die-forging',
+    severity: 'high',
+    title: 'Section thinner than open-die forging reaches',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 6,
+    unit: 'mm',
+    rationale:
+      'Between flat tools there is no cavity to fill and no die wall to hold the metal, so a thin web simply is not formed — it is machined out of a thicker one.',
+    fix: 'Thicken the section, or move to closed-die forging where a cavity can hold a thinner web.',
+    source: 'Positioned at twice the closed-die hot-forging minimum used elsewhere in this catalogue (3 mm), because open-die work has no cavity to fill a thin section into. DERIVED from that ordering, not quoted.',
+  },
+  {
+    id: 'odf-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'open-die-forging',
+    severity: 'medium',
+    title: 'Section change beyond what open-die work produces',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 1.2,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'Open-die forging makes simple shapes: shafts, discs, rings, blocks. A part whose section varies more than the process can work into it is a machined part with a forged blank, and it should be quoted that way.',
+    fix: 'Simplify the forged shape and machine the detail, or move to closed-die forging.',
+    source: 'Positioned above the closed-die hot-forging band used elsewhere in this catalogue (0.9), because open-die work is deliberately a simpler shape carrying more machining stock. DERIVED from that ordering, not quoted.',
+  },
+  {
+    id: 'odf-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'open-die-forging',
+    severity: 'high',
+    title: 'Tolerance tighter than open-die forging holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 3.0,
+    unit: 'mm total band',
+    rationale:
+      'There is no die cavity setting the shape — the operator and the manipulator set it, blow by blow. Every dimension that matters on an open-die forging is machined afterwards, and the forging exists to put grain flow and mass roughly where they are needed.',
+    fix: 'Treat the forging as a blank: put the tolerance on the machined feature and leave stock for it.',
+    source: 'Positioned at three times the closed-die hot-forging band used elsewhere in this catalogue (1.0 mm), because open-die work has no cavity setting the dimension. DERIVED from that ordering, not quoted — and it is the threshold in this family most in need of a forge-shop review.',
+  },
+  {
+    id: 'odf-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'open-die-forging',
+    severity: 'high',
+    title: 'Undercuts cannot be forged between open tools',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'Flat or simply-contoured tools approach along one axis and separate along it. There is no mechanism in an open-die press to form or release a re-entrant feature.',
+    fix: 'Machine the undercut afterwards.',
+    source: 'Open-die forging tool practice: flat tools approach and separate along one axis. Derived from the process, not quoted from a design guide.',
+  },
+
 ];
 
 /**
@@ -2817,6 +3280,21 @@ export const DFM_RULES = [
  * reader to infer that the catalogue is complete.
  */
 export const UNWRITTEN_RULES = [
+  {
+    topic: 'Tube bending — bend radius against tube OD, and wall thinning round the bend',
+    needs: 'The part recognised AS a tube: a circular section swept along a centreline, so the outside diameter, the wall and the centreline radius can be read separately. The engine finds cylinders and it finds bends between planar flanges; it has no swept-section recogniser, and a bent tube is neither a body of revolution nor folded sheet.',
+    proxy: 'None. Tube Bending is the ONE shaping process in this tool priced and carbon-scored but not judged, and the picker prints that reason when it is selected rather than showing an empty report.',
+  },
+  {
+    topic: 'Corner ANGLE for the fine-blanking corner-radius rule',
+    needs: 'The included angle at each internal corner. The published guidance is angle-dependent — an obtuse corner needs 5-10% of thickness, a right angle 10-15%, an acute one 25-30% — and the catalogue applies the single 0.5t "minimum inside radius" figure to every corner because the angle is not measured.',
+    proxy: '`fb-corner-radius` uses the flat 0.5t figure, which is stricter than the obtuse case and more permissive than the acute one. A sharp acute corner can therefore pass a rule it should fail.',
+  },
+  {
+    topic: 'True LIMITING DRAW RATIO (blank diameter / punch diameter)',
+    needs: 'The blank and the punch. Neither is in a finished solid model: the blank is the flat sheet before forming and the punch is tooling. Computing the real LDR would need the part unfolded to its developed blank, which is a forming simulation, not a measurement.',
+    proxy: '`dd-draw-depth` reads bounding-box depth over the narrower box width, which is the depth-to-diameter figure design guides quote alongside the LDR. It cannot see a stepped or tapered cup, where the governing diameter is not the box width, and it ABSTAINS when the draw direction is not a box axis.',
+  },
   {
     topic: 'Minimum as-cast cored hole diameter for SAND casting',
     needs: 'A published sand-foundry figure for the smallest hole worth coring. Every other casting family in this catalogue now carries one — HPDC 2.5 mm, zinc 1.5 mm, permanent mould 6.0 mm, investment 1.5 mm — and sand does not, because the research turned up a sand CORE cross-section floor (about 1.6 mm for stability against the melt) and an unsupported core L/D band (10-15), but no sand cored-HOLE minimum from any source. Interpolating one from the permanent-mould 6 mm would have looked identical on the page to the four that are sourced.',
