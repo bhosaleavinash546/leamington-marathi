@@ -1390,3 +1390,37 @@ Format: decision · why · what would change it.
     a fixed 160px track in its own grid column with a legend row, so the bars are a chart
     beside the text rather than a decoration behind it. Found by rendering the page in
     Chromium and looking at it — the layout typechecked perfectly either way.
+
+109. **Innovation Studio, second pass: a workspace rather than a decorated page (2026).**
+    *Why:* the first pass gave the page a motion language and left its STRUCTURE untouched —
+    a marketing hero over a stack of identical rounded rectangles. Motion on a template is
+    still a template. The specific failures, each visible in a browser screenshot:
+      * a 64px mark over a 5xl centred title over a three-line paragraph took a third of the
+        first screen before an engineer could do anything;
+      * three different card recipes were in use for what is one surface;
+      * results were a flat list you could only read top to bottom — no sort, no filter, no
+        density, and nothing to point at in a meeting;
+      * the convergence figures, which ARE the answer to a run, were a run-on line of 11px
+        grey text under a heading;
+      * scrolling twenty ideas lost the method, the part and the exports entirely;
+      * commentary was prose with a bold prefix ("Cost angle:", "Risk:") rather than fields.
+    *Changes it:* a compact tool header with the catalogue counted on the right; one panel
+    treatment (`iv-panel`) and one label style (`iv-label`) used everywhere; a sticky context
+    bar carrying method / part / exports; a five-figure KPI strip in tabular numerals; a
+    results toolbar with verdict filter, sort and a density toggle, all acting on the real
+    result; and idea ROWS with a stable index, the verdict in its own aligned column, and
+    labelled Cost angle / Risk cells.
+
+110. **The idea index is captured before sorting (2026).**
+    *Why:* the whole point of numbering ideas is so a reviewer can say "look at idea 3" in a
+    meeting. A number that renumbers when the reader sorts by saving is worse than no number
+    at all — two people looking at the same result would mean different ideas by "3".
+    *Changes it:* the index is assigned from the returned order and travels with the idea
+    through every filter and sort.
+
+111. **"Best confirmed" excludes contradicted ideas by construction (2026).**
+    *Why:* a contradicted idea's saving figure is the ENGINE DISAGREEING with the AI's claim.
+    Feeding it into a "best saving" tile would have the page quoting, as its headline number,
+    the one figure it has already told the reader not to believe. *Changes it:* the tile
+    reduces over confirmed ideas only, and shows an em dash when none is confirmed rather
+    than falling back to the largest number available.

@@ -3,7 +3,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   Sparkles, CheckCircle, XCircle, Layers, Cpu, Wand2, ArrowRight, FileDown, Table2,
   Search, Lightbulb, Target, GitBranch, ShieldCheck, Gauge, ChevronDown,
+  Rows3, AlignJustify, TrendingDown,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import BusinessCaseModal from '../components/BusinessCaseModal';
@@ -188,6 +190,13 @@ export default function InnovationStudioPage() {
     }
   }
   const [pipelineIdea, setPipelineIdea] = useState<Idea | null>(null);
+  // Results view state. A flat list you can only read top to bottom is fine for
+  // four ideas and useless for fifteen: an engineer wants the confirmed ones
+  // first, or only the contradicted ones, or all of them at a density that fits
+  // one screen. All three act on the real result — nothing is re-fetched.
+  const [sortBy, setSortBy] = useState<'returned' | 'saving' | 'lens'>('returned');
+  const [verdictFilter, setVerdictFilter] = useState<'all' | 'confirmed' | 'contradicted' | 'unchecked'>('all');
+  const [dense, setDense] = useState(false);
 
   const method = METHODS.find(m => m.id === methodId)!;
 
@@ -205,6 +214,52 @@ export default function InnovationStudioPage() {
   const tiers = useMemo(() => [1, 2, 3]
     .map(t => ({ tier: t, items: matches.filter(m => m.tier === t) }))
     .filter(g => g.items.length > 0), [matches]);
+
+  // The ideas as the reader asked to see them. Index is captured BEFORE sorting
+  // so "idea 3" means the same idea whichever order it is shown in — a number
+  // that renumbers when you sort is worse than no number.
+  const shownIdeas = useMemo(() => {
+    if (!result) return [];
+    const rows = result.ideas.map((idea, i) => ({ idea, n: i + 1 }));
+    const kept = rows.filter(({ idea }) => {
+      if (verdictFilter === 'all') return true;
+      if (verdictFilter === 'unchecked') return !idea.engineCheck;
+      return idea.engineCheck?.direction === verdictFilter;
+    });
+    if (sortBy === 'saving') {
+      // Unchecked ideas sort LAST rather than as zero — an idea the engine could
+      // not price is not an idea worth nothing.
+      return [...kept].sort((a, b) => {
+        const av = a.idea.engineCheck?.savingPct, bv = b.idea.engineCheck?.savingPct;
+        if (av == null && bv == null) return a.n - b.n;
+        if (av == null) return 1;
+        if (bv == null) return -1;
+        return bv - av;
+      });
+    }
+    if (sortBy === 'lens') {
+      return [...kept].sort((a, b) => (a.idea.lens || '').localeCompare(b.idea.lens || '') || a.n - b.n);
+    }
+    return kept;
+  }, [result, sortBy, verdictFilter]);
+
+  // The headline figures, computed once. `bestSaving` is the largest CONFIRMED
+  // saving — a contradicted idea's number is the engine disagreeing, and putting
+  // it in a "best" tile would be the page arguing with itself.
+  const kpis = useMemo(() => {
+    if (!result) return null;
+    const checks = result.engineChecks;
+    const confirmed = result.ideas.filter(i => i.engineCheck?.direction === 'confirmed');
+    const best = confirmed.reduce((m, i) => Math.max(m, i.engineCheck!.savingPct), 0);
+    return {
+      ideas: result.ideas.length,
+      checked: checks?.checked ?? 0,
+      confirmed: checks?.confirmed ?? confirmed.length,
+      contradicted: checks?.contradicted ?? 0,
+      unchecked: Math.max(0, result.ideas.length - (checks?.checked ?? 0)),
+      bestSaving: best > 0 ? best : null,
+    };
+  }, [result]);
 
   async function generate() {
     if (!token) { setError('Please sign in.'); return; }
@@ -288,35 +343,44 @@ export default function InnovationStudioPage() {
       <div className="iv-glow iv-glow-teal" aria-hidden="true" />
 
       <div className="relative max-w-5xl mx-auto">
-        {/* ── Hero ─────────────────────────────────────────────────────────── */}
-        <div className="text-center mb-9">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="iv-mark inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-gold-500/20 to-violet-500/10 border border-gold-500/25 mb-5">
-            <Wand2 size={30} className="text-gold-400" />
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.06 }}
-            className="iv-title text-4xl sm:text-5xl font-black mb-3 tracking-tight">
-            Innovation Studio
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.12 }}
-            className="text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            {/* COUNTED, not typed. This line read "Eight structured methods" while
-                the list held eleven — a number in the product's own shop window
-                that nobody updated when methods were added. */}
-            <span className="text-white font-semibold">{METHODS.length}</span> structured methods for generating
-            cost-reduction ideas. Each gives the AI a proven thinking framework — one problem, many lenses —
-            and every idea comes back <span className="text-gold-400">engine-checked</span>.
-          </motion.p>
+        {/* ── Page header ──────────────────────────────────────────────────
+            A TOOL HEADER, not a billboard. The first version put a 64px mark
+            over a 5xl centred title over a three-line paragraph, which is a
+            landing-page pattern and cost a third of the first screen before an
+            engineer could do anything. Title left, what it does beside it,
+            what it is made of on the right. */}
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 mb-6">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2.5">
+              <span className="iv-mark inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-gold-500/20 to-violet-500/10 border border-gold-500/25 shrink-0">
+                <Wand2 size={17} className="text-gold-400" />
+              </span>
+              <h1 className="iv-title text-[26px] sm:text-[30px] font-black tracking-tight leading-none">Innovation Studio</h1>
+            </div>
+            <p className="text-slate-400 text-[13px] mt-2 max-w-2xl leading-relaxed">
+              Structured idea generation. Each method gives the AI a proven thinking framework —
+              one problem, many lenses — and every idea comes back <span className="text-gold-400">engine-checked</span>.
+            </p>
+          </div>
+          {/* COUNTED, not typed. This strip read "Eight structured methods" while
+              the list held eleven — a figure in the product's own shop window
+              that nobody updated when methods were added. */}
+          <dl className="flex items-center gap-5 shrink-0">
+            {[
+              { v: METHODS.length, l: 'methods' },
+              { v: METHODS.filter(m => m.tier === 1).length, l: 'deterministic' },
+              { v: METHODS.reduce((a, m) => a + m.lenses.length, 0), l: 'lenses' },
+            ].map(k => (
+              <div key={k.l} className="text-right">
+                <dd className="iv-num text-white text-lg font-bold leading-none">{k.v}</dd>
+                <dt className="iv-label mt-1">{k.l}</dt>
+              </div>
+            ))}
+          </dl>
         </div>
 
         {/* ── Method picker ────────────────────────────────────────────────── */}
-        <div className="mb-6">
+        <div className="mb-5">
           <div className="flex items-center justify-between gap-3 mb-3">
             <h2 className="text-white font-semibold text-sm flex items-center gap-2">
               <Lightbulb size={15} className="text-gold-400" aria-hidden="true" /> Choose a method
@@ -389,7 +453,14 @@ export default function InnovationStudioPage() {
         <MethodPreview method={method} result={result} />
 
         {/* ── Input ────────────────────────────────────────────────────────── */}
-        <div className="relative bg-navy-900/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 mb-6">
+        <div className="iv-panel relative mb-5">
+          <div className="iv-panel-head px-5 py-3 flex items-center justify-between gap-3">
+            <h2 className="text-white font-semibold text-[13px] flex items-center gap-2">
+              <Target size={13} className="text-gold-400" aria-hidden="true" /> Subject
+            </h2>
+            <span className="iv-label">{method.input === 'parts' ? 'assembly' : method.input === 'target' ? 'cost target' : method.input}</span>
+          </div>
+          <div className="p-5">
           {methodId === 'triz' ? (
             <div className="text-center py-4">
               <p className="text-slate-300 text-sm mb-3">TRIZ works from a <span className="text-white">contradiction</span> ("lighter without losing stiffness"), so it has its own studio.</p>
@@ -484,46 +555,135 @@ export default function InnovationStudioPage() {
               </button>
             </>
           )}
+          </div>
         </div>
 
         {/* ── The generating state ─────────────────────────────────────────── */}
         <AnimatePresence>{loading && <SynthesisRail method={method} />}</AnimatePresence>
 
         {/* ── Results ──────────────────────────────────────────────────────── */}
-        {result && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-            {/* Deterministic analysis panel (method-specific, best-effort) */}
-            {result.analysis != null && <AnalysisPanel methodId={result.method.id} analysis={result.analysis} />}
+        {result && kpis && (
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className={dense ? 'iv-dense' : ''}>
 
-            <div>
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
-                <h2 className="text-white font-bold text-lg flex items-center gap-2"><Cpu size={18} className="text-gold-400" aria-hidden="true" /> Generated Ideas · {result.method.name}</h2>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => exportReport('pdf')} disabled={exporting !== ''}
-                    title="Branded PDF report: method analysis, every idea in full, and each engine-check verdict."
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 text-xs transition-colors disabled:opacity-50">
-                    {exporting === 'pdf' ? <ButtonSpinner size={12} /> : <FileDown size={13} aria-hidden="true" />} Export PDF
-                  </button>
-                  <button onClick={() => exportReport('xlsx')} disabled={exporting !== ''}
-                    title="Formatted Excel workbook: summary, filterable idea table, and one sheet per analysis table."
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 text-xs transition-colors disabled:opacity-50">
-                    {exporting === 'xlsx' ? <ButtonSpinner size={12} /> : <Table2 size={13} aria-hidden="true" />} Export Excel
-                  </button>
-                </div>
+            {/* CONTEXT BAR. Sticks under the app header, so twenty ideas down the
+                page the reader still knows which method ran, on which part, and
+                where the exports are. Scrolling used to lose all three. */}
+            <div className="iv-sticky -mx-4 px-4 py-2.5 mb-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${TIER_DOT[method.tier]}`} aria-hidden="true" />
+                <span className="text-white font-semibold text-[13px] truncate">{result.method.name}</span>
+                {part && <><span className="text-slate-700" aria-hidden="true">/</span>
+                  <span className="text-slate-400 text-[13px] truncate">{part}</span></>}
+                {system && <span className="text-slate-600 text-[11px] truncate hidden sm:inline">· {system}</span>}
               </div>
-
-              {/* CONVERGENCE, in real numbers. How many ideas came back, how many
-                  the engine could check, and how many it agreed with — the shape
-                  of the whole page stated once. */}
-              <ConvergenceStrip ideas={result.ideas.length} checks={result.engineChecks ?? null} />
-
-              <div className="space-y-3 mt-4">
-                {result.ideas.map((idea, i) => (
-                  <IdeaCard key={i} idea={idea} index={i} onPipeline={() => setPipelineIdea(idea)} />
-                ))}
+              <div className="flex items-center gap-2 ml-auto">
+                <button onClick={() => exportReport('pdf')} disabled={exporting !== ''}
+                  title="Branded PDF report: method analysis, every idea in full, and each engine-check verdict."
+                  className="iv-focus flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-slate-300 hover:text-gold-300 hover:border-gold-500/30 text-[11px] font-medium transition-colors disabled:opacity-50">
+                  {exporting === 'pdf' ? <ButtonSpinner size={12} /> : <FileDown size={12} aria-hidden="true" />} PDF
+                </button>
+                <button onClick={() => exportReport('xlsx')} disabled={exporting !== ''}
+                  title="Formatted Excel workbook: summary, filterable idea table, and one sheet per analysis table."
+                  className="iv-focus flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-slate-300 hover:text-emerald-300 hover:border-emerald-500/30 text-[11px] font-medium transition-colors disabled:opacity-50">
+                  {exporting === 'xlsx' ? <ButtonSpinner size={12} /> : <Table2 size={12} aria-hidden="true" />} Excel
+                </button>
               </div>
             </div>
-            <p className="text-slate-600 text-xs text-center">Method structure is deterministic; every £ figure is engine-checked or labelled. Validate before commercial use.</p>
+
+            <div className="space-y-5">
+              {/* KPI STRIP. The convergence figures were a run-on line of 11px
+                  grey text under a heading. They are the answer to the run. */}
+              <div className="iv-panel px-5 py-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-y-4">
+                <Kpi value={kpis.ideas} label="ideas" />
+                <Kpi value={kpis.checked} label="engine-checked" divider />
+                <Kpi value={kpis.confirmed} label="confirmed" tone="text-emerald-400" divider />
+                <Kpi value={kpis.contradicted} label="contradicted" tone="text-amber-400" divider />
+                {/* Largest CONFIRMED saving. A contradicted idea's figure is the
+                    engine disagreeing; putting it in a "best" tile would be the
+                    page arguing with itself. */}
+                <Kpi
+                  value={kpis.bestSaving != null ? `−${kpis.bestSaving}%` : '—'}
+                  label="best confirmed" tone="text-gold-300" divider
+                  icon={kpis.bestSaving != null ? TrendingDown : undefined} />
+              </div>
+
+              {/* Named, not hidden: an idea the engine could not price is not an
+                  idea it approved, and the difference must not need arithmetic. */}
+              {kpis.unchecked > 0 && (
+                <p className="text-slate-500 text-[11px] -mt-3">
+                  <span className="iv-num text-slate-400 font-semibold">{kpis.unchecked}</span> of {kpis.ideas} could
+                  not be engine-checked — no modelled cost driver connects them to a price. They are shown, not scored.
+                </p>
+              )}
+
+              {/* Deterministic analysis panel (method-specific, best-effort) */}
+              {result.analysis != null && <AnalysisPanel methodId={result.method.id} analysis={result.analysis} />}
+
+              {/* ── Idea workspace ───────────────────────────────────────── */}
+              <div className="iv-panel overflow-hidden">
+                <div className="iv-panel-head px-5 py-3 flex flex-wrap items-center gap-x-4 gap-y-2.5">
+                  <h2 className="text-white font-semibold text-[13px] flex items-center gap-2 mr-auto">
+                    <Cpu size={14} className="text-gold-400" aria-hidden="true" />
+                    Ideas
+                    <span className="iv-num text-slate-500 font-normal">
+                      {shownIdeas.length === kpis.ideas ? kpis.ideas : `${shownIdeas.length} of ${kpis.ideas}`}
+                    </span>
+                  </h2>
+
+                  <div className="flex items-center gap-1.5">
+                    <span className="iv-label hidden sm:inline">Verdict</span>
+                    <div className="iv-seg" role="group" aria-label="Filter ideas by engine verdict">
+                      {([
+                        ['all', 'All', kpis.ideas],
+                        ['confirmed', 'Confirmed', kpis.confirmed],
+                        ['contradicted', 'Contradicted', kpis.contradicted],
+                        ['unchecked', 'Unchecked', kpis.unchecked],
+                      ] as const).map(([k, label, n]) => (
+                        <button key={k} onClick={() => setVerdictFilter(k)} aria-pressed={verdictFilter === k}
+                          disabled={n === 0 && k !== 'all'}
+                          className="iv-seg-btn iv-focus disabled:opacity-35 disabled:cursor-not-allowed">
+                          {label} <span className="iv-num opacity-60">{n}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <span className="iv-label hidden sm:inline">Sort</span>
+                    <div className="iv-seg" role="group" aria-label="Sort ideas">
+                      {([['returned', 'As returned'], ['saving', 'Saving'], ['lens', 'Lens']] as const).map(([k, label]) => (
+                        <button key={k} onClick={() => setSortBy(k)} aria-pressed={sortBy === k}
+                          className="iv-seg-btn iv-focus">{label}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button onClick={() => setDense(d => !d)} aria-pressed={dense}
+                    title={dense ? 'Comfortable rows' : 'Compact rows'}
+                    className="iv-focus p-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-slate-400 hover:text-white transition-colors">
+                    {dense ? <Rows3 size={13} aria-hidden="true" /> : <AlignJustify size={13} aria-hidden="true" />}
+                    <span className="sr-only">{dense ? 'Switch to comfortable rows' : 'Switch to compact rows'}</span>
+                  </button>
+                </div>
+
+                {shownIdeas.length === 0 ? (
+                  <p className="px-5 py-10 text-center text-slate-500 text-sm">
+                    No idea carries that verdict. <button onClick={() => setVerdictFilter('all')}
+                      className="text-gold-400 hover:text-gold-300 underline underline-offset-2">Show all {kpis.ideas}</button>.
+                  </p>
+                ) : (
+                  <div className="divide-y divide-white/[0.06]">
+                    {shownIdeas.map(({ idea, n }, i) => (
+                      <IdeaRow key={n} idea={idea} n={n} order={i} onPipeline={() => setPipelineIdea(idea)} />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <p className="text-slate-600 text-[11px] text-center pt-1">
+                Method structure is deterministic; every £ figure is engine-checked or labelled. Validate before commercial use.
+              </p>
+            </div>
           </motion.div>
         )}
 
@@ -581,7 +741,7 @@ function MethodPreview({ method, result }: { method: Method; result: Result | nu
       key={method.id}
       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-navy-900/60 backdrop-blur-sm border border-white/10 rounded-2xl p-5 mb-6">
+      className="iv-panel p-5 mb-5">
       <div className="grid md:grid-cols-[minmax(0,1fr)_auto] gap-5 items-center">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-2">
@@ -656,7 +816,7 @@ function SynthesisRail({ method }: { method: Method }) {
       initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
       transition={{ duration: 0.3 }}
       className="overflow-hidden mb-6">
-      <div className="bg-navy-900/70 backdrop-blur-sm border border-gold-500/20 rounded-2xl p-5"
+      <div className="iv-panel p-5" style={{ borderColor: 'rgba(245,158,11,0.22)' }}
         role="status" aria-live="polite">
         <div className="flex items-center justify-between gap-3 mb-3">
           <p className="text-white text-sm font-semibold">Running {method.name} across {method.lenses.length} lenses…</p>
@@ -677,64 +837,91 @@ function SynthesisRail({ method }: { method: Method }) {
   );
 }
 
-// ── Convergence strip ────────────────────────────────────────────────────────
-function ConvergenceStrip({ ideas, checks }: { ideas: number; checks: { checked: number; confirmed: number; contradicted: number } | null }) {
-  const unchecked = checks ? Math.max(0, ideas - checks.checked) : ideas;
+// ── KPI cell ─────────────────────────────────────────────────────────────────
+function Kpi({ value, label, tone, divider, icon: Icon }: {
+  value: number | string; label: string; tone?: string; divider?: boolean;
+  icon?: LucideIcon;
+}) {
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-1 text-xs">
-      <span className="iv-count text-slate-400"><span className="text-white font-semibold">{ideas}</span> ideas</span>
-      {checks && checks.checked > 0 && (
-        <>
-          <span className="iv-count text-slate-400" style={{ animationDelay: '60ms' }}>
-            <span className="text-white font-semibold">{checks.checked}</span> engine-checked
-          </span>
-          <span className="iv-count text-emerald-400" style={{ animationDelay: '120ms' }}>{checks.confirmed} confirmed</span>
-          <span className="iv-count text-amber-400" style={{ animationDelay: '180ms' }}>{checks.contradicted} contradicted</span>
-        </>
-      )}
-      {/* Named, not hidden. An idea the engine could not price is not an idea it
-          approved, and the difference has to be visible without arithmetic. */}
-      {unchecked > 0 && (
-        <span className="iv-count text-slate-500" style={{ animationDelay: '240ms' }}>
-          {unchecked} not engine-checked — no modelled driver connects them to a price
-        </span>
-      )}
+    <div className={`relative px-5 first:pl-0 ${divider ? 'lg:border-l lg:border-white/[0.07]' : ''}`}>
+      <div className={`iv-kpi-value flex items-center gap-1.5 ${tone ?? 'text-white'}`}>
+        {Icon && <Icon size={16} className="opacity-70" />}
+        {value}
+      </div>
+      <div className="iv-label mt-1.5">{label}</div>
     </div>
   );
 }
 
-// ── Idea card ────────────────────────────────────────────────────────────────
-function IdeaCard({ idea, index, onPipeline }: { idea: Idea; index: number; onPipeline: () => void }) {
+// ── Idea row ─────────────────────────────────────────────────────────────────
+//
+// Was a free-standing card of unstructured prose: a title, a paragraph, then
+// "Cost angle:" and "Risk:" run into the body text. Fifteen of those is a wall.
+// This is a ROW in a table-like list — a stable index you can point at in a
+// meeting, the lens, the verdict aligned in its own column, and the two
+// commentary fields as LABELLED cells rather than sentences with a prefix.
+function IdeaRow({ idea, n, order, onPipeline }: { idea: Idea; n: number; order: number; onPipeline: () => void }) {
   const v = idea.engineCheck;
   const edge = v ? (v.direction === 'confirmed' ? 'iv-idea-confirmed' : 'iv-idea-contradicted') : '';
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index, 8) * 0.06, duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-      className={`iv-idea iv-crystallise ${edge} bg-navy-900/80 backdrop-blur-sm border border-white/10 rounded-2xl p-5 hover:border-gold-500/25`}>
-      <div className="flex items-start justify-between gap-3 mb-2">
-        {idea.lens
-          ? <span className="px-2 py-0.5 rounded-md bg-gold-500/10 border border-gold-500/20 text-gold-400 text-[11px] font-semibold">{idea.lens}</span>
-          : <span />}
-        {v && (
-          <span className={`flex items-center gap-1.5 text-xs font-medium ${v.direction === 'confirmed' ? 'text-emerald-400' : 'text-amber-400'}`}>
-            <VerdictRing pct={v.savingPct} confirmed={v.direction === 'confirmed'} />
-            {v.direction === 'confirmed' ? <CheckCircle size={13} aria-hidden="true" /> : <XCircle size={13} aria-hidden="true" />}
-            Engine {v.direction} ({v.savingPct > 0 ? '−' : '+'}{Math.abs(v.savingPct)}%)
-          </span>
-        )}
+    <motion.article
+      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: Math.min(order, 10) * 0.045, duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+      className={`iv-idea iv-crystallise ${edge} px-5 py-4`}>
+      <div className="flex items-start gap-3">
+        <span className="iv-index mt-1 shrink-0 w-5 text-right" aria-hidden="true">{String(n).padStart(2, '0')}</span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1.5">
+            <div className="min-w-0">
+              {idea.lens && (
+                <span className="iv-label text-gold-500/80 block mb-1">{idea.lens}</span>
+              )}
+              <h3 className="text-white font-semibold text-[15px] leading-snug">{idea.title}</h3>
+            </div>
+            {v
+              ? (
+                <span className={`flex items-center gap-2 shrink-0 ${v.direction === 'confirmed' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  <VerdictRing pct={v.savingPct} confirmed={v.direction === 'confirmed'} />
+                  <span className="text-right leading-tight">
+                    <span className="iv-num block font-bold text-[15px]">
+                      {v.savingPct > 0 ? '−' : '+'}{Math.abs(v.savingPct)}%
+                    </span>
+                    <span className="iv-label block mt-0.5 opacity-80">{v.direction}</span>
+                  </span>
+                </span>
+              )
+              : (
+                <span className="shrink-0 text-right leading-tight text-slate-500">
+                  <span className="iv-num block font-bold text-[15px]">—</span>
+                  <span className="iv-label block mt-0.5">not checked</span>
+                </span>
+              )}
+          </div>
+
+          <p className="iv-idea-desc text-slate-400 text-[13px] leading-relaxed mt-2">{idea.technicalDescription}</p>
+
+          <div className="iv-idea-fields mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-2">
+            <div>
+              <span className="iv-label block mb-0.5">Cost angle</span>
+              <p className="text-teal-300/90 text-[12px] leading-relaxed">{idea.costAngle}</p>
+            </div>
+            {idea.riskNotes && (
+              <div>
+                <span className="iv-label block mb-0.5">Risk</span>
+                <p className="text-amber-300/80 text-[12px] leading-relaxed">{idea.riskNotes}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end mt-3">
+            <button onClick={onPipeline}
+              className="iv-focus flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-violet-500/25 bg-violet-500/[0.08] text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-colors text-[11px] font-medium">
+              <Layers size={11} aria-hidden="true" /> Add to Pipeline
+            </button>
+          </div>
+        </div>
       </div>
-      <h3 className="text-white font-semibold mb-2">{idea.title}</h3>
-      <p className="text-slate-400 text-sm leading-relaxed mb-2">{idea.technicalDescription}</p>
-      <p className="text-teal-300 text-xs mb-1"><span className="text-slate-500">Cost angle:</span> {idea.costAngle}</p>
-      {idea.riskNotes && <p className="text-amber-300/80 text-xs mb-3"><span className="text-slate-500">Risk:</span> {idea.riskNotes}</p>}
-      <div className="flex justify-end">
-        <button onClick={onPipeline}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-colors text-xs">
-          <Layers size={11} aria-hidden="true" /> Add to Pipeline
-        </button>
-      </div>
-    </motion.div>
+    </motion.article>
   );
 }
 
@@ -927,9 +1114,9 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-      className="bg-navy-900/80 backdrop-blur-sm border border-white/10 rounded-2xl p-5">
-      <p className="text-slate-500 text-xs uppercase tracking-wider mb-3">{title}</p>
-      {children}
+      className="iv-panel overflow-hidden">
+      <p className="iv-panel-head px-5 py-2.5 iv-label">{title}</p>
+      <div className="p-5">{children}</div>
     </motion.div>
   );
 }
