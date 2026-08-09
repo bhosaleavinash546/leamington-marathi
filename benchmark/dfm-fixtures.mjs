@@ -505,3 +505,64 @@ export const DFA_FIXTURES = [
     },
   },
 ];
+
+/**
+ * CASTING FIXTURES — the two shapes the casting rule tranche needs and no
+ * existing fixture provides.
+ *
+ * `bushing-tube` is the only part in the whole set that is a TRUE body of
+ * revolution, and without it the centrifugal rule could only ever be seen
+ * saying NO. A rule that has never been observed passing is not a tested rule.
+ *
+ * `fine-cored-holes` separates three numbers that used to be one: the smallest
+ * bore on the part, the worst BLIND slenderness, and the worst THROUGH
+ * slenderness. The combined figure (3.33) and the blind figure (1.60) disagree
+ * by more than a factor of two, so a blind-hole limit judged on the combined
+ * measure would pass a part it should have failed — and vice versa.
+ *
+ * Every number here comes from the construction in generate.py, not from an
+ * engine run.
+ */
+export const CASTING_FIXTURES = [
+  {
+    file: 'bushing-tube.step',
+    what: 'OD 60 / ID 40 / L 50 bushing — a perfect body of revolution',
+    truth: {
+      // Faces: OD cylinder about +Z, ID cylinder about +Z, two planes with +/-Z
+      // normals. Every one is compatible with revolution about Z, so the share
+      // is exactly 100% — no sampling, no tolerance, arithmetic.
+      axisymmetricAreaPct: 100.0,
+      axisXYZ: [0, 0, 1],
+      // The bore is a Ø40 through hole 50 deep: L/D = 50/40 = 1.25.
+      minHoleDiaMm: 40.0,
+      maxThroughHoleDepthToDia: 1.25,
+      // Nothing is blind, so the blind measure must be ABSENT rather than 0.
+      blindMeasureAbsent: true,
+      // Wall = (60-40)/2 = 10.00 mm everywhere.
+      wallP50Mm: 10.0,
+      // And the rule that exists for this shape must PASS on it.
+      centrifugalBodyOfRevolutionPasses: true,
+    },
+  },
+  {
+    file: 'fine-cored-holes.step',
+    what: '80x50x20 block: Ø2 through, Ø10x16 blind, Ø6 through',
+    truth: {
+      // Smallest bore on the part, exactly as drawn. Ø2.0 is the one diameter
+      // that splits all four distinct as-cast floors in the catalogue: it fails
+      // HPDC (2.5) and both permanent-mould families (6.0) while passing zinc
+      // and investment (1.5). The first draft of this fixture used Ø3, which
+      // passes HPDC too and left that threshold untested — the gate caught it.
+      minHoleDiaMm: 2.0,
+      // Ø10 blind 16 deep -> 1.60.
+      maxBlindHoleDepthToDia: 1.6,
+      // Ø2 through 20 deep -> 10.00. The Ø6 through is 3.33 and is NOT the worst.
+      maxThroughHoleDepthToDia: 10.0,
+      // What the two used to share, and why the split was needed: a blind limit
+      // of 2 tested against 10.00 fails a hole that is actually at 1.60.
+      maxHoleDepthToDia: 10.0,
+      minHoleFailsIn: ['hpdc', 'gravity-die', 'lpdc'],
+      minHolePassesIn: ['hpdc-zinc', 'investment-casting'],
+    },
+  },
+];

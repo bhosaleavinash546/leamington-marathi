@@ -617,6 +617,63 @@ def seat_bracket_assembly(outdir):
     }
 
 
+def bushing_tube(outdir):
+    """Plain bushing: OD 60, ID 40, length 50. A PERFECT body of revolution.
+
+    Truth: volume = pi*(30^2 - 20^2)*50 = 78539.8 mm^3. Wall = (60-40)/2 = 10.00 mm
+    everywhere. Every face is either a cylinder about +Z (OD, ID) or a plane whose
+    normal is +/-Z (the two ends), so the axisymmetric area share is EXACTLY 100%
+    by construction — the fixture the centrifugal body-of-revolution rule needs to
+    prove it can say YES, not only NO. The bore is a Ø40 through hole, L/D 1.25.
+    """
+    outer = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1)), 30.0, 50.0).Shape()
+    bore = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(0, 0, -1), gp_Dir(0, 0, 1)), 20.0, 52.0).Shape()
+    s = BRepAlgoAPI_Cut(outer, bore).Shape()
+    vol = math.pi * (30.0 ** 2 - 20.0 ** 2) * 50.0
+    return _write(s, os.path.join(outdir, "bushing-tube.step")), round(vol, 1)
+
+
+def fine_cored_holes(outdir):
+    """80x50x20 block with THREE holes chosen to separate the as-cast rules.
+
+    Ø2.0 through, 20 deep -> smallest bore on the part; through depth/dia = 10.00
+    Ø10.0 blind, 16 deep  -> blind depth/dia = 1.60
+    Ø6.0 through, 20 deep -> through depth/dia = 3.33
+
+    Truth by construction:
+      volume  = 80*50*20 - pi*1^2*20 - pi*5^2*16 - pi*3^2*20 = 78115.0 mm^3
+      minHoleDiaMm             = 2.00
+      maxBlindHoleDepthToDia   = 1.60   (the Ø10 x 16 blind)
+      maxThroughHoleDepthToDia = 10.00  (the Ø2 x 20 through)
+      maxHoleDepthToDia        = 10.00  (the combined figure both used to share)
+
+    Ø2.0 is chosen deliberately: it is the ONE diameter that splits all four
+    distinct as-cast floors in this catalogue into two groups —
+      fails  HPDC (2.5), gravity die (6.0), low-pressure die (6.0)
+      passes zinc HPDC (1.5), investment (1.5)
+    A Ø3 bore, which the first draft of this fixture used, passes HPDC as well and
+    leaves that threshold untested. A fixture that cannot fail is not a fixture.
+
+    And the blind/through point: the COMBINED figure is 10.00 while the real blind
+    hole sits at 1.60 — a factor of six apart on one part. A blind limit of 2
+    judged against the combined number fails a hole that is perfectly sound.
+    Investment casting writes the two limits separately for exactly this reason,
+    and until the split existed the catalogue could not express either one.
+    """
+    box = BRepPrimAPI_MakeBox(80.0, 50.0, 20.0).Shape()
+    fine = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(15, 25, -1), gp_Dir(0, 0, 1)), 1.0, 22.0).Shape()
+    blind = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(40, 25, 4), gp_Dir(0, 0, 1)), 5.0, 16.5).Shape()
+    thru = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(65, 25, -1), gp_Dir(0, 0, 1)), 3.0, 22.0).Shape()
+    s = BRepAlgoAPI_Cut(box, fine).Shape()
+    s = BRepAlgoAPI_Cut(s, blind).Shape()
+    s = BRepAlgoAPI_Cut(s, thru).Shape()
+    vol = (80 * 50 * 20
+           - math.pi * 1.0 ** 2 * 20
+           - math.pi * 5.0 ** 2 * 16
+           - math.pi * 3.0 ** 2 * 20)
+    return _write(s, os.path.join(outdir, "fine-cored-holes.step")), round(vol, 1)
+
+
 def main():
     outdir = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__))
     os.makedirs(outdir, exist_ok=True)
@@ -633,7 +690,10 @@ def main():
                # PRODUCT(), so inserting a fixture renumbers every file written
                # after it and the whole set churns for no geometric reason.
                curved_wall_plate, sheet_hole_through, pmi_toleranced_block,
-               seat_bracket_assembly):
+               seat_bracket_assembly,
+               # Appended for the casting tranche: a true body of revolution, and a
+               # block whose blind and through holes sit either side of the split.
+               bushing_tube, fine_cored_holes):
         path, truth = fn(outdir)
         print(f"  {os.path.basename(path):26s}  analytic truth: {truth}")
     print(f"wrote fixtures to {outdir}")

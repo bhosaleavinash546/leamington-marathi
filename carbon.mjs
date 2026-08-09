@@ -81,6 +81,15 @@ export const PROCESS_KWH_PER_KG = {
   'Sand Casting': 1.0,
   'Investment Casting': 1.6,
   'Gravity Die Casting': 1.0,
+  // Permanent-mould and specialist casting. Set relative to the neighbour whose
+  // melt and hold they share, with the physical difference named — a factor
+  // invented independently would disagree with the route it is compared against.
+  'Low-Pressure Die Casting': 1.15,          // gravity's melt + a pressurised holding furnace run continuously
+  'Squeeze Casting': 1.3,                    // HPDC melt + a hydraulic press held through solidification
+  'Semi-Solid Casting (Thixo/Rheo)': 1.5,    // HPDC melt + slurry preparation (induction reheat or stirring)
+  'Vacuum-Assisted Die Casting': 1.2,        // HPDC + vacuum pump duty every shot
+  'Shell Mould Casting': 1.1,                // sand's melt + the heated pattern that cures the resin shell
+  'Centrifugal Casting': 1.0,                // sand-class melt; the spindle draw is small against the pour
   'Forging (Hot)': 0.55,            // induction to 1250 °C ≈ 0.45 kWh/kg input
   'Forging (Cold)': 0.25,
   'Stamping / Deep Drawing': 0.15,

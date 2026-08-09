@@ -1105,3 +1105,73 @@ Format: decision · why · what would change it.
     in play travels on the finding as `thresholdMaterial` whether or not the rule had a band
     for it, so the report can distinguish "you gave no alloy" from "this rule is
     alloy-independent". Both remain amber; only one of them is the reader's fault.
+
+83. **The casting tranche: six processes, five rule families, and a rule type the
+    catalogue could not previously express (2026).**
+    *Why:* the picker offered 17 shaping processes and four casting families, so low-pressure
+    die casting — the route a wheel rim and most structural housings actually take — was
+    reachable only by mis-selecting gravity die, which prices a different metal yield (0.65
+    against 0.85) and judges a different wall (3.0 mm against 2.0). Squeeze, semi-solid, shell
+    mould and centrifugal had the same problem. *Changes it:* six processes added to the cost
+    model, the carbon table and the DFM registry, five of them with their own rule family.
+    112 rules → 148, 15 families → 20.
+    *The judgement that shaped it:* a process gets its own family only when its GEOMETRIC
+    limits differ. Vacuum-assisted die casting is routed to the existing `hpdc` family and
+    says so — evacuating the cavity changes the gas in it, not the shape the die can make, and
+    a near-copy family would have invented six thresholds to restate the same limits.
+
+84. **Every casting family checked core SLENDERNESS and none checked core DIAMETER (2026).**
+    *Why:* `*-core-ld` asks how DEEP a core pin may go for its diameter. Nothing asked how thin
+    it may be at all. They are different failure modes — slenderness fails by deflection, and
+    the hole walks off position; diameter fails by existence, and the hole is not cast, it is
+    drilled afterwards at a cost nobody quoted. A Ø3 hole in a permanent-mould part passes
+    every slenderness check ever written and is still not a cast hole. *Changes it:*
+    `minHoleDiaMm` measured from the feature table the kernel already produced, and a floor per
+    family because they are not the same number: HPDC 2.5 mm, zinc 1.5, permanent mould
+    (gravity and low-pressure) 6.0, investment 1.5.
+    *Sand is deliberately absent.* The research found a sand CORE cross-section floor and an
+    unsupported L/D band, and no sand cored-HOLE minimum from any source. Interpolating one
+    from the permanent-mould 6 mm would have looked identical on the page to the four that are
+    sourced, so it is declared in `UNWRITTEN_RULES` instead.
+
+85. **Blind and through core slenderness were sharing one measurement (2026).**
+    *Why:* `maxHoleDepthToDia` is the worst ratio on the part regardless of whether the hole is
+    blind or through, and a through core is supported at BOTH ends where a blind one is a
+    cantilever. Investment casting writes the two limits separately — blind under 2, through
+    under 5 — and a single figure cannot express either. On the new analytic fixture the
+    combined figure is 10.00 and the real blind hole is at 1.60: a factor of six, on one part.
+    *Changes it:* `maxBlindHoleDepthToDia` and `maxThroughHoleDepthToDia`, split on the
+    through/blind flag the solid classifier already produced. A part with no blind hole makes
+    the blind rule ABSTAIN — a hard zero would have passed every "at most" limit silently.
+
+86. **A feasibility gate is not a low score (2026).**
+    *Why:* centrifugal casting appeared in the route table for a real casting bracket at
+    EUR 7.77 with a score of 63 — below the route the engineer had chosen — while the geometry
+    said the part is 29% axisymmetric and a spinning mould cannot make it at all. Every other
+    rule in this catalogue says "this will cost you"; that one says "this route does not
+    exist for this part", and the scoring arithmetic cannot tell the difference.
+    *Changes it:* a `blocking` flag on the rule, `blockers`/`blockedReason` on the result, and
+    `viable: false` on the route row. The report and the Studio print NOT VIABLE with the
+    reason instead of a score, and a blocked route is excluded from the cheapest-alternative
+    sentence whatever the cost engine says it would have cost. Exactly one rule carries the
+    flag, and it should stay rare — an undercut buys a slide, but a part that is not round
+    buys nothing.
+
+87. **Axisymmetry had to be measured before centrifugal casting could be offered (2026).**
+    *Why:* adding the family without it would have produced a page of NOT EVALUATED and a rule
+    count that flattered the tool. *Changes it:* `_axisymmetry()` in the geometry engine scores,
+    for each candidate axis, the area share of faces compatible with revolution about it —
+    revolved faces sharing the axis, spheres centred on it, planes perpendicular to it. Flats
+    and lugs count AGAINST, because they are what stops a part being spun. The new
+    `bushing-tube` fixture is analytically 100% and the engine returns 100.00: the first
+    fixture in the set on which this rule can be observed PASSING, and a rule never seen
+    passing is not a tested rule.
+
+    *Research note, and it limits every threshold above:* this environment's network policy
+    blocks direct document fetch, so the sources behind these rules were read as search
+    summaries, not as primary documents. Nothing here is graded on a first-hand reading of
+    NADCA or ISO 8062. Where a design guide NAMES a standard the rule says so and says the
+    standard was not read; where several independent guides agree the rule says industry
+    consensus; where a value was positioned between two neighbours in this catalogue rather
+    than quoted, the source string says DERIVED and names it as the first threshold a foundry
+    review should correct.

@@ -57,6 +57,19 @@ export const PROCESS_TO_DFM_FAMILY = {
   'Gravity Die Casting': 'gravity-die',
   'Sand Casting': 'sand-casting',
   'Investment Casting': 'investment-casting',
+  'Low-Pressure Die Casting': 'lpdc',
+  'Squeeze Casting': 'squeeze-casting',
+  'Semi-Solid Casting (Thixo/Rheo)': 'semi-solid',
+  'Shell Mould Casting': 'shell-mould',
+  'Centrifugal Casting': 'centrifugal',
+  // DELIBERATELY THE SAME FAMILY AS HPDC, and that is a statement rather than an
+  // omission. Evacuating the cavity changes the GAS in it, not the geometry the
+  // die can produce: the wall, draft, core slenderness and undercut limits are
+  // the die-casting limits either way. What vacuum buys is porosity low enough
+  // to heat-treat and weld — a metallurgical property, and this tool measures
+  // geometry. Giving it a near-copy family would invent six thresholds to say
+  // the same thing the HPDC family already says correctly.
+  'Vacuum-Assisted Die Casting': 'hpdc',
   'Stamping / Deep Drawing': 'sheet-metal',
   'Laser Cutting + Bending': 'sheet-metal',
   'Lamination Stamping (Electrical Steel)': 'sheet-metal',

@@ -206,6 +206,98 @@ export const PROCESSES = {
     families: ['aluminium', 'copper'],
     finishPct: 0.12, returnsRecovery: 0.90,
   },
+  // ── The permanent-mould and specialist casting family ──────────────────────
+  //
+  // Each of these was reachable only by mis-selecting its nearest neighbour, so
+  // a wheel rim was priced as gravity die and a structural node as plain HPDC.
+  // Every parameter below is set RELATIVE to a modelled neighbour with the
+  // physical reason stated, not sampled from a quotation the tool has never
+  // seen — the same discipline the rest of this table follows.
+  'Low-Pressure Die Casting': {
+    // Bottom-fed from a sealed furnace at 0.3-1.5 bar. Against gravity die: the
+    // same permanent mould (so similar tooling), better yield because the riser
+    // IS the fill tube and drains back, and a LONGER cycle because the fill is
+    // deliberately slow and the pressure is held through solidification.
+    // utilisation is METAL YIELD here, and it is the whole commercial case for
+    // LPDC: the fill tube is the feeder and drains back into the furnace, so
+    // there is no riser to cut off and remelt. Copying gravity's 0.65 would have
+    // erased the one thing that makes the route worth quoting.
+    machineRate: 90, operators: 0.6, cavities: 1, utilisation: 0.85, scrapPct: 0.04,
+    setupHr: 3.0, batch: 1500, toolLife: 120_000,
+    cycleBase: 55, cyclePerKg: 11, toolingBase: 85_000, toolingPerKg: 50_000,
+    families: ['aluminium', 'magnesium'],
+    finishPct: 0.08, returnsRecovery: 0.92,
+  },
+  'Squeeze Casting': {
+    // Poured then pressurised through solidification on a hydraulic press. Die
+    // cost and press rate above HPDC because the tonnage is held for seconds
+    // rather than a fraction of one; scrap low because the pressure closes
+    // shrinkage porosity, which is the entire reason to choose it.
+    // Yield high because the applied pressure feeds solidification shrinkage —
+    // that is what replaces the riser.
+    machineRate: 120, operators: 0.7, cavities: 1, utilisation: 0.80, scrapPct: 0.04,
+    setupHr: 3.5, batch: 1200, toolLife: 100_000,
+    cycleBase: 60, cyclePerKg: 14, toolingBase: 110_000, toolingPerKg: 70_000,
+    families: ['aluminium'],
+    finishPct: 0.10, returnsRecovery: 0.92,
+  },
+  'Semi-Solid Casting (Thixo/Rheo)': {
+    // Injected as a slurry, not a liquid. Laminar fill means near-zero trapped
+    // gas, so the part is heat-treatable and weldable — but the slug/slurry
+    // preparation is an extra process step and the machines are fewer, which is
+    // where the rate goes.
+    // Laminar fill needs less overflow than a turbulent HPDC shot, so yield sits
+    // above HPDC's 0.60 without approaching LPDC's gravity-fed return.
+    machineRate: 140, operators: 0.6, cavities: 1, utilisation: 0.68, scrapPct: 0.04,
+    setupHr: 3.5, batch: 1500, toolLife: 120_000,
+    cycleBase: 45, cyclePerKg: 9, toolingBase: 120_000, toolingPerKg: 75_000,
+    families: ['aluminium', 'magnesium'],
+    finishPct: 0.08, returnsRecovery: 0.90,
+  },
+  'Vacuum-Assisted Die Casting': {
+    // HPDC with the cavity evacuated before the shot. Same machine class and
+    // same die, plus the vacuum block, valve and its maintenance — so tooling
+    // and rate sit just above HPDC and the scrap sits below it.
+    // Same gating and overflow geometry as HPDC — the vacuum changes the gas in
+    // the cavity, not the runner system — so yield tracks HPDC's 0.60.
+    machineRate: 110, operators: 0.5, cavities: 1, utilisation: 0.60, scrapPct: 0.04,
+    setupHr: 3.5, batch: 1500, toolLife: 140_000,
+    cycleBase: 38, cyclePerKg: 6.5, toolingBase: 110_000, toolingPerKg: 70_000,
+    families: ['aluminium', 'magnesium'],
+    finishPct: 0.09, returnsRecovery: 0.90,
+    clampTPerCm2: 0.7,
+    machineTiers: [
+      { maxClampT: 400, rate: 85 }, { maxClampT: 800, rate: 110 }, { maxClampT: 1200, rate: 150 },
+      { maxClampT: 1800, rate: 205 }, { maxClampT: 2700, rate: 275 }, { maxClampT: 99999, rate: 365 },
+    ],
+  },
+  'Shell Mould Casting': {
+    // Resin-bonded sand cured against a heated metal pattern. Against green
+    // sand: a real pattern cost instead of a cheap one, resin sand instead of
+    // green sand, and in exchange a better finish and a tighter tolerance —
+    // which is why it survives on smaller, more accurate parts.
+    // Yield above green sand (0.55): a shell mould feeds a smaller, better-placed
+    // riser because the resin shell chills faster than a rammed green-sand mould.
+    machineRate: 65, operators: 1.0, cavities: 1, utilisation: 0.62, scrapPct: 0.05,
+    setupHr: 2.5, batch: 800, toolLife: 80_000,
+    cycleBase: 40, cyclePerKg: 10, toolingBase: 32_000, toolingPerKg: 20_000,
+    families: ['castiron', 'ferrous', 'aluminium', 'copper'],
+    finishPct: 0.14, returnsRecovery: 0.90,
+  },
+  'Centrifugal Casting': {
+    // Poured into a mould spinning at 200-2000 rpm. There is no core and no
+    // riser — the bore is formed by rotation and the dross collects on the
+    // inside diameter to be machined away — so tooling is cheap and the yield
+    // penalty lands in the machining allowance rather than in scrap.
+    // No gating and no riser at all — rotation feeds the casting — so the poured
+    // mass is close to the finished mass. What is lost is machined off the bore,
+    // and that belongs in the machining allowance, not in the metal yield.
+    machineRate: 75, operators: 1.0, cavities: 1, utilisation: 0.80, scrapPct: 0.05,
+    setupHr: 2.0, batch: 400, toolLife: 60_000,
+    cycleBase: 50, cyclePerKg: 10, toolingBase: 20_000, toolingPerKg: 9_000,
+    families: ['ferrous', 'castiron', 'copper', 'aluminium'],
+    finishPct: 0.18, returnsRecovery: 0.90,
+  },
   'Injection Moulding': {
     machineRate: 65, operators: 0.4, cavities: 2, utilisation: 0.95, scrapPct: 0.02,
     setupHr: 2.0, batch: 5000, toolLife: 1_000_000,

@@ -55,6 +55,16 @@ export const PROCESS_FAMILIES = {
   extrusion: 'Extrusion',
   'rubber-moulding': 'Rubber moulding',
   'composite-rtm': 'Composite layup / RTM',
+  // ── The permanent-mould and specialist casting families ──────────────────
+  // Each one exists because its geometric limits genuinely differ from its
+  // nearest neighbour's, not because the process has a different name. Where
+  // the limits are the SAME — vacuum-assisted die casting against plain HPDC —
+  // the registry routes the process to the existing family and says why.
+  lpdc: 'Low-pressure die casting',
+  'squeeze-casting': 'Squeeze casting',
+  'semi-solid': 'Semi-solid casting (thixo / rheo)',
+  'shell-mould': 'Shell mould casting',
+  centrifugal: 'Centrifugal casting',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2154,6 +2164,643 @@ export const DFM_RULES = [
     source: 'Composite tooling design guidance (split tools and collapsible cores).',
   },
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AS-CAST FEATURE SIZE — a question this catalogue could not previously ask
+  //
+  // Every casting family already carried a core SLENDERNESS rule (`*-core-ld`):
+  // how DEEP a core pin may go for its diameter. Not one carried a core
+  // DIAMETER rule: how thin a pin may be at all. They are different failure
+  // modes and only one of them was being checked.
+  //
+  //   * slenderness fails by DEFLECTION — the pin bends, the hole walks off
+  //     position and the wall around it goes eccentric;
+  //   * diameter fails by EXISTENCE — below the family's floor the pin snaps on
+  //     the first shots, or no toolmaker will cut it, and the hole is not cast
+  //     at all. It is drilled afterwards, at a cost nobody put in the quote.
+  //
+  // A Ø3 hole in a permanent-mould part is the single most common example: it
+  // passes every slenderness check ever written and it is still not a cast hole.
+  //
+  // The threshold is a DIAMETER in millimetres, and each family's floor is its
+  // own. Zinc fills a finer pin than aluminium; a ceramic investment core goes
+  // finer than either; a permanent-mould steel pin is the coarsest of the lot.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'hpdc-min-cored-hole',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc',
+    severity: 'medium',
+    title: 'Hole too small to be cast — it will be drilled',
+    measure: 'minHoleDiaMm',
+    compare: 'gte',
+    threshold: 2.5,
+    unit: 'mm dia',
+    byMaterial: {
+      'Magnesium AZ91D (die-cast)': { threshold: 2.0, source: 'Magnesium fills a finer core than aluminium at the same pin strength, so the practical as-cast floor sits nearer 2 mm. The limit is still the PIN, not the alloy: an unsupported core pin below about 1.5 mm is not run in production whatever is flowing round it.' },
+    },
+    rationale:
+      'The hole is made by a steel pin standing in the die, taking the full shot pressure on every cycle. Below roughly 2.5 mm in aluminium the pin is too slender to survive production — it soldiers, bends and eventually snaps — and unsupported pins under about 1.5 mm are not run at all. The feature does not disappear from the part; it moves to the drill, and a drilling operation nobody costed is a piece price nobody predicted.',
+    fix: 'Open the hole to at least 2.5 mm to cast it, or delete it from the casting and quote it as a drilled feature so the secondary operation is in the price from the start.',
+    source: 'Die casting core-pin design guidance: unsupported core pins below about 1.5 mm are avoided or reinforced; the practical as-cast aluminium hole floor sits above that at roughly 2.5 mm. Consistent across supplier design guides; no primary standard audited.',
+  },
+  {
+    id: 'hpdc-zinc-min-cored-hole',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'medium',
+    title: 'Hole too small to be cast — it will be drilled',
+    measure: 'minHoleDiaMm',
+    compare: 'gte',
+    threshold: 1.5,
+    unit: 'mm dia',
+    rationale:
+      'Zinc runs cooler and thinner than aluminium and is the least aggressive of the die-casting alloys on tooling, so a hot-chamber die will hold a finer core pin than an aluminium die will. It will not hold an arbitrarily fine one: below about 1.5 mm the pin is unsupported steel in a pressurised cavity and breaks.',
+    fix: 'Open the hole to at least 1.5 mm, or move it to a drilling operation and cost that operation.',
+    source: 'Die casting core-pin design guidance: avoid unsupported cores below about 1.5 mm diameter, or reinforce them. Zinc is the alloy this floor is most nearly achievable in. No primary standard audited.',
+  },
+  {
+    id: 'gdc-min-cored-hole',
+    sourceStatus: 'standard-named',
+    process: 'gravity-die',
+    severity: 'medium',
+    title: 'Hole too small to be cast — it will be drilled',
+    measure: 'minHoleDiaMm',
+    compare: 'gte',
+    threshold: 6.0,
+    unit: 'mm dia',
+    rationale:
+      'A gravity-poured permanent mould has no shot pressure to force metal down a fine pin, and the pin itself sits in a hot die for a long, slow fill. The published permanent-mould floor is 6 mm, and the hole must run parallel to the draw. Anything finer is a drilled feature wearing a cast feature\'s drawing callout.',
+    fix: 'Open the hole to at least 6 mm and align it with the draw direction, or delete it from the casting and quote the drilling.',
+    source: 'Permanent-mould (gravity die) design guidance, citing NADCA: minimum cored hole diameter 6.0 mm, parallel to the direction of draw. The standard is NAMED by the design guide; the NADCA document itself has not been read first-hand.',
+  },
+  {
+    id: 'inv-min-cored-hole',
+    sourceStatus: 'industry-consensus',
+    process: 'investment-casting',
+    severity: 'medium',
+    title: 'Hole too small for a ceramic core',
+    measure: 'minHoleDiaMm',
+    compare: 'gte',
+    threshold: 1.5,
+    unit: 'mm dia',
+    rationale:
+      'Investment casting makes a hole with a ceramic core inside a wax pattern, not with a steel pin. Ceramic is brittle but it is also formed, not machined, so it goes finer than any die pin — down to about 1.5 mm. Below that the core breaks during wax injection or dewax and the hole closes.',
+    fix: 'Open the hole to at least 1.5 mm, or drill it after casting — investment castings machine easily and the stock is already there.',
+    source: 'Investment casting design guidance: minimum hole diameter approximately 1.5 mm (some houses quote 2.0 mm for through holes), with tolerances of the order of ±0.13 mm up to 25 mm. Consistent across several foundry design guides; no primary standard audited.',
+  },
+  // The BLIND / THROUGH split, which the combined slenderness measure could not
+  // express. A through core is supported at BOTH ends; a blind one is a
+  // cantilever, and investment casting writes the two limits separately because
+  // they differ by more than a factor of two. Judging a supported through core
+  // by the cantilever limit is how a perfectly good design gets flagged.
+  {
+    id: 'inv-blind-core-ld',
+    sourceStatus: 'industry-consensus',
+    process: 'investment-casting',
+    severity: 'high',
+    title: 'Blind cored hole too deep for an unsupported ceramic core',
+    measure: 'maxBlindHoleDepthToDia',
+    compare: 'lte',
+    threshold: 2,
+    unit: 'blind core L/D',
+    rationale:
+      'A blind hole is formed by a ceramic core held at one end only. Past about two diameters the cantilever cannot survive wax injection and shell build, and it snaps off inside the pattern where nobody sees it until the casting is sectioned.',
+    fix: 'Reduce the depth to twice the diameter, open the diameter, or take the hole through so the core can be supported at both ends.',
+    source: 'Investment casting design guidance: depth/diameter ratio for BLIND holes should be under 2, and for THROUGH holes under 5. Consistent across several foundry design guides; no primary standard audited.',
+  },
+  {
+    id: 'inv-through-core-ld',
+    sourceStatus: 'industry-consensus',
+    process: 'investment-casting',
+    severity: 'medium',
+    title: 'Through cored hole too deep for a ceramic core',
+    measure: 'maxThroughHoleDepthToDia',
+    compare: 'lte',
+    threshold: 5,
+    unit: 'through core L/D',
+    rationale:
+      'A through hole lets the ceramic core be anchored at both ends, which roughly doubles the slenderness it survives against a blind one. It is still ceramic: past about five diameters it bows during shell build and the bore goes out of straightness.',
+    fix: 'Open the diameter, shorten the hole, or accept a drilled bore and leave machining stock.',
+    source: 'Investment casting design guidance: depth/diameter ratio for THROUGH holes should be under 5, against under 2 for blind holes. Consistent across several foundry design guides; no primary standard audited.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LOW-PRESSURE DIE CASTING
+  //
+  // The route a wheel rim and most structural housings actually take, and it had
+  // no entry at all — selecting it was only possible by mis-selecting gravity
+  // die, which prices a different yield and judges a different wall.
+  //
+  // What makes it its own family: metal is pushed UP into the mould from a
+  // sealed furnace at 0.3-1.5 bar and the pressure is held through
+  // solidification, so it fills a thinner section than gravity (2.0 mm against
+  // 3.0) and holds a tighter tolerance (ISO 8062 CT6-CT7 against CT7-CT9). The
+  // core hardware is the same steel-in-a-permanent-mould as gravity, so the
+  // cored-hole floor is gravity's, not HPDC's.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'lpdc-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'lpdc',
+    severity: 'high',
+    title: 'Local section below what a low-pressure fill reaches',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 2.0,
+    unit: 'mm',
+    rationale:
+      'Low-pressure filling is slow and bottom-fed, which is what makes it clean — and also what limits it. Below about 2 mm the front freezes before the section is full and the result is a misrun or a cold shut, the two defects the process is otherwise chosen to avoid.',
+    fix: 'Thicken the section to at least 2 mm, or move the part to high-pressure die casting, which fills a 1.0-1.5 mm wall.',
+    source: 'Low-pressure die casting is quoted at 2.0-3.0 mm thin-wall capability, against gravity die casting requiring 3 mm and up, where cold shuts and misruns appear at 4 mm. Consistent across process-comparison guides; no primary standard audited.',
+  },
+  {
+    id: 'lpdc-wall-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'lpdc',
+    severity: 'high',
+    title: 'Non-uniform wall thickness',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.7,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'The held pressure feeds shrinkage from the fill tube upward, so a heavy section ABOVE a thin one is cut off from its own feed path and shrinks into porosity. Uniformity matters more here than in gravity casting, not less, because the feed direction is fixed by the process.',
+    fix: 'Even out the section, or re-orient the part so heavy sections sit low, nearest the fill tube.',
+    source: 'Casting design guidance on uniform wall thickness and gradual transitions, applied to a bottom-fed directional-solidification process. No primary standard audited.',
+  },
+  {
+    id: 'lpdc-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'lpdc',
+    severity: 'high',
+    title: 'Wall area below the minimum permanent-mould draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 1.0,
+    compare: 'lte',
+    threshold: 5,
+    unit: '% of wall area',
+    rationale:
+      'The part shrinks onto a steel mould as it solidifies under pressure. Without taper it grips, and the ejectors either mark the face or tear it.',
+    fix: 'Add at least 1° of draft to every drawn wall, 2-3° on deep or cosmetic faces.',
+    source: 'Permanent-mould design guidance: minimum draft about 1°, with 2-3° generally recommended and 2° specified on box-section walls perpendicular to the parting plane. No primary standard audited.',
+  },
+  {
+    id: 'lpdc-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'lpdc',
+    severity: 'medium',
+    title: 'Undercuts need a slide or a sand core',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'A permanent mould opens along one axis. An undercut buys either a slide — mechanism, maintenance and cycle time — or a sand core, which reintroduces the sand handling the permanent mould was chosen to escape.',
+    fix: 'Re-orient the part, or move the undercut feature to a machined operation.',
+    source: 'Permanent-mould design guidance on parting-line selection and slide cost. No primary standard audited.',
+  },
+  {
+    id: 'lpdc-min-cored-hole',
+    sourceStatus: 'standard-named',
+    process: 'lpdc',
+    severity: 'medium',
+    title: 'Hole too small to be cast — it will be drilled',
+    measure: 'minHoleDiaMm',
+    compare: 'gte',
+    threshold: 6.0,
+    unit: 'mm dia',
+    rationale:
+      'The core hardware is the same steel-in-a-permanent-mould as gravity die casting, and 0.3-1.5 bar is not the 500-1000 bar that lets high-pressure die casting run a finer pin. The permanent-mould floor applies unchanged: 6 mm, parallel to the draw.',
+    fix: 'Open the hole to at least 6 mm and align it with the draw, or quote it as drilled.',
+    source: 'Permanent-mould (gravity and low-pressure die) design guidance, citing NADCA: minimum cored hole diameter 6.0 mm, parallel to the direction of draw. The standard is NAMED by the design guide; the NADCA document itself has not been read first-hand.',
+  },
+  {
+    id: 'lpdc-core-ld',
+    sourceStatus: 'industry-consensus',
+    process: 'lpdc',
+    severity: 'medium',
+    title: 'Cored hole beyond the core slenderness limit',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 6,
+    unit: 'core L/D',
+    rationale:
+      'Past about six diameters a core pin deflects under the metal front and the hole walks off position, taking the wall around it eccentric with it.',
+    fix: 'Open the diameter, shorten the hole, or support the pin at both ends by taking it through.',
+    source: 'Die casting core-pin guidance: past an L/D of 6:1 deflection risk rises sharply and additional support, a larger diameter or reduced local pressure is needed. No primary standard audited.',
+  },
+  {
+    id: 'lpdc-rib-thickness-max',
+    sourceStatus: 'industry-consensus',
+    process: 'lpdc',
+    severity: 'medium',
+    title: 'Rib heavier than the wall it stands on',
+    measure: 'maxRibThicknessToWall',
+    compare: 'lte',
+    threshold: 1.0,
+    unit: 'rib/wall',
+    rationale:
+      'A rib thicker than its wall is a heavy section hanging off a thin one. It solidifies last, draws metal it cannot get, and leaves a sink on the show face opposite.',
+    fix: 'Bring the rib base to 0.6-1.0 times the wall.',
+    source: 'Die casting rib guidance: rib base thickness 0.6-1.0 × wall, height ≤ 5 × rib thickness, fillet 1.0-1.25 × rib thickness, draft 1-3°. No primary standard audited.',
+  },
+  {
+    id: 'lpdc-rib-thickness-min',
+    sourceStatus: 'industry-consensus',
+    process: 'lpdc',
+    severity: 'low',
+    title: 'Rib too thin to fill',
+    measure: 'minRibThicknessToWall',
+    compare: 'gte',
+    threshold: 0.6,
+    unit: 'rib/wall',
+    rationale:
+      'A rib much thinner than the wall freezes off before the slow low-pressure front reaches its tip, and the stiffness it was drawn for is not there.',
+    fix: 'Bring the rib base to at least 0.6 of the wall.',
+    source: 'Die casting rib guidance: rib base thickness 0.6-1.0 × wall. No primary standard audited.',
+  },
+  {
+    id: 'lpdc-rib-height',
+    sourceStatus: 'industry-consensus',
+    process: 'lpdc',
+    severity: 'low',
+    title: 'Rib taller than it can be filled and drawn',
+    measure: 'maxRibHeightToWall',
+    compare: 'lte',
+    threshold: 5,
+    unit: 'rib height/wall',
+    rationale:
+      'A tall thin rib is a deep narrow slot in the mould: hard to fill, hard to vent, and hard to draw without tearing.',
+    fix: 'Keep rib height within five times the wall, or split one tall rib into two shorter ones.',
+    source: 'Die casting rib guidance: rib height ≤ 5 × rib thickness. No primary standard audited.',
+  },
+  {
+    id: 'lpdc-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'lpdc',
+    severity: 'high',
+    title: 'Tolerance tighter than low-pressure die casting holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.6,
+    unit: 'mm total band',
+    rationale:
+      'Low-pressure die casting is the most accurate of the permanent-mould routes — ISO 8062 CT6-CT7 against gravity\'s CT7-CT9 — but it is still a casting. A band tighter than about 0.6 mm total is a machining requirement, and the stock for it has to be on the part.',
+    fix: 'Open the tolerance, or add machining stock on that feature and quote the operation.',
+    source: 'Low-pressure die casting quoted at ISO 8062 CT6-CT7 and ±0.3 mm, against gravity die casting at CT7-CT9. Consistent across process-comparison guides; no primary standard audited.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SQUEEZE CASTING
+  //
+  // Poured, then pressurised through solidification on a hydraulic press. The
+  // applied pressure feeds shrinkage, which is why it exists: no riser, low
+  // porosity, heat-treatable. Geometrically it sits between gravity die and
+  // HPDC — thinner than gravity, thicker than HPDC — and it needs MORE draft
+  // than either because the part is squeezed onto the die.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'squeeze-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'squeeze-casting',
+    severity: 'high',
+    title: 'Local section below what squeeze casting fills',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 2.0,
+    unit: 'mm',
+    rationale:
+      'Squeeze casting fills slowly and relies on pressure rather than velocity, so it does not chase a thin section the way a high-pressure shot does. Below about 2 mm the section is short-filled before the press closes on it.',
+    fix: 'Thicken the section to at least 2 mm, or move the part to high-pressure die casting.',
+    source: 'Squeeze casting is quoted as producing walls of 2.0-2.5 mm at 800-1200 mm length, and 2.5-3.5 mm at 900-2000 mm. No primary standard audited.',
+  },
+  {
+    id: 'squeeze-wall-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'squeeze-casting',
+    severity: 'medium',
+    title: 'Non-uniform wall thickness',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.9,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'Applied pressure feeds shrinkage, which is precisely why squeeze casting tolerates a heavier section than gravity does — but the pressure has to reach it. A heavy pocket isolated behind a thin wall freezes off from the feed path and shrinks anyway.',
+    fix: 'Even out the section, or place the heavy section where the ram pressure acts directly on it.',
+    source: 'Casting design guidance on uniform wall thickness, relaxed for a process whose applied pressure feeds solidification shrinkage. No primary standard audited.',
+  },
+  {
+    id: 'squeeze-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'squeeze-casting',
+    severity: 'high',
+    title: 'Wall area below the minimum squeeze-casting draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 1.5,
+    compare: 'lte',
+    threshold: 5,
+    unit: '% of wall area',
+    rationale:
+      'The part is held against the die under load while it solidifies, so it grips harder than a free-shrinking casting. Zero-draft walls that a die caster would accept will not release here.',
+    fix: 'Add at least 1.5° of draft to every drawn wall, 2-3° on deep pockets.',
+    source: 'Die casting draft guidance of 1-3°, with 2-3° minimum on deep pockets, applied to a process that solidifies under applied load. No primary standard audited.',
+  },
+  {
+    id: 'squeeze-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'squeeze-casting',
+    severity: 'medium',
+    title: 'Undercuts need a slide in a pressurised die',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'A slide in a squeeze die carries the full press load, not just a shot pressure spike. It is a more expensive mechanism than the same slide in a gravity mould and it is the first thing to wear.',
+    fix: 'Re-orient the part, or machine the undercut afterwards.',
+    source: 'Permanent-mould design guidance on parting-line selection and slide cost, applied to a load-bearing die. No primary standard audited.',
+  },
+  {
+    id: 'squeeze-core-ld',
+    sourceStatus: 'industry-consensus',
+    process: 'squeeze-casting',
+    severity: 'medium',
+    title: 'Cored hole beyond the core slenderness limit',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 5,
+    unit: 'core L/D',
+    rationale:
+      'A core pin in a squeeze die is loaded by the ram for the whole solidification, not by a shot for milliseconds. The slenderness it survives is below the die-casting figure, not above it.',
+    fix: 'Open the diameter, shorten the hole, or drill it afterwards.',
+    source: 'Die casting core-pin guidance (deflection risk rising sharply past L/D 6:1), tightened for a core loaded through solidification rather than during fill. Derived, not quoted — treat as a screening value.',
+  },
+  {
+    id: 'squeeze-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'squeeze-casting',
+    severity: 'high',
+    title: 'Tolerance tighter than squeeze casting holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.6,
+    unit: 'mm total band',
+    rationale:
+      'Squeeze casting works in a steel die and holds a permanent-mould class of tolerance. A band tighter than about 0.6 mm total is a machining requirement.',
+    fix: 'Open the tolerance, or leave machining stock and quote the operation.',
+    source: 'Permanent-mould tolerance class (ISO 8062 CT6-CT8) applied to a steel-die process. No primary standard audited.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SEMI-SOLID CASTING (thixo / rheo)
+  //
+  // Injected as a slurry rather than a liquid. Laminar fill, almost no trapped
+  // gas, so the part is heat-treatable and weldable — and, distinctively, it
+  // draws with far less taper than any other die process. This family exists
+  // mainly to STOP a good design being flagged: a 0.5° wall that HPDC rules
+  // correctly reject is perfectly castable here, and judging it by the HPDC
+  // family would send an engineer to add draft they do not need.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'ssm-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'semi-solid',
+    severity: 'high',
+    title: 'Local section below what a semi-solid slurry fills',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'mm',
+    rationale:
+      'A semi-solid slurry fills thinner than liquid metal because it does not spray and freeze off at the front. Walls down to 0.5 mm over palm-sized areas are documented — but 0.5 mm is the floor, not the target.',
+    fix: 'Thicken the section to at least 0.5 mm; anything below that is not a casting feature.',
+    source: 'Thixomolding design guidance: wall thickness as low as 0.5 mm over 150 × 100 mm areas, with parts up to 18-19 mm thick also moulded. No primary standard audited.',
+  },
+  {
+    id: 'ssm-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'semi-solid',
+    severity: 'medium',
+    title: 'Wall area below the minimum semi-solid draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 0.5,
+    compare: 'lte',
+    threshold: 10,
+    unit: '% of wall area',
+    rationale:
+      'This is the one die process that draws with almost no taper — zero draft has been used in production. The rule is here to catch a wall with NO taper across a large area, not to demand the 1-2° a die caster would ask for. A part flagged by the HPDC draft rule is very often fine here, and that difference is the reason to choose the route.',
+    fix: 'Add half a degree where the drawn area is large, or confirm zero-draft ejection with the moulder before committing.',
+    source: 'Thixomolding design guidance: parts can be moulded with minimum draft angles or none at all, and zero draft has been used. The threshold here is deliberately permissive against the 1-3° die-casting norm. No primary standard audited.',
+  },
+  {
+    id: 'ssm-wall-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'semi-solid',
+    severity: 'medium',
+    title: 'Non-uniform wall thickness',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 0.9,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'Laminar filling and a low superheat mean less solidification shrinkage than a fully liquid shot, so the section change this process tolerates is wider than HPDC\'s. It is not unlimited: a heavy boss on a thin wall still sinks.',
+    fix: 'Even out the section, or core out the heavy region.',
+    source: 'Thixomolding design guidance: concentrate on uniform wall thickness and cavity filling; match bosses and studs to wall thickness. No primary standard audited.',
+  },
+  {
+    id: 'ssm-undercuts',
+    sourceStatus: 'industry-consensus',
+    process: 'semi-solid',
+    severity: 'medium',
+    title: 'Undercuts need a slide',
+    measure: 'undercutFaceCount',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'regions',
+    rationale:
+      'Low draft does not mean no draw. The die still opens along one axis, and an undercut still buys a slide or a lifter.',
+    fix: 'Re-orient the part on the parting line, or machine the undercut afterwards.',
+    source: 'Thixomolding design guidance on gating, ejection and tool opening. No primary standard audited.',
+  },
+  {
+    id: 'ssm-rib-thickness-max',
+    sourceStatus: 'industry-consensus',
+    process: 'semi-solid',
+    severity: 'medium',
+    title: 'Rib heavier than the wall it stands on',
+    measure: 'maxRibThicknessToWall',
+    compare: 'lte',
+    threshold: 1.0,
+    unit: 'rib/wall',
+    rationale:
+      'A rib heavier than its wall is a late-freezing section on an early-freezing one, and it sinks the show face opposite whatever the fill physics.',
+    fix: 'Match the rib base to the wall or bring it below it.',
+    source: 'Thixomolding design guidance: match bosses and studs to wall thickness. No primary standard audited.',
+  },
+  {
+    id: 'ssm-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'semi-solid',
+    severity: 'high',
+    title: 'Tolerance tighter than semi-solid casting holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.4,
+    unit: 'mm total band',
+    rationale:
+      'Low shrinkage and a laminar fill make semi-solid the most repeatable of the die routes, so it holds a tighter band than plain HPDC. It is still a die process with thermal growth in the tool, and a band under about 0.4 mm total belongs to machining.',
+    fix: 'Open the tolerance, or leave stock and machine the feature.',
+    source: 'Semi-solid processing is quoted as holding tighter dimensional repeatability than conventional die casting on account of reduced solidification shrinkage. Positioned tighter than the HPDC band used elsewhere in this catalogue; no primary standard audited.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SHELL MOULD CASTING
+  //
+  // Resin-bonded sand cured against a heated metal pattern. The MOULD is sand,
+  // so the core and section limits are the sand family's — that is stated in
+  // each source string rather than left for the reader to assume. What differs,
+  // and the only reason this is a separate family, is accuracy and finish: a
+  // shell holds a tighter band than green sand because the mould is rigid and
+  // dimensionally stable rather than rammed.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'shell-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'shell-mould',
+    severity: 'high',
+    title: 'Local section below what a shell mould fills',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 2.5,
+    unit: 'mm',
+    rationale:
+      'A resin shell chills faster than rammed green sand, so it fills a thinner section than green sand does — but it is still a gravity pour into a sand-class mould, not a pressurised one.',
+    fix: 'Thicken the section, or move the part to a permanent-mould or pressurised route.',
+    source: 'Shell moulding is quoted as reaching thinner sections and a better finish (Ra 1.6-3.2 µm) than green sand casting. The figure here sits between the sand-casting minimum used elsewhere in this catalogue and the permanent-mould minimum; it is DERIVED from that ordering, not quoted, and should be the first threshold a foundry review corrects.',
+  },
+  {
+    id: 'shell-draft-minimum',
+    sourceStatus: 'industry-consensus',
+    process: 'shell-mould',
+    severity: 'high',
+    title: 'Wall area below the minimum shell-mould draft',
+    measure: 'wallAreaBelowDraftPct',
+    draftCutoffDeg: 1.0,
+    compare: 'lte',
+    threshold: 5,
+    unit: '% of wall area',
+    rationale:
+      'The pattern is drawn from a cured resin shell, which is rigid — so it needs less taper than green sand, where the mould crumbles if the pattern rubs, but more than nothing.',
+    fix: 'Add at least 1° of draft to every drawn wall.',
+    source: 'Casting draft allowance guidance of 1-3° per vertical face, taken at the lower end because the cured shell is rigid where green sand is not. No primary standard audited.',
+  },
+  {
+    id: 'shell-wall-uniformity',
+    sourceStatus: 'industry-consensus',
+    process: 'shell-mould',
+    severity: 'high',
+    title: 'Non-uniform wall thickness',
+    measure: 'wallSpreadRatio',
+    compare: 'lte',
+    threshold: 1.0,
+    unit: '(p95-p5)/p50',
+    rationale:
+      'A gravity pour feeds shrinkage through risers, and a riser only feeds a section it can still reach through liquid metal. Isolated heavy sections shrink whatever the mould is made of.',
+    fix: 'Even out the section, or add a feeder path to the heavy region.',
+    source: 'Casting design guidance on uniform wall thickness and gradual transitions. No primary standard audited.',
+  },
+  {
+    id: 'shell-core-ld',
+    sourceStatus: 'industry-consensus',
+    process: 'shell-mould',
+    severity: 'medium',
+    title: 'Cored hole beyond the sand-core slenderness limit',
+    measure: 'maxHoleDepthToDia',
+    compare: 'lte',
+    threshold: 10,
+    unit: 'core L/D',
+    rationale:
+      'A resin-bonded core is far stronger than a green-sand one, but it is still bonded sand. Past roughly ten diameters unsupported it is too brittle to handle without damage, let alone to survive the pour.',
+    fix: 'Support the core at both ends, open the diameter, or drill the hole after casting.',
+    source: 'Foundry core guidance: an unsupported core length-to-diameter ratio beyond about 10-15 forces alternatives to conventional sand cores. The lower end of that band is used here. No primary standard audited.',
+  },
+  {
+    id: 'shell-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'shell-mould',
+    severity: 'high',
+    title: 'Tolerance tighter than shell moulding holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.8,
+    unit: 'mm total band',
+    rationale:
+      'A rigid cured shell holds a tighter band than rammed green sand — that accuracy, with the finish, is the whole reason to pay for the heated pattern — but it does not approach a steel die.',
+    fix: 'Open the tolerance, or leave machining stock and quote the operation.',
+    source: 'Shell moulding sits between green sand and permanent mould on the ISO 8062 CT scale. The value here is positioned between the sand-casting and gravity-die bands used elsewhere in this catalogue; DERIVED from that ordering, not quoted.',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CENTRIFUGAL CASTING
+  //
+  // The only family in this catalogue whose FIRST question is not a dimension.
+  // The mould spins, so the part must be a body of revolution — a rule about
+  // SHAPE, which nothing in the geometry engine could answer until the
+  // axisymmetry measure was written for it. Adding this family without that
+  // measure would have produced a page of NOT EVALUATED and a rule count that
+  // flattered the tool.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'cent-body-of-revolution',
+    // THE ONLY BLOCKING RULE IN THE CATALOGUE, and it should stay rare. Every
+    // other finding here says "this will cost you"; this one says "this route
+    // cannot make this part". An undercut buys a slide. A part that is not round
+    // buys nothing — the mould spins or it does not.
+    blocking: true,
+    sourceStatus: 'engine-derived',
+    process: 'centrifugal',
+    severity: 'high',
+    title: 'Part is not a body of revolution',
+    measure: 'axisymmetricAreaPct',
+    compare: 'gte',
+    threshold: 90,
+    unit: '% of surface area',
+    rationale:
+      'Centrifugal casting forms the part by spinning the mould: the outer surface is the mould bore and the inner surface is a free liquid surface held by rotation. A feature that is not axisymmetric — a lug, a flat, a bolt boss — cannot be produced by that motion at all. This is not a tolerance to negotiate; it is whether the route exists for this part.',
+    fix: 'Cast an axisymmetric blank and machine the non-axisymmetric features, or choose a route with a static mould.',
+    source: 'Derived from the process kinematics rather than from a design guide: a spinning mould can only generate surfaces of revolution about its own axis. The 90% threshold allows for small machined-in features on an otherwise round part; it is this tool\'s own screening value, not a published one.',
+  },
+  {
+    id: 'cent-min-section',
+    sourceStatus: 'industry-consensus',
+    process: 'centrifugal',
+    severity: 'medium',
+    title: 'Local section below what a spun pour fills',
+    measure: 'wallP5Mm',
+    compare: 'gte',
+    threshold: 5.0,
+    unit: 'mm',
+    rationale:
+      'Centrifugal castings are liners, rings and bushings: the wall is set by the mould bore and the pour volume, and the inner surface carries the dross that has to be machined off. A thin as-cast wall leaves nothing to remove it from.',
+    fix: 'Thicken the as-cast wall, or choose a route that casts closer to net shape.',
+    source: 'Centrifugal casting practice: the bore is machined to remove the dross layer that collects on the inside diameter, so the as-cast wall must carry that allowance on top of the finished wall. Machining allowances of 1-3 mm are quoted for casting processes generally. DERIVED from that practice, not quoted as a wall minimum.',
+  },
+  {
+    id: 'cent-tolerance-capability',
+    sourceStatus: 'industry-consensus',
+    process: 'centrifugal',
+    severity: 'high',
+    title: 'Tolerance tighter than centrifugal casting holds',
+    measure: 'tightestToleranceMm',
+    compare: 'gte',
+    threshold: 0.5,
+    unit: 'mm total band',
+    rationale:
+      'Rotation gives a dense, well-controlled OUTER diameter — the tightest as-cast surface of any sand-class process. The bore is a free liquid surface and is not controlled at all; it is machined.',
+    fix: 'Open the tolerance, or apply the tight band to the outer diameter only and machine the bore.',
+    source: 'Centrifugal casting is quoted at radial tolerance CT3-CT8 (±0.1-0.5%) with a surface finish of Ra 3-8 µm. The value here takes the loose end of that band as a screening figure; no primary standard audited.',
+  },
+
 ];
 
 /**
@@ -2170,6 +2817,16 @@ export const DFM_RULES = [
  * reader to infer that the catalogue is complete.
  */
 export const UNWRITTEN_RULES = [
+  {
+    topic: 'Minimum as-cast cored hole diameter for SAND casting',
+    needs: 'A published sand-foundry figure for the smallest hole worth coring. Every other casting family in this catalogue now carries one — HPDC 2.5 mm, zinc 1.5 mm, permanent mould 6.0 mm, investment 1.5 mm — and sand does not, because the research turned up a sand CORE cross-section floor (about 1.6 mm for stability against the melt) and an unsupported core L/D band (10-15), but no sand cored-HOLE minimum from any source. Interpolating one from the permanent-mould 6 mm would have looked identical on the page to the four that are sourced.',
+    proxy: '`sand-core-ld` still catches a sand core that is too SLENDER. Nothing catches one that is simply too fine, so a small hole on a sand casting is currently unjudged rather than passed — it appears under NOT EVALUATED with this reason.',
+  },
+  {
+    topic: 'Vacuum-assisted die casting as a distinct GEOMETRIC family',
+    needs: 'Nothing — and that is the point. Evacuating the cavity changes the gas in it, not the shape the die can make: wall, draft, core slenderness and undercut limits are the die-casting limits either way. What vacuum buys is porosity low enough to heat-treat and weld, which is a metallurgical property this tool does not measure. The process is offered in the picker and priced separately, and routed to the HPDC rule family on purpose.',
+    proxy: 'The `hpdc` family judges it, correctly. A near-copy family would have invented six thresholds to restate the same limits and inflated the catalogue count by six.',
+  },
   {
     topic: 'Tool HOLDER and machine-envelope collision (machining)',
     needs: 'The holder geometry, the spindle nose and the machine work envelope. The shank-clearance sweep behind `mach-tool-access` now measures whether a cutter of a given diameter can reach each face along each approach direction, which is the larger half of this — but a face it calls reachable can still be unreachable once the holder is on the tool.',

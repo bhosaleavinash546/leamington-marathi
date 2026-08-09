@@ -346,6 +346,160 @@ def _bore_is_through(classifier, foot, dc, s_lo, s_hi, depth, extents):
         return None
 
 
+def _axisymmetry(wrapped):
+    """How much of the surface is compatible with a BODY OF REVOLUTION, and about
+    which axis.
+
+    Centrifugal casting is the one route whose first question is not a dimension:
+    the mould spins, so the part must be a body of revolution or it cannot be
+    made at all. Every other DFM check in this tool asks "is this feature within
+    a limit"; this one asks "is this part the right SHAPE for the process", and
+    no measure in the engine could answer it.
+
+    Measured, not assumed. For each candidate axis — every distinct axis a
+    revolved face already declares, plus the three principal directions so a
+    plain prism is scored rather than skipped — the area of every face that is
+    compatible with revolution about THAT axis is summed:
+
+      * a cylinder, cone, torus or surface of revolution sharing the axis
+      * a sphere whose centre lies on the axis
+      * a plane whose normal is parallel to the axis (an end face or a step)
+
+    A plane whose normal is perpendicular to the axis (a flat, a lug, a bolt
+    boss face) is NOT compatible and drags the figure down, which is exactly the
+    signal wanted: it is the flats and lugs that stop a part being spun.
+
+    Returns None rather than a number when the kernel refuses — an unmeasured
+    shape must reach the rules as absent, never as 0% (which would fail every
+    part) or 100% (which would pass every part).
+    """
+    try:
+        from OCP.TopExp import TopExp_Explorer
+        from OCP.TopAbs import TopAbs_ShapeEnum
+        from OCP.TopoDS import TopoDS
+        from OCP.BRepAdaptor import BRepAdaptor_Surface
+        from OCP.GeomAbs import GeomAbs_SurfaceType
+        from OCP.BRepGProp import BRepGProp
+        from OCP.GProp import GProp_GProps
+        from OCP.gp import gp_Vec
+    except Exception:
+        return None
+
+    REV = {
+        GeomAbs_SurfaceType.GeomAbs_Cylinder,
+        GeomAbs_SurfaceType.GeomAbs_Cone,
+        GeomAbs_SurfaceType.GeomAbs_Torus,
+        GeomAbs_SurfaceType.GeomAbs_SurfaceOfRevolution,
+    }
+
+    faces = []
+    total = 0.0
+    try:
+        exp = TopExp_Explorer(wrapped, TopAbs_ShapeEnum.TopAbs_FACE)
+        while exp.More():
+            f = TopoDS.Face_s(exp.Current())
+            exp.Next()
+            props = GProp_GProps()
+            BRepGProp.SurfaceProperties_s(f, props)
+            area = props.Mass()
+            if not (area > 0):
+                continue
+            ad = BRepAdaptor_Surface(f)
+            st = ad.GetType()
+            rec = {"area": area, "type": st, "axis": None, "normal": None, "centre": None}
+            if st in REV:
+                try:
+                    if st == GeomAbs_SurfaceType.GeomAbs_Cylinder:
+                        a = ad.Cylinder().Axis()
+                    elif st == GeomAbs_SurfaceType.GeomAbs_Cone:
+                        a = ad.Cone().Axis()
+                    elif st == GeomAbs_SurfaceType.GeomAbs_Torus:
+                        a = ad.Torus().Axis()
+                    else:
+                        a = ad.AxeOfRevolution()
+                    rec["axis"] = _canonical_axis(a.Direction(), a.Location())
+                except Exception:
+                    rec["axis"] = None
+            elif st == GeomAbs_SurfaceType.GeomAbs_Plane:
+                try:
+                    pl = ad.Plane()
+                    n = pl.Axis().Direction()
+                    rec["normal"] = (n.X(), n.Y(), n.Z())
+                except Exception:
+                    rec["normal"] = None
+            elif st == GeomAbs_SurfaceType.GeomAbs_Sphere:
+                try:
+                    c = ad.Sphere().Location()
+                    rec["centre"] = (c.X(), c.Y(), c.Z())
+                except Exception:
+                    rec["centre"] = None
+            faces.append(rec)
+            total += area
+    except Exception:
+        return None
+
+    if not faces or total <= 0:
+        return None
+
+    # Candidate axes: every axis a revolved face declares, deduped, plus X/Y/Z so
+    # a part with no revolved face at all still gets a measured answer.
+    cands = []
+    for rec in faces:
+        if not rec["axis"]:
+            continue
+        d, foot = rec["axis"]
+        if not any(_axes_equal((d, foot), c) for c in cands):
+            cands.append((d, foot))
+    for d in ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)):
+        if not any(_axes_equal((d, (0.0, 0.0, 0.0)), c) for c in cands):
+            cands.append((d, (0.0, 0.0, 0.0)))
+
+    best_pct, best_axis = None, None
+    for (d, foot) in cands:
+        ok = 0.0
+        for rec in faces:
+            st = rec["type"]
+            if rec["axis"] is not None:
+                if _axes_equal(rec["axis"], (d, foot)):
+                    ok += rec["area"]
+            elif rec["normal"] is not None:
+                # A plane is part of a body of revolution only when it is
+                # PERPENDICULAR to the axis — i.e. its normal is parallel to it.
+                dot = abs(sum(a * b for a, b in zip(rec["normal"], d)))
+                if dot >= math.cos(math.radians(1.0)):
+                    ok += rec["area"]
+            elif st == GeomAbs_SurfaceType.GeomAbs_Sphere and rec["centre"] is not None:
+                delta = [c - f for c, f in zip(rec["centre"], foot)]
+                along = sum(x * y for x, y in zip(delta, d))
+                perp2 = max(0.0, sum(x * x for x in delta) - along * along)
+                if math.sqrt(perp2) <= AXIS_POS_TOL_MM:
+                    ok += rec["area"]
+        pct = 100.0 * ok / total
+        if best_pct is None or pct > best_pct:
+            best_pct, best_axis = pct, d
+
+    return {
+        "axisymmetricAreaPct": round(best_pct, 2),
+        "axisXYZ": [round(c, 4) for c in best_axis] if best_axis else None,
+        "candidateAxisCount": len(cands),
+        "basis": ("Area-weighted share of the surface that is compatible with revolution about the "
+                  "best available axis: revolved faces sharing that axis, spheres centred on it, and "
+                  "planes perpendicular to it. Flats and lugs whose normal is perpendicular to the "
+                  "axis are counted against, because they are what stops a part being spun."),
+    }
+
+
+def _axes_equal(a, b):
+    """Same axis LINE — direction and position, radius not involved."""
+    (da, fa), (db, fb) = a, b
+    if abs(sum(x * y for x, y in zip(da, db))) < math.cos(math.radians(AXIS_ANG_TOL_DEG)):
+        return False
+    delta = [q - p for p, q in zip(fa, fb)]
+    along = sum(x * y for x, y in zip(delta, da))
+    perp2 = max(0.0, sum(x * x for x in delta) - along * along)
+    return math.sqrt(perp2) <= AXIS_POS_TOL_MM
+
+
 def _classify_faces(faces):
     """Return (type_counts dict, cyl_radii_ALL list — one entry per face)."""
     from OCP.BRep import BRep_Tool
@@ -1094,9 +1248,20 @@ def analyze(filepath: str, draw_override=None) -> dict:
                 except Exception as _e:
                     aperture_block = {"count": 0, "reason": f"Apertures could not be read: {_e}"}
 
+                # IS THIS PART THE RIGHT SHAPE FOR A SPINNING MOULD. The only
+                # question centrifugal casting asks before any dimension, and
+                # nothing in the engine could answer it. None when the kernel
+                # refuses — an unmeasured shape must reach the rules as absent,
+                # never as a 0% that fails every part.
+                try:
+                    revolution_block = _axisymmetry(wrapped)
+                except Exception as _e:
+                    revolution_block = {"reason": f"Axisymmetry could not be measured: {_e}"}
+
                 dfm_block = {
                     "pmi": pmi_block,
                     "apertures": aperture_block,
+                    "revolution": revolution_block,
                     "toolAccess": access_info,
                     "tessellation": {"triangles": tess["count"],
                                      "totalAreaMm2": round(tess["totalAreaMm2"], 1),

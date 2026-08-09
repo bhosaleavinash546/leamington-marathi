@@ -73,6 +73,12 @@ export function compareRoutes(geo, opts = {}) {
       row.evaluatedCount = r.evaluatedCount;
       row.findingCount = r.findings.length;
       row.highSeverityCount = r.findings.filter(f => f.severity === 'high').length;
+      // NOT VIABLE is a different statement from a low score, and the table has
+      // to make it. Centrifugal casting priced this bracket at EUR 7.77 with a
+      // score of 63 while the geometry said the mould cannot make it at all —
+      // a cheap-looking row for a route that does not exist.
+      row.viable = !r.blockers?.length;
+      row.blockedReason = r.blockedReason ?? null;
       // The two worst findings, so a row explains itself without a drill-down.
       row.topFindings = r.findings.slice(0, 2).map(f => ({
         title: f.title, severity: f.severity, measured: f.measured,

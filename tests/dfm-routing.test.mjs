@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 
 import { compareRoutes, rankRoutes } from '../dfm-routing.mjs';
 import { PROCESS_TO_DFM_FAMILY } from '../dfm-process-registry.mjs';
-import { runDfmRules } from '../dfm-rules.mjs';
+import { extractMeasures, runDfmRules } from '../dfm-rules.mjs';
 
 /** A chunky aluminium casting: 15.84 mm median wall, very non-uniform. */
 const CASTING = {
@@ -264,4 +264,245 @@ test('a finding records the material that was in play even when the rule ignores
   const without = runDfmRules(sheet, 'sheet-metal');
   const g = without.findings.find(x => x.id === 'sm-bend-to-bend');
   assert.equal(g.thresholdMaterial, null, 'and when it was not given, that is a different claim');
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// THE CASTING TRANCHE
+//
+// Six processes that were only reachable by mis-selecting a neighbour, and one
+// rule TYPE the catalogue could not previously express: how small a hole can be
+// CAST at all, as against how deep a core pin can go for its diameter. Every
+// casting family carried the second and none carried the first.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test('the new casting processes are offered, priced and routed to a rule family', async () => {
+  const { processesForMaterial } = await import('../dfm-process-registry.mjs');
+  const { PROCESS_FAMILIES } = await import('../dfm-rule-catalogue.mjs');
+  const { PROCESSES } = await import('../costing-engine.mjs');
+  const offered = new Map(processesForMaterial('Aluminium A356 (cast)').map(p => [p.name, p]));
+  for (const [name, fam] of [
+    ['Low-Pressure Die Casting', 'lpdc'],
+    ['Squeeze Casting', 'squeeze-casting'],
+    ['Semi-Solid Casting (Thixo/Rheo)', 'semi-solid'],
+    ['Shell Mould Casting', 'shell-mould'],
+    ['Centrifugal Casting', 'centrifugal'],
+    // Routed to HPDC ON PURPOSE: evacuating the cavity changes the gas in it,
+    // not the shape the die can make.
+    ['Vacuum-Assisted Die Casting', 'hpdc'],
+  ]) {
+    assert.ok(offered.has(name), `${name} must be selectable for a casting alloy`);
+    assert.equal(offered.get(name).dfmFamily, fam, `${name} must route to ${fam}`);
+    assert.ok(PROCESS_FAMILIES[fam], `${fam} must be a real rule family`);
+    assert.ok(PROCESSES[name], `${name} must be in the cost model or it cannot be a route`);
+  }
+});
+
+test('every new casting family actually has rules — none is an empty name', async () => {
+  const { DFM_RULES } = await import('../dfm-rule-catalogue.mjs');
+  for (const fam of ['lpdc', 'squeeze-casting', 'semi-solid', 'shell-mould', 'centrifugal']) {
+    const n = DFM_RULES.filter(r => r.process === fam).length;
+    assert.ok(n >= 3, `${fam} has ${n} rules — a family with no rules inflates the picker and judges nothing`);
+  }
+});
+
+test('the as-cast hole floor differs by family, and each one is reachable', async () => {
+  const { DFM_RULES } = await import('../dfm-rule-catalogue.mjs');
+  const floors = Object.fromEntries(DFM_RULES
+    .filter(r => r.measure === 'minHoleDiaMm')
+    .map(r => [r.process, r.threshold]));
+  // The whole point of the rule type: these are NOT the same number.
+  assert.equal(floors['hpdc'], 2.5);
+  assert.equal(floors['hpdc-zinc'], 1.5);
+  assert.equal(floors['gravity-die'], 6.0);
+  assert.equal(floors['lpdc'], 6.0);
+  assert.equal(floors['investment-casting'], 1.5);
+  // Sand deliberately absent — no sand cored-HOLE minimum was found in the
+  // research, and interpolating one would look identical to the four above.
+  assert.equal(floors['sand-casting'], undefined,
+    'sand must stay unwritten rather than carry an invented floor');
+});
+
+test('the unwritten sand rule is DECLARED, not silently missing', async () => {
+  const { UNWRITTEN_RULES } = await import('../dfm-rule-catalogue.mjs');
+  assert.ok(UNWRITTEN_RULES.some(u => /SAND casting/i.test(u.topic) && /cored hole/i.test(u.topic)),
+    'a threshold that could not be sourced must be declared, not left as an absence');
+});
+
+test('a Ø2 bore splits the casting families exactly as their floors say', () => {
+  const part = {
+    featureTable: [{ kind: 'hole', diaMm: 2.0, depthMm: 8, through: true, count: 1 }],
+    dfm: { wallThickness: { p50Mm: 3 }, draft: {}, features: {} },
+  };
+  const verdict = fam => {
+    const r = runDfmRules(part, fam, { material: 'Aluminium A356 (cast)' });
+    return [...r.findings, ...r.passed].find(f => f.measure === 'minHoleDiaMm')?.status;
+  };
+  assert.equal(verdict('hpdc'), 'fail', '2.0 is under the 2.5 aluminium die floor');
+  assert.equal(verdict('gravity-die'), 'fail', '2.0 is far under the 6.0 permanent-mould floor');
+  assert.equal(verdict('lpdc'), 'fail', 'low pressure uses the same permanent-mould core hardware');
+  assert.equal(verdict('investment-casting'), 'pass', 'a ceramic core goes to 1.5');
+});
+
+test('blind and through slenderness are measured separately, not shared', () => {
+  // One part, two holes. The COMBINED figure is the through hole's 5.0; the
+  // blind hole is at 1.5 and is sound. A blind limit of 2 judged on the
+  // combined figure condemns a hole that is fine — which is what happened
+  // while both rules read `maxHoleDepthToDia`.
+  const part = {
+    featureTable: [
+      { kind: 'hole', diaMm: 10, depthMm: 15, through: false, count: 1 },
+      { kind: 'hole', diaMm: 4, depthMm: 20, through: true, count: 1 },
+    ],
+    dfm: { wallThickness: { p50Mm: 4 }, draft: {}, features: {} },
+  };
+  const m = extractMeasures(part);
+  assert.equal(m.maxBlindHoleDepthToDia, 1.5);
+  assert.equal(m.maxThroughHoleDepthToDia, 5);
+  assert.equal(m.maxHoleDepthToDia, 5, 'the combined figure is the through hole');
+
+  const r = runDfmRules(part, 'investment-casting');
+  const blind = [...r.findings, ...r.passed].find(f => f.id === 'inv-blind-core-ld');
+  const thru = [...r.findings, ...r.passed].find(f => f.id === 'inv-through-core-ld');
+  assert.equal(blind.status, 'pass', 'the blind hole at 1.5 is inside the limit of 2');
+  assert.equal(thru.status, 'pass', 'the through hole at 5.0 is at the limit of 5');
+});
+
+test('a part with no blind hole makes the blind rule abstain, not pass at zero', () => {
+  // `Number(null) === 0` has bitten this file before. A blind measure of 0 would
+  // PASS an "at most" limit and read in the report as a check that happened.
+  const part = {
+    featureTable: [{ kind: 'hole', diaMm: 8, depthMm: 40, through: true, count: 1 }],
+    dfm: { wallThickness: { p50Mm: 4 }, draft: {}, features: {} },
+  };
+  const m = extractMeasures(part);
+  assert.equal(m.maxBlindHoleDepthToDia, undefined);
+  const r = runDfmRules(part, 'investment-casting');
+  assert.ok(r.notEvaluated.some(f => f.id === 'inv-blind-core-ld'),
+    'no blind hole means the blind rule was not checked — not that it passed');
+});
+
+test('semi-solid draft is genuinely more permissive than HPDC, not a copy', () => {
+  // The reason the family exists: a 0.5-degree wall that HPDC correctly rejects
+  // is castable here, and judging it by the HPDC family would send an engineer
+  // to add draft they do not need.
+  const lowDraft = {
+    dfm: {
+      wallThickness: { p5Mm: 1.2, p50Mm: 2.0, spreadRatio: 0.4 },
+      draft: { wallAreaBelowDraftPct: { '0.5': 8, '1': 40, '1.5': 55, '5': 80 }, undercutFaceCount: 0 },
+      features: {},
+    },
+  };
+  const hpdc = runDfmRules(lowDraft, 'hpdc', { material: 'Aluminium A380 / ADC12 (die-cast)' });
+  const ssm = runDfmRules(lowDraft, 'semi-solid', { material: 'Aluminium A380 / ADC12 (die-cast)' });
+  assert.ok(hpdc.findings.some(f => f.measure === 'wallAreaBelowDraftPct'),
+    'HPDC must reject 40% of the wall under 1 degree');
+  assert.ok(!ssm.findings.some(f => f.measure === 'wallAreaBelowDraftPct'),
+    'semi-solid reads the 0.5-degree point and passes — that difference IS the route');
+});
+
+test('centrifugal asks about SHAPE, and abstains when the shape was not measured', () => {
+  const round = { dfm: { revolution: { axisymmetricAreaPct: 99.4 }, wallThickness: { p5Mm: 8 }, draft: {}, features: {} } };
+  const flat = { dfm: { revolution: { axisymmetricAreaPct: 62.0 }, wallThickness: { p5Mm: 8 }, draft: {}, features: {} } };
+  const unmeasured = { dfm: { revolution: { reason: 'kernel refused' }, wallThickness: { p5Mm: 8 }, draft: {}, features: {} } };
+
+  const id = 'cent-body-of-revolution';
+  const statusOf = (geo) => {
+    const r = runDfmRules(geo, 'centrifugal');
+    return [...r.findings, ...r.passed, ...r.notEvaluated].find(f => f.id === id)?.status;
+  };
+  assert.equal(statusOf(round), 'pass');
+  assert.equal(statusOf(flat), 'fail');
+  // NOT a fail. An unmeasured shape that defaulted to 0 would condemn every part
+  // whose kernel call happened to throw.
+  assert.equal(statusOf(unmeasured), 'not-evaluated');
+});
+
+test('every new casting process prices, and low-pressure beats gravity on yield', async () => {
+  const { computeShouldCost } = await import('../costing-engine.mjs');
+  const base = { material: 'Aluminium A356 (cast)', weightKg: 0.86, annualVolume: 50_000, region: 'Germany' };
+  for (const process of ['Low-Pressure Die Casting', 'Squeeze Casting',
+    'Semi-Solid Casting (Thixo/Rheo)', 'Vacuum-Assisted Die Casting',
+    'Shell Mould Casting', 'Centrifugal Casting']) {
+    const c = computeShouldCost({ ...base, process });
+    assert.ok(Number.isFinite(c.totalShouldCost) && c.totalShouldCost > 0, `${process} must price`);
+    assert.ok(Number.isFinite(c.drivers?.inputMassKg), `${process} must report a buy-to-fly mass`);
+  }
+  // The commercial fact that makes LPDC worth quoting: the fill tube is the
+  // feeder and drains back, so less metal is poured per good part than gravity.
+  const lp = computeShouldCost({ ...base, process: 'Low-Pressure Die Casting' });
+  const gd = computeShouldCost({ ...base, process: 'Gravity Die Casting' });
+  assert.ok(lp.drivers.inputMassKg < gd.drivers.inputMassKg,
+    `LPDC must pour less than gravity (${lp.drivers.inputMassKg} vs ${gd.drivers.inputMassKg})`);
+});
+
+test('every priced casting route also carries a carbon factor', async () => {
+  const { PROCESS_KWH_PER_KG } = await import('../carbon.mjs');
+  for (const process of ['Low-Pressure Die Casting', 'Squeeze Casting',
+    'Semi-Solid Casting (Thixo/Rheo)', 'Vacuum-Assisted Die Casting',
+    'Shell Mould Casting', 'Centrifugal Casting']) {
+    assert.ok(Number.isFinite(PROCESS_KWH_PER_KG[process]),
+      `${process} would show a blank CO2e column beside a priced one`);
+  }
+});
+
+test('the new routes appear in the route comparison for a casting alloy', () => {
+  const { routes, skipped } = compareRoutes(CASTING, {
+    material: 'Aluminium A356 (cast)', weightKg: 0.86, chosenProcess: 'Die Casting (Aluminium)',
+  });
+  const names = routes.map(r => r.process);
+  for (const n of ['Low-Pressure Die Casting', 'Squeeze Casting', 'Shell Mould Casting']) {
+    assert.ok(names.includes(n), `${n} must be offered as an alternative route`);
+  }
+  // And nothing became unpriceable in the process.
+  for (const r of routes) {
+    assert.ok(Number.isFinite(r.piecePriceEur) || r.costReason,
+      `${r.process} has neither a price nor a reason`);
+  }
+  assert.ok(!skipped.some(s => s.process === 'Low-Pressure Die Casting'),
+    'LPDC takes aluminium and must not be listed as inapplicable');
+});
+
+test('a route the geometry rules out is NOT VIABLE, not a cheap option', () => {
+  // On a real casting bracket this table showed Centrifugal Casting at EUR 7.77
+  // with a score of 63 — below the route the user had chosen — while the
+  // geometry said a spinning mould cannot make the part at all. A low score and
+  // an impossible route are different statements and the table has to make both.
+  const flat = {
+    volume: { cm3: 320 },
+    dfm: {
+      revolution: { axisymmetricAreaPct: 29.0 },
+      wallThickness: { p5Mm: 8, p50Mm: 12, spreadRatio: 0.5 },
+      draft: { wallAreaBelowDraftPct: { '1': 3 }, undercutFaceCount: 0 },
+      features: {},
+    },
+  };
+  const { routes } = compareRoutes(flat, {
+    material: 'Aluminium A356 (cast)', weightKg: 0.86, chosenProcess: 'Gravity Die Casting',
+  });
+  const cent = routes.find(r => r.process === 'Centrifugal Casting');
+  assert.equal(cent.viable, false);
+  assert.match(cent.blockedReason, /body of revolution/);
+  // It keeps its price and its findings — hiding them would leave the reader
+  // wondering what was wrong — but it is no longer offered as a comparison.
+  assert.ok(Number.isFinite(cent.piecePriceEur));
+
+  // And nothing else is collateral damage: an ordinary bad score stays viable.
+  const gdc = routes.find(r => r.process === 'Gravity Die Casting');
+  assert.notEqual(gdc.viable, false, 'a low score is not a blocked route');
+});
+
+test('a round part makes the same route viable — the flag tracks geometry, not the process', () => {
+  const round = {
+    volume: { cm3: 320 },
+    dfm: {
+      revolution: { axisymmetricAreaPct: 99.1 },
+      wallThickness: { p5Mm: 8, p50Mm: 12, spreadRatio: 0.5 },
+      draft: { wallAreaBelowDraftPct: { '1': 3 }, undercutFaceCount: 0 },
+      features: {},
+    },
+  };
+  const { routes } = compareRoutes(round, { material: 'Aluminium A356 (cast)', weightKg: 0.86 });
+  const cent = routes.find(r => r.process === 'Centrifugal Casting');
+  assert.notEqual(cent.viable, false);
+  assert.equal(cent.blockedReason, null);
 });

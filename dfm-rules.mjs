@@ -80,6 +80,50 @@ export function extractMeasures(geo = {}) {
     return vals.length ? Math.max(...vals) : undefined;
   };
 
+  // ── AS-CAST FEATURE SIZE, in millimetres rather than as a ratio ────────────
+  //
+  // Every casting family had a core SLENDERNESS rule (how deep a pin can go) and
+  // not one had a core DIAMETER rule (how thin a pin can be at all). They are
+  // different failure modes: a slender pin deflects and the hole goes off
+  // position; a pin below the family's floor snaps or cannot be made. A Ø2 hole
+  // in a permanent-mould part is not cast at all — it is drilled afterwards, and
+  // the report should say so before the tool is cut.
+  //
+  // The value carried is the DIAMETER, not a ratio. The `ratio` key is the
+  // evaluator's generic value slot; the finding's own `unit` says what it means,
+  // and the report prints that unit rather than assuming every instance is
+  // dimensionless.
+  const sizeInstances = (kind, key, ascending = true) => table
+    .filter(f => f.kind === kind)
+    .map(f => ({
+      ratio: Number(f[key]),
+      diaMm: f.diaMm, depthMm: f.depthMm, through: f.through, count: f.count,
+      atXYZ: f.axisPointXYZ ?? null,
+      instancesXYZ: Array.isArray(f.instancesXYZ) ? f.instancesXYZ.slice(0, 8) : null,
+    }))
+    .filter(r => Number.isFinite(r.ratio) && r.ratio > 0)
+    .sort((a, b) => (ascending ? a.ratio - b.ratio : b.ratio - a.ratio));
+
+  const smallestOf = (kind, key) => {
+    const vals = sizeInstances(kind, key).map(r => r.ratio);
+    return vals.length ? Math.round(Math.min(...vals) * 100) / 100 : undefined;
+  };
+
+  // A BLIND hole and a THROUGH hole of the same slenderness are not the same
+  // risk — a through core pin can be supported at both ends, a blind one is a
+  // cantilever. Investment casting writes the two limits separately (blind < 2,
+  // through < 5) and a single combined figure cannot express either. The kernel
+  // already classifies through vs blind with a solid classifier, so the split is
+  // free; what it is not is optional, because the combined measure silently
+  // judged a supported through core by the cantilever limit.
+  const depthRatioWhere = (pred) => {
+    const vals = table
+      .filter(f => f.kind === 'hole' && pred(f))
+      .map(f => Number(f.depthMm) / Number(f.diaMm))
+      .filter(v => Number.isFinite(v) && v > 0);
+    return vals.length ? Math.round(Math.max(...vals) * 100) / 100 : undefined;
+  };
+
   const ribs = Array.isArray(features.ribs) ? features.ribs : [];
   const nominalWall = num(wall.p50Mm);
   const ribInstances = (key, ascending = false) => {
@@ -131,6 +175,11 @@ export function extractMeasures(geo = {}) {
       return t > 0 && min > 0 ? Math.round((min / t) * 100) / 100 : undefined;
     })(),
     apertureCount: num((dfm.apertures || {}).count),
+    // SHAPE, not size. Centrifugal casting spins the mould, so the part must be
+    // a body of revolution before any dimension matters. Absent when the kernel
+    // could not measure it — never defaulted, because 0 would fail every part
+    // and 100 would pass every part.
+    axisymmetricAreaPct: num((dfm.revolution || {}).axisymmetricAreaPct),
     internalCutLengthMm: num((dfm.apertures || {}).totalCutLengthMm),
     pmiDimensionCount: num((dfm.pmi || {}).dimensionCount),
     pmiGeomToleranceCount: num((dfm.pmi || {}).geometricToleranceCount),
@@ -145,6 +194,17 @@ export function extractMeasures(geo = {}) {
     // family sets its own limit against it.
     maxHoleDepthToDia: ratioOverTable('hole', 'depthMm', 'diaMm'),
     maxBossHeightToDia: ratioOverTable('boss', 'depthMm', 'diaMm'),
+    // Blind and through split out, because a cantilevered core pin and a
+    // double-supported one fail at different slendernesses.
+    maxBlindHoleDepthToDia: depthRatioWhere(f => f.through === false),
+    maxThroughHoleDepthToDia: depthRatioWhere(f => f.through === true),
+
+    // ── As-cast feature SIZE, in mm ──
+    // The smallest bore and the smallest boss on the part. Every casting family
+    // has a floor below which the feature is not cast at all, and until now the
+    // catalogue could not ask about it.
+    minHoleDiaMm: smallestOf('hole', 'diaMm'),
+    minBossDiaMm: smallestOf('boss', 'diaMm'),
 
     // ── Ribs, as proportions of the nominal wall ──
     maxRibThicknessToWall: ribRatio(Math.max, 'thicknessMm'),
@@ -180,6 +240,10 @@ export function extractMeasures(geo = {}) {
       maxRibThicknessToWall: ribInstances('thicknessMm'),
       minRibThicknessToWall: ribInstances('thicknessMm', true),
       maxRibHeightToWall: ribInstances('heightMm'),
+      // Smallest first: the offenders under a minimum-size rule are the SMALL
+      // features, so the same worst-first promise needs the opposite sort.
+      minHoleDiaMm: sizeInstances('hole', 'diaMm'),
+      minBossDiaMm: sizeInstances('boss', 'diaMm'),
     }),
 
     // THE DRAFT CURVE, not one point on it. `wallAreaBelowMinDraftPct` above is
@@ -289,6 +353,13 @@ export function runDfmRules(geo, process, { material, overrides } = {}) {
       // all. The report prints this beside the finding.
       thresholdBasis: picked.basis,
       thresholdMatchedOn: picked.matchedOn,
+      // A FEASIBILITY GATE, not a quality finding. Most rules answer "how good
+      // is this part for the process"; a few answer "can the process make this
+      // part at all". Centrifugal casting spins the mould, so a part that is not
+      // a body of revolution is not a low score — it is not a route. Without
+      // this flag the impossible option sat in a cheapest-first table at EUR
+      // 7.77, below the route the user had actually chosen.
+      blocking: rule.blocking === true,
       // The alloy that WAS in play, independently of whether this rule had a
       // band for it. Without it the report cannot tell "no material was given"
       // apart from "this rule is alloy-independent", and it used to assert the
@@ -318,6 +389,12 @@ export function runDfmRules(geo, process, { material, overrides } = {}) {
 
   findings.sort((a, b) => SEVERITIES.indexOf(a.severity) - SEVERITIES.indexOf(b.severity));
 
+  // A blocked route must not be presented as a route. It keeps its findings and
+  // its score — hiding them would leave the reader wondering what was wrong —
+  // but everything downstream can now say NOT VIABLE instead of a number that
+  // invites a comparison the geometry has already settled.
+  const blockers = findings.filter(f => f.blocking);
+
   const evaluated = findings.length + passed.length;
   const coveragePct = rules.length ? Math.round((evaluated / rules.length) * 1000) / 10 : 0;
 
@@ -335,6 +412,10 @@ export function runDfmRules(geo, process, { material, overrides } = {}) {
       .map(r => r.id),
     evaluatedCount: evaluated,
     coveragePct,
+    blockers,
+    blockedReason: blockers.length
+      ? `${blockers[0].title} — ${blockers[0].fix}`
+      : null,
     // A score over rules nobody could evaluate would be meaningless, so it is
     // computed over the EVALUATED rules only and carries its own coverage.
     score: scoreOf(findings, evaluated),

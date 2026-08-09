@@ -67,6 +67,8 @@ interface RouteRow {
   costReason?: string; carbonReason?: string;
   isChosen?: boolean;
   deltaPieceEur?: number | null; deltaToolingEur?: number | null;
+  /** False when a feasibility rule failed: the route cannot make this part at all. */
+  viable?: boolean; blockedReason?: string | null;
 }
 interface AnalysisLimit { kind: string; severity: 'blocking' | 'warning'; message: string }
 interface RuleOverride { enabled: boolean; threshold?: number | number[]; note?: string }
@@ -1407,7 +1409,12 @@ export default function DfmStudioPage() {
                                 your route — the findings above are this one
                               </span>
                             )}
-                            {!r.isChosen && Number.isFinite(r.deltaPieceEur as number) && (
+                            {r.viable === false && (
+                              <span className="block text-red-400/90 mt-0.5">
+                                cannot make this part: {r.blockedReason}
+                              </span>
+                            )}
+                            {r.viable !== false && !r.isChosen && Number.isFinite(r.deltaPieceEur as number) && (
                               <span className={`block mt-0.5 ${(r.deltaPieceEur as number) < 0 ? 'text-emerald-400/80' : 'text-slate-500'}`}>
                                 {(r.deltaPieceEur as number) < 0 ? '−' : '+'}€{Math.abs(r.deltaPieceEur as number).toFixed(2)}/part vs your route
                               </span>
@@ -1420,8 +1427,11 @@ export default function DfmStudioPage() {
                           </td>
                           {/* A score without its coverage invites comparison
                               between a 9-of-9 check and a 1-of-9 one. */}
-                          <td className={`text-right py-2 px-2 tabular-nums ${r.score === null ? 'text-slate-500' : r.score >= 70 ? 'text-emerald-400' : r.score >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
-                            {r.score === null ? '—' : r.score}
+                          {/* NOT VIABLE is a different statement from a low
+                              score. A number invites a comparison the geometry
+                              has already settled. */}
+                          <td className={`text-right py-2 px-2 tabular-nums ${r.viable === false ? 'text-red-400 font-semibold' : r.score === null ? 'text-slate-500' : r.score >= 70 ? 'text-emerald-400' : r.score >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
+                            {r.viable === false ? 'not viable' : r.score === null ? '—' : r.score}
                             {r.highSeverityCount > 0 && <span className="block text-red-400/70">{r.highSeverityCount} high</span>}
                           </td>
                           <td className="text-right py-2 px-2 tabular-nums text-slate-400">

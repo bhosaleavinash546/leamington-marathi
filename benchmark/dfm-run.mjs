@@ -17,7 +17,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES, PMI_FIXTURES } from './dfm-fixtures.mjs';
+import { CASTING_FIXTURES, DEGENERATE_FIXTURES, DFA_FIXTURES, DFM_FIXTURES, PMI_FIXTURES } from './dfm-fixtures.mjs';
 import { extractMeasures, runDfmRules } from '../dfm-rules.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
 import { analyzeGeometry, tessellateToSTL } from '../cad-engine/cad-geometry-bridge.mjs';
@@ -452,6 +452,81 @@ async function main() {
         .find(f => f.measure === 'tightestToleranceMm');
       record(fx.file, `${fam} tolerance rule abstains`, row?.status === 'not-evaluated',
         row ? `${row.status} at ${row.measured}` : 'rule missing entirely');
+    }
+  }
+
+
+  // ── Casting: as-cast feature size and body-of-revolution ──────────────────
+  // The three measures the casting tranche added, against analytic truth. The
+  // blind/through split is the one that matters most: the combined figure and
+  // the blind figure differ by a factor of two on the same part, and every
+  // casting family judged both by the combined number until now.
+  for (const fx of CASTING_FIXTURES) {
+    if (!AS_JSON) console.log(`\n  ${fx.file}  (casting)`);
+    let g;
+    try {
+      g = await analyzeGeometry(await readFile(join(FIXDIR, fx.file)), fx.file);
+    } catch (e) {
+      record(fx.file, 'analyze for casting', false, `bridge threw: ${e.message}`);
+      continue;
+    }
+    const t = fx.truth;
+    const m = extractMeasures(g);
+
+    if (t.axisymmetricAreaPct !== undefined) {
+      const rev = g.dfm?.revolution || {};
+      record(fx.file, 'axisymmetric area', near(rev.axisymmetricAreaPct, t.axisymmetricAreaPct, 0.5),
+        `${rev.axisymmetricAreaPct}% vs ${t.axisymmetricAreaPct}% by construction`);
+      if (t.axisXYZ) {
+        const got = rev.axisXYZ || [];
+        const dot = Math.abs(got.reduce((a, v, i) => a + v * t.axisXYZ[i], 0));
+        record(fx.file, 'revolution axis', near(dot, 1, 0.01),
+          `[${got.join(', ')}] vs [${t.axisXYZ.join(', ')}]`);
+      }
+    }
+    if (t.minHoleDiaMm !== undefined) {
+      record(fx.file, 'smallest bore', near(m.minHoleDiaMm, t.minHoleDiaMm, 0.02),
+        `${m.minHoleDiaMm} vs ${t.minHoleDiaMm} mm`);
+    }
+    if (t.maxBlindHoleDepthToDia !== undefined) {
+      record(fx.file, 'blind L/D', near(m.maxBlindHoleDepthToDia, t.maxBlindHoleDepthToDia, 0.02),
+        `${m.maxBlindHoleDepthToDia} vs ${t.maxBlindHoleDepthToDia}`);
+    }
+    if (t.maxThroughHoleDepthToDia !== undefined) {
+      record(fx.file, 'through L/D', near(m.maxThroughHoleDepthToDia, t.maxThroughHoleDepthToDia, 0.02),
+        `${m.maxThroughHoleDepthToDia} vs ${t.maxThroughHoleDepthToDia}`);
+    }
+    if (t.maxHoleDepthToDia !== undefined) {
+      record(fx.file, 'combined L/D', near(m.maxHoleDepthToDia, t.maxHoleDepthToDia, 0.02),
+        `${m.maxHoleDepthToDia} vs ${t.maxHoleDepthToDia} — the figure the blind limit used to be judged on`);
+    }
+    if (t.blindMeasureAbsent) {
+      // ABSENT, not zero. A part with no blind hole must make the blind rule
+      // abstain; a 0 would pass every "at most" limit and read as a clean check.
+      record(fx.file, 'no blind hole abstains', m.maxBlindHoleDepthToDia === undefined,
+        m.maxBlindHoleDepthToDia === undefined ? 'undefined' : `${m.maxBlindHoleDepthToDia} — a hard zero would pass silently`);
+    }
+    if (t.wallP50Mm !== undefined) {
+      record(fx.file, 'wall p50', near(m.wallP50Mm, t.wallP50Mm, 0.3),
+        `${m.wallP50Mm} vs ${t.wallP50Mm} mm`);
+    }
+    if (t.centrifugalBodyOfRevolutionPasses) {
+      const r = runDfmRules(g, 'centrifugal');
+      const row = [...r.findings, ...r.passed, ...r.notEvaluated]
+        .find(f => f.id === 'cent-body-of-revolution');
+      record(fx.file, 'body-of-revolution rule PASSES', row?.status === 'pass',
+        row ? `${row.status} at ${row.measured}%` : 'rule missing entirely');
+    }
+    for (const fam of t.minHoleFailsIn || []) {
+      const row = [...runDfmRules(g, fam).findings].find(f => f.measure === 'minHoleDiaMm');
+      record(fx.file, `${fam} rejects the fine bore`, !!row,
+        row ? `fails at ${row.measured} ${row.unit} against ${row.thresholdText}` : 'no finding — the fine hole passed');
+    }
+    for (const fam of t.minHolePassesIn || []) {
+      const r = runDfmRules(g, fam);
+      const row = [...r.findings, ...r.passed].find(f => f.measure === 'minHoleDiaMm');
+      record(fx.file, `${fam} accepts the fine bore`, row?.status === 'pass',
+        row ? `${row.status} at ${row.measured} ${row.unit}` : 'rule missing entirely');
     }
   }
 

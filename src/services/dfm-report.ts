@@ -149,6 +149,8 @@ export interface DfmReportData {
       kgCo2e: number | null; cbamEur: number | null; costReason?: string; carbonReason?: string;
       /** True on the ONE row the user actually selected. */
       isChosen?: boolean;
+      /** False when a FEASIBILITY rule failed: the route cannot make this part at all. */
+      viable?: boolean; blockedReason?: string | null;
       /** Piece-price and tooling difference against the chosen route, when there is one. */
       deltaPieceEur?: number | null; deltaToolingEur?: number | null;
     }>;
@@ -771,7 +773,11 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
           ].filter(Boolean).join(' ');
           const at = inst.atXYZ?.length === 3 ? `at (${inst.atXYZ.map(v => Math.round(v)).join(', ')})` : '';
           const n = inst.count && inst.count > 1 ? `${inst.count}x ` : '';
-          doc.text(fit(doc, `    ${n}${dims}  ratio ${inst.ratio ?? '—'}  ${at}`, CW - 12), ML + 4.5, y);
+          // The instance value carries the rule's OWN unit. It was hardcoded as
+          // "ratio", which was true while every instance measure was
+          // dimensionless and became a lie the moment the as-cast feature rules
+          // started measuring a diameter in millimetres.
+          doc.text(fit(doc, `    ${n}${dims}  ${inst.ratio ?? '—'} ${f.unit ?? ''}  ${at}`.replace(/\s+/g, ' '), CW - 12), ML + 4.5, y);
           y += 4;
         }
         if (f.instances.length > 6) {
@@ -898,7 +904,8 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
       return (av as number) - (bv as number);
     });
     for (const r of sorted) {
-      const colour = r.score === null ? MUT : r.score >= 70 ? GREEN : r.score >= 40 ? AMBER : RED;
+      const colour = r.viable === false ? RED
+        : r.score === null ? MUT : r.score >= 70 ? GREEN : r.score >= 40 ? AMBER : RED;
       // The chosen route is drawn in place, on a band, rather than lifted to the
       // top: its position in a cheapest-first list IS the answer to "should I
       // have picked something else", and moving it would destroy that.
@@ -909,7 +916,9 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
         r.process,
         // A score without its coverage invites comparison between a 9-of-9 check
         // and a 1-of-9 one, so the two are never more than a column apart.
-        r.score === null ? '—' : String(r.score),
+        // A route the geometry rules out does not get a score. A number here
+        // invites a comparison that has already been settled.
+        r.viable === false ? 'NOT VIABLE' : r.score === null ? '—' : String(r.score),
         `${r.evaluatedCount}/${r.ruleCount}`,
         r.piecePriceEur === null ? 'not priced' : `EUR ${r.piecePriceEur.toFixed(2)}`,
         r.toolingEur === null ? '—' : `EUR ${Math.round(r.toolingEur).toLocaleString('en-GB')}`,
@@ -925,7 +934,8 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
         : '';
       const note = [
         r.isChosen ? 'YOUR ROUTE — the findings above are this one' : '',
-        delta,
+        r.viable === false ? `CANNOT MAKE THIS PART: ${r.blockedReason ?? 'a feasibility rule failed'}` : '',
+        r.viable === false ? '' : delta,
         r.highSeverityCount ? `${r.highSeverityCount} high-severity` : '',
         r.scoreCaveat ?? '',
       ].filter(Boolean).join(' · ');
@@ -940,7 +950,10 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
     // THE ONE SENTENCE A COST ENGINEER READS. A table of nine rows without it
     // leaves the reader to do the arithmetic that produced the table.
     if (chosenRow && Number.isFinite(chosenRow.piecePriceEur as number)) {
+      // A route the geometry rules out is not a cheaper alternative, whatever
+      // the cost engine says it would have cost.
       const cheaper = sorted.filter(r => !r.isChosen
+        && r.viable !== false
         && Number.isFinite(r.piecePriceEur as number)
         && (r.piecePriceEur as number) < (chosenRow.piecePriceEur as number));
       if (!cheaper.length) {
