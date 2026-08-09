@@ -1340,3 +1340,53 @@ Format: decision · why · what would change it.
     competes head-on with rotational moulding — a family built from rotomoulding's figures with
     a different name would make exactly the comparison the route table exists to support
     meaningless. All three are in `UNWRITTEN_RULES`, which now runs to 15 entries.
+
+103. **Innovation Studio motion language: divergence → convergence (2026).**
+    *Why:* the page was a flat grid of eleven identical cards, a three-field form and a list.
+    Nothing on it said what the tool DOES, and every method looked like every other method.
+    *Changes it:* `innovation.css`, an `iv-`-prefixed language on the same model as
+    `foresight.css`, themed on the shape every structured method actually has — one problem
+    opens into many lenses, then collapses to the few that survive engine checking. So the
+    ambience drifts OUTWARD from the input (rising motes, three aurora glows), the method
+    preview literally DRAWS that fan in SVG, and the results settle INWARD with a
+    crystallising wipe. Every animation carries that meaning; none is there to fill space.
+    *And every one of them sits behind `prefers-reduced-motion: no-preference`.* Verified in a
+    real browser at `reducedMotion: 'reduce'`: the page is complete and static, not degraded —
+    the gradient title, the tier spines, the aperture ring and the divergence diagram are all
+    present, they simply do not move.
+
+104. **The picker collapses after you choose (2026).**
+    *Why:* grouping eleven methods into three tier bands was right for the first choice and
+    wrong for every run after it — the browser shot showed the part-name field two screens
+    below the fold. *Changes it:* the grid collapses to a one-line chosen-method bar on
+    select, with an "All 11 methods" expander. The first screen now carries the choice, what
+    the method needs, what it returns, and the input. Caught by looking at a real screenshot,
+    not by reading the JSX.
+
+105. **A number in the product's own shop window that nobody updated (2026).**
+    *Why:* the hero read "Eight structured methods" while `METHODS` held eleven. Methods were
+    added and the sentence describing them was not. *Changes it:* `METHODS.length`. The same
+    class of bug as the "24 of the 26 rules" provenance line in the DFM report (DECISIONS 79),
+    and the same fix — count it, never type it.
+
+106. **What a method needs, before you spend a call finding out (2026).**
+    *Why:* choosing a method told you its one-line blurb and nothing else. Whether Spec
+    Challenge wanted a characteristic register, or what Teardown Delta would give back, was
+    discoverable only by running it. *Changes it:* every method carries `needs`, `returns` and
+    its `lenses`, rendered as a preview panel that changes with the selection. The lens list is
+    also what the divergence diagram fans into, so a 7-verb checklist and a 4-function matrix
+    visibly differ in the size of their search.
+
+107. **An indeterminate rail, not a fake percentage (2026).**
+    *Why:* `/api/innovate/resolve` emits no progress events. A bar creeping to 90% and stopping
+    is a lie with a progress indicator drawn on it. *Changes it:* the generating state names
+    the four stages the request actually passes through and animates a photon along an
+    indeterminate rail, with the line "no progress figure — the endpoint reports none" printed
+    beside it. If the endpoint ever streams stages, the same component renders them.
+
+108. **The value bars were a chart the first time and a mess at full width (2026).**
+    *Why:* letting the cost/worth bars fill the panel put a 46% bar 400px long with its own
+    label sitting on top of it, and the two stacked bars read as one broken line. *Changes it:*
+    a fixed 160px track in its own grid column with a legend row, so the bars are a chart
+    beside the text rather than a decoration behind it. Found by rendering the page in
+    Chromium and looking at it — the layout typechecked perfectly either way.

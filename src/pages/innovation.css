@@ -1,0 +1,329 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   BrainSpark Innovation Studio — motion language (scoped iv- prefix).
+
+   THEME: DIVERGENCE → CONVERGENCE. Every structured ideation method has the
+   same shape — you open one problem out into many possibilities, then collapse
+   them back to the few that survive checking. That is what the motion here
+   says, and it is why the ambience drifts OUTWARD from the input while the
+   results settle INWARD. Nothing on this page animates for decoration alone:
+
+     idea field      particles rising and spreading   = divergence
+     aperture ring   an iris opening on the method    = a lens being chosen
+     synthesis rail  a photon travelling the stages   = work in progress
+     crystallise     a scan wipe as a card resolves   = an idea taking shape
+     verdict ring    an arc drawn to the saving       = the engine's answer
+
+   Every decorative animation sits behind @media (prefers-reduced-motion:
+   no-preference), so a reduced-motion user gets an instant, static, complete
+   page — not a degraded one. The same discipline foresight.css follows.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* ── Ambient field ────────────────────────────────────────────────────────── */
+
+.iv-backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.16) 1px, transparent 0);
+  background-size: 38px 38px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 80% at 50% 12%, black 20%, transparent 72%);
+  mask-image: radial-gradient(ellipse 75% 80% at 50% 12%, black 20%, transparent 72%);
+  opacity: 0.5;
+}
+
+.iv-glow {
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  border-radius: 9999px;
+  filter: blur(100px);
+  opacity: 0.13;
+  pointer-events: none;
+}
+.iv-glow-gold { background: #f59e0b; top: -200px; left: 8%; }
+.iv-glow-violet { background: #8b5cf6; top: -150px; right: 6%; }
+.iv-glow-teal { background: #14b8a6; top: 30%; left: 45%; opacity: 0.07; }
+
+/* Rising motes: the visual of one input becoming many ideas. Two layers at
+   different speeds so the field has depth without a third DOM node. */
+.iv-motes,
+.iv-motes2 {
+  position: absolute;
+  inset: -20% 0 0 0;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+.iv-motes {
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 78%, rgba(245, 158, 11, 0.55), transparent),
+    radial-gradient(1.5px 1.5px at 34% 92%, rgba(139, 92, 246, 0.45), transparent),
+    radial-gradient(1px 1px at 58% 84%, rgba(94, 234, 212, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 77% 96%, rgba(245, 158, 11, 0.4), transparent),
+    radial-gradient(1px 1px at 91% 72%, rgba(139, 92, 246, 0.4), transparent);
+  background-size: 100% 620px;
+  opacity: 0.7;
+}
+.iv-motes2 {
+  background-image:
+    radial-gradient(1px 1px at 22% 88%, rgba(148, 163, 184, 0.4), transparent),
+    radial-gradient(1px 1px at 47% 74%, rgba(245, 158, 11, 0.3), transparent),
+    radial-gradient(1px 1px at 68% 90%, rgba(139, 92, 246, 0.3), transparent),
+    radial-gradient(1px 1px at 86% 80%, rgba(94, 234, 212, 0.3), transparent);
+  background-size: 100% 880px;
+  opacity: 0.5;
+}
+
+/* ── Title ────────────────────────────────────────────────────────────────── */
+
+.iv-title {
+  background: linear-gradient(100deg, #fff 18%, #fcd34d 42%, #c4b5fd 58%, #fff 82%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* The mark above the title: an iris that breathes. */
+.iv-mark {
+  position: relative;
+  isolation: isolate;
+}
+.iv-mark::before,
+.iv-mark::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  opacity: 0;
+}
+
+/* ── Method cards ─────────────────────────────────────────────────────────── */
+
+.iv-method {
+  position: relative;
+  overflow: hidden;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 220ms ease, background-color 220ms ease;
+}
+.iv-method:hover { transform: translateY(-2px); }
+.iv-method:active { transform: translateY(0); }
+
+/* Tier spine — the one piece of colour that says which class of method this is
+   before any text is read. Gold rigorous, teal fast lens, violet advanced. */
+.iv-method::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  opacity: 0.55;
+  transition: opacity 220ms ease, width 220ms ease;
+}
+.iv-method:hover::before,
+.iv-method[aria-pressed='true']::before { opacity: 1; width: 3px; }
+.iv-tier-1::before { background: linear-gradient(180deg, #f59e0b, rgba(245, 158, 11, 0.2)); }
+.iv-tier-2::before { background: linear-gradient(180deg, #14b8a6, rgba(20, 184, 166, 0.2)); }
+.iv-tier-3::before { background: linear-gradient(180deg, #8b5cf6, rgba(139, 92, 246, 0.2)); }
+
+/* Cursor-tracked spotlight. --mx/--my are set inline by the pointer handler and
+   default to the card centre so a keyboard user sees a sensible highlight too. */
+.iv-spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 260ms ease;
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%),
+              rgba(245, 158, 11, 0.13), transparent 62%);
+}
+.iv-method:hover .iv-spot,
+.iv-method:focus-visible .iv-spot { opacity: 1; }
+
+/* The selected method wears an aperture: an iris ring around its badge. */
+.iv-aperture {
+  position: relative;
+}
+.iv-aperture::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  border: 1px solid rgba(245, 158, 11, 0.6);
+}
+
+/* ── Divergence diagram ───────────────────────────────────────────────────── */
+
+.iv-fan-line {
+  stroke-linecap: round;
+  opacity: 0.8;
+}
+.iv-fan-node { transform-box: fill-box; transform-origin: center; }
+
+/* ── Synthesis rail (the generating state) ────────────────────────────────── */
+
+.iv-rail {
+  position: relative;
+  height: 2px;
+  border-radius: 9999px;
+  background: rgba(148, 163, 184, 0.16);
+  overflow: hidden;
+}
+.iv-rail::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 34%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.9), rgba(139, 92, 246, 0.9), transparent);
+  transform: translateX(-110%);
+}
+
+.iv-stage {
+  transition: color 300ms ease, opacity 300ms ease;
+}
+.iv-stage-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: rgba(148, 163, 184, 0.35);
+  transition: background-color 300ms ease, box-shadow 300ms ease;
+}
+.iv-stage-live .iv-stage-dot {
+  background: #f59e0b;
+  box-shadow: 0 0 10px 2px rgba(245, 158, 11, 0.45);
+}
+
+/* ── Idea cards ───────────────────────────────────────────────────────────── */
+
+.iv-idea {
+  position: relative;
+  overflow: hidden;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 260ms ease, box-shadow 260ms ease;
+}
+.iv-idea:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.9);
+}
+/* A hairline that lights up along the top edge on hover — the "this one is
+   live" cue, borrowed from the Horizon card treatment for consistency. */
+.iv-idea::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.65), transparent);
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+.iv-idea:hover::before,
+.iv-idea:focus-within::before { opacity: 1; }
+
+/* Verdict-coloured left edge: confirmed green, contradicted amber, unchecked
+   stays neutral. Colour is never the ONLY carrier — every card also states the
+   verdict in words beside an icon. */
+.iv-idea-confirmed { border-left: 2px solid rgba(16, 185, 129, 0.55); }
+.iv-idea-contradicted { border-left: 2px solid rgba(245, 158, 11, 0.55); }
+
+.iv-verdict-ring { transform: rotate(-90deg); transform-origin: center; }
+
+/* ── Reduced-motion boundary ──────────────────────────────────────────────────
+   Everything above is layout, colour and hover — usable with no animation at
+   all. Everything below is movement, and it only exists when the reader has
+   not asked for it to stop. */
+
+@media (prefers-reduced-motion: no-preference) {
+  .iv-glow-gold { animation: iv-drift 16s ease-in-out infinite alternate; }
+  .iv-glow-violet { animation: iv-drift 21s ease-in-out infinite alternate-reverse; }
+  .iv-glow-teal { animation: iv-drift 27s ease-in-out infinite alternate; }
+
+  .iv-motes { animation: iv-rise 34s linear infinite; }
+  .iv-motes2 { animation: iv-rise 52s linear infinite; }
+
+  .iv-title { animation: iv-shimmer 8s ease-in-out infinite; }
+
+  .iv-mark::before { animation: iv-iris 3.6s ease-out infinite; }
+  .iv-mark::after { animation: iv-iris 3.6s ease-out 1.8s infinite; }
+
+  .iv-rail::after { animation: iv-photon 1.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+  /* An idea CRYSTALLISES: a bright scan wipes across it once as it arrives. */
+  .iv-crystallise::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgba(245, 158, 11, 0.16) 50%, transparent 65%);
+    background-size: 260% 100%;
+    animation: iv-wipe 900ms ease-out forwards;
+  }
+
+  /* The fan lines DRAW rather than appear, so the eye follows one problem
+     opening into many lenses. */
+  .iv-fan-line {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: iv-draw 900ms ease-out forwards;
+  }
+  .iv-fan-node { animation: iv-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+  .iv-verdict-arc {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: iv-arc 900ms ease-out 180ms forwards;
+  }
+
+  .iv-aperture::after { animation: iv-iris-tight 2.8s ease-in-out infinite; }
+
+  .iv-count { animation: iv-count-in 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+}
+
+@keyframes iv-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-70px, 34px, 0) scale(1.18); }
+}
+@keyframes iv-rise {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, -620px, 0); }
+}
+@keyframes iv-shimmer {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 120% center; }
+}
+@keyframes iv-iris {
+  0% { opacity: 0.7; transform: scale(0.72); }
+  70% { opacity: 0; transform: scale(1.5); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+@keyframes iv-iris-tight {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.12); }
+}
+@keyframes iv-photon {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(400%); }
+}
+@keyframes iv-wipe {
+  from { background-position: 200% 0; opacity: 1; }
+  to { background-position: -60% 0; opacity: 0; }
+}
+@keyframes iv-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes iv-pop {
+  from { opacity: 0; transform: scale(0.3); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes iv-arc {
+  to { stroke-dashoffset: var(--arc-rest, 40); }
+}
+@keyframes iv-count-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}

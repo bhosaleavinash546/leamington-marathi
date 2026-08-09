@@ -63,7 +63,10 @@ try {
   await page.evaluate(([t, u]) => localStorage.setItem('brainspark_auth', JSON.stringify({ token: t, user: u })), [token, user]);
 
   const axeSource = readFileSync(join(ROOT, 'node_modules', 'axe-core', 'axe.min.js'), 'utf8');
-  const PAGES = ['/', '/marketplace', '/analyze', '/should-cost', '/dfm-studio', '/legal/privacy'];
+  // `/innovate` joins the gate with the Innovation Studio's motion pass: the page
+  // gained an ambient field, a cursor-tracked spotlight, an SVG divergence
+  // diagram and a live region, and every one of those is a way to fail axe.
+  const PAGES = ['/', '/marketplace', '/analyze', '/should-cost', '/dfm-studio', '/innovate', '/legal/privacy'];
   let axeFailures = 0;
 
   for (const route of PAGES) {
