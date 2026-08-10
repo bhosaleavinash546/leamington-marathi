@@ -1823,3 +1823,30 @@ Format: decision · why · what would change it.
     so every one of them abstained with "no measurement available" while the measure map held
     the right answer three lines away. Found by writing the test first and watching four
     correct rules report nothing.
+
+## Vacuum-assisted die casting keeps the HPDC ruleset, with one NADCA amendment
+
+`Vacuum-Assisted Die Casting` routes to the plain `hpdc` family. The original
+reason stands: vacuum buys porosity low enough to heat-treat and weld, which is
+a metallurgical property this tool does not measure, and a near-copy family
+would have invented six thresholds to restate the same geometric limits.
+
+NADCA *Product Design for Die Casting* 7th ed. §5.1 pp.125-128, read first-hand,
+does give two things that ARE specific, and they are recorded here rather than
+turned into a family:
+
+  * VHPDC is characterised as producing "large, thin-walled (0.08-0.16
+    inches/2-4 mm) structural castings" — a narrower band than the 1.5-4 mm the
+    conventional rule carries, at the thin end especially.
+  * The alloy set is named and is low-iron (<= 0.45% Fe): Aural-2/3/5,
+    Castasil-37, Mercalloy 367/368, Magsimal-59, Silafont-36. Silafont and
+    Castasil are in the picker and currently route to conventional HPDC.
+
+And one figure worth carrying into COST rather than DFM: VHPDC uses 20-50 gates
+against the 3-5 of conventional die casting — an Audi B-pillar is cited at 46.
+The tooling model does not distinguish them.
+
+Not acted on, deliberately: a 2-4 mm band applied to a part the user has told
+us is vacuum cast would tighten the thin end from 1.5 to 2 mm, which is a real
+change but rests on one descriptive sentence rather than a specification table.
+Recorded so the next person does not have to re-read Chapter 5 to find it.

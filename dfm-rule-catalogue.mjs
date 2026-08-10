@@ -636,7 +636,7 @@ export const DFM_RULES = [
     rationale:
       'A die casting solidifies against cold steel, so it grows a dense, fine-grained skin about 0.4 to 0.5 mm thick that carries most of its strength and all of its pressure tightness. The skin does NOT get thicker as the wall does. Cutting deeper than it exposes the porous core — which is why a machined sealing face leaks when an as-cast one would not.',
     fix: 'Hold machining stock at or below 0.5 mm on faces that must seal or carry load, or specify a vacuum or squeeze process where the core is dense enough to cut into.',
-    source: 'NADCA Product Design for Die Casting, 7th ed. (2015), §4.2 pp.93-94 and Figure 4.6, read first-hand, citing Borland and Tsumagari (2006): the skin is 0.38-0.50 mm, is not a function of wall thickness, and "removal of the skin to a depth greater than 0.020 in. (0.50 mm) by secondary processes such as machining, increases the chance of exposing porosity in the core".',
+    source: 'NADCA Product Design for Die Casting, 7th ed. (2015), §4.2 pp.93-94 and Figure 4.6, read first-hand, citing Borland and Tsumagari (2006): the skin is 0.38-0.50 mm, is not a function of wall thickness, and "removal of the skin to a depth greater than 0.020 in. (0.50 mm) by secondary processes such as machining, increases the chance of exposing porosity in the core". NOTE A CONTRADICTION INSIDE THE BOOK: §3.4 and the glossary both give the same skin as 0.020 in. but convert it to "0.8 mm", which is arithmetically wrong — 0.020 in. is 0.508 mm. The IMPERIAL figure is 0.020 in. in all three places, so 0.5 mm is the correct metric value and the two 0.8 mm figures are the book mis-converting. Recorded here so the threshold is not "corrected" to 0.8 by a later reader.',
   },
   {
     id: 'hpdc-as-cast-finish',
@@ -2782,19 +2782,24 @@ export const DFM_RULES = [
   // than either because the part is squeezed onto the die.
   // ═══════════════════════════════════════════════════════════════════════════
   {
+    // WAS 2 mm, AND TOO PERMISSIVE BY HALF. NADCA gives squeeze casting its own
+    // minimum, and the reason: the cavity is filled deliberately slowly — 1 to 3
+    // seconds against a conventional die casting's milliseconds — so a thin wall
+    // freezes before the metal reaches the end of it. Squeeze casting buys
+    // density, and it pays for it in wall thickness.
     id: 'squeeze-min-section',
-    sourceStatus: 'industry-consensus',
+    sourceStatus: 'standard-named',
     process: 'squeeze-casting',
     severity: 'high',
-    title: 'Local section below what squeeze casting fills',
+    title: 'Wall too thin for a slow-filled squeeze casting',
     measure: 'wallP5Mm',
     compare: 'gte',
-    threshold: 2.0,
+    threshold: 3,
     unit: 'mm',
     rationale:
-      'Squeeze casting fills slowly and relies on pressure rather than velocity, so it does not chase a thin section the way a high-pressure shot does. Below about 2 mm the section is short-filled before the press closes on it.',
-    fix: 'Thicken the section to at least 2 mm, or move the part to high-pressure die casting.',
-    source: 'Squeeze casting is quoted as producing walls of 2.0-2.5 mm at 800-1200 mm length, and 2.5-3.5 mm at 900-2000 mm. No primary standard audited.',
+      'Squeeze casting fills the cavity in one to three seconds to keep the metal free of turbulence and gas, then holds it under about 100 MPa while it freezes. That slow fill is what makes the casting dense enough to heat treat — and it is also why a thin wall solidifies before the metal gets there.',
+    fix: 'Take the thinnest section to at least 3 mm, or choose conventional or vacuum die casting, which fill fast enough for a thinner wall.',
+    source: 'NADCA Product Design for Die Casting, 7th ed. (2015), §5.2 p.129, READ FIRST-HAND: "As the castings are filled so slowly, components produced by squeeze casting are normally thicker walled (minimum of 0.12-0.20 inches/3-5 mm) so that the liquid aluminum doesn\'t solidify before the casting is fully filled." The lower end of the published band is used here; 5 mm is the typical figure, not the limit.',
   },
   {
     id: 'squeeze-wall-uniformity',
@@ -4395,6 +4400,21 @@ export const DFM_RULES = [
  * reader to infer that the catalogue is complete.
  */
 export const UNWRITTEN_RULES = [
+  {
+    topic: 'Cast-in-place insert wall thickness (magnesium)',
+    needs: 'Recognition of an INSERT — a body of a different material cast into the part. NADCA §3.2 p.63 gives a checkable limit: "Insert wall thicknesses 0.050 in. (1.25 mm) or less will heat and subsequently contract, and limit residual stresses to safe levels. Inserts with thicker walls must be preheated." A thick-walled insert in AZ91 is a stress-corrosion-cracking risk. A STEP file of a single solid carries no insert, so there is nothing to measure.',
+    proxy: 'Nothing. This rule cannot be evaluated from a one-body model at all, and no rule in the catalogue approximates it.',
+  },
+  {
+    topic: 'INSIDE versus OUTSIDE surfaces for the NADCA draft split',
+    needs: 'A test that tells an ejector-half surface from a cover-half one and survives through-features. NADCA requires TWICE as much draft on inside surfaces as on outside ones, because the alloy shrinks onto the features that form inside surfaces and away from those that form outside surfaces. The obvious ray test — does the outward normal escape to open air — classifies a through-hole wall as an outside surface, because from a bore wall the normal escapes through the bore opening.',
+    proxy: 'Every wall is judged at the OUTSIDE constant, which is the lower of the two. The draft rules therefore UNDER-report on ejector-half surfaces by a factor of two, and each of their source texts says so.',
+  },
+  {
+    topic: 'Parting-line planarity, and the trim die it pays for',
+    needs: 'The silhouette of the part along the chosen draw direction, and a measure of how far it departs from a single plane. NADCA §2.3 p.30: "Where possible, the die casting should be designed with the parting line in one plane to simplify trim die design", and trim dies "can be estimated at an additional 15 to 20% of the die casting die cost". A stepped parting line is a real and quotable cost.',
+    proxy: 'The draw direction IS chosen by sweeping candidate axes and scoring undercut area, so the parting direction is measured — but nothing reports whether the resulting parting line is planar, and no trim-die line appears in the tooling cost.',
+  },
   {
     topic: 'Tolerance expressed as a PERCENTAGE of dimension (MIM, and casting CT grades)',
     needs: 'A per-feature tolerance chain rather than one tightest band. MIM is quoted at roughly +/-0.3% of the dimension and ISO 8062 casting grades are the same idea — a band that is generous on a 40 mm feature is impossible on a 4 mm one. This engine reads ONE tightest callout in millimetres from the PMI, so it cannot ask "is this band achievable FOR THIS SIZE".',
