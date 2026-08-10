@@ -8,6 +8,8 @@ export interface FindingAnnotation {
   label: string;
   value: string;
   severity: 'high' | 'medium' | 'low';
+  /** The rule's measure, so a caller need not re-derive it from the title. */
+  measure: string;
   /** Which instance this marker sits on — "worst of 34", "the pocket". */
   note: string;
 }
@@ -33,3 +35,8 @@ export function chooseSecondView(
   missing: string[],
   byView: Record<string, string[]>,
 ): { view: string; reveals: string[] } | null;
+
+/** The one marked finding whose evidence is under the surface, or null. */
+export function sectionCandidate(
+  annotations: FindingAnnotation[],
+): FindingAnnotation | null;

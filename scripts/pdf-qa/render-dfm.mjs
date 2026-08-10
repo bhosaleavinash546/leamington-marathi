@@ -48,7 +48,7 @@ globalThis.document = {
 const { exportDfmPdf, exportDfmXlsx } = await import('./dfm-report.bundle.mjs');
 const {
   DFM_RESULT, DFM_FIGURES, DFM_FIGURE_NOTES, DFM_RESULT_CONFLICT, DFM_RESULT_MEASURED,
-  DFM_RESULT_FULL, DFM_RESULT_NO_RULES, DFM_RESULT_CHOSEN,
+  DFM_RESULT_FULL, DFM_RESULT_NO_RULES, DFM_RESULT_CHOSEN, DFM_BASELINE,
 } = await import('./fixture-dfm.mjs');
 
 // Rendered TWICE on purpose. The no-figure call is the branch the harness has
@@ -57,6 +57,19 @@ const {
 // node, where there is no canvas and jsPDF must decode the data URI itself.
 exportDfmPdf(DFM_RESULT);
 exportDfmPdf({ ...DFM_RESULT, partName: DFM_RESULT.partName + ' (annotated)' }, DFM_FIGURES, DFM_FIGURE_NOTES);
+
+// The revision comparison and the action list, which have their own pages and
+// their own ways to be wrong — a diff that counts a lost measurement as a fix,
+// and an action table whose owner column is empty.
+{
+  const { diffAnalyses, comparability } = await import('../../src/services/dfm-diff.mjs');
+  const d = diffAnalyses(DFM_BASELINE, DFM_RESULT);
+  exportDfmPdf(
+    { ...DFM_RESULT, partName: DFM_RESULT.partName + ' (revision diff)' },
+    DFM_FIGURES, DFM_FIGURE_NOTES,
+    { ...d, warnings: comparability(DFM_BASELINE, DFM_RESULT), baselineLabel: 'Rev A - 2026-07-02' },
+  );
+}
 // The two process-family states the cover has to render differently: geometry
 // agreeing with the chosen family, and geometry contradicting it.
 exportDfmPdf(DFM_RESULT_MEASURED);
@@ -82,7 +95,15 @@ if (over) process.exit(1);
 // The FULL fixture, not the base one. The base carries no route comparison, so
 // exporting it left the workbook's Routes sheet — the sheet a cost engineer
 // reaches for first — completely unexercised by this harness.
-await exportDfmXlsx(DFM_RESULT_FULL);
+// WITH the revision diff, or the Changes sheet renders in no test anywhere —
+// the same fault that left the Routes sheet unexercised until xlsx-inspect
+// caught it.
+{
+  const { diffAnalyses, comparability } = await import('../../src/services/dfm-diff.mjs');
+  const d = diffAnalyses(DFM_BASELINE, DFM_RESULT);
+  await exportDfmXlsx(DFM_RESULT_FULL,
+    { ...d, warnings: comparability(DFM_BASELINE, DFM_RESULT), baselineLabel: 'Rev A - 2026-07-02' });
+}
 if (!xlsxOut) throw new Error('no xlsx captured');
 fs.writeFileSync('dfm-fixture.xlsx', Buffer.from(xlsxOut));
 console.log('xlsx bytes:', Buffer.from(xlsxOut).length);

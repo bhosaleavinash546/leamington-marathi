@@ -96,6 +96,109 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
     } catch { return undefined; }
   }
 
+  // ── Revision snapshots ─────────────────────────────────────────────────────
+  //
+  // A DFM report was a snapshot with nothing to compare it to. Answering "did
+  // the changes we agreed last month work?" needs rev A to still exist when rev
+  // B is analysed, and nothing persisted an analysis at all.
+  //
+  // What is stored is the RULE VERDICTS, not the geometry: the diff matches by
+  // rule id and needs the measured value, the threshold and the priced impact.
+  // Keeping the tessellation would multiply the row size by a thousand for data
+  // no comparison reads.
+  try {
+    db?.exec(`CREATE TABLE IF NOT EXISTS dfm_snapshots (
+      id         TEXT PRIMARY KEY,
+      user_id    TEXT NOT NULL,
+      part_key   TEXT NOT NULL,
+      label      TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      payload    TEXT NOT NULL
+    )`);
+    db?.exec('CREATE INDEX IF NOT EXISTS idx_dfm_snapshots_user_part ON dfm_snapshots (user_id, part_key)');
+  } catch { /* migration is best-effort, same as the rest of the schema block */ }
+
+  /** Two revisions of one part share a key; case and spacing must not split them. */
+  const partKeyOf = (a) => String(a?.partName || a?.fileName || 'part')
+    .toLowerCase().replace(/\.(step|stp|igs|iges)$/i, '').replace(/[^a-z0-9]+/g, '-').slice(0, 80);
+
+  /**
+   * Only what the comparison reads.
+   *
+   * Storing the whole analysis would put a megabyte of tessellation and feature
+   * tables in every row to support a diff that looks at rule ids — and a store
+   * that big is a store people turn off.
+   */
+  function compactForDiff(a) {
+    const slim = (f) => ({
+      id: f.id, title: f.title, severity: f.severity, measure: f.measure,
+      measured: f.measured ?? null, unit: f.unit, thresholdText: f.thresholdText,
+      status: f.status, reason: f.reason,
+      cost: f.cost ? { annualDeltaEur: f.cost.annualDeltaEur ?? null } : undefined,
+    });
+    return {
+      partName: a?.partName, fileName: a?.fileName, subject: a?.subject, material: a?.material,
+      results: (a?.results || []).map((r) => ({
+        process: r.process, processName: r.processName, ruleCount: r.ruleCount,
+        evaluatedCount: r.evaluatedCount, coveragePct: r.coveragePct, score: r.score,
+        impact: r.impact ? { annualEur: r.impact.annualEur } : undefined,
+        findings: (r.findings || []).map(slim),
+        passed: (r.passed || []).map(slim),
+        notEvaluated: (r.notEvaluated || []).map(slim),
+      })),
+    };
+  }
+
+  app.get('/api/dfm/snapshots', requireAuth, (req, res) => {
+    if (!db) return res.json({ snapshots: [] });
+    const key = String(req.query.partKey || '').slice(0, 80);
+    try {
+      const rows = key
+        ? db.prepare('SELECT id, label, created_at, part_key FROM dfm_snapshots WHERE user_id = ? AND part_key = ? ORDER BY created_at DESC LIMIT 20')
+          .all(req.user.id, key)
+        : db.prepare('SELECT id, label, created_at, part_key FROM dfm_snapshots WHERE user_id = ? ORDER BY created_at DESC LIMIT 20')
+          .all(req.user.id);
+      res.json({ snapshots: rows.map((r) => ({ id: r.id, label: r.label, createdAt: r.created_at, partKey: r.part_key })) });
+    } catch { res.json({ snapshots: [] }); }
+  });
+
+  app.get('/api/dfm/snapshots/:id', requireAuth, (req, res) => {
+    if (!db) return res.status(404).json({ error: 'No store configured.' });
+    try {
+      const row = db.prepare('SELECT payload, label, created_at FROM dfm_snapshots WHERE id = ? AND user_id = ?')
+        .get(req.params.id, req.user.id);
+      if (!row) return res.status(404).json({ error: 'No such snapshot.' });
+      res.json({ label: row.label, createdAt: row.created_at, analysis: JSON.parse(row.payload) });
+    } catch { res.status(500).json({ error: 'Could not read that snapshot.' }); }
+  });
+
+  app.post('/api/dfm/snapshots', requireAuth, (req, res) => {
+    if (!db) return res.status(503).json({ error: 'No store configured.' });
+    const analysis = req.body?.analysis;
+    if (!analysis?.results) return res.status(400).json({ error: 'An analysis with results is required.' });
+    const key = partKeyOf(analysis);
+    const label = String(req.body?.label || '').trim().slice(0, 80)
+      || `${analysis.partName || analysis.fileName || 'Part'} — ${new Date().toISOString().slice(0, 10)}`;
+    const id = `snap_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    try {
+      db.prepare('INSERT INTO dfm_snapshots (id, user_id, part_key, label, created_at, payload) VALUES (?,?,?,?,?,?)')
+        .run(id, req.user.id, key, label, new Date().toISOString(), JSON.stringify(compactForDiff(analysis)));
+      // Twenty per part is plenty of history and bounds the table without a cron.
+      db.prepare(`DELETE FROM dfm_snapshots WHERE user_id = ? AND part_key = ? AND id NOT IN (
+        SELECT id FROM dfm_snapshots WHERE user_id = ? AND part_key = ? ORDER BY created_at DESC LIMIT 20)`)
+        .run(req.user.id, key, req.user.id, key);
+      res.json({ id, label, partKey: key });
+    } catch (e) { res.status(500).json({ error: 'Could not save that revision.' }); }
+  });
+
+  app.delete('/api/dfm/snapshots/:id', requireAuth, (req, res) => {
+    if (!db) return res.status(503).json({ error: 'No store configured.' });
+    try {
+      db.prepare('DELETE FROM dfm_snapshots WHERE id = ? AND user_id = ?').run(req.params.id, req.user.id);
+      res.json({ ok: true });
+    } catch { res.status(500).json({ error: 'Could not delete that revision.' }); }
+  });
+
   // Each call forks a Python OCP process; the bridge caps concurrency, this caps
   // request rate.
   const limit = rateLimit(Number(process.env.CV_DFM_RATE_MAX ?? 40), 10 * 60 * 1000);

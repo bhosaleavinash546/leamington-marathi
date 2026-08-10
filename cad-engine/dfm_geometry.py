@@ -808,12 +808,14 @@ def tool_accessibility(tess, inter, directions=None, tool_dia_mm=10.0, reach=1e5
     # Union across directions, computed per triangle rather than by adding the
     # per-direction percentages — a face reachable from three sides would
     # otherwise be counted three times and the union could exceed 100%.
+    unreached = []
     for i in sampled:
         ar = tess["area"][i] * step
         nx, ny, nz = tess["nx"][i], tess["ny"][i], tess["nz"][i]
         px = tess["cx"][i] + nx * EPS_MM
         py = tess["cy"][i] + ny * EPS_MM
         pz = tess["cz"][i] + nz * EPS_MM
+        reached_here = False
         for d in directions:
             m = math.sqrt(sum(c * c for c in d)) or 1.0
             dn = tuple(c / m for c in d)
@@ -833,10 +835,26 @@ def tool_accessibility(tess, inter, directions=None, tool_dia_mm=10.0, reach=1e5
                     break
             if not blocked:
                 reached_any += ar
+                reached_here = True
                 break
+        if not reached_here:
+            # WHERE the cutter cannot get to.
+            #
+            # The measure was a bare percentage and the report had to say "23% of
+            # the surface is unreachable" with nothing to point at, on a part
+            # whose whole problem is that one pocket is too deep for the tool.
+            # These are real surface points, kept largest-area first and capped,
+            # so a marker lands on a face the cutter genuinely misses.
+            unreached.append((ar, round(tess["cx"][i], 3), round(tess["cy"][i], 3),
+                              round(tess["cz"][i], 3)))
+
+    unreached.sort(key=lambda t: -t[0])
 
     return {
         "toolDiaMm": round(float(tool_dia_mm), 2),
+        "unreachableRegions": [
+            {"areaMm2": round(a, 2), "atXYZ": [x, y, z]} for (a, x, y, z) in unreached[:8]
+        ],
         "reachableAreaPct": round(100.0 * reached_any / total_area, 2) if total_area else 0.0,
         "unreachableAreaPct": round(100.0 - (100.0 * reached_any / total_area), 2) if total_area else 0.0,
         "byDirection": per_dir,

@@ -1634,3 +1634,77 @@ Format: decision · why · what would change it.
     capture included the viewer's **ground grid** — orientation help for someone orbiting a
     part, and a receding lattice behind the subject in print. `snapshot({ clean: true })`
     hides it for the capture and restores it in the `finally`.
+
+126. **Ten measures were filed as "whole part" because the kernel threw the face away (2026).**
+    *Why:* the marker layer could place 53% of the catalogue. Auditing why, most of the gap
+    was not physics: `_min_internal_corner_radius` took a minimum over every concave face and
+    discarded which one; `_aperture_gaps` found the worst hole pair and kept only the
+    distance; the flange measure walked every bend and remembered none of them; the tool-reach
+    sweep knew exactly which triangles it failed on and returned a bare percentage. Each
+    measure was then classified "whole part, no single face to mark" — a claim that was true
+    *by construction*, because the code had deleted the answer one line earlier.
+    *Changes it:* the kernel keeps the face. `internalCorners`, `minHoleToHoleAtXYZ`,
+    `minHoleToEdgeAtXYZ`, `minBendRadiusAtXYZ`, `minBendToBendAtXYZ`, `minFlangeAtXYZ`,
+    `holeToBendAtXYZ` and `unreachableRegions` are published, and the ten measures move.
+    **Markable: 53% → 66% of 216 rules** (142 of them). The remaining 74 are genuinely
+    whole-part — a setup count, a tolerance band, a slenderness ratio — and stay named as
+    such. My estimate before doing the work was 85%; the real number is 66%, and the
+    difference is that most of what is left really is a property of the part.
+
+127. **A DFM report that cannot answer "did last month's changes work?" (2026).**
+    *Why:* every report was a snapshot. The second question a programme asks is comparative,
+    and a reviewer had to diff two PDFs by eye — which is how a closed finding gets missed and
+    a regression ships. *Changes it:* `dfm-diff.mjs`, pure and unit-tested, plus a
+    `dfm_snapshots` table, four endpoints and a baseline picker in the Studio.
+    The value of the module is entirely in the distinctions it refuses to blur:
+      * **CLOSED vs NO LONGER MEASURABLE.** A rule that stopped failing because rev B lost
+        its wall measurement has NOT been fixed. It is the most dangerous false positive the
+        feature could have, so it is a separate `how` on every row, the money it "freed" is
+        zero, and the page-one tile counts only genuine fixes. An early render had a tile
+        reading "2 CLOSED" beside a headline reading "0 findings closed" — the report arguing
+        with itself, with the flattering number in the bigger typeface.
+      * **NEW vs NOWLY VISIBLE.** A rule that could not be evaluated on rev A and fails on
+        rev B has not regressed; it became measurable. Calling that a new defect sends
+        somebody to undo a change that did nothing wrong.
+      * **Comparability is WARNED, not assumed.** Two different rule families, or two
+        different alloys, produce a table that means nothing. The mismatch is named and the
+        reader decides.
+    The baseline is never auto-selected. Diffing against whatever happened to be in the store
+    last is how a report ends up comparing two different parts.
+
+128. **Findings, and then nothing: the report had no next step (2026).**
+    *Why:* it said what was wrong and what it cost, and stopped. Nobody leaves a design review
+    with "41.2% of the wall area is under-drafted"; they leave with an owner and a decision.
+    *Changes it:* `dfm-actions.mjs` — a page and two sheets. Two disciplines make it a module
+    rather than prose in the exporter: **the action is the rule's OWN fix text** (nothing is
+    authored, only cut to the instruction), and **the owner is a ROLE, never a name** —
+    derived from what has to change, because a slide is a toolmaker's problem and a wall
+    thickness is a designer's. The due column is deliberately BLANK; a date this tool invented
+    would be the least credible column in the document.
+    Two layout faults found only by rasterising: the first version dropped the FINDING to fit
+    five columns, so two rules sharing a fix sentence produced two identical, unaddressable
+    rows; and `splitTextToSize` was called before the font was set, so 8.4 pt text was wrapped
+    against 6.2 pt metrics and ran straight through the column beside it.
+
+129. **A ring on the skin above a thin wall proves nothing (2026).**
+    *Why:* the one finding type where an external view is worthless is the one hidden under
+    the surface. *Changes it:* `snapshot` gained a `sectionThrough(anchor)` that cuts the part
+    at the point the engine measured — not wherever a slider was left — choosing the axis the
+    anchor sits furthest along. Only findings whose evidence is internal earn a cut
+    (`sectionCandidate`: the thin-wall and deep-bore measures), because a section costs a page.
+
+130. **`npm run thresholds:audit` — 109 unaudited thresholds were a sentence, not a work list (2026).**
+    *Why:* the report appendix said "N of 216 rest on industry consensus" and no process could
+    act on it: you could not list them, rank them, or tell which had been looked at. A grade is
+    a claim ABOUT a citation, not a record that anyone opened it. *Changes it:* a register
+    (`docs/threshold-audit.json`) with four honest statuses — `primary-read`,
+    `search-corroborated`, `contested`, `unaudited` — and a report that ranks by exposure and
+    names what is unverified. A threshold absent from the register is `unaudited`; defaulting
+    to anything else is the same fault as scoring an unevaluated rule as a pass.
+    **This environment blocks outbound access to every standards body** (nadca.com, iso.org and
+    the rest return EGRESS_BLOCKED), so `primary document read` is **0%** and not one entry is
+    `primary-read`. That is recorded in the register rather than glossed. The first pass still
+    found two CONTESTED thresholds by corroboration alone: `hpdc-draft-minimum` applies one
+    figure where the published NADCA constants split inside/outside/cored-hole draft, and
+    `hpdc-wall-thickness-range` cites a standard that, by every summary, sets no absolute
+    minimum wall at all.

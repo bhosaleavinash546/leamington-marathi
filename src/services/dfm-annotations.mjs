@@ -43,10 +43,19 @@ const WHOLE_PART_MEASURES = new Set([
   'setupCount', 'axisymmetricAreaPct', 'unreachableAreaPct', 'wallSpreadRatio',
   'tightestToleranceMm', 'slendernessLtoD', 'circumscribingCircleMm',
   'drawDepthToWidth', 'pressDepthToWallRatio', 'overhangAreaBelowDeg',
-  'blindHoleCount', 'minBendRadiusToThickness', 'minBendToBendToThickness',
-  'minFlangeToThickness', 'minApertureToThickness', 'minHoleDiaToThickness',
-  'minHoleToEdgeToThickness', 'minHoleToHoleToThickness', 'holeToBendClearanceMm',
+  'blindHoleCount',
 ]);
+// TEN measures used to sit in that list and should never have. A hole-to-hole
+// gap, a short flange, a tight bend and an unreachable pocket all HAPPEN AT A
+// PLACE; calling them properties of the whole part was a filing decision, not
+// physics. In every case the kernel knew the face and was discarding it at the
+// moment it took the minimum — bends already carried `axisPointXYZ`, and the
+// tool-reach sweep knew exactly which triangles it failed on. They are kept
+// now, and placed below.
+//
+// What remains above is genuinely whole-part: a setup count, a tolerance band,
+// a slenderness ratio, a percentage of surface area. There is no face on the
+// model where "three setups" is true.
 
 /**
  * Where to look for coordinates when the finding carries none of its own.
@@ -61,28 +70,28 @@ const WHOLE_PART_MEASURES = new Set([
  */
 const REGION_SOURCE = {
   undercutFaceCount: {
-    at: (g) => g?.draft?.undercutRegions,
+    at: (g) => g?.dfm?.draft?.undercutRegions,
     xyz: (r) => r.centroidXYZ,
     faces: (r) => (r.faceId == null ? [] : [r.faceId]),
     worst: (a, b) => (Number(b.areaMm2) || 0) - (Number(a.areaMm2) || 0),
     note: (r, n) => (n > 1 ? `largest of ${n} undercut regions` : 'the undercut region'),
   },
   wallAreaBelowDraftPct: {
-    at: (g) => g?.draft?.zeroDraftRegions,
+    at: (g) => g?.dfm?.draft?.zeroDraftRegions,
     xyz: (r) => r.centroidXYZ,
     faces: (r) => (r.faceId == null ? [] : [r.faceId]),
     worst: (a, b) => (Number(a.draftDeg) || 0) - (Number(b.draftDeg) || 0),
     note: (r, n) => (n > 1 ? `flattest of ${n} under-drafted walls` : 'the under-drafted wall'),
   },
   wallP5Mm: {
-    at: (g) => g?.wallThickness?.thinnestRegions,
+    at: (g) => g?.dfm?.wallThickness?.thinnestRegions,
     xyz: (r) => r.atXYZ,
     faces: (r) => (r.faceId == null ? [] : [r.faceId]),
     worst: (a, b) => (Number(a.thicknessMm) || 0) - (Number(b.thicknessMm) || 0),
     note: (r) => (r.thicknessMm != null ? `thinnest section, ${r.thicknessMm} mm` : 'the thinnest section'),
   },
   maxPocketDepthToWidth: {
-    at: (g) => (g?.features?.prismatic || []).filter((p) => /pocket|slot/i.test(String(p.kind || ''))),
+    at: (g) => (g?.dfm?.features?.prismatic || []).filter((p) => /pocket|slot/i.test(String(p.kind || ''))),
     xyz: (r) => r.centroidXYZ,
     faces: (r) => (Array.isArray(r.faceIds) ? r.faceIds : []),
     worst: (a, b) => (Number(b.areaMm2) || 0) - (Number(a.areaMm2) || 0),
@@ -97,13 +106,66 @@ for (const [measure, worst] of [
   ['maxRibHeightToWall', (a, b) => (Number(b.heightMm) || 0) - (Number(a.heightMm) || 0)],
 ]) {
   REGION_SOURCE[measure] = {
-    at: (g) => g?.features?.ribs,
+    at: (g) => g?.dfm?.features?.ribs,
     xyz: (r) => r.centroidXYZ,
     faces: (r) => (Array.isArray(r.faceIds) ? r.faceIds : []),
     worst,
     note: (r, n) => (n > 1 ? `worst of ${n} ribs — ${r.thicknessMm} x ${r.heightMm} mm` : 'the rib'),
   };
 }
+
+// ── The five that used to have nowhere to point ────────────────────────────
+REGION_SOURCE.minInternalCornerRadiusMm = {
+  at: (g) => g?.dfm?.features?.internalCorners,
+  xyz: (r) => r.centroidXYZ,
+  faces: (r) => (r.faceId == null ? [] : [r.faceId]),
+  worst: (a, b) => (Number(a.radiusMm) || 0) - (Number(b.radiusMm) || 0),
+  note: (r, n) => (n > 1 ? `tightest of ${n} corners, R${r.radiusMm}` : `the R${r.radiusMm} corner`),
+};
+// A single measured POINT rather than a list — the kernel reports one worst web
+// and one worst edge distance, so there is exactly one place to mark.
+const singlePoint = (get, label) => ({
+  at: (g) => { const p = get(g); return isXYZ(p) ? [{ atXYZ: p }] : []; },
+  xyz: (r) => r.atXYZ,
+  faces: () => [],
+  worst: () => 0,
+  note: () => label,
+});
+REGION_SOURCE.minHoleToHoleToThickness =
+  singlePoint((g) => g?.dfm?.sheetMetal?.minHoleToHoleAtXYZ, 'the narrowest web between two openings');
+REGION_SOURCE.minHoleToEdgeToThickness =
+  singlePoint((g) => g?.dfm?.sheetMetal?.minHoleToEdgeAtXYZ, 'the opening closest to an edge');
+REGION_SOURCE.minApertureToThickness = {
+  // Already sorted smallest-first by the recogniser; sorted again here so the
+  // choice does not depend on somebody else's ordering staying that way.
+  at: (g) => g?.dfm?.apertures?.apertures,
+  xyz: (r) => r.centroidXYZ,
+  faces: () => [],
+  worst: (a, b) => (Number(a.equivalentDiaMm) || 0) - (Number(b.equivalentDiaMm) || 0),
+  note: (r, n) => (n > 1 ? `smallest of ${n} openings` : 'the opening'),
+};
+REGION_SOURCE.minBendRadiusToThickness =
+  singlePoint((g) => g?.dfm?.sheetMetal?.minBendRadiusAtXYZ, 'the tightest bend');
+REGION_SOURCE.minBendToBendToThickness =
+  singlePoint((g) => g?.dfm?.sheetMetal?.minBendToBendAtXYZ, 'the land between the two fold lines');
+REGION_SOURCE.minFlangeToThickness =
+  singlePoint((g) => g?.dfm?.sheetMetal?.minFlangeAtXYZ, 'the bend the short flange stands on');
+REGION_SOURCE.holeToBendClearanceMm =
+  singlePoint((g) => g?.dfm?.sheetMetal?.holeToBendAtXYZ, 'the opening nearest a fold line');
+REGION_SOURCE.unreachableAreaPct = {
+  at: (g) => g?.dfm?.toolAccess?.unreachableRegions,
+  xyz: (r) => r.atXYZ,
+  faces: () => [],
+  worst: (a, b) => (Number(b.areaMm2) || 0) - (Number(a.areaMm2) || 0),
+  note: (r, n) => (n > 1 ? `largest of ${n} unreachable patches` : 'the unreachable surface'),
+};
+REGION_SOURCE.minHoleDiaToThickness = {
+  at: (g) => (g?.geometry?.featureTable || []).filter((f) => f.kind === 'hole'),
+  xyz: (r) => r.axisPointXYZ || (Array.isArray(r.instancesXYZ) ? r.instancesXYZ[0] : null),
+  faces: () => [],
+  worst: (a, b) => (Number(a.diaMm) || 0) - (Number(b.diaMm) || 0),
+  note: (r, n) => (n > 1 ? `smallest of ${n} hole sizes, D${r.diaMm}` : `the D${r.diaMm} hole`),
+};
 
 const isXYZ = (v) => Array.isArray(v) && v.length === 3 && v.every((n) => Number.isFinite(Number(n)));
 
@@ -126,7 +188,9 @@ function bySeverityThenImpact(a, b) {
  */
 export function selectFindingAnnotations(analysis, opts = {}) {
   const max = Number.isFinite(opts.max) ? opts.max : ANNOTATION_CAP;
-  const geo = analysis?.dfm ?? {};
+  // The WHOLE analysis, not just its `dfm` block: the feature table and the
+  // aperture list live one level up, and two of the anchors below need them.
+  const geo = analysis ?? {};
   const results = Array.isArray(analysis?.results) ? analysis.results : [];
 
   // FAILED rules only. `findings` already excludes passes and abstentions, but
@@ -160,6 +224,9 @@ export function selectFindingAnnotations(analysis, opts = {}) {
     annotations.push({
       id: `finding-${f.id}`,
       ruleId: f.id,
+      // Carried so a caller can ask what KIND of measurement this is without
+      // re-deriving it from the title — which is how the two would drift apart.
+      measure: f.measure,
       anchorXYZ: placed.xyz.map(Number),
       faceIds: placed.faceIds,
       label: f.title,
@@ -255,4 +322,24 @@ export function chooseSecondView(missing, byView) {
     }
   }
   return best;
+}
+
+/**
+ * Findings whose evidence is UNDER the surface.
+ *
+ * A thin wall is invisible from outside. Drawing a ring on the skin above it
+ * asks a supplier to take the tool's word for what is underneath — and that is
+ * the one finding type where an external view proves nothing at all. Same for a
+ * deep bore: the slenderness that matters is the part of it you cannot see.
+ *
+ * A section is expensive in pages, so this is deliberately SHORT. Everything
+ * else is legible from outside and does not earn a cut.
+ */
+const SECTION_MEASURES = new Set([
+  'wallP5Mm', 'maxHoleDepthToDia', 'maxBlindHoleDepthToDia', 'maxThroughHoleDepthToDia',
+]);
+
+/** The one finding worth cutting the part open for, or null. */
+export function sectionCandidate(annotations = []) {
+  return annotations.find((a) => SECTION_MEASURES.has(a.measure)) || null;
 }

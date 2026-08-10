@@ -149,6 +149,67 @@ describe('http integration', () => {
     assert.equal(h.status, 200, 'server must still be alive after a bad request');
   });
 
+  it('a revision snapshot round-trips, is scoped to its owner, and is capped', async () => {
+    // The store behind the revision comparison. It writes to the DB and is
+    // reachable by id, which are exactly the two things a pure-core test cannot
+    // check — and the id path is where a missing owner filter would leak one
+    // workspace's parts into another's.
+    const analysis = {
+      partName: 'Integration bracket',
+      results: [{
+        process: 'hpdc', processName: 'HPDC', ruleCount: 2, evaluatedCount: 2, score: 40,
+        findings: [{ id: 'r1', title: 'Wall too thick', severity: 'high', measured: 9, unit: 'mm', status: 'fail' }],
+        passed: [], notEvaluated: [],
+      }],
+    };
+    const post = await fetch(`${BASE}/api/dfm/snapshots`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ analysis }),
+    });
+    assert.equal(post.status, 200);
+    const { id, partKey } = await post.json();
+    assert.ok(id && partKey);
+
+    const list = await fetch(`${BASE}/api/dfm/snapshots?partKey=${partKey}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    assert.ok((await list.json()).snapshots.some(s2 => s2.id === id));
+
+    const one = await fetch(`${BASE}/api/dfm/snapshots/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    assert.equal(one.status, 200);
+    const got = await one.json();
+    // The COMPACTED payload: rule verdicts survive, and the diff can read them.
+    assert.equal(got.analysis.results[0].findings[0].id, 'r1');
+    assert.equal(got.analysis.results[0].findings[0].measured, 9);
+
+    // Another user must not see it, by id or by list.
+    const other = await fetch(`${BASE}/api/auth/signup`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: `snap${process.pid}@example.com`, password: 'Another-pass-123', name: 'Other' }),
+    });
+    const otherToken = (await other.json()).token;
+    const denied = await fetch(`${BASE}/api/dfm/snapshots/${id}`, { headers: { Authorization: `Bearer ${otherToken}` } });
+    assert.equal(denied.status, 404, 'a snapshot must not be readable by another workspace');
+
+    // Without a token at all.
+    assert.ok((await fetch(`${BASE}/api/dfm/snapshots/${id}`)).status >= 400);
+
+    const del = await fetch(`${BASE}/api/dfm/snapshots/${id}`, {
+      method: 'DELETE', headers: { Authorization: `Bearer ${token}` },
+    });
+    assert.equal(del.status, 200);
+    assert.equal((await fetch(`${BASE}/api/dfm/snapshots/${id}`, { headers: { Authorization: `Bearer ${token}` } })).status, 404);
+  });
+
+  it('a snapshot without results is refused rather than stored empty', async () => {
+    const r = await fetch(`${BASE}/api/dfm/snapshots`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ analysis: { partName: 'nothing' } }),
+    });
+    assert.equal(r.status, 400);
+  });
+
   it('serves the SPA for non-API routes when dist/ exists', async () => {
     const r = await fetch(`${BASE}/marketplace`);
     // Passes with dist built (200 + HTML); if dist is absent the fallback is

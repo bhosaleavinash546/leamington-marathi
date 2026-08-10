@@ -133,11 +133,13 @@ export const DFM_RESULT = {
         finding(),
         finding({
           id: 'hpdc-draft-minimum', title: 'Wall area below the minimum die-casting draft',
+          fix: 'Add at least 1.5 deg of draft to every wall parallel to the draw. Inside walls need roughly twice the outside figure because the casting shrinks onto them.',
           measure: 'wallAreaBelowDraftPct', measured: 41.2, unit: '% of wall area', thresholdText: '≤ 5 % of wall area',
           cost: { priced: false, reason: 'Insufficient draft shortens die life through galling; die life is a tooling-amortisation input, not a geometric one the engine derives.' },
         }),
         finding({
           id: 'hpdc-core-ld', title: 'Cored hole beyond the core-pin slenderness limit',
+          fix: 'Shorten the cored hole to 10 diameters or open it up. A drilled secondary operation is the alternative and it carries its own cost.',
           measure: 'maxHoleDepthToDia', severity: 'medium', measured: 14.2, unit: 'core L/D', thresholdText: '≤ 10 core L/D',
           // The per-instance branch: named offenders with coordinates, and a
           // count that says how many were CHECKED so a pass reads as a pass.
@@ -156,6 +158,7 @@ export const DFM_RESULT = {
         }),
         finding({
           id: 'hpdc-undercuts', title: 'Undercuts require slides or lifters in the die',
+          fix: 'Redesign the three occluded faces so they release along the draw, or budget a slide for each. A lifter is cheaper than a slide where the feature is shallow.',
           measure: 'undercutFaceCount', severity: 'high', measured: 3, unit: 'regions', thresholdText: '≤ 0 regions',
           cost: {
             priced: false,
@@ -393,3 +396,39 @@ export const DFM_RESULT_CHOSEN = {
   routes: DFM_RESULT_FULL.routes,
 };
 
+/**
+ * A BASELINE REVISION, so the comparison page has something hostile to render.
+ *
+ * Deliberately covers all five states the diff distinguishes — including the two
+ * that look like good news and are not: a rule that stopped failing because the
+ * measurement disappeared, and a rule that only started failing because it
+ * became measurable.
+ */
+export const DFM_BASELINE = {
+  partName: DFM_RESULT.partName,
+  subject: DFM_RESULT.subject,
+  results: [{
+    process: 'hpdc', processName: 'High-pressure die casting',
+    ruleCount: 4, evaluatedCount: 4, coveragePct: 100, score: 18,
+    impact: { annualEur: 118400 },
+    findings: [
+      // Fixed between revisions: frees real money.
+      { id: 'hpdc-wall-thickness-range', title: 'Wall thickness outside the die-casting range', severity: 'high', measure: 'wallP50Mm', measured: 44, unit: 'mm', thresholdText: '1-3.5 mm', status: 'fail', cost: { annualDeltaEur: 41600 } },
+      // Still failing, but halved.
+      { id: 'hpdc-draft-minimum', title: 'Wall area below the minimum die-casting draft', severity: 'high', measure: 'wallAreaBelowDraftPct', measured: 82.5, unit: '% of wall area', thresholdText: '<= 5 % of wall area', status: 'fail' },
+      // Present then, absent now because a different family ran.
+      { id: 'hpdc-slide-count', title: 'Slide count beyond the die budget', severity: 'medium', measure: 'undercutFaceCount', measured: 6, unit: 'regions', thresholdText: '<= 2 regions', status: 'fail', cost: { annualDeltaEur: 9000 } },
+      // Was failing; on the new revision the wall can no longer be measured, so
+      // it "stops failing" without anybody fixing anything.
+      { id: 'hpdc-thin-web', title: 'Thin web below the fill limit', severity: 'high', measure: 'wallP5Mm', measured: 0.8, unit: 'mm', thresholdText: '>= 1.2 mm', status: 'fail', cost: { annualDeltaEur: 22000 } },
+    ],
+    passed: [
+      // Passing then, failing now: the only genuine regression.
+      { id: 'hpdc-undercuts', title: 'Undercuts require slides or lifters in the die', severity: 'high', measure: 'undercutFaceCount', measured: 0, unit: 'regions', thresholdText: '<= 0 regions', status: 'pass' },
+    ],
+    notEvaluated: [
+      // Could not be judged then; fails now. NOT a regression.
+      { id: 'hpdc-core-ld', title: 'Cored hole beyond the core-pin slenderness limit', severity: 'medium', measure: 'maxHoleDepthToDia', unit: 'core L/D', thresholdText: '<= 10 core L/D', status: 'not-evaluated', reason: 'no cored hole was recognised on the earlier revision' },
+    ],
+  }],
+};

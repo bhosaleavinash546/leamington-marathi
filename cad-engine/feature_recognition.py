@@ -1085,7 +1085,14 @@ def _aperture_gaps(probe, box):
     the material left between features, and a centre distance would pass a pair
     of large holes that are almost touching.
     """
-    out = {"holeToHoleMm": None, "holeToEdgeMm": None}
+    # The WORST PAIR's position, not only its gap.
+    #
+    # The minimum was taken and the two holes that produced it thrown away, so a
+    # finding could say "1.4 t between holes, limit 2 t" and the report had
+    # nowhere to point on a blank with forty of them. The midpoint of the two
+    # rims is the web that will tear — which is exactly the place to mark.
+    out = {"holeToHoleMm": None, "holeToEdgeMm": None,
+           "holeToHoleAtXYZ": None, "holeToEdgeAtXYZ": None}
     if not probe:
         return out
     for i in range(len(probe)):
@@ -1096,6 +1103,9 @@ def _aperture_gaps(probe, box):
             gap = centre - (di + dj) / 2.0
             if gap > 0 and (out["holeToHoleMm"] is None or gap < out["holeToHoleMm"]):
                 out["holeToHoleMm"] = gap
+                out["holeToHoleAtXYZ"] = [round((xi + xj) / 2.0, 3),
+                                          round((yi + yj) / 2.0, 3),
+                                          round((zi + zj) / 2.0, 3)]
     if box:
         x0, y0, z0, x1, y1, z1 = box
         spans = sorted([(x1 - x0, 0), (y1 - y0, 1), (z1 - z0, 2)], reverse=True)
@@ -1109,6 +1119,10 @@ def _aperture_gaps(probe, box):
                     gap = edge - d / 2.0
                     if gap > 0 and (out["holeToEdgeMm"] is None or gap < out["holeToEdgeMm"]):
                         out["holeToEdgeMm"] = gap
+                        # The hole itself: the edge it is close to is a face of
+                        # the blank, and marking the middle of that face would
+                        # point at material rather than at the feature.
+                        out["holeToEdgeAtXYZ"] = [round(px, 3), round(py, 3), round(pz, 3)]
     return out
 
 
@@ -1290,6 +1304,8 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
                 out["minHoleToEdgeBasis"] = (
                     "distance to the bounding box in the two widest axes — a LOWER bound on "
                     "the true trim distance")
+            out["minHoleToHoleAtXYZ"] = gaps.get("holeToHoleAtXYZ")
+            out["minHoleToEdgeAtXYZ"] = gaps.get("holeToEdgeAtXYZ")
         return out
 
     # Thickness: the median across bends, so one malformed bend cannot move it.
@@ -1345,6 +1361,7 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
         return sum(abs(u[i]) * (p["hi"][i] - p["lo"][i]) for i in range(3))
 
     flange = None
+    flange_at = None
     for b in bends:
         ax = b["axisXYZ"]
         ap = b["axisPointXYZ"]
@@ -1367,6 +1384,12 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
             run = _extent_along(p, u)
             if run > thickness * 1.5 and (flange is None or run < flange):
                 flange = run
+                # WHICH bend the short flange belongs to. The measure is a
+                # minimum over every leg of every bend, and the bend it came
+                # from was discarded — so a finding could say "the shortest
+                # flange is 2.1 t" on a six-bend bracket with nothing to point
+                # at. The bend axis point is the fold line itself.
+                flange_at = list(ap)
 
     # ── Hole-to-hole and hole-to-edge ────────────────────────────────────────
     # DFMPro's sheet-metal list leads with these two after bend radius, and both
@@ -1401,6 +1424,7 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
                 hole_pts.append((p3[0], p3[1], p3[2], r))
 
     hole_gap = None
+    hole_gap_at = None       # the web that will tear, so the report can mark it
     for i in range(len(hole_pts)):
         for j in range(i + 1, len(hole_pts)):
             ax, ay, az, ar = hole_pts[i]
@@ -1411,12 +1435,15 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
             # violation, so it is not allowed to become the reported minimum.
             if gap > 0 and (hole_gap is None or gap < hole_gap):
                 hole_gap = gap
+                hole_gap_at = [round((ax + bx) / 2.0, 3), round((ay + by) / 2.0, 3),
+                               round((az + bz) / 2.0, 3)]
 
     # Distance from each hole's edge to the part's outer boundary. The bounding
     # box is a LOWER bound on the true trim distance — a hole near a concave
     # cut-out is closer to material's end than this says — so the measure is
     # published with that stated rather than presented as exact.
     edge_gap = None
+    edge_gap_at = None
     try:
         bb = Bnd_Box()
         BRepBndLib.Add_s(shape, bb)
@@ -1432,6 +1459,7 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
                 d = min(lo, hi) - hr
                 if d >= 0 and (edge_gap is None or d < edge_gap):
                     edge_gap = d
+                    edge_gap_at = [round(hx, 3), round(hy, 3), round(hz, 3)]
     except Exception:
         edge_gap = None
 
@@ -1441,6 +1469,7 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
     # perpendicular distance between parallel bend LINES, minus the two inside
     # radii, so it is the flat land that actually has to exist.
     bend_gap = None
+    bend_gap_at = None
     for i in range(len(bends)):
         for j in range(i + 1, len(bends)):
             a, b = bends[i], bends[j]
@@ -1453,11 +1482,16 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
             flat = perp - a["insideRadiusMm"] - b["insideRadiusMm"]
             if flat > 0 and (bend_gap is None or flat < bend_gap):
                 bend_gap = flat
+                # The land BETWEEN the two fold lines — the material the press
+                # brake has to clamp, and the thing that is too short.
+                bend_gap_at = [round((p + q) / 2.0, 3)
+                               for p, q in zip(a["axisPointXYZ"], b["axisPointXYZ"])]
 
     # Hole-to-bend: perpendicular distance from each hole axis to each bend line,
     # reported as CLEARANCE against the 2t + r guideline so the rule can be
     # evaluated arithmetically instead of carrying an unevaluatable formula.
     clearance = None
+    clearance_at = None
     hole_dia = None
     # Same generalisation for hole-to-bend: an aperture near a bend line distorts
     # as the bend is worked up whatever its shape.
@@ -1477,6 +1511,7 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
             c = perp - required
             if clearance is None or c < clearance:
                 clearance = c
+                clearance_at = [round(v, 3) for v in hp]
 
     # Apertures reach the bend-clearance test too, and set the minimum opening
     # size when there is no round hole to set it.
@@ -1490,6 +1525,7 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
             c = perp - (2 * thickness + b["insideRadiusMm"])
             if clearance is None or c < clearance:
                 clearance = c
+                clearance_at = [round(ax, 3), round(ay, 3), round(az, 3)]
 
     return {
         "isSheetMetal": True,
@@ -1500,16 +1536,25 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
         "minBendRadiusToThickness": round(min(b["insideRadiusMm"] for b in bends) / thickness, 3),
         "minFlangeMm": round(flange, 2) if flange else None,
         "minFlangeToThickness": round(flange / thickness, 3) if flange else None,
+        "minFlangeAtXYZ": flange_at,
+        # The TIGHTEST bend, by position. Sorting the bend table here rather than
+        # in the report keeps "which bend is worst" next to the definition of
+        # worst — the report should not have to re-derive it and risk disagreeing.
+        "minBendRadiusAtXYZ": min(bends, key=lambda b: b["insideRadiusMm"])["axisPointXYZ"],
         "minHoleDiaToThickness": round(hole_dia / thickness, 3) if hole_dia else None,
         "holeToBendClearanceMm": round(clearance, 2) if clearance is not None else None,
+        "holeToBendAtXYZ": clearance_at,
         # Edge-to-edge gaps, so a rule can be a flat multiple of t.
         "minHoleToHoleMm": round(hole_gap, 2) if hole_gap is not None else None,
         "minHoleToHoleToThickness": round(hole_gap / thickness, 2) if hole_gap is not None else None,
+        "minHoleToHoleAtXYZ": hole_gap_at,
+        "minHoleToEdgeAtXYZ": edge_gap_at,
         "minHoleToEdgeMm": round(edge_gap, 2) if edge_gap is not None else None,
         "minHoleToEdgeToThickness": round(edge_gap / thickness, 2) if edge_gap is not None else None,
         "minHoleToEdgeBasis": "distance to the bounding box in the two sheet-plane axes — a LOWER bound on the true trim distance, since a hole beside a concave cut-out is nearer the edge than this says",
         "minBendToBendMm": round(bend_gap, 2) if bend_gap is not None else None,
         "minBendToBendToThickness": round(bend_gap / thickness, 2) if bend_gap is not None else None,
+        "minBendToBendAtXYZ": bend_gap_at,
         "method": "paired coaxial cylinders; thickness = outer radius - inner radius",
     }
 
@@ -1550,7 +1595,7 @@ def _min_internal_corner_radius(aag, fillets):
     None rather than 0 when the part has no internal corner at all: a part
     modelled with sharp corners has not been measured as having a small one.
     """
-    radii = []
+    corners = []
     for fid, f in (aag.get("faces") or {}).items():
         if f.get("type") != "CYLINDER" or f.get("blendConcavity") != "concave":
             continue
@@ -1559,13 +1604,30 @@ def _min_internal_corner_radius(aag, fillets):
             continue                      # a bore, not a corner
         r = f.get("radiusMm")
         if isinstance(r, (int, float)) and r > 0:
-            radii.append(r)
+            corners.append((r, fid, f.get("centreXYZ")))
     # Blend-classified fillets still count even if the arc test skipped them —
     # a fully-round blend at the base of a boss is a real internal radius.
     for f in fillets:
         if f.get("concavity") == "concave" and isinstance(f.get("radiusMm"), (int, float)) and f["radiusMm"] > 0:
-            radii.append(f["radiusMm"])
-    return round(min(radii), 3) if radii else None
+            fid = f.get("faceId")
+            src = (aag.get("faces") or {}).get(fid) or {}
+            corners.append((f["radiusMm"], fid, src.get("centreXYZ")))
+    if not corners:
+        return None, []
+    # WHERE the corners are, not only how small the smallest is.
+    #
+    # The rule reported "1.2 mm against a 3 mm limit" and the report could not
+    # mark it, because the measurement threw the face away the moment it took
+    # the minimum. A machinist reading "your smallest internal radius is too
+    # tight" then has to find it themselves in a part with ninety concave faces.
+    # Tightest first, and only the handful a reader can act on.
+    corners.sort(key=lambda c: c[0])
+    located = [
+        {"faceId": fid, "radiusMm": round(r, 3),
+         "centroidXYZ": [round(v, 3) for v in c]}
+        for r, fid, c in corners[:8] if c
+    ]
+    return round(corners[0][0], 3), located
 
 
 def _max_pocket_slenderness(prismatic):
@@ -1658,6 +1720,8 @@ def recognise(shape, feature_table, extents=None, aag=None):
     if chamfers:
         counts["chamfer"] = len(chamfers)
 
+    _min_corner_r, _corner_regions = _min_internal_corner_radius(aag, fillets)
+
     return {
         "graph": {"faces": len(aag["faces"]), "arcs": len(aag["arcs"]),
                   "concaveArcs": sum(1 for a in aag["arcs"] if a["label"] == "concave"),
@@ -1678,7 +1742,8 @@ def recognise(shape, feature_table, extents=None, aag=None):
         # CONCAVE fillets only. An external edge round is not a tool-access
         # constraint, and a part whose only blend is a 0.5 mm edge break must not
         # read as needing a 1 mm cutter.
-        "minInternalCornerRadiusMm": _min_internal_corner_radius(aag, fillets),
+        "minInternalCornerRadiusMm": _min_corner_r,
+        "internalCorners": _corner_regions,
         "maxPocketDepthToWidth": _max_pocket_slenderness(prismatic),
         "chamfers": chamfers,
         # Cylindrical features are found analytically, so their faces are named

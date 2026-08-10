@@ -8,7 +8,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  selectFindingAnnotations, chooseSecondView, ANNOTATION_CAP,
+  selectFindingAnnotations, chooseSecondView, sectionCandidate, ANNOTATION_CAP,
 } from '../src/services/dfm-annotations.mjs';
 
 const finding = (o = {}) => ({
@@ -215,4 +215,147 @@ test('ties break deterministically, so two runs render the same report', () => {
   const b = chooseSecondView(['m'], { front: ['m'], top: ['m'] });
   assert.equal(a.view, 'front');
   assert.equal(b.view, 'front');
+});
+
+// ── The five that used to have nowhere to point ────────────────────────────
+//
+// Each of these measures HAPPENS AT A PLACE. They were filed as "whole part"
+// because the kernel took a minimum and threw the face away, which made the
+// classification true by construction rather than by physics. The kernel now
+// keeps the face; these prove the report uses it.
+
+const SHEET = {
+  geometry: {
+    featureTable: [
+      { kind: 'hole', diaMm: 12, axisPointXYZ: [50, 0, 0] },
+      { kind: 'hole', diaMm: 3.2, axisPointXYZ: [11, 22, 33] },
+      { kind: 'boss', diaMm: 1, axisPointXYZ: [0, 0, 0] },
+    ],
+  },
+  dfm: {
+    features: {
+      internalCorners: [
+        { faceId: 70, radiusMm: 4.0, centroidXYZ: [1, 0, 0] },
+        { faceId: 71, radiusMm: 0.8, centroidXYZ: [2, 3, 4] },
+      ],
+    },
+    sheetMetal: {
+      minHoleToHoleAtXYZ: [5, 6, 7],
+      minHoleToEdgeAtXYZ: [8, 9, 10],
+    },
+    apertures: {
+      apertures: [
+        { equivalentDiaMm: 14.2, centroidXYZ: [40, 0, 0] },
+        { equivalentDiaMm: 2.6, centroidXYZ: [60, 70, 80] },
+      ],
+    },
+  },
+};
+
+test('the tightest internal corner is marked, not declared unlocatable', () => {
+  const out = selectFindingAnnotations({
+    ...SHEET,
+    results: [{ findings: [finding({ measure: 'minInternalCornerRadiusMm' })] }],
+  });
+  assert.equal(out.notLocated.length, 0);
+  assert.deepEqual(out.annotations[0].anchorXYZ, [2, 3, 4]);   // R0.8, not R4.0
+  assert.deepEqual(out.annotations[0].faceIds, [71]);
+  assert.match(out.annotations[0].note, /tightest of 2 corners, R0\.8/);
+});
+
+test('the narrowest web and the closest edge are single measured points', () => {
+  const web = selectFindingAnnotations({
+    ...SHEET, results: [{ findings: [finding({ measure: 'minHoleToHoleToThickness' })] }],
+  });
+  assert.deepEqual(web.annotations[0].anchorXYZ, [5, 6, 7]);
+  assert.match(web.annotations[0].note, /narrowest web/);
+
+  const edge = selectFindingAnnotations({
+    ...SHEET, results: [{ findings: [finding({ measure: 'minHoleToEdgeToThickness' })] }],
+  });
+  assert.deepEqual(edge.annotations[0].anchorXYZ, [8, 9, 10]);
+});
+
+test('the smallest aperture and the smallest hole are found by size, not by list order', () => {
+  const ap = selectFindingAnnotations({
+    ...SHEET, results: [{ findings: [finding({ measure: 'minApertureToThickness' })] }],
+  });
+  assert.deepEqual(ap.annotations[0].anchorXYZ, [60, 70, 80]);   // 2.6, listed second
+
+  const hole = selectFindingAnnotations({
+    ...SHEET, results: [{ findings: [finding({ measure: 'minHoleDiaToThickness' })] }],
+  });
+  // The 3.2 hole. The 1 mm BOSS is smaller and must not be chosen — a punch
+  // rule is about openings.
+  assert.deepEqual(hole.annotations[0].anchorXYZ, [11, 22, 33]);
+});
+
+test('bend, flange and reach findings land on the feature the kernel measured', () => {
+  const G = {
+    dfm: {
+      sheetMetal: {
+        minBendRadiusAtXYZ: [1, 0, 0], minBendToBendAtXYZ: [2, 0, 0],
+        minFlangeAtXYZ: [3, 0, 0], holeToBendAtXYZ: [4, 0, 0],
+      },
+      toolAccess: {
+        unreachableRegions: [
+          { areaMm2: 12, atXYZ: [9, 9, 9] },
+          { areaMm2: 480, atXYZ: [5, 5, 5] },
+        ],
+      },
+    },
+  };
+  const at = (measure) => selectFindingAnnotations({
+    ...G, results: [{ findings: [finding({ measure })] }],
+  }).annotations[0]?.anchorXYZ;
+  assert.deepEqual(at('minBendRadiusToThickness'), [1, 0, 0]);
+  assert.deepEqual(at('minBendToBendToThickness'), [2, 0, 0]);
+  assert.deepEqual(at('minFlangeToThickness'), [3, 0, 0]);
+  assert.deepEqual(at('holeToBendClearanceMm'), [4, 0, 0]);
+  // Largest unreachable patch, not the first listed.
+  assert.deepEqual(at('unreachableAreaPct'), [5, 5, 5]);
+});
+
+test('what is genuinely whole-part STAYS whole-part', () => {
+  // Not everything moved. There is no face on the model where "three setups" is
+  // true, and claiming one would be exactly the fault this module prevents.
+  for (const measure of ['setupCount', 'tightestToleranceMm', 'wallP50Mm', 'slendernessLtoD']) {
+    const out = selectFindingAnnotations({ ...SHEET, results: [{ findings: [finding({ measure })] }] });
+    assert.equal(out.annotations.length, 0, measure);
+    assert.match(out.notLocated[0].reason, /whole part/, measure);
+  }
+});
+
+test('a sheet anchor the kernel did not produce is NOT invented', () => {
+  const out = selectFindingAnnotations({
+    dfm: { sheetMetal: {} },
+    results: [{ findings: [finding({ measure: 'minHoleToHoleToThickness' })] }],
+  });
+  assert.equal(out.annotations.length, 0);
+  assert.match(out.notLocated[0].reason, /no coordinates/);
+});
+
+// ── Which finding earns a section view ─────────────────────────────────────
+test('a thin wall earns a cut; a draft angle does not', () => {
+  const { annotations } = selectFindingAnnotations({
+    dfm: GEO,
+    results: [{
+      findings: [
+        finding({ id: 'draft', measure: 'wallAreaBelowDraftPct', severity: 'high' }),
+        finding({ id: 'thin', measure: 'wallP5Mm', severity: 'medium' }),
+      ],
+    }],
+  });
+  // The draft finding is FIRST — higher severity — and must not be the one cut
+  // for, because the whole point is which evidence is invisible from outside.
+  assert.equal(annotations[0].ruleId, 'draft');
+  assert.equal(sectionCandidate(annotations).ruleId, 'thin');
+});
+
+test('no section when nothing marked is internal', () => {
+  const { annotations } = selectFindingAnnotations({
+    dfm: GEO, results: [{ findings: [finding({ measure: 'undercutFaceCount' })] }],
+  });
+  assert.equal(sectionCandidate(annotations), null);
+  assert.equal(sectionCandidate([]), null);
 });

@@ -7,7 +7,8 @@ import {
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import CadViewer3D, { type CadViewerRef } from '../components/CadViewer3D';
 import type { DfmFigure } from '../services/dfm-report';
-import { selectFindingAnnotations, chooseSecondView } from '../services/dfm-annotations.mjs';
+import { selectFindingAnnotations, chooseSecondView, sectionCandidate } from '../services/dfm-annotations.mjs';
+import { diffAnalyses, comparability } from '../services/dfm-diff.mjs';
 import { useAuth } from '../contexts/AuthContext';
 
 // DFM / DFA Studio. Upload a STEP or IGES part and get a manufacturability
@@ -201,6 +202,14 @@ export default function DfmStudioPage() {
   const [result, setResult] = useState<DfmResponse | null>(null);
   const [dfa, setDfa] = useState<DfaResponse | null>(null);
   const [exporting, setExporting] = useState<'' | 'pdf' | 'xlsx'>('');
+  // ── Revision comparison ──────────────────────────────────────────────────
+  // The baseline is the PREVIOUS analysis of this part, saved deliberately. It
+  // is never auto-selected: comparing rev B against whatever happened to be in
+  // the store last is how a report ends up diffing two different parts.
+  const [snapshots, setSnapshots] = useState<Array<{ id: string; label: string; createdAt: string }>>([]);
+  const [baselineId, setBaselineId] = useState('');
+  const [baseline, setBaseline] = useState<{ label: string; analysis: unknown } | null>(null);
+  const [savingSnap, setSavingSnap] = useState(false);
   // Which findings the viewer paints onto the model. The analysis already
   // returns the face ids; a finding that says "2 undercut regions" without
   // showing WHERE leaves the engineer to hunt for them.
@@ -302,6 +311,53 @@ export default function DfmStudioPage() {
     void analyseAssembly(next);
   }
 
+  // The comparison, computed where both halves exist. Pure and shared with the
+  // report, so what the page shows and what the PDF prints cannot diverge.
+  const revisionDiff = useMemo(() => {
+    if (!result || !baseline?.analysis) return null;
+    const d = diffAnalyses(baseline.analysis, result);
+    return { ...d, warnings: comparability(baseline.analysis, result), baselineLabel: baseline.label };
+  }, [result, baseline]);
+
+  /** Every saved revision of THIS part, so a baseline can be chosen. */
+  useEffect(() => {
+    if (!token || !result) return;
+    const key = String(result.partName || file?.name || 'part')
+      .toLowerCase().replace(/\.(step|stp|igs|iges)$/i, '').replace(/[^a-z0-9]+/g, '-').slice(0, 80);
+    fetch(`/api/dfm/snapshots?partKey=${encodeURIComponent(key)}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (d?.snapshots) setSnapshots(d.snapshots); })
+      .catch(() => { /* no history is a normal state, not an error to show */ });
+  }, [token, result, file]);
+
+  async function saveRevision() {
+    if (!token || !result) return;
+    setSavingSnap(true);
+    try {
+      const res = await fetch('/api/dfm/snapshots', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ analysis: { ...result, fileName: file?.name } }),
+      });
+      const d = await res.json();
+      if (!res.ok) { setError(d.error || 'Could not save this revision.'); return; }
+      setSnapshots(s => [{ id: d.id, label: d.label, createdAt: new Date().toISOString() }, ...s]);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not save this revision.');
+    } finally { setSavingSnap(false); }
+  }
+
+  async function loadBaseline(id: string) {
+    setBaselineId(id);
+    if (!id || !token) { setBaseline(null); return; }
+    try {
+      const res = await fetch(`/api/dfm/snapshots/${encodeURIComponent(id)}`, { headers: { Authorization: `Bearer ${token}` } });
+      const d = await res.json();
+      if (!res.ok) { setError(d.error || 'Could not load that revision.'); setBaseline(null); return; }
+      setBaseline({ label: d.label, analysis: d.analysis });
+    } catch { setBaseline(null); }
+  }
+
   async function exportReport(kind: 'pdf' | 'xlsx') {
     if (!result) return;
     setExporting(kind);
@@ -321,8 +377,8 @@ export default function DfmStudioPage() {
           droppedByCap: located.droppedByCap,
           markable: located.annotations.length,
           captureError: cap.error,
-        });
-      } else await mod.exportDfmXlsx(payload as never);
+        }, revisionDiff as never);
+      } else await mod.exportDfmXlsx(payload as never, revisionDiff as never);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Export failed');
     } finally { setExporting(''); }
@@ -405,6 +461,31 @@ export default function DfmStudioPage() {
           });
         }
       }
+      // ── A CUT, for the findings you cannot see from outside ──────────────
+      //
+      // A thin wall is under the skin. The ring was drawn on the surface above
+      // it and the reader asked to trust that something was wrong underneath —
+      // the one case where an external view proves nothing. The plane goes
+      // THROUGH the point the engine measured, not wherever a slider was left.
+      const cut = sectionCandidate(annotations);
+      if (cut) {
+        try {
+          await v.sectionThrough(cut.anchorXYZ);
+          const s = await shoot('iso');
+          if (s) {
+            figures.push({
+              id: 'section', view: 'iso', role: 'section', width: W, height: H,
+              dataUri: s.dataUri,
+              // Only the finding the cut was made for. Every other marker on a
+              // sectioned view sits on geometry that is half removed.
+              callouts: s.callouts.filter(c => c.n === (numberOf.get(cut.id) ?? -1)),
+              sectionOf: cut.label,
+            });
+          }
+        } catch { /* a failed cut must not lose the figures that worked */ }
+        finally { await v.sectionThrough(null).catch(() => {}); }
+      }
+
       return { figures };
     } catch (e) {
       return { figures: [], error: e instanceof Error ? e.message : 'The 3D view could not be captured.' };
@@ -1099,6 +1180,61 @@ export default function DfmStudioPage() {
                   {exporting === 'xlsx' ? <ButtonSpinner size={12} /> : <Table2 size={13} />} Export Excel
                 </button>
               </div>
+            </div>
+
+            {/* ── Revision comparison ──────────────────────────────────────
+                The second question a review asks is "did last month's changes
+                work?", and the tool could not answer it. The baseline is chosen
+                EXPLICITLY: auto-selecting the most recent snapshot is how a
+                report ends up diffing two different parts. */}
+            <div className="rounded-2xl border border-white/10 bg-navy-900 p-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-slate-300 text-sm font-medium flex items-center gap-2">
+                  <Ruler size={14} className="text-gold-400" /> Compare revisions
+                </p>
+                <button onClick={saveRevision} disabled={savingSnap}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:text-white hover:border-white/25 text-xs transition-colors disabled:opacity-50">
+                  {savingSnap ? <ButtonSpinner size={12} /> : null} Save this revision
+                </button>
+                <label className="flex items-center gap-2 text-xs text-slate-400">
+                  Baseline
+                  <select value={baselineId} onChange={e => void loadBaseline(e.target.value)}
+                    className="bg-navy-800 border border-white/10 rounded-lg px-2 py-1.5 text-slate-200 text-xs">
+                    <option value="">None — report this revision on its own</option>
+                    {snapshots.map(sn => (
+                      <option key={sn.id} value={sn.id}>{sn.label}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              {revisionDiff ? (
+                <div className="mt-3">
+                  <p className="text-white text-sm font-semibold">{revisionDiff.headline}</p>
+                  <div className="flex flex-wrap gap-2 mt-2 text-[11px]">
+                    <span className="px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-300">{revisionDiff.counts.closed} closed</span>
+                    <span className="px-2 py-1 rounded-lg bg-red-500/15 text-red-300">{revisionDiff.counts.created} new</span>
+                    <span className="px-2 py-1 rounded-lg bg-amber-500/15 text-amber-300">{revisionDiff.counts.persisting} still open</span>
+                    {revisionDiff.counts.nowVisible > 0 && (
+                      <span className="px-2 py-1 rounded-lg bg-teal-500/15 text-teal-300">{revisionDiff.counts.nowVisible} newly visible</span>
+                    )}
+                  </div>
+                  {revisionDiff.warnings.map((w, i) => (
+                    <p key={i} className="mt-2 text-[11px] text-amber-300/90 flex items-start gap-2">
+                      <AlertTriangle size={12} className="shrink-0 mt-0.5" aria-hidden="true" /><span>{w}</span>
+                    </p>
+                  ))}
+                  <p className="mt-2 text-slate-500 text-[11px]">
+                    Both exports carry this comparison. A finding that stopped failing because the
+                    measurement disappeared is listed as NOT FIXED, never as a win.
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-2 text-slate-500 text-[11px]">
+                  {snapshots.length
+                    ? 'Choose a saved revision to compare this analysis against.'
+                    : 'Save this analysis, then compare the next revision of the same part against it.'}
+                </p>
+              )}
             </div>
 
             {/* Analysis limits. These flags were always produced by the engine

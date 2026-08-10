@@ -20,7 +20,8 @@
     "e2e": "node e2e/smoke.mjs",
     "test:integration": "node --test tests/http-integration.test.mjs",
     "horizon:audit": "node scripts/horizon-audit.mjs",
-    "horizon:coverage": "node scripts/horizon-coverage.mjs"
+    "horizon:coverage": "node scripts/horizon-coverage.mjs",
+    "thresholds:audit": "node scripts/threshold-audit.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",

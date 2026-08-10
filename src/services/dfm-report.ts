@@ -20,6 +20,7 @@
 import jsPDF from 'jspdf';
 import { pdfSafe, deepPdfSafe } from './pdf-safe.mjs';
 import { LOGO_PNG } from './brainspark-logo-png';
+import { buildActions } from './dfm-actions.mjs';
 import { downloadXlsx, type SheetSpec } from './xlsx-write';
 
 export interface DfmFinding {
@@ -107,7 +108,9 @@ export interface DfmFigure {
    * The ISO capture serves as both: the markers are vector, so the one raster is
    * drawn twice with and without them rather than captured twice.
    */
-  role?: 'hero' | 'evidence';
+  role?: 'hero' | 'evidence' | 'section';
+  /** For a section figure: the finding the cut was made for. */
+  sectionOf?: string;
   /** JPEG/PNG data URI straight from the viewer. */
   dataUri: string;
   width: number;
@@ -278,6 +281,21 @@ function fit(doc: jsPDF, text: string, max: number): string {
  * report tells them — which is the difference between a limit that was declared
  * and a limit that was hidden.
  */
+/** A revision comparison, produced by dfm-diff.mjs. Absent on a first analysis. */
+export interface DfmDiff {
+  headline: string;
+  counts: { closed: number; created: number; persisting: number; nowVisible: number; nowBlind: number };
+  score: { before: number | null; after: number | null };
+  money: { closedAnnualEur: number; createdAnnualEur: number };
+  closed: Array<{ title: string; severity: string; was: number | null; now: number | null; unit?: string; how: string; annualFreed: number }>;
+  created: Array<{ title: string; severity: string; measured: number | null; unit?: string; thresholdText?: string; annual: number; wasPassing: boolean }>;
+  persisting: Array<{ title: string; severity: string; was: number | null; now: number | null; unit?: string; delta: number | null }>;
+  nowVisible: Array<{ title: string; severity: string; reason: string }>;
+  nowBlind: Array<{ title: string; reason: string }>;
+  warnings?: string[];
+  baselineLabel?: string;
+}
+
 export interface DfmFigureNotes {
   /** Findings with no place on the model, each with the reason. */
   notLocated?: Array<{ id: string; title: string; severity: string; reason: string }>;
@@ -293,6 +311,7 @@ export function exportDfmPdf(
   dataIn: DfmReportData,
   figures: DfmFigure[] = [],
   figureNotes: DfmFigureNotes = {},
+  diff: DfmDiff | null = null,
 ): void {
   // Provenance counted by the SERVER that ran the rules and sent with the
   // analysis, so the sentence describing the catalogue cannot fall out of date
@@ -786,7 +805,21 @@ export function exportDfmPdf(
       // full page spent saying "never mind".
       if (!fig.callouts.length) continue;
       newPage();
-      sectionTitle('Located evidence', `${VIEW_LABEL[fig.view] ?? fig.view} view`);
+      sectionTitle(
+        fig.role === 'section' ? 'Section through the finding' : 'Located evidence',
+        fig.role === 'section'
+          ? `Cut through ${fig.sectionOf ?? 'the measured point'}`
+          : `${VIEW_LABEL[fig.view] ?? fig.view} view`,
+      );
+      if (fig.role === 'section') {
+        // WHY there is a cut at all. A reader who does not know the plane was
+        // put through the measured point will read it as a decorative render.
+        wrapped('A thin wall is invisible from outside, so a ring drawn on the skin above it proves '
+          + 'nothing. This plane is cut THROUGH the point the engine measured — not wherever a '
+          + 'section slider was last left — so what you are looking at is the section the number '
+          + 'came from.', 8.4, MUT, CW, 4, 'italic');
+        y += 1;
+      }
 
       const imgW = CW;
       const imgH = Math.min(imgW * (fig.height / fig.width), 150);
@@ -875,6 +908,224 @@ export function exportDfmPdf(
           doc.text(fit(doc, c.note ?? '', CW - 139 - 2), ML + 139, y);
           y += 5;
         }
+      }
+    }
+  }
+
+  // ── WHAT CHANGED SINCE THE LAST REVISION ──────────────────────────────────
+  //
+  // The second question a programme asks is never "what is wrong with rev B" —
+  // it is "did the changes we agreed last month work?". Every report this tool
+  // produced was a snapshot and could not answer it, so a reviewer diffed two
+  // PDFs by eye, which is how a closed finding gets missed and a regression
+  // ships.
+  //
+  // The distinction that earns this page its space is CLOSED versus NO LONGER
+  // MEASURABLE. A rule that stopped failing because rev B lost its wall
+  // measurement has not been fixed, and a report that counts it as a win is
+  // worse than one that says nothing at all.
+  if (diff) {
+    newPage();
+    sectionTitle('What changed', diff.baselineLabel
+      ? `This revision against ${diff.baselineLabel}`
+      : 'This revision against the previous analysis');
+
+    sans(12, 'bold'); setText(doc, INK);
+    doc.text(fit(doc, diff.headline, CW), ML, y); y += 7;
+
+    if (diff.warnings?.length) {
+      // A diff across two different processes or two different alloys is
+      // arithmetic that means nothing. It is printed WITH the caveat rather
+      // than withheld, because the reader may have meant to do exactly that.
+      for (const w of diff.warnings) {
+        ensure(12);
+        setFill(doc, [254, 243, 199]); doc.roundedRect(ML, y - 4, CW, 11, 1.2, 1.2, 'F');
+        sans(8.2); setText(doc, [146, 64, 14]);
+        const lines = doc.splitTextToSize(pdfSafe(w), CW - 8);
+        doc.text(lines.slice(0, 2), ML + 4, y);
+        y += 13;
+      }
+      y += 1;
+    }
+
+    // FIXED, not "closed". Two of these rows stopped failing because the rule
+    // stopped being measurable, and a tile reading "2 CLOSED" beside a headline
+    // reading "0 findings closed" is the report arguing with itself — with the
+    // flattering number in the bigger typeface.
+    const genuinelyFixed = diff.closed.filter(c => c.how === 'now passes').length;
+    const cells: [string, string, RGB][] = [
+      [`${genuinelyFixed}`, 'FIXED', genuinelyFixed ? GREEN : MUT],
+      [`${diff.counts.created}`, 'NEW', diff.counts.created ? RED : GREEN],
+      [`${diff.counts.persisting}`, 'STILL OPEN', diff.counts.persisting ? AMBER : GREEN],
+      [diff.score.before == null || diff.score.after == null
+        ? 'not scored' : `${diff.score.before} -> ${diff.score.after}`,
+      'SCORE', (diff.score.after ?? 0) >= (diff.score.before ?? 0) ? GREEN : RED],
+    ];
+    setFill(doc, PANEL); doc.roundedRect(ML, y - 5, CW, 20, 1.5, 1.5, 'F');
+    const dcw = CW / 4;
+    cells.forEach(([v, l, c], i) => {
+      const x = ML + 5 + i * dcw;
+      if (i > 0) { setDraw(doc, RULE, 0.3); doc.line(ML + i * dcw, y - 3, ML + i * dcw, y + 12); }
+      sans(v.length > 9 ? 10 : 15, 'bold'); setText(doc, c);
+      doc.text(fit(doc, v, dcw - 8), x, y + 3);
+      mono(5.6); setText(doc, MUT);
+      doc.text(fit(doc, l, dcw - 8), x, y + 9.5);
+    });
+    y += 24;
+
+    // Each row carries its OWN colour. A green dot beside "NOT FIXED" is the
+    // same visual contradiction the tile had — the eye reads the colour before
+    // the words, and the colour was saying the opposite thing.
+    const rowsOf = (title: string, colour: RGB, items: Array<[string, string, string, RGB?]>) => {
+      if (!items.length) return;
+      ensure(14);
+      mono(6.4, true); setText(doc, colour);
+      doc.text(title, ML, y); y += 5;
+      for (const [a, b, c, own] of items) {
+        ensure(5.4);
+        const dot = own ?? colour;
+        setFill(doc, dot); doc.circle(ML + 1.4, y - 1.1, 1.4, 'F');
+        sans(8.6); setText(doc, INK);
+        doc.text(fit(doc, a, 68), ML + 5, y);
+        mono(7.2); setText(doc, dot);
+        doc.text(fit(doc, b, 36), ML + 76, y);
+        sans(7.8); setText(doc, MUT);
+        doc.text(fit(doc, c, CW - 116), ML + 116, y);
+        y += 5.2;
+      }
+      y += 3;
+    };
+
+    const nOf = (v: number | null, unit?: string) => (v == null ? '—' : `${v}${unit ? ` ${shortUnit(unit)}` : ''}`);
+
+    // "NO LONGER FAILING" covers both, and every row says which it is. Calling
+    // the group CLOSED put a green heading over rows that fixed nothing.
+    rowsOf('NO LONGER FAILING', GREEN, diff.closed.map(c => [
+      c.title,
+      `${nOf(c.was, c.unit)} -> ${nOf(c.now, c.unit)}`,
+      // The distinction that matters, said on every row rather than in a
+      // footnote nobody reaches.
+      c.how === 'now passes'
+        ? (c.annualFreed ? `fixed · frees ${eur(c.annualFreed).replace('EUR ', 'EUR ')}/yr` : 'fixed')
+        : `NOT FIXED — ${c.how}`,
+      c.how === 'now passes' ? GREEN : MUT,
+    ]));
+    rowsOf('NEW', RED, diff.created.map(c => [
+      c.title,
+      `${nOf(c.measured, c.unit)} vs ${c.thresholdText ?? '—'}`,
+      c.wasPassing ? 'was passing on the previous revision' : 'first appearance',
+    ]));
+    rowsOf('STILL OPEN', AMBER, diff.persisting.map(c => [
+      c.title,
+      `${nOf(c.was, c.unit)} -> ${nOf(c.now, c.unit)}`,
+      c.delta == null ? 'movement not measurable'
+        : c.delta === 0 ? 'unchanged'
+          : `${c.delta > 0 ? '+' : ''}${c.delta}${c.unit ? ` ${shortUnit(c.unit)}` : ''}`,
+    ]));
+    rowsOf('NEWLY VISIBLE', TEAL, diff.nowVisible.map(c => [
+      c.title, 'not a regression', c.reason,
+    ]));
+    rowsOf('NO LONGER MEASURABLE', MUT, diff.nowBlind.map(c => [
+      c.title, 'lost visibility', c.reason,
+    ]));
+  }
+
+  // ── WHAT HAPPENS NEXT, AND WHO DOES IT ────────────────────────────────────
+  //
+  // The report said what is wrong and what it costs, and stopped. Nobody leaves
+  // a design review with "41.2% of the wall area is under-drafted"; they leave
+  // with an owner and a decision. The action text is the ENGINE's own fix
+  // wording — nothing here is authored — the owner is a ROLE derived from what
+  // has to change, and the due date is deliberately BLANK because a date this
+  // tool invented would be the least credible column in the document.
+  {
+    const { rows: actions, omitted, byOwner } = buildActions(data as never, { max: 12 });
+    if (actions.length) {
+      newPage();
+      sectionTitle('Actions', `${actions.length} decisions, worst first`);
+
+      mono(6.2); setText(doc, MUT);
+      // TWO COLUMNS, TWO LINES EACH — not five narrow ones.
+      //
+      // The first version put action, owner, decision and due in five columns
+      // and dropped the FINDING to make them fit. Rendered, it was four rows of
+      // identical instruction text with nothing to say which finding each
+      // answered — two rules that share a fix sentence produced two identical
+      // rows. The finding is what makes a row addressable, so it leads.
+      const AX = ML + 6;          // the action block
+      const AW = 108;
+      const RX = ML + 120;        // owner, decision and the box somebody signs
+      const RW = CW - 120;
+      doc.text('FINDING, AND THE CHANGE THAT CLEARS IT', AX, y);
+      doc.text('OWNER (ROLE) / DECISION NEEDED', RX, y);
+      y += 2;
+      setDraw(doc, RULE, 0.4); doc.line(ML, y, PW - MR, y); y += 5;
+
+      for (const a of actions) {
+        // SET THE FONT BEFORE MEASURING. splitTextToSize wraps against whatever
+        // font is current, and this ran with the 6.2 pt mono still selected from
+        // the header row — so the 8.4 pt sans text it produced was wider than
+        // the column and ran straight through the one beside it. Invisible until
+        // the page was rasterised, as ever.
+        sans(8.4);
+        const act = doc.splitTextToSize(pdfSafe(a.action), AW).slice(0, 3);
+        sans(7.8);
+        const dec = doc.splitTextToSize(pdfSafe(a.decision), RW).slice(0, 3);
+        const h = Math.max(act.length, dec.length) * 3.9 + 11;
+        ensure(h + 3);
+        const top = y;
+        const col = SEV[a.severity] ?? MUT;
+
+        mono(6.6, true); setText(doc, col);
+        doc.text(String(a.n), ML, y + 0.5);
+        sans(8.8, 'bold'); setText(doc, INK);
+        doc.text(fit(doc, a.finding, AW), AX, y);
+        sans(8.4); setText(doc, BODY);
+        doc.text(act, AX, y + 4.6);
+        if (a.change) {
+          mono(6.8); setText(doc, col);
+          doc.text(fit(doc, a.change, AW), AX, y + 4.6 + act.length * 3.9 + 1.2);
+        }
+
+        sans(8.4, 'bold'); setText(doc, INK);
+        doc.text(fit(doc, a.owner, RW), RX, y);
+        sans(7.8); setText(doc, MUT);
+        doc.text(dec, RX, y + 4.6);
+        // The empty rule is the point: somebody has to write on it.
+        const dueY = y + 4.6 + dec.length * 3.9 + 3;
+        mono(5.6); setText(doc, MUT);
+        doc.text('DUE', RX, dueY);
+        setDraw(doc, RULE, 0.3); doc.line(RX + 9, dueY, PW - MR, dueY);
+
+        y = top + h;
+        setDraw(doc, RULE, 0.15); doc.line(ML, y - 2.4, PW - MR, y - 2.4);
+      }
+      y += 3;
+
+      if (omitted) {
+        wrapped(`${omitted} further finding(s) are in the findings table but not in this list. `
+          + 'The list is capped so it stays a set of decisions rather than a second copy of the '
+          + 'findings table.', 8, MUT, CW, 4, 'italic');
+        y += 2;
+      }
+
+      if (byOwner.length > 1) {
+        ensure(10 + byOwner.length * 5);
+        mono(6.4, true); setText(doc, GOLD);
+        doc.text('BY OWNER', ML, y); y += 5;
+        for (const o of byOwner) {
+          ensure(5);
+          sans(8.6); setText(doc, INK);
+          doc.text(fit(doc, o.owner, 70), ML, y);
+          sans(8.4); setText(doc, o.high ? RED : BODY);
+          doc.text(`${o.actions} action${o.actions === 1 ? '' : 's'}`
+            + (o.high ? `, ${o.high} high severity` : ''), ML + 74, y);
+          mono(7.4); setText(doc, o.annualEur ? GREEN : MUT);
+          doc.text(o.annualEur ? `${eur(o.annualEur).replace('EUR ', 'EUR ')}/yr` : 'not priced',
+            PW - MR, y, { align: 'right' });
+          y += 5;
+        }
+        y += 2;
       }
     }
   }
@@ -1430,7 +1681,7 @@ export function exportDfmPdf(
 
 // ── Excel ────────────────────────────────────────────────────────────────────
 
-export async function exportDfmXlsx(data: DfmReportData): Promise<void> {
+export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = null): Promise<void> {
   const subject = data.partName || data.fileName || 'Part';
   const today = new Date().toISOString().split('T')[0];
   const sheets: SheetSpec[] = [];
@@ -1548,6 +1799,85 @@ export async function exportDfmXlsx(data: DfmReportData): Promise<void> {
           ...data.routes.skipped.map(x => [x.process, x.reason])],
       });
     }
+  }
+
+  // ── Actions ────────────────────────────────────────────────────────────────
+  // The one sheet somebody actually works from. Filterable by owner, because the
+  // first thing a programme does with this is send each role their rows — and a
+  // due-date column left EMPTY on purpose, for a human to fill in.
+  {
+    const { rows: actions, byOwner, omitted } = buildActions(data as never, { max: 40 });
+    if (actions.length) {
+      sheets.push({
+        name: 'Actions',
+        title: `What happens next — ${actions.length} decisions${omitted ? `, ${omitted} findings not listed` : ''}`,
+        subtitle: 'The action text is the rule\'s own fix wording; nothing here is authored by the tool. '
+          + 'The owner is a ROLE derived from what has to change — the tool does not know who works here — '
+          + 'and Due is blank on purpose.',
+        headerRow: 0, zebra: true, autoFilter: true,
+        colWidths: [4, 10, 40, 52, 30, 20, 44, 14, 12],
+        wrapCols: [2, 3, 6],
+        rows: [
+          ['#', 'Severity', 'Finding', 'Action', 'Change', 'Owner (role)', 'Decision needed', 'EUR/year', 'Due'],
+          ...actions.map(a => [a.n, a.severity, a.finding, a.action, a.change, a.owner, a.decision,
+            a.annualEur ?? '', '']),
+        ],
+        // Matched on the row's text, which is how xlsx-write tints a row. The
+        // severity word is the first distinctive token in each action row.
+        statusColors: [
+          { match: 'high', argb: 'FFFDECEC' },
+          { match: 'medium', argb: 'FFFEF6E7' },
+        ],
+      });
+      if (byOwner.length > 1) {
+        sheets.push({
+          name: 'Actions by owner',
+          title: 'Who is holding what',
+          subtitle: 'Sorted by high-severity load. Roles, not names.',
+          headerRow: 0, zebra: true, colWidths: [30, 12, 16, 16],
+          rows: [['Owner (role)', 'Actions', 'High severity', 'EUR/year'],
+            ...byOwner.map(o => [o.owner, o.actions, o.high, o.annualEur || ''])],
+        });
+      }
+    }
+  }
+
+  // ── Changes since the baseline revision ────────────────────────────────────
+  // CLOSED and NO LONGER MEASURABLE are kept in separate columns on purpose: a
+  // rule that stopped failing because the measurement disappeared has not been
+  // fixed, and a sheet that totals them together is a spreadsheet that lies.
+  if (diff) {
+    const rows: Array<Array<string | number>> = [
+      ['State', 'Severity', 'Finding', 'Was', 'Now', 'Unit', 'EUR/year', 'Note'],
+      ...diff.closed.map(c => ['CLOSED', c.severity, c.title, c.was ?? '', c.now ?? '', c.unit ?? '',
+        c.how === 'now passes' ? c.annualFreed : '',
+        c.how === 'now passes' ? 'fixed' : `NOT FIXED — ${c.how}`]),
+      ...diff.created.map(c => ['NEW', c.severity, c.title, '', c.measured ?? '', c.unit ?? '', c.annual || '',
+        c.wasPassing ? 'was passing on the baseline' : 'first appearance']),
+      ...diff.persisting.map(c => ['STILL OPEN', c.severity, c.title, c.was ?? '', c.now ?? '', c.unit ?? '', '',
+        c.delta == null ? 'movement not measurable' : c.delta === 0 ? 'unchanged' : `moved ${c.delta}`]),
+      ...diff.nowVisible.map(c => ['NEWLY VISIBLE', c.severity, c.title, '', '', '', '', c.reason]),
+      ...diff.nowBlind.map(c => ['LOST VISIBILITY', '', c.title, '', '', '', '', c.reason]),
+    ];
+    sheets.push({
+      name: 'Changes',
+      title: diff.headline,
+      subtitle: `Against ${diff.baselineLabel ?? 'the previous analysis'}. `
+        + (diff.warnings?.length ? diff.warnings.join(' ') : 'Matched by rule id.'),
+      headerRow: 0, zebra: true, autoFilter: true,
+      colWidths: [18, 10, 52, 12, 12, 14, 14, 60], wrapCols: [2, 7],
+      rows,
+      // Tinted by STATE, so the eye separates a genuine fix from a rule that
+      // merely stopped being measurable before reading a word.
+      statusColors: [
+        { match: 'not fixed', argb: 'FFF1F5F9' },
+        { match: 'closed', argb: 'FFECFDF5' },
+        { match: 'new', argb: 'FFFDECEC' },
+        { match: 'still open', argb: 'FFFEF6E7' },
+        { match: 'newly visible', argb: 'FFEFFCFB' },
+        { match: 'lost visibility', argb: 'FFF1F5F9' },
+      ],
+    });
   }
 
   // Sorted worst first, like the PDF's summary table. A findings sheet in

@@ -1,0 +1,73 @@
+{
+  "_readme": [
+    "THE AUDIT TRAIL FOR EVERY THRESHOLD THIS TOOL JUDGES A PART AGAINST.",
+    "",
+    "The catalogue already grades its sources — standard-named, industry-consensus,",
+    "engine-derived, customer-standard — but a grade is a CLAIM about a citation, not",
+    "a record that anyone checked it. 109 of 216 thresholds rest on industry",
+    "consensus read from secondary summaries, and until this file existed that debt",
+    "was invisible: nothing in the repository could tell you which numbers had been",
+    "verified, by whom, against what, or when.",
+    "",
+    "`status` is the only field that matters, and it has four honest values:",
+    "",
+    "  primary-read          someone opened the standard, found the clause, and",
+    "                        recorded the section number below. The only status that",
+    "                        justifies the 'standard-named' grade.",
+    "  search-corroborated   independent published sources agree on the value, but no",
+    "                        primary document was read. This is NOT verification; it",
+    "                        is evidence that the consensus is real.",
+    "  contested             sources disagree, or the standard does not say what the",
+    "                        rule claims it says. These are the dangerous ones.",
+    "  unaudited             nobody has checked. The default, and the honest one.",
+    "",
+    "A threshold absent from this file is `unaudited`. Run `npm run thresholds:audit`",
+    "for the report, which names what is unverified rather than scoring it.",
+    "",
+    "NOTE ON THIS PASS: the environment these entries were written in blocks",
+    "outbound access to standards bodies (nadca.com, iso.org and the rest return",
+    "EGRESS_BLOCKED), so NOT ONE entry below is `primary-read`. That is a limit of",
+    "where the work was done, not a judgement about the values, and it is recorded",
+    "here rather than glossed."
+  ],
+  "auditedOn": "2026-08-10",
+  "thresholds": {
+    "hpdc-draft-minimum": {
+      "status": "contested",
+      "claimedSource": "NADCA Product Specification Standards, S-4A-7 (Draft Constants)",
+      "grade": "standard-named",
+      "finding": "The rule applies ONE draft figure to all wall area. Published summaries of the NADCA draft constants consistently split the requirement: roughly 0.5-1 deg on outside walls, 1-2 deg on inside walls, and about 2 deg per side in cored holes, with inside draft about twice outside. A single threshold cannot express that, so the rule is conservative on outside walls and lenient on inside ones.",
+      "recommendation": "Split into inside-wall, outside-wall and cored-hole draft rules. The geometry engine already classifies faces by draw relationship, so the split is measurable, not a guess.",
+      "corroboration": [
+        "https://www.abdiecasting.com/wp-content/uploads/2017/08/Section-06-Additional-Specification-Guidelines.pdf",
+        "https://www.diecasting.org/Web/R_D/Standards/Web/R_D/Standards.aspx",
+        "https://www.mecomeco.com/blog/die-casting-tolerances-nadca-standards-explained"
+      ],
+      "primaryDocumentRead": false,
+      "blockedBy": "nadca.com and diecasting.org unreachable from this environment (EGRESS_BLOCKED)"
+    },
+    "hpdc-wall-thickness-range": {
+      "status": "contested",
+      "claimedSource": "Aluminium HPDC design guidance (1.0 mm minimum, 2.0-3.5 mm recommended)",
+      "grade": "industry-consensus",
+      "finding": "Independent sources agree on the 2.0-3.5 mm practical band and on ~1.0 mm as a thin-wall floor, so the VALUE is sound. But published summaries of the NADCA standards state that NADCA sets no absolute minimum wall thickness — it specifies tolerance grades and calls for uniformity. The rule's citation therefore must not drift toward reading as a standard.",
+      "recommendation": "Keep the value and the industry-consensus grade. Do NOT promote this rule to standard-named. Consider adding a uniformity rule, which is what the standards actually emphasise.",
+      "corroboration": [
+        "https://www.diecastingdesign.org/walls/",
+        "https://www.sunrise-casting.com/min-and-max-wall-thickness-of-aluminum-die-casting/"
+      ],
+      "primaryDocumentRead": false,
+      "blockedBy": "diecastingdesign.org unreachable from this environment (EGRESS_BLOCKED)"
+    },
+    "hpdc-core-ld": {
+      "status": "search-corroborated",
+      "claimedSource": "Core-pin slenderness guidance for aluminium HPDC",
+      "grade": "industry-consensus",
+      "finding": "Widely published as a practical limit; the exact figure varies with alloy, pin cooling and whether the pin is supported at both ends. A single number across all cored holes is a simplification the report should keep stating.",
+      "recommendation": "Where a customer standard exists it should override this, which the threshold resolver already supports.",
+      "corroboration": [],
+      "primaryDocumentRead": false,
+      "blockedBy": "no primary source reachable from this environment"
+    }
+  }
+}

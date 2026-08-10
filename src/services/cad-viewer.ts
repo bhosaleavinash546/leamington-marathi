@@ -144,6 +144,8 @@ export interface CADViewerHandle {
   setCamera(c: { position: [number, number, number]; target: [number, number, number] }): void;
   /** Render one frame at an explicit size and return it as a data URL. */
   snapshot(opts?: SnapshotOptions): string;
+  /** Cut through a measured point for a report figure; null clears the cut. */
+  sectionThrough(anchor: [number, number, number] | null, axis?: 'x' | 'y' | 'z'): void;
   /** Pin callouts to the geometry. Replaces any previous set. */
   setAnnotations(items: Annotation[]): void;
   /** Screen positions of the current annotations, for drawing over a capture. */
@@ -677,6 +679,45 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     // keep fragments where axis·p ≤ offset (slider slides the cut through the part)
     clipPlane.normal.set(-nx, -ny, -nz);
     clipPlane.constant = offset;
+    applyClipping();
+  }
+
+  /**
+   * Cut the part THROUGH A MEASURED POINT, for a report figure.
+   *
+   * A thin wall is invisible from outside. The report drew a ring on the surface
+   * above it and asked a supplier to take the tool's word for what was
+   * underneath — which is the one finding type where an external view proves
+   * nothing at all. This puts the cut where the measurement was taken, so the
+   * section shows the wall the engine measured rather than a plane somebody
+   * dragged a slider to.
+   *
+   * The axis is CHOSEN, not fixed: whichever of the part's three axes the point
+   * sits furthest along from the centre gives the most material to cut away and
+   * therefore the clearest view of the feature. Passing null restores whatever
+   * the user had.
+   */
+  function sectionThrough(anchor: [number, number, number] | null, axis?: 'x' | 'y' | 'z'): void {
+    if (!anchor) {
+      clipOn = false;
+      applyClipping();
+      return;
+    }
+    const world = toWorld(anchor);
+    const pick: 'x' | 'y' | 'z' = axis ?? (() => {
+      const d: Array<['x' | 'y' | 'z', number]> = [
+        ['x', Math.abs(anchor[0])], ['y', Math.abs(anchor[1])], ['z', Math.abs(anchor[2])],
+      ];
+      d.sort((a, b) => b[1] - a[1]);
+      return d[0][0];
+    })();
+    clipAxis = pick;
+    const [nx, ny, nz] = AXIS_WORLD[pick];
+    clipPlane.normal.set(-nx, -ny, -nz);
+    // Through the point itself, nudged past it by a hair so the cut face is the
+    // material BESIDE the measurement rather than a coplanar z-fight with it.
+    clipPlane.constant = (world.x * nx + world.y * ny + world.z * nz) + partRadius * 0.002;
+    clipOn = true;
     applyClipping();
   }
 
@@ -1645,6 +1686,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       controls.update();
     },
     snapshot,
+    sectionThrough,
     setAnnotations,
     projectAnchors,
     flyTo,

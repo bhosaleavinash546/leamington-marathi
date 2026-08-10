@@ -34,6 +34,8 @@ interface CadViewer3DProps {
  */
 export interface CadViewerRef {
   snapshot(opts?: Parameters<CADViewerHandle['snapshot']>[0]): Promise<string | null>;
+  sectionThrough(anchor: [number, number, number] | null,
+                 axis?: Parameters<CADViewerHandle['sectionThrough']>[1]): Promise<void>;
   paintFaces(layer: string, faceIds: Iterable<number>,
              style?: Parameters<CADViewerHandle['paintFaces']>[2]): Promise<void>;
   clearLayer(layer: string): Promise<void>;
@@ -119,6 +121,7 @@ const CadViewer3D = forwardRef<CadViewerRef, CadViewer3DProps>(function CadViewe
     return {
       ready: settled,
       async snapshot(opts) { const h = await settled(); return h ? h.snapshot(opts) : null; },
+      async sectionThrough(anchor, axis) { (await settled())?.sectionThrough(anchor, axis); },
       async paintFaces(layer, ids, style) { (await settled())?.paintFaces(layer, ids, style); },
       async clearLayer(layer) { (await settled())?.clearLayer(layer); },
       async clearAllLayers() { (await settled())?.clearAllLayers(); },
