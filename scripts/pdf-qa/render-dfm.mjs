@@ -1,6 +1,27 @@
 // Render the DFM / DFA report (PDF + Excel) under Node with the hostile fixture.
 import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { jsPDF } from 'jspdf';
+
+// REBUILD THE BUNDLE FIRST, ALWAYS.
+//
+// This was a manual step in the README, and it bit exactly as you would expect:
+// a page-one figure was added, the harness was run, the render came back
+// IDENTICAL, and the obvious conclusion — "my code did not work" — was wrong.
+// The harness had faithfully re-rendered a bundle built before the change.
+//
+// A QA harness that can silently test stale code is worse than no harness,
+// because it reports green over a change it never saw. Ninety milliseconds of
+// esbuild is a cheap price for the guarantee.
+const ROOT = new URL('../../', import.meta.url).pathname;
+const BUNDLE = `${ROOT}scripts/pdf-qa/dfm-report.bundle.mjs`;
+execFileSync('npx', ['esbuild', 'src/services/dfm-report.ts', '--bundle', '--format=esm',
+  '--platform=node', '--external:jspdf', '--external:exceljs', `--outfile=${BUNDLE}`],
+{ cwd: ROOT, stdio: ['ignore', 'ignore', 'inherit'] });
+fs.writeFileSync(BUNDLE, fs.readFileSync(BUNDLE, 'utf-8')
+  .replace('import jsPDF from "jspdf";', 'import { jsPDF } from "jspdf";')
+  .replace('const ExcelJS = await import("exceljs");',
+    'const ExcelJS = (await import("exceljs")).default ?? (await import("exceljs"));'));
 
 // SIZE IS A GATE NOW. There was none, and this report just gained embedded
 // renders — the failure mode is a PDF that quietly grows to tens of megabytes
@@ -26,7 +47,7 @@ globalThis.document = {
 
 const { exportDfmPdf, exportDfmXlsx } = await import('./dfm-report.bundle.mjs');
 const {
-  DFM_RESULT, DFM_FIGURES, DFM_RESULT_CONFLICT, DFM_RESULT_MEASURED,
+  DFM_RESULT, DFM_FIGURES, DFM_FIGURE_NOTES, DFM_RESULT_CONFLICT, DFM_RESULT_MEASURED,
   DFM_RESULT_FULL, DFM_RESULT_NO_RULES, DFM_RESULT_CHOSEN,
 } = await import('./fixture-dfm.mjs');
 
@@ -35,7 +56,7 @@ const {
 // where the capture failed. The figure call proves the image path survives in
 // node, where there is no canvas and jsPDF must decode the data URI itself.
 exportDfmPdf(DFM_RESULT);
-exportDfmPdf({ ...DFM_RESULT, partName: DFM_RESULT.partName + ' (annotated)' }, DFM_FIGURES);
+exportDfmPdf({ ...DFM_RESULT, partName: DFM_RESULT.partName + ' (annotated)' }, DFM_FIGURES, DFM_FIGURE_NOTES);
 // The two process-family states the cover has to render differently: geometry
 // agreeing with the chosen family, and geometry contradicting it.
 exportDfmPdf(DFM_RESULT_MEASURED);

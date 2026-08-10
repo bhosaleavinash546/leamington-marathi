@@ -7,6 +7,7 @@ import {
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import CadViewer3D, { type CadViewerRef } from '../components/CadViewer3D';
 import type { DfmFigure } from '../services/dfm-report';
+import { selectFindingAnnotations, chooseSecondView } from '../services/dfm-annotations.mjs';
 import { useAuth } from '../contexts/AuthContext';
 
 // DFM / DFA Studio. Upload a STEP or IGES part and get a manufacturability
@@ -313,8 +314,15 @@ export default function DfmStudioPage() {
         dfa: dfa?.dfa ?? null,
         subject: { part: result.partName, material, process: costProcess },
       };
-      if (kind === 'pdf') mod.exportDfmPdf(payload as never, await captureFigures());
-      else await mod.exportDfmXlsx(payload as never);
+      if (kind === 'pdf') {
+        const cap = await captureFigures();
+        mod.exportDfmPdf(payload as never, cap.figures, {
+          notLocated: located.notLocated,
+          droppedByCap: located.droppedByCap,
+          markable: located.annotations.length,
+          captureError: cap.error,
+        });
+      } else await mod.exportDfmXlsx(payload as never);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Export failed');
     } finally { setExporting(''); }
@@ -333,31 +341,76 @@ export default function DfmStudioPage() {
    * draws its markers as vector on top — sharp at print resolution rather than
    * upscaled screen text.
    */
-  async function captureFigures(): Promise<DfmFigure[]> {
+  async function captureFigures(): Promise<{ figures: DfmFigure[]; error?: string }> {
     const v = viewerRef.current;
-    if (!v || !file) return [];
+    if (!v || !file) return { figures: [], error: 'No 3D view was open when the report was exported.' };
     const W = 1400, H = 1000;
-    const out: DfmFigure[] = [];
-    for (const view of ['iso', 'front', 'top'] as const) {
-      try {
-        const dataUri = await v.snapshot({ view, width: W, height: H });
-        if (!dataUri) continue;
-        const projected = await v.projectAnchors();
-        const byId = new Map(projected.map(p2 => [p2.id, p2]));
-        out.push({
-          id: view, view, width: W, height: H, dataUri,
-          // Off-screen anchors are DROPPED, never clamped to an edge: a clamped
-          // leader line points at a face that is not in the picture.
-          callouts: annotations.flatMap((a, i) => {
-            const p2 = byId.get(a.id);
-            if (!p2?.visible) return [];
-            return [{ n: i + 1, x: p2.x, y: p2.y, label: a.label, value: a.value ?? '', severity: a.severity ?? 'info' }];
-          }),
-        });
-      } catch { /* one bad view must not lose the whole export */ }
+
+    // The marker NUMBERS come from the annotation order — worst finding first —
+    // so #1 is the same finding in every view and in the page-one table. Deriving
+    // them per-view from whatever happened to be visible would renumber the same
+    // undercut between two pictures of the same part.
+    const numberOf = new Map(annotations.map((a, i) => [a.id, i + 1]));
+    const shoot = async (view: 'iso' | 'front' | 'top' | 'back' | 'left' | 'right' | 'bottom') => {
+      const dataUri = await v.snapshot({ view, width: W, height: H, clean: true });
+      if (!dataUri) return null;
+      const projected = await v.projectAnchors();
+      const visible = projected.filter(p => p.visible);
+      return {
+        dataUri,
+        visibleIds: visible.map(p => p.id),
+        // Off-screen anchors are DROPPED, never clamped to an edge: a clamped
+        // leader line points at a face that is not in the picture.
+        callouts: visible.flatMap(p => {
+          const a = annotations.find(x => x.id === p.id);
+          if (!a) return [];
+          return [{ n: numberOf.get(a.id) ?? 0, x: p.x, y: p.y, label: a.label, value: a.value ?? '', severity: a.severity ?? 'info', note: a.note ?? '' }];
+        }).sort((a, b) => a.n - b.n),
+      };
+    };
+
+    try {
+      const iso = await shoot('iso');
+      if (!iso) {
+        return { figures: [], error: 'The 3D view returned no image. WebGL may be unavailable in this browser.' };
+      }
+      const figures: DfmFigure[] = [{
+        id: 'iso', view: 'iso', role: 'hero', width: W, height: H,
+        dataUri: iso.dataUri, callouts: iso.callouts,
+      }];
+
+      // A SECOND VIEW ONLY WHEN IT EARNS ITS PAGE.
+      //
+      // The old export always printed iso, front and top — three pages of the
+      // same part, two of which usually restated the first. Here the candidates
+      // are captured, and the one that reveals the most findings the ISO could
+      // not show is kept. If none reveals anything, there is no second page.
+      const missing = annotations.map(a => a.id).filter(id => !iso.visibleIds.includes(id));
+      if (missing.length) {
+        const byView: Record<string, string[]> = {};
+        const shots: Record<string, Awaited<ReturnType<typeof shoot>>> = {};
+        for (const view of ['back', 'bottom', 'front', 'left', 'right', 'top'] as const) {
+          try {
+            const s = await shoot(view);
+            if (!s) continue;
+            shots[view] = s; byView[view] = s.visibleIds;
+          } catch { /* one bad candidate must not lose the others */ }
+        }
+        const best = chooseSecondView(missing, byView);
+        const shot = best ? shots[best.view] : null;
+        if (best && shot) {
+          figures.push({
+            id: best.view, view: best.view, role: 'evidence', width: W, height: H,
+            dataUri: shot.dataUri, callouts: shot.callouts,
+          });
+        }
+      }
+      return { figures };
+    } catch (e) {
+      return { figures: [], error: e instanceof Error ? e.message : 'The 3D view could not be captured.' };
+    } finally {
+      await v.setView('iso').catch(() => {});
     }
-    await v.setView('iso');
-    return out;
   }
 
   const dfmBlock = result?.dfm ?? {};
@@ -368,35 +421,22 @@ export default function DfmStudioPage() {
   // Everything here carries its own coordinates and its own measured value, so
   // a callout never re-derives anything — it reads what the analysis measured
   // and pins it to the face that produced it.
-  const annotations = useMemo(() => {
-    const out: { id: string; anchorXYZ: [number, number, number]; label: string; value?: string; severity?: 'high' | 'medium' | 'low' | 'info'; faceIds?: number[] }[] = [];
-    const d = dfmBlock.draft ?? {};
-    const w = dfmBlock.wallThickness ?? {};
-    const f = dfmBlock.features ?? {};
-    for (const [i, r] of ((d.undercutRegions ?? []) as any[]).entries()) {
-      out.push({ id: `undercut-${i}`, anchorXYZ: r.centroidXYZ, label: 'Undercut',
-        value: `${r.areaMm2} mm²`, severity: 'high', faceIds: [r.faceId] });
-    }
-    for (const [i, r] of ((d.zeroDraftRegions ?? []) as any[]).slice(0, 6).entries()) {
-      out.push({ id: `zerodraft-${i}`, anchorXYZ: r.centroidXYZ, label: 'Zero draft',
-        value: `${r.draftDeg}°`, severity: 'medium', faceIds: [r.faceId] });
-    }
-    for (const [i, r] of ((w.thinnestRegions ?? []) as any[]).slice(0, 4).entries()) {
-      out.push({ id: `thin-${i}`, anchorXYZ: r.atXYZ, label: 'Thinnest wall',
-        value: `${r.thicknessMm} mm`, severity: 'medium', faceIds: [r.faceId] });
-    }
-    for (const [i, r] of ((f.ribs ?? []) as any[]).entries()) {
-      if (!r.centroidXYZ) continue;
-      out.push({ id: `rib-${i}`, anchorXYZ: r.centroidXYZ, label: `Rib ${i + 1}`,
-        value: `${r.thicknessMm} × ${r.heightMm} mm`, severity: 'info', faceIds: r.faceIds });
-    }
-    for (const [i, p] of ((f.prismatic ?? []) as any[]).entries()) {
-      if (!p.centroidXYZ) continue;
-      out.push({ id: `prismatic-${i}`, anchorXYZ: p.centroidXYZ, label: p.kind,
-        value: `${p.areaMm2} mm²`, severity: 'info', faceIds: p.faceIds });
-    }
-    return out;
-  }, [dfmBlock]);
+  // MARKERS COME FROM THE RULE RESULTS, NOT FROM THE GEOMETRY BLOCK.
+  //
+  // This used to walk `dfm.draft` / `dfm.features` and pin a ring on every
+  // undercut region, every rib and every pocket the recogniser found — dozens of
+  // markers on a casting, most of them on features that broke no rule, while a
+  // rule that actually failed got none. It annotated what the engine MEASURED
+  // instead of what it CONCLUDED.
+  //
+  // `selectFindingAnnotations` is the join, and it is pure and unit-tested
+  // (tests/dfm-annotations.test.mjs) because a browser is a terrible place to
+  // prove that a passing rib never gets marked.
+  const located = useMemo(
+    () => selectFindingAnnotations(result ?? {}),
+    [result],
+  );
+  const annotations = located.annotations;
 
   /**
    * Shade the assembly by HANDLING TIME — the part that costs the most to pick
@@ -538,19 +578,17 @@ export default function DfmStudioPage() {
   }, [annotations, showCallouts]);
 
   /**
-   * Which located finding backs a rule id. A rule is a THRESHOLD; an anchor is a
-   * PLACE. They are different things, so the mapping is explicit rather than
-   * inferred — and a rule with no located evidence simply gets no button.
+   * Which marker backs a rule id.
+   *
+   * This was a list of string-prefix guesses — `endsWith('-undercuts')` and so
+   * on — which meant a rule whose id did not match one of five patterns had no
+   * button however well located its evidence was, and a matching id pointed at
+   * whatever region happened to be first rather than the one that failed. The
+   * annotation now carries its own `ruleId`, so the lookup is an identity rather
+   * than an inference.
    */
   function anchorFor(ruleId: string) {
-    const first = (prefix: string) => annotations.find(a => a.id.startsWith(prefix));
-    if (ruleId.endsWith('-undercuts')) return first('undercut-');
-    if (ruleId.endsWith('-draft-minimum')) return first('zerodraft-');
-    if (ruleId.includes('wall-thickness') || ruleId.includes('thin-web')
-        || ruleId.includes('wall-uniformity')) return first('thin-');
-    if (ruleId.includes('rib-')) return first('rib-');
-    if (ruleId.includes('pocket')) return first('prismatic-');
-    return undefined;
+    return annotations.find(a => a.ruleId === ruleId);
   }
 
   /** Fly to a finding's anchor and make sure its callout is on screen. */
@@ -1007,7 +1045,7 @@ export default function DfmStudioPage() {
                       showCallouts
                         ? 'border-gold-500/50 bg-gold-500/15 text-gold-300'
                         : 'border-white/10 text-slate-400 hover:text-slate-200'}`}>
-                    Callouts ({annotations.length})
+                    Findings on model ({annotations.length})
                   </button>
                 </div>
               )}

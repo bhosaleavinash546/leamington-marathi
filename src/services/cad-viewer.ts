@@ -64,6 +64,17 @@ export interface SnapshotOptions {
   view?: NamedView;
   mime?: string;
   quality?: number;
+  /**
+   * Hide the viewer's own furniture — the ground grid — for the duration of the
+   * capture.
+   *
+   * A grid is orientation help for someone ORBITING a part. In a printed report
+   * it is a receding lattice behind the subject that makes the figure read as a
+   * screenshot of an app rather than as a drawing of a part, and on a pale
+   * casting the light grey lines compete with the silhouette. Restored in the
+   * `finally`, so the live viewport is never left altered by an export.
+   */
+  clean?: boolean;
 }
 
 /**
@@ -597,7 +608,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const h = Math.max(64, Math.round(o.height ?? viewport.clientHeight * 2));
     if (o.view) setView(NAMED_VIEWS[o.view]);
     const prevRatio = renderer.getPixelRatio();
+    const gridWasVisible = grid?.visible ?? false;
     try {
+      if (o.clean && grid) grid.visible = false;
       renderer.setPixelRatio(1);
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
@@ -608,6 +621,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     } finally {
       // Always restore, even if toDataURL throws on a lost context — otherwise
       // the live viewport is left at report resolution and looks broken.
+      if (grid) grid.visible = gridWasVisible;
       renderer.setPixelRatio(prevRatio);
       resize();
       scaleLabels();

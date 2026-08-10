@@ -6,6 +6,12 @@
 // The unevaluated/withheld cases are here on purpose — they are the states the
 // report must render legibly, and they are the ones a layout is most likely to
 // forget.
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import { selectFindingAnnotations } from '../../src/services/dfm-annotations.mjs';
+
 const LONG_RATIONALE = 'Below about 1 mm the die will not fill reliably before the melt freezes off, and cold shuts appear along the last-to-fill boundary; above about 3.5 mm the section traps porosity as it solidifies from the outside in, holds the cycle open while the centre gives up its heat, and leaves a shrinkage void exactly where the casting is thickest and a machinist is most likely to break into it. Neither failure is recoverable by process tuning once the wall is drawn, which is why wall thickness is the first thing a die caster looks at and the last thing a designer wants to change.';
 const LONG_FIX = 'Hold a uniform nominal wall in the 2.0-3.5 mm band and core out heavy sections rather than leaving solid mass. Where local stiffness is needed, add ribs at 40-60% of the nominal wall rather than thickening the wall itself; where a boss must be thick, core it from the back so the section stays even. WARNING_TOKEN_THAT_IS_EXTREMELY_LONG_AND_UNBREAKABLE_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
@@ -13,7 +19,7 @@ const finding = (over = {}) => ({
   id: over.id || 'hpdc-wall-thickness-range',
   title: over.title || 'Wall thickness outside the die-casting range',
   severity: over.severity || 'high',
-  measure: 'wallP50Mm',
+  measure: over.measure || 'wallP50Mm',
   measured: over.measured ?? 30,
   unit: over.unit || 'mm',
   thresholdText: over.thresholdText || '1–3.5 mm',
@@ -55,7 +61,13 @@ export const DFM_RESULT = {
     assemblyWarning: null, unitWarning: null,
   },
   dfm: {
-    wallThickness: { p5Mm: 2.1, p50Mm: 30.0, p95Mm: 61.4, spreadRatio: 1.98, uniformity: 'non-uniform', samples: 2841 },
+    wallThickness: {
+      p5Mm: 2.1, p50Mm: 30.0, p95Mm: 61.4, spreadRatio: 1.98, uniformity: 'non-uniform', samples: 2841,
+      thinnestRegions: [
+        { faceId: 88, thicknessMm: 3.9, atXYZ: [60, -20, 40] },
+        { faceId: 91, thicknessMm: 2.1, atXYZ: [-90, 44, 12] },
+      ],
+    },
     // PMI PRESENT. The absent branch gets its own render below — that is the
     // one whose wording matters most, and a fixture that only covers the happy
     // path leaves it unverified.
@@ -78,6 +90,15 @@ export const DFM_RESULT = {
     draft: {
       drawDirectionXYZ: [0, 0, 1], undercutFaceCount: 3, zeroDraftFaceCount: 11,
       wallAreaBelowMinDraftPct: 41.2, minWallDraftDeg: 0.4, maxWallDraftDeg: 5.1,
+      undercutRegions: [
+        { faceId: 140, areaMm2: 312.5, centroidXYZ: [98, 55, 22] },
+        { faceId: 141, areaMm2: 2256.45, centroidXYZ: [-70, -38, 51] },
+        { faceId: 142, areaMm2: 88.0, centroidXYZ: [10, 70, -30] },
+      ],
+      zeroDraftRegions: [
+        { faceId: 150, draftDeg: 0.9, centroidXYZ: [-110, 10, 60] },
+        { faceId: 151, draftDeg: 0.4, centroidXYZ: [30, -66, 5] },
+      ],
       areaPct: { partingParallel: 31.4, releasing: 27.4, zeroDraft: 24.6, undercut: 16.6 },
     },
     features: {
@@ -112,12 +133,12 @@ export const DFM_RESULT = {
         finding(),
         finding({
           id: 'hpdc-draft-minimum', title: 'Wall area below the minimum die-casting draft',
-          measured: 41.2, unit: '% of wall area', thresholdText: '≤ 5 % of wall area',
+          measure: 'wallAreaBelowDraftPct', measured: 41.2, unit: '% of wall area', thresholdText: '≤ 5 % of wall area',
           cost: { priced: false, reason: 'Insufficient draft shortens die life through galling; die life is a tooling-amortisation input, not a geometric one the engine derives.' },
         }),
         finding({
           id: 'hpdc-core-ld', title: 'Cored hole beyond the core-pin slenderness limit',
-          severity: 'medium', measured: 14.2, unit: 'core L/D', thresholdText: '≤ 10 core L/D',
+          measure: 'maxHoleDepthToDia', severity: 'medium', measured: 14.2, unit: 'core L/D', thresholdText: '≤ 10 core L/D',
           // The per-instance branch: named offenders with coordinates, and a
           // count that says how many were CHECKED so a pass reads as a pass.
           instanceCount: 3, instanceTotal: 9,
@@ -135,7 +156,7 @@ export const DFM_RESULT = {
         }),
         finding({
           id: 'hpdc-undercuts', title: 'Undercuts require slides or lifters in the die',
-          severity: 'high', measured: 3, unit: 'regions', thresholdText: '≤ 0 regions',
+          measure: 'undercutFaceCount', severity: 'high', measured: 3, unit: 'regions', thresholdText: '≤ 0 regions',
           cost: {
             priced: false,
             reason: 'Slide and loose-core tooling is quoted by the diemaker; the piece-price engines do not model it.',
@@ -197,19 +218,69 @@ export const DFM_RESULT = {
  * image. The `noCallouts` view exercises the "nothing visible from this angle"
  * branch, which is the one a reader hits on a real part.
  */
+// A REAL RENDER, captured from the real viewer.
+//
+// This was a 1x1-ish flat navy PNG, which proved jsPDF can embed an image and
+// nothing else: the page-one figure could have been the wrong size, the wrong
+// aspect or upside down and the render would have looked identical. The picture
+// here came out of scripts/pdf-qa/live-figures.mjs — headless Chromium, the
+// real viewer, the real ribbed-plate STEP fixture — so the QA page shows what a
+// reader will actually see.
+const HERE = dirname(fileURLToPath(import.meta.url));
+const PART_JPEG = (() => {
+  const f = join(HERE, 'fixture-part-iso.jpg');
+  return existsSync(f)
+    ? `data:image/jpeg;base64,${readFileSync(f).toString('base64')}`
+    // The flat fallback keeps the harness runnable if the asset is missing;
+    // the layout branches it exercises are the same.
+    : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAABkCAIAAADbtU+GAAABTElEQVR4nO3OQQ3AMADEsCApgKIYf1SDkOf1EckAzLlfHsd8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EPUDcXcPNAHVkcQAAAAASUVORK5CYII=';
+})();
+
+/**
+ * The markers are GENERATED BY THE REAL SELECTOR, not hand-written.
+ *
+ * They used to be a literal list, and it quietly encoded the old behaviour —
+ * "Rib 1" and "Zero draft" tagged `info`, which is exactly the geometry-dump
+ * annotation this fixture is now meant to prove has gone. A hand-written fixture
+ * cannot fail when the code it stands in for changes; running the selector means
+ * a regression in what gets marked shows up in the rendered PDF.
+ *
+ * Only the PROJECTION is faked, because that is the one step that genuinely
+ * needs a camera. Anchors are mapped through the bounding box into 0..1, which
+ * puts each ring somewhere plausible and, more usefully, somewhere DIFFERENT.
+ */
+const located = selectFindingAnnotations(DFM_RESULT);
+const bb = DFM_RESULT.geometry.boundingBox;
+const project = (xyz, i) => ({
+  x: Math.min(0.94, Math.max(0.06, 0.5 + xyz[0] / (bb.xMm * 2))),
+  y: Math.min(0.94, Math.max(0.06, 0.5 - xyz[2] / (bb.zMm * 2) + (i % 2) * 0.08)),
+});
+
+export const DFM_FIGURE_NOTES = {
+  notLocated: located.notLocated,
+  droppedByCap: located.droppedByCap,
+  markable: located.annotations.length,
+};
+
 export const DFM_FIGURES = [
   {
-    id: 'iso', view: 'iso', width: 140, height: 100,
-    dataUri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAABkCAIAAADbtU+GAAABTElEQVR4nO3OQQ3AMADEsCApgKIYf1SDkOf1EckAzLlfHsd8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EPUDcXcPNAHVkcQAAAAASUVORK5CYII=',
-    callouts: [
-      { n: 1, x: 0.22, y: 0.31, label: 'Undercut', value: '2,256.45 mm2', severity: 'high' },
-      { n: 2, x: 0.68, y: 0.44, label: 'Zero draft', value: '0.4 deg', severity: 'medium' },
-      { n: 3, x: 0.51, y: 0.77, label: 'Thinnest wall', value: '2.1 mm', severity: 'medium' },
-      { n: 4, x: 0.95, y: 0.05, label: 'Rib 1 - a deliberately long label to test truncation', value: '4.85 x 28.4 mm', severity: 'info' },
-    ],
+    id: 'iso', view: 'iso', role: 'hero', width: 700, height: 500, dataUri: PART_JPEG,
+    callouts: located.annotations.map((a, i) => ({
+      n: i + 1, ...project(a.anchorXYZ, i),
+      label: a.label, value: a.value, severity: a.severity, note: a.note,
+    })),
   },
-  { id: 'front', view: 'front', width: 140, height: 100,
-    dataUri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAABkCAIAAADbtU+GAAABTElEQVR4nO3OQQ3AMADEsCApgKIYf1SDkOf1EckAzLlfHsd8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EMV8EPUDcXcPNAHVkcQAAAAASUVORK5CYII=', callouts: [] },
+  // THE SECOND VIEW, as production emits it: captured only because it was
+  // measured to reveal a finding the ISO could not show, and therefore carrying
+  // exactly those markers — here the two the ISO "hid", keeping their original
+  // numbers so #1 is the same finding in both pictures.
+  {
+    id: 'back', view: 'back', role: 'evidence', width: 700, height: 500, dataUri: PART_JPEG,
+    callouts: located.annotations.slice(0, 2).map((a, i) => ({
+      n: i + 1, x: 0.3 + i * 0.02, y: 0.55 + i * 0.01,   // deliberately COLLIDING
+      label: a.label, value: a.value, severity: a.severity, note: a.note,
+    })),
+  },
 ];
 
 

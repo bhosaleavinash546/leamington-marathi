@@ -46,13 +46,30 @@ The DFM / DFA report has its own renderer too. Run after any change to
 src/services/dfm-report.ts:
 
 ```bash
-npx esbuild src/services/dfm-report.ts --bundle --format=esm --platform=node \
-  --external:jspdf --external:exceljs \
-  --outfile=scripts/pdf-qa/dfm-report.bundle.mjs
-sed -i 's/import jsPDF from "jspdf";/import { jsPDF } from "jspdf";/;s|const ExcelJS = await import("exceljs");|const ExcelJS = (await import("exceljs")).default ?? (await import("exceljs"));|' \
-  scripts/pdf-qa/dfm-report.bundle.mjs
-cd scripts/pdf-qa && node render-dfm.mjs && python3 scan.py BrainSpark_DFM*.pdf
+cd scripts/pdf-qa && node render-dfm.mjs && python3 scan.py BrainSpark_DFM*.pdf && node xlsx-inspect.mjs
 ```
+
+`render-dfm.mjs` rebuilds its own esbuild bundle first. That used to be a manual
+step in this file, and it bit exactly as you would expect: a page-one figure was
+added, the harness was run, the output came back IDENTICAL, and the obvious
+conclusion — "my change did not work" — was wrong. The harness had faithfully
+re-rendered a bundle built before the change. A QA harness that can silently
+test stale code is worse than no harness.
+
+The 3D figures are proven in a REAL browser, not only in a fixture:
+
+```bash
+npm run build && node scripts/pdf-qa/live-figures.mjs   # writes live-iso.png
+```
+
+It boots the real server on a temp DB, signs up through the real API, loads the
+DFM Studio in headless Chromium, uploads a STEP fixture and asks the page's own
+viewer for the same snapshot the exporter asks for — then asserts the result is
+a picture of a solid rather than a blank frame, which is what a broken WebGL
+context silently returns. WebGL here runs on SwiftShader (software), so it
+proves the code path and the geometry, not a particular GPU driver.
+`fixture-part-iso.jpg` is a capture from that run, used by fixture-dfm.mjs so
+the QA pages show a real part instead of a flat rectangle.
 
 fixture-dfm.mjs deliberately includes the states a layout is most likely to get
 wrong: a process family where NOTHING could be evaluated (null score), a finding

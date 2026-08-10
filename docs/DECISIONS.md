@@ -1579,3 +1579,58 @@ Format: decision · why · what would change it.
     That exact fault was live: the QA harness passed `DFM_RESULT` (no route data) so the new
     Routes sheet rendered empty. The inspector prints every sheet with its row count and
     **fails on a header with no body**; the harness now renders `DFM_RESULT_FULL`.
+
+123. **The markers came from the geometry block, not from the rule results (2026).**
+    *Why:* the callout list was built by walking `dfm.draft` and `dfm.features` — every
+    undercut region, six zero-draft regions, four thinnest walls, EVERY rib and EVERY
+    pocket, the last two tagged `info` and labelled "Rib 1". Nothing in it ever read a
+    finding. So a casting arrived with dozens of numbered rings, most on features that
+    broke no rule, while a rule that actually FAILED often had none, because nothing joined
+    a finding to the faces that broke it. The picture annotated what the engine MEASURED
+    instead of what it CONCLUDED — the same fault page one had before it was reordered.
+    *Changes it:* `src/services/dfm-annotations.mjs`, a pure and unit-tested join.
+      * **Failed rules only.** Passes, abstentions and bare observations never mark.
+      * **Worst first, then capped.** The CAP declutters, not a severity floor — a floor
+        would let the picture silently omit a row the findings table shows.
+      * **One ring per finding, on its worst instance**, preferring the finding's own
+        `instances[].atXYZ` over the region list: the right kind of feature in the wrong
+        place is worse than no marker, because it looks authoritative.
+      * **What cannot be marked is NAMED with its reason** — "measured across the whole
+        part, so there is no single face to mark". A view with six rings looks complete;
+        four more findings with nowhere to point used to leave no trace at all.
+
+124. **A reference view of the part, on page one, at a size you can read (2026).**
+    *Why:* a DFM report that never shows the part asks a reader to hold a shape in their
+    head while being told what is wrong with it. Every commercial tool in this space puts
+    the model on the summary page. The only renders here were three pages of marked-up
+    views near the back, reached after a reader has already formed an opinion.
+    *Changes it:* a 92 mm ISO render under the verdict strip with the envelope beside it,
+    deliberately UNMARKED — what the part IS, before judgement is drawn over it. Sized by
+    eye on a rasterised page: at 76 mm it read as a thumbnail beside the numbers rather
+    than as the subject of the page. The marked copy follows under 'Located evidence',
+    reusing the same raster because the rings are vector.
+    Two further deletions: a second view is now captured ONLY when it is measured to
+    reveal a finding the ISO could not show (`chooseSecondView`), where the export used to
+    print iso/front/top unconditionally — two pages that usually restated the first; and a
+    view with nothing marked on it gets no page at all.
+    Rings that collide are relaxed apart with a LEADER LINE back to the true point. Two
+    findings on one wall — an undercut and a zero-draft face — project to the same pixel
+    and read as one ring; nudging without the leader would quietly relocate the finding.
+
+125. **`scripts/pdf-qa/live-figures.mjs` — the figure path had never run in a browser (2026).**
+    *Why:* every QA render fed the exporter a hand-written data URI. What was verified was
+    that jsPDF can embed a PNG — not that the viewer produces one, not that anchors project
+    onto the part, not that a report exported from the real page carries a picture at all.
+    I had also asserted twice that this container has no WebGL. **It does**: headless
+    Chromium runs it on SwiftShader, so the claim was wrong and the gap was avoidable.
+    *Changes it:* real server on a temp DB, real signup, real STEP upload, and the page's
+    own viewer handle asked for the same snapshot the exporter asks for. It asserts the
+    capture is a picture of a solid — distinct-colour count, not just byte length, because
+    a blank frame passes a size check. `CadViewer3D` hangs its handle on the host element
+    for this: reading the canvas directly returns a cleared buffer, so without it a feature
+    that ships pictures to customers cannot be proven to produce one.
+    Two faults it found immediately: seeding only the token left the page redirecting to
+    sign-in (the provider restores a session only when token AND user are present), and the
+    capture included the viewer's **ground grid** — orientation help for someone orbiting a
+    part, and a receding lattice behind the subject in print. `snapshot({ clean: true })`
+    hides it for the capture and restores it in the `finally`.

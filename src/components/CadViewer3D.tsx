@@ -132,6 +132,19 @@ const CadViewer3D = forwardRef<CadViewerRef, CadViewer3DProps>(function CadViewe
     };
   }, []);
 
+  // The handle, also hung on the host element.
+  //
+  // The report's 3D figures could be verified in a fixture and nowhere else:
+  // there was no way for a browser test to ask the viewer for the SAME image the
+  // exporter asks for, and reading the canvas directly returns a cleared buffer
+  // because the WebGL context does not preserve its drawing buffer between
+  // frames. So a feature that ships pictures to customers had never been proven
+  // to produce one. Four lines to make it testable is the right trade.
+  useEffect(() => {
+    const host = hostRef.current as (HTMLDivElement & { __cadViewer?: unknown }) | null;
+    if (host) host.__cadViewer = (ref as React.MutableRefObject<CadViewerRef | null> | null)?.current ?? null;
+  });
+
   return <div ref={hostRef} className={`cv3d-host ${className ?? ''}`} />;
 });
 

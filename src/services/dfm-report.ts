@@ -100,6 +100,14 @@ export interface AnalysisLimit { kind: string; severity: 'blocking' | 'warning';
 export interface DfmFigure {
   id: string;
   view: string;
+  /**
+   * `hero` is the reference picture of the part — printed LARGE on page one and
+   * deliberately UNMARKED, so a reader sees the part before any judgement is
+   * laid over it. `evidence` is the same render with the findings marked on it.
+   * The ISO capture serves as both: the markers are vector, so the one raster is
+   * drawn twice with and without them rather than captured twice.
+   */
+  role?: 'hero' | 'evidence';
   /** JPEG/PNG data URI straight from the viewer. */
   dataUri: string;
   width: number;
@@ -112,6 +120,8 @@ export interface DfmFigure {
     label: string;
     value?: string;
     severity?: string;
+    /** Which instance the ring sits on — "worst of 34", "largest of 3 pockets". */
+    note?: string;
   }>;
 }
 
@@ -260,7 +270,30 @@ function fit(doc: jsPDF, text: string, max: number): string {
   return `${s.trimEnd()}...`;
 }
 
-export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): void {
+/**
+ * What the marker selection could NOT do, so the report can say it.
+ *
+ * A picture with six rings on it looks complete. If four more findings existed
+ * and simply had nowhere to point, the reader has no way to know unless the
+ * report tells them — which is the difference between a limit that was declared
+ * and a limit that was hidden.
+ */
+export interface DfmFigureNotes {
+  /** Findings with no place on the model, each with the reason. */
+  notLocated?: Array<{ id: string; title: string; severity: string; reason: string }>;
+  /** Findings that WERE locatable but fell past the marker cap. */
+  droppedByCap?: number;
+  /** How many markers the selection produced. */
+  markable?: number;
+  /** Why there is no picture at all, when there is none. */
+  captureError?: string;
+}
+
+export function exportDfmPdf(
+  dataIn: DfmReportData,
+  figures: DfmFigure[] = [],
+  figureNotes: DfmFigureNotes = {},
+): void {
   // Provenance counted by the SERVER that ran the rules and sent with the
   // analysis, so the sentence describing the catalogue cannot fall out of date
   // the way "24 of the 26 rules" did — it said that on every report long after
@@ -415,6 +448,85 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
       doc.text(fit(doc, l, cw4 - 8), x, y + 9.5);
     });
     y += 22;
+
+    // ── THE PART ITSELF ─────────────────────────────────────────────────────
+    //
+    // A DFM report that never shows the part is asking a reader to hold a shape
+    // in their head while being told what is wrong with it. Every commercial
+    // tool in this space puts the model on the summary page and this one did
+    // not — the only renders were three pages of marked-up views near the back,
+    // which a reader reaches after forming their opinion, if at all.
+    //
+    // DELIBERATELY UNMARKED. This is the reference view: what the part IS,
+    // before any judgement is drawn on top of it. The marked copy comes later,
+    // under 'Located evidence', where the reader is ready to read rings.
+    {
+      const hero = figures.find(f => f.role === 'hero') ?? figures.find(f => f.view === 'iso') ?? figures[0];
+      // 92 x up-to-130 mm — about a third of the text column. Sized by eye on a
+      // rasterised page rather than picked as a round number: at 76 mm the part
+      // read as a thumbnail beside the numbers rather than as the subject of the
+      // page, which is the whole reason it is here.
+      const heroH = 92;
+      const heroW = hero && hero.height > 0
+        ? Math.min(130, heroH * (hero.width / hero.height))
+        : 130;
+      const heroX = ML;
+      // The envelope beside the picture, not under it — the page is 182 mm wide
+      // and a 118 mm image leaves a column that would otherwise be white space.
+      // Five lines of reference data, the numbers a reader checks against their
+      // own drawing before trusting anything else in the document.
+      const asideX = heroX + heroW + 8;
+      const asideW = CW - heroW - 8;
+
+      mono(7, true); setText(doc, GOLD);
+      doc.text('THE PART', ML, y); y += 4.6;
+
+      if (hero?.dataUri) {
+        try {
+          doc.addImage(hero.dataUri, hero.dataUri.includes('image/png') ? 'PNG' : 'JPEG',
+            heroX, y, heroW, heroH);
+        } catch {
+          setFill(doc, PANEL); doc.rect(heroX, y, heroW, heroH, 'F');
+          sans(8.6); setText(doc, MUT);
+          doc.text('The 3D view could not be embedded.', heroX + 5, y + heroH / 2);
+        }
+      } else {
+        // NO PICTURE IS ITSELF A RESULT. This used to be silent: the figure
+        // section simply did not render and the reader could not tell "nothing
+        // to show" from "the capture broke". A labelled box, with the reason.
+        setFill(doc, PANEL); doc.rect(heroX, y, heroW, heroH, 'F');
+        setDraw(doc, RULE, 0.3); doc.rect(heroX, y, heroW, heroH);
+        sans(9, 'bold'); setText(doc, AMBER);
+        doc.text('No 3D view was captured', heroX + 6, y + heroH / 2 - 3);
+        sans(8); setText(doc, MUT);
+        const why = figureNotes.captureError
+          || 'The report was generated without an open 3D view.';
+        doc.text(doc.splitTextToSize(pdfSafe(`${why} The analysis below is unaffected — it is measured from the solid, not from the picture.`), heroW - 12),
+          heroX + 6, y + heroH / 2 + 2);
+      }
+      setDraw(doc, RULE, 0.3); doc.rect(heroX, y, heroW, heroH);
+
+      const gh = (data.geometry || {}) as Record<string, any>;
+      const aside: Array<[string, string]> = [
+        ['ENVELOPE', gh.boundingBox ? `${gh.boundingBox.xMm} x ${gh.boundingBox.yMm} x ${gh.boundingBox.zMm} mm` : '—'],
+        ['VOLUME', gh.volume?.cm3 != null ? `${gh.volume.cm3} cm3` : '—'],
+        ['SURFACE', gh.surfaceArea?.cm2 != null ? `${gh.surfaceArea.cm2} cm2` : '—'],
+        ['FACES', gh.faces?.total != null ? `${gh.faces.total}` : '—'],
+        ['VIEW', hero ? `${VIEW_LABEL[hero.view] ?? hero.view}, part axes` : '—'],
+      ];
+      // Spread down the full height of the picture rather than stacked at its
+      // top, so the two halves of the band end together instead of leaving a
+      // third of the column blank.
+      const step = (heroH - 6) / aside.length;
+      aside.forEach(([k, v], i) => {
+        const ay = y + 4 + i * step;
+        mono(5.6); setText(doc, MUT);
+        doc.text(k, asideX, ay);
+        sans(8.6); setText(doc, INK);
+        doc.text(fit(doc, v, asideW), asideX, ay + 4.4);
+      });
+      y += heroH + 6;
+    }
 
     // ── PRIORITISED FINDINGS TABLE ──────────────────────────────────────────
     // The thing the report exists to deliver, on page one, sorted worst first.
@@ -656,9 +768,23 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
   // fixes (nudging, leader elbows) fail on a dense casting. A numbered ring on
   // the geometry and a numbered list beneath is what an engineering drawing has
   // always done, and it never collides.
+  //
+  // WHAT IS MARKED CHANGED. These pages used to carry every geometry
+  // observation the recogniser produced — each undercut region, each rib, each
+  // pocket, tagged 'info' and numbered — so a casting arrived with forty rings,
+  // most on features that broke no rule, while a rule that FAILED often had
+  // none. The markers now come from the rule results (dfm-annotations.mjs):
+  // failed rules only, worst first, one ring per finding on its worst instance.
   if (figures.length) {
     for (const fig of figures) {
       if (!fig.dataUri) continue;
+      // A VIEW WITH NOTHING MARKED ON IT IS NOT EVIDENCE. The hero is already
+      // on page one unmarked, and a second view is only ever captured because
+      // it was measured to reveal a finding the ISO could not show — so either
+      // way, no callouts means no page. This used to print the picture anyway
+      // with a line of prose explaining that nothing was visible, which is a
+      // full page spent saying "never mind".
+      if (!fig.callouts.length) continue;
       newPage();
       sectionTitle('Located evidence', `${VIEW_LABEL[fig.view] ?? fig.view} view`);
 
@@ -680,20 +806,57 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
       setDraw(doc, RULE, 0.3); doc.rect(ML, imgY, imgW, imgH);
 
       // Markers, drawn as vector over the raster so they stay sharp in print.
-      for (const c of fig.callouts) {
-        const cx = ML + c.x * imgW;
-        const cy = imgY + c.y * imgH;
-        const col = SEV[c.severity ?? ''] ?? TEAL;
-        setDraw(doc, col, 0.5); setFill(doc, [255, 255, 255]);
-        doc.circle(cx, cy, 2.6, 'FD');
-        setText(doc, col); mono(6.4, true);
-        doc.text(String(c.n), cx, cy + 1.05, { align: 'center' });
+      //
+      // TWO FINDINGS ON THE SAME FEATURE PROJECT TO THE SAME PIXEL — an undercut
+      // and a zero-draft wall are frequently the same wall — and two rings drawn
+      // on top of each other read as one. So overlapping rings are relaxed
+      // apart, and any ring that MOVED gets a leader line back to the point it
+      // was measured at. Nudging without the leader would quietly relocate the
+      // finding; the leader is what keeps the picture honest.
+      const R = 2.6;
+      const anchors = fig.callouts.map(c => ({ x: ML + c.x * imgW, y: imgY + c.y * imgH }));
+      const at = anchors.map(a => ({ ...a }));
+      for (let pass = 0; pass < 12; pass++) {
+        let moved = false;
+        for (let i = 0; i < at.length; i++) {
+          for (let j = i + 1; j < at.length; j++) {
+            const dx = at[j].x - at[i].x, dy = at[j].y - at[i].y;
+            const d = Math.hypot(dx, dy);
+            const need = R * 2.3;
+            if (d >= need) continue;
+            moved = true;
+            // Coincident points get a deterministic direction rather than a
+            // random one, so the same report renders the same way twice.
+            const ux = d > 0.001 ? dx / d : Math.cos(i), uy = d > 0.001 ? dy / d : Math.sin(i);
+            const push = (need - d) / 2;
+            at[i].x -= ux * push; at[i].y -= uy * push;
+            at[j].x += ux * push; at[j].y += uy * push;
+          }
+        }
+        if (!moved) break;
       }
+      fig.callouts.forEach((c, i) => {
+        const col = SEV[c.severity ?? ''] ?? TEAL;
+        const a = anchors[i], m = at[i];
+        if (Math.hypot(m.x - a.x, m.y - a.y) > 0.8) {
+          setDraw(doc, col, 0.25);
+          doc.line(a.x, a.y, m.x, m.y);
+          setFill(doc, col); doc.circle(a.x, a.y, 0.7, 'F');
+        }
+        setDraw(doc, col, 0.5); setFill(doc, [255, 255, 255]);
+        doc.circle(m.x, m.y, R, 'FD');
+        setText(doc, col); mono(6.4, true);
+        doc.text(String(c.n), m.x, m.y + 1.05, { align: 'center' });
+      });
       y = imgY + imgH + 5;
 
-      if (fig.callouts.length) {
+      {
         mono(6.2); setText(doc, MUT);
-        doc.text('WHAT IS MARKED, AND WHAT IT MEASURES', ML, y); y += 4.5;
+        doc.text('WHAT IS MARKED', ML + 7, y);
+        doc.text('MEASURED AGAINST ITS LIMIT', ML + 75, y);
+        doc.text('WHICH INSTANCE', ML + 139, y);
+        y += 2;
+        setDraw(doc, RULE, 0.3); doc.line(ML, y, PW - MR, y); y += 4.6;
         for (const c of fig.callouts) {
           ensure(5.2);
           const col = SEV[c.severity ?? ''] ?? TEAL;
@@ -701,18 +864,51 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
           doc.circle(ML + 2, y - 1.1, 2.4, 'FD');
           setText(doc, col); mono(6.2, true);
           doc.text(String(c.n), ML + 2, y - 0.25, { align: 'center' });
-          sans(9); setText(doc, INK);
-          doc.text(fit(doc, c.label, 60), ML + 7, y);
-          setText(doc, BODY);
-          doc.text(fit(doc, c.value ?? '', CW - 75), ML + 70, y);
+          sans(8.6); setText(doc, INK);
+          doc.text(fit(doc, c.label, 66), ML + 7, y);
+          mono(7.2); setText(doc, col);
+          doc.text(fit(doc, c.value ?? '', 62), ML + 75, y);
+          // WHICH of the thirty-four this ring is. One marker per finding keeps
+          // the picture readable; without this column it also hides that there
+          // were thirty-three others.
+          sans(7.6); setText(doc, MUT);
+          doc.text(fit(doc, c.note ?? '', CW - 139 - 2), ML + 139, y);
           y += 5;
         }
-      } else {
-        wrapped('No located finding is visible from this angle. The markers are '
-          + 'dropped rather than pushed to the edge of the frame, because a leader '
-          + 'line pointing off the picture is worse than none.', 8.6, MUT, CW, 4, 'italic');
       }
     }
+  }
+
+  // ── What the picture does NOT show ────────────────────────────────────────
+  //
+  // A view with six rings on it looks complete. If four more findings existed
+  // and had nowhere to point — a tolerance that is a property of the whole part,
+  // a rule whose offending feature the kernel could not place — the reader has
+  // no way to know unless it is written down. The old report drew the rings it
+  // could and said nothing about the rest, which reads as "that is all of them".
+  if ((figureNotes.notLocated?.length ?? 0) > 0 || (figureNotes.droppedByCap ?? 0) > 0) {
+    ensure(26);
+    y += 3;
+    mono(6.4, true); setText(doc, GOLD);
+    doc.text('FINDINGS NOT MARKED ON THE MODEL', ML, y); y += 5;
+    if (figureNotes.droppedByCap) {
+      wrapped(`${figureNotes.droppedByCap} further finding(s) are locatable but fall past the `
+        + `${figureNotes.markable ?? 0}-marker limit for one view. They are in the findings table `
+        + 'in full — the limit exists because a render with thirty rings on it stops being evidence.',
+      8.4, BODY, CW, 4);
+      y += 1;
+    }
+    for (const n of figureNotes.notLocated ?? []) {
+      ensure(5);
+      const col = SEV[n.severity] ?? MUT;
+      setFill(doc, col); doc.circle(ML + 1.4, y - 1.1, 1.4, 'F');
+      sans(8.4); setText(doc, INK);
+      doc.text(fit(doc, n.title, 78), ML + 5, y);
+      sans(8); setText(doc, MUT);
+      doc.text(fit(doc, n.reason, CW - 88), ML + 88, y);
+      y += 5;
+    }
+    y += 2;
   }
 
   // ── What the file did and did not tell us about tolerances ────────────────
