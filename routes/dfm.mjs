@@ -18,7 +18,7 @@ import {
   dfmOptions, familyForSelection, familyOfMaterial, processesForMaterial,
 } from '../dfm-process-registry.mjs';
 import { compareRoutes, rankRoutes } from '../dfm-routing.mjs';
-import { priceFindings, summarisePricedImpact } from '../dfm-cost-impact.mjs';
+import { priceFindings, summarisePricedImpact, formingContent } from '../dfm-cost-impact.mjs';
 import { DFM_RULES, PROCESS_FAMILIES, UNWRITTEN_RULES } from '../dfm-rule-catalogue.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
 import { TIME_MODEL } from '../dfa-time-model.mjs';
@@ -646,6 +646,13 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
           }
         }
         if (m._bookBasis) out.unavailable = m._bookBasis;
+        // FORMING CONTENT LIVES HERE, NOT ON A FINDING. It used to be attached
+        // to `sm-bend-radius`, where a figure that measures "all the bends
+        // against a flat blank" read as the saving from opening one radius. It
+        // is a property of the part, so it is reported with the press tonnage
+        // and the strip layout, which are the other properties of the part.
+        const forming = formingContent(ctx);
+        if (forming) out.formingContent = forming;
         return Object.keys(out).length ? out : null;
       })(),
       // Counted here, beside the catalogue that produced the findings, so the

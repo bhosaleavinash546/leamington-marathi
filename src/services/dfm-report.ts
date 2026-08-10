@@ -167,6 +167,12 @@ export interface DfmReportData {
       isChosen?: boolean;
       /** False when a FEASIBILITY rule failed: the route cannot make this part at all. */
       viable?: boolean; blockedReason?: string | null;
+      /**
+       * False when the process FINISHES a part rather than producing one —
+       * broaching, wire EDM, gun drilling. Still priced and judged, never
+       * recommended as an alternative way to make the part.
+       */
+      netShape?: boolean; secondaryReason?: string | null;
       /** Piece-price and tooling difference against the chosen route, when there is one. */
       deltaPieceEur?: number | null; deltaToolingEur?: number | null;
     }>;
@@ -1520,7 +1526,8 @@ export function exportDfmPdf(
     });
     for (const r of sorted) {
       const colour = r.viable === false ? RED
-        : r.score === null ? MUT : r.score >= 70 ? GREEN : r.score >= 40 ? AMBER : RED;
+        : r.netShape === false ? MUT
+          : r.score === null ? MUT : r.score >= 70 ? GREEN : r.score >= 40 ? AMBER : RED;
       // The chosen route is drawn in place, on a band, rather than lifted to the
       // top: its position in a cheapest-first list IS the answer to "should I
       // have picked something else", and moving it would destroy that.
@@ -1533,7 +1540,9 @@ export function exportDfmPdf(
         // and a 1-of-9 one, so the two are never more than a column apart.
         // A route the geometry rules out does not get a score. A number here
         // invites a comparison that has already been settled.
-        r.viable === false ? 'NOT VIABLE' : r.score === null ? '—' : String(r.score),
+        r.viable === false ? 'NOT VIABLE'
+          : r.netShape === false ? 'SECONDARY'
+            : r.score === null ? '—' : String(r.score),
         `${r.evaluatedCount}/${r.ruleCount}`,
         r.piecePriceEur === null ? 'not priced' : `EUR ${r.piecePriceEur.toFixed(2)}`,
         r.toolingEur === null ? '—' : `EUR ${Math.round(r.toolingEur).toLocaleString('en-GB')}`,
@@ -1550,7 +1559,12 @@ export function exportDfmPdf(
       const note = [
         r.isChosen ? 'YOUR ROUTE — the findings above are this one' : '',
         r.viable === false ? `CANNOT MAKE THIS PART: ${r.blockedReason ?? 'a feasibility rule failed'}` : '',
-        r.viable === false ? '' : delta,
+        // Priced per part like a route, but it is not one — and a reader
+        // comparing EUR 4.74 of broaching against EUR 6.55 of die casting is
+        // comparing one operation with the whole part.
+        r.viable !== false && r.netShape === false
+          ? `NOT A ROUTE: ${r.secondaryReason ?? 'this process finishes a part rather than producing one'}` : '',
+        r.viable === false || r.netShape === false ? '' : delta,
         r.highSeverityCount ? `${r.highSeverityCount} high-severity` : '',
         r.scoreCaveat ?? '',
       ].filter(Boolean).join(' · ');
@@ -1567,8 +1581,16 @@ export function exportDfmPdf(
     if (chosenRow && Number.isFinite(chosenRow.piecePriceEur as number)) {
       // A route the geometry rules out is not a cheaper alternative, whatever
       // the cost engine says it would have cost.
+      // WHAT MAY BE RECOMMENDED. Three gates, each added because the sentence
+      // below landed somewhere it should not have: a blocked route (already
+      // handled), a SECONDARY OPERATION offered as a way to make the part, and a
+      // route on which NO RULE COULD BE EVALUATED. The last is the worst of the
+      // three — Fine Blanking was ranked and priced for a die-cast bracket over
+      // 0 of 6 rules, which is not a clean sheet, it is an unknown.
       const cheaper = sorted.filter(r => !r.isChosen
         && r.viable !== false
+        && r.netShape !== false
+        && (r.evaluatedCount ?? 0) > 0
         && Number.isFinite(r.piecePriceEur as number)
         && (r.piecePriceEur as number) < (chosenRow.piecePriceEur as number));
       if (!cheaper.length) {

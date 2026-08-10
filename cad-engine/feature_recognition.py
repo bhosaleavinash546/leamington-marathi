@@ -1302,8 +1302,8 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
                 out["minHoleToEdgeMm"] = round(gaps["holeToEdgeMm"], 2)
                 out["minHoleToEdgeToThickness"] = round(gaps["holeToEdgeMm"] / t, 2)
                 out["minHoleToEdgeBasis"] = (
-                    "distance to the bounding box in the two widest axes — a LOWER bound on "
-                    "the true trim distance")
+                    "distance to the bounding box in the two widest axes — an UPPER bound "
+                    "on the clearance, so a pass near the limit is not conclusive")
             out["minHoleToHoleAtXYZ"] = gaps.get("holeToHoleAtXYZ")
             out["minHoleToEdgeAtXYZ"] = gaps.get("holeToEdgeAtXYZ")
         return out
@@ -1438,10 +1438,16 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
                 hole_gap_at = [round((ax + bx) / 2.0, 3), round((ay + by) / 2.0, 3),
                                round((az + bz) / 2.0, 3)]
 
-    # Distance from each hole's edge to the part's outer boundary. The bounding
-    # box is a LOWER bound on the true trim distance — a hole near a concave
-    # cut-out is closer to material's end than this says — so the measure is
-    # published with that stated rather than presented as exact.
+    # Distance from each hole's edge to the part's outer boundary, measured to
+    # the BOUNDING BOX. The real trimmed outline is inside that box wherever it
+    # is concave, so a hole near a notch is closer to the edge than this says:
+    # the figure OVER-states clearance and is an UPPER bound on it.
+    #
+    # The direction is the whole point. `sm-hole-to-edge` asks for `>= 2.5 gap/t`,
+    # so an over-stated clearance can PASS a hole that is genuinely too close to
+    # a trimmed edge. This was published as "a LOWER bound" in three places,
+    # which told a reader to trust a marginal pass in exactly the wrong
+    # direction. A fail is sound; a near-limit pass is not conclusive.
     edge_gap = None
     edge_gap_at = None
     try:
@@ -1551,7 +1557,7 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
         "minHoleToEdgeAtXYZ": edge_gap_at,
         "minHoleToEdgeMm": round(edge_gap, 2) if edge_gap is not None else None,
         "minHoleToEdgeToThickness": round(edge_gap / thickness, 2) if edge_gap is not None else None,
-        "minHoleToEdgeBasis": "distance to the bounding box in the two sheet-plane axes — a LOWER bound on the true trim distance, since a hole beside a concave cut-out is nearer the edge than this says",
+        "minHoleToEdgeBasis": "distance to the bounding box in the two sheet-plane axes — an UPPER bound on the clearance, since a hole beside a concave cut-out is nearer the true trimmed edge than this says. A fail is sound; a pass near the limit is not conclusive",
         "minBendToBendMm": round(bend_gap, 2) if bend_gap is not None else None,
         "minBendToBendToThickness": round(bend_gap / thickness, 2) if bend_gap is not None else None,
         "minBendToBendAtXYZ": bend_gap_at,
@@ -1813,8 +1819,22 @@ def _wire_metrics(wire):
     if not (perimeter > 0) or not math.isfinite(perimeter):
         return None
 
-    # Circular when every edge is a circle of one radius — that is the case the
-    # cylinder pass already owns, and it must not be reported twice.
+    # ── IS IT ROUND? MEASURE IT, DO NOT ASK THE EXPORTER. ───────────────────
+    #
+    # This used to be `kinds == {GeomAbs_Circle} and len(radii) == 1`, which asks
+    # what CURVE TYPE the writing CAD system chose rather than what shape the
+    # wire is. A real seat bracket came through with all 26 of its holes written
+    # as B-splines — 36 inner wires all-BSpline, 14 BSpline+Line, not one circle
+    # — so every plain Ø6 hole was reported as "shaped", the part's summary read
+    # "26 (0 round, 26 shaped)", and `circleDiaMm` was null on holes whose
+    # diameter was exactly 6.000 mm. A second part, from a different exporter,
+    # wrote real circles and reported 4 of 4 round. The answer depended on who
+    # saved the file, and nothing said so.
+    #
+    # The isoperimetric quotient 4*pi*A / P**2 is 1 for a circle and strictly
+    # less for every other closed curve, so it settles the question from the
+    # geometry itself. The analytic radius is still preferred when the file
+    # offers one — it is exact — and the measured route only fills in behind it.
     radii, kinds = set(), set()
     ex = TopExp_Explorer(wire, TopAbs_EDGE)
     while ex.More():
@@ -1826,13 +1846,75 @@ def _wire_metrics(wire):
         except Exception:
             pass
         ex.Next()
-    circular = kinds == {GeomAbs_CurveType.GeomAbs_Circle} and len(radii) == 1
+
+    analytic = kinds == {GeomAbs_CurveType.GeomAbs_Circle} and len(radii) == 1
+    circular = analytic
+    circle_dia = round(2 * next(iter(radii)), 2) if analytic and radii else None
+    roundness = None
+    if not analytic:
+        roundness = _radial_uniformity(wire, centroid)
+        if roundness is not None and roundness <= ROUNDNESS_TOL:
+            circular = True
+            circle_dia = round(perimeter / math.pi, 2)
+
     return {
         "perimeterMm": round(perimeter, 2),
         "centroidXYZ": [round(v, 3) for v in centroid],
         "circular": circular,
-        "circleDiaMm": round(2 * next(iter(radii)), 2) if circular and radii else None,
+        "circleDiaMm": circle_dia,
+        # How it was decided, because "round" from an exact circle record and
+        # "round" from a measured quotient are not the same claim.
+        "circularBasis": "analytic circle" if analytic
+                         else ("measured: radius varies %.2f%% about the centroid" % (roundness * 100))
+                         if roundness is not None else "not circular",
     }
+
+
+#: How much the radius may vary about the wire's own centroid before it stops
+#: being a circle, as a fraction of the mean. A B-spline circle written by a CAD
+#: exporter holds a few parts in ten thousand; a 1:1.5 stadium slot varies by
+#: about 20% and a rounded square by 25%, so this separates them with room to
+#: spare while tolerating the faceting of a sampled spline.
+ROUNDNESS_TOL = 0.02
+
+#: Points sampled per edge when measuring radial uniformity.
+ROUNDNESS_SAMPLES = 12
+
+
+def _radial_uniformity(wire, centroid):
+    """
+    Peak-to-peak radius variation about `centroid`, as a fraction of the mean.
+
+    0 for a perfect circle, and it needs no planar face — which matters, because
+    the face-building route fails outright on the spline wires that made this
+    check necessary in the first place.
+    """
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.TopAbs import TopAbs_EDGE
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopoDS import TopoDS
+
+    radii = []
+    ex = TopExp_Explorer(wire, TopAbs_EDGE)
+    while ex.More():
+        try:
+            ad = BRepAdaptor_Curve(TopoDS.Edge_s(ex.Current()))
+            t0, t1 = ad.FirstParameter(), ad.LastParameter()
+            if not (math.isfinite(t0) and math.isfinite(t1)) or t1 <= t0:
+                return None
+            for k in range(ROUNDNESS_SAMPLES):
+                pt = ad.Value(t0 + (t1 - t0) * k / float(ROUNDNESS_SAMPLES))
+                radii.append(math.dist((pt.X(), pt.Y(), pt.Z()), centroid))
+        except Exception:
+            return None
+        ex.Next()
+
+    if len(radii) < 8:
+        return None
+    mean = sum(radii) / len(radii)
+    if not (mean > 0):
+        return None
+    return (max(radii) - min(radii)) / mean
 
 
 def apertures(shape, wall_mm=None):
@@ -1906,6 +1988,7 @@ def apertures(shape, wall_mm=None):
             "equivalentDiaMm": round(eq, 2),
             "circular": a["circular"],
             "circleDiaMm": a["circleDiaMm"],
+            "circularBasis": a.get("circularBasis"),
             "through": partner is not None,
             "centroidXYZ": a["centroidXYZ"],
         })

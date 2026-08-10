@@ -477,6 +477,30 @@ export function extractMeasures(geo = {}, opts = {}) {
       return Math.round(Math.hypot(sorted[0], sorted[1]) * 10) / 10;
     })(),
 
+    // ── HOW MUCH METAL THE PART IS ──────────────────────────────────────────
+    //
+    // The envelope alone was not enough. A 133 mm die-cast bracket sits under a
+    // 150 mm cold-heading gate and still cannot be headed, because a header
+    // works from a slug cut off wire: the largest production machines run about
+    // 25 mm stock, so the biggest slug they can cut is tens of cubic
+    // centimetres. Volume is what actually bounds the process, and it bounds
+    // MIM the same way through sintering mass.
+    partVolumeCm3: num((geo.geometry || {}).volume?.cm3 ?? geo.volume?.cm3),
+
+    // ── THE PART'S LARGEST DIMENSION ────────────────────────────────────────
+    //
+    // Trivial to compute and it was missing, which is why nothing stopped the
+    // route table offering cold heading — a wire-slug process — for a 133 mm
+    // die-cast bracket and then RECOMMENDING it as the cheapest quotation to
+    // ask for. Some processes are ruled out by size before any other question
+    // about the geometry is worth asking.
+    maxEnvelopeMm: (() => {
+      const bb = geo.boundingBox || {};
+      const ext = [num(bb.xMm), num(bb.yMm), num(bb.zMm)];
+      if (ext.some(v => !(v > 0))) return undefined;
+      return Math.round(Math.max(...ext) * 10) / 10;
+    })(),
+
     // ── PRESS DEPTH over wall, the density-gradient number for powder metal ──
     //
     // Powder does not flow. It is compacted along ONE axis and the density falls
@@ -709,8 +733,21 @@ export function runDfmRules(geo, process, { material, overrides, declaredToleran
     } else {
       value = measures[rule.measure];
     }
+    // NAME THE CUTOFF IN THE UNIT. "Wall area below the minimum draft" is not
+    // one quantity — it is a curve, and each process reads it at its own angle.
+    // A forging report printed 64.07% from the rule (5 deg) on page 1 and 56.39%
+    // from the geometry panel (1 deg) on page 2 under the SAME words, eight
+    // points apart with nothing on either page to reconcile them. The angle is
+    // the difference, so the angle travels with the number everywhere it goes.
+    const cutoff = rule.measure === 'wallAreaBelowDraftPct' ? rule.draftCutoffDeg
+      : rule.measure === 'overhangAreaBelowDeg' ? rule.overhangCutoffDeg
+        : null;
+    const unit = cutoff != null && rule.unit?.startsWith('%')
+      ? `% of wall under ${cutoff}°`
+      : rule.unit;
+
     const picked = resolveThreshold(rule, material, materialFamily, overrides?.[rule.id]);
-    const effective = { ...rule, threshold: picked.threshold };
+    const effective = { ...rule, threshold: picked.threshold, unit };
     const { status, reason } = evaluate(effective, value);
     const row = {
       id: rule.id,
@@ -718,7 +755,9 @@ export function runDfmRules(geo, process, { material, overrides, declaredToleran
       severity: rule.severity,
       measure: rule.measure,
       measured: value,
-      unit: rule.unit,
+      unit,
+      /** The angle this rule read the draft curve at, when it read one. */
+      measuredAtDeg: cutoff ?? undefined,
       threshold: picked.threshold,
       thresholdText: thresholdText(effective),
       rationale: rule.rationale,
@@ -758,6 +797,7 @@ export function runDfmRules(geo, process, { material, overrides, declaredToleran
     }
     if (status === 'fail') findings.push(row);
     else if (status === 'pass') passed.push(row);
+    // fallthrough below adds the not-evaluated row
     else {
       notEvaluated.push({
         ...row,
@@ -797,7 +837,7 @@ export function runDfmRules(geo, process, { material, overrides, declaredToleran
       : null,
     // A score over rules nobody could evaluate would be meaningless, so it is
     // computed over the EVALUATED rules only and carries its own coverage.
-    score: scoreOf(findings, evaluated),
+    score: scoreOf(findings, evaluated, [...findings, ...passed]),
   };
 }
 
@@ -807,12 +847,35 @@ export function runDfmRules(geo, process, { material, overrides, declaredToleran
  * This supersedes the LLM's 1-10 `dfmaScore` guess on the CAD → Cost page. It is
  * arithmetic: each failed rule costs weight by severity. `null` when nothing
  * could be evaluated — a score of 100 on zero checks would be a lie.
+ *
+ * NORMALISED BY WHAT THE EVALUATED RULES COULD HAVE COST, which the flat
+ * `100 - Σpenalty` form was not. That form has no denominator, so how badly a
+ * route can score depends on how many rules its family happens to contain: a
+ * 12-rule family can shed 99 points while a 3-rule family can shed at most 75,
+ * and a family with one evaluated rule at most 25. The routes table ranks on
+ * this number, and on a real bracket it printed the chosen die-casting route at
+ * 1/100 over 8 of 12 rules beside Turning at 100/100 over 3 of 5 — inviting a
+ * reader to compare a thorough check against a shallow one as though they were
+ * the same measurement. Dividing by the penalty the evaluated rules COULD have
+ * inflicted makes the number a fraction of what was actually checked, so no
+ * family wins by owning fewer rules.
+ *
+ * @param {object[]} findings   the failed rules
+ * @param {number} evaluatedCount  how many rules produced a verdict
+ * @param {object[]} [evaluatedRules]  every rule that produced a verdict, failed
+ *   or passed. Omitted, the function falls back to the un-normalised form so an
+ *   older caller keeps working rather than dividing by zero.
  */
-export function scoreOf(findings, evaluatedCount) {
+export function scoreOf(findings, evaluatedCount, evaluatedRules = null) {
   if (!evaluatedCount) return null;
   const WEIGHT = { high: 25, medium: 12, low: 5 };
-  const penalty = findings.reduce((s, f) => s + (WEIGHT[f.severity] || 5), 0);
-  return Math.max(0, Math.min(100, Math.round(100 - penalty)));
+  const weigh = list => list.reduce((s, f) => s + (WEIGHT[f.severity] || 5), 0);
+  const penalty = weigh(findings);
+  const worstCase = Array.isArray(evaluatedRules) && evaluatedRules.length
+    ? weigh(evaluatedRules)
+    : 100;
+  if (!(worstCase > 0)) return null;
+  return Math.max(0, Math.min(100, Math.round(100 * (1 - penalty / worstCase))));
 }
 
 /** Run every process family — used when the process is not yet decided. */

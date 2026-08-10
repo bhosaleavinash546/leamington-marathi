@@ -90,6 +90,18 @@ const REGION_SOURCE = {
     worst: (a, b) => (Number(a.thicknessMm) || 0) - (Number(b.thicknessMm) || 0),
     note: (r) => (r.thicknessMm != null ? `thinnest section, ${r.thicknessMm} mm` : 'the thinnest section'),
   },
+  coredHoleDraftPerSideDeg: {
+    at: (g) => g?.dfm?.draft?.coredHoles?.bores,
+    xyz: (r) => r.atXYZ,
+    faces: (r) => (r.faceId == null ? [] : [r.faceId]),
+    // Least draft first, then largest wall — the bore that binds hardest on the
+    // core pin is the one worth drawing a leader to.
+    worst: (a, b) => (Number(a.draftPerSideDeg) || 0) - (Number(b.draftPerSideDeg) || 0)
+      || (Number(b.areaMm2) || 0) - (Number(a.areaMm2) || 0),
+    note: (r, n) => (n > 1
+      ? `least-drafted of ${n} cored holes${r.radiusMm ? `, Ø${(r.radiusMm * 2).toFixed(1)} mm` : ''}`
+      : 'the cored hole'),
+  },
   maxPocketDepthToWidth: {
     at: (g) => (g?.dfm?.features?.prismatic || []).filter((p) => /pocket|slot/i.test(String(p.kind || ''))),
     xyz: (r) => r.centroidXYZ,

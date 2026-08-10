@@ -47,21 +47,32 @@ const PRICERS = {
   'im-rib-thickness-max': priceRibThickness,
   'hpdc-rib-thickness-max': priceRibThickness,
 
-  // A tight bend radius does not change piece price by itself, but the BEND
-  // COUNT it belongs to does — stampingFeatureCost prices forming per bend, and
-  // until bend recognition existed it was called with its default of 2 on every
-  // part, or not called at all. This is the first finding whose cost comes from
-  // that engine.
-  'sm-bend-radius': priceBendCount,
+  // NOTHING PRICES sm-bend-radius, AND THAT WAS THE POINT OF REMOVING IT.
+  //
+  // `priceBendCount` used to be bound here. It costs the part as drawn against a
+  // FLAT BLANK — i.e. the forming content of all 23 bends — and the report
+  // printed that as "a saving of EUR 1.26 per part (EUR 151,200 per year)" on a
+  // finding whose fix is "open the inside radius". Opening a radius removes no
+  // bends and saves none of that money. It was the only priced figure in three
+  // shipped reports and it was attached to the wrong change.
+  //
+  // The forming-content figure is still worth having, so it survives as
+  // `formingContent()` below and is reported on the sheet-forming page as a
+  // property of the part rather than as the consequence of a finding.
 };
 
 /**
  * Cost of the forming content the recognised bends imply, against a flat blank.
- * Not a "saving" — a bend cannot be deleted without changing the design — so it
- * is reported as the forming CONTENT the current design carries, which is what a
- * designer trades away when they flatten a feature.
+ *
+ * NOT A SAVING, and no longer attached to any finding. A bend cannot be deleted
+ * without changing the design, so this is the forming CONTENT the part carries —
+ * a property of the geometry, like its mass. Bound to a rule it read as the
+ * price of clearing that rule, which for a bend-RADIUS finding was simply false.
+ *
+ * The caller reports it on the sheet-forming page, where "this part carries
+ * EUR x/part of forming across n bends" is a true and useful sentence.
  */
-function priceBendCount(finding, ctx) {
+export function formingContent(ctx) {
   const { material, region, annualVolume, geometry, library, sheet } = ctx;
   if (!material || !geometry?.partVolumeCm3 || !sheet?.bendCount) return null;
   const run = bends => stampingFeatureCost({
@@ -76,13 +87,15 @@ function priceBendCount(finding, ctx) {
     return null;
   }
   return {
-    priced: true,
-    basis: 'stampingFeatureCost — forming tonnage and station count from the recognised bend count',
-    changeDescription: `${sheet.bendCount} bend${sheet.bendCount === 1 ? '' : 's'} vs a flat blank`,
-    asDrawnEur: round2(asDrawn.totalShouldCost),
-    improvedEur: round2(flat.totalShouldCost),
-    deltaEur: round2(asDrawn.totalShouldCost - flat.totalShouldCost),
-    annualDeltaEur: annualVolume ? round2((asDrawn.totalShouldCost - flat.totalShouldCost) * annualVolume) : null,
+    bendCount: sheet.bendCount,
+    basis: 'stampingFeatureCost — forming tonnage and station count from the recognised bend count, against the same blank unformed',
+    formedEur: round2(asDrawn.totalShouldCost),
+    flatEur: round2(flat.totalShouldCost),
+    contentEur: round2(asDrawn.totalShouldCost - flat.totalShouldCost),
+    annualContentEur: annualVolume ? round2((asDrawn.totalShouldCost - flat.totalShouldCost) * annualVolume) : null,
+    // Said on the page, not left for the reader to infer: this is what the
+    // forming COSTS, not what removing it would save.
+    caveat: 'The forming content of the design as drawn. Not a saving — clearing a bend-geometry finding opens a radius or moves a hole; it does not delete a bend.',
   };
 }
 
@@ -301,6 +314,10 @@ const UNPRICED_REASON = {
   },
   'mach-pocket-depth-ratio': {
     reason: 'The recogniser does not yet report pocket depth and width, so there is nothing to re-cost.',
+  },
+  'sm-bend-radius': {
+    reason: 'Opening an inside radius changes the die and the scrap rate, not the forming content — the part keeps the same bend count, so no piece-price driver moves. The forming content itself is on the sheet-forming page.',
+    externalGuideline: 'The real cost of a too-tight radius is cracked parts. Ask the press shop what fallout they expect at this r/t on this grade; the engines do not model scrap rate.',
   },
 };
 

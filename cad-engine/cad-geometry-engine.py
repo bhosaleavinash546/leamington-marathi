@@ -397,9 +397,17 @@ def _bore_wall_faces(wrapped, skip):
             if reversed_face != reversed_param:          # material outside => a hole
                 props = GProp_GProps()
                 BRepGProp.SurfaceProperties_s(face, props)
+                # WHERE IT IS, not just that it exists. Without a coordinate the
+                # cored-hole draft finding could never be drawn on the model, and
+                # a shipped report filed it under "the geometry engine returned no
+                # coordinates for the offending feature" — while holding the face,
+                # its area and its radius. The surface centre of mass sits on the
+                # bore wall, which is exactly where a leader line should land.
+                c = props.CentreOfMass()
                 out.append({"faceId": i, "draftPerSideDeg": round(draft, 3),
                             "areaMm2": round(props.Mass(), 2),
-                            "radiusMm": round(radius, 3)})
+                            "radiusMm": round(radius, 3),
+                            "atXYZ": [round(c.X(), 3), round(c.Y(), 3), round(c.Z(), 3)]})
         except Exception:
             continue
     out.sort(key=lambda b: b["draftPerSideDeg"])

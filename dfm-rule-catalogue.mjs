@@ -421,7 +421,7 @@ export const DFM_RULES = [
     sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'medium',
-    title: 'Rib taller than three wall thicknesses',
+    title: 'Rib taller than the wall will fill and eject',
     measure: 'maxRibHeightToWall',
     compare: 'lte',
     threshold: 3,
@@ -441,7 +441,7 @@ export const DFM_RULES = [
     sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'medium',
-    title: 'Boss taller than three times its diameter',
+    title: 'Boss too tall for the core pin that forms it',
     measure: 'maxBossHeightToDia',
     compare: 'lte',
     threshold: 3,
@@ -685,7 +685,7 @@ export const DFM_RULES = [
     sourceStatus: 'industry-consensus',
     process: 'hpdc',
     severity: 'medium',
-    title: 'Rib taller than three wall thicknesses',
+    title: 'Rib taller than the wall will fill and eject',
     measure: 'maxRibHeightToWall',
     compare: 'lte',
     threshold: 3,
@@ -716,14 +716,14 @@ export const DFM_RULES = [
     sourceStatus: 'industry-consensus',
     process: 'sheet-metal',
     severity: 'medium',
-    title: 'Inside bend radius below one material thickness',
+    title: 'Inside bend radius tighter than the grade will take',
     measure: 'minBendRadiusToThickness',
     compare: 'gte',
     threshold: 1,
     unit: 'r/t',
     rationale:
       'Bending tighter than about one thickness works the outer fibre beyond its uniform elongation and cracks it. Less ductile alloys need considerably more.',
-    fix: 'Open the inside radius to at least 1x thickness; allow 1.5–2x for stainless or 6061-T6.',
+    fix: 'Open the inside radius to at least the r/t shown above for this grade — the figure is the alloy\'s, not a generic one. Where the radius has to stay, a hot or annealed bend is the alternative.',
     source: 'Sheet-metal design guidance (1x t typical, 1.5–2x for stainless and 6061-T6).',
   },
   {
@@ -1980,7 +1980,7 @@ export const DFM_RULES = [
     sourceStatus: 'industry-consensus',
     process: 'roll-forming',
     severity: 'medium',
-    title: 'Inside bend radius below one material thickness',
+    title: 'Inside bend radius tighter than the grade will take',
     measure: 'minBendRadiusToThickness',
     compare: 'gte',
     threshold: 1.0,
@@ -3295,6 +3295,48 @@ export const DFM_RULES = [
   // COLD HEADING / UPSETTING
   // ═══════════════════════════════════════════════════════════════════════════
   {
+    // A FEASIBILITY GATE, like the body-of-revolution rules on centrifugal
+    // casting and spinning. Cold heading starts from a slug cut off coil, so the
+    // part's size is bounded by the wire the header can run. Nothing in this
+    // family measured size, so a 133 mm die-cast bracket and a 256 mm stamped
+    // bracket both came through as viable, priced below their real routes, and
+    // were named as "a quotation to ask for" in two shipped reports.
+    id: 'ch-max-envelope',
+    sourceStatus: 'industry-consensus',
+    process: 'cold-heading',
+    severity: 'high',
+    blocking: true,
+    title: 'Too large to cold head from wire',
+    measure: 'maxEnvelopeMm',
+    compare: 'lte',
+    threshold: 150,
+    unit: 'mm largest dimension',
+    rationale:
+      'A cold header cuts a slug from coil and upsets it between dies. The machine is built around the wire it feeds, so the finished part cannot be much longer than the slug — commercial multi-station headers work in fasteners and small formed parts, not brackets.',
+    fix: 'Cold heading is not a route for a part this size. Where a headed feature is wanted on a large part, head the fastener separately and join it.',
+    source: 'Cold-heading practice: production headers run wire up to roughly 25 mm diameter with cut-off lengths in the tens of millimetres; a 150 mm envelope is already generous for the largest machines. No primary standard audited.',
+  },
+  {
+    // The size gate above catches a long part; this catches a CHUNKY one. The
+    // 133 x 120 x 125 mm die-cast bracket that cold heading was recommended for
+    // fits inside a 150 mm envelope and holds 320 cm3 of aluminium — four times
+    // the largest slug any production header can cut.
+    id: 'ch-max-slug-volume',
+    sourceStatus: 'industry-consensus',
+    process: 'cold-heading',
+    severity: 'high',
+    blocking: true,
+    title: 'More metal than a header can cut as a slug',
+    measure: 'partVolumeCm3',
+    compare: 'lte',
+    threshold: 80,
+    unit: 'cm3',
+    rationale:
+      'A cold header shears a slug off wire and upsets it. The slug is the whole part, so the part cannot hold more metal than the largest wire the machine runs can give it — about 25 mm diameter over a workable cut length.',
+    fix: 'Cold heading is not a route at this mass. A forging or a casting is the comparable net-shape process.',
+    source: 'Cold-heading practice: production headers run wire to roughly 25 mm diameter; a 25 mm x 150 mm slug is about 73 cm3, so 80 cm3 is already the generous end. No primary standard audited.',
+  },
+  {
     id: 'ch-upset-ratio',
     sourceStatus: 'industry-consensus',
     process: 'cold-heading',
@@ -3933,6 +3975,44 @@ export const DFM_RULES = [
   // radii, thin walls all behave the same way — with ONE limit no plastic has:
   // a maximum wall, because the binder has to get out of the middle.
   // ═══════════════════════════════════════════════════════════════════════════
+  {
+    // The same gate for MIM, and for the same reason: no rule in the family
+    // measured the part, so a 256 mm seat bracket scored 88 and priced below the
+    // stamping that actually makes it.
+    id: 'mim-max-envelope',
+    sourceStatus: 'industry-consensus',
+    process: 'mim',
+    severity: 'high',
+    blocking: true,
+    title: 'Too large for metal injection moulding',
+    measure: 'maxEnvelopeMm',
+    compare: 'lte',
+    threshold: 100,
+    unit: 'mm largest dimension',
+    rationale:
+      'A MIM part is moulded from powder in a binder and then sintered, shrinking by around 15-20%. That shrink has to be held to a tolerance across the whole part, so size is limited by distortion and by what a debind furnace can support — the process lives in small, complex parts.',
+    fix: 'Above roughly 100 mm the route is a casting or a machined blank. Where MIM is wanted for one intricate feature, make that feature a separate MIM insert.',
+    source: 'MIM practice: typical parts are under 100 g and under 100 mm, limited by sintering shrinkage control and debind support. No primary standard audited.',
+  },
+  {
+    // Sintering mass, the other half of the MIM size limit: a large part
+    // distorts as the binder leaves and the powder densifies, and the furnace
+    // has to support it through the shrink.
+    id: 'mim-max-volume',
+    sourceStatus: 'industry-consensus',
+    process: 'mim',
+    severity: 'high',
+    blocking: true,
+    title: 'Too much metal to debind and sinter',
+    measure: 'partVolumeCm3',
+    compare: 'lte',
+    threshold: 30,
+    unit: 'cm3',
+    rationale:
+      'A MIM part loses its binder and then densifies by 15-20% in the furnace. The larger the mass, the further any point of it has to move, and the harder that shrink is to hold — which is why the process lives in small, intricate parts rather than large ones.',
+    fix: 'Above roughly 30 cm3 the route is a casting or a machined blank; a MIM insert can still carry one intricate feature of a larger assembly.',
+    source: 'MIM practice: typical production parts are well under 100 g (about 13 cm3 in steel), with the upper end around 250 g. 30 cm3 is the generous end of that band. No primary standard audited.',
+  },
   {
     id: 'mim-max-wall',
     sourceStatus: 'industry-consensus',

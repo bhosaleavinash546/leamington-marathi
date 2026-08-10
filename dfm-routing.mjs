@@ -26,7 +26,7 @@
 import { computeShouldCost } from './costing-engine.mjs';
 import { computeCarbon } from './carbon.mjs';
 import { runDfmRules } from './dfm-rules.mjs';
-import { processesForMaterial } from './dfm-process-registry.mjs';
+import { processesForMaterial, SECONDARY_OPERATION_FAMILIES } from './dfm-process-registry.mjs';
 
 /**
  * @param {object} geo      measured geometry (the engine's analyze() output)
@@ -79,6 +79,13 @@ export function compareRoutes(geo, opts = {}) {
       // a cheap-looking row for a route that does not exist.
       row.viable = !r.blockers?.length;
       row.blockedReason = r.blockedReason ?? null;
+      // AN OPERATION IS NOT A ROUTE. Broaching, wire EDM and gun drilling finish
+      // a part that already exists, so pricing them per-part beside die casting
+      // compares "make this bracket" with "cut one feature in it". They stay in
+      // the table — "can this be broached" is worth answering — but they are
+      // labelled, and the recommendation below can never land on one.
+      row.netShape = !SECONDARY_OPERATION_FAMILIES[candidate.dfmFamily];
+      row.secondaryReason = SECONDARY_OPERATION_FAMILIES[candidate.dfmFamily] ?? null;
       // The two worst findings, so a row explains itself without a drill-down.
       row.topFindings = r.findings.slice(0, 2).map(f => ({
         title: f.title, severity: f.severity, measured: f.measured,

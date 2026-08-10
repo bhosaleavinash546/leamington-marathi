@@ -116,6 +116,42 @@ export const PROCESS_TO_DFM_FAMILY = {
   'Washing & Final Inspection': null,
 };
 
+/**
+ * PROCESSES THAT ARE OPERATIONS, NOT ROUTES.
+ *
+ * Each of these has a rule family and a price, and each is a real thing a
+ * supplier does — but none of them turns raw stock into this part. Broaching
+ * finishes a hole somebody else drilled; wire EDM cuts a profile out of a blank;
+ * gun drilling makes a deep bore in a part that already exists.
+ *
+ * They were sitting in the route-comparison table as alternatives to die casting
+ * a bracket, priced at EUR 4.74 and EUR 68.46 and ranked among genuine routes.
+ * The rules still run — "can this part be broached" is a useful question — but
+ * the table has to say what kind of answer it is giving, and the "switch to this
+ * route" recommendation must never land on one.
+ */
+export const SECONDARY_OPERATION_FAMILIES = {
+  broaching: 'Broaching finishes a hole or a form in an existing part; it does not produce the part.',
+  'wire-edm': 'Wire EDM cuts a profile from a blank somebody else made, and cuts it slowly. It is a toolroom and low-volume route, not a production one.',
+  'deep-hole-drilling': 'Gun drilling makes a deep bore in an existing part; it does not produce the part.',
+  turning: 'Turning is a route only for a part that starts as bar or a turned blank. On a non-axisymmetric part it is a secondary operation.',
+};
+
+/**
+ * Largest bounding-box dimension a process can physically make, in mm.
+ *
+ * Only for processes whose SIZE ceiling is the thing that rules them out, and
+ * where nothing else in the rule family would catch it. A cold header runs cut
+ * slugs of wire through a multi-station machine; a MIM part is moulded then
+ * sintered, and the shrink makes a large one impossible to hold. Neither had any
+ * size gate, so both were offered — and cold heading recommended — for a 133 mm
+ * die-cast bracket and a 256 mm stamping.
+ */
+export const MAX_ENVELOPE_MM = {
+  'cold-heading': 150,
+  mim: 100,
+};
+
 /** Why a non-shaping process carries no geometric DFM rules. Printed, not hidden. */
 export const NO_DFM_REASON = {
   'Tube Bending':
