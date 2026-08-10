@@ -13,7 +13,8 @@
 import pptxgen from 'pptxgenjs';
 import { readFileSync } from 'node:fs';
 import { DFM_RULES, PROCESS_FAMILIES } from '../dfm-rule-catalogue.mjs';
-import { MATERIALS } from '../costing-engine.mjs';
+import { MATERIALS, PROCESSES } from '../costing-engine.mjs';
+import { PROCESS_DISPLAY } from '../dfm-process-registry.mjs';
 
 const audit = JSON.parse(readFileSync(new URL('../docs/threshold-audit.json', import.meta.url), 'utf-8'));
 const ICONS = JSON.parse(readFileSync(new URL('./deck-icons.json', import.meta.url), 'utf-8'));
@@ -27,6 +28,18 @@ const auditRows = Object.values(audit.thresholds);
 const PRIMARY_READ = auditRows.filter((t) => t.status === 'primary-read').length;
 const CONTESTED = auditRows.filter((t) => t.status === 'contested').length;
 const UNAUDITED = RULES - auditRows.length;
+const PROCESS_COUNT = Object.keys(PROCESSES).length;
+const CASTING_PROCESSES = Object.values(PROCESS_DISPLAY).filter((d) => d.group === 'Casting').length;
+const CASTING_ALLOYS = Object.keys(MATERIALS).filter((m) => /die-cast|\(cast\)|Cast Iron|ZAMAK|ZA-8/.test(m)).length;
+const OVERRIDES = DFM_RULES.reduce((n, r) => n + Object.keys(r.byMaterial || {}).length
+  + Object.keys(r.byMaterialFamily || {}).length, 0);
+const GATED = DFM_RULES.filter((r) => r.blocking).length;
+
+// Recorded by hand because running the suite inside the deck build would take
+// two minutes. Dated for the same reason the sweep is: a stale number should be
+// visible rather than quietly believed.
+const TESTS = 628;
+const TESTS_DATE = '10 Aug 2026';
 
 // From `node benchmark/commodity-sweep.mjs`, recorded with the run date so a
 // stale table is visible rather than silently believed.
@@ -74,7 +87,7 @@ const W = 13.33;
 const H = 7.5;
 const M = 0.62;                        // page margin
 let slideNo = 0;
-const TOTAL = 15;
+const TOTAL = 16;
 
 /** Every content slide shares one footer, so the deck reads as one document. */
 function footer(s) {
@@ -125,7 +138,15 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   s.addText('Avinash Bhosale   ·   Cost Engineering   ·   August 2026', {
     x: M, y: H - 1.15, w: 8, h: 0.3, fontSize: 11.5, color: '64748B', fontFace: 'Calibri', margin: 0,
   });
-  s.addNotes('Good morning. Ten minutes on the DFM/DFA Studio — what it does, what is genuinely inside it, and one thing I need from you at the end.\n\nThe one-line version is on the slide: it measures manufacturability from the geometry rather than asking an engineer to work through a checklist. The part on the right is a real render out of the tool, not a stock image.');
+  s.addNotes([
+    'Good morning, and thank you for the time. I am going to take about fifteen minutes on the DFM and DFA Studio, and then I have one thing to ask you. If there is a slide you have already seen, stop me and I will move on.',
+    '',
+    'Let me start with what it is in one sentence. You give it a CAD file and tell it how you plan to make the part. It measures the part, tells you every rule that part breaks for that process, shows you where on the part the problem is, and tells you what each problem costs. That is it.',
+    '',
+    'The thing that makes it different from a checklist is the word MEASURED. Nobody types a number in. The tool opens the CAD model and measures the wall thickness, the draft angle, the bend radius. So when it says a wall is two point one millimetres, something actually measured two point one.',
+    '',
+    'The picture on the right is a real part, rendered by the tool itself out of a CAD file. It is not a stock image.',
+  ].join('\n'));
 }
 
 // ── 2 · The problem ─────────────────────────────────────────────────────────
@@ -157,7 +178,21 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   // failure modes; a label crushed into a gutter is worse than none.
   s.addImage({ data: SHOT.page1, x: 8.15, y: 1.5, w: 3.7, h: 5.23 });
   footer(s);
-  s.addNotes('The honest problem statement. A DFM review is only as good as who happens to be reviewing, and the cost of missing something scales with how late it is caught.\n\nThe three failure modes on the left are the ones I set out to fix, and they map exactly onto the three things you will see next: rules that know the process and the alloy, findings marked on the geometry, and every finding priced.');
+  s.addNotes([
+    'Let me start with the problem, because I want to be honest about it.',
+    '',
+    'Today, a DFM review depends entirely on who is sitting in the room. A senior engineer who has done twenty die castings spots an undercut in ten seconds. Somebody who is busy that week signs the drawing. The part then goes to the toolmaker, the slide appears in the quotation, and by that point the tool is committed. Changing it then costs roughly ten times what it would have cost at design.',
+    '',
+    'Now look at the three points on the left, because these are the three specific things I set out to fix.',
+    '',
+    'NUMBER ONE, the rule is generic. Most tools carry one draft angle for all castings and one bend radius for all steels. But high-pressure die casting and sand casting need completely different draft. DP980 needs four times the bend radius of mild steel. When the rule is generic, the finding is either wrong or it gets ignored — and both are equally useless.',
+    '',
+    'NUMBER TWO, the finding has no place. A report that says thirty-four undercut regions sends the supplier hunting through the CAD model to find them. Most people just do not bother.',
+    '',
+    'NUMBER THREE, the finding has no price. If a cosmetic radius and a seventy-seven thousand euro slide sit on the same line of a list, nobody knows which one to fix first.',
+    '',
+    'Those three map exactly onto the next three things I am going to show you.',
+  ].join('\n'));
 }
 
 // ── 3 · What it does ────────────────────────────────────────────────────────
@@ -185,7 +220,23 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   s.addText('Every dimension is measured by the geometry kernel and every cost by a deterministic engine. There is no language model anywhere in this analysis — nothing on the report was written by one, and nothing was estimated by one.',
     { x: M + 0.35, y: 5.56, w: 11.6, h: 0.6, fontSize: 11.5, color: 'CBD5E1', fontFace: 'Calibri', margin: 0 });
   footer(s);
-  s.addNotes('This is the shape of the thing. Read, measure, judge, price.\n\nThe box at the bottom is the part I would ask you to hold onto. Everywhere else in the platform we use AI to propose ideas. In DFM Studio there is no AI at all — it is a geometry kernel and a rule engine. When it says a wall is 2.1 mm, something measured 2.1 mm.');
+  s.addNotes([
+    'This is the whole shape of the tool in four steps. Read, measure, judge, price.',
+    '',
+    'It READS your STEP file — the real solid model, with faces and edges, not a picture of it.',
+    '',
+    'It MEASURES the part. Wall thickness, draft, undercuts, bends, holes, and whether a cutting tool can even reach each surface.',
+    '',
+    'It JUDGES what it measured against the rules for the process YOU chose, at the limits for YOUR alloy.',
+    '',
+    'And it PRICES what it found, using the same should-cost engines we use to quote parts.',
+    '',
+    'Now the dark box at the bottom is the one sentence I would ask you to remember from the whole presentation. Math for numbers, AI for judgment.',
+    '',
+    'Everywhere else in this platform we use AI — for generating ideas, for reading documents. In this tool there is no AI at all. Not a single number in the report was written or estimated by an AI. It is a geometry engine and a rule book, and both are things you can check line by line.',
+    '',
+    'I am making a point of that because the first question people ask about any AI tool is whether it made the numbers up. Here, it cannot.',
+  ].join('\n'));
 }
 
 // ── 4 · The actual pipeline ─────────────────────────────────────────────────
@@ -259,21 +310,23 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
 
   footer(s);
   s.addNotes([
-    'The Director asked what the tool actually does, so this is the inside view — six steps, and it takes about two seconds a part.',
+    'You asked to see what the tool actually does inside, so this is that view. Six steps, and the whole thing takes about two seconds per part.',
     '',
-    'STEP ONE. You give it two things: the CAD file, and how you plan to make the part. That second one matters more than it sounds. Telling it "die casting in A356" is what makes the answer specific instead of generic.',
+    'STEP ONE. You give it two things: the CAD file, and how you intend to make the part. That second one matters far more than it sounds. Telling it die casting in A356 is what makes the answer specific instead of generic.',
     '',
-    'STEP TWO. It opens the real solid. Not a picture, not a mesh someone exported — the actual faces and edges the designer built, through the same geometry kernel professional CAD uses. That is why it can tell a drilled hole from a cast one.',
+    'STEP TWO. It opens the real solid. Not a picture, not a mesh — the actual faces and edges the designer built, through the same geometry kernel that professional CAD systems use. That is why it can tell the difference between a drilled hole and a cast one.',
     '',
-    'STEP THREE is the heart of it, and it is six passes shown along the bottom left. It meshes the surface. It fires rays through the part to measure wall thickness. It tries three different directions the tool could open in and picks the one with the least undercut — it does not assume. It recognises features: holes, ribs, pockets, bends. It checks whether the part is folded sheet. And it sweeps a virtual cutter over the surface to see what a tool can physically reach.',
+    'STEP THREE is the heart of it, and it is the six boxes along the bottom left. Let me walk them.',
     '',
-    'Each pass reports what it found — how many rays, how many triangles — or says it was skipped and why. Nothing happens silently.',
+    'First it covers the surface in tiny triangles so it can work with curved shapes. Then it fires rays through the part to measure how thick the wall is at thousands of points. Then — and this one I like — it tries three different directions the tool could open in and picks the one with the fewest undercuts. It does not assume; it tests. Then it recognises features: the holes, the ribs, the pockets, the bends. Then it checks whether the part is actually folded sheet metal. And finally it sweeps a virtual cutter over the surface to see which faces a real tool could physically reach.',
     '',
-    'STEP FOUR applies the rules. Only the ones for your process, at the limit for your alloy. And if our plant has agreed its own number, that wins over the textbook.',
+    'Every one of those passes reports what it did — how many rays it fired, how many triangles — or it says it was skipped and why. Nothing happens silently.',
     '',
-    'The three boxes on the bottom right are the bit I would ask you to remember. Every rule ends as passed, failed, or could-not-measure. Most tools collapse that last one into a green tick — which is how you get a clean report on a part nobody actually checked. Ours says so.',
+    'STEP FOUR applies the rules. Only the ones for your process, at the limit for your alloy. And if our plant has agreed its own number, ours wins over the textbook.',
     '',
-    'STEP FIVE prices it. It re-runs the same costing engine we quote with, once on the part as drawn and once with the problem fixed. The difference is what the finding is worth — per part and per year.',
+    'Now the three boxes on the bottom right. This is the bit I would ask you to hold onto. Every rule ends in one of three states: passed, failed, or could not be measured. Most tools I have looked at collapse that third one into a green tick — which is how you end up with a clean-looking report on a part nobody actually checked. Ours says plainly that it could not check, and names the measurement it was missing.',
+    '',
+    'STEP FIVE prices it. It runs the costing engine twice — once on the part as drawn, once with the problem fixed. The difference is what that finding is worth, per part and per year.',
     '',
     'STEP SIX writes it up: marked on the part, worst first, with an owner against every decision.',
     '',
@@ -307,7 +360,17 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   stat(s, M + 4.08, 5.15, 3.8, 'stated', 'EVERY ABSTENTION', INK, 'Named with the measurement it lacked');
   stat(s, M + 8.16, 5.15, 3.8, 'null', 'SCORE WHEN BLIND', INK, 'Never 100. A clean sheet must be earned');
   footer(s);
-  s.addNotes('If you take one thing from the engineering: three outcomes, not two.\n\nEvery DFM tool I have looked at collapses "passed" and "could not check" into one green tick. That is how you get a report that looks clean on a part nobody actually assessed. We report coverage next to the score, and when nothing could be evaluated the score is null rather than a hundred.');
+  s.addNotes([
+    'If you take one engineering idea away from today, I would like it to be this one. Three outcomes, not two.',
+    '',
+    'A rule can pass. A rule can fail. Or the tool can be unable to check it at all — because the measurement it needs is not there in the file.',
+    '',
+    'Here is why that third box matters commercially. Imagine a report comes back and everything is green. You would reasonably assume the part was checked and it was fine. But if the tool quietly counts everything it could not measure as a pass, that green report might mean nothing was checked at all. That is worse than no report, because it gives false confidence.',
+    '',
+    'So we do two things. We print the coverage percentage right next to the score — that is the sixty-nine per cent figure at the bottom left, measured across ninety-three parts. And when nothing at all could be evaluated, the score comes back as blank, not as a hundred.',
+    '',
+    'A clean sheet has to be earned. That is the whole difference.',
+  ].join('\n'));
 }
 
 // ── 5 · What is inside ──────────────────────────────────────────────────────
@@ -317,7 +380,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   stat(s, M, 1.72, 2.85, String(RULES), 'RULES', INK, 'Each citing its source and grading it');
   stat(s, M + 3.12, 1.72, 2.85, String(FAMILIES), 'PROCESS FAMILIES', INK, 'Casting, forming, machining, moulding, PM, additive');
   stat(s, M + 6.24, 1.72, 2.85, String(MATERIAL_COUNT), 'MATERIALS', INK, 'Thresholds resolve to the alloy where it matters');
-  stat(s, M + 9.36, 1.72, 2.85, '3', 'REPORT FORMATS', INK, 'On screen, PDF, and a 14-sheet workbook');
+  stat(s, M + 9.36, 1.72, 2.85, String(PROCESS_COUNT), 'PROCESSES', INK, `${CASTING_PROCESSES} casting routes alone — HPDC, LPDC, GDC, VHPDC, SSM`);
 
   s.addText('Selecting Steel DP980 + Stamping does not filter a generic list — it runs a different ruleset, with thresholds resolved for that steel.', {
     x: M, y: 3.46, w: W - 2 * M, h: 0.46, fontSize: 13, bold: true, color: INK, fontFace: 'Calibri', margin: 0 });
@@ -330,14 +393,30 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     ['Deep drawing', 'Draw operations counted from the drawing-ratio table · wall uniformity · undercuts'],
     ['Powder metallurgy, forging, extrusion', 'Press depth, flash, die slenderness, overhang angle'],
   ];
+  // The picker is named the way a plant names it — added after a live demo in
+  // which HPDC could not be found because it was labelled "Die Casting
+  // (Aluminium)". Worth one line here: it is the first thing anybody touches.
+
   rows.forEach(([a, b], i) => {
     const y = 3.98 + i * 0.44;
     if (i % 2 === 0) s.addShape(pres.ShapeType.rect, { x: M, y: y - 0.04, w: W - 2 * M, h: 0.42, fill: { color: PANEL }, line: { color: PANEL } });
     s.addText(a, { x: M + 0.18, y, w: 3.5, h: 0.32, fontSize: 11, bold: true, color: INK, fontFace: 'Calibri', margin: 0 });
     s.addText(b, { x: M + 3.8, y, w: 7.9, h: 0.32, fontSize: 10.5, color: BODY, fontFace: 'Calibri', margin: 0 });
   });
+  s.addText(`Picked by the name a plant uses — HPDC, LPDC, GDC, VHPDC, SSM, PHS, MIM — grouped by commodity, with ${CASTING_ALLOYS} casting alloys including Silafont-36, Castasil-37, ADC10, AM60B and ZAMAK 2.`, {
+    x: M, y: 6.56, w: W - 2 * M, h: 0.38, fontSize: 11, italic: true, color: MUT, fontFace: 'Calibri', margin: 0 });
   footer(s);
-  s.addNotes(`${RULES} rules across ${FAMILIES} families. The number matters less than the second line: choosing a material and a process changes which rules run AND what they compare against.\n\nThat was the single biggest gap when I started. The first version ran every rule on every part, so a die-cast bracket got sheet-metal findings. Now the analysis is specific to the route you actually intend.`);
+  s.addNotes([
+    'This is what is actually in the box. Two hundred and twenty-eight rules across thirty-five process families, and forty-nine processes to choose from.',
+    '',
+    'But the number of rules is not the interesting part. The interesting part is the line in bold underneath.',
+    '',
+    'Choosing your material and your process does not just filter a long generic list. It runs a completely different rule set, and it changes the numbers those rules compare against. Pick DP980 steel and stamping, and the bend radius rule wants four times the material thickness. Pick mild steel and it wants one. Same rule, different number, because the metal is different.',
+    '',
+    'Look at the table. Die casting is judged on wall range, draft, cored hole draft and core pin slenderness. Sheet metal is judged on bend radius by alloy, springback and strip utilisation. They have almost nothing in common — as it should be.',
+    '',
+    'And the line at the very bottom is worth a mention because it is new. The picker now names processes the way we name them in a plant — HPDC, LPDC, GDC, PHS — grouped by commodity, with twenty casting alloys including Silafont and Castasil. Previously HPDC was buried in a long list under the label Die Casting Aluminium, and if you were scanning for the letters H-P-D-C you would never find it. That is fixed.',
+  ].join('\n'));
 }
 
 // ── 6 · Located evidence ────────────────────────────────────────────────────
@@ -358,7 +437,21 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   s.addText('A supplier can act on this without opening CAD. That is the difference between a report that asserts and a report that shows.',
     { x: 6.72, y: 5.52, w: 5.8, h: 0.7, fontSize: 12, italic: true, color: INK, fontFace: 'Calibri', margin: 0 });
   footer(s);
-  s.addNotes('This is the slide I would linger on. The legend reads as findings — "wall area below the minimum die-casting draft, 41.2 percent, limit 5" — not as geometry.\n\nThe honest detail: this used to mark everything the recogniser found. A casting came back with forty rings, most on ribs that broke no rule. It was annotating what we measured instead of what we concluded.');
+  s.addNotes([
+    'This is the slide I would slow down on, because it is the one suppliers react to.',
+    '',
+    'On the left is a page straight out of the report. You can see the part, and you can see numbered rings on it. Underneath, a legend tells you what each ring is: wall area below the minimum die casting draft, forty-one per cent, limit is five.',
+    '',
+    'The important thing is what the rings are NOT. They are not every feature the tool found. Every ring is a rule that FAILED. If a rib is perfectly fine, no ring.',
+    '',
+    'That sounds obvious but we got it wrong first time round. An early version marked everything it recognised, and a casting came back with forty rings on it, most of them on features that broke no rule at all. It was showing what it had MEASURED instead of what it had CONCLUDED. Nobody could read it.',
+    '',
+    'So now: worst first, maximum of eight rings, one ring per finding placed on the worst example of it. And where two rings would sit on top of each other, they get pushed apart with a leader line back to the real point.',
+    '',
+    'And one more piece of honesty. Some findings cannot be pointed at. A tolerance belongs to the whole part, not to one face. Rather than pin it somewhere plausible and mislead you, the report lists it separately and says why it is not marked.',
+    '',
+    'The reason this matters: a supplier can act on this page without opening CAD.',
+  ].join('\n'));
 }
 
 // ── 7 · Actions ─────────────────────────────────────────────────────────────
@@ -385,7 +478,23 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     s.addText(d, { x: M + 0.46, y: y + 0.3, w: 5.5, h: 0.55, fontSize: 11, color: BODY, fontFace: 'Calibri', margin: 0 });
   });
   footer(s);
-  s.addNotes('This is what turns an analysis into something a programme runs on.\n\nNote the three constraints. The action text is the rule\'s own words, so nothing is invented. The owner is a role, because the tool genuinely does not know our org chart. And Due is deliberately empty — a date generated by software is the first thing anyone would stop believing.');
+  s.addNotes([
+    'This is what turns an analysis into something a programme can actually run on.',
+    '',
+    'The report used to tell you what was wrong and what it cost, and then stop. People would read it, agree it was interesting, and nothing would happen. Nobody walks out of a review holding a percentage.',
+    '',
+    'So the report now ends with an action list. Every finding becomes a decision, with an owner.',
+    '',
+    'Three deliberate choices in there, and each one is about staying credible.',
+    '',
+    'FIRST, the action text is the rule\'s own recommendation, word for word. The tool did not compose it. Nothing on that page is invented.',
+    '',
+    'SECOND, the owner is a ROLE, not a person\'s name — design, tooling, press shop. The tool genuinely does not know our organisation chart, so it does not pretend to.',
+    '',
+    'THIRD, and this is the one people notice: the due date column is deliberately empty. A date generated by software would be the first column anybody stopped believing, and once they stop believing one column they stop believing the page.',
+    '',
+    'And it rolls up by owner, so the tooling engineer can be sent just their rows straight out of the spreadsheet.',
+  ].join('\n'));
 }
 
 // ── 8 · Revision diff ───────────────────────────────────────────────────────
@@ -411,7 +520,23 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   s.addText('Comparing two different processes, or two different alloys, is warned about — not silently tabulated.', {
     x: 6.6, y: 6.38, w: 6.1, h: 0.52, fontSize: 11, italic: true, color: MUT, fontFace: 'Calibri', margin: 0 });
   footer(s);
-  s.addNotes('The second question a programme always asks, and until recently we could not answer it.\n\nThe distinction that earns this slide is the second one. If rev B loses its PMI, a rule stops failing — and a naive comparison reports the problem solved. Ours calls that NOT FIXED and frees zero money against it.');
+  s.addNotes([
+    'The second question a programme always asks is: we agreed changes last month, did they work?',
+    '',
+    'Until recently we could not answer that. Every report was a snapshot, so people compared two PDFs side by side and looked for differences by eye. That is how a fixed problem gets missed, and how a new problem ships.',
+    '',
+    'Now you upload the new revision and it tells you what changed, in four categories. And the four categories are the point of this slide.',
+    '',
+    'FIXED, in green, means the rule now passes. That is the only category that actually frees up money.',
+    '',
+    'NOT FIXED is the important one. Sometimes a rule stops failing not because the part got better, but because the measurement disappeared — for example the new file was exported without its tolerance data. A naive comparison would report that as solved. Ours calls it NOT FIXED and credits zero money against it. If this feature ever told you a problem was solved when it was not, you would rightly stop trusting the whole tool.',
+    '',
+    'NEWLY VISIBLE means it could not be judged before and now fails. That is not a regression — the part became measurable.',
+    '',
+    'And NEW, in red, means it was passing and now fails. That is the only genuine regression.',
+    '',
+    'One last thing: if you try to compare two revisions made by different processes or different alloys, it warns you instead of quietly putting them in a table.',
+  ].join('\n'));
 }
 
 // ── 9 · Cost ────────────────────────────────────────────────────────────────
@@ -433,7 +558,19 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   s.addText('Material is the largest cost in a stamping and our report never showed it. Utilisation now sits on page two, against the 70% industry target.',
     { x: M + 0.28, y: 5.76, w: 5.5, h: 0.55, fontSize: 10.5, color: 'CBD5E1', fontFace: 'Calibri', margin: 0 });
   footer(s);
-  s.addNotes('Two things here. First, every finding is priced by the same engines that quote the part — so a designer and a buyer are looking at the same number.\n\nSecond, the panel bottom-left is this month\'s work, from a sheet-metal die-design textbook. Strip utilisation is the biggest single cost lever on a stamping and we were quoting a piece price without ever showing it.');
+  s.addNotes([
+    'Two things on this slide.',
+    '',
+    'The first is that every finding carries a price. The tool runs the same should-cost engine we use to quote parts, once with the geometry as drawn and once with the problem fixed, and the gap between them is what the finding is worth — per part and per year.',
+    '',
+    'That matters because it means the designer and the buyer are finally looking at the same number, from the same engine. Not two spreadsheets that disagree.',
+    '',
+    'And where the engine genuinely cannot price something — a die slide, a die-life effect — it says so and quotes the published range instead of inventing a figure. I would rather it say I do not know than guess.',
+    '',
+    'The second thing is the route table. It asks the harder question: what if we made this part a completely different way? It takes the same measured geometry, runs it through every other process\'s own rules, prices it, and scores its carbon — and tells you why each alternative is or is not viable.',
+    '',
+    'And the panel in the dark box is recent work on stamping. Material is the single biggest cost in a pressed part, and our report was quoting a piece price without ever showing the strip utilisation. Now it shows the press tonnage, the strip layout and the utilisation against the industry target. Those numbers come from a die design textbook, equation by equation.',
+  ].join('\n'));
 }
 
 // ── 10 · Evidence ───────────────────────────────────────────────────────────
@@ -444,7 +581,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
 
   const facts = [
     ['199/199', 'GEOMETRY ACCURACY GATE', 'Every fixture is a shape whose truth is arithmetic — a 3.000° cone, a 25 mm wall. CI fails on any regression.'],
-    ['617', 'AUTOMATED TESTS', 'Plus 14 HTTP integration tests and an accessibility gate on every page.'],
+    [String(TESTS), 'AUTOMATED TESTS', `Plus HTTP integration tests and an accessibility gate on every page. ${TESTS_DATE}.`],
     ['93', 'SHAPED PARTS SWEPT', 'Ten commodities, ten variants each, through the full production path.'],
     ['0', 'AI-WRITTEN NUMBERS', 'No language model touches this analysis at any point.'],
   ];
@@ -462,7 +599,85 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     { text: 'That register ships with the product and there is a command that prints it. A number nobody has checked is worth knowing about before a supplier finds it.', options: {} },
   ], { x: M, y: 5.12, w: 11.8, h: 1.0, fontSize: 12.5, color: 'CBD5E1', fontFace: 'Calibri', lineSpacing: 21, margin: 0 });
   footer(s);
-  s.addNotes('This is the slide that should decide whether you trust the rest.\n\nThe accuracy gate is 199 checks against shapes whose answer is arithmetic — we know a cone drafted at three degrees is three degrees, so if the engine says 2.8 the build fails.\n\nAnd then the bottom half, which I want to be straight about. Most of our thresholds are industry consensus that nobody has audited. We ship the register that says so, and three of them are actively disputed by a source we do trust.');
+  s.addNotes([
+    'This is the slide that should decide whether you believe anything on the previous ten.',
+    '',
+    'Start top left. A hundred and ninety-nine out of a hundred and ninety-nine on the geometry accuracy gate. Those are test shapes where we know the right answer by arithmetic — we built a cone with exactly three degrees of draft, so the engine must say three degrees. If it says two point eight, the build fails and the code does not ship. That runs automatically on every change.',
+    '',
+    'Six hundred and twenty-eight automated tests, ninety-three real-shaped parts swept through the full production path, and zero numbers written by AI.',
+    '',
+    'Now the bottom half, and I want to be completely straight with you here, because it is the weakest part of the tool.',
+    '',
+    'Every DIMENSION we report is measured from your file and you can reproduce it. But the LIMITS we compare those dimensions against are somebody\'s published guidance, and most of them nobody here has personally verified against the original standard. Out of two hundred and twenty-eight, only five come from a document we have read first-hand. Three are recorded as CONTESTED, meaning a source we do trust disagrees with the number we are using.',
+    '',
+    'We ship that register with the product, and there is a command that prints it.',
+    '',
+    'I could have left this slide off. I have put it on deliberately, because the alternative is a supplier finding it first and then doubting everything else we say.',
+  ].join('\n'));
+}
+
+// ── 11 · Tested on real parts ───────────────────────────────────────────────
+//
+// Added after three of the user's own exports were reviewed finding by finding
+// and re-run through the live engine. Seven things the tool said were wrong.
+// A director who has watched a demo wobble needs to see that the wobble was
+// found by us, on purpose, before it was found by a supplier.
+{
+  const s = pres.addSlide(); s.background = { color: PAPER };
+  heading(s, 'Tested on real parts', 'Three real components, seven faults found');
+  s.addText('The benchmarks prove the maths. They cannot tell you whether the report SAYS the right thing. So we took three real components, read every finding by hand, and re-ran them through the live tool.', {
+    x: M, y: 1.6, w: W - 2 * M, h: 0.5, fontSize: 12.5, color: BODY, fontFace: 'Calibri', lineSpacing: 20, margin: 0 });
+
+  const PARTS = [
+    ['Steering knuckle', 'Hot forging · high-strength steel'],
+    ['Casting bracket', 'HPDC · aluminium A356'],
+    ['Seat locking bracket', 'Stamping · high-strength steel'],
+  ];
+  PARTS.forEach(([t, d], i) => {
+    const x = M + i * 4.08;
+    s.addShape(pres.ShapeType.roundRect, { x, y: 2.18, w: 3.8, h: 0.78, fill: { color: PANEL }, rectRadius: 0.06, line: { color: PANEL } });
+    s.addText(t, { x: x + 0.22, y: 2.3, w: 3.4, h: 0.28, fontSize: 12.5, bold: true, color: INK, fontFace: 'Calibri', margin: 0 });
+    s.addText(d, { x: x + 0.22, y: 2.58, w: 3.4, h: 0.28, fontSize: 10, color: MUT, fontFace: 'Calibri', margin: 0 });
+  });
+
+  const FOUND = [
+    ['It reported a EUR 151,200 a year saving', 'on a bend-radius finding — but the figure priced deleting all 23 bends, which is a different part', 'Now says NOT PRICED, with the reason'],
+    ['It recommended cold heading a die casting', 'a wire-fed fastener process, for a 320 cm3 bracket. Only 2 of 35 routes had a feasibility gate', `${GATED} gates now — it refuses both`],
+    ['One label, two different numbers', '"wall below minimum draft" read 64% on page 1 and 56% on page 2 — measured at different angles', 'The angle is printed in the label'],
+    ['A rule told you to do the wrong thing', '"open the radius to 1x thickness" when the steel it had resolved needs 2x', 'Titles and fixes read the alloy limit'],
+    ['26 holes, none of them round', 'it asked the CAD exporter what shape they were instead of measuring', 'Measured — 12 round, 14 shaped'],
+  ];
+  FOUND.forEach(([a, b, c], i) => {
+    const y = 3.12 + i * 0.63;
+    if (i % 2 === 0) s.addShape(pres.ShapeType.rect, { x: M, y: y - 0.06, w: W - 2 * M, h: 0.62, fill: { color: PANEL }, line: { color: PANEL } });
+    s.addText(a, { x: M + 0.16, y: y - 0.02, w: 3.9, h: 0.28, fontSize: 11, bold: true, color: RED, fontFace: 'Calibri', margin: 0 });
+    s.addText(b, { x: M + 0.16, y: y + 0.24, w: 7.6, h: 0.28, fontSize: 9.5, color: BODY, fontFace: 'Calibri', margin: 0 });
+    s.addText(c, { x: 8.5, y: y + 0.04, w: 3.6, h: 0.4, fontSize: 10.5, bold: true, color: GREEN, fontFace: 'Calibri', margin: 0 });
+  });
+
+  s.addShape(pres.ShapeType.roundRect, { x: M, y: 6.34, w: W - 2 * M, h: 0.6, fill: { color: NAVY }, rectRadius: 0.06, line: { color: NAVY } });
+  s.addText(`All seven are fixed, and every one is now held down by a test that fails if it comes back. ${TESTS} tests run on every change.`,
+    { x: M + 0.3, y: 6.47, w: 11.4, h: 0.34, fontSize: 12, bold: true, color: 'FFFFFF', fontFace: 'Calibri', margin: 0 });
+  footer(s);
+  s.addNotes([
+    'This slide exists because of a fair question: how do you know the tool is telling the truth?',
+    '',
+    'The benchmarks on the last slide prove the MATHS is right. They cannot prove the REPORT says the right thing. Those are two different problems, and a tool can pass the first while failing the second badly.',
+    '',
+    'So we took three real components — a forged steering knuckle, a die-cast bracket, and a stamped seat bracket. We read every single finding by hand, then re-ran the same files through the live tool and compared.',
+    '',
+    'We found seven things our own tool was getting wrong. They are on the slide. Let me take you through the two that matter most.',
+    '',
+    'THE FIRST ONE, top of the list. The report showed a saving of a hundred and fifty-one thousand euros a year. That was the biggest number in the whole document. When we traced it back, the calculation was pricing the removal of all twenty-three bends in the part — in other words, a completely flat piece of metal. But the finding it was attached to just asked you to open one bend radius slightly. Opening a radius removes no bends and saves nothing. So the number was real arithmetic attached to the wrong question. It now says NOT PRICED and explains why.',
+    '',
+    'THE SECOND ONE, and this is the one an experienced engineer spots in ten seconds. The tool was recommending Cold Heading as a cheaper way to make a die-cast bracket. Cold heading makes bolts out of wire. It cannot make a bracket. The reason was that only two of our thirty-five processes had any check on whether they could physically make the part at all. Everything else was allowed by default. We have added those checks, and it now refuses cold heading and MIM outright, with the reason.',
+    '',
+    'The other three on the list are the same character — right maths, wrong wording, or a check that trusted the CAD file instead of measuring.',
+    '',
+    'The point I want to land is this. We found all seven ourselves, on purpose, before a supplier did. And every one of them is now pinned by a test that fails automatically if the fault ever comes back. That is why the number at the bottom matters — six hundred and twenty-eight tests, run on every single change.',
+    '',
+    'If we had not done this exercise, the first person to spot the hundred and fifty-one thousand would have been someone reading the report in a supplier review.',
+  ].join('\n'));
 }
 
 // ── 11 · Coverage ───────────────────────────────────────────────────────────
@@ -499,7 +714,21 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   s.addText('37.5% — the lowest on the board. Our test brackets are flat plates with holes, so no bend is recognised and seven bend rules never fire.\n\nIt is a fixture gap, not a rule gap, and it is on the slide because you would find it in five minutes.',
     { x: 8.67, y: 4.55, w: 3.85, h: 1.6, fontSize: 10.5, color: BODY, fontFace: 'Calibri', lineSpacing: 15, margin: 0 });
   footer(s);
-  s.addNotes('This table is the measurement I am proudest of having, and least proud of some of the numbers in.\n\nThe standard I set was: a rule that is right and silent is worth nothing. So we sweep 93 parts and count how much of the catalogue speaks.\n\nSheet metal at 37.5% is the worst row and I have left it in. Our synthetic test brackets have no bends, so the bend rules never get a chance. That is a test-data problem, and it is exactly why my ask at the end is what it is.');
+  s.addNotes([
+    'This is the measurement I am proudest of having, and least proud of some of the numbers in.',
+    '',
+    'The standard I set myself was this: a rule that is technically correct but stays silent on every real part is worth nothing. So we run ninety-three realistically-shaped parts — ten commodities, ten variants each — through the whole tool, and count how much of the rule book actually speaks.',
+    '',
+    'The average is sixty-nine per cent. Die casting, powder metallurgy and extrusion are all above eighty. Those are genuinely good.',
+    '',
+    'Now look at the bottom row, sheet metal, thirty-seven and a half per cent, in red. That is the worst number on the board and I have deliberately left it on the slide.',
+    '',
+    'The reason is not that the rules are wrong. It is that our synthetic test brackets are flat plates with holes in them. They have no bends. So seven bend-related rules never get a chance to run, and they score zero through no fault of their own.',
+    '',
+    'That is a test-data problem, not a rule problem. And it is exactly why my ask at the end of this presentation is what it is — I need one real bent bracket.',
+    '',
+    'I am showing you this because you would find it within five minutes of using the tool, and I would rather point at it myself.',
+  ].join('\n'));
 }
 
 // ── 12 · Competitive ────────────────────────────────────────────────────────
@@ -540,7 +769,21 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   s.addText('The two red rows are the honest gaps, and they are the two I would spend money on next. Everything above them we already do.', {
     x: M, y: 5.95, w: W - 2 * M, h: 0.4, fontSize: 12.5, italic: true, color: INK, fontFace: 'Calibri', margin: 0 });
   footer(s);
-  s.addNotes('A fair comparison, including the two rows where we lose.\n\nWhere we are genuinely ahead is provenance and honesty — no commercial tool I have seen tells you that a threshold is unaudited, or refuses to score a rule it could not check.\n\nWhere we are behind: they have decades of measured outcomes behind their numbers, and they read native CAD. Both are solvable and neither is solved by more code from me.');
+  s.addNotes([
+    'A fair comparison against the established tools — DFMPro, aPriori, Boothroyd Dewhurst.',
+    '',
+    'The green rows are where we are genuinely ahead, and there are three. We price alternative process routes and carbon-score them. We treat could-not-evaluate as a real outcome instead of a green tick. And we publish where every threshold came from and how much it is worth trusting. I have not found a commercial tool that will tell you one of its own numbers is unaudited.',
+    '',
+    'The middle rows are parity — reading real geometry, process and alloy specific rules, pricing findings, comparing revisions. We match them.',
+    '',
+    'Now the two red rows, because those are the honest ones.',
+    '',
+    'They have decades of measured production outcomes behind their numbers. We have zero. Their limits have been checked against real scrap rates from real plants; ours have been checked against published guidance.',
+    '',
+    'And they read native CATIA, NX and JT files. We read STEP and IGES, which means a translation step, and we lose the tolerance data every time.',
+    '',
+    'Both of those are solvable. Neither is solved by me writing more code — the first one needs data from the business, and that is what I am about to ask for.',
+  ].join('\n'));
 }
 
 // ── 13 · Roadmap ────────────────────────────────────────────────────────────
@@ -562,7 +805,19 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     s.addText(d, { x: M + 0.95, y: y + 0.5, w: 10.9, h: 0.5, fontSize: 11, color: BODY, fontFace: 'Calibri', margin: 0 });
   });
   footer(s);
-  s.addNotes('Four things, in the order that changes the answer.\n\nNumber one is the only one that matters this quarter, and it is the only one I cannot do by myself. Everything below it is engineering I can schedule.');
+  s.addNotes([
+    'Four things next, in the order that changes the answer rather than the order of effort.',
+    '',
+    'NUMBER ONE, in gold, is to validate against one real part. That is the only item on this list that I cannot do by myself, and it is the only one that converts this tool from internally consistent to actually accurate. I will come back to it on the next slide.',
+    '',
+    'NUMBER TWO is reading native CAD — CATIA, NX, JT. Today every file goes through a translation to STEP and we lose the tolerance information on the way. That is why you saw tolerance rules abstaining on the coverage slide.',
+    '',
+    'NUMBER THREE is auditing our top twenty thresholds against the primary standards. The register already names which twenty and ranks them by how much damage a wrong number would do.',
+    '',
+    'NUMBER FOUR is loading our own plant standards. The mechanism is already built and it already overrides the textbook where we set a value. It just needs our actual numbers put into it, which is a conversation with manufacturing rather than a coding job.',
+    '',
+    'Everything from two down I can schedule myself.',
+  ].join('\n'));
 }
 
 // ── 14 · The ask ────────────────────────────────────────────────────────────
@@ -583,7 +838,23 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
 
   s.addText('Avinash Bhosale   ·   Cost Engineering   ·   August 2026', {
     x: M, y: H - 0.9, w: 8, h: 0.3, fontSize: 11, color: '64748B', fontFace: 'Calibri', margin: 0 });
-  s.addNotes('So that is the ask, and it is deliberately small.\n\nI am not asking for budget or headcount. I am asking for one part we already buy, with the quote and the supplier\'s DFM comments, so we can measure the tool against something real instead of against itself.\n\nIf it disagrees with the supplier, I want to publish that. That is the fastest way to find out whether this is ready.\n\nHappy to show it running live now if you have five more minutes.');
+  s.addNotes([
+    'So here is the ask, and it is deliberately a small one.',
+    '',
+    'I am not asking for budget. I am not asking for headcount. I am asking for one part.',
+    '',
+    'Specifically: one component we already buy today. Three things with it — the STEP file, the quotation we actually pay, and whatever DFM comments the supplier gave us.',
+    '',
+    'I will run it through the tool and publish everything, including every place the tool disagrees with the supplier. Especially those.',
+    '',
+    'The reason is this. Right now the tool is internally consistent. It is tested, it is honest about its limits, and every number in it is reproducible. What it has never been is checked against reality — against a part where somebody already knows the right answer.',
+    '',
+    'Within a week of getting that part, we will know whether this is something we can put in front of a supplier, or a prototype that needs another quarter of work. And either answer is worth having.',
+    '',
+    'One preference, in the box at the bottom. If you can find me a sheet metal bracket with real bends in it, that would be ideal — it would exercise seven rules that have never yet run on anything except a test fixture.',
+    '',
+    'That is everything. Happy to take questions, and if you have five more minutes I can run a real part through it live right now.',
+  ].join('\n'));
 }
 
 await pres.writeFile({ fileName: 'BrainSpark_DFM_DFA_Studio_Director.pptx' });
