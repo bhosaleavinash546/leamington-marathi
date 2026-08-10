@@ -56,6 +56,35 @@ export const MATERIAL_CO2E_PER_KG = {
   'Magnesium AZ91D (die-cast)': 14.0,
   'Zinc (ZAMAK 3)': 3.2,
   'Bronze (CuSn8)': 4.0,
+
+  // ── The casting alloys added for the foundry picker ──────────────────────
+  //
+  // Cradle-to-gate, on the same basis as everything above. The number that
+  // matters for a casting alloy is the SECONDARY (recycled) content: a die-cast
+  // aluminium alloy is run on remelted scrap and lands near 4-5 kg/kg, where
+  // primary ingot is 16-18. The structural HPDC alloys sit higher because
+  // Silafont and Castasil specify low iron, which caps how much secondary metal
+  // the charge can carry.
+  'Aluminium AlSi10MnMg (Silafont-36, structural HPDC)': 6.8,
+  'Aluminium Castasil-37 (AlSi9MnMoZr, structural HPDC)': 7.0,
+  'Aluminium AlSi9Cu3 / EN AC-46000 (die-cast)': 4.4,
+  'Aluminium ADC10 / A383 (die-cast)': 4.5,
+  'Aluminium A360 (die-cast)': 4.7,
+  'Aluminium A413 (die-cast)': 4.6,
+  // Gravity and low-pressure Al-Si-Mg: a primary-heavy charge, because the
+  // mechanical properties after T6 depend on a clean analysis.
+  'Aluminium A357 (cast)': 7.4,
+  'Aluminium AlSi7Mg0.3 / EN AC-42100 (cast)': 7.2,
+  // Magnesium is the outlier in this table: primary Mg is electrolytic or
+  // Pidgeon-process and both are energy-intensive.
+  'Magnesium AM60B (die-cast)': 14.0,
+  'Magnesium AM50A (die-cast)': 14.0,
+  'Zinc (ZAMAK 2)': 3.2,
+  'Zinc ZA-8': 3.4,
+  // ADI is ductile iron plus an austemper cycle; SiMo carries ferro-silicon and
+  // ferro-molybdenum additions. Both sit above plain ductile iron.
+  'Cast Iron (ADI 900, austempered)': 2.2,
+  'Cast Iron (SiMo, exhaust)': 2.3,
   'PC/ABS blend': 3.6,
   'PBT': 4.0,
   'PP-T20 (talc-filled)': 1.7,          // mineral filler displaces polymer
@@ -163,6 +192,14 @@ const MATERIAL_FAMILY = {
   'Cast Iron (CGI / GJV-450)': 'castiron',
   'Aluminium A380 / ADC12 (die-cast)': 'aluminium', 'Aluminium 5052 (sheet)': 'aluminium',
   'Aluminium 6082': 'aluminium',
+  'Aluminium AlSi10MnMg (Silafont-36, structural HPDC)': 'aluminium',
+  'Aluminium Castasil-37 (AlSi9MnMoZr, structural HPDC)': 'aluminium',
+  'Aluminium AlSi9Cu3 / EN AC-46000 (die-cast)': 'aluminium',
+  'Aluminium ADC10 / A383 (die-cast)': 'aluminium',
+  'Aluminium A360 (die-cast)': 'aluminium', 'Aluminium A413 (die-cast)': 'aluminium',
+  'Aluminium A357 (cast)': 'aluminium',
+  'Aluminium AlSi7Mg0.3 / EN AC-42100 (cast)': 'aluminium',
+  'Cast Iron (ADI 900, austempered)': 'castiron', 'Cast Iron (SiMo, exhaust)': 'castiron',
 };
 
 /**

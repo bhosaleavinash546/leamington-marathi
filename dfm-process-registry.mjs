@@ -178,6 +178,103 @@ export const NO_DFM_REASON = {
     'Neither operation shapes the part, so no geometric rule applies.',
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// WHAT THE PROCESS IS CALLED IN A PLANT, versus what this codebase calls it.
+//
+// This exists because of a live demo that failed in front of a director. The
+// user went looking for HPDC and could not find it — because the process is
+// keyed 'Die Casting (Aluminium)' and the letters H, P, D, C appear nowhere in
+// the product. LPDC is 'Low-Pressure Die Casting'; sheet metal is 'Stamping /
+// Deep Drawing', with neither "sheet" nor "metal" in the string. Every one of
+// those processes was implemented, tested and working. None of them was
+// FINDABLE, which for a person scanning a 37-row menu is the same thing.
+//
+// The key must not change: it indexes PROCESSES in costing-engine.mjs and
+// PROCESS_TO_DFM_FAMILY here, it is stored in saved analyses, and it is printed
+// in every report already exported. So the name stays and a DISPLAY LABEL is
+// added beside it, with the acronym FIRST — a native <select> jumps to the
+// option whose label starts with what you type, so "H" now lands on HPDC rather
+// than on Hydroforming.
+//
+// `aliases` are the other words people search with, including the German and
+// the shop-floor terms. `group` is the commodity heading the menu sorts under,
+// because 37 flat options is not a menu, it is a haystack.
+export const PROCESS_DISPLAY = {
+  // ── Casting ──────────────────────────────────────────────────────────────
+  'Die Casting (Aluminium)': { label: 'HPDC — High-pressure die casting (Al / Mg)', group: 'Casting', aliases: ['hpdc', 'high pressure die casting', 'pressure die casting', 'druckguss', 'aluminium die casting'] },
+  'Die Casting (Zinc)': { label: 'HPDC (Zinc) — Hot-chamber die casting', group: 'Casting', aliases: ['hpdc', 'zinc die casting', 'zamak', 'hot chamber'] },
+  'Low-Pressure Die Casting': { label: 'LPDC — Low-pressure die casting', group: 'Casting', aliases: ['lpdc', 'low pressure'] },
+  'Gravity Die Casting': { label: 'GDC — Gravity die casting (permanent mould)', group: 'Casting', aliases: ['gdc', 'gravity', 'permanent mould', 'permanent mold', 'chill casting', 'kokillenguss'] },
+  'Vacuum-Assisted Die Casting': { label: 'VHPDC — Vacuum-assisted die casting', group: 'Casting', aliases: ['vhpdc', 'vacuum', 'vacural', 'vacuum die casting'] },
+  'Squeeze Casting': { label: 'Squeeze casting (liquid forging)', group: 'Casting', aliases: ['liquid forging', 'squeeze'] },
+  'Semi-Solid Casting (Thixo/Rheo)': { label: 'SSM — Semi-solid casting (thixo / rheo)', group: 'Casting', aliases: ['ssm', 'thixo', 'rheo', 'thixocasting', 'rheocasting', 'thixomoulding'] },
+  'Sand Casting': { label: 'Sand casting (green sand / no-bake)', group: 'Casting', aliases: ['sand', 'green sand', 'no bake', 'sandguss'] },
+  'Shell Mould Casting': { label: 'Shell mould casting (Croning)', group: 'Casting', aliases: ['shell', 'croning', 'shell moulding'] },
+  'Investment Casting': { label: 'Investment casting (lost wax)', group: 'Casting', aliases: ['lost wax', 'precision casting', 'feinguss'] },
+  'Centrifugal Casting': { label: 'Centrifugal casting (spun)', group: 'Casting', aliases: ['centrifugal', 'spun casting'] },
+
+  // ── Sheet metal and forming ──────────────────────────────────────────────
+  'Stamping / Deep Drawing': { label: 'Sheet metal — stamping / deep drawing', group: 'Sheet metal & forming', aliases: ['sheetmetal', 'sheet metal', 'stamping', 'pressing', 'blanking', 'progressive die', 'transfer die', 'presswerk'] },
+  'Deep Drawing (Multi-stage)': { label: 'Sheet metal — deep drawing (multi-stage)', group: 'Sheet metal & forming', aliases: ['sheetmetal', 'sheet metal', 'deep draw', 'multi stage', 'tiefziehen'] },
+  'Fine Blanking': { label: 'Fine blanking', group: 'Sheet metal & forming', aliases: ['fineblanking', 'feinschneiden'] },
+  'Hot Stamping (Press Hardening)': { label: 'Hot stamping / press hardening (PHS)', group: 'Sheet metal & forming', aliases: ['phs', 'press hardening', 'hot forming', 'usibor', '22mnb5', 'boron steel'] },
+  'Roll Forming': { label: 'Roll forming', group: 'Sheet metal & forming', aliases: ['rollforming', 'roll form', 'profiling'] },
+  'Hydroforming': { label: 'Hydroforming (tube / sheet)', group: 'Sheet metal & forming', aliases: ['hydroform', 'ihu'] },
+  'Metal Spinning': { label: 'Metal spinning / flow forming', group: 'Sheet metal & forming', aliases: ['spinning', 'flow forming', 'drucken'] },
+  'Laser Cutting + Bending': { label: 'Sheet metal — laser cut + press brake', group: 'Sheet metal & forming', aliases: ['sheetmetal', 'sheet metal', 'laser', 'press brake', 'prototype sheet'] },
+  'Lamination Stamping (Electrical Steel)': { label: 'Lamination stamping (electrical steel)', group: 'Sheet metal & forming', aliases: ['lamination', 'stator', 'rotor', 'e-steel', 'blanking'] },
+  'Tube Bending': { label: 'Tube bending (mandrel)', group: 'Sheet metal & forming', aliases: ['tube', 'mandrel bend', 'pipe bending'] },
+
+  // ── Forging and bulk forming ─────────────────────────────────────────────
+  'Forging (Hot)': { label: 'Hot forging (closed die)', group: 'Forging & bulk forming', aliases: ['forging', 'closed die', 'drop forging', 'gesenkschmieden', 'hot forge'] },
+  'Forging (Cold)': { label: 'Cold forging', group: 'Forging & bulk forming', aliases: ['forging', 'cold forming', 'cold forge', 'kaltumformung'] },
+  'Open-Die Forging': { label: 'Open-die forging (free forging)', group: 'Forging & bulk forming', aliases: ['forging', 'open die', 'free forging'] },
+  'Cold Heading / Upsetting': { label: 'Cold heading / upsetting (fasteners)', group: 'Forging & bulk forming', aliases: ['heading', 'header', 'upsetting', 'fastener', 'bolt making'] },
+  'Extrusion': { label: 'Extrusion (aluminium profile)', group: 'Forging & bulk forming', aliases: ['extrusion', 'profile', 'strangpressen'] },
+
+  // ── Machining and material removal ───────────────────────────────────────
+  'Machining (CNC)': { label: 'Machining — CNC milling (3 / 5-axis)', group: 'Machining', aliases: ['cnc', 'milling', 'mill', 'machining', 'zerspanung'] },
+  'Turning (CNC)': { label: 'Turning — CNC lathe', group: 'Machining', aliases: ['cnc', 'lathe', 'turning', 'drehen'] },
+  'Wire EDM': { label: 'Wire EDM (spark erosion)', group: 'Machining', aliases: ['edm', 'wire cut', 'spark erosion', 'erodieren'] },
+  'Deep-Hole / Gun Drilling': { label: 'Deep-hole / gun drilling', group: 'Machining', aliases: ['gundrill', 'gun drilling', 'deep hole', 'bta'] },
+  'Broaching': { label: 'Broaching (spline / keyway)', group: 'Machining', aliases: ['broach', 'spline', 'raumen'] },
+
+  // ── Polymers, rubber and composites ──────────────────────────────────────
+  'Injection Moulding': { label: 'Injection moulding (thermoplastic)', group: 'Polymer, rubber & composite', aliases: ['im', 'injection molding', 'plastic moulding', 'spritzguss'] },
+  'Thermoforming': { label: 'Thermoforming (vacuum / pressure)', group: 'Polymer, rubber & composite', aliases: ['vacuum forming', 'thermoform'] },
+  'Rotational Moulding': { label: 'Rotational moulding (rotomoulding)', group: 'Polymer, rubber & composite', aliases: ['rotomoulding', 'rotomolding', 'rotational molding'] },
+  'Rubber Moulding (Compression/Injection)': { label: 'Rubber moulding (compression / injection)', group: 'Polymer, rubber & composite', aliases: ['rubber', 'elastomer', 'seal', 'gasket'] },
+  'Composite Layup (RTM)': { label: 'RTM — composite layup / resin transfer', group: 'Polymer, rubber & composite', aliases: ['rtm', 'composite', 'prepreg', 'cfrp', 'layup'] },
+  'Glass Forming (Bend + Temper)': { label: 'Glass forming (bend + temper)', group: 'Polymer, rubber & composite', aliases: ['glass', 'glazing', 'tempering'] },
+
+  // ── Powder and additive ──────────────────────────────────────────────────
+  'Powder Metallurgy (Press & Sinter)': { label: 'PM — powder metallurgy (press & sinter)', group: 'Powder & additive', aliases: ['pm', 'sinter', 'sintering', 'press and sinter', 'sintermetall'] },
+  'Metal Injection Moulding (MIM)': { label: 'MIM — metal injection moulding', group: 'Powder & additive', aliases: ['mim', 'metal injection'] },
+  'Laser Powder Bed Fusion (DMLS/SLM)': { label: 'LPBF — laser powder bed fusion (DMLS / SLM)', group: 'Powder & additive', aliases: ['lpbf', 'dmls', 'slm', 'additive', 'am', '3d printing', 'printing'] },
+
+  // ── Joining, heat treatment and finishing ────────────────────────────────
+  'MIG Welding Assembly': { label: 'MIG welding assembly', group: 'Joining & finishing', aliases: ['welding', 'mig', 'mag', 'gmaw'] },
+  'Resistance Spot Welding': { label: 'Resistance spot welding', group: 'Joining & finishing', aliases: ['welding', 'spot weld', 'rsw'] },
+  'Machining (secondary ops)': { label: 'Machining (secondary operations)', group: 'Joining & finishing', aliases: ['secondary', 'finish machining'] },
+  'Heat Treatment (batch)': { label: 'Heat treatment (batch)', group: 'Joining & finishing', aliases: ['heat treat', 'hardening', 'annealing', 't6', 'ageing'] },
+  'E-coat (KTL)': { label: 'E-coat (KTL / cathodic dip)', group: 'Joining & finishing', aliases: ['ktl', 'ecoat', 'e-coat', 'cathodic dip', 'edip'] },
+  'Powder Coating': { label: 'Powder coating', group: 'Joining & finishing', aliases: ['powder coat', 'paint'] },
+  'Zinc Plating': { label: 'Zinc plating', group: 'Joining & finishing', aliases: ['plating', 'galvanising', 'zinc flake'] },
+  'Grinding (finish)': { label: 'Grinding (finish)', group: 'Joining & finishing', aliases: ['grind', 'honing', 'superfinish'] },
+  'Washing & Final Inspection': { label: 'Washing & final inspection', group: 'Joining & finishing', aliases: ['washing', 'inspection', 'cleaning'] },
+};
+
+/** Menu order for the commodity groups. Casting first — it is the biggest family. */
+export const PROCESS_GROUP_ORDER = [
+  'Casting', 'Sheet metal & forming', 'Forging & bulk forming', 'Machining',
+  'Polymer, rubber & composite', 'Powder & additive', 'Joining & finishing',
+];
+
+/** Display label for a process key, falling back to the key itself. */
+export function labelForProcess(name) {
+  return PROCESS_DISPLAY[name]?.label ?? name;
+}
+
 /** Material family of a named grade, or undefined when the grade is unknown. */
 export function familyOfMaterial(material) {
   return MATERIALS[material]?.family;
@@ -214,8 +311,20 @@ export function processesForMaterial(material) {
   for (const [name, spec] of Object.entries(PROCESSES)) {
     if (family && Array.isArray(spec.families) && !spec.families.includes(family)) continue;
     const dfmFamily = PROCESS_TO_DFM_FAMILY[name] ?? null;
+    const display = PROCESS_DISPLAY[name] ?? {};
     rows.push({
+      // The KEY. Everything downstream — the cost tables, the rule routing,
+      // saved analyses, reports already exported — is indexed on this, so it is
+      // what the picker submits no matter what the menu shows.
       name,
+      // What a person reads, acronym first so a native select's type-ahead
+      // lands on it. Falls back to the key rather than to nothing.
+      label: display.label ?? name,
+      // The commodity heading it sorts under, and the words somebody might
+      // search with. Both were absent, and the cost was a director watching
+      // someone fail to find HPDC in a list that contained it.
+      group: display.group ?? 'Other',
+      aliases: display.aliases ?? [],
       dfmFamily,
       dfmFamilyName: dfmFamily ? PROCESS_FAMILIES[dfmFamily] ?? dfmFamily : null,
       // A process with no rules is offered with its reason attached, so the UI
@@ -223,7 +332,13 @@ export function processesForMaterial(material) {
       noDfmReason: dfmFamily ? null : (NO_DFM_REASON[name] ?? 'This process does not shape the geometry, so no geometric DFM rule applies.'),
     });
   }
-  return rows;
+  // Menu order: commodity groups in PROCESS_GROUP_ORDER, and inside a group the
+  // ones that carry DFM rules first — those are the ones the tool can judge.
+  const rank = (r) => {
+    const g = PROCESS_GROUP_ORDER.indexOf(r.group);
+    return (g < 0 ? PROCESS_GROUP_ORDER.length : g) * 100 + (r.dfmFamily ? 0 : 50);
+  };
+  return rows.sort((a, b) => rank(a) - rank(b) || a.label.localeCompare(b.label));
 }
 
 /**

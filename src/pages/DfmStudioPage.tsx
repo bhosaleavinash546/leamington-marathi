@@ -101,7 +101,14 @@ interface DfaResponse {
 // derives them from the cost model's own tables, so there is one list rather
 // than two that agree until someone edits one of them.
 interface ProcessOption {
+  /** The KEY the analysis is submitted with — never shown to a user. */
   name: string;
+  /** What the menu shows, acronym first: "HPDC — High-pressure die casting". */
+  label: string;
+  /** Commodity heading this option sorts under. */
+  group: string;
+  /** Other words somebody might type looking for it. */
+  aliases: string[];
   dfmFamily: string | null;
   dfmFamilyName: string | null;
   noDfmReason: string | null;
@@ -614,6 +621,18 @@ export default function DfmStudioPage() {
     return (material ? options.processesForMaterial[material] : options.allProcesses) ?? [];
   }, [options, material]);
 
+  // The same list, split into the commodity headings the menu renders. Order is
+  // the server's — it already sorts by group and puts the rule-bearing
+  // processes first inside each one — so the two can never disagree.
+  const processGroups: Array<[string, ProcessOption[]]> = useMemo(() => {
+    const byGroup = new Map<string, ProcessOption[]>();
+    for (const p of processOptions) {
+      if (!byGroup.has(p.group)) byGroup.set(p.group, []);
+      byGroup.get(p.group)!.push(p);
+    }
+    return [...byGroup.entries()];
+  }, [processOptions]);
+
   // Sorted client-side by ONE measured column. A route missing that column sorts
   // last and keeps its reason rather than being read as zero, which would put
   // every unpriceable route at the top of a cheapest-first list.
@@ -806,20 +825,22 @@ export default function DfmStudioPage() {
                                 focus:outline-none focus:border-gold-500/60 disabled:opacity-50
                                 ${costProcess ? 'border-white/15' : 'border-amber-500/50'}`}>
                     <option value="">{material ? 'Choose a process' : 'Choose a material first'}</option>
-                    {processOptions.filter(p => p.dfmFamily).length > 0 && (
-                      <optgroup label="Shapes the part — DFM rules apply">
-                        {processOptions.filter(p => p.dfmFamily).map(p => (
-                          <option key={p.name} value={p.name}>{p.name}</option>
+                    {/* GROUPED BY COMMODITY, not by whether rules exist. The old
+                        split put all 26 rule-bearing processes in one flat
+                        optgroup — casting beside machining beside moulding — and
+                        finding one row in it while somebody watched was the
+                        failure that sent this menu back to be rebuilt. A reader
+                        looking for HPDC now opens "Casting" and reads eleven
+                        rows, not thirty-seven. */}
+                    {processGroups.map(([groupName, opts]) => (
+                      <optgroup key={groupName} label={groupName}>
+                        {opts.map(p => (
+                          <option key={p.name} value={p.name}>
+                            {p.label}{p.dfmFamily ? '' : '  (no DFM rules)'}
+                          </option>
                         ))}
                       </optgroup>
-                    )}
-                    {processOptions.filter(p => !p.dfmFamily).length > 0 && (
-                      <optgroup label="No geometric DFM rules">
-                        {processOptions.filter(p => !p.dfmFamily).map(p => (
-                          <option key={p.name} value={p.name}>{p.name}</option>
-                        ))}
-                      </optgroup>
-                    )}
+                    ))}
                   </select>
                 </label>
               </div>

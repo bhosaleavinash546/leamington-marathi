@@ -83,6 +83,52 @@ export const MATERIALS = {
   'Zinc (ZAMAK 3)':           { density: 6.60, price: 2.85, scrapRecovery: 0.50, family: 'zinc' },
   'Bronze (CuSn8)':           { density: 8.80, price: 8.50, scrapRecovery: 0.60, family: 'copper' },
 
+  // ── THE CASTING ALLOYS A FOUNDRY ACTUALLY QUOTES ──────────────────────────
+  //
+  // The list above carried ONE aluminium die-casting alloy, ONE magnesium and
+  // two zincs, which is enough to demonstrate the engine and not enough to run a
+  // programme. A cost engineer opening the picker for a structural HPDC node
+  // wants Silafont or Castasil by name; one for a gearbox housing wants AlSi9Cu3
+  // or ADC10; the thin-wall convertor wants A360 or A413. Forcing all of them
+  // onto "A380 / ADC12" resolves every alloy-specific threshold — minimum wall,
+  // draft, core slenderness — against the wrong metal, and the report then says
+  // "resolved for Aluminium A380" on a part that is not made of it.
+  //
+  // Densities are physical constants. PRICES ARE INDICATIVE €/kg on the same
+  // static basis as everything above — the commodity bridge overrides them where
+  // a live index exists — so they start a should-cost rather than settle one.
+
+  // High-pressure die casting. Silafont-36 and Castasil-37 are the two that
+  // matter for structural, heat-treatable and weldable castings; the rest are
+  // the conventional secondary-alloy workhorses.
+  'Aluminium AlSi10MnMg (Silafont-36, structural HPDC)': { density: 2.65, price: 3.10, scrapRecovery: 0.50, family: 'aluminium' },
+  'Aluminium Castasil-37 (AlSi9MnMoZr, structural HPDC)': { density: 2.65, price: 3.25, scrapRecovery: 0.50, family: 'aluminium' },
+  'Aluminium AlSi9Cu3 / EN AC-46000 (die-cast)': { density: 2.75, price: 2.40, scrapRecovery: 0.50, family: 'aluminium' },
+  'Aluminium ADC10 / A383 (die-cast)': { density: 2.74, price: 2.42, scrapRecovery: 0.50, family: 'aluminium' },
+  'Aluminium A360 (die-cast)': { density: 2.68, price: 2.55, scrapRecovery: 0.50, family: 'aluminium' },
+  'Aluminium A413 (die-cast)': { density: 2.66, price: 2.50, scrapRecovery: 0.50, family: 'aluminium' },
+
+  // Gravity, low-pressure and sand: the Al-Si-Mg heat-treatable family. A356 was
+  // already here; these are the two grades quoted beside it.
+  'Aluminium A357 (cast)':    { density: 2.68, price: 3.00, scrapRecovery: 0.50, family: 'aluminium' },
+  'Aluminium AlSi7Mg0.3 / EN AC-42100 (cast)': { density: 2.67, price: 2.90, scrapRecovery: 0.50, family: 'aluminium' },
+
+  // Magnesium die casting. AZ91D is the strongest and the least ductile; AM60
+  // and AM50 are what a steering wheel armature or an instrument-panel beam is
+  // actually cast in, because they take an impact.
+  'Magnesium AM60B (die-cast)': { density: 1.80, price: 3.60, scrapRecovery: 0.30, family: 'magnesium' },
+  'Magnesium AM50A (die-cast)': { density: 1.78, price: 3.65, scrapRecovery: 0.30, family: 'magnesium' },
+
+  // Zinc hot-chamber. ZAMAK 2 is the strongest of the three; ZA-8 is the
+  // higher-aluminium alloy for bearing and wear duty.
+  'Zinc (ZAMAK 2)':           { density: 6.60, price: 3.00, scrapRecovery: 0.50, family: 'zinc' },
+  'Zinc ZA-8':                { density: 6.30, price: 3.10, scrapRecovery: 0.50, family: 'zinc' },
+
+  // Iron castings beyond the three already listed: ADI for gears and suspension
+  // arms, SiMo for exhaust manifolds and turbo housings.
+  'Cast Iron (ADI 900, austempered)': { density: 7.10, price: 1.55, scrapRecovery: 0.25, family: 'castiron' },
+  'Cast Iron (SiMo, exhaust)': { density: 7.05, price: 1.70, scrapRecovery: 0.25, family: 'castiron' },
+
   // Thermoplastics: interior, connector, under-bonnet and blow-moulded grades
   'PC/ABS blend':             { density: 1.12, price: 2.90, scrapRecovery: 0.10, family: 'plastic' },
   'PBT':                      { density: 1.31, price: 3.10, scrapRecovery: 0.10, family: 'plastic' },
