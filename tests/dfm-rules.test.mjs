@@ -458,3 +458,22 @@ test('every book rule ABSTAINS on a material with no properties on file', () => 
     assert.equal(r.findings.some(x => x.id === id), false);
   }
 });
+
+test('a rectangular pan abstains from the draw-stage rule; a round cup does not', () => {
+  // Table 6.2 is written for "a cylindrical cup without flange". Handing a
+  // rectangular pan a diameter it does not have would be an invented
+  // measurement, and the first version of this rule abstained on ALL ten corpus
+  // cups because it reached for a value that lives nowhere — a rule that is
+  // right and silent, which is the failure this project treats as the worst one.
+  const cup = {
+    geometry: { boundingBox: { xMm: 100, yMm: 100, zMm: 40 }, surfaceArea: { cm2: 260 } },
+    dfm: { sheetMetal: { isSheetMetal: true, thicknessMm: 1.0, bends: [] } },
+  };
+  const pan = {
+    geometry: { boundingBox: { xMm: 160, yMm: 80, zMm: 40 }, surfaceArea: { cm2: 260 } },
+    dfm: { sheetMetal: { isSheetMetal: true, thicknessMm: 1.0, bends: [] } },
+  };
+  const m = (g) => extractMeasures(g, { material: 'Steel (mild)' });
+  assert.notEqual(m(cup).drawStagesBeyondTable, undefined, 'a round cup must be judged');
+  assert.equal(m(pan).drawStagesBeyondTable, undefined, 'a rectangular pan is outside the table');
+});

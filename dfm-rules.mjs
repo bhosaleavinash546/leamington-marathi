@@ -169,8 +169,21 @@ function bookLimits(sm, geo, opts) {
   // surface as the developed shell, and for a thin shell the mid-surface is
   // half the total. Stated as an estimate, because the book's own analytic
   // method (Sec. 6.4.2, Guldinus) needs the meridian profile we do not extract.
+  //
+  // THE CUP DIAMETER comes from the footprint, with a ROUNDNESS TEST. Table 6.2
+  // is written for "a cylindrical cup without flange", so a rectangular pan is
+  // outside it and must abstain rather than be handed a diameter that does not
+  // describe it. The first version of this reached for a
+  // `circumscribingCircleMm` that lives in none of the three places it looked —
+  // so the rule abstained on all ten corpus cups while reporting nothing wrong,
+  // which is precisely the failure mode this project treats as worse than a
+  // missing rule.
   const areaCm2 = Number((geo.geometry || {}).surfaceArea?.cm2 ?? geo.surfaceArea?.cm2);
-  const cupDia = num(measuresCircumscribing(geo));
+  const bbc = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
+  const plan = [Number(bbc.xMm), Number(bbc.yMm), Number(bbc.zMm)]
+    .filter((v) => v > 0).sort((a, b) => b - a).slice(0, 2);
+  const round = plan.length === 2 && Math.abs(plan[0] - plan[1]) / plan[0] <= 0.05;
+  const cupDia = round ? plan[0] : undefined;
   if (areaCm2 > 0 && cupDia > 0) {
     const blankDia = Math.sqrt((2 * areaCm2 * 100) / Math.PI);
     const d = drawStages(blankDia, cupDia, T);
@@ -180,13 +193,6 @@ function bookLimits(sm, geo, opts) {
     }
   }
   return out;
-}
-
-/** The circumscribing circle, read wherever the kernel put it. */
-function measuresCircumscribing(geo) {
-  const d = geo.dfm || {};
-  return d.revolution?.circumscribingCircleMm ?? d.features?.circumscribingCircleMm
-    ?? (geo.geometry || {}).circumscribingCircleMm;
 }
 
 export function extractMeasures(geo = {}, opts = {}) {
