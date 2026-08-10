@@ -109,7 +109,7 @@ for (const m of parts) {
   };
 
   // ── What the GEOMETRY infers, against what the part is for ─────────────
-  const inf = inferProcessFamily(geo);
+  const inf = inferProcessFamily(geo, { material: m.material });
   row.inferred = { family: inf.family, confidence: inf.confidence, evidence: inf.evidence };
   row.inferenceAgrees = inf.family == null ? null : inf.family === m.intendedFamily;
 

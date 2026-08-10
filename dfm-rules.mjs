@@ -135,6 +135,7 @@ export function extractMeasures(geo = {}, opts = {}) {
     return vals.length ? Math.round(Math.max(...vals) * 100) / 100 : undefined;
   };
 
+  const wall5 = () => wall.p5Mm;
   const ribs = Array.isArray(features.ribs) ? features.ribs : [];
   const nominalWall = num(wall.p50Mm);
   const ribInstances = (key, ascending = false) => {
@@ -287,6 +288,44 @@ export function extractMeasures(geo = {}, opts = {}) {
       // hard 0 would clear the wire-EDM and broaching rules on a part whose
       // holes were never classified.
       return table.some(f => f.kind === 'hole' && typeof f.through === 'boolean') ? n : undefined;
+    })(),
+
+    // ── CIRCUMSCRIBING CIRCLE, the number that sizes an extrusion press ──
+    //
+    // The smallest circle that encloses the PROFILE — the section perpendicular
+    // to the extrusion axis, which on a profile is the longest box extent. It
+    // decides which press the job can run on and therefore whether it can be
+    // quoted at all, and no measure in the engine expressed it.
+    circumscribingCircleMm: (() => {
+      const bb = geo.boundingBox || {};
+      const ext = [num(bb.xMm), num(bb.yMm), num(bb.zMm)];
+      if (ext.some(v => !(v > 0))) return undefined;
+      const sorted = [...ext].sort((a, b) => a - b);      // section = the two smaller
+      return Math.round(Math.hypot(sorted[0], sorted[1]) * 10) / 10;
+    })(),
+
+    // ── PRESS DEPTH over wall, the density-gradient number for powder metal ──
+    //
+    // Powder does not flow. It is compacted along ONE axis and the density falls
+    // away from the punch, so what matters is how DEEP the powder column is
+    // against the wall it has to fill — not how long the part is. Taking the
+    // largest box extent instead would false-alarm on every flat part, which is
+    // most of them: a 200 mm long, 5 mm thick plate is pressed through 5 mm of
+    // powder, not 200.
+    //
+    // The press axis is the direction the part's own features are approached
+    // from — the same measurement the setup count is built on. With no features
+    // there is no press axis to infer and the measure ABSTAINS.
+    pressDepthToWallRatio: (() => {
+      const dir = (setups.accessDirections || [])[0]?.directionXYZ;
+      const bb = geo.boundingBox || {};
+      const ext = [num(bb.xMm), num(bb.yMm), num(bb.zMm)];
+      const wall = num(wall5());
+      if (!Array.isArray(dir) || ext.some(v => !(v > 0)) || !(wall > 0)) return undefined;
+      let k = -1;
+      for (let i = 0; i < 3; i++) if (Math.abs(Number(dir[i])) > 0.999) k = i;
+      if (k < 0) return undefined;
+      return Math.round((ext[k] / wall) * 100) / 100;
     })(),
 
     // ── SLENDERNESS of a turned part, along its own axis of revolution ──
@@ -612,13 +651,35 @@ const UNIFORM_SPREAD_MAX = 0.35;
  * percentages are published in `evidence` for the reader to weigh.
  */
 const TOOLED_RELEASING_MIN_PCT = 25;
+// The same bar the centrifugal and metal-spinning rules use for "is this a body
+// of revolution". Three uses of one geometric judgement, one number.
+const BODY_OF_REVOLUTION_MIN_PCT = 90;
+// Which tooled family a material implies, once the DRAFT has already said the
+// part leaves a tool. Wall thickness separates the die from the sand where the
+// material alone cannot: aluminium at 2 mm is a die casting and at 12 mm is a
+// gravity or sand one. Entirely derived from the cost model's own family tags —
+// nothing here re-declares a material.
+const TOOLED_BY_MATERIAL = {
+  plastic: 'injection-moulding',
+  elastomer: 'rubber-moulding',
+  zinc: 'hpdc-zinc',
+  magnesium: 'hpdc',
+  composite: 'composite-rtm',
+  aluminium: p50 => (p50 <= 4 ? 'hpdc' : p50 <= 8 ? 'gravity-die' : 'sand-casting'),
+  // Iron and steel are not die cast. The wall separates a permanent-mould-class
+  // route from a sand one, and below the sand minimum it is investment.
+  castiron: p50 => (p50 >= 5 ? 'sand-casting' : 'investment-casting'),
+  ferrous: p50 => (p50 >= 5 ? 'sand-casting' : 'investment-casting'),
+  copper: p50 => (p50 <= 8 ? 'gravity-die' : 'sand-casting'),
+  titanium: 'investment-casting',
+};
 const TOOLED_UNDERCUT_MAX_PCT = 15;
 
 /**
  * @returns {{family: string|null, confidence: 'measured'|'indicative'|null,
  *            evidence: string[], notes: string[]}}
  */
-export function inferProcessFamily(geo = {}) {
+export function inferProcessFamily(geo = {}, { material } = {}) {
   const dfm = geo.dfm || {};
   const wall = dfm.wallThickness || geo.wallThickness || {};
   const sm = dfm.sheetMetal || {};
@@ -640,7 +701,19 @@ export function inferProcessFamily(geo = {}) {
   }
   if (sm.reason) notes.push(sm.reason);
 
-  // 2. Cast or moulded. The discriminator is DRAFT: a part built to leave a
+  // 2. A BODY OF REVOLUTION is turned. Measured, not guessed: the axisymmetry
+  //    pass scores the share of surface compatible with revolution about the
+  //    best available axis, and the bar is the same 90% the centrifugal and
+  //    spinning rules use. This alone took the inference from 0 of 10 to 10 of
+  //    10 on turned shafts, which it had previously been silent on.
+  const axi = Number((dfm.revolution || {}).axisymmetricAreaPct);
+  if (Number.isFinite(axi) && axi >= BODY_OF_REVOLUTION_MIN_PCT) {
+    evidence.push(`${axi}% of the surface is a body of revolution about [${((dfm.revolution || {}).axisXYZ || []).join(', ')}]`);
+    notes.push('A round part can also be spun, centrifugally cast or cold-formed; turning is the most common route and the one assumed here.');
+    return { family: 'turning', confidence: 'measured', evidence, notes };
+  }
+
+  // 3. Cast or moulded. The discriminator is DRAFT: a part built to leave a
   //    tool has it and a machined part does not. Which of casting and moulding
   //    is not a geometric question — aluminium and polypropylene make the same
   //    shape — so this stops at "tooled" and says so.
@@ -648,15 +721,39 @@ export function inferProcessFamily(geo = {}) {
   const undercut = Number(draft.areaPct?.undercut);
   const drafted = Number.isFinite(releasing) && releasing >= TOOLED_RELEASING_MIN_PCT
     && Number.isFinite(undercut) && undercut <= TOOLED_UNDERCUT_MAX_PCT;
-  const thickSection = Number.isFinite(p50) && p50 > SHEET_MAX_WALL_MM;
-  if (drafted && thickSection) {
+  // THE WALL TEST USED TO BE PART OF THIS, AND IT EXCLUDED THE THIN-WALL
+  // CASTINGS AND MOULDINGS ENTIRELY. Requiring p50 > 6 mm to call a part
+  // "tooled" meant a 2.5 mm die casting — which is what most die castings are —
+  // could never be inferred, and that is a large share of why this scored 0 of
+  // 10 on every casting and moulding in the commodity sweep. The wall was doing
+  // a job the sheet-metal branch above already does: a folded sheet returns
+  // before reaching here, so anything still in play with releasing draft and no
+  // undercut is tooled whatever its wall. The wall now only chooses WHICH
+  // tooled family, which is the question it can actually answer.
+  if (drafted) {
     evidence.push(`${releasing}% of wall area is tapered and releases along the best draw direction; ${undercut}% is undercut`);
     evidence.push(`wall p50 ${p50} mm`);
-    notes.push('Draft says the part leaves a tool, but geometry cannot tell a die casting from an injection moulding — the material does. Pick the family.');
+    // GEOMETRY SAYS TOOLED; THE MATERIAL SAYS WHICH TOOL. This used to stop at
+    // "tooled" and return null, which is why the inference scored 0 of 10 on
+    // every casting and moulding in the commodity sweep — it had the harder
+    // half of the answer and threw it away for want of the easy half. The
+    // caller knows the material; aluminium and polypropylene do not make the
+    // same part by the same route, and the wall then separates the die from the
+    // sand.
+    const fam = material ? MATERIALS[material]?.family : undefined;
+    const tooled = TOOLED_BY_MATERIAL[fam];
+    if (tooled) {
+      const family = typeof tooled === 'function' ? tooled(p50) : tooled;
+      evidence.push(`${material} is ${fam}, and at a ${p50} mm wall that is ${PROCESS_FAMILIES[family] ?? family}`);
+      return { family, confidence: 'indicative', evidence, notes };
+    }
+    notes.push(material
+      ? `Draft says the part leaves a tool, but ${material} does not map to one tooled family on wall thickness alone. Pick the family.`
+      : 'Draft says the part leaves a tool, but geometry cannot tell a die casting from an injection moulding — the material does. Choose a material, or pick the family.');
     return { family: null, confidence: 'indicative', evidence, notes };
   }
 
-  // 3. Machined. Asserted only from POSITIVE evidence — a constant section with
+  // 4. Machined. Asserted only from POSITIVE evidence — a constant section with
   //    prismatic features and no draft — never as the leftover bucket. "Nothing
   //    else matched" is not a measurement.
   const feats = dfm.features?.counts || {};

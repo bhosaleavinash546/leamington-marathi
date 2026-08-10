@@ -31,6 +31,7 @@ import sys
 from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
 from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
 from OCP.BRepFilletAPI import BRepFilletAPI_MakeFillet
+from OCP.BRepOffsetAPI import BRepOffsetAPI_ThruSections
 from OCP.BRepPrimAPI import (BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder,
                              BRepPrimAPI_MakePrism, BRepPrimAPI_MakeRevol)
 from OCP.gp import gp_Ax1, gp_Ax2, gp_Dir, gp_Pnt, gp_Trsf, gp_Vec
@@ -114,26 +115,53 @@ def sheet_bracket(i):
     return s, {"thicknessMm": t, "holeDiaMm": hole, "insideRadiusMm": r}
 
 
+def _tapered_box(L, W, H, draft_deg):
+    """A box with `draft_deg` of taper on all four walls, narrowing upward.
+
+    Lofted between two rectangles rather than drafted with BRepOffsetAPI: the
+    loft is a handful of faces the kernel builds every time, and the draft
+    operator is the kind of call that took sixty parts of this corpus down with
+    a segfault.
+    """
+    d = H * math.tan(math.radians(draft_deg))
+    bot = _wire([(0, 0, 0), (L, 0, 0), (L, W, 0), (0, W, 0)])
+    top = _wire([(d, d, H), (L - d, d, H), (L - d, W - d, H), (d, W - d, H)])
+    mk = BRepOffsetAPI_ThruSections(True, True)
+    mk.AddWire(bot)
+    mk.AddWire(top)
+    mk.Build()
+    return mk.Shape()
+
+
 def hpdc_housing(i):
-    """Die-cast housing: walled box, ribs, cored bosses. Wall is the story."""
+    """Die-cast housing: DRAFTED walled box, ribs, cored bosses.
+
+    The first version of this builder made a plain box with square walls, and
+    the sweep exposed what that costs: the process inference correctly read 0%
+    releasing draft and called ten die castings MACHINED parts — because a
+    square-walled box with a uniform wall and prismatic features is exactly what
+    a machined part looks like. The engine was right and the fixture was wrong.
+    A real die casting carries 1-3 deg on every drawn wall, so this one does.
+    """
     w = [1.2, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 2.2, 6.0][i]
+    draft = [1.0, 1.5, 2.0, 2.0, 3.0, 1.0, 2.5, 1.5, 2.0, 3.0][i]
     L, W, H = 110, 80, 42 + i * 2
-    outer = BRepPrimAPI_MakeBox(L, W, H).Shape()
-    inner = _move(BRepPrimAPI_MakeBox(L - 2 * w, W - 2 * w, H).Shape(), w, w, w)
+    outer = _tapered_box(L, W, H, draft)
+    inner = _move(_tapered_box(L - 2 * w, W - 2 * w, H, draft), w, w, w)
     s = BRepAlgoAPI_Cut(outer, inner).Shape()
-    for k in range(2):                       # ribs on the floor
-        rib = _move(BRepPrimAPI_MakeBox(w * 0.7, W - 2 * w, H * 0.35).Shape(),
-                    30 + k * 40, w, w)
+    for k in range(2):
+        rib = _move(BRepPrimAPI_MakeBox(w * 0.7, W - 4 * w, H * 0.35).Shape(),
+                    30 + k * 40, 2 * w, w)
         s = BRepAlgoAPI_Fuse(s, rib).Shape()
     bore = [2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 3.5, 12.0][i]
-    for k in range(2):                       # cored bosses through the floor
+    for k in range(2):
         boss = BRepPrimAPI_MakeCylinder(
             gp_Ax2(gp_Pnt(22 + k * 66, W / 2.0, 0), gp_Dir(0, 0, 1)), bore, H * 0.5).Shape()
         s = BRepAlgoAPI_Fuse(s, boss).Shape()
         hole = BRepPrimAPI_MakeCylinder(
             gp_Ax2(gp_Pnt(22 + k * 66, W / 2.0, -1), gp_Dir(0, 0, 1)), bore / 2.0, H).Shape()
         s = BRepAlgoAPI_Cut(s, hole).Shape()
-    return s, {"wallMm": w, "coredHoleDiaMm": bore}
+    return s, {"wallMm": w, "coredHoleDiaMm": bore, "draftDeg": draft}
 
 
 def machined_block(i):
@@ -186,21 +214,19 @@ def sand_cast_arm(i):
 
 
 def moulded_cover(i):
-    """Injection-moulded cover: thin wall, ribs, draft on the side walls."""
+    """Injection-moulded cover: thin wall, a rib, and draft on ALL four walls.
+
+    Drafted on one axis only in the first version, which left barely a tenth of
+    the wall releasing — under the inference's threshold, so ten mouldings were
+    read as machined parts. A moulding is drafted all the way round.
+    """
     w = [0.8, 1.0, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0, 1.8, 5.0][i]
     L, W, H = 120, 90, 24
-    draft = [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 0.0, 1.0, 2.5, 0.5][i]
-    # A drafted box: two faces lofted would be cleaner, but a tapered prism from
-    # a trapezoid section gives an exact, known wall draft.
-    dx = H * math.tan(math.radians(draft))
-    outer = _wire([(0, 0, 0), (L, 0, 0), (L - dx, 0, H), (dx, 0, H)])
-    face = BRepBuilderAPI_MakeFace(outer).Face()
-    solid = BRepPrimAPI_MakePrism(face, gp_Vec(0, W, 0)).Shape()
-    inner = _wire([(w, w, w), (L - w, w, w), (L - dx - w, w, H + 1), (dx + w, w, H + 1)])
-    icut = BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(inner).Face(),
-                                 gp_Vec(0, W - 2 * w, 0)).Shape()
-    s = BRepAlgoAPI_Cut(solid, icut).Shape()
-    rib = _move(BRepPrimAPI_MakeBox(w * 0.6, W - 2 * w, H * 0.4).Shape(), L / 2.0, w, w)
+    draft = [0.5, 0.5, 1.0, 1.5, 2.0, 3.0, 1.0, 1.0, 2.5, 0.5][i]
+    outer = _tapered_box(L, W, H, draft)
+    inner = _move(_tapered_box(L - 2 * w, W - 2 * w, H, draft), w, w, w)
+    s = BRepAlgoAPI_Cut(outer, inner).Shape()
+    rib = _move(BRepPrimAPI_MakeBox(w * 0.6, W - 4 * w, H * 0.4).Shape(), L / 2.0, 2 * w, w)
     s = BRepAlgoAPI_Fuse(s, rib).Shape()
     return s, {"wallMm": w, "draftDeg": draft}
 

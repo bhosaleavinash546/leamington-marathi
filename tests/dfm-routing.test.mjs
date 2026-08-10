@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 
 import { compareRoutes, rankRoutes } from '../dfm-routing.mjs';
 import { PROCESS_TO_DFM_FAMILY } from '../dfm-process-registry.mjs';
-import { extractMeasures, runDfmRules } from '../dfm-rules.mjs';
+import { extractMeasures, inferProcessFamily, runDfmRules } from '../dfm-rules.mjs';
 
 /** A chunky aluminium casting: 15.84 mm median wall, very non-uniform. */
 const CASTING = {
@@ -1039,4 +1039,116 @@ test('a declared tolerance carries its basis onto the finding, and only that fin
   for (const f of [...r.findings, ...r.passed]) {
     if (f.measure !== 'tightestToleranceMm') assert.equal(f.measuredBasis, undefined, `${f.id} carries a stray basis`);
   }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// THE THREE GAPS THE COMMODITY SWEEP LEFT OPEN
+// ═══════════════════════════════════════════════════════════════════════════
+
+test('a body of revolution is inferred as turned, from a measurement', () => {
+  // The inference was silent on all ten turned shafts. It is not a hard
+  // question: the axisymmetry pass already scored them, at the same 90% bar the
+  // centrifugal and spinning rules use.
+  const shaft = {
+    boundingBox: { xMm: 30, yMm: 30, zMm: 160 },
+    dfm: {
+      revolution: { axisymmetricAreaPct: 97.4, axisXYZ: [0, 0, 1] },
+      wallThickness: { p50Mm: 8, p95Mm: 9 }, draft: {}, features: { counts: {} },
+    },
+  };
+  const inf = inferProcessFamily(shaft);
+  assert.equal(inf.family, 'turning');
+  assert.equal(inf.confidence, 'measured');
+  assert.match(inf.evidence.join(' '), /97.4% of the surface is a body of revolution/);
+  // And it says what else a round part could be, rather than implying certainty.
+  assert.match(inf.notes.join(' '), /spun, centrifugally cast/);
+});
+
+test('draft says TOOLED; the material says which tool', () => {
+  // The inference used to stop at "this part leaves a tool" and return null,
+  // which is why it scored 0 of 10 on every casting and moulding in the sweep —
+  // it had the hard half of the answer and threw it away for want of the easy
+  // half. The caller knows the material.
+  const tooled = (p50) => ({
+    dfm: {
+      wallThickness: { p50Mm: p50, p95Mm: p50 * 1.2 },
+      draft: { areaPct: { releasing: 62, undercut: 1 } },
+      features: { counts: {} }, revolution: { axisymmetricAreaPct: 30 },
+    },
+  });
+  const fam = (p50, material) => inferProcessFamily(tooled(p50), { material }).family;
+
+  assert.equal(fam(2.5, 'Aluminium A380 / ADC12 (die-cast)'), 'hpdc', 'thin aluminium is die cast');
+  assert.equal(fam(6, 'Aluminium A356 (cast)'), 'gravity-die', 'a heavier aluminium wall is gravity');
+  assert.equal(fam(14, 'Aluminium A356 (cast)'), 'sand-casting', 'and a very heavy one is sand');
+  assert.equal(fam(3, 'PA66-GF30 (glass-filled)'), 'injection-moulding');
+  assert.equal(fam(2, 'Zinc (ZAMAK 3)'), 'hpdc-zinc');
+  assert.equal(fam(9, 'Cast Iron (Ductile/GJS)'), 'sand-casting', 'iron is not die cast');
+  assert.equal(fam(3, 'EPDM Rubber'), 'rubber-moulding');
+
+  // With no material it still refuses to guess, and says why.
+  const silent = inferProcessFamily(tooled(3));
+  assert.equal(silent.family, null);
+  assert.match(silent.notes.join(' '), /Choose a material, or pick the family/);
+});
+
+test('an internal corner is any concave partial arc — a bore is not one', () => {
+  // Measured over 93 parts: `minInternalCornerRadiusMm` abstained 20 times,
+  // because it only looked at faces the blend recogniser had accepted — a fair
+  // test for an edge break and the wrong one for the corner of a deep pocket.
+  const withCorner = { dfm: { features: { minInternalCornerRadiusMm: 1.2 }, wallThickness: { p50Mm: 8, p5Mm: 8 }, draft: {} } };
+  assert.equal(extractMeasures(withCorner).minInternalCornerRadiusMm, 1.2);
+  const r = runDfmRules(withCorner, 'machining', { material: 'Aluminium 6061' });
+  assert.ok(r.findings.some(f => f.id === 'mach-internal-corner-radius'), '1.2 mm is under the 3 mm end-mill limit');
+  // A part with sharp corners has NO internal corner — that is not a small one.
+  const sharp = { dfm: { features: {}, wallThickness: { p50Mm: 8, p5Mm: 8 }, draft: {} } };
+  assert.equal(extractMeasures(sharp).minInternalCornerRadiusMm, undefined);
+});
+
+test('extrusion now asks the two questions an extruder asks', async () => {
+  const { DFM_RULES } = await import('../dfm-rule-catalogue.mjs');
+  assert.equal(DFM_RULES.filter(r => r.process === 'extrusion').length, 6, 'was four generic rules');
+  // A profile too big for a general-purpose press, with a channel too deep for
+  // its die tongue — the two ways an extrusion quote actually goes wrong.
+  const big = {
+    boundingBox: { xMm: 220, yMm: 180, zMm: 3000 },
+    dfm: { features: { maxPocketDepthToWidth: 5.2 }, wallThickness: { p5Mm: 3, p50Mm: 3, spreadRatio: 0.1 },
+      draft: { undercutFaceCount: 0 } },
+  };
+  const m = extractMeasures(big);
+  assert.equal(m.circumscribingCircleMm, 284.3, 'hypot(180, 220) = 284.25 — the section, not the length');
+  const r = runDfmRules(big, 'extrusion', { material: 'Aluminium 6082' });
+  assert.ok(r.findings.some(f => f.id === 'extr-circumscribing-circle'), '283 mm is past a general-purpose press');
+  assert.ok(r.findings.some(f => f.id === 'extr-tongue-ratio'), '5.2:1 will break the die tongue');
+});
+
+test('powder metallurgy now bites on a density gradient', async () => {
+  const { DFM_RULES } = await import('../dfm-rule-catalogue.mjs');
+  assert.equal(DFM_RULES.filter(r => r.process === 'powder-metallurgy').length, 6, 'was four generic rules');
+  // A tall thin-walled bush: the powder column is thirteen times the wall.
+  const bush = {
+    boundingBox: { xMm: 40, yMm: 40, zMm: 39 },
+    dfm: {
+      setups: { estimatedSetupCount: 1, accessDirections: [{ directionXYZ: [0, 0, 1], featureCount: 1 }] },
+      wallThickness: { p5Mm: 3, p50Mm: 3 }, draft: { undercutFaceCount: 0 }, features: {},
+    },
+    featureTable: [{ kind: 'hole', diaMm: 34, depthMm: 39, through: true, count: 1 }],
+  };
+  assert.equal(extractMeasures(bush).pressDepthToWallRatio, 13);
+  const r = runDfmRules(bush, 'powder-metallurgy', { material: 'Steel (mild)' });
+  assert.ok(r.findings.some(f => f.id === 'pm-press-depth-ratio'), '13:1 is past the 8:1 density limit');
+
+  // A flat disc is the SAME part rotated, and must not false-alarm: the powder
+  // column is the disc thickness, not its diameter. Taking the largest box
+  // extent instead would fail every flat pressed part there is.
+  const disc = {
+    boundingBox: { xMm: 110, yMm: 110, zMm: 20 },
+    dfm: {
+      setups: { estimatedSetupCount: 1, accessDirections: [{ directionXYZ: [0, 0, 1], featureCount: 5 }] },
+      wallThickness: { p5Mm: 20, p50Mm: 20 }, draft: { undercutFaceCount: 0 }, features: {},
+    },
+    featureTable: [{ kind: 'hole', diaMm: 18, depthMm: 20, through: true, count: 1 }],
+  };
+  assert.equal(extractMeasures(disc).pressDepthToWallRatio, 1);
+  assert.equal(runDfmRules(disc, 'powder-metallurgy', { material: 'Steel (mild)' }).findings.length, 0);
 });

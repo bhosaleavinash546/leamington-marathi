@@ -159,6 +159,7 @@ def build_aag(shape):
         kind = "FREEFORM"
         concavity = None
         radius = None
+        span = None
         try:
             ad = BRepAdaptor_Surface(f)
             kind = TYPE.get(ad.GetType(), "FREEFORM")
@@ -173,6 +174,15 @@ def build_aag(shape):
                 concavity = "concave" if (
                     (f.Orientation() == _REV) != (not cyl.Position().Direct())
                 ) else "convex"
+                # HOW FAR ROUND IT GOES. A bore is a full revolution; an
+                # internal corner is an arc of roughly a quarter. Without the
+                # span the two are the same object — a concave cylinder — and a
+                # Ø8 drilled hole would be reported as a 4 mm internal corner
+                # radius that no cutter needs to reach into.
+                try:
+                    span = math.degrees(abs(ad.LastUParameter() - ad.FirstUParameter()))
+                except Exception:
+                    span = None
                 # THE RADIUS ITSELF, which was computed and thrown away. A fillet
                 # reported without it cannot answer the one question a machinist
                 # asks of an internal corner — what cutter fits — and
@@ -248,6 +258,8 @@ def build_aag(shape):
             faces[i]["blendConcavity"] = concavity
         if radius is not None:
             faces[i]["radiusMm"] = round(radius, 4)
+        if span is not None:
+            faces[i]["arcDeg"] = round(span, 2)
         if centre is not None:
             # The face's own extents, sorted. `dims[2]` is its longest span and
             # `dims[0]` its thickness.
@@ -1050,6 +1062,8 @@ SHEET_WALL_AGREE = 1.35
 # ordinary definition of sheet metal rather than tuned values: above 6 mm the
 # material is plate and is not pressed on a brake, and a part less than ten
 # thicknesses across is a block whatever it is made of.
+# A cylindrical face at or above this span is a BORE, not a corner.
+FULL_BORE_ARC_DEG = 350.0
 SHEET_MAX_THICKNESS_MM = 6.0
 SHEET_MIN_SPAN_RATIO = 10.0
 
@@ -1517,18 +1531,40 @@ def blend_face_ids(shape, aag=None):
 
 
 
-def _min_concave_fillet_radius(fillets):
+def _min_internal_corner_radius(aag, fillets):
     """Smallest INTERNAL corner radius on the part, in mm, or None.
 
-    None rather than 0 when there is no concave fillet: a part machined with
-    sharp internal corners in CAD has not been measured as having a small
-    corner, it has been measured as having none, and the rule must abstain
-    rather than fail it at zero.
+    Was computed from blend-classified fillets alone, and that missed most real
+    corners: `find_blends` accepts a face only when it is small relative to what
+    it joins, which is a fair test for an edge break and the wrong one for the
+    corner of a deep pocket. Measured over a 93-part commodity sweep, this
+    abstained 20 times — the rule a machinist asks first, silent on a fifth of
+    the corpus.
+
+    Every CONCAVE cylindrical face that is not a full revolution is an internal
+    corner, whether or not anything classified it as a blend. The arc test is
+    what keeps bores out: a drilled hole is a concave cylinder too, and without
+    it a Ø8 hole would be reported as a 4 mm corner radius that no cutter has to
+    reach into.
+
+    None rather than 0 when the part has no internal corner at all: a part
+    modelled with sharp corners has not been measured as having a small one.
     """
-    radii = [f["radiusMm"] for f in fillets
-             if f.get("concavity") == "concave"
-             and isinstance(f.get("radiusMm"), (int, float))
-             and f["radiusMm"] > 0]
+    radii = []
+    for fid, f in (aag.get("faces") or {}).items():
+        if f.get("type") != "CYLINDER" or f.get("blendConcavity") != "concave":
+            continue
+        arc = f.get("arcDeg")
+        if arc is not None and arc >= FULL_BORE_ARC_DEG:
+            continue                      # a bore, not a corner
+        r = f.get("radiusMm")
+        if isinstance(r, (int, float)) and r > 0:
+            radii.append(r)
+    # Blend-classified fillets still count even if the arc test skipped them —
+    # a fully-round blend at the base of a boss is a real internal radius.
+    for f in fillets:
+        if f.get("concavity") == "concave" and isinstance(f.get("radiusMm"), (int, float)) and f["radiusMm"] > 0:
+            radii.append(f["radiusMm"])
     return round(min(radii), 3) if radii else None
 
 
@@ -1642,7 +1678,7 @@ def recognise(shape, feature_table, extents=None, aag=None):
         # CONCAVE fillets only. An external edge round is not a tool-access
         # constraint, and a part whose only blend is a 0.5 mm edge break must not
         # read as needing a 1 mm cutter.
-        "minInternalCornerRadiusMm": _min_concave_fillet_radius(fillets),
+        "minInternalCornerRadiusMm": _min_internal_corner_radius(aag, fillets),
         "maxPocketDepthToWidth": _max_pocket_slenderness(prismatic),
         "chamfers": chamfers,
         # Cylindrical features are found analytically, so their faces are named

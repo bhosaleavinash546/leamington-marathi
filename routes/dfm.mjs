@@ -257,7 +257,10 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
     // What the GEOMETRY says, independently of what anybody chose. Used to pick
     // the family when nobody named one, and to CONTRADICT one when it was named
     // and the geometry disagrees. It never silently overrides a choice.
-    const inferred = inferProcessFamily(geo);
+    // The material is part of the evidence: draft says the part leaves a tool,
+    // and the material says WHICH tool. Withholding it left the inference silent
+    // on every casting and moulding.
+    const inferred = inferProcessFamily(geo, { material });
     const measuredOnly = inferred.confidence === 'measured' ? inferred.family : null;
     const family = selected.family || measuredOnly;
     const conflict = processFamilyConflict(selected.family, inferred);
@@ -519,7 +522,10 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
       row.wallP50Mm = geo.dfm?.wallThickness?.p50Mm ?? null;
       row.undercutRegions = geo.dfm?.draft?.undercutFaceCount ?? null;
 
-      const inferred = inferProcessFamily(geo);
+      // The material is part of the evidence: draft says the part leaves a tool,
+    // and the material says WHICH tool. Withholding it left the inference silent
+    // on every casting and moulding.
+    const inferred = inferProcessFamily(geo, { material });
       const selected = familyForSelection({ process: chosenProcess });
       const family = selected.family
         || (inferred.confidence === 'measured' ? inferred.family : null);

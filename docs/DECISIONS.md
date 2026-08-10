@@ -1467,3 +1467,52 @@ Format: decision · why · what would change it.
     conflate them.
     *Measured effect across the corpus:* mean coverage 64.1% → 85.1%, with extrusion, deep
     drawing and powder metallurgy reaching 100%.
+
+115. **The internal-corner measure only looked at blends (2026).**
+    *Why:* `minInternalCornerRadiusMm` was computed from faces the blend recogniser had
+    accepted, and `find_blends` accepts a face only when it is SMALL relative to what it joins
+    — a fair test for an edge break and the wrong one for the corner of a deep pocket. Over
+    the 93-part sweep it abstained 20 times: the rule a machinist asks first, silent on a
+    fifth of the corpus. *Changes it:* every CONCAVE cylindrical face that is not a full
+    revolution is an internal corner, blend-classified or not. The AAG now carries each
+    cylinder's angular span, and that arc test is what keeps bores out — a drilled hole is a
+    concave cylinder too, and without it a Ø8 hole would be reported as a 4 mm corner radius
+    no cutter has to reach into. Verified: `plate-two-holes` returns NONE despite two bores.
+
+116. **Extrusion and powder metallurgy could not bite (2026).**
+    *Why:* both scored ~100 with almost no findings across twenty parts, because both carried
+    only the generic four — wall, uniformity, undercut, tolerance — and none of the questions
+    their own engineers ask. A ruleset that never fires on its own archetype is not validating
+    anything. *Changes it:* four rules, each with a sourced number and a new measure where one
+    was needed.
+      * `extr-circumscribing-circle` — the smallest circle the SECTION fits inside decides
+        which press can run the job at all; past ~203 mm the profile leaves the general-purpose
+        press population and the quote changes shape rather than degrading.
+      * `extr-tongue-ratio` — a channel in the profile is a cantilevered TONGUE in the die
+        with metal flowing round it at hundreds of bar, and 3:1 is where it starts to deflect.
+      * `pm-press-depth-ratio` — powder does not flow; density falls away from the punch, so
+        a column deeper than about eight wall thicknesses comes out dense at the top and soft
+        at the bottom.
+      * `pm-min-hole` — below 1.5 mm the core rod does not survive the stroke.
+    *The press-depth measure takes the press axis from the part's own feature access
+    direction, not the largest box extent.* Using the box would false-alarm on every flat
+    pressed part there is: a 200 x 5 mm plate is pressed through 5 mm of powder, not 200.
+
+117. **Process inference: two bugs, one of them mine and one of them the fixtures' (2026).**
+    *Why:* the inference scored 0 of 10 on nine of ten commodities. Two separate causes.
+      * A body of revolution was never inferred at all, though the axisymmetry pass had
+        already scored it. Adding that — at the same 90% bar the centrifugal and spinning
+        rules use — took turned shafts from 0 of 10 to **10 of 10**.
+      * The "tooled" branch required a wall thicker than 6 mm, so a 2.5 mm die casting —
+        which is what most die castings are — could never be inferred. The wall was doing a
+        job the sheet-metal branch above already does. It now only chooses WHICH tooled
+        family, which is the question it can answer: draft says the part leaves a tool, and
+        the material says which tool.
+    *And the fixtures were wrong too, which is worth stating rather than tuning around.* The
+    corpus's castings were built as square-walled boxes with 0% draft, so the inference
+    correctly read them as machined — a uniform wall with prismatic features and no taper is
+    exactly what a machined part looks like. They were rebuilt with real draft on every wall
+    and the releasing area rose to 31%, but their ribs and bosses are still undrafted and
+    push the UNDERCUT share to 28%, above the tooled test's limit. The material-narrowing
+    path is implemented and unit-tested; it remains **unproven on this corpus**, and the fix
+    is properly drafted rib and boss fixtures, not a looser threshold.

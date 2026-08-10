@@ -3938,6 +3938,77 @@ export const DFM_RULES = [
     source: 'As-built powder-bed fusion surfaces are quoted well looser than machined ones, with diameter deviation significant below Ø4 mm. Positioned above the general machining band used elsewhere in this catalogue. DERIVED from that ordering, not quoted.',
   },
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EXTRUSION and POWDER METALLURGY — the two families the commodity sweep
+  // showed could not bite.
+  //
+  // Over ten profiles and ten gear blanks both scored ~100 with almost no
+  // findings. A ruleset that never fires on its own archetype is not validating
+  // anything, and the reason was that both families carried only the generic
+  // four — wall, uniformity, undercut, tolerance — and none of the questions
+  // their own engineers actually ask.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'extr-circumscribing-circle',
+    sourceStatus: 'industry-consensus',
+    process: 'extrusion',
+    severity: 'high',
+    title: 'Profile too large for a general-purpose press',
+    measure: 'circumscribingCircleMm',
+    compare: 'lte',
+    threshold: 203,
+    unit: 'mm CCD',
+    rationale:
+      'The circumscribing circle is the smallest circle the section fits inside, and it is what decides which press can run the job at all. Past about 203 mm (8 in) the profile leaves the general-purpose press population: it needs a bigger container, more tonnage and a specific supplier, and the quote changes shape rather than degrading gently.',
+    fix: 'Bring the section inside a 203 mm circle, or split the profile into two extrusions and join them.',
+    source: 'Aluminium extrusion design guidance: extrusions are most economical within a circumscribing circle of roughly 1-10 in; general-purpose presses prefer CCD at or below 203 mm (8 in), with some plants reaching ~457 mm given tonnage and tooling. No primary standard audited.',
+  },
+  {
+    id: 'extr-tongue-ratio',
+    sourceStatus: 'industry-consensus',
+    process: 'extrusion',
+    severity: 'high',
+    title: 'Channel too deep for its width — the die tongue will fail',
+    measure: 'maxPocketDepthToWidth',
+    compare: 'lte',
+    threshold: 3,
+    unit: 'depth/width',
+    rationale:
+      'A channel in the profile is a TONGUE in the die: a cantilevered finger of tool steel with metal flowing round it at hundreds of bar. It is the classic way an extrusion die breaks. Past about three times its own width the tongue deflects, the channel opens out along the run, and eventually the tongue snaps.',
+    fix: 'Open the channel, shorten it, or put a large radius at its mouth and a full radius at its root — that buys roughly a 2:1 improvement.',
+    source: 'Aluminium extrusion design guidance: the ratio of channel height to width should be about 3:1 to keep die strength; with large radii at the opening and a full radius at the base a 2:1 improvement is available. No primary standard audited.',
+  },
+  {
+    id: 'pm-press-depth-ratio',
+    sourceStatus: 'industry-consensus',
+    process: 'powder-metallurgy',
+    severity: 'high',
+    title: 'Powder column too deep for its wall — density will vary',
+    measure: 'pressDepthToWallRatio',
+    compare: 'lte',
+    threshold: 8,
+    unit: 'depth/wall',
+    rationale:
+      'Powder does not flow. It is compacted along one axis and friction against the die wall means the density falls away from the punch face, so a deep column in a thin wall comes out dense at the top and soft at the bottom. That gradient is not visible, it does not sinter out, and it is measured as a strength difference in the finished part.',
+    fix: 'Reduce the depth, thicken the wall, or split the part — a double-action press buys some depth but does not remove the gradient.',
+    source: 'Powder metallurgy design guidance: density variations become unavoidable once the length-to-wall-thickness ratio passes about 8:1. Related figures in circulation are an overall aspect ratio limit of 3:1 even with double-ended compaction, and L/D limits of 2 for a single-action press and 4 for a double-action one. The 8:1 wall figure is used because it is the one stated against WALL thickness, which is what this measure reads. No primary standard audited.',
+  },
+  {
+    id: 'pm-min-hole',
+    sourceStatus: 'industry-consensus',
+    process: 'powder-metallurgy',
+    severity: 'medium',
+    title: 'Hole too small to press',
+    measure: 'minHoleDiaMm',
+    compare: 'gte',
+    threshold: 1.5,
+    unit: 'mm dia',
+    rationale:
+      'A hole in a pressed part is a core rod standing in the die through the whole compaction stroke. Below about 1.5 mm the rod is too slender to survive the pressure cycle and it is drilled into the sintered blank instead — a secondary operation on a process bought for being net-shape.',
+    fix: 'Open the hole to at least 1.5 mm, or quote the drilling as a secondary operation.',
+    source: 'Powder metallurgy design guidance: the minimum recommended hole diameter is 1.5 mm (0.060 in), alongside a minimum wall of 1.52 mm. No primary standard audited.',
+  },
+
 ];
 
 /**

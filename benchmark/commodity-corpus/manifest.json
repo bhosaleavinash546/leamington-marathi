@@ -138,7 +138,8 @@
   "intendedFamily": "hpdc",
   "params": {
    "wallMm": 1.2,
-   "coredHoleDiaMm": 2.0
+   "coredHoleDiaMm": 2.0,
+   "draftDeg": 1.0
   }
  },
  {
@@ -150,7 +151,8 @@
   "intendedFamily": "hpdc",
   "params": {
    "wallMm": 1.5,
-   "coredHoleDiaMm": 2.5
+   "coredHoleDiaMm": 2.5,
+   "draftDeg": 1.5
   }
  },
  {
@@ -162,7 +164,8 @@
   "intendedFamily": "hpdc",
   "params": {
    "wallMm": 2.0,
-   "coredHoleDiaMm": 3.0
+   "coredHoleDiaMm": 3.0,
+   "draftDeg": 2.0
   }
  },
  {
@@ -174,7 +177,8 @@
   "intendedFamily": "hpdc",
   "params": {
    "wallMm": 2.5,
-   "coredHoleDiaMm": 4.0
+   "coredHoleDiaMm": 4.0,
+   "draftDeg": 2.0
   }
  },
  {
@@ -186,7 +190,8 @@
   "intendedFamily": "hpdc",
   "params": {
    "wallMm": 3.0,
-   "coredHoleDiaMm": 5.0
+   "coredHoleDiaMm": 5.0,
+   "draftDeg": 3.0
   }
  },
  {
@@ -198,7 +203,8 @@
   "intendedFamily": "hpdc",
   "params": {
    "wallMm": 3.5,
-   "coredHoleDiaMm": 6.0
+   "coredHoleDiaMm": 6.0,
+   "draftDeg": 1.0
   }
  },
  {
@@ -210,7 +216,8 @@
   "intendedFamily": "hpdc",
   "params": {
    "wallMm": 4.0,
-   "coredHoleDiaMm": 8.0
+   "coredHoleDiaMm": 8.0,
+   "draftDeg": 2.5
   }
  },
  {
@@ -222,7 +229,8 @@
   "intendedFamily": "hpdc",
   "params": {
    "wallMm": 5.0,
-   "coredHoleDiaMm": 10.0
+   "coredHoleDiaMm": 10.0,
+   "draftDeg": 1.5
   }
  },
  {
@@ -234,7 +242,8 @@
   "intendedFamily": "hpdc",
   "params": {
    "wallMm": 2.2,
-   "coredHoleDiaMm": 3.5
+   "coredHoleDiaMm": 3.5,
+   "draftDeg": 2.0
   }
  },
  {
@@ -246,7 +255,8 @@
   "intendedFamily": "hpdc",
   "params": {
    "wallMm": 6.0,
-   "coredHoleDiaMm": 12.0
+   "coredHoleDiaMm": 12.0,
+   "draftDeg": 3.0
   }
  },
  {
@@ -648,7 +658,7 @@
   "intendedFamily": "injection-moulding",
   "params": {
    "wallMm": 0.8,
-   "draftDeg": 0.0
+   "draftDeg": 0.5
   }
  },
  {
@@ -720,7 +730,7 @@
   "intendedFamily": "injection-moulding",
   "params": {
    "wallMm": 3.0,
-   "draftDeg": 0.0
+   "draftDeg": 1.0
   }
  },
  {
