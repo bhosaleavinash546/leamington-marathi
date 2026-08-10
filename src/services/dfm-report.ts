@@ -44,6 +44,9 @@ export interface DfmFinding {
    *  not the rule had a band for it. Without this a generic band cannot tell
    *  "you gave no alloy" apart from "this rule is alloy-independent". */
   thresholdMaterial?: string | null;
+  /** Where the MEASURED side came from — set only on rules that read the PMI
+   *  tolerance, so no other finding carries a stray provenance claim. */
+  measuredBasis?: string;
   /** The features that break this rule, worst first. A finding that says
    *  "max depth/dia is 8.2" sends a supplier hunting; one that names the hole
    *  and its coordinates is a review document. */
@@ -156,6 +159,8 @@ export interface DfmReportData {
     }>;
     skipped: Array<{ process: string; reason: string }>;
     basis: string;
+    /** The route the user chose, so the table can mark it rather than reading as a survey. */
+    chosenProcess?: string | null;
   } | null;
   material?: string | null;
   /** Rule-catalogue provenance, counted server-side. */
@@ -1239,34 +1244,143 @@ export async function exportDfmXlsx(data: DfmReportData): Promise<void> {
   const feats = dfm.features || {};
   const g = (data.geometry || {}) as Record<string, any>;
 
+  const evaluatedAll = data.results.reduce((s2, r) => s2 + r.evaluatedCount, 0);
+  const ruleAll = data.results.reduce((s2, r) => s2 + r.ruleCount, 0);
+  const findingsAll = data.results.flatMap(r => r.findings);
+  const pricedAll = data.results.reduce((s2, r) => s2 + (r.impact?.annualEur || 0), 0);
+  const ran = data.results.filter(r => r.ruleCount > 0);
+  const one = ran.length === 1 ? ran[0] : null;
+  // Its own, not the PDF's: the two exporters are separate functions and the
+  // caveat must not depend on which one ran first.
+  const hasUpperBound = data.results.some(r => r.findings.some(f => f.cost?.upperBound));
+
+  // ── Sheet 1: THE ANSWER ─────────────────────────────────────────────────
+  //
+  // This sheet used to open with a bounding box and close with a rule count —
+  // a geometry dump, the same fault page one of the PDF had. Whoever opens the
+  // workbook wants the verdict, and the geometry is evidence for it, so the
+  // verdict goes first and the evidence goes underneath.
   sheets.push({
     name: 'Summary',
     title: `BrainSpark DFM / DFA — ${subject}`,
-    subtitle: `Generated ${today}. Geometry measured by an OpenCascade kernel; cost by BrainSpark's deterministic engines. No figure here was written by an AI.`,
-    headerRow: 0, zebra: true, colWidths: [38, 26, 68], wrapCols: [2],
+    subtitle: `Generated ${today}. Geometry measured by an OpenCascade kernel; cost by BrainSpark's deterministic engines. No figure in this workbook was written by an AI.`,
+    headerRow: 0, zebra: true, colWidths: [34, 30, 74], wrapCols: [2],
+    statusColors: [{ match: 'HIGH SEVERITY', argb: 'FFFDECEC' }],
     rows: [
-      ['Measure', 'Value', 'Note'],
+      ['Item', 'Value', 'Note'],
+
+      ['— VERDICT —', '', ''],
+      ['Process route', data.subject?.process ?? one?.processName ?? 'not specified',
+        one ? `Judged against the ${one.processName} ruleset and nothing else.`
+          : `${ran.length} rule families were run speculatively — some findings will be for a route this part will never take.`],
+      ['Material', data.material ?? data.subject?.material ?? 'not specified',
+        'Sets the threshold wherever the alloy changes it, and the mass the cost is computed on.'],
+      ['Manufacturability score', one?.score ?? 'not scored',
+        one?.score == null ? 'No rule could be evaluated, so there is no score — this is not a clean sheet.'
+          : `Out of 100, over the ${one.evaluatedCount} rules that could be evaluated.`],
+      ['Rule coverage', one ? `${one.coveragePct}%` : `${evaluatedAll} of ${ruleAll}`,
+        `${evaluatedAll} of ${ruleAll} evaluated. The remainder could not be measured on this geometry and are NOT passes — see the "Not evaluated" sheet.`],
+      ['Findings', findingsAll.length, 'Rules the geometry breached.'],
+      ['HIGH SEVERITY', findingsAll.filter(f => f.severity === 'high').length,
+        'Findings that change the tool, the process or the part — not a finish note.'],
+      ['Priced impact EUR/year', pricedAll || 'none priced',
+        hasUpperBound
+          ? 'CEILING, not an estimate: at least one finding assumes the most aggressive redesign available.'
+          : 'Re-run through the same cost engine, once as drawn and once with the rule satisfied.'],
+
+      ['— MEASURED GEOMETRY —', '', ''],
       ['Bounding box', g.boundingBox ? `${g.boundingBox.xMm} x ${g.boundingBox.yMm} x ${g.boundingBox.zMm} mm` : '—', 'From the CAD model'],
-      ['Volume', g.volume?.cm3 ?? '—', 'cm3, exact from the kernel'],
-      ['Wall thickness p50', wall.p50Mm ?? 'not measured', 'Area-weighted median, ray-cast on the tessellation'],
-      ['Wall thickness p5', wall.p5Mm ?? 'not measured', 'The thin tail — where cold shuts and short shots start'],
+      ['Volume cm3', g.volume?.cm3 ?? '—', 'Exact from the kernel'],
+      ['Wall thickness p50 mm', wall.p50Mm ?? 'not measured', 'Area-weighted median, ray-cast on the tessellation'],
+      ['Wall thickness p5 mm', wall.p5Mm ?? 'not measured', 'The thin tail — where cold shuts and short shots start'],
       ['Wall uniformity', wall.uniformity ?? '—', 'Robust spread ratio, not standard deviation'],
+      ['Wall cross-check 2V/A mm', wall.referenceWallMm ?? '—',
+        wall.confidenceNote ? String(wall.confidenceNote) : 'Independent check on the ray cast: exact for a thin uniform shell, indicative otherwise.'],
+      ['Wall measured over', wall.measuredAreaPct != null ? `${wall.measuredAreaPct}% of surface` : '—',
+        'The share of the surface the rays returned a valid opposed-face hit on.'],
       ['Draw direction', draft.drawDirectionXYZ ? draft.drawDirectionXYZ.join(', ') : '—', 'Chosen by sweeping candidate axes, not assumed'],
       ['Undercut regions', draft.undercutFaceCount ?? '—', 'Occluded in both tool halves — needs a slide or lifter'],
-      ['Wall area below min draft', draft.wallAreaBelowMinDraftPct ?? '—', '% of wall area; drag faces, distinct from undercuts'],
-      ['Unclassified surface area', feats.unclassifiedAreaPct ?? '—', '% the feature recogniser could not name'],
-      ['Rules evaluated', data.results.reduce((s, r) => s + r.evaluatedCount, 0), `of ${data.results.reduce((s, r) => s + r.ruleCount, 0)} in the catalogue`],
+      ['Wall area below min draft %', draft.wallAreaBelowMinDraftPct ?? '—', 'Drag faces, distinct from undercuts'],
+      ['Holes & cut-outs', (dfm.apertures?.count ?? 0) || 'none',
+        (dfm.apertures?.count ?? 0) ? `${dfm.apertures.circularCount} round, ${dfm.apertures.nonCircularCount} shaped` : 'No inner wire found in any face.'],
+      ['Unclassified surface area %', feats.unclassifiedAreaPct ?? '—', 'What the feature recogniser could not name'],
     ],
   });
 
-  const findingRows = data.results.flatMap(r => r.findings.map(f => [
-    r.processName, f.severity, f.title, f.measured ?? '', f.unit, f.thresholdText,
-    f.cost?.priced ? 'priced' : 'not priced',
-    f.cost?.priced ? (f.cost.deltaEur ?? '') : '',
-    f.cost?.priced ? (f.cost.annualDeltaEur ?? '') : '',
-    f.cost?.priced ? f.cost.basis ?? '' : (f.cost?.reason ?? ''),
-    f.fix, f.source,
-  ]));
+  // ── Sheet 2: EVERY VIABLE ROUTE ─────────────────────────────────────────
+  //
+  // Missing from this workbook entirely, and it is the sheet a cost engineer
+  // would reach for first — a table you can sort by price is exactly what a
+  // spreadsheet is for, and it existed only in the PDF where you cannot.
+  const routes = data.routes?.routes ?? [];
+  if (routes.length) {
+    sheets.push({
+      name: 'Routes',
+      title: `Alternative routes — ${routes.length} viable for ${data.material ?? 'this material'}`,
+      subtitle: (data.routes?.chosenProcess
+        ? `Your route is ${data.routes.chosenProcess}. Every other row is the SAME measured geometry run through THAT process's own rule family. `
+        : '')
+        + 'Nothing is blended into a single ranking: cost, manufacturability and CO2e are three different questions. A route marked NOT VIABLE cannot make this part at all — its price is shown only so the exclusion is auditable.',
+      headerRow: 0, zebra: true, autoFilter: true,
+      colWidths: [30, 14, 12, 10, 14, 14, 14, 12, 14, 14, 60],
+      numFmt: { 4: '#,##0.00', 5: '#,##0', 6: '#,##0.00', 7: '#,##0.00', 8: '#,##0.00', 9: '#,##0' },
+      statusColors: [
+        { match: 'NOT VIABLE', argb: 'FFFDECEC' },
+        { match: 'YOUR ROUTE', argb: 'FFFFF7E8' },
+      ],
+      rows: [[
+        'Process', 'Status', 'Score', 'Rules', 'EUR/part', 'Tooling EUR', 'Buy-to-fly kg',
+        'kg CO2e', 'Δ EUR/part', 'Δ tooling EUR', 'Caveat or reason',
+      ], ...routes.map(r => [
+        r.process,
+        r.viable === false ? 'NOT VIABLE' : r.isChosen ? 'YOUR ROUTE' : 'alternative',
+        r.score ?? '', `${r.evaluatedCount}/${r.ruleCount}`,
+        r.piecePriceEur ?? '', r.toolingEur ?? '', r.inputMassKg ?? '', r.kgCo2e ?? '',
+        r.isChosen ? '' : (r.deltaPieceEur ?? ''), r.isChosen ? '' : (r.deltaToolingEur ?? ''),
+        [r.viable === false ? `CANNOT MAKE THIS PART: ${r.blockedReason ?? ''}` : '',
+          r.highSeverityCount ? `${r.highSeverityCount} high-severity` : '',
+          r.scoreCaveat ?? '', r.costReason ?? '', r.carbonReason ?? ''].filter(Boolean).join(' · '),
+      ])],
+    });
+    if (data.routes?.skipped?.length) {
+      sheets.push({
+        name: 'Routes not applicable',
+        title: `Processes ${data.material ?? 'this material'} cannot take`,
+        subtitle: 'Named, not hidden: the absence of a process from the route table looks like an oversight unless the table says why.',
+        headerRow: 0, zebra: true, colWidths: [36, 96], wrapCols: [1],
+        rows: [['Process', 'Why it is not offered'],
+          ...data.routes.skipped.map(x => [x.process, x.reason])],
+      });
+    }
+  }
+
+  // Sorted worst first, like the PDF's summary table. A findings sheet in
+  // catalogue order makes the reader do the triage the tool already did.
+  const SEV_RANK: Record<string, number> = { high: 0, medium: 1, low: 2 };
+  const findingRows = data.results
+    .flatMap(r => r.findings.map(f => ({ r, f })))
+    .sort((a, b) => (SEV_RANK[a.f.severity] ?? 3) - (SEV_RANK[b.f.severity] ?? 3)
+      || (b.f.cost?.annualDeltaEur ?? 0) - (a.f.cost?.annualDeltaEur ?? 0))
+    .map(({ r, f }) => [
+      r.processName, f.severity, f.title, f.measured ?? '', f.unit, f.thresholdText,
+      f.cost?.priced ? 'priced' : 'not priced',
+      f.cost?.priced ? (f.cost.deltaEur ?? '') : '',
+      f.cost?.priced ? (f.cost.annualDeltaEur ?? '') : '',
+      f.cost?.priced ? f.cost.basis ?? '' : (f.cost?.reason ?? ''),
+      // WHERE THE COMPARISON CAME FROM, on both sides. A threshold tuned to the
+      // alloy and a process-wide band look identical in a spreadsheet unless the
+      // sheet says which; so does a tolerance read from the model against one an
+      // engineer typed. Both distinctions were added to the engine this cycle
+      // and neither reached the workbook.
+      f.thresholdBasis === 'material' || f.thresholdBasis === 'material-family'
+        ? `tuned to ${f.thresholdMatchedOn}`
+        : f.thresholdBasis === 'customer-standard' ? 'company standard'
+          : f.thresholdMaterial ? `process-wide (${f.thresholdMaterial} has no specific band)`
+            : 'process-wide (no material given)',
+      f.measuredBasis ?? '',
+      f.instances?.length ? `${f.instanceCount ?? f.instances.length} of ${f.instanceTotal ?? '?'} features` : '',
+      f.fix, f.source,
+    ]);
   // An empty findings sheet is the most dangerous page in the whole export: a
   // header row over blank space reads as "we checked everything and it is
   // clean". Which of the two possible reasons applies has to be stated, because
@@ -1282,13 +1396,14 @@ export async function exportDfmXlsx(data: DfmReportData): Promise<void> {
         ? `No rule was breached. ${evaluatedTotal} of ${ruleTotal} rules could be evaluated on this geometry — see the "Not evaluated" sheet for the remaining ${ruleTotal - evaluatedTotal}.`
         : `NOT A CLEAN RESULT. None of the ${ruleTotal} rules could be evaluated on this geometry, so this sheet is empty because nothing was checked — not because nothing was wrong. Every rule and its reason is on the "Not evaluated" sheet.`,
     headerRow: 0, zebra: true, autoFilter: true,
-    colWidths: [24, 10, 44, 12, 12, 18, 12, 14, 16, 52, 52, 44],
-    wrapCols: [2, 9, 10, 11],
+    colWidths: [24, 10, 44, 12, 12, 18, 12, 14, 16, 52, 34, 40, 20, 52, 44],
+    wrapCols: [2, 9, 11, 13, 14],
     numFmt: { 7: '#,##0.00', 8: '#,##0' },
     statusColors: [{ match: 'high', argb: 'FFFDECEC' }, { match: 'medium', argb: 'FFFFF7E8' }],
     rows: [[
       'Process', 'Severity', 'Finding', 'Measured', 'Unit', 'Guideline',
-      'Cost status', 'Saving EUR/part', 'Saving EUR/year', 'Basis or reason', 'What to do', 'Source',
+      'Cost status', 'Saving EUR/part', 'Saving EUR/year', 'Basis or reason',
+      'Threshold basis', 'Measured basis', 'Offending features', 'What to do', 'Source',
     ], ...findingRows],
   });
 

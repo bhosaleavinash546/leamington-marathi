@@ -58,7 +58,10 @@ for (const w of written) {
   if (w.mb > MAX_PDF_MB) { console.error(`FAIL: exceeds ${MAX_PDF_MB} MB`); over++; }
 }
 if (over) process.exit(1);
-await exportDfmXlsx(DFM_RESULT);
+// The FULL fixture, not the base one. The base carries no route comparison, so
+// exporting it left the workbook's Routes sheet — the sheet a cost engineer
+// reaches for first — completely unexercised by this harness.
+await exportDfmXlsx(DFM_RESULT_FULL);
 if (!xlsxOut) throw new Error('no xlsx captured');
 fs.writeFileSync('dfm-fixture.xlsx', Buffer.from(xlsxOut));
 console.log('xlsx bytes:', Buffer.from(xlsxOut).length);

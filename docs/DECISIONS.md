@@ -1553,3 +1553,29 @@ Format: decision · why · what would change it.
     quarter of page one. *Changes it:* columns computed from `CW` so they cannot under-fill,
     an abbreviated-unit helper (`% of wall area` → `%`, `core L/D` → `L/D`), and a 56 mm band.
     Every one of these was invisible until the PDF was rasterised and looked at.
+
+121. **The workbook had the same fault as page one, plus a missing sheet (2026).**
+    *Why:* the PDF was reordered to answer first, but the Excel export still opened with a
+    bounding box and closed with a rule count — a geometry dump with the verdict buried in
+    the middle. Worse, the ROUTE COMPARISON existed only in the PDF, where you cannot sort
+    it. A table of processes with a price, a tooling cost and a delta against your chosen
+    route is exactly the thing a spreadsheet is for, and it was the one sheet a cost
+    engineer would reach for first. *Changes it:*
+      * **Summary** now opens `— VERDICT —` (route, material, score, coverage, findings,
+        high-severity count, priced impact per year) and only then `— MEASURED GEOMETRY —`.
+      * **Routes** — a new sheet, autofiltered, status-coloured `YOUR ROUTE` /
+        `NOT VIABLE` / `alternative`, carrying price, tooling, buy-to-fly, CO₂e and the
+        deltas against the chosen route, with the caveat or non-viability reason in the
+        last column so a cheaper row can never be read without its catch.
+      * **Routes not applicable** — the processes that were excluded, and why.
+      * **Findings** sorted worst-first, and carrying the provenance the PDF gained this
+        session: `Threshold basis`, `Measured basis`, `Offending features`.
+
+122. **`scripts/pdf-qa/xlsx-inspect.mjs` — the workbook equivalent of `scan.py` (2026).**
+    *Why:* every layout fault in entry 120 was found by rasterising the PDF and looking at
+    it; the workbook had no such check, and a sheet can fail silently in a way that
+    typechecks and throws nothing — a header row with no body under it, which reads to a
+    user as "the tool found nothing" rather than "the exporter was handed the wrong shape".
+    That exact fault was live: the QA harness passed `DFM_RESULT` (no route data) so the new
+    Routes sheet rendered empty. The inspector prints every sheet with its row count and
+    **fails on a header with no body**; the harness now renders `DFM_RESULT_FULL`.
