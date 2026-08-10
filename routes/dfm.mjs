@@ -468,7 +468,29 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
       const v = Number(req.body?.tightestToleranceMm);
       return Number.isFinite(v) && v > 0 ? v : undefined;
     })();
-    const ruleOpts = { material, overrides: overridesFor(scope(req, 'viewer')?.orgId), declaredToleranceMm };
+    // TWO MORE DECLARED INPUTS, on the same footing as the tolerance above.
+    //
+    // Neither can be measured from one STEP file — a solid model does not know
+    // what a machinist will take off it, nor what finish the drawing asks for.
+    // Declared, labelled as declared, and ABSENT when the engineer has not
+    // typed one, so the rules that need them abstain rather than pass on a
+    // default. NADCA gives both a hard limit worth checking: the chilled skin
+    // is only 0.4-0.5 mm deep, and each alloy holds a published roughness.
+    const declaredMachiningStockMm = (() => {
+      const v = Number(req.body?.machiningStockMm);
+      return Number.isFinite(v) && v >= 0 ? v : undefined;
+    })();
+    const declaredSurfaceRoughnessUin = (() => {
+      const v = Number(req.body?.surfaceRoughnessUin);
+      return Number.isFinite(v) && v > 0 ? v : undefined;
+    })();
+    const ruleOpts = {
+      material,
+      overrides: overridesFor(scope(req, 'viewer')?.orgId),
+      declaredToleranceMm,
+      machiningStockMm: declaredMachiningStockMm,
+      surfaceRoughnessUin: declaredSurfaceRoughnessUin,
+    };
     const ruleResults = family ? [runDfmRules(geo, family, ruleOpts)] : runAllDfmRules(geo, ruleOpts);
     const familyBasis = selected.basis === 'chosen'
       ? (selected.chosenProcess ? `chosen — ${selected.chosenProcess}` : 'chosen')
@@ -636,8 +658,11 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
       // for — "what press does this need", "how much of the coil ends up in the
       // part" — never left the engine. They are figures, not verdicts, so they
       // travel beside the findings rather than as findings.
+      // Named `sheetForming` when it only carried press tonnage and strip layout.
+      // It now also carries the NADCA die-casting figures, so a die casting
+      // reaches this block with no sheet data at all and must still keep it.
       sheetForming: (() => {
-        const m = extractMeasures(geo, { declaredToleranceMm, material });
+        const m = extractMeasures(geo, ruleOpts);
         const out = {};
         for (const [k, v] of Object.entries(m)) {
           if (k.startsWith('_') && v && typeof v === 'object'
@@ -646,6 +671,14 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
           }
         }
         if (m._bookBasis) out.unavailable = m._bookBasis;
+        // The NADCA figures a die-casting engineer wants on the page whether or
+        // not a threshold applies to them: the general-note draft their drawing
+        // should carry, the worst bore and what it needed at its own depth, the
+        // fillet requirement, and the skin the machining stock has to respect.
+        for (const k of ['_nadcaDraft', '_nadcaCoredHole', '_nadcaFillet', '_nadcaBoss', '_nadcaSkin', '_nadcaRoughness']) {
+          if (m[k]) out[k.slice(1)] = m[k];
+        }
+        if (m._nadcaBasis) out.nadcaUnavailable = m._nadcaBasis;
         // FORMING CONTENT LIVES HERE, NOT ON A FINDING. It used to be attached
         // to `sm-bend-radius`, where a figure that measures "all the bends
         // against a flat blank" read as the saving from opening one radius. It

@@ -13,6 +13,11 @@
 // makes the size of that gap impossible to miss.
 // ─────────────────────────────────────────────────────────────────────────────
 import { DFM_RULES, PROCESS_FAMILIES, SEVERITIES, resolveThreshold } from './dfm-rule-catalogue.mjs';
+import {
+  draftGroupFor, generalNoteDraft, areaBelowDraftPct, requiredCoredHoleDraftPerSideDeg,
+  outsideCornerRadiusMm, FILLET_RATIO, BOSS_DIA_TO_HOLE_DIA, SKIN, asCastRoughnessUin,
+  minWallForAlloyMm,
+} from './nadca-die-casting.mjs';
 import { MATERIALS } from './costing-engine.mjs';
 import {
   minBendRadiusMm, maxBendRadiusMm, springback, minPunchedHoleMm,
@@ -649,7 +654,182 @@ export function extractMeasures(geo = {}, opts = {}) {
     // measured as having a small corner, it has been measured as having none.
     minInternalCornerRadiusMm: num(features.minInternalCornerRadiusMm),
     maxPocketDepthToWidth: num(features.maxPocketDepthToWidth),
+
+    // ── NADCA, READ FIRST-HAND ────────────────────────────────────────────
+    //
+    // Everything from here down is computed in nadcaLimits() from the die
+    // casting design book rather than from a remembered constant. It is
+    // spread in last so that a NADCA-derived measure of the same name wins
+    // over the flat one above — which is the point of the exercise.
+    ...nadcaLimits(draft, features, wall, geo, opts),
   };
+}
+
+/**
+ * The limits NADCA actually specifies, expressed as MARGINS.
+ *
+ * Same shape as bookLimits() for sheet metal: each entry is `measured /
+ * required`, so a rule can be written against a flat 1.0 while the requirement
+ * itself moves with the alloy and the feature depth. Everything is absent
+ * rather than zero when it cannot be computed — a part whose alloy is not in
+ * NADCA's four groups must abstain, not score 0 and fail every draft rule in
+ * the catalogue.
+ *
+ * Underscored entries are for the REPORT rather than for rules: an engineer
+ * wants to see the general-note draft their drawing should carry, whether or
+ * not a threshold applies to it.
+ */
+function nadcaLimits(draft, features, wall, geo, opts = {}) {
+  const num = (v) => {
+    if (v === null || v === undefined || v === '') return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
+  const out = {};
+  // NOTHING TO SAY ABOUT NOTHING. On an empty geometry there is no part to
+  // judge, so there is no reason to explain either — a measure map that carries
+  // a sentence when it carries no measurements is still a map with a value in
+  // it, and every measure in this engine must be absent until something is
+  // measured. The reason is only interesting once there IS a part.
+  const hasPart = !!(draft && (draft.drawDirectionXYZ || draft.draftHistogramDegToAreaMm2 || draft.coredHoles));
+  if (!hasPart) return out;
+  const material = opts.material;
+  const group = draftGroupFor(material);
+  if (!group.ok) { out._nadcaBasis = group.reason; return out; }
+
+  // ── How deep the part is ALONG THE DRAW. This is L in NADCA's formula, and
+  // taking the part's own extent reproduces the general-note practice the book
+  // describes on p.46. Without a draw direction there is no depth and every
+  // draft margin below abstains.
+  const bb = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
+  const dir = draft.drawDirectionXYZ;
+  const partDepthMm = (() => {
+    const ext = [num(bb.xMm), num(bb.yMm), num(bb.zMm)];
+    if (!Array.isArray(dir) || ext.some((v) => !(v > 0))) return undefined;
+    // The draw is an axis in this engine, so the depth is the extent along it.
+    for (let i = 0; i < 3; i++) if (Math.abs(Number(dir[i])) > 0.999) return ext[i];
+    return undefined;
+  })();
+
+  const note = generalNoteDraft(material, partDepthMm);
+  if (note.ok) {
+    out._nadcaDraft = note;
+    // AREA BELOW THE COMPUTED REQUIREMENT, off the measured histogram. The old
+    // rules read a fixed point on a 7-value curve; this reads the angle NADCA
+    // actually asks for, which is rarely one of those seven.
+    const pct = areaBelowDraftPct(draft.draftHistogramDegToAreaMm2, note.outsideDeg);
+    if (pct !== undefined) {
+      out.nadcaWallAreaBelowDraftPct = pct;
+      out._nadcaDraft = { ...note, wallAreaBelowRequiredPct: pct };
+    }
+  }
+
+  // ── CORED HOLES, per bore, at each bore's own depth ─────────────────────
+  //
+  // A cylinder's wall area is 2·pi·r·depth, so the depth the formula needs is
+  // already implied by two numbers the bore pass reports. The margin is the
+  // WORST bore on the part, and the bore that produced it is named.
+  const bores = Array.isArray(draft.coredHoles?.bores) ? draft.coredHoles.bores : [];
+  let worstBore = null;
+  for (const b of bores) {
+    const r = num(b.radiusMm); const a = num(b.areaMm2); const measured = num(b.draftPerSideDeg);
+    if (!(r > 0) || !(a > 0) || measured === undefined) continue;
+    const depthMm = a / (2 * Math.PI * r);
+    const req = requiredCoredHoleDraftPerSideDeg(material, depthMm);
+    if (!req.ok) continue;
+    const ratio = req.deg > 0 ? measured / req.deg : undefined;
+    if (ratio === undefined) continue;
+    if (!worstBore || ratio < worstBore.ratio) {
+      worstBore = { ratio, measuredDeg: measured, requiredDeg: req.deg, depthMm: Math.round(depthMm * 100) / 100,
+        diaMm: Math.round(r * 200) / 100, faceId: b.faceId, atXYZ: b.atXYZ, basis: req.basis };
+    }
+  }
+  if (worstBore) {
+    out.nadcaCoredHoleDraftMargin = Math.round(worstBore.ratio * 1000) / 1000;
+    out._nadcaCoredHole = worstBore;
+  }
+
+  // ── FILLETS AS A RATIO TO WALL, Figure 3.2 ─────────────────────────────
+  //
+  // The flat 1.6 mm this replaces passes a 1.6 mm radius on a 6 mm wall, where
+  // the book wants 6 mm — so the rule was silent on exactly the chunky castings
+  // it should have been loudest about.
+  const nominalWall = num(wall.p50Mm);
+  const corner = num(features.minInternalCornerRadiusMm);
+  if (nominalWall > 0 && corner !== undefined) {
+    out.nadcaFilletToWall = Math.round((corner / nominalWall) * 1000) / 1000;
+    out._nadcaFillet = {
+      measuredMm: corner,
+      wallMm: nominalWall,
+      requiredMm: Math.round(nominalWall * 100) / 100,
+      outsideCornerMm: outsideCornerRadiusMm(corner, nominalWall),
+      basis: FILLET_RATIO.basis,
+    };
+  }
+
+  // ── BOSS WALL AROUND A FASTENER HOLE, §3.2 p.51 ────────────────────────
+  //
+  // Pairs each recognised boss with the hole running COAXIALLY through it. A
+  // boss with no hole in it is not a fastener boss and is not judged.
+  const table = Array.isArray((geo.geometry || {}).featureTable || geo.featureTable)
+    ? ((geo.geometry || {}).featureTable || geo.featureTable) : [];
+  const holes = table.filter((f) => f.kind === 'hole' && num(f.diaMm) > 0);
+  let worstBoss = null;
+  for (const boss of table.filter((f) => f.kind === 'boss' && num(f.diaMm) > 0)) {
+    const bAxis = boss.axisXYZ; const bPt = boss.axisPointXYZ;
+    if (!Array.isArray(bAxis) || !Array.isArray(bPt)) continue;
+    for (const h of holes) {
+      const hAxis = h.axisXYZ; const hPt = h.axisPointXYZ;
+      if (!Array.isArray(hAxis) || !Array.isArray(hPt)) continue;
+      const parallel = Math.abs(bAxis[0] * hAxis[0] + bAxis[1] * hAxis[1] + bAxis[2] * hAxis[2]) > 0.999;
+      if (!parallel) continue;
+      // Coaxial when the two axis points differ only ALONG the shared axis.
+      const d = [hPt[0] - bPt[0], hPt[1] - bPt[1], hPt[2] - bPt[2]];
+      const along = d[0] * bAxis[0] + d[1] * bAxis[1] + d[2] * bAxis[2];
+      const perp = Math.hypot(d[0] - along * bAxis[0], d[1] - along * bAxis[1], d[2] - along * bAxis[2]);
+      if (perp > 0.5) continue;
+      if (num(h.diaMm) >= num(boss.diaMm)) continue;      // not a hole IN this boss
+      const ratio = num(boss.diaMm) / num(h.diaMm);
+      if (!worstBoss || ratio < worstBoss.ratio) {
+        worstBoss = { ratio, bossDiaMm: num(boss.diaMm), holeDiaMm: num(h.diaMm), atXYZ: bPt };
+      }
+    }
+  }
+  if (worstBoss) {
+    out.nadcaBossDiaToHoleDia = Math.round(worstBoss.ratio * 1000) / 1000;
+    out._nadcaBoss = { ...worstBoss, basis: BOSS_DIA_TO_HOLE_DIA.basis };
+  }
+
+  // ── MACHINING STOCK vs THE CHILLED SKIN, §4.2 ──────────────────────────
+  //
+  // Declared, never measured — one STEP file cannot show what will be cut off
+  // it. Absent when the engineer has not typed one, which keeps the rule
+  // honestly unevaluated rather than passing on a default.
+  const stock = num(opts.machiningStockMm);
+  if (stock !== undefined && stock >= 0) {
+    out.nadcaMachiningStockToSkinMm = stock;
+    out._nadcaSkin = { stockMm: stock, skinMinMm: SKIN.minMm, skinMaxMm: SKIN.maxMm, basis: SKIN.basis };
+  }
+
+  // ── MINIMUM WALL SCALED BY THE ALLOY'S DIE-FILLING RATING, Table 4.8 ───
+  //
+  // Reported rather than compared: it is the FLOOR the wall-range rule should
+  // use for this alloy, and the rule's own band stays the anchor because the
+  // book gives no minimum-wall table. A rating of 2 — A380, the alloy the old
+  // flat number was written for — reproduces that number exactly, so nothing
+  // moves for the common case.
+  const fill = minWallForAlloyMm(material, 1.0);
+  if (fill.ok) out._nadcaMinWall = fill;
+
+  // ── AS-CAST SURFACE FINISH vs PROCESS CAPABILITY, Table 3.26 ───────────
+  const asked = num(opts.surfaceRoughnessUin);
+  const cap = asCastRoughnessUin(material);
+  if (asked !== undefined && asked > 0 && cap.ok) {
+    out.nadcaRoughnessMargin = Math.round((asked / cap.overDieLife) * 1000) / 1000;
+    out._nadcaRoughness = { askedUin: asked, newDieUin: cap.newDie, overDieLifeUin: cap.overDieLife, basis: cap.basis };
+  }
+
+  return out;
 }
 
 function evaluate(rule, value) {
@@ -684,7 +864,8 @@ function thresholdText(rule) {
  * @param {string} process  key of PROCESS_FAMILIES
  * @returns {{process, processName, findings, passed, notEvaluated, coveragePct, score}}
  */
-export function runDfmRules(geo, process, { material, overrides, declaredToleranceMm, temper } = {}) {
+export function runDfmRules(geo, process, opts = {}) {
+  const { material, overrides } = opts;
   if (!PROCESS_FAMILIES[process]) {
     throw new Error(`Unknown process family: ${process}`);
   }
@@ -696,7 +877,12 @@ export function runDfmRules(geo, process, { material, overrides, declaredToleran
   // c*T, d_min/T = 2.8*UTS/sigma_pd — so the MEASURE cannot be computed without
   // it, and every one of them abstained silently while the measure map held the
   // right answer.
-  const measures = extractMeasures(geo, { declaredToleranceMm, material, temper });
+  // EVERY option, forwarded. This call used to name its arguments one by one,
+  // and twice now a new option has been added to the signature and silently
+  // dropped here: first `material`, which left every alloy-specific measure
+  // abstaining while the table held the answer, and then the two NADCA declared
+  // inputs. Spreading the object means a new option cannot be forgotten.
+  const measures = extractMeasures(geo, opts);
   // A workspace can DISABLE a rule as well as retune it. A disabled rule is
   // removed from the denominator too — leaving it in as "not evaluated" would
   // drag the coverage figure down for a check the plant deliberately does not
@@ -722,32 +908,89 @@ export function runDfmRules(geo, process, { material, overrides, declaredToleran
     // so it substitutes for exactly that angle and for no other. Using it for a
     // rule that asked about 5 degrees would be the original bug wearing a
     // fallback, so the rule abstains instead.
-    let value;
-    if (rule.measure === 'overhangAreaBelowDeg') {
-      value = numberOr(measures._overhangCurve?.[String(rule.overhangCutoffDeg)]);
-    } else if (rule.measure === 'wallAreaBelowDraftPct') {
-      value = numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
-      if (value === undefined && rule.draftCutoffDeg === 1.0) {
-        value = measures.wallAreaBelowMinDraftPct;
-      }
-    } else {
-      value = measures[rule.measure];
-    }
     // NAME THE CUTOFF IN THE UNIT. "Wall area below the minimum draft" is not
     // one quantity — it is a curve, and each process reads it at its own angle.
     // A forging report printed 64.07% from the rule (5 deg) on page 1 and 56.39%
     // from the geometry panel (1 deg) on page 2 under the SAME words, eight
     // points apart with nothing on either page to reconcile them. The angle is
     // the difference, so the angle travels with the number everywhere it goes.
-    const cutoff = rule.measure === 'wallAreaBelowDraftPct' ? rule.draftCutoffDeg
+    // ── THE CUTOFF NADCA COMPUTES, WHERE IT CAN COMPUTE ONE ────────────────
+    //
+    // The published flat angle stays the fallback, and this is deliberate. An
+    // earlier draft of this change moved the rule onto a NADCA-only measure and
+    // every part analysed WITHOUT an alloy lost its draft finding entirely —
+    // trading a slightly wrong answer for no answer at all. So the rule keeps
+    // its own figure and NADCA sharpens it: the formula needs a material and a
+    // depth, and where both are present the requirement it returns replaces the
+    // constant. Where either is missing the rule runs exactly as it always did.
+    // NADCA MAY ONLY SHARPEN THE RULE, NEVER SOFTEN IT.
+    //
+    // The formula takes L as the depth of the FEATURE, and the deepest thing we
+    // can measure without per-feature depths is the part's own extent along the
+    // draw. That is an upper bound on any feature's depth, and the required
+    // angle FALLS as depth rises — so computing at the part depth returns the
+    // LEAST draft the part could possibly need. On a 133 mm bracket it returned
+    // 0.42 degrees against the 1 degree we published, which would have made the
+    // rule quietly more permissive in the name of being more accurate.
+    //
+    // So the two are combined by taking whichever is more demanding. Where the
+    // part is shallow the formula wins and the rule tightens, which is the
+    // whole point — a 6 mm pocket needs 1.96 degrees. Where the part is deep the
+    // published figure holds the line until per-feature depths exist to compute
+    // against. Either way the check is at least as strict as it was.
+    const nadca = measures._nadcaDraft;
+    const nadcaCut = nadca?.outsideDeg != null ? Math.round(nadca.outsideDeg * 100) / 100 : null;
+    const cutoffFromNadca = rule.measure === 'wallAreaBelowDraftPct'
+      && nadcaCut != null && nadcaCut > (rule.draftCutoffDeg ?? 0);
+    const cutoff = rule.measure === 'wallAreaBelowDraftPct'
+      ? (cutoffFromNadca ? nadcaCut : rule.draftCutoffDeg)
       : rule.measure === 'overhangAreaBelowDeg' ? rule.overhangCutoffDeg
         : null;
     const unit = cutoff != null && rule.unit?.startsWith('%')
       ? `% of wall under ${cutoff}°`
       : rule.unit;
 
+    let value;
+    if (rule.measure === 'overhangAreaBelowDeg') {
+      value = numberOr(measures._overhangCurve?.[String(rule.overhangCutoffDeg)]);
+    } else if (rule.measure === 'wallAreaBelowDraftPct') {
+      // A computed cutoff is rarely one of the seven angles the curve carries,
+      // so it is read off the per-degree histogram instead. The curve remains
+      // the path for the published constants, which ARE curve points.
+      value = cutoffFromNadca
+        ? numberOr(measures.nadcaWallAreaBelowDraftPct)
+        : numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
+      if (value === undefined) value = numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
+      if (value === undefined && rule.draftCutoffDeg === 1.0) {
+        value = measures.wallAreaBelowMinDraftPct;
+      }
+    } else {
+      value = measures[rule.measure];
+    }
+
     const picked = resolveThreshold(rule, material, materialFamily, overrides?.[rule.id]);
-    const effective = { ...rule, threshold: picked.threshold, unit };
+
+    // For a cored hole the threshold IS the angle, so the NADCA requirement
+    // replaces it rather than the cutoff. The requirement is computed at the
+    // worst bore's OWN depth, which is why a flat figure could only ever be
+    // right at one bore size. A company override still wins: `picked.basis`
+    // says so, and a plant that has set its own number has out-ranked both.
+    // Same rule for a cored hole, and here the depth IS per-feature — it comes
+    // from the bore's own measured wall area and radius — so the formula is on
+    // firmer ground. It still may only tighten: a published figure that is
+    // stricter than the computed one is a plant's accumulated experience, and
+    // this is not the place to overrule it.
+    const bore = measures._nadcaCoredHole;
+    const nadcaThreshold = rule.measure === 'coredHoleDraftPerSideDeg'
+      && bore?.requiredDeg > 0 && picked.basis !== 'customer-standard'
+      && bore.requiredDeg > picked.threshold
+      ? bore.requiredDeg : null;
+
+    const effective = {
+      ...rule,
+      threshold: nadcaThreshold ?? picked.threshold,
+      unit,
+    };
     const { status, reason } = evaluate(effective, value);
     const row = {
       id: rule.id,
@@ -758,8 +1001,15 @@ export function runDfmRules(geo, process, { material, overrides, declaredToleran
       unit,
       /** The angle this rule read the draft curve at, when it read one. */
       measuredAtDeg: cutoff ?? undefined,
-      threshold: picked.threshold,
+      threshold: effective.threshold,
       thresholdText: thresholdText(effective),
+      // WHERE A COMPUTED LIMIT REPLACED A PUBLISHED ONE. Without this the
+      // report prints the NADCA figure under the flat rule's citation, which
+      // is the same class of fault as a title quoting a threshold the rule did
+      // not use.
+      computedThreshold: (nadcaThreshold != null || cutoffFromNadca)
+        ? (nadcaThreshold != null ? bore.basis : nadca.basis)
+        : undefined,
       rationale: rule.rationale,
       fix: rule.fix,
       source: picked.source,

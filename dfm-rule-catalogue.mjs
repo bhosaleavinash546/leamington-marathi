@@ -166,6 +166,17 @@ export function resolveThreshold(rule, material, materialFamily, override) {
   };
 }
 
+/**
+ * The two NADCA draft citations, named once.
+ *
+ * Four rules quote them and the wording must not drift between the four —
+ * a report that cites the same document differently on two pages reads as two
+ * different documents.
+ */
+const DRAFT_SOURCE = 'NADCA Product Design for Die Casting, 7th ed. (2015), §3.1 "Draft requirements" pp.45-46, READ FIRST-HAND. A = 57.2738 / (C·sqrt(L)), L in inches. Draft constants C by alloy group and surface: zinc and ZA 50 inside / 100 outside / 34 hole total; magnesium 35/70/24; aluminium 30/60/20; copper 25/50/17. Verified against the book\'s own worked example for an aluminium inside surface (0.1 in -> 6.0 deg, 1.0 in -> 1.9 deg, 5.0 in -> 0.85 deg). Judged here at the OUTSIDE constant, the lower of the two, because the engine cannot yet separate an ejector-half surface from a cover-half one — so this UNDER-reports on inside walls, which need twice as much.';
+
+const CORED_HOLE_SOURCE = 'NADCA Product Design for Die Casting, 7th ed. (2015), §3.1 pp.45-46, READ FIRST-HAND. The "Hole, Total" column gives C = 20 for aluminium, 24 magnesium, 34 zinc and ZA, 17 copper, and is the TOTAL included angle — so the per-side requirement is half of what the formula returns. Each bore\'s depth comes from its own measured wall area and radius, and the worst bore on the part sets the margin.';
+
 export const DFM_RULES = [
   // ── Machining ──────────────────────────────────────────────────────────────
   {
@@ -458,7 +469,7 @@ export const DFM_RULES = [
     byMaterialFamily: {
       aluminium: {
         threshold: [1.5, 4.0],
-        source: 'Aluminium HPDC design guidance: 1.5 mm practical minimum for a small part, 2.5-4.0 mm typical nominal. Aluminium freezes fast and will not run a 1 mm section reliably at production yield.',
+        source: 'Aluminium HPDC design guidance: 1.5 mm practical minimum for a small part, 2.0-3.5 mm the usual band. INDUSTRY CONSENSUS and deliberately not promoted: NADCA Product Design for Die Casting 7th ed. §3.1, read first-hand, states there are no hard and fast rules for maximum and minimum wall and gives no table. The physical argument for the upper bound IS from that book, §4.2 pp.93-94: the chilled skin is 0.38-0.50 mm and is not a function of wall thickness. Table 4.8 p.100 rates each alloy for die-filling capacity, which is the one axis on which the minimum genuinely varies, and the per-alloy band below comes from it.',
       },
       magnesium: {
         threshold: [1.3, 3.5],
@@ -474,29 +485,30 @@ export const DFM_RULES = [
     threshold: [1.0, 3.5],
     unit: 'mm',
     rationale:
-      'Below about 1 mm the die will not fill reliably and cold shuts appear; above about 3.5 mm the section traps porosity as it solidifies and holds the cycle open.',
+      'Below about 1 mm the die will not fill reliably and cold shuts appear. Above about 3.5 mm the extra metal is not load-bearing metal: a die casting grows a dense chilled skin only 0.4 to 0.5 mm deep, and that skin does NOT get thicker as the wall does — so a heavy section is the same strong skin plus a porous core, and it holds the cycle open while it freezes.',
     fix: 'Hold a uniform nominal wall in the 2.0–3.5 mm band and core out heavy sections.',
-    source: 'Aluminium HPDC design guidance (1.0 mm minimum, 2.0-3.5 mm recommended). Widely published and mutually consistent across die-casting suppliers; NOT audited against NADCA or a foundry standard.',
+    source: 'Aluminium HPDC design guidance: 1.0 mm practical minimum for a small part, 2.0-3.5 mm the usual band. INDUSTRY CONSENSUS and deliberately NOT promoted: NADCA Product Design for Die Casting 7th ed. §3.1, read first-hand, states there are no hard and fast rules governing maximum and minimum wall thickness and gives no table. The physical argument for the upper bound IS from that book, §4.2 pp.93-94 citing Borland and Tsumagari (2006): the chilled skin is 0.38-0.50 mm and does not thicken with the wall, so the extra metal in a heavy section is porous core. Table 4.8 p.100 rates each alloy for die-filling capacity, which is the one axis on which the minimum genuinely varies.'
   },
   {
+    // WAS A FLAT 1 DEGREE, and graded CONTESTED in the audit register precisely
+    // because the figure rested on secondary summaries of this document. The
+    // primary source is now read: draft is a formula, and the flat figure was
+    // correct at about 23 mm of depth and wrong at every other. On a 6 mm pocket
+    // in aluminium it passed a wall that needs 1.96 degrees.
     id: 'hpdc-draft-minimum',
-    byMaterialFamily: {
-      magnesium: { threshold: 8, source: 'Magnesium shrinks onto the die less than aluminium and releases more readily, so a larger share of wall area below the nominal draft is tolerable before ejection becomes the problem.' },
-    },
     sourceStatus: 'standard-named',
     process: 'hpdc',
     severity: 'high',
-    title: 'Wall area below the minimum die-casting draft',
+    title: 'Wall area below the draft NADCA computes for this alloy and depth',
     measure: 'wallAreaBelowDraftPct',
     draftCutoffDeg: 1.0,
     compare: 'lte',
     threshold: 5,
     unit: '% of wall area',
     rationale:
-      'Aluminium shrinks onto the die steel as it solidifies, so a die casting needs more draft than a moulding. Insufficient draft galls the die surface and shortens die life as well as risking ejector distortion.',
-    fix: 'Allow 1 to 2 degrees on external walls and 2 to 3 degrees on internal walls and cores; use 3 to 5 degrees on deep features.',
-    source: 'NADCA Product Specification Standards, S-4A-7 (Draft Constants). NADCA standard tolerances give 1 deg minimum on outside surfaces and 2 deg on inside; the 1 deg threshold used here is the outside-wall figure. Designation and values corroborated from secondary summaries — the standard itself is paywalled and has NOT been read.',
-    measuredAt: { minDraftDeg: 1.0 },
+      'Aluminium shrinks onto the die steel as it solidifies, so a die casting needs more draft than a moulding — and the amount is not a constant. It falls as the feature gets deeper and it changes with the alloy, so one figure for a whole catalogue is right at one depth only. Insufficient draft galls the die surface and shortens die life as well as risking ejector distortion.',
+    fix: 'Take the drawing to the general-note draft the analysis prints for this part, and call the shallow features out separately — a shallow feature needs MORE draft, not less.',
+    source: DRAFT_SOURCE,
   },
   // ── CORED HOLES GET THEIR OWN DRAFT ────────────────────────────────────────
   //
@@ -519,30 +531,30 @@ export const DFM_RULES = [
     sourceStatus: 'standard-named',
     process: 'hpdc',
     severity: 'medium',
-    title: 'Cored holes below the core-pin draft',
+    title: 'Cored hole below the draft NADCA computes for its depth',
     measure: 'coredHoleDraftPerSideDeg',
     compare: 'gte',
     threshold: 2,
     unit: 'deg per side',
     rationale:
-      'A casting shrinks ONTO a core pin rather than away from it, so a cored hole needs more draft than an outside wall, not the same. A pin that binds galls, deflects and puts the hole off position; a bound pin in a deep hole can pull the casting off the ejector side.',
-    fix: 'Take cored holes to 2 degrees per side. Where the hole must be parallel, drill it after casting and cost the secondary operation rather than fighting the pin.',
-    source: 'NADCA Product Specification Standards, S-4A-7 (Draft Constants): cored holes take roughly 2 deg per side against 1 deg on outside walls. Corroborated from secondary summaries — the standard itself is paywalled and has NOT been read first-hand.',
+      'A casting shrinks ONTO a core pin rather than away from it, so a cored hole needs more draft than an outside wall. How much more depends on how deep the hole is: NADCA asks about 4.2 degrees per side on a 3 mm bore in aluminium and about 1.0 on a 50 mm one. A pin that binds galls, deflects and puts the hole off position; a bound pin in a deep hole can pull the casting off the ejector side.',
+    fix: 'Draft the bore to the per-side figure the analysis prints for its measured depth. Where the hole must be parallel, drill it after casting and cost the secondary operation rather than fighting the pin.',
+    source: CORED_HOLE_SOURCE,
   },
   {
     id: 'hpdc-zinc-cored-hole-draft',
-    sourceStatus: 'industry-consensus',
+    sourceStatus: 'standard-named',
     process: 'hpdc-zinc',
     severity: 'medium',
-    title: 'Cored holes below the core-pin draft',
+    title: 'Cored hole below the draft NADCA computes for zinc at its depth',
     measure: 'coredHoleDraftPerSideDeg',
     compare: 'gte',
     threshold: 1,
     unit: 'deg per side',
     rationale:
-      'Zinc shrinks onto the pin less than aluminium and releases more readily, so the cored-hole figure is about half the aluminium one — but it is still larger than the wall figure for the same reason.',
-    fix: 'Take cored holes to 1 degree per side in zinc.',
-    source: 'Zinc die-casting design guidance: draft constants roughly half the aluminium values, cored holes drafted more than walls. Same family of secondary sources as the zinc wall rule.',
+      'Zinc grips a core pin less than aluminium does — NADCA gives it a hole constant of 34 against aluminium\'s 20 — but the pin still has to release, and the requirement still rises as the bore gets shallower.',
+    fix: 'Draft the bore to the per-side figure printed for its measured depth, or drill after casting.',
+    source: CORED_HOLE_SOURCE,
   },
   {
     id: 'gdc-cored-hole-draft',
@@ -575,19 +587,92 @@ export const DFM_RULES = [
     source: 'Permanent-mould and low-pressure die design guidance: cored holes drafted roughly twice the wall figure. Secondary sources, consistent with the wall rule for this family.',
   },
   {
-    id: 'hpdc-internal-radius',
+    // The absolute floor the ratio rule cannot express. On a 1 mm zinc wall the
+    // ratio rule is satisfied by a 1 mm radius, and a die cannot reliably be cut
+    // and polished much below this whatever the wall does.
+    id: 'hpdc-internal-radius-floor',
     sourceStatus: 'industry-consensus',
     process: 'hpdc',
-    severity: 'medium',
-    title: 'Sharp internal corners concentrate stress and restrict flow',
+    severity: 'low',
+    title: 'Inside corner below the smallest radius a die is cut to',
     measure: 'minInternalCornerRadiusMm',
     compare: 'gte',
-    threshold: 1.6,
+    threshold: 0.8,
     unit: 'mm',
     rationale:
-      'A sharp internal corner is a hot spot in the casting and a stress raiser in the die, where it becomes the first place a heat-check crack starts.',
-    fix: 'Fillet internal corners to at least 1.5 times the adjacent wall thickness, and never below about 1.6 mm.',
-    source: 'Die-casting design guidance (minimum ~1.6 mm fillet; 1.5x wall preferred). Industry consensus, no primary source audited.',
+      'Below about 0.8 mm the corner stops being a radius the toolmaker cuts and becomes an edge the cutter leaves, which heat-checks early however thin the wall is.',
+    fix: 'Carry a physical radius on every inside corner, even where the wall is thin enough that the ratio rule is satisfied.',
+    source: 'Die-casting tool practice: an inside corner is formed by an external corner on the die, and a cutter leaves a radius. Industry consensus, no primary source audited.',
+  },
+  {
+    // NADCA §3.2 p.51. We measured how TALL a boss is and never how much metal
+    // is round the hole, which is the one that splits when the bolt is torqued.
+    id: 'hpdc-boss-wall',
+    sourceStatus: 'standard-named',
+    process: 'hpdc',
+    severity: 'high',
+    title: 'Too little metal around a fastener boss',
+    measure: 'nadcaBossDiaToHoleDia',
+    compare: 'gte',
+    threshold: 2,
+    unit: 'boss dia / hole dia',
+    rationale:
+      'The shear strength and stiffness of a die-casting alloy are far below steel, so the wedging action of a thread dilates the boss — the hole grows, the mating threads lose contact and the joint fails. Metal around the hole is what resists it.',
+    fix: 'Take the boss to at least twice the fastener diameter, or fit a steel insert and let the insert carry the thread.',
+    source: 'NADCA Product Design for Die Casting, 7th ed. (2015), §3.2 "Threaded Fasteners" p.51, read first-hand: "the boss diameter should be at least twice the bolt diameter".',
+  },
+  {
+    // The skin rule. Declared stock, never measured — one STEP file cannot show
+    // what a machinist will take off it.
+    id: 'hpdc-machining-stock-skin',
+    sourceStatus: 'standard-named',
+    process: 'hpdc',
+    severity: 'medium',
+    title: 'Machining stock deep enough to cut through the chilled skin',
+    measure: 'nadcaMachiningStockToSkinMm',
+    compare: 'lte',
+    threshold: 0.5,
+    unit: 'mm removed',
+    rationale:
+      'A die casting solidifies against cold steel, so it grows a dense, fine-grained skin about 0.4 to 0.5 mm thick that carries most of its strength and all of its pressure tightness. The skin does NOT get thicker as the wall does. Cutting deeper than it exposes the porous core — which is why a machined sealing face leaks when an as-cast one would not.',
+    fix: 'Hold machining stock at or below 0.5 mm on faces that must seal or carry load, or specify a vacuum or squeeze process where the core is dense enough to cut into.',
+    source: 'NADCA Product Design for Die Casting, 7th ed. (2015), §4.2 pp.93-94 and Figure 4.6, read first-hand, citing Borland and Tsumagari (2006): the skin is 0.38-0.50 mm, is not a function of wall thickness, and "removal of the skin to a depth greater than 0.020 in. (0.50 mm) by secondary processes such as machining, increases the chance of exposing porosity in the core".',
+  },
+  {
+    id: 'hpdc-as-cast-finish',
+    sourceStatus: 'standard-named',
+    process: 'hpdc',
+    severity: 'low',
+    title: 'Surface finish tighter than the process holds over die life',
+    measure: 'nadcaRoughnessMargin',
+    compare: 'gte',
+    threshold: 1,
+    unit: 'x process capability',
+    rationale:
+      'A die holds its best finish when it is new and loses it as it heat-checks. Specifying the new-die figure is not a specification, it is a die-replacement schedule — and the die caster will price it as one.',
+    fix: 'Specify the over-die-life figure, or accept a periodic die refurbishment and price it into the tooling amortisation.',
+    source: 'NADCA Product Design for Die Casting, 7th ed. (2015), Table 3.26 p.68, read first-hand: aluminium, ZA-12 and ZA-27 hold 63 microinch or better in a new die and 100-125 over its life; magnesium 63 and 63; zinc and ZA-8 32 and 63.',
+  },
+  {
+    // WAS A FLAT 1.6 mm. NADCA Figure 3.2 gives the fillet as a RATIO to the
+    // wall it joins, which is the difference between a rule that fires on a
+    // 2 mm zinc wall and one that stays silent on a 6 mm aluminium boss — the
+    // flat figure passed 1.6 mm on both. The absolute floor survives as its own
+    // rule below, because a very thin wall still cannot carry a radius smaller
+    // than the die can be cut.
+    id: 'hpdc-internal-radius',
+    sourceStatus: 'standard-named',
+    process: 'hpdc',
+    severity: 'medium',
+    title: 'Inside corner radius smaller than the wall it joins',
+    measure: 'nadcaFilletToWall',
+    compare: 'gte',
+    threshold: 1,
+    unit: 'R / wall t',
+    rationale:
+      'A sharp inside corner concentrates stress in the part AND in the die that forms it, and the die is the one that fails first — the corner is where heat checking starts. It also restricts metal flow into the corner, so the region fills last and fills badly.',
+    fix: 'Open the inside radius to at least one wall thickness, and carry the matching outside radius at R + t so the wall stays uniform round the corner.',
+    source: 'NADCA Product Design for Die Casting, 7th ed. (2015), Figure 3.2 pp.40-41, read first-hand: at a junction of uniform walls the optimal inside radius is R1 >= T1 with R2 = R1 + T1; between non-uniform walls R1 >= 2/3(T1 + T2). R1 = 0 is listed as "not recommended - will cause weak part & die casting die".',
   },
   {
     id: 'hpdc-undercuts',
@@ -1659,20 +1744,83 @@ export const DFM_RULES = [
     source: 'Zinc hot-chamber die-casting design guidance (ZAMAK): 0.6 mm practical minimum, 1.0-2.0 mm typical nominal.',
   },
   {
-    id: 'hpdc-zinc-draft-minimum',
-    sourceStatus: 'industry-consensus',
+    // The same four NADCA rules for the zinc family. Zinc is in the book's
+    // tables throughout — it is a die-casting alloy — so these carry the same
+    // first-hand grade as the aluminium ones.
+    id: 'hpdc-zinc-internal-radius',
+    sourceStatus: 'standard-named',
     process: 'hpdc-zinc',
     severity: 'medium',
-    title: 'Wall area below the minimum zinc die-casting draft',
+    title: 'Inside corner radius smaller than the wall it joins',
+    measure: 'nadcaFilletToWall',
+    compare: 'gte',
+    threshold: 1,
+    unit: 'R / wall t',
+    rationale:
+      'A sharp inside corner is a stress raiser in the part and a heat-check origin in the die. Zinc runs cooler than aluminium so the die lasts longer, but the corner is still where it starts to fail.',
+    fix: 'Open the inside radius to at least one wall thickness, and carry the outside radius at R + t.',
+    source: 'NADCA Product Design for Die Casting, 7th ed. (2015), Figure 3.2 pp.40-41, read first-hand: R1 >= T1 at a uniform wall junction, R2 = R1 + T1; R1 = 0 is "not recommended - will cause weak part & die casting die".',
+  },
+  {
+    id: 'hpdc-zinc-boss-wall',
+    sourceStatus: 'standard-named',
+    process: 'hpdc-zinc',
+    severity: 'high',
+    title: 'Too little metal around a fastener boss',
+    measure: 'nadcaBossDiaToHoleDia',
+    compare: 'gte',
+    threshold: 2,
+    unit: 'boss dia / hole dia',
+    rationale:
+      'The wedging action of a thread dilates a die-cast boss — the hole grows, the mating threads lose contact and the joint fails. Zinc is the softest of the die-casting alloys, so it dilates the most readily of any of them.',
+    fix: 'Take the boss to at least twice the fastener diameter, or fit an insert and let the insert carry the thread.',
+    source: 'NADCA Product Design for Die Casting, 7th ed. (2015), §3.2 "Threaded Fasteners" p.51, read first-hand: "the boss diameter should be at least twice the bolt diameter".',
+  },
+  {
+    id: 'hpdc-zinc-machining-stock-skin',
+    sourceStatus: 'standard-named',
+    process: 'hpdc-zinc',
+    severity: 'medium',
+    title: 'Machining stock deep enough to cut through the chilled skin',
+    measure: 'nadcaMachiningStockToSkinMm',
+    compare: 'lte',
+    threshold: 0.5,
+    unit: 'mm removed',
+    rationale:
+      'The dense chilled skin is about 0.4 to 0.5 mm thick and does not get thicker as the wall does. Cutting deeper exposes the porous core, which is why a machined sealing face leaks where an as-cast one would not.',
+    fix: 'Hold machining stock at or below 0.5 mm on faces that must seal or carry load.',
+    source: 'NADCA Product Design for Die Casting, 7th ed. (2015), §4.2 pp.93-94 and Figure 4.6, read first-hand, citing Borland and Tsumagari (2006).',
+  },
+  {
+    id: 'hpdc-zinc-as-cast-finish',
+    sourceStatus: 'standard-named',
+    process: 'hpdc-zinc',
+    severity: 'low',
+    title: 'Surface finish tighter than the process holds over die life',
+    measure: 'nadcaRoughnessMargin',
+    compare: 'gte',
+    threshold: 1,
+    unit: 'x process capability',
+    rationale:
+      'Zinc holds the best as-cast finish of the die-casting alloys — 32 microinch in a new die — but that degrades to about 63 over the life of the die. Specifying the new-die figure is a die-replacement schedule rather than a specification.',
+    fix: 'Specify the over-die-life figure, or accept periodic die refurbishment and price it into the tooling.',
+    source: 'NADCA Product Design for Die Casting, 7th ed. (2015), Table 3.26 p.68, read first-hand: zinc and ZA-8 hold 32 microinch or better in a new die and 63 over its life.',
+  },
+  {
+    id: 'hpdc-zinc-draft-minimum',
+    sourceStatus: 'standard-named',
+    process: 'hpdc-zinc',
+    severity: 'high',
+    title: 'Wall area below the draft NADCA computes for zinc at this depth',
     measure: 'wallAreaBelowDraftPct',
     draftCutoffDeg: 0.5,
     compare: 'lte',
     threshold: 5,
     unit: '% of wall area',
     rationale:
-      'Zinc shrinks onto the die much less than aluminium and runs cooler, so it strips with about half the draft. Half a degree on an external wall is normal practice and holding an aluminium part\'s 1-2 degrees on a zinc part gives away dimensional accuracy for nothing.',
-    fix: 'Allow 0.5 degrees on external walls and 1 degree on internal walls and cores.',
-    source: 'Zinc die-casting design guidance (draft constants roughly half the aluminium values).',
+      'Zinc shrinks less onto the die than aluminium does and is cast at a lower temperature, so it needs the least draft of the four groups NADCA tabulates — its outside constant is 100 against aluminium\'s 60. That is a ratio of 0.6, not a licence for zero draft: the requirement still climbs as the feature gets shallower.',
+    fix: 'Take the drawing to the general-note draft printed for this part. Zinc tolerates the least draft of any die-casting alloy, so where a feature cannot carry it, zinc is the alloy most likely to make it work.',
+    source: DRAFT_SOURCE,
   },
   {
     id: 'hpdc-zinc-wall-uniformity',

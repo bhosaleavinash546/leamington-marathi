@@ -38,31 +38,28 @@
   "auditedOn": "2026-08-10",
   "thresholds": {
     "hpdc-draft-minimum": {
-      "status": "contested",
-      "claimedSource": "NADCA Product Specification Standards, S-4A-7 (Draft Constants)",
+      "status": "primary-read",
+      "claimedSource": "NADCA Product Design for Die Casting, 7th ed. (2015), §3.1 pp.45-46",
       "grade": "standard-named",
-      "finding": "The rule applied ONE draft figure to all wall area. Published summaries of the NADCA draft constants split the requirement: roughly 0.5-1 deg on outside walls, 1-2 deg on inside walls, and about 2 deg per side in cored holes. HALF of that split is now implemented — `hpdc-cored-hole-draft` judges bore walls on their own curve at 2 deg, measured from the faces the analytic cylinder pass identifies as bores. The inside-vs-outside WALL half is NOT implemented and is not planned without a reliable test: from a bore wall the outward normal escapes through the bore opening, so the obvious ray test classifies a through-hole as an outer surface.",
-      "recommendation": "Remains contested. The wall rule keeps the conservative OUTSIDE figure (1 deg), so it under-reports on inside walls. Closing this needs either a solid-side test that survives through-features, or the mould-half assignment from a real parting line rather than a draw vector.",
+      "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. The user supplied the book itself, so the blocker that made this CONTESTED is gone. NADCA does not give a draft constant at all - it gives a formula, A = 57.2738 / (C*sqrt(L)) with L the feature depth in inches, and a table of C by alloy group and surface: zinc/ZA 50 inside / 100 outside / 34 hole total, magnesium 35/70/24, aluminium 30/60/20, copper 25/50/17. The formula was verified against the book's own worked example for an aluminium inside surface (0.1 in -> 6.0 deg, 1.0 in -> 1.9 deg, 5.0 in -> 0.85 deg) before being implemented. The old flat 1 degree was correct at about 23 mm of depth and wrong everywhere else: on a 6 mm deep pocket the book asks 1.96 deg on an outside surface and 3.93 deg on an inside one. The rule now computes the requirement from the alloy and the part's own measured depth along the draw.",
+      "recommendation": "The INSIDE half of the split is still not implemented. The rule judges every wall at the OUTSIDE constant, which is the lower of the two, so it under-reports on ejector-half surfaces by a factor of two. That is stated in the rule's own source text rather than left for a reader to discover. Closing it needs a solid-side test that survives through-features - from a bore wall the outward normal escapes through the bore opening, so the obvious ray test classifies a through-hole as an outside surface.",
       "corroboration": [
-        "https://www.abdiecasting.com/wp-content/uploads/2017/08/Section-06-Additional-Specification-Guidelines.pdf",
-        "https://www.diecasting.org/Web/R_D/Standards/Web/R_D/Standards.aspx",
-        "https://www.mecomeco.com/blog/die-casting-tolerances-nadca-standards-explained"
+        "Product Design for Die Casting, NADCA, 7th edition, 2015, ISBN via NADCA - supplied directly by the user as a PDF"
       ],
-      "primaryDocumentRead": false,
-      "blockedBy": "nadca.com and diecasting.org unreachable from this environment (EGRESS_BLOCKED)"
+      "primaryDocumentRead": true,
+      "readOn": "2026-08-10"
     },
     "hpdc-wall-thickness-range": {
       "status": "contested",
-      "claimedSource": "Aluminium HPDC design guidance (1.0 mm minimum, 2.0-3.5 mm recommended)",
+      "claimedSource": "Aluminium HPDC design guidance (1.0 mm practical minimum, 2.0-3.5 mm recommended)",
       "grade": "industry-consensus",
-      "finding": "Independent sources agree on the 2.0-3.5 mm practical band and on ~1.0 mm as a thin-wall floor, so the VALUE is sound. But published summaries of the NADCA standards state that NADCA sets no absolute minimum wall thickness — it specifies tolerance grades and calls for uniformity. The rule's citation therefore must not drift toward reading as a standard.",
-      "recommendation": "Keep the value and the industry-consensus grade. Do NOT promote this rule to standard-named. Consider adding a uniformity rule, which is what the standards actually emphasise.",
+      "finding": "STILL CONTESTED, and the primary document confirms why rather than settling it. Product Design for Die Casting says plainly in §3.1: 'There are no hard and fast rules governing maximum and minimum limits for wall thicknesses.' It gives no table. What it DOES give is the physical argument, from §4.2: the dense chilled skin is 0.38-0.50 mm and is NOT a function of wall thickness, so a thick wall carries the same load-bearing skin as a thin one plus a porous core - which makes a heavy section useless rather than merely inefficient. Table 4.8 separately rates each aluminium alloy for die-filling capacity (1 best to 5 worst), which is the one axis on which the minimum wall genuinely varies.",
+      "recommendation": "Keep the band at industry-consensus and do NOT promote it. The rationale should carry the skin argument, and the minimum should scale with the alloy's die-filling rating rather than being flat across every aluminium grade.",
       "corroboration": [
-        "https://www.diecastingdesign.org/walls/",
-        "https://www.sunrise-casting.com/min-and-max-wall-thickness-of-aluminum-die-casting/"
+        "Product Design for Die Casting, NADCA, 7th edition, 2015, §3.1 and §4.2 - read first-hand"
       ],
-      "primaryDocumentRead": false,
-      "blockedBy": "diecastingdesign.org unreachable from this environment (EGRESS_BLOCKED)"
+      "primaryDocumentRead": true,
+      "readOn": "2026-08-10"
     },
     "hpdc-core-ld": {
       "status": "search-corroborated",
@@ -75,17 +72,16 @@
       "blockedBy": "no primary source reachable from this environment"
     },
     "hpdc-cored-hole-draft": {
-      "status": "search-corroborated",
-      "claimedSource": "NADCA Product Specification Standards, S-4A-7 (Draft Constants)",
+      "status": "primary-read",
+      "claimedSource": "NADCA Product Design for Die Casting, 7th ed. (2015), §3.1 pp.45-46, 'Hole, Total' column",
       "grade": "standard-named",
-      "finding": "Cored holes at ~2 deg per side against ~1 deg on outside walls is consistent across every secondary summary found. The value is the one half of the draft split that could be measured, because the cylinder pass knows which faces are bore walls.",
-      "recommendation": "Read S-4A-7 first-hand before this is promoted past search-corroborated. The grade on the rule is standard-named because the citation is a standard; the STATUS here is what says nobody has opened it.",
+      "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. The book gives a cored-hole constant per alloy group - aluminium 20, magnesium 24, zinc and ZA 34, copper 17 - and the column is the TOTAL included angle, so the per-side requirement is half of what the formula returns. The old flat 2 degrees per side matches the book at about 13 mm of bore depth and nowhere else: a 3 mm bore in aluminium needs 4.17 deg per side and a 50 mm bore needs 1.02. The rule now derives each bore's depth from its own measured wall area and radius and judges the worst bore on the part.",
+      "recommendation": "None outstanding. The value, the alloy split and the total-versus-per-side distinction all come from the document as printed.",
       "corroboration": [
-        "https://www.abdiecasting.com/wp-content/uploads/2017/08/Section-06-Additional-Specification-Guidelines.pdf",
-        "https://www.mecomeco.com/blog/die-casting-tolerances-nadca-standards-explained"
+        "Product Design for Die Casting, NADCA, 7th edition, 2015 - supplied directly by the user as a PDF"
       ],
-      "primaryDocumentRead": false,
-      "blockedBy": "nadca.com and diecasting.org unreachable from this environment (EGRESS_BLOCKED)"
+      "primaryDocumentRead": true,
+      "readOn": "2026-08-10"
     },
     "gdc-cored-hole-draft": {
       "status": "unaudited",
@@ -180,6 +176,28 @@
         "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 6.2.1, Table 6.2"
       ],
       "primaryDocumentRead": true
+    },
+    "hpdc-internal-radius": {
+      "status": "primary-read",
+      "claimedSource": "NADCA Product Design for Die Casting, 7th ed. (2015), Figure 3.2 pp.40-41",
+      "grade": "standard-named",
+      "finding": "RESOLVED FROM THE PRIMARY DOCUMENT, and the old value was wrong in kind rather than in degree. The rule held a flat 1.6 mm. NADCA gives the fillet as a RATIO to the wall it joins: R1 >= T1 at a junction of uniform walls with R2 = R1 + T1, and R1 >= 2/3(T1 + T2) between non-uniform walls; on rib tops and tee junctions R1 = 0.5*T1 is optimal and below 0.25*T1 is 'not recommended'. A flat 1.6 mm passes a 1.6 mm radius on a 6 mm wall where the book wants 6 mm, so the rule was silent on exactly the chunky castings it should have been loudest about.",
+      "recommendation": "The outside corner radius R2 = R1 + T is specified by the book and is not yet checked, because the recogniser reports inside corner radii only. Adding external corner recognition would close it.",
+      "corroboration": [
+        "Product Design for Die Casting, NADCA, 7th edition, 2015 - supplied directly by the user as a PDF"
+      ],
+      "primaryDocumentRead": true,
+      "readOn": "2026-08-10"
+    },
+    "hpdc-tolerance-capability": {
+      "status": "unaudited",
+      "claimedSource": "NADCA Product Specification Standards, linear dimensional tolerances (as-cast)",
+      "grade": "industry-consensus",
+      "finding": "NOT SETTLED BY THE DOCUMENT SUPPLIED. Product Design for Die Casting is the DESIGN sourcebook; the tolerance grades live in NADCA Product Specification Standards for Die Castings (publication #402), which the design book refers to repeatedly and does not reproduce. Recording this explicitly so the next reader does not assume the casting tolerances were audited alongside the draft.",
+      "recommendation": "Obtain publication #402. Until then this rule and its five siblings in the other casting families stay unaudited.",
+      "corroboration": [],
+      "primaryDocumentRead": false,
+      "blockedBy": "NADCA Product Specification Standards #402 not held; the design sourcebook does not carry tolerance tables"
     }
   }
 }
