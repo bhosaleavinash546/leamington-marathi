@@ -16,6 +16,8 @@ import { DFM_RULES, PROCESS_FAMILIES } from '../dfm-rule-catalogue.mjs';
 import { MATERIALS } from '../costing-engine.mjs';
 
 const audit = JSON.parse(readFileSync(new URL('../docs/threshold-audit.json', import.meta.url), 'utf-8'));
+const ICONS = JSON.parse(readFileSync(new URL('./deck-icons.json', import.meta.url), 'utf-8'));
+const icon = (n) => `data:image/png;base64,${ICONS[n]}`;
 
 // ── Live figures, counted rather than remembered ────────────────────────────
 const RULES = DFM_RULES.length;
@@ -72,7 +74,7 @@ const W = 13.33;
 const H = 7.5;
 const M = 0.62;                        // page margin
 let slideNo = 0;
-const TOTAL = 14;
+const TOTAL = 15;
 
 /** Every content slide shares one footer, so the deck reads as one document. */
 function footer(s) {
@@ -184,6 +186,99 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     { x: M + 0.35, y: 5.56, w: 11.6, h: 0.6, fontSize: 11.5, color: 'CBD5E1', fontFace: 'Calibri', margin: 0 });
   footer(s);
   s.addNotes('This is the shape of the thing. Read, measure, judge, price.\n\nThe box at the bottom is the part I would ask you to hold onto. Everywhere else in the platform we use AI to propose ideas. In DFM Studio there is no AI at all — it is a geometry kernel and a rule engine. When it says a wall is 2.1 mm, something measured 2.1 mm.');
+}
+
+// ── 4 · The actual pipeline ─────────────────────────────────────────────────
+//
+// The director asked to see what the tool really does, from the inside. Every
+// stage name on this slide is one the engine genuinely emits (`tessellate`,
+// `wallThickness`, `drawSweep`, `features`, `sheetMetal`, `toolAccess`) and
+// every technique named is the one in the code. Nothing here is a generic
+// "AI pipeline" diagram.
+{
+  const s = pres.addSlide(); s.background = { color: PAPER };
+  heading(s, 'Under the bonnet', 'What happens when you press Analyse');
+
+  const STEPS = [
+    ['upload', 'You give it two things', 'The CAD file, and how you intend to make the part.',
+      'STEP or IGES · material + process'],
+    ['solid', 'It opens the real solid', 'Not a picture of the part — the actual faces, edges and holes the designer built.',
+      'OpenCascade B-rep kernel'],
+    ['measure', 'It measures the shape', 'Walls, draft, undercuts, bends, holes, corners — each one an actual measurement.',
+      'six measuring passes'],
+    ['judge', 'It applies YOUR rules', 'Only the rules for your process, at the limits for your alloy — or your plant\'s own limit.',
+      `${RULES} rules · ${FAMILIES} families`],
+    ['price', 'It prices what it found', 'Re-costs the part as drawn, then again with the problem fixed. The gap is the finding\'s worth.',
+      'the same should-cost engines'],
+    ['report', 'It writes it up', 'Marked on the part, sorted worst first, with an owner against every decision.',
+      'PDF · 14-sheet workbook'],
+  ];
+
+  const CW_ = 1.92;                 // card width
+  const GAP = 0.09;
+  const X0 = M;
+  STEPS.forEach(([ic, title, plain, tech], i) => {
+    const x = X0 + i * (CW_ + GAP);
+    s.addShape(pres.ShapeType.roundRect, { x, y: 1.68, w: CW_, h: 3.15, fill: { color: PANEL }, rectRadius: 0.06, line: { color: PANEL } });
+    s.addShape(pres.ShapeType.ellipse, { x: x + 0.72, y: 1.86, w: 0.48, h: 0.48, fill: { color: NAVY }, line: { color: NAVY } });
+    s.addImage({ data: icon(ic), x: x + 0.83, y: 1.97, w: 0.26, h: 0.26 });
+    s.addText(String(i + 1), { x: x + 0.1, y: 1.88, w: 0.34, h: 0.26, fontSize: 12, bold: true, color: GOLD, fontFace: 'Cambria', margin: 0 });
+    s.addText(title, { x: x + 0.14, y: 2.46, w: CW_ - 0.28, h: 0.62, fontSize: 12, bold: true, color: INK, fontFace: 'Calibri', align: 'center', margin: 0 });
+    s.addText(plain, { x: x + 0.14, y: 3.1, w: CW_ - 0.28, h: 1.25, fontSize: 10, color: BODY, fontFace: 'Calibri', align: 'center', margin: 0 });
+    s.addText(tech, { x: x + 0.14, y: 4.42, w: CW_ - 0.28, h: 0.32, fontSize: 8.5, italic: true, color: MUT, fontFace: 'Calibri', align: 'center', margin: 0 });
+    if (i < STEPS.length - 1) {
+      s.addText('>', { x: x + CW_ - 0.02, y: 2.02, w: 0.15, h: 0.24, fontSize: 13, bold: true, color: GOLD, align: 'center', fontFace: 'Calibri', margin: 0 });
+    }
+  });
+
+  // What comes out of stage 3 — the six passes, named — and the fork at stage 4.
+  s.addText('The six measuring passes, in order', { x: M, y: 5.0, w: 6.1, h: 0.28, fontSize: 11.5, bold: true, color: INK, fontFace: 'Calibri', margin: 0 });
+  const PASSES = ['Mesh the surface', 'Wall thickness', 'Draw direction', 'Features', 'Folded sheet?', 'Tool reach'];
+  PASSES.forEach((t, i) => {
+    const x = M + i * 1.03;
+    s.addShape(pres.ShapeType.roundRect, { x, y: 5.34, w: 0.95, h: 0.52, fill: { color: NAVY }, rectRadius: 0.05, line: { color: NAVY } });
+    s.addText(t, { x: x + 0.05, y: 5.4, w: 0.85, h: 0.4, fontSize: 7.8, color: 'FFFFFF', align: 'center', valign: 'middle', fontFace: 'Calibri', margin: 0 });
+  });
+  // No specific ray or triangle counts here. The obvious candidates came from a
+  // synthetic QA fixture and a code comment about one bracket — quoting either
+  // as if it were a measured figure is precisely the habit this tool exists to
+  // break.
+  s.addText('Each one reports the figure it measured — how many rays, how many triangles — or says it was skipped, and why.',
+    { x: M, y: 5.92, w: 6.3, h: 0.46, fontSize: 9.5, italic: true, color: MUT, fontFace: 'Calibri', margin: 0 });
+
+  s.addText('Every rule ends in one of three states', { x: 6.95, y: 5.0, w: 5.8, h: 0.28, fontSize: 11.5, bold: true, color: INK, fontFace: 'Calibri', margin: 0 });
+  [['PASS', GREEN, 'cleared'], ['FAIL', RED, 'broken — priced'], ['NOT EVALUATED', MUT, 'could not measure — says why']]
+    .forEach(([t, c, d], i) => {
+      const x = 6.95 + i * 1.95;
+      s.addShape(pres.ShapeType.roundRect, { x, y: 5.34, w: 1.85, h: 0.52, fill: { color: 'FFFFFF' }, rectRadius: 0.05, line: { color: c, width: 1.25 } });
+      s.addText(t, { x: x + 0.06, y: 5.38, w: 1.73, h: 0.22, fontSize: 9, bold: true, color: c, align: 'center', fontFace: 'Calibri', margin: 0 });
+      s.addText(d, { x: x + 0.06, y: 5.6, w: 1.73, h: 0.22, fontSize: 8, color: BODY, align: 'center', fontFace: 'Calibri', margin: 0 });
+    });
+  s.addText('An unmeasurable rule is never scored as a pass. That is the whole difference.',
+    { x: 6.95, y: 5.92, w: 5.8, h: 0.46, fontSize: 9.5, italic: true, color: MUT, fontFace: 'Calibri', margin: 0 });
+
+  footer(s);
+  s.addNotes([
+    'The Director asked what the tool actually does, so this is the inside view — six steps, and it takes about two seconds a part.',
+    '',
+    'STEP ONE. You give it two things: the CAD file, and how you plan to make the part. That second one matters more than it sounds. Telling it "die casting in A356" is what makes the answer specific instead of generic.',
+    '',
+    'STEP TWO. It opens the real solid. Not a picture, not a mesh someone exported — the actual faces and edges the designer built, through the same geometry kernel professional CAD uses. That is why it can tell a drilled hole from a cast one.',
+    '',
+    'STEP THREE is the heart of it, and it is six passes shown along the bottom left. It meshes the surface. It fires rays through the part to measure wall thickness. It tries three different directions the tool could open in and picks the one with the least undercut — it does not assume. It recognises features: holes, ribs, pockets, bends. It checks whether the part is folded sheet. And it sweeps a virtual cutter over the surface to see what a tool can physically reach.',
+    '',
+    'Each pass reports what it found — how many rays, how many triangles — or says it was skipped and why. Nothing happens silently.',
+    '',
+    'STEP FOUR applies the rules. Only the ones for your process, at the limit for your alloy. And if our plant has agreed its own number, that wins over the textbook.',
+    '',
+    'The three boxes on the bottom right are the bit I would ask you to remember. Every rule ends as passed, failed, or could-not-measure. Most tools collapse that last one into a green tick — which is how you get a clean report on a part nobody actually checked. Ours says so.',
+    '',
+    'STEP FIVE prices it. It re-runs the same costing engine we quote with, once on the part as drawn and once with the problem fixed. The difference is what the finding is worth — per part and per year.',
+    '',
+    'STEP SIX writes it up: marked on the part, worst first, with an owner against every decision.',
+    '',
+    'Two seconds, start to finish, and no AI anywhere in it.',
+  ].join('\n'));
 }
 
 // ── 4 · Three outcomes ──────────────────────────────────────────────────────
