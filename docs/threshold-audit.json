@@ -26,9 +26,14 @@
     "",
     "NOTE ON THIS PASS: the environment these entries were written in blocks",
     "outbound access to standards bodies (nadca.com, iso.org and the rest return",
-    "EGRESS_BLOCKED), so NOT ONE entry below is `primary-read`. That is a limit of",
     "where the work was done, not a judgement about the values, and it is recorded",
-    "here rather than glossed."
+    "here rather than glossed.",
+    "",
+    "UPDATE: the sheet-metal entries below ARE primary-read. A copy of Boljanovic,",
+    "'Sheet Metal Forming Processes and Die Design' was supplied and read end to",
+    "end (321 pages), and every sheet-forming threshold now cites a chapter,",
+    "section, table or equation from it. The casting entries remain blocked: this",
+    "environment still cannot reach nadca.com or iso.org."
   ],
   "auditedOn": "2026-08-10",
   "thresholds": {
@@ -108,6 +113,73 @@
       "recommendation": "Corroborate against a permanent-mould foundry design guide before relying on it.",
       "corroboration": [],
       "primaryDocumentRead": false
+    },
+    "sm-bend-radius": {
+      "status": "primary-read",
+      "claimedSource": "Per-alloy bend-radius guidance held in the rule's byMaterial table",
+      "grade": "industry-consensus",
+      "finding": "CORROBORATED, not superseded. The catalogue's twelve per-alloy values were checked row by row against Table 5.2 (R_min = c*T, c by material group and temper). Every steel and stainless value we hold sits INSIDE the book's soft-to-hard band, and 7075 at 4.0 r/t sits inside the 1.5-6.0 band for high-strength heat-treatable aluminium. The book does NOT supply our values — it has no row for 6000-series aluminium and predates dual-phase steel entirely — so the catalogue's figures stand and the book is the check on them, not the source.",
+      "recommendation": "Keep the per-alloy table. The book adds a dimension we do not model at all — TEMPER — with c ranging 0.5 to 3.0 for the same low-carbon steel. Capturing temper as an input would let the rule tighten or relax correctly instead of holding one figure per alloy.",
+      "corroboration": [
+        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 5.5.1, Eq. 5.14a, Table 5.2"
+      ],
+      "primaryDocumentRead": true,
+      "corroboratesButDoesNotSupply": true
+    },
+    "sm-hole-diameter": {
+      "status": "contested",
+      "claimedSource": "Per-alloy minimum pierced-hole guidance in the rule's byMaterial table",
+      "grade": "industry-consensus",
+      "finding": "GENUINE CONFLICT on the high-strength grades. Sec. 9.3.3(a) sizes the punch so it does not crush: combined with the punch force of Eq. 4.3 this gives d_min/T = 2.8*UTS/sigma_pd, with sigma_pd = 980-1560 MPa for hardened tool steel. At the conservative end that is 2.80 d/t for DP980 against the 1.50 d/t the catalogue holds, 1.77 for 304 against 1.20, and 1.66 for 316L against 1.20 — the book is stricter on every high-strength grade. It is LOOSER on 22MnB5 (1.71 vs our 2.50), but our figure there is for the hardened condition, which the book does not cover. The book's number is first-principles; ours is unattributed prose.",
+      "recommendation": "Do not switch silently. The engine now computes the book's limit alongside ours and publishes both (`punchedHoleMarginRatio` and `_punchLimit`); a plant that pierces DP980 at 1.5 d/t successfully is evidence the 980 MPa punch-stress floor is too conservative for their tooling, and that is exactly the measurement needed to settle it. Resolve with one real part before changing either number.",
+      "corroboration": [
+        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 9.3.3(a) with Eq. 4.3 and Eq. 9.6"
+      ],
+      "primaryDocumentRead": true
+    },
+    "sm-bend-radius-max": {
+      "status": "primary-read",
+      "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Eq. 5.15",
+      "grade": "standard-named",
+      "finding": "R_i(max) <= T*E/(2*YS). A bend gentler than this never yields and the part springs back flat. New capability — nothing in the catalogue tested for it.",
+      "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
+      "corroboration": [
+        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Eq. 5.15"
+      ],
+      "primaryDocumentRead": true
+    },
+    "sm-springback": {
+      "status": "primary-read",
+      "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 5.7, Eq. 5.21 and Eq. 5.22, Table 5.4",
+      "grade": "standard-named",
+      "finding": "Springback factor from the material's own YS/E, with the 2-8% practical overbend allowance stated in the text. New capability — springback was entirely absent.",
+      "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
+      "corroboration": [
+        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 5.7, Eq. 5.21 and Eq. 5.22, Table 5.4"
+      ],
+      "primaryDocumentRead": true
+    },
+    "sm-blank-utilisation": {
+      "status": "primary-read",
+      "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 4.4, Eq. 4.7, Table 4.3",
+      "grade": "standard-named",
+      "finding": "Webs m = T + 0.015*D and n from Table 4.3, against the text's own 70-80% utilisation target. The utilisation figure is a LOWER bound: it assumes a rectangular envelope in a single-pass layout (Fig. 4.7a) and real nesting does better.",
+      "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
+      "corroboration": [
+        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 4.4, Eq. 4.7, Table 4.3"
+      ],
+      "primaryDocumentRead": true
+    },
+    "dd-draw-stages": {
+      "status": "primary-read",
+      "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 6.2.1, Table 6.2",
+      "grade": "standard-named",
+      "finding": "Successive drawing ratios m1..m5 by relative thickness 100*T/D. The blank diameter is estimated by area equivalence rather than the book's Guldinus method (Sec. 6.4.2), which needs a meridian profile the recogniser does not extract — so the STAGE COUNT is sound and the blank it starts from is an estimate.",
+      "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
+      "corroboration": [
+        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 6.2.1, Table 6.2"
+      ],
+      "primaryDocumentRead": true
     }
   }
 }

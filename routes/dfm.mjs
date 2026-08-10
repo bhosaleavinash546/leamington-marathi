@@ -13,7 +13,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import multer from 'multer';
 import { analyzeGeometry, decomposeAssembly } from '../cad-engine/cad-geometry-bridge.mjs';
-import { runDfmRules, runAllDfmRules, inferProcessFamily, processFamilyConflict } from '../dfm-rules.mjs';
+import { runDfmRules, runAllDfmRules, inferProcessFamily, processFamilyConflict, extractMeasures } from '../dfm-rules.mjs';
 import {
   dfmOptions, familyForSelection, familyOfMaterial, processesForMaterial,
 } from '../dfm-process-registry.mjs';
@@ -628,6 +628,26 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
       // one. A retuned threshold that leaves no trace is indistinguishable from
       // a published guideline.
       ruleOverrides: ruleOpts.overrides ?? null,
+      // ── THE SHEET-FORMING FIGURES ────────────────────────────────────────
+      //
+      // Press tonnage, strip utilisation, bend allowance and the draw-stage
+      // count are computed by the measure pass and, until now, went nowhere: a
+      // rule reads a ratio, and the numbers a stamping engineer actually asks
+      // for — "what press does this need", "how much of the coil ends up in the
+      // part" — never left the engine. They are figures, not verdicts, so they
+      // travel beside the findings rather than as findings.
+      sheetForming: (() => {
+        const m = extractMeasures(geo, { declaredToleranceMm, material });
+        const out = {};
+        for (const [k, v] of Object.entries(m)) {
+          if (k.startsWith('_') && v && typeof v === 'object'
+              && /^_(press|stripLayout|bendAllowance|drawStages|springback|bendLimit|bendMaxLimit|punchLimit)$/.test(k)) {
+            out[k.slice(1)] = v;
+          }
+        }
+        if (m._bookBasis) out.unavailable = m._bookBasis;
+        return Object.keys(out).length ? out : null;
+      })(),
       // Counted here, beside the catalogue that produced the findings, so the
       // report's provenance sentence can never drift from the ruleset again.
       catalogue: {

@@ -749,6 +749,72 @@ export const DFM_RULES = [
     fix: 'Increase the hole diameter to at least one thickness, or drill rather than punch.',
     source: 'Sheet-metal design guidance (minimum punched hole diameter ~1x thickness).',
   },
+  // ── FROM BOLJANOVIC, READ FIRST-HAND ──────────────────────────────────────
+  //
+  // Four checks the catalogue did not have, each with a chapter and an equation
+  // behind it rather than a remembered figure. They are ADDITIONS: the existing
+  // per-material bend and hole tables are better for our alloys than this book,
+  // which predates dual-phase steel and has no 6000-series aluminium row.
+  {
+    id: 'sm-bend-radius-max',
+    sourceStatus: 'standard-named',
+    process: 'sheet-metal',
+    severity: 'medium',
+    title: 'Bend radius too LARGE to take a permanent set',
+    measure: 'bendRadiusMaxRatio',
+    compare: 'lte',
+    threshold: 1,
+    unit: 'x the maximum that will yield',
+    rationale:
+      'Every DFM tool checks that a bend is not too tight. A bend that is too GENTLE never strains the outer fibre past yield, so on unloading the part springs back to flat and the feature does not exist. The limit is T*E/(2*YS), which on thin high-yield sheet is reached at surprisingly modest radii.',
+    fix: 'Tighten the radius below T*E/(2*YS), or form the feature by another means — a large-radius contour is a stretch-forming or roll-forming job, not a brake bend.',
+    source: "Boljanovic, 'Sheet Metal Forming Processes and Die Design', Eq. 5.15: R_i(max) <= T*E/(2*YS). READ FIRST-HAND.",
+  },
+  {
+    id: 'sm-springback',
+    sourceStatus: 'standard-named',
+    process: 'sheet-metal',
+    severity: 'medium',
+    title: 'Springback beyond what overbend alone can compensate',
+    measure: 'springbackOverbendPct',
+    compare: 'lte',
+    threshold: 8,
+    unit: '% overbend required',
+    rationale:
+      'Springback scales with YS/E, which is why high-strength steel recovers far more than mild steel at identical geometry. The book gives 2 to 8 percent added bend angle as the practical overbend allowance; past that the die has to bottom or stretch-bend the part, and the tooling is a different design at a different price.',
+    fix: 'Tighten the bend radius, choose a lower-yield grade, or budget for bottoming or stretch bending rather than overbend alone.',
+    source: "Boljanovic, Sec. 5.7, Eq. 5.22 for the springback factor and the 2-8% practical overbend allowance. READ FIRST-HAND.",
+  },
+  {
+    id: 'sm-blank-utilisation',
+    sourceStatus: 'standard-named',
+    process: 'sheet-metal',
+    severity: 'high',
+    title: 'Strip utilisation below the industry target',
+    measure: 'blankUtilisationPct',
+    compare: 'gte',
+    threshold: 70,
+    unit: '% of strip area',
+    rationale:
+      "The book opens its material-economy chapter with 'the major portion of the cost of producing a stamped component is the material' and sets the target at 70 to 80 percent of the strip. On a stamping this is usually the largest single cost lever on the part, and it is invisible on a report that quotes only a piece price.",
+    fix: 'Re-lay the blank: rotate it, nest it two-up or interlocked, or alter the outline where function allows. The book devotes Sec. 4.4.2 to changing the workpiece design for exactly this.',
+    source: "Boljanovic, Sec. 4.4 with Eq. 4.7 and Table 4.3 for the webs; the 70-80% target is stated in the text. READ FIRST-HAND.",
+  },
+  {
+    id: 'dd-draw-stages',
+    sourceStatus: 'standard-named',
+    process: 'deep-drawing',
+    severity: 'high',
+    title: 'Cup too deep for the drawing-ratio table',
+    measure: 'drawStagesBeyondTable',
+    compare: 'lte',
+    threshold: 0,
+    unit: 'beyond the table (1 = yes)',
+    rationale:
+      'Each draw can only reduce the diameter to m times the previous one, and Table 6.2 runs to five successive draws. A cup still larger than target after five is not simply expensive — it needs interstage annealing the table never contemplated, and the process plan is no longer a stamping plan.',
+    fix: 'Reduce the draw depth, increase the starting blank thickness, or plan the part as a drawn-and-ironed or spun component.',
+    source: "Boljanovic, Sec. 6.2.1 and Table 6.2: optimal drawing ratio m per operation against relative thickness 100*T/D. READ FIRST-HAND.",
+  },
   {
     id: 'sm-hole-to-bend',
     sourceStatus: 'industry-consensus',

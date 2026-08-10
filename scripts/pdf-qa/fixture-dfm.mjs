@@ -333,6 +333,26 @@ export const DFM_RESULT_FULL = {
   partName: DFM_RESULT.partName + ' (full)',
   processFamily: 'hpdc',
   material: 'Aluminium A356 (cast)',
+  // THE SHEET-FORMING FIGURES, so the press/strip band and the workbook sheet
+  // render in QA rather than only in production. Numbers are the ones the engine
+  // produced for a 1.5 mm DP980 bracket — including a strip utilisation UNDER
+  // the book's 70% target, because a band that only ever renders green proves
+  // nothing about the branch that matters.
+  sheetForming: {
+    press: {
+      blankingKN: 967.3, withMarginKN: 1257.4, bendingKN: 51.7, totalKN: 1309.1,
+      requiredTonnes: 133.5, pressTonnes: 160, beyondLadder: false,
+      basis: 'Eq. 4.3 F = 0.7*L*T*UTS over 940 mm of cut, +30% press margin (Eq. 4.4). Outer profile taken as the flat envelope perimeter — a LOWER bound.',
+    },
+    stripLayout: {
+      utilisationPct: 61.4, stripWidthMm: 106, pitchMm: 204.3,
+      edgeWebMm: 3.0, blankWebMm: 4.3, meetsBookTarget: false,
+      basis: 'Eq. 4.7 m = T + 0.015*D; Table 4.3 n = 4.3 mm. Rectangular envelope, single-pass layout (Fig. 4.7a) — a LOWER bound on what real nesting achieves.',
+    },
+    bendAllowance: { totalMm: 53.67, basis: 'Eq. 5.19 with the Table 5.3 neutral-axis shift, per recognised bend' },
+    springback: { overbendPct: 19.5, insideRadiusMm: 30, basis: 'Eq. 5.22 with YS = 700 MPa, E = 210000 MPa' },
+    drawStages: { stages: 3, beyondTable: false, blankDiaMm: 182.1, basis: 'Table 6.2, relative thickness band 0.6-1%', blankBasis: 'area equivalence, an ESTIMATE' },
+  },
   // THE CATALOGUE COUNTS, on the "everything the API knows" fixture only.
   //
   // No fixture carried this block, so the appendix's provenance paragraph was

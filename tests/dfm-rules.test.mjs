@@ -406,3 +406,55 @@ test('each casting family applies the angle ITS source quotes', () => {
   assert.equal(verdict('lpdc'), 'pass');          // needs 2
   assert.equal(verdict('gravity-die'), 'fail');   // needs 3 — slower solidification
 });
+
+// ── The Boljanovic rules, wired through the real measure path ───────────────
+test('a bend too GENTLE to yield is caught — the check nobody makes', () => {
+  const geo = {
+    geometry: { boundingBox: { xMm: 200, yMm: 100, zMm: 20 } },
+    dfm: { sheetMetal: { isSheetMetal: true, thicknessMm: 1.0,
+      bends: [{ insideRadiusMm: 500, angleDeg: 90, bendLengthMm: 80 }] } },
+  };
+  const r = runDfmRules(geo, 'sheet-metal', { material: 'Steel (mild)' });
+  const f = r.findings.find(x => x.id === 'sm-bend-radius-max');
+  // Max allowed = T*E/(2*YS) = 210000/500 = 420 mm. A 500 mm radius exceeds it.
+  assert.ok(f, 'a 500 mm radius on 1 mm mild steel must fail Eq. 5.15');
+  assert.ok(f.measured > 1);
+});
+
+test('springback past the practical overbend band is a finding', () => {
+  const geo = {
+    geometry: { boundingBox: { xMm: 200, yMm: 100, zMm: 20 } },
+    dfm: { sheetMetal: { isSheetMetal: true, thicknessMm: 1.0,
+      bends: [{ insideRadiusMm: 40, angleDeg: 90, bendLengthMm: 80 }] } },
+  };
+  const r = runDfmRules(geo, 'sheet-metal', { material: 'Steel DP980 (dual-phase)' });
+  const f = r.findings.find(x => x.id === 'sm-springback');
+  assert.ok(f, 'a large-radius bend in DP980 must exceed the 8% overbend allowance');
+});
+
+test('a wasteful blank layout is a HIGH-severity finding, because material is the cost', () => {
+  const geo = {
+    geometry: { boundingBox: { xMm: 12, yMm: 12, zMm: 4 } },
+    dfm: { sheetMetal: { isSheetMetal: true, thicknessMm: 4.0, bends: [] } },
+  };
+  const r = runDfmRules(geo, 'sheet-metal', { material: 'Steel (mild)' });
+  const f = r.findings.find(x => x.id === 'sm-blank-utilisation');
+  assert.ok(f);
+  assert.equal(f.severity, 'high');
+  assert.ok(f.measured < 70);
+});
+
+test('every book rule ABSTAINS on a material with no properties on file', () => {
+  // The discipline that matters: an unknown alloy must not be judged against
+  // mild steel's numbers just because they are the ones to hand.
+  const geo = {
+    geometry: { boundingBox: { xMm: 200, yMm: 100, zMm: 20 } },
+    dfm: { sheetMetal: { isSheetMetal: true, thicknessMm: 1.0,
+      bends: [{ insideRadiusMm: 500, angleDeg: 90, bendLengthMm: 80 }] } },
+  };
+  const r = runDfmRules(geo, 'sheet-metal', { material: 'Inconel 718' });
+  for (const id of ['sm-bend-radius-max', 'sm-springback']) {
+    assert.ok(r.notEvaluated.some(x => x.id === id), `${id} must abstain`);
+    assert.equal(r.findings.some(x => x.id === id), false);
+  }
+});

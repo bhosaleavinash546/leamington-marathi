@@ -14,6 +14,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { DFM_RULES, PROCESS_FAMILIES, SEVERITIES, resolveThreshold } from './dfm-rule-catalogue.mjs';
 import { MATERIALS } from './costing-engine.mjs';
+import {
+  minBendRadiusMm, maxBendRadiusMm, springback, minPunchedHoleMm,
+  blankingForceKN, bendingForceKN, pressClass, drawStages, stripLayout,
+  bendAllowanceMm, sheetPropertiesFor,
+} from './sheet-metal-forming.mjs';
 
 /**
  * Pull the values rules are written against out of a measured-geometry blob.
@@ -22,6 +27,168 @@ import { MATERIALS } from './costing-engine.mjs';
  * ever substitute a default. A guessed default here would be indistinguishable
  * from a real measurement in the report.
  */
+/**
+ * The sheet-forming limits from Boljanovic, expressed as MARGINS.
+ *
+ * Each entry is `measured / required`, so a rule can be written against a flat
+ * 1.0 while the requirement itself moves with the alloy, the temper and the
+ * gauge. Everything is absent rather than zero when it cannot be computed — a
+ * part whose material has no properties on file must abstain, not score 0 and
+ * fail every bend rule in the catalogue.
+ *
+ * The underscored entries are for the REPORT, not for rules: a press tonnage
+ * and a strip utilisation are figures a reader wants even when no threshold
+ * applies to them.
+ */
+function bookLimits(sm, geo, opts) {
+  // Its own `num`, not the one inside extractMeasures: that one is a closure and
+  // borrowing it from here would have thrown at call time on every sheet part
+  // while the module still imported cleanly.
+  const num = (v) => {
+    if (v === null || v === undefined || v === '') return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
+  const out = {};
+  const T = Number(sm.thicknessMm);
+  const material = opts.material;
+  const props = sheetPropertiesFor(material);
+  if (!(T > 0)) return out;
+
+  // Why every book rule below abstains, said once, so each finding can carry it.
+  if (!props.known) { out._bookBasis = props.reason; return out; }
+
+  const bends = Array.isArray(sm.bends) ? sm.bends : [];
+  const radii = bends.map((b) => Number(b.insideRadiusMm)).filter((r) => Number.isFinite(r) && r >= 0);
+
+  // ── Bend radius, Table 5.2 ───────────────────────────────────────────────
+  const need = minBendRadiusMm(material, T, opts.temper);
+  if (need.ok && radii.length) {
+    const tightest = Math.min(...radii);
+    // A required radius of ZERO (annealed pure aluminium) makes the ratio
+    // meaningless — everything divided by nothing is infinite. The rule cannot
+    // fail in that case and says so rather than producing Infinity.
+    out.bendRadiusMarginRatio = need.minRadiusMm > 0
+      ? Math.round((tightest / need.minRadiusMm) * 1000) / 1000
+      : undefined;
+    out._bendLimit = {
+      tightestMeasuredMm: Math.round(tightest * 1000) / 1000,
+      requiredMinMm: need.minRadiusMm,
+      bandMm: need.bandMm,
+      temper: need.temper,
+      basis: need.basis,
+    };
+  }
+
+  const max = maxBendRadiusMm(material, T);
+  if (max.ok && radii.length) {
+    const gentlest = Math.max(...radii);
+    out.bendRadiusMaxRatio = Math.round((gentlest / max.maxRadiusMm) * 1000) / 1000;
+    out._bendMaxLimit = { gentlestMeasuredMm: Math.round(gentlest * 1000) / 1000, maxAllowedMm: max.maxRadiusMm, basis: max.basis };
+  }
+
+  // ── Springback, Eq. 5.22 ─────────────────────────────────────────────────
+  // The WORST bend on the part: the one that needs the most overbend is the one
+  // that decides whether overbend alone will do.
+  let worst = null;
+  for (const b of bends) {
+    const s = springback(material, Number(b.insideRadiusMm), T, Number(b.angleDeg));
+    if (s.ok && Number.isFinite(s.overbendPct) && (!worst || s.overbendPct > worst.overbendPct)) {
+      worst = { ...s, insideRadiusMm: Number(b.insideRadiusMm), angleDeg: Number(b.angleDeg) };
+    }
+  }
+  if (worst) {
+    out.springbackOverbendPct = worst.overbendPct;
+    out._springback = worst;
+  }
+
+  // ── Bend allowance, Table 5.3 / Eq. 5.19 ─────────────────────────────────
+  const allowances = bends
+    .map((b) => bendAllowanceMm(Number(b.insideRadiusMm), T, Number(b.angleDeg)))
+    .filter((v) => Number.isFinite(v));
+  if (allowances.length) {
+    out._bendAllowance = {
+      perBendMm: allowances.map((v) => Math.round(v * 100) / 100),
+      totalMm: Math.round(allowances.reduce((a, b) => a + b, 0) * 100) / 100,
+      basis: 'Eq. 5.19 with the Table 5.3 neutral-axis shift, per recognised bend',
+    };
+  }
+
+  // ── Smallest punchable hole, Sec. 9.3.3 ──────────────────────────────────
+  const punch = minPunchedHoleMm(material, T);
+  const smallest = num(sm.minHoleDiaMm) ?? num((geo.dfm || {}).apertures?.smallestApertureMm);
+  if (punch.ok && smallest > 0) {
+    out.punchedHoleMarginRatio = Math.round((smallest / punch.minDiaMm) * 1000) / 1000;
+    out._punchLimit = { smallestMeasuredMm: smallest, requiredMinMm: punch.minDiaMm, basis: punch.basis };
+  }
+
+  // ── Strip layout and utilisation, Sec. 4.4 ───────────────────────────────
+  // The flat envelope: the two LARGEST bounding-box axes, because the third is
+  // the formed depth and a blank is laid out flat.
+  const bb = (geo.geometry || {}).boundingBox || geo.boundingBox;
+  if (bb) {
+    const dims = [Number(bb.xMm), Number(bb.yMm), Number(bb.zMm)].filter((v) => v > 0).sort((a, b) => b - a);
+    if (dims.length >= 2) {
+      const strip = stripLayout(dims[1], dims[0], T);
+      if (strip.ok) {
+        out.blankUtilisationPct = strip.utilisationPct;
+        out._stripLayout = { ...strip, envelopeMm: [dims[0], dims[1]] };
+      }
+    }
+  }
+
+  // ── Press force, Eq. 4.3/4.4 and 5.7 ─────────────────────────────────────
+  // Internal cut length is exact; the OUTER profile is not measured by the
+  // recogniser, so the blanking perimeter is taken as the flat envelope's
+  // perimeter and the whole figure is published as a LOWER bound. A tonnage
+  // that silently omits the blanking cut would send somebody to the wrong press.
+  const cut = num((geo.dfm || {}).apertures?.totalCutLengthMm) ?? 0;
+  const outer = out._stripLayout ? 2 * (out._stripLayout.envelopeMm[0] + out._stripLayout.envelopeMm[1]) : 0;
+  if (cut + outer > 0) {
+    const bf = blankingForceKN(material, T, cut + outer);
+    if (bf.ok) {
+      const bendF = bends.reduce((sum, b) => {
+        const f = bendingForceKN(material, T, Number(b.bendLengthMm), Number(b.insideRadiusMm));
+        return sum + (f.ok ? f.forceKN : 0);
+      }, 0);
+      const total = bf.pressForceKN + bendF;
+      out._press = {
+        blankingKN: bf.forceKN,
+        withMarginKN: bf.pressForceKN,
+        bendingKN: Math.round(bendF * 10) / 10,
+        totalKN: Math.round(total * 10) / 10,
+        ...pressClass(total),
+        cutLengthMm: Math.round(cut + outer),
+        basis: `${bf.basis}. Outer profile taken as the flat envelope perimeter — the recogniser measures internal cut length only, so this is a LOWER bound.`,
+      };
+    }
+  }
+
+  // ── Draw stages, Table 6.2 ───────────────────────────────────────────────
+  // Blank diameter by AREA EQUIVALENCE: a drawn shell's blank has the same
+  // surface as the developed shell, and for a thin shell the mid-surface is
+  // half the total. Stated as an estimate, because the book's own analytic
+  // method (Sec. 6.4.2, Guldinus) needs the meridian profile we do not extract.
+  const areaCm2 = Number((geo.geometry || {}).surfaceArea?.cm2 ?? geo.surfaceArea?.cm2);
+  const cupDia = num(measuresCircumscribing(geo));
+  if (areaCm2 > 0 && cupDia > 0) {
+    const blankDia = Math.sqrt((2 * areaCm2 * 100) / Math.PI);
+    const d = drawStages(blankDia, cupDia, T);
+    if (d.ok) {
+      out.drawStagesBeyondTable = d.beyondTable ? 1 : 0;
+      out._drawStages = { ...d, blankDiaMm: Math.round(blankDia * 10) / 10, cupDiaMm: cupDia, blankBasis: 'area equivalence: D = sqrt(2*A_total/pi), an ESTIMATE — the book\'s analytic method needs the meridian profile' };
+    }
+  }
+  return out;
+}
+
+/** The circumscribing circle, read wherever the kernel put it. */
+function measuresCircumscribing(geo) {
+  const d = geo.dfm || {};
+  return d.revolution?.circumscribingCircleMm ?? d.features?.circumscribingCircleMm
+    ?? (geo.geometry || {}).circumscribingCircleMm;
+}
+
 export function extractMeasures(geo = {}, opts = {}) {
   const dfm = geo.dfm || {};
   const wall = dfm.wallThickness || geo.wallThickness || {};
@@ -379,6 +546,21 @@ export function extractMeasures(geo = {}, opts = {}) {
     // instead of a per-part formula the evaluator cannot express.
     minHoleToHoleToThickness: num(sm.minHoleToHoleToThickness),
     minHoleToEdgeToThickness: num(sm.minHoleToEdgeToThickness),
+
+    // ── THE BOOK'S PHYSICS, AS RATIOS ────────────────────────────────────────
+    //
+    // Boljanovic's limits are functions of the material AND the thickness —
+    // `R_min = c*T` with c from 0.0 to 6.0 by alloy and temper, `d_min/T =
+    // 2.8*UTS/sigma_pd` by sheet strength. A static per-family threshold cannot
+    // express that, and the old rules pretended otherwise with a flat 1.0 r/t
+    // and 1.0 d/t.
+    //
+    // So the ENGINE computes the requirement from the book and the MEASURE is
+    // the margin against it: at or above 1.0 the part clears its own material's
+    // limit. The rule's threshold stays a clean 1.0 and the finding carries the
+    // real numbers in `measuredBasis`, which is where a reader can check the
+    // arithmetic.
+    ...bookLimits(sm, geo, opts),
     minBendToBendToThickness: num(sm.minBendToBendToThickness),
 
     // The offenders behind the ratio measures, in worst-first order. Consumed by
@@ -472,11 +654,19 @@ function thresholdText(rule) {
  * @param {string} process  key of PROCESS_FAMILIES
  * @returns {{process, processName, findings, passed, notEvaluated, coveragePct, score}}
  */
-export function runDfmRules(geo, process, { material, overrides, declaredToleranceMm } = {}) {
+export function runDfmRules(geo, process, { material, overrides, declaredToleranceMm, temper } = {}) {
   if (!PROCESS_FAMILIES[process]) {
     throw new Error(`Unknown process family: ${process}`);
   }
-  const measures = extractMeasures(geo, { declaredToleranceMm });
+  // MATERIAL REACHES THE MEASUREMENT, not only the threshold.
+  //
+  // Until the Boljanovic limits arrived, the alloy was needed only to pick a
+  // threshold, so it was never handed to extractMeasures. The forming rules
+  // invert that: the requirement itself is a function of the material — R_min =
+  // c*T, d_min/T = 2.8*UTS/sigma_pd — so the MEASURE cannot be computed without
+  // it, and every one of them abstained silently while the measure map held the
+  // right answer.
+  const measures = extractMeasures(geo, { declaredToleranceMm, material, temper });
   // A workspace can DISABLE a rule as well as retune it. A disabled rule is
   // removed from the denominator too — leaving it in as "not evaluated" would
   // drag the coverage figure down for a check the plant deliberately does not

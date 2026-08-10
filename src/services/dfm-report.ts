@@ -1040,6 +1040,57 @@ export function exportDfmPdf(
     ]));
   }
 
+  // ── PRESS, STRIP AND FORMING ──────────────────────────────────────────────
+  //
+  // The figures a stamping engineer asks for before anything else: what press
+  // does this need, and how much of the coil ends up in the part. The second is
+  // the one the report has never carried, and on a stamping it is usually the
+  // largest cost lever there is — Boljanovic opens his material-economy chapter
+  // saying so outright.
+  {
+    const sf = (data as Record<string, any>).sheetForming;
+    if (sf && !sf.unavailable && (sf.press || sf.stripLayout)) {
+      ensure(46);
+      y += 2;
+      mono(7, true); setText(doc, GOLD);
+      doc.text('PRESS, STRIP AND FORMING', ML, y); y += 5.4;
+
+      const tiles: Array<[string, string, RGB]> = [];
+      if (sf.press) {
+        tiles.push([sf.press.beyondLadder ? 'transfer line' : `${sf.press.pressTonnes} t`,
+          'PRESS CLASS', sf.press.beyondLadder ? AMBER : INK]);
+        tiles.push([`${Math.round(sf.press.totalKN)} kN`, 'FORCE + MARGIN', INK]);
+      }
+      if (sf.stripLayout) {
+        tiles.push([`${sf.stripLayout.utilisationPct} %`, 'STRIP UTILISATION',
+          sf.stripLayout.meetsBookTarget ? GREEN : RED]);
+      }
+      if (sf.drawStages) tiles.push([`${sf.drawStages.stages}`, 'DRAW OPERATIONS', sf.drawStages.beyondTable ? RED : INK]);
+      if (sf.bendAllowance) tiles.push([`${sf.bendAllowance.totalMm} mm`, 'BEND ALLOWANCE', INK]);
+
+      if (tiles.length) {
+        setFill(doc, PANEL); doc.roundedRect(ML, y - 5, CW, 20, 1.5, 1.5, 'F');
+        const cwN = CW / tiles.length;
+        tiles.forEach(([v, l, c], i) => {
+          const x = ML + 5 + i * cwN;
+          if (i > 0) { setDraw(doc, RULE, 0.3); doc.line(ML + i * cwN, y - 3, ML + i * cwN, y + 12); }
+          sans(v.length > 8 ? 10 : 13, 'bold'); setText(doc, c);
+          doc.text(fit(doc, v, cwN - 8), x, y + 3);
+          mono(5.4); setText(doc, MUT);
+          doc.text(fit(doc, l, cwN - 8), x, y + 9.5);
+        });
+        y += 23;
+      }
+      // The provenance, once, rather than on every tile.
+      wrapped("Every figure here comes from Boljanovic, 'Sheet Metal Forming Processes and Die Design', "
+        + 'read first-hand: blanking force from Eq. 4.3 with the 30% press margin of Eq. 4.4, bend force '
+        + 'from Eq. 5.7, webs and utilisation from Sec. 4.4, draw operations from Table 6.2. The '
+        + 'utilisation is a LOWER bound — it assumes a rectangular blank envelope in a single-pass '
+        + 'layout, and real nesting does better.', 7.8, MUT, CW, 3.6, 'italic');
+      y += 3;
+    }
+  }
+
   // ── WHAT HAPPENS NEXT, AND WHO DOES IT ────────────────────────────────────
   //
   // The report said what is wrong and what it costs, and stopped. Nobody leaves
@@ -1817,6 +1868,51 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
         rows: [['Process', 'Why it is not offered'],
           ...data.routes.skipped.map(x => [x.process, x.reason])],
       });
+    }
+  }
+
+  // ── Sheet-metal forming ────────────────────────────────────────────────────
+  // Press class, strip utilisation, bend allowance and draw stages. These are
+  // FIGURES rather than verdicts — a tonnage is not a pass or a fail — and they
+  // are the numbers a stamping engineer reaches for first. Every one of them
+  // carries the equation it came from.
+  {
+    const sf = (data as Record<string, any>).sheetForming;
+    if (sf && !sf.unavailable) {
+      const rows: Array<Array<string | number>> = [['Figure', 'Value', 'How it was computed']];
+      if (sf.press) {
+        rows.push(['Blanking force', `${sf.press.blankingKN} kN`, sf.press.basis]);
+        rows.push(['Bending force', `${sf.press.bendingKN} kN`, 'Eq. 5.7, summed over recognised bends']);
+        rows.push(['Total with press margin', `${sf.press.totalKN} kN`, 'Eq. 4.4 adds 30% for dull edges, friction and thickness variation']);
+        rows.push(['Press required', sf.press.beyondLadder ? 'beyond the standard ladder — this is a transfer-line part'
+          : `${sf.press.pressTonnes} t (needs ${sf.press.requiredTonnes} t)`, sf.press.basis]);
+      }
+      if (sf.stripLayout) {
+        rows.push(['Strip utilisation', `${sf.stripLayout.utilisationPct} %`, sf.stripLayout.basis]);
+        rows.push(['Strip width', `${sf.stripLayout.stripWidthMm} mm`, `edge web ${sf.stripLayout.edgeWebMm} mm (Eq. 4.7)`]);
+        rows.push(['Feed pitch', `${sf.stripLayout.pitchMm} mm`, `blank-to-blank web ${sf.stripLayout.blankWebMm} mm (Table 4.3)`]);
+      }
+      if (sf.bendAllowance) {
+        rows.push(['Bend allowance, total', `${sf.bendAllowance.totalMm} mm`, sf.bendAllowance.basis]);
+      }
+      if (sf.springback) {
+        rows.push(['Worst springback', `${sf.springback.overbendPct} % overbend`,
+          `${sf.springback.basis} on the R${sf.springback.insideRadiusMm} bend`]);
+      }
+      if (sf.drawStages) {
+        rows.push(['Draw operations', `${sf.drawStages.stages}${sf.drawStages.beyondTable ? ' (beyond the table)' : ''}`,
+          `${sf.drawStages.basis}. Blank ${sf.drawStages.blankDiaMm} mm by ${sf.drawStages.blankBasis}`]);
+      }
+      if (rows.length > 1) {
+        sheets.push({
+          name: 'Sheet forming',
+          title: 'Press, strip and forming figures',
+          subtitle: "From Boljanovic, 'Sheet Metal Forming Processes and Die Design' — read first-hand, "
+            + 'equation numbers in the last column. These are figures, not verdicts.',
+          headerRow: 0, zebra: true, colWidths: [28, 26, 96], wrapCols: [2],
+          rows,
+        });
+      }
     }
   }
 

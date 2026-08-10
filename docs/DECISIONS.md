@@ -1765,3 +1765,61 @@ Format: decision · why · what would change it.
     outer surface, and every cheap variant fails similarly. The wall rules keep the
     conservative outside figure, the register keeps the threshold marked contested, and the
     catalogue says why in the rule itself.
+
+134. **A book we actually read, and the two claims of mine it disproved (2026).**
+    *Why:* 321 pages of Boljanovic, "Sheet Metal Forming Processes and Die Design", were
+    supplied for review. The register recorded **0% `primary-read`** across 220 rules — every
+    guideline the tool judges a part against had come from a secondary summary. This is the
+    first primary source in the product.
+    *What it corrected in ME first.* I reported that `sm-bend-radius` and `sm-hole-diameter`
+    were "a single flat 1.0". They are not: both carry per-alloy override tables — DP600 at
+    2.5 r/t, DP980 at 4 r/t, 6061-T6 at 3 r/t. I overstated the gap, and a scripted edit
+    acting on that overstatement flattened all twelve values to 1 before the git diff caught
+    it. Two lessons, both recorded because both will recur: **read the data before reporting
+    a gap in it**, and a bulk edit whose block boundary is `"  },"` will match a nested
+    closing brace and silently rewrite the wrong object.
+    *What the book actually settles:*
+      * **CORROBORATION, not correction.** Checked row by row against Table 5.2 (`R_min =
+        c*T`), every steel and stainless value we hold sits INSIDE the book's soft-to-hard
+        band. The catalogue's figures stand; the book is the check on them. Recorded as
+        `primary-read` with `corroboratesButDoesNotSupply`.
+      * **One genuine conflict.** Sec. 9.3.3(a) with Eq. 4.3 gives `d_min/T = 2.8*UTS/sigma_pd`
+        — 2.80 d/t for DP980 against our 1.50, 1.77 for 304 against our 1.20. The book is
+        first-principles and stricter; ours is unattributed prose. Marked **contested**, both
+        numbers published, and NOT switched: a plant that pierces DP980 at 1.5 d/t
+        successfully is the measurement that settles it.
+      * **Silence reported as silence.** Table 5.2 has no 6000-series row, so mapping 6061 to
+        the pure-aluminium row produced a 0-1.2 r/t band against our well-founded 3.0 — the
+        book appearing to contradict a good value when it simply does not cover the alloy.
+        `bendGroup: null`, the rule abstains, our figure stands.
+
+135. **What the book adds that we did not have at all (2026).**
+    `sheet-metal-forming.mjs`, pure and unit-tested, every constant carrying its table or
+    equation number:
+      * **Maximum bend radius** (Eq. 5.15, `R_max <= T*E/(2*YS)`) — a bend too GENTLE never
+        yields and the part springs back flat. No DFM tool I know of tests for it and neither
+        did we.
+      * **Springback** (Eq. 5.22 from the material's own YS/E, plus Table 5.4) with the
+        practical 2-8% overbend band from Sec. 5.7. The biggest quality issue in sheet metal,
+        previously absent entirely.
+      * **The neutral-axis shift as a CURVE** (Table 5.3: 0.23 at R/T 0.1 to 0.50 at 10),
+        not the folklore 0.33 — which is what makes a developed length correct.
+      * **Strip layout and utilisation** (Sec. 4.4, Eq. 4.7, Table 4.3) against the book's own
+        70-80% target. Its material-economy chapter opens "the major portion of the cost of
+        producing a stamped component is the material", and our report quoted a piece price
+        while never showing utilisation at all.
+      * **Press force and press class** (Eq. 4.3 with the 30% margin of Eq. 4.4, Eq. 5.7).
+      * **Draw OPERATIONS counted** (Table 6.2) rather than a pass/fail depth ratio — the
+        difference between "drawable" and "three dies".
+    Two limits stated rather than hidden: utilisation is a LOWER bound (rectangular envelope,
+    single-pass layout — real nesting does better), and the draw blank comes from area
+    equivalence because the book's own analytic method (Sec. 6.4.2, Guldinus) needs a meridian
+    profile the recogniser does not extract.
+
+136. **`runDfmRules` never gave the material to the measurement (2026).**
+    *Why:* the alloy was only ever used to pick a threshold, so `extractMeasures` was called
+    with `{ declaredToleranceMm }` and nothing else. The forming rules invert that — the
+    REQUIREMENT is a function of the material (`R_min = c*T`, `d_min/T = 2.8*UTS/sigma_pd`) —
+    so every one of them abstained with "no measurement available" while the measure map held
+    the right answer three lines away. Found by writing the test first and watching four
+    correct rules report nothing.
