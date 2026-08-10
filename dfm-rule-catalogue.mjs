@@ -498,6 +498,82 @@ export const DFM_RULES = [
     source: 'NADCA Product Specification Standards, S-4A-7 (Draft Constants). NADCA standard tolerances give 1 deg minimum on outside surfaces and 2 deg on inside; the 1 deg threshold used here is the outside-wall figure. Designation and values corroborated from secondary summaries — the standard itself is paywalled and has NOT been read.',
     measuredAt: { minDraftDeg: 1.0 },
   },
+  // ── CORED HOLES GET THEIR OWN DRAFT ────────────────────────────────────────
+  //
+  // The draft rules judged every wall against ONE figure, and the audit
+  // (docs/threshold-audit.json, `hpdc-draft-minimum`) flagged that as CONTESTED:
+  // every published draft table separates outside walls, inside walls and cored
+  // holes, roughly 0.5-1 / 1-2 / 2 deg per side. A single threshold is therefore
+  // conservative on the outer skin and lenient exactly where the tooling risk
+  // is — a core pin that binds bends, goes off position, or takes the casting
+  // with it.
+  //
+  // Only the CORED-HOLE half of the split is implemented. Inside-vs-outside WALL
+  // is not, and deliberately: no cheap geometric test separates them reliably
+  // (from a bore wall the outward normal escapes through the bore opening, so
+  // the obvious ray test calls a through-hole an outer surface), and a
+  // plausible-but-wrong classifier here moves tooling money. The wall rules keep
+  // the conservative outside figure and the register keeps saying so.
+  {
+    id: 'hpdc-cored-hole-draft',
+    sourceStatus: 'standard-named',
+    process: 'hpdc',
+    severity: 'medium',
+    title: 'Cored holes below the core-pin draft',
+    measure: 'coredHoleDraftPerSideDeg',
+    compare: 'gte',
+    threshold: 2,
+    unit: 'deg per side',
+    rationale:
+      'A casting shrinks ONTO a core pin rather than away from it, so a cored hole needs more draft than an outside wall, not the same. A pin that binds galls, deflects and puts the hole off position; a bound pin in a deep hole can pull the casting off the ejector side.',
+    fix: 'Take cored holes to 2 degrees per side. Where the hole must be parallel, drill it after casting and cost the secondary operation rather than fighting the pin.',
+    source: 'NADCA Product Specification Standards, S-4A-7 (Draft Constants): cored holes take roughly 2 deg per side against 1 deg on outside walls. Corroborated from secondary summaries — the standard itself is paywalled and has NOT been read first-hand.',
+  },
+  {
+    id: 'hpdc-zinc-cored-hole-draft',
+    sourceStatus: 'industry-consensus',
+    process: 'hpdc-zinc',
+    severity: 'medium',
+    title: 'Cored holes below the core-pin draft',
+    measure: 'coredHoleDraftPerSideDeg',
+    compare: 'gte',
+    threshold: 1,
+    unit: 'deg per side',
+    rationale:
+      'Zinc shrinks onto the pin less than aluminium and releases more readily, so the cored-hole figure is about half the aluminium one — but it is still larger than the wall figure for the same reason.',
+    fix: 'Take cored holes to 1 degree per side in zinc.',
+    source: 'Zinc die-casting design guidance: draft constants roughly half the aluminium values, cored holes drafted more than walls. Same family of secondary sources as the zinc wall rule.',
+  },
+  {
+    id: 'gdc-cored-hole-draft',
+    sourceStatus: 'industry-consensus',
+    process: 'gravity-die',
+    severity: 'medium',
+    title: 'Cored holes below the core draft',
+    measure: 'coredHoleDraftPerSideDeg',
+    compare: 'gte',
+    threshold: 3,
+    unit: 'deg per side',
+    rationale:
+      'Permanent-mould cores are steel and the casting shrinks onto them through a longer, slower solidification than die casting, so cored holes need more draft than the 1.5 deg the walls take.',
+    fix: 'Take cored holes to 3 degrees per side, or use a sand core where the hole must stay parallel.',
+    source: 'Permanent-mould (gravity die) design guidance: cored holes drafted roughly twice the wall figure. Secondary sources, consistent with the same guidance the wall rule cites.',
+  },
+  {
+    id: 'lpdc-cored-hole-draft',
+    sourceStatus: 'industry-consensus',
+    process: 'lpdc',
+    severity: 'medium',
+    title: 'Cored holes below the core draft',
+    measure: 'coredHoleDraftPerSideDeg',
+    compare: 'gte',
+    threshold: 2,
+    unit: 'deg per side',
+    rationale:
+      'Low-pressure filling is gentler than HPDC but the casting still shrinks onto a steel core, and the pin sees the same binding risk over a longer cycle.',
+    fix: 'Take cored holes to 2 degrees per side.',
+    source: 'Permanent-mould and low-pressure die design guidance: cored holes drafted roughly twice the wall figure. Secondary sources, consistent with the wall rule for this family.',
+  },
   {
     id: 'hpdc-internal-radius',
     sourceStatus: 'industry-consensus',

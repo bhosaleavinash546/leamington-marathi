@@ -206,10 +206,16 @@ export default function DfmStudioPage() {
   // The baseline is the PREVIOUS analysis of this part, saved deliberately. It
   // is never auto-selected: comparing rev B against whatever happened to be in
   // the store last is how a report ends up diffing two different parts.
-  const [snapshots, setSnapshots] = useState<Array<{ id: string; label: string; createdAt: string }>>([]);
+  const [snapshots, setSnapshots] = useState<Array<{ id: string; label: string; createdAt: string; savedBy?: string }>>([]);
   const [baselineId, setBaselineId] = useState('');
   const [baseline, setBaseline] = useState<{ label: string; analysis: unknown } | null>(null);
   const [savingSnap, setSavingSnap] = useState(false);
+  // WHICH WORKSPACE this analysis is acting in. Company standards and revision
+  // history now belong to an org rather than a person, and without a picker the
+  // API could serve a team while the page could only ever reach one workspace —
+  // support with no way to use it.
+  const [orgs, setOrgs] = useState<Array<{ id: string; name: string; role: string; members: number }>>([]);
+  const [orgId, setOrgId] = useState('');
   // Which findings the viewer paints onto the model. The analysis already
   // returns the face ids; a finding that says "2 undercut regions" without
   // showing WHERE leaves the engineer to hunt for them.
@@ -324,11 +330,12 @@ export default function DfmStudioPage() {
     if (!token || !result) return;
     const key = String(result.partName || file?.name || 'part')
       .toLowerCase().replace(/\.(step|stp|igs|iges)$/i, '').replace(/[^a-z0-9]+/g, '-').slice(0, 80);
-    fetch(`/api/dfm/snapshots?partKey=${encodeURIComponent(key)}`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`/api/dfm/snapshots?partKey=${encodeURIComponent(key)}${orgId ? `&orgId=${encodeURIComponent(orgId)}` : ''}`,
+      { headers: { Authorization: `Bearer ${token}` } })
       .then(r => (r.ok ? r.json() : null))
       .then(d => { if (d?.snapshots) setSnapshots(d.snapshots); })
       .catch(() => { /* no history is a normal state, not an error to show */ });
-  }, [token, result, file]);
+  }, [token, result, file, orgId]);
 
   async function saveRevision() {
     if (!token || !result) return;
@@ -337,7 +344,7 @@ export default function DfmStudioPage() {
       const res = await fetch('/api/dfm/snapshots', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ analysis: { ...result, fileName: file?.name } }),
+        body: JSON.stringify({ analysis: { ...result, fileName: file?.name }, orgId: orgId || undefined }),
       });
       const d = await res.json();
       if (!res.ok) { setError(d.error || 'Could not save this revision.'); return; }
@@ -351,7 +358,8 @@ export default function DfmStudioPage() {
     setBaselineId(id);
     if (!id || !token) { setBaseline(null); return; }
     try {
-      const res = await fetch(`/api/dfm/snapshots/${encodeURIComponent(id)}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`/api/dfm/snapshots/${encodeURIComponent(id)}${orgId ? `?orgId=${encodeURIComponent(orgId)}` : ''}`,
+        { headers: { Authorization: `Bearer ${token}` } });
       const d = await res.json();
       if (!res.ok) { setError(d.error || 'Could not load that revision.'); setBaseline(null); return; }
       setBaseline({ label: d.label, analysis: d.analysis });
@@ -549,18 +557,30 @@ export default function DfmStudioPage() {
     const h = { Authorization: `Bearer ${token}` };
     fetch('/api/dfm/rules', { headers: h }).then(r => (r.ok ? r.json() : null))
       .then(d => { if (d?.rules) setCatalogue(d.rules); }).catch(() => {});
-    fetch('/api/dfm/rule-overrides', { headers: h }).then(r => (r.ok ? r.json() : null))
+    fetch(`/api/dfm/rule-overrides${orgId ? `?orgId=${encodeURIComponent(orgId)}` : ''}`, { headers: h })
+      .then(r => (r.ok ? r.json() : null))
       .then(d => { if (d?.overrides) setOverrides(d.overrides); }).catch(() => {});
+  }, [token, orgId]);
+
+  // The workspaces this user belongs to. One entry is the normal case and the
+  // picker stays out of the way; more than one means a team, and which one a
+  // standard is being set in is then a decision the page must not make silently.
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/orgs', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (Array.isArray(d) && d.length) { setOrgs(d); setOrgId(prev => prev || d[0].id); } })
+      .catch(() => { /* orgs unreachable: the endpoints fall back to the personal workspace */ });
   }, [token]);
 
   async function saveOverride(ruleId: string, body: RuleOverride | null) {
     if (!token) return;
     setSavingRule(ruleId);
     try {
-      const res = await fetch(`/api/dfm/rule-overrides/${encodeURIComponent(ruleId)}`, {
+      const res = await fetch(`/api/dfm/rule-overrides/${encodeURIComponent(ruleId)}${!body && orgId ? `?orgId=${encodeURIComponent(orgId)}` : ''}`, {
         method: body ? 'PUT' : 'DELETE',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        ...(body ? { body: JSON.stringify(body) } : {}),
+        ...(body ? { body: JSON.stringify({ ...body, orgId: orgId || undefined }) } : {}),
       });
       const d = await res.json();
       if (!res.ok) { setError(d.error || 'Could not save the standard.'); return; }
@@ -1196,13 +1216,26 @@ export default function DfmStudioPage() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:text-white hover:border-white/25 text-xs transition-colors disabled:opacity-50">
                   {savingSnap ? <ButtonSpinner size={12} /> : null} Save this revision
                 </button>
+                {orgs.length > 1 && (
+                  <label className="flex items-center gap-2 text-xs text-slate-400">
+                    Workspace
+                    <select value={orgId} onChange={e => setOrgId(e.target.value)}
+                      className="bg-navy-800 border border-white/10 rounded-lg px-2 py-1.5 text-slate-200 text-xs">
+                      {orgs.map(o => (
+                        <option key={o.id} value={o.id}>{o.name} · {o.role}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
                 <label className="flex items-center gap-2 text-xs text-slate-400">
                   Baseline
                   <select value={baselineId} onChange={e => void loadBaseline(e.target.value)}
                     className="bg-navy-800 border border-white/10 rounded-lg px-2 py-1.5 text-slate-200 text-xs">
                     <option value="">None — report this revision on its own</option>
                     {snapshots.map(sn => (
-                      <option key={sn.id} value={sn.id}>{sn.label}</option>
+                      <option key={sn.id} value={sn.id}>
+                        {sn.label}{sn.savedBy && orgs.length > 1 ? ` · ${sn.savedBy}` : ''}
+                      </option>
                     ))}
                   </select>
                 </label>
@@ -1233,6 +1266,7 @@ export default function DfmStudioPage() {
                   {snapshots.length
                     ? 'Choose a saved revision to compare this analysis against.'
                     : 'Save this analysis, then compare the next revision of the same part against it.'}
+                  {orgs.length > 1 && ' Saved revisions and company standards belong to the workspace, so your colleagues see them too.'}
                 </p>
               )}
             </div>

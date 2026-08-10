@@ -132,6 +132,19 @@ async function main() {
       record(fx.file, 'zero-draft @+Z', zAxis.zeroDraftFaceCount === t.zeroDraftFaceCountAtZ,
         `${zAxis.zeroDraftFaceCount} vs ${t.zeroDraftFaceCountAtZ}`);
     }
+    // CORED HOLES, measured from the surface rather than the mesh. The first
+    // implementation derived these from the tessellation and reported 12% of a
+    // clean 3-degree bore as under-drafted; this fixture is what caught it and
+    // this check is what keeps it caught.
+    if (t.coredHoleCount !== undefined) {
+      const c = (g.dfm?.draft?.coredHoles) || {};
+      record(fx.file, 'cored hole count', c.count === t.coredHoleCount,
+        `${c.count} vs ${t.coredHoleCount}`);
+      record(fx.file, 'cored hole draft', near(c.minDraftPerSideDeg, t.coredHoleMinDraftPerSideDeg, 0.02),
+        `${c.minDraftPerSideDeg} vs ${t.coredHoleMinDraftPerSideDeg} deg/side (exact from the cone, not the mesh)`);
+      record(fx.file, 'cored hole area', near(c.totalAreaMm2, t.coredHoleAreaMm2, 0.01),
+        `${c.totalAreaMm2} vs ${t.coredHoleAreaMm2} mm2`);
+    }
     if (t.minWallDraftDeg !== undefined) {
       record(fx.file, 'min wall draft', near(zAxis.minWallDraftDeg, t.minWallDraftDeg, 0.02),
         `${zAxis.minWallDraftDeg} vs ${t.minWallDraftDeg} deg`);

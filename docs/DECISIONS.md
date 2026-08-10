@@ -1708,3 +1708,60 @@ Format: decision · why · what would change it.
     figure where the published NADCA constants split inside/outside/cored-hole draft, and
     `hpdc-wall-thickness-range` cites a standard that, by every summary, sets no absolute
     minimum wall at all.
+
+131. **"0 of 216 rest on industry consensus" — three confident zeros (2026).**
+    *Why:* the appendix read each provenance grade as `?? 0`, so an analysis that arrived
+    without the server's catalogue counts printed zeros that look measured, in the one
+    paragraph whose whole subject is how far a reader should trust these numbers. The same
+    `Number(null) === 0` trap this codebase has a rule against, and it survived because no QA
+    fixture carried a catalogue block either — so the ABSENT branch was the only one anyone
+    had ever seen rendered. *Changes it:* absent counts say so in words; `DFM_RESULT_FULL`
+    now carries the block, so both branches render in QA.
+
+132. **The DFM store belonged to a person, not a plant (2026).**
+    *Why:* `dfm_rule_overrides` and `dfm_snapshots` were keyed on `user_id`, which made "our
+    company standard" mean "my standard" — a colleague could not see a threshold the plant
+    had agreed, and the revision history of a part belonged to whoever happened to upload it.
+    `routes/orgs.mjs` had existed for a while saying of itself *"no org-scoped data migration
+    yet — this is the substrate."* *Changes it:* both tables key on the ORG, with the
+    personal workspace as the default so a lone user notices nothing. `orgAccess(db)` lifts
+    the org helpers out of the route module so a second feature can ask "which org, and what
+    may they do in it" without duplicating the query, and it CREATES the org schema itself —
+    `registerDfmRoutes` runs before `registerOrgRoutes`, so a backfill that resolved users to
+    orgs would have hit a table that did not exist yet and, being best-effort, migrated
+    nothing on the one boot where it mattered.
+    Two decisions worth stating: **viewer reads, member writes** — a quality engineer needs
+    to see the threshold their plant runs to without being able to move it; and **a user who
+    names an org they do not belong to gets the same 403 as one naming a fictional org**, so
+    membership cannot be probed by comparing error codes. Existing rows are backfilled to
+    each user's personal org rather than dropped: deleting a plant's retuned thresholds
+    during a migration is not an acceptable way to add a column.
+
+133. **A cored hole is not a wall, and its draft is not a mesh statistic (2026).**
+    *Why:* the audit flagged `hpdc-draft-minimum` as CONTESTED — every published draft table
+    separates outside walls, inside walls and cored holes (~0.5-1 / 1-2 / 2 deg per side) and
+    the rule applied one figure to all of it, conservative on the skin and lenient exactly
+    where the tooling risk is. *Changes it:* four cored-hole draft rules across the die-cast
+    and permanent-mould families, judged on the bore walls the analytic cylinder pass
+    identifies.
+    **Two bugs the analytic fixture caught, both of which would have shipped:**
+      * The bore detector only accepted CYLINDERS. A drafted cored hole is a CONE, so the
+        rule could only ever fire on undrafted bores and would abstain on every properly
+        drafted one — a rule that produces bad news and never good news is worse than no
+        rule. `_bore_wall_faces` now accepts both, with blends and chamfers skipped because a
+        chamfer is a cone too.
+      * Draft was derived from the TESSELLATION, as wall draft is. On a flat wall that is
+        exact; on a cone the facets chord the surface and their normals spread either side of
+        the true angle — a clean 3.000 deg bore reported **12% of its area "below 2 deg"**, a
+        false finding manufactured by the measurement. A cone knows its own half-angle:
+        `SemiAngle()` is exact, mesh-independent, and it is the number the sources actually
+        quote. The measure is now the ANGLE and the tessellation is not involved.
+    A third: the first `_bore_wall_faces` borrowed its OCP imports from the caller's scope and
+    raised `NameError` inside a bare `except Exception: continue`, which returned an empty
+    set and read, all the way up to the report, as "this part has no cored holes". A coding
+    error must not be able to impersonate a measurement.
+    **INSIDE-vs-OUTSIDE WALL is deliberately not implemented.** From a bore wall the outward
+    normal escapes through the bore opening, so the obvious ray test calls a through-hole an
+    outer surface, and every cheap variant fails similarly. The wall rules keep the
+    conservative outside figure, the register keeps the threshold marked contested, and the
+    catalogue says why in the rule itself.

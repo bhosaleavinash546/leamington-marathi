@@ -321,6 +321,16 @@ export function exportDfmPdf(
   const gradeCounts: Record<string, number> = dataIn.catalogue?.byGrade ?? {};
   const totalCatalogueRules = dataIn.catalogue?.total
     ?? Object.values(gradeCounts).reduce((a, b) => a + b, 0);
+  // ABSENT IS NOT ZERO.
+  //
+  // The appendix paragraph read each grade as `?? 0`, so an analysis that
+  // arrived without the server's catalogue counts printed "0 of 216 rest on
+  // industry consensus; 0 name a published standard" — three confident zeros
+  // that are the opposite of the truth, in the one paragraph whose subject is
+  // how far a reader should trust these numbers. It is the same
+  // `Number(null) === 0` trap this codebase has a rule against, and it survived
+  // because the QA fixture never carried a catalogue block either.
+  const haveGrades = Object.keys(gradeCounts).length > 0 && totalCatalogueRules > 0;
   // FIGURES ARE A SEPARATE ARGUMENT ON PURPOSE. deepPdfSafe walks every string
   // in `dataIn` character by character with rope concatenation; a megabyte of
   // base64 through that loop would visibly jank the export, and any non-string
@@ -1645,11 +1655,20 @@ export function exportDfmPdf(
       + 'drawn and once with the rule satisfied. Findings the engines cannot price say so, with the reason.'],
     ['Thresholds',
       `Every DIMENSION here was measured from your file and is reproducible. The GUIDELINES they are compared `
-      + `against are not of the same standing: ${gradeCounts['industry-consensus'] ?? 0} of ${totalCatalogueRules} `
-      + `rest on industry consensus — widely published and mutually consistent, but not audited against a primary `
-      + `standard and not validated against measured scrap data. ${gradeCounts['standard-named'] ?? 0} name a `
-      + `published standard that has not been read first-hand; ${gradeCounts['engine-derived'] ?? 0} come from this `
-      + `tool's own model. Every finding carries its grade. Treat a finding as a screening result that opens a `
+      + `against are not of the same standing. `
+      + (haveGrades
+        ? `${gradeCounts['industry-consensus'] ?? 0} of ${totalCatalogueRules} rest on industry consensus — `
+          + `widely published and mutually consistent, but not audited against a primary standard and not `
+          + `validated against measured scrap data. ${gradeCounts['standard-named'] ?? 0} name a published `
+          + `standard that has not been read first-hand; ${gradeCounts['engine-derived'] ?? 0} come from this `
+          + `tool's own model. `
+        // Said plainly rather than as three zeros. A reader who is told the
+        // counts are missing can go and get them; one who is shown "0 of 216"
+        // has been misinformed by a number that looks measured.
+        : 'The catalogue-wide counts were not sent with this analysis, so they are not stated here — '
+          + 'each finding still carries its own grade beside its source, which is where the claim that '
+          + 'matters for that finding lives. ')
+      + `Every finding carries its grade. Treat a finding as a screening result that opens a `
       + `conversation with your supplier — not as a specification.`],
     ['Three outcomes, not two',
       'Failed, passed, and NOT EVALUATED. A rule whose measurement this part does not provide is listed as '

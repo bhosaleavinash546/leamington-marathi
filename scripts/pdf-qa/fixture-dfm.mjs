@@ -333,6 +333,17 @@ export const DFM_RESULT_FULL = {
   partName: DFM_RESULT.partName + ' (full)',
   processFamily: 'hpdc',
   material: 'Aluminium A356 (cast)',
+  // THE CATALOGUE COUNTS, on the "everything the API knows" fixture only.
+  //
+  // No fixture carried this block, so the appendix's provenance paragraph was
+  // only ever rendered down its ABSENT branch — which printed "0 of 216 rest on
+  // industry consensus" and looked, to every reader of the QA output, like a
+  // measured fact. Both branches now render, and the base fixture keeps the
+  // absent one because that is the case the wording has to get right.
+  catalogue: {
+    total: 216,
+    byGrade: { 'industry-consensus': 109, 'standard-named': 3, 'engine-derived': 4, 'customer-standard': 1 },
+  },
   ruleOverrides: {
     'hpdc-core-ld': { enabled: true, threshold: 10, note: 'our tool room will not run a core pin past 10 L/D' },
     'hpdc-internal-radius': { enabled: false },

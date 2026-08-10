@@ -58,7 +58,28 @@ const numOr = (v, d) => (Number.isFinite(Number(v)) ? Number(v) : d);
 //: reliably time out at the proxy rather than return a bigger table.
 const BATCH_MAX = 25;
 
-export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
+export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }) {
+  // WHOSE standards, and whose revision history.
+  //
+  // Both stores were keyed on `user_id`, which made "our company standard" mean
+  // "my standard": a colleague could not see a threshold the plant had agreed,
+  // and the revision history of a part belonged to whoever happened to upload
+  // it. That is a single-player tool wearing a team product's language. Both
+  // now key on the ORG, with the personal workspace as the default so a lone
+  // user notices nothing.
+  const access = orgAccess ? orgAccess(db) : null;
+
+  /**
+   * The org this request acts in, or null if the user may not do this here.
+   *
+   * `viewer` may read; `member` and above may write. The split matters: a
+   * quality engineer should be able to read the standards their plant runs to
+   * without being able to retune them.
+   */
+  function scope(req, minRole = 'member') {
+    if (!access) return { orgId: req.user.id, role: 'owner' };   // orgs not wired: fall back to per-user
+    return access.resolve(req.user, req.body?.orgId || req.query?.orgId, minRole);
+  }
   // ── Company standards ──────────────────────────────────────────────────────
   // A plant's own guideline outranks a published one, and this is how DFMPro
   // gets bought: an organisation encodes ITS standards rather than accepting a
@@ -68,6 +89,11 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
   try {
     db?.exec(`CREATE TABLE IF NOT EXISTS dfm_rule_overrides (
       user_id    TEXT NOT NULL,
+      -- WHOSE standard this is. Declared here for a fresh database and ALTERed
+      -- in for an existing one; the unique index below needs the column to
+      -- exist, and creating it first was a silent failure that left the upsert
+      -- with no conflict target and every save returning 500.
+      org_id     TEXT,
       rule_id    TEXT NOT NULL,
       enabled    INTEGER NOT NULL DEFAULT 1,
       threshold  TEXT,
@@ -75,13 +101,44 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
       updated_at TEXT NOT NULL,
       PRIMARY KEY (user_id, rule_id)
     )`);
+    // The key moves with the scope. SQLite cannot re-key in place, so the
+    // constraint is enforced by a UNIQUE INDEX instead — cheaper than a table
+    // rebuild and it survives the ALTER that adds the column.
+    db?.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_dfm_overrides_org_rule ON dfm_rule_overrides (org_id, rule_id)');
   } catch { /* migration is best-effort, same as the rest of the schema block */ }
 
-  /** Overrides for one user, keyed by rule id, in the shape runDfmRules takes. */
-  function overridesFor(userId) {
-    if (!db || !userId) return undefined;
+  /**
+   * ONE-TIME BACKFILL, user -> that user's personal org.
+   *
+   * Adding the column is the easy half. The half that matters is that every row
+   * written before this change still belongs to somebody: dropping them, or
+   * leaving org_id null and filtering it out, would silently delete a plant's
+   * retuned thresholds and every saved revision. So each distinct historic
+   * user_id is resolved to their personal org — the same org `resolve()` gives
+   * them by default — and the rows move with them. Idempotent: rows that
+   * already carry an org are left alone.
+   */
+  function backfillOrgIds(table) {
+    if (!db || !access) return;
+    try { db.exec(`ALTER TABLE ${table} ADD COLUMN org_id TEXT`); } catch { /* already there */ }
     try {
-      const rows = db.prepare('SELECT rule_id, enabled, threshold, note FROM dfm_rule_overrides WHERE user_id = ?').all(userId);
+      const orphans = db.prepare(`SELECT DISTINCT user_id FROM ${table} WHERE org_id IS NULL`).all();
+      for (const { user_id: uid } of orphans) {
+        const row = db.prepare('SELECT id, email, data FROM users WHERE id = ?').get(uid);
+        if (!row) continue;                       // a deleted user's rows stay orphaned rather than land in someone else's org
+        let name;
+        try { name = JSON.parse(row.data || '{}').name; } catch { name = undefined; }
+        const org = access.ensurePersonalOrg({ id: row.id, email: row.email, name });
+        db.prepare(`UPDATE ${table} SET org_id = ? WHERE user_id = ? AND org_id IS NULL`).run(org.id, uid);
+      }
+    } catch { /* best-effort, same as the schema block */ }
+  }
+
+  /** Overrides for one org, keyed by rule id, in the shape runDfmRules takes. */
+  function overridesFor(orgId) {
+    if (!db || !orgId) return undefined;
+    try {
+      const rows = db.prepare('SELECT rule_id, enabled, threshold, note FROM dfm_rule_overrides WHERE org_id = ?').all(orgId);
       if (!rows.length) return undefined;
       const out = {};
       for (const r of rows) {
@@ -110,13 +167,22 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
     db?.exec(`CREATE TABLE IF NOT EXISTS dfm_snapshots (
       id         TEXT PRIMARY KEY,
       user_id    TEXT NOT NULL,
+      org_id     TEXT,
+      saved_by   TEXT,
       part_key   TEXT NOT NULL,
       label      TEXT NOT NULL,
       created_at TEXT NOT NULL,
       payload    TEXT NOT NULL
     )`);
+    // WHO saved it. With history shared across a team, "Rev A - 2026-07-02" is
+    // not enough to know whose analysis you are comparing against.
+    try { db?.exec('ALTER TABLE dfm_snapshots ADD COLUMN saved_by TEXT'); } catch { /* already there */ }
     db?.exec('CREATE INDEX IF NOT EXISTS idx_dfm_snapshots_user_part ON dfm_snapshots (user_id, part_key)');
+    db?.exec('CREATE INDEX IF NOT EXISTS idx_dfm_snapshots_org_part ON dfm_snapshots (org_id, part_key)');
   } catch { /* migration is best-effort, same as the rest of the schema block */ }
+
+  backfillOrgIds('dfm_rule_overrides');
+  backfillOrgIds('dfm_snapshots');
 
   /** Two revisions of one part share a key; case and spacing must not split them. */
   const partKeyOf = (a) => String(a?.partName || a?.fileName || 'part')
@@ -153,20 +219,24 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
     if (!db) return res.json({ snapshots: [] });
     const key = String(req.query.partKey || '').slice(0, 80);
     try {
+      const sc = scope(req, 'viewer');
+      if (!sc) return res.status(403).json({ error: 'You are not a member of that workspace.' });
       const rows = key
-        ? db.prepare('SELECT id, label, created_at, part_key FROM dfm_snapshots WHERE user_id = ? AND part_key = ? ORDER BY created_at DESC LIMIT 20')
-          .all(req.user.id, key)
-        : db.prepare('SELECT id, label, created_at, part_key FROM dfm_snapshots WHERE user_id = ? ORDER BY created_at DESC LIMIT 20')
-          .all(req.user.id);
-      res.json({ snapshots: rows.map((r) => ({ id: r.id, label: r.label, createdAt: r.created_at, partKey: r.part_key })) });
+        ? db.prepare('SELECT id, label, created_at, part_key, saved_by FROM dfm_snapshots WHERE org_id = ? AND part_key = ? ORDER BY created_at DESC LIMIT 20')
+          .all(sc.orgId, key)
+        : db.prepare('SELECT id, label, created_at, part_key, saved_by FROM dfm_snapshots WHERE org_id = ? ORDER BY created_at DESC LIMIT 20')
+          .all(sc.orgId);
+      res.json({ snapshots: rows.map((r) => ({ id: r.id, label: r.label, createdAt: r.created_at, partKey: r.part_key, savedBy: r.saved_by })) });
     } catch { res.json({ snapshots: [] }); }
   });
 
   app.get('/api/dfm/snapshots/:id', requireAuth, (req, res) => {
     if (!db) return res.status(404).json({ error: 'No store configured.' });
     try {
-      const row = db.prepare('SELECT payload, label, created_at FROM dfm_snapshots WHERE id = ? AND user_id = ?')
-        .get(req.params.id, req.user.id);
+      const sc = scope(req, 'viewer');
+      if (!sc) return res.status(404).json({ error: 'No such snapshot.' });
+      const row = db.prepare('SELECT payload, label, created_at FROM dfm_snapshots WHERE id = ? AND org_id = ?')
+        .get(req.params.id, sc.orgId);
       if (!row) return res.status(404).json({ error: 'No such snapshot.' });
       res.json({ label: row.label, createdAt: row.created_at, analysis: JSON.parse(row.payload) });
     } catch { res.status(500).json({ error: 'Could not read that snapshot.' }); }
@@ -176,25 +246,30 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
     if (!db) return res.status(503).json({ error: 'No store configured.' });
     const analysis = req.body?.analysis;
     if (!analysis?.results) return res.status(400).json({ error: 'An analysis with results is required.' });
+    const sc = scope(req, 'member');
+    if (!sc) return res.status(403).json({ error: 'Only a member of this workspace can save a revision.' });
     const key = partKeyOf(analysis);
     const label = String(req.body?.label || '').trim().slice(0, 80)
       || `${analysis.partName || analysis.fileName || 'Part'} — ${new Date().toISOString().slice(0, 10)}`;
     const id = `snap_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
     try {
-      db.prepare('INSERT INTO dfm_snapshots (id, user_id, part_key, label, created_at, payload) VALUES (?,?,?,?,?,?)')
-        .run(id, req.user.id, key, label, new Date().toISOString(), JSON.stringify(compactForDiff(analysis)));
+      db.prepare('INSERT INTO dfm_snapshots (id, org_id, user_id, saved_by, part_key, label, created_at, payload) VALUES (?,?,?,?,?,?,?,?)')
+        .run(id, sc.orgId, req.user.id, req.user.email || req.user.id, key, label,
+             new Date().toISOString(), JSON.stringify(compactForDiff(analysis)));
       // Twenty per part is plenty of history and bounds the table without a cron.
-      db.prepare(`DELETE FROM dfm_snapshots WHERE user_id = ? AND part_key = ? AND id NOT IN (
-        SELECT id FROM dfm_snapshots WHERE user_id = ? AND part_key = ? ORDER BY created_at DESC LIMIT 20)`)
-        .run(req.user.id, key, req.user.id, key);
-      res.json({ id, label, partKey: key });
+      db.prepare(`DELETE FROM dfm_snapshots WHERE org_id = ? AND part_key = ? AND id NOT IN (
+        SELECT id FROM dfm_snapshots WHERE org_id = ? AND part_key = ? ORDER BY created_at DESC LIMIT 20)`)
+        .run(sc.orgId, key, sc.orgId, key);
+      res.json({ id, label, partKey: key, orgId: sc.orgId });
     } catch (e) { res.status(500).json({ error: 'Could not save that revision.' }); }
   });
 
   app.delete('/api/dfm/snapshots/:id', requireAuth, (req, res) => {
     if (!db) return res.status(503).json({ error: 'No store configured.' });
     try {
-      db.prepare('DELETE FROM dfm_snapshots WHERE id = ? AND user_id = ?').run(req.params.id, req.user.id);
+      const sc = scope(req, 'member');
+      if (!sc) return res.status(403).json({ error: 'Only a member of this workspace can delete a revision.' });
+      db.prepare('DELETE FROM dfm_snapshots WHERE id = ? AND org_id = ?').run(req.params.id, sc.orgId);
       res.json({ ok: true });
     } catch { res.status(500).json({ error: 'Could not delete that revision.' }); }
   });
@@ -215,9 +290,14 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
     res.json(dfmOptions());
   });
 
-  /** This workspace's rule overrides, alongside the published defaults. */
+  /** This ORG's rule overrides, alongside the published defaults. */
   app.get('/api/dfm/rule-overrides', requireAuth, (req, res) => {
-    res.json({ overrides: overridesFor(req.user?.id) ?? {} });
+    // A viewer may READ the standards their plant runs to. Only a member and
+    // above may retune them — a quality engineer needs to see the threshold
+    // without being able to move it.
+    const sc = scope(req, 'viewer');
+    if (!sc) return res.status(403).json({ error: 'You are not a member of that workspace.' });
+    res.json({ orgId: sc.orgId, role: sc.role, overrides: overridesFor(sc.orgId) ?? {} });
   });
 
   /**
@@ -230,6 +310,8 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
    */
   app.put('/api/dfm/rule-overrides/:ruleId', requireAuth, (req, res) => {
     if (!db) return res.status(503).json({ error: 'No database configured.' });
+    const sc = scope(req, 'member');
+    if (!sc) return res.status(403).json({ error: 'Only a member of this workspace can set a company standard.' });
     const rule = DFM_RULES.find(r => r.id === req.params.ruleId);
     if (!rule) return res.status(404).json({ error: `Unknown rule: ${req.params.ruleId}` });
 
@@ -251,26 +333,31 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
     const stored = threshold === null || threshold === undefined ? null
       : JSON.stringify(rule.compare === 'between' ? threshold.map(Number) : Number(threshold));
     try {
-      db.prepare(`INSERT INTO dfm_rule_overrides (user_id, rule_id, enabled, threshold, note, updated_at)
-                  VALUES (?, ?, ?, ?, ?, ?)
-                  ON CONFLICT(user_id, rule_id) DO UPDATE SET
+      // `user_id` is still written: WHO set a company standard is worth keeping
+      // even once WHOSE it is has moved to the org.
+      db.prepare(`INSERT INTO dfm_rule_overrides (org_id, user_id, rule_id, enabled, threshold, note, updated_at)
+                  VALUES (?, ?, ?, ?, ?, ?, ?)
+                  ON CONFLICT(org_id, rule_id) DO UPDATE SET
                     enabled = excluded.enabled, threshold = excluded.threshold,
-                    note = excluded.note, updated_at = excluded.updated_at`)
-        .run(req.user.id, rule.id, enabled ? 1 : 0, stored,
+                    note = excluded.note, updated_at = excluded.updated_at,
+                    user_id = excluded.user_id`)
+        .run(sc.orgId, req.user.id, rule.id, enabled ? 1 : 0, stored,
              note ? String(note).slice(0, 500) : null, new Date().toISOString());
     } catch (e) {
       return res.status(500).json({ error: `Could not save: ${e.message}` });
     }
-    res.json({ ok: true, overrides: overridesFor(req.user.id) ?? {} });
+    res.json({ ok: true, orgId: sc.orgId, overrides: overridesFor(sc.orgId) ?? {} });
   });
 
   app.delete('/api/dfm/rule-overrides/:ruleId', requireAuth, (req, res) => {
     if (!db) return res.status(503).json({ error: 'No database configured.' });
+    const sc = scope(req, 'member');
+    if (!sc) return res.status(403).json({ error: 'Only a member of this workspace can clear a company standard.' });
     try {
-      db.prepare('DELETE FROM dfm_rule_overrides WHERE user_id = ? AND rule_id = ?')
-        .run(req.user.id, req.params.ruleId);
+      db.prepare('DELETE FROM dfm_rule_overrides WHERE org_id = ? AND rule_id = ?')
+        .run(sc.orgId, req.params.ruleId);
     } catch { /* deleting something absent is not an error */ }
-    res.json({ ok: true, overrides: overridesFor(req.user.id) ?? {} });
+    res.json({ ok: true, orgId: sc.orgId, overrides: overridesFor(sc.orgId) ?? {} });
   });
 
   /** The catalogue, so the UI can show what will be checked and cite thresholds. */
@@ -381,7 +468,7 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
       const v = Number(req.body?.tightestToleranceMm);
       return Number.isFinite(v) && v > 0 ? v : undefined;
     })();
-    const ruleOpts = { material, overrides: overridesFor(req.user?.id), declaredToleranceMm };
+    const ruleOpts = { material, overrides: overridesFor(scope(req, 'viewer')?.orgId), declaredToleranceMm };
     const ruleResults = family ? [runDfmRules(geo, family, ruleOpts)] : runAllDfmRules(geo, ruleOpts);
     const familyBasis = selected.basis === 'chosen'
       ? (selected.chosenProcess ? `chosen — ${selected.chosenProcess}` : 'chosen')
@@ -595,7 +682,7 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
     const region = req.body?.region || 'Germany';
     const annualVolume = numOr(req.body?.annualVolume, 50000);
     const chosenProcess = String(req.body?.costProcess || '').trim();
-    const overrides = overridesFor(req.user?.id);
+    const overrides = overridesFor(scope(req, 'viewer')?.orgId);
     const density = MATERIALS[material]?.density;
 
     const rows = [];

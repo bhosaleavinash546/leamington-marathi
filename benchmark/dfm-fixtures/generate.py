@@ -27,7 +27,7 @@ import sys
 from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
 from OCP.BRepBuilderAPI import BRepBuilderAPI_MakePolygon
 from OCP.BRepOffsetAPI import BRepOffsetAPI_ThruSections
-from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder
+from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder, BRepPrimAPI_MakeCone
 from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
 from OCP.Interface import Interface_Static
 from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
@@ -83,6 +83,31 @@ def plate_two_holes(outdir):
     s = BRepAlgoAPI_Cut(s, blind).Shape()
     vol = 60 * 40 * 10 - math.pi * 25 * 10 - math.pi * 16 * 6
     return _write(s, os.path.join(outdir, "plate-two-holes.step")), round(vol, 1)
+
+
+def cored_hole_draft3(outdir):
+    """Plate 80x80x20 with ONE conical through-hole at EXACTLY 3.000 deg per side.
+
+    Truth: the bore wall is a cone whose half-angle is 3.000 deg, so its draft
+    against the +Z draw is 3.000 deg everywhere. The four outside walls are
+    vertical — 0 deg — which is the point: a part whose WALLS are undrafted and
+    whose CORED HOLE is well drafted is exactly the case one combined draft
+    figure cannot express. The wall rule must fail it and the cored-hole rule
+    must pass it.
+
+    Expected, analytically:
+      coredHoleDraft.areaBelowDraftPct["2"] == 0     (3 deg clears a 2 deg limit)
+      coredHoleDraft.areaBelowDraftPct["5"] == 100   (3 deg is short of 5)
+      coredHoleDraft.minDraftDeg           == 3.0
+    """
+    h = 20.0
+    r_bot = 6.0
+    r_top = r_bot + math.tan(math.radians(3.0)) * h      # cone opens toward +Z
+    box = BRepPrimAPI_MakeBox(gp_Pnt(-40, -40, 0), 80, 80, h).Shape()
+    cone = BRepPrimAPI_MakeCone(gp_Ax2(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1)),
+                                r_bot, r_top, h).Shape()
+    cut = BRepAlgoAPI_Cut(box, cone).Shape()
+    return _write(cut, os.path.join(outdir, "cored-hole-draft3.step")), 3.0
 
 
 def frustum_draft3(outdir):
@@ -723,7 +748,7 @@ def overhang_wedge(outdir):
 def main():
     outdir = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__))
     os.makedirs(outdir, exist_ok=True)
-    for fn in (plate_two_holes, frustum_draft3, box_side_hole, shell_wall25, boss_plate,
+    for fn in (plate_two_holes, frustum_draft3, cored_hole_draft3, box_side_hole, shell_wall25, boss_plate,
                counterbore_plate, countersink_plate, slot_vs_pocket, through_hole_and_pocket,
                filleted_pocket, filleted_slot, chamfered_box, thin_plate,
                folded_bracket, ribbed_plate, bolted_assembly,

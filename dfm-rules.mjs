@@ -405,6 +405,15 @@ export function extractMeasures(geo = {}, opts = {}) {
     // hot forging (5-7). Each rule names the angle it actually means in
     // `draftCutoffDeg` and the evaluator reads that point off this curve.
     _draftCurve: draft.wallAreaBelowDraftPct || undefined,
+    // THE SMALLEST CORED-HOLE DRAFT, in degrees per side, read from the cone
+    // surface itself rather than from the tessellation. An area percentage
+    // derived from facets spread either side of the true angle and reported 12%
+    // of a clean 3-degree bore as "below 2 degrees" — a false finding produced
+    // by the measurement, not by the part. Absent, not zero, when the part has
+    // no recognised bore: a part with no cored holes has not passed a
+    // cored-hole rule.
+    coredHoleDraftPerSideDeg: num((draft.coredHoles || {}).minDraftPerSideDeg),
+    coredHoleCount: num((draft.coredHoles || {}).count),
 
     // THE OVERHANG CURVE, same shape and same discipline as the draft curve.
     // 45 degrees is a rule of thumb, not a constant: some alloys and parameter

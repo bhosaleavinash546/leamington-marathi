@@ -237,7 +237,7 @@ def _extract_feature_table(wrapped, extents, skip_faces=None, solid_classifier=N
             if slot is None:
                 slot = key
                 groups[slot] = []
-            groups[slot].append((min(s0, s1), max(s0, s1), hole, face, ad, cyl))
+            groups[slot].append((min(s0, s1), max(s0, s1), hole, face, ad, cyl, _i))
         except Exception:
             continue
 
@@ -263,7 +263,7 @@ def _extract_feature_table(wrapped, extents, skip_faces=None, solid_classifier=N
 
         for cluster in clusters:
             arcs = []
-            for _s0, _s1, _h, face, ad, cyl in cluster:
+            for _s0, _s1, _h, face, ad, cyl, _fid in cluster:
                 arc = _cyl_arc(face, ad, cyl, frame)
                 if arc:
                     arcs.append(arc)
@@ -289,6 +289,15 @@ def _extract_feature_table(wrapped, extents, skip_faces=None, solid_classifier=N
                    bool(through) if through is not None else None)
             ident = tuple(round(v, 2) for v in (s_lo, s_hi) + foot + dc)
             instances.setdefault(key, set()).add(ident)
+            # WHICH FACES ARE BORE WALLS.
+            #
+            # The draft sweep judges every wall against one figure, and a cored
+            # hole is not a wall: the casting shrinks ONTO the core rather than
+            # away from the cavity, which is why every published draft table
+            # gives cored holes their own — larger — requirement. Splitting them
+            # needs to know which triangles belong to a bore, and this loop is
+            # the only place that knows. The ids were being discarded.
+
             # Axis direction is what a machining SETUP is counted from — a part
             # is re-fixtured to reach features approached from a new direction.
             # The axis POINT is needed too: two holes can share a direction and
@@ -313,7 +322,88 @@ def _extract_feature_table(wrapped, extents, skip_faces=None, solid_classifier=N
             "instancesXYZ": anchor[2][:24] if anchor else None,
         })
     rows.sort(key=lambda r: (r["kind"], r["diaMm"], r["depthMm"]))
-    return rows
+    return rows, _bore_wall_faces(wrapped, skip)
+
+
+def _bore_wall_faces(wrapped, skip):
+    """Face ids of every BORE WALL — cylindrical or CONICAL.
+
+    A drafted cored hole is a CONE, and the cylinder pass above only inspects
+    GeomAbs_Cylinder. Deriving the bore set from that pass therefore found
+    straight holes and missed tapered ones — so a cored-hole draft rule fed by it
+    could only ever fire on undrafted bores and would abstain on every properly
+    drafted one. A rule that can produce bad news and never good news is worse
+    than no rule, and the analytic 3-degree cored-hole fixture is what caught it.
+
+    The hole/boss test is the same orientation comparison the cylinder pass uses:
+    material on the outside of the surface means a hole, on the inside a boss.
+    Blends and chamfers are skipped by the caller's `skip` set — a chamfer is a
+    cone too, and counting one as a cored hole would judge an edge break against
+    a core-pin draft limit.
+
+    THE DRAFT ANGLE COMES FROM THE SURFACE, NOT THE MESH.
+    ----------------------------------------------------
+    The first version derived cored draft from the tessellation, the way wall
+    draft is derived. On a flat wall that is exact; on a CONE it is not, because
+    the facets chord the surface and their normals spread either side of the true
+    angle. Measured on the analytic 3-degree fixture, that spread reported 12% of
+    the bore area as "below 2 degrees" on a hole that is a clean 3 degrees
+    everywhere — a false finding at any sensible threshold, produced by the
+    measurement method rather than by the part.
+
+    A cone knows its own half-angle. `SemiAngle()` is exact, mesh-independent,
+    and it is the number every published draft table actually quotes ("2 deg per
+    side"). A cylinder is exactly 0. So the measure is the ANGLE, and the
+    tessellation is not involved at all.
+    """
+    # Imported HERE, not relied on from the caller's scope. The first version
+    # borrowed them and raised NameError inside a bare `except Exception:
+    # continue` — which returned an empty set and read, all the way up to the
+    # report, as "this part has no cored holes". A coding error must not be able
+    # to impersonate a measurement.
+    from OCP.TopAbs import TopAbs_FACE, TopAbs_Orientation
+    from OCP.TopoDS import TopoDS
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.GeomAbs import GeomAbs_SurfaceType
+    from OCP.TopTools import TopTools_IndexedMapOfShape
+    from OCP.TopExp import TopExp
+
+    from OCP.GProp import GProp_GProps
+    from OCP.BRepGProp import BRepGProp
+
+    out = []
+    fmap = TopTools_IndexedMapOfShape()
+    TopExp.MapShapes_s(wrapped, TopAbs_FACE, fmap)
+    for i in range(1, fmap.Size() + 1):
+        if i in skip:
+            continue
+        try:
+            face = TopoDS.Face_s(fmap.FindKey(i))
+            ad = BRepAdaptor_Surface(face)
+            t = ad.GetType()
+            if t == GeomAbs_SurfaceType.GeomAbs_Cylinder:
+                pos = ad.Cylinder().Position()
+                draft = 0.0                       # a straight bore has none
+                radius = ad.Cylinder().Radius()
+            elif t == GeomAbs_SurfaceType.GeomAbs_Cone:
+                cone = ad.Cone()
+                pos = cone.Position()
+                draft = abs(math.degrees(cone.SemiAngle()))
+                radius = abs(cone.RefRadius())
+            else:
+                continue
+            reversed_param = not pos.Direct()
+            reversed_face = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
+            if reversed_face != reversed_param:          # material outside => a hole
+                props = GProp_GProps()
+                BRepGProp.SurfaceProperties_s(face, props)
+                out.append({"faceId": i, "draftPerSideDeg": round(draft, 3),
+                            "areaMm2": round(props.Mass(), 2),
+                            "radiusMm": round(radius, 3)})
+        except Exception:
+            continue
+    out.sort(key=lambda b: b["draftPerSideDeg"])
+    return out
 
 
 def _bore_is_through(classifier, foot, dc, s_lo, s_hi, depth, extents):
@@ -1128,11 +1218,11 @@ def analyze(filepath: str, draw_override=None) -> dict:
         except Exception:
             _classifier = None
         try:
-            feature_table = _extract_feature_table(wrapped, (x_sz, y_sz, z_sz),
-                                                   skip_faces=_blend_ids,
-                                                   solid_classifier=_classifier)
+            feature_table, _bores = _extract_feature_table(
+                wrapped, (x_sz, y_sz, z_sz),
+                skip_faces=_blend_ids, solid_classifier=_classifier)
         except Exception:
-            feature_table = []
+            feature_table, _bores = [], []
         try:
             import dfm_geometry as _dfm
             from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
@@ -1276,7 +1366,18 @@ def analyze(filepath: str, draw_override=None) -> dict:
                     "tessellation": {"triangles": tess["count"],
                                      "totalAreaMm2": round(tess["totalAreaMm2"], 1),
                                      "truncated": tess["truncated"]},
-                    "draft": draft_info,
+                    "draft": (dict(draft_info, coredHoles=({
+                        # EXACT, from the surfaces themselves — no tessellation.
+                        # Absent, not zero, when the part has no recognised bore:
+                        # "the smallest cored-hole draft is 0" is a finding, and
+                        # a part with no cored holes has not earned one.
+                        "count": len(_bores),
+                        "minDraftPerSideDeg": _bores[0]["draftPerSideDeg"],
+                        "totalAreaMm2": round(sum(b["areaMm2"] for b in _bores), 2),
+                        "bores": _bores[:12],
+                        "method": "cone half-angle read from the surface (SemiAngle); a cylindrical bore is exactly 0 deg",
+                        "knownLimits": "Only cylindrical and conical bore walls are recognised. A cored hole with a freeform or prismatic wall is not counted, and neither is a cored feature the blend pass classified as a chamfer.",
+                    } if _bores else None)) if draft_info else draft_info),
                     "drawDirectionAlternatives": draft_alts,
                     "wallThickness": wall_stats,
                     # An absent measurement gets a REASON, not a blank. Without

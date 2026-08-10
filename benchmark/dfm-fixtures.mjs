@@ -33,6 +33,21 @@ export const DFM_FIXTURES = [
     },
   },
   {
+    file: 'cored-hole-draft3.step',
+    what: 'Plate with ONE conical cored hole at EXACTLY 3.000 deg per side, vertical outside walls',
+    truth: {
+      // The case one combined draft figure cannot express: the WALLS are
+      // undrafted and the CORED HOLE is well drafted. Before the split, both
+      // were judged against the wall figure and the report could only say the
+      // part was bad.
+      coredHoleCount: 1,
+      coredHoleMinDraftPerSideDeg: 3.0,
+      // Cone lateral area, pi*(r1+r2)*slant with r1=6, r2=6+20*tan(3deg),
+      // slant=20/cos(3deg). Analytic, not engine output.
+      coredHoleAreaMm2: 821.0,
+    },
+  },
+  {
     file: 'frustum-draft3.step',
     what: 'Truncated pyramid, EXACTLY 3.000 deg draft on all four walls',
     truth: {

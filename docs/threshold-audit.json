@@ -36,8 +36,8 @@
       "status": "contested",
       "claimedSource": "NADCA Product Specification Standards, S-4A-7 (Draft Constants)",
       "grade": "standard-named",
-      "finding": "The rule applies ONE draft figure to all wall area. Published summaries of the NADCA draft constants consistently split the requirement: roughly 0.5-1 deg on outside walls, 1-2 deg on inside walls, and about 2 deg per side in cored holes, with inside draft about twice outside. A single threshold cannot express that, so the rule is conservative on outside walls and lenient on inside ones.",
-      "recommendation": "Split into inside-wall, outside-wall and cored-hole draft rules. The geometry engine already classifies faces by draw relationship, so the split is measurable, not a guess.",
+      "finding": "The rule applied ONE draft figure to all wall area. Published summaries of the NADCA draft constants split the requirement: roughly 0.5-1 deg on outside walls, 1-2 deg on inside walls, and about 2 deg per side in cored holes. HALF of that split is now implemented — `hpdc-cored-hole-draft` judges bore walls on their own curve at 2 deg, measured from the faces the analytic cylinder pass identifies as bores. The inside-vs-outside WALL half is NOT implemented and is not planned without a reliable test: from a bore wall the outward normal escapes through the bore opening, so the obvious ray test classifies a through-hole as an outer surface.",
+      "recommendation": "Remains contested. The wall rule keeps the conservative OUTSIDE figure (1 deg), so it under-reports on inside walls. Closing this needs either a solid-side test that survives through-features, or the mould-half assignment from a real parting line rather than a draw vector.",
       "corroboration": [
         "https://www.abdiecasting.com/wp-content/uploads/2017/08/Section-06-Additional-Specification-Guidelines.pdf",
         "https://www.diecasting.org/Web/R_D/Standards/Web/R_D/Standards.aspx",
@@ -68,6 +68,46 @@
       "corroboration": [],
       "primaryDocumentRead": false,
       "blockedBy": "no primary source reachable from this environment"
+    },
+    "hpdc-cored-hole-draft": {
+      "status": "search-corroborated",
+      "claimedSource": "NADCA Product Specification Standards, S-4A-7 (Draft Constants)",
+      "grade": "standard-named",
+      "finding": "Cored holes at ~2 deg per side against ~1 deg on outside walls is consistent across every secondary summary found. The value is the one half of the draft split that could be measured, because the cylinder pass knows which faces are bore walls.",
+      "recommendation": "Read S-4A-7 first-hand before this is promoted past search-corroborated. The grade on the rule is standard-named because the citation is a standard; the STATUS here is what says nobody has opened it.",
+      "corroboration": [
+        "https://www.abdiecasting.com/wp-content/uploads/2017/08/Section-06-Additional-Specification-Guidelines.pdf",
+        "https://www.mecomeco.com/blog/die-casting-tolerances-nadca-standards-explained"
+      ],
+      "primaryDocumentRead": false,
+      "blockedBy": "nadca.com and diecasting.org unreachable from this environment (EGRESS_BLOCKED)"
+    },
+    "gdc-cored-hole-draft": {
+      "status": "unaudited",
+      "claimedSource": "Permanent-mould / zinc die-casting design guidance",
+      "grade": "industry-consensus",
+      "finding": "Derived by the same reasoning as the aluminium cored-hole rule — a cored hole needs more draft than a wall because the casting shrinks onto the core — at 3.0 deg for this family. NOT independently corroborated: it is consistent with the family's own wall rule and with the aluminium figure, which is an argument, not evidence.",
+      "recommendation": "Corroborate against a permanent-mould foundry design guide before relying on it.",
+      "corroboration": [],
+      "primaryDocumentRead": false
+    },
+    "lpdc-cored-hole-draft": {
+      "status": "unaudited",
+      "claimedSource": "Permanent-mould / zinc die-casting design guidance",
+      "grade": "industry-consensus",
+      "finding": "Derived by the same reasoning as the aluminium cored-hole rule — a cored hole needs more draft than a wall because the casting shrinks onto the core — at 2.0 deg for this family. NOT independently corroborated: it is consistent with the family's own wall rule and with the aluminium figure, which is an argument, not evidence.",
+      "recommendation": "Corroborate against a permanent-mould foundry design guide before relying on it.",
+      "corroboration": [],
+      "primaryDocumentRead": false
+    },
+    "hpdc-zinc-cored-hole-draft": {
+      "status": "unaudited",
+      "claimedSource": "Permanent-mould / zinc die-casting design guidance",
+      "grade": "industry-consensus",
+      "finding": "Derived by the same reasoning as the aluminium cored-hole rule — a cored hole needs more draft than a wall because the casting shrinks onto the core — at 1.0 deg for this family. NOT independently corroborated: it is consistent with the family's own wall rule and with the aluminium figure, which is an argument, not evidence.",
+      "recommendation": "Corroborate against a permanent-mould foundry design guide before relying on it.",
+      "corroboration": [],
+      "primaryDocumentRead": false
     }
   }
 }

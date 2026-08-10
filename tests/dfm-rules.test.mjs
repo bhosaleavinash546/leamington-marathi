@@ -346,3 +346,63 @@ test('no nominal wall, no wall saving', () => {
   assert.equal(ok.cost.priced, true);
   assert.ok(ok.cost.annualDeltaEur > 0);
 });
+
+// ── Cored holes are judged separately from walls ────────────────────────────
+//
+// The draft rules applied ONE figure to every wall, which the threshold audit
+// flagged as contested: a casting shrinks onto a core pin rather than away from
+// a cavity, so a cored hole needs more draft, not the same.
+//
+// The measure is the CONE HALF-ANGLE read from the surface, not an area
+// fraction off the tessellation. The first version used the mesh and reported
+// 12% of a clean 3-degree bore as "below 2 degrees" — a false finding made by
+// the measurement rather than by the part.
+test('a cored-hole rule reads the exact bore angle, not the wall figure', () => {
+  const geo = {
+    dfm: {
+      draft: {
+        wallAreaBelowDraftPct: { 1: 90, 2: 90 },       // the walls are terrible
+        coredHoles: { count: 1, minDraftPerSideDeg: 3.0, totalAreaMm2: 821 },
+      },
+    },
+  };
+  const r = runDfmRules(geo, 'hpdc', { material: 'Aluminium A356 (cast)' });
+  const cored = [...r.findings, ...r.passed].find(f => f.id === 'hpdc-cored-hole-draft');
+  assert.ok(cored, 'the cored-hole rule must be evaluated when a bore was measured');
+  assert.equal(cored.measured, 3.0);
+  // 3 deg clears the 2 deg core-pin limit even though the walls fail badly.
+  // That separation is the entire reason this rule exists.
+  assert.equal(cored.status, 'pass');
+  assert.ok(r.findings.some(f => f.id === 'hpdc-draft-minimum'), 'the wall rule still fails');
+});
+
+test('a straight cored hole fails: a cylinder is exactly zero draft', () => {
+  const geo = { dfm: { draft: { coredHoles: { count: 2, minDraftPerSideDeg: 0 } } } };
+  const r = runDfmRules(geo, 'hpdc', {});
+  const cored = r.findings.find(f => f.id === 'hpdc-cored-hole-draft');
+  assert.ok(cored);
+  assert.equal(cored.measured, 0);
+});
+
+test('a part with no cored hole ABSTAINS rather than passing the cored rule', () => {
+  // "0 degrees of cored draft" on a part with no cored holes would be a finding
+  // about a feature that does not exist; a clean sheet would be worse.
+  const geo = { dfm: { draft: { wallAreaBelowDraftPct: { 1: 2.0, 2: 4.0 } } } };
+  const r = runDfmRules(geo, 'hpdc', { material: 'Aluminium A356 (cast)' });
+  assert.ok(r.notEvaluated.some(f => f.id === 'hpdc-cored-hole-draft'));
+  assert.equal(r.findings.some(f => f.id === 'hpdc-cored-hole-draft'), false);
+  assert.equal(r.passed.some(f => f.id === 'hpdc-cored-hole-draft'), false);
+});
+
+test('each casting family applies the angle ITS source quotes', () => {
+  const geo = { dfm: { draft: { coredHoles: { count: 1, minDraftPerSideDeg: 2.0 } } } };
+  const verdict = (family) => {
+    const r = runDfmRules(geo, family, {});
+    const f = [...r.findings, ...r.passed].find(x => x.measure === 'coredHoleDraftPerSideDeg');
+    return f && f.status;
+  };
+  assert.equal(verdict('hpdc'), 'pass');          // needs 2
+  assert.equal(verdict('hpdc-zinc'), 'pass');     // needs 1 — zinc releases more readily
+  assert.equal(verdict('lpdc'), 'pass');          // needs 2
+  assert.equal(verdict('gravity-die'), 'fail');   // needs 3 — slower solidification
+});
