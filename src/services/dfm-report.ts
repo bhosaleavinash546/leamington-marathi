@@ -184,6 +184,30 @@ const TEAL: RGB = [13, 148, 136];
 
 const SEV: Record<string, RGB> = { high: RED, medium: AMBER, low: TEAL };
 
+/** A unit short enough for the summary table. Dropping the unit entirely made
+ *  the table read "30" and "41.2", which is a figure nobody can use; keeping it
+ *  in full made "41.2 % of wall area" truncate to "41.2 % of wal...". The head
+ *  of each unit is the part that carries the meaning. */
+function shortUnit(unit?: string): string {
+  if (!unit) return '';
+  const u = unit.trim();
+  if (u.startsWith('%')) return '%';
+  if (u.includes('L/D')) return 'L/D';
+  if (u.startsWith('mm')) return 'mm';
+  if (u === 'regions') return 'reg';
+  if (u.includes('/')) return u.split(' ')[0];          // r/t, gap/t, depth/width
+  return u.length <= 6 ? u : u.split(' ')[0];
+}
+
+/** A threshold short enough for the summary table: the comparison, the number
+ *  and an abbreviated unit. The detail page prints it in full. */
+function shortThreshold(f: { thresholdText?: string; unit?: string }): string {
+  const t = f.thresholdText ?? '';
+  if (!t) return '—';
+  const bare = (f.unit && t.endsWith(f.unit) ? t.slice(0, -f.unit.length) : t).trim();
+  return bare ? `${bare} ${shortUnit(f.unit)}`.trim() : t;
+}
+
 // How much a threshold is actually worth. Printing "SOURCE:" beside a number
 // nobody audited is a claim this tool has not earned — the same failure it calls
 // out everywhere else — so the grade travels with the citation. 24 of the 26
@@ -312,138 +336,161 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
   const hasUpperBound = data.results.some(r => r.findings.some(f => f.cost?.upperBound));
 
   // ── Cover ──────────────────────────────────────────────────────────────────
-  setFill(doc, NAVY); doc.rect(0, 0, PW, 74, 'F');
-  setFill(doc, GOLD); doc.rect(0, 74, PW, 1.6, 'F');
-  doc.addImage(LOGO_PNG, 'PNG', ML, 16, 16, 16);
+  setFill(doc, NAVY); doc.rect(0, 0, PW, 56, 'F');
+  setFill(doc, GOLD); doc.rect(0, 56, PW, 1.4, 'F');
+  doc.addImage(LOGO_PNG, 'PNG', ML, 13, 13, 13);
   sans(9); setText(doc, [226, 232, 240]);
-  doc.text('B R A I N S P A R K', ML + 20, 22.5);
+  doc.text('B R A I N S P A R K', ML + 17, 17.5);
   sans(24, 'bold'); setText(doc, [255, 255, 255]);
-  doc.text('DFM / DFA Analysis', ML + 20, 32);
+  doc.text('DFM / DFA Analysis', ML + 17, 26.5);
   sans(12); doc.setTextColor(GOLD[0], GOLD[1], GOLD[2]);
-  doc.text(fit(doc, subject, CW - 24), ML + 20, 40);
+  doc.text(fit(doc, subject, CW - 20), ML + 17, 34.5);
   mono(8); setText(doc, [148, 163, 184]);
   const sub = [data.subject?.system, data.subject?.material, data.subject?.process].filter(Boolean).join('  ·  ');
-  if (sub) doc.text(fit(doc, sub.toUpperCase(), CW - 24), ML + 20, 50);
-  doc.text(`GENERATED ${today}  ·  ${totalEvaluated}/${totalRules} RULES EVALUATED`, ML + 20, 57);
-  y = 88;
+  if (sub) doc.text(fit(doc, sub.toUpperCase(), CW - 20), ML + 17, 43);
+  doc.text(`GENERATED ${today}  ·  ${totalEvaluated}/${totalRules} RULES EVALUATED`, ML + 17, 49);
+  y = 68;
   footer();
 
-  const tiles: [string, string, RGB][] = [
-    [String(allFindings.length), 'FINDINGS', allFindings.length ? RED : GREEN],
-    [String(allFindings.filter(f => f.severity === 'high').length), 'HIGH SEVERITY', RED],
-    [String(totalUnevaluated), 'NOT EVALUATED', MUT],
-    [pricedTotal ? eur(pricedTotal).replace('EUR ', '€') : '—',
-      hasUpperBound ? 'PRICED / YR - UPPER BOUND' : 'PRICED / YEAR', GREEN],
-  ];
-  const tw = (CW - 9) / 4;
-  tiles.forEach(([v, l, c], i) => {
-    const x = ML + i * (tw + 3);
-    setFill(doc, c); doc.roundedRect(x, y, tw, 20, 2, 2, 'F');
-    sans(v.length > 8 ? 10 : 15, 'bold'); setText(doc, [255, 255, 255]);
-    doc.text(fit(doc, v, tw - 4), x + tw / 2, y + 9.5, { align: 'center' });
-    mono(5.4); setText(doc, [226, 232, 240]);
-    doc.text(l, x + tw / 2, y + 15.5, { align: 'center' });
-  });
-  y += 28;
+  // The coloured tile row that used to sit here has gone. The executive summary
+  // below states the same four figures, and a reader met them TWICE on one page
+  // in two different visual languages — which is how a report starts to look
+  // like a dashboard someone decorated rather than a result someone computed.
 
-  sans(11, 'bold'); setText(doc, INK);
-  doc.text('How to read this report', ML, y); y += 5.5;
-  wrapped('Every geometric figure here was measured from your CAD file by an OpenCascade kernel — draft angles and wall thickness on the tessellation, holes and features from the B-rep topology. Every cost figure was computed by the same deterministic engines the rest of BrainSpark uses. The AI wrote none of the numbers.', 9.2, BODY);
-  y += 2;
-  // WHAT THIS REPORT IS ABOUT, IN ONE SENTENCE. The engine has always run only
-  // the chosen family's rules — but the report never said so in the reader's
-  // words, and it printed nine alternative processes before the chosen one's
-  // findings. A manufacturing head read that as "it is giving me all the
-  // different processes", which is exactly what the page looked like.
+
+  // ── EXECUTIVE SUMMARY ─────────────────────────────────────────────────────
+  //
+  // WHAT A MANUFACTURING HEAD OPENS THE REPORT FOR. Page one used to carry
+  // three paragraphs of methodology, a provenance essay and a ten-row geometry
+  // table before a single finding — a reader told us plainly "I am not
+  // understanding the report", and that ordering is why. Method belongs at the
+  // back of an engineering report, not in front of the answer.
+  //
+  // The order here is the order the questions get asked: which route is this,
+  // how did it score, what is wrong with it, what does it cost, and how much of
+  // the catalogue actually ran.
   {
     const ran = data.results.filter(r => r.ruleCount > 0);
-    if (ran.length === 1 && data.subject?.process) {
-      wrapped(`WHAT WAS ANALYSED: you chose ${data.subject.process}`
-        + (data.material ? ` in ${data.material}` : '')
-        + `, so this report runs the ${ran[0].processName} ruleset and nothing else — `
-        + `${ran[0].ruleCount} rules, of which ${ran[0].evaluatedCount} could be evaluated on this geometry. `
-        + 'Every finding below belongs to that route. Other processes appear once, near the end, under '
-        + '"Alternative routes", and only to answer whether a different route would be cheaper.',
-        9, INK, CW, 4.2, 'bold');
+    const one = ran.length === 1 ? ran[0] : null;
+
+    mono(7, true); setText(doc, GOLD);
+    doc.text('EXECUTIVE SUMMARY', ML, y); y += 5.4;
+
+    // The route, in one line, with the material and the ruleset that judged it.
+    sans(11, 'bold'); setText(doc, INK);
+    doc.text(fit(doc, one
+      ? `${data.subject?.process ?? one.processName}${data.material ? ` · ${data.material}` : ''}`
+      : `${ran.length} rule families run speculatively`, CW), ML, y);
+    y += 5;
+    sans(9); setText(doc, MUT);
+    doc.text(fit(doc, one
+      ? `Judged against the ${one.processName} ruleset — ${one.evaluatedCount} of ${one.ruleCount} rules could be evaluated on this geometry.`
+      : 'No single process was settled, so some findings below are for a route this part will never take.', CW), ML, y);
+    y += 8;
+
+    // ── THE VERDICT TABLE ───────────────────────────────────────────────────
+    // Four figures on one rule, in tabular numerals. The coloured blocks that
+    // used to sit here read as a dashboard widget rather than as a result.
+    const score = one ? one.score : null;
+    const cells: [string, string, RGB][] = [
+      [score == null ? 'not scored' : `${score}`, 'MANUFACTURABILITY', score == null ? MUT : score >= 80 ? GREEN : score >= 50 ? AMBER : RED],
+      [`${allFindings.length}`, 'FINDINGS', allFindings.length ? INK : GREEN],
+      [`${allFindings.filter(f => f.severity === 'high').length}`, 'HIGH SEVERITY', allFindings.some(f => f.severity === 'high') ? RED : GREEN],
+      [pricedTotal ? eur(pricedTotal).replace('EUR ', '€') : 'none priced',
+        hasUpperBound ? 'PRICED / YR (CEILING)' : 'PRICED / YEAR', pricedTotal ? GREEN : MUT],
+    ];
+    setFill(doc, PANEL); doc.roundedRect(ML, y - 5, CW, 20, 1.5, 1.5, 'F');
+    const cw4 = CW / 4;
+    cells.forEach(([v, l, c], i) => {
+      const x = ML + 5 + i * cw4;
+      if (i > 0) { setDraw(doc, RULE, 0.3); doc.line(ML + i * cw4, y - 3, ML + i * cw4, y + 12); }
+      sans(v.length > 9 ? 11 : 15, 'bold'); setText(doc, c);
+      doc.text(fit(doc, v, cw4 - 8), x, y + 3);
+      mono(5.6); setText(doc, MUT);
+      doc.text(fit(doc, l, cw4 - 8), x, y + 9.5);
+    });
+    y += 22;
+
+    // ── PRIORITISED FINDINGS TABLE ──────────────────────────────────────────
+    // The thing the report exists to deliver, on page one, sorted worst first.
+    // Everything below this page is the evidence for these rows.
+    if (allFindings.length) {
+      mono(7, true); setText(doc, GOLD);
+      doc.text('WHAT IS WRONG, WORST FIRST', ML, y); y += 5;
+
+      // Widths sum to the full measure. The first version summed to 166 of 182
+      // and truncated four of five columns on the very first render.
+      const cols = [
+        { w: 17, label: '', align: 'left' as const },
+        { w: 75, label: 'Finding', align: 'left' as const },
+        { w: 30, label: 'Measured', align: 'right' as const },
+        { w: 32, label: 'Guideline', align: 'right' as const },
+        { w: CW - 17 - 75 - 30 - 32, label: 'Impact / yr', align: 'right' as const },
+      ];
+      mono(5.8); setText(doc, MUT);
+      let hx = ML;
+      for (const c of cols) {
+        doc.text(c.label.toUpperCase(), c.align === 'right' ? hx + c.w - 2 : hx, y, { align: c.align });
+        hx += c.w;
+      }
       y += 2;
-    } else if (ran.length > 1) {
-      wrapped(`WHAT WAS ANALYSED: no single manufacturing process was settled, so ${ran.length} rule families were `
-        + 'run speculatively and some findings below will be for a process this part will never see. '
-        + 'Choose a material and a manufacturing process to narrow this to one route.',
-        9, AMBER, CW, 4.2, 'bold');
-      y += 2;
+      setDraw(doc, RULE, 0.4); doc.line(ML, y, PW - MR, y); y += 4.5;
+
+      const ordered = [...allFindings].sort((a, b) => {
+        const rank = (f: DfmFinding) => (f.severity === 'high' ? 0 : f.severity === 'medium' ? 1 : 2);
+        return rank(a) - rank(b) || (b.cost?.annualDeltaEur ?? 0) - (a.cost?.annualDeltaEur ?? 0);
+      });
+      for (const f of ordered.slice(0, 8)) {
+        ensure(8);
+        const sc = SEV[f.severity] ?? MUT;
+        // The severity as a filled chip, so the eye sorts the table before
+        // reading a word of it.
+        setFill(doc, sc); doc.roundedRect(ML, y - 3.2, 13, 4.4, 0.8, 0.8, 'F');
+        mono(5); setText(doc, [255, 255, 255]);
+        doc.text(f.severity.toUpperCase(), ML + 6.5, y, { align: 'center' });
+
+        let x = ML + cols[0].w;
+        sans(8.4); setText(doc, INK);
+        doc.text(fit(doc, f.title, cols[1].w - 3), x, y); x += cols[1].w;
+        mono(7.6); setText(doc, sc);
+        // The NUMBER, not the number plus a unit that will not fit. "41.2 % of
+        // wall area" truncated to "41.2 % of wal..." on the first render, which
+        // is a figure a reader cannot use. The unit is on the detail page.
+        doc.text(fit(doc, `${f.measured ?? '—'} ${shortUnit(f.unit)}`.trim(), cols[2].w - 3), x + cols[2].w - 2, y, { align: 'right' }); x += cols[2].w;
+        mono(7.6); setText(doc, MUT);
+        doc.text(fit(doc, shortThreshold(f), cols[3].w - 3), x + cols[3].w - 2, y, { align: 'right' }); x += cols[3].w;
+        mono(7.6); setText(doc, f.cost?.annualDeltaEur ? GREEN : MUT);
+        doc.text(f.cost?.annualDeltaEur ? eur(f.cost.annualDeltaEur).replace('EUR ', '€') : 'not priced',
+          x + cols[4].w - 2, y, { align: 'right' });
+        y += 5.6;
+        setDraw(doc, RULE, 0.15); doc.line(ML, y - 2, PW - MR, y - 2);
+      }
+      if (ordered.length > 8) {
+        mono(6.4); setText(doc, MUT);
+        doc.text(`+ ${ordered.length - 8} more, in full from page 3`, ML, y + 1);
+        y += 4;
+      }
+      y += 4;
+    } else {
+      setFill(doc, [236, 253, 245]); doc.roundedRect(ML, y - 4, CW, 13, 1.5, 1.5, 'F');
+      sans(9.5, 'bold'); setText(doc, GREEN);
+      doc.text(one && one.evaluatedCount > 0
+        ? `No rule breached across the ${one.evaluatedCount} checks that could be evaluated.`
+        : 'No finding — and no rule could be evaluated either, so this is not a clean sheet.',
+        ML + 4, y + 3.5);
+      y += 16;
+    }
+
+    // COVERAGE, immediately under the verdict rather than buried. A score over
+    // four of nine rules is not the same claim as a score over nine of nine.
+    if (one) {
+      const pct = one.coveragePct;
+      mono(6.4); setText(doc, pct >= 80 ? MUT : AMBER);
+      doc.text(fit(doc, `RULE COVERAGE ${pct}%  —  ${one.evaluatedCount} of ${one.ruleCount} evaluated, `
+        + `${one.notEvaluated.length} could not be measured on this geometry and are NOT passes.`, CW), ML, y);
+      y += 6;
     }
   }
-  wrapped('Rules report in three states, not two: failed, passed, and NOT EVALUATED. A rule whose measurement this part does not provide is listed as unevaluated with the reason, never as a pass — so the coverage figure beside each score tells you how much of the catalogue actually ran.', 9.2, BODY);
-  y += 2;
-  // The geometry is measured. The THRESHOLDS it is measured against are not, and
-  // saying so is the difference between a screening tool and a false authority.
-  // COUNTED, NOT TYPED. This sentence said "24 of the 26 rules" on every report
-    // long after the catalogue reached 111, because it was a string literal. A
-    // provenance claim that is itself out of date is worse than no claim.
-    wrapped(`A word on the thresholds, separate from the measurements. Every dimension in this report was measured from your CAD file and is reproducible. The guideline values those dimensions are compared against are NOT of the same standing: ${gradeCounts['industry-consensus'] ?? 0} of the ${totalCatalogueRules} rules rest on industry consensus — widely published and mutually consistent across suppliers and design guides, but not audited against a primary standard, and not validated against controlled trials or measured scrap data. ${gradeCounts['standard-named'] ?? 0} name a published standard that has not been read first-hand; ${gradeCounts['engine-derived'] ?? 0} comes from this tool's own cost model. Each finding carries its grade. Some values are actively disputed by practising manufacturers. Treat a finding as a screening result that opens a conversation with your supplier — not as a specification, and not as a verdict.`, 9, MUT, CW, 4.2, 'italic');
-  y += 2;
-  // What the GEOMETRY says the process is. This paragraph exists because a live
-  // report on a 1.6 mm seat cross member opened with "no process specified,
-  // every family run speculatively" and then judged a pressing against machining
-  // rules — while the same analysis had already recognised 38 bends and a
-  // uniform 1.60 mm wall. The measurement was in the payload; the report simply
-  // did not say it.
-  const mp = data.measuredProcess;
-  if (mp?.confidence === 'measured' && mp.family && !data.processConflict) {
-    wrapped(`MEASURED FROM THE GEOMETRY: this part is ${FAMILY_LABEL[mp.family] ?? mp.family}. ${(mp.evidence ?? []).join('; ')}. The rules below were run for that family.`,
-      9, INK, CW, 4.2, 'bold');
-    y += 2;
-  } else if (mp?.confidence === 'indicative' && (mp.evidence ?? []).length) {
-    wrapped(`WHAT THE GEOMETRY SUGGESTS: ${(mp.evidence ?? []).join('; ')}. ${(mp.notes ?? []).join(' ')}`,
-      9, AMBER, CW, 4.2, 'normal');
-    y += 2;
-  }
-  if (data.processConflict) {
-    // A named process that the geometry contradicts is the most dangerous state
-    // this report can be in: every finding below is judged against the wrong
-    // family and every cost figure is priced for a process the part will not see.
-    wrapped(`PROCESS CONFLICT — READ BEFORE THE FINDINGS. You asked for ${data.processConflict.chosenName}, but the geometry measures as ${data.processConflict.measuredName}: ${data.processConflict.evidence.join('; ')}. Either the process is wrong or the CAD is; until that is settled, treat every finding and every cost below as unreliable.`,
-      9, RED, CW, 4.2, 'bold');
-    y += 2;
-  }
-  if (data.materialProcessConflict) {
-    // Impossible pair. Checked server-side because the API is reachable without
-    // the picker that forbids it.
-    wrapped(`MATERIAL AND PROCESS DO NOT GO TOGETHER. ${data.materialProcessConflict.message}`,
-      9, RED, CW, 4.2, 'bold');
-    y += 2;
-  }
-  if (data.noDfmRulesReason) {
-    // An empty findings list because a process shapes nothing is not a clean
-    // sheet, and without this line the two are indistinguishable.
-    wrapped(`NO GEOMETRIC RULES APPLY. ${data.noDfmRulesReason}`, 9, AMBER, CW, 4.2, 'bold');
-    y += 2;
-  }
-  {
-    const ov = Object.entries(data.ruleOverrides ?? {});
-    if (ov.length) {
-      // A retuned threshold that leaves no trace is indistinguishable from a
-      // published one, and a report has to be reproducible a year later.
-      const off = ov.filter(([, v]) => v.enabled === false).map(([k]) => k);
-      const tuned = ov.filter(([, v]) => v.enabled !== false && v.threshold !== undefined);
-      wrapped('COMPANY STANDARDS WERE IN FORCE FOR THIS ANALYSIS. '
-        + (tuned.length ? `${tuned.length} threshold${tuned.length === 1 ? '' : 's'} retuned in this workspace` : '')
-        + (tuned.length && off.length ? '; ' : '')
-        + (off.length ? `${off.length} rule${off.length === 1 ? '' : 's'} switched off (${off.join(', ')})` : '')
-        + '. Each affected finding is marked with your standard as its source.',
-        9, INK, CW, 4.2, 'bold');
-      y += 2;
-    }
-  }
-  if (!data.processFamily && !data.processConflict) {
-    // Without this, a speculative sweep is indistinguishable from a targeted
-    // analysis and the reader has no way to know some findings are for a process
-    // the part will never see.
-    wrapped('No manufacturing process was specified and the geometry does not settle it, so EVERY rule family below was run speculatively. Some findings will be for processes this part will never see, and their cost figures should not be added together.', 9, AMBER, CW, 4.2, 'bold');
-    y += 2;
-  }
-  y += 4;
 
   // Analysis limits — before the numbers, not after. A reader who sees a wall
   // figure first has already formed a view by the time a caveat arrives.
@@ -458,6 +505,53 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
       y += 1.5;
     }
     y += 4;
+  }
+
+  // ── THE WORKFLOW, DRAWN ───────────────────────────────────────────────────
+  //
+  // A reader who has never used this tool has no idea what produced the numbers
+  // on page one, and a paragraph saying "an OpenCascade kernel tessellates the
+  // solid" is not an answer to that. Four stages with the REAL counts under
+  // each: what was read, what was measured, what was judged, what was priced.
+  newPage();
+  sectionTitle('Analysis basis', 'How this report was produced, and from what');
+
+  {
+    const g0 = (data.geometry || {}) as Record<string, any>;
+    const d0 = (data.dfm || {}) as Record<string, any>;
+    const stages: [string, string, string][] = [
+      ['READ', 'B-rep from your STEP',
+        `${g0.faces?.total ?? '—'} faces`],
+      // ONE fact per stage. Two facts and a separator overran the box on the
+      // first render and truncated to "— triangles · wall p...".
+      ['MEASURE', 'kernel + tessellation',
+        d0.wallThickness?.p50Mm != null ? `wall p50 ${d0.wallThickness.p50Mm} mm`
+          : `${d0.tessellation?.triangles ?? '—'} triangles`],
+      ['JUDGE', 'rule catalogue',
+        `${totalEvaluated} of ${totalRules} rules evaluated`],
+      ['PRICE', 'should-cost engine',
+        pricedTotal ? `${eur(pricedTotal).replace('EUR ', '€')} / yr` : 'nothing priced'],
+    ];
+    const bw = (CW - 3 * 8) / 4;
+    stages.forEach(([k, what, figure], i) => {
+      const x = ML + i * (bw + 8);
+      setFill(doc, PANEL); doc.roundedRect(x, y, bw, 22, 1.5, 1.5, 'F');
+      setFill(doc, GOLD); doc.rect(x, y, bw, 1.2, 'F');
+      mono(6, true); setText(doc, GOLD);
+      doc.text(k, x + 3, y + 6);
+      sans(7.4); setText(doc, MUT);
+      doc.text(fit(doc, what, bw - 6), x + 3, y + 11.5);
+      mono(6.6); setText(doc, INK);
+      doc.text(fit(doc, figure, bw - 6), x + 3, y + 17.5);
+      // The arrow between stages, so it reads as a pipeline and not as four tiles.
+      if (i < 3) {
+        setDraw(doc, RULE, 0.6);
+        doc.line(x + bw + 1.5, y + 11, x + bw + 6.5, y + 11);
+        setFill(doc, RULE);
+        doc.triangle(x + bw + 6.5, y + 9.4, x + bw + 6.5, y + 12.6, x + bw + 8, y + 11, 'F');
+      }
+    });
+    y += 28;
   }
 
   // Measured-geometry strip — the evidence the findings rest on.
@@ -653,9 +747,17 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
   }
 
   // ── Tool reach ────────────────────────────────────────────────────────────
+  //
+  // ONLY WHERE A CUTTER IS INVOLVED. This printed on every report, so a sand
+  // casting carried half a page about what a Ø10 end mill can reach — a
+  // measurement with no bearing on a process that has no cutter. Noise in a
+  // report is not free: it is the reason a reader stops trusting the pages that
+  // do matter.
   {
+    const CUTTER_FAMILIES = new Set(['machining', 'turning', 'deep-hole-drilling', 'broaching', 'wire-edm']);
+    const usesCutter = data.results.some(r => r.ruleCount > 0 && CUTTER_FAMILIES.has(r.process));
     const ta = (data.dfm as Record<string, any> | undefined)?.toolAccess as Record<string, any> | undefined;
-    if (ta && Number.isFinite(ta.reachableAreaPct)) {
+    if (usesCutter && ta && Number.isFinite(ta.reachableAreaPct)) {
       ensure(28);
       sectionTitle('Tool reach', `${ta.reachableAreaPct}% of the surface a Ø${ta.toolDiaMm} mm cutter can reach`);
       wrapped(String(ta.method ?? ''), 9.2, BODY);
@@ -999,6 +1101,9 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
       [dfa.designEfficiencyPct == null ? 'withheld' : `${dfa.designEfficiencyPct}%`, 'DFA INDEX', dfa.designEfficiencyPct == null ? MUT : GOLD],
     ];
     ensure(26);
+    // Its own width. This used to borrow `tw` from the cover's tile row, so
+    // deleting that row broke the DFA page — a coupling nothing declared.
+    const tw = (CW - 9) / 4;
     tilesA.forEach(([v, l, c], i) => {
       const x = ML + i * (tw + 3);
       setFill(doc, c); doc.roundedRect(x, y, tw, 20, 2, 2, 'F');
@@ -1063,33 +1168,61 @@ export function exportDfmPdf(dataIn: DfmReportData, figures: DfmFigure[] = []): 
     }
   }
 
-  // ── Provenance ─────────────────────────────────────────────────────────────
+  // ── Appendix: method, provenance and limits ───────────────────────────────
+  //
+  // ALL OF IT AT THE BACK, ON ONE PAGE. This used to be two full pages of
+  // bullets at the end PLUS three paragraphs on the cover, and between them
+  // they said the same things twice. Method belongs behind the answer in an
+  // engineering report; a reader who wants to audit the numbers will turn to
+  // it, and a reader who wants the answer should never have to scroll past it.
   newPage();
-  sectionTitle('Provenance', 'Where every number came from');
-  for (const line of [
-    'Geometry is measured by an OpenCascade kernel. Draft angles, undercut classification and wall thickness are measured on the tessellation — which works on freeform surfaces, where a plane-and-cylinder analysis measures almost nothing on a real cast or moulded part. Holes and features come from the B-rep topology.',
-    'Draw direction is chosen by sweeping candidate axes and scoring undercut area, not assumed. Alternatives and their penalties are available in the analysis output.',
-    'Undercuts are separated from zero-draft drag faces. A zero-draft wall is fixable with a degree of taper; an undercut buys a slide or a lifter. Reporting them as one number would overstate the tooling problem.',
-    'Cost deltas are computed by re-running the same deterministic engines used elsewhere in BrainSpark, once with the geometry as drawn and once with the rule satisfied. Findings the engines cannot price say so, with the reason.',
-    'DFA handling times use the BrainSpark time model, which follows the published Boothroyd-Dewhurst METHOD. Their tables are copyrighted and are not reproduced; the coefficients here are ours and are meant to be calibrated against your own line data before being used for a labour commitment.',
-    'Part symmetry is measured by rotating each solid and intersecting it with itself, not inferred from inertia — equal principal moments are necessary but not sufficient for symmetry.',
-    'The three DFA questions concern function and intent, which a static solid model cannot answer. Geometry proposes; a human confirms. Until every part is answered the theoretical minimum and the DFA index are withheld rather than estimated.',
-  ]) { wrapped(`·  ${line}`, 9.1, BODY); y += 2; }
+  sectionTitle('Appendix', 'Where every number came from');
 
-  y += 4;
-  sectionTitle('Limits', 'What this analysis does not cover');
-  // The RECOGNISER'S OWN limits come first, straight from the engine. A
-  // hand-maintained list drifts the moment the engine gains a capability, and
-  // this one had: it still told every reader that "sheet-metal rules require
-  // bend recognition, which is not yet implemented" for the whole life of the
-  // wave that implemented it. The engine knows what it cannot do; print that.
-  for (const line of (feats.knownLimits || []) as string[]) {
-    wrapped(`·  ${line}`, 9.1, BODY); y += 2;
+  const appendix: [string, string][] = [
+    ['Geometry',
+      'Measured by an OpenCascade kernel. Draft angles, undercut classification and wall thickness on the '
+      + 'tessellation — which works on freeform surfaces, where a plane-and-cylinder analysis measures almost '
+      + 'nothing on a real cast or moulded part. Holes, apertures and features from the B-rep topology. '
+      + 'The AI wrote none of the numbers in this report.'],
+    ['Draw direction',
+      'Chosen by sweeping candidate axes and scoring undercut area, not assumed. Undercuts are separated from '
+      + 'zero-draft drag faces: a zero-draft wall is fixable with a degree of taper, an undercut buys a slide '
+      + 'or a lifter, and reporting them as one number would overstate the tooling problem.'],
+    ['Cost',
+      'Re-run through the same deterministic engines used elsewhere in BrainSpark, once with the geometry as '
+      + 'drawn and once with the rule satisfied. Findings the engines cannot price say so, with the reason.'],
+    ['Thresholds',
+      `Every DIMENSION here was measured from your file and is reproducible. The GUIDELINES they are compared `
+      + `against are not of the same standing: ${gradeCounts['industry-consensus'] ?? 0} of ${totalCatalogueRules} `
+      + `rest on industry consensus — widely published and mutually consistent, but not audited against a primary `
+      + `standard and not validated against measured scrap data. ${gradeCounts['standard-named'] ?? 0} name a `
+      + `published standard that has not been read first-hand; ${gradeCounts['engine-derived'] ?? 0} come from this `
+      + `tool's own model. Every finding carries its grade. Treat a finding as a screening result that opens a `
+      + `conversation with your supplier — not as a specification.`],
+    ['Three outcomes, not two',
+      'Failed, passed, and NOT EVALUATED. A rule whose measurement this part does not provide is listed as '
+      + 'unevaluated with the reason, never as a pass — so the coverage figure beside the score tells you how '
+      + 'much of the catalogue actually ran.'],
+    ['DFA',
+      'Handling times follow the published Boothroyd-Dewhurst METHOD. Their tables are copyrighted and are not '
+      + 'reproduced; the coefficients here are ours and should be calibrated against your own line data before '
+      + 'a labour commitment. Part symmetry is MEASURED by rotating each solid and intersecting it with itself, '
+      + 'not inferred from inertia. The three DFA questions concern function and intent, which a static solid '
+      + 'cannot answer — until every part is answered, the theoretical minimum and the index are withheld.'],
+    ['What this does not cover',
+      'Threads are not recognised. GD&T is read only where the file carries semantic AP242 PMI. Ribs are found '
+      + 'from opposed planar side faces on a planar base, so a rib with curved sides is not checked. Surface '
+      + 'finish and material come from your input, not from the model. The tool-reach sweep does not model the '
+      + 'holder, the spindle nose or the machine envelope, so a face it calls reachable may still not be.'],
+  ];
+  for (const [k, v] of appendix) {
+    ensure(measure(v, 8.6, CW - 32, 3.9) + 6);
+    mono(6.4, true); setText(doc, GOLD);
+    doc.text(k.toUpperCase(), ML, y);
+    const top = y;
+    wrapped(v, 8.6, BODY, CW - 32, 3.9, 'normal', ML + 32);
+    y = Math.max(y, top + 4) + 3;
   }
-  for (const line of [
-    'Surface finish and material specification come from your input, not from the model.',
-    'Thresholds are design guidelines from published industry sources. Validate against your supplier before committing a design change.',
-  ]) { wrapped(`·  ${line}`, 9.1, BODY); y += 2; }
 
   doc.save(safeName(`BrainSpark_DFM_${subject}_${today}.pdf`));
 }

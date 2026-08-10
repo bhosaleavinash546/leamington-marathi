@@ -1516,3 +1516,40 @@ Format: decision · why · what would change it.
     push the UNDERCUT share to 28%, above the tooled test's limit. The material-narrowing
     path is implemented and unit-tested; it remains **unproven on this corpus**, and the fix
     is properly drafted rib and boss fixtures, not a looser threshold.
+
+118. **The report told you HOW before it told you WHAT (2026).**
+    *Why:* a reader said plainly "I am not understanding the report", and the ordering was the
+    answer. Page one carried a coloured tile row, three paragraphs of methodology, a
+    provenance essay, a conflict banner, an analysis-limits box and a ten-row geometry table —
+    and not one finding. Method belongs behind the answer in an engineering report; a reader
+    who wants to audit the numbers will turn to the back, and a reader who wants the answer
+    should never have to scroll past the method to reach it. *Changes it:*
+      * **Page 1 — Executive summary.** The route in one line, a four-figure verdict strip,
+        and a PRIORITISED FINDINGS TABLE — severity chip, finding, measured, guideline,
+        priced impact — sorted worst first, with the coverage figure under it.
+      * **Page 2 — Analysis basis.** A four-stage workflow drawn with the REAL counts under
+        each (read → measure → judge → price), then the measured geometry.
+      * **Findings, routes, DFA** as before.
+      * **Last page — Appendix.** Everything methodological, condensed from two pages of
+        bullets plus three cover paragraphs into seven labelled entries. The two used to say
+        the same things twice.
+
+119. **Deleted: the coloured tile row, and tool reach on parts with no cutter (2026).**
+    *Why:* the tile row stated the same four figures the new verdict strip states, so a reader
+    met them TWICE on one page in two different visual languages — which is how a report
+    starts to look like a dashboard someone decorated rather than a result someone computed.
+    And the tool-reach section printed on every report, so a sand casting carried half a page
+    about what a Ø10 end mill can reach. Noise in a report is not free: it is the reason a
+    reader stops trusting the pages that do matter. Tool reach now renders only for the
+    families that involve a cutter.
+    *Deleting the tile row broke the DFA page*, which had been borrowing its `tw` width — a
+    coupling nothing declared, caught by the typechecker.
+
+120. **Three layout faults found by rendering the page, not by reading the code (2026).**
+    *Why:* all three typechecked perfectly. The summary table's five columns summed to 166 mm
+    of a 182 mm measure and truncated four of them on the very first render — "41.2 % of
+    wal...", a figure nobody can use. Dropping the unit entirely to fix it then produced "30"
+    and "41.2", which is worse. The header band was 74 mm of navy for five lines of text, a
+    quarter of page one. *Changes it:* columns computed from `CW` so they cannot under-fill,
+    an abbreviated-unit helper (`% of wall area` → `%`, `core L/D` → `L/D`), and a 56 mm band.
+    Every one of these was invisible until the PDF was rasterised and looked at.
