@@ -22,17 +22,28 @@ import { MATERIALS } from './costing-engine.mjs';
  * ever substitute a default. A guessed default here would be indistinguishable
  * from a real measurement in the report.
  */
-export function extractMeasures(geo = {}) {
+export function extractMeasures(geo = {}, opts = {}) {
   const dfm = geo.dfm || {};
   const wall = dfm.wallThickness || geo.wallThickness || {};
   const draft = dfm.draft || geo.draftAnalysis || {};
   const features = dfm.features || {};
   const setups = dfm.setups || geo.setupAnalysis || {};
-  // Sheet-metal measures now come from real bend recognition (paired coaxial
-  // cylinders). `isSheetMetal: false` means the part is not folded sheet, so the
-  // measures stay undefined and the rules abstain — which is the correct answer
-  // for a casting, not a pass.
-  const sm = dfm.sheetMetal && dfm.sheetMetal.isSheetMetal ? dfm.sheetMetal : {};
+  // Sheet-metal measures come from real bend recognition (paired coaxial
+  // cylinders) — and, when there is no bend to recognise, from the ray-cast wall.
+  //
+  // THE GATE USED TO BE `isSheetMetal`, AND IT BLACKED OUT THE COMMONEST
+  // AUTOMOTIVE COMMODITY. Measured over ten stamped brackets: the engine read
+  // the wall at 1.60 mm and the holes at Ø8 — everything four of the nine sheet
+  // rules need — and abstained on all nine, scoring `null`, because it could not
+  // find a bend radius. A concept model drawn with sharp corners, or a STEP
+  // export that dropped them, produced a completely blank sheet-metal report.
+  //
+  // The recogniser now returns the thickness-derived subset with its PROVENANCE,
+  // and the bend-dependent keys are simply absent from that object — so those
+  // rules still abstain without a special case here. `isSheetMetal` is untouched
+  // and still means "a bend was measured"; it is not a licence to run rules.
+  const smRaw = dfm.sheetMetal || {};
+  const sm = (smRaw.isSheetMetal || smRaw.thicknessMm > 0) ? smRaw : {};
   // NULL IS NOT ZERO. `Number(null)` is 0 and passes `Number.isFinite`, so a
   // measurement the recogniser explicitly reported as absent arrived at the rule
   // engine as a hard zero — and a zero fails every "must be at least" rule. A
@@ -162,7 +173,25 @@ export function extractMeasures(geo = {}) {
     // own semantic PMI. Absent on any file without AP242 PMI — which is most of
     // them — so every tolerance rule abstains rather than passing a part whose
     // tolerances are on a drawing this tool has never seen.
-    tightestToleranceMm: num((dfm.pmi || {}).tightestToleranceMm),
+    // ── THE TIGHTEST BAND ON THE PART ────────────────────────────────────
+    //
+    // Read from the STEP's own AP242 semantic PMI when it is there. It almost
+    // never is: over a 93-part sweep this measure abstained 93 TIMES — every
+    // tolerance-capability rule in the catalogue, one per family, had never
+    // fired on a single part. Fourteen rules that cannot ever speak are not a
+    // conservative tool, they are a hole in it.
+    //
+    // So the engineer may DECLARE it. They know the number; it is on the
+    // drawing in front of them. What must never happen is the two being
+    // confused, so the basis travels with the value and the report prints it:
+    // a figure read from the model and a figure typed by a person are not the
+    // same kind of evidence, and PMI always wins when both exist.
+    tightestToleranceMm: num((dfm.pmi || {}).tightestToleranceMm) ?? num(opts.declaredToleranceMm),
+    _toleranceBasis: num((dfm.pmi || {}).tightestToleranceMm) != null
+      ? 'read from the model\'s AP242 semantic PMI'
+      : num(opts.declaredToleranceMm) != null
+        ? 'DECLARED by the engineer — not read from the model, and not verified against it'
+        : undefined,
     // APERTURES, read from the topology rather than the wall geometry. The
     // cylinder pass finds round holes exactly and is blind to everything else,
     // and on a stamped bracket that blindness reported zero holes on a part
@@ -294,6 +323,10 @@ export function extractMeasures(geo = {}) {
 
     // ── Sheet metal, measured from recognised bends ──
     sheetThicknessMm: num(sm.thicknessMm),
+    // Whether that thickness was measured between two bend radii or derived
+    // from the wall. The report prints it beside every sheet finding — a
+    // derived thickness is exact on a uniform sheet and wrong on anything else.
+    _sheetThicknessBasis: smRaw.thicknessBasis ?? (smRaw.isSheetMetal ? 'measured between the inner and outer bend radius' : undefined),
     bendCount: num(sm.bendCount),
     minBendRadiusToThickness: num(sm.minBendRadiusToThickness),
     minHoleDiaToThickness: num(sm.minHoleDiaToThickness),
@@ -391,11 +424,11 @@ function thresholdText(rule) {
  * @param {string} process  key of PROCESS_FAMILIES
  * @returns {{process, processName, findings, passed, notEvaluated, coveragePct, score}}
  */
-export function runDfmRules(geo, process, { material, overrides } = {}) {
+export function runDfmRules(geo, process, { material, overrides, declaredToleranceMm } = {}) {
   if (!PROCESS_FAMILIES[process]) {
     throw new Error(`Unknown process family: ${process}`);
   }
-  const measures = extractMeasures(geo);
+  const measures = extractMeasures(geo, { declaredToleranceMm });
   // A workspace can DISABLE a rule as well as retune it. A disabled rule is
   // removed from the denominator too — leaving it in as "not evaluated" would
   // drag the coverage figure down for a check the plant deliberately does not
@@ -464,6 +497,9 @@ export function runDfmRules(geo, process, { material, overrides } = {}) {
       // apart from "this rule is alloy-independent", and it used to assert the
       // first on reports whose cover named the second.
       thresholdMaterial: material ?? null,
+      // Where the MEASURED side of a tolerance comparison came from. Only set on
+      // the rules that read it, so no other finding carries a stray claim.
+      measuredBasis: rule.measure === 'tightestToleranceMm' ? measures._toleranceBasis : undefined,
       status,
     };
     // The specific features that break this rule, worst first. Only the ones

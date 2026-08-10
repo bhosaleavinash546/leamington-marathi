@@ -1045,7 +1045,61 @@ SHEET_T_TOL_FRAC = 0.10
 SHEET_WALL_AGREE = 1.35
 
 
-def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_block=None):
+
+# What lets a part without a bend still be measured as sheet. Both are the
+# ordinary definition of sheet metal rather than tuned values: above 6 mm the
+# material is plate and is not pressed on a brake, and a part less than ten
+# thicknesses across is a block whatever it is made of.
+SHEET_MAX_THICKNESS_MM = 6.0
+SHEET_MIN_SPAN_RATIO = 10.0
+
+
+def extents_of(shape):
+    """Axis-aligned bounding box of a shape as (dx, dy, dz) plus its min corner."""
+    from OCP.Bnd import Bnd_Box
+    from OCP.BRepBndLib import BRepBndLib
+    bb = Bnd_Box()
+    BRepBndLib.Add_s(shape, bb)
+    x0, y0, z0, x1, y1, z1 = bb.Get()
+    return (x0, y0, z0, x1, y1, z1)
+
+
+def _aperture_gaps(probe, box):
+    """Closest hole-to-hole and hole-to-edge distances from aperture centres.
+
+    EDGE-TO-EDGE, not centre-to-centre: every sheet guideline is written about
+    the material left between features, and a centre distance would pass a pair
+    of large holes that are almost touching.
+    """
+    out = {"holeToHoleMm": None, "holeToEdgeMm": None}
+    if not probe:
+        return out
+    for i in range(len(probe)):
+        xi, yi, zi, di = probe[i]
+        for j in range(i + 1, len(probe)):
+            xj, yj, zj, dj = probe[j]
+            centre = math.sqrt((xi - xj) ** 2 + (yi - yj) ** 2 + (zi - zj) ** 2)
+            gap = centre - (di + dj) / 2.0
+            if gap > 0 and (out["holeToHoleMm"] is None or gap < out["holeToHoleMm"]):
+                out["holeToHoleMm"] = gap
+    if box:
+        x0, y0, z0, x1, y1, z1 = box
+        spans = sorted([(x1 - x0, 0), (y1 - y0, 1), (z1 - z0, 2)], reverse=True)
+        wide = [spans[0][1], spans[1][1]]          # the two in-plane axes
+        lo = (x0, y0, z0)
+        hi = (x1, y1, z1)
+        for (px, py, pz, d) in probe:
+            pt = (px, py, pz)
+            for k in wide:
+                for edge in (pt[k] - lo[k], hi[k] - pt[k]):
+                    gap = edge - d / 2.0
+                    if gap > 0 and (out["holeToEdgeMm"] is None or gap < out["holeToEdgeMm"]):
+                        out["holeToEdgeMm"] = gap
+    return out
+
+
+def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_block=None,
+                         wall_stats=None, extents=None):
     """Bends, sheet thickness and flange lengths from B-rep geometry.
 
     A bend is a PAIR of coaxial cylinders sweeping the same angle: the inside
@@ -1147,11 +1201,82 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
             break
 
     if not bends:
-        # No paired cylinders means this is not a folded sheet part — say so
-        # rather than returning zeros that would read as measurements.
-        return {"isSheetMetal": False, "bends": [], "reason":
-                "No paired coaxial cylinders found, so no bend could be measured. "
-                "This part does not look like folded sheet metal."}
+        # NO BEND IS NOT NO INFORMATION, and treating it as such blacked out the
+        # single most common automotive commodity. Measured on a corpus of ten
+        # stamped brackets: the engine read the wall at 1.60 mm and the holes at
+        # Ø8 — everything four of the nine sheet rules need — and then abstained
+        # on all nine, because the family was gated on BEND recognition rather
+        # than on what each rule actually requires.
+        #
+        # A sharp-cornered bracket is not a rare input. Concept models are drawn
+        # without bend radii, and some STEP exports drop them. That part now
+        # gets the thickness-derived checks, with the thickness's PROVENANCE
+        # stated: derived from the ray-cast wall, not measured between two
+        # cylinder radii. `isSheetMetal` stays FALSE — this is not a claim that
+        # the part is folded sheet, it is the honest subset of what can be
+        # measured if the reader has told us it is.
+        out = {"isSheetMetal": False, "bends": [], "reason":
+               "No paired coaxial cylinders found, so no bend could be measured. "
+               "This part does not look like folded sheet metal."}
+        # THE FALLBACK NEEDS EVIDENCE, not merely a wall. The first version of
+        # this fired on anything with a measurable thickness and the benchmark
+        # caught it immediately: a 60x40x10 MACHINED PLATE started being judged
+        # by sheet-metal rules because it happened to have a wall and some
+        # holes. A plate is not a sheet.
+        #
+        # Three conditions, all of which a real sheet part meets and a machined
+        # plate does not:
+        #   * the wall is inside the sheet range at all (<= 6 mm);
+        #   * it is UNIFORM — one thickness throughout, which is what "sheet"
+        #     means and what a milled part is precisely not;
+        #   * the part is at least ten times its own thickness across, so a
+        #     thick short block cannot pass on thinness alone.
+        t = wall_p50_mm if (wall_p50_mm and 0 < wall_p50_mm <= SHEET_MAX_THICKNESS_MM) else None
+        if t and (wall_stats or {}).get("uniformity") != "uniform":
+            t = None
+        if t and extents:
+            span = max(extents)
+            if span < t * SHEET_MIN_SPAN_RATIO:
+                t = None
+        if t:
+            out["thicknessMm"] = round(t, 3)
+            out["thicknessBasis"] = (
+                "derived from the ray-cast wall median, NOT measured between a bend's inner "
+                "and outer radius. Applied only because the wall is uniform, within the sheet "
+                "range and small against the part's span; the bend-dependent rules still abstain.")
+            out["thicknessEvidence"] = (
+                f"uniform wall of {round(t, 2)} mm across a part spanning "
+                f"{round(max(extents), 1) if extents else '?'} mm")
+            # The aperture centres, built here rather than reused: the bend
+            # pass that normally produces them runs below this early return.
+            probe = []
+            for ap in ((aperture_block or {}).get("apertures") or []):
+                c = ap.get("centroidXYZ")
+                d = ap.get("circleDiaMm") or ap.get("equivalentDiaMm") or 0
+                if c and len(c) == 3 and d > 0:
+                    probe.append((c[0], c[1], c[2], d))
+            for row in (feature_table or []):
+                c = row.get("axisPointXYZ")
+                d = float(row.get("diaMm") or 0)
+                if row.get("kind") == "hole" and c and len(c) == 3 and d > 0:
+                    if not any(abs(c[0] - q[0]) < 0.01 and abs(c[1] - q[1]) < 0.01
+                               and abs(c[2] - q[2]) < 0.01 for q in probe):
+                        probe.append((c[0], c[1], c[2], d))
+            dias = [d for (_x, _y, _z, d) in probe if d and d > 0]
+            if dias:
+                out["minHoleDiaMm"] = round(min(dias), 2)
+                out["minHoleDiaToThickness"] = round(min(dias) / t, 3)
+            gaps = _aperture_gaps(probe, extents_of(shape))
+            if gaps.get("holeToHoleMm") is not None:
+                out["minHoleToHoleMm"] = round(gaps["holeToHoleMm"], 2)
+                out["minHoleToHoleToThickness"] = round(gaps["holeToHoleMm"] / t, 2)
+            if gaps.get("holeToEdgeMm") is not None:
+                out["minHoleToEdgeMm"] = round(gaps["holeToEdgeMm"], 2)
+                out["minHoleToEdgeToThickness"] = round(gaps["holeToEdgeMm"] / t, 2)
+                out["minHoleToEdgeBasis"] = (
+                    "distance to the bounding box in the two widest axes — a LOWER bound on "
+                    "the true trim distance")
+        return out
 
     # Thickness: the median across bends, so one malformed bend cannot move it.
     ts = sorted(b["thicknessMm"] for b in bends)

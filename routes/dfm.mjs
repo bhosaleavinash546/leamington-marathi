@@ -266,7 +266,16 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db }) {
     // where mild steel needs 1, zinc fills a 0.6 mm wall where aluminium needs
     // 1.5. Passing it through is what makes the finding specific rather than
     // generic, and every finding records which basis it got.
-    const ruleOpts = { material, overrides: overridesFor(req.user?.id) };
+    // The tightest band on the drawing, when the engineer types it. Almost no
+    // STEP carries semantic PMI, so without this every tolerance-capability rule
+    // in the catalogue abstains on every part — measured at 93 abstentions over
+    // a 93-part commodity sweep. Declared, labelled as declared, and always
+    // outranked by real PMI when the file has it.
+    const declaredToleranceMm = (() => {
+      const v = Number(req.body?.tightestToleranceMm);
+      return Number.isFinite(v) && v > 0 ? v : undefined;
+    })();
+    const ruleOpts = { material, overrides: overridesFor(req.user?.id), declaredToleranceMm };
     const ruleResults = family ? [runDfmRules(geo, family, ruleOpts)] : runAllDfmRules(geo, ruleOpts);
     const familyBasis = selected.basis === 'chosen'
       ? (selected.chosenProcess ? `chosen — ${selected.chosenProcess}` : 'chosen')

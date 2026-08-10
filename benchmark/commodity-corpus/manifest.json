@@ -1,0 +1,1251 @@
+[
+ {
+  "file": "sheet-bracket-00.step",
+  "commodity": "sheet-bracket",
+  "variant": 0,
+  "intendedProcess": "Stamping / Deep Drawing",
+  "material": "Steel (mild)",
+  "intendedFamily": "sheet-metal",
+  "params": {
+   "thicknessMm": 0.8,
+   "holeDiaMm": 4.0,
+   "insideRadiusMm": 0.8
+  }
+ },
+ {
+  "file": "sheet-bracket-01.step",
+  "commodity": "sheet-bracket",
+  "variant": 1,
+  "intendedProcess": "Stamping / Deep Drawing",
+  "material": "Steel (mild)",
+  "intendedFamily": "sheet-metal",
+  "params": {
+   "thicknessMm": 1.0,
+   "holeDiaMm": 5.0,
+   "insideRadiusMm": 1.0
+  }
+ },
+ {
+  "file": "sheet-bracket-02.step",
+  "commodity": "sheet-bracket",
+  "variant": 2,
+  "intendedProcess": "Stamping / Deep Drawing",
+  "material": "Steel (mild)",
+  "intendedFamily": "sheet-metal",
+  "params": {
+   "thicknessMm": 1.2,
+   "holeDiaMm": 6.0,
+   "insideRadiusMm": 1.7999999999999998
+  }
+ },
+ {
+  "file": "sheet-bracket-03.step",
+  "commodity": "sheet-bracket",
+  "variant": 3,
+  "intendedProcess": "Stamping / Deep Drawing",
+  "material": "Steel (mild)",
+  "intendedFamily": "sheet-metal",
+  "params": {
+   "thicknessMm": 1.5,
+   "holeDiaMm": 6.5,
+   "insideRadiusMm": 2.25
+  }
+ },
+ {
+  "file": "sheet-bracket-04.step",
+  "commodity": "sheet-bracket",
+  "variant": 4,
+  "intendedProcess": "Stamping / Deep Drawing",
+  "material": "Steel (mild)",
+  "intendedFamily": "sheet-metal",
+  "params": {
+   "thicknessMm": 1.6,
+   "holeDiaMm": 8.0,
+   "insideRadiusMm": 3.2
+  }
+ },
+ {
+  "file": "sheet-bracket-05.step",
+  "commodity": "sheet-bracket",
+  "variant": 5,
+  "intendedProcess": "Stamping / Deep Drawing",
+  "material": "Steel (mild)",
+  "intendedFamily": "sheet-metal",
+  "params": {
+   "thicknessMm": 2.0,
+   "holeDiaMm": 9.0,
+   "insideRadiusMm": 4.0
+  }
+ },
+ {
+  "file": "sheet-bracket-06.step",
+  "commodity": "sheet-bracket",
+  "variant": 6,
+  "intendedProcess": "Stamping / Deep Drawing",
+  "material": "Steel (mild)",
+  "intendedFamily": "sheet-metal",
+  "params": {
+   "thicknessMm": 2.5,
+   "holeDiaMm": 10.0,
+   "insideRadiusMm": 2.5
+  }
+ },
+ {
+  "file": "sheet-bracket-07.step",
+  "commodity": "sheet-bracket",
+  "variant": 7,
+  "intendedProcess": "Stamping / Deep Drawing",
+  "material": "Steel (mild)",
+  "intendedFamily": "sheet-metal",
+  "params": {
+   "thicknessMm": 3.0,
+   "holeDiaMm": 12.0,
+   "insideRadiusMm": 9.0
+  }
+ },
+ {
+  "file": "sheet-bracket-08.step",
+  "commodity": "sheet-bracket",
+  "variant": 8,
+  "intendedProcess": "Stamping / Deep Drawing",
+  "material": "Steel (mild)",
+  "intendedFamily": "sheet-metal",
+  "params": {
+   "thicknessMm": 1.4,
+   "holeDiaMm": 3.5,
+   "insideRadiusMm": 1.68
+  }
+ },
+ {
+  "file": "sheet-bracket-09.step",
+  "commodity": "sheet-bracket",
+  "variant": 9,
+  "intendedProcess": "Stamping / Deep Drawing",
+  "material": "Steel (mild)",
+  "intendedFamily": "sheet-metal",
+  "params": {
+   "thicknessMm": 1.8,
+   "holeDiaMm": 7.0,
+   "insideRadiusMm": 4.5
+  }
+ },
+ {
+  "file": "hpdc-housing-00.step",
+  "commodity": "hpdc-housing",
+  "variant": 0,
+  "intendedProcess": "Die Casting (Aluminium)",
+  "material": "Aluminium A380 / ADC12 (die-cast)",
+  "intendedFamily": "hpdc",
+  "params": {
+   "wallMm": 1.2,
+   "coredHoleDiaMm": 2.0
+  }
+ },
+ {
+  "file": "hpdc-housing-01.step",
+  "commodity": "hpdc-housing",
+  "variant": 1,
+  "intendedProcess": "Die Casting (Aluminium)",
+  "material": "Aluminium A380 / ADC12 (die-cast)",
+  "intendedFamily": "hpdc",
+  "params": {
+   "wallMm": 1.5,
+   "coredHoleDiaMm": 2.5
+  }
+ },
+ {
+  "file": "hpdc-housing-02.step",
+  "commodity": "hpdc-housing",
+  "variant": 2,
+  "intendedProcess": "Die Casting (Aluminium)",
+  "material": "Aluminium A380 / ADC12 (die-cast)",
+  "intendedFamily": "hpdc",
+  "params": {
+   "wallMm": 2.0,
+   "coredHoleDiaMm": 3.0
+  }
+ },
+ {
+  "file": "hpdc-housing-03.step",
+  "commodity": "hpdc-housing",
+  "variant": 3,
+  "intendedProcess": "Die Casting (Aluminium)",
+  "material": "Aluminium A380 / ADC12 (die-cast)",
+  "intendedFamily": "hpdc",
+  "params": {
+   "wallMm": 2.5,
+   "coredHoleDiaMm": 4.0
+  }
+ },
+ {
+  "file": "hpdc-housing-04.step",
+  "commodity": "hpdc-housing",
+  "variant": 4,
+  "intendedProcess": "Die Casting (Aluminium)",
+  "material": "Aluminium A380 / ADC12 (die-cast)",
+  "intendedFamily": "hpdc",
+  "params": {
+   "wallMm": 3.0,
+   "coredHoleDiaMm": 5.0
+  }
+ },
+ {
+  "file": "hpdc-housing-05.step",
+  "commodity": "hpdc-housing",
+  "variant": 5,
+  "intendedProcess": "Die Casting (Aluminium)",
+  "material": "Aluminium A380 / ADC12 (die-cast)",
+  "intendedFamily": "hpdc",
+  "params": {
+   "wallMm": 3.5,
+   "coredHoleDiaMm": 6.0
+  }
+ },
+ {
+  "file": "hpdc-housing-06.step",
+  "commodity": "hpdc-housing",
+  "variant": 6,
+  "intendedProcess": "Die Casting (Aluminium)",
+  "material": "Aluminium A380 / ADC12 (die-cast)",
+  "intendedFamily": "hpdc",
+  "params": {
+   "wallMm": 4.0,
+   "coredHoleDiaMm": 8.0
+  }
+ },
+ {
+  "file": "hpdc-housing-07.step",
+  "commodity": "hpdc-housing",
+  "variant": 7,
+  "intendedProcess": "Die Casting (Aluminium)",
+  "material": "Aluminium A380 / ADC12 (die-cast)",
+  "intendedFamily": "hpdc",
+  "params": {
+   "wallMm": 5.0,
+   "coredHoleDiaMm": 10.0
+  }
+ },
+ {
+  "file": "hpdc-housing-08.step",
+  "commodity": "hpdc-housing",
+  "variant": 8,
+  "intendedProcess": "Die Casting (Aluminium)",
+  "material": "Aluminium A380 / ADC12 (die-cast)",
+  "intendedFamily": "hpdc",
+  "params": {
+   "wallMm": 2.2,
+   "coredHoleDiaMm": 3.5
+  }
+ },
+ {
+  "file": "hpdc-housing-09.step",
+  "commodity": "hpdc-housing",
+  "variant": 9,
+  "intendedProcess": "Die Casting (Aluminium)",
+  "material": "Aluminium A380 / ADC12 (die-cast)",
+  "intendedFamily": "hpdc",
+  "params": {
+   "wallMm": 6.0,
+   "coredHoleDiaMm": 12.0
+  }
+ },
+ {
+  "file": "machined-block-00.step",
+  "commodity": "machined-block",
+  "variant": 0,
+  "intendedProcess": "Machining (CNC)",
+  "material": "Aluminium 6061",
+  "intendedFamily": "machining",
+  "params": {
+   "pocketDepthMm": 6,
+   "pocketWidthMm": 40,
+   "holeDiaMm": 3.0
+  }
+ },
+ {
+  "file": "machined-block-01.step",
+  "commodity": "machined-block",
+  "variant": 1,
+  "intendedProcess": "Machining (CNC)",
+  "material": "Aluminium 6061",
+  "intendedFamily": "machining",
+  "params": {
+   "pocketDepthMm": 10,
+   "pocketWidthMm": 30,
+   "holeDiaMm": 4.0
+  }
+ },
+ {
+  "file": "machined-block-02.step",
+  "commodity": "machined-block",
+  "variant": 2,
+  "intendedProcess": "Machining (CNC)",
+  "material": "Aluminium 6061",
+  "intendedFamily": "machining",
+  "params": {
+   "pocketDepthMm": 14,
+   "pocketWidthMm": 24,
+   "holeDiaMm": 5.0
+  }
+ },
+ {
+  "file": "machined-block-03.step",
+  "commodity": "machined-block",
+  "variant": 3,
+  "intendedProcess": "Machining (CNC)",
+  "material": "Aluminium 6061",
+  "intendedFamily": "machining",
+  "params": {
+   "pocketDepthMm": 18,
+   "pocketWidthMm": 18,
+   "holeDiaMm": 6.0
+  }
+ },
+ {
+  "file": "machined-block-04.step",
+  "commodity": "machined-block",
+  "variant": 4,
+  "intendedProcess": "Machining (CNC)",
+  "material": "Aluminium 6061",
+  "intendedFamily": "machining",
+  "params": {
+   "pocketDepthMm": 22,
+   "pocketWidthMm": 14,
+   "holeDiaMm": 8.0
+  }
+ },
+ {
+  "file": "machined-block-05.step",
+  "commodity": "machined-block",
+  "variant": 5,
+  "intendedProcess": "Machining (CNC)",
+  "material": "Aluminium 6061",
+  "intendedFamily": "machining",
+  "params": {
+   "pocketDepthMm": 26,
+   "pocketWidthMm": 10,
+   "holeDiaMm": 10.0
+  }
+ },
+ {
+  "file": "machined-block-06.step",
+  "commodity": "machined-block",
+  "variant": 6,
+  "intendedProcess": "Machining (CNC)",
+  "material": "Aluminium 6061",
+  "intendedFamily": "machining",
+  "params": {
+   "pocketDepthMm": 30,
+   "pocketWidthMm": 8,
+   "holeDiaMm": 12.0
+  }
+ },
+ {
+  "file": "machined-block-07.step",
+  "commodity": "machined-block",
+  "variant": 7,
+  "intendedProcess": "Machining (CNC)",
+  "material": "Aluminium 6061",
+  "intendedFamily": "machining",
+  "params": {
+   "pocketDepthMm": 34,
+   "pocketWidthMm": 6,
+   "holeDiaMm": 2.5
+  }
+ },
+ {
+  "file": "machined-block-08.step",
+  "commodity": "machined-block",
+  "variant": 8,
+  "intendedProcess": "Machining (CNC)",
+  "material": "Aluminium 6061",
+  "intendedFamily": "machining",
+  "params": {
+   "pocketDepthMm": 12,
+   "pocketWidthMm": 20,
+   "holeDiaMm": 7.0
+  }
+ },
+ {
+  "file": "machined-block-09.step",
+  "commodity": "machined-block",
+  "variant": 9,
+  "intendedProcess": "Machining (CNC)",
+  "material": "Aluminium 6061",
+  "intendedFamily": "machining",
+  "params": {
+   "pocketDepthMm": 40,
+   "pocketWidthMm": 5,
+   "holeDiaMm": 16.0
+  }
+ },
+ {
+  "file": "turned-shaft-00.step",
+  "commodity": "turned-shaft",
+  "variant": 0,
+  "intendedProcess": "Turning (CNC)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "turning",
+  "params": {
+   "diaMm": 20,
+   "lengthMm": 60,
+   "boreMm": 4,
+   "slendernessLtoD": 3.0
+  }
+ },
+ {
+  "file": "turned-shaft-01.step",
+  "commodity": "turned-shaft",
+  "variant": 1,
+  "intendedProcess": "Turning (CNC)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "turning",
+  "params": {
+   "diaMm": 24,
+   "lengthMm": 90,
+   "boreMm": 5,
+   "slendernessLtoD": 3.75
+  }
+ },
+ {
+  "file": "turned-shaft-02.step",
+  "commodity": "turned-shaft",
+  "variant": 2,
+  "intendedProcess": "Turning (CNC)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "turning",
+  "params": {
+   "diaMm": 28,
+   "lengthMm": 120,
+   "boreMm": 6,
+   "slendernessLtoD": 4.29
+  }
+ },
+ {
+  "file": "turned-shaft-03.step",
+  "commodity": "turned-shaft",
+  "variant": 3,
+  "intendedProcess": "Turning (CNC)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "turning",
+  "params": {
+   "diaMm": 30,
+   "lengthMm": 160,
+   "boreMm": 8,
+   "slendernessLtoD": 5.33
+  }
+ },
+ {
+  "file": "turned-shaft-04.step",
+  "commodity": "turned-shaft",
+  "variant": 4,
+  "intendedProcess": "Turning (CNC)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "turning",
+  "params": {
+   "diaMm": 34,
+   "lengthMm": 200,
+   "boreMm": 3,
+   "slendernessLtoD": 5.88
+  }
+ },
+ {
+  "file": "turned-shaft-05.step",
+  "commodity": "turned-shaft",
+  "variant": 5,
+  "intendedProcess": "Turning (CNC)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "turning",
+  "params": {
+   "diaMm": 40,
+   "lengthMm": 240,
+   "boreMm": 10,
+   "slendernessLtoD": 6.0
+  }
+ },
+ {
+  "file": "turned-shaft-06.step",
+  "commodity": "turned-shaft",
+  "variant": 6,
+  "intendedProcess": "Turning (CNC)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "turning",
+  "params": {
+   "diaMm": 45,
+   "lengthMm": 300,
+   "boreMm": 12,
+   "slendernessLtoD": 6.67
+  }
+ },
+ {
+  "file": "turned-shaft-07.step",
+  "commodity": "turned-shaft",
+  "variant": 7,
+  "intendedProcess": "Turning (CNC)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "turning",
+  "params": {
+   "diaMm": 18,
+   "lengthMm": 340,
+   "boreMm": 2.5,
+   "slendernessLtoD": 18.89
+  }
+ },
+ {
+  "file": "turned-shaft-08.step",
+  "commodity": "turned-shaft",
+  "variant": 8,
+  "intendedProcess": "Turning (CNC)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "turning",
+  "params": {
+   "diaMm": 26,
+   "lengthMm": 150,
+   "boreMm": 7,
+   "slendernessLtoD": 5.77
+  }
+ },
+ {
+  "file": "turned-shaft-09.step",
+  "commodity": "turned-shaft",
+  "variant": 9,
+  "intendedProcess": "Turning (CNC)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "turning",
+  "params": {
+   "diaMm": 50,
+   "lengthMm": 90,
+   "boreMm": 14,
+   "slendernessLtoD": 1.8
+  }
+ },
+ {
+  "file": "sand-cast-arm-00.step",
+  "commodity": "sand-cast-arm",
+  "variant": 0,
+  "intendedProcess": "Sand Casting",
+  "material": "Cast Iron (Ductile/GJS)",
+  "intendedFamily": "sand-casting",
+  "params": {
+   "sectionMm": 8,
+   "coredHoleDiaMm": 8
+  }
+ },
+ {
+  "file": "sand-cast-arm-01.step",
+  "commodity": "sand-cast-arm",
+  "variant": 1,
+  "intendedProcess": "Sand Casting",
+  "material": "Cast Iron (Ductile/GJS)",
+  "intendedFamily": "sand-casting",
+  "params": {
+   "sectionMm": 10,
+   "coredHoleDiaMm": 10
+  }
+ },
+ {
+  "file": "sand-cast-arm-02.step",
+  "commodity": "sand-cast-arm",
+  "variant": 2,
+  "intendedProcess": "Sand Casting",
+  "material": "Cast Iron (Ductile/GJS)",
+  "intendedFamily": "sand-casting",
+  "params": {
+   "sectionMm": 12,
+   "coredHoleDiaMm": 12
+  }
+ },
+ {
+  "file": "sand-cast-arm-03.step",
+  "commodity": "sand-cast-arm",
+  "variant": 3,
+  "intendedProcess": "Sand Casting",
+  "material": "Cast Iron (Ductile/GJS)",
+  "intendedFamily": "sand-casting",
+  "params": {
+   "sectionMm": 14,
+   "coredHoleDiaMm": 16
+  }
+ },
+ {
+  "file": "sand-cast-arm-04.step",
+  "commodity": "sand-cast-arm",
+  "variant": 4,
+  "intendedProcess": "Sand Casting",
+  "material": "Cast Iron (Ductile/GJS)",
+  "intendedFamily": "sand-casting",
+  "params": {
+   "sectionMm": 16,
+   "coredHoleDiaMm": 20
+  }
+ },
+ {
+  "file": "sand-cast-arm-05.step",
+  "commodity": "sand-cast-arm",
+  "variant": 5,
+  "intendedProcess": "Sand Casting",
+  "material": "Cast Iron (Ductile/GJS)",
+  "intendedFamily": "sand-casting",
+  "params": {
+   "sectionMm": 20,
+   "coredHoleDiaMm": 24
+  }
+ },
+ {
+  "file": "sand-cast-arm-06.step",
+  "commodity": "sand-cast-arm",
+  "variant": 6,
+  "intendedProcess": "Sand Casting",
+  "material": "Cast Iron (Ductile/GJS)",
+  "intendedFamily": "sand-casting",
+  "params": {
+   "sectionMm": 24,
+   "coredHoleDiaMm": 30
+  }
+ },
+ {
+  "file": "sand-cast-arm-07.step",
+  "commodity": "sand-cast-arm",
+  "variant": 7,
+  "intendedProcess": "Sand Casting",
+  "material": "Cast Iron (Ductile/GJS)",
+  "intendedFamily": "sand-casting",
+  "params": {
+   "sectionMm": 6,
+   "coredHoleDiaMm": 6
+  }
+ },
+ {
+  "file": "sand-cast-arm-08.step",
+  "commodity": "sand-cast-arm",
+  "variant": 8,
+  "intendedProcess": "Sand Casting",
+  "material": "Cast Iron (Ductile/GJS)",
+  "intendedFamily": "sand-casting",
+  "params": {
+   "sectionMm": 18,
+   "coredHoleDiaMm": 18
+  }
+ },
+ {
+  "file": "sand-cast-arm-09.step",
+  "commodity": "sand-cast-arm",
+  "variant": 9,
+  "intendedProcess": "Sand Casting",
+  "material": "Cast Iron (Ductile/GJS)",
+  "intendedFamily": "sand-casting",
+  "params": {
+   "sectionMm": 28,
+   "coredHoleDiaMm": 36
+  }
+ },
+ {
+  "file": "moulded-cover-00.step",
+  "commodity": "moulded-cover",
+  "variant": 0,
+  "intendedProcess": "Injection Moulding",
+  "material": "PA66-GF30 (glass-filled)",
+  "intendedFamily": "injection-moulding",
+  "params": {
+   "wallMm": 0.8,
+   "draftDeg": 0.0
+  }
+ },
+ {
+  "file": "moulded-cover-01.step",
+  "commodity": "moulded-cover",
+  "variant": 1,
+  "intendedProcess": "Injection Moulding",
+  "material": "PA66-GF30 (glass-filled)",
+  "intendedFamily": "injection-moulding",
+  "params": {
+   "wallMm": 1.0,
+   "draftDeg": 0.5
+  }
+ },
+ {
+  "file": "moulded-cover-02.step",
+  "commodity": "moulded-cover",
+  "variant": 2,
+  "intendedProcess": "Injection Moulding",
+  "material": "PA66-GF30 (glass-filled)",
+  "intendedFamily": "injection-moulding",
+  "params": {
+   "wallMm": 1.2,
+   "draftDeg": 1.0
+  }
+ },
+ {
+  "file": "moulded-cover-03.step",
+  "commodity": "moulded-cover",
+  "variant": 3,
+  "intendedProcess": "Injection Moulding",
+  "material": "PA66-GF30 (glass-filled)",
+  "intendedFamily": "injection-moulding",
+  "params": {
+   "wallMm": 1.5,
+   "draftDeg": 1.5
+  }
+ },
+ {
+  "file": "moulded-cover-04.step",
+  "commodity": "moulded-cover",
+  "variant": 4,
+  "intendedProcess": "Injection Moulding",
+  "material": "PA66-GF30 (glass-filled)",
+  "intendedFamily": "injection-moulding",
+  "params": {
+   "wallMm": 2.0,
+   "draftDeg": 2.0
+  }
+ },
+ {
+  "file": "moulded-cover-05.step",
+  "commodity": "moulded-cover",
+  "variant": 5,
+  "intendedProcess": "Injection Moulding",
+  "material": "PA66-GF30 (glass-filled)",
+  "intendedFamily": "injection-moulding",
+  "params": {
+   "wallMm": 2.5,
+   "draftDeg": 3.0
+  }
+ },
+ {
+  "file": "moulded-cover-06.step",
+  "commodity": "moulded-cover",
+  "variant": 6,
+  "intendedProcess": "Injection Moulding",
+  "material": "PA66-GF30 (glass-filled)",
+  "intendedFamily": "injection-moulding",
+  "params": {
+   "wallMm": 3.0,
+   "draftDeg": 0.0
+  }
+ },
+ {
+  "file": "moulded-cover-07.step",
+  "commodity": "moulded-cover",
+  "variant": 7,
+  "intendedProcess": "Injection Moulding",
+  "material": "PA66-GF30 (glass-filled)",
+  "intendedFamily": "injection-moulding",
+  "params": {
+   "wallMm": 4.0,
+   "draftDeg": 1.0
+  }
+ },
+ {
+  "file": "moulded-cover-08.step",
+  "commodity": "moulded-cover",
+  "variant": 8,
+  "intendedProcess": "Injection Moulding",
+  "material": "PA66-GF30 (glass-filled)",
+  "intendedFamily": "injection-moulding",
+  "params": {
+   "wallMm": 1.8,
+   "draftDeg": 2.5
+  }
+ },
+ {
+  "file": "moulded-cover-09.step",
+  "commodity": "moulded-cover",
+  "variant": 9,
+  "intendedProcess": "Injection Moulding",
+  "material": "PA66-GF30 (glass-filled)",
+  "intendedFamily": "injection-moulding",
+  "params": {
+   "wallMm": 5.0,
+   "draftDeg": 0.5
+  }
+ },
+ {
+  "file": "forged-lever-00.step",
+  "commodity": "forged-lever",
+  "variant": 0,
+  "intendedProcess": "Forging (Hot)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "forging-hot",
+  "buildError": "segfault: "
+ },
+ {
+  "file": "forged-lever-01.step",
+  "commodity": "forged-lever",
+  "variant": 1,
+  "intendedProcess": "Forging (Hot)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "forging-hot",
+  "buildError": "segfault: "
+ },
+ {
+  "file": "forged-lever-02.step",
+  "commodity": "forged-lever",
+  "variant": 2,
+  "intendedProcess": "Forging (Hot)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "forging-hot",
+  "buildError": "segfault: "
+ },
+ {
+  "file": "forged-lever-03.step",
+  "commodity": "forged-lever",
+  "variant": 3,
+  "intendedProcess": "Forging (Hot)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "forging-hot",
+  "buildError": "segfault: "
+ },
+ {
+  "file": "forged-lever-04.step",
+  "commodity": "forged-lever",
+  "variant": 4,
+  "intendedProcess": "Forging (Hot)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "forging-hot",
+  "buildError": "segfault: "
+ },
+ {
+  "file": "forged-lever-05.step",
+  "commodity": "forged-lever",
+  "variant": 5,
+  "intendedProcess": "Forging (Hot)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "forging-hot",
+  "params": {
+   "webMm": 12,
+   "boreMm": 24
+  }
+ },
+ {
+  "file": "forged-lever-06.step",
+  "commodity": "forged-lever",
+  "variant": 6,
+  "intendedProcess": "Forging (Hot)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "forging-hot",
+  "buildError": "segfault: "
+ },
+ {
+  "file": "forged-lever-07.step",
+  "commodity": "forged-lever",
+  "variant": 7,
+  "intendedProcess": "Forging (Hot)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "forging-hot",
+  "params": {
+   "webMm": 14,
+   "boreMm": 26
+  }
+ },
+ {
+  "file": "forged-lever-08.step",
+  "commodity": "forged-lever",
+  "variant": 8,
+  "intendedProcess": "Forging (Hot)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "forging-hot",
+  "buildError": "segfault: "
+ },
+ {
+  "file": "forged-lever-09.step",
+  "commodity": "forged-lever",
+  "variant": 9,
+  "intendedProcess": "Forging (Hot)",
+  "material": "Steel 42CrMo4 / 4140",
+  "intendedFamily": "forging-hot",
+  "params": {
+   "webMm": 16,
+   "boreMm": 30
+  }
+ },
+ {
+  "file": "extruded-profile-00.step",
+  "commodity": "extruded-profile",
+  "variant": 0,
+  "intendedProcess": "Extrusion",
+  "material": "Aluminium 6082",
+  "intendedFamily": "extrusion",
+  "params": {
+   "wallMm": 1.0,
+   "lengthMm": 200
+  }
+ },
+ {
+  "file": "extruded-profile-01.step",
+  "commodity": "extruded-profile",
+  "variant": 1,
+  "intendedProcess": "Extrusion",
+  "material": "Aluminium 6082",
+  "intendedFamily": "extrusion",
+  "params": {
+   "wallMm": 1.5,
+   "lengthMm": 220
+  }
+ },
+ {
+  "file": "extruded-profile-02.step",
+  "commodity": "extruded-profile",
+  "variant": 2,
+  "intendedProcess": "Extrusion",
+  "material": "Aluminium 6082",
+  "intendedFamily": "extrusion",
+  "params": {
+   "wallMm": 2.0,
+   "lengthMm": 240
+  }
+ },
+ {
+  "file": "extruded-profile-03.step",
+  "commodity": "extruded-profile",
+  "variant": 3,
+  "intendedProcess": "Extrusion",
+  "material": "Aluminium 6082",
+  "intendedFamily": "extrusion",
+  "params": {
+   "wallMm": 2.5,
+   "lengthMm": 260
+  }
+ },
+ {
+  "file": "extruded-profile-04.step",
+  "commodity": "extruded-profile",
+  "variant": 4,
+  "intendedProcess": "Extrusion",
+  "material": "Aluminium 6082",
+  "intendedFamily": "extrusion",
+  "params": {
+   "wallMm": 3.0,
+   "lengthMm": 280
+  }
+ },
+ {
+  "file": "extruded-profile-05.step",
+  "commodity": "extruded-profile",
+  "variant": 5,
+  "intendedProcess": "Extrusion",
+  "material": "Aluminium 6082",
+  "intendedFamily": "extrusion",
+  "params": {
+   "wallMm": 4.0,
+   "lengthMm": 300
+  }
+ },
+ {
+  "file": "extruded-profile-06.step",
+  "commodity": "extruded-profile",
+  "variant": 6,
+  "intendedProcess": "Extrusion",
+  "material": "Aluminium 6082",
+  "intendedFamily": "extrusion",
+  "params": {
+   "wallMm": 5.0,
+   "lengthMm": 320
+  }
+ },
+ {
+  "file": "extruded-profile-07.step",
+  "commodity": "extruded-profile",
+  "variant": 7,
+  "intendedProcess": "Extrusion",
+  "material": "Aluminium 6082",
+  "intendedFamily": "extrusion",
+  "params": {
+   "wallMm": 0.8,
+   "lengthMm": 340
+  }
+ },
+ {
+  "file": "extruded-profile-08.step",
+  "commodity": "extruded-profile",
+  "variant": 8,
+  "intendedProcess": "Extrusion",
+  "material": "Aluminium 6082",
+  "intendedFamily": "extrusion",
+  "params": {
+   "wallMm": 3.5,
+   "lengthMm": 360
+  }
+ },
+ {
+  "file": "extruded-profile-09.step",
+  "commodity": "extruded-profile",
+  "variant": 9,
+  "intendedProcess": "Extrusion",
+  "material": "Aluminium 6082",
+  "intendedFamily": "extrusion",
+  "params": {
+   "wallMm": 6.0,
+   "lengthMm": 380
+  }
+ },
+ {
+  "file": "drawn-cup-00.step",
+  "commodity": "drawn-cup",
+  "variant": 0,
+  "intendedProcess": "Deep Drawing (Multi-stage)",
+  "material": "Steel (mild)",
+  "intendedFamily": "deep-drawing",
+  "params": {
+   "diaMm": 60,
+   "depthMm": 10,
+   "thicknessMm": 0.8,
+   "depthToWidth": 0.17
+  }
+ },
+ {
+  "file": "drawn-cup-01.step",
+  "commodity": "drawn-cup",
+  "variant": 1,
+  "intendedProcess": "Deep Drawing (Multi-stage)",
+  "material": "Steel (mild)",
+  "intendedFamily": "deep-drawing",
+  "params": {
+   "diaMm": 60,
+   "depthMm": 20,
+   "thicknessMm": 1.0,
+   "depthToWidth": 0.33
+  }
+ },
+ {
+  "file": "drawn-cup-02.step",
+  "commodity": "drawn-cup",
+  "variant": 2,
+  "intendedProcess": "Deep Drawing (Multi-stage)",
+  "material": "Steel (mild)",
+  "intendedFamily": "deep-drawing",
+  "params": {
+   "diaMm": 60,
+   "depthMm": 30,
+   "thicknessMm": 1.2,
+   "depthToWidth": 0.5
+  }
+ },
+ {
+  "file": "drawn-cup-03.step",
+  "commodity": "drawn-cup",
+  "variant": 3,
+  "intendedProcess": "Deep Drawing (Multi-stage)",
+  "material": "Steel (mild)",
+  "intendedFamily": "deep-drawing",
+  "params": {
+   "diaMm": 60,
+   "depthMm": 45,
+   "thicknessMm": 1.5,
+   "depthToWidth": 0.75
+  }
+ },
+ {
+  "file": "drawn-cup-04.step",
+  "commodity": "drawn-cup",
+  "variant": 4,
+  "intendedProcess": "Deep Drawing (Multi-stage)",
+  "material": "Steel (mild)",
+  "intendedFamily": "deep-drawing",
+  "params": {
+   "diaMm": 60,
+   "depthMm": 60,
+   "thicknessMm": 1.0,
+   "depthToWidth": 1.0
+  }
+ },
+ {
+  "file": "drawn-cup-05.step",
+  "commodity": "drawn-cup",
+  "variant": 5,
+  "intendedProcess": "Deep Drawing (Multi-stage)",
+  "material": "Steel (mild)",
+  "intendedFamily": "deep-drawing",
+  "params": {
+   "diaMm": 50,
+   "depthMm": 55,
+   "thicknessMm": 1.2,
+   "depthToWidth": 1.1
+  }
+ },
+ {
+  "file": "drawn-cup-06.step",
+  "commodity": "drawn-cup",
+  "variant": 6,
+  "intendedProcess": "Deep Drawing (Multi-stage)",
+  "material": "Steel (mild)",
+  "intendedFamily": "deep-drawing",
+  "params": {
+   "diaMm": 45,
+   "depthMm": 60,
+   "thicknessMm": 0.9,
+   "depthToWidth": 1.33
+  }
+ },
+ {
+  "file": "drawn-cup-07.step",
+  "commodity": "drawn-cup",
+  "variant": 7,
+  "intendedProcess": "Deep Drawing (Multi-stage)",
+  "material": "Steel (mild)",
+  "intendedFamily": "deep-drawing",
+  "params": {
+   "diaMm": 70,
+   "depthMm": 25,
+   "thicknessMm": 1.6,
+   "depthToWidth": 0.36
+  }
+ },
+ {
+  "file": "drawn-cup-08.step",
+  "commodity": "drawn-cup",
+  "variant": 8,
+  "intendedProcess": "Deep Drawing (Multi-stage)",
+  "material": "Steel (mild)",
+  "intendedFamily": "deep-drawing",
+  "params": {
+   "diaMm": 55,
+   "depthMm": 40,
+   "thicknessMm": 1.1,
+   "depthToWidth": 0.73
+  }
+ },
+ {
+  "file": "drawn-cup-09.step",
+  "commodity": "drawn-cup",
+  "variant": 9,
+  "intendedProcess": "Deep Drawing (Multi-stage)",
+  "material": "Steel (mild)",
+  "intendedFamily": "deep-drawing",
+  "params": {
+   "diaMm": 40,
+   "depthMm": 70,
+   "thicknessMm": 0.7,
+   "depthToWidth": 1.75
+  }
+ },
+ {
+  "file": "gear-blank-00.step",
+  "commodity": "gear-blank",
+  "variant": 0,
+  "intendedProcess": "Powder Metallurgy (Press & Sinter)",
+  "material": "Steel (mild)",
+  "intendedFamily": "powder-metallurgy",
+  "params": {
+   "diaMm": 40,
+   "thicknessMm": 6,
+   "webHoleDiaMm": 4
+  }
+ },
+ {
+  "file": "gear-blank-01.step",
+  "commodity": "gear-blank",
+  "variant": 1,
+  "intendedProcess": "Powder Metallurgy (Press & Sinter)",
+  "material": "Steel (mild)",
+  "intendedFamily": "powder-metallurgy",
+  "params": {
+   "diaMm": 50,
+   "thicknessMm": 8,
+   "webHoleDiaMm": 5
+  }
+ },
+ {
+  "file": "gear-blank-02.step",
+  "commodity": "gear-blank",
+  "variant": 2,
+  "intendedProcess": "Powder Metallurgy (Press & Sinter)",
+  "material": "Steel (mild)",
+  "intendedFamily": "powder-metallurgy",
+  "params": {
+   "diaMm": 60,
+   "thicknessMm": 10,
+   "webHoleDiaMm": 6
+  }
+ },
+ {
+  "file": "gear-blank-03.step",
+  "commodity": "gear-blank",
+  "variant": 3,
+  "intendedProcess": "Powder Metallurgy (Press & Sinter)",
+  "material": "Steel (mild)",
+  "intendedFamily": "powder-metallurgy",
+  "params": {
+   "diaMm": 70,
+   "thicknessMm": 12,
+   "webHoleDiaMm": 8
+  }
+ },
+ {
+  "file": "gear-blank-04.step",
+  "commodity": "gear-blank",
+  "variant": 4,
+  "intendedProcess": "Powder Metallurgy (Press & Sinter)",
+  "material": "Steel (mild)",
+  "intendedFamily": "powder-metallurgy",
+  "params": {
+   "diaMm": 80,
+   "thicknessMm": 14,
+   "webHoleDiaMm": 10
+  }
+ },
+ {
+  "file": "gear-blank-05.step",
+  "commodity": "gear-blank",
+  "variant": 5,
+  "intendedProcess": "Powder Metallurgy (Press & Sinter)",
+  "material": "Steel (mild)",
+  "intendedFamily": "powder-metallurgy",
+  "params": {
+   "diaMm": 90,
+   "thicknessMm": 16,
+   "webHoleDiaMm": 12
+  }
+ },
+ {
+  "file": "gear-blank-06.step",
+  "commodity": "gear-blank",
+  "variant": 6,
+  "intendedProcess": "Powder Metallurgy (Press & Sinter)",
+  "material": "Steel (mild)",
+  "intendedFamily": "powder-metallurgy",
+  "params": {
+   "diaMm": 30,
+   "thicknessMm": 5,
+   "webHoleDiaMm": 3
+  }
+ },
+ {
+  "file": "gear-blank-07.step",
+  "commodity": "gear-blank",
+  "variant": 7,
+  "intendedProcess": "Powder Metallurgy (Press & Sinter)",
+  "material": "Steel (mild)",
+  "intendedFamily": "powder-metallurgy",
+  "params": {
+   "diaMm": 100,
+   "thicknessMm": 18,
+   "webHoleDiaMm": 14
+  }
+ },
+ {
+  "file": "gear-blank-08.step",
+  "commodity": "gear-blank",
+  "variant": 8,
+  "intendedProcess": "Powder Metallurgy (Press & Sinter)",
+  "material": "Steel (mild)",
+  "intendedFamily": "powder-metallurgy",
+  "params": {
+   "diaMm": 65,
+   "thicknessMm": 11,
+   "webHoleDiaMm": 7
+  }
+ },
+ {
+  "file": "gear-blank-09.step",
+  "commodity": "gear-blank",
+  "variant": 9,
+  "intendedProcess": "Powder Metallurgy (Press & Sinter)",
+  "material": "Steel (mild)",
+  "intendedFamily": "powder-metallurgy",
+  "params": {
+   "diaMm": 110,
+   "thicknessMm": 20,
+   "webHoleDiaMm": 16
+  }
+ }
+]

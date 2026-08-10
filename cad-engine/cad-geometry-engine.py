@@ -1318,7 +1318,12 @@ def analyze(filepath: str, draw_override=None) -> dict:
                 dfm_block["sheetMetal"] = _fr.sheet_metal_features(
                     wrapped, feature_table,
                     wall_p50_mm=(wall_stats or {}).get("p50Mm"),
-                    aperture_block=aperture_block)
+                    aperture_block=aperture_block,
+                    # Uniformity and the part's span decide whether a wall may
+                    # STAND IN for a bend-measured thickness. A machined plate
+                    # has a wall too; it is not a sheet.
+                    wall_stats=wall_stats,
+                    extents=(x_sz, y_sz, z_sz))
                 _stage("sheetMetal", status="done",
                        isSheetMetal=(dfm_block.get("sheetMetal") or {}).get("isSheetMetal"))
             except Exception as e:

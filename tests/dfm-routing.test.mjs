@@ -969,3 +969,74 @@ test('every shaping process in the cost model is either routed or explained', as
     }
   }
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// COMMODITY-SWEEP FIXES
+//
+// A 93-part sweep across ten automotive commodities measured what the catalogue
+// can actually SAY about real-shaped parts, as opposed to whether its numbers
+// are right. Two holes dominated everything else, and both are guarded here.
+// ═══════════════════════════════════════════════════════════════════════════
+
+test('a sheet part with no modelled bend is still measured, and says on what basis', () => {
+  // The sheet family was gated on BEND recognition. Measured over ten stamped
+  // brackets: the engine read the wall at 1.60 mm and the holes at Ø8 —
+  // everything four of the nine rules need — and abstained on all nine.
+  const noBend = {
+    dfm: {
+      sheetMetal: {
+        isSheetMetal: false, thicknessMm: 1.6,
+        thicknessBasis: 'derived from the ray-cast wall median',
+        minHoleDiaToThickness: 5, minHoleToEdgeToThickness: 6.27,
+      },
+      apertures: { smallestApertureMm: 8 },
+      wallThickness: { p50Mm: 1.6 }, draft: {}, features: {},
+    },
+  };
+  const m = extractMeasures(noBend);
+  assert.equal(m.sheetThicknessMm, 1.6);
+  assert.match(m._sheetThicknessBasis, /ray-cast wall/);
+  const r = runDfmRules(noBend, 'sheet-metal', { material: 'Steel (mild)' });
+  assert.ok(r.evaluatedCount >= 3, `expected the thickness-derived rules to run, got ${r.evaluatedCount}`);
+  // The bend-dependent ones must STILL abstain — the fix widens what can be
+  // measured, it does not invent a bend.
+  for (const id of ['sm-bend-radius', 'sm-hole-to-bend', 'sm-bend-to-bend', 'sm-flange-length']) {
+    assert.ok(r.notEvaluated.some(f => f.id === id), `${id} must still abstain with no bend`);
+  }
+});
+
+test('a part with no sheet thickness at all still abstains completely', () => {
+  const casting = { dfm: { sheetMetal: { isSheetMetal: false, reason: 'no bends' }, wallThickness: { p50Mm: 12 }, draft: {}, features: {} } };
+  const r = runDfmRules(casting, 'sheet-metal', { material: 'Steel (mild)' });
+  assert.equal(r.evaluatedCount, 0, 'a casting is not judged by sheet rules');
+  assert.equal(r.score, null, 'and scores null, not 100');
+});
+
+test('the tightest tolerance can be DECLARED, and never outranks real PMI', () => {
+  // 93 abstentions over 93 parts: every tolerance-capability rule in the
+  // catalogue — one per family — had never fired on a single part, because
+  // almost no STEP carries semantic PMI.
+  const bare = { dfm: { wallThickness: { p50Mm: 3, p5Mm: 3 }, draft: {}, features: {} } };
+  assert.equal(extractMeasures(bare).tightestToleranceMm, undefined);
+  assert.equal(extractMeasures(bare, { declaredToleranceMm: 0.05 }).tightestToleranceMm, 0.05);
+  assert.match(extractMeasures(bare, { declaredToleranceMm: 0.05 })._toleranceBasis, /DECLARED/);
+
+  // PMI wins when the file actually carries it — a typed number must never
+  // override a measured one.
+  const withPmi = { dfm: { pmi: { tightestToleranceMm: 0.02 }, wallThickness: { p50Mm: 3 }, draft: {}, features: {} } };
+  const m = extractMeasures(withPmi, { declaredToleranceMm: 0.5 });
+  assert.equal(m.tightestToleranceMm, 0.02);
+  assert.match(m._toleranceBasis, /AP242/);
+});
+
+test('a declared tolerance carries its basis onto the finding, and only that finding', () => {
+  const geo = { dfm: { wallThickness: { p50Mm: 3, p5Mm: 3 }, draft: { undercutFaceCount: 0 }, features: {} } };
+  const r = runDfmRules(geo, 'hpdc', { material: 'Aluminium A356 (cast)', declaredToleranceMm: 0.05 });
+  const tol = [...r.findings, ...r.passed].find(f => f.measure === 'tightestToleranceMm');
+  assert.ok(tol, 'the tolerance rule must now evaluate');
+  assert.match(tol.measuredBasis, /DECLARED/);
+  // No other finding may pick up a stray provenance claim.
+  for (const f of [...r.findings, ...r.passed]) {
+    if (f.measure !== 'tightestToleranceMm') assert.equal(f.measuredBasis, undefined, `${f.id} carries a stray basis`);
+  }
+});

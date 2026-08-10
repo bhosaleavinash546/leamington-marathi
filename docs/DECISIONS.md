@@ -1424,3 +1424,46 @@ Format: decision · why · what would change it.
     the one figure it has already told the reader not to believe. *Changes it:* the tile
     reduces over confirmed ideas only, and shows an em dash when none is confirmed rather
     than falling back to the largest number available.
+
+112. **A COVERAGE corpus, because the accuracy gate could not see the biggest hole (2026).**
+    *Why:* `benchmark/dfm-run.mjs` proves the kernel returns the right NUMBER on parts whose
+    truth is arithmetic, and it was at 100% while the tool was blind on the commonest
+    automotive commodity. Those are different questions. A rule that is correct and abstains
+    on every real part is worth nothing, and no fixture in the accuracy set can reveal that.
+    *Changes it:* `benchmark/commodity-corpus/` — ten automotive commodities at ten variants
+    each, parameters swept from the thin end to the thick end of every rule — and
+    `benchmark/commodity-sweep.mjs`, which runs the FULL production path over them and reports
+    coverage, abstentions by rule, process-inference agreement and per-part runtime.
+    It is a MEASUREMENT, not a gate: "how much of the catalogue applies to a gear blank" has
+    no pass mark, it has an answer, and the answer is what says where to build next.
+    *One process per part.* The kernel SEGFAULTED filleting a fused lever and took sixty
+    parts of the corpus with it. A crash inside OCCT cannot be caught by a try block, so the
+    only way to make it data rather than a dead run is a process boundary. 96 of 100 built;
+    the four that crash are recorded as such.
+
+113. **The first sweep: 0% coverage on stamped brackets (2026).**
+    *Why:* the sheet-metal family was gated on BEND recognition — `isSheetMetal` — but only
+    four of its nine rules need a bend. Measured over ten brackets: the engine read the wall
+    at 1.60 mm and the holes at Ø8, everything the other five need, then abstained on all
+    nine and scored `null`. A concept model drawn with sharp corners, or a STEP export that
+    dropped the radii, produced a completely blank sheet-metal report — on the single most
+    common part a plant makes. *Changes it:* the recogniser returns the thickness-derived
+    subset when there is no bend, with the thickness's provenance stated. `isSheetMetal` is
+    untouched and still means "a bend was measured".
+    *And the gate immediately caught the over-reach.* The first version fired on anything
+    with a wall, so a 60x40x10 MACHINED PLATE started being judged by sheet rules. The
+    fallback now needs evidence a sheet part has and a plate does not: a wall inside the
+    sheet range (≤ 6 mm), UNIFORM, on a part at least ten thicknesses across. Both numbers
+    are the ordinary definition of sheet metal, not values tuned to the corpus.
+
+114. **Every tolerance rule in the catalogue had never fired (2026).**
+    *Why:* `tightestToleranceMm` is read from AP242 semantic PMI, and almost no STEP carries
+    any. Over 93 parts it abstained 93 times — fourteen rules, one per family, that had never
+    once spoken. Fourteen rules that cannot ever speak are not a conservative tool, they are a
+    hole in it. *Changes it:* the engineer may DECLARE the tightest band; they know the
+    number, it is on the drawing in front of them. Real PMI always wins when the file has it,
+    and the basis travels with the value onto the finding — a figure read from the model and a
+    figure typed by a person are not the same kind of evidence and the report must never
+    conflate them.
+    *Measured effect across the corpus:* mean coverage 64.1% → 85.1%, with extrusion, deep
+    drawing and powder metallurgy reaching 100%.
