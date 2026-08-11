@@ -1913,3 +1913,47 @@ and the register now names Supplement 3 or ISO 8062-3 as the documents that
 lift it. Also recorded, not enforced: the taper equation (needs riser
 positions), external-corner radius 0.1–0.2 T (external corner radii are not
 yet a measure), and Table 1 boss heights.
+
+## SFSA Supplement 3 makes steel casting tolerance capability computed, and exposes an old lie
+
+The user supplied *SFSA Supplement 3 — Dimensional Capabilities of Steel
+Castings*, the document the register named as the tolerance blocker after
+NADCA #402. Now code in `sfsa-supplement-3.mjs`. Decisions worth recording:
+
+  * **The document verifies itself.** Every table is printed in both mm and
+    inches, and the tests pin the mm values against the inch values (green
+    sand model constant 5.200 mm = 0.2050 in × 25.4, and so on) — the same
+    role the printed worked examples played for #402. One printed anomaly is
+    kept table-faithful rather than corrected: this copy's CT table reads
+    CT9 = CT10 = 2 mm at ≤10 mm where canonical ISO 8062 prints 1.5 for CT9;
+    verified against the page image, held as printed, noted in the module.
+  * **The old flat screen was passing bands no foundry could hold.** The
+    1.2 mm sand screen (1.6 ferrous) was ~4× TIGHTER than what SFSA 2000
+    says steel sand casting promises — CT13 never tabulates below 6 mm.
+    A 2 mm declared band used to pass; the industry's own statistics
+    (140,000+ production features) say a first-article steel sand casting
+    cannot promise it. The rule now computes capability at each feature's
+    own dimension; the fix wording sends the engineer to machining or to a
+    negotiated CT grade, which is what the document itself recommends.
+  * **The alloy dependence moved into the measure, not out of the rule.**
+    Steel is judged against the CT tables; cast iron and non-ferrous alloys
+    keep their screening bands with a basis saying the supplement tabulates
+    steel only — so aluminium sand castings kept today's behaviour instead
+    of going silent, and the finding's source grade (standard-named vs
+    industry-consensus) rides the material family.
+  * **Production series is a declared input** (`productionSeries`, default
+    short): short = first article, judged at CT13; long = tooling iterated,
+    CT12. Each is the LOOSEST of the printed typical band — what a first
+    quotation can rely on without asking the foundry for anything special.
+  * **The capability regressions report; the CT tables gate.** Table 3.8's
+    6σ models (green sand / no-bake / shell, at the part's own length and
+    weight) carry r² of only 0.4–0.7, so they appear as report figures with
+    that caveat, refuse outside their fitted weight domains, and never fail
+    a part.
+
+Also new: flatness capability from the ISO 8062-2 CTG tables (sand CTG7,
+investment CTG6, at the bounding diagonal) and a machining-stock rule
+against Table 2.2's required machining allowance at grade F. Register:
+22 rules primary-read. Residual blockers, named: non-ferrous casting grade
+selection (ISO 8062 proper), and the geometric tables beyond flatness
+(straightness, circularity, coaxiality) are encoded but await measures.

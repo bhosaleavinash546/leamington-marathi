@@ -1170,6 +1170,57 @@ export function exportDfmPdf(
     }
   }
 
+  // ── WHAT SFSA 2000 PROMISES FOR THIS PART ─────────────────────────────────
+  //
+  // The steel-casting counterpart of the NADCA band above; a part is one or
+  // the other by material, so the two never render together.
+  {
+    const sf = (data as Record<string, any>).sheetForming;
+    const ct = sf?.sfsaCtSummary;
+    if (ct) {
+      ensure(46);
+      y += 2;
+      mono(7, true); setText(doc, GOLD);
+      doc.text('WHAT SFSA 2000 PROMISES FOR THIS STEEL CASTING', ML, y); y += 5.4;
+
+      const tiles: Array<[string, string, RGB]> = [
+        [`${ct.totalBandMm} mm`, `${ct.grade} BAND AT ${ct.largestDimensionMm} MM · ${String(ct.series).toUpperCase()} SERIES`, INK],
+      ];
+      if (sf.sfsaRma?.requiredMm != null) {
+        tiles.push([`${sf.sfsaRma.requiredMm} mm`, `MACHINING ALLOWANCE (GRADE ${sf.sfsaRma.grade})`, INK]);
+      }
+      if (sf.sfsaSandFlatness?.capabilityMm != null) {
+        tiles.push([`${sf.sfsaSandFlatness.capabilityMm} mm`, `FLATNESS AT ${sf.sfsaSandFlatness.diagonalMm} MM DIAG (${sf.sfsaSandFlatness.ctg})`, INK]);
+      }
+      const tol = sf.sfsaSandTolerance;
+      if (tol?.margin != null) {
+        tiles.push([`${Math.round(tol.margin * 1000) / 1000}×`,
+          tol.from === 'declared' ? 'DECLARED BAND VS CAPABILITY' : `WORST PMI BAND (${tol.dimensionMm} MM)`,
+          tol.margin >= 1 ? GREEN : RED]);
+      }
+
+      setFill(doc, PANEL); doc.roundedRect(ML, y - 5, CW, 20, 1.5, 1.5, 'F');
+      const cwN = CW / tiles.length;
+      tiles.forEach(([v, l, c], i) => {
+        const x = ML + 5 + i * cwN;
+        if (i > 0) { setDraw(doc, RULE, 0.3); doc.line(ML + i * cwN, y - 3, ML + i * cwN, y + 12); }
+        sans(v.length > 8 ? 10 : 13, 'bold'); setText(doc, c);
+        doc.text(fit(doc, v, cwN - 8), x, y + 3);
+        mono(5.4); setText(doc, MUT);
+        doc.text(fit(doc, l, cwN - 8), x, y + 9.5);
+      });
+      y += 23;
+
+      wrapped('From SFSA Supplement 3 "Dimensional Capabilities of Steel Castings", read first-hand: '
+        + 'the ISO 8062-1994 CT table adopted as SFSA 2000, judged at the loosest grade of the typical '
+        + 'band for the declared production series (a statistical basis of 140,000+ production features); '
+        + 'machining allowance from Table 2.2 at the casting’s largest dimension; flatness from the '
+        + 'ISO 8062-2 CTG tables at the bounding diagonal. Tighter numbers are a negotiation with the '
+        + 'foundry — pattern re-engineering, or machining the one surface that needs it.', 7.8, MUT, CW, 3.6, 'italic');
+      y += 3;
+    }
+  }
+
   // ── WHAT HAPPENS NEXT, AND WHO DOES IT ────────────────────────────────────
   //
   // The report said what is wrong and what it costs, and stopped. Nobody leaves
@@ -2172,6 +2223,43 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
         const s = sf.sfsaCoreDia;
         steelRows.push([`Worst core (Ø${s.diaMm} mm, ${s.depthMm} mm deep)`,
           `recommended minimum Ø${s.recommendedMinDiaMm} mm`, s.basis]);
+      }
+      // Supplement 3: what SFSA 2000 promises dimensionally, at this part's size.
+      if (sf.sfsaCtSummary) {
+        const s = sf.sfsaCtSummary;
+        steelRows.push([`Dimensional capability at ${s.largestDimensionMm} mm (${s.grade}, ${s.series} series)`,
+          `${s.totalBandMm} mm total band`, s.basis]);
+      }
+      if (sf.sfsaSandTolerance) {
+        const s = sf.sfsaSandTolerance;
+        steelRows.push([s.from === 'declared' ? `Declared band vs ${s.grade}` : `Worst PMI band (on ${s.dimensionMm} mm) vs ${s.grade}`,
+          `${s.bandMm} mm vs ${s.capabilityBandMm} mm → ${Math.round(s.margin * 1000) / 1000}×`, s.basis]);
+      }
+      if (sf.sfsaCapabilityModel) {
+        const s = sf.sfsaCapabilityModel;
+        const route = (k: string, label: string) => {
+          const r = s[k];
+          if (!r || r.unavailable) return `${label}: ${r?.unavailable ?? 'n/a'}`;
+          return `${label} ${r.p50Mm}-${r.p90Mm} mm`;
+        };
+        steelRows.push([`Expected 6σ spread per molding route (${s.lengthMm} mm, ${s.weightKg} kg)`,
+          [route('greenSand', 'green sand'), route('noBake', 'no-bake'), route('shell', 'shell')].join(' · '),
+          s.basis]);
+      }
+      if (sf.sfsaSandFlatness) {
+        const s = sf.sfsaSandFlatness;
+        steelRows.push([`Flatness capability at ${s.diagonalMm} mm diagonal (${s.ctg})`,
+          `${s.capabilityMm} mm (declared ${s.declaredMm} mm)`, s.basis]);
+      }
+      if (sf.sfsaRma) {
+        const s = sf.sfsaRma;
+        steelRows.push([`Required machining allowance (grade ${s.grade}, ${s.largestDimensionMm} mm casting)`,
+          `${s.requiredMm} mm per surface${s.declaredMm != null ? ` (declared ${s.declaredMm} mm)` : ''}`, s.basis]);
+      }
+      if (sf.sfsaWeightTolerance) {
+        const s = sf.sfsaWeightTolerance;
+        steelRows.push(['Weight tolerance (ISO 4990)',
+          `±${s.machineMoldedPct}% machine molded / ±${s.handMoldedPct}% hand molded on ${s.weightKg} kg`, s.basis]);
       }
       if (steelRows.length > 1) {
         sheets.push({

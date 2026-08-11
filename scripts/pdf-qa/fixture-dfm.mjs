@@ -379,6 +379,36 @@ export const DFM_RESULT_FULL = {
       measuredMm: 2, wallMm: 15.84, requiredMm: 15.84,
       basis: 'NADCA Product Design for Die Casting 7th ed., Figure 3.2 (pp. 40-41): at a uniform wall junction R1 >= T1.',
     },
+    // THE SFSA SUPPLEMENT 3 FIGURES, so the steel-casting capability band and
+    // the workbook rows render in QA. Values are the engine's own output for
+    // a 300 mm / 40 kg steel sand casting with a declared 2 mm band - a
+    // FAILING margin on purpose, same reason as ever.
+    sfsaCtSummary: {
+      grade: 'CT13', band: 'CT11-13', series: 'short', largestDimensionMm: 300, totalBandMm: 12,
+      basis: 'SFSA Supplement 3, Table 3.4 (short production series): CT11-13 "appropriate for most casting types and sand molding processes". Judged at CT13. Table 3.1: 12 mm at CT13 for the 250-400 mm band.',
+    },
+    sfsaSandTolerance: {
+      margin: 0.333, dimensionMm: null, bandMm: 2, capabilityBandMm: 6, grade: 'CT13', series: 'short', from: 'declared',
+      basis: 'The band was DECLARED by the engineer, without its dimension. SFSA Supplement 3, Table 3.1: the tightest value CT13 ever tabulates is 6 mm (dimensions up to 25 mm).',
+    },
+    sfsaCapabilityModel: {
+      lengthMm: 300, weightKg: 40, series: 'short',
+      greenSand: { p50Mm: 4.19, p90Mm: 7.25 }, noBake: { p50Mm: 3.63, p90Mm: 6.23 },
+      shell: { p50Mm: 1.94, p90Mm: 2.89 },
+      basis: 'SFSA Supplement 3, Table 3.8: 6-sigma capability regressions per sand molding route, at this part\'s own largest dimension and weight. r^2 0.4-0.7 - expected industry spread, not a promise.',
+    },
+    sfsaSandFlatness: {
+      declaredMm: 1.5, capabilityMm: 3.0, ctg: 'CTG7', diagonalMm: 361,
+      basis: 'SFSA Supplement 3, Table 4.2a: flatness 3.0 mm at CTG7 for a feature up to 1000 mm; sand machine-molded band CTG5-7, judged at CTG7.',
+    },
+    sfsaRma: {
+      requiredMm: 2.5, grade: 'F', largestDimensionMm: 300, declaredMm: 1.5,
+      basis: 'SFSA Supplement 3, Table 2.2: required machining allowance 2.5 mm per surface at grade F for a casting whose largest dimension is 300 mm. Cope surfaces carry a printed 6 mm minimum.',
+    },
+    sfsaWeightTolerance: {
+      machineMoldedPct: 5, handMoldedPct: 7, weightKg: 40,
+      basis: 'SFSA Supplement 3, Table 3.14 (ISO 4990-1986): casting mass tolerance +/-5% machine molded, +/-7% hand molded.',
+    },
   },
   // THE CATALOGUE COUNTS, on the "everything the API knows" fixture only.
   //

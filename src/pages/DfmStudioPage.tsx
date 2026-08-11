@@ -212,6 +212,9 @@ export default function DfmStudioPage() {
   const [tightestTolMm, setTightestTolMm] = useState('');
   const [toleranceGrade, setToleranceGrade] = useState<'standard' | 'precision'>('standard');
   const [flatnessCalloutMm, setFlatnessCalloutMm] = useState('');
+  // SFSA 2000 production series (steel castings): short is the honest
+  // first-article default; long declares that tooling has been iterated.
+  const [productionSeries, setProductionSeries] = useState<'short' | 'long'>('short');
   const [loading, setLoading] = useState<'' | 'dfm' | 'dfa'>('');
   const [error, setError] = useState('');
   const [result, setResult] = useState<DfmResponse | null>(null);
@@ -277,6 +280,7 @@ export default function DfmStudioPage() {
     // Declared drawing callouts, sent only when typed: an empty field must
     // reach the server as ABSENT so the rules abstain instead of judging 0.
     fd.append('toleranceGrade', toleranceGrade);
+    fd.append('productionSeries', productionSeries);
     if (tightestTolMm.trim()) fd.append('tightestToleranceMm', tightestTolMm.trim());
     if (flatnessCalloutMm.trim()) fd.append('flatnessMm', flatnessCalloutMm.trim());
     // A pinned draw direction, when the tool split is already decided. Left
@@ -962,6 +966,13 @@ export default function DfmStudioPage() {
                   <input type="number" value={flatnessCalloutMm} min={0} step={0.01} placeholder="e.g. 0.3"
                     onChange={e => setFlatnessCalloutMm(e.target.value)}
                     className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40 placeholder:text-slate-600" />
+                </label>
+                <label className="text-xs text-slate-400">Production series (SFSA 2000, steel castings)
+                  <select value={productionSeries} onChange={e => setProductionSeries(e.target.value as 'short' | 'long')}
+                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
+                    <option value="short">Short — first article, no pattern iteration yet</option>
+                    <option value="long">Long — tooling iterated, dimensions centred</option>
+                  </select>
                 </label>
               </div>
             </div>

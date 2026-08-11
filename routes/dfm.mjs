@@ -493,11 +493,22 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
       // NADCA #402 grade: Standard is what a first quotation assumes, so it is
       // the default; Precision is a die-cost decision the engineer declares.
       toleranceGrade: req.body?.toleranceGrade === 'precision' ? 'precision' : 'standard',
+      // SFSA 2000 production series: short is the first-article assumption
+      // (no pattern re-engineering has centred the dimensions yet), long is a
+      // declaration that tooling has been iterated - it LOOSENS nothing by
+      // default and tightens the judged CT grade by one when declared.
+      productionSeries: req.body?.productionSeries === 'long' ? 'long' : 'short',
       // Declared flatness callout, mm. Absent when not typed - the flatness
       // rule abstains rather than passing on a default.
       flatnessMm: (() => {
         const v = Number(req.body?.flatnessMm);
         return Number.isFinite(v) && v > 0 ? v : undefined;
+      })(),
+      // Mass for the SFSA capability models, derived from the kernel-measured
+      // volume and the chosen material's density - never typed.
+      weightKg: (() => {
+        const d = MATERIALS[req.body?.material]?.density;
+        return d && geo.volume?.cm3 > 0 ? (geo.volume.cm3 * d) / 1000 : undefined;
       })(),
     };
     const ruleResults = family ? [runDfmRules(geo, family, ruleOpts)] : runAllDfmRules(geo, ruleOpts);
@@ -721,7 +732,9 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
           '_nadca402Summary', '_nadca402Tolerance', '_nadca402Flatness',
           // The SFSA steel-casting figures, same contract: what the handbook
           // asks of THIS part, printed whether or not a rule fired.
-          '_sfsaMinSection', '_sfsaJunctionFillet', '_sfsaRibNeutrality', '_sfsaBoss', '_sfsaCoreDia']) {
+          '_sfsaMinSection', '_sfsaJunctionFillet', '_sfsaRibNeutrality', '_sfsaBoss', '_sfsaCoreDia',
+          '_sfsaCtSummary', '_sfsaCapabilityModel', '_sfsaRma', '_sfsaWeightTolerance',
+          '_sfsaSandTolerance', '_sfsaSandFlatness']) {
           if (m[k]) out[k.slice(1)] = m[k];
         }
         if (m._nadcaBasis) out.nadcaUnavailable = m._nadcaBasis;

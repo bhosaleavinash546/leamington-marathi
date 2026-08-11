@@ -23,6 +23,10 @@ import {
   castSteelGroupFor, minSectionMm, junctionFilletMm, ribNeutralHeightLimit,
   BOSS, minCoreDiaMm,
 } from './sfsa-steel-casting.mjs';
+import {
+  ctToleranceMm, ctTightestPromiseMm, ctGradeFor, ctgFlatnessMm, CTG_SELECTION,
+  rmaMm, RMA_GRADE_SELECTION, capabilityModelMm, WEIGHT_TOLERANCE,
+} from './sfsa-supplement-3.mjs';
 import { MATERIALS } from './costing-engine.mjs';
 import {
   minBendRadiusMm, maxBendRadiusMm, springback, minPunchedHoleMm,
@@ -966,6 +970,119 @@ function sfsaLimits(draft, features, wall, geo, opts = {}) {
     || num(wall?.p50Mm) !== undefined;
   if (!hasPart) return out;
   const group = castSteelGroupFor(opts.material);
+
+  // ── TOLERANCE CAPABILITY, SFSA Supplement 3 (SFSA 2000 / ISO 8062) ──────
+  //
+  // Computed for EVERY material, with the honesty carried in the path taken:
+  // steel is judged against the CT tables the supplement adopts; every other
+  // alloy keeps the tool's screening value with a basis that says the
+  // supplement tabulates steel only. Same two evidence paths as NADCA #402 —
+  // worst PMI dimension row, else the declared band judged against the
+  // tightest value the grade ever tabulates.
+  const series = opts.productionSeries === 'long' ? 'long' : 'short';
+  {
+    const pmiRows = (Array.isArray(geo.dfm?.pmi?.dimensions) ? geo.dfm.pmi.dimensions : [])
+      .filter((r) => Number(r?.span) > 0 && Number(r?.value) > 0);
+    const declared = num(opts.declaredToleranceMm);
+    // The screening bands the catalogue carried before the supplement was
+    // read. They stay for the alloys the supplement does not speak for.
+    const SCREEN = { sand: 1.2, sandCastIron: 1.0, investment: 0.3 };
+    const isIron = /cast iron/i.test(String(opts.material || ''));
+
+    const judge = (process) => {
+      if (group.ok) {
+        const sel = ctGradeFor(process, series);
+        if (!sel.ok) return undefined;
+        let worst = null;
+        for (const r of pmiRows) {
+          const cap = ctToleranceMm(Number(r.value), sel.grade);
+          if (!cap.ok) continue;                      // the grade prints '-' there
+          const margin = Number(r.span) / cap.totalBandMm;
+          if (!worst || margin < worst.margin) {
+            worst = { margin, dimensionMm: Number(r.value), bandMm: Number(r.span),
+              capabilityBandMm: cap.totalBandMm, grade: `CT${sel.grade}`, series: sel.series,
+              from: 'PMI', basis: `${sel.basis} ${cap.basis}` };
+          }
+        }
+        if (!worst && declared !== undefined && declared > 0) {
+          const cap = ctTightestPromiseMm(sel.grade);
+          if (cap.ok) {
+            worst = { margin: declared / cap.totalBandMm, dimensionMm: null, bandMm: declared,
+              capabilityBandMm: cap.totalBandMm, grade: `CT${sel.grade}`, series: sel.series,
+              from: 'declared', basis: `The band was DECLARED by the engineer, without its dimension. ${sel.basis} ${cap.basis}` };
+          }
+        }
+        return worst ?? undefined;
+      }
+      // Non-steel: the screening value, labelled as exactly that.
+      const screen = process === 'investment' ? SCREEN.investment : (isIron ? SCREEN.sandCastIron : SCREEN.sand);
+      const band = pmiRows.length
+        ? Math.min(...pmiRows.map((r) => Number(r.span)))
+        : (declared !== undefined && declared > 0 ? declared : undefined);
+      if (band === undefined) return undefined;
+      return { margin: band / screen, dimensionMm: null, bandMm: band, capabilityBandMm: screen,
+        grade: null, series: null, from: pmiRows.length ? 'PMI' : 'declared',
+        basis: `Process screening value (${screen} mm total band${isIron ? ', cast iron' : ''}) - SFSA Supplement 3 tabulates steel castings only, so this alloy keeps the tool's screening threshold rather than borrowing a steel column.` };
+    };
+
+    const sand = judge('sand');
+    if (sand) {
+      out.sfsaSandToleranceMargin = Math.round(sand.margin * 1000) / 1000;
+      out._sfsaSandTolerance = sand;
+    }
+    const inv = judge('investment');
+    if (inv) {
+      out.sfsaInvToleranceMargin = Math.round(inv.margin * 1000) / 1000;
+      out._sfsaInvTolerance = inv;
+    }
+  }
+
+  // ── FLATNESS vs ISO 8062-2 CTG, Table 4.2a + 4.5 — steel only ───────────
+  // Declared callout judged at the bounding diagonal (the largest dimension
+  // any single face could carry), CTG7 for machine-molded sand and CTG6 for
+  // investment — the loosest of each printed band; hand molding runs to CTG8.
+  const flatDecl = num(opts.flatnessMm);
+  if (group.ok && flatDecl !== undefined && flatDecl > 0) {
+    const bbF = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
+    const dims = [num(bbF.xMm), num(bbF.yMm), num(bbF.zMm)].filter((v) => v > 0).sort((a, b) => b - a);
+    if (dims.length >= 2) {
+      const diag = Math.hypot(dims[0], dims[1]);
+      const sandCap = ctgFlatnessMm(diag, 7);
+      if (sandCap.ok) {
+        out.sfsaSandFlatnessMargin = Math.round((flatDecl / sandCap.toleranceMm) * 1000) / 1000;
+        out._sfsaSandFlatness = { declaredMm: flatDecl, capabilityMm: sandCap.toleranceMm, ctg: 'CTG7',
+          diagonalMm: Math.round(diag),
+          basis: `${sandCap.basis} ${CTG_SELECTION.basis} Judged at CTG7, the loosest of the machine-molded band; hand molding extends to CTG8. At the part's own ${Math.round(diag)} mm bounding diagonal.` };
+      }
+      const invCap = ctgFlatnessMm(diag, 6);
+      if (invCap.ok) {
+        out.sfsaInvFlatnessMargin = Math.round((flatDecl / invCap.toleranceMm) * 1000) / 1000;
+        out._sfsaInvFlatness = { declaredMm: flatDecl, capabilityMm: invCap.toleranceMm, ctg: 'CTG6',
+          diagonalMm: Math.round(diag), basis: `${invCap.basis} Investment band CTG4-6; judged at CTG6.` };
+      }
+    }
+  }
+
+  // ── REQUIRED MACHINING ALLOWANCE, Table 2.2 — steel only ────────────────
+  // The declared stock must at least cover the RMA at the part's largest
+  // dimension, judged at grade F — the machine-molded band's minimum, the
+  // least the standard ever requires. Absent when no stock was declared.
+  const stockDecl = num(opts.machiningStockMm);
+  {
+    const bbR = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
+    const maxDim = Math.max(num(bbR.xMm) ?? 0, num(bbR.yMm) ?? 0, num(bbR.zMm) ?? 0);
+    if (group.ok && maxDim > 0) {
+      const rma = rmaMm(maxDim, 'F');
+      if (rma.ok) {
+        out._sfsaRma = { requiredMm: rma.rmaMm, grade: 'F', largestDimensionMm: rma.largestDimensionMm,
+          declaredMm: stockDecl ?? null, basis: `${rma.basis} ${RMA_GRADE_SELECTION.basis}` };
+        if (stockDecl !== undefined && stockDecl >= 0) {
+          out.sfsaMachiningStockMargin = Math.round((stockDecl / rma.rmaMm) * 1000) / 1000;
+        }
+      }
+    }
+  }
+
   if (!group.ok) { out._sfsaBasis = group.reason; return out; }
   const nominalWall = num(wall.p50Mm);
 
@@ -1057,6 +1174,46 @@ function sfsaLimits(draft, features, wall, geo, opts = {}) {
     }
   }
   if (worstCore) out._sfsaCoreDia = worstCore;
+
+  // ── THE SUPPLEMENT 3 SUMMARY the report prints whether or not a rule
+  // fires: what SFSA 2000 promises at this part's own size, and what the
+  // industry capability models expect each sand molding route to hold.
+  {
+    const bbS = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
+    const maxDim = Math.max(num(bbS.xMm) ?? 0, num(bbS.yMm) ?? 0, num(bbS.zMm) ?? 0);
+    if (maxDim > 0) {
+      const sel = ctGradeFor('sand', series);
+      const cap = sel.ok ? ctToleranceMm(maxDim, sel.grade) : { ok: false };
+      if (cap.ok) {
+        out._sfsaCtSummary = {
+          grade: `CT${sel.grade}`, band: sel.band, series: sel.series,
+          largestDimensionMm: Math.round(maxDim), totalBandMm: cap.totalBandMm,
+          basis: `${sel.basis} ${cap.basis}`,
+        };
+      }
+      const weightKg = num(opts.weightKg);
+      if (weightKg !== undefined && weightKg > 0) {
+        const routes = {};
+        for (const molding of ['greenSand', 'noBake', 'shell']) {
+          const model = capabilityModelMm(molding, { lengthMm: maxDim, weightKg, series });
+          routes[molding] = model.ok
+            ? { p50Mm: model.p50Mm, p90Mm: model.p90Mm }
+            : { unavailable: model.reason };
+        }
+        out._sfsaCapabilityModel = {
+          lengthMm: Math.round(maxDim), weightKg: Math.round(weightKg * 100) / 100, series,
+          ...routes,
+          basis: 'SFSA Supplement 3, Table 3.8: 6-sigma capability regressions per sand molding route, at this part\'s own largest dimension and weight (parting-line crossing not assumed). r^2 0.4-0.7 - expected industry spread, not a promise.',
+        };
+        out._sfsaWeightTolerance = {
+          machineMoldedPct: WEIGHT_TOLERANCE.machineMoldedPct,
+          handMoldedPct: WEIGHT_TOLERANCE.handMoldedPct,
+          weightKg: Math.round(weightKg * 100) / 100,
+          basis: WEIGHT_TOLERANCE.basis,
+        };
+      }
+    }
+  }
 
   return out;
 }
@@ -1273,7 +1430,12 @@ export function runDfmRules(geo, process, opts = {}) {
       measuredBasis: rule.measure === 'tightestToleranceMm' ? measures._toleranceBasis
         : rule.measure === 'nadca402ToleranceMargin' ? measures._nadca402Tolerance?.basis
           : rule.measure === 'nadca402FlatnessMargin' ? measures._nadca402Flatness?.basis
-            : undefined,
+            : rule.measure === 'sfsaSandToleranceMargin' ? measures._sfsaSandTolerance?.basis
+              : rule.measure === 'sfsaInvToleranceMargin' ? measures._sfsaInvTolerance?.basis
+                : rule.measure === 'sfsaSandFlatnessMargin' ? measures._sfsaSandFlatness?.basis
+                  : rule.measure === 'sfsaInvFlatnessMargin' ? measures._sfsaInvFlatness?.basis
+                    : rule.measure === 'sfsaMachiningStockMargin' ? measures._sfsaRma?.basis
+                      : undefined,
       status,
     };
     // The specific features that break this rule, worst first. Only the ones

@@ -258,24 +258,18 @@
    "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
   },
   "sand-tolerance-capability": {
-   "status": "unaudited",
-   "claimedSource": "Casting tolerance guidance (family-specific)",
-   "grade": "industry-consensus",
-   "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held. SFSA Supplement 1 (now held, read 2026-08-11) is DESIGN rules and prints no tolerance tables; those are SFSA Supplement 3 \"Tolerances\" - either that booklet or ISO 8062-3 lifts this blocker.",
-   "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
-   "corroboration": [],
-   "primaryDocumentRead": false,
-   "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
+   "status": "primary-read",
+   "claimedSource": "SFSA Supplement 3 \"Dimensional Capabilities of Steel Castings\" (Steel Founders' Society of America), Tables 3.1/3.3/3.4",
+   "grade": "standard-named",
+   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT for steel. The user supplied the supplement: the ISO 8062-1994 CT table is adopted as SFSA 2000 (statistical basis: 140,000+ features on production steel castings), with grade selection CT11-13 typical for a short production series (judged at CT13) and CT10-12 for a long one (judged at CT12). The mm table was verified against the printed inch table before wiring. The old flat 1.2 mm screen was TIGHTER than anything the tables promise for steel - CT13 never tabulates below 6 mm - meaning the screen passed bands no steel foundry could hold as-cast. Non-ferrous sand alloys keep the screening value: the CT value table is metal-independent in ISO 8062, but the grade selection for non-ferrous is not held.",
+   "readOn": "2026-08-11"
   },
   "inv-tolerance-capability": {
-   "status": "unaudited",
-   "claimedSource": "Casting tolerance guidance (family-specific)",
-   "grade": "industry-consensus",
-   "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
-   "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
-   "corroboration": [],
-   "primaryDocumentRead": false,
-   "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
+   "status": "primary-read",
+   "claimedSource": "SFSA Supplement 3 \"Dimensional Capabilities of Steel Castings\" (Steel Founders' Society of America), Tables 3.1/3.3",
+   "grade": "standard-named",
+   "finding": "RESOLVED for steel: investment castings CT5-7 (long production series only - investment tooling is always iterated), judged at CT7. The old 0.3 mm screen sat close to the CT5-7 values at small dimensions, so verdicts move little on small parts and become dimension-aware on large ones. Non-steel investment alloys keep the screen.",
+   "readOn": "2026-08-11"
   },
   "sand-min-section": {
    "status": "primary-read",
@@ -310,6 +304,27 @@
    "claimedSource": "SFSA Steel Castings Handbook, Supplement 1 \"Design Rules and Data\" (Steel Founders' Society of America), Fig. 16 + Table 1 p.7",
    "grade": "standard-named",
    "finding": "NEW RULE from the primary document: the boss-neutrality bands stop at D = 2.0 T, beyond which no neutral height is printed. Worst boss sets the ratio. Steel castings only.",
+   "readOn": "2026-08-11"
+  },
+  "sand-flatness-capability": {
+   "status": "primary-read",
+   "claimedSource": "SFSA Supplement 3 \"Dimensional Capabilities of Steel Castings\" (Steel Founders' Society of America), Tables 4.2a + 4.5",
+   "grade": "standard-named",
+   "finding": "NEW RULE: flatness by ISO 8062-2 CTG grade at the bounding diagonal; steel sand machine-molded CTG5-7, judged at CTG7 (hand molding extends to CTG8, stated in the basis). Abstains without a declared callout, and on non-steel alloys.",
+   "readOn": "2026-08-11"
+  },
+  "inv-flatness-capability": {
+   "status": "primary-read",
+   "claimedSource": "SFSA Supplement 3 \"Dimensional Capabilities of Steel Castings\" (Steel Founders' Society of America), Tables 4.2a + 4.5",
+   "grade": "standard-named",
+   "finding": "NEW RULE: steel investment CTG4-6, judged at CTG6 at the bounding diagonal. Abstains without a declared callout, and on non-steel alloys.",
+   "readOn": "2026-08-11"
+  },
+  "sand-machining-stock": {
+   "status": "primary-read",
+   "claimedSource": "SFSA Supplement 3 \"Dimensional Capabilities of Steel Castings\" (Steel Founders' Society of America), Table 2.2",
+   "grade": "standard-named",
+   "finding": "NEW RULE: declared machining stock vs the required machining allowance at the casting's largest dimension, judged at grade F - the machine-molded band's minimum, the least the standard ever requires. The printed 6 mm cope-surface floor is stated, not silently applied (orientation is the foundry's choice). Steel only; abstains undeclared.",
    "readOn": "2026-08-11"
   }
  }
