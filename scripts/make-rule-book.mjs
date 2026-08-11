@@ -162,7 +162,7 @@ function shortThreshold(rule, threshold) {
 
 // ── The same test, in plain words ───────────────────────────────────────────
 //
-// One sentence per rule, GENERATED from the rule itself so 247 of them can
+// One sentence per rule, GENERATED from the rule itself so all of them can
 // never drift from the catalogue. Two parts: a friendly name for the
 // measurement (falling back to a de-camelled measure id, which stays honest
 // for measures nobody has named yet), and a comparator template. Margin-type
@@ -385,7 +385,7 @@ function build(index) {
 
   wrapped('WHAT THIS BOOK IS NOT', 8, GOLD, CW, 4.6, 'bold');
   y += 1;
-  wrapped(`It is not a design standard - but it now leans on several. ${Object.values(AUDIT).filter((a) => a.status === 'primary-read').length} thresholds have been verified against a primary document read cover to cover (the eight documents below), each formula tested against that book's own printed worked examples before it was wired in. The rest are widely-published practice that nobody here has yet checked against an original clause, and ${Object.values(AUDIT).filter((a) => a.status === 'contested').length} are actively contested - all named in Appendix B. Where your plant has its own number, it outranks everything in this book, and the tool lets you set it. It is also not a complete list of what matters: Appendix A sets out ${UNWRITTEN_RULES.length} things the engine deliberately does not claim to check.`, 9, BODY, CW, 4.4);
+  wrapped(`It is not a design standard - but it now leans on several. ${Object.values(AUDIT).filter((a) => a.status === 'primary-read').length} thresholds have been verified against a primary document read cover to cover (the nine documents below), each formula tested against that book's own printed worked examples before it was wired in. The rest are widely-published practice that nobody here has yet checked against an original clause, and ${Object.values(AUDIT).filter((a) => a.status === 'contested').length} are actively contested - all named in Appendix B. Where your plant has its own number, it outranks everything in this book, and the tool lets you set it. It is also not a complete list of what matters: Appendix A sets out ${UNWRITTEN_RULES.length} things the engine deliberately does not claim to check.`, 9, BODY, CW, 4.4);
   y += 9;
 
   // The primary documents, named on the cover. STATIC by design - extend this
@@ -402,6 +402,7 @@ function build(index) {
     ['Covestro (Bayer) Part and Mold Design', 'PC-family ribs, draft, fillets, undercut stripping limits'],
     ['Boljanovic, Sheet Metal Forming Processes and Die Design', 'press force, strip utilisation, bend allowance, draw operations'],
     ['ISO 8062-4:2017 - General tolerances for castings', 'non-ferrous casting tolerances per metal group, draft tables, machining allowance'],
+    ['DIN 16742:2013 - Plastics moulded parts, tolerances', 'moulding tolerance groups per resin and dimension; rotomoulding at TG9'],
   ]) {
     ensure(8);
     sans(8.6, 'bold'); setText(INK);

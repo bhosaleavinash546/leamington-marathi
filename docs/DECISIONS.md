@@ -2082,3 +2082,58 @@ material picker column decides which document speaks.
     the more specific authority for HPDC). Register: 31 rules
     primary-read; the last casting blocker standing is DIN 16742 for
     injection moulding.
+
+## DIN 16742 closes the tolerance story: every moulding and casting family now judges tolerance from a pinned standard
+
+**Date**: 2026-08-11
+**Context**: the roadmap's last catalogue purchase. The injection-moulding
+tolerance rule was a flat per-resin millimetre screen citing the withdrawn
+DIN 16901 from memory, and rotational moulding had no tolerance rule at
+all. The user supplied DIN 16742:2013-10 (36 pages, bilingual German/
+English, the DIN 16901 replacement), which extracts cleanly.
+**Decision**: `din-16742.mjs` pins Table 2 (tolerance groups TG1-TG9 ×
+16 nominal size bands, tool-specific W and non-tool-specific NW columns),
+Table 10 (profile-form general tolerances by DP dimension), Annex C
+(compound → tolerance-series column A-F) and Table C.1 (column × series →
+TG). `im-tolerance-capability` becomes a computed `din16742ToleranceMargin`
+(standard-named): Annex C assigns the picker resin its column, Table C.1
+picks the TG at the declared series, Table 2 prices the band at each PMI
+dimension's own size, and a declared band is judged against the group's
+tightest promise. A new `rm-tolerance-capability` rule (catalogue 247→248)
+judges rotational moulding at TG9 — §7.1.1 classifies the whole process
+there in one printed sentence.
+**Consequences**:
+  * **Verified against the standard's own Annex G worked example** — TG4
+    at DP 84,13 mm → ±0,32 mm, reproduced exactly — and against Table 2's
+    printed structure: the NW column IS the W column shifted one size
+    band, checked across all eight groups. A misread cell breaks the test.
+  * **Judged at the NW column, doubly justified**: the engine cannot tell
+    whether a dimension crosses tool parts (the looser column is the
+    honest one), and Table 2 NOTE 5 prints NW as the column for general
+    tolerances.
+  * **The Annex C letters are the standard's; the shrinkage figures that
+    pick a semi-crystalline resin's class are consensus** — the same
+    figures the old flat rule cited (PBT ~1.8%, POM ~2%, HDPE 1.5-3%) —
+    and every basis names both parts. Loosest printed branch wherever the
+    deciding knowledge (shrinkage held to ±10%, anisotropy considered in
+    the tool contour) is not an input. The old byMaterial ordering
+    survives as TG spread: PC/ABS/PC-ABS TG5, PA/PBT/PEEK and the filled
+    compounds TG6, PP/POM/TPU TG7, HDPE TG8 (its modulus sits below the
+    1200 N/mm² boundary, so the standard's low-stiffness branch applies).
+  * **The series input maps to the printed series**: 'standard' → series 1
+    (normal production — §5.2 allows only series 1 for general
+    tolerances), 'precision' → series 2 (accurate production, one TG
+    tighter per Table C.1). Series 3 and 4 are "always subject to
+    mandatory agreement" (Table 8) and the module refuses them — a first
+    quotation cannot assume a negotiation.
+  * **Refusals kept**: dimensions under 1 mm and over 1000 mm are
+    "subject to mandatory agreement" (NOTE 4); '-' cells refuse; a
+    material Annex C cannot assign abstains rather than borrowing a group.
+  * **Deliberately deferred**: Table 9 (position tolerances, cylindrical
+    zones) — the engine has no position-tolerance measure to read it
+    against; Tables 3-8's five-point evaluation as a user-facing input
+    (the Annex C orientation path covers the first-quotation case, and
+    the point system needs shrinkage knowledge only the moulder holds);
+    thermoset and GMT assignments (C.6/C.7) until those compounds join
+    the picker. Register: 33 rules primary-read from nine documents; the
+    named casting and moulding tolerance blockers are now all closed.

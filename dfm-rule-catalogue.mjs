@@ -1590,32 +1590,27 @@ export const DFM_RULES = [
     source: 'General machining tolerance guidance (ISO 2768 fine class and shop practice).',
   },
   {
+    // WAS A FLAT SCREEN with per-resin millimetre bands graded industry
+    // consensus, blocked on the very document that now backs it. DIN 16742
+    // makes capability a function of BOTH the resin and the DIMENSION: the
+    // Annex C compound assignment picks a tolerance group per resin (the old
+    // byMaterial ordering survives — amorphous tightest, HDPE widest — but
+    // now from the standard's own classes), and Table 2 prices the band at
+    // each feature's own size. The material dependence lives in the MEASURE,
+    // so the threshold is 1.0x for every resin.
     id: 'im-tolerance-capability',
-    byMaterial: {
-      'PC/ABS blend': { threshold: 0.22, source: 'PC/ABS: amorphous-dominated and low-shrink, so it holds close to neat PC.' },
-      'PBT': { threshold: 0.35, source: 'PBT is semi-crystalline and shrinks about 1.8%, so its achievable band is far wider than an amorphous resin of the same stiffness.' },
-      'PP-T20 (talc-filled)': { threshold: 0.30, source: '20% talc cuts PP shrinkage by roughly a third and makes it more isotropic, so the filled compound holds tighter than the neat resin.' },
-      'HDPE': { threshold: 0.50, source: 'HDPE shrinks 1.5-3% and keeps moving after ejection — the widest band of the common moulding resins.' },
-      'PEEK': { threshold: 0.25, source: 'PEEK is dimensionally stable once crystallised, and parts are usually annealed, so it holds tighter than most semi-crystallines.' },
-      'PPS': { threshold: 0.25, source: 'PPS shrinks little and is highly stable at temperature, which is much of its appeal.' },
-      'POM (Acetal)': { threshold: 0.35, source: 'Acetal shrinks about 2% and keeps moving for days after ejection, so its achievable band is far wider than an amorphous resin.' },
-      'PA6 (Nylon)': { threshold: 0.35, source: 'Nylon shrinks heavily AND absorbs moisture, so the part grows on the shelf; a machined-part tolerance cannot be held.' },
-      'PA66-GF30 (glass-filled)': { threshold: 0.30, source: 'Glass fill cuts shrinkage but makes it directional, so the band narrows without becoming isotropic.' },
-      'ABS': { threshold: 0.20, source: 'ABS is amorphous and low-shrink — the best of the commodity resins for dimensional control.' },
-      'Polycarbonate (PC)': { threshold: 0.20, source: 'PC is amorphous and dimensionally stable once dried.' },
-    },
-    sourceStatus: 'industry-consensus',
+    sourceStatus: 'standard-named',
     process: 'injection-moulding',
     severity: 'high',
     title: 'Tolerance tighter than injection moulding holds',
-    measure: 'tightestToleranceMm',
+    measure: 'din16742ToleranceMargin',
     compare: 'gte',
-    threshold: 0.2,
-    unit: 'mm total band',
+    threshold: 1.0,
+    unit: 'x DIN 16742 capability',
     rationale:
-      'Moulding tolerance is dominated by shrinkage, which varies with fill, pack and the batch of resin. About 0.2 mm total on a 50 mm dimension is normal for an engineering thermoplastic; a filled or semi-crystalline grade is worse, not better.',
-    fix: 'Open the tolerance, or machine the feature after moulding and price the secondary operation.',
-    source: 'Injection-moulding dimensional tolerance guidance (DIN 16901 / SPI commercial class).',
+      'Moulding tolerance is dominated by shrinkage, which varies with fill, pack and the batch of resin. The capability is COMPUTED from DIN 16742\'s Table 2 at each feature\'s own dimension and the tolerance group Annex C assigns to the declared resin — an amorphous PC is judged two groups tighter than HDPE, and a 200 mm dimension is allowed far more than a 20 mm one. The finding names the group and the printed band.',
+    fix: 'Open the tolerance to the tolerance-group band, or machine the feature after moulding and price the secondary operation. Declaring \'precision\' tooling moves the judgment one series tighter (Table C.1 series 2 — accurate production); anything beyond that is a mandatory agreement with the moulder, not a drawing note.',
+    source: 'DIN 16742:2013-10, READ FIRST-HAND (Table 2 + Table C.1 + Annex C): plastic moulded part tolerances as symmetrical limit dimensions, judged at the NON-tool-specific column — the looser one, and the column NOTE 5 prints for general tolerances — with the resin\'s tolerance group selected from the standard\'s own Annex C compound classes at the loosest printed branch wherever the deciding knowledge (shrinkage held to ±10%, anisotropy considered in the tool contour) is not an input. Verified against the standard\'s own Annex G worked example: TG4 at DP 84,13 mm → ±0,32 mm. Replaces DIN 16901, and the tool\'s old flat screen with it.',
   },
   {
     // WAS A FLAT 0.2 mm SCREEN graded industry-consensus, blocked on the very
@@ -4263,6 +4258,26 @@ export const DFM_RULES = [
     source: 'Rotational moulding design guidance: draft angles of generally 1-2°, varying with the shrinkage of the polymer. No primary standard audited.',
   },
   {
+    // Rotational moulding never had a tolerance rule at all — the family was
+    // priced and judged on walls and draft while a tolerance callout went
+    // unexamined. DIN 16742 closes that with one printed sentence: §7.1.1
+    // classifies the process into TG9, whatever the compound, so the rule is
+    // born standard-named rather than upgraded to it.
+    id: 'rm-tolerance-capability',
+    sourceStatus: 'standard-named',
+    process: 'rotational-moulding',
+    severity: 'high',
+    title: 'Tolerance tighter than rotational moulding holds',
+    measure: 'din16742RmToleranceMargin',
+    compare: 'gte',
+    threshold: 1.0,
+    unit: 'x DIN 16742 TG9 capability',
+    rationale:
+      'A rotational mould is an unpressurised shell: the powder sinters against it and the part cools free-standing, so dimensional control is the loosest of any moulding process. DIN 16742 says exactly that by classifying the whole process into its loosest tolerance group, TG9 — ±0.90 mm on an 18 mm dimension, ±2.25 mm at 120 mm — computed here at each feature\'s own size.',
+    fix: 'Open the tolerance to the TG9 band, machine the one feature that needs better, or move the part to injection moulding and pay for the tool.',
+    source: 'DIN 16742:2013-10, READ FIRST-HAND, 7.1.1: "The production method rotational moulding is classified into tolerance group 9." Judged from Table 2\'s TG9 row (which prints a single column - NOTE 2 waives the tool-specific split) at each feature\'s own dimension; a declared band with no dimension is judged against the tightest value TG9 ever tabulates (±0,30 mm at 1-3 mm), stated as such.',
+  },
+  {
     id: 'rm-undercuts',
     sourceStatus: 'industry-consensus',
     process: 'rotational-moulding',
@@ -4644,9 +4659,9 @@ export const UNWRITTEN_RULES = [
     proxy: 'The draw direction IS chosen by sweeping candidate axes and scoring undercut area, so the parting direction is measured — but nothing reports whether the resulting parting line is planar, and no trim-die line appears in the tooling cost.',
   },
   {
-    topic: 'Tolerance expressed as a PERCENTAGE of dimension (MIM, and casting CT grades)',
-    needs: 'A per-feature tolerance chain rather than one tightest band. MIM is quoted at roughly +/-0.3% of the dimension and ISO 8062 casting grades are the same idea — a band that is generous on a 40 mm feature is impossible on a 4 mm one. This engine reads ONE tightest callout in millimetres from the PMI, so it cannot ask "is this band achievable FOR THIS SIZE".',
-    proxy: '`mim-tolerance-capability` and every `*-tolerance-capability` rule use a flat millimetre screening value and say so. A part whose tight band sits on a small feature will pass when it should fail.',
+    topic: 'Tolerance expressed as a PERCENTAGE of dimension (MIM, and the families without a pinned standard)',
+    needs: 'A dimension-aware capability for every family. MIM is quoted at roughly +/-0.3% of the dimension — a band that is generous on a 40 mm feature is impossible on a 4 mm one. The moulding and casting families now have exactly this (NADCA #402, SFSA 2000, ISO 8062-4 and DIN 16742 price the band at each PMI dimension\'s own size), which makes the remaining flat screens more visible, not less.',
+    proxy: '`mim-tolerance-capability` and the other families without a pinned standard (machining, sheet metal, forging, extrusion and the rest) still use a flat millimetre screening value and say so. A part whose tight band sits on a small feature will pass when it should fail — on those families only.',
   },
   {
     topic: 'Best BUILD ORIENTATION for an additive part',

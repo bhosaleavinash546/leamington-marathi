@@ -740,7 +740,11 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
           // The ISO 8062-4 figures: the permanent-mould tolerance verdict at
           // the worst dimension, and the Table 4-8 draft requirement per
           // casting family at the part's own draw extent.
-          '_iso8062PmTolerance', '_iso8062Draft']) {
+          '_iso8062PmTolerance', '_iso8062Draft',
+          // The DIN 16742 figures: the moulded-part tolerance verdict, the
+          // rotomoulding TG9 verdict, and the what-the-standard-promises
+          // summary at the part's own size and resin.
+          '_din16742Tolerance', '_din16742RmTolerance', '_din16742Summary']) {
           if (m[k]) out[k.slice(1)] = m[k];
         }
         if (m._nadcaBasis) out.nadcaUnavailable = m._nadcaBasis;

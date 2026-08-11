@@ -1268,6 +1268,53 @@ export function exportDfmPdf(
     }
   }
 
+  // ── WHAT DIN 16742 PROMISES FOR THIS MOULDING ─────────────────────────────
+  //
+  // The moulded-part counterpart: the tolerance group Annex C assigns to the
+  // declared resin and the Table 2 band at this part's own size. Absent for
+  // metals, so no part shows two capability bands for one claim.
+  {
+    const sf = (data as Record<string, any>).sheetForming;
+    const din = sf?.din16742Summary;
+    if (din?.totalBandMm != null) {
+      ensure(46);
+      y += 2;
+      mono(7, true); setText(doc, GOLD);
+      doc.text('WHAT DIN 16742 PROMISES FOR THIS MOULDING', ML, y); y += 5.4;
+
+      const tiles: Array<[string, string, RGB]> = [
+        [din.tg, `ANNEX C COLUMN ${din.letter} · SERIES ${din.series}`, INK],
+        [`±${din.plusMinusMm} mm`, `${din.tg} BAND AT ${din.largestDimensionMm} MM`, INK],
+      ];
+      const tol = sf.din16742Tolerance;
+      if (tol?.margin != null) {
+        tiles.push([`${tol.margin}×`,
+          tol.from === 'declared' ? 'DECLARED BAND VS CAPABILITY' : `WORST PMI BAND (${tol.dimensionMm} MM)`,
+          tol.margin >= 1 ? GREEN : RED]);
+      }
+
+      setFill(doc, PANEL); doc.roundedRect(ML, y - 5, CW, 20, 1.5, 1.5, 'F');
+      const cwN = CW / tiles.length;
+      tiles.forEach(([v, l, c], i) => {
+        const x = ML + 5 + i * cwN;
+        if (i > 0) { setDraw(doc, RULE, 0.3); doc.line(ML + i * cwN, y - 3, ML + i * cwN, y + 12); }
+        sans(v.length > 8 ? 10 : 13, 'bold'); setText(doc, c);
+        doc.text(fit(doc, v, cwN - 8), x, y + 3);
+        mono(5.4); setText(doc, MUT);
+        doc.text(fit(doc, l, cwN - 8), x, y + 9.5);
+      });
+      y += 23;
+
+      wrapped('From DIN 16742:2013-10, read first-hand: the tolerance group the standard’s own '
+        + 'Annex C assigns to this resin (at the loosest printed branch where shrinkage knowledge is '
+        + 'not an input), priced by Table 2 at each dimension’s own size in the non-tool-specific '
+        + 'column — the looser one, and the column the standard prints for general tolerances. '
+        + 'Declaring precision tooling moves the judgment one series tighter; series 3 and 4 are a '
+        + 'mandatory agreement with the moulder, not a drawing note.', 7.8, MUT, CW, 3.6, 'italic');
+      y += 3;
+    }
+  }
+
   // ── WHAT HAPPENS NEXT, AND WHO DOES IT ────────────────────────────────────
   //
   // The report said what is wrong and what it costs, and stopped. Nobody leaves
@@ -2380,6 +2427,45 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
           rows: isoRows,
         });
       }
+
+      // ── DIN 16742 (moulded parts) — same contract, own sheet ─────────────
+      const dinRows: Array<Array<string | number>> = [['Figure', 'Value', 'Where it comes from']];
+      if (sf.din16742Summary) {
+        const s = sf.din16742Summary;
+        dinRows.push([`Tolerance group for this resin (Annex C column ${s.letter}, series ${s.series})`,
+          s.tg, s.basis]);
+        if (s.totalBandMm != null) {
+          dinRows.push([`Dimensional capability at ${s.largestDimensionMm} mm (${s.tg})`,
+            `±${s.plusMinusMm} mm (${s.totalBandMm} mm total band)`,
+            'DIN 16742 Table 2, non-tool-specific column, at the part’s largest dimension.']);
+        }
+        if (s.profileToleranceMm != null) {
+          dinRows.push([`General profile-form tolerance at the ${s.profileDiagonalMm} mm diagonal`,
+            `${s.profileToleranceMm} mm`,
+            'DIN 16742 Table 10: the general tolerance for freeform and profile surfaces, keyed on the DP dimension — the bounding diagonal is its upper bound here.']);
+        }
+      }
+      if (sf.din16742Tolerance) {
+        const s = sf.din16742Tolerance;
+        dinRows.push([s.from === 'declared' ? `Declared band vs ${s.tg}` : `Worst PMI band (on ${s.dimensionMm} mm) vs ${s.tg}`,
+          `${s.bandMm} mm vs ${s.capabilityBandMm} mm → ${s.margin}×`, s.basis]);
+      }
+      if (sf.din16742RmTolerance) {
+        const s = sf.din16742RmTolerance;
+        dinRows.push([s.from === 'declared' ? 'Rotomoulding: declared band vs TG9' : `Rotomoulding: worst PMI band (on ${s.dimensionMm} mm) vs TG9`,
+          `${s.bandMm} mm vs ${s.capabilityBandMm} mm → ${s.margin}×`, s.basis]);
+      }
+      if (dinRows.length > 1) {
+        sheets.push({
+          name: 'DIN 16742',
+          title: 'What DIN 16742 promises for this moulding',
+          subtitle: 'DIN 16742:2013-10 plastics moulded part tolerances, read first-hand: the tolerance group '
+            + 'the standard’s own Annex C assigns to this resin, and the Table 2 band at this part’s '
+            + 'dimensions. Figures, not verdicts — judged at the non-tool-specific column, the looser one.',
+          headerRow: 0, zebra: true, colWidths: [42, 32, 76], wrapCols: [2],
+          rows: dinRows,
+        });
+      }
     }
   }
 
@@ -2606,6 +2692,7 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
         ['Covestro (Bayer) Part and Mold Design', 'PC-family rib percentages, draft minimums, fillet ratio, tall-boss limit, undercut stripping'],
         ['Boljanovic, Sheet Metal Forming Processes and Die Design', 'Press force, strip utilisation, bend allowance, springback, draw operations — equation by equation'],
         ['ISO 8062-4:2017 — General tolerances for castings', 'Non-ferrous casting tolerance capability per metal group (permanent mould, sand, investment), draft tables 4-8, machining allowance'],
+        ['DIN 16742:2013 — Plastics moulded parts, tolerances and acceptance conditions', 'Injection-moulding tolerance groups per resin (Annex C) and dimension (Table 2), profile-form general tolerances, rotomoulding at TG9'],
       ],
     });
   }

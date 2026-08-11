@@ -40,6 +40,10 @@ import {
   isoMetalGroupFor, isoGradeFor, sToleranceMm, sTightestPromiseMm,
   isoDraftDeg,
 } from './iso-8062-4.mjs';
+import {
+  dinTgFor, tgToleranceMm, tgTightestPromiseMm, dinProfileToleranceMm,
+  ROTOMOULDING_TG, ROTOMOULDING_BASIS,
+} from './din-16742.mjs';
 
 /**
  * The worst (smallest-ratio) coaxial boss/hole pair in a feature table.
@@ -735,6 +739,10 @@ export function extractMeasures(geo = {}, opts = {}) {
     // ISO 8062-4: tolerance capability for the permanent-mould families and
     // the draft tables every casting family can sharpen against.
     ...iso8062Limits(draft, features, wall, geo, opts),
+    // DIN 16742: the moulded-part tolerance tables — injection moulding per
+    // Annex C compound assignment, rotational moulding at the standard's own
+    // TG9.
+    ...din16742Limits(draft, features, wall, geo, opts),
   };
 }
 
@@ -827,6 +835,96 @@ function iso8062Limits(draft, features, wall, geo, opts = {}) {
         };
       }
       if (Object.keys(map).length) out._iso8062Draft = map;
+    }
+  }
+
+  return out;
+}
+
+/**
+ * The limits DIN 16742 prints — moulded-part tolerance capability for
+ * injection moulding (Annex C compound assignment → Table C.1 tolerance
+ * group → Table 2 band at the feature's own dimension) and for rotational
+ * moulding at the standard's own TG9. Same dual evidence paths as every
+ * other capability measure: a worst PMI row judged at its own dimension, or
+ * a declared band judged against the group's tightest promise.
+ */
+function din16742Limits(draft, features, wall, geo, opts = {}) {
+  const num = (v) => {
+    if (v === null || v === undefined || v === '') return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
+  const out = {};
+  const hasPart = !!(draft && (draft.drawDirectionXYZ || draft.draftHistogramDegToAreaMm2 || draft.coredHoles))
+    || num(wall?.p50Mm) !== undefined;
+  if (!hasPart) return out;
+
+  // 'standard' → series 1 (normal production — the only series §5.2 allows
+  // for general tolerances); 'precision' → series 2 (accurate production).
+  // Series 3/4 are printed as "always subject to mandatory agreement" and
+  // the module refuses them, so this input can never assume a negotiation.
+  const series = opts.toleranceGrade === 'precision' ? 2 : 1;
+  const sel = dinTgFor(opts.material, { series });
+  if (!sel.ok) return out;
+
+  const pmiRows = (Array.isArray(geo.dfm?.pmi?.dimensions) ? geo.dfm.pmi.dimensions : [])
+    .filter((r) => Number(r?.span) > 0 && Number(r?.value) > 0);
+  const declared = num(opts.declaredToleranceMm);
+
+  const judge = (tg, tgBasis) => {
+    let worst = null;
+    for (const r of pmiRows) {
+      const cap = tgToleranceMm(Number(r.value), tg);
+      if (!cap.ok) continue;                       // <1 mm, >1000 mm, or '-'
+      const margin = Number(r.span) / cap.totalBandMm;
+      if (!worst || margin < worst.margin) {
+        worst = { margin: Math.round(margin * 1000) / 1000, dimensionMm: Number(r.value), bandMm: Number(r.span),
+          capabilityBandMm: cap.totalBandMm, tg: `TG${tg}`, series,
+          from: 'PMI', basis: `${tgBasis} ${cap.basis}` };
+      }
+    }
+    if (!worst && declared !== undefined && declared > 0) {
+      const cap = tgTightestPromiseMm(tg);
+      if (cap.ok) {
+        worst = { margin: Math.round((declared / cap.totalBandMm) * 1000) / 1000, dimensionMm: null, bandMm: declared,
+          capabilityBandMm: cap.totalBandMm, tg: `TG${tg}`, series,
+          from: 'declared', basis: `The band was DECLARED by the engineer, without its dimension. ${tgBasis} ${cap.basis}` };
+      }
+    }
+    return worst;
+  };
+
+  const im = judge(sel.tg, sel.basis);
+  if (im) {
+    out.din16742ToleranceMargin = im.margin;
+    out._din16742Tolerance = im;
+  }
+  const rm = judge(ROTOMOULDING_TG, ROTOMOULDING_BASIS);
+  if (rm) {
+    out.din16742RmToleranceMargin = rm.margin;
+    out._din16742RmTolerance = rm;
+  }
+
+  // ── The report figure: what the standard promises at this part's size ───
+  // Printed whether or not a rule fires, like the CT and NADCA summaries.
+  {
+    const bb = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
+    const ext = [num(bb.xMm), num(bb.yMm), num(bb.zMm)].filter((v) => v > 0);
+    if (ext.length) {
+      const largest = Math.max(...ext);
+      const cap = tgToleranceMm(largest, sel.tg);
+      const diag = Math.sqrt(ext.reduce((s, v) => s + v * v, 0));
+      const prof = dinProfileToleranceMm(diag);
+      out._din16742Summary = {
+        tg: `TG${sel.tg}`, letter: sel.letter, series,
+        largestDimensionMm: Math.round(largest),
+        totalBandMm: cap.ok ? cap.totalBandMm : null,
+        plusMinusMm: cap.ok ? cap.plusMinusMm : null,
+        profileToleranceMm: prof.ok ? prof.toleranceMm : null,
+        profileDiagonalMm: prof.ok ? prof.dpMm : null,
+        basis: cap.ok ? `${sel.basis} ${cap.basis}` : `${sel.basis} ${cap.reason}`,
+      };
     }
   }
 
@@ -1775,9 +1873,11 @@ export function runDfmRules(geo, process, opts = {}) {
                       : rule.measure === 'resinFilletMargin' ? measures._resinFillet?.basis
                         : rule.measure === 'dupontBossOdToHole' ? measures._dupontBoss?.basis
                           : rule.measure === 'iso8062PmToleranceMargin' ? measures._iso8062PmTolerance?.basis
-                            : cutoffFromResin ? measures._resinDraft?.basis
-                              : cutoffFromIso ? isoDraft?.basis
-                                : undefined,
+                            : rule.measure === 'din16742ToleranceMargin' ? measures._din16742Tolerance?.basis
+                              : rule.measure === 'din16742RmToleranceMargin' ? measures._din16742RmTolerance?.basis
+                                : cutoffFromResin ? measures._resinDraft?.basis
+                                  : cutoffFromIso ? isoDraft?.basis
+                                    : undefined,
       status,
     };
     // The specific features that break this rule, worst first. Only the ones

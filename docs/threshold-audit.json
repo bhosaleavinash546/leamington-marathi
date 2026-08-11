@@ -364,16 +364,24 @@
    "readOn": "2026-08-11"
   },
   "im-tolerance-capability": {
-   "status": "unaudited",
-   "claimedSource": "Process screening value (0.2 mm total band)",
-   "grade": "industry-consensus",
-   "finding": "DuPont Module I (now held, read 2026-08-11) prints NO tolerance tables - it is a design-principles book. The moulding tolerance primary source remains DIN 16742 (successor of DIN 16901), not held; the SPI/SPE commercial-vs-fine charts would also serve."
+   "status": "primary-read",
+   "claimedSource": "DIN 16742:2013-10 \"Plastics moulded parts - Tolerances and acceptance conditions\", Table 2 + Table C.1 + Annex C",
+   "grade": "standard-named",
+   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. The user supplied DIN 16742:2013-10 (36 pages, bilingual, the replacement for the withdrawn DIN 16901 the rule used to cite from memory). Capability is now COMPUTED: Annex C assigns each picker resin to a tolerance-series column (amorphous PC/ABS/PC+ABS are named in the C.2 type list -> B; semi-crystalline classes by the standard's own shrinkage boundaries -> B-E; filled compounds at the printed anisotropy-not-considered branch -> C; TPU via Table C.2's Shore rows -> D), Table C.1 maps the column at the declared series to a tolerance group TG1-TG9, and Table 2 prices the band at each feature's own dimension in the NON-tool-specific column (the looser one, and the column NOTE 5 prints for general tolerances). Verified against the standard's own Annex G worked example: TG4 at DP 84,13 mm -> +/-0,32 mm, reproduced exactly; plus the table's printed structure (the NW column IS the W column shifted one size band) held across all 8 groups. The old flat per-resin millimetre bands preserved the right ORDERING (amorphous tightest, HDPE widest) but priced every dimension the same; the typical-shrinkage figures they cited survive only to pick the semi-crystalline class, and the basis says so.",
+   "readOn": "2026-08-11"
   },
   "im-boss-height": {
    "status": "primary-read",
    "claimedSource": "Covestro (Bayer) \"Engineering Polymers: Part and Mold Design - Thermoplastics, A Design Guide\", p.28 (PC family); industry consensus elsewhere",
    "grade": "standard-named",
    "finding": "PARTIALLY RESOLVED with a genuine two-claim conflict handled sharpen-only: Covestro prints 5x OD as the point where FILLING becomes the problem; the existing PC screen of 3x rests on notch-sensitivity (crazing at the boss base under load) - a different failure mode and STRICTER, so it stands with both claims named in the source. PC/ABS and TPU (no notch screen) are judged at the printed 5x, standard-named. Generic 3x stays for unnamed resins.",
+   "readOn": "2026-08-11"
+  },
+  "rm-tolerance-capability": {
+   "status": "primary-read",
+   "claimedSource": "DIN 16742:2013-10, 7.1.1 + Table 2 (TG9 row)",
+   "grade": "standard-named",
+   "finding": "BORN FROM THE PRIMARY DOCUMENT - rotational moulding never had a tolerance rule at all; the family was judged on walls and draft while a tolerance callout went unexamined. DIN 16742 7.1.1 prints one sentence: \"The production method rotational moulding is classified into tolerance group 9\", whatever the compound. The rule judges each PMI dimension against Table 2's TG9 row at its own size (a declared band with no dimension against the tightest value TG9 ever tabulates, +/-0,30 mm, stated as such).",
    "readOn": "2026-08-11"
   }
  }
