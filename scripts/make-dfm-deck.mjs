@@ -38,8 +38,8 @@ const GATED = DFM_RULES.filter((r) => r.blocking).length;
 // Recorded by hand because running the suite inside the deck build would take
 // two minutes. Dated for the same reason the sweep is: a stale number should be
 // visible rather than quietly believed.
-const TESTS = 628;
-const TESTS_DATE = '10 Aug 2026';
+const TESTS = 701;
+const TESTS_DATE = '11 Aug 2026';
 
 // From `node benchmark/commodity-sweep.mjs`, recorded with the run date so a
 // stale table is visible rather than silently believed.
@@ -87,7 +87,7 @@ const W = 13.33;
 const H = 7.5;
 const M = 0.62;                        // page margin
 let slideNo = 0;
-const TOTAL = 16;
+const TOTAL = 17;
 
 /** Every content slide shares one footer, so the deck reads as one document. */
 function footer(s) {
@@ -407,7 +407,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     x: M, y: 6.56, w: W - 2 * M, h: 0.38, fontSize: 11, italic: true, color: MUT, fontFace: 'Calibri', margin: 0 });
   footer(s);
   s.addNotes([
-    'This is what is actually in the box. Two hundred and twenty-eight rules across thirty-five process families, and forty-nine processes to choose from.',
+    'This is what is actually in the box. Two hundred and forty-seven rules across thirty-five process families, and forty-nine processes to choose from.',
     '',
     'But the number of rules is not the interesting part. The interesting part is the line in bold underneath.',
     '',
@@ -553,10 +553,10 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   ], { x: M, y: 1.7, w: 6.0, h: 3.0, fontSize: 12.5, color: BODY, fontFace: 'Calibri', lineSpacing: 21, margin: 0 });
 
   s.addShape(pres.ShapeType.roundRect, { x: M, y: 4.95, w: 6.0, h: 1.45, fill: { color: NAVY }, rectRadius: 0.06, line: { color: NAVY } });
-  s.addText('NEW THIS MONTH — SHEET METAL', { x: M + 0.28, y: 5.13, w: 5.4, h: 0.24, fontSize: 10, bold: true, color: GOLD, fontFace: 'Calibri', charSpacing: 1.5, margin: 0 });
-  s.addText('Press class, strip utilisation and draw operations', { x: M + 0.28, y: 5.4, w: 5.4, h: 0.32, fontSize: 14, bold: true, color: 'FFFFFF', fontFace: 'Cambria', margin: 0 });
-  s.addText('Material is the largest cost in a stamping and our report never showed it. Utilisation now sits on page two, against the 70% industry target.',
-    { x: M + 0.28, y: 5.76, w: 5.5, h: 0.55, fontSize: 10.5, color: 'CBD5E1', fontFace: 'Calibri', margin: 0 });
+  s.addText('NEW — WHAT THE STANDARD PROMISES', { x: M + 0.28, y: 5.13, w: 5.4, h: 0.24, fontSize: 10, bold: true, color: GOLD, fontFace: 'Calibri', charSpacing: 1.5, margin: 0 });
+  s.addText('Capability bands, before any rule fires', { x: M + 0.28, y: 5.4, w: 5.4, h: 0.32, fontSize: 14, bold: true, color: 'FFFFFF', fontFace: 'Cambria', margin: 0 });
+  s.addText('For die castings and steel castings the report now opens with what NADCA #402 or SFSA 2000 promises at this part\'s own size — tolerance band, machining allowance, flatness — so a purchasing conversation starts from the standard, not from a finding.',
+    { x: M + 0.28, y: 5.72, w: 5.5, h: 0.62, fontSize: 10, color: 'CBD5E1', fontFace: 'Calibri', margin: 0 });
   footer(s);
   s.addNotes([
     'Two things on this slide.',
@@ -569,7 +569,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     '',
     'The second thing is the route table. It asks the harder question: what if we made this part a completely different way? It takes the same measured geometry, runs it through every other process\'s own rules, prices it, and scores its carbon — and tells you why each alternative is or is not viable.',
     '',
-    'And the panel in the dark box is recent work on stamping. Material is the single biggest cost in a pressed part, and our report was quoting a piece price without ever showing the strip utilisation. Now it shows the press tonnage, the strip layout and the utilisation against the industry target. Those numbers come from a die design textbook, equation by equation.',
+    'And the panel in the dark box is the newest addition. For die castings and steel castings, the report now opens with a small band that says what the governing standard PROMISES for a part of this size — the tolerance band it can hold, the machining allowance it needs, the flatness it can keep — before any rule has fired. The reason is that a purchasing conversation goes very differently when it starts from what the industry standard says the process can do, rather than from a complaint about the drawing. Sheet metal parts get the same treatment with press tonnage and strip utilisation, from the die-design textbook equation by equation.',
   ].join('\n'));
 }
 
@@ -595,7 +595,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
 
   s.addText('What we deliberately do NOT claim', { x: M, y: 4.68, w: 11, h: 0.36, fontSize: 17, bold: true, color: 'FFFFFF', fontFace: 'Cambria', margin: 0 });
   s.addText([
-    { text: `Of ${RULES} thresholds, ${PRIMARY_READ} come from a reference we have read first-hand. ${CONTESTED} are recorded as CONTESTED, where a primary source disagrees with the value we hold. ${UNAUDITED} are unaudited industry consensus.`, options: { breakLine: true } },
+    { text: `Of ${RULES} thresholds, ${PRIMARY_READ} now come from a reference we have read first-hand — up from 12 a week ago, after seven primary documents were read cover to cover (next slide). ${CONTESTED} are recorded as CONTESTED, where a primary source disagrees with the value we hold; the rest are unaudited industry consensus, and the register names each one.`, options: { breakLine: true } },
     { text: 'That register ships with the product and there is a command that prints it. A number nobody has checked is worth knowing about before a supplier finds it.', options: {} },
   ], { x: M, y: 5.12, w: 11.8, h: 1.0, fontSize: 12.5, color: 'CBD5E1', fontFace: 'Calibri', lineSpacing: 21, margin: 0 });
   footer(s);
@@ -604,19 +604,74 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     '',
     'Start top left. A hundred and ninety-nine out of a hundred and ninety-nine on the geometry accuracy gate. Those are test shapes where we know the right answer by arithmetic — we built a cone with exactly three degrees of draft, so the engine must say three degrees. If it says two point eight, the build fails and the code does not ship. That runs automatically on every change.',
     '',
-    'Six hundred and twenty-eight automated tests, ninety-three real-shaped parts swept through the full production path, and zero numbers written by AI.',
+    'Seven hundred and one automated tests, ninety-three real-shaped parts swept through the full production path, and zero numbers written by AI.',
     '',
-    'Now the bottom half, and I want to be completely straight with you here, because it is the weakest part of the tool.',
+    'Now the bottom half. When I first showed this slide, this was the weakest part of the tool — out of the whole rule book, only five limits came from a document we had personally read. I said so at the time.',
     '',
-    'Every DIMENSION we report is measured from your file and you can reproduce it. But the LIMITS we compare those dimensions against are somebody\'s published guidance, and most of them nobody here has personally verified against the original standard. Out of two hundred and twenty-eight, only five come from a document we have read first-hand. Three are recorded as CONTESTED, meaning a source we do trust disagrees with the number we are using.',
+    'That number is now twenty-nine, and the reason is simple: over the last week we obtained and read seven primary reference books cover to cover — the actual NADCA standards for die casting, the Steel Founders\' Society handbooks for steel castings, the DuPont and Covestro design guides for plastics, and the die-design textbook for sheet metal. The next slide shows exactly what each one gave us.',
     '',
-    'We ship that register with the product, and there is a command that prints it.',
+    'The rest of the thresholds are still industry consensus, and the register still names every one of them, with a command that prints it. Two are recorded as CONTESTED, where a source we trust disagrees with the number we hold.',
     '',
-    'I could have left this slide off. I have put it on deliberately, because the alternative is a supplier finding it first and then doubting everything else we say.',
+    'I keep this slide in deliberately. The alternative is a supplier finding an unaudited number first and then doubting everything else we say.',
   ].join('\n'));
 }
 
-// ── 11 · Tested on real parts ───────────────────────────────────────────────
+// ── 11 · The standards, read first-hand ─────────────────────────────────────
+//
+// Added after the week in which seven primary reference documents were
+// obtained and turned into engine code. Every row names the document, what it
+// unlocked, and — in the bottom band — a verdict that CHANGED because a
+// primary source was read. The 12 → 29 figure is counted from the register,
+// not remembered.
+{
+  const s = pres.addSlide(); s.background = { color: PAPER };
+  heading(s, 'The rule book\'s sources', 'Seven reference books, read cover to cover');
+
+  const BOOKS = [
+    ['NADCA Product Design for Die Casting, 7th ed.', 'Draft computed from the book\'s own formula at each feature\'s depth · fillets · bosses · cored holes'],
+    ['NADCA #402 Product Specification Standards (2021)', 'Die-casting tolerance CAPABILITY, computed per dimension and grade — Standard vs Precision is now an input'],
+    ['SFSA Steel Castings Handbook, Supplement 1', 'Steel casting design: rib height coupled to rib thickness · junction fillets with the printed 13–25 mm clamp'],
+    ['SFSA Supplement 3 — Dimensional Capabilities', 'Steel casting tolerances (SFSA 2000 CT grades) · required machining allowance · production series input'],
+    ['DuPont Engineering Polymers, Module I', 'Moulding draft per resin and draw depth · fillet knee · boss and blind-core limits'],
+    ['Covestro Part and Mold Design', 'PC-family ribs, draft and fillets from the resin maker\'s own tables — read from page images'],
+    ['Boljanovic, Sheet Metal Forming Processes', 'Press force, strip utilisation, bend allowance and draw operations, equation by equation'],
+  ];
+  BOOKS.forEach(([t, d], i) => {
+    const y = 1.66 + i * 0.545;
+    if (i % 2 === 0) s.addShape(pres.ShapeType.rect, { x: M, y: y - 0.05, w: 8.1, h: 0.54, fill: { color: PANEL }, line: { color: PANEL } });
+    s.addText(t, { x: M + 0.14, y: y - 0.02, w: 7.9, h: 0.26, fontSize: 10.5, bold: true, color: INK, fontFace: 'Calibri', margin: 0 });
+    s.addText(d, { x: M + 0.14, y: y + 0.22, w: 7.9, h: 0.26, fontSize: 9.5, color: BODY, fontFace: 'Calibri', margin: 0 });
+  });
+
+  stat(s, 9.0, 1.66, 3.7, `12 → ${PRIMARY_READ}`, 'PRIMARY-READ THRESHOLDS', GREEN, 'In one week. Counted from the register, not remembered');
+  stat(s, 9.0, 3.3, 3.7, '0', 'CONSTANTS TUNED TO FIXTURES', INK, 'Formulas verified against each book\'s own printed worked examples first');
+  stat(s, 9.0, 4.94, 3.7, '2', 'RULES CONFIRMED UNCHANGED', INK, 'DuPont printed our exact rib band — an audit hit, recorded as one');
+
+  s.addShape(pres.ShapeType.roundRect, { x: M, y: 5.62, w: 8.1, h: 1.28, fill: { color: NAVY }, rectRadius: 0.06, line: { color: NAVY } });
+  s.addText('READING THE BOOK CHANGED THE VERDICT', { x: M + 0.26, y: 5.78, w: 7.6, h: 0.24, fontSize: 9.5, bold: true, color: GOLD, fontFace: 'Calibri', charSpacing: 1.5, margin: 0 });
+  s.addText('A 2 mm tolerance band on a first-article steel sand casting used to pass the old screen. SFSA\'s own statistics say no foundry can promise it — it now fails at 0.33× capability, with the table cited. And the same bracket passes draft as nylon and fails as ABS, because DuPont\'s table judges each resin at its own angle.',
+    { x: M + 0.26, y: 6.04, w: 7.65, h: 0.8, fontSize: 10.5, color: 'CBD5E1', fontFace: 'Calibri', lineSpacing: 14, margin: 0 });
+  footer(s);
+  s.addNotes([
+    'This slide is the answer to the weakness I admitted on the previous slide, so let me walk you through what actually happened.',
+    '',
+    'Over the last week we obtained seven of the reference books that the industry actually runs on, and read them cover to cover. Not summaries of them — the books themselves. The two NADCA documents for die casting, including the 2021 specification standard that carries the tolerance tables. The two Steel Founders\' Society handbooks for steel castings. The DuPont and Covestro design guides, which are what the plastics industry designs against. And the die-design textbook for sheet metal.',
+    '',
+    'Each row on the left tells you what came out of each book. But three things on the right matter more than the list.',
+    '',
+    'FIRST, the count of thresholds we have personally verified against a primary document went from twelve to twenty-nine in that week. That number is counted live from the register when this deck is generated — I did not type it.',
+    '',
+    'SECOND — and this is a discipline point — before any formula from a book was wired in, it was tested against the book\'s OWN printed worked examples. The NADCA tolerance standard prints an example: an aluminium dimension of five inches should come out at plus or minus point three five millimetres. Our code has to reproduce that exact number or the tests fail. That catches misread tables — and it caught two real mistakes before they shipped, including one where a rounding error would have charged an extra inch of tolerance.',
+    '',
+    'THIRD, honesty cuts both ways. When DuPont\'s figure for rib proportions turned out to print exactly the numbers we already used, we did not quietly claim we knew all along — the register records it as a CONFIRMATION. And where a book\'s number was LOOSER than the screen we already had, the stricter number stayed, with both claims named on the finding.',
+    '',
+    'Now the dark box, because this is the part with money in it. Reading these books did not just improve citations — it changed verdicts. A two-millimetre tolerance band on a first-article steel sand casting used to pass our old screening check. The Steel Founders\' statistics — built from a hundred and forty thousand measured production features — say no foundry can promise that as-cast. It now fails, at a third of capability, and the finding cites the exact table. That is a scrap-rate conversation we can now have with a supplier BEFORE the quote, with their own industry\'s book on the table.',
+    '',
+    'And the drafting example at the end: the same bracket now passes draft as nylon and fails as ABS, because the DuPont table judges each resin at its own angle. One part, two materials, two different correct answers. That is what alloy-specific genuinely means.',
+  ].join('\n'));
+}
+
+// ── 12 · Tested on real parts ───────────────────────────────────────────────
 //
 // Added after three of the user's own exports were reviewed finding by finding
 // and re-run through the live engine. Seven things the tool said were wrong.
@@ -674,7 +729,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     '',
     'The other three on the list are the same character — right maths, wrong wording, or a check that trusted the CAD file instead of measuring.',
     '',
-    'The point I want to land is this. We found all seven ourselves, on purpose, before a supplier did. And every one of them is now pinned by a test that fails automatically if the fault ever comes back. That is why the number at the bottom matters — six hundred and twenty-eight tests, run on every single change.',
+    'The point I want to land is this. We found all seven ourselves, on purpose, before a supplier did. And every one of them is now pinned by a test that fails automatically if the fault ever comes back. That is why the number at the bottom matters — seven hundred and one tests, run on every single change.',
     '',
     'If we had not done this exercise, the first person to spot the hundred and fifty-one thousand would have been someone reading the report in a supplier review.',
   ].join('\n'));
@@ -742,6 +797,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     ['Alternative process routes, priced and carbon-scored', 'Yes', 'Partial', 'Ahead'],
     ['"Not evaluated" as a first-class outcome', 'Yes', 'Rare', 'Ahead'],
     ['Threshold provenance published with the finding', 'Yes', 'No', 'Ahead'],
+    ['Tolerance capability computed from the named standard', 'Yes', 'Table lookups', 'Ahead'],
     ['Revision-to-revision comparison', 'Yes', 'Yes', 'Parity'],
     ['Validated against measured production outcomes', 'Not yet', 'Yes', 'Behind'],
     ['Native CATIA / NX / JT input', 'No', 'Yes', 'Behind'],
@@ -763,16 +819,16 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     ]);
   });
   s.addTable(tr, {
-    x: M, y: 1.68, w: W - 2 * M, colW: [5.3, 1.9, 2.4, 2.49], rowH: 0.4,
-    fontSize: 11, fontFace: 'Calibri', border: { type: 'none' }, valign: 'middle', margin: [2, 8, 2, 8],
+    x: M, y: 1.62, w: W - 2 * M, colW: [5.3, 1.9, 2.4, 2.49], rowH: 0.385,
+    fontSize: 10.5, fontFace: 'Calibri', border: { type: 'none' }, valign: 'middle', margin: [2, 8, 2, 8],
   });
   s.addText('The two red rows are the honest gaps, and they are the two I would spend money on next. Everything above them we already do.', {
-    x: M, y: 5.95, w: W - 2 * M, h: 0.4, fontSize: 12.5, italic: true, color: INK, fontFace: 'Calibri', margin: 0 });
+    x: M, y: 6.15, w: W - 2 * M, h: 0.4, fontSize: 12.5, italic: true, color: INK, fontFace: 'Calibri', margin: 0 });
   footer(s);
   s.addNotes([
     'A fair comparison against the established tools — DFMPro, aPriori, Boothroyd Dewhurst.',
     '',
-    'The green rows are where we are genuinely ahead, and there are three. We price alternative process routes and carbon-score them. We treat could-not-evaluate as a real outcome instead of a green tick. And we publish where every threshold came from and how much it is worth trusting. I have not found a commercial tool that will tell you one of its own numbers is unaudited.',
+    'The green rows are where we are genuinely ahead, and there are four now. We price alternative process routes and carbon-score them. We treat could-not-evaluate as a real outcome instead of a green tick. And we publish where every threshold came from and how much it is worth trusting. I have not found a commercial tool that will tell you one of its own numbers is unaudited. And since last week, tolerance capability is COMPUTED from the named standard at the part\'s own dimensions — NADCA 402 for die castings, SFSA 2000 for steel — where the established tools do static table lookups.',
     '',
     'The middle rows are parity — reading real geometry, process and alloy specific rules, pricing findings, comparing revisions. We match them.',
     '',
@@ -793,7 +849,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   const items = [
     ['1', 'Validate against one real part', 'A production part, its quote, and the supplier\'s own DFM markup. This is what converts "internally consistent" into "accurate" — and it is the only item on this list I cannot do alone.', GOLD],
     ['2', 'Native CAD input', 'CATIA, NX and JT. Today we read STEP and IGES, which means a translation step and a lost PMI tolerance every time.', NAVY_MID],
-    ['3', 'Audit the top 20 thresholds', 'Against primary standards. The register already names which twenty and ranks them by exposure.', NAVY_MID],
+    ['3', 'Buy the two missing standards', 'DIN 16742 for moulded-part tolerances and ISO 8062 for non-ferrous castings. Seven books are already in; these two close the tolerance story, and both are catalogue purchases.', NAVY_MID],
     ['4', 'Company standards, plant-wide', 'Already built and org-scoped; needs the plant\'s own values loaded to be worth anything.', NAVY_MID],
   ];
   items.forEach(([n, t, d, c], i) => {
@@ -812,7 +868,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     '',
     'NUMBER TWO is reading native CAD — CATIA, NX, JT. Today every file goes through a translation to STEP and we lose the tolerance information on the way. That is why you saw tolerance rules abstaining on the coverage slide.',
     '',
-    'NUMBER THREE is auditing our top twenty thresholds against the primary standards. The register already names which twenty and ranks them by how much damage a wrong number would do.',
+    'NUMBER THREE is a small purchase rather than a project. Seven reference books are already read and coded. The two that remain are DIN 16742, which carries the tolerance tables for moulded plastic parts, and ISO 8062 for aluminium sand and gravity castings. Both are standards you simply buy. The register names them as the exact blockers, so the money maps directly onto rules that start speaking.',
     '',
     'NUMBER FOUR is loading our own plant standards. The mechanism is already built and it already overrides the textbook where we set a value. It just needs our actual numbers put into it, which is a conversation with manufacturing rather than a coding job.',
     '',
