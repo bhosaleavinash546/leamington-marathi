@@ -24,6 +24,8 @@ interface Finding {
   id: string; title: string; severity: 'high' | 'medium' | 'low';
   measure: string; measured?: number; unit: string; thresholdText: string;
   rationale: string; fix: string; source: string; sourceStatus?: string; status: string; reason?: string;
+  /** Where the MEASURED side came from: model PMI, the 2D drawing, or typed. */
+  measuredBasis?: string;
   cost?: {
     priced: boolean; basis?: string; changeDescription?: string;
     asDrawnEur?: number; improvedEur?: number; deltaEur?: number; annualDeltaEur?: number;
@@ -58,6 +60,11 @@ interface DfmResponse {
     chosenProcess?: string | null;
   } | null;
   analysisLimits?: AnalysisLimit[];
+  /** The 2D drawing's side of the story, when one was uploaded. */
+  drawing?: DrawingData | null;
+  drawingCheck?: DrawingCheck | null;
+  drawingApplied?: string[] | null;
+  modelPmi?: Record<string, any> | null;
 }
 interface RouteRow {
   process: string; dfmFamily: string | null; dfmFamilyName: string | null;
@@ -73,6 +80,31 @@ interface RouteRow {
   viable?: boolean; blockedReason?: string | null;
 }
 interface AnalysisLimit { kind: string; severity: 'blocking' | 'warning'; message: string }
+// ── The 2D drawing, as /api/dfm/drawing-extract returns it ──────────────────
+interface DrawingDim {
+  nominalMm: number; bandMm?: number; type: 'linear' | 'diameter' | 'radius' | 'angle';
+  toleranced: boolean; sheet?: number; zone?: string; sourceText: string;
+}
+interface DrawingData {
+  ok: boolean; units: 'mm' | 'inch' | 'unknown';
+  dimensions: DrawingDim[];
+  gdt: Array<{ symbol: string; toleranceMm?: number; datums: string[]; sourceText: string }>;
+  roughness: Array<{ raUm?: number; raUin?: number; scope?: string; sourceText: string }>;
+  titleBlock: { material?: string; generalToleranceNote?: string; drawingNumber?: string; revision?: string; title?: string };
+  overall?: { widthMm?: number; heightMm?: number; thicknessMm?: number };
+  notes: string[]; pageCount?: number; readability: string; conversions: string[];
+}
+interface DrawingCheckRow {
+  nominalMm: number; bandMm?: number; type: string; sourceText: string;
+  status: 'confirmed' | 'conflict' | 'not-found';
+  candidate: { kind: string; valueMm: number; deltaMm: number } | null;
+  note: string;
+}
+interface DrawingCheck {
+  rows: DrawingCheckRow[];
+  counts: { confirmed: number; conflict: number; notFound: number };
+  unitsSuspect: boolean; basis: string;
+}
 interface RuleOverride { enabled: boolean; threshold?: number | number[]; note?: string }
 interface CatalogueRule {
   id: string; process: string; severity: string; title: string; measure: string;
@@ -215,6 +247,17 @@ export default function DfmStudioPage() {
   // SFSA 2000 production series (steel castings): short is the honest
   // first-article default; long declares that tooling has been iterated.
   const [productionSeries, setProductionSeries] = useState<'short' | 'long'>('short');
+  // ── The 2D drawing ────────────────────────────────────────────────────────
+  // AI reads the drawing; every number it extracts is judged by the same
+  // deterministic rules as a typed input and labelled as drawing-read. The
+  // extraction is shown BEFORE anything is judged so a misread row can be
+  // excluded — the engineer stays the editor of record.
+  const [drawingFile, setDrawingFile] = useState<File | null>(null);
+  const [drawing, setDrawing] = useState<DrawingData | null>(null);
+  const [extracting, setExtracting] = useState(false);
+  const [excludedDims, setExcludedDims] = useState<Set<number>>(new Set());
+  const [showExtraction, setShowExtraction] = useState(true);
+  const drawingInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState<'' | 'dfm' | 'dfa'>('');
   const [error, setError] = useState('');
   const [result, setResult] = useState<DfmResponse | null>(null);
@@ -248,6 +291,41 @@ export default function DfmStudioPage() {
     setFile(f); setResult(null); setDfa(null); setError(''); setAnswers({});
   }, []);
 
+  /** Read the drawing file and send it for extraction. Nothing is judged here. */
+  async function pickDrawing(f: File | null) {
+    setDrawingFile(f); setDrawing(null); setExcludedDims(new Set()); setResult(null);
+    if (!f) return;
+    if (!token) { setError('Please sign in.'); return; }
+    setExtracting(true); setError('');
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(',')[1] ?? '');
+        reader.onerror = () => reject(new Error('Could not read the file.'));
+        reader.readAsDataURL(f);
+      });
+      const mime = f.type === 'application/pdf' || /\.pdf$/i.test(f.name) ? 'application/pdf'
+        : f.type || 'image/png';
+      const r = await fetch('/api/dfm/drawing-extract', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileBase64: base64, mimeType: mime, fileName: f.name }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Drawing extraction failed');
+      setDrawing(d.drawing); setShowExtraction(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Drawing extraction failed');
+      setDrawingFile(null);
+    } finally { setExtracting(false); }
+  }
+
+  /** The drawing as it will be judged: minus the rows the engineer excluded. */
+  function drawingForAnalysis(): DrawingData | null {
+    if (!drawing) return null;
+    return { ...drawing, dimensions: drawing.dimensions.filter((_, i) => !excludedDims.has(i)) };
+  }
+
   async function post(path: string, extra: Record<string, string> = {}) {
     const fd = new FormData();
     fd.append('cadFile', file as File);
@@ -268,11 +346,15 @@ export default function DfmStudioPage() {
    * event says skipped and so does the UI.
    */
   async function analyse() {
-    if (!file) { setError('Choose a STEP or IGES file first.'); return; }
+    if (!file && !drawing) { setError('Choose a STEP/IGES file, a 2D drawing, or both.'); return; }
     if (!token) { setError('Please sign in.'); return; }
     setLoading('dfm'); setError(''); setStages([]);
     const fd = new FormData();
-    fd.append('cadFile', file);
+    if (file) fd.append('cadFile', file);
+    // The 2D drawing's extraction, minus any rows the engineer excluded. The
+    // server re-normalizes it — this is data, not trusted state.
+    const dwg = drawingForAnalysis();
+    if (dwg) fd.append('drawing', JSON.stringify(dwg));
     // weightKg is deliberately not sent: the server derives it from the
     // kernel-measured volume and the chosen material, so a value typed here
     // could silently disagree with the geometry the findings are based on.
@@ -695,7 +777,19 @@ export default function DfmStudioPage() {
   }, [result, routeSort]);
 
   // A file alone is no longer enough. `runGeneric` is the explicit way past it.
-  const canAnalyse = !!file && (runGeneric || (!!material && !!costProcess));
+  // A 2D drawing counts as a part too — drawing-only analysis is the
+  // quote-stage case, and the geometry rules say NOT EVALUATED honestly.
+  const canAnalyse = (!!file || !!drawing) && (runGeneric || (!!material && !!costProcess));
+  // What the drawing supplies, so the manual callout inputs can say they are
+  // superseded rather than silently ignored.
+  const drawingSupplies = useMemo(() => {
+    if (!drawing) return { tolerance: false, flatness: false };
+    const activeDims = drawing.dimensions.filter((d, i) => !excludedDims.has(i) && d.toleranced && d.type !== 'angle' && (d.bandMm ?? 0) > 0);
+    return {
+      tolerance: activeDims.length > 0,
+      flatness: drawing.gdt.some(g => g.symbol === 'flatness' && (g.toleranceMm ?? 0) > 0),
+    };
+  }, [drawing, excludedDims]);
 
   const selectedProcess = useMemo(
     () => processOptions.find(p => p.name === costProcess) ?? null,
@@ -823,6 +917,134 @@ export default function DfmStudioPage() {
               tabIndex={-1} aria-hidden="true" onChange={e => pick(e.target.files?.[0] ?? null)} />
           </div>
 
+          {/* ── THE 2D DRAWING — optional, alone or alongside the 3D file ────
+              AI reads the drawing; every number it extracts is judged by the
+              same deterministic rules as a typed input and labelled as
+              drawing-read. The extraction renders below BEFORE anything is
+              judged, so a misread row can be excluded. */}
+          <div className="mt-4 border border-white/10 rounded-xl p-4 bg-navy-950/40">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <p className="text-white text-sm font-medium">2D drawing (optional) — PDF or image</p>
+                <p className="text-slate-500 text-xs mt-0.5">
+                  AI reads the dimensions, GD&amp;T and title block; every number is still judged by the
+                  deterministic rules and labelled as drawing-read. Works with or without a 3D file —
+                  with both, the two are cross-checked.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                {drawingFile && (
+                  <button type="button" onClick={() => pickDrawing(null)}
+                    className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs">
+                    Remove
+                  </button>
+                )}
+                <button type="button" disabled={extracting}
+                  onClick={() => drawingInputRef.current?.click()}
+                  className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-medium
+                             focus:outline-none focus:ring-2 focus:ring-gold-500/60 disabled:opacity-50">
+                  {extracting ? 'Reading the drawing…' : drawingFile ? drawingFile.name : 'Choose drawing'}
+                </button>
+              </div>
+              <input ref={drawingInputRef} type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" className="hidden"
+                tabIndex={-1} aria-hidden="true" onChange={e => pickDrawing(e.target.files?.[0] ?? null)} />
+            </div>
+
+            {/* The extraction, reviewable before it is judged. */}
+            {drawing && (
+              <div className="mt-3 border-t border-white/10 pt-3">
+                <button type="button" onClick={() => setShowExtraction(s => !s)}
+                  className="text-xs text-gold-400 hover:text-gold-300 font-medium">
+                  {showExtraction ? '▾' : '▸'} What the AI read
+                  {' '}({drawing.dimensions.length} dimensions · {drawing.gdt.length} GD&amp;T · {drawing.roughness.length} roughness)
+                  {drawing.titleBlock.drawingNumber ? ` — ${drawing.titleBlock.drawingNumber}` : ''}
+                  {drawing.titleBlock.revision ? ` rev ${drawing.titleBlock.revision}` : ''}
+                </button>
+                {showExtraction && (
+                  <div className="mt-2 space-y-3">
+                    {drawing.conversions.map((c, i) => (
+                      <p key={i} className="text-[11px] text-amber-300/90">{c}</p>
+                    ))}
+                    {drawing.titleBlock.material && (
+                      <p className="text-xs text-slate-400">
+                        Title block material: <span className="text-slate-200">{drawing.titleBlock.material}</span>
+                        {drawing.titleBlock.generalToleranceNote ? <> · general tolerance note: <span className="text-slate-200">{drawing.titleBlock.generalToleranceNote}</span></> : null}
+                      </p>
+                    )}
+                    <div className="overflow-x-auto">
+                      <table className="text-xs w-full">
+                        <thead>
+                          <tr className="text-slate-500 text-left">
+                            <th className="pr-2 py-1 font-medium">Use</th>
+                            <th className="pr-3 py-1 font-medium">As printed</th>
+                            <th className="pr-3 py-1 font-medium">Nominal (mm)</th>
+                            <th className="pr-3 py-1 font-medium">Band (mm)</th>
+                            <th className="pr-3 py-1 font-medium">Type</th>
+                            <th className="py-1 font-medium">Check vs 3D</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {drawing.dimensions.map((d, i) => {
+                            const check = result?.drawingCheck?.rows.find(r => r.sourceText === d.sourceText && r.nominalMm === d.nominalMm);
+                            return (
+                              <tr key={i} className={`border-t border-white/5 ${excludedDims.has(i) ? 'opacity-40' : ''}`}>
+                                <td className="pr-2 py-1">
+                                  <input type="checkbox" checked={!excludedDims.has(i)}
+                                    aria-label={`Include ${d.sourceText}`}
+                                    onChange={() => setExcludedDims(prev => {
+                                      const next = new Set(prev);
+                                      if (next.has(i)) next.delete(i); else next.add(i);
+                                      return next;
+                                    })} />
+                                </td>
+                                <td className="pr-3 py-1 text-slate-200 font-mono">{d.sourceText}</td>
+                                <td className="pr-3 py-1 text-slate-300">{d.nominalMm}</td>
+                                <td className="pr-3 py-1 text-slate-300">{d.bandMm ?? <span className="text-slate-600">— (general tol.)</span>}</td>
+                                <td className="pr-3 py-1 text-slate-400">{d.type}</td>
+                                <td className="py-1">
+                                  {check ? (
+                                    <span className={
+                                      check.status === 'confirmed' ? 'text-emerald-400'
+                                        : check.status === 'conflict' ? 'text-red-400 font-medium'
+                                          : 'text-slate-500'
+                                    } title={check.note}>
+                                      {check.status === 'confirmed' ? '✓ confirmed'
+                                        : check.status === 'conflict' ? `✗ conflict (model: ${check.candidate?.valueMm} mm)`
+                                          : 'not found in 3D'}
+                                    </span>
+                                  ) : <span className="text-slate-600">—</span>}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                    {drawing.gdt.length > 0 && (
+                      <div className="text-xs text-slate-400">
+                        <span className="text-slate-300 font-medium">GD&amp;T: </span>
+                        {drawing.gdt.map((g, i) => (
+                          <span key={i} className="mr-3 font-mono">
+                            {g.symbol} {g.toleranceMm ?? '?'}{g.datums.length ? ` | ${g.datums.join(' | ')}` : ''}
+                            {g.symbol !== 'flatness' && (
+                              <span className="text-slate-600 font-sans"> (no deterministic rule consumes this yet — shown for the record)</span>
+                            )}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {drawing.roughness.length > 0 && (
+                      <p className="text-xs text-slate-400">
+                        <span className="text-slate-300 font-medium">Roughness: </span>
+                        {drawing.roughness.map((r) => r.sourceText).join(' · ')}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* ── STEP 2 — HOW IT'S MADE ───────────────────────────────────────
               These two selectors decide WHICH RULE FAMILY judges the part, and
               they used to sit as two cells of a five-column row of settings
@@ -834,7 +1056,7 @@ export default function DfmStudioPage() {
 
               So they are now a STEP, they appear once there is a part to apply
               them to, and the analyse button waits for them. */}
-          {file && (
+          {(file || drawing) && (
             <div className="mt-5 border-t border-white/10 pt-4">
               <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-1">
                 <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold-500 text-navy-950 text-[11px] font-bold">2</span>
@@ -950,10 +1172,13 @@ export default function DfmStudioPage() {
                 Drawing callouts <span className="normal-case font-normal">— optional; blank = rules abstain honestly</span>
               </p>
               <div className="grid sm:grid-cols-3 gap-3">
-                <label className="text-xs text-slate-400">Tightest tolerance band (mm)
-                  <input type="number" value={tightestTolMm} min={0} step={0.01} placeholder="e.g. 0.5 for ±0.25"
+                <label className={`text-xs ${drawingSupplies.tolerance ? 'text-slate-600' : 'text-slate-400'}`}>Tightest tolerance band (mm)
+                  <input type="number" value={tightestTolMm} min={0} step={0.01}
+                    placeholder={drawingSupplies.tolerance ? 'superseded by the uploaded drawing' : 'e.g. 0.5 for ±0.25'}
+                    disabled={drawingSupplies.tolerance}
+                    title={drawingSupplies.tolerance ? 'The uploaded drawing carries toleranced dimensions, and those are judged each at their own size — a single typed band would be weaker evidence.' : undefined}
                     onChange={e => setTightestTolMm(e.target.value)}
-                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40 placeholder:text-slate-600" />
+                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40 placeholder:text-slate-600 disabled:opacity-50" />
                 </label>
                 <label className="text-xs text-slate-400">Tolerance grade (NADCA #402)
                   <select value={toleranceGrade} onChange={e => setToleranceGrade(e.target.value as 'standard' | 'precision')}
@@ -963,7 +1188,8 @@ export default function DfmStudioPage() {
                   </select>
                 </label>
                 <label className="text-xs text-slate-400">Flatness callout (mm)
-                  <input type="number" value={flatnessCalloutMm} min={0} step={0.01} placeholder="e.g. 0.3"
+                  <input type="number" value={flatnessCalloutMm} min={0} step={0.01}
+                    placeholder={drawingSupplies.flatness ? 'drawing supplies one; typing here overrides it' : 'e.g. 0.3'}
                     onChange={e => setFlatnessCalloutMm(e.target.value)}
                     className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40 placeholder:text-slate-600" />
                 </label>
@@ -1305,6 +1531,36 @@ export default function DfmStudioPage() {
               </div>
             </div>
 
+            {/* ── Drawing vs model reconciliation ──────────────────────────
+                When both documents were supplied, every drawing dimension was
+                matched against the model's measured quantities. Conflicts are
+                the rows with money in them: one of the two documents is wrong,
+                and this tool deliberately does not guess which. */}
+            {result.drawingCheck && (
+              <div className="rounded-2xl border border-white/10 bg-navy-900 p-4">
+                <p className="text-slate-300 text-sm font-medium mb-1">Drawing vs 3D model</p>
+                <p className="text-xs">
+                  <span className="text-emerald-400 font-medium">{result.drawingCheck.counts.confirmed} confirmed</span>
+                  <span className="text-slate-500"> · </span>
+                  <span className={result.drawingCheck.counts.conflict ? 'text-red-400 font-medium' : 'text-slate-400'}>
+                    {result.drawingCheck.counts.conflict} in conflict
+                  </span>
+                  <span className="text-slate-500"> · {result.drawingCheck.counts.notFound} with no measured counterpart (normal — the kernel does not name most drawing dimensions)</span>
+                </p>
+                {result.drawingCheck.rows.filter(r2 => r2.status === 'conflict').map((r2, i) => (
+                  <p key={i} className="text-xs text-red-300/90 mt-1.5">
+                    ✗ <span className="font-mono">{r2.sourceText}</span> — the model's {r2.candidate?.kind} measures {r2.candidate?.valueMm} mm, {r2.candidate?.deltaMm} mm away. One of the two documents is wrong; this tool cannot say which.
+                  </p>
+                ))}
+                <p className="text-slate-600 text-[10px] mt-2">{result.drawingCheck.basis}</p>
+              </div>
+            )}
+            {result.drawingApplied && result.drawingApplied.length > 0 && (
+              <p className="text-[11px] text-sky-300/70 italic">
+                Supplied by the uploaded drawing (not typed): {result.drawingApplied.join(' · ')}. Each is judged deterministically and labelled as drawing-read on its finding.
+              </p>
+            )}
+
             {/* ── Revision comparison ──────────────────────────────────────
                 The second question a review asks is "did last month's changes
                 work?", and the tool could not answer it. The baseline is chosen
@@ -1590,6 +1846,14 @@ export default function DfmStudioPage() {
                     <p className="text-xs opacity-90 mb-2">
                       Measured <span className="font-semibold">{f.measured ?? '—'} {f.unit}</span> · guideline {f.thresholdText}
                     </p>
+                    {/* WHERE the measured side came from — the model's own PMI,
+                        the uploaded 2D drawing, or a typed declaration. Three
+                        kinds of evidence a reader must never confuse. */}
+                    {f.measuredBasis && (
+                      <p className="text-[11px] text-sky-300/80 italic mb-2">
+                        Evidence: {f.measuredBasis}
+                      </p>
+                    )}
                     <p className="text-slate-300 text-sm leading-relaxed mb-2">{f.rationale}</p>
                     <p className="text-emerald-300 text-xs mb-2"><span className="text-slate-500">What to do:</span> {f.fix}</p>
                     {f.cost?.priced ? (

@@ -53,6 +53,23 @@ import {
  * geometry, two standards reading it. A boss with no coaxial hole is not a
  * fastener boss and is not judged.
  */
+/**
+ * Where the pmi dimension rows CAME FROM — the model's own AP242 data, or a
+ * 2D drawing read by AI vision. One label, read by every tolerance judge, so
+ * six provenance stamps can never disagree about one block of evidence.
+ * `prefix` is prepended to each worst-row basis when the source is a drawing;
+ * for real PMI it is empty and every existing basis string stays byte-identical.
+ */
+function pmiSource(geo) {
+  const pmi = geo?.dfm?.pmi || {};
+  if (pmi.source === 'drawing') {
+    const note = pmi.sourceNote
+      || 'read from the uploaded 2D drawing by AI vision — judged deterministically; not verified against a 3D model';
+    return { from: 'drawing', prefix: `The dimensions were ${note}. ` };
+  }
+  return { from: 'PMI', prefix: '' };
+}
+
 function worstCoaxialBossPair(table) {
   const num = (v) => {
     const n = Number(v);
@@ -430,8 +447,14 @@ export function extractMeasures(geo = {}, opts = {}) {
     // a figure read from the model and a figure typed by a person are not the
     // same kind of evidence, and PMI always wins when both exist.
     tightestToleranceMm: num((dfm.pmi || {}).tightestToleranceMm) ?? num(opts.declaredToleranceMm),
+    // Three evidence states, never confused: measured from the model's own
+    // AP242 PMI, read off an uploaded 2D drawing by AI vision, or typed by
+    // the engineer. The report prints whichever one it was.
     _toleranceBasis: num((dfm.pmi || {}).tightestToleranceMm) != null
-      ? 'read from the model\'s AP242 semantic PMI'
+      ? ((dfm.pmi || {}).source === 'drawing'
+        ? ((dfm.pmi || {}).sourceNote
+          || 'read from the uploaded 2D drawing by AI vision — judged deterministically; not verified against a 3D model')
+        : 'read from the model\'s AP242 semantic PMI')
       : num(opts.declaredToleranceMm) != null
         ? 'DECLARED by the engineer — not read from the model, and not verified against it'
         : undefined,
@@ -761,8 +784,12 @@ function iso8062Limits(draft, features, wall, geo, opts = {}) {
     return Number.isFinite(n) ? n : undefined;
   };
   const out = {};
+  // A pmi block is part evidence too — the same clause nadcaLimits carries:
+  // a tolerance judge needs only a band, so a drawing-only analysis with no
+  // measured walls or draft must still have its callouts judged.
   const hasPart = !!(draft && (draft.drawDirectionXYZ || draft.draftHistogramDegToAreaMm2 || draft.coredHoles))
-    || num(wall?.p50Mm) !== undefined;
+    || num(wall?.p50Mm) !== undefined
+    || !!(geo.dfm?.pmi?.present);
   if (!hasPart) return out;
 
   // ── PERMANENT-MOULD TOLERANCE CAPABILITY (gravity die / LPDC) ───────────
@@ -771,6 +798,7 @@ function iso8062Limits(draft, features, wall, geo, opts = {}) {
   {
     const sel = isoGradeFor('permanentMould', opts.material, 'long');
     if (sel.ok) {
+      const pmiSrc = pmiSource(geo);
       const pmiRows = (Array.isArray(geo.dfm?.pmi?.dimensions) ? geo.dfm.pmi.dimensions : [])
         .filter((r) => Number(r?.span) > 0 && Number(r?.value) > 0);
       const declared = num(opts.declaredToleranceMm);
@@ -781,8 +809,8 @@ function iso8062Limits(draft, features, wall, geo, opts = {}) {
         const margin = Number(r.span) / cap.totalBandMm;
         if (!worst || margin < worst.margin) {
           worst = { margin, dimensionMm: Number(r.value), bandMm: Number(r.span),
-            capabilityBandMm: cap.totalBandMm, grade: `S${sel.grade}`, from: 'PMI',
-            basis: `${sel.basis} ${cap.basis}` };
+            capabilityBandMm: cap.totalBandMm, grade: `S${sel.grade}`, from: pmiSrc.from,
+            basis: `${pmiSrc.prefix}${sel.basis} ${cap.basis}` };
         }
       }
       if (!worst && declared !== undefined && declared > 0) {
@@ -856,8 +884,12 @@ function din16742Limits(draft, features, wall, geo, opts = {}) {
     return Number.isFinite(n) ? n : undefined;
   };
   const out = {};
+  // A pmi block is part evidence too — the same clause nadcaLimits carries:
+  // a tolerance judge needs only a band, so a drawing-only analysis with no
+  // measured walls or draft must still have its callouts judged.
   const hasPart = !!(draft && (draft.drawDirectionXYZ || draft.draftHistogramDegToAreaMm2 || draft.coredHoles))
-    || num(wall?.p50Mm) !== undefined;
+    || num(wall?.p50Mm) !== undefined
+    || !!(geo.dfm?.pmi?.present);
   if (!hasPart) return out;
 
   // 'standard' → series 1 (normal production — the only series §5.2 allows
@@ -868,6 +900,7 @@ function din16742Limits(draft, features, wall, geo, opts = {}) {
   const sel = dinTgFor(opts.material, { series });
   if (!sel.ok) return out;
 
+  const pmiSrc = pmiSource(geo);
   const pmiRows = (Array.isArray(geo.dfm?.pmi?.dimensions) ? geo.dfm.pmi.dimensions : [])
     .filter((r) => Number(r?.span) > 0 && Number(r?.value) > 0);
   const declared = num(opts.declaredToleranceMm);
@@ -881,7 +914,7 @@ function din16742Limits(draft, features, wall, geo, opts = {}) {
       if (!worst || margin < worst.margin) {
         worst = { margin: Math.round(margin * 1000) / 1000, dimensionMm: Number(r.value), bandMm: Number(r.span),
           capabilityBandMm: cap.totalBandMm, tg: `TG${tg}`, series,
-          from: 'PMI', basis: `${tgBasis} ${cap.basis}` };
+          from: pmiSrc.from, basis: `${pmiSrc.prefix}${tgBasis} ${cap.basis}` };
       }
     }
     if (!worst && declared !== undefined && declared > 0) {
@@ -1227,7 +1260,11 @@ function nadcaLimits(draft, features, wall, geo, opts = {}) {
   //     basis says so. Conservative in the only defensible direction.
   const grade402 = opts.toleranceGrade === 'precision' ? 'precision' : 'standard';
   {
-    const pmiRows = (Array.isArray(draft ? geo.dfm?.pmi?.dimensions : null) ? geo.dfm.pmi.dimensions : [])
+    // The rows need no draft data — a tolerance judge needs only a band. The
+    // old `draft ?` guard here silently emptied the rows on a part with pmi
+    // evidence but no draft pass (exactly the drawing-only case).
+    const pmiSrc = pmiSource(geo);
+    const pmiRows = (Array.isArray(geo.dfm?.pmi?.dimensions) ? geo.dfm.pmi.dimensions : [])
       .filter((r) => Number(r?.span) > 0 && Number(r?.value) > 0);
     let worst = null;
     for (const r of pmiRows) {
@@ -1236,7 +1273,8 @@ function nadcaLimits(draft, features, wall, geo, opts = {}) {
       const margin = Number(r.span) / cap.totalBandMm;
       if (!worst || margin < worst.margin) {
         worst = { margin, dimensionMm: Number(r.value), bandMm: Number(r.span),
-          capabilityBandMm: cap.totalBandMm, grade: grade402, basis: cap.basis, from: 'PMI' };
+          capabilityBandMm: cap.totalBandMm, grade: grade402,
+          basis: `${pmiSrc.prefix}${cap.basis}`, from: pmiSrc.from };
       }
     }
     if (!worst) {
@@ -1337,8 +1375,12 @@ function sfsaLimits(draft, features, wall, geo, opts = {}) {
     return Number.isFinite(n) ? n : undefined;
   };
   const out = {};
+  // A pmi block is part evidence too — the same clause nadcaLimits carries:
+  // a tolerance judge needs only a band, so a drawing-only analysis with no
+  // measured walls or draft must still have its callouts judged.
   const hasPart = !!(draft && (draft.drawDirectionXYZ || draft.draftHistogramDegToAreaMm2 || draft.coredHoles))
-    || num(wall?.p50Mm) !== undefined;
+    || num(wall?.p50Mm) !== undefined
+    || !!(geo.dfm?.pmi?.present);
   if (!hasPart) return out;
   const group = castSteelGroupFor(opts.material);
 
@@ -1360,6 +1402,7 @@ function sfsaLimits(draft, features, wall, geo, opts = {}) {
     const SCREEN = { sand: 1.2, sandCastIron: 1.0, investment: 0.3 };
     const isIron = /cast iron/i.test(String(opts.material || ''));
 
+    const pmiSrc = pmiSource(geo);
     const judge = (process) => {
       if (group.ok) {
         const sel = ctGradeFor(process, series);
@@ -1372,7 +1415,7 @@ function sfsaLimits(draft, features, wall, geo, opts = {}) {
           if (!worst || margin < worst.margin) {
             worst = { margin, dimensionMm: Number(r.value), bandMm: Number(r.span),
               capabilityBandMm: cap.totalBandMm, grade: `CT${sel.grade}`, series: sel.series,
-              from: 'PMI', basis: `${sel.basis} ${cap.basis}` };
+              from: pmiSrc.from, basis: `${pmiSrc.prefix}${sel.basis} ${cap.basis}` };
           }
         }
         if (!worst && declared !== undefined && declared > 0) {
@@ -1399,7 +1442,7 @@ function sfsaLimits(draft, features, wall, geo, opts = {}) {
           if (!worst || margin < worst.margin) {
             worst = { margin, dimensionMm: Number(r.value), bandMm: Number(r.span),
               capabilityBandMm: cap.totalBandMm, grade: `S${isoSel.grade}`, series: isoSel.series,
-              from: 'PMI', basis: `${isoSel.basis} ${cap.basis}` };
+              from: pmiSrc.from, basis: `${pmiSrc.prefix}${isoSel.basis} ${cap.basis}` };
           }
         }
         if (!worst && declared !== undefined && declared > 0) {
@@ -1422,8 +1465,8 @@ function sfsaLimits(draft, features, wall, geo, opts = {}) {
         : (declared !== undefined && declared > 0 ? declared : undefined);
       if (band === undefined) return undefined;
       return { margin: band / screen, dimensionMm: null, bandMm: band, capabilityBandMm: screen,
-        grade: null, series: null, from: pmiRows.length ? 'PMI' : 'declared',
-        basis: `Process screening value (${screen} mm total band${isIron ? ', cast iron' : ''}) - neither SFSA Supplement 3 (steel) nor ISO 8062-4's metal groups tabulate this material, so the tool's screening threshold stays in force.` };
+        grade: null, series: null, from: pmiRows.length ? pmiSrc.from : 'declared',
+        basis: `${pmiRows.length ? pmiSrc.prefix : ''}Process screening value (${screen} mm total band${isIron ? ', cast iron' : ''}) - neither SFSA Supplement 3 (steel) nor ISO 8062-4's metal groups tabulate this material, so the tool's screening threshold stays in force.` };
     };
 
     const sand = judge('sand');

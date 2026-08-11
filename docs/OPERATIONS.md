@@ -13,6 +13,7 @@ Status of the production-readiness gaps, kept current so nobody discovers them i
 | Prompt-injection | All user strings sanitized + framed as untrusted data before any prompt; retrieved corpus text cleaned. |
 | Tests/CI | 285+ tests + 4 deterministic accuracy gates run in CI on every push. |
 | Provenance | Every AI-touched number is labelled (engine-verified / AI-estimated / LIVE price / unverified); marketplace ideas labelled curated vs community. |
+| 2D drawing extraction | `POST /api/dfm/drawing-extract` is the one vision call in the DFM routes: 15 req/hr per user, ~8 MB base64 cap, PDF/PNG/JPEG/WebP only, needs an Anthropic key (request → stored user key → server env). Extracted values are re-normalized on `/analyze` and judged deterministically. |
 
 ## Known gaps (acceptable for pilot, must be planned before wider rollout)
 

@@ -99,7 +99,7 @@ app.use(cors({ origin: ALLOWED_ORIGINS }));
 const jsonBig = express.json({ limit: '12mb' });
 const jsonSmall = express.json({ limit: '1mb' });
 app.use((req, res, next) => {
-  const big = req.path === '/api/cad-analyze' || req.path === '/api/cad-step' || req.path === '/api/teardown-vision' || req.path === '/api/pcb-bom-cost' || req.path === '/api/pcb-bom-import' || req.path === '/api/cad-diff';
+  const big = req.path === '/api/cad-analyze' || req.path === '/api/cad-step' || req.path === '/api/teardown-vision' || req.path === '/api/pcb-bom-cost' || req.path === '/api/pcb-bom-import' || req.path === '/api/cad-diff' || req.path === '/api/dfm/drawing-extract';
   return (big ? jsonBig : jsonSmall)(req, res, next);
 });
 
@@ -3518,7 +3518,7 @@ const shouldCostApi = registerShouldCostRoutes(app, { db, requireAuth, rateLimit
 registerMarketplaceRoutes(app, { db, requireAuth, rateLimit });
 // 3D CAD viewer: STEP/IGES tessellation + geometry analysis via the OCCT engine.
 registerCadRoutes(app, { requireAuth, rateLimit });
-registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess });
+registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess, makeAnthropic, resolveApiKey, safeLlmError, checkUsageQuota });
 // Wiring-harness should-cost (deterministic parametric model).
 registerHarnessRoutes(app, { requireAuth, rateLimit });
 // Organisations & roles v1 (SaaS substrate: personal orgs, invites, role middleware).

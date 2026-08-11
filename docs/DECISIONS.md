@@ -2137,3 +2137,60 @@ there in one printed sentence.
     thermoset and GMT assignments (C.6/C.7) until those compounds join
     the picker. Register: 33 rules primary-read from nine documents; the
     named casting and moulding tolerance blockers are now all closed.
+
+## 2D drawings enter the rule engine as a synthesized pmi block, and the AI only ever reads
+
+**Date**: 2026-08-11
+**Context**: almost no STEP file carries semantic PMI (0 of 93 in the
+commodity sweep), so the tolerance-capability rules built from NADCA #402,
+SFSA, ISO 8062-4 and DIN 16742 mostly ran on one typed band — while the 2D
+drawing, where the dimensions and GD&T actually live, was not an input at
+all. DFM Studio now takes a drawing PDF or image, alone or alongside the
+3D file.
+**Decision**: one vision endpoint (`POST /api/dfm/drawing-extract`, the
+only LLM call in routes/dfm.mjs) reads the drawing into a schema-shaped
+extraction via forced tool-use — native `document` blocks, no rasterizer —
+and everything after it is pure math in `drawing-analysis.mjs`:
+normalization (units, bands, clamps), mapping onto the engine's inputs,
+deterministic reconciliation against the model, and the geo synthesis.
+Drawing values reach the rules as `geo.dfm.pmi = { source: 'drawing',
+sourceNote, dimensions: [{value, span}] }` — six provenance sites
+(`pmiSource()`) read that one label, so every capability judge fires
+unchanged with `from: 'drawing'` and a basis naming the evidence.
+**Consequences**:
+  * **The AI extracts; the engines judge.** The extraction prompt orders
+    the model to copy what is printed and omit what it cannot read; the
+    schema requires no number the model might have to invent; every row
+    carries its verbatim `sourceText`; the engineer reviews and can
+    exclude rows BEFORE anything is judged; and `/analyze` re-normalizes
+    the client's blob — a tampered row gets the same clamps as a fresh
+    extraction, with units pinned to mm so a second inch conversion can
+    never fire.
+  * **Three evidence states, never confused**: model AP242 PMI, drawing-
+    read (AI vision), typed by the engineer. `_toleranceBasis` gained the
+    third state; the DECLARED and AP242 strings are byte-identical to
+    before, pinned by tests.
+  * **Conflicts are limits + a drawingCheck table, never catalogue
+    rules** — a fake rule row would corrupt the coverage and score
+    denominators and claim a manufacturability verdict the catalogue
+    never published. Each drawing dimension is matched within a 15%
+    proximity window and judged inside its own band plus measurement
+    slack; "not found" is the NORMAL state (the kernel does not name most
+    drawing dimensions) and is not a conflict. When both documents carry
+    a tightest band, the drawing governs the tolerance judges (it is the
+    document that carries tolerances), and the model's own PMI is kept on
+    the payload with a visible warning — nothing silently wins.
+  * **Drawing-only analysis works** (the quote-stage case): the geometry
+    skeleton carries a bounding box ONLY when the drawing explicitly
+    prints overall dimensions — deriving one from the largest callouts
+    would be invention — and every geometry rule abstains with the mode
+    named in its reason. Three `hasPart` gates (sfsa/iso/din limits) were
+    widened with the pmi-presence clause nadcaLimits already carried, and
+    an accidental `draft ?` guard on the NADCA pmi rows (which silently
+    emptied them on a part with no draft pass) was removed.
+  * **Deliberately deferred**: position/profile GD&T frames are extracted
+    and recorded but feed no rule yet (the engine has no position-
+    tolerance measure; DIN 16742 Table 9 is the obvious consumer);
+    general-tolerance notes (ISO 2768-mK, DIN 16742-TG6) are recognized
+    and reported but do not synthesize per-dimension bands — that would
+    be a second implementation of tables the engine already holds.

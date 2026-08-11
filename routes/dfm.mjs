@@ -1,19 +1,28 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // DFM / DFA Studio routes.
 //
-//   POST /api/dfm/analyze   part file  → measured geometry + rule findings +
-//                                        priced cost impact
-//   POST /api/dfm/dfa       assembly   → decomposition + DFA analysis
-//   GET  /api/dfm/rules     the rule catalogue (thresholds + sources), so the UI
-//                           can show what WILL be checked before anything is run
+//   POST /api/dfm/analyze          part file and/or a 2D drawing extraction →
+//                                  measured geometry + rule findings + priced
+//                                  cost impact
+//   POST /api/dfm/drawing-extract  2D drawing (PDF/image) → dimensions, GD&T,
+//                                  roughness and title block, read by vision
+//   POST /api/dfm/dfa              assembly → decomposition + DFA analysis
+//   GET  /api/dfm/rules            the rule catalogue (thresholds + sources)
 //
-// Every number these return comes from a deterministic engine. Nothing here
-// calls an LLM: the AI's role in this feature is narration on top of a finished
-// analysis, and it is deliberately not on the path that produces the figures.
+// Every number a REPORT carries comes from a deterministic engine. Exactly one
+// endpoint here calls an LLM — `/drawing-extract`, where vision READS what a
+// drawing prints — and everything it extracts is then normalized, judged and
+// cross-checked by the same pure engines as any typed input, with each finding
+// stamped as drawing-read. The AI extracts; it never invents a number, and it
+// is never on the path that JUDGES one.
 // ─────────────────────────────────────────────────────────────────────────────
 import multer from 'multer';
 import { analyzeGeometry, decomposeAssembly } from '../cad-engine/cad-geometry-bridge.mjs';
 import { runDfmRules, runAllDfmRules, inferProcessFamily, processFamilyConflict, extractMeasures } from '../dfm-rules.mjs';
+import {
+  extractDrawing, normalizeExtraction, drawingToRuleInputs, crossCheckDrawing,
+  geoFromDrawing, mergeDrawingIntoGeo,
+} from '../drawing-analysis.mjs';
 import {
   dfmOptions, familyForSelection, familyOfMaterial, processesForMaterial,
 } from '../dfm-process-registry.mjs';
@@ -58,7 +67,13 @@ const numOr = (v, d) => (Number.isFinite(Number(v)) ? Number(v) : d);
 //: reliably time out at the proxy rather than return a bigger table.
 const BATCH_MAX = 25;
 
-export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }) {
+export function registerDfmRoutes(app, {
+  requireAuth, rateLimit, db, orgAccess,
+  // LLM deps, used ONLY by /drawing-extract. Optional: a registration without
+  // them (older tests, stripped deployments) keeps every deterministic route
+  // and the extract endpoint answers 503 rather than crashing.
+  makeAnthropic, resolveApiKey, safeLlmError, checkUsageQuota,
+}) {
   // WHOSE standards, and whose revision history.
   //
   // Both stores were keyed on `user_id`, which made "our company standard" mean
@@ -278,6 +293,48 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
   // request rate.
   const limit = rateLimit(Number(process.env.CV_DFM_RATE_MAX ?? 40), 10 * 60 * 1000);
 
+  // ── 2D DRAWING EXTRACTION — the one vision call in this file ──────────────
+  //
+  // The drawing PDF (or image) goes to the model as a native document block
+  // and comes back as structured dimensions, GD&T frames, roughness callouts
+  // and a title block — via forced tool-use, so the output is always
+  // schema-shaped. Nothing is judged here: the client shows the extraction to
+  // the engineer, who can exclude misread rows, and only then does /analyze
+  // hand the survivors to the deterministic rule engines. Extraction has its
+  // own tighter rate limit because a multi-sheet vision read costs real
+  // tokens, unlike every other endpoint in this file.
+  const extractLimit = rateLimit(15, 60 * 60 * 1000);
+  const quota = checkUsageQuota ?? ((_req, _res, next) => next());
+  app.post('/api/dfm/drawing-extract', requireAuth, quota, extractLimit, async (req, res) => {
+    if (!makeAnthropic || !resolveApiKey) {
+      return res.status(503).json({ error: 'Drawing extraction is not configured on this server.' });
+    }
+    const { fileBase64, mimeType } = req.body ?? {};
+    if (typeof fileBase64 !== 'string' || !fileBase64) {
+      return res.status(400).json({ error: 'Send the drawing as { fileBase64, mimeType }.' });
+    }
+    // ~8 MB of base64 — the same ceiling the PCB BOM import enforces. A
+    // heavier drawing pack should be split or downscaled client-side.
+    if (fileBase64.length > 11_000_000) {
+      return res.status(413).json({ error: 'The drawing is too large (over ~8 MB). Split the PDF or downscale the image.' });
+    }
+    const ALLOWED_MIMES = ['application/pdf', 'image/png', 'image/jpeg', 'image/webp'];
+    if (!ALLOWED_MIMES.includes(mimeType)) {
+      return res.status(400).json({ error: 'Unsupported drawing format. Upload a PDF, PNG, JPEG or WebP.' });
+    }
+    const apiKey = resolveApiKey(req);
+    if (!apiKey) return res.status(400).json({ error: 'No API key configured — add one in Settings.' });
+    try {
+      const client = makeAnthropic(apiKey, { userId: req.user.id, route: 'dfm-drawing-extract' });
+      const raw = await extractDrawing(client, { base64: fileBase64, mimeType });
+      const drawing = normalizeExtraction(raw);
+      if (!drawing.ok) return res.status(422).json({ error: drawing.reason });
+      res.json({ drawing });
+    } catch (err) {
+      res.status(500).json({ error: safeLlmError ? safeLlmError(err) : 'Drawing extraction failed. Please try again.' });
+    }
+  });
+
   /**
    * The pickers, served from the SAME tables the cost model uses.
    *
@@ -379,7 +436,47 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
 
   /** Single-part DFM: measure, apply the rules, price what the engines can. */
   app.post('/api/dfm/analyze', requireAuth, limit, upload.single('cadFile'), async (req, res) => {
-    if (rejectUnsupported(req, res)) return;
+    // ── THE 2D DRAWING, extracted earlier by /drawing-extract and reviewed
+    // by the engineer. RE-NORMALIZED here, not trusted: the blob arrives
+    // from the client and the API is reachable without the UI, so a tampered
+    // or hand-built row gets the same clamps as a fresh extraction. The
+    // client holds NORMALIZED rows (already millimetres), so units are
+    // pinned to mm on the way back in — re-applying an inch conversion to
+    // converted values would scale every band by 25.4 a second time.
+    let drawing = null;
+    if (req.body?.drawing) {
+      let parsed;
+      try { parsed = JSON.parse(req.body.drawing); } catch {
+        return res.status(400).json({ error: 'The drawing field must be the JSON object returned by /api/dfm/drawing-extract.' });
+      }
+      const renorm = normalizeExtraction({
+        units: 'mm',
+        readability: parsed?.readability,
+        dimensions: (Array.isArray(parsed?.dimensions) ? parsed.dimensions : []).map((d) => ({
+          nominal: d?.nominalMm, totalBand: d?.bandMm, type: d?.type,
+          toleranced: d?.toleranced, sheet: d?.sheet, zone: d?.zone, sourceText: d?.sourceText,
+        })),
+        gdt: (Array.isArray(parsed?.gdt) ? parsed.gdt : []).map((g) => ({
+          symbol: g?.symbol, tolerance: g?.toleranceMm, datums: g?.datums, sourceText: g?.sourceText,
+        })),
+        roughness: (Array.isArray(parsed?.roughness) ? parsed.roughness : []).map((r) => ({
+          raUm: r?.raUm, scope: r?.scope, sourceText: r?.sourceText,
+        })),
+        titleBlock: parsed?.titleBlock,
+        overall: parsed?.overall
+          ? { width: parsed.overall.widthMm, height: parsed.overall.heightMm, thickness: parsed.overall.thicknessMm }
+          : undefined,
+        notes: parsed?.notes,
+        pageCount: parsed?.pageCount,
+      });
+      if (!renorm.ok) return res.status(400).json({ error: 'The drawing data could not be read.' });
+      // Keep the ORIGINAL units label for display — the values are mm either
+      // way, and the report should still say what the drawing was drawn in.
+      renorm.units = ['mm', 'inch', 'unknown'].includes(parsed?.units) ? parsed.units : 'unknown';
+      drawing = renorm;
+    }
+    const drawingOnly = !req.file && !!drawing;
+    if (!drawingOnly && rejectUnsupported(req, res)) return;
 
     // STREAM THE STAGES THAT GENUINELY COMPLETE, when the caller asks for it.
     // A real part takes 5-30 s and the page had nothing to show for it but a
@@ -422,13 +519,48 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
       }
     } catch { pinnedDraw = null; }
 
-    const geo = await analyzeGeometry(
-      req.file.buffer, req.file.originalname, 120_000,
-      useSSE ? (ev) => { if (!clientGone) emit({ type: 'stage', ...ev }); } : null,
-      pinnedDraw);
-    if (geo.status !== 'success') {
-      if (useSSE) { emit({ type: 'error', error: geo.error }); return res.end(); }
-      return res.status(422).json({ error: geo.error });
+    let geo;
+    let drawingCheck;
+    let modelPmi = null;
+    let drawingApplied = [];
+    const drawingInputs = drawing ? drawingToRuleInputs(drawing) : null;
+    if (drawingOnly) {
+      // No 3D model: the drawing's toleranced callouts become the part
+      // evidence, and every rule that reads measured geometry will say so
+      // instead of judging. This is the quote-stage case — the drawing
+      // exists, the model does not.
+      geo = geoFromDrawing(drawing, String(req.body?.partName || '').slice(0, 120) || undefined);
+      if (drawingInputs.pmiDimensions.length) drawingApplied.push(`${drawingInputs.pmiDimensions.length} toleranced dimensions`);
+      emit({ type: 'stage', stage: 'drawing-only', dimensions: drawingInputs.pmiDimensions.length });
+    } else {
+      geo = await analyzeGeometry(
+        req.file.buffer, req.file.originalname, 120_000,
+        useSSE ? (ev) => { if (!clientGone) emit({ type: 'stage', ...ev }); } : null,
+        pinnedDraw);
+      if (geo.status !== 'success') {
+        if (useSSE) { emit({ type: 'error', error: geo.error }); return res.end(); }
+        return res.status(422).json({ error: geo.error });
+      }
+      if (drawing) {
+        // BOTH documents present: reconcile them deterministically first, so
+        // the provenance note on every judged dimension can say how many of
+        // the drawing's callouts the model actually confirms — then the
+        // drawing's rows replace the pmi block (the drawing is the document
+        // that carries tolerances) and the model's own PMI, if it had any,
+        // is kept on the payload rather than silently discarded.
+        drawingCheck = crossCheckDrawing(drawing, geo);
+        const c = drawingCheck?.counts;
+        const sourceNote = c
+          ? `read from the uploaded 2D drawing by AI vision; ${c.confirmed} of ${drawingCheck.rows.length} dimensions confirmed against the 3D model within their own bands${c.conflict ? `, ${c.conflict} in CONFLICT with it` : ''}`
+          : undefined;
+        const merged = mergeDrawingIntoGeo(geo, drawing, sourceNote ? { sourceNote } : {});
+        modelPmi = merged.previousPmi?.present ? merged.previousPmi : null;
+        geo = merged.geo;
+        drawingApplied = merged.applied;
+        emit({ type: 'stage', stage: 'drawing-merge',
+          dimensions: drawingInputs.pmiDimensions.length,
+          confirmed: c?.confirmed ?? 0, conflicts: c?.conflict ?? 0 });
+      }
     }
 
     // WHICH RULE FAMILY JUDGES THIS PART.
@@ -484,12 +616,18 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
       const v = Number(req.body?.surfaceRoughnessUin);
       return Number.isFinite(v) && v > 0 ? v : undefined;
     })();
+    // THE DRAWING FILLS WHAT NOBODY TYPED, and only that. A typed value is a
+    // deliberate act and wins; a drawing value is labelled as drawing-read.
+    // Each substitution is recorded so the payload can say which inputs the
+    // drawing supplied rather than the engineer.
+    const drawingFlatnessMm = drawingInputs?.flatnessMm;
+    const drawingRoughnessUin = drawingInputs?.surfaceRoughnessUin;
     const ruleOpts = {
       material,
       overrides: overridesFor(scope(req, 'viewer')?.orgId),
       declaredToleranceMm,
       machiningStockMm: declaredMachiningStockMm,
-      surfaceRoughnessUin: declaredSurfaceRoughnessUin,
+      surfaceRoughnessUin: declaredSurfaceRoughnessUin ?? drawingRoughnessUin,
       // NADCA #402 grade: Standard is what a first quotation assumes, so it is
       // the default; Precision is a die-cost decision the engineer declares.
       toleranceGrade: req.body?.toleranceGrade === 'precision' ? 'precision' : 'standard',
@@ -498,11 +636,12 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
       // declaration that tooling has been iterated - it LOOSENS nothing by
       // default and tightens the judged CT grade by one when declared.
       productionSeries: req.body?.productionSeries === 'long' ? 'long' : 'short',
-      // Declared flatness callout, mm. Absent when not typed - the flatness
-      // rule abstains rather than passing on a default.
+      // Declared flatness callout, mm; the drawing's tightest flatness frame
+      // fills in when nothing was typed. Absent when neither exists - the
+      // flatness rule abstains rather than passing on a default.
       flatnessMm: (() => {
         const v = Number(req.body?.flatnessMm);
-        return Number.isFinite(v) && v > 0 ? v : undefined;
+        return Number.isFinite(v) && v > 0 ? v : drawingFlatnessMm;
       })(),
       // Mass for the SFSA capability models, derived from the kernel-measured
       // volume and the chosen material's density - never typed.
@@ -511,6 +650,13 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
         return d && geo.volume?.cm3 > 0 ? (geo.volume.cm3 * d) / 1000 : undefined;
       })(),
     };
+    // Record which inputs the drawing supplied INSTEAD of the engineer — the
+    // payload prints this, so a report never implies a person typed a number
+    // the drawing carried.
+    if (drawing) {
+      if (!(Number(req.body?.flatnessMm) > 0) && drawingFlatnessMm !== undefined) drawingApplied.push('flatness callout');
+      if (!(Number(req.body?.surfaceRoughnessUin) > 0) && drawingRoughnessUin !== undefined) drawingApplied.push('surface roughness');
+    }
     const ruleResults = family ? [runDfmRules(geo, family, ruleOpts)] : runAllDfmRules(geo, ruleOpts);
     const familyBasis = selected.basis === 'chosen'
       ? (selected.chosenProcess ? `chosen — ${selected.chosenProcess}` : 'chosen')
@@ -618,6 +764,48 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
     if (geo.dfm && !geo.dfm.wallThickness && geo.dfm.wallThicknessNote) {
       limits.push({ kind: 'wallThickness', severity: 'warning', message: geo.dfm.wallThicknessNote });
     }
+    // ── HOW THE DRAWING LIMITED OR CONTRADICTED THE ANALYSIS ─────────────────
+    if (drawingOnly) {
+      limits.push({
+        kind: 'drawingOnly', severity: 'warning',
+        message: 'Drawing-only analysis: no 3D model was uploaded. Tolerance, flatness and roughness callouts are judged from the drawing; every rule that reads measured 3D geometry (walls, draft, features, undercuts) reports NOT EVALUATED below rather than guessing.',
+      });
+    }
+    if (drawing && drawing.units === 'unknown') {
+      limits.push({
+        kind: 'drawingUnits', severity: 'warning',
+        message: 'The drawing does not state its units, so its values were taken as millimetres. If it is an inch drawing, every drawing-read figure here is 25.4x too small — check the title block.',
+      });
+    }
+    if (drawingCheck?.unitsSuspect) {
+      limits.push({
+        kind: 'drawingUnits', severity: 'warning',
+        message: 'The drawing\'s stated overall size is roughly 25x smaller than the 3D model — an inch drawing read as millimetres looks exactly like this. Every drawing-read figure below is suspect until the units are confirmed.',
+      });
+    }
+    {
+      const conflicts = (drawingCheck?.rows || []).filter((r) => r.status === 'conflict');
+      for (const row of conflicts.slice(0, 5)) {
+        limits.push({
+          kind: 'drawingConflict', severity: 'warning',
+          message: `Drawing vs model: "${row.sourceText}" (${row.nominalMm} mm) does not match the model's ${row.candidate.kind} of ${row.candidate.valueMm} mm — ${row.candidate.deltaMm} mm apart, outside ${row.bandMm ? 'its own tolerance band' : 'the default window'}. One of the two documents is wrong, and this tool cannot say which.`,
+        });
+      }
+      if (conflicts.length > 5) {
+        limits.push({
+          kind: 'drawingConflict', severity: 'warning',
+          message: `…and ${conflicts.length - 5} more drawing-vs-model conflicts — see the drawing check table.`,
+        });
+      }
+    }
+    if (modelPmi && Number.isFinite(Number(modelPmi.tightestToleranceMm))
+      && Number.isFinite(Number(geo.dfm?.pmi?.tightestToleranceMm))
+      && Math.abs(Number(modelPmi.tightestToleranceMm) - Number(geo.dfm.pmi.tightestToleranceMm)) > 1e-9) {
+      limits.push({
+        kind: 'drawingVsModelPmi', severity: 'warning',
+        message: `The model carries its own AP242 PMI (tightest band ${modelPmi.tightestToleranceMm} mm) and the drawing disagrees (tightest ${geo.dfm.pmi.tightestToleranceMm} mm). The drawing governs the tolerance judgments below — it is the document that carries tolerances — and the model's PMI is kept on this payload, not discarded.`,
+      });
+    }
 
     // A unit error invalidates every dimensional threshold. Findings computed at
     // the wrong scale are worse than no findings, so they are withheld and the
@@ -638,14 +826,26 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
         };
       }
       const priced = priceFindings(r.findings, ctx);
-      return { ...r, findings: priced, impact: summarisePricedImpact(priced) };
+      const mapped = { ...r, findings: priced, impact: summarisePricedImpact(priced) };
+      // In drawing-only mode every abstention gets the mode named in its
+      // reason — a reader must be able to tell "the geometry had no ribs"
+      // apart from "no geometry was ever uploaded".
+      if (drawingOnly) {
+        mapped.notEvaluated = mapped.notEvaluated.map((f) => ({
+          ...f,
+          reason: `Drawing-only analysis (no 3D model uploaded): ${f.reason ?? 'this rule reads measured 3D geometry.'}`,
+        }));
+      }
+      return mapped;
     });
 
     const payload = {
       // The engine names the part after the file it was handed, which is the
       // bridge's temp file (cv-cad-3e46530a…). Use the name the user actually
       // uploaded, or their report is titled with a random hex string.
-      partName: String(req.file.originalname || '').replace(/\.[^.]+$/, '') || geo.partName,
+      partName: req.file
+        ? (String(req.file.originalname || '').replace(/\.[^.]+$/, '') || geo.partName)
+        : geo.partName,
       geometry: {
         boundingBox: geo.boundingBox, volume: geo.volume, surfaceArea: geo.surfaceArea,
         fillRatio: geo.fillRatio, faces: geo.faces, weights: geo.weights,
@@ -656,6 +856,14 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
       dfm: geo.dfm,
       results,
       analysisLimits: limits,
+      // ── THE 2D DRAWING'S SIDE OF THE STORY ───────────────────────────────
+      // The normalized extraction (as reviewed by the engineer), the
+      // deterministic reconciliation against the model, the model's own PMI
+      // when the drawing displaced it, and which inputs the drawing supplied.
+      drawing: drawing ?? null,
+      drawingCheck: drawingCheck ?? null,
+      modelPmi,
+      drawingApplied: drawing ? drawingApplied : null,
       processFamily: family || null,
       processFamilyBasis: familyBasis,
       // Published whether or not it was used, so a reader can always see what

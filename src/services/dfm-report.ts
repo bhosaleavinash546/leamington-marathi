@@ -203,6 +203,26 @@ export interface DfmReportData {
   results: DfmProcessResult[];
   dfa?: Record<string, unknown> | null;
   subject?: { part?: string; system?: string; material?: string; process?: string };
+  /** The 2D drawing extraction (AI-read, engineer-reviewed), when one was uploaded. */
+  drawing?: {
+    ok: boolean; units: string; readability: string; conversions: string[];
+    dimensions: Array<{ nominalMm: number; bandMm?: number; type: string; toleranced: boolean; sheet?: number; zone?: string; sourceText: string }>;
+    gdt: Array<{ symbol: string; toleranceMm?: number; datums: string[]; sourceText: string }>;
+    roughness: Array<{ raUm?: number; raUin?: number; scope?: string; sourceText: string }>;
+    titleBlock: { material?: string; generalToleranceNote?: string; drawingNumber?: string; revision?: string; title?: string };
+    overall?: { widthMm?: number; heightMm?: number; thicknessMm?: number };
+    notes: string[]; pageCount?: number;
+  } | null;
+  /** Deterministic reconciliation of the drawing against the 3D model. */
+  drawingCheck?: {
+    rows: Array<{ nominalMm: number; bandMm?: number; type: string; sourceText: string; status: string; candidate: { kind: string; valueMm: number; deltaMm: number } | null; note: string }>;
+    counts: { confirmed: number; conflict: number; notFound: number };
+    unitsSuspect: boolean; basis: string;
+  } | null;
+  /** Which rule inputs the drawing supplied instead of the engineer. */
+  drawingApplied?: string[] | null;
+  /** The model's own AP242 PMI block, when the drawing displaced it. */
+  modelPmi?: Record<string, unknown> | null;
 }
 
 type RGB = readonly [number, number, number];
@@ -1313,6 +1333,58 @@ export function exportDfmPdf(
         + 'mandatory agreement with the moulder, not a drawing note.', 7.8, MUT, CW, 3.6, 'italic');
       y += 3;
     }
+  }
+
+  // ── THE 2D DRAWING, AND HOW THE MODEL ANSWERS IT ──────────────────────────
+  //
+  // A summary panel, not the full table — the Excel export carries every row
+  // with its verbatim callout. What a reviewer needs on paper is the counts,
+  // the conflicts by name, and the provenance sentence.
+  if (data.drawing?.ok) {
+    const dw = data.drawing;
+    const chk = data.drawingCheck;
+    ensure(40);
+    y += 2;
+    mono(7, true); setText(doc, GOLD);
+    doc.text('WHAT THE AI READ OFF THE 2D DRAWING', ML, y); y += 5.4;
+    const tb = dw.titleBlock;
+    const tolCount = dw.dimensions.filter(d => d.toleranced).length;
+    const tiles: Array<[string, string, RGB]> = [
+      [`${dw.dimensions.length}`, `DIMENSIONS (${tolCount} TOLERANCED)`, INK],
+      [`${dw.gdt.length}`, 'GD&T FRAMES', INK],
+    ];
+    if (chk) {
+      tiles.push([`${chk.counts.confirmed}✓ ${chk.counts.conflict}✗`,
+        'CONFIRMED / CONFLICTS VS 3D',
+        chk.counts.conflict ? RED : GREEN]);
+    }
+    setFill(doc, PANEL); doc.roundedRect(ML, y - 5, CW, 20, 1.5, 1.5, 'F');
+    const cwD = CW / tiles.length;
+    tiles.forEach(([v, l, c], i) => {
+      const x = ML + 5 + i * cwD;
+      if (i > 0) { setDraw(doc, RULE, 0.3); doc.line(ML + i * cwD, y - 3, ML + i * cwD, y + 12); }
+      sans(v.length > 8 ? 10 : 13, 'bold'); setText(doc, c);
+      doc.text(fit(doc, v, cwD - 8), x, y + 3);
+      mono(5.4); setText(doc, MUT);
+      doc.text(fit(doc, l, cwD - 8), x, y + 9.5);
+    });
+    y += 23;
+    if (chk) {
+      for (const row of chk.rows.filter(r2 => r2.status === 'conflict').slice(0, 6)) {
+        ensure(8);
+        wrapped(`CONFLICT — "${row.sourceText}": the model's ${row.candidate?.kind} measures ${row.candidate?.valueMm} mm, ${row.candidate?.deltaMm} mm from the drawing. One of the two documents is wrong; this tool cannot say which.`,
+          7.8, RED, CW, 3.6);
+        y += 1.5;
+      }
+    }
+    wrapped(`${tb.drawingNumber ? `Drawing ${tb.drawingNumber}${tb.revision ? ` rev ${tb.revision}` : ''} · ` : ''}`
+      + `units ${dw.units} · readability ${dw.readability}`
+      + `${tb.generalToleranceNote ? ` · general tolerance note "${tb.generalToleranceNote}"` : ''}. `
+      + 'Extracted by AI vision and reviewed before judging; every extracted value was then judged by the '
+      + 'same deterministic engines as a typed input, and each finding built on one is labelled '
+      + 'drawing-read. The full row-by-row extraction with verbatim callouts is in the Excel export.',
+    7.8, MUT, CW, 3.6, 'italic');
+    y += 3;
   }
 
   // ── WHAT HAPPENS NEXT, AND WHO DOES IT ────────────────────────────────────
@@ -2662,6 +2734,50 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
       headerRow: 0, zebra: true, autoFilter: true,
       colWidths: [24, 46, 14, 12, 20, 44], wrapCols: [5],
       rows: [['Process', 'Rule', 'Measured', 'Unit', 'Guideline', 'Source'], ...passed],
+    });
+  }
+
+  // ── The 2D drawing — what the AI read, and how the model answers it ───────
+  // Every row carries the callout VERBATIM as printed, so a reader can check
+  // the extraction against the drawing without the tool in the loop. The
+  // reconciliation column is deterministic; "not found" is the normal state
+  // for most dimensions and is not a conflict.
+  if (data.drawing?.ok) {
+    const dw = data.drawing;
+    const checkFor = (d: { sourceText: string; nominalMm: number }) =>
+      data.drawingCheck?.rows.find(r2 => r2.sourceText === d.sourceText && r2.nominalMm === d.nominalMm);
+    const dwRows: Array<Array<string | number>> = [['As printed', 'Nominal (mm)', 'Band (mm)', 'Type', 'Toleranced', 'Sheet', 'Check vs 3D model']];
+    for (const d of dw.dimensions) {
+      const chk = checkFor(d);
+      dwRows.push([
+        d.sourceText, d.nominalMm, d.bandMm ?? '', d.type, d.toleranced ? 'yes' : 'no (general tol.)', d.sheet ?? '',
+        chk ? (chk.status === 'confirmed' ? `confirmed — ${chk.note}` : chk.status === 'conflict' ? `CONFLICT — ${chk.note}` : 'not found in 3D (not a conflict)') : 'no 3D model to check against',
+      ]);
+    }
+    for (const g of dw.gdt) {
+      dwRows.push([g.sourceText, '', g.toleranceMm ?? '', `GD&T ${g.symbol}`, g.datums.length ? `datums ${g.datums.join(', ')}` : '', '',
+        g.symbol === 'flatness' ? 'feeds the flatness capability rules' : 'no deterministic rule consumes this yet — recorded, not judged']);
+    }
+    for (const r2 of dw.roughness) {
+      dwRows.push([r2.sourceText, '', '', 'roughness', r2.scope ?? '', '', r2.raUin ? `${r2.raUin} µin — feeds the roughness rules` : '']);
+    }
+    const tb = dw.titleBlock;
+    const subtitleBits = [
+      tb.drawingNumber ? `Drawing ${tb.drawingNumber}${tb.revision ? ` rev ${tb.revision}` : ''}` : null,
+      tb.material ? `title-block material: ${tb.material}` : null,
+      tb.generalToleranceNote ? `general tolerance note: ${tb.generalToleranceNote}` : null,
+      `units: ${dw.units}`,
+      ...dw.conversions,
+      ...(data.drawingApplied?.length ? [`Supplied to the rules by this drawing: ${data.drawingApplied.join(', ')}.`] : []),
+      data.drawingCheck ? `Reconciliation: ${data.drawingCheck.counts.confirmed} confirmed, ${data.drawingCheck.counts.conflict} in conflict, ${data.drawingCheck.counts.notFound} with no measured counterpart. ${data.drawingCheck.basis}` : null,
+    ].filter(Boolean);
+    sheets.push({
+      name: '2D drawing',
+      title: 'What the AI read off the 2D drawing',
+      subtitle: `Extracted by AI vision, reviewed by the engineer, judged by the deterministic rules — every finding built on these rows says so. ${subtitleBits.join(' · ')}`,
+      headerRow: 0, zebra: true, autoFilter: true,
+      colWidths: [22, 14, 12, 16, 22, 8, 70], wrapCols: [6],
+      rows: dwRows,
     });
   }
 
