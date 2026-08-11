@@ -36,6 +36,10 @@ import {
   covestroResinFor, requiredDraftDeg as covestroRequiredDraftDeg,
   filletRequirementMm as covestroFilletRequirementMm,
 } from './covestro-polymers.mjs';
+import {
+  isoMetalGroupFor, isoGradeFor, sToleranceMm, sTightestPromiseMm,
+  isoDraftDeg,
+} from './iso-8062-4.mjs';
 
 /**
  * The worst (smallest-ratio) coaxial boss/hole pair in a feature table.
@@ -728,7 +732,105 @@ export function extractMeasures(geo = {}, opts = {}) {
     // DuPont table does not name. The two resin gates are DISJOINT, so the
     // shared resin* measure keys can never collide.
     ...covestroLimits(draft, features, wall, geo, opts),
+    // ISO 8062-4: tolerance capability for the permanent-mould families and
+    // the draft tables every casting family can sharpen against.
+    ...iso8062Limits(draft, features, wall, geo, opts),
   };
+}
+
+/**
+ * The limits ISO 8062-4 prints — permanent-mould (gravity / low-pressure)
+ * tolerance capability, and the Table 4-8 draft requirements per casting
+ * family, computed at the part's own extent along the draw. Sand and
+ * investment TOLERANCES are handled inside sfsaLimits' judge() so steel and
+ * non-steel flow through one path; this function carries what no other
+ * module covers.
+ */
+function iso8062Limits(draft, features, wall, geo, opts = {}) {
+  const num = (v) => {
+    if (v === null || v === undefined || v === '') return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
+  const out = {};
+  const hasPart = !!(draft && (draft.drawDirectionXYZ || draft.draftHistogramDegToAreaMm2 || draft.coredHoles))
+    || num(wall?.p50Mm) !== undefined;
+  if (!hasPart) return out;
+
+  // ── PERMANENT-MOULD TOLERANCE CAPABILITY (gravity die / LPDC) ───────────
+  // Table B.1 has no short-series column for permanent moulds — the tooling
+  // is always iterated — so the series input does not move this one.
+  {
+    const sel = isoGradeFor('permanentMould', opts.material, 'long');
+    if (sel.ok) {
+      const pmiRows = (Array.isArray(geo.dfm?.pmi?.dimensions) ? geo.dfm.pmi.dimensions : [])
+        .filter((r) => Number(r?.span) > 0 && Number(r?.value) > 0);
+      const declared = num(opts.declaredToleranceMm);
+      let worst = null;
+      for (const r of pmiRows) {
+        const cap = sToleranceMm(Number(r.value), sel.grade);
+        if (!cap.ok) continue;
+        const margin = Number(r.span) / cap.totalBandMm;
+        if (!worst || margin < worst.margin) {
+          worst = { margin, dimensionMm: Number(r.value), bandMm: Number(r.span),
+            capabilityBandMm: cap.totalBandMm, grade: `S${sel.grade}`, from: 'PMI',
+            basis: `${sel.basis} ${cap.basis}` };
+        }
+      }
+      if (!worst && declared !== undefined && declared > 0) {
+        const cap = sTightestPromiseMm(sel.grade);
+        if (cap.ok) {
+          worst = { margin: declared / cap.totalBandMm, dimensionMm: null, bandMm: declared,
+            capabilityBandMm: cap.totalBandMm, grade: `S${sel.grade}`, from: 'declared',
+            basis: `The band was DECLARED by the engineer, without its dimension. ${sel.basis} ${cap.basis}` };
+        }
+      }
+      if (worst) {
+        out.iso8062PmToleranceMargin = Math.round(worst.margin * 1000) / 1000;
+        out._iso8062PmTolerance = worst;
+      }
+    }
+  }
+
+  // ── DRAFT, Tables 4-8: per casting family, at the part's draw extent ────
+  // The tables ask LESS of taller features, and the part's extent along the
+  // draw is an upper bound on any feature's height — so the angle computed
+  // here is the LEAST the standard could ask, and the run loop combines it
+  // sharpen-only with each rule's published cutoff, exactly like NADCA.
+  {
+    const bb = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
+    const ext = [num(bb.xMm), num(bb.yMm), num(bb.zMm)];
+    const dir = draft.drawDirectionXYZ;
+    let depthMm;
+    if (Array.isArray(dir) && ext.every((v) => v > 0)) {
+      let k = -1;
+      for (let i = 0; i < 3; i++) if (Math.abs(Number(dir[i])) > 0.999) k = i;
+      depthMm = k >= 0 ? ext[k] : Math.max(...ext.filter((v) => v > 0));
+    } else if (ext.some((v) => v > 0)) {
+      depthMm = Math.max(...ext.filter((v) => v > 0));
+    }
+    if (depthMm > 0 && draft.draftHistogramDegToAreaMm2) {
+      const FAMILY_TABLE = {
+        'sand-casting': 'hand', 'shell-mould': 'machine',
+        'gravity-die': 'permanentMould', 'lpdc': 'permanentMould',
+        'investment-casting': 'investment',
+      };
+      const map = {};
+      for (const [family, table] of Object.entries(FAMILY_TABLE)) {
+        const req = isoDraftDeg(table, depthMm);
+        if (!req.ok) continue;
+        const pct = areaBelowDraftPct(draft.draftHistogramDegToAreaMm2, req.deg);
+        map[family] = {
+          requiredDeg: req.deg, drawDepthMm: Math.round(depthMm),
+          wallAreaBelowRequiredPct: pct,
+          basis: `${req.basis} Judged at the part's own ${Math.round(depthMm)} mm extent along the draw - an upper bound on any feature's height, and the table asks LESS of taller features, so this is the least the standard could ask; the published rule angle stays the floor.`,
+        };
+      }
+      if (Object.keys(map).length) out._iso8062Draft = map;
+    }
+  }
+
+  return out;
 }
 
 /**
@@ -1185,7 +1287,37 @@ function sfsaLimits(draft, features, wall, geo, opts = {}) {
         }
         return worst ?? undefined;
       }
-      // Non-steel: the screening value, labelled as exactly that.
+      // Non-steel: ISO 8062-4 now speaks for every metal group its Annex B
+      // tabulates — the same two evidence paths as the steel branch, with
+      // the grade picked per metal and process. The old screening value
+      // survives ONLY for materials the standard's metal grouping refuses.
+      const isoSel = isoGradeFor(process, opts.material, series);
+      if (isoSel.ok) {
+        let worst = null;
+        for (const r of pmiRows) {
+          const cap = sToleranceMm(Number(r.value), isoSel.grade);
+          if (!cap.ok) continue;                    // beyond Table 2's 300 mm, or '-'
+          const margin = Number(r.span) / cap.totalBandMm;
+          if (!worst || margin < worst.margin) {
+            worst = { margin, dimensionMm: Number(r.value), bandMm: Number(r.span),
+              capabilityBandMm: cap.totalBandMm, grade: `S${isoSel.grade}`, series: isoSel.series,
+              from: 'PMI', basis: `${isoSel.basis} ${cap.basis}` };
+          }
+        }
+        if (!worst && declared !== undefined && declared > 0) {
+          const cap = sTightestPromiseMm(isoSel.grade);
+          if (cap.ok) {
+            worst = { margin: declared / cap.totalBandMm, dimensionMm: null, bandMm: declared,
+              capabilityBandMm: cap.totalBandMm, grade: `S${isoSel.grade}`, series: isoSel.series,
+              from: 'declared', basis: `The band was DECLARED by the engineer, without its dimension. ${isoSel.basis} ${cap.basis}` };
+          }
+        }
+        if (worst) return worst;
+        if (pmiRows.length || (declared !== undefined && declared > 0)) return undefined;
+        return undefined;
+      }
+      // The screening value, labelled as exactly that, for materials neither
+      // standard tabulates.
       const screen = process === 'investment' ? SCREEN.investment : (isIron ? SCREEN.sandCastIron : SCREEN.sand);
       const band = pmiRows.length
         ? Math.min(...pmiRows.map((r) => Number(r.span)))
@@ -1193,7 +1325,7 @@ function sfsaLimits(draft, features, wall, geo, opts = {}) {
       if (band === undefined) return undefined;
       return { margin: band / screen, dimensionMm: null, bandMm: band, capabilityBandMm: screen,
         grade: null, series: null, from: pmiRows.length ? 'PMI' : 'declared',
-        basis: `Process screening value (${screen} mm total band${isIron ? ', cast iron' : ''}) - SFSA Supplement 3 tabulates steel castings only, so this alloy keeps the tool's screening threshold rather than borrowing a steel column.` };
+        basis: `Process screening value (${screen} mm total band${isIron ? ', cast iron' : ''}) - neither SFSA Supplement 3 (steel) nor ISO 8062-4's metal groups tabulate this material, so the tool's screening threshold stays in force.` };
     };
 
     const sand = judge('sand');
@@ -1497,7 +1629,14 @@ export function runDfmRules(geo, process, opts = {}) {
     // against. Either way the check is at least as strict as it was.
     const nadca = measures._nadcaDraft;
     const nadcaCut = nadca?.outsideDeg != null ? Math.round(nadca.outsideDeg * 100) / 100 : null;
+    // ONLY on the families NADCA speaks for. The formula is die casting's —
+    // metal injected against an ejector die — and until ISO 8062-4 arrived it
+    // quietly sharpened sand and investment rules too, putting a die-casting
+    // citation on a rammed mould. Squeeze and semi-solid stay: they fill a
+    // die-casting die and eject from it, which is what the constants model.
+    const NADCA_DRAFT_FAMILIES = new Set(['hpdc', 'hpdc-zinc', 'squeeze-casting', 'semi-solid']);
     const cutoffFromNadca = rule.measure === 'wallAreaBelowDraftPct'
+      && NADCA_DRAFT_FAMILIES.has(rule.process)
       && nadcaCut != null && nadcaCut > (rule.draftCutoffDeg ?? 0);
     // DuPont Table 3.01 REPLACES the moulding draft angle for the resins it
     // names — not sharpen-only, because the table is depth-banded the safe
@@ -1509,8 +1648,17 @@ export function runDfmRules(geo, process, opts = {}) {
     const cutoffFromResin = rule.process === 'injection-moulding'
       && rule.measure === 'wallAreaBelowDraftPct'
       && dupontDraft?.requiredDeg != null;
+    // ISO 8062-4 Tables 4-8 SHARPEN the casting families' draft cutoffs the
+    // same way NADCA sharpens die casting: the table angle at the part's own
+    // draw extent replaces the published constant only where it is STRICTER.
+    const isoDraft = measures._iso8062Draft?.[rule.process];
+    const cutoffFromIso = rule.measure === 'wallAreaBelowDraftPct'
+      && isoDraft?.requiredDeg != null
+      && isoDraft.requiredDeg > (rule.draftCutoffDeg ?? 0);
     const cutoff = rule.measure === 'wallAreaBelowDraftPct'
-      ? (cutoffFromResin ? dupontDraft.requiredDeg : cutoffFromNadca ? nadcaCut : rule.draftCutoffDeg)
+      ? (cutoffFromResin ? dupontDraft.requiredDeg
+        : cutoffFromIso ? isoDraft.requiredDeg
+          : cutoffFromNadca ? nadcaCut : rule.draftCutoffDeg)
       : rule.measure === 'overhangAreaBelowDeg' ? rule.overhangCutoffDeg
         : null;
     const unit = cutoff != null && rule.unit?.startsWith('%')
@@ -1526,9 +1674,11 @@ export function runDfmRules(geo, process, opts = {}) {
       // the path for the published constants, which ARE curve points.
       value = cutoffFromResin
         ? numberOr(measures.resinDraftAreaPct)
-        : cutoffFromNadca
-          ? numberOr(measures.nadcaWallAreaBelowDraftPct)
-          : numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
+        : cutoffFromIso
+          ? numberOr(isoDraft.wallAreaBelowRequiredPct)
+          : cutoffFromNadca
+            ? numberOr(measures.nadcaWallAreaBelowDraftPct)
+            : numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
       // The generic-angle fallbacks must not run under a computed DuPont
       // cutoff: the unit names the angle, and an area measured at the
       // generic angle under a resin-specific label would be the two-numbers-
@@ -1624,8 +1774,10 @@ export function runDfmRules(geo, process, opts = {}) {
                     : rule.measure === 'sfsaMachiningStockMargin' ? measures._sfsaRma?.basis
                       : rule.measure === 'resinFilletMargin' ? measures._resinFillet?.basis
                         : rule.measure === 'dupontBossOdToHole' ? measures._dupontBoss?.basis
-                          : cutoffFromResin ? measures._resinDraft?.basis
-                            : undefined,
+                          : rule.measure === 'iso8062PmToleranceMargin' ? measures._iso8062PmTolerance?.basis
+                            : cutoffFromResin ? measures._resinDraft?.basis
+                              : cutoffFromIso ? isoDraft?.basis
+                                : undefined,
       status,
     };
     // The specific features that break this rule, worst first. Only the ones

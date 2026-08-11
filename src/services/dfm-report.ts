@@ -1221,6 +1221,53 @@ export function exportDfmPdf(
     }
   }
 
+  // ── WHAT ISO 8062-4 PROMISES FOR THIS CASTING ─────────────────────────────
+  //
+  // The non-ferrous counterpart: the permanent-mould tolerance verdict at
+  // this part's own dimension and metal group. Absent for steel (the
+  // standard prints '-' there) and for die castings (NADCA #402 renders
+  // above instead), so no part shows two capability bands for one claim.
+  {
+    const sf = (data as Record<string, any>).sheetForming;
+    const pm = sf?.iso8062PmTolerance;
+    if (pm?.margin != null) {
+      ensure(46);
+      y += 2;
+      mono(7, true); setText(doc, GOLD);
+      doc.text('WHAT ISO 8062-4 PROMISES FOR THIS CASTING', ML, y); y += 5.4;
+
+      const tiles: Array<[string, string, RGB]> = [
+        [`${pm.capabilityBandMm} mm`, `${pm.grade} TOTAL BAND · PERMANENT MOULD`, INK],
+        [`${Math.round(pm.margin * 1000) / 1000}×`,
+          pm.from === 'declared' ? 'DECLARED BAND VS CAPABILITY' : `WORST PMI BAND (${pm.dimensionMm} MM)`,
+          pm.margin >= 1 ? GREEN : RED],
+      ];
+      const gdcDraft = sf?.iso8062Draft?.['gravity-die'];
+      if (gdcDraft?.requiredDeg != null) {
+        tiles.push([`${gdcDraft.requiredDeg}°`, `DRAFT, TABLE 6 AT ${gdcDraft.drawDepthMm} MM DRAW`, INK]);
+      }
+
+      setFill(doc, PANEL); doc.roundedRect(ML, y - 5, CW, 20, 1.5, 1.5, 'F');
+      const cwN = CW / tiles.length;
+      tiles.forEach(([v, l, c], i) => {
+        const x = ML + 5 + i * cwN;
+        if (i > 0) { setDraw(doc, RULE, 0.3); doc.line(ML + i * cwN, y - 3, ML + i * cwN, y + 12); }
+        sans(v.length > 8 ? 10 : 13, 'bold'); setText(doc, c);
+        doc.text(fit(doc, v, cwN - 8), x, y + 3);
+        mono(5.4); setText(doc, MUT);
+        doc.text(fit(doc, l, cwN - 8), x, y + 9.5);
+      });
+      y += 23;
+
+      wrapped('From ISO 8062-4:2017, read first-hand: dimensional capability from Table 2 at the '
+        + 'grade Annex B.1 selects for this metal group by metallic permanent mould, judged at the '
+        + 'loosest of the printed band; draft from Table 6 at the part’s own draw extent, Grade A '
+        + '(fine) external — the least demanding printed column, so internal walls need more. Steel, '
+        + 'nickel and cobalt print no permanent-mould column, and this panel abstains for them.', 7.8, MUT, CW, 3.6, 'italic');
+      y += 3;
+    }
+  }
+
   // ── WHAT HAPPENS NEXT, AND WHO DOES IT ────────────────────────────────────
   //
   // The report said what is wrong and what it costs, and stopped. Nobody leaves
@@ -2300,6 +2347,39 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
           rows: dpRows,
         });
       }
+
+      // ── ISO 8062-4 (non-ferrous castings) — same contract, own sheet ─────
+      const isoRows: Array<Array<string | number>> = [['Figure', 'Value', 'Where it comes from']];
+      if (sf.iso8062PmTolerance) {
+        const s = sf.iso8062PmTolerance;
+        isoRows.push([s.from === 'declared'
+          ? `Permanent-mould capability: declared band vs ${s.grade}`
+          : `Permanent-mould capability: worst PMI band (on ${s.dimensionMm} mm) vs ${s.grade}`,
+        `${s.bandMm} mm vs ${s.capabilityBandMm} mm → ${Math.round(s.margin * 1000) / 1000}×`, s.basis]);
+      }
+      if (sf.iso8062Draft) {
+        const label: Record<string, string> = {
+          'sand-casting': 'sand (hand moulding)', 'shell-mould': 'shell (machine moulding table)',
+          'gravity-die': 'gravity die', 'lpdc': 'low-pressure die', 'investment-casting': 'investment',
+        };
+        for (const [fam, d] of Object.entries(sf.iso8062Draft as Record<string, any>)) {
+          if (!d || d.requiredDeg == null) continue;
+          isoRows.push([`Draft the standard asks by ${label[fam] ?? fam} (${d.drawDepthMm} mm draw)`,
+            `${d.requiredDeg}° per side${d.wallAreaBelowRequiredPct != null ? ` (${d.wallAreaBelowRequiredPct}% of wall below it)` : ''}`,
+            d.basis]);
+        }
+      }
+      if (isoRows.length > 1) {
+        sheets.push({
+          name: 'ISO 8062-4',
+          title: 'What ISO 8062-4 promises for this casting',
+          subtitle: 'ISO 8062-4:2017 general tolerances for castings, read first-hand and computed at this '
+            + 'part’s own dimensions and metal group. Figures, not verdicts — draft is judged at Grade A '
+            + '(fine) external, the least demanding printed column, so internal walls need more.',
+          headerRow: 0, zebra: true, colWidths: [42, 32, 76], wrapCols: [2],
+          rows: isoRows,
+        });
+      }
     }
   }
 
@@ -2525,6 +2605,7 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
         ['DuPont Engineering Polymers, General Design Principles, Module I', 'Moulding draft per resin and draw depth, fillet knee, boss OD band, blind-core depth, undercut stripping'],
         ['Covestro (Bayer) Part and Mold Design', 'PC-family rib percentages, draft minimums, fillet ratio, tall-boss limit, undercut stripping'],
         ['Boljanovic, Sheet Metal Forming Processes and Die Design', 'Press force, strip utilisation, bend allowance, springback, draw operations — equation by equation'],
+        ['ISO 8062-4:2017 — General tolerances for castings', 'Non-ferrous casting tolerance capability per metal group (permanent mould, sand, investment), draft tables 4-8, machining allowance'],
       ],
     });
   }

@@ -1693,28 +1693,32 @@ export const DFM_RULES = [
   },
   {
     id: 'gdc-tolerance-capability',
-    sourceStatus: 'industry-consensus',
+    sourceStatus: 'standard-named',
     process: 'gravity-die',
     severity: 'high',
     title: 'Tolerance tighter than gravity die casting holds',
-    measure: 'tightestToleranceMm',
+    measure: 'iso8062PmToleranceMargin',
     compare: 'gte',
-    threshold: 0.6,
-    unit: 'mm total band',
+    threshold: 1.0,
+    unit: 'x ISO 8062-4 capability',
     rationale:
       'A gravity casting cools slowly against a steel mould and moves as it does. About ISO 8062 CT8-10 is normal, which is roughly +/-0.3 mm on a 50 mm dimension.',
     fix: 'Open the as-cast tolerance and machine the functional faces.',
-    source: 'ISO 8062 casting tolerance grades CT8-CT10 (permanent mould).',
+    source: 'ISO 8062-4:2017, READ FIRST-HAND (Tables 2 + B.1): general dimensional tolerance capability computed at each feature\'s own dimension, judged at the loosest of the printed grade band for the metal group by metallic permanent mould - light metal alloys S6-8, copper and zinc S7-9, grey/SG iron S7-9. A worst PMI dimension row is judged at its own dimension; a declared band against the tightest value the grade ever tabulates. Steel, nickel and cobalt print \'-\' for permanent moulds, and the rule abstains for them rather than borrowing a column.',
   },
   {
     id: 'sand-tolerance-capability',
     // The MEASURE carries the alloy dependence now: steel is judged against
-    // the SFSA 2000 / ISO 8062 CT tables at the declared production series,
-    // cast iron and everything else against the tool's screening bands — so
+    // the SFSA 2000 / ISO 8062 CT tables, every metal group ISO 8062-4's
+    // Annex B tabulates against its own S-grade band, and only materials
+    // NEITHER document covers fall back to the tool's screening bands — so
     // the threshold is 1.0x for every material and only the SOURCE changes.
     byMaterialFamily: {
       ferrous: { threshold: 1.0, sourceStatus: 'standard-named', source: 'SFSA Supplement 3 "Dimensional Capabilities of Steel Castings", Tables 3.1/3.3/3.4, READ FIRST-HAND: the ISO 8062-1994 CT table adopted as SFSA 2000, judged at CT13 for a short production series (typical band CT11-13) or CT12 for a long one (typical CT10-12) — based on a statistical analysis of over 140,000 features on production steel castings. A worst PMI dimension row is judged at its own dimension; a declared band against the tightest value the grade ever tabulates.' },
-      castiron: { threshold: 1.0, source: 'Grey iron expands on graphite formation, partly cancelling its contraction, so it holds tighter as-cast than steel — screened at a 1.0 mm total band. SFSA Supplement 3 tabulates steel only.' },
+      castiron: { threshold: 1.0, sourceStatus: 'standard-named', source: 'ISO 8062-4:2017, READ FIRST-HAND (Table 2 + Annexes B.1/B.2): capability computed at each feature\'s own dimension. Grey and S.G. iron sand cast: S13-15 for a short or single production series (Table B.2, clay-bonded hand moulding — the looser printed binder column; judged at S15) or S11-14 for a long one (Table B.1 hand moulding — the looser column, since the moulding method is not a tool input; judged at S14). A worst PMI dimension row is judged at its own dimension; a declared band against the tightest value the grade ever tabulates.' },
+      aluminium: { threshold: 1.0, sourceStatus: 'standard-named', source: 'ISO 8062-4:2017, READ FIRST-HAND (Table 2 + Annexes B.1/B.2): capability computed at each feature\'s own dimension. Light metal alloys sand cast: S11-13 for a short or single production series (Table B.2, clay-bonded hand moulding; judged at S13) or S9-12 for a long one (Table B.1 hand moulding — the looser column, since the moulding method is not a tool input; judged at S12). A worst PMI dimension row is judged at its own dimension; a declared band against the tightest value the grade ever tabulates.' },
+      magnesium: { threshold: 1.0, sourceStatus: 'standard-named', source: 'ISO 8062-4:2017, READ FIRST-HAND (Table 2 + Annexes B.1/B.2): magnesium sits in the standard\'s light metal alloys group — S11-13 sand cast short series (Table B.2, clay-bonded hand moulding; judged at S13), S9-12 long (Table B.1 hand moulding; judged at S12), computed at each feature\'s own dimension.' },
+      copper: { threshold: 1.0, sourceStatus: 'standard-named', source: 'ISO 8062-4:2017, READ FIRST-HAND (Table 2 + Annexes B.1/B.2): copper alloys sand cast S13-15 for a short or single production series (Table B.2, clay-bonded hand moulding; judged at S15) or S10-13 for a long one (Table B.1 hand moulding; judged at S13), computed at each feature\'s own dimension.' },
     },
     sourceStatus: 'industry-consensus',
     process: 'sand-casting',
@@ -1727,12 +1731,17 @@ export const DFM_RULES = [
     rationale:
       'Sand moves. The mould is rammed, the cores are set by hand and the casting contracts against a yielding medium. For steel the capability is now COMPUTED from the SFSA 2000 CT tables at the feature\'s own dimension and the declared production series; other alloys are screened at the process band, and the finding says which happened.',
     fix: 'Machine every functional surface and open everything else — or negotiate a tighter CT grade with the foundry and pay for the pattern re-engineering it implies. A tight as-cast tolerance on a sand casting is a scrap rate, not a specification.',
-    source: 'Process screening value (1.2 mm total band) for alloys the SFSA tables do not cover; ISO 8062 grade selection for non-ferrous sand alloys is not held.',
+    source: 'Process screening value (1.2 mm total band), in force only for materials neither SFSA Supplement 3 (steel) nor ISO 8062-4\'s Annex B metal groups tabulate — the finding names which document judged the part.',
   },
   {
     id: 'inv-tolerance-capability',
     byMaterialFamily: {
       ferrous: { threshold: 1.0, sourceStatus: 'standard-named', source: 'SFSA Supplement 3 "Dimensional Capabilities of Steel Castings", Tables 3.1/3.3, READ FIRST-HAND: steel investment castings judged at CT7, the loosest of the printed CT5-7 band (long production series only — investment tooling is always iterated). A worst PMI dimension row is judged at its own dimension; a declared band against the tightest value CT7 ever tabulates.' },
+      castiron: { threshold: 1.0, sourceStatus: 'standard-named', source: 'ISO 8062-4:2017, READ FIRST-HAND (Table 2 + Annex B.1): grey and S.G. iron investment castings tabulated at S4-9, judged at S9 — the loosest of the printed band — computed at each feature\'s own dimension. Long series only: Annex B prints no short-series investment column, because the wax die is always iterated.' },
+      aluminium: { threshold: 1.0, sourceStatus: 'standard-named', source: 'ISO 8062-4:2017, READ FIRST-HAND (Table 2 + Annex B.1): light metal investment castings tabulated at S4-9, judged at S9 — the loosest of the printed band — computed at each feature\'s own dimension. Long series only: Annex B prints no short-series investment column, because the wax die is always iterated.' },
+      magnesium: { threshold: 1.0, sourceStatus: 'standard-named', source: 'ISO 8062-4:2017, READ FIRST-HAND (Table 2 + Annex B.1): magnesium sits in the standard\'s light metal alloys group — investment castings tabulated at S4-9, judged at S9, computed at each feature\'s own dimension.' },
+      copper: { threshold: 1.0, sourceStatus: 'standard-named', source: 'ISO 8062-4:2017, READ FIRST-HAND (Table 2 + Annex B.1): copper alloy investment castings tabulated at S4-9, judged at S9 — the loosest of the printed band — computed at each feature\'s own dimension.' },
+      zinc: { threshold: 1.0, sourceStatus: 'standard-named', source: 'ISO 8062-4:2017, READ FIRST-HAND (Table 2 + Annex B.1): zinc alloy investment castings tabulated at S4-9, judged at S9 — the loosest of the printed band — computed at each feature\'s own dimension.' },
     },
     sourceStatus: 'industry-consensus',
     process: 'investment-casting',
@@ -1745,7 +1754,7 @@ export const DFM_RULES = [
     rationale:
       'The wax pattern is moulded to a machined die and the ceramic shell is rigid, so investment casting holds ISO 8062 CT5-7 — the accuracy the process is bought for. For steel the capability is COMPUTED from the CT table at the feature\'s own dimension; other alloys are screened at a 0.3 mm total band, and the finding says which happened.',
     fix: 'Hold the tolerance as-cast where you can; if it must be tighter, machine only that feature.',
-    source: 'Process screening value (0.3 mm total band, roughly CT5-7 at small dimensions) for alloys the SFSA tables do not cover.',
+    source: 'Process screening value (0.3 mm total band, roughly CT5-7 at small dimensions), in force only for materials neither SFSA Supplement 3 (steel) nor ISO 8062-4\'s Annex B metal groups tabulate — the finding names which document judged the part.',
   },
   {
     id: 'sand-flatness-capability',
@@ -2977,18 +2986,18 @@ export const DFM_RULES = [
   },
   {
     id: 'lpdc-tolerance-capability',
-    sourceStatus: 'industry-consensus',
+    sourceStatus: 'standard-named',
     process: 'lpdc',
     severity: 'high',
     title: 'Tolerance tighter than low-pressure die casting holds',
-    measure: 'tightestToleranceMm',
+    measure: 'iso8062PmToleranceMargin',
     compare: 'gte',
-    threshold: 0.6,
-    unit: 'mm total band',
+    threshold: 1.0,
+    unit: 'x ISO 8062-4 capability',
     rationale:
       'Low-pressure die casting is the most accurate of the permanent-mould routes — ISO 8062 CT6-CT7 against gravity\'s CT7-CT9 — but it is still a casting. A band tighter than about 0.6 mm total is a machining requirement, and the stock for it has to be on the part.',
     fix: 'Open the tolerance, or add machining stock on that feature and quote the operation.',
-    source: 'Low-pressure die casting quoted at ISO 8062 CT6-CT7 and ±0.3 mm, against gravity die casting at CT7-CT9. Consistent across process-comparison guides; no primary standard audited.',
+    source: 'ISO 8062-4:2017, READ FIRST-HAND (Tables 2 + B.1): general dimensional tolerance capability computed at each feature\'s own dimension, judged at the loosest of the printed grade band for the metal group by metallic permanent mould - light metal alloys S6-8, copper and zinc S7-9, grey/SG iron S7-9. A worst PMI dimension row is judged at its own dimension; a declared band against the tightest value the grade ever tabulates. Steel, nickel and cobalt print \'-\' for permanent moulds, and the rule abstains for them rather than borrowing a column.',
   },
 
   // ═══════════════════════════════════════════════════════════════════════════

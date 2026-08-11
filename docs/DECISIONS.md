@@ -2029,3 +2029,56 @@ undercut depth % is still not a measure. Chapters 3-8 (structural,
 assembly, machining, painting, mold design) were read and print process
 and mold-side guidance, not part-geometry DFM thresholds. Register: 29
 rules primary-read.
+
+## ISO 8062-4 speaks for every non-ferrous casting tolerance, and NADCA loses the moulds it never owned
+
+**Date**: 2026-08-11
+**Context**: the register named ISO 8062 as the blocker on every non-ferrous
+casting tolerance rule: gravity die and LPDC were unaudited screens, and
+sand/investment fell back to flat screening bands for everything but steel.
+The user supplied ISO 8062-4:2017 (32 pages). Its text layer extracts per
+character, so every table was reconstructed by word position (pymupdf
+`get_text('words')` grouped by rounded y) and spot-checked against the
+rendered pages.
+**Decision**: `iso-8062-4.mjs` pins Table 2 (dimensional S1-S15, stops at
+300 mm), Table 1 (profile P1-P15, to 10 m), Table 3 (RMA A-K), Tables 4-8
+(draft per process by feature height) and Annexes B.1/B.2/C.1 (grade
+selection per metal group × process, long vs short series). The
+permanent-mould families (gravity die, LPDC) get a computed
+`iso8062PmToleranceMargin` with the same dual evidence paths as every other
+capability rule (worst PMI row at its own dimension / declared band vs the
+grade's tightest promise); sand and investment route every metal group
+Annex B tabulates through the same judge that already served steel, so one
+material picker column decides which document speaks.
+**Consequences**:
+  * **The loosest-of-band convention carries over**: light metal sand short
+    series S13, long S12; permanent mould S8; investment S9 for every
+    group. First quotations rely on what the table promises unasked.
+  * **'-' cells refuse**: steel, nickel and cobalt print no permanent-mould
+    or pressure-die column, so gdc/lpdc tolerance rules ABSTAIN on steel
+    rather than borrowing the light-metal column. Zinc has no short-series
+    sand band and refuses there while its long-series band works.
+  * **Two printed oddities held table-faithful**: Table 6 permanent-mould
+    fine-external prints 8.5° at ≤4 mm then 3.3° at 4-6.3 mm
+    (non-monotonic as printed, like the CT-table anomaly), and the RMA
+    6300-10000 mm row was not fully legible in the supplied copy — the
+    module refuses beyond 6300 mm and says why.
+  * **Draft judged at Grade A (fine) EXTERNAL** — the least demanding
+    printed column, because the engine cannot yet split internal from
+    external surfaces. Same under-reporting caveat as the NADCA draft, and
+    the basis says so. Tables 4-8 sharpen the casting families' draft
+    cutoffs at the part's own draw extent, sharpen-only, exactly like
+    NADCA on die casting.
+  * **NADCA's draft formula is now GATED to the die-casting families**
+    (hpdc, hpdc-zinc, squeeze, semi-solid). Until this pass it quietly
+    sharpened sand and investment draft rules too — a die-casting citation
+    on a rammed mould. ISO's arrival exposed the leak: two documents
+    competed for the same cutoff, and each now sharpens only the families
+    it speaks for.
+  * **Deliberately deferred**: Annex C RMA wiring for non-steel machining
+    stock (SFSA's grade-F selection still governs the sand rule), the
+    Table 1 P-profile path for parts beyond Table 2's 300 mm, and the
+    Table 7 pressure-die cross-check against NADCA #402 (kept — NADCA is
+    the more specific authority for HPDC). Register: 31 rules
+    primary-read; the last casting blocker standing is DIN 16742 for
+    injection moulding.

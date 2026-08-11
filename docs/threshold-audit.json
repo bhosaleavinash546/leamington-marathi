@@ -238,37 +238,31 @@
    "readOn": "2026-08-11"
   },
   "lpdc-tolerance-capability": {
-   "status": "unaudited",
-   "claimedSource": "Casting tolerance guidance (family-specific)",
-   "grade": "industry-consensus",
-   "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
-   "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
-   "corroboration": [],
-   "primaryDocumentRead": false,
-   "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
+   "status": "primary-read",
+   "claimedSource": "ISO 8062-4:2017, Table 2 (general dimensional tolerances S1-S15) + Annex B.1 (grade selection, long series)",
+   "grade": "standard-named",
+   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. The user supplied ISO 8062-4:2017 (32 pages; the text layer extracts per character, so every table was reconstructed by word position and spot-checked). Metallic permanent mould, Table B.1: light metal alloys S6-8, copper and zinc S7-9, grey/SG iron S7-9 - judged at the loosest of the printed band, capability computed at each feature's own dimension from Table 2. Steel, nickel and cobalt print '-' for permanent moulds and the rule abstains for them rather than borrowing a column. Table B.1 has no short-series permanent-mould column (the tooling is always iterated), so the production series does not move this rule. The Table 4-8 draft angles from the same document now sharpen the casting families' draft cutoffs (sharpen-only, at the part's own draw extent), and the NADCA draft formula was simultaneously GATED to the die-casting families it actually speaks for - before this it quietly sharpened sand and investment rules under a die-casting citation.",
+   "readOn": "2026-08-11"
   },
   "gdc-tolerance-capability": {
-   "status": "unaudited",
-   "claimedSource": "Casting tolerance guidance (family-specific)",
-   "grade": "industry-consensus",
-   "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
-   "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
-   "corroboration": [],
-   "primaryDocumentRead": false,
-   "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
+   "status": "primary-read",
+   "claimedSource": "ISO 8062-4:2017, Table 2 (general dimensional tolerances S1-S15) + Annex B.1 (grade selection, long series)",
+   "grade": "standard-named",
+   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. The user supplied ISO 8062-4:2017 (32 pages; the text layer extracts per character, so every table was reconstructed by word position and spot-checked). Metallic permanent mould, Table B.1: light metal alloys S6-8, copper and zinc S7-9, grey/SG iron S7-9 - judged at the loosest of the printed band, capability computed at each feature's own dimension from Table 2. Steel, nickel and cobalt print '-' for permanent moulds and the rule abstains for them rather than borrowing a column. Table B.1 has no short-series permanent-mould column (the tooling is always iterated), so the production series does not move this rule. The Table 4-8 draft angles from the same document now sharpen the casting families' draft cutoffs (sharpen-only, at the part's own draw extent), and the NADCA draft formula was simultaneously GATED to the die-casting families it actually speaks for - before this it quietly sharpened sand and investment rules under a die-casting citation.",
+   "readOn": "2026-08-11"
   },
   "sand-tolerance-capability": {
    "status": "primary-read",
-   "claimedSource": "SFSA Supplement 3 \"Dimensional Capabilities of Steel Castings\" (Steel Founders' Society of America), Tables 3.1/3.3/3.4",
+   "claimedSource": "SFSA Supplement 3 \"Dimensional Capabilities of Steel Castings\" (Steel Founders' Society of America), Tables 3.1/3.3/3.4 + ISO 8062-4:2017 Table 2 / Annexes B.1-B.2 (non-ferrous)",
    "grade": "standard-named",
-   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT for steel. The user supplied the supplement: the ISO 8062-1994 CT table is adopted as SFSA 2000 (statistical basis: 140,000+ features on production steel castings), with grade selection CT11-13 typical for a short production series (judged at CT13) and CT10-12 for a long one (judged at CT12). The mm table was verified against the printed inch table before wiring. The old flat 1.2 mm screen was TIGHTER than anything the tables promise for steel - CT13 never tabulates below 6 mm - meaning the screen passed bands no steel foundry could hold as-cast. Non-ferrous sand alloys keep the screening value: the CT value table is metal-independent in ISO 8062, but the grade selection for non-ferrous is not held.",
+   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT for steel. The user supplied the supplement: the ISO 8062-1994 CT table is adopted as SFSA 2000 (statistical basis: 140,000+ features on production steel castings), with grade selection CT11-13 typical for a short production series (judged at CT13) and CT10-12 for a long one (judged at CT12). The mm table was verified against the printed inch table before wiring. The old flat 1.2 mm screen was TIGHTER than anything the tables promise for steel - CT13 never tabulates below 6 mm - meaning the screen passed bands no steel foundry could hold as-cast. UPDATE 2026-08-11: non-ferrous sand alloys are now judged from ISO 8062-4:2017 (supplied and read): Table 2 S-values with Annex B.2 short-series grade selection (clay-bonded hand moulding, the looser binder column - light metal S11-13, grey/SG iron and copper S13-15) and Annex B.1 long-series hand-moulding bands (light metal S9-12, iron S11-14, copper S10-13), each judged at the loosest of the printed band. Zinc has no B.2 short-series sand column and refuses there; materials neither document tabulates (e.g. titanium) keep the screening value, and the finding says which document judged the part.",
    "readOn": "2026-08-11"
   },
   "inv-tolerance-capability": {
    "status": "primary-read",
-   "claimedSource": "SFSA Supplement 3 \"Dimensional Capabilities of Steel Castings\" (Steel Founders' Society of America), Tables 3.1/3.3",
+   "claimedSource": "SFSA Supplement 3 \"Dimensional Capabilities of Steel Castings\" (Steel Founders' Society of America), Tables 3.1/3.3 + ISO 8062-4:2017 Table 2 / Annex B.1 (non-steel)",
    "grade": "standard-named",
-   "finding": "RESOLVED for steel: investment castings CT5-7 (long production series only - investment tooling is always iterated), judged at CT7. The old 0.3 mm screen sat close to the CT5-7 values at small dimensions, so verdicts move little on small parts and become dimension-aware on large ones. Non-steel investment alloys keep the screen.",
+   "finding": "RESOLVED for steel: investment castings CT5-7 (long production series only - investment tooling is always iterated), judged at CT7. The old 0.3 mm screen sat close to the CT5-7 values at small dimensions, so verdicts move little on small parts and become dimension-aware on large ones. Non-steel investment alloys keep the screen. UPDATE 2026-08-11: non-steel investment alloys are now judged from ISO 8062-4:2017 (supplied and read): Annex B.1 tabulates S4-9 for every metal group by investment casting, judged at S9, the loosest - long series only, because the wax die is always iterated. The screening value survives only for materials neither document tabulates.",
    "readOn": "2026-08-11"
   },
   "sand-min-section": {

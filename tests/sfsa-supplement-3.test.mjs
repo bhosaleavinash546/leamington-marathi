@@ -139,15 +139,25 @@ test('steel PMI rows are judged each at their OWN dimension, worst row named', (
   assert.equal(m._sfsaSandTolerance.from, 'PMI');
 });
 
-test('aluminium keeps the screening band, and says so', () => {
+test('aluminium is now judged by ISO 8062-4, and materials neither standard tabulates keep the screen', () => {
+  // Light metal, sand, short series: Table B.2 gives S11-13, judged at S13 —
+  // whose tightest promise is 3 mm. The old 1.2 mm screen is gone for
+  // every metal group Annex B tabulates.
   const m = extractMeasures(casting('Aluminium A356 (cast)'), { material: 'Aluminium A356 (cast)', declaredToleranceMm: 1.0 });
-  assert.ok(m.sfsaSandToleranceMargin < 1, '1.0 vs the 1.2 screen fails');
-  assert.equal(m._sfsaSandTolerance.capabilityBandMm, 1.2);
-  assert.match(m._sfsaSandTolerance.basis, /screening/i);
-  assert.match(m._sfsaSandTolerance.basis, /steel castings only/i);
-  // Cast iron keeps ITS screen.
+  assert.ok(m.sfsaSandToleranceMargin < 1, `1.0 vs S13's 3 mm promise fails, got ${m.sfsaSandToleranceMargin}`);
+  assert.equal(m._sfsaSandTolerance.grade, 'S13');
+  assert.equal(m._sfsaSandTolerance.capabilityBandMm, 3);
+  assert.match(m._sfsaSandTolerance.basis, /ISO 8062-4/);
+  // Cast iron: B.2 grey iron S13-15, judged at S15 — tightest promise 5 mm.
   const iron = extractMeasures(casting('Cast Iron (Grey)'), { material: 'Cast Iron (Grey)', declaredToleranceMm: 0.8 });
-  assert.equal(iron._sfsaSandTolerance.capabilityBandMm, 1.0);
+  assert.equal(iron._sfsaSandTolerance.grade, 'S15');
+  assert.equal(iron._sfsaSandTolerance.capabilityBandMm, 5);
+  // Titanium is in neither document's tables — the screen survives for it,
+  // and the basis names both refusals.
+  const ti = extractMeasures(casting('Titanium Ti-6Al-4V'), { material: 'Titanium Ti-6Al-4V', declaredToleranceMm: 1.0 });
+  assert.equal(ti._sfsaSandTolerance.capabilityBandMm, 1.2);
+  assert.match(ti._sfsaSandTolerance.basis, /screening/i);
+  assert.match(ti._sfsaSandTolerance.basis, /ISO 8062-4/);
 });
 
 test('the sand tolerance rule fires end to end with the SFSA grade on steel', () => {
@@ -157,19 +167,22 @@ test('the sand tolerance rule fires end to end with the SFSA grade on steel', ()
   assert.equal(f.sourceStatus, 'standard-named');
   assert.match(f.source, /SFSA Supplement 3/);
   assert.match(f.measuredBasis, /DECLARED/);
-  // Aluminium still evaluates (screen path) but carries the screening source.
+  // Aluminium now evaluates against ISO 8062-4 and carries the standard's
+  // grade: a 2 mm band vs S13's 3 mm tightest promise FAILS — the screen
+  // used to wave it through at 1.2 mm.
   const al = runDfmRules(casting('Aluminium A356 (cast)'), 'sand-casting',
     { material: 'Aluminium A356 (cast)', declaredToleranceMm: 2 });
   const alF = [...al.findings, ...al.passed].find((x) => x.id === 'sand-tolerance-capability');
-  assert.ok(alF, 'aluminium keeps its screening verdict');
-  assert.equal(alF.status, 'pass', '2 mm vs the 1.2 screen passes');
-  assert.equal(alF.sourceStatus, 'industry-consensus');
+  assert.ok(alF, 'aluminium must still be judged');
+  assert.equal(alF.status, 'fail', '2 mm vs S13\'s 3 mm promise fails');
+  assert.equal(alF.sourceStatus, 'standard-named');
+  assert.match(alF.source, /ISO 8062-4/);
   // Nothing declared, no PMI -> NOT EVALUATED.
   const bare = runDfmRules(casting(STEEL), 'sand-casting', { material: STEEL });
   assert.ok(bare.notEvaluated.some((x) => x.id === 'sand-tolerance-capability'));
 });
 
-test('investment: CT7 capability for steel, screen for others', () => {
+test('investment: CT7 capability for steel (non-steel is ISO 8062-4\'s, tested in its own file)', () => {
   // CT7 tightest promise 0.74 mm: a 0.5 band fails, a 1.0 passes.
   const tight = extractMeasures(casting(STEEL), { material: STEEL, declaredToleranceMm: 0.5 });
   assert.ok(tight.sfsaInvToleranceMargin < 1);

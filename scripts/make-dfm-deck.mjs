@@ -38,7 +38,7 @@ const GATED = DFM_RULES.filter((r) => r.blocking).length;
 // Recorded by hand because running the suite inside the deck build would take
 // two minutes. Dated for the same reason the sweep is: a stale number should be
 // visible rather than quietly believed.
-const TESTS = 701;
+const TESTS = 716;
 const TESTS_DATE = '11 Aug 2026';
 
 // From `node benchmark/commodity-sweep.mjs`, recorded with the run date so a
@@ -595,7 +595,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
 
   s.addText('What we deliberately do NOT claim', { x: M, y: 4.68, w: 11, h: 0.36, fontSize: 17, bold: true, color: 'FFFFFF', fontFace: 'Cambria', margin: 0 });
   s.addText([
-    { text: `Of ${RULES} thresholds, ${PRIMARY_READ} now come from a reference we have read first-hand — up from 12 a week ago, after seven primary documents were read cover to cover (next slide). ${CONTESTED} are recorded as CONTESTED, where a primary source disagrees with the value we hold; the rest are unaudited industry consensus, and the register names each one.`, options: { breakLine: true } },
+    { text: `Of ${RULES} thresholds, ${PRIMARY_READ} now come from a reference we have read first-hand — up from 12 a week ago, after eight primary documents were read cover to cover (next slide). ${CONTESTED} are recorded as CONTESTED, where a primary source disagrees with the value we hold; the rest are unaudited industry consensus, and the register names each one.`, options: { breakLine: true } },
     { text: 'That register ships with the product and there is a command that prints it. A number nobody has checked is worth knowing about before a supplier finds it.', options: {} },
   ], { x: M, y: 5.12, w: 11.8, h: 1.0, fontSize: 12.5, color: 'CBD5E1', fontFace: 'Calibri', lineSpacing: 21, margin: 0 });
   footer(s);
@@ -604,11 +604,11 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     '',
     'Start top left. A hundred and ninety-nine out of a hundred and ninety-nine on the geometry accuracy gate. Those are test shapes where we know the right answer by arithmetic — we built a cone with exactly three degrees of draft, so the engine must say three degrees. If it says two point eight, the build fails and the code does not ship. That runs automatically on every change.',
     '',
-    'Seven hundred and one automated tests, ninety-three real-shaped parts swept through the full production path, and zero numbers written by AI.',
+    'Seven hundred and sixteen automated tests, ninety-three real-shaped parts swept through the full production path, and zero numbers written by AI.',
     '',
     'Now the bottom half. When I first showed this slide, this was the weakest part of the tool — out of the whole rule book, only five limits came from a document we had personally read. I said so at the time.',
     '',
-    'That number is now twenty-nine, and the reason is simple: over the last week we obtained and read seven primary reference books cover to cover — the actual NADCA standards for die casting, the Steel Founders\' Society handbooks for steel castings, the DuPont and Covestro design guides for plastics, and the die-design textbook for sheet metal. The next slide shows exactly what each one gave us.',
+    'That number is now thirty-one, and the reason is simple: over the last week we obtained and read eight primary documents cover to cover — the actual NADCA standards for die casting, the Steel Founders\' Society handbooks for steel castings, the DuPont and Covestro design guides for plastics, the die-design textbook for sheet metal, and now ISO 8062-4, the international tolerance standard for castings. The next slide shows exactly what each one gave us.',
     '',
     'The rest of the thresholds are still industry consensus, and the register still names every one of them, with a command that prints it. Two are recorded as CONTESTED, where a source we trust disagrees with the number we hold.',
     '',
@@ -618,14 +618,14 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
 
 // ── 11 · The standards, read first-hand ─────────────────────────────────────
 //
-// Added after the week in which seven primary reference documents were
+// Added after the week in which eight primary reference documents were
 // obtained and turned into engine code. Every row names the document, what it
 // unlocked, and — in the bottom band — a verdict that CHANGED because a
-// primary source was read. The 12 → 29 figure is counted from the register,
+// primary source was read. The 12 → N figure is counted from the register,
 // not remembered.
 {
   const s = pres.addSlide(); s.background = { color: PAPER };
-  heading(s, 'The rule book\'s sources', 'Seven reference books, read cover to cover');
+  heading(s, 'The rule book\'s sources', 'Eight primary documents, read cover to cover');
 
   const BOOKS = [
     ['NADCA Product Design for Die Casting, 7th ed.', 'Draft computed from the book\'s own formula at each feature\'s depth · fillets · bosses · cored holes'],
@@ -635,12 +635,14 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     ['DuPont Engineering Polymers, Module I', 'Moulding draft per resin and draw depth · fillet knee · boss and blind-core limits'],
     ['Covestro Part and Mold Design', 'PC-family ribs, draft and fillets from the resin maker\'s own tables — read from page images'],
     ['Boljanovic, Sheet Metal Forming Processes', 'Press force, strip utilisation, bend allowance and draw operations, equation by equation'],
+    ['ISO 8062-4:2017 — General tolerances for castings', 'Non-ferrous casting tolerances per metal group · draft tables · the standard\'s own ‘-’ cells refuse'],
   ];
+  // Eight rows in the same vertical span the seven had: tighter pitch.
   BOOKS.forEach(([t, d], i) => {
-    const y = 1.66 + i * 0.545;
-    if (i % 2 === 0) s.addShape(pres.ShapeType.rect, { x: M, y: y - 0.05, w: 8.1, h: 0.54, fill: { color: PANEL }, line: { color: PANEL } });
-    s.addText(t, { x: M + 0.14, y: y - 0.02, w: 7.9, h: 0.26, fontSize: 10.5, bold: true, color: INK, fontFace: 'Calibri', margin: 0 });
-    s.addText(d, { x: M + 0.14, y: y + 0.22, w: 7.9, h: 0.26, fontSize: 9.5, color: BODY, fontFace: 'Calibri', margin: 0 });
+    const y = 1.66 + i * 0.485;
+    if (i % 2 === 0) s.addShape(pres.ShapeType.rect, { x: M, y: y - 0.05, w: 8.1, h: 0.48, fill: { color: PANEL }, line: { color: PANEL } });
+    s.addText(t, { x: M + 0.14, y: y - 0.03, w: 7.9, h: 0.24, fontSize: 10, bold: true, color: INK, fontFace: 'Calibri', margin: 0 });
+    s.addText(d, { x: M + 0.14, y: y + 0.19, w: 7.9, h: 0.24, fontSize: 9, color: BODY, fontFace: 'Calibri', margin: 0 });
   });
 
   stat(s, 9.0, 1.66, 3.7, `12 → ${PRIMARY_READ}`, 'PRIMARY-READ THRESHOLDS', GREEN, 'In one week. Counted from the register, not remembered');
@@ -655,11 +657,11 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   s.addNotes([
     'This slide is the answer to the weakness I admitted on the previous slide, so let me walk you through what actually happened.',
     '',
-    'Over the last week we obtained seven of the reference books that the industry actually runs on, and read them cover to cover. Not summaries of them — the books themselves. The two NADCA documents for die casting, including the 2021 specification standard that carries the tolerance tables. The two Steel Founders\' Society handbooks for steel castings. The DuPont and Covestro design guides, which are what the plastics industry designs against. And the die-design textbook for sheet metal.',
+    'Over the last week we obtained eight of the reference documents that the industry actually runs on, and read them cover to cover. Not summaries of them — the documents themselves. The two NADCA documents for die casting, including the 2021 specification standard that carries the tolerance tables. The two Steel Founders\' Society handbooks for steel castings. The DuPont and Covestro design guides, which are what the plastics industry designs against. The die-design textbook for sheet metal. And now ISO 8062-4, the international tolerance standard for castings — which finally covers the non-ferrous alloys: aluminium gravity and low-pressure castings, cast iron, copper and zinc, each judged in its own printed column. Where the standard prints a dash — steel in a permanent mould, for instance — the tool now abstains rather than borrowing a neighbouring column.',
     '',
     'Each row on the left tells you what came out of each book. But three things on the right matter more than the list.',
     '',
-    'FIRST, the count of thresholds we have personally verified against a primary document went from twelve to twenty-nine in that week. That number is counted live from the register when this deck is generated — I did not type it.',
+    'FIRST, the count of thresholds we have personally verified against a primary document went from twelve to thirty-one in that week. That number is counted live from the register when this deck is generated — I did not type it.',
     '',
     'SECOND — and this is a discipline point — before any formula from a book was wired in, it was tested against the book\'s OWN printed worked examples. The NADCA tolerance standard prints an example: an aluminium dimension of five inches should come out at plus or minus point three five millimetres. Our code has to reproduce that exact number or the tests fail. That catches misread tables — and it caught two real mistakes before they shipped, including one where a rounding error would have charged an extra inch of tolerance.',
     '',
@@ -849,7 +851,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   const items = [
     ['1', 'Validate against one real part', 'A production part, its quote, and the supplier\'s own DFM markup. This is what converts "internally consistent" into "accurate" — and it is the only item on this list I cannot do alone.', GOLD],
     ['2', 'Native CAD input', 'CATIA, NX and JT. Today we read STEP and IGES, which means a translation step and a lost PMI tolerance every time.', NAVY_MID],
-    ['3', 'Buy the two missing standards', 'DIN 16742 for moulded-part tolerances and ISO 8062 for non-ferrous castings. Seven books are already in; these two close the tolerance story, and both are catalogue purchases.', NAVY_MID],
+    ['3', 'Buy the one missing standard', 'DIN 16742 for moulded-part tolerances. Eight documents are already in — ISO 8062-4 arrived and now judges the non-ferrous castings — and this last one closes the tolerance story. A catalogue purchase.', NAVY_MID],
     ['4', 'Company standards, plant-wide', 'Already built and org-scoped; needs the plant\'s own values loaded to be worth anything.', NAVY_MID],
   ];
   items.forEach(([n, t, d, c], i) => {
@@ -868,7 +870,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
     '',
     'NUMBER TWO is reading native CAD — CATIA, NX, JT. Today every file goes through a translation to STEP and we lose the tolerance information on the way. That is why you saw tolerance rules abstaining on the coverage slide.',
     '',
-    'NUMBER THREE is a small purchase rather than a project. Seven reference books are already read and coded. The two that remain are DIN 16742, which carries the tolerance tables for moulded plastic parts, and ISO 8062 for aluminium sand and gravity castings. Both are standards you simply buy. The register names them as the exact blockers, so the money maps directly onto rules that start speaking.',
+    'NUMBER THREE is a small purchase rather than a project. Eight reference documents are already read and coded — ISO 8062 for the non-ferrous castings arrived this week and is already wired in. The one that remains is DIN 16742, which carries the tolerance tables for moulded plastic parts. It is a standard you simply buy. The register names it as the exact blocker, so the money maps directly onto rules that start speaking.',
     '',
     'NUMBER FOUR is loading our own plant standards. The mechanism is already built and it already overrides the textbook where we set a value. It just needs our actual numbers put into it, which is a conversation with manufacturing rather than a coding job.',
     '',

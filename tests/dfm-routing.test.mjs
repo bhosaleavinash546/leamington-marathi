@@ -1043,11 +1043,14 @@ test('a declared tolerance carries its basis onto the finding, and only that fin
   for (const f of [...r.findings, ...r.passed]) {
     if (!TOLERANCE_MEASURES.has(f.measure)) assert.equal(f.measuredBasis, undefined, `${f.id} carries a stray basis`);
   }
-  // Families NOT covered by #402 still evaluate the declared band directly.
+  // Families NOT covered by #402 are now judged by ISO 8062-4's permanent-
+  // mould capability — the declared band flows through the same provenance
+  // contract: the finding says it was DECLARED, and names the standard.
   const lp = runDfmRules(geo, 'lpdc', { material: 'Aluminium A356 (cast)', declaredToleranceMm: 0.05 });
-  const lpTol = [...lp.findings, ...lp.passed].find(f => f.measure === 'tightestToleranceMm');
-  assert.ok(lpTol, 'lpdc keeps its screening tolerance rule until ISO 8062-3 is held');
+  const lpTol = [...lp.findings, ...lp.passed].find(f => f.measure === 'iso8062PmToleranceMargin');
+  assert.ok(lpTol, 'lpdc now judges the declared band against ISO 8062-4 Table 2');
   assert.match(lpTol.measuredBasis, /DECLARED/);
+  assert.match(lpTol.measuredBasis, /ISO 8062-4/);
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
