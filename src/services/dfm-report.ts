@@ -155,6 +155,18 @@ export interface DfmReportData {
   noDfmRulesReason?: string | null;
   /** Company standards in force for this analysis, keyed by rule id. */
   ruleOverrides?: Record<string, { enabled: boolean; threshold?: number | number[]; note?: string }> | null;
+  /**
+   * Where the chosen route's money goes — computeShouldCost's breakdown,
+   * largest driver first, with the physical levers behind the rows.
+   */
+  costDrivers?: {
+    process: string; totalEur: number;
+    rows: Array<{ driver: string; eur: number; pct: number }>;
+    dominant: { driver: string; eur: number; pct: number } | null;
+    inputMassKg: number | null; cycleSecPerPart: number | null;
+    scrapPct: number | null; toolingTotalEur: number | null;
+    basis: string;
+  } | null;
   /** Every viable route for this material, judged and priced from one measurement. */
   routes?: {
     routes: Array<{
@@ -901,6 +913,12 @@ export function exportDfmPdf(
 
       {
         mono(6.2); setText(doc, MUT);
+    // Say what the colours MEAN, or the tinted faces read as decoration. The
+    // paint is the finding itself — the B-rep faces the engine measured —
+    // tinted by severity; the numbered ring marks the worst instance.
+    mono(6.6); setText(doc, MUT);
+    doc.text(fit(doc, 'TINTED FACES ARE THE MEASURED FEATURE ITSELF — RED HIGH, AMBER MEDIUM, TEAL LOW. THE RING MARKS THE WORST INSTANCE.', CW), ML, y);
+    y += 4.5;
         doc.text('WHAT IS MARKED', ML + 7, y);
         doc.text('MEASURED AGAINST ITS LIMIT', ML + 75, y);
         doc.text('WHICH INSTANCE', ML + 139, y);
@@ -1469,6 +1487,57 @@ export function exportDfmPdf(
     }
   }
 
+  // ── Where the money goes ──────────────────────────────────────────────────
+  //
+  // The first question a cost engineer asks of any part, and until this band
+  // existed the report priced findings and priced alternatives without ever
+  // showing the cost structure of the route in hand. Names the dominant driver
+  // in a sentence, then the full stack — because "material is 35% of this part"
+  // is the context every priced finding below it is read against.
+  if (data.costDrivers?.rows?.length) {
+    const cd = data.costDrivers;
+    ensure(46);
+    sectionTitle('Cost drivers', `Where the money goes at ${pdfSafe(cd.process)}`);
+    if (cd.dominant) {
+      const DRIVER_WORDS: Record<string, string> = {
+        material: 'material — the metal bought, including scrap and yield', machine: 'machine time',
+        labour: 'direct labour', setup: 'setup and changeover', finishing: 'finishing operations',
+        tooling: 'tooling amortisation', overhead: 'plant overhead', commercial: 'logistics and packaging',
+        sgaProfit: 'supplier SG&A and profit',
+      };
+      wrapped(`The largest single driver is ${DRIVER_WORDS[cd.dominant.driver] ?? cd.dominant.driver} at `
+        + `EUR ${cd.dominant.eur.toFixed(2)} per part — ${cd.dominant.pct.toFixed(0)}% of the `
+        + `EUR ${cd.totalEur.toFixed(2)} piece price. That is the lever the findings below should be read against.`,
+        10, INK, CW, 4.4, 'bold');
+      y += 3;
+    }
+    // A horizontal bar per driver, drawn to a common scale, largest first.
+    const maxEur = Math.max(...cd.rows.map(r => r.eur), 0.01);
+    const BAR_W = 96;
+    for (const r of cd.rows) {
+      ensure(6.4);
+      sans(8.6); setText(doc, INK);
+      doc.text(fit(doc, r.driver === 'sgaProfit' ? 'SG&A + profit' : r.driver, 34), ML, y);
+      setFill(doc, PANEL); doc.rect(ML + 36, y - 3, BAR_W, 4, 'F');
+      setFill(doc, r === cd.rows[0] ? GOLD : NAVY);
+      doc.rect(ML + 36, y - 3, Math.max(0.8, BAR_W * (r.eur / maxEur)), 4, 'F');
+      mono(7.6); setText(doc, BODY);
+      doc.text(`EUR ${r.eur.toFixed(2)}`, ML + 36 + BAR_W + 4, y, { align: 'left' });
+      doc.text(`${r.pct.toFixed(1)}%`, PW - MR, y, { align: 'right' });
+      y += 6;
+    }
+    y += 2;
+    const levers = [
+      cd.inputMassKg != null ? `buy-to-fly ${cd.inputMassKg.toFixed(2)} kg in` : null,
+      cd.cycleSecPerPart != null ? `${Math.round(cd.cycleSecPerPart)} s cycle` : null,
+      cd.scrapPct != null ? `${cd.scrapPct}% scrap` : null,
+      cd.toolingTotalEur != null ? `EUR ${Math.round(cd.toolingTotalEur).toLocaleString('en-GB')} tooling investment` : null,
+    ].filter(Boolean).join('  ·  ');
+    if (levers) { mono(7.2); setText(doc, MUT); doc.text(fit(doc, `THE LEVERS BEHIND THE ROWS:  ${levers}`, CW), ML, y); y += 5; }
+    wrapped(cd.basis, 8, MUT, CW, 3.8, 'italic');
+    y += 4;
+  }
+
   // ── Alternative routes ────────────────────────────────────────────────────
   //
   // This section USED TO COME FIRST, and a reader opening the report met nine
@@ -1854,6 +1923,24 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
   const routes = data.routes?.routes ?? [];
   if (routes.length) {
     sheets.push({
+      name: 'Cost drivers',
+      title: data.costDrivers
+        ? `Where the money goes — ${data.costDrivers.process} at EUR ${data.costDrivers.totalEur.toFixed(2)}/part`
+        : 'Cost drivers',
+      subtitle: data.costDrivers?.basis ?? 'Not available: the cost engine needs a material, a process and a computable mass.',
+      headerRow: 0,
+      zebra: true,
+      colWidths: [24, 14, 18, 8],
+      numFmt: { 1: '#,##0.00', 2: '0.0"%"' },
+      rows: [
+        ['Driver', 'EUR / part', '% of piece price', 'Rank'],
+        ...(data.costDrivers?.rows ?? []).map((r, i) => [
+          r.driver === 'sgaProfit' ? 'SG&A + profit' : r.driver,
+          Number(r.eur.toFixed(2)), Number(r.pct.toFixed(1)), i + 1,
+        ]),
+      ],
+    },
+    {
       name: 'Routes',
       title: `Alternative routes — ${routes.length} viable for ${data.material ?? 'this material'}`,
       subtitle: (data.routes?.chosenProcess

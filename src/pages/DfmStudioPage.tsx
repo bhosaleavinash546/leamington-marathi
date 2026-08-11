@@ -422,6 +422,31 @@ export default function DfmStudioPage() {
     // them per-view from whatever happened to be visible would renumber the same
     // undercut between two pictures of the same part.
     const numberOf = new Map(annotations.map((a, i) => [a.id, i + 1]));
+
+    // ── PAINT THE ACTUAL FEATURE, not just a ring above it ────────────────
+    //
+    // The interactive page has always painted a finding's faces when it is
+    // CLICKED — and the export path never called that code, so every PDF
+    // shipped with ring markers floating over untinted geometry. A reader was
+    // told "the undercut is here" and shown an arrow, when the engine knows
+    // exactly which B-rep faces it measured. The report is the artefact a
+    // supplier acts on, so it gets the same evidence the screen does: every
+    // finding's faces tinted by severity, in every captured view, and cleared
+    // afterwards so the live viewport returns to whatever the user had.
+    const SEV_TINT: Record<string, number> = { high: 0xdc2626, medium: 0xf59e0b, low: 0x0d9488, info: 0x64748b };
+    // The page's global undercut/zero-draft wash (blue) would sit under the
+    // severity tints and read as a fourth, unexplained colour in print. The
+    // export clears it and the finally below restores the user's selection.
+    await v.highlightFaces([]);
+    const paintedLayers: string[] = [];
+    for (const sev of ['low', 'medium', 'high'] as const) {   // high last, so it wins overlaps
+      const ids = annotations.filter(a => (a.severity ?? 'info') === sev).flatMap(a => a.faceIds ?? []);
+      if (!ids.length) continue;
+      const layer = `report-${sev}`;
+      await v.paintFaces(layer, ids, { colour: SEV_TINT[sev], opacity: 0.75 });
+      paintedLayers.push(layer);
+    }
+
     const shoot = async (view: 'iso' | 'front' | 'top' | 'back' | 'left' | 'right' | 'bottom') => {
       const dataUri = await v.snapshot({ view, width: W, height: H, clean: true });
       if (!dataUri) return null;
@@ -505,6 +530,10 @@ export default function DfmStudioPage() {
     } catch (e) {
       return { figures: [], error: e instanceof Error ? e.message : 'The 3D view could not be captured.' };
     } finally {
+      // The report's paint must not outlive the capture: the live viewport goes
+      // back to whatever the user had selected before they pressed Export.
+      for (const layer of paintedLayers) { try { await v.clearLayer(layer); } catch { /* viewer gone */ } }
+      try { await v.highlightFaces(highlightIds ?? []); } catch { /* viewer gone */ }
       await v.setView('iso').catch(() => {});
     }
   }

@@ -368,6 +368,24 @@ export const DFM_RESULT_FULL = {
     'hpdc-core-ld': { enabled: true, threshold: 10, note: 'our tool room will not run a core pin past 10 L/D' },
     'hpdc-internal-radius': { enabled: false },
   },
+  costDrivers: {
+    process: 'Die Casting (Aluminium)',
+    totalEur: 6.47,
+    rows: [
+      { driver: 'material', eur: 2.27, pct: 35.1 },
+      { driver: 'machine', eur: 1.12, pct: 17.3 },
+      { driver: 'tooling', eur: 0.99, pct: 15.4 },
+      { driver: 'sgaProfit', eur: 0.69, pct: 10.7 },
+      { driver: 'overhead', eur: 0.37, pct: 5.8 },
+      { driver: 'setup', eur: 0.31, pct: 4.7 },
+      { driver: 'labour', eur: 0.29, pct: 4.6 },
+      { driver: 'commercial', eur: 0.27, pct: 4.3 },
+      { driver: 'finishing', eur: 0.14, pct: 2.2 },
+    ],
+    dominant: { driver: 'material', eur: 2.27, pct: 35.1 },
+    inputMassKg: 1.43, cycleSecPerPart: 40, scrapPct: 5, toolingTotalEur: 141600,
+    basis: 'computeShouldCost on the chosen route — the same engine that prices the alternatives table, so the rows reconcile.',
+  },
   routes: {
     // The route the reader is standing on. The fixture carries one so the
     // report's "your route / alternatives" framing is exercised, and so a

@@ -22,7 +22,7 @@ import { priceFindings, summarisePricedImpact, formingContent } from '../dfm-cos
 import { DFM_RULES, PROCESS_FAMILIES, UNWRITTEN_RULES } from '../dfm-rule-catalogue.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
 import { TIME_MODEL } from '../dfa-time-model.mjs';
-import { MATERIALS, REGIONS } from '../costing-engine.mjs';
+import { MATERIALS, REGIONS, computeShouldCost } from '../costing-engine.mjs';
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 
@@ -650,6 +650,39 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
       // one. A retuned threshold that leaves no trace is indistinguishable from
       // a published guideline.
       ruleOverrides: ruleOpts.overrides ?? null,
+      // ── WHERE THE MONEY GOES on the route the user actually chose ────────
+      //
+      // The tool priced FINDINGS and priced ALTERNATIVE ROUTES, and never once
+      // showed the cost structure of the route in hand — which is the first
+      // thing a cost engineer asks of any part: what is the biggest adder,
+      // material or machine or tooling? The engine computed this all along;
+      // it just never left the routes table. Sorted largest-first so the page
+      // can name the dominant driver without arithmetic.
+      costDrivers: (() => {
+        const proc = req.body?.costProcess || req.body?.process;
+        if (!material || !proc || !(weightKg > 0)) return null;
+        try {
+          const c = computeShouldCost(
+            { material, process: proc, weightKg, annualVolume: numOr(req.body?.annualVolume, 50000), region: req.body?.region || 'Germany' },
+            {}, null, null);
+          const rows = Object.entries(c.breakdown || {})
+            .map(([k, v]) => ({ driver: k, eur: v.value, pct: v.pct }))
+            .sort((a, b) => b.eur - a.eur);
+          return {
+            process: proc,
+            totalEur: c.totalShouldCost,
+            rows,
+            dominant: rows[0] ?? null,
+            // The physical levers behind the rows, so "material is 35%" can be
+            // followed by WHY: buy-to-fly mass, cycle seconds, scrap.
+            inputMassKg: c.drivers?.inputMassKg ?? null,
+            cycleSecPerPart: c.drivers?.cycleSecPerPart ?? null,
+            scrapPct: c.drivers?.scrapPct ?? null,
+            toolingTotalEur: c.drivers?.toolingTotal ?? null,
+            basis: 'computeShouldCost on the chosen route — the same engine that prices the alternatives table, so the rows reconcile.',
+          };
+        } catch { return null; }
+      })(),
       // ── THE SHEET-FORMING FIGURES ────────────────────────────────────────
       //
       // Press tonnage, strip utilisation, bend allowance and the draw-stage

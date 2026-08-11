@@ -38,6 +38,9 @@ export interface CadViewerRef {
                  axis?: Parameters<CADViewerHandle['sectionThrough']>[1]): Promise<void>;
   paintFaces(layer: string, faceIds: Iterable<number>,
              style?: Parameters<CADViewerHandle['paintFaces']>[2]): Promise<void>;
+  /** The default (selection-blue) layer the `highlightFaceIds` prop also paints.
+   *  Exposed so the report capture can suppress the wash and restore it. */
+  highlightFaces(faceIds: Iterable<number>): Promise<void>;
   clearLayer(layer: string): Promise<void>;
   clearAllLayers(): Promise<void>;
   setView(name: Parameters<CADViewerHandle['setView']>[0]): Promise<void>;
@@ -123,6 +126,7 @@ const CadViewer3D = forwardRef<CadViewerRef, CadViewer3DProps>(function CadViewe
       async snapshot(opts) { const h = await settled(); return h ? h.snapshot(opts) : null; },
       async sectionThrough(anchor, axis) { (await settled())?.sectionThrough(anchor, axis); },
       async paintFaces(layer, ids, style) { (await settled())?.paintFaces(layer, ids, style); },
+      async highlightFaces(ids) { (await settled())?.highlightFaces(ids); },
       async clearLayer(layer) { (await settled())?.clearLayer(layer); },
       async clearAllLayers() { (await settled())?.clearAllLayers(); },
       async setView(name) { (await settled())?.setView(name); },
