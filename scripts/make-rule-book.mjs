@@ -160,6 +160,54 @@ function shortThreshold(rule, threshold) {
   return `${op} ${numText(threshold)}`;
 }
 
+// ── The same test, in plain words ───────────────────────────────────────────
+//
+// One sentence per rule, GENERATED from the rule itself so 247 of them can
+// never drift from the catalogue. Two parts: a friendly name for the
+// measurement (falling back to a de-camelled measure id, which stays honest
+// for measures nobody has named yet), and a comparator template. Margin-type
+// measures — unit starting "x" — get the computed-limit phrasing instead,
+// because their threshold of 1.0 is not a number at all: it is "whatever the
+// named table promises for YOUR part".
+const MEASURE_PLAIN = {
+  wallP5Mm: 'the thinnest wall on the part',
+  wallP50Mm: 'the typical wall thickness',
+  wallP95Mm: 'the thickest wall on the part',
+  wallSpreadRatio: 'how uneven the walls are (spread against the typical wall)',
+  wallAreaBelowDraftPct: 'how much wall area has less taper than the process needs',
+  undercutFaceCount: 'how many regions the mould halves cannot release',
+  maxRibThicknessToWall: 'the fattest rib, compared with the wall it stands on',
+  minRibThicknessToWall: 'the thinnest rib, compared with the wall it stands on',
+  maxRibHeightToWall: 'the tallest rib, compared with the wall it stands on',
+  maxBossHeightToDia: 'the tallest boss, compared with its own diameter',
+  maxHoleDepthToDia: 'the deepest hole, compared with its diameter',
+  maxBlindHoleDepthToDia: 'the deepest BLIND hole, compared with its diameter',
+  tightestToleranceMm: 'the tightest tolerance band asked for on the drawing',
+  minInternalCornerRadiusMm: 'the sharpest internal corner',
+  maxPocketDepthToWidth: 'the deepest pocket, compared with its width',
+  unreachableAreaPct: 'how much of the surface a cutting tool cannot reach',
+  bendRadiusToThickness: 'the tightest bend, compared with the sheet thickness',
+  minHoleDiaToThickness: 'the smallest hole, compared with the sheet thickness',
+  overhangAreaBelowDeg: 'how much surface overhangs beyond the printable angle',
+};
+const deCamel = (m) => m.replace(/Mm$/, ' (mm)').replace(/Pct$/, ' (%)')
+  .replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+
+function plainWords(rule) {
+  const isMargin = typeof rule.unit === 'string' && rule.unit.startsWith('x ');
+  if (isMargin) {
+    const what = rule.unit.slice(2);
+    return `In plain words: the limit here is not a fixed number - the engine works out ${what} for YOUR part (its own size, alloy or resin, and declared inputs) from the source below, and 1.0 means exactly what that table promises. Above 1.0 the part is inside the standard's capability; below it, the drawing is asking for more than the process can hold.`;
+  }
+  const what = MEASURE_PLAIN[rule.measure] || deCamel(rule.measure);
+  const u = rule.unit ? ` ${rule.unit}` : '';
+  if (rule.compare === 'between' && Array.isArray(rule.threshold)) {
+    return `In plain words: the engine measures ${what}; the part passes when it is between ${numText(rule.threshold[0])} and ${numText(rule.threshold[1])}${u}.`;
+  }
+  const dir = rule.compare === 'gte' || rule.compare === 'gt' ? 'at least' : 'no more than';
+  return `In plain words: the engine measures ${what}; the part passes when it is ${dir} ${numText(rule.threshold)}${u}.`;
+}
+
 const GRADE_LABEL = {
   'standard-named': 'Named standard, not read first-hand',
   'industry-consensus': 'Industry consensus, no primary source audited',
@@ -337,11 +385,38 @@ function build(index) {
 
   wrapped('WHAT THIS BOOK IS NOT', 8, GOLD, CW, 4.6, 'bold');
   y += 1;
-  wrapped(`It is not a design standard. Most of these thresholds are widely-published practice rather than a clause anyone here has read in the original document, and ${Object.values(AUDIT).filter((a) => a.status === 'contested').length} are actively contested - those are named in Appendix B. Where your plant has its own number, it outranks everything in this book, and the tool lets you set it. It is also not a complete list of what matters: Appendix A sets out ${UNWRITTEN_RULES.length} things the engine deliberately does not claim to check.`, 9, BODY, CW, 4.4);
+  wrapped(`It is not a design standard - but it now leans on several. ${Object.values(AUDIT).filter((a) => a.status === 'primary-read').length} thresholds have been verified against a primary document read cover to cover (the seven books below), each formula tested against that book's own printed worked examples before it was wired in. The rest are widely-published practice that nobody here has yet checked against an original clause, and ${Object.values(AUDIT).filter((a) => a.status === 'contested').length} are actively contested - all named in Appendix B. Where your plant has its own number, it outranks everything in this book, and the tool lets you set it. It is also not a complete list of what matters: Appendix A sets out ${UNWRITTEN_RULES.length} things the engine deliberately does not claim to check.`, 9, BODY, CW, 4.4);
   y += 9;
 
+  // The primary documents, named on the cover. STATIC by design - extend this
+  // list when the next document is read; the per-rule SOURCE lines remain the
+  // live truth about which rule rests on which page.
+  wrapped('READ FIRST-HAND - THE PRIMARY DOCUMENTS BEHIND THE STRONGEST RULES', 8, GOLD, CW, 4.6, 'bold');
+  y += 2.5;
+  for (const [name, scope] of [
+    ['NADCA Product Design for Die Casting, 7th ed. (2015)', 'die-casting draft formula, fillets, bosses, cored holes'],
+    ['NADCA #402 Product Specification Standards (2021)', 'die-casting tolerance capability, computed per dimension and grade'],
+    ['SFSA Steel Castings Handbook, Supplement 1', 'steel casting design - rib neutrality, junction fillets, minimum section'],
+    ['SFSA Supplement 3 - Dimensional Capabilities of Steel Castings', 'steel casting tolerances (SFSA 2000 CT grades), machining allowance'],
+    ['DuPont Engineering Polymers, General Design Principles, Module I', 'moulding draft per resin, fillets, bosses, blind cores'],
+    ['Covestro (Bayer) Part and Mold Design', 'PC-family ribs, draft, fillets, undercut stripping limits'],
+    ['Boljanovic, Sheet Metal Forming Processes and Die Design', 'press force, strip utilisation, bend allowance, draw operations'],
+  ]) {
+    ensure(8);
+    sans(8.6, 'bold'); setText(INK);
+    doc.text(fit(name, CW), ML, y);
+    y += 3.9;
+    sans(8); setText(MUT);
+    doc.text(fit(scope, CW), ML, y);
+    y += 4.6;
+  }
+  y += 3;
+
   // The six commodity groups, so a reader can find their own parts on the cover
-  // rather than working it out from the contents page.
+  // rather than working it out from the contents page. The heading must carry
+  // at least its first group with it — an orphan heading at a page foot reads
+  // as an empty section.
+  ensure(24);
   wrapped('THE SIX COMMODITY GROUPS', 8, GOLD, CW, 4.6, 'bold');
   y += 2.5;
   for (const c of COMMODITIES) {
@@ -384,6 +459,13 @@ function build(index) {
     y += 1.6;
   }
   y += 4;
+
+  wrapped('Some limits are computed, not constant', 10, INK, CW, 4.8, 'bold');
+  y += 1.5;
+  wrapped('Where a rule\'s unit begins with "x" - "x SFSA 2000 capability", "x S-4A-1 capability", "x required fillet" - the number 1.0 is not the limit itself. The engine works out the real limit for YOUR part from the named table: the tolerance band the standard promises at that feature\'s own dimension and your declared production series, the draft angle the resin maker prints for your resin at the part\'s own draw depth, the fillet radius that suits the wall\'s own thickness. The finding then prints both the computed requirement and the table it came from. Read 1.0 as "exactly what the standard promises" - above it you are inside the process\'s capability, below it the drawing is asking for more than the book says the process can hold.', 8.8, BODY, CW, 4.2);
+  y += 3;
+  wrapped('This is also why the same part can pass as one material and fail as another: the drawing did not change, but the table the limit comes from did.', 8.8, BODY, CW, 4.2);
+  y += 6;
 
   wrapped('Anatomy of an entry', 10, INK, CW, 4.8, 'bold');
   y += 2;
@@ -586,6 +668,7 @@ function build(index) {
    */
   function entryHeight(r) {
     let h = 4.6 + 13.4;                                            // title + test panel
+    h += measure(plainWords(r), 7.8, IW, 3.7) + 1.8;               // the plain-words line
     h += measure(r.rationale, 8.5, IW, 4.05) + 1.6;
     sans(8.5, 'bold');
     h += Math.max(1, doc.splitTextToSize(pdfSafe(r.fix), IW - 12).length) * 4.05 + 1.6;
@@ -629,6 +712,11 @@ function build(index) {
     ].filter(Boolean).join('   ·   ');
     doc.text(fit(flags, CW - 15), ML + 12, y + 5.6);
     y += 13.4;
+
+    // THE SAME TEST IN PLAIN WORDS — generated from the rule, so it cannot
+    // disagree with the grey line above it.
+    wrapped(plainWords(r), 7.8, TEAL, IW, 3.7, 'italic', IX);
+    y += 1.8;
 
     wrapped(r.rationale, 8.5, BODY, IW, 4.05, 'normal', IX);
     y += 1.6;
