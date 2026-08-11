@@ -718,7 +718,10 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
         // should carry, the worst bore and what it needed at its own depth, the
         // fillet requirement, and the skin the machining stock has to respect.
         for (const k of ['_nadcaDraft', '_nadcaCoredHole', '_nadcaFillet', '_nadcaBoss', '_nadcaSkin', '_nadcaRoughness',
-          '_nadca402Summary', '_nadca402Tolerance', '_nadca402Flatness']) {
+          '_nadca402Summary', '_nadca402Tolerance', '_nadca402Flatness',
+          // The SFSA steel-casting figures, same contract: what the handbook
+          // asks of THIS part, printed whether or not a rule fired.
+          '_sfsaMinSection', '_sfsaJunctionFillet', '_sfsaRibNeutrality', '_sfsaBoss', '_sfsaCoreDia']) {
           if (m[k]) out[k.slice(1)] = m[k];
         }
         if (m._nadcaBasis) out.nadcaUnavailable = m._nadcaBasis;

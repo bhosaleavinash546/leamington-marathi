@@ -19,6 +19,10 @@ import {
   minWallForAlloyMm,
 } from './nadca-die-casting.mjs';
 import { linearToleranceMm, partingLineToleranceMm, flatnessToleranceMm } from './nadca-402.mjs';
+import {
+  castSteelGroupFor, minSectionMm, junctionFilletMm, ribNeutralHeightLimit,
+  BOSS, minCoreDiaMm,
+} from './sfsa-steel-casting.mjs';
 import { MATERIALS } from './costing-engine.mjs';
 import {
   minBendRadiusMm, maxBendRadiusMm, springback, minPunchedHoleMm,
@@ -663,6 +667,10 @@ export function extractMeasures(geo = {}, opts = {}) {
     // spread in last so that a NADCA-derived measure of the same name wins
     // over the flat one above — which is the point of the exercise.
     ...nadcaLimits(draft, features, wall, geo, opts),
+    // SFSA Supplement 1, the same discipline for STEEL castings: margins where
+    // a rule reads them, report figures where the engineer wants the number,
+    // absence everywhere the document does not speak.
+    ...sfsaLimits(draft, features, wall, geo, opts),
   };
 }
 
@@ -940,6 +948,119 @@ function nadcaLimits(draft, features, wall, geo, opts = {}) {
   return out;
 }
 
+/**
+ * The limits SFSA Supplement 1 actually prints for STEEL castings — same
+ * discipline as nadcaLimits(): margins where a rule reads them, underscored
+ * report figures where an engineer wants the number whether or not a rule
+ * fires, absence (with the reason on the report key) everywhere the document
+ * does not speak. Cast iron deliberately gets nothing here.
+ */
+function sfsaLimits(draft, features, wall, geo, opts = {}) {
+  const num = (v) => {
+    if (v === null || v === undefined || v === '') return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
+  const out = {};
+  const hasPart = !!(draft && (draft.drawDirectionXYZ || draft.draftHistogramDegToAreaMm2 || draft.coredHoles))
+    || num(wall?.p50Mm) !== undefined;
+  if (!hasPart) return out;
+  const group = castSteelGroupFor(opts.material);
+  if (!group.ok) { out._sfsaBasis = group.reason; return out; }
+  const nominalWall = num(wall.p50Mm);
+
+  // ── MINIMUM SECTION vs THE RUN THE STEEL MUST MAKE, p.2 + Fig. 1 ────────
+  // The run length is bounded above by the part's longest bounding-box edge —
+  // the gate position is the foundry's choice, so the true run may be shorter,
+  // and the basis says which way that cuts.
+  const bb = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
+  const runMm = Math.max(num(bb.xMm) ?? 0, num(bb.yMm) ?? 0, num(bb.zMm) ?? 0);
+  if (runMm > 0) {
+    const req = minSectionMm(runMm);
+    if (req.ok) {
+      out._sfsaMinSection = {
+        requiredMm: req.requiredMm, runLengthMm: req.runLengthMm, digitized: req.digitized,
+        basis: `${req.basis} The run is taken as the longest bounding-box edge - an UPPER bound, since the gate may sit closer.`,
+      };
+    }
+  }
+
+  // ── JUNCTION FILLET, Fig. 11: r = thinner wall, clamped 13-25 mm ────────
+  const corner = num(features.minInternalCornerRadiusMm);
+  if (nominalWall > 0) {
+    const fil = junctionFilletMm(nominalWall);
+    if (fil.ok) {
+      out._sfsaJunctionFillet = { requiredMm: fil.requiredMm, wallMm: nominalWall, measuredMm: corner ?? null, basis: fil.basis };
+      if (corner !== undefined) {
+        out.sfsaJunctionFilletMargin = Math.round((corner / fil.requiredMm) * 1000) / 1000;
+      }
+    }
+  }
+
+  // ── RIB THERMAL NEUTRALITY, Fig. 8: height limit moves with thickness ───
+  // The generic "height <= 4 walls" is only printed for the THINNEST rib
+  // (1/4 wall); a 3/4-wall rib is neutral to just half a wall of height. The
+  // margin is the worst rib's limit/actual, and that rib is named.
+  const ribList = Array.isArray(features.ribs) ? features.ribs : [];
+  if (nominalWall > 0 && ribList.length) {
+    let worstRib = null;
+    for (const r of ribList) {
+      const t = num(r.thicknessMm); const h = num(r.heightMm);
+      if (!(t > 0) || !(h > 0)) continue;
+      const lim = ribNeutralHeightLimit(t / nominalWall);
+      if (!lim.ok) continue;      // beyond 3/4 wall the thickness rule itself fails
+      const margin = (lim.maxHeightToWall * nominalWall) / h;
+      if (!worstRib || margin < worstRib.margin) {
+        worstRib = { margin, thicknessMm: t, heightMm: h,
+          ratioToWall: Math.round((t / nominalWall) * 1000) / 1000,
+          neutralHeightMm: Math.round(lim.maxHeightToWall * nominalWall * 10) / 10,
+          atXYZ: r.centroidXYZ ?? null, basis: lim.basis };
+      }
+    }
+    if (worstRib) {
+      out.sfsaRibNeutralityMargin = Math.round(worstRib.margin * 1000) / 1000;
+      out._sfsaRibNeutrality = worstRib;
+    }
+  }
+
+  // ── BOSS DIAMETER vs PARENT WALL, Fig. 16: the bands stop at 2.0 T ──────
+  const table = Array.isArray((geo.geometry || {}).featureTable || geo.featureTable)
+    ? ((geo.geometry || {}).featureTable || geo.featureTable) : [];
+  if (nominalWall > 0) {
+    let worstBoss = null;
+    for (const b of table.filter((f) => f.kind === 'boss' && num(f.diaMm) > 0)) {
+      const ratio = num(b.diaMm) / nominalWall;
+      if (!worstBoss || ratio > worstBoss.ratio) {
+        worstBoss = { ratio: Math.round(ratio * 1000) / 1000, diaMm: num(b.diaMm), wallMm: nominalWall, atXYZ: b.axisPointXYZ ?? null };
+      }
+    }
+    if (worstBoss) {
+      out.sfsaBossDiaToWall = worstBoss.ratio;
+      out._sfsaBoss = { ...worstBoss, basis: BOSS.basis };
+    }
+  }
+
+  // ── MINIMUM CORE DIAMETER, Fig. 30 — digitized, so REPORTED not gated ───
+  const bores = Array.isArray(draft.coredHoles?.bores) ? draft.coredHoles.bores : [];
+  let worstCore = null;
+  for (const b of bores) {
+    const r = num(b.radiusMm); const a = num(b.areaMm2);
+    if (!(r > 0) || !(a > 0)) continue;
+    const depthMm = a / (2 * Math.PI * r);
+    const rec = minCoreDiaMm(nominalWall, depthMm);
+    if (!rec.ok) continue;
+    const margin = (2 * r) / rec.minDiaMm;
+    if (!worstCore || margin < worstCore.margin) {
+      worstCore = { margin: Math.round(margin * 1000) / 1000, diaMm: Math.round(r * 200) / 100,
+        depthMm: Math.round(depthMm * 10) / 10, recommendedMinDiaMm: rec.minDiaMm,
+        faceId: b.faceId, atXYZ: b.atXYZ, basis: rec.basis };
+    }
+  }
+  if (worstCore) out._sfsaCoreDia = worstCore;
+
+  return out;
+}
+
 function evaluate(rule, value) {
   if (value === undefined || value === null || Number.isNaN(value)) {
     return { status: 'not-evaluated' };
@@ -1094,9 +1215,18 @@ export function runDfmRules(geo, process, opts = {}) {
       && bore.requiredDeg > picked.threshold
       ? bore.requiredDeg : null;
 
+    // Same sharpen-only contract for the SFSA Fig. 1 curve: on a long steel
+    // sand casting the minimum section grows with the run the metal must make,
+    // and the computed requirement may only TIGHTEN the published floor.
+    const sfsaSection = measures._sfsaMinSection;
+    const sfsaThreshold = rule.id === 'sand-min-section'
+      && sfsaSection?.requiredMm > 0 && picked.basis !== 'customer-standard'
+      && sfsaSection.requiredMm > picked.threshold
+      ? sfsaSection.requiredMm : null;
+
     const effective = {
       ...rule,
-      threshold: nadcaThreshold ?? picked.threshold,
+      threshold: sfsaThreshold ?? nadcaThreshold ?? picked.threshold,
       unit,
     };
     const { status, reason } = evaluate(effective, value);

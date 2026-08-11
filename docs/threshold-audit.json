@@ -1,281 +1,316 @@
 {
-  "_readme": [
-    "THE AUDIT TRAIL FOR EVERY THRESHOLD THIS TOOL JUDGES A PART AGAINST.",
-    "",
-    "The catalogue already grades its sources — standard-named, industry-consensus,",
-    "engine-derived, customer-standard — but a grade is a CLAIM about a citation, not",
-    "a record that anyone checked it. 109 of 216 thresholds rest on industry",
-    "consensus read from secondary summaries, and until this file existed that debt",
-    "was invisible: nothing in the repository could tell you which numbers had been",
-    "verified, by whom, against what, or when.",
-    "",
-    "`status` is the only field that matters, and it has four honest values:",
-    "",
-    "  primary-read          someone opened the standard, found the clause, and",
-    "                        recorded the section number below. The only status that",
-    "                        justifies the 'standard-named' grade.",
-    "  search-corroborated   independent published sources agree on the value, but no",
-    "                        primary document was read. This is NOT verification; it",
-    "                        is evidence that the consensus is real.",
-    "  contested             sources disagree, or the standard does not say what the",
-    "                        rule claims it says. These are the dangerous ones.",
-    "  unaudited             nobody has checked. The default, and the honest one.",
-    "",
-    "A threshold absent from this file is `unaudited`. Run `npm run thresholds:audit`",
-    "for the report, which names what is unverified rather than scoring it.",
-    "",
-    "NOTE ON THIS PASS: the environment these entries were written in blocks",
-    "outbound access to standards bodies (nadca.com, iso.org and the rest return",
-    "where the work was done, not a judgement about the values, and it is recorded",
-    "here rather than glossed.",
-    "",
-    "UPDATE: the sheet-metal entries below ARE primary-read. A copy of Boljanovic,",
-    "'Sheet Metal Forming Processes and Die Design' was supplied and read end to",
-    "end (321 pages), and every sheet-forming threshold now cites a chapter,",
-    "section, table or equation from it. The casting entries remain blocked: this",
-    "environment still cannot reach nadca.com or iso.org."
-  ],
-  "auditedOn": "2026-08-10",
-  "thresholds": {
-    "hpdc-draft-minimum": {
-      "status": "primary-read",
-      "claimedSource": "NADCA Product Design for Die Casting, 7th ed. (2015), §3.1 pp.45-46",
-      "grade": "standard-named",
-      "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. The user supplied the book itself, so the blocker that made this CONTESTED is gone. NADCA does not give a draft constant at all - it gives a formula, A = 57.2738 / (C*sqrt(L)) with L the feature depth in inches, and a table of C by alloy group and surface: zinc/ZA 50 inside / 100 outside / 34 hole total, magnesium 35/70/24, aluminium 30/60/20, copper 25/50/17. The formula was verified against the book's own worked example for an aluminium inside surface (0.1 in -> 6.0 deg, 1.0 in -> 1.9 deg, 5.0 in -> 0.85 deg) before being implemented. The old flat 1 degree was correct at about 23 mm of depth and wrong everywhere else: on a 6 mm deep pocket the book asks 1.96 deg on an outside surface and 3.93 deg on an inside one. The rule now computes the requirement from the alloy and the part's own measured depth along the draw.",
-      "recommendation": "The INSIDE half of the split is still not implemented. The rule judges every wall at the OUTSIDE constant, which is the lower of the two, so it under-reports on ejector-half surfaces by a factor of two. That is stated in the rule's own source text rather than left for a reader to discover. Closing it needs a solid-side test that survives through-features - from a bore wall the outward normal escapes through the bore opening, so the obvious ray test classifies a through-hole as an outside surface.",
-      "corroboration": [
-        "Product Design for Die Casting, NADCA, 7th edition, 2015, ISBN via NADCA - supplied directly by the user as a PDF"
-      ],
-      "primaryDocumentRead": true,
-      "readOn": "2026-08-10"
-    },
-    "hpdc-wall-thickness-range": {
-      "status": "contested",
-      "claimedSource": "Aluminium HPDC design guidance (1.0 mm practical minimum, 2.0-3.5 mm recommended)",
-      "grade": "industry-consensus",
-      "finding": "STILL CONTESTED, and the primary document confirms why rather than settling it. Product Design for Die Casting says plainly in §3.1: 'There are no hard and fast rules governing maximum and minimum limits for wall thicknesses.' It gives no table. What it DOES give is the physical argument, from §4.2: the dense chilled skin is 0.38-0.50 mm and is NOT a function of wall thickness, so a thick wall carries the same load-bearing skin as a thin one plus a porous core - which makes a heavy section useless rather than merely inefficient. Table 4.8 separately rates each aluminium alloy for die-filling capacity (1 best to 5 worst), which is the one axis on which the minimum wall genuinely varies.",
-      "recommendation": "Keep the band at industry-consensus and do NOT promote it. The rationale should carry the skin argument, and the minimum should scale with the alloy's die-filling rating rather than being flat across every aluminium grade.",
-      "corroboration": [
-        "Product Design for Die Casting, NADCA, 7th edition, 2015, §3.1 and §4.2 - read first-hand"
-      ],
-      "primaryDocumentRead": true,
-      "readOn": "2026-08-10"
-    },
-    "hpdc-core-ld": {
-      "status": "search-corroborated",
-      "claimedSource": "Core-pin slenderness guidance for aluminium HPDC",
-      "grade": "industry-consensus",
-      "finding": "Widely published as a practical limit; the exact figure varies with alloy, pin cooling and whether the pin is supported at both ends. A single number across all cored holes is a simplification the report should keep stating.",
-      "recommendation": "Where a customer standard exists it should override this, which the threshold resolver already supports.",
-      "corroboration": [],
-      "primaryDocumentRead": false,
-      "blockedBy": "no primary source reachable from this environment"
-    },
-    "hpdc-cored-hole-draft": {
-      "status": "primary-read",
-      "claimedSource": "NADCA Product Design for Die Casting, 7th ed. (2015), §3.1 pp.45-46, 'Hole, Total' column",
-      "grade": "standard-named",
-      "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. The book gives a cored-hole constant per alloy group - aluminium 20, magnesium 24, zinc and ZA 34, copper 17 - and the column is the TOTAL included angle, so the per-side requirement is half of what the formula returns. The old flat 2 degrees per side matches the book at about 13 mm of bore depth and nowhere else: a 3 mm bore in aluminium needs 4.17 deg per side and a 50 mm bore needs 1.02. The rule now derives each bore's depth from its own measured wall area and radius and judges the worst bore on the part.",
-      "recommendation": "None outstanding. The value, the alloy split and the total-versus-per-side distinction all come from the document as printed.",
-      "corroboration": [
-        "Product Design for Die Casting, NADCA, 7th edition, 2015 - supplied directly by the user as a PDF"
-      ],
-      "primaryDocumentRead": true,
-      "readOn": "2026-08-10"
-    },
-    "gdc-cored-hole-draft": {
-      "status": "unaudited",
-      "claimedSource": "Permanent-mould / zinc die-casting design guidance",
-      "grade": "industry-consensus",
-      "finding": "Derived by the same reasoning as the aluminium cored-hole rule — a cored hole needs more draft than a wall because the casting shrinks onto the core — at 3.0 deg for this family. NOT independently corroborated: it is consistent with the family's own wall rule and with the aluminium figure, which is an argument, not evidence.",
-      "recommendation": "Corroborate against a permanent-mould foundry design guide before relying on it.",
-      "corroboration": [],
-      "primaryDocumentRead": false
-    },
-    "lpdc-cored-hole-draft": {
-      "status": "unaudited",
-      "claimedSource": "Permanent-mould / zinc die-casting design guidance",
-      "grade": "industry-consensus",
-      "finding": "Derived by the same reasoning as the aluminium cored-hole rule — a cored hole needs more draft than a wall because the casting shrinks onto the core — at 2.0 deg for this family. NOT independently corroborated: it is consistent with the family's own wall rule and with the aluminium figure, which is an argument, not evidence.",
-      "recommendation": "Corroborate against a permanent-mould foundry design guide before relying on it.",
-      "corroboration": [],
-      "primaryDocumentRead": false
-    },
-    "hpdc-zinc-cored-hole-draft": {
-      "status": "unaudited",
-      "claimedSource": "Permanent-mould / zinc die-casting design guidance",
-      "grade": "industry-consensus",
-      "finding": "Derived by the same reasoning as the aluminium cored-hole rule — a cored hole needs more draft than a wall because the casting shrinks onto the core — at 1.0 deg for this family. NOT independently corroborated: it is consistent with the family's own wall rule and with the aluminium figure, which is an argument, not evidence.",
-      "recommendation": "Corroborate against a permanent-mould foundry design guide before relying on it.",
-      "corroboration": [],
-      "primaryDocumentRead": false
-    },
-    "sm-bend-radius": {
-      "status": "primary-read",
-      "claimedSource": "Per-alloy bend-radius guidance held in the rule's byMaterial table",
-      "grade": "industry-consensus",
-      "finding": "CORROBORATED, not superseded. The catalogue's twelve per-alloy values were checked row by row against Table 5.2 (R_min = c*T, c by material group and temper). Every steel and stainless value we hold sits INSIDE the book's soft-to-hard band, and 7075 at 4.0 r/t sits inside the 1.5-6.0 band for high-strength heat-treatable aluminium. The book does NOT supply our values — it has no row for 6000-series aluminium and predates dual-phase steel entirely — so the catalogue's figures stand and the book is the check on them, not the source.",
-      "recommendation": "Keep the per-alloy table. The book adds a dimension we do not model at all — TEMPER — with c ranging 0.5 to 3.0 for the same low-carbon steel. Capturing temper as an input would let the rule tighten or relax correctly instead of holding one figure per alloy.",
-      "corroboration": [
-        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 5.5.1, Eq. 5.14a, Table 5.2"
-      ],
-      "primaryDocumentRead": true,
-      "corroboratesButDoesNotSupply": true
-    },
-    "sm-hole-diameter": {
-      "status": "contested",
-      "claimedSource": "Per-alloy minimum pierced-hole guidance in the rule's byMaterial table",
-      "grade": "industry-consensus",
-      "finding": "GENUINE CONFLICT on the high-strength grades. Sec. 9.3.3(a) sizes the punch so it does not crush: combined with the punch force of Eq. 4.3 this gives d_min/T = 2.8*UTS/sigma_pd, with sigma_pd = 980-1560 MPa for hardened tool steel. At the conservative end that is 2.80 d/t for DP980 against the 1.50 d/t the catalogue holds, 1.77 for 304 against 1.20, and 1.66 for 316L against 1.20 — the book is stricter on every high-strength grade. It is LOOSER on 22MnB5 (1.71 vs our 2.50), but our figure there is for the hardened condition, which the book does not cover. The book's number is first-principles; ours is unattributed prose.",
-      "recommendation": "Do not switch silently. The engine now computes the book's limit alongside ours and publishes both (`punchedHoleMarginRatio` and `_punchLimit`); a plant that pierces DP980 at 1.5 d/t successfully is evidence the 980 MPa punch-stress floor is too conservative for their tooling, and that is exactly the measurement needed to settle it. Resolve with one real part before changing either number.",
-      "corroboration": [
-        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 9.3.3(a) with Eq. 4.3 and Eq. 9.6"
-      ],
-      "primaryDocumentRead": true
-    },
-    "sm-bend-radius-max": {
-      "status": "primary-read",
-      "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Eq. 5.15",
-      "grade": "standard-named",
-      "finding": "R_i(max) <= T*E/(2*YS). A bend gentler than this never yields and the part springs back flat. New capability — nothing in the catalogue tested for it.",
-      "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
-      "corroboration": [
-        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Eq. 5.15"
-      ],
-      "primaryDocumentRead": true
-    },
-    "sm-springback": {
-      "status": "primary-read",
-      "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 5.7, Eq. 5.21 and Eq. 5.22, Table 5.4",
-      "grade": "standard-named",
-      "finding": "Springback factor from the material's own YS/E, with the 2-8% practical overbend allowance stated in the text. New capability — springback was entirely absent.",
-      "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
-      "corroboration": [
-        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 5.7, Eq. 5.21 and Eq. 5.22, Table 5.4"
-      ],
-      "primaryDocumentRead": true
-    },
-    "sm-blank-utilisation": {
-      "status": "primary-read",
-      "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 4.4, Eq. 4.7, Table 4.3",
-      "grade": "standard-named",
-      "finding": "Webs m = T + 0.015*D and n from Table 4.3, against the text's own 70-80% utilisation target. The utilisation figure is a LOWER bound: it assumes a rectangular envelope in a single-pass layout (Fig. 4.7a) and real nesting does better.",
-      "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
-      "corroboration": [
-        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 4.4, Eq. 4.7, Table 4.3"
-      ],
-      "primaryDocumentRead": true
-    },
-    "dd-draw-stages": {
-      "status": "primary-read",
-      "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 6.2.1, Table 6.2",
-      "grade": "standard-named",
-      "finding": "Successive drawing ratios m1..m5 by relative thickness 100*T/D. The blank diameter is estimated by area equivalence rather than the book's Guldinus method (Sec. 6.4.2), which needs a meridian profile the recogniser does not extract — so the STAGE COUNT is sound and the blank it starts from is an estimate.",
-      "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
-      "corroboration": [
-        "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 6.2.1, Table 6.2"
-      ],
-      "primaryDocumentRead": true
-    },
-    "hpdc-internal-radius": {
-      "status": "primary-read",
-      "claimedSource": "NADCA Product Design for Die Casting, 7th ed. (2015), Figure 3.2 pp.40-41",
-      "grade": "standard-named",
-      "finding": "RESOLVED FROM THE PRIMARY DOCUMENT, and the old value was wrong in kind rather than in degree. The rule held a flat 1.6 mm. NADCA gives the fillet as a RATIO to the wall it joins: R1 >= T1 at a junction of uniform walls with R2 = R1 + T1, and R1 >= 2/3(T1 + T2) between non-uniform walls; on rib tops and tee junctions R1 = 0.5*T1 is optimal and below 0.25*T1 is 'not recommended'. A flat 1.6 mm passes a 1.6 mm radius on a 6 mm wall where the book wants 6 mm, so the rule was silent on exactly the chunky castings it should have been loudest about.",
-      "recommendation": "The outside corner radius R2 = R1 + T is specified by the book and is not yet checked, because the recogniser reports inside corner radii only. Adding external corner recognition would close it.",
-      "corroboration": [
-        "Product Design for Die Casting, NADCA, 7th edition, 2015 - supplied directly by the user as a PDF"
-      ],
-      "primaryDocumentRead": true,
-      "readOn": "2026-08-10"
-    },
-    "hpdc-tolerance-capability": {
-      "status": "primary-read",
-      "claimedSource": "NADCA #402, Product Specification Standards for Die Castings, 2021 (11th ed.), Tables S/P-4A-1-21",
-      "grade": "standard-named",
-      "finding": "RESOLVED FROM THE PRIMARY DOCUMENT, supplied by the user as the 2021 11th edition. The blocker this register carried - 'NADCA Product Specification Standards #402 not held' - is closed. The standard does not give one screening value: linear capability is a function of the dimension (Al/Mg/Zn Standard +/-0.25 mm for the first 25.4 mm plus +/-0.025 mm per additional inch; Precision +/-0.05 mm base; copper +/-0.36/+/-0.076 and +/-0.18/+/-0.05). The rule now computes capability per PMI dimension at its own size, or judges a declared band against the first-inch base with that basis stated. Implementation verified against the standard's own worked examples: 127 mm aluminium -> +/-0.35 mm Standard, +/-0.15 mm Precision; the cross-parting-line composition reproduces +0.65/-0.35 mm.",
-      "recommendation": "Cross-parting-line and moving-die adders (S-4A-2/3) are computed for the report but not yet attributed to individual dimensions - that needs to know which PMI dimension crosses the parting line, which the draw direction plus the dimension's axis could supply later.",
-      "corroboration": [
-        "NADCA #402 2021, supplied by the user as PDF - tables read as rendered images because the numbers do not survive text extraction"
-      ],
-      "primaryDocumentRead": true,
-      "readOn": "2026-08-11"
-    },
-    "hpdc-zinc-tolerance-capability": {
-      "status": "primary-read",
-      "claimedSource": "NADCA #402 2021, Tables S/P-4A-1-21 (zinc column)",
-      "grade": "standard-named",
-      "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. Zinc shares the aluminium row at Standard grade (+/-0.25 mm base). The P-4A-1 notes record that artificial ageing and Section 4B miniature machines reach tighter than the table - which is why the old flat 0.15 mm screen was neither right nor wrong: the standard's own answer is dimension-dependent.",
-      "recommendation": "Cross-parting-line and moving-die adders (S-4A-2/3) are computed for the report but not yet attributed to individual dimensions - that needs to know which PMI dimension crosses the parting line, which the draw direction plus the dimension's axis could supply later.",
-      "corroboration": [
-        "NADCA #402 2021, supplied by the user as PDF - tables read as rendered images because the numbers do not survive text extraction"
-      ],
-      "primaryDocumentRead": true,
-      "readOn": "2026-08-11"
-    },
-    "hpdc-flatness-capability": {
-      "status": "primary-read",
-      "claimedSource": "NADCA #402 2021, Tables S/P-4A-8-21",
-      "grade": "standard-named",
-      "finding": "NEW RULE from the primary document: as-cast flatness, all alloys, 0.20 mm to 76.2 mm largest dimension + 0.08 mm per additional inch (Standard); 0.13 + 0.05 (Precision). Verified against both printed worked examples (254 mm diagonal -> 0.76 / 0.48 mm).",
-      "recommendation": "Declared-input only: a STEP file does not say which face must be flat. PMI flatness callouts could feed it once the extractor reports them per-face.",
-      "corroboration": [
-        "NADCA #402 2021, supplied by the user"
-      ],
-      "primaryDocumentRead": true,
-      "readOn": "2026-08-11"
-    },
-    "hpdc-zinc-flatness-capability": {
-      "status": "primary-read",
-      "claimedSource": "NADCA #402 2021, Tables S/P-4A-8-21",
-      "grade": "standard-named",
-      "finding": "NEW RULE from the primary document: as-cast flatness, all alloys, 0.20 mm to 76.2 mm largest dimension + 0.08 mm per additional inch (Standard); 0.13 + 0.05 (Precision). Verified against both printed worked examples (254 mm diagonal -> 0.76 / 0.48 mm).",
-      "recommendation": "Declared-input only: a STEP file does not say which face must be flat. PMI flatness callouts could feed it once the extractor reports them per-face.",
-      "corroboration": [
-        "NADCA #402 2021, supplied by the user"
-      ],
-      "primaryDocumentRead": true,
-      "readOn": "2026-08-11"
-    },
-    "lpdc-tolerance-capability": {
-      "status": "unaudited",
-      "claimedSource": "Casting tolerance guidance (family-specific)",
-      "grade": "industry-consensus",
-      "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
-      "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
-      "corroboration": [],
-      "primaryDocumentRead": false,
-      "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
-    },
-    "gdc-tolerance-capability": {
-      "status": "unaudited",
-      "claimedSource": "Casting tolerance guidance (family-specific)",
-      "grade": "industry-consensus",
-      "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
-      "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
-      "corroboration": [],
-      "primaryDocumentRead": false,
-      "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
-    },
-    "sand-tolerance-capability": {
-      "status": "unaudited",
-      "claimedSource": "Casting tolerance guidance (family-specific)",
-      "grade": "industry-consensus",
-      "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
-      "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
-      "corroboration": [],
-      "primaryDocumentRead": false,
-      "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
-    },
-    "inv-tolerance-capability": {
-      "status": "unaudited",
-      "claimedSource": "Casting tolerance guidance (family-specific)",
-      "grade": "industry-consensus",
-      "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
-      "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
-      "corroboration": [],
-      "primaryDocumentRead": false,
-      "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
-    }
+ "_readme": [
+  "THE AUDIT TRAIL FOR EVERY THRESHOLD THIS TOOL JUDGES A PART AGAINST.",
+  "",
+  "The catalogue already grades its sources — standard-named, industry-consensus,",
+  "engine-derived, customer-standard — but a grade is a CLAIM about a citation, not",
+  "a record that anyone checked it. 109 of 216 thresholds rest on industry",
+  "consensus read from secondary summaries, and until this file existed that debt",
+  "was invisible: nothing in the repository could tell you which numbers had been",
+  "verified, by whom, against what, or when.",
+  "",
+  "`status` is the only field that matters, and it has four honest values:",
+  "",
+  "  primary-read          someone opened the standard, found the clause, and",
+  "                        recorded the section number below. The only status that",
+  "                        justifies the 'standard-named' grade.",
+  "  search-corroborated   independent published sources agree on the value, but no",
+  "                        primary document was read. This is NOT verification; it",
+  "                        is evidence that the consensus is real.",
+  "  contested             sources disagree, or the standard does not say what the",
+  "                        rule claims it says. These are the dangerous ones.",
+  "  unaudited             nobody has checked. The default, and the honest one.",
+  "",
+  "A threshold absent from this file is `unaudited`. Run `npm run thresholds:audit`",
+  "for the report, which names what is unverified rather than scoring it.",
+  "",
+  "NOTE ON THIS PASS: the environment these entries were written in blocks",
+  "outbound access to standards bodies (nadca.com, iso.org and the rest return",
+  "where the work was done, not a judgement about the values, and it is recorded",
+  "here rather than glossed.",
+  "",
+  "UPDATE: the sheet-metal entries below ARE primary-read. A copy of Boljanovic,",
+  "'Sheet Metal Forming Processes and Die Design' was supplied and read end to",
+  "end (321 pages), and every sheet-forming threshold now cites a chapter,",
+  "section, table or equation from it. The casting entries remain blocked: this",
+  "environment still cannot reach nadca.com or iso.org."
+ ],
+ "auditedOn": "2026-08-10",
+ "thresholds": {
+  "hpdc-draft-minimum": {
+   "status": "primary-read",
+   "claimedSource": "NADCA Product Design for Die Casting, 7th ed. (2015), §3.1 pp.45-46",
+   "grade": "standard-named",
+   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. The user supplied the book itself, so the blocker that made this CONTESTED is gone. NADCA does not give a draft constant at all - it gives a formula, A = 57.2738 / (C*sqrt(L)) with L the feature depth in inches, and a table of C by alloy group and surface: zinc/ZA 50 inside / 100 outside / 34 hole total, magnesium 35/70/24, aluminium 30/60/20, copper 25/50/17. The formula was verified against the book's own worked example for an aluminium inside surface (0.1 in -> 6.0 deg, 1.0 in -> 1.9 deg, 5.0 in -> 0.85 deg) before being implemented. The old flat 1 degree was correct at about 23 mm of depth and wrong everywhere else: on a 6 mm deep pocket the book asks 1.96 deg on an outside surface and 3.93 deg on an inside one. The rule now computes the requirement from the alloy and the part's own measured depth along the draw.",
+   "recommendation": "The INSIDE half of the split is still not implemented. The rule judges every wall at the OUTSIDE constant, which is the lower of the two, so it under-reports on ejector-half surfaces by a factor of two. That is stated in the rule's own source text rather than left for a reader to discover. Closing it needs a solid-side test that survives through-features - from a bore wall the outward normal escapes through the bore opening, so the obvious ray test classifies a through-hole as an outside surface.",
+   "corroboration": [
+    "Product Design for Die Casting, NADCA, 7th edition, 2015, ISBN via NADCA - supplied directly by the user as a PDF"
+   ],
+   "primaryDocumentRead": true,
+   "readOn": "2026-08-10"
+  },
+  "hpdc-wall-thickness-range": {
+   "status": "contested",
+   "claimedSource": "Aluminium HPDC design guidance (1.0 mm practical minimum, 2.0-3.5 mm recommended)",
+   "grade": "industry-consensus",
+   "finding": "STILL CONTESTED, and the primary document confirms why rather than settling it. Product Design for Die Casting says plainly in §3.1: 'There are no hard and fast rules governing maximum and minimum limits for wall thicknesses.' It gives no table. What it DOES give is the physical argument, from §4.2: the dense chilled skin is 0.38-0.50 mm and is NOT a function of wall thickness, so a thick wall carries the same load-bearing skin as a thin one plus a porous core - which makes a heavy section useless rather than merely inefficient. Table 4.8 separately rates each aluminium alloy for die-filling capacity (1 best to 5 worst), which is the one axis on which the minimum wall genuinely varies.",
+   "recommendation": "Keep the band at industry-consensus and do NOT promote it. The rationale should carry the skin argument, and the minimum should scale with the alloy's die-filling rating rather than being flat across every aluminium grade.",
+   "corroboration": [
+    "Product Design for Die Casting, NADCA, 7th edition, 2015, §3.1 and §4.2 - read first-hand"
+   ],
+   "primaryDocumentRead": true,
+   "readOn": "2026-08-10"
+  },
+  "hpdc-core-ld": {
+   "status": "search-corroborated",
+   "claimedSource": "Core-pin slenderness guidance for aluminium HPDC",
+   "grade": "industry-consensus",
+   "finding": "Widely published as a practical limit; the exact figure varies with alloy, pin cooling and whether the pin is supported at both ends. A single number across all cored holes is a simplification the report should keep stating.",
+   "recommendation": "Where a customer standard exists it should override this, which the threshold resolver already supports.",
+   "corroboration": [],
+   "primaryDocumentRead": false,
+   "blockedBy": "no primary source reachable from this environment"
+  },
+  "hpdc-cored-hole-draft": {
+   "status": "primary-read",
+   "claimedSource": "NADCA Product Design for Die Casting, 7th ed. (2015), §3.1 pp.45-46, 'Hole, Total' column",
+   "grade": "standard-named",
+   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. The book gives a cored-hole constant per alloy group - aluminium 20, magnesium 24, zinc and ZA 34, copper 17 - and the column is the TOTAL included angle, so the per-side requirement is half of what the formula returns. The old flat 2 degrees per side matches the book at about 13 mm of bore depth and nowhere else: a 3 mm bore in aluminium needs 4.17 deg per side and a 50 mm bore needs 1.02. The rule now derives each bore's depth from its own measured wall area and radius and judges the worst bore on the part.",
+   "recommendation": "None outstanding. The value, the alloy split and the total-versus-per-side distinction all come from the document as printed.",
+   "corroboration": [
+    "Product Design for Die Casting, NADCA, 7th edition, 2015 - supplied directly by the user as a PDF"
+   ],
+   "primaryDocumentRead": true,
+   "readOn": "2026-08-10"
+  },
+  "gdc-cored-hole-draft": {
+   "status": "unaudited",
+   "claimedSource": "Permanent-mould / zinc die-casting design guidance",
+   "grade": "industry-consensus",
+   "finding": "Derived by the same reasoning as the aluminium cored-hole rule — a cored hole needs more draft than a wall because the casting shrinks onto the core — at 3.0 deg for this family. NOT independently corroborated: it is consistent with the family's own wall rule and with the aluminium figure, which is an argument, not evidence.",
+   "recommendation": "Corroborate against a permanent-mould foundry design guide before relying on it.",
+   "corroboration": [],
+   "primaryDocumentRead": false
+  },
+  "lpdc-cored-hole-draft": {
+   "status": "unaudited",
+   "claimedSource": "Permanent-mould / zinc die-casting design guidance",
+   "grade": "industry-consensus",
+   "finding": "Derived by the same reasoning as the aluminium cored-hole rule — a cored hole needs more draft than a wall because the casting shrinks onto the core — at 2.0 deg for this family. NOT independently corroborated: it is consistent with the family's own wall rule and with the aluminium figure, which is an argument, not evidence.",
+   "recommendation": "Corroborate against a permanent-mould foundry design guide before relying on it.",
+   "corroboration": [],
+   "primaryDocumentRead": false
+  },
+  "hpdc-zinc-cored-hole-draft": {
+   "status": "unaudited",
+   "claimedSource": "Permanent-mould / zinc die-casting design guidance",
+   "grade": "industry-consensus",
+   "finding": "Derived by the same reasoning as the aluminium cored-hole rule — a cored hole needs more draft than a wall because the casting shrinks onto the core — at 1.0 deg for this family. NOT independently corroborated: it is consistent with the family's own wall rule and with the aluminium figure, which is an argument, not evidence.",
+   "recommendation": "Corroborate against a permanent-mould foundry design guide before relying on it.",
+   "corroboration": [],
+   "primaryDocumentRead": false
+  },
+  "sm-bend-radius": {
+   "status": "primary-read",
+   "claimedSource": "Per-alloy bend-radius guidance held in the rule's byMaterial table",
+   "grade": "industry-consensus",
+   "finding": "CORROBORATED, not superseded. The catalogue's twelve per-alloy values were checked row by row against Table 5.2 (R_min = c*T, c by material group and temper). Every steel and stainless value we hold sits INSIDE the book's soft-to-hard band, and 7075 at 4.0 r/t sits inside the 1.5-6.0 band for high-strength heat-treatable aluminium. The book does NOT supply our values — it has no row for 6000-series aluminium and predates dual-phase steel entirely — so the catalogue's figures stand and the book is the check on them, not the source.",
+   "recommendation": "Keep the per-alloy table. The book adds a dimension we do not model at all — TEMPER — with c ranging 0.5 to 3.0 for the same low-carbon steel. Capturing temper as an input would let the rule tighten or relax correctly instead of holding one figure per alloy.",
+   "corroboration": [
+    "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 5.5.1, Eq. 5.14a, Table 5.2"
+   ],
+   "primaryDocumentRead": true,
+   "corroboratesButDoesNotSupply": true
+  },
+  "sm-hole-diameter": {
+   "status": "contested",
+   "claimedSource": "Per-alloy minimum pierced-hole guidance in the rule's byMaterial table",
+   "grade": "industry-consensus",
+   "finding": "GENUINE CONFLICT on the high-strength grades. Sec. 9.3.3(a) sizes the punch so it does not crush: combined with the punch force of Eq. 4.3 this gives d_min/T = 2.8*UTS/sigma_pd, with sigma_pd = 980-1560 MPa for hardened tool steel. At the conservative end that is 2.80 d/t for DP980 against the 1.50 d/t the catalogue holds, 1.77 for 304 against 1.20, and 1.66 for 316L against 1.20 — the book is stricter on every high-strength grade. It is LOOSER on 22MnB5 (1.71 vs our 2.50), but our figure there is for the hardened condition, which the book does not cover. The book's number is first-principles; ours is unattributed prose.",
+   "recommendation": "Do not switch silently. The engine now computes the book's limit alongside ours and publishes both (`punchedHoleMarginRatio` and `_punchLimit`); a plant that pierces DP980 at 1.5 d/t successfully is evidence the 980 MPa punch-stress floor is too conservative for their tooling, and that is exactly the measurement needed to settle it. Resolve with one real part before changing either number.",
+   "corroboration": [
+    "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 9.3.3(a) with Eq. 4.3 and Eq. 9.6"
+   ],
+   "primaryDocumentRead": true
+  },
+  "sm-bend-radius-max": {
+   "status": "primary-read",
+   "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Eq. 5.15",
+   "grade": "standard-named",
+   "finding": "R_i(max) <= T*E/(2*YS). A bend gentler than this never yields and the part springs back flat. New capability — nothing in the catalogue tested for it.",
+   "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
+   "corroboration": [
+    "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Eq. 5.15"
+   ],
+   "primaryDocumentRead": true
+  },
+  "sm-springback": {
+   "status": "primary-read",
+   "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 5.7, Eq. 5.21 and Eq. 5.22, Table 5.4",
+   "grade": "standard-named",
+   "finding": "Springback factor from the material's own YS/E, with the 2-8% practical overbend allowance stated in the text. New capability — springback was entirely absent.",
+   "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
+   "corroboration": [
+    "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 5.7, Eq. 5.21 and Eq. 5.22, Table 5.4"
+   ],
+   "primaryDocumentRead": true
+  },
+  "sm-blank-utilisation": {
+   "status": "primary-read",
+   "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 4.4, Eq. 4.7, Table 4.3",
+   "grade": "standard-named",
+   "finding": "Webs m = T + 0.015*D and n from Table 4.3, against the text's own 70-80% utilisation target. The utilisation figure is a LOWER bound: it assumes a rectangular envelope in a single-pass layout (Fig. 4.7a) and real nesting does better.",
+   "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
+   "corroboration": [
+    "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 4.4, Eq. 4.7, Table 4.3"
+   ],
+   "primaryDocumentRead": true
+  },
+  "dd-draw-stages": {
+   "status": "primary-read",
+   "claimedSource": "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 6.2.1, Table 6.2",
+   "grade": "standard-named",
+   "finding": "Successive drawing ratios m1..m5 by relative thickness 100*T/D. The blank diameter is estimated by area equivalence rather than the book's Guldinus method (Sec. 6.4.2), which needs a meridian profile the recogniser does not extract — so the STAGE COUNT is sound and the blank it starts from is an estimate.",
+   "recommendation": "None outstanding. The source was read first-hand and the equation is implemented as printed.",
+   "corroboration": [
+    "Boljanovic, V., 'Sheet Metal Forming Processes and Die Design', Industrial Press, Sec. 6.2.1, Table 6.2"
+   ],
+   "primaryDocumentRead": true
+  },
+  "hpdc-internal-radius": {
+   "status": "primary-read",
+   "claimedSource": "NADCA Product Design for Die Casting, 7th ed. (2015), Figure 3.2 pp.40-41",
+   "grade": "standard-named",
+   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT, and the old value was wrong in kind rather than in degree. The rule held a flat 1.6 mm. NADCA gives the fillet as a RATIO to the wall it joins: R1 >= T1 at a junction of uniform walls with R2 = R1 + T1, and R1 >= 2/3(T1 + T2) between non-uniform walls; on rib tops and tee junctions R1 = 0.5*T1 is optimal and below 0.25*T1 is 'not recommended'. A flat 1.6 mm passes a 1.6 mm radius on a 6 mm wall where the book wants 6 mm, so the rule was silent on exactly the chunky castings it should have been loudest about.",
+   "recommendation": "The outside corner radius R2 = R1 + T is specified by the book and is not yet checked, because the recogniser reports inside corner radii only. Adding external corner recognition would close it.",
+   "corroboration": [
+    "Product Design for Die Casting, NADCA, 7th edition, 2015 - supplied directly by the user as a PDF"
+   ],
+   "primaryDocumentRead": true,
+   "readOn": "2026-08-10"
+  },
+  "hpdc-tolerance-capability": {
+   "status": "primary-read",
+   "claimedSource": "NADCA #402, Product Specification Standards for Die Castings, 2021 (11th ed.), Tables S/P-4A-1-21",
+   "grade": "standard-named",
+   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT, supplied by the user as the 2021 11th edition. The blocker this register carried - 'NADCA Product Specification Standards #402 not held' - is closed. The standard does not give one screening value: linear capability is a function of the dimension (Al/Mg/Zn Standard +/-0.25 mm for the first 25.4 mm plus +/-0.025 mm per additional inch; Precision +/-0.05 mm base; copper +/-0.36/+/-0.076 and +/-0.18/+/-0.05). The rule now computes capability per PMI dimension at its own size, or judges a declared band against the first-inch base with that basis stated. Implementation verified against the standard's own worked examples: 127 mm aluminium -> +/-0.35 mm Standard, +/-0.15 mm Precision; the cross-parting-line composition reproduces +0.65/-0.35 mm.",
+   "recommendation": "Cross-parting-line and moving-die adders (S-4A-2/3) are computed for the report but not yet attributed to individual dimensions - that needs to know which PMI dimension crosses the parting line, which the draw direction plus the dimension's axis could supply later.",
+   "corroboration": [
+    "NADCA #402 2021, supplied by the user as PDF - tables read as rendered images because the numbers do not survive text extraction"
+   ],
+   "primaryDocumentRead": true,
+   "readOn": "2026-08-11"
+  },
+  "hpdc-zinc-tolerance-capability": {
+   "status": "primary-read",
+   "claimedSource": "NADCA #402 2021, Tables S/P-4A-1-21 (zinc column)",
+   "grade": "standard-named",
+   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. Zinc shares the aluminium row at Standard grade (+/-0.25 mm base). The P-4A-1 notes record that artificial ageing and Section 4B miniature machines reach tighter than the table - which is why the old flat 0.15 mm screen was neither right nor wrong: the standard's own answer is dimension-dependent.",
+   "recommendation": "Cross-parting-line and moving-die adders (S-4A-2/3) are computed for the report but not yet attributed to individual dimensions - that needs to know which PMI dimension crosses the parting line, which the draw direction plus the dimension's axis could supply later.",
+   "corroboration": [
+    "NADCA #402 2021, supplied by the user as PDF - tables read as rendered images because the numbers do not survive text extraction"
+   ],
+   "primaryDocumentRead": true,
+   "readOn": "2026-08-11"
+  },
+  "hpdc-flatness-capability": {
+   "status": "primary-read",
+   "claimedSource": "NADCA #402 2021, Tables S/P-4A-8-21",
+   "grade": "standard-named",
+   "finding": "NEW RULE from the primary document: as-cast flatness, all alloys, 0.20 mm to 76.2 mm largest dimension + 0.08 mm per additional inch (Standard); 0.13 + 0.05 (Precision). Verified against both printed worked examples (254 mm diagonal -> 0.76 / 0.48 mm).",
+   "recommendation": "Declared-input only: a STEP file does not say which face must be flat. PMI flatness callouts could feed it once the extractor reports them per-face.",
+   "corroboration": [
+    "NADCA #402 2021, supplied by the user"
+   ],
+   "primaryDocumentRead": true,
+   "readOn": "2026-08-11"
+  },
+  "hpdc-zinc-flatness-capability": {
+   "status": "primary-read",
+   "claimedSource": "NADCA #402 2021, Tables S/P-4A-8-21",
+   "grade": "standard-named",
+   "finding": "NEW RULE from the primary document: as-cast flatness, all alloys, 0.20 mm to 76.2 mm largest dimension + 0.08 mm per additional inch (Standard); 0.13 + 0.05 (Precision). Verified against both printed worked examples (254 mm diagonal -> 0.76 / 0.48 mm).",
+   "recommendation": "Declared-input only: a STEP file does not say which face must be flat. PMI flatness callouts could feed it once the extractor reports them per-face.",
+   "corroboration": [
+    "NADCA #402 2021, supplied by the user"
+   ],
+   "primaryDocumentRead": true,
+   "readOn": "2026-08-11"
+  },
+  "lpdc-tolerance-capability": {
+   "status": "unaudited",
+   "claimedSource": "Casting tolerance guidance (family-specific)",
+   "grade": "industry-consensus",
+   "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
+   "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
+   "corroboration": [],
+   "primaryDocumentRead": false,
+   "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
+  },
+  "gdc-tolerance-capability": {
+   "status": "unaudited",
+   "claimedSource": "Casting tolerance guidance (family-specific)",
+   "grade": "industry-consensus",
+   "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
+   "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
+   "corroboration": [],
+   "primaryDocumentRead": false,
+   "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
+  },
+  "sand-tolerance-capability": {
+   "status": "unaudited",
+   "claimedSource": "Casting tolerance guidance (family-specific)",
+   "grade": "industry-consensus",
+   "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held. SFSA Supplement 1 (now held, read 2026-08-11) is DESIGN rules and prints no tolerance tables; those are SFSA Supplement 3 \"Tolerances\" - either that booklet or ISO 8062-3 lifts this blocker.",
+   "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
+   "corroboration": [],
+   "primaryDocumentRead": false,
+   "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
+  },
+  "inv-tolerance-capability": {
+   "status": "unaudited",
+   "claimedSource": "Casting tolerance guidance (family-specific)",
+   "grade": "industry-consensus",
+   "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
+   "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
+   "corroboration": [],
+   "primaryDocumentRead": false,
+   "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
+  },
+  "sand-min-section": {
+   "status": "primary-read",
+   "claimedSource": "SFSA Steel Castings Handbook, Supplement 1 \"Design Rules and Data\" (Steel Founders' Society of America), p.2 + Fig. 1",
+   "grade": "standard-named",
+   "finding": "RESOLVED FROM THE PRIMARY DOCUMENT for the steel band. The user supplied the supplement itself: p.2 prints \"a minimum thickness of 0.25 in. (6 mm) is suggested for design use when conventional steel casting techniques are employed\", and Fig. 1 raises the minimum with the length the molten steel must run - digitized at +/-1.5 mm, and used sharpen-only at the part's own longest dimension. The ferrous family band moved from a researched 5.0 mm to the printed 6.0 mm. The generic 3.5 mm band and the castiron/copper bands keep their prior grading - this document speaks for steel only.",
+   "readOn": "2026-08-11"
+  },
+  "sand-rib-thickness-max": {
+   "status": "primary-read",
+   "claimedSource": "SFSA Steel Castings Handbook, Supplement 1 \"Design Rules and Data\" (Steel Founders' Society of America), Fig. 8 p.5",
+   "grade": "standard-named",
+   "finding": "RESOLVED for the steel band: the thermally-neutral rib proportions of Fig. 8 stop at T1 = 3/4 T2, so the ferrous band is 0.75 where the generic band stays 1.0. The full coupling (height limit moving with thickness ratio: 4 walls at 1/4, 1.5 at 1/2, 0.5 at 3/4) is enforced by the dedicated sand-rib-thermal-neutrality rule.",
+   "readOn": "2026-08-11"
+  },
+  "sand-rib-thermal-neutrality": {
+   "status": "primary-read",
+   "claimedSource": "SFSA Steel Castings Handbook, Supplement 1 \"Design Rules and Data\" (Steel Founders' Society of America), Fig. 8 p.5",
+   "grade": "standard-named",
+   "finding": "NEW RULE from the primary document: rib height limit COUPLED to rib thickness ratio, interpolated between the three printed points, worst rib named. Steel castings only; abstains on every other alloy.",
+   "readOn": "2026-08-11"
+  },
+  "sand-junction-fillet": {
+   "status": "primary-read",
+   "claimedSource": "SFSA Steel Castings Handbook, Supplement 1 \"Design Rules and Data\" (Steel Founders' Society of America), Fig. 11 p.6",
+   "grade": "standard-named",
+   "finding": "NEW RULE from the primary document: junction fillet r = T1 clamped to the printed 13-25 mm band; the cap is deliberate ((D/d)^2 mass growth at the joint). Steel castings only.",
+   "readOn": "2026-08-11"
+  },
+  "sand-boss-dia": {
+   "status": "primary-read",
+   "claimedSource": "SFSA Steel Castings Handbook, Supplement 1 \"Design Rules and Data\" (Steel Founders' Society of America), Fig. 16 + Table 1 p.7",
+   "grade": "standard-named",
+   "finding": "NEW RULE from the primary document: the boss-neutrality bands stop at D = 2.0 T, beyond which no neutral height is printed. Worst boss sets the ratio. Steel castings only.",
+   "readOn": "2026-08-11"
   }
+ }
 }

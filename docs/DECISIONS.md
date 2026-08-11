@@ -1881,3 +1881,35 @@ three decisions worth recording:
 Scope honesty: #402 tabulates die casting only. LPDC / gravity / sand /
 investment tolerance rules stay blocked, now naming ISO 8062-3 as the
 remaining document.
+
+## SFSA Supplement 1 speaks for steel castings; printed numbers gate, digitized curves report
+
+The user supplied the *SFSA Steel Castings Handbook, Supplement 1 — Design
+Rules and Data* (25 pages, scanned). It is now code in
+`sfsa-steel-casting.mjs`, with three decisions worth recording:
+
+  * **Printed numbers and digitized curves get different jobs.** The 6 mm
+    minimum section, the Fig. 8 rib-neutrality triple (1/4 wall → 4 walls of
+    height, 1/2 → 1.5, 3/4 → 0.5), the 13–25 mm junction-fillet clamp and the
+    2.0 T boss cap are printed and rule-grade. The Fig. 1 length curve
+    (±1.5 mm) sharpens the minimum-section threshold only; the Fig. 30 core
+    curves (±8 mm at this scan quality) REPORT a recommendation and gate
+    nothing. A scan does not get to invent precision.
+  * **Steel only, and iron is refused by name.** `castSteelGroupFor` rejects
+    cast iron with the reason (graphite expansion gives iron a castability
+    this document never describes), so the 6 mm steel floor cannot leak onto
+    a grey-iron bracket that legitimately casts at 4 mm. A test pins that.
+  * **The rib height ceiling is now COUPLED to rib thickness for steel.**
+    The old flat pair (thickness ≤ 1 wall, height ≤ 4 walls) passed exactly
+    the ribs Fig. 8 says are worst — full-thickness and tall. The new
+    `sand-rib-thermal-neutrality` rule interpolates the printed triple at
+    each rib's own ratio and names the worst rib. Rib spacing (≥ 7 T1) is
+    recorded but not enforced: spacing between recognised ribs is not yet a
+    measure.
+
+Scope honesty: Supplement 1 prints no tolerance tables — those are
+Supplement 3, a separate booklet. `sand-tolerance-capability` stays blocked
+and the register now names Supplement 3 or ISO 8062-3 as the documents that
+lift it. Also recorded, not enforced: the taper equation (needs riser
+positions), external-corner radius 0.1–0.2 T (external corner radii are not
+yet a measure), and Table 1 boss heights.

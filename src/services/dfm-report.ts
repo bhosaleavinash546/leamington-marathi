@@ -2144,6 +2144,45 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
           rows,
         });
       }
+
+      // ── Steel casting (SFSA Supplement 1) — same contract, own sheet ─────
+      // Mutually exclusive with the NADCA rows by material, so a workbook
+      // carries one or the other, never a mislabeled mixture.
+      const steelRows: Array<Array<string | number>> = [['Figure', 'Value', 'Where it comes from']];
+      if (sf.sfsaMinSection) {
+        const s = sf.sfsaMinSection;
+        steelRows.push([`Minimum section at a ${s.runLengthMm} mm run`,
+          `${s.requiredMm} mm${s.digitized ? ' (from the Fig. 1 curve)' : ''}`, s.basis]);
+      }
+      if (sf.sfsaJunctionFillet) {
+        const s = sf.sfsaJunctionFillet;
+        steelRows.push(['Junction fillet the steel wants',
+          `${s.requiredMm} mm${s.measuredMm != null ? ` (smallest measured ${s.measuredMm} mm)` : ''}`, s.basis]);
+      }
+      if (sf.sfsaRibNeutrality) {
+        const s = sf.sfsaRibNeutrality;
+        steelRows.push([`Worst rib vs thermal neutrality (${s.thicknessMm} mm on the wall)`,
+          `${s.heightMm} mm tall vs ${s.neutralHeightMm} mm neutral`, s.basis]);
+      }
+      if (sf.sfsaBoss) {
+        steelRows.push(['Largest boss vs parent wall',
+          `${sf.sfsaBoss.diaMm} mm dia on ${sf.sfsaBoss.wallMm} mm → ${sf.sfsaBoss.ratio}x`, sf.sfsaBoss.basis]);
+      }
+      if (sf.sfsaCoreDia) {
+        const s = sf.sfsaCoreDia;
+        steelRows.push([`Worst core (Ø${s.diaMm} mm, ${s.depthMm} mm deep)`,
+          `recommended minimum Ø${s.recommendedMinDiaMm} mm`, s.basis]);
+      }
+      if (steelRows.length > 1) {
+        sheets.push({
+          name: 'Steel casting',
+          title: 'What the SFSA handbook asks of this part',
+          subtitle: 'SFSA Steel Castings Handbook Supplement 1 "Design Rules and Data", read first-hand and '
+            + 'computed at this part’s own dimensions. Figures, not verdicts; curve-derived values say so.',
+          headerRow: 0, zebra: true, colWidths: [42, 32, 76], wrapCols: [2],
+          rows: steelRows,
+        });
+      }
     }
   }
 

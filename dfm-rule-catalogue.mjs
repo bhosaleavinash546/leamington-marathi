@@ -146,11 +146,15 @@ export function resolveThreshold(rule, material, materialFamily, override) {
       sourceStatus: 'customer-standard',
     };
   }
+  // A material band read first-hand from a named document may carry its own
+  // grade — the ferrous minimum-section band is SFSA-sourced while the generic
+  // band stays industry consensus, and the finding must say which one it used.
   const byGrade = material && rule.byMaterial?.[material];
   if (byGrade) {
     return {
       threshold: byGrade.threshold, source: byGrade.source ?? rule.source,
       basis: 'material', matchedOn: material,
+      sourceStatus: byGrade.sourceStatus,
     };
   }
   const byFamily = materialFamily && rule.byMaterialFamily?.[materialFamily];
@@ -158,6 +162,7 @@ export function resolveThreshold(rule, material, materialFamily, override) {
     return {
       threshold: byFamily.threshold, source: byFamily.source ?? rule.source,
       basis: 'material-family', matchedOn: materialFamily,
+      sourceStatus: byFamily.sourceStatus,
     };
   }
   return {
@@ -1047,7 +1052,7 @@ export const DFM_RULES = [
   {
     id: 'sand-min-section',
     byMaterialFamily: {
-      ferrous: { threshold: 5.0, source: 'Sand-cast steel: the least fluid of the common cast metals, so a local web below 5 mm misruns even where the nominal wall is healthy.' },
+      ferrous: { threshold: 6.0, sourceStatus: 'standard-named', source: 'SFSA Steel Castings Handbook Supplement 1, p.2, READ FIRST-HAND: "A minimum thickness of 0.25 in. (6 mm) is suggested for design use when conventional steel casting techniques are employed." On a section whose run exceeds 12 in (305 mm) the Fig. 1 curve raises this further, and the engine computes that at the part\'s own longest dimension.' },
       castiron: { threshold: 4.0, source: 'Sand-cast grey iron: more fluid than steel thanks to its high carbon and silicon, so it carries a thinner local web.' },
       copper: { threshold: 4.0, source: 'Sand-cast bronze and brass: fluid, but they oxidise on the pour, and a thin section skins over before it fills.' },
     },
@@ -1067,7 +1072,7 @@ export const DFM_RULES = [
   {
     id: 'inv-min-section',
     byMaterialFamily: {
-      ferrous: { threshold: 1.6, source: 'Investment-cast steel: the shell is preheated, but steel still misruns before aluminium does.' },
+      ferrous: { threshold: 1.6, source: 'Investment-cast steel: the shell is preheated, but steel still misruns before aluminium does. Corroborated by SFSA Steel Castings Handbook Supplement 1 (p.2, read first-hand): 0.060 in (1.5 mm) walls "are common" for investment castings, tapering to 0.030 in (0.76 mm) — the 1.6 mm kept here is the stricter of the two and stands.' },
       titanium: { threshold: 2.0, source: 'Investment-cast titanium: poured in vacuum and reactive with the shell, so a thin local section comes out with an alpha case that has to be machined off.' },
     },
     sourceStatus: 'industry-consensus',
@@ -1280,6 +1285,9 @@ export const DFM_RULES = [
   },
   {
     id: 'sand-rib-thickness-max',
+    byMaterialFamily: {
+      ferrous: { threshold: 0.75, sourceStatus: 'standard-named', source: 'SFSA Steel Castings Handbook Supplement 1, Fig. 8 (p.5), READ FIRST-HAND: the thermally-neutral rib proportions stop at T1 = 3/4 T2. A steel rib heavier than 3/4 of its parent wall has no printed neutral height at all — the joint freezes last whatever the rib does above it.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'sand-casting',
     severity: 'medium',
@@ -1292,6 +1300,51 @@ export const DFM_RULES = [
       'Sand cools slowest of all, so it tolerates the fullest ribs — but a rib heavier than the wall it stands on inverts the freezing order and pulls a shrinkage cavity into the joint.',
     fix: 'Thin the rib, or add two thinner ribs instead of one heavy one.',
     source: 'Casting rib-proportion guidance (rib thickness against nominal wall).',
+  },
+  {
+    id: 'sand-rib-thermal-neutrality',
+    sourceStatus: 'standard-named',
+    process: 'sand-casting',
+    severity: 'medium',
+    title: 'Steel rib taller than its thermally neutral height',
+    measure: 'sfsaRibNeutralityMargin',
+    compare: 'gte',
+    threshold: 1.0,
+    unit: 'x Fig. 8 neutral height',
+    rationale:
+      'For steel the allowed rib height is COUPLED to rib thickness: SFSA prints neutrality to 4 walls of height only for a rib of 1/4 wall; at 1/2 wall the limit is 1.5 walls, at 3/4 wall just 0.5. A single flat height ceiling passes exactly the ribs — full-thickness, tall — that pull shrinkage into the joint. Too thin fails the other way: the rib acts as a cooling fin and upsets the freezing order.',
+    fix: 'Thin the rib to move up the neutrality curve, shorten it to its own neutral height, or split it into staggered ribs at least 7 rib-thicknesses apart.',
+    source: 'SFSA Steel Castings Handbook Supplement 1, Fig. 8 (p.5), READ FIRST-HAND: T1 = 1/4 T2 thermally neutral until h = 4 T2; 1/2 until 1.5 T2; 3/4 until 0.5 T2; spacing at least 7 T1. Interpolated at each rib\'s own ratio; the worst rib on the part sets the margin and is named. Steel castings only — the measure abstains on every other alloy.',
+  },
+  {
+    id: 'sand-junction-fillet',
+    sourceStatus: 'standard-named',
+    process: 'sand-casting',
+    severity: 'medium',
+    title: 'Junction fillet below the steel-casting band',
+    measure: 'sfsaJunctionFilletMargin',
+    compare: 'gte',
+    threshold: 1.0,
+    unit: 'x Fig. 11 fillet',
+    rationale:
+      'A steel T-junction wants a fillet equal to the thinner joining wall — but clamped between 13 and 25 mm, because past an inch the fillet GROWS the inscribed circle at the joint and the mass increase goes as (D/d)^2. A sharp junction tears on solidification; an oversized one feeds a shrinkage cavity.',
+    fix: 'Open the junction fillet to the thinner wall thickness, within the 13-25 mm band; past a 1.5x wall difference keep r at the thinner wall and bridge with a 15 deg slope.',
+    source: 'SFSA Steel Castings Handbook Supplement 1, Fig. 11 (p.6), READ FIRST-HAND: "r = T1, but never less than 1/2 in. (13 mm) or greater than 1 in. (25 mm)"; the slope past T2 = 1.5 T1 must run at least T2 - T1. Judged against the part\'s smallest internal corner radius. Steel castings only.',
+  },
+  {
+    id: 'sand-boss-dia',
+    sourceStatus: 'standard-named',
+    process: 'sand-casting',
+    severity: 'low',
+    title: 'Boss more than twice the wall it stands on',
+    measure: 'sfsaBossDiaToWall',
+    compare: 'lte',
+    threshold: 2.0,
+    unit: 'boss dia / wall',
+    rationale:
+      'SFSA\'s boss-neutrality bands stop at a boss of twice the parent wall — and even that is neutral only to a quarter-wall of height. Beyond 2 T no neutral height is printed at all: the boss is an isolated mass that must be fed or it shrinks, and bosses are the textbook place centre-line shrinkage hides.',
+    fix: 'Shrink the boss toward the wall thickness, blend it with tapered fillets, join several bosses into one machined panel, or core the centre out of a heavy one.',
+    source: 'SFSA Steel Castings Handbook Supplement 1, Fig. 16 + Table 1 (p.7), READ FIRST-HAND: neutrality bands D = 1.0/1.3/2.0 T with heights 1.5/1.0/0.25 T (less with fillets); spacing 3 T minimum. The worst boss on the part sets the ratio. Steel castings only.',
   },
   {
     id: 'sand-rib-thickness-min',
