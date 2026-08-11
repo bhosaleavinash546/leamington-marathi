@@ -2382,6 +2382,38 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
     });
   }
 
+  // The same test in plain words — mirrors the rule book's generator: one
+  // sentence derived from the rule itself, so 247 of them can never drift
+  // from the catalogue. Margin-type rules (unit starting "x") explain that
+  // the limit was computed for THIS part rather than looked up.
+  const MEASURE_PLAIN: Record<string, string> = {
+    wallP5Mm: 'the thinnest wall on the part',
+    wallP50Mm: 'the typical wall thickness',
+    wallP95Mm: 'the thickest wall on the part',
+    wallSpreadRatio: 'how uneven the walls are',
+    wallAreaBelowDraftPct: 'how much wall area has less taper than the process needs',
+    undercutFaceCount: 'how many regions the mould halves cannot release',
+    maxRibThicknessToWall: 'the fattest rib, compared with the wall it stands on',
+    minRibThicknessToWall: 'the thinnest rib, compared with the wall it stands on',
+    maxRibHeightToWall: 'the tallest rib, compared with the wall it stands on',
+    maxBossHeightToDia: 'the tallest boss, compared with its own diameter',
+    maxHoleDepthToDia: 'the deepest hole, compared with its diameter',
+    maxBlindHoleDepthToDia: 'the deepest BLIND hole, compared with its diameter',
+    tightestToleranceMm: 'the tightest tolerance band asked for on the drawing',
+    minInternalCornerRadiusMm: 'the sharpest internal corner',
+    maxPocketDepthToWidth: 'the deepest pocket, compared with its width',
+    unreachableAreaPct: 'how much of the surface a cutting tool cannot reach',
+  };
+  const deCamel = (m: string) => m.replace(/Mm$/, ' (mm)').replace(/Pct$/, ' (%)')
+    .replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+  const plainWordsFor = (f: { measure: string; unit?: string; thresholdText?: string }) => {
+    if (typeof f.unit === 'string' && f.unit.startsWith('x ')) {
+      return `The limit is not a fixed number: the engine worked out ${f.unit.slice(2)} for THIS part from the source cited, and 1.0 means exactly what that table promises. Below 1.0 the drawing asks for more than the process can hold.`;
+    }
+    const what = MEASURE_PLAIN[f.measure] || deCamel(f.measure);
+    return `The engine measured ${what}; the guideline is ${f.thresholdText ?? 'in the Guideline column'}.`;
+  };
+
   // Sorted worst first, like the PDF's summary table. A findings sheet in
   // catalogue order makes the reader do the triage the tool already did.
   const SEV_RANK: Record<string, number> = { high: 0, medium: 1, low: 2 };
@@ -2390,7 +2422,7 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
     .sort((a, b) => (SEV_RANK[a.f.severity] ?? 3) - (SEV_RANK[b.f.severity] ?? 3)
       || (b.f.cost?.annualDeltaEur ?? 0) - (a.f.cost?.annualDeltaEur ?? 0))
     .map(({ r, f }) => [
-      r.processName, f.severity, f.title, f.measured ?? '', f.unit, f.thresholdText,
+      r.processName, f.severity, f.title, plainWordsFor(f), f.measured ?? '', f.unit, f.thresholdText,
       f.cost?.priced ? 'priced' : 'not priced',
       f.cost?.priced ? (f.cost.deltaEur ?? '') : '',
       f.cost?.priced ? (f.cost.annualDeltaEur ?? '') : '',
@@ -2424,12 +2456,12 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
         ? `No rule was breached. ${evaluatedTotal} of ${ruleTotal} rules could be evaluated on this geometry — see the "Not evaluated" sheet for the remaining ${ruleTotal - evaluatedTotal}.`
         : `NOT A CLEAN RESULT. None of the ${ruleTotal} rules could be evaluated on this geometry, so this sheet is empty because nothing was checked — not because nothing was wrong. Every rule and its reason is on the "Not evaluated" sheet.`,
     headerRow: 0, zebra: true, autoFilter: true,
-    colWidths: [24, 10, 44, 12, 12, 18, 12, 14, 16, 52, 34, 40, 20, 52, 44],
-    wrapCols: [2, 9, 11, 13, 14],
-    numFmt: { 7: '#,##0.00', 8: '#,##0' },
+    colWidths: [24, 10, 44, 48, 12, 12, 18, 12, 14, 16, 52, 34, 40, 20, 52, 44],
+    wrapCols: [2, 3, 10, 12, 14, 15],
+    numFmt: { 8: '#,##0.00', 9: '#,##0' },
     statusColors: [{ match: 'high', argb: 'FFFDECEC' }, { match: 'medium', argb: 'FFFFF7E8' }],
     rows: [[
-      'Process', 'Severity', 'Finding', 'Measured', 'Unit', 'Guideline',
+      'Process', 'Severity', 'Finding', 'In plain words', 'Measured', 'Unit', 'Guideline',
       'Cost status', 'Saving EUR/part', 'Saving EUR/year', 'Basis or reason',
       'Threshold basis', 'Measured basis', 'Offending features', 'What to do', 'Source',
     ], ...findingRows],
@@ -2438,7 +2470,9 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
   // Not-evaluated is its own sheet on purpose. Buried at the bottom of the
   // findings sheet it would read as a footnote; it is the coverage statement.
   const unevaluated = data.results.flatMap(r => r.notEvaluated.map(n => [
-    r.processName, n.title, n.measure, n.reason ?? 'no measurement available', n.source,
+    r.processName, n.title,
+    MEASURE_PLAIN[n.measure] || deCamel(n.measure),
+    n.reason ?? 'no measurement available', n.source,
   ]));
   if (unevaluated.length) {
     sheets.push({
@@ -2446,8 +2480,8 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
       title: 'Rules that could NOT be checked',
       subtitle: 'These are not passes. The measurement each rule needs was not available on this geometry, and the reason is given for every one.',
       headerRow: 0, zebra: true, autoFilter: true,
-      colWidths: [24, 46, 30, 66, 44], wrapCols: [3, 4],
-      rows: [['Process', 'Rule', 'Needs measure', 'Why it could not run', 'Source'], ...unevaluated],
+      colWidths: [24, 46, 38, 66, 44], wrapCols: [2, 3, 4],
+      rows: [['Process', 'Rule', 'What it would have measured', 'Why it could not run', 'Source'], ...unevaluated],
     });
   }
 
@@ -2462,6 +2496,36 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
       headerRow: 0, zebra: true, autoFilter: true,
       colWidths: [24, 46, 14, 12, 20, 44], wrapCols: [5],
       rows: [['Process', 'Rule', 'Measured', 'Unit', 'Guideline', 'Source'], ...passed],
+    });
+  }
+
+  // ── Where the rules come from ─────────────────────────────────────────────
+  // The provenance summary a supplier conversation reaches for: the catalogue's
+  // grade split (counted server-side, same figures as the appendix sentence)
+  // and the primary documents read cover to cover. The book list is static by
+  // design — extend it when the next document is read; each finding's own
+  // Source cell remains the live truth about which rule rests on which page.
+  if (data.catalogue?.total) {
+    const g = data.catalogue.byGrade ?? {};
+    sheets.push({
+      name: 'Rule sources',
+      title: 'Where the rule book comes from',
+      subtitle: `Of ${data.catalogue.total} rules in the catalogue: `
+        + `${g['standard-named'] ?? 0} cite a named standard or document read first-hand, `
+        + `${g['engine-derived'] ?? 0} derive from this tool's own cost model, `
+        + `${g['customer-standard'] ?? 0} are company standards set in this workspace, `
+        + `and the rest are industry consensus. The threshold-audit register ships with the product and names every unaudited number.`,
+      headerRow: 0, zebra: true, colWidths: [58, 76], wrapCols: [1],
+      rows: [
+        ['Primary document, read cover to cover', 'What it governs in this tool'],
+        ['NADCA Product Design for Die Casting, 7th ed. (2015)', 'Die-casting draft (computed from the book\'s formula at each feature\'s depth), fillets, bosses, cored holes'],
+        ['NADCA #402 Product Specification Standards (2021)', 'Die-casting tolerance capability, computed per dimension and grade (Standard vs Precision is a report input)'],
+        ['SFSA Steel Castings Handbook, Supplement 1', 'Steel casting design: minimum section vs run length, rib thermal neutrality, junction fillets, boss cap'],
+        ['SFSA Supplement 3 — Dimensional Capabilities of Steel Castings', 'Steel casting tolerances (SFSA 2000 CT grades), required machining allowance, flatness, production series'],
+        ['DuPont Engineering Polymers, General Design Principles, Module I', 'Moulding draft per resin and draw depth, fillet knee, boss OD band, blind-core depth, undercut stripping'],
+        ['Covestro (Bayer) Part and Mold Design', 'PC-family rib percentages, draft minimums, fillet ratio, tall-boss limit, undercut stripping'],
+        ['Boljanovic, Sheet Metal Forming Processes and Die Design', 'Press force, strip utilisation, bend allowance, springback, draw operations — equation by equation'],
+      ],
     });
   }
 
