@@ -1354,7 +1354,9 @@ export function exportDfmPdf(
       [`${dw.gdt.length}`, 'GD&T FRAMES', INK],
     ];
     if (chk) {
-      tiles.push([`${chk.counts.confirmed}✓ ${chk.counts.conflict}✗`,
+      // ASCII only: the check/cross glyphs are outside jsPDF's WinAnsi set
+      // and rendered as dropped characters on the live E2E run.
+      tiles.push([`${chk.counts.confirmed} / ${chk.counts.conflict}`,
         'CONFIRMED / CONFLICTS VS 3D',
         chk.counts.conflict ? RED : GREEN]);
     }

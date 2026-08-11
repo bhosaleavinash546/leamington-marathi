@@ -442,8 +442,10 @@ export function mergeDrawingIntoGeo(geo, drawing, { sourceNote = DRAWING_SOURCE_
   const next = { ...geo, dfm: { ...(geo.dfm || {}) } };
   const previousPmi = next.dfm.pmi;
   next.dfm.pmi = pmiBlockFrom(drawing, sourceNote);
+  // ONLY the dimensions are recorded here — flatness and roughness are
+  // applied by the CALLER (typed values win there), and the caller records
+  // them. Recording them in both places printed each twice on the payload,
+  // which the live E2E run caught.
   if (inputs.pmiDimensions.length) applied.push(`${inputs.pmiDimensions.length} toleranced dimensions`);
-  if (inputs.flatnessMm !== undefined) applied.push('flatness callout');
-  if (inputs.surfaceRoughnessUin !== undefined) applied.push('surface roughness');
   return { geo: next, previousPmi, applied, inputs };
 }

@@ -174,7 +174,11 @@ test('merge: the drawing replaces the pmi block, the original survives, nothing 
   assert.equal(geo.dfm.pmi.sourceNote, 'test note');
   assert.equal(previousPmi.tightestToleranceMm, 0.05, 'the displaced AP242 block is returned, not discarded');
   assert.equal(original.dfm.pmi.tightestToleranceMm, 0.05, 'the input object is never mutated');
-  assert.ok(applied.some((a) => /toleranced dimensions/.test(a)));
+  // ONLY the dimensions: flatness and roughness are the caller's to record
+  // (typed values win there). Recording them here too printed each twice on
+  // the live payload — the fault the E2E run caught.
+  assert.deepEqual(applied, ['1 toleranced dimensions'],
+    'merge must not claim inputs the route applies, or the payload lists them twice');
 });
 
 test('the schema never requires a number the model might have to invent', () => {
