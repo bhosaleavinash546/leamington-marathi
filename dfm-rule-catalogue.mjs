@@ -352,6 +352,9 @@ export const DFM_RULES = [
       'PA66-GF30 (glass-filled)': { threshold: 5, sourceStatus: 'standard-named', source: 'DuPont Module I, Table 3.01 (p.7), READ FIRST-HAND: reinforced nylons 1/4-1/2 deg shallow, 1/2-1 deg deep per side - judged at the top of the printed range at the part\'s own draw depth.' },
       'POM (Acetal)': { threshold: 5, sourceStatus: 'standard-named', source: 'DuPont Module I, Table 3.01 (p.7), READ FIRST-HAND: Delrin (acetal) 0-1/4 deg shallow, 1/2 deg deep per side - judged at the top of the printed range at the part\'s own draw depth.' },
       'PET': { threshold: 5, sourceStatus: 'standard-named', source: 'DuPont Module I, Table 3.01 (p.7), READ FIRST-HAND: Rynite PET 1/2 deg shallow, 1/2-1 deg deep per side - judged at the top of the printed range at the part\'s own draw depth.' },
+      'Polycarbonate (PC)': { threshold: 5, sourceStatus: 'standard-named', source: 'Covestro "Part and Mold Design", p.32 + Fig 2-24, READ FIRST-HAND: "use at least one-half degree of draft for most PC-based materials; design permitting, use one degree" - judged at the printed 0.5 deg minimum. Texture adds roughly 1 deg per 0.001 in of depth.' },
+      'PC/ABS blend': { threshold: 5, sourceStatus: 'standard-named', source: 'Covestro "Part and Mold Design", p.32, READ FIRST-HAND: Bayblend PC/ABS is a PC-based material - at least 0.5 deg per side, 1 deg preferred. Judged at the printed minimum.' },
+      'TPU (thermoplastic PU)': { threshold: 5, sourceStatus: 'standard-named', source: 'Covestro "Part and Mold Design", p.32, READ FIRST-HAND: "Texin/Desmopan TPU resins typically prefer 3 to 5 degrees of draft" - judged at the bottom of the printed preference. TPU ejects easier from FROSTED mold surfaces, the printed exception to polish-helps.' },
     },
     sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
@@ -383,19 +386,24 @@ export const DFM_RULES = [
     unit: 'regions',
     rationale:
       'Any feature the two mould halves cannot form in a straight pull needs a slide, lifter or collapsible core. Each mechanism adds tooling cost, adds a moving part that can wear, and lengthens the cycle.',
-    fix: 'Redesign the feature so it forms in the draw direction, relocate the parting line, or accept the side action with its tooling cost priced in. A SHALLOW beveled undercut may instead strip from the mould: DuPont Module I (pp.12-13) allows up to 5% for Delrin (circular shapes only), 6-10% for Zytel, and just 1-2% for glass-reinforced resins depending on mould temperature — the engine does not yet measure undercut depth %, so stripping feasibility is the engineer\'s call.',
+    fix: 'Redesign the feature so it forms in the draw direction, relocate the parting line, or accept the side action with its tooling cost priced in. A SHALLOW beveled undercut may instead strip from the mould: DuPont Module I (pp.12-13) allows up to 5% for Delrin (circular shapes only), 6-10% for Zytel, and just 1-2% for glass-reinforced resins depending on mould temperature — the engine does not yet measure undercut depth %, so stripping feasibility is the engineer\'s call. Covestro (p.34) prints the same discipline for its families: stiff resins (Makrolon PC, Bayblend PC/ABS, Apec, filled) up to 2% with rounded 30-45 deg leading edges; Texin/Desmopan TPU 5% typically, 10% under ideal conditions.',
     source: 'Injection-moulding design guidance (side actions add roughly $500–$5,000 of tooling per feature). Stripping limits per resin from DuPont Module I pp.12-13, read first-hand.',
   },
   {
     id: 'im-internal-radius',
+    byMaterial: {
+      'Polycarbonate (PC)': { threshold: 1.0, sourceStatus: 'standard-named', source: 'Covestro "Part and Mold Design", p.31 + Fig 2-22, READ FIRST-HAND: "a radius-to-thickness ratio of approximately 0.15 provides a good compromise between performance and appearance" for light-to-moderate impact. The requirement is computed at 0.15x the wall for PC-family resins; critical impact areas want more, and the drawing should carry a radius RANGE.' },
+      'PC/ABS blend': { threshold: 1.0, sourceStatus: 'standard-named', source: 'Covestro "Part and Mold Design", p.31 + Fig 2-22, READ FIRST-HAND: r/t of approximately 0.15 for the PC-based families; judged at 0.15x the wall.' },
+      'TPU (thermoplastic PU)': { threshold: 1.0, sourceStatus: 'standard-named', source: 'Covestro "Part and Mold Design", p.31 + Fig 2-22, READ FIRST-HAND: r/t of approximately 0.15; judged at 0.15x the wall.' },
+    },
     sourceStatus: 'standard-named',
     process: 'injection-moulding',
     severity: 'medium',
     title: 'Inside corner radius below the DuPont stress-concentration knee',
-    measure: 'dupontFilletMargin',
+    measure: 'resinFilletMargin',
     compare: 'gte',
     threshold: 1.0,
-    unit: 'x Fig 3.07 fillet',
+    unit: 'x required fillet',
     rationale:
       'Most plastics are notch sensitive, and the sharp internal corner is the leading cause of failure DuPont names first. Their stress-concentration curve flattens at R/T = 0.5 — half the wall is where extra radius stops buying anything — and even a "sharp" edge is allowed 0.5 mm.',
     fix: 'Open every internal corner to at least half the adjoining wall thickness, and never below 0.5 mm — the printed minimum that is "usually permissible even where a sharp edge is required".',
@@ -449,7 +457,9 @@ export const DFM_RULES = [
       'PA6 (Nylon)': { sourceStatus: 'industry-consensus', threshold: 0.5, source: 'Nylon is semi-crystalline and shrinks heavily; a rib above half the wall reads through as a sink mark.' },
       'PA66-GF30 (glass-filled)': { sourceStatus: 'industry-consensus', threshold: 0.6, source: 'Glass fill suppresses shrinkage in the flow direction, so a filled nylon tolerates a fuller rib than the unfilled resin.' },
       'ABS': { sourceStatus: 'industry-consensus', threshold: 0.6, source: 'ABS is amorphous and shrinks about 0.5%, so it hides a fuller rib.' },
-      'Polycarbonate (PC)': { sourceStatus: 'industry-consensus', threshold: 0.6, source: 'PC is amorphous and low-shrink; the limit is sink on a gloss surface rather than the rib itself.' },
+      'Polycarbonate (PC)': { sourceStatus: 'standard-named', threshold: 0.5, source: 'Covestro "Part and Mold Design", Table 2-1 (p.25), READ FIRST-HAND from the page image: Makrolon PC rib thickness 50% of wall for minimal sink (40% if high gloss; 66% where slight sink is acceptable). REPLACES the 0.6 consensus figure - the resin\'s own maker prints 50.' },
+      'PC/ABS blend': { sourceStatus: 'standard-named', threshold: 0.5, source: 'Covestro "Part and Mold Design", Table 2-1 (p.25), READ FIRST-HAND: Bayblend PC/ABS 50% minimal sink / 66% slight sink; filled grades 60/75.' },
+      'TPU (thermoplastic PU)': { sourceStatus: 'standard-named', threshold: 0.5, source: 'Covestro "Part and Mold Design", Table 2-1 (p.25), READ FIRST-HAND: Texin & Desmopan TPU 50% minimal sink / 66% slight sink.' },
     },
     sourceStatus: 'standard-named',
     process: 'injection-moulding',
@@ -506,8 +516,13 @@ export const DFM_RULES = [
   {
     id: 'im-boss-height',
     byMaterial: {
-      'PA66-GF30 (glass-filled)': { threshold: 2.5, source: 'A filled compound is stiff and abrasive; a tall boss cored in it wears the pin and will not pack to the top.' },
-      'Polycarbonate (PC)': { threshold: 3, source: 'PC is notch-sensitive, so a tall boss concentrates stress at its base and crazes under load rather than failing to fill.' },
+      'PA66-GF30 (glass-filled)': { sourceStatus: 'industry-consensus', threshold: 2.5, source: 'A filled compound is stiff and abrasive; a tall boss cored in it wears the pin and will not pack to the top.' },
+      // The maker prints 5x as the FILLING limit (Covestro p.28); the 3 held
+      // here is the stricter notch-sensitivity screen — a different failure
+      // mode — and the stricter figure stands, with both claims named.
+      'Polycarbonate (PC)': { sourceStatus: 'industry-consensus', threshold: 3, source: 'PC is notch-sensitive, so a tall boss concentrates stress at its base and crazes under load rather than failing to fill. Covestro "Part and Mold Design" (p.28, read first-hand) prints 5x OD as the point where FILLING becomes the problem — a looser, different-failure-mode limit; the stricter structural screen stands.' },
+      'PC/ABS blend': { threshold: 5.0, sourceStatus: 'standard-named', source: 'Covestro "Part and Mold Design", p.28, READ FIRST-HAND: "tall bosses - those greater than five times their outside diameter - can create a filling problem at their top or a thick section at their base."' },
+      'TPU (thermoplastic PU)': { threshold: 5.0, sourceStatus: 'standard-named', source: 'Covestro "Part and Mold Design", p.28, READ FIRST-HAND: the printed tall-boss limit is five times the outside diameter; TPU is elastomeric, so the PC notch-sensitivity screen does not apply.' },
     },
     sourceStatus: 'industry-consensus',
     process: 'injection-moulding',

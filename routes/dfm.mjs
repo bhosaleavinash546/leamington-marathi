@@ -736,7 +736,7 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
           '_sfsaCtSummary', '_sfsaCapabilityModel', '_sfsaRma', '_sfsaWeightTolerance',
           '_sfsaSandTolerance', '_sfsaSandFlatness',
           // The DuPont moulding figures, same contract.
-          '_dupontDraft', '_dupontFillet', '_dupontBoss']) {
+          '_resinDraft', '_resinFillet', '_dupontBoss']) {
           if (m[k]) out[k.slice(1)] = m[k];
         }
         if (m._nadcaBasis) out.nadcaUnavailable = m._nadcaBasis;

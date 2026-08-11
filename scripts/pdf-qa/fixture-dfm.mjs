@@ -412,11 +412,11 @@ export const DFM_RESULT_FULL = {
     // THE DUPONT MOULDING FIGURES, so the workbook sheet renders in QA. The
     // fixture is a metal casting, but QA renders every branch on one fixture
     // by design - production payloads carry one document family at a time.
-    dupontDraft: {
+    resinDraft: {
       requiredDeg: 0.13, band: 'shallow', group: 'Zytel®', drawDepthMm: 20, wallAreaBelowRequiredPct: 3.2,
       basis: 'DuPont Module I, Table 3.01 (p.7), read first-hand: Zytel, shallow draw - judged at the top of the printed range at the part\'s own draw depth.',
     },
-    dupontFillet: {
+    resinFillet: {
       requiredMm: 1, wallMm: 2, measuredMm: 0.4,
       basis: 'DuPont Module I, Fig 3.07 + p.7: fillet radius = 1/2 wall at the stress-concentration knee; minimum 0.508 mm.',
     },

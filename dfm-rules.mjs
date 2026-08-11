@@ -32,6 +32,10 @@ import {
   filletRequirementMm as dupontFilletRequirementMm,
   BOSS_OD_TO_HOLE, BLIND_CORE,
 } from './dupont-polymers.mjs';
+import {
+  covestroResinFor, requiredDraftDeg as covestroRequiredDraftDeg,
+  filletRequirementMm as covestroFilletRequirementMm,
+} from './covestro-polymers.mjs';
 
 /**
  * The worst (smallest-ratio) coaxial boss/hole pair in a feature table.
@@ -720,7 +724,66 @@ export function extractMeasures(geo = {}, opts = {}) {
     ...sfsaLimits(draft, features, wall, geo, opts),
     // DuPont Module I, the same discipline for ENGINEERING THERMOPLASTICS.
     ...dupontLimits(draft, features, wall, geo, opts),
+    // Covestro "Part and Mold Design" for the PC/PC-ABS/TPU families the
+    // DuPont table does not name. The two resin gates are DISJOINT, so the
+    // shared resin* measure keys can never collide.
+    ...covestroLimits(draft, features, wall, geo, opts),
   };
+}
+
+/**
+ * The limits the Covestro guide prints for ITS resin families — Makrolon PC,
+ * Bayblend PC/ABS, Texin/Desmopan TPU. Emits the same neutral resin* keys
+ * as dupontLimits (draft area at the resin's own angle, fillet margin), and
+ * the gates are disjoint by construction: a resin is judged by the book that
+ * names it, never by a borrowed column.
+ */
+function covestroLimits(draft, features, wall, geo, opts = {}) {
+  const num = (v) => {
+    if (v === null || v === undefined || v === '') return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
+  const out = {};
+  const hasPart = !!(draft && (draft.drawDirectionXYZ || draft.draftHistogramDegToAreaMm2))
+    || num(wall?.p50Mm) !== undefined;
+  if (!hasPart) return out;
+  const group = covestroResinFor(opts.material);
+  if (!group.ok) {
+    // The DuPont gate already wrote its reason for non-DuPont resins; only
+    // add one here when neither book names the material and nothing spoke.
+    return out;
+  }
+  const nominalWall = num(wall.p50Mm);
+
+  // ── DRAFT, p.32: flat per-resin minimum (no printed depth dependence) ───
+  {
+    const req = covestroRequiredDraftDeg(opts.material);
+    if (req.ok) {
+      const pct = areaBelowDraftPct(draft.draftHistogramDegToAreaMm2, req.deg);
+      out._resinDraft = {
+        requiredDeg: req.deg, band: null, group: req.group, drawDepthMm: null,
+        wallAreaBelowRequiredPct: pct,
+        basis: req.basis,
+      };
+      if (pct !== undefined) out.resinDraftAreaPct = pct;
+    }
+  }
+
+  // ── FILLETS, Fig 2-22: the r/t = 0.15 compromise ────────────────────────
+  const corner = num(features.minInternalCornerRadiusMm);
+  if (nominalWall > 0) {
+    const req = covestroFilletRequirementMm(nominalWall);
+    if (req.ok) {
+      out._resinFillet = { requiredMm: req.requiredMm, wallMm: nominalWall,
+        measuredMm: corner ?? null, basis: req.basis };
+      if (corner !== undefined && req.requiredMm > 0) {
+        out.resinFilletMargin = Math.round((corner / req.requiredMm) * 1000) / 1000;
+      }
+    }
+  }
+
+  return out;
 }
 
 /**
@@ -766,13 +829,13 @@ function dupontLimits(draft, features, wall, geo, opts = {}) {
       const req = dupontRequiredDraftDeg(opts.material, depthMm);
       if (req.ok) {
         const pct = areaBelowDraftPct(draft.draftHistogramDegToAreaMm2, req.deg);
-        out._dupontDraft = {
+        out._resinDraft = {
           requiredDeg: req.deg, band: req.band, group: req.group,
           drawDepthMm: Math.round(depthMm),
           wallAreaBelowRequiredPct: pct,
           basis: `${req.basis} Judged at the part's own ${Math.round(depthMm)} mm extent along the draw - an upper bound on any feature's depth, and the table asks MORE of deeper draws, so this is the most demanding band the part could fall in.`,
         };
-        if (pct !== undefined) out.dupontWallAreaBelowDraftPct = pct;
+        if (pct !== undefined) out.resinDraftAreaPct = pct;
       }
     }
   }
@@ -782,10 +845,10 @@ function dupontLimits(draft, features, wall, geo, opts = {}) {
   if (nominalWall > 0) {
     const req = dupontFilletRequirementMm(nominalWall);
     if (req.ok) {
-      out._dupontFillet = { requiredMm: req.requiredMm, wallMm: nominalWall,
+      out._resinFillet = { requiredMm: req.requiredMm, wallMm: nominalWall,
         measuredMm: corner ?? null, basis: req.basis };
       if (corner !== undefined) {
-        out.dupontFilletMargin = Math.round((corner / req.requiredMm) * 1000) / 1000;
+        out.resinFilletMargin = Math.round((corner / req.requiredMm) * 1000) / 1000;
       }
     }
   }
@@ -1442,12 +1505,12 @@ export function runDfmRules(geo, process, opts = {}) {
     // bound on feature depth) and the printed ranges are already judged at
     // their conservative top. Zytel genuinely needs less than the generic
     // angle, and the primary source saying so is the point of holding it.
-    const dupontDraft = measures._dupontDraft;
-    const cutoffFromDupont = rule.process === 'injection-moulding'
+    const dupontDraft = measures._resinDraft;
+    const cutoffFromResin = rule.process === 'injection-moulding'
       && rule.measure === 'wallAreaBelowDraftPct'
       && dupontDraft?.requiredDeg != null;
     const cutoff = rule.measure === 'wallAreaBelowDraftPct'
-      ? (cutoffFromDupont ? dupontDraft.requiredDeg : cutoffFromNadca ? nadcaCut : rule.draftCutoffDeg)
+      ? (cutoffFromResin ? dupontDraft.requiredDeg : cutoffFromNadca ? nadcaCut : rule.draftCutoffDeg)
       : rule.measure === 'overhangAreaBelowDeg' ? rule.overhangCutoffDeg
         : null;
     const unit = cutoff != null && rule.unit?.startsWith('%')
@@ -1461,8 +1524,8 @@ export function runDfmRules(geo, process, opts = {}) {
       // A computed cutoff is rarely one of the seven angles the curve carries,
       // so it is read off the per-degree histogram instead. The curve remains
       // the path for the published constants, which ARE curve points.
-      value = cutoffFromDupont
-        ? numberOr(measures.dupontWallAreaBelowDraftPct)
+      value = cutoffFromResin
+        ? numberOr(measures.resinDraftAreaPct)
         : cutoffFromNadca
           ? numberOr(measures.nadcaWallAreaBelowDraftPct)
           : numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
@@ -1470,8 +1533,8 @@ export function runDfmRules(geo, process, opts = {}) {
       // cutoff: the unit names the angle, and an area measured at the
       // generic angle under a resin-specific label would be the two-numbers-
       // one-caption bug again. Under DuPont, no histogram means abstain.
-      if (value === undefined && !cutoffFromDupont) value = numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
-      if (value === undefined && !cutoffFromDupont && rule.draftCutoffDeg === 1.0) {
+      if (value === undefined && !cutoffFromResin) value = numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
+      if (value === undefined && !cutoffFromResin && rule.draftCutoffDeg === 1.0) {
         value = measures.wallAreaBelowMinDraftPct;
       }
     } else {
@@ -1559,9 +1622,9 @@ export function runDfmRules(geo, process, opts = {}) {
                 : rule.measure === 'sfsaSandFlatnessMargin' ? measures._sfsaSandFlatness?.basis
                   : rule.measure === 'sfsaInvFlatnessMargin' ? measures._sfsaInvFlatness?.basis
                     : rule.measure === 'sfsaMachiningStockMargin' ? measures._sfsaRma?.basis
-                      : rule.measure === 'dupontFilletMargin' ? measures._dupontFillet?.basis
+                      : rule.measure === 'resinFilletMargin' ? measures._resinFillet?.basis
                         : rule.measure === 'dupontBossOdToHole' ? measures._dupontBoss?.basis
-                          : cutoffFromDupont ? measures._dupontDraft?.basis
+                          : cutoffFromResin ? measures._resinDraft?.basis
                             : undefined,
       status,
     };

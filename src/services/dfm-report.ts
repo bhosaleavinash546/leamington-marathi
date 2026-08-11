@@ -2274,14 +2274,14 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
 
       // ── Injection moulding (DuPont Module I) — same contract, own sheet ──
       const dpRows: Array<Array<string | number>> = [['Figure', 'Value', 'Where it comes from']];
-      if (sf.dupontDraft) {
-        const s = sf.dupontDraft;
+      if (sf.resinDraft) {
+        const s = sf.resinDraft;
         dpRows.push([`Required draft (${s.group}, ${s.band} draw of ${s.drawDepthMm} mm)`,
           `${s.requiredDeg}° per side${s.wallAreaBelowRequiredPct != null ? ` (${s.wallAreaBelowRequiredPct}% of wall below it)` : ''}`,
           s.basis]);
       }
-      if (sf.dupontFillet) {
-        const s = sf.dupontFillet;
+      if (sf.resinFillet) {
+        const s = sf.resinFillet;
         dpRows.push(['Internal corner radius the resin wants',
           `${s.requiredMm} mm${s.measuredMm != null ? ` (smallest measured ${s.measuredMm} mm)` : ''}`, s.basis]);
       }

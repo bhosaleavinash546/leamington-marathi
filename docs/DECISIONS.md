@@ -1994,3 +1994,38 @@ strength ~60%. Chunks read in full; pp.87-136 (assembly, welding,
 machining) print no DFM thresholds. Module I also prints NO tolerance
 tables - DIN 16742 remains the moulding tolerance blocker. Register: 28
 rules primary-read.
+
+## The Covestro guide covers the PC families, and two books now share one measure honestly
+
+The user supplied the Covestro (Bayer) *Part and Mold Design* guide. Its
+digit font does not survive text extraction — every number was read from
+the rendered page images (Table 2-1, Fig 2-10, pp.28/31/32/34), the same
+way the NADCA tables were. Now code in `covestro-polymers.mjs`. Decisions:
+
+  * **Two resin gates, disjoint by construction.** DuPont Module I names
+    nylon/acetal/PET; Covestro names PC, PC/ABS and TPU. Each material is
+    judged by the book that names it, a test pins that no material is
+    claimed by both, and the shared measure keys were renamed from
+    `dupont*` to neutral `resin*` so a Covestro number never travels under
+    another maker's name.
+  * **The maker tightened its own resin's rib ceiling.** Table 2-1 prints
+    Makrolon PC at 50% of wall for minimal sink (40% high gloss) — the
+    consensus 0.6 entry was too loose, and it moved to the printed 0.5.
+  * **A genuine two-claim conflict, resolved sharpen-only with both claims
+    named.** Covestro prints tall-boss trouble at 5× OD (a FILLING limit);
+    the existing PC screen of 3× rests on notch-sensitivity (crazing under
+    load) — different failure modes. The stricter 3× stands for PC with the
+    printed 5× named in the source; PC/ABS and TPU, which carry no notch
+    screen, are judged at the printed 5×.
+  * **Two books, two different fillet claims, no averaging.** DuPont's 0.5
+    knee is where stress concentration flattens; Covestro's 0.15 is a
+    performance/appearance compromise for its own resins. Each governs only
+    the resins its author names.
+
+Recorded but not gated: rib base radius 0.125T and the ≤1.0 mm walls →
+rib-equals-wall note; boss base blend 0.38 mm; undercut stripping (stiff
+2%, TPU 5-10%, 30-45 deg lead) enriches the undercut rule's fix text —
+undercut depth % is still not a measure. Chapters 3-8 (structural,
+assembly, machining, painting, mold design) were read and print process
+and mold-side guidance, not part-geometry DFM thresholds. Register: 29
+rules primary-read.

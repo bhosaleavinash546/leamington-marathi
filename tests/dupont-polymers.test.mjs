@@ -118,14 +118,14 @@ test('draft is judged at the Table 3.01 angle for a named resin, and says so', (
 test('the fillet rule fires on a sharp-cornered nylon part and abstains on ABS', () => {
   // 0.4 mm corner vs required max(0.5*2, 0.508) = 1 mm → margin 0.4, FAIL.
   const m = extractMeasures(moulding(PA), { material: PA });
-  assert.ok(m.dupontFilletMargin < 1, `0.4 vs 1.0 must fail, got ${m.dupontFilletMargin}`);
-  assert.equal(m._dupontFillet.requiredMm, 1);
+  assert.ok(m.resinFilletMargin < 1, `0.4 vs 1.0 must fail, got ${m.resinFilletMargin}`);
+  assert.equal(m._resinFillet.requiredMm, 1);
   const r = runDfmRules(moulding(PA), 'injection-moulding', { material: PA });
   const f = r.findings.find((x) => x.id === 'im-internal-radius');
   assert.ok(f);
   assert.match(f.source, /0\.508/);
   const abs = extractMeasures(moulding('ABS'), { material: 'ABS' });
-  assert.equal(abs.dupontFilletMargin, undefined);
+  assert.equal(abs.resinFilletMargin, undefined);
   assert.match(abs._dupontBasis, /Table 3\.01/);
 });
 
@@ -152,8 +152,8 @@ test('blind holes past twice their diameter fail; the measure is resin-independe
 
 test('metals get nothing from the DuPont measures, and the NADCA boss rule still fires', () => {
   const m = extractMeasures(moulding('Steel (mild)'), { material: 'Steel (mild)' });
-  assert.equal(m.dupontFilletMargin, undefined);
-  assert.equal(m.dupontWallAreaBelowDraftPct, undefined);
+  assert.equal(m.resinFilletMargin, undefined);
+  assert.equal(m.resinDraftAreaPct, undefined);
   // The shared coaxial-pair helper must not have changed the NADCA side: an
   // aluminium die casting with a 30 mm boss on a 10 mm hole still measures 3.
   const alu = {

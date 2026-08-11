@@ -331,14 +331,14 @@
    "status": "primary-read",
    "claimedSource": "DuPont \"General Design Principles for DuPont Engineering Polymers\", Module I (2000 ed.), Table 3.01 p.7",
    "grade": "standard-named",
-   "finding": "RESOLVED for the resins Table 3.01 names: the draft ANGLE is now computed per resin and draw depth (Zytel 1/8-1/2 deg, Delrin 1/4-1/2, reinforced nylons and Rynite 1/2-1, judged at the top of each printed range at the part's own extent along the draw - the table asks more of deeper draws, so the part extent is conservative). This REPLACES the generic 1 deg for named resins - nylon genuinely needs less, and the primary source saying so is the point. ABS/PC/PP and other unnamed resins keep the generic angle and grade. Texture (+1 deg per 0.001 in) is recorded; texture depth is not yet a declared input.",
+   "finding": "RESOLVED for the resins Table 3.01 names: the draft ANGLE is now computed per resin and draw depth (Zytel 1/8-1/2 deg, Delrin 1/4-1/2, reinforced nylons and Rynite 1/2-1, judged at the top of each printed range at the part's own extent along the draw - the table asks more of deeper draws, so the part extent is conservative). This REPLACES the generic 1 deg for named resins - nylon genuinely needs less, and the primary source saying so is the point. ABS/PC/PP and other unnamed resins keep the generic angle and grade. Texture (+1 deg per 0.001 in) is recorded; texture depth is not yet a declared input. SECOND PRIMARY SOURCE: Covestro (Bayer) \"Engineering Polymers: Part and Mold Design - Thermoplastics, A Design Guide\", p.32 - PC-based materials at least 0.5 deg per side (1 deg preferred), Apec high-heat PC and TPU prefer 3-5 deg (judged at 3). Flat per resin, no printed depth dependence; the same texture rule of thumb as DuPont.",
    "readOn": "2026-08-11"
   },
   "im-rib-thickness-max": {
    "status": "primary-read",
    "claimedSource": "DuPont \"General Design Principles for DuPont Engineering Polymers\", Module I (2000 ed.), Fig 4.07 p.26",
    "grade": "standard-named",
-   "finding": "CONFIRMED, not retuned: the printed band (0.4 W appearance / 0.6 W structure) matches the tool's existing 0.4/0.6 thresholds exactly. Grade upgraded to standard-named; the stricter resin-specific bands (0.5 for high-shrink semi-crystallines) are practising-moulder experience, stand unchanged, and carry their own industry-consensus grade.",
+   "finding": "CONFIRMED, not retuned: the printed band (0.4 W appearance / 0.6 W structure) matches the tool's existing 0.4/0.6 thresholds exactly. Grade upgraded to standard-named; the stricter resin-specific bands (0.5 for high-shrink semi-crystallines) are practising-moulder experience, stand unchanged, and carry their own industry-consensus grade. SECOND PRIMARY SOURCE (read 2026-08-11): Covestro (Bayer) \"Engineering Polymers: Part and Mold Design - Thermoplastics, A Design Guide\", Table 2-1 p.25 - the digit font in the supplied copy does not extract, so the table was read from the page image. It TIGHTENS the PC ceiling from the 0.6 consensus to the maker's printed 0.5 (minimal sink; 0.4 high gloss; 0.66 where slight sink is acceptable) and adds Bayblend PC/ABS and Texin/Desmopan TPU at 0.5, all standard-named.",
    "readOn": "2026-08-11"
   },
   "im-rib-thickness-min": {
@@ -352,7 +352,7 @@
    "status": "primary-read",
    "claimedSource": "DuPont \"General Design Principles for DuPont Engineering Polymers\", Module I (2000 ed.), Fig 3.07 + p.7",
    "grade": "standard-named",
-   "finding": "NEW RULE: fillet radius at least half the wall (the printed stress-concentration knee at R/T = 0.5) with the printed 0.508 mm floor. DuPont-named resins only; abstains on others.",
+   "finding": "NEW RULE: fillet radius at least half the wall (the printed stress-concentration knee at R/T = 0.5) with the printed 0.508 mm floor. DuPont-named resins only; abstains on others. SECOND PRIMARY SOURCE: Covestro (Bayer) \"Engineering Polymers: Part and Mold Design - Thermoplastics, A Design Guide\", p.31 + Fig 2-22 - r/t of approximately 0.15 for PC-family resins, a DIFFERENT claim from DuPont's 0.5 knee (compromise incl. appearance vs pure stress flattening); each resin is judged by the book that names it, gates disjoint by construction and pinned by test.",
    "readOn": "2026-08-11"
   },
   "im-boss-od": {
@@ -374,6 +374,13 @@
    "claimedSource": "Process screening value (0.2 mm total band)",
    "grade": "industry-consensus",
    "finding": "DuPont Module I (now held, read 2026-08-11) prints NO tolerance tables - it is a design-principles book. The moulding tolerance primary source remains DIN 16742 (successor of DIN 16901), not held; the SPI/SPE commercial-vs-fine charts would also serve."
+  },
+  "im-boss-height": {
+   "status": "primary-read",
+   "claimedSource": "Covestro (Bayer) \"Engineering Polymers: Part and Mold Design - Thermoplastics, A Design Guide\", p.28 (PC family); industry consensus elsewhere",
+   "grade": "standard-named",
+   "finding": "PARTIALLY RESOLVED with a genuine two-claim conflict handled sharpen-only: Covestro prints 5x OD as the point where FILLING becomes the problem; the existing PC screen of 3x rests on notch-sensitivity (crazing at the boss base under load) - a different failure mode and STRICTER, so it stands with both claims named in the source. PC/ABS and TPU (no notch screen) are judged at the printed 5x, standard-named. Generic 3x stays for unnamed resins.",
+   "readOn": "2026-08-11"
   }
  }
 }
