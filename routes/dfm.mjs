@@ -734,7 +734,9 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
           // asks of THIS part, printed whether or not a rule fired.
           '_sfsaMinSection', '_sfsaJunctionFillet', '_sfsaRibNeutrality', '_sfsaBoss', '_sfsaCoreDia',
           '_sfsaCtSummary', '_sfsaCapabilityModel', '_sfsaRma', '_sfsaWeightTolerance',
-          '_sfsaSandTolerance', '_sfsaSandFlatness']) {
+          '_sfsaSandTolerance', '_sfsaSandFlatness',
+          // The DuPont moulding figures, same contract.
+          '_dupontDraft', '_dupontFillet', '_dupontBoss']) {
           if (m[k]) out[k.slice(1)] = m[k];
         }
         if (m._nadcaBasis) out.nadcaUnavailable = m._nadcaBasis;

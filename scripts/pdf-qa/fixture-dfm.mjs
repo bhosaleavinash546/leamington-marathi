@@ -409,6 +409,21 @@ export const DFM_RESULT_FULL = {
       machineMoldedPct: 5, handMoldedPct: 7, weightKg: 40,
       basis: 'SFSA Supplement 3, Table 3.14 (ISO 4990-1986): casting mass tolerance +/-5% machine molded, +/-7% hand molded.',
     },
+    // THE DUPONT MOULDING FIGURES, so the workbook sheet renders in QA. The
+    // fixture is a metal casting, but QA renders every branch on one fixture
+    // by design - production payloads carry one document family at a time.
+    dupontDraft: {
+      requiredDeg: 0.13, band: 'shallow', group: 'Zytel®', drawDepthMm: 20, wallAreaBelowRequiredPct: 3.2,
+      basis: 'DuPont Module I, Table 3.01 (p.7), read first-hand: Zytel, shallow draw - judged at the top of the printed range at the part\'s own draw depth.',
+    },
+    dupontFillet: {
+      requiredMm: 1, wallMm: 2, measuredMm: 0.4,
+      basis: 'DuPont Module I, Fig 3.07 + p.7: fillet radius = 1/2 wall at the stress-concentration knee; minimum 0.508 mm.',
+    },
+    dupontBoss: {
+      ratio: 3, bossDiaMm: 30, holeDiaMm: 10, minRatio: 2, maxRatio: 2.5, atXYZ: [10, 10, 0],
+      basis: 'DuPont Module I, p.8: boss OD 2-2.5x the hole diameter.',
+    },
   },
   // THE CATALOGUE COUNTS, on the "everything the API knows" fixture only.
   //

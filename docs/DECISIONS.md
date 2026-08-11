@@ -1957,3 +1957,40 @@ against Table 2.2's required machining allowance at grade F. Register:
 22 rules primary-read. Residual blockers, named: non-ferrous casting grade
 selection (ISO 8062 proper), and the geometric tables beyond flatness
 (straightness, circularity, coaxiality) are encoded but await measures.
+
+## DuPont Module I is the first polymer primary source, and it confirmed two thresholds
+
+The user supplied *DuPont General Design Principles for DuPont Engineering
+Polymers, Module I* (2000 ed.) — the first primary document for the
+injection-moulding family. Now code in `dupont-polymers.mjs`. Decisions:
+
+  * **Fig 4.07 CONFIRMED the rib band.** The printed rib proportions
+    (0.4 W for appearance, 0.6 W for structure) match the tool's existing
+    0.4/0.6 thresholds exactly — the audit's first case of a primary source
+    validating a consensus number rather than correcting it. Grades
+    upgraded, thresholds untouched. The stricter resin-specific bands (0.5
+    for high-shrink semi-crystallines) are moulder experience, are TIGHTER
+    than the printed figure, and keep their own grade so the standard's
+    name is never borrowed for a number it did not print.
+  * **Table 3.01 REPLACES the draft angle for named resins — both ways.**
+    Zytel needs just 1/8 deg on a shallow smooth draw where the generic rule
+    asked 1 deg; reinforced nylons need up to 1 deg where a generic tool
+    might have accepted less. Replacement (not sharpen-only) is safe here
+    because the table is depth-banded the conservative way round — deeper
+    draws ask MORE, and the part's extent along the draw is an upper bound
+    on any feature's depth — and each printed range is judged at its top.
+    Resins the table does not name (ABS, PC, PP, PBT...) keep the generic
+    angle, and a computed cutoff never lets the generic-angle fallback run
+    under its label (the two-numbers-one-caption bug, pre-empted).
+  * **The boss/hole pairing geometry now exists once.** The NADCA §3.2 rule
+    and the DuPont p.8 rule read the same worst coaxial pair through a
+    shared helper; a regression test pins the NADCA measure unchanged.
+
+Recorded but not gated, with the missing measure named: undercut stripping
+percentages (Delrin 5%, Zytel 6-10%, GF 1-2% by mould temperature — no
+undercut-depth measure yet), thread termination and pitch limits, insert
+seat/protrusion/preheat, blind-hole bottom >= 1/6 dia, reinforced weld-line
+strength ~60%. Chunks read in full; pp.87-136 (assembly, welding,
+machining) print no DFM thresholds. Module I also prints NO tolerance
+tables - DIN 16742 remains the moulding tolerance blocker. Register: 28
+rules primary-read.

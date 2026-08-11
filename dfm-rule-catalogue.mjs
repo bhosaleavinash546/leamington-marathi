@@ -344,21 +344,31 @@ export const DFM_RULES = [
   },
   {
     id: 'im-draft-minimum',
+    // For the resins DuPont Table 3.01 names, the ANGLE itself is computed
+    // per resin and draw depth (see dupontLimits in dfm-rules.mjs) and these
+    // entries carry the grade; the 5% area threshold is unchanged.
+    byMaterial: {
+      'PA6 (Nylon)': { threshold: 5, sourceStatus: 'standard-named', source: 'DuPont General Design Principles Module I, Table 3.01 (p.7), READ FIRST-HAND: Zytel (nylon) 0-1/8 deg per side shallow draw (<1 in), 1/4-1/2 deg deep - judged at the top of the printed range at the part\'s own draw depth. Texture adds 1 deg per 0.001 in of depth.' },
+      'PA66-GF30 (glass-filled)': { threshold: 5, sourceStatus: 'standard-named', source: 'DuPont Module I, Table 3.01 (p.7), READ FIRST-HAND: reinforced nylons 1/4-1/2 deg shallow, 1/2-1 deg deep per side - judged at the top of the printed range at the part\'s own draw depth.' },
+      'POM (Acetal)': { threshold: 5, sourceStatus: 'standard-named', source: 'DuPont Module I, Table 3.01 (p.7), READ FIRST-HAND: Delrin (acetal) 0-1/4 deg shallow, 1/2 deg deep per side - judged at the top of the printed range at the part\'s own draw depth.' },
+      'PET': { threshold: 5, sourceStatus: 'standard-named', source: 'DuPont Module I, Table 3.01 (p.7), READ FIRST-HAND: Rynite PET 1/2 deg shallow, 1/2-1 deg deep per side - judged at the top of the printed range at the part\'s own draw depth.' },
+    },
     sourceStatus: 'industry-consensus',
     process: 'injection-moulding',
     severity: 'high',
     title: 'Wall area below the minimum draft angle',
     measure: 'wallAreaBelowDraftPct',
-    // 1 degree per side is the smooth-wall figure. Texture needs far more, and
-    // texture is not in the solid — see `rationale`.
+    // 1 degree per side is the smooth-wall figure for resins Table 3.01 does
+    // not name. Texture needs far more, and texture is not in the solid — see
+    // `rationale`.
     draftCutoffDeg: 1.0,
     compare: 'lte',
     threshold: 5,
     unit: '% of wall area',
     rationale:
       'A wall with no draft drags on the core as the part ejects, scuffing the surface and raising ejection force. Textured surfaces need considerably more draft than smooth ones.',
-    fix: 'Add at least 0.5 to 1 degree per side on smooth walls; allow 2 to 5 degrees where the surface is textured.',
-    source: 'Injection-moulding design guidance (0.5–1 deg/side smooth, 2–5 deg textured).',
+    fix: 'Add at least 0.5 to 1 degree per side on smooth walls; allow 2 to 5 degrees where the surface is textured. For DuPont resins the finding names the Table 3.01 angle it judged.',
+    source: 'Injection-moulding design guidance (0.5–1 deg/side smooth, 2–5 deg textured) for resins DuPont Table 3.01 does not name.',
     measuredAt: { minDraftDeg: 1.0 },
   },
   {
@@ -373,8 +383,53 @@ export const DFM_RULES = [
     unit: 'regions',
     rationale:
       'Any feature the two mould halves cannot form in a straight pull needs a slide, lifter or collapsible core. Each mechanism adds tooling cost, adds a moving part that can wear, and lengthens the cycle.',
-    fix: 'Redesign the feature so it forms in the draw direction, relocate the parting line, or accept the side action with its tooling cost priced in.',
-    source: 'Injection-moulding design guidance (side actions add roughly $500–$5,000 of tooling per feature).',
+    fix: 'Redesign the feature so it forms in the draw direction, relocate the parting line, or accept the side action with its tooling cost priced in. A SHALLOW beveled undercut may instead strip from the mould: DuPont Module I (pp.12-13) allows up to 5% for Delrin (circular shapes only), 6-10% for Zytel, and just 1-2% for glass-reinforced resins depending on mould temperature — the engine does not yet measure undercut depth %, so stripping feasibility is the engineer\'s call.',
+    source: 'Injection-moulding design guidance (side actions add roughly $500–$5,000 of tooling per feature). Stripping limits per resin from DuPont Module I pp.12-13, read first-hand.',
+  },
+  {
+    id: 'im-internal-radius',
+    sourceStatus: 'standard-named',
+    process: 'injection-moulding',
+    severity: 'medium',
+    title: 'Inside corner radius below the DuPont stress-concentration knee',
+    measure: 'dupontFilletMargin',
+    compare: 'gte',
+    threshold: 1.0,
+    unit: 'x Fig 3.07 fillet',
+    rationale:
+      'Most plastics are notch sensitive, and the sharp internal corner is the leading cause of failure DuPont names first. Their stress-concentration curve flattens at R/T = 0.5 — half the wall is where extra radius stops buying anything — and even a "sharp" edge is allowed 0.5 mm.',
+    fix: 'Open every internal corner to at least half the adjoining wall thickness, and never below 0.5 mm — the printed minimum that is "usually permissible even where a sharp edge is required".',
+    source: 'DuPont General Design Principles Module I, Fig 3.07 + p.7, READ FIRST-HAND: fillet radius = 1/2 wall thickness at the stress-concentration knee; minimum recommended corner radius 0.020 in (0.508 mm). DuPont-named resins only — the measure abstains on others.',
+  },
+  {
+    id: 'im-boss-od',
+    sourceStatus: 'standard-named',
+    process: 'injection-moulding',
+    severity: 'low',
+    title: 'Boss outside diameter outside the 2–2.5× hole band',
+    measure: 'dupontBossOdToHole',
+    compare: 'between',
+    threshold: [2.0, 2.5],
+    unit: 'boss OD / hole dia',
+    rationale:
+      'DuPont\'s band is two-sided: below twice the hole the boss lacks the wall to carry a screw or insert load; above 2.5x it is a heavy section that voids, sinks and stretches the cycle. The same band applies around molded-in inserts (Fig 3.27).',
+    fix: 'Size the boss outside diameter between 2 and 2.5 times its hole; if more support is needed, gusset or rib the boss instead of thickening it.',
+    source: 'DuPont General Design Principles Module I, p.8 + Fig 3.27 (p.14), READ FIRST-HAND: "the outside diameter of a boss should be 2 to 2-1/2 times the hole diameter to ensure adequate strength." Judged on the worst coaxial boss/hole pair the recogniser finds; abstains when it finds none.',
+  },
+  {
+    id: 'im-blind-core-depth',
+    sourceStatus: 'standard-named',
+    process: 'injection-moulding',
+    severity: 'medium',
+    title: 'Blind hole deeper than twice its diameter',
+    measure: 'maxBlindHoleDepthToDia',
+    compare: 'lte',
+    threshold: 2.0,
+    unit: 'depth / dia',
+    rationale:
+      'A blind hole is formed by a core pin supported at one end only — a cantilever the melt pushes sideways. Past twice the diameter the pin deflects and the hole comes out off-centre. Through holes escape the limit because the pin is supported at both ends.',
+    fix: 'Keep blind holes to twice their diameter; deeper needs a stepped core pin or a counterbored wall to shorten the unsupported length (DuPont Fig 3.12), and the bottom should keep at least 1/6 of the diameter of material to avoid bulging.',
+    source: 'DuPont General Design Principles Module I, p.8 + Figs 3.12/3.16, READ FIRST-HAND: "the depth of a blind hole is generally limited to twice the diameter of the core pin."',
   },
 
   // Rib proportions are checked with THREE rules rather than one "40-60% of
@@ -387,16 +442,16 @@ export const DFM_RULES = [
   {
     id: 'im-rib-thickness-max',
     byMaterial: {
-      'PBT': { threshold: 0.5, source: 'PBT is semi-crystalline and shrinks heavily; a rib above half the wall reads through the show face as a sink line.' },
-      'HDPE': { threshold: 0.5, source: 'HDPE has the highest shrinkage of the commodity resins — a full-thickness rib sinks visibly.' },
-      'PP-T20 (talc-filled)': { threshold: 0.6, source: 'Talc suppresses shrinkage, so the filled compound hides a fuller rib than neat PP.' },
-      'POM (Acetal)': { threshold: 0.5, source: 'Acetal shrinks about 2% — twice an amorphous resin — so a rib at 60% of the wall sinks visibly on the show face. 50% is the practical ceiling.' },
-      'PA6 (Nylon)': { threshold: 0.5, source: 'Nylon is semi-crystalline and shrinks heavily; a rib above half the wall reads through as a sink mark.' },
-      'PA66-GF30 (glass-filled)': { threshold: 0.6, source: 'Glass fill suppresses shrinkage in the flow direction, so a filled nylon tolerates a fuller rib than the unfilled resin.' },
-      'ABS': { threshold: 0.6, source: 'ABS is amorphous and shrinks about 0.5%, so it hides a fuller rib.' },
-      'Polycarbonate (PC)': { threshold: 0.6, source: 'PC is amorphous and low-shrink; the limit is sink on a gloss surface rather than the rib itself.' },
+      'PBT': { sourceStatus: 'industry-consensus', threshold: 0.5, source: 'PBT is semi-crystalline and shrinks heavily; a rib above half the wall reads through the show face as a sink line.' },
+      'HDPE': { sourceStatus: 'industry-consensus', threshold: 0.5, source: 'HDPE has the highest shrinkage of the commodity resins — a full-thickness rib sinks visibly.' },
+      'PP-T20 (talc-filled)': { sourceStatus: 'industry-consensus', threshold: 0.6, source: 'Talc suppresses shrinkage, so the filled compound hides a fuller rib than neat PP.' },
+      'POM (Acetal)': { sourceStatus: 'industry-consensus', threshold: 0.5, source: 'Acetal shrinks about 2% — twice an amorphous resin — so a rib at 60% of the wall sinks visibly on the show face. 50% is the practical ceiling.' },
+      'PA6 (Nylon)': { sourceStatus: 'industry-consensus', threshold: 0.5, source: 'Nylon is semi-crystalline and shrinks heavily; a rib above half the wall reads through as a sink mark.' },
+      'PA66-GF30 (glass-filled)': { sourceStatus: 'industry-consensus', threshold: 0.6, source: 'Glass fill suppresses shrinkage in the flow direction, so a filled nylon tolerates a fuller rib than the unfilled resin.' },
+      'ABS': { sourceStatus: 'industry-consensus', threshold: 0.6, source: 'ABS is amorphous and shrinks about 0.5%, so it hides a fuller rib.' },
+      'Polycarbonate (PC)': { sourceStatus: 'industry-consensus', threshold: 0.6, source: 'PC is amorphous and low-shrink; the limit is sink on a gloss surface rather than the rib itself.' },
     },
-    sourceStatus: 'industry-consensus',
+    sourceStatus: 'standard-named',
     process: 'injection-moulding',
     severity: 'medium',
     title: 'Rib too thick at its base for the wall it stands on',
@@ -407,15 +462,15 @@ export const DFM_RULES = [
     rationale:
       'A rib meeting the wall at more than about 60% of the wall thickness makes a heavy junction that is the last place to solidify. It shows as a sink mark on the opposite — usually visible — surface, and as a void inside the section.',
     fix: 'Thin the rib to 40–60% of the nominal wall and add more ribs, or gusset it, if stiffness is lost.',
-    source: 'Injection-moulding design guidance (rib base 40-60% of nominal wall). Widely published, and actively DISPUTED by practising moulders — Mack Molding publish "Why 60% Rib-to-Wall Ratio is NOT Sacred", arguing the limit depends on resin, texture and whether the opposite face is cosmetic. Treat as a screening threshold, not a specification.',
+    source: 'DuPont General Design Principles Module I, Fig 4.07 (p.26), READ FIRST-HAND from the page image: rib thickness T = 0.4 W for appearance parts, 0.6 W for structural parts (1.0 W only for foam molding), with 1/4-1/2 deg draft per side and a base fillet of half the rib thickness. The tool\'s 0.4-0.6 band matches the printed figures exactly - an audit CONFIRMATION, not a retune. The resin-specific tightenings above (0.5 for high-shrink semi-crystallines) are practising-moulder experience and are STRICTER than the printed 0.6, so they stand; Mack Molding\'s \"60% is not sacred\" caveat still applies on cosmetic faces.',
   },
   {
     id: 'im-rib-thickness-min',
     byMaterial: {
-      'PA66-GF30 (glass-filled)': { threshold: 0.5, source: 'A 30% glass compound is far more viscous than the unfilled resin, so a rib below half the wall will not fill and pack before the gate freezes.' },
-      'Polypropylene (PP)': { threshold: 0.3, source: 'PP is the easiest-flowing commodity resin and fills a thinner rib than any engineering grade.' },
+      'PA66-GF30 (glass-filled)': { sourceStatus: 'industry-consensus', threshold: 0.5, source: 'A 30% glass compound is far more viscous than the unfilled resin, so a rib below half the wall will not fill and pack before the gate freezes.' },
+      'Polypropylene (PP)': { sourceStatus: 'industry-consensus', threshold: 0.3, source: 'PP is the easiest-flowing commodity resin and fills a thinner rib than any engineering grade.' },
     },
-    sourceStatus: 'industry-consensus',
+    sourceStatus: 'standard-named',
     process: 'injection-moulding',
     severity: 'low',
     title: 'Rib too thin to fill reliably',
@@ -426,7 +481,7 @@ export const DFM_RULES = [
     rationale:
       'A rib much below 40% of the wall is a narrow, high-resistance flow path off the main cavity. It fills late or not at all, and a short-shot rib contributes none of the stiffness it was drawn for.',
     fix: 'Take the rib back up to 40% of the wall, or delete it and thicken the wall locally instead.',
-    source: 'Injection-moulding design guidance (rib base 40-60% of nominal wall). See the rib-thickness-max note: the 60% figure is disputed by practising moulders and depends on resin and cosmetics.',
+    source: 'DuPont General Design Principles Module I, Fig 4.07 (p.26), READ FIRST-HAND: the printed rib band starts at T = 0.4 W (design for appearance) - thinner is a high-resistance flow path that fills late or not at all. The 0.4 floor matches the printed figure exactly; resin-specific entries (PP 0.3, glass-filled nylon 0.5) are flow-behaviour experience and stand on their own grade.',
   },
   {
     id: 'im-rib-height',

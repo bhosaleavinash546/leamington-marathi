@@ -2271,6 +2271,35 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
           rows: steelRows,
         });
       }
+
+      // ── Injection moulding (DuPont Module I) — same contract, own sheet ──
+      const dpRows: Array<Array<string | number>> = [['Figure', 'Value', 'Where it comes from']];
+      if (sf.dupontDraft) {
+        const s = sf.dupontDraft;
+        dpRows.push([`Required draft (${s.group}, ${s.band} draw of ${s.drawDepthMm} mm)`,
+          `${s.requiredDeg}° per side${s.wallAreaBelowRequiredPct != null ? ` (${s.wallAreaBelowRequiredPct}% of wall below it)` : ''}`,
+          s.basis]);
+      }
+      if (sf.dupontFillet) {
+        const s = sf.dupontFillet;
+        dpRows.push(['Internal corner radius the resin wants',
+          `${s.requiredMm} mm${s.measuredMm != null ? ` (smallest measured ${s.measuredMm} mm)` : ''}`, s.basis]);
+      }
+      if (sf.dupontBoss) {
+        const s = sf.dupontBoss;
+        dpRows.push([`Worst boss vs its hole (Ø${s.bossDiaMm} on Ø${s.holeDiaMm} mm)`,
+          `${Math.round(s.ratio * 100) / 100}× (band ${s.minRatio}–${s.maxRatio}×)`, s.basis]);
+      }
+      if (dpRows.length > 1) {
+        sheets.push({
+          name: 'Injection moulding',
+          title: 'What DuPont Module I asks of this part',
+          subtitle: 'DuPont General Design Principles for Engineering Polymers, Module I — read first-hand and '
+            + 'computed at this part’s own dimensions and resin. Figures, not verdicts.',
+          headerRow: 0, zebra: true, colWidths: [42, 32, 76], wrapCols: [2],
+          rows: dpRows,
+        });
+      }
     }
   }
 

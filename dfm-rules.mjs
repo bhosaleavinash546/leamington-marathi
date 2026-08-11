@@ -27,6 +27,49 @@ import {
   ctToleranceMm, ctTightestPromiseMm, ctGradeFor, ctgFlatnessMm, CTG_SELECTION,
   rmaMm, RMA_GRADE_SELECTION, capabilityModelMm, WEIGHT_TOLERANCE,
 } from './sfsa-supplement-3.mjs';
+import {
+  resinGroupFor, requiredDraftDeg as dupontRequiredDraftDeg,
+  filletRequirementMm as dupontFilletRequirementMm,
+  BOSS_OD_TO_HOLE, BLIND_CORE,
+} from './dupont-polymers.mjs';
+
+/**
+ * The worst (smallest-ratio) coaxial boss/hole pair in a feature table.
+ *
+ * Shared by the NADCA boss rule (§3.2 p.51: boss >= 2x the bolt hole) and
+ * the DuPont boss rule (p.8: boss OD 2-2.5x the hole) — one piece of
+ * geometry, two standards reading it. A boss with no coaxial hole is not a
+ * fastener boss and is not judged.
+ */
+function worstCoaxialBossPair(table) {
+  const num = (v) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
+  const holes = table.filter((f) => f.kind === 'hole' && num(f.diaMm) > 0);
+  let worst = null;
+  for (const boss of table.filter((f) => f.kind === 'boss' && num(f.diaMm) > 0)) {
+    const bAxis = boss.axisXYZ; const bPt = boss.axisPointXYZ;
+    if (!Array.isArray(bAxis) || !Array.isArray(bPt)) continue;
+    for (const h of holes) {
+      const hAxis = h.axisXYZ; const hPt = h.axisPointXYZ;
+      if (!Array.isArray(hAxis) || !Array.isArray(hPt)) continue;
+      const parallel = Math.abs(bAxis[0] * hAxis[0] + bAxis[1] * hAxis[1] + bAxis[2] * hAxis[2]) > 0.999;
+      if (!parallel) continue;
+      // Coaxial when the two axis points differ only ALONG the shared axis.
+      const d = [hPt[0] - bPt[0], hPt[1] - bPt[1], hPt[2] - bPt[2]];
+      const along = d[0] * bAxis[0] + d[1] * bAxis[1] + d[2] * bAxis[2];
+      const perp = Math.hypot(d[0] - along * bAxis[0], d[1] - along * bAxis[1], d[2] - along * bAxis[2]);
+      if (perp > 0.5) continue;
+      if (num(h.diaMm) >= num(boss.diaMm)) continue;      // not a hole IN this boss
+      const ratio = num(boss.diaMm) / num(h.diaMm);
+      if (!worst || ratio < worst.ratio) {
+        worst = { ratio, bossDiaMm: num(boss.diaMm), holeDiaMm: num(h.diaMm), atXYZ: bPt };
+      }
+    }
+  }
+  return worst;
+}
 import { MATERIALS } from './costing-engine.mjs';
 import {
   minBendRadiusMm, maxBendRadiusMm, springback, minPunchedHoleMm,
@@ -675,7 +718,92 @@ export function extractMeasures(geo = {}, opts = {}) {
     // a rule reads them, report figures where the engineer wants the number,
     // absence everywhere the document does not speak.
     ...sfsaLimits(draft, features, wall, geo, opts),
+    // DuPont Module I, the same discipline for ENGINEERING THERMOPLASTICS.
+    ...dupontLimits(draft, features, wall, geo, opts),
   };
+}
+
+/**
+ * The limits DuPont Module I actually prints for its resin families — same
+ * discipline as nadcaLimits(): resin-specific requirements as margins,
+ * report figures underscored, absence with a reason wherever Table 3.01
+ * does not name the material. ABS, PC, PP and friends keep the generic
+ * moulding thresholds; metals get nothing here.
+ */
+function dupontLimits(draft, features, wall, geo, opts = {}) {
+  const num = (v) => {
+    if (v === null || v === undefined || v === '') return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
+  const out = {};
+  const hasPart = !!(draft && (draft.drawDirectionXYZ || draft.draftHistogramDegToAreaMm2))
+    || num(wall?.p50Mm) !== undefined;
+  if (!hasPart) return out;
+  const group = resinGroupFor(opts.material);
+  if (!group.ok) { out._dupontBasis = group.reason; return out; }
+  const nominalWall = num(wall.p50Mm);
+
+  // ── DRAFT, Table 3.01: resin- and depth-specific requirement ────────────
+  //
+  // The table asks MORE draft of a deeper draw, so judging at the part's own
+  // extent along the draw — an upper bound on any feature's depth — returns
+  // the most demanding band the part could fall in. Conservative in the
+  // right direction, unlike the NADCA formula where depth loosens the ask.
+  {
+    const bb = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
+    const ext = [num(bb.xMm), num(bb.yMm), num(bb.zMm)];
+    const dir = draft.drawDirectionXYZ;
+    let depthMm;
+    if (Array.isArray(dir) && ext.every((v) => v > 0)) {
+      let k = -1;
+      for (let i = 0; i < 3; i++) if (Math.abs(Number(dir[i])) > 0.999) k = i;
+      depthMm = k >= 0 ? ext[k] : Math.max(...ext);
+    } else if (ext.some((v) => v > 0)) {
+      depthMm = Math.max(...ext.filter((v) => v > 0));
+    }
+    if (depthMm > 0) {
+      const req = dupontRequiredDraftDeg(opts.material, depthMm);
+      if (req.ok) {
+        const pct = areaBelowDraftPct(draft.draftHistogramDegToAreaMm2, req.deg);
+        out._dupontDraft = {
+          requiredDeg: req.deg, band: req.band, group: req.group,
+          drawDepthMm: Math.round(depthMm),
+          wallAreaBelowRequiredPct: pct,
+          basis: `${req.basis} Judged at the part's own ${Math.round(depthMm)} mm extent along the draw - an upper bound on any feature's depth, and the table asks MORE of deeper draws, so this is the most demanding band the part could fall in.`,
+        };
+        if (pct !== undefined) out.dupontWallAreaBelowDraftPct = pct;
+      }
+    }
+  }
+
+  // ── FILLETS, Fig 3.07: the R/T = 0.5 knee with the printed 0.508 floor ──
+  const corner = num(features.minInternalCornerRadiusMm);
+  if (nominalWall > 0) {
+    const req = dupontFilletRequirementMm(nominalWall);
+    if (req.ok) {
+      out._dupontFillet = { requiredMm: req.requiredMm, wallMm: nominalWall,
+        measuredMm: corner ?? null, basis: req.basis };
+      if (corner !== undefined) {
+        out.dupontFilletMargin = Math.round((corner / req.requiredMm) * 1000) / 1000;
+      }
+    }
+  }
+
+  // ── BOSS OD vs ITS HOLE, p.8: the 2-2.5x band, worst pair named ─────────
+  const table = Array.isArray((geo.geometry || {}).featureTable || geo.featureTable)
+    ? ((geo.geometry || {}).featureTable || geo.featureTable) : [];
+  const pair = worstCoaxialBossPair(table);
+  if (pair) {
+    out.dupontBossOdToHole = Math.round(pair.ratio * 1000) / 1000;
+    out._dupontBoss = { ...pair, minRatio: BOSS_OD_TO_HOLE.min, maxRatio: BOSS_OD_TO_HOLE.max, basis: BOSS_OD_TO_HOLE.basis };
+  }
+
+  // ── BLIND HOLES: the p.8 limit is a REPORT figure beside the rule ───────
+  // (the rule itself reads the global maxBlindHoleDepthToDia measure)
+  out._dupontBlindHole = { maxDepthToDia: BLIND_CORE.maxDepthToDia, basis: BLIND_CORE.basis };
+
+  return out;
 }
 
 /**
@@ -787,32 +915,12 @@ function nadcaLimits(draft, features, wall, geo, opts = {}) {
 
   // ── BOSS WALL AROUND A FASTENER HOLE, §3.2 p.51 ────────────────────────
   //
-  // Pairs each recognised boss with the hole running COAXIALLY through it. A
-  // boss with no hole in it is not a fastener boss and is not judged.
+  // Pairs each recognised boss with the hole running COAXIALLY through it —
+  // shared geometry with the DuPont boss rule, so the pairing logic exists
+  // once in worstCoaxialBossPair().
   const table = Array.isArray((geo.geometry || {}).featureTable || geo.featureTable)
     ? ((geo.geometry || {}).featureTable || geo.featureTable) : [];
-  const holes = table.filter((f) => f.kind === 'hole' && num(f.diaMm) > 0);
-  let worstBoss = null;
-  for (const boss of table.filter((f) => f.kind === 'boss' && num(f.diaMm) > 0)) {
-    const bAxis = boss.axisXYZ; const bPt = boss.axisPointXYZ;
-    if (!Array.isArray(bAxis) || !Array.isArray(bPt)) continue;
-    for (const h of holes) {
-      const hAxis = h.axisXYZ; const hPt = h.axisPointXYZ;
-      if (!Array.isArray(hAxis) || !Array.isArray(hPt)) continue;
-      const parallel = Math.abs(bAxis[0] * hAxis[0] + bAxis[1] * hAxis[1] + bAxis[2] * hAxis[2]) > 0.999;
-      if (!parallel) continue;
-      // Coaxial when the two axis points differ only ALONG the shared axis.
-      const d = [hPt[0] - bPt[0], hPt[1] - bPt[1], hPt[2] - bPt[2]];
-      const along = d[0] * bAxis[0] + d[1] * bAxis[1] + d[2] * bAxis[2];
-      const perp = Math.hypot(d[0] - along * bAxis[0], d[1] - along * bAxis[1], d[2] - along * bAxis[2]);
-      if (perp > 0.5) continue;
-      if (num(h.diaMm) >= num(boss.diaMm)) continue;      // not a hole IN this boss
-      const ratio = num(boss.diaMm) / num(h.diaMm);
-      if (!worstBoss || ratio < worstBoss.ratio) {
-        worstBoss = { ratio, bossDiaMm: num(boss.diaMm), holeDiaMm: num(h.diaMm), atXYZ: bPt };
-      }
-    }
-  }
+  const worstBoss = worstCoaxialBossPair(table);
   if (worstBoss) {
     out.nadcaBossDiaToHoleDia = Math.round(worstBoss.ratio * 1000) / 1000;
     out._nadcaBoss = { ...worstBoss, basis: BOSS_DIA_TO_HOLE_DIA.basis };
@@ -1328,8 +1436,18 @@ export function runDfmRules(geo, process, opts = {}) {
     const nadcaCut = nadca?.outsideDeg != null ? Math.round(nadca.outsideDeg * 100) / 100 : null;
     const cutoffFromNadca = rule.measure === 'wallAreaBelowDraftPct'
       && nadcaCut != null && nadcaCut > (rule.draftCutoffDeg ?? 0);
+    // DuPont Table 3.01 REPLACES the moulding draft angle for the resins it
+    // names — not sharpen-only, because the table is depth-banded the safe
+    // way round (deeper draw asks MORE, and the part extent is an upper
+    // bound on feature depth) and the printed ranges are already judged at
+    // their conservative top. Zytel genuinely needs less than the generic
+    // angle, and the primary source saying so is the point of holding it.
+    const dupontDraft = measures._dupontDraft;
+    const cutoffFromDupont = rule.process === 'injection-moulding'
+      && rule.measure === 'wallAreaBelowDraftPct'
+      && dupontDraft?.requiredDeg != null;
     const cutoff = rule.measure === 'wallAreaBelowDraftPct'
-      ? (cutoffFromNadca ? nadcaCut : rule.draftCutoffDeg)
+      ? (cutoffFromDupont ? dupontDraft.requiredDeg : cutoffFromNadca ? nadcaCut : rule.draftCutoffDeg)
       : rule.measure === 'overhangAreaBelowDeg' ? rule.overhangCutoffDeg
         : null;
     const unit = cutoff != null && rule.unit?.startsWith('%')
@@ -1343,11 +1461,17 @@ export function runDfmRules(geo, process, opts = {}) {
       // A computed cutoff is rarely one of the seven angles the curve carries,
       // so it is read off the per-degree histogram instead. The curve remains
       // the path for the published constants, which ARE curve points.
-      value = cutoffFromNadca
-        ? numberOr(measures.nadcaWallAreaBelowDraftPct)
-        : numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
-      if (value === undefined) value = numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
-      if (value === undefined && rule.draftCutoffDeg === 1.0) {
+      value = cutoffFromDupont
+        ? numberOr(measures.dupontWallAreaBelowDraftPct)
+        : cutoffFromNadca
+          ? numberOr(measures.nadcaWallAreaBelowDraftPct)
+          : numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
+      // The generic-angle fallbacks must not run under a computed DuPont
+      // cutoff: the unit names the angle, and an area measured at the
+      // generic angle under a resin-specific label would be the two-numbers-
+      // one-caption bug again. Under DuPont, no histogram means abstain.
+      if (value === undefined && !cutoffFromDupont) value = numberOr(measures._draftCurve?.[String(rule.draftCutoffDeg)]);
+      if (value === undefined && !cutoffFromDupont && rule.draftCutoffDeg === 1.0) {
         value = measures.wallAreaBelowMinDraftPct;
       }
     } else {
@@ -1435,7 +1559,10 @@ export function runDfmRules(geo, process, opts = {}) {
                 : rule.measure === 'sfsaSandFlatnessMargin' ? measures._sfsaSandFlatness?.basis
                   : rule.measure === 'sfsaInvFlatnessMargin' ? measures._sfsaInvFlatness?.basis
                     : rule.measure === 'sfsaMachiningStockMargin' ? measures._sfsaRma?.basis
-                      : undefined,
+                      : rule.measure === 'dupontFilletMargin' ? measures._dupontFillet?.basis
+                        : rule.measure === 'dupontBossOdToHole' ? measures._dupontBoss?.basis
+                          : cutoffFromDupont ? measures._dupontDraft?.basis
+                            : undefined,
       status,
     };
     // The specific features that break this rule, worst first. Only the ones
