@@ -1115,6 +1115,61 @@ export function exportDfmPdf(
     }
   }
 
+  // ── WHAT NADCA #402 PROMISES FOR THIS PART ────────────────────────────────
+  //
+  // The capability figures a die-casting drawing should be checked against,
+  // printed whether or not a rule fired: a purchasing conversation starts from
+  // "the standard promises ±0.38 mm at this size", not from a finding. Every
+  // number is computed from the 2021 tables at this part's own dimensions.
+  {
+    const sf = (data as Record<string, any>).sheetForming;
+    const s402 = sf?.nadca402Summary;
+    if (s402) {
+      ensure(46);
+      y += 2;
+      mono(7, true); setText(doc, GOLD);
+      doc.text('WHAT NADCA #402 PROMISES FOR THIS PART', ML, y); y += 5.4;
+
+      const tiles: Array<[string, string, RGB]> = [
+        [`±${s402.linearPlusMinusMm} mm`,
+          `LINEAR AT ${s402.largestDimensionMm} MM · ${String(s402.grade).toUpperCase()}`, INK],
+      ];
+      if (s402.partingLinePlusMm != null) {
+        tiles.push([`+${s402.partingLinePlusMm} mm`, `PARTING-LINE ADDER (${s402.projectedAreaCm2} CM²)`, INK]);
+      }
+      const f402 = sf.nadca402Flatness;
+      if (f402?.capabilityMm != null) {
+        tiles.push([`${f402.capabilityMm} mm`, `FLATNESS AT ${f402.diagonalMm} MM DIAG`, INK]);
+      }
+      const t402 = sf.nadca402Tolerance;
+      if (t402?.margin != null) {
+        tiles.push([`${t402.margin}×`,
+          t402.from === 'declared' ? 'DECLARED BAND VS CAPABILITY' : `WORST PMI BAND (${t402.dimensionMm} MM)`,
+          t402.margin >= 1 ? GREEN : RED]);
+      }
+
+      setFill(doc, PANEL); doc.roundedRect(ML, y - 5, CW, 20, 1.5, 1.5, 'F');
+      const cwN = CW / tiles.length;
+      tiles.forEach(([v, l, c], i) => {
+        const x = ML + 5 + i * cwN;
+        if (i > 0) { setDraw(doc, RULE, 0.3); doc.line(ML + i * cwN, y - 3, ML + i * cwN, y + 12); }
+        sans(v.length > 8 ? 10 : 13, 'bold'); setText(doc, c);
+        doc.text(fit(doc, v, cwN - 8), x, y + 3);
+        mono(5.4); setText(doc, MUT);
+        doc.text(fit(doc, l, cwN - 8), x, y + 9.5);
+      });
+      y += 23;
+
+      wrapped('From NADCA Product Specification Standards for Die Castings (2021, 11th ed.), read '
+        + 'first-hand: linear capability from Tables S/P-4A-1 at this part’s largest dimension, the '
+        + 'PLUS-ONLY parting-line adder from S/P-4A-2 at the bounding footprint perpendicular to the '
+        + 'draw (an upper bound on true projected area, so the adder is an upper bound too), flatness '
+        + 'from S/P-4A-8 at the bounding diagonal. A drawing tighter than these numbers is not '
+        + 'impossible — it is a conversation with the die caster, and a cost.', 7.8, MUT, CW, 3.6, 'italic');
+      y += 3;
+    }
+  }
+
   // ── WHAT HAPPENS NEXT, AND WHO DOES IT ────────────────────────────────────
   //
   // The report said what is wrong and what it costs, and stopped. Nobody leaves
@@ -2019,6 +2074,73 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
           subtitle: "From Boljanovic, 'Sheet Metal Forming Processes and Die Design' — read first-hand, "
             + 'equation numbers in the last column. These are figures, not verdicts.',
           headerRow: 0, zebra: true, colWidths: [28, 26, 96], wrapCols: [2],
+          rows,
+        });
+      }
+    }
+  }
+
+  // ── Die-casting capability (NADCA) ────────────────────────────────────────
+  // The figures a die-casting engineer checks a drawing against, whether or
+  // not a rule fired. Each row carries the table it came from, in the same
+  // figure-not-verdict discipline as the sheet-forming block above.
+  {
+    const sf = (data as Record<string, any>).sheetForming;
+    if (sf) {
+      const rows: Array<Array<string | number>> = [['Figure', 'Value', 'Where it comes from']];
+      const s402 = sf.nadca402Summary;
+      if (s402) {
+        rows.push([`Linear capability at ${s402.largestDimensionMm} mm (${s402.grade})`,
+          `±${s402.linearPlusMinusMm} mm`,
+          'NADCA #402 (2021) Tables S/P-4A-1, computed at this part’s largest dimension']);
+        if (s402.partingLinePlusMm != null) {
+          rows.push([`Parting-line adder (${s402.projectedAreaCm2} cm² projected)`,
+            `+${s402.partingLinePlusMm} mm`,
+            `Tables S/P-4A-2 — PLUS-ONLY, across the parting line. ${s402.projectedAreaBasis}`]);
+        } else if (s402.partingLineNote) {
+          rows.push(['Parting-line adder', 'consult the die caster', s402.partingLineNote]);
+        }
+      }
+      if (sf.nadca402Tolerance) {
+        const t = sf.nadca402Tolerance;
+        rows.push([t.from === 'declared' ? 'Declared band vs capability' : `Worst PMI band (on ${t.dimensionMm} mm)`,
+          `${t.bandMm} mm vs ${t.capabilityBandMm} mm → ${t.margin}×`, t.basis]);
+      }
+      if (sf.nadca402Flatness) {
+        const f = sf.nadca402Flatness;
+        rows.push([`Flatness capability at ${f.diagonalMm} mm diagonal (${f.grade})`,
+          `${f.capabilityMm} mm (declared ${f.declaredMm} mm)`, f.basis]);
+      }
+      if (sf.nadcaDraft) {
+        rows.push(['General-note draft the drawing should carry',
+          `${sf.nadcaDraft.outsideDeg}° outside / ${sf.nadcaDraft.insideDeg ?? sf.nadcaDraft.outsideDeg * 2}° inside`,
+          sf.nadcaDraft.basis ?? 'NADCA draft formula at this part’s own depth']);
+      }
+      if (sf.nadcaFillet) {
+        rows.push(['Fillet the wall wants', `${sf.nadcaFillet.requiredMm} mm (measured ${sf.nadcaFillet.measuredMm} mm)`,
+          sf.nadcaFillet.basis]);
+      }
+      if (sf.nadcaCoredHole) {
+        rows.push([`Worst cored hole (Ø${sf.nadcaCoredHole.diaMm} mm)`,
+          `${sf.nadcaCoredHole.measuredDeg}° vs ${sf.nadcaCoredHole.requiredDeg}° needed`,
+          sf.nadcaCoredHole.basis]);
+      }
+      if (sf.nadcaSkin) {
+        rows.push(['Machining stock vs chilled skin', `${sf.nadcaSkin.stockMm} mm declared, skin ${sf.nadcaSkin.skinMinMm}–${sf.nadcaSkin.skinMaxMm} mm`,
+          sf.nadcaSkin.basis]);
+      }
+      if (sf.nadcaRoughness) {
+        rows.push(['As-cast roughness vs asked', `${sf.nadcaRoughness.askedUin} µin asked, ${sf.nadcaRoughness.overDieLifeUin} µin over die life`,
+          sf.nadcaRoughness.basis]);
+      }
+      if (rows.length > 1) {
+        sheets.push({
+          name: 'Die casting',
+          title: 'What NADCA promises for this part',
+          subtitle: 'NADCA #402 (2021, 11th ed.) capability computed at this part’s own dimensions, plus the '
+            + 'design-book figures. Figures, not verdicts — a drawing tighter than these is a conversation '
+            + 'with the die caster, and a cost.',
+          headerRow: 0, zebra: true, colWidths: [42, 32, 76], wrapCols: [2],
           rows,
         });
       }

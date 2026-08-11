@@ -1030,15 +1030,24 @@ test('the tightest tolerance can be DECLARED, and never outranks real PMI', () =
 });
 
 test('a declared tolerance carries its basis onto the finding, and only that finding', () => {
+  // hpdc's tolerance rule is now the NADCA #402 capability check, so the
+  // declared band arrives as a margin — the provenance contract is unchanged:
+  // the finding must say the band was DECLARED, and nothing else may.
   const geo = { dfm: { wallThickness: { p50Mm: 3, p5Mm: 3 }, draft: { undercutFaceCount: 0 }, features: {} } };
   const r = runDfmRules(geo, 'hpdc', { material: 'Aluminium A356 (cast)', declaredToleranceMm: 0.05 });
-  const tol = [...r.findings, ...r.passed].find(f => f.measure === 'tightestToleranceMm');
+  const tol = [...r.findings, ...r.passed].find(f => f.measure === 'nadca402ToleranceMargin');
   assert.ok(tol, 'the tolerance rule must now evaluate');
   assert.match(tol.measuredBasis, /DECLARED/);
   // No other finding may pick up a stray provenance claim.
+  const TOLERANCE_MEASURES = new Set(['tightestToleranceMm', 'nadca402ToleranceMargin', 'nadca402FlatnessMargin']);
   for (const f of [...r.findings, ...r.passed]) {
-    if (f.measure !== 'tightestToleranceMm') assert.equal(f.measuredBasis, undefined, `${f.id} carries a stray basis`);
+    if (!TOLERANCE_MEASURES.has(f.measure)) assert.equal(f.measuredBasis, undefined, `${f.id} carries a stray basis`);
   }
+  // Families NOT covered by #402 still evaluate the declared band directly.
+  const lp = runDfmRules(geo, 'lpdc', { material: 'Aluminium A356 (cast)', declaredToleranceMm: 0.05 });
+  const lpTol = [...lp.findings, ...lp.passed].find(f => f.measure === 'tightestToleranceMm');
+  assert.ok(lpTol, 'lpdc keeps its screening tolerance rule until ISO 8062-3 is held');
+  assert.match(lpTol.measuredBasis, /DECLARED/);
 });
 
 // ═══════════════════════════════════════════════════════════════════════════

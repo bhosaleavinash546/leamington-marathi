@@ -204,6 +204,14 @@ export default function DfmStudioPage() {
   const batchInputRef = useRef<HTMLInputElement>(null);
   const [region, setRegion] = useState('Germany');
   const [annualVolume, setAnnualVolume] = useState(120000);
+  // Drawing callouts, typed from the drawing. Almost no STEP carries semantic
+  // PMI, so without these every tolerance- and flatness-capability rule
+  // abstains on every part. Blank means undeclared — the rules say NOT
+  // EVALUATED rather than judging a default; real PMI in the file outranks
+  // whatever is typed here.
+  const [tightestTolMm, setTightestTolMm] = useState('');
+  const [toleranceGrade, setToleranceGrade] = useState<'standard' | 'precision'>('standard');
+  const [flatnessCalloutMm, setFlatnessCalloutMm] = useState('');
   const [loading, setLoading] = useState<'' | 'dfm' | 'dfa'>('');
   const [error, setError] = useState('');
   const [result, setResult] = useState<DfmResponse | null>(null);
@@ -266,6 +274,11 @@ export default function DfmStudioPage() {
     // kernel-measured volume and the chosen material, so a value typed here
     // could silently disagree with the geometry the findings are based on.
     for (const [k, v] of Object.entries({ material, costProcess, region, annualVolume: String(annualVolume) })) fd.append(k, v);
+    // Declared drawing callouts, sent only when typed: an empty field must
+    // reach the server as ABSENT so the rules abstain instead of judging 0.
+    fd.append('toleranceGrade', toleranceGrade);
+    if (tightestTolMm.trim()) fd.append('tightestToleranceMm', tightestTolMm.trim());
+    if (flatnessCalloutMm.trim()) fd.append('flatnessMm', flatnessCalloutMm.trim());
     // A pinned draw direction, when the tool split is already decided. Left
     // blank the engine sweeps for the axis with the least undercut, which is
     // the right default and the wrong answer once a foundry has told you where
@@ -920,6 +933,35 @@ export default function DfmStudioPage() {
                     <option value="y">Pin to +Y</option>
                     <option value="z">Pin to +Z</option>
                   </select>
+                </label>
+              </div>
+
+              {/* ── Drawing callouts ─────────────────────────────────────────
+                  What the DRAWING asks for, which no STEP file carries. Left
+                  blank, the capability rules abstain (NOT EVALUATED) — they
+                  never judge a default. Die castings are judged against the
+                  NADCA #402 tables; the grade selects Standard vs Precision
+                  tolerance columns, a die-cost decision the engineer owns. */}
+              <p className="mt-4 mb-2 text-[11px] uppercase tracking-wide text-slate-500 font-medium">
+                Drawing callouts <span className="normal-case font-normal">— optional; blank = rules abstain honestly</span>
+              </p>
+              <div className="grid sm:grid-cols-3 gap-3">
+                <label className="text-xs text-slate-400">Tightest tolerance band (mm)
+                  <input type="number" value={tightestTolMm} min={0} step={0.01} placeholder="e.g. 0.5 for ±0.25"
+                    onChange={e => setTightestTolMm(e.target.value)}
+                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40 placeholder:text-slate-600" />
+                </label>
+                <label className="text-xs text-slate-400">Tolerance grade (NADCA #402)
+                  <select value={toleranceGrade} onChange={e => setToleranceGrade(e.target.value as 'standard' | 'precision')}
+                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
+                    <option value="standard">Standard — first-quote assumption</option>
+                    <option value="precision">Precision — costs die money, declared deliberately</option>
+                  </select>
+                </label>
+                <label className="text-xs text-slate-400">Flatness callout (mm)
+                  <input type="number" value={flatnessCalloutMm} min={0} step={0.01} placeholder="e.g. 0.3"
+                    onChange={e => setFlatnessCalloutMm(e.target.value)}
+                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40 placeholder:text-slate-600" />
                 </label>
               </div>
             </div>

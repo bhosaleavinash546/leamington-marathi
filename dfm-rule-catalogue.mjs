@@ -1495,34 +1495,78 @@ export const DFM_RULES = [
     source: 'Injection-moulding dimensional tolerance guidance (DIN 16901 / SPI commercial class).',
   },
   {
+    // WAS A FLAT 0.2 mm SCREEN graded industry-consensus, blocked on the very
+    // document that now backs it. NADCA #402 makes capability a function of the
+    // DIMENSION: ±0.25 mm covers the first 25.4 mm and grows 0.025 mm per
+    // additional inch, so the rule now compares each toleranced dimension
+    // against what the standard promises AT ITS OWN SIZE — and a declared band
+    // with no dimension is judged against the first-inch base, stated as such.
     id: 'hpdc-tolerance-capability',
-    sourceStatus: 'industry-consensus',
+    sourceStatus: 'standard-named',
     process: 'hpdc',
-    severity: 'high',
-    title: 'Tolerance tighter than high-pressure die casting holds',
-    measure: 'tightestToleranceMm',
+    severity: 'medium',
+    title: 'Tolerance tighter than NADCA Standard capability at that dimension',
+    measure: 'nadca402ToleranceMargin',
     compare: 'gte',
-    threshold: 0.2,
-    unit: 'mm total band',
+    threshold: 1,
+    unit: 'x S-4A-1 capability',
     rationale:
-      'As-cast linear tolerance is about +/-0.1 mm on a small dimension and grows with size. Anything tighter is machined after casting, which means a fixture, a datum scheme and a second cost centre.',
-    fix: 'Open the as-cast tolerance and machine only the features that need to be accurate, with the datums declared.',
-    source: 'NADCA Product Specification Standards, linear dimensional tolerances (as-cast).',
+      'As-cast capability grows with the dimension: NADCA promises a total band of 0.5 mm on a 25 mm feature and adds 0.05 mm of band per additional inch. A band tighter than the table means machining after casting - a fixture, a datum scheme and a second cost centre - or Precision-grade tooling, which is a die-cost decision, not a default.',
+    fix: 'Open the band to the S-4A-1 value for that dimension, specify Precision grade where the fit genuinely needs it, or machine the feature and cost the operation.',
+    source: 'NADCA #402, Product Specification Standards for Die Castings, 2021 (11th ed.), Tables S-4A-1-21 and P-4A-1-21 pp.4A-7/8, READ FIRST-HAND: aluminium, magnesium and zinc ±0.25 mm for the first 25.4 mm plus ±0.025 mm per additional 25.4 mm (Standard); ±0.05 mm base (Precision); copper ±0.36/±0.076. Verified against the standard\'s own worked example - a 127 mm aluminium dimension carries ±0.35 mm Standard, ±0.15 mm Precision.',
+  },
+  {
+    // NEW WITH #402: flatness was never checked because no source gave a
+    // number. S-4A-8 does - keyed on the largest dimension of the surface,
+    // one column for all alloys, because flatness is a property of the die and
+    // the thermal history rather than of the metal.
+    id: 'hpdc-flatness-capability',
+    sourceStatus: 'standard-named',
+    process: 'hpdc',
+    severity: 'low',
+    title: 'Flatness tighter than the as-cast table holds',
+    measure: 'nadca402FlatnessMargin',
+    compare: 'gte',
+    threshold: 1,
+    unit: 'x S-4A-8 capability',
+    rationale:
+      'As-cast flatness is 0.20 mm over the first 76 mm of surface and grows 0.08 mm per additional inch (Standard). A flatness callout tighter than that is a straightening or machining operation, and the standard\'s own guidance is that sinks under large bosses and uneven wall heights are what break it.',
+    fix: 'Open the flatness to the S-4A-8 value for the surface\'s largest dimension, specify Precision grade, or machine the face and respect the 0.5 mm skin.',
+    source: 'NADCA #402, Product Specification Standards for Die Castings, 2021 (11th ed.), Tables S-4A-8-21 and P-4A-8-21 pp.4A-23/24, READ FIRST-HAND: Standard 0.20 mm to 76.2 mm largest dimension + 0.08 mm per additional 25.4 mm; Precision 0.13 + 0.05. Verified against the standard\'s own worked example - a 254 mm diagonal carries 0.76 mm Standard, 0.48 mm Precision.',
   },
   {
     id: 'hpdc-zinc-tolerance-capability',
-    sourceStatus: 'industry-consensus',
+    sourceStatus: 'standard-named',
     process: 'hpdc-zinc',
-    severity: 'high',
-    title: 'Tolerance tighter than high-pressure die casting holds',
-    measure: 'tightestToleranceMm',
+    severity: 'medium',
+    title: 'Tolerance tighter than NADCA Standard capability at that dimension',
+    measure: 'nadca402ToleranceMargin',
     compare: 'gte',
-    threshold: 0.15,
-    unit: 'mm total band',
+    threshold: 1,
+    unit: 'x S-4A-1 capability',
     rationale:
-      'Zinc holds tighter as-cast tolerances than aluminium because it runs cooler and shrinks less onto the die — about +/-0.075 mm on a small dimension. That accuracy is one of the reasons to choose the alloy.',
-    fix: 'Take advantage of the alloy: hold the tolerance as-cast rather than adding a machining operation.',
-    source: 'Zinc die-casting dimensional tolerance guidance (tighter than aluminium by roughly a third).',
+      'Zinc shares the aluminium row of the NADCA linear table - a total band of 0.5 mm on the first 25.4 mm, Standard grade. Zinc\'s real advantage is on the Precision side: the standard notes tighter figures are attainable with artificial ageing, and miniature zinc machines reach tighter still (Section 4B).',
+    fix: 'Open the band to the S-4A-1 value for that dimension, or specify Precision grade - which for zinc may need artificial ageing to hold through the alloy\'s creep.',
+    source: 'NADCA #402, Product Specification Standards for Die Castings, 2021 (11th ed.), Tables S-4A-1-21 and P-4A-1-21 pp.4A-7/8, READ FIRST-HAND. The zinc column equals the aluminium one at Standard grade; the P-4A-1 notes record that artificial ageing and miniature die casting reach tighter than the table.',
+  },
+  {
+    // NEW WITH #402: flatness was never checked because no source gave a
+    // number. S-4A-8 does - keyed on the largest dimension of the surface,
+    // one column for all alloys, because flatness is a property of the die and
+    // the thermal history rather than of the metal.
+    id: 'hpdc-zinc-flatness-capability',
+    sourceStatus: 'standard-named',
+    process: 'hpdc-zinc',
+    severity: 'low',
+    title: 'Flatness tighter than the as-cast table holds',
+    measure: 'nadca402FlatnessMargin',
+    compare: 'gte',
+    threshold: 1,
+    unit: 'x S-4A-8 capability',
+    rationale:
+      'As-cast flatness is 0.20 mm over the first 76 mm of surface and grows 0.08 mm per additional inch (Standard). A flatness callout tighter than that is a straightening or machining operation, and the standard\'s own guidance is that sinks under large bosses and uneven wall heights are what break it.',
+    fix: 'Open the flatness to the S-4A-8 value for the surface\'s largest dimension, specify Precision grade, or machine the face and respect the 0.5 mm skin.',
+    source: 'NADCA #402, Product Specification Standards for Die Castings, 2021 (11th ed.), Tables S-4A-8-21 and P-4A-8-21 pp.4A-23/24, READ FIRST-HAND: Standard 0.20 mm to 76.2 mm largest dimension + 0.08 mm per additional 25.4 mm; Precision 0.13 + 0.05. Verified against the standard\'s own worked example - a 254 mm diagonal carries 0.76 mm Standard, 0.48 mm Precision.',
   },
   {
     id: 'gdc-tolerance-capability',

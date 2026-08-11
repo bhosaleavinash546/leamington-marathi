@@ -190,14 +190,92 @@
       "readOn": "2026-08-10"
     },
     "hpdc-tolerance-capability": {
+      "status": "primary-read",
+      "claimedSource": "NADCA #402, Product Specification Standards for Die Castings, 2021 (11th ed.), Tables S/P-4A-1-21",
+      "grade": "standard-named",
+      "finding": "RESOLVED FROM THE PRIMARY DOCUMENT, supplied by the user as the 2021 11th edition. The blocker this register carried - 'NADCA Product Specification Standards #402 not held' - is closed. The standard does not give one screening value: linear capability is a function of the dimension (Al/Mg/Zn Standard +/-0.25 mm for the first 25.4 mm plus +/-0.025 mm per additional inch; Precision +/-0.05 mm base; copper +/-0.36/+/-0.076 and +/-0.18/+/-0.05). The rule now computes capability per PMI dimension at its own size, or judges a declared band against the first-inch base with that basis stated. Implementation verified against the standard's own worked examples: 127 mm aluminium -> +/-0.35 mm Standard, +/-0.15 mm Precision; the cross-parting-line composition reproduces +0.65/-0.35 mm.",
+      "recommendation": "Cross-parting-line and moving-die adders (S-4A-2/3) are computed for the report but not yet attributed to individual dimensions - that needs to know which PMI dimension crosses the parting line, which the draw direction plus the dimension's axis could supply later.",
+      "corroboration": [
+        "NADCA #402 2021, supplied by the user as PDF - tables read as rendered images because the numbers do not survive text extraction"
+      ],
+      "primaryDocumentRead": true,
+      "readOn": "2026-08-11"
+    },
+    "hpdc-zinc-tolerance-capability": {
+      "status": "primary-read",
+      "claimedSource": "NADCA #402 2021, Tables S/P-4A-1-21 (zinc column)",
+      "grade": "standard-named",
+      "finding": "RESOLVED FROM THE PRIMARY DOCUMENT. Zinc shares the aluminium row at Standard grade (+/-0.25 mm base). The P-4A-1 notes record that artificial ageing and Section 4B miniature machines reach tighter than the table - which is why the old flat 0.15 mm screen was neither right nor wrong: the standard's own answer is dimension-dependent.",
+      "recommendation": "Cross-parting-line and moving-die adders (S-4A-2/3) are computed for the report but not yet attributed to individual dimensions - that needs to know which PMI dimension crosses the parting line, which the draw direction plus the dimension's axis could supply later.",
+      "corroboration": [
+        "NADCA #402 2021, supplied by the user as PDF - tables read as rendered images because the numbers do not survive text extraction"
+      ],
+      "primaryDocumentRead": true,
+      "readOn": "2026-08-11"
+    },
+    "hpdc-flatness-capability": {
+      "status": "primary-read",
+      "claimedSource": "NADCA #402 2021, Tables S/P-4A-8-21",
+      "grade": "standard-named",
+      "finding": "NEW RULE from the primary document: as-cast flatness, all alloys, 0.20 mm to 76.2 mm largest dimension + 0.08 mm per additional inch (Standard); 0.13 + 0.05 (Precision). Verified against both printed worked examples (254 mm diagonal -> 0.76 / 0.48 mm).",
+      "recommendation": "Declared-input only: a STEP file does not say which face must be flat. PMI flatness callouts could feed it once the extractor reports them per-face.",
+      "corroboration": [
+        "NADCA #402 2021, supplied by the user"
+      ],
+      "primaryDocumentRead": true,
+      "readOn": "2026-08-11"
+    },
+    "hpdc-zinc-flatness-capability": {
+      "status": "primary-read",
+      "claimedSource": "NADCA #402 2021, Tables S/P-4A-8-21",
+      "grade": "standard-named",
+      "finding": "NEW RULE from the primary document: as-cast flatness, all alloys, 0.20 mm to 76.2 mm largest dimension + 0.08 mm per additional inch (Standard); 0.13 + 0.05 (Precision). Verified against both printed worked examples (254 mm diagonal -> 0.76 / 0.48 mm).",
+      "recommendation": "Declared-input only: a STEP file does not say which face must be flat. PMI flatness callouts could feed it once the extractor reports them per-face.",
+      "corroboration": [
+        "NADCA #402 2021, supplied by the user"
+      ],
+      "primaryDocumentRead": true,
+      "readOn": "2026-08-11"
+    },
+    "lpdc-tolerance-capability": {
       "status": "unaudited",
-      "claimedSource": "NADCA Product Specification Standards, linear dimensional tolerances (as-cast)",
+      "claimedSource": "Casting tolerance guidance (family-specific)",
       "grade": "industry-consensus",
-      "finding": "NOT SETTLED BY THE DOCUMENT SUPPLIED. Product Design for Die Casting is the DESIGN sourcebook; the tolerance grades live in NADCA Product Specification Standards for Die Castings (publication #402), which the design book refers to repeatedly and does not reproduce. Recording this explicitly so the next reader does not assume the casting tolerances were audited alongside the draft.",
-      "recommendation": "Obtain publication #402. Until then this rule and its five siblings in the other casting families stay unaudited.",
+      "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
+      "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
       "corroboration": [],
       "primaryDocumentRead": false,
-      "blockedBy": "NADCA Product Specification Standards #402 not held; the design sourcebook does not carry tolerance tables"
+      "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
+    },
+    "gdc-tolerance-capability": {
+      "status": "unaudited",
+      "claimedSource": "Casting tolerance guidance (family-specific)",
+      "grade": "industry-consensus",
+      "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
+      "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
+      "corroboration": [],
+      "primaryDocumentRead": false,
+      "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
+    },
+    "sand-tolerance-capability": {
+      "status": "unaudited",
+      "claimedSource": "Casting tolerance guidance (family-specific)",
+      "grade": "industry-consensus",
+      "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
+      "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
+      "corroboration": [],
+      "primaryDocumentRead": false,
+      "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
+    },
+    "inv-tolerance-capability": {
+      "status": "unaudited",
+      "claimedSource": "Casting tolerance guidance (family-specific)",
+      "grade": "industry-consensus",
+      "finding": "NOT covered by NADCA #402: its tables carry the four conventional die-casting alloy columns only. The primary source for permanent-mould, sand and investment tolerance grades is ISO 8062-3 (dimensional and geometrical tolerances for moulded parts - CT grades), which is not held.",
+      "recommendation": "Obtain ISO 8062-3. Until then these stay unaudited industry consensus.",
+      "corroboration": [],
+      "primaryDocumentRead": false,
+      "blockedBy": "ISO 8062-3 not held; NADCA #402 (now held) does not tabulate these processes"
     }
   }
 }

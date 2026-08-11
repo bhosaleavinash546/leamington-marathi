@@ -462,8 +462,11 @@ async function main() {
     }
     for (const fam of t.toleranceRulesAbstain || []) {
       const r = runDfmRules(g, fam);
+      // The rule's identity is its id, not its measure: hpdc's tolerance rule
+      // is now judged against the computed NADCA #402 capability rather than
+      // the raw declared band, and the abstention contract must survive that.
       const row = [...r.findings, ...r.passed, ...r.notEvaluated]
-        .find(f => f.measure === 'tightestToleranceMm');
+        .find(f => /-tolerance-capability$/.test(f.id));
       record(fx.file, `${fam} tolerance rule abstains`, row?.status === 'not-evaluated',
         row ? `${row.status} at ${row.measured}` : 'rule missing entirely');
     }

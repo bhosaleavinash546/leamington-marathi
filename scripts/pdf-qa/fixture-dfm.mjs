@@ -352,6 +352,33 @@ export const DFM_RESULT_FULL = {
     bendAllowance: { totalMm: 53.67, basis: 'Eq. 5.19 with the Table 5.3 neutral-axis shift, per recognised bend' },
     springback: { overbendPct: 19.5, insideRadiusMm: 30, basis: 'Eq. 5.22 with YS = 700 MPa, E = 210000 MPa' },
     drawStages: { stages: 3, beyondTable: false, blankDiaMm: 182.1, basis: 'Table 6.2, relative thickness band 0.6-1%', blankBasis: 'area equivalence, an ESTIMATE' },
+    // THE NADCA #402 CAPABILITY FIGURES, so the new capability band and the
+    // die-casting workbook sheet render in QA. Values are the engine's own
+    // output for the user's Casting_Braket at Standard grade with a declared
+    // 0.1 mm band — a FAILING margin on purpose, for the same reason the strip
+    // utilisation above is under target.
+    nadca402Summary: {
+      grade: 'standard', largestDimensionMm: 133, linearPlusMinusMm: 0.375,
+      projectedAreaCm2: 150,
+      projectedAreaBasis: 'bounding footprint perpendicular to the draw - an UPPER bound on the true projected area',
+      partingLinePlusMm: 0.19, partingLineNote: null,
+    },
+    nadca402Tolerance: {
+      margin: 0.2, dimensionMm: null, bandMm: 0.1, capabilityBandMm: 0.5, grade: 'standard', from: 'declared',
+      basis: 'NADCA #402 (2021) Table S-4A-1-21: ±0.25 mm for the first 25.4 mm plus ±0.025 mm per additional 25.4 mm, for an aluminium feature formed in one die part. The band was DECLARED without its dimension, so it is judged against the first-25.4 mm base.',
+    },
+    nadca402Flatness: {
+      declaredMm: 0.2, capabilityMm: 0.6, diagonalMm: 182, grade: 'standard',
+      basis: 'NADCA #402 (2021) Table S-4A-8-21, all alloys: 0.2 mm up to 76.2 mm largest dimension plus 0.08 mm per additional 25.4 mm. Judged at the part\'s own 182 mm bounding diagonal.',
+    },
+    nadcaDraft: {
+      ok: true, group: 'aluminium', partDepthMm: 132.62, outsideDeg: 0.418, insideDeg: 0.836,
+      basis: 'NADCA §3.1 pp.45-46, A = 57.2738 / (C·√L) with C = 60 outside and 30 inside for aluminium.',
+    },
+    nadcaFillet: {
+      measuredMm: 2, wallMm: 15.84, requiredMm: 15.84,
+      basis: 'NADCA Product Design for Die Casting 7th ed., Figure 3.2 (pp. 40-41): at a uniform wall junction R1 >= T1.',
+    },
   },
   // THE CATALOGUE COUNTS, on the "everything the API knows" fixture only.
   //

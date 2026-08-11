@@ -490,6 +490,15 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
       declaredToleranceMm,
       machiningStockMm: declaredMachiningStockMm,
       surfaceRoughnessUin: declaredSurfaceRoughnessUin,
+      // NADCA #402 grade: Standard is what a first quotation assumes, so it is
+      // the default; Precision is a die-cost decision the engineer declares.
+      toleranceGrade: req.body?.toleranceGrade === 'precision' ? 'precision' : 'standard',
+      // Declared flatness callout, mm. Absent when not typed - the flatness
+      // rule abstains rather than passing on a default.
+      flatnessMm: (() => {
+        const v = Number(req.body?.flatnessMm);
+        return Number.isFinite(v) && v > 0 ? v : undefined;
+      })(),
     };
     const ruleResults = family ? [runDfmRules(geo, family, ruleOpts)] : runAllDfmRules(geo, ruleOpts);
     const familyBasis = selected.basis === 'chosen'
@@ -708,7 +717,8 @@ export function registerDfmRoutes(app, { requireAuth, rateLimit, db, orgAccess }
         // not a threshold applies to them: the general-note draft their drawing
         // should carry, the worst bore and what it needed at its own depth, the
         // fillet requirement, and the skin the machining stock has to respect.
-        for (const k of ['_nadcaDraft', '_nadcaCoredHole', '_nadcaFillet', '_nadcaBoss', '_nadcaSkin', '_nadcaRoughness']) {
+        for (const k of ['_nadcaDraft', '_nadcaCoredHole', '_nadcaFillet', '_nadcaBoss', '_nadcaSkin', '_nadcaRoughness',
+          '_nadca402Summary', '_nadca402Tolerance', '_nadca402Flatness']) {
           if (m[k]) out[k.slice(1)] = m[k];
         }
         if (m._nadcaBasis) out.nadcaUnavailable = m._nadcaBasis;

@@ -18,6 +18,7 @@ import {
   outsideCornerRadiusMm, FILLET_RATIO, BOSS_DIA_TO_HOLE_DIA, SKIN, asCastRoughnessUin,
   minWallForAlloyMm,
 } from './nadca-die-casting.mjs';
+import { linearToleranceMm, partingLineToleranceMm, flatnessToleranceMm } from './nadca-402.mjs';
 import { MATERIALS } from './costing-engine.mjs';
 import {
   minBendRadiusMm, maxBendRadiusMm, springback, minPunchedHoleMm,
@@ -691,7 +692,12 @@ function nadcaLimits(draft, features, wall, geo, opts = {}) {
   // a sentence when it carries no measurements is still a map with a value in
   // it, and every measure in this engine must be absent until something is
   // measured. The reason is only interesting once there IS a part.
-  const hasPart = !!(draft && (draft.drawDirectionXYZ || draft.draftHistogramDegToAreaMm2 || draft.coredHoles));
+  // A measured wall or PMI is part evidence too: the #402 tolerance check
+  // needs only an alloy and a band, so a part whose draft pass produced
+  // nothing must still have its declared callouts judged.
+  const hasPart = !!(draft && (draft.drawDirectionXYZ || draft.draftHistogramDegToAreaMm2 || draft.coredHoles))
+    || num(wall?.p50Mm) !== undefined
+    || !!(geo.dfm?.pmi?.present);
   if (!hasPart) return out;
   const material = opts.material;
   const group = draftGroupFor(material);
@@ -820,6 +826,108 @@ function nadcaLimits(draft, features, wall, geo, opts = {}) {
   // moves for the common case.
   const fill = minWallForAlloyMm(material, 1.0);
   if (fill.ok) out._nadcaMinWall = fill;
+
+  // ── TOLERANCE CAPABILITY FROM NADCA #402 (2021), Tables S/P-4A-1 ────────
+  //
+  // The document every casting tolerance rule was blocked on, now read
+  // first-hand. Capability is a function of the DIMENSION the band sits on —
+  // ±0.25 mm covers the first 25.4 mm and grows 0.025 mm per inch after — so
+  // a band that is comfortable on a 200 mm dimension is impossible on a 10 mm
+  // one, and one screening value can never say both.
+  //
+  // Two paths, honestly distinguished:
+  //   * PMI: every dimension row carries its own value and band, so the margin
+  //     is the WORST of band/capability over the rows, and the worst row is
+  //     named in the finding.
+  //   * A declared single band has no dimension, so it is compared against the
+  //     FIRST-INCH base — the tightest the standard ever promises — and the
+  //     basis says so. Conservative in the only defensible direction.
+  const grade402 = opts.toleranceGrade === 'precision' ? 'precision' : 'standard';
+  {
+    const pmiRows = (Array.isArray(draft ? geo.dfm?.pmi?.dimensions : null) ? geo.dfm.pmi.dimensions : [])
+      .filter((r) => Number(r?.span) > 0 && Number(r?.value) > 0);
+    let worst = null;
+    for (const r of pmiRows) {
+      const cap = linearToleranceMm(material, Number(r.value), grade402);
+      if (!cap.ok) continue;
+      const margin = Number(r.span) / cap.totalBandMm;
+      if (!worst || margin < worst.margin) {
+        worst = { margin, dimensionMm: Number(r.value), bandMm: Number(r.span),
+          capabilityBandMm: cap.totalBandMm, grade: grade402, basis: cap.basis, from: 'PMI' };
+      }
+    }
+    if (!worst) {
+      const declared = num(opts.declaredToleranceMm);
+      if (declared !== undefined && declared > 0) {
+        const cap = linearToleranceMm(material, 25.4, grade402);
+        if (cap.ok) {
+          worst = { margin: declared / cap.totalBandMm, dimensionMm: null, bandMm: declared,
+            capabilityBandMm: cap.totalBandMm, grade: grade402,
+            basis: `${cap.basis} The band was DECLARED without its dimension, so it is judged against the first-25.4 mm base - the tightest the standard ever promises - rather than against a dimension nobody stated.`,
+            from: 'declared' };
+        }
+      }
+    }
+    if (worst) {
+      out.nadca402ToleranceMargin = Math.round(worst.margin * 1000) / 1000;
+      out._nadca402Tolerance = worst;
+    }
+  }
+
+  // ── FLATNESS CAPABILITY, Tables S/P-4A-8 ────────────────────────────────
+  //
+  // Keyed on the largest dimension of the surface; the bounding diagonal of
+  // the part's two largest extents is the largest any face could carry, so it
+  // is the honest upper bound when no face was named. Declared-only: a STEP
+  // file does not say which surface must be flat, or how flat.
+  {
+    const flat = num(opts.flatnessMm);
+    const bbF = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
+    const dims = [num(bbF.xMm), num(bbF.yMm), num(bbF.zMm)].filter((v) => v > 0).sort((a, b) => b - a);
+    if (flat !== undefined && flat > 0 && dims.length >= 2) {
+      const diag = Math.hypot(dims[0], dims[1]);
+      const cap = flatnessToleranceMm(diag, grade402);
+      if (cap.ok) {
+        out.nadca402FlatnessMargin = Math.round((flat / cap.toleranceMm) * 1000) / 1000;
+        out._nadca402Flatness = { declaredMm: flat, capabilityMm: cap.toleranceMm,
+          diagonalMm: Math.round(diag), grade: grade402,
+          basis: `${cap.basis} Judged at the part's own ${Math.round(diag)} mm bounding diagonal - the largest dimension any single face could carry.` };
+      }
+    }
+  }
+
+  // ── The #402 capability summary the REPORT prints whether or not a rule
+  // fires: what the standard promises for this part at this grade. Projected
+  // area for the parting-line adder is approximated by the bounding footprint
+  // perpendicular to the draw — an UPPER bound on the true projected area,
+  // which makes the quoted adder an upper bound too, and the basis says so.
+  {
+    const bbS = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
+    const ext = [num(bbS.xMm), num(bbS.yMm), num(bbS.zMm)];
+    const dir = draft.drawDirectionXYZ;
+    if (Array.isArray(dir) && ext.every((v) => v > 0)) {
+      let k = -1;
+      for (let i = 0; i < 3; i++) if (Math.abs(Number(dir[i])) > 0.999) k = i;
+      if (k >= 0) {
+        const perp = ext.filter((_, i) => i !== k);
+        const areaCm2 = (perp[0] * perp[1]) / 100;
+        const maxDim = Math.max(...ext);
+        const lin = linearToleranceMm(material, maxDim, grade402);
+        const pl = partingLineToleranceMm(material, areaCm2, grade402);
+        if (lin.ok) {
+          out._nadca402Summary = {
+            grade: grade402,
+            largestDimensionMm: Math.round(maxDim),
+            linearPlusMinusMm: lin.plusMinusMm,
+            projectedAreaCm2: Math.round(areaCm2),
+            projectedAreaBasis: 'bounding footprint perpendicular to the draw - an UPPER bound on the true projected area',
+            partingLinePlusMm: pl.ok ? pl.plusMm : null,
+            partingLineNote: pl.ok ? null : pl.reason,
+          };
+        }
+      }
+    }
+  }
 
   // ── AS-CAST SURFACE FINISH vs PROCESS CAPABILITY, Table 3.26 ───────────
   const asked = num(opts.surfaceRoughnessUin);
@@ -1032,7 +1140,10 @@ export function runDfmRules(geo, process, opts = {}) {
       thresholdMaterial: material ?? null,
       // Where the MEASURED side of a tolerance comparison came from. Only set on
       // the rules that read it, so no other finding carries a stray claim.
-      measuredBasis: rule.measure === 'tightestToleranceMm' ? measures._toleranceBasis : undefined,
+      measuredBasis: rule.measure === 'tightestToleranceMm' ? measures._toleranceBasis
+        : rule.measure === 'nadca402ToleranceMargin' ? measures._nadca402Tolerance?.basis
+          : rule.measure === 'nadca402FlatnessMargin' ? measures._nadca402Flatness?.basis
+            : undefined,
       status,
     };
     // The specific features that break this rule, worst first. Only the ones

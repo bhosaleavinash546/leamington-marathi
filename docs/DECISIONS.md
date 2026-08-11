@@ -1850,3 +1850,34 @@ Not acted on, deliberately: a 2-4 mm band applied to a part the user has told
 us is vacuum cast would tighten the thin end from 1.5 to 2 mm, which is a real
 change but rests on one descriptive sentence rather than a specification table.
 Recorded so the next person does not have to re-read Chapter 5 to find it.
+
+## NADCA #402 (2021, 11th ed.) is the tolerance authority; 2015 draft constants survive it
+
+The user supplied *NADCA Product Specification Standards for Die Castings*,
+2021 (publication #402) — the document every casting `*-tolerance-capability`
+register entry named as its blocker. It is now code in `nadca-402.mjs`, with
+three decisions worth recording:
+
+  * **The 2021 draft tables agree with the 2015 design book.** S/P-4A-7 carries
+    the same A = 57.28/(C·√L) structure and the same worked example (1.0 in
+    depth → 2° inside / 1° outside for aluminium), so `DRAFT_CONSTANT` in
+    `nadca-die-casting.mjs` stands unchanged and its sources now also cite the
+    2021 standard. No constant was retuned.
+  * **Every formula is tested against the standard's own printed worked
+    examples** (Al 127 mm → ±0.35 Std / ±0.15 Prec; 75 in² parting-line adder
+    → +0.30 mm; flatness 254 mm → 0.76 mm), because that is the only test that
+    catches a misread table. It caught one real bug before wiring: a bare
+    `Math.ceil` on `177.8/25.4 = 7.000000000000001` charged an eighth
+    additional inch and computed flatness 0.84 vs the printed 0.76.
+  * **Tolerance capability is now dimension-dependent** where PMI dimension
+    rows exist (worst row governs and is named in the finding); a declared
+    single band falls back to the first-25.4 mm base — the tightest the
+    standard ever promises — and the finding says so. Parting-line adders are
+    PLUS-ONLY and banded by projected area; beyond the table (Cu past
+    322.6 cm², anything past 1935.5 cm²) the module refuses with "consult your
+    die caster" rather than extrapolating. Precision moving-die values were
+    not legible in the supplied copy and say so instead of guessing.
+
+Scope honesty: #402 tabulates die casting only. LPDC / gravity / sand /
+investment tolerance rules stay blocked, now naming ISO 8062-3 as the
+remaining document.
