@@ -15,20 +15,41 @@ from pptx.oxml import parse_xml
 from lxml import etree
 import copy
 
-# ─── Brand colours ────────────────────────────────────────────────────────────
-BG          = RGBColor(0x0D, 0x0F, 0x14)   # near-black background
-SURFACE     = RGBColor(0x16, 0x19, 0x23)   # card surface
-SURFACE2    = RGBColor(0x1E, 0x23, 0x30)   # elevated surface
-BORDER      = RGBColor(0x2A, 0x30, 0x45)   # border
-ACCENT_B    = RGBColor(0x4F, 0x8E, 0xF7)   # blue accent
-ACCENT_G    = RGBColor(0x10, 0xB9, 0x81)   # green accent
-ACCENT_P    = RGBColor(0x7C, 0x3A, 0xED)   # purple accent
-ORANGE      = RGBColor(0xF5, 0x9E, 0x0B)   # orange
-RED         = RGBColor(0xEF, 0x44, 0x44)   # red
-TEXT_W      = RGBColor(0xF0, 0xF2, 0xF8)   # white text
-TEXT_G      = RGBColor(0x9A, 0xA3, 0xB8)   # grey text
-TEXT_D      = RGBColor(0x5A, 0x63, 0x80)   # dark grey text
+# ─── Brand colours — light theme, matched to CostVision-Workflow-Explained ────
+# The palette is deliberately the same set of hex values as build_workflow_deck.mjs
+# so the two decks read as one pack when they are presented back to back: a very
+# light blue-grey page, white cards, navy headings, and accents dark enough to
+# stay legible as TEXT on white (the dark-theme accents were tuned for the
+# opposite job and turn to pastel mush on paper and on a bright projector).
+#
+# The token NAMES are historical — TEXT_W is the primary text colour, not white.
+# They are kept because ~300 call sites use them, so the theme is one edit here.
+BG          = RGBColor(0xF4, 0xF7, 0xFB)   # page
+SURFACE     = RGBColor(0xF7, 0xF9, 0xFC)   # tinted panel / alternating table row
+SURFACE2    = RGBColor(0xFF, 0xFF, 0xFF)   # card
+BORDER      = RGBColor(0xDC, 0xE3, 0xEE)   # hairline rule
+ACCENT_B    = RGBColor(0x1D, 0x6F, 0xB8)   # blue
+ACCENT_G    = RGBColor(0x2E, 0x8B, 0x57)   # green
+ACCENT_P    = RGBColor(0x6B, 0x3F, 0xA0)   # purple
+ORANGE      = RGBColor(0xB7, 0x79, 0x1F)   # amber
+RED         = RGBColor(0xB0, 0x3A, 0x2E)   # red
+TEXT_W      = RGBColor(0x16, 0x32, 0x5C)   # primary — navy
+TEXT_G      = RGBColor(0x3A, 0x43, 0x56)   # body — slate
+TEXT_D      = RGBColor(0x6B, 0x72, 0x80)   # secondary — muted
 WHITE       = RGBColor(0xFF, 0xFF, 0xFF)
+
+# The title slide stays a dark navy panel, exactly as the Workflow deck's does —
+# a light deck still wants one dark plate to open on. These are the only colours
+# used against it, and they are the ONLY place white type is correct.
+HERO_BG     = RGBColor(0x16, 0x32, 0x5C)   # navy plate
+HERO_PANEL  = RGBColor(0x1E, 0x40, 0x70)   # slightly lifted centre
+HERO_TEXT   = RGBColor(0xFF, 0xFF, 0xFF)
+HERO_SUB    = RGBColor(0xCA, 0xDC, 0xFC)
+HERO_DIM    = RGBColor(0x8F, 0xA3, 0xCC)
+
+# Workflow sets titles in Cambria and everything else in Calibri. Matching that
+# is most of what makes the two decks look like siblings.
+TITLE_FONT  = 'Cambria'
 
 # Slide dimensions: 16:9 widescreen
 W = Inches(13.333)
@@ -89,14 +110,14 @@ def _emit_runs(p, t, size, color, bold, italic, base_font='Calibri'):
 
 def txb(slide, text, x, y, w, h,
         size=18, bold=False, color=TEXT_W, align=PP_ALIGN.LEFT,
-        wrap=True, italic=False):
+        wrap=True, italic=False, font=None):
     """Add a text box."""
     tf_box = slide.shapes.add_textbox(x, y, w, h)
     tf = tf_box.text_frame
     tf.word_wrap = wrap
     p = tf.paragraphs[0]
     p.alignment = align
-    _emit_runs(p, text, size, color, bold, italic, base_font=None)
+    _emit_runs(p, text, size, color, bold, italic, base_font=font)
     return tf_box
 
 def rect(slide, x, y, w, h, fill_color, line_color=None, line_width=Pt(0)):
@@ -118,15 +139,15 @@ def accent_bar(slide, x, y, w=Inches(0.5), h=Inches(0.04), color=ACCENT_B):
 
 def slide_header(slide, slide_num, section_label, title_text, subtitle_text=""):
     """Standard slide header with top bar, slide number, section label, title."""
-    # Top accent strip
-    rect(slide, 0, 0, W, Inches(0.06), ACCENT_B)
+    # Top navy strip — the Workflow deck's masthead
+    rect(slide, 0, 0, W, Inches(0.10), HERO_BG)
 
     # Slide number (top-left)
-    txb(slide, f"SLIDE {slide_num:02d} / 19", Inches(0.35), Inches(0.12), Inches(2), Inches(0.35),
+    txb(slide, f"SLIDE {slide_num:02d} / 19", Inches(0.35), Inches(0.14), Inches(2), Inches(0.35),
         size=7.5, color=TEXT_D, bold=True)
 
     # CostVision logo (top-right)
-    txb(slide, "CostVision", W - Inches(1.9), Inches(0.10), Inches(1.6), Inches(0.35),
+    txb(slide, "CostVision", W - Inches(1.9), Inches(0.12), Inches(1.6), Inches(0.35),
         size=11, bold=True, color=ACCENT_B, align=PP_ALIGN.RIGHT)
 
     # Horizontal rule under top bar
@@ -138,7 +159,7 @@ def slide_header(slide, slide_num, section_label, title_text, subtitle_text=""):
 
     # Main title
     txb(slide, title_text, Inches(0.5), Inches(0.9), Inches(12), Inches(0.6),
-        size=26, bold=True, color=TEXT_W)
+        size=26, bold=True, color=TEXT_W, font=TITLE_FONT)
 
     # Subtitle
     if subtitle_text:
@@ -238,14 +259,14 @@ def add_table(slide, rows, cols, x, y, w, h, header_row, data_rows,
     for c, text in enumerate(header_row):
         cell = table.cell(0, c)
         cell.fill.solid()
-        cell.fill.fore_color.rgb = SURFACE
+        cell.fill.fore_color.rgb = HERO_BG
         p = cell.text_frame.paragraphs[0]
         p.alignment = PP_ALIGN.LEFT
         run = p.add_run()
         run.text = text
         run.font.size = Pt(7.5)
         run.font.bold = True
-        run.font.color.rgb = TEXT_G
+        run.font.color.rgb = HERO_TEXT
 
     # Data rows
     for r, row_data in enumerate(data_rows):
@@ -280,32 +301,37 @@ def notes(slide, text):
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
 
-# Top accent strip
+# Navy plate. This is the one slide in the deck that is NOT light, and so the
+# one place HERO_TEXT/HERO_SUB (white and pale blue) are the correct colours —
+# everywhere else those would be invisible.
+rect(slide, 0, 0, W, H, HERO_BG)
+# The lifted panel is sized to the content it holds (wordmark down to the second
+# pill row) and centred on the slide — it used to run to 6.5" with the bottom
+# third empty, and sat 0.09" off centre.
+# It closes above the capability pills, which are wider than it is — the pills
+# then sit cleanly on the navy plate instead of straddling the panel edge.
+_HP_W = Inches(9.53)
+rect(slide, (W - _HP_W) / 2, Inches(0.85), _HP_W, Inches(3.30), HERO_PANEL)
 rect(slide, 0, 0, W, Inches(0.08), ACCENT_B)
-
-# Gradient-like background strip (simulated with layered rects)
-rect(slide, 0, 0, W, H, RGBColor(0x0D, 0x0F, 0x14))
-rect(slide, Inches(2), Inches(1.5), Inches(9.5), Inches(5),
-     RGBColor(0x14, 0x18, 0x28))  # subtle centre glow
 
 # Main logo / wordmark
 txb(slide, "CostVision", Inches(0.6), Inches(1.0), Inches(12), Inches(1.4),
-    size=72, bold=True, color=ACCENT_B, align=PP_ALIGN.CENTER)
+    size=72, bold=True, color=HERO_TEXT, align=PP_ALIGN.CENTER, font=TITLE_FONT)
 
 # Accent tagline bar
-rect(slide, Inches(4.5), Inches(2.45), Inches(4.4), Inches(0.06), ACCENT_P)
+rect(slide, Inches(4.5), Inches(2.45), Inches(4.4), Inches(0.06), HERO_SUB)
 
 txb(slide, "AI-Powered Should-Cost Intelligence for Modern Engineering",
     Inches(0.6), Inches(2.55), Inches(12), Inches(0.6),
-    size=17, color=TEXT_G, align=PP_ALIGN.CENTER)
+    size=17, color=HERO_SUB, align=PP_ALIGN.CENTER)
 
 txb(slide, "Designed & Developed by  Avinash Bhosale",
     Inches(0.6), Inches(3.2), Inches(12), Inches(0.45),
-    size=13, bold=True, color=TEXT_W, align=PP_ALIGN.CENTER)
+    size=13, bold=True, color=HERO_TEXT, align=PP_ALIGN.CENTER)
 
 txb(slide, "Cost Engineering & Digital Innovation",
     Inches(0.6), Inches(3.65), Inches(12), Inches(0.35),
-    size=10, color=TEXT_D, align=PP_ALIGN.CENTER)
+    size=10, color=HERO_DIM, align=PP_ALIGN.CENTER)
 
 # Capability pills row
 pill_data = [
@@ -333,10 +359,10 @@ for label, col, px in pill2_data:
         size=7.5, bold=True, color=col, align=PP_ALIGN.CENTER)
 
 # Footer
-rect(slide, 0, H - Inches(0.45), W, Inches(0.008), BORDER)
+rect(slide, 0, H - Inches(0.45), W, Inches(0.008), HERO_PANEL)
 txb(slide, "CONFIDENTIAL — Management Review  |  July 2026",
     Inches(0.4), H - Inches(0.4), W - Inches(0.8), Inches(0.35),
-    size=7.5, color=TEXT_D, align=PP_ALIGN.CENTER)
+    size=7.5, color=HERO_DIM, align=PP_ALIGN.CENTER)
 
 notes(slide,
     "Welcome, and thanks for making the time. What you're looking at is CostVision — a "
@@ -375,26 +401,37 @@ problems = [
      "Buyers lack a defensible floor price for negotiation. Supplier margins are opaque and unchallenged."),
 ]
 
+# The card rows and the stat bar below them are sized from a common bottom
+# target, so the block finishes just above the footer instead of leaving an inch
+# of empty page under it.
 cols = 3
-cw = Inches(4.1)
-ch = Inches(1.6)
 sx, sy = Inches(0.45), Inches(2.0)
 gap = Inches(0.12)
+cw = (W - sx * 2 - gap * (cols - 1)) / cols
+STAT_BAR_H = Inches(0.86)
+_rows2 = -(-len(problems) // cols)
+ch = (Inches(6.95) - STAT_BAR_H - Inches(0.14) - sy - gap * (_rows2 - 1)) / _rows2
 
 for i, (col, ico, title, body) in enumerate(problems):
     r, c = divmod(i, cols)
     cx = sx + c * (cw + gap)
     cy = sy + r * (ch + gap)
-    card(slide, cx, cy, cw, ch, f"{ico}  {title}", body, accent=col)
+    card(slide, cx, cy, cw, ch, f"{ico}  {title}", body, accent=col,
+         title_pt=10.5, body_pt=9.5)
 
 # Industry stat bar
-rect(slide, Inches(0.45), Inches(5.42), Inches(12.45), Inches(0.82), SURFACE2, BORDER, Pt(0.5))
-txb(slide, "80%", Inches(0.6), Inches(5.46), Inches(1.1), Inches(0.72),
-    size=36, bold=True, color=ORANGE, align=PP_ALIGN.CENTER)
+_bar_y = sy + _rows2 * (ch + gap) + Inches(0.02)
+rect(slide, sx, _bar_y, W - sx * 2, STAT_BAR_H, SURFACE2, BORDER, Pt(0.5))
+# "80%" at 36 pt is wider than the 1.1" box, so wrapping broke it across two
+# lines and dropped the "%" out of the panel. Centred and unwrapped it stays on
+# one line inside the panel and clear of the sentence beside it.
+txb(slide, "80%", sx + Inches(0.15), _bar_y + Inches(0.06), Inches(1.1), Inches(0.72),
+    size=36, bold=True, color=ORANGE, align=PP_ALIGN.CENTER, wrap=False)
 txb(slide, "of part cost is locked in at the design stage — yet most cost analysis happens after design freeze."
     "  CostVision shifts cost intelligence to where it matters: concept phase.",
-    Inches(1.8), Inches(5.52), Inches(10.8), Inches(0.62),
-    size=9.5, color=TEXT_G)
+    sx + Inches(1.35), _bar_y + Inches(0.14), Inches(10.8), Inches(0.62),
+    size=10, color=TEXT_G)
+assert _bar_y + STAT_BAR_H <= Inches(6.98), 'slide 2 stat bar runs into the footer'
 
 notes(slide,
     "Before I show you the tool, let me be honest about the problem it's solving, because most of "
@@ -495,13 +532,6 @@ for title, body in steps:
 rx = Inches(6.6)
 ry = Inches(2.0)
 rw = Inches(6.3)
-rh = Inches(4.92)
-rect(slide, rx, ry, rw, rh, SURFACE, BORDER, Pt(0.5))
-
-# Mockup title bar
-rect(slide, rx, ry, rw, Inches(0.36), SURFACE2)
-txb(slide, "●  CostVision AI Agent", rx + Inches(0.14), ry + Inches(0.07),
-    rw - Inches(0.2), Inches(0.25), size=8.5, bold=True, color=ACCENT_B)
 
 # Chat bubbles
 chats = [
@@ -511,13 +541,31 @@ chats = [
     ("AI",    "Should-Cost Result: £ 4.18 per board\n• PCB Fab (material + process): £ 3.24\n• Test (flying probe): £ 0.71\n• NRE amortised: £ 0.23\nDFM Score: 8.5/10 — Good manufacturability"),
 ]
 
+# The panel height is DERIVED from the transcript rather than typed. It used to
+# be a fixed 4.92", the transcript overran it, and the "Key Benefits" heading
+# clamped back on top of the last AI bubble while the second row of benefits
+# dropped through the panel floor onto the footer.
+BUB_PAD, BUB_LINE, BUB_GAP = 0.26, 0.21, 0.08
+_transcript = sum(BUB_PAD + (m.count('\n') + 1) * BUB_LINE for _, m in chats) \
+    + BUB_GAP * (len(chats) - 1)
+rh = Inches(0.44 + _transcript + 0.14)
+rect(slide, rx, ry, rw, rh, SURFACE, BORDER, Pt(0.5))
+
+# Mockup title bar
+rect(slide, rx, ry, rw, Inches(0.36), SURFACE2)
+txb(slide, "●  CostVision AI Agent", rx + Inches(0.14), ry + Inches(0.07),
+    rw - Inches(0.2), Inches(0.25), size=8.5, bold=True, color=ACCENT_B)
+
 cy2 = ry + Inches(0.44)
 for role, msg in chats:
     is_user = role == "USER"
-    bg_col = SURFACE2 if is_user else RGBColor(0x1A, 0x24, 0x3E)
+    # The AI reply used to be a dark blue bubble against a dark page. On a light
+    # page the same distinction is made the other way round: the user's turn is
+    # the plain white bubble, the AI's is a pale blue tint.
+    bg_col = SURFACE2 if is_user else RGBColor(0xE8, 0xF1, 0xFA)
     border_col = BORDER if is_user else ACCENT_B
     lines = msg.count('\n') + 1
-    bh = Inches(0.28 + lines * 0.22)
+    bh = Inches(BUB_PAD + lines * BUB_LINE)
     if is_user:
         rect(slide, rx + Inches(0.14), cy2, rw - Inches(0.28), bh, bg_col, border_col, Pt(0.5))
         txb(slide, f"You: {msg}", rx + Inches(0.24), cy2 + Inches(0.06),
@@ -528,20 +576,18 @@ for role, msg in chats:
             rw - Inches(0.5), bh - Inches(0.1), size=7.5, color=TEXT_W)
     cy2 += bh + Inches(0.08)
 
-# Key benefits pills
-benefits = ["⚡ Zero manual form-filling", "🎯 Works for any commodity", "✓ Validates all AI assumptions", "📊 Full audit trail"]
-# The chat transcript above grows, so this block has to be clamped rather than
-# offset — two rows of pills used to finish 0.13" below the bottom of the slide.
-PILL_H, PILL_GAP = Inches(0.25), Inches(0.05)
-rows_b = (len(benefits) + 1) // 2
-block_h = rows_b * PILL_H + (rows_b - 1) * PILL_GAP
-by_base = min(cy2 + Inches(0.34), H - Inches(0.28) - block_h)
-txb(slide, "Key Benefits", rx, by_base - Inches(0.29), rw, Inches(0.25),
-    size=8.5, bold=True, color=ACCENT_G)
+# Key benefits — one strip under the panel, label and all four on a single line,
+# so it cannot collide with the transcript however long that grows.
+benefits = ["⚡ Zero form-filling", "🎯 Any commodity",
+            "✓ Assumptions visible", "📊 Full audit trail"]
+by = ry + rh + Inches(0.12)
+txb(slide, "Key Benefits", rx, by, Inches(0.95), Inches(0.22),
+    size=8.5, bold=True, color=ACCENT_G, wrap=False)
+_bw = (rw - Inches(1.05)) / len(benefits)
 for i, b in enumerate(benefits):
-    bx = rx + Inches(0.1) + (i % 2) * Inches(3.0)
-    by = by_base + (i // 2) * (PILL_H + PILL_GAP)
-    txb(slide, b, bx, by, Inches(2.9), PILL_H, size=7.5, color=TEXT_G)
+    txb(slide, b, rx + Inches(1.05) + i * _bw, by, _bw, Inches(0.22),
+        size=7.5, color=TEXT_G, wrap=False)
+assert by + Inches(0.22) <= H - Inches(0.45), 'benefits strip runs into the footer'
 
 notes(slide,
     "This is the feature that gets the biggest reaction in a live demo, so let me walk the flow on "
@@ -564,12 +610,18 @@ slide = add_slide()
 slide_header(slide, 5, "Automation", "CAD-to-Cost: Geometry to Should-Cost Automatically",
              "Upload a STEP file or part photo — AI extracts features, infers material, and generates a full cost model.")
 
-# 3 stat boxes
+# 3 stat boxes, then the supported-formats panel beside them. These used to be
+# laid on the same 1.98"–3.00" band at the same x, so the formats bar was drawn
+# straight over all three stat cards and hid them completely.
+STAT_Y, STAT_H = Inches(1.98), Inches(1.0)
 stats = [("10×", "Faster than manual costing", ACCENT_B),
          ("±8%", "Typical model accuracy", ACCENT_G),
          ("0", "Manual routing steps required", ORANGE)]
+_sw5, _sg5 = Inches(1.75), Inches(0.1)
 for i, (num, lbl, col) in enumerate(stats):
-    stat_card(slide, Inches(0.45 + i*2.2), Inches(1.98), Inches(2.0), Inches(1.0), num, lbl, col)
+    stat_card(slide, Inches(0.45) + i * (_sw5 + _sg5), STAT_Y, _sw5, STAT_H, num, lbl, col)
+_fmt_x = Inches(0.45) + len(stats) * (_sw5 + _sg5) + Inches(0.1)
+assert _fmt_x >= Inches(0.45) + 3 * (_sw5 + _sg5), 'formats panel overlaps the stat cards'
 
 # What AI extracts
 ex_items = [
@@ -639,11 +691,18 @@ txb(slide, "  ".join(f"■ {l}" for _, _, l in bar_data),
     rx + Inches(0.15), ry + Inches(2.86), rw - Inches(0.3), Inches(0.22),
     size=7.5, color=TEXT_D)
 
-# File types supported
-rect(slide, Inches(0.45), Inches(2.12), Inches(6.7), Inches(0.88), SURFACE2, BORDER, Pt(0.5))
-txb(slide, "Supported formats:", Inches(0.6), Inches(2.16), Inches(1.5), Inches(0.25), size=8, color=TEXT_D, bold=True)
-txb(slide, ".STEP   .IGES   .STP   .IGS   .JPG   .PNG   .HEIC   (drag-drop or file picker)",
-    Inches(2.1), Inches(2.18), Inches(5.0), Inches(0.25), size=8, color=ACCENT_B)
+# File types supported — right of the stat cards, aligned to the panel below it
+_fmt_w = Inches(12.85) - _fmt_x
+rect(slide, _fmt_x, STAT_Y, _fmt_w, STAT_H, SURFACE2, BORDER, Pt(0.5))
+rect(slide, _fmt_x, STAT_Y, Inches(0.06), STAT_H, ACCENT_P)
+txb(slide, "Supported formats", _fmt_x + Inches(0.2), STAT_Y + Inches(0.12),
+    _fmt_w - Inches(0.3), Inches(0.25), size=9, color=TEXT_W, bold=True)
+txb(slide, ".STEP   .IGES   .STP   .IGS   .STL   .JPG   .PNG   .HEIC",
+    _fmt_x + Inches(0.2), STAT_Y + Inches(0.42), _fmt_w - Inches(0.3), Inches(0.25),
+    size=9, color=ACCENT_B, bold=True)
+txb(slide, "Drag-drop or file picker — CAD geometry measured by a full kernel, photos read by vision.",
+    _fmt_x + Inches(0.2), STAT_Y + Inches(0.68), _fmt_w - Inches(0.3), Inches(0.25),
+    size=8, color=TEXT_D)
 
 notes(slide,
     "This is the automation path, and there's one design decision here I really want to land: the "
@@ -664,7 +723,7 @@ notes(slide,
 # ══════════════════════════════════════════════════════════════════════════════
 # SLIDE 6 — 3D CAD Viewer (latest capabilities)
 # ══════════════════════════════════════════════════════════════════════════════
-TEAL = RGBColor(0x22, 0xB8, 0xC4)
+TEAL = RGBColor(0x0E, 0x80, 0x74)   # Workflow deck's teal
 slide = add_slide()
 slide_header(slide, 6, "New in 2026 · Engineering-Grade Viewer",
              "3D CAD Viewer — Inspect, Measure & Analyse",
