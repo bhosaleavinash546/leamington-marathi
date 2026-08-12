@@ -964,34 +964,34 @@ notes(slide,
 # SLIDE 8 — Should-Cost Model Depth
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 10, "Engineering Depth", "Should-Cost Model Architecture",
-             "Built on aPriori-calibrated benchmarks, IPC standards, and first-principles manufacturing engineering.")
+slide_header(slide, 10, "Engineering Depth", "What Sits Behind Every Number",
+             "Twelve layers, all of them arithmetic you can follow. Nothing is estimated by feel.")
 
 depth_cards = [
-    (ACCENT_B, "📦 Material Database",
-     "30+ materials: alloy steels, aluminium grades, engineering plastics, elastomers, composites, PCB laminates, copper alloys. FX-adjusted per region."),
-    (ACCENT_G, "🏭 Machine & Rate Library",
-     "50+ machine types: CNC centres, presses, moulding machines, SMT lines, reflow ovens, test equipment. Hourly rates editable per project and region."),
-    (ORANGE,   "🛤️ Routing & Process Logic",
-     "AI-driven operation sequencing. Each operation: machine ID, cycle time (hr), OEE, setup time, labour grade, overhead allocation."),
-    (ACCENT_P, "🔩 Tooling & NRE Amortisation",
-     "Dies, moulds, fixtures, PCB NRE — amortised over annual volume with tool life curves for press tools and EDM electrodes."),
-    (ACCENT_G, "📉 Yield & Scrap Models",
-     "First-pass yield from 10 penalty factors: layer count, trace width, via type, HDI structure, impedance control, BGA pitch, alloy grade, section thickness."),
-    (ACCENT_B, "🌍 Regional Cost Multipliers",
-     "20 regions — each with calibrated labour tiers (skilled/semi-skilled/engineer/inspector), energy costs, and machine hour rates."),
+    (ACCENT_B, "📦 Materials",
+     "30+ grades — steels, aluminium, plastics, rubber, composites, board laminates. Priced in the local currency."),
+    (ACCENT_G, "🏭 Machines & Rates",
+     "50+ machine types with an hourly rate you can edit per project and per region."),
+    (ORANGE,   "🛤️ Process Routing",
+     "The order of operations, and for each one: which machine, how long, who runs it."),
+    (ACCENT_P, "🔩 Tooling & NRE",
+     "Dies, moulds and fixtures spread over the year's volume, with tool life accounted for."),
+    (ACCENT_G, "📉 Yield & Scrap",
+     "What actually comes out good first time, driven by the features that make a part hard to build."),
+    (ACCENT_B, "🌍 Regional Rates",
+     "20 regions, each with its own labour, energy and machine rates."),
     (ORANGE,   "📊 Benchmarks & Sensitivity",
-     "Every cost element benchmarked vs aPriori/Cleansheet ranges. Tornado chart shows top 10 cost drivers at ±10%. Scenario A/B/C comparison."),
+     "Checked against published cost ranges, and ranked by which inputs move the number most."),
     (ACCENT_P, "📉 Learning Curve",
-     "Wright's Law: configure an 85% (or custom) curve to project volume-driven cost reduction. Essential for programme pricing and LTA negotiations."),
-    (ACCENT_G, "💰 Supplier Quote Comparison",
-     "Log supplier quotes (name, date, price, currency). Compare vs should-cost instantly — identify margin gaps and overhead inflation."),
-    (ACCENT_B, "🤖 AI-Driven Assumptions",
-     "Where geometry is unknown, Claude AI fills assumptions transparently — material, complexity, process, geometry — with explanation of every decision."),
-    (ORANGE,   "⚙️ Gear Cutting Kinematics",
-     "Hobbing, shaping, power-skiving and grinding cycles derived from gear-train arithmetic rather than rules of thumb. Machine sized on module × diameter × face width."),
-    (ACCENT_P, "🚢 Landed Cost & Customs",
-     "Duty on customs value, CBAM carbon border levy, rules of origin and incoterms — the cost at our door, not at the supplier's gate."),
+     "What the part costs as volume builds — the figure you need for a long-term agreement."),
+    (ACCENT_G, "💰 Quote Comparison",
+     "Put the supplier's quote next to ours and see the gap, in their currency or yours."),
+    (ACCENT_B, "🤖 Stated Assumptions",
+     "Where something isn't known, the AI fills it in and says so — every assumption is on the page."),
+    (ORANGE,   "⚙️ Gear Cutting",
+     "Hobbing, shaping, skiving and grinding times worked out from the gear itself, not a rule of thumb."),
+    (ACCENT_P, "🚢 Landed Cost",
+     "Duty, carbon levy and shipping terms — the cost at our door, not at the supplier's gate."),
 ]
 
 # Card width is DERIVED from the slide, never typed. A hardcoded 3.88" put
@@ -1046,25 +1046,23 @@ notes(slide,
 # SLIDE 9 — Advanced Features
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 11, "Advanced Capabilities", "Advanced Cost Modelling & Intelligence Features",
-             "CostVision goes beyond basic costing — it models commercial reality with precision.")
+slide_header(slide, 11, "Advanced Capabilities", "Beyond a Cost Number",
+             "Five tools that turn the estimate into something you can negotiate with.")
 
 # Left col
 lx9 = Inches(0.45)
 lw9 = Inches(6.0)
 
 adv_left = [
-    (ACCENT_P, "📉 Wright's Law Learning Curve",
-     "Configure any learning curve % (default 85%). As volume doubles, cost reduces by the curve %.\n\n"
-     "• Model programme cost at any volume milestone\n"
-     "• Critical for LTA negotiations and make-vs-buy decisions\n"
-     "• Visualise break-even volume vs manual costing cost"),
-    (ACCENT_G, "🔗 Assembly BOM Rollup",
-     "Build multi-level assemblies from any combination of 21 commodities:\n\n"
-     "• Add components one-by-one with commodity type, weight, volume\n"
-     "• Each component costed using its own should-cost model\n"
-     "• Roll up to a total assembly cost with full per-component breakdown\n"
-     "• Example: BIW + Painting + Harness + PCBA = full module should-cost"),
+    (ACCENT_P, "📉 Learning Curve",
+     "Cost falls as volume builds. Set the curve, read the cost at any year.\n\n"
+     "• Quote year-three cost, not prototype cost\n"
+     "• Built for long-term agreements and make-vs-buy"),
+    (ACCENT_G, "🧩 Assembly Roll-Up",
+     "Cost a whole module, not just one part.\n\n"
+     "• Mix any of the 21 commodities in one build\n"
+     "• Every component keeps its own cost model\n"
+     "• Body + paint + harness + PCBA = one total"),
 ]
 
 yy9 = Inches(2.0)
@@ -1082,22 +1080,18 @@ rx9 = Inches(6.85)
 rw9 = Inches(6.0)
 
 adv_right = [
-    (ORANGE, "💰 Supplier Quote Comparison",
-     "• Enter supplier name, quote date, price, currency, and FX rate\n"
-     "• CostVision converts to GBP and compares vs should-cost\n"
-     "• Calculates margin gap: 'Supplier is 18% above should-cost'\n"
-     "• Generates data-driven negotiation talking points\n"
-     "• Track multiple suppliers per part for competitive benchmarking"),
-    (ACCENT_B, "📊 Sensitivity Analysis (Tornado Chart)",
-     "• ±10% variation applied to each cost driver independently\n"
-     "• Top 10 drivers ranked by impact (tornado chart)\n"
-     "• Identify which inputs most need validation before negotiation\n"
-     "• Export the chart to include in supplier presentations"),
-    (ACCENT_G, "🧪 Scenario A/B/C Comparison",
-     "• Save any configuration as a named scenario\n"
-     "• Compare baseline vs target vs stretch cost side-by-side\n"
-     "• Delta view shows where costs increased or decreased\n"
-     "• Export all scenarios to JSON for team sharing"),
+    (ORANGE, "💰 Quote Comparison",
+     "Log the supplier's quote. Any currency, converted for you.\n"
+     "• Tells you the gap in words: \"18% above should-cost\"\n"
+     "• Gives you the talking points to open with"),
+    (ACCENT_B, "📊 What Moves the Number",
+     "Every driver flexed ±10%, ranked by impact.\n"
+     "• Shows the few inputs worth checking before you negotiate\n"
+     "• Chart exports straight into your supplier pack"),
+    (ACCENT_G, "🧪 Scenarios Side by Side",
+     "Baseline, target and stretch on one screen.\n"
+     "• See exactly where the money moved\n"
+     "• Save and share with the team"),
 ]
 
 yy9r = Inches(2.0)
@@ -1129,8 +1123,8 @@ notes(slide,
 # SLIDE 10 — DFM / DFA Intelligence
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 12, "AI Intelligence Layer", "DFM / DFA — Design for Manufacture & Assembly",
-             "A bolt-on AI intelligence layer that runs AFTER the should-cost, without modifying any calculation logic.")
+slide_header(slide, 12, "AI Intelligence Layer", "DFM / DFA — How to Make the Part Cheaper",
+             "Runs after the cost is settled. It reads the result and advises — it never changes the price.")
 
 # Score banner
 rect(slide, Inches(0.45), Inches(2.0), Inches(12.45), Inches(0.78), SURFACE2, BORDER, Pt(0.5))
@@ -1146,44 +1140,46 @@ txb(slide, "Total Potential Saving", Inches(8.4), Inches(2.06),
     Inches(2.5), Inches(0.28), size=8.5, bold=True, color=TEXT_W)
 txb(slide, "~19.3%", Inches(8.4), Inches(2.34), Inches(2.5), Inches(0.36),
     size=20, bold=True, color=ACCENT_G)
-txb(slide, "All scores are 1–10 (10 = perfect)  |  Savings are RSS-combined from top 3 issues",
+txb(slide, "Scored out of 10  ·  saving is the top three fixes combined",
     Inches(10.8), Inches(2.2), Inches(2.0), Inches(0.54),
     size=7.5, color=TEXT_D, wrap=True)
 
 # Four quadrant cards
 dfm_dfa = [
-    (ACCENT_B, "DFM Issues — What It Finds",
-     "Critical: Low material utilisation (<60%), OEE <70%, die cost >18%\n"
-     "Major: Below-benchmark OEE (70–80%), high operation count, process cost dominant\n"
-     "Minor: Elevated tooling %, overhead burden >18%, supplier margin >18%\n"
-     "Opportunity: Near-net-shape conversion, volume increase, multi-cavity tooling"),
-    (ACCENT_G, "DFA Issues — Assembly Intelligence",
-     "Automation feasibility: labour-dominated assemblies flagged for robot/cobot study\n"
-     "Operation count: multiple setups imply fixturing cost and dimensional variation risk\n"
-     "OEE pacing: low OEE in assembly indicates manual pacing or changeover inefficiency\n"
-     "Fastener standardisation: variety in fastener drives assembly time and tool changes"),
-    (ORANGE,   "Cost Optimisation Levers (6–8 per part)",
-     "Automate High-Labour Operations — typically 5–20% saving\n"
-     "Near-Net-Shape Material Improvement — 5–15% material cost saving\n"
-     "OEE Improvement (TPM programme) — 5–12% machine cost reduction\n"
-     "Volume Increase to Dilute Tooling NRE — Quick Win, Low Risk\n"
-     "Overhead Rate Negotiation via Open-Book Costing — Quick Win\n"
-     "Competitive RFQ to Reduce Supplier Margin — Quick Win"),
-    (ACCENT_P, "AI Deep Analysis (Claude AI)",
-     "Click 'Run AI Deep Analysis' after rule-based results are shown\n"
-     "Claude provides: Root cause commentary, Priority top-3 actions\n"
-     "Supplier negotiation strategy with specific talking points\n"
-     "Alternative process recommendations (e.g. casting → HPDC)\n"
-     "Risk assessment: red flags in cost structure needing investigation"),
+    (ACCENT_B, "🔧 What It Finds — Making the Part",
+     "Too much material going to scrap.\n"
+     "Machines running well below what they should.\n"
+     "Tooling, overhead or supplier margin out of line.\n"
+     "Each issue graded critical, major or minor."),
+    (ACCENT_G, "🧩 What It Finds — Building It",
+     "Assemblies done by hand that a robot could do.\n"
+     "Too many setups — every one adds cost and variation.\n"
+     "Too many different fasteners, so tools keep changing."),
+    (ORANGE,   "💡 What to Do About It",
+     "Six to eight actions per part, with the saving on each:\n\n"
+     "Automate the manual operations   5–20%\n"
+     "Move to a near-net shape   5–15%\n"
+     "Raise machine uptime   5–12%\n"
+     "Plus quick wins: more volume, open-book overhead, re-bid."),
+    (ACCENT_P, "🤖 Ask the AI to Go Deeper",
+     "One click, after the rule-based findings are on screen.\n\n"
+     "Why the cost sits where it does.\n"
+     "The three things to fix first.\n"
+     "What to say to the supplier, and a different process to consider."),
 ]
 
+# Height derived from a bottom target: a typed 2.0" put the second row of cards
+# at 7.10", straight through the footer rule.
 cw_d2 = Inches(6.0)
-ch_d2 = Inches(2.0)
+_top_d2, _gap_d2 = Inches(3.0), Inches(0.12)
+ch_d2 = (Inches(6.95) - _top_d2 - _gap_d2) / 2
 for i, (col, title, body) in enumerate(dfm_dfa):
     r, c = divmod(i, 2)
-    dx = Inches(0.45) + c * (cw_d2 + Inches(0.12))
-    dy = Inches(3.0) + r * (ch_d2 + Inches(0.1))
-    card(slide, dx, dy, cw_d2, ch_d2, title, body, accent=col)
+    dx = Inches(0.45) + c * (cw_d2 + _gap_d2)
+    dy = _top_d2 + r * (ch_d2 + _gap_d2)
+    card(slide, dx, dy, cw_d2, ch_d2, title, body, accent=col,
+         title_pt=10.5, body_pt=9.5)
+assert _top_d2 + 2 * ch_d2 + _gap_d2 <= Inches(6.96), 'DFM grid runs into the footer'
 
 notes(slide,
     "One thing I was careful about here: the DFM and DFA layer runs after the should-cost, and it "
@@ -1348,24 +1344,21 @@ notes(slide,
 slide = add_slide()
 slide_header(slide, 15, "New in 2026 · Agentic Intelligence",
              "The Tool Now Checks Its Own Work — and Learns",
-             "A deterministic self-audit re-checks every estimate, calibration learns from real quotes, and it is proven on real parts.")
+             "It re-checks every estimate before you see it, and it learns from the quotes you have already had.")
 
 # Left column — three new-capability cards
 lx12, lw12 = Inches(0.45), Inches(5.55)
 agentic_cards = [
-    (ACCENT_G, "🔍 Self-Audit — it checks its own homework",
-     "A deterministic layer re-runs every estimate looking for known mistakes: a part classed as "
-     "the wrong process, machining time over the physical finish envelope, a wall thinner than the "
-     "geometry allows, weight that disagrees with the CAD. It applies bounded corrections and shows "
-     "its working — the AI never overrules the measured geometry."),
-    (ACCENT_B, "📈 Calibration & Drift — learns from actuals",
-     "Bulk-import real supplier quotes as a CSV. The engine learns per-segment correction factors, "
-     "carries a conformal confidence band, and watches for drift — so the estimate tightens as your "
-     "own history grows. Calibration status now rides on every single estimate, not a hidden report."),
-    (ORANGE, "🛠️ Universal Machine-Sizing — right press, any commodity",
-     "One dispatcher now sizes the machine for the part across commodities — forging presses, "
-     "stamping presses, HPDC and moulding tonnage, extrusion and more — instead of a single "
-     "hard-coded tier. Tooling amortises over annual volume everywhere by one universal rule."),
+    (ACCENT_G, "🔍 It checks its own homework",
+     "Every estimate is re-checked against the mistakes this tool has actually made before — wrong "
+     "process, impossible machining time, a weight that disagrees with the CAD. It corrects them and "
+     "shows its working. The measured geometry always wins over the AI."),
+    (ACCENT_B, "📈 It learns from your quotes",
+     "Load the supplier quotes you already have. The engine corrects itself against them, and the "
+     "estimate gets tighter as your history grows. Every estimate now says how well calibrated it is."),
+    (ORANGE, "🛠️ It picks the right machine",
+     "One rule now sizes the machine for the part on every commodity — presses, die-casting, "
+     "moulding, extrusion — instead of a fixed guess per commodity."),
 ]
 yy12 = Inches(2.0)
 for col, title, body in agentic_cards:
@@ -1392,8 +1385,8 @@ data12a = [
     ("Fuel tank",         "£216.97", "Treated as cast",       "£24.62 blow-mould"),
     ("Front bumper",      "£29.18",  "Machined, not moulded", "£7.79 injection"),
     ("Servo horn",        "£333.00", "Bulk, not net-shape",   "£6.40 net-shape"),
-    ("Stub axle",         "mis-class","Wrong process/weight",  "Forged steel 8.1 kg"),
-    ("Seat cross-member", "engine crash","Sizing gap",         "£1.11 runs clean"),
+    ("Stub axle",         "no result", "Classed as the wrong process", "Forged steel 8.1 kg"),
+    ("Seat cross-member", "no result", "Machine sizing gap",    "£1.11 runs clean"),
 ]
 col_ws12a = [Inches(1.55), Inches(1.15), Inches(1.95), Inches(1.9)]
 add_table(slide, len(data12a) + 1, 4,
@@ -1406,9 +1399,9 @@ rect(slide, rx12, Inches(5.5), Inches(0.06), Inches(1.42), ACCENT_B)
 txb(slide, "Built to be trusted, not just believed", rx12 + Inches(0.16), Inches(5.58),
     rw12 - Inches(0.25), Inches(0.28), size=9.5, bold=True, color=TEXT_W)
 cred_items = [
-    "1,777 automated tests across 136 suites — a logic regression fails the build, not the demo",
-    "The self-audit re-checks every estimate before you ever see the number",
-    "The CAD geometry engine ships inside a container whose build is verified in CI",
+    "1,777 automated tests — if the logic breaks, the build fails, not the demo",
+    "Every estimate is re-checked before you ever see the number",
+    "The CAD engine is tested in the same container we deploy",
 ]
 yyc = Inches(5.9)
 for it in cred_items:
@@ -1493,45 +1486,36 @@ notes(slide,
 # SLIDE 15 — Export, Reporting & Team Collaboration
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 17, "Reporting & Collaboration", "Export, Share & Collaborate — Enterprise Ready",
-             "From individual engineer to global team — CostVision scales to any organisation size.")
+slide_header(slide, 17, "Reporting & Collaboration", "Getting the Number Out of the Room",
+             "Reports people can act on, and one shared baseline for the whole team.")
 
 export_cards = [
-    (ACCENT_G, "📊 6-Sheet Excel Export",
-     "Sheet 1: Summary (total cost, breakdown %, region, commodity)\n"
-     "Sheet 2: Material (alloy, weight, utilisation, price)\n"
-     "Sheet 3: Operations (machine, labour, cycle time, OEE per step)\n"
-     "Sheet 4: Machine Rates (rate library snapshot)\n"
-     "Sheet 5: Labour Rates (regional labour tiers)\n"
-     "Sheet 6: Traceability (assumptions, AI notes, version, date)"),
-    (ACCENT_B, "📄 Professional PDF Report",
-     "Section 1: Cover page with part photo & programme details\n"
-     "Section 2: Cost summary and 8-bucket breakdown chart\n"
-     "Section 3: Detailed operation-by-operation cost build\n"
-     "Section 4: Machine and labour rate build-up table\n"
-     "Section 5: AI insights and saving opportunities\n"
-     "Section 6: DFM/DFA scores, issues and recommendations"),
-    (ACCENT_P, "☁️ Cloud Team Sync",
-     "Scenarios saved to cloud database (SQLite / PostgreSQL)\n"
-     "All team members see the same cost baseline\n"
-     "Secure JWT authentication + OTP email verification\n"
-     "Full multi-user access — no spreadsheet version conflicts\n"
-     "Import/export scenarios as JSON for offline sharing"),
-    (ORANGE,   "📸 Part Photo & Visual Docs",
-     "Upload part photo (JPG / PNG / HEIC) with any calculation\n"
-     "Photo appears on the PDF report cover page\n"
-     "AI Agent accepts photos as input for visual cost estimation\n"
-     "Drag-and-drop or file picker supported"),
-    (ACCENT_G, "🔑 Enterprise Authentication",
-     "JWT token-based authentication with 24hr expiry\n"
-     "OTP email verification for account security\n"
-     "Password reset flow with secure email delivery\n"
-     "Rate limiting: 10 sign-in attempts / 15 min window"),
-    (ACCENT_B, "❓ Help Centre & Support",
-     "7-tab Help Centre: Getting Started, AI Agent, CAD & Photo,\n"
-     "Commodities, FAQ (6 items), Glossary (12 terms),\n"
-     "Troubleshooting (5 common issues)\n"
-     "Contact support form built-in to the application"),
+    (ACCENT_G, "📊 Excel — Six Sheets",
+     "The whole build-up, not just the total.\n\n"
+     "Summary · material · every operation ·\n"
+     "machine rates · labour rates ·\n"
+     "and a sheet recording every assumption."),
+    (ACCENT_B, "📄 PDF Report",
+     "The version you send out.\n\n"
+     "Cover with the part photo, the cost summary,\n"
+     "the operation-by-operation build,\n"
+     "and the savings and DFM findings."),
+    (ACCENT_P, "☁️ One Shared Baseline",
+     "Everyone works from the same numbers.\n\n"
+     "Saved centrally, not on a laptop.\n"
+     "No arguing over which spreadsheet is current."),
+    (ORANGE,   "📸 Part Photos",
+     "Attach a photo to any calculation.\n\n"
+     "It appears on the report cover — and the\n"
+     "AI can cost from the photo itself."),
+    (ACCENT_G, "🔑 Secure Access",
+     "Enterprise sign-in, as you would expect.\n\n"
+     "Email verification, password reset,\n"
+     "and sign-in attempts capped."),
+    (ACCENT_B, "❓ Built-In Help",
+     "Nobody needs training to start.\n\n"
+     "Getting started, the AI agent, CAD and photo,\n"
+     "a glossary and troubleshooting — all in the app."),
 ]
 
 cw_e = Inches(4.1)
@@ -1563,16 +1547,16 @@ notes(slide,
 # SLIDE 16 — Business Benefits & ROI
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 18, "Value Delivered", "Business Impact & Measurable ROI",
-             "Quantified improvements across speed, accuracy, and cost reduction that directly impact the bottom line.")
+slide_header(slide, 18, "Value Delivered", "What This Is Worth",
+             "The same claims, in numbers a finance team recognises.")
 
 # Stat row
 stats14 = [
     ("70–90%", "Reduction in costing time",                     ACCENT_B),
     ("±8%",    "Typical cost model accuracy",                   ACCENT_G),
-    ("15–25%", "Supplier price reduction via should-cost intel",ORANGE),
+    ("15–25%", "Typical supplier price reduction",              ORANGE),
     ("3×",     "Faster sourcing decisions",                     ACCENT_P),
-    ("£15M",   "Saving on £500M spend at 3% improvement",       ACCENT_G),
+    ("£15M",   "On £500M of spend, a 3% improvement",           ACCENT_G),
 ]
 sw = Inches(2.4)
 sh = Inches(1.1)
@@ -1581,35 +1565,36 @@ for i, (num, lbl, col) in enumerate(stats14):
 
 # Benefits detail cards
 benefits14 = [
-    (ACCENT_B, "⚡ Speed — 10× Faster",
-     "What took 2–4 weeks now takes 5–10 minutes. Engineers spend time on decisions, not spreadsheets. Faster RFQ responses, faster programme decisions."),
-    (ACCENT_G, "🎯 Accuracy — Not Estimates",
-     "Physics-based models calibrated to actual shop floor data. ±8% typical accuracy vs actual. Dramatically better than rule-of-thumb or parametric estimates."),
-    (ORANGE,   "💰 Negotiation Power",
-     "Should-cost models give buyers a defensible floor price for every part. Supplier margins become visible and challengeable with engineering data, not opinion."),
-    (ACCENT_P, "📐 DFM at Concept Stage",
-     "80% of cost is locked at design. DFM/DFA analysis at concept prevents expensive late-stage redesigns. Engineering issues caught when change is free."),
-    (ACCENT_G, "🌍 Regional Arbitrage",
-     "Instantly compare cost across 20 regions. Identify LCC sourcing opportunities. Quantify make-vs-buy with real data — not assumptions."),
-    (ACCENT_B, "📊 Standardised Methodology",
-     "One consistent cost model across all teams, programmes, and regions. Full audit trail for every assumption. Leadership gets a single source of truth."),
-    (ORANGE,   "📉 Volume Optimisation",
-     "Learning curve modelling shows cost reduction with volume. Identify the volume at which a new process becomes cost-competitive."),
-    (ACCENT_P, "☁️ Team Collaboration",
-     "Cloud sync means all engineers share the same cost baseline. No more conflicting spreadsheets. Cost knowledge is captured, not locked in individuals."),
+    (ACCENT_B, "⚡ Speed",
+     "Two to four weeks becomes ten minutes. Engineers spend the day deciding, not building spreadsheets."),
+    (ACCENT_G, "🎯 Accuracy",
+     "Built from the physics of the process and checked against real shop-floor data — not a rule of thumb."),
+    (ORANGE,   "💰 Negotiation",
+     "A floor price you can defend, part by part. Supplier margin becomes visible instead of assumed."),
+    (ACCENT_P, "📐 Early Warning",
+     "Most of the cost is fixed at design. Problems surface while changing them is still free."),
+    (ACCENT_G, "🌍 Where to Build It",
+     "Compare 20 regions in one click. Make-vs-buy answered with real rates."),
+    (ACCENT_B, "📊 One Method",
+     "The same model everywhere, with every assumption on record. Leadership sees one set of numbers."),
+    (ORANGE,   "📉 The Right Volume",
+     "See what the part costs as volume grows, and when a new process starts to pay."),
+    (ACCENT_P, "☁️ Shared Knowledge",
+     "One baseline the whole team works from. Cost know-how stays with the business, not one engineer."),
 ]
 
-cw_b = Inches(3.0)
-ch_b = Inches(1.3)
-sx_b = Inches(0.45)
-sy_b = Inches(3.25)
-gap_b = Inches(0.1)
+# Card height derived from a bottom target — a typed 1.3" left 1.4" of empty
+# page under the grid once the copy was cut back.
+sx_b, sy_b, gap_b = Inches(0.45), Inches(3.25), Inches(0.1)
+COLS_B = 4
+cw_b = (W - sx_b * 2 - gap_b * (COLS_B - 1)) / COLS_B
+_rows_b = -(-len(benefits14) // COLS_B)
+ch_b = (Inches(6.95) - sy_b - gap_b * (_rows_b - 1)) / _rows_b
 
 for i, (col, title, body) in enumerate(benefits14):
-    r, c = divmod(i, 4)
-    cx_b = sx_b + c * (cw_b + gap_b)
-    cy_b = sy_b + r * (ch_b + gap_b)
-    card(slide, cx_b, cy_b, cw_b, ch_b, title, body, accent=col)
+    r, c = divmod(i, COLS_B)
+    card(slide, sx_b + c * (cw_b + gap_b), sy_b + r * (ch_b + gap_b),
+         cw_b, ch_b, title, body, accent=col, title_pt=10.5, body_pt=9.5)
 
 notes(slide,
     "Let me translate all of that into the numbers a manager actually cares about. "
@@ -1639,27 +1624,26 @@ txb(slide, "📍 Current Capabilities — Live Today", Inches(0.6), Inches(2.08)
     Inches(5.6), Inches(0.3), size=9.5, bold=True, color=ACCENT_G)
 
 live_items = [
-    "21 commodity should-cost models — fully parametric, engineering-grade",
-    "AI Agent — describe a part in plain English, AI builds the cost model",
-    "AI CAD Analysis — STEP / photo → geometry → cost in minutes",
-    "Self-audit — re-checks every estimate, corrects known errors, geometry stays truth",
-    "Learns from actuals — bulk-import quotes, per-segment calibration + drift watch",
-    "Universal machine-sizing — right press / tonnage picked across all commodities",
-    "Assembly BOM Rollup — multi-part, multi-commodity assemblies",
-    "Learning Curve (Wright's Law) + Supplier Quote Comparison + A/B/C scenarios",
-    "DFM / DFA Intelligence — bolt-on AI layer, 1–10 scores",
-    "20 global regions · 10 currencies with live auto-switching",
-    "6-sheet Excel + professional PDF report with part photo",
-    "Cloud sync, team sharing & secure JWT authentication",
-    "1,777 automated tests · CAD engine ships in a CI-verified container",
+    "21 commodities costed to engineering depth",
+    "Describe a part in plain English — the model builds itself",
+    "Upload a CAD file or a photo, get a cost in minutes",
+    "Every estimate re-checked, and corrected, before you see it",
+    "Learns from the supplier quotes you already have",
+    "Whole assemblies, not just single parts",
+    "Learning curve, quote comparison and scenarios",
+    "20 regions and 10 currencies, switched automatically",
+    "Excel and PDF reports, shared across the team",
 ]
 
+# The pitch is derived so the list always fills its panel — the old fixed 0.34"
+# was tuned to thirteen items and would leave a gap at any other count.
 yy15 = Inches(2.44)
+_pitch15 = (Inches(6.80) - yy15) / len(live_items)
 for item in live_items:
-    rect(slide, Inches(0.65), yy15 + Inches(0.13), Inches(0.06), Inches(0.06), ACCENT_G)
+    rect(slide, Inches(0.65), yy15 + Inches(0.15), Inches(0.06), Inches(0.06), ACCENT_G)
     txb(slide, item, Inches(0.84), yy15, Inches(5.3), Inches(0.3),
-        size=8, color=TEXT_G, wrap=True)
-    yy15 += Inches(0.34)
+        size=9, color=TEXT_G, wrap=True)
+    yy15 += _pitch15
 
 # Roadmap
 rx15 = Inches(6.6)
@@ -1668,20 +1652,17 @@ rw15 = Inches(6.3)
 
 phases = [
     (ORANGE,   "Phase 2 — H2 2026",
-     "PLM/ERP integration connectors (Teamcenter, SAP)\n"
-     "Cost-target waterfall dashboard for programme teams\n"
-     "Multi-supplier quotation comparison matrix\n"
-     "Harden the Fly.io cloud deploy to multi-tenant"),
+     "Connect to Teamcenter and SAP\n"
+     "Cost-target dashboard for programme teams\n"
+     "Compare several suppliers side by side"),
     (ACCENT_P, "Phase 3 — 2027",
-     "Auto-tune calibration from a live ERP actuals feed\n"
-     "Autonomous sourcing RFQ generation from should-cost output\n"
-     "Executive portfolio analytics dashboard\n"
-     "Wider CAD coverage — assemblies and IGES edge cases"),
+     "Calibrate itself from live ERP actuals\n"
+     "Draft the RFQ straight from the should-cost\n"
+     "Portfolio view for the leadership team"),
     (ACCENT_B, "Phase 4 — 2027+",
-     "Digital Twin cost model (live update as the design changes)\n"
-     "Generative AI component redesign suggestions\n"
-     "Supplier risk scoring + supply-chain resilience index\n"
-     "Mobile app for shop-floor and supplier visits"),
+     "Cost that updates as the design changes\n"
+     "AI suggestions for redesigning the part\n"
+     "Supplier risk scoring · mobile app for plant visits"),
 ]
 
 yy15r = ry15
@@ -1700,13 +1681,13 @@ rect(slide, rx15, yy15r, Inches(0.06), Inches(1.42), ACCENT_G)
 txb(slide, "🚀  Pilot Rollout — Next Steps", rx15 + Inches(0.14), yy15r + Inches(0.08),
     rw15 - Inches(0.2), Inches(0.28), size=9, bold=True, color=ACCENT_G)
 pilot_text = (
-    "• Pilot scope: 2–3 commodity families, one programme team\n"
-    "• Duration: 4–6 weeks with real parts vs supplier quotes\n"
-    "• Success metric: ≥15% supplier price reduction identified per part\n"
-    "• Contact: Avinash Bhosale — Cost Engineering & Digital Innovation"
+    "• Two or three commodities, one programme team\n"
+    "• Four to six weeks, on real parts against real quotes\n"
+    "• We call it a success at 15% price reduction found per part\n"
+    "• Avinash Bhosale — Cost Engineering & Digital Innovation"
 )
 txb(slide, pilot_text, rx15 + Inches(0.14), yy15r + Inches(0.38), rw15 - Inches(0.2), Inches(0.92),
-    size=8, color=TEXT_G, wrap=True)
+    size=8.5, color=TEXT_G, wrap=True)
 
 # Vision quote at bottom
 rect(slide, Inches(0.45), Inches(7.08), W - Inches(0.9), Inches(0.36), SURFACE2, BORDER, Pt(0.3))
