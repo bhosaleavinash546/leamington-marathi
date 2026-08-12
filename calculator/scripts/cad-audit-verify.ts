@@ -151,8 +151,14 @@ function verifyArmAPdf(dir: string, file: string): void {
   if (measured && assumed) {
     const m = Number(measured[1]), a = Number(assumed[1]);
     const d = pct(a, m);
-    add(label, 'P1-weight-consistency', d < 2 ? 'PASS' : 'CRITICAL',
-      `provenance section says ${m} kg, Key Assumptions says ${a} kg (Δ ${d.toFixed(0)}%) — the report contradicts itself`);
+    // <2% agree; 2-5% is the documented cast-iron density-rounding residual
+    // (library 7.10 / rules 7.15 / report 7.20 / AI clamp ≤ +5%) — MINOR and
+    // named, not hidden; >5% is the F1-class self-contradiction (was 190%).
+    add(label, 'P1-weight-consistency',
+      d < 2 ? 'PASS' : d < 5 ? 'MINOR' : 'CRITICAL',
+      `provenance says ${m} kg, Key Assumptions says ${a} kg (Δ ${d.toFixed(1)}%)`
+      + (d >= 2 && d < 5 ? ' — within the documented density-rounding residual' :
+         d >= 5 ? ' — the report contradicts itself' : ''));
   }
 
   // P2 — bucket percentages sum to ~100

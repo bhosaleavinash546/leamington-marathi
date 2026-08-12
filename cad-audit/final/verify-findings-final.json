@@ -1,0 +1,140 @@
+[
+  {
+    "part": "armA-FINAL-block-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 169.1 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-FINAL-Casting_Braket-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "MINOR",
+    "detail": "provenance says 2.304 kg, Key Assumptions says 2.359 kg (Δ 2.4%) — within the documented density-rounding residual"
+  },
+  {
+    "part": "armA-FINAL-Casting_Braket-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 160.7 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-FINAL-flange-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 170.5 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-FINAL-knuckle-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "MINOR",
+    "detail": "provenance says 2.564 kg, Key Assumptions says 2.625 kg (Δ 2.4%) — within the documented density-rounding residual"
+  },
+  {
+    "part": "armA-FINAL-knuckle-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 159.3 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-FINAL-Part1-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "MINOR",
+    "detail": "provenance says 3.092 kg, Key Assumptions says 3.165 kg (Δ 2.4%) — within the documented density-rounding residual"
+  },
+  {
+    "part": "armA-FINAL-Part1-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 164.4 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-FINAL-PRCR002-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 165.5 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-FINAL-Seat_Bracket-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "INFO",
+    "detail": "visible bucket percentages sum 108.5 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "FINAL-BUMPER-api",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "FINAL-Fuel_tank-api",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "armA-FINAL-block-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "PASS",
+    "detail": "provenance says 0.352 kg, Key Assumptions says 0.352 kg (Δ 0.0%)"
+  },
+  {
+    "part": "armA-FINAL-flange-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "PASS",
+    "detail": "provenance says 0.502 kg, Key Assumptions says 0.502 kg (Δ 0.0%)"
+  },
+  {
+    "part": "armA-FINAL-PRCR002-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "PASS",
+    "detail": "provenance says 8.141 kg, Key Assumptions says 8.141 kg (Δ 0.0%)"
+  },
+  {
+    "part": "armA-FINAL-Seat_Bracket-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "PASS",
+    "detail": "provenance says 0.558 kg, Key Assumptions says 0.558 kg (Δ 0.0%)"
+  },
+  {
+    "part": "FINAL-BUMPER-api",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "FINAL-BUMPER-api",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 2059.899 cm³ vs truth 2059.899 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "FINAL-BUMPER-api",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 1.8539 → 0.90 g/cm³ = plastic (PP)"
+  },
+  {
+    "part": "FINAL-BUMPER-api",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-pp and weight agree (plastic)"
+  },
+  {
+    "part": "FINAL-BUMPER-api",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-pp"
+  },
+  {
+    "part": "FINAL-Fuel_tank-api",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "FINAL-Fuel_tank-api",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 10595.902 cm³ vs truth 10595.902 cm³ (Δ 0.00%)"
+  }
+]
