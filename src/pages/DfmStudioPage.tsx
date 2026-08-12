@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload, ShieldCheck, AlertTriangle, HelpCircle, FileDown, Table2,
   Ruler, Layers, Boxes, Info, CheckCircle2, MinusCircle, ChevronRight,
+  FileText, Crosshair, Gauge,
 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import CadViewer3D, { type CadViewerRef } from '../components/CadViewer3D';
@@ -10,6 +11,17 @@ import type { DfmFigure } from '../services/dfm-report';
 import { selectFindingAnnotations, chooseSecondView, sectionCandidate } from '../services/dfm-annotations.mjs';
 import { diffAnalyses, comparability } from '../services/dfm-diff.mjs';
 import { useAuth } from '../contexts/AuthContext';
+// ── The studio's own material and motion ────────────────────────────────────
+// Precision-instrument identity: graph-paper ground, drawing-frame ticks, a
+// swept gauge. Everything decorative sits behind prefers-reduced-motion in
+// dfm.css, matching the convention foresight.css and innovation.css set.
+import './dfm.css';
+import { useDfmMotion, scoreTone, TONE_TEXT, TONE_LABEL } from '../components/dfm/motion';
+import Panel from '../components/dfm/Panel';
+import ScoreRing from '../components/dfm/ScoreRing';
+import TickNumber from '../components/dfm/TickNumber';
+import StepRail, { type RailStep } from '../components/dfm/StepRail';
+import SectionNav, { type NavSection } from '../components/dfm/SectionNav';
 
 // DFM / DFA Studio. Upload a STEP or IGES part and get a manufacturability
 // analysis measured from the geometry, plus an assembly analysis when the file
@@ -60,6 +72,10 @@ interface DfmResponse {
     chosenProcess?: string | null;
   } | null;
   analysisLimits?: AnalysisLimit[];
+  /** Rule-catalogue provenance, counted server-side. */
+  catalogue?: { total: number; byGrade: Record<string, number> } | null;
+  /** When the server finished this analysis — also the key for the arrival scan. */
+  analysedAt?: string;
   /** The 2D drawing's side of the story, when one was uploaded. */
   drawing?: DrawingData | null;
   drawingCheck?: DrawingCheck | null;
@@ -209,6 +225,9 @@ const SEV_STYLE: Record<string, string> = {
 
 export default function DfmStudioPage() {
   const { token } = useAuth();
+  // The page's motion vocabulary, already resolved against the reader's
+  // reduced-motion preference — see components/dfm/motion.ts.
+  const m = useDfmMotion();
   const inputRef = useRef<HTMLInputElement>(null);
   // Reaches into the viewer to paint finding layers and capture report figures.
   const viewerRef = useRef<CadViewerRef | null>(null);
@@ -258,6 +277,11 @@ export default function DfmStudioPage() {
   const [excludedDims, setExcludedDims] = useState<Set<number>>(new Set());
   const [showExtraction, setShowExtraction] = useState(true);
   const drawingInputRef = useRef<HTMLInputElement>(null);
+  // Drag-over feedback for the two dropzones. A drop target that does not
+  // acknowledge the drag is the commonest reason a file gets dropped on the
+  // page background and nothing happens.
+  const [dragOver, setDragOver] = useState(false);
+  const [dragOverDrawing, setDragOverDrawing] = useState(false);
   const [loading, setLoading] = useState<'' | 'dfm' | 'dfa'>('');
   const [error, setError] = useState('');
   const [result, setResult] = useState<DfmResponse | null>(null);
@@ -289,6 +313,16 @@ export default function DfmStudioPage() {
 
   const pick = useCallback((f: File | null) => {
     setFile(f); setResult(null); setDfa(null); setError(''); setAnswers({});
+  }, []);
+
+  /** Jump the reader to a step. 128px clears the app header and the sticky bar. */
+  const scrollToStep = useCallback((id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 128;
+    // `smooth` already defers to the OS reduced-motion setting in every
+    // browser that implements it; no branch needed here.
+    window.scrollTo({ top, behavior: 'smooth' });
   }, []);
 
   /** Read the drawing file and send it for extraction. Nothing is judged here. */
@@ -780,6 +814,75 @@ export default function DfmStudioPage() {
   // A 2D drawing counts as a part too — drawing-only analysis is the
   // quote-stage case, and the geometry rules say NOT EVALUATED honestly.
   const canAnalyse = (!!file || !!drawing) && (runGeneric || (!!material && !!costProcess));
+
+  // ── THE GUIDED FLOW ───────────────────────────────────────────────────────
+  //
+  // Four steps, each `done` derived from state that genuinely exists — a file
+  // or drawing actually loaded, a material and process actually chosen, an
+  // analysis that actually returned. A tick here is a fact about the session,
+  // never encouragement, which is the same contract the findings keep.
+  const railSteps: RailStep[] = useMemo(() => [
+    { id: 'step-part', label: 'Part', done: !!file || !!drawing,
+      hint: 'Upload a STEP/IGES model, a 2D drawing, or both' },
+    { id: 'step-process', label: 'Process', done: (!!material && !!costProcess) || runGeneric,
+      hint: 'Material and process choose the ruleset' },
+    { id: 'step-analyse', label: 'Analyse', done: !!result,
+      hint: canAnalyse ? 'Ready to run' : 'Complete the steps above' },
+    { id: 'results', label: 'Results', done: !!result,
+      hint: 'Findings, routes and the cost impact' },
+  ], [file, drawing, material, costProcess, runGeneric, result, canAnalyse]);
+
+  const activeStep = !file && !drawing ? 'step-part'
+    : !((material && costProcess) || runGeneric) ? 'step-process'
+      : !result ? 'step-analyse' : 'results';
+
+  // The report's own table of contents, with live counts. Only sections that
+  // actually rendered appear — a nav entry that jumps nowhere is worse than
+  // no nav at all.
+  const navSections: NavSection[] = useMemo(() => {
+    if (!result) return [];
+    const findings = (result.results ?? []).reduce((n, r) => n + r.findings.length, 0);
+    const highSeverity = (result.results ?? []).reduce(
+      (n, r) => n + r.findings.filter(f => f.severity === 'high').length, 0);
+    const out: NavSection[] = [
+      { id: 'sec-summary', label: 'Summary', count: null },
+      { id: 'sec-findings', label: 'Findings', count: findings, alert: highSeverity > 0 },
+    ];
+    if (result.drawingCheck) {
+      out.push({ id: 'sec-drawing', label: 'Drawing check',
+        count: result.drawingCheck.counts.conflict || null,
+        alert: result.drawingCheck.counts.conflict > 0 });
+    }
+    out.push({ id: 'sec-geometry', label: 'Geometry', count: null });
+    if (result.routes?.routes?.length) {
+      out.push({ id: 'sec-routes', label: 'Routes', count: result.routes.routes.length });
+    }
+    if (dfa?.dfa) out.push({ id: 'sec-dfa', label: 'Assembly', count: null });
+    return out;
+  }, [result, dfa]);
+
+  // The headline numbers of a finished analysis, computed once for the KPI
+  // strip. Every one is a sum over what the engines returned — nothing here
+  // is a ratio this page invented.
+  const summary = useMemo(() => {
+    if (!result) return null;
+    const rs = result.results ?? [];
+    const findings = rs.flatMap(r => r.findings);
+    const scored = rs.filter(r => typeof r.score === 'number');
+    return {
+      score: scored.length
+        ? Math.round(scored.reduce((s, r) => s + (r.score as number), 0) / scored.length)
+        : null,
+      scoredFamilies: scored.length,
+      familyCount: rs.length,
+      findings: findings.length,
+      high: findings.filter(f => f.severity === 'high').length,
+      evaluated: rs.reduce((n, r) => n + r.evaluatedCount, 0),
+      ruleCount: rs.reduce((n, r) => n + r.ruleCount, 0),
+      annualEur: rs.reduce((n, r) => n + (r.impact?.annualEur ?? 0), 0),
+      notEvaluated: rs.reduce((n, r) => n + r.notEvaluated.length, 0),
+    };
+  }, [result]);
   // What the drawing supplies, so the manual callout inputs can say they are
   // superseded rather than silently ignored.
   const drawingSupplies = useMemo(() => {
@@ -871,22 +974,61 @@ export default function DfmStudioPage() {
         : null;
 
   return (
-    <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/25 mb-4">
-            <ShieldCheck size={28} className="text-gold-400" />
+    <div className="dfm-shell min-h-screen bg-navy-950 pt-20 pb-16 px-4">
+      {/* The ground this tool works on: two-level squared paper, faded away
+          from the reading column. Decorative and inert. */}
+      <div className="dfm-grid" aria-hidden="true" />
+      <div className="dfm-content max-w-6xl mx-auto">
+        {/* ── TOOL HEADER ────────────────────────────────────────────────────
+            A workspace masthead, not a landing hero. The right-hand figures
+            are COUNTED from the catalogue the server sent, so the header
+            cannot claim a rule count the engine does not hold. */}
+        <header className="flex flex-wrap items-start justify-between gap-4 mb-5">
+          <div className="flex items-start gap-3 min-w-0">
+            <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gold-500/15 border border-gold-500/25 shrink-0">
+              <ShieldCheck size={22} className="text-gold-400" aria-hidden="true" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-[27px] font-black text-white tracking-tight leading-tight">DFM / DFA Studio</h1>
+              <p className="text-[13px] text-slate-400 mt-0.5 max-w-2xl">
+                Manufacturability measured from your geometry and read off your drawing, judged against
+                cited standards, priced by deterministic engines.
+              </p>
+            </div>
           </div>
-          <h1 className="text-4xl font-black text-white mb-3">DFM / DFA Studio</h1>
-          <p className="text-slate-400 max-w-2xl mx-auto">
-            Upload a 3D CAD part and get manufacturability measured from the geometry — draft, undercuts,
-            wall thickness, features — checked against <span className="text-white">cited</span> design
-            guidelines and priced by BrainSpark&apos;s <span className="text-gold-400">deterministic</span> cost engines.
-          </p>
+          <dl className="flex items-center gap-5 shrink-0">
+            {[
+              ['Rules', result?.catalogue?.total ?? catalogue.length ?? null],
+              ['Standards-named', result?.catalogue?.byGrade?.['standard-named'] ?? null],
+              ['Company standards', Object.keys(overrides).length || null],
+            ].map(([label, value]) => (
+              <div key={label as string} className="text-right">
+                <dd className="text-white font-bold text-lg dfm-num leading-none">
+                  {value === null || value === undefined ? '—' : (value as number)}
+                </dd>
+                <dt className="dfm-label text-slate-500 mt-1">{label as string}</dt>
+              </div>
+            ))}
+          </dl>
+        </header>
+
+        {/* ── THE GUIDED FLOW + REPORT NAV ───────────────────────────────────
+            One sticky bar carrying both: where you are in the four steps, and
+            — once there is a report — its table of contents with live counts. */}
+        <div className="dfm-sticky -mx-4 px-4 py-2.5 mb-5 border-y border-white/[0.07] bg-navy-950/70">
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+            <StepRail steps={railSteps} activeId={activeStep} onJump={scrollToStep} />
+            {navSections.length > 1 && (
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="dfm-label text-slate-600 hidden lg:inline shrink-0">Report</span>
+                <SectionNav sections={navSections} />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Input */}
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-6 mb-6">
+        <div id="step-part" className="dfm-panel dfm-framed p-6 mb-6 scroll-mt-32">
           <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-3">
             <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold-500 text-navy-950 text-[11px] font-bold">1</span>
             The part
@@ -895,37 +1037,77 @@ export default function DfmStudioPage() {
               equivalent — but the CHOOSE action is a real button, so the page is
               operable without a mouse. It was a bare div with onClick, which no
               keyboard or screen-reader user could reach at all. */}
-          <div
+          <motion.div
             onClick={() => inputRef.current?.click()}
-            onDragOver={e => e.preventDefault()}
-            onDrop={e => { e.preventDefault(); pick(e.dataTransfer.files?.[0] ?? null); }}
-            className="border-2 border-dashed border-white/15 rounded-xl p-8 text-center cursor-pointer hover:border-gold-500/40 transition-colors"
+            onDragOver={e => { e.preventDefault(); if (!dragOver) setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={e => { e.preventDefault(); setDragOver(false); pick(e.dataTransfer.files?.[0] ?? null); }}
+            animate={m.reduced ? undefined : { scale: dragOver ? 1.008 : 1 }}
+            transition={m.t(0.16)}
+            className={`relative overflow-hidden rounded-xl p-8 text-center cursor-pointer border-2 border-dashed transition-colors ${
+              dragOver ? 'border-gold-500/70 bg-gold-500/[0.07]'
+                : file ? 'border-emerald-500/30 bg-emerald-500/[0.04]'
+                  : 'border-white/15 hover:border-gold-500/40'
+            }`}
           >
-            <Upload size={28} className="mx-auto text-slate-500 mb-2" aria-hidden="true" />
-            <p className="text-white text-sm font-medium">{file ? file.name : 'Drop a STEP or IGES file, or choose one'}</p>
-            <p className="text-slate-500 text-xs mt-1">
-              B-rep geometry only. An STL is a triangle mesh with no topology, so draft, undercuts and features cannot be measured from it.
-            </p>
-            <button type="button"
+            <AnimatePresence mode="wait" initial={false}>
+              {file ? (
+                <motion.div key="chosen" variants={m.rise} initial="hidden" animate="show" exit="exit">
+                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/30 mb-2">
+                    <CheckCircle2 size={24} className="text-emerald-400 dfm-tick-in" aria-hidden="true" />
+                  </span>
+                  <p className="text-white text-sm font-semibold">{file.name}</p>
+                  <p className="text-slate-500 text-xs mt-1 dfm-num">
+                    {(file.size / 1024 / 1024).toFixed(2)} MB · B-rep geometry ready to measure
+                  </p>
+                </motion.div>
+              ) : (
+                <motion.div key="empty" variants={m.rise} initial="hidden" animate="show" exit="exit">
+                  <Upload size={28} className={`mx-auto mb-2 transition-colors ${dragOver ? 'text-gold-400' : 'text-slate-500'}`} aria-hidden="true" />
+                  <p className="text-white text-sm font-medium">
+                    {dragOver ? 'Release to load the part' : 'Drop a STEP or IGES file, or choose one'}
+                  </p>
+                  <p className="text-slate-500 text-xs mt-1 max-w-lg mx-auto">
+                    B-rep geometry only. An STL is a triangle mesh with no topology, so draft, undercuts and features cannot be measured from it.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <motion.button type="button"
+              {...m.press}
               onClick={e => { e.stopPropagation(); inputRef.current?.click(); }}
-              className="mt-3 px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-medium
+              className="relative mt-3 px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-medium
                          focus:outline-none focus:ring-2 focus:ring-gold-500/60"
             >
               {file ? 'Choose a different file' : 'Choose CAD file'}
-            </button>
+            </motion.button>
             <input ref={inputRef} type="file" accept=".step,.stp,.iges,.igs" className="hidden"
               tabIndex={-1} aria-hidden="true" onChange={e => pick(e.target.files?.[0] ?? null)} />
-          </div>
+          </motion.div>
 
           {/* ── THE 2D DRAWING — optional, alone or alongside the 3D file ────
               AI reads the drawing; every number it extracts is judged by the
               same deterministic rules as a typed input and labelled as
               drawing-read. The extraction renders below BEFORE anything is
               judged, so a misread row can be excluded. */}
-          <div className="mt-4 border border-white/10 rounded-xl p-4 bg-navy-950/40">
+          <div
+            onDragOver={e => { e.preventDefault(); if (!dragOverDrawing) setDragOverDrawing(true); }}
+            onDragLeave={() => setDragOverDrawing(false)}
+            onDrop={e => { e.preventDefault(); setDragOverDrawing(false); void pickDrawing(e.dataTransfer.files?.[0] ?? null); }}
+            className={`relative mt-4 border rounded-xl p-4 overflow-hidden transition-colors ${
+              dragOverDrawing ? 'border-gold-500/60 bg-gold-500/[0.06]'
+                : drawing ? 'border-sky-500/25 bg-sky-500/[0.03]' : 'border-white/10 bg-navy-950/40'
+            }`}>
+            {/* While vision is reading, the panel carries an indeterminate
+                photon — the duration of a multi-sheet read is genuinely
+                unknown, so a percentage bar here would be a fiction. */}
+            {extracting && <div className="dfm-photon absolute inset-x-0 top-0 h-0.5" aria-hidden="true" />}
             <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div>
-                <p className="text-white text-sm font-medium">2D drawing (optional) — PDF or image</p>
+              <div className="min-w-0">
+                <p className="text-white text-sm font-medium flex items-center gap-2">
+                  <FileText size={14} className="text-sky-400" aria-hidden="true" />
+                  2D drawing (optional) — PDF or image
+                </p>
                 <p className="text-slate-500 text-xs mt-0.5">
                   AI reads the dimensions, GD&amp;T and title block; every number is still judged by the
                   deterministic rules and labelled as drawing-read. Works with or without a 3D file —
@@ -934,17 +1116,19 @@ export default function DfmStudioPage() {
               </div>
               <div className="flex items-center gap-2">
                 {drawingFile && (
-                  <button type="button" onClick={() => pickDrawing(null)}
-                    className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs">
+                  <motion.button type="button" {...m.press} onClick={() => pickDrawing(null)}
+                    className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs
+                               focus:outline-none focus:ring-2 focus:ring-gold-500/60">
                     Remove
-                  </button>
+                  </motion.button>
                 )}
-                <button type="button" disabled={extracting}
+                <motion.button type="button" disabled={extracting} {...m.press}
                   onClick={() => drawingInputRef.current?.click()}
-                  className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-medium
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-medium
                              focus:outline-none focus:ring-2 focus:ring-gold-500/60 disabled:opacity-50">
+                  {extracting && <ButtonSpinner size={12} />}
                   {extracting ? 'Reading the drawing…' : drawingFile ? drawingFile.name : 'Choose drawing'}
-                </button>
+                </motion.button>
               </div>
               <input ref={drawingInputRef} type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" className="hidden"
                 tabIndex={-1} aria-hidden="true" onChange={e => pickDrawing(e.target.files?.[0] ?? null)} />
@@ -952,10 +1136,14 @@ export default function DfmStudioPage() {
 
             {/* The extraction, reviewable before it is judged. */}
             {drawing && (
-              <div className="mt-3 border-t border-white/10 pt-3">
+              <motion.div variants={m.rise} initial="hidden" animate="show" className="mt-3 border-t border-white/10 pt-3">
                 <button type="button" onClick={() => setShowExtraction(s => !s)}
-                  className="text-xs text-gold-400 hover:text-gold-300 font-medium">
-                  {showExtraction ? '▾' : '▸'} What the AI read
+                  aria-expanded={showExtraction}
+                  className="inline-flex items-center gap-1.5 text-xs text-gold-400 hover:text-gold-300 font-medium
+                             focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 rounded">
+                  <ChevronRight size={13} aria-hidden="true"
+                    className={`transition-transform ${showExtraction ? 'rotate-90' : ''}`} />
+                  What the AI read
                   {' '}({drawing.dimensions.length} dimensions · {drawing.gdt.length} GD&amp;T · {drawing.roughness.length} roughness)
                   {drawing.titleBlock.drawingNumber ? ` — ${drawing.titleBlock.drawingNumber}` : ''}
                   {drawing.titleBlock.revision ? ` rev ${drawing.titleBlock.revision}` : ''}
@@ -974,21 +1162,24 @@ export default function DfmStudioPage() {
                     <div className="overflow-x-auto">
                       <table className="text-xs w-full">
                         <thead>
-                          <tr className="text-slate-500 text-left">
-                            <th className="pr-2 py-1 font-medium">Use</th>
-                            <th className="pr-3 py-1 font-medium">As printed</th>
-                            <th className="pr-3 py-1 font-medium">Nominal (mm)</th>
-                            <th className="pr-3 py-1 font-medium">Band (mm)</th>
-                            <th className="pr-3 py-1 font-medium">Type</th>
-                            <th className="py-1 font-medium">Check vs 3D</th>
+                          <tr className="text-slate-500 text-left border-b border-white/10">
+                            <th className="pr-2 py-1.5 dfm-label font-medium">Use</th>
+                            <th className="pr-3 py-1.5 dfm-label font-medium">As printed</th>
+                            <th className="pr-3 py-1.5 dfm-label font-medium">Nominal (mm)</th>
+                            <th className="pr-3 py-1.5 dfm-label font-medium">Band (mm)</th>
+                            <th className="pr-3 py-1.5 dfm-label font-medium">Type</th>
+                            <th className="py-1.5 dfm-label font-medium">Check vs 3D</th>
                           </tr>
                         </thead>
-                        <tbody>
+                        <motion.tbody variants={m.stagger()} initial="hidden" animate="show">
                           {drawing.dimensions.map((d, i) => {
                             const check = result?.drawingCheck?.rows.find(r => r.sourceText === d.sourceText && r.nominalMm === d.nominalMm);
+                            const conflict = check?.status === 'conflict';
                             return (
-                              <tr key={i} className={`border-t border-white/5 ${excludedDims.has(i) ? 'opacity-40' : ''}`}>
-                                <td className="pr-2 py-1">
+                              <motion.tr key={i} variants={m.staggerItem}
+                                className={`border-t border-white/5 dfm-row-hover ${excludedDims.has(i) ? 'opacity-40' : ''} ${
+                                  conflict ? 'bg-red-500/[0.05]' : ''}`}>
+                                <td className="pr-2 py-1.5">
                                   <input type="checkbox" checked={!excludedDims.has(i)}
                                     aria-label={`Include ${d.sourceText}`}
                                     onChange={() => setExcludedDims(prev => {
@@ -997,27 +1188,30 @@ export default function DfmStudioPage() {
                                       return next;
                                     })} />
                                 </td>
-                                <td className="pr-3 py-1 text-slate-200 font-mono">{d.sourceText}</td>
-                                <td className="pr-3 py-1 text-slate-300">{d.nominalMm}</td>
-                                <td className="pr-3 py-1 text-slate-300">{d.bandMm ?? <span className="text-slate-600">— (general tol.)</span>}</td>
-                                <td className="pr-3 py-1 text-slate-400">{d.type}</td>
-                                <td className="py-1">
+                                <td className="pr-3 py-1.5 text-slate-200 font-mono">{d.sourceText}</td>
+                                <td className="pr-3 py-1.5 text-slate-300 dfm-num">{d.nominalMm}</td>
+                                <td className="pr-3 py-1.5 text-slate-300 dfm-num">{d.bandMm ?? <span className="text-slate-600">— (general tol.)</span>}</td>
+                                <td className="pr-3 py-1.5 text-slate-400">{d.type}</td>
+                                <td className="py-1.5">
                                   {check ? (
-                                    <span className={
-                                      check.status === 'confirmed' ? 'text-emerald-400'
-                                        : check.status === 'conflict' ? 'text-red-400 font-medium'
-                                          : 'text-slate-500'
-                                    } title={check.note}>
-                                      {check.status === 'confirmed' ? '✓ confirmed'
-                                        : check.status === 'conflict' ? `✗ conflict (model: ${check.candidate?.valueMm} mm)`
-                                          : 'not found in 3D'}
+                                    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded ${
+                                      check.status === 'confirmed' ? 'text-emerald-300 bg-emerald-500/10'
+                                        : conflict ? 'text-red-300 bg-red-500/15 font-medium dfm-alert-once'
+                                          : 'text-slate-500 bg-white/5'
+                                    }`}>
+                                      {check.status === 'confirmed'
+                                        ? <><CheckCircle2 size={11} aria-hidden="true" /> confirmed</>
+                                        : conflict
+                                          ? <><AlertTriangle size={11} aria-hidden="true" /> conflict — model {check.candidate?.valueMm} mm</>
+                                          : <><MinusCircle size={11} aria-hidden="true" /> not found in 3D</>}
+                                      <span className="sr-only">{check.note}</span>
                                     </span>
                                   ) : <span className="text-slate-600">—</span>}
                                 </td>
-                              </tr>
+                              </motion.tr>
                             );
                           })}
-                        </tbody>
+                        </motion.tbody>
                       </table>
                     </div>
                     {drawing.gdt.length > 0 && (
@@ -1041,7 +1235,7 @@ export default function DfmStudioPage() {
                     )}
                   </div>
                 )}
-              </div>
+              </motion.div>
             )}
           </div>
 
@@ -1323,22 +1517,30 @@ export default function DfmStudioPage() {
               never see. It now waits for the two answers that decide which rules
               run — or for an explicit, labelled decision to go without them. */}
           <div className="flex flex-wrap gap-2 mt-5">
-            <button onClick={analyse} disabled={!canAnalyse || loading !== ''}
+            <motion.button onClick={analyse} disabled={!canAnalyse || loading !== ''}
+              {...(canAnalyse && loading === '' ? m.press : {})}
               /* `disabled:opacity-50` alone leaves a bright gold button still
                  reading as clickable — checked against a real render. A disabled
                  PRIMARY has to lose its fill, not just some of its alpha, or the
-                 gate is invisible until you click and nothing happens. */
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-500 text-navy-950 font-semibold text-sm
-                         hover:bg-gold-400 transition-colors
+                 gate is invisible until you click and nothing happens.
+                 When it IS armed it carries the gold glow, so the one action
+                 the page is built around is unmistakably the primary. */
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-500 text-navy-950 font-semibold text-sm
+                         hover:bg-gold-400 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60
                          disabled:bg-transparent disabled:text-slate-500 disabled:border disabled:border-white/15
-                         disabled:cursor-not-allowed disabled:hover:bg-transparent">
-              {loading === 'dfm' ? <ButtonSpinner size={14} /> : <Ruler size={15} />} Analyse manufacturability
-            </button>
-            <button onClick={() => void analyseAssembly()} disabled={!file || loading !== ''}
-              title="Decompose an assembly into parts and score it for assembly"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-teal-500/30 bg-teal-500/10 text-teal-300 font-semibold text-sm hover:bg-teal-500/20 transition-colors disabled:opacity-50">
-              {loading === 'dfa' ? <ButtonSpinner size={14} /> : <Boxes size={15} />} Analyse assembly (DFA)
-            </button>
+                         disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:shadow-none
+                         ${canAnalyse && loading === '' ? 'shadow-glow-gold' : ''}`}>
+              {loading === 'dfm' ? <ButtonSpinner size={14} /> : <Ruler size={15} aria-hidden="true" />}
+              {loading === 'dfm' ? 'Measuring…' : 'Analyse manufacturability'}
+            </motion.button>
+            <motion.button onClick={() => void analyseAssembly()} disabled={!file || loading !== ''}
+              {...(file && loading === '' ? m.press : {})}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-teal-500/30 bg-teal-500/10 text-teal-300 font-semibold text-sm hover:bg-teal-500/20 transition-colors disabled:opacity-50
+                         focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/60">
+              {loading === 'dfa' ? <ButtonSpinner size={14} /> : <Boxes size={15} aria-hidden="true" />} Analyse assembly (DFA)
+              {/* The title= was the only place this said what DFA does. */}
+              <span className="sr-only">Decompose an assembly into parts and score it for assembly</span>
+            </motion.button>
           </div>
           {file && !canAnalyse && (
             <p className="mt-2.5 text-xs text-amber-400/90 flex items-start gap-2">
@@ -1367,26 +1569,14 @@ export default function DfmStudioPage() {
           {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
         </div>
 
-        {/* GEOMETRY FIRST. This viewer used to live inside the results block, so a
-            user stared at a form for up to 30 s with their part invisible, then
-            saw it only once the analysis returned. CadToCostPage has always done
-            it the other way round — "Independent of the parse/analyse flow
-            below" — and that is the right way round: the part appears the moment
-            it is chosen, and the findings paint onto it when they arrive. */}
-        {file && /\.(step|stp|igs|iges)$/i.test(file.name) && (
-          <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 mb-6">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-              <p className="text-slate-500 text-xs uppercase tracking-wider">
-                {result ? 'Geometry — findings shown on the part' : 'Geometry'}
-              </p>
-              {/* ── PORTFOLIO RESULTS ────────────────────────────────────────────────
+        {/* ── PORTFOLIO RESULTS ────────────────────────────────────────────────
           Worst first, because the only reason to scan a portfolio is to find the
           parts that need attention. A part that could not be read keeps its row
           with the reason: a table that drops what it failed on reads as "these
           are your parts". */}
-      {batch && (
+        {batch && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-navy-900 border border-white/10 rounded-2xl p-5 mb-4">
+          className="dfm-panel dfm-framed p-5 mb-6">
           <h3 className="text-white font-semibold text-sm flex items-center gap-2 mb-1">
             <Boxes size={15} className="text-gold-400" aria-hidden="true" />
             Portfolio scan — {batch.parts.length} parts
@@ -1419,7 +1609,7 @@ export default function DfmStudioPage() {
                       <td className="py-2 px-2 text-amber-400" colSpan={5}>{p.error}</td>
                     ) : (
                       <>
-                        <td className={`text-right py-2 px-2 tabular-nums ${p.score == null ? 'text-slate-500' : p.score >= 70 ? 'text-emerald-400' : p.score >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
+                        <td className={`text-right py-2 px-2 tabular-nums ${TONE_TEXT[scoreTone(p.score)]}`}>
                           {p.score ?? '—'}
                           {p.highSeverityCount ? <span className="block text-red-400/70">{p.highSeverityCount} high</span> : null}
                         </td>
@@ -1439,9 +1629,72 @@ export default function DfmStudioPage() {
             </table>
           </div>
         </motion.div>
-      )}
+        )}
 
-      {result && (
+        {/* ── LIVE STAGES ────────────────────────────────────────────────────
+            Each line appears when the engine has genuinely FINISHED that
+            phase and carries the figure it just measured — never a predicted
+            percentage. It used to sit inside the 3D viewer card, which meant
+            a drawing-only run (no STEP file, so no viewer) showed a dead
+            button for the whole analysis with nothing to say it was working.
+            The bar at the top is indeterminate on purpose: the duration of an
+            OCCT pass over an unseen part is not knowable, and a filling bar
+            would be a number this tool did not measure. */}
+        <AnimatePresence>
+          {(loading === 'dfm' || stages.length > 0) && !result && (
+            <motion.div variants={m.panel} initial="hidden" animate="show" exit="exit"
+              className="dfm-panel relative overflow-hidden p-4 mb-6">
+              {loading === 'dfm' && <div className="dfm-photon absolute inset-x-0 top-0 h-0.5" aria-hidden="true" />}
+              <p className="dfm-label text-slate-500 mb-2.5 flex items-center gap-1.5">
+                <Gauge size={12} className="text-gold-500/70" aria-hidden="true" />
+                Measuring
+              </p>
+              <ol className="space-y-1.5 relative" aria-live="polite">
+                {/* The spine every tick hangs off — a witness line down the
+                    left of the finished stages. */}
+                {stages.length > 1 && (
+                  <span className="absolute left-[6px] top-2 bottom-2 w-px bg-white/10" aria-hidden="true" />
+                )}
+                <AnimatePresence initial={false}>
+                  {stages.filter(s2 => s2.status !== 'start').map((s2, i) => (
+                    <motion.li key={`${s2.stage}-${i}`} variants={m.slideIn}
+                      initial="hidden" animate="show" exit="exit"
+                      className="relative flex items-center gap-2 text-[11px] pl-0">
+                      {s2.status === 'skipped'
+                        ? <MinusCircle size={13} className="text-amber-400 shrink-0 relative bg-navy-900 rounded-full dfm-tick-in" aria-hidden="true" />
+                        : <CheckCircle2 size={13} className="text-emerald-400 shrink-0 relative bg-navy-900 rounded-full dfm-tick-in" aria-hidden="true" />}
+                      <span className="text-slate-300 font-medium">{STAGE_LABEL[s2.stage] ?? s2.stage}</span>
+                      <span className="text-slate-500 dfm-num">{describeStage(s2)}</span>
+                    </motion.li>
+                  ))}
+                </AnimatePresence>
+                {loading === 'dfm' && (
+                  <li className="relative flex items-center gap-2 text-[11px] text-gold-400">
+                    <span className="shrink-0 relative bg-navy-900 rounded-full flex items-center justify-center" style={{ width: 13, height: 13 }}>
+                      <ButtonSpinner size={11} />
+                    </span>
+                    <span>{STAGE_LABEL[stages[stages.length - 1]?.stage] ?? 'Reading geometry'}…</span>
+                  </li>
+                )}
+              </ol>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* GEOMETRY FIRST. This viewer used to live inside the results block, so a
+            user stared at a form for up to 30 s with their part invisible, then
+            saw it only once the analysis returned. CadToCostPage has always done
+            it the other way round — "Independent of the parse/analyse flow
+            below" — and that is the right way round: the part appears the moment
+            it is chosen, and the findings paint onto it when they arrive. */}
+        {file && /\.(step|stp|igs|iges)$/i.test(file.name) && (
+          <div id="sec-geometry" className="dfm-panel p-5 mb-6 scroll-mt-32">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <p className="dfm-label text-slate-500 flex items-center gap-1.5">
+                <Crosshair size={12} className={`text-gold-500/70 ${result ? '' : 'dfm-idle'}`} aria-hidden="true" />
+                {result ? 'Geometry — findings shown on the part' : 'Geometry'}
+              </p>
+              {result && (
                 <div className="flex items-center gap-1.5" role="group" aria-label="Highlight findings on the model">
                   {([
                     ['undercuts', `Undercuts (${draft.undercutFaceCount ?? 0})`],
@@ -1480,28 +1733,6 @@ export default function DfmStudioPage() {
                 </div>
               )}
             </div>
-            {/* LIVE STAGES. Each line appears when the engine has genuinely
-                finished that phase, and carries the figure it just measured —
-                not a predicted percentage. A skipped stage says skipped. */}
-            {(loading === 'dfm' || stages.length > 0) && !result && (
-              <ol className="mb-3 space-y-1" aria-live="polite">
-                {stages.filter(s2 => s2.status !== 'start').map((s2, i) => (
-                  <li key={i} className="flex items-center gap-2 text-[11px]">
-                    {s2.status === 'skipped'
-                      ? <MinusCircle size={12} className="text-amber-400 shrink-0" />
-                      : <CheckCircle2 size={12} className="text-emerald-400 shrink-0" />}
-                    <span className="text-slate-300">{STAGE_LABEL[s2.stage] ?? s2.stage}</span>
-                    <span className="text-slate-500">{describeStage(s2)}</span>
-                  </li>
-                ))}
-                {loading === 'dfm' && (
-                  <li className="flex items-center gap-2 text-[11px] text-gold-400">
-                    <ButtonSpinner size={11} />
-                    <span>{STAGE_LABEL[stages[stages.length - 1]?.stage] ?? 'Reading geometry'}…</span>
-                  </li>
-                )}
-              </ol>
-            )}
             <CadViewer3D ref={viewerRef} file={file} token={token} highlightFaceIds={highlightIds}
               className="h-[420px] rounded-xl overflow-hidden" />
             <p className="text-slate-600 text-[11px] mt-2">
@@ -1513,23 +1744,79 @@ export default function DfmStudioPage() {
         )}
 
         {result && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-            {/* Export */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-white font-bold text-lg flex items-center gap-2">
-                <Layers size={18} className="text-gold-400" /> {result.partName || file?.name}
-              </h2>
-              <div className="flex items-center gap-2">
-                <button onClick={() => exportReport('pdf')} disabled={exporting !== ''}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 text-xs transition-colors disabled:opacity-50">
-                  {exporting === 'pdf' ? <ButtonSpinner size={12} /> : <FileDown size={13} />} Export PDF
-                </button>
-                <button onClick={() => exportReport('xlsx')} disabled={exporting !== ''}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 text-xs transition-colors disabled:opacity-50">
-                  {exporting === 'xlsx' ? <ButtonSpinner size={12} /> : <Table2 size={13} />} Export Excel
-                </button>
+          <motion.div variants={m.stagger()} initial="hidden" animate="show" className="space-y-5">
+            {/* ── THE HEADLINE ───────────────────────────────────────────────
+                A finished analysis used to announce itself with a filename and
+                two export buttons; the score was twelve-pixel text three
+                screens down. This is the panel a director reads: the dial, the
+                counted findings, the priced impact, and the coverage that says
+                how much of the catalogue actually ran. Every figure is summed
+                from what the engines returned — see `summary` above. */}
+            <motion.div variants={m.staggerItem} id="sec-summary"
+              className="dfm-panel dfm-framed relative overflow-hidden p-5 scroll-mt-32">
+              {/* One scan per analysis: keyed on the content so a new result
+                  replays it and nothing loops. */}
+              {!m.reduced && (
+                <div key={`scan|${result.partName}|${summary?.findings}|${result.analysedAt ?? ''}`}
+                  className="dfm-scan" style={{ ['--scan-h' as string]: '220px' }} aria-hidden="true" />
+              )}
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="flex items-center gap-5 min-w-0">
+                  <ScoreRing
+                    score={summary?.score ?? null}
+                    label="DFM score"
+                    sublabel={summary && summary.scoredFamilies > 1
+                      ? `mean of ${summary.scoredFamilies} rule families`
+                      : summary?.score === null ? 'nothing could be evaluated' : undefined}
+                  />
+                  <div className="min-w-0 border-l border-white/10 pl-5">
+                    <p className="dfm-label text-slate-500">Part</p>
+                    <h2 className="text-white font-bold text-lg leading-tight truncate max-w-[22rem]">
+                      {result.partName || file?.name}
+                    </h2>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      {result.material ?? 'material not set'}
+                      {result.processFamily ? ` · ${result.processFamily}` : ''}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <motion.button {...m.press} onClick={() => exportReport('pdf')} disabled={exporting !== ''}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 text-xs font-medium transition-colors disabled:opacity-50
+                               focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60">
+                    {exporting === 'pdf' ? <ButtonSpinner size={12} /> : <FileDown size={13} aria-hidden="true" />} Export PDF
+                  </motion.button>
+                  <motion.button {...m.press} onClick={() => exportReport('xlsx')} disabled={exporting !== ''}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 text-xs font-medium transition-colors disabled:opacity-50
+                               focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60">
+                    {exporting === 'xlsx' ? <ButtonSpinner size={12} /> : <Table2 size={13} aria-hidden="true" />} Export Excel
+                  </motion.button>
+                </div>
               </div>
-            </div>
+
+              {summary && (
+                <div className="mt-4 pt-4 border-t border-white/[0.07] grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {[
+                    { label: 'Findings', value: summary.findings,
+                      sub: `${summary.high} high severity`, tone: summary.high > 0 ? 'text-red-400' : 'text-white' },
+                    { label: 'Rules evaluated', value: summary.evaluated,
+                      sub: `of ${summary.ruleCount} that apply`, tone: 'text-white' },
+                    { label: 'Priced impact', value: summary.annualEur, prefix: '€', suffix: '/yr',
+                      sub: summary.annualEur > 0 ? 'upper bound, engine-priced' : 'nothing priced', tone: summary.annualEur > 0 ? 'text-emerald-400' : 'text-slate-500' },
+                    { label: 'Not evaluated', value: summary.notEvaluated,
+                      sub: 'measurement unavailable', tone: 'text-slate-300' },
+                  ].map((k) => (
+                    <div key={k.label}>
+                      <p className={`dfm-kpi-value ${k.tone}`}>
+                        <TickNumber value={k.value} prefix={k.prefix ?? ''} suffix={k.suffix ?? ''} />
+                      </p>
+                      <p className="dfm-label text-slate-500 mt-1">{k.label}</p>
+                      <p className="text-[11px] text-slate-600 mt-0.5">{k.sub}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
 
             {/* ── Drawing vs model reconciliation ──────────────────────────
                 When both documents were supplied, every drawing dimension was
@@ -1537,7 +1824,7 @@ export default function DfmStudioPage() {
                 the rows with money in them: one of the two documents is wrong,
                 and this tool deliberately does not guess which. */}
             {result.drawingCheck && (
-              <div className="rounded-2xl border border-white/10 bg-navy-900 p-4">
+              <motion.div variants={m.staggerItem} id="sec-drawing" className="dfm-panel dfm-framed p-4 scroll-mt-32">
                 <p className="text-slate-300 text-sm font-medium mb-1">Drawing vs 3D model</p>
                 <p className="text-xs">
                   <span className="text-emerald-400 font-medium">{result.drawingCheck.counts.confirmed} confirmed</span>
@@ -1553,7 +1840,7 @@ export default function DfmStudioPage() {
                   </p>
                 ))}
                 <p className="text-slate-600 text-[10px] mt-2">{result.drawingCheck.basis}</p>
-              </div>
+              </motion.div>
             )}
             {result.drawingApplied && result.drawingApplied.length > 0 && (
               <p className="text-[11px] text-sky-300/70 italic">
@@ -1566,7 +1853,7 @@ export default function DfmStudioPage() {
                 work?", and the tool could not answer it. The baseline is chosen
                 EXPLICITLY: auto-selecting the most recent snapshot is how a
                 report ends up diffing two different parts. */}
-            <div className="rounded-2xl border border-white/10 bg-navy-900 p-4">
+            <div className="dfm-panel p-4">
               <div className="flex flex-wrap items-center gap-3">
                 <p className="text-slate-300 text-sm font-medium flex items-center gap-2">
                   <Ruler size={14} className="text-gold-400" /> Compare revisions
@@ -1650,7 +1937,7 @@ export default function DfmStudioPage() {
             )}
 
             {/* Measured geometry — the evidence the findings rest on */}
-            <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+            <div className="dfm-panel p-5">
               <p className="text-slate-500 text-xs uppercase tracking-wider mb-3">Measured geometry</p>
               <div className="grid sm:grid-cols-4 gap-4 text-sm">
                 <Metric label="Wall p5 / p50 / p95"
@@ -1679,7 +1966,7 @@ export default function DfmStudioPage() {
                 it, so a reader had no way to tell "no ribs on this part" from
                 "ribs with curved sides are not recognised". */}
             {Array.isArray(feats.knownLimits) && feats.knownLimits.length > 0 && (
-              <details className="bg-navy-900 border border-white/10 rounded-2xl p-5 group">
+              <details className="dfm-panel p-5 group">
                 <summary className="text-slate-500 text-xs uppercase tracking-wider cursor-pointer
                                     marker:content-none flex items-center gap-2
                                     focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 rounded">
@@ -1699,7 +1986,7 @@ export default function DfmStudioPage() {
             {/* Ribs, with the ratios the rules are actually written against.
                 A "3x rib" count says nothing; the proportions are the finding. */}
             {Array.isArray(feats.ribs) && feats.ribs.length > 0 && (
-              <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+              <div className="dfm-panel p-5">
                 <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">
                   Recognised ribs
                 </p>
@@ -1802,18 +2089,32 @@ export default function DfmStudioPage() {
             )}
 
             {/* Per-process results */}
+            <div id="sec-findings" className="scroll-mt-32 space-y-5">
             {result.results.filter(r => r.ruleCount > 0).map(r => (
-              <div key={r.process} className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+              <motion.div key={r.process} variants={m.staggerItem} className="dfm-panel p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
                   <h3 className="text-white font-semibold">{r.processName}</h3>
                   <div className="flex items-center gap-4 text-xs">
-                    <span className={r.score == null ? 'text-slate-500' : r.score >= 80 ? 'text-emerald-400' : r.score >= 50 ? 'text-amber-400' : 'text-red-400'}>
+                    {/* One score scale for the whole page — see scoreTone(). */}
+                    <span className={TONE_TEXT[scoreTone(r.score)]}>
                       Score {r.score == null ? 'not given' : `${r.score}/100`}
+                      {r.score != null && <span className="text-slate-600"> · {TONE_LABEL[scoreTone(r.score)]}</span>}
                     </span>
                     {/* Coverage always sits next to the score. A score without it
-                        invites the reader to assume the whole catalogue ran. */}
-                    <span className="text-slate-400">Coverage {r.coveragePct}% ({r.evaluatedCount}/{r.ruleCount})</span>
-                    {r.impact?.annualEur ? <span className="text-emerald-400">€{r.impact.annualEur.toLocaleString()}/yr priced</span> : null}
+                        invites the reader to assume the whole catalogue ran. It
+                        is a bar now as well as a figure: 8 of 34 rules reads
+                        very differently once you can see it. */}
+                    <span className="flex items-center gap-2 text-slate-400">
+                      Coverage
+                      <span className="inline-block w-16 h-1 rounded-full bg-white/10 overflow-hidden align-middle">
+                        <motion.span className="block h-full bg-slate-400/70"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${Math.max(0, Math.min(100, r.coveragePct))}%` }}
+                          transition={m.t(0.6, 0.1)} />
+                      </span>
+                      <span className="dfm-num">{r.coveragePct}% ({r.evaluatedCount}/{r.ruleCount})</span>
+                    </span>
+                    {r.impact?.annualEur ? <span className="text-emerald-400 dfm-num">€{r.impact.annualEur.toLocaleString()}/yr priced</span> : null}
                   </div>
                 </div>
 
@@ -1823,8 +2124,11 @@ export default function DfmStudioPage() {
                   </p>
                 )}
 
+                <motion.div variants={m.stagger()} initial="hidden" animate="show">
                 {r.findings.map(f => (
-                  <div key={f.id} className={`rounded-xl border p-4 mb-3 ${SEV_STYLE[f.severity]}`}>
+                  <motion.div key={f.id} variants={m.staggerItem}
+                    whileHover={m.reduced ? undefined : { y: -1 }}
+                    className={`dfm-spine dfm-lift rounded-xl border p-4 pl-5 mb-3 ${SEV_STYLE[f.severity]}`}>
                     <div className="flex items-start justify-between gap-3 mb-1">
                       <h4 className="text-white font-semibold text-sm">{f.title}</h4>
                       <div className="flex items-center gap-2 shrink-0">
@@ -1833,12 +2137,12 @@ export default function DfmStudioPage() {
                             engine actually located this kind of finding — a
                             button that flies to nowhere is worse than none. */}
                         {anchorFor(f.id) && (
-                          <button type="button" onClick={() => showOnModel(f.id)}
+                          <motion.button type="button" onClick={() => showOnModel(f.id)} {...m.press}
                             className="px-2 py-0.5 rounded-md border border-current/40 text-[10px]
                                        font-semibold uppercase tracking-wider hover:bg-white/10
                                        focus:outline-none focus:ring-2 focus:ring-gold-500/60">
                             Show on model
-                          </button>
+                          </motion.button>
                         )}
                         <span className="text-[10px] font-bold uppercase tracking-wider">{f.severity}</span>
                       </div>
@@ -1884,8 +2188,9 @@ export default function DfmStudioPage() {
                       </span>
                       {' · '}{f.source}
                     </p>
-                  </div>
+                  </motion.div>
                 ))}
+                </motion.div>
                 {/* Only an all-clear when something was actually checked. With
                     zero evaluated rules this would be a green tick on a family
                     nobody looked at. */}
@@ -1924,8 +2229,9 @@ export default function DfmStudioPage() {
                     </ul>
                   </details>
                 )}
-              </div>
+              </motion.div>
             ))}
+            </div>
 
             {/* ── EVERY VIABLE ROUTE ─────────────────────────────────────────
                 The report answers "is this part good for the process you named".
@@ -1938,7 +2244,7 @@ export default function DfmStudioPage() {
                 and CO2e are three different questions in three different units,
                 and one number would hide the trade-off the reader is here for. */}
             {result.routes && result.routes.routes.length > 0 && (
-              <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+              <motion.div variants={m.staggerItem} id="sec-routes" className="dfm-panel p-5 scroll-mt-32">
                 <div className="flex items-baseline justify-between flex-wrap gap-2 mb-1">
                   <h3 className="text-white font-semibold text-sm flex items-center gap-2">
                     <Layers size={15} className="text-gold-400" aria-hidden="true" />
@@ -1946,14 +2252,18 @@ export default function DfmStudioPage() {
                       ? <>Alternative routes — {result.routes.chosenProcess} against the other {result.routes.routes.length - 1}</>
                       : <>Route comparison — {result.routes.routes.length} viable processes</>}
                   </h3>
+                  {/* A segmented control, so the four sorts read as one choice
+                      rather than four buttons that happen to sit together. */}
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="text-slate-500">Sort by</span>
-                    {(['piecePriceEur', 'score', 'kgCo2e', 'toolingEur'] as const).map(k => (
-                      <button key={k} onClick={() => setRouteSort(k)}
-                        className={`px-2 py-0.5 rounded ${routeSort === k ? 'bg-gold-500 text-navy-950 font-semibold' : 'bg-white/10 text-slate-300 hover:bg-white/15'}`}>
-                        {{ piecePriceEur: 'Cost', score: 'DFM score', kgCo2e: 'CO2e', toolingEur: 'Tooling' }[k]}
-                      </button>
-                    ))}
+                    <span className="dfm-label text-slate-500">Sort by</span>
+                    <div className="dfm-seg" role="group" aria-label="Sort routes by">
+                      {(['piecePriceEur', 'score', 'kgCo2e', 'toolingEur'] as const).map(k => (
+                        <button key={k} onClick={() => setRouteSort(k)} aria-pressed={routeSort === k}
+                          className="dfm-seg-btn focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60">
+                          {{ piecePriceEur: 'Cost', score: 'DFM score', kgCo2e: 'CO2e', toolingEur: 'Tooling' }[k]}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
                 <p className="text-slate-500 text-xs mb-3">{result.routes.basis}</p>
@@ -1972,8 +2282,10 @@ export default function DfmStudioPage() {
                     </thead>
                     <tbody>
                       {sortedRoutes.map(r => (
-                        <tr key={r.process}
-                          className={`border-b border-white/5 align-top ${r.isChosen ? 'bg-gold-500/10' : ''}`}>
+                        <motion.tr key={r.process} layout={m.reduced ? false : 'position'}
+                          transition={m.layout}
+                          className={`border-b border-white/5 align-top dfm-row-hover ${
+                            r.isChosen ? 'bg-gold-500/10 ring-1 ring-inset ring-gold-500/25' : ''}`}>
                           <td className="py-2 pr-3">
                             <span className={r.isChosen ? 'text-gold-300 font-semibold' : 'text-white'}>{r.process}</span>
                             {/* Marked in place, not lifted to the top: where the
@@ -2005,7 +2317,7 @@ export default function DfmStudioPage() {
                           {/* NOT VIABLE is a different statement from a low
                               score. A number invites a comparison the geometry
                               has already settled. */}
-                          <td className={`text-right py-2 px-2 tabular-nums ${r.viable === false ? 'text-red-400 font-semibold' : r.score === null ? 'text-slate-500' : r.score >= 70 ? 'text-emerald-400' : r.score >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
+                          <td className={`text-right py-2 px-2 tabular-nums ${r.viable === false ? 'text-red-400 font-semibold' : TONE_TEXT[scoreTone(r.score)]}`}>
                             {r.viable === false ? 'not viable' : r.score === null ? '—' : r.score}
                             {r.highSeverityCount > 0 && <span className="block text-red-400/70">{r.highSeverityCount} high</span>}
                           </td>
@@ -2030,7 +2342,7 @@ export default function DfmStudioPage() {
                               : r.kgCo2e.toFixed(2)}
                             {r.cbamEur ? <span className="block text-amber-400/70">CBAM EUR {r.cbamEur}</span> : null}
                           </td>
-                        </tr>
+                        </motion.tr>
                       ))}
                     </tbody>
                   </table>
@@ -2042,7 +2354,7 @@ export default function DfmStudioPage() {
                     Not applicable to {result.material}: {result.routes.skipped.map(s => s.process).join(', ')}.
                   </p>
                 )}
-              </div>
+              </motion.div>
             )}
 
           </motion.div>
@@ -2050,8 +2362,8 @@ export default function DfmStudioPage() {
 
         {/* DFA */}
         {dfa?.dfa && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            className="bg-navy-900 border border-white/10 rounded-2xl p-5 mt-5">
+          <motion.div id="sec-dfa" variants={m.panel} initial="hidden" animate="show"
+            className="dfm-panel p-5 mt-5 scroll-mt-32">
             <h3 className="text-white font-semibold mb-3 flex items-center gap-2"><Boxes size={17} className="text-teal-400" /> Design for Assembly</h3>
             <div className="grid sm:grid-cols-4 gap-4 text-sm mb-4">
               <Metric label="Parts" value={String(dfa.dfa.totalParts)} />
@@ -2123,16 +2435,32 @@ export default function DfmStudioPage() {
         )}
 
         {!result && !dfa && (
-          <div className="bg-navy-900/60 border border-white/10 rounded-2xl p-5 text-slate-400 text-sm">
-            <p className="flex items-start gap-2">
-              <Info size={15} className="text-gold-400 shrink-0 mt-0.5" />
-              <span>
-                Findings are checked against published design guidelines with their source cited, and each carries a cost
-                consequence computed by the same engines the rest of BrainSpark uses. Rules the geometry cannot answer are
-                reported as <span className="text-white">not evaluated</span> — never as passes.
-              </span>
-            </p>
-          </div>
+          <motion.div variants={m.panel} initial="hidden" animate="show" className="dfm-panel dfm-framed p-6">
+            <div className="flex flex-col sm:flex-row items-start gap-5">
+              <div className="relative shrink-0">
+                {/* An idling instrument: the dial with no needle, because
+                    nothing has been measured yet. */}
+                <ScoreRing score={null} size={78} label="Awaiting a part" sublabel="nothing measured yet" />
+              </div>
+              <div className="sm:border-l sm:border-white/10 sm:pl-5 grid sm:grid-cols-3 gap-4">
+                {[
+                  { icon: Upload, title: 'Measured, not guessed',
+                    body: 'Draft, undercuts, wall thickness and features come off the B-rep itself — no estimate stands in for a measurement.' },
+                  { icon: ShieldCheck, title: 'Cited, not asserted',
+                    body: 'Every threshold names its source and its grade, from NADCA and SFSA to ISO 8062-4 and DIN 16742.' },
+                  { icon: MinusCircle, title: 'Honest about silence',
+                    body: 'A rule the geometry cannot answer is reported as NOT EVALUATED with the reason — never as a pass.' },
+                ].map(({ icon: Icon, title, body }) => (
+                  <div key={title}>
+                    <p className="text-white text-xs font-semibold flex items-center gap-1.5 mb-1">
+                      <Icon size={13} className="text-gold-400" aria-hidden="true" />{title}
+                    </p>
+                    <p className="text-slate-500 text-[11px] leading-relaxed">{body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         )}
       </div>
     </div>
@@ -2141,8 +2469,8 @@ export default function DfmStudioPage() {
 
 function Metric({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div>
-      <p className="text-slate-500 text-[11px] uppercase tracking-wider flex items-center gap-1">
+    <div className="dfm-lift rounded-lg -m-1.5 p-1.5 hover:bg-white/[0.03]">
+      <p className="dfm-label text-slate-500 flex items-center gap-1">
         {label}
         {/* The hint was a `title` on a span, which a screen reader never
             announces and a keyboard user can never reveal. The icon is now
@@ -2154,7 +2482,7 @@ function Metric({ label, value, hint }: { label: string; value: string; hint?: s
           </>
         )}
       </p>
-      <p className="text-white font-semibold mt-0.5">{value}</p>
+      <p className="text-white font-semibold mt-0.5 dfm-num">{value}</p>
     </div>
   );
 }

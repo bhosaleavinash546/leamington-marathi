@@ -2194,3 +2194,51 @@ unchanged with `from: 'drawing'` and a basis naming the evidence.
     general-tolerance notes (ISO 2768-mK, DIN 16742-TG6) are recognized
     and reported but do not synthesize per-dimension bands — that would
     be a second implementation of tables the engine already holds.
+
+## The DFM Studio is a precision instrument, and its motion has a job description
+
+**Date**: 2026-08-12
+**Context**: the studio had grown into the most capable page in the product
+and the plainest — a centred landing hero, three competing card recipes, a
+score printed as twelve-pixel text between two other figures, and four
+one-shot fade-ups doing duty as "animation". Two structural faults were
+hiding in the sprawl: the portfolio-scan table had been pasted inside the
+3D viewer's header flex row AND inside the `file` STEP guard (so a batch
+scan was unreachable without first loading a single CAD part), and the SSE
+stage list sat inside that same guard (so a drawing-only run showed a dead
+button for the whole analysis).
+**Decision**: a `dfm.css` with the `dfm-` prefix following the convention
+foresight.css and innovation.css set — every layout, colour and border
+declared statically, every animation inside
+`@media (prefers-reduced-motion: no-preference)` — plus a small set of
+primitives under `src/components/dfm/` (motion vocabulary, ScoreRing,
+TickNumber, Panel, StepRail, SectionNav). The identity is METROLOGY, not
+the Horizon page's sci-fi: graph-paper ground, drawing-frame corner ticks
+on the panels that carry a verdict, GD&T-style datum markers on the step
+rail, and a 270° gauge that sweeps to the measured score.
+**Consequences**:
+  * **Motion states things that are true.** The gauge arc is driven by CSS
+    variables computed from the real score, so it cannot land anywhere but
+    on it; the count-up terminates on the exact value and renders the
+    fallback rather than counting to zero when a figure is absent; the
+    in-flight bar is an indeterminate travelling photon, never a filling
+    bar, because the duration of an OCCT pass over an unseen part is not a
+    number this tool has measured.
+  * **The guided flow is derived, not decorative.** Each of Part → Process
+    → Analyse → Results is `done` only from state that genuinely exists,
+    and the travelling indicator is one shared-layout element so the
+    progression reads as travel. The report gains a sticky table of
+    contents with live counts and scroll-spy.
+  * **One score scale.** The page graded scores at 80/50 in the finding
+    headers and 70/40 in the routes and portfolio tables, so the same 62
+    was amber in one place and green two inches below. `scoreTone()` is
+    now the only grader, and the band it lands in is named beside the
+    number.
+  * **Both structural faults fixed**: the portfolio table is its own
+    section outside the viewer and its guard, and the stage list is its
+    own panel above the viewer so a drawing-only run shows its progress.
+  * **Verified on a real render, not by reading the diff**: the app was
+    driven in Chromium through empty → file chosen → process chosen →
+    analysing → results → each section, plus a `reducedMotion: 'reduce'`
+    pass confirming the page is complete and static rather than degraded.
+    The repo's axe gate reports 0 serious/critical on /dfm-studio.

@@ -1,0 +1,260 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   DFM / DFA STUDIO — the material and motion of a precision instrument.
+
+   The Horizon page is atmospheric and the Innovation Studio is a workspace;
+   this tool is neither. It is the surface an engineer argues from in front of
+   a supplier, so its identity is METROLOGY: graph-paper ground, drawing-frame
+   corner ticks, datum markers, dimension rules, and a gauge that sweeps to a
+   measured value. There are no starfields, orbits or drifting particles here —
+   a caliper does not shimmer.
+
+   Two rules this file keeps, matching foresight.css and innovation.css:
+
+     1. EVERY layout, colour and border is declared statically. Only motion
+        lives inside `@media (prefers-reduced-motion: no-preference)`, so a
+        reader who asks for stillness gets the complete page, not a degraded
+        one.
+     2. Colours go through the theme's utility surfaces (rgb var tokens and
+        white/N alphas) wherever the light theme remaps them in index.css.
+        Hard-coded hex here would survive the theme switch and look wrong.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── THE GROUND: graph paper, not a void ──────────────────────────────────── */
+.dfm-shell {
+  position: relative;
+  isolation: isolate;
+}
+.dfm-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* Fine 8 mm ruling over a coarse 48 mm ruling — the two-level squared paper
+     a section is sketched on. Kept under 4% alpha: it must read as texture at
+     a glance and disappear behind any content placed on it. */
+  background-image:
+    linear-gradient(rgb(var(--gold-500) / 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--gold-500) / 0.022) 1px, transparent 1px),
+    linear-gradient(rgb(255 255 255 / 0.016) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.016) 1px, transparent 1px);
+  background-size: 96px 96px, 96px 96px, 16px 16px, 16px 16px;
+  /* Fades away from the working column so the grid frames the page rather
+     than competing with the tables in the middle of it. */
+  mask-image: radial-gradient(ellipse 85% 55% at 50% 0%, #000 12%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 55% at 50% 0%, #000 12%, transparent 72%);
+}
+.dfm-content { position: relative; z-index: 1; }
+
+/* ── PANEL: the standard surface ──────────────────────────────────────────── */
+.dfm-panel {
+  position: relative;
+  background: rgb(var(--navy-900) / 0.72);
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  border: 1px solid rgb(255 255 255 / 0.07);
+  border-radius: 14px;
+}
+.dfm-panel-head {
+  border-bottom: 1px solid rgb(255 255 255 / 0.07);
+}
+/* Drawing-frame corner ticks. Two L-shapes at the leading corners, the way a
+   title block frames a sheet — the single motif that carries the identity. */
+.dfm-framed::before,
+.dfm-framed::after {
+  content: '';
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border-color: rgb(var(--gold-500) / 0.55);
+  border-style: solid;
+  pointer-events: none;
+}
+.dfm-framed::before {
+  top: -1px; left: -1px;
+  border-width: 1px 0 0 1px;
+  border-top-left-radius: 14px;
+}
+.dfm-framed::after {
+  bottom: -1px; right: -1px;
+  border-width: 0 1px 1px 0;
+  border-bottom-right-radius: 14px;
+}
+
+/* ── TYPE: one label style, one number style ──────────────────────────────── */
+.dfm-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.dfm-num { font-variant-numeric: tabular-nums; }
+.dfm-kpi-value {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── STICKY CHROME (app header is 64px) ───────────────────────────────────── */
+.dfm-sticky {
+  position: sticky;
+  top: 64px;
+  z-index: 30;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* ── SEGMENTED CONTROL ────────────────────────────────────────────────────── */
+.dfm-seg {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  border-radius: 10px;
+  background: rgb(var(--navy-950) / 0.6);
+  border: 1px solid rgb(255 255 255 / 0.07);
+}
+.dfm-seg-btn {
+  position: relative;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgb(148 163 184);
+}
+.dfm-seg-btn[aria-pressed='true'] {
+  color: rgb(var(--gold-400));
+  background: rgb(var(--gold-500) / 0.12);
+  box-shadow: inset 0 0 0 1px rgb(var(--gold-500) / 0.30);
+}
+
+/* ── DATUM MARKER: the step-rail bullet, drawn like a GD&T datum ──────────── */
+.dfm-datum {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  background: rgb(var(--navy-950) / 0.75);
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgb(148 163 184);
+}
+.dfm-datum[data-state='done'] {
+  border-color: rgb(16 185 129 / 0.5);
+  background: rgb(16 185 129 / 0.14);
+  color: rgb(52 211 153);
+}
+.dfm-datum[data-state='active'] {
+  border-color: rgb(var(--gold-500) / 0.6);
+  background: rgb(var(--gold-500) / 0.14);
+  color: rgb(var(--gold-400));
+}
+
+/* ── DIMENSION RULE: a hairline that fades at both ends, like a witness line */
+.dfm-rule-x {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.12) 12%, rgb(255 255 255 / 0.12) 88%, transparent);
+}
+
+/* ── FINDING SPINE: severity as a drawn edge, not just a tint ─────────────── */
+.dfm-spine { position: relative; overflow: hidden; }
+.dfm-spine::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: currentColor;
+  opacity: 0.75;
+}
+
+/* ── GAUGE ────────────────────────────────────────────────────────────────── */
+.dfm-gauge-track { stroke: rgb(255 255 255 / 0.08); }
+
+/* ── HOVER MATERIAL ───────────────────────────────────────────────────────── */
+.dfm-lift { transition: transform 0.16s ease-out, border-color 0.16s ease-out, background-color 0.16s ease-out; }
+.dfm-row-hover { transition: background-color 0.14s ease-out; }
+.dfm-row-hover:hover { background: rgb(255 255 255 / 0.025); }
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   MOTION — everything below is optional by definition.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: no-preference) {
+
+  .dfm-lift:hover { transform: translateY(-1px); }
+
+  /* The measuring sweep: a gauge arc drawing to its value. Driven by a CSS
+     variable the component sets from the REAL score, so the arc can never
+     land anywhere but on the measured number. */
+  .dfm-gauge-value {
+    stroke-dasharray: var(--dash-total);
+    stroke-dashoffset: var(--dash-total);
+    animation: dfm-gauge-draw 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  @keyframes dfm-gauge-draw {
+    to { stroke-dashoffset: var(--dash-offset); }
+  }
+
+  /* Indeterminate progress for work whose duration is genuinely unknown (an
+     OCCT tessellation of an unseen part). A travelling photon, NOT a bar that
+     fills — a bar implies a percentage nobody measured. */
+  .dfm-photon { position: relative; overflow: hidden; }
+  .dfm-photon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgb(var(--gold-500) / 0.55), transparent);
+    width: 38%;
+    animation: dfm-photon 1.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+  @keyframes dfm-photon {
+    0%   { transform: translateX(-110%); }
+    100% { transform: translateX(320%); }
+  }
+
+  /* One-shot scan when a NEW analysis lands. Mounted with a content-derived
+     key so it replays per result and never loops — the page is not a screen
+     saver. */
+  .dfm-scan {
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgb(var(--gold-500) / 0.85), transparent);
+    box-shadow: 0 0 18px 2px rgb(var(--gold-500) / 0.35);
+    animation: dfm-scan-down 1s ease-out forwards;
+    pointer-events: none;
+    z-index: 2;
+  }
+  @keyframes dfm-scan-down {
+    0%   { transform: translateY(0); opacity: 0; }
+    12%  { opacity: 1; }
+    100% { transform: translateY(var(--scan-h, 260px)); opacity: 0; }
+  }
+
+  /* A conflict earns ONE pulse when it appears. Anything that repeats forever
+     stops being a warning and becomes wallpaper. */
+  .dfm-alert-once { animation: dfm-alert 1.1s ease-out 1; }
+  @keyframes dfm-alert {
+    0%   { box-shadow: 0 0 0 0 rgb(239 68 68 / 0.45); }
+    70%  { box-shadow: 0 0 0 8px rgb(239 68 68 / 0); }
+    100% { box-shadow: 0 0 0 0 rgb(239 68 68 / 0); }
+  }
+
+  /* The crosshair that breathes over the 3D viewer while it has no result —
+     an instrument idling, at 4 s so it never pulls the eye off the model. */
+  .dfm-idle { animation: dfm-idle 4s ease-in-out infinite; }
+  @keyframes dfm-idle {
+    0%, 100% { opacity: 0.25; }
+    50%      { opacity: 0.6; }
+  }
+
+  /* Stage tick: a measurement landing. Slight overshoot is allowed HERE only,
+     because a tick is a confirmation and confirmation reads as a snap. */
+  .dfm-tick-in { animation: dfm-tick 0.32s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes dfm-tick {
+    from { transform: scale(0.6); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+}
