@@ -2441,3 +2441,41 @@ is a full render, and the remainder is stated rather than dropped silently.
     its own card and "measured across the whole part" printed under the finding
     that has no face; 185 kB workbook with 4 images anchored on the Evidence
     sheet at the right rows.
+
+## 45. All four deck generators live in the repo
+
+**Context**: Four director decks are tracked deliverables. Only one generator —
+`scripts/make-dfm-deck.mjs` — was in the repo. The other three lived in a
+scratch directory, and it shows in the dates: the platform deck went 132 commits
+without a refresh, the brief 129, Horizon 110. A generator you cannot find is a
+deck that goes stale silently, and every figure on those slides was retyped
+rather than counted.
+
+**Decision**: `build_deck.py`, `brief_deck.py` and `horizon_deck.cjs` move in as
+`scripts/make-platform-deck.py`, `make-brief-deck.py` and `make-horizon-deck.cjs`,
+with their assets committed under `scripts/deck-assets/`.
+
+**No build-time dependency on `sharp` or `react-icons`.** `make-deck-icons.mjs`
+had already ruled on this and written down why: *"a deck that cannot be
+regenerated six months from now because an optional npm package moved is a deck
+that quietly goes stale."* The Horizon generator rasterised 26 Lucide glyphs on
+every run through `sharp`. Those PNGs are now baked into
+`deck-assets/horizon-icons.json`, keyed `IconName|hexcolour`, and `ic()` reads
+the cache. It reaches for `sharp` **only on a cache miss** — which is how the
+cache rebuilds when the icon set changes, and the one time a scratch install is
+needed. A miss with no scratch install throws a message naming the fix rather
+than failing obscurely.
+
+**Consequences**:
+  * All three rebuild byte-identically in structure from a clean checkout —
+    21, 2 and 16 slides, all passing `validate.py`.
+  * `CLAUDE.md` changed: the line saying the platform generator is "kept outside
+    the repo" is now wrong. Its useful half survives — regenerate a deck only
+    when the deck IS the task, never as a side effect — and now covers all four,
+    plus the `.zip` twins.
+  * The scratch install had `react`/`react-dom`/`sharp` but not `pptxgenjs`, and
+    the repo had the reverse. Baking had to run from `/tmp` with `pptxgenjs`
+    symlinked in, because Node resolves `node_modules` by walking up from the
+    FILE, so a repo-resident script always found the app's React 18 first and
+    died on a version clash. Recorded because it will be the same dance next
+    time the icon set changes.
