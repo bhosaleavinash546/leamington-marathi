@@ -9,3 +9,8 @@ node_modules/
 
 # SQLite database (runtime data, not source)
 calculator/data/
+
+# Python bytecode — the deck builders import pptx_fixup, so running one
+# leaves a __pycache__ behind at the repo root
+__pycache__/
+*.pyc
