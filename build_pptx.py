@@ -15,6 +15,8 @@ from pptx.oxml import parse_xml
 from lxml import etree
 import copy
 
+from pptx_fixup import finalise
+
 # ─── Brand colours — light theme, matched to CostVision-Workflow-Explained ────
 # The palette is deliberately the same set of hex values as build_workflow_deck.mjs
 # so the two decks read as one pack when they are presented back to back: a very
@@ -1716,5 +1718,8 @@ notes(slide,
 # ─── Save ─────────────────────────────────────────────────────────────────────
 output_path = "/home/user/leamington-marathi/CostVision-Executive-Presentation.pptx"
 prs.save(output_path)
-print(f"Saved: {output_path}")
+# python-pptx cannot declare the notes master, and PowerPoint will not open a
+# deck that has notes slides without one. See pptx_fixup.py.
+_fixed = finalise(output_path)
+print(f"Saved: {output_path}" + (f"  [fixed: {', '.join(_fixed)}]" if _fixed else ""))
 print(f"Slides: {len(prs.slides)}")

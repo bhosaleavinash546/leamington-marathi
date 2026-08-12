@@ -19,6 +19,8 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
 
+from pptx_fixup import finalise
+
 # ── Brand palette ─────────────────────────────────────────────────────────────
 # Same hex values as build_workflow_deck.mjs and build_pptx.py, so all four decks
 # read as one pack. This deck was already light, but a DIFFERENT light — white
@@ -1185,4 +1187,6 @@ assert len(_slides) == len(SPEAKER_NOTES), f"slides={len(_slides)} notes={len(SP
 
 OUT = 'CostVision-Agentic-AI-Management-Presentation.pptx'
 prs.save(OUT)
+# Without this PowerPoint refuses the file — see pptx_fixup.py.
+finalise(OUT)
 print(f'Wrote {OUT} with {len(prs.slides.slides if hasattr(prs.slides, "slides") else prs.slides._sldIdLst)} slides')

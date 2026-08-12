@@ -20,6 +20,8 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
 
+from pptx_fixup import finalise
+
 # Same hex values as build_workflow_deck.mjs, build_pptx.py and the Agentic
 # builder, so all four decks read as one pack. This deck was already light but a
 # DIFFERENT light — white page, near-black headings, indigo accent.
@@ -1297,4 +1299,6 @@ notes(slide,
 
 OUT = 'CostVision-Implementation-Blueprint.pptx'
 prs.save(OUT)
+# Without this PowerPoint refuses the file — see pptx_fixup.py.
+finalise(OUT)
 print(f'Wrote {OUT} with {len(prs.slides._sldIdLst)} slides')

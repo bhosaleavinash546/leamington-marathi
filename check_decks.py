@@ -28,6 +28,8 @@ from pptx import Presentation
 from pptx.util import Emu
 from pptx.enum.dml import MSO_FILL
 
+from pptx_fixup import declares_notes_master
+
 DECKS = [
     'CostVision-Workflow-Explained.pptx',
     'CostVision-Agentic-AI-Management-Presentation.pptx',
@@ -122,6 +124,13 @@ def audit(path):
         'slides': len(prs.slides), 'offslide': offslide, 'small': small,
         'no_notes': no_notes, 'emoji_fonts': sorted(emoji_fonts),
         'overlaps': overlaps,
+        # Package-level, not shape-level: python-pptx creates a notes master but
+        # never declares it in presentation.xml, and PowerPoint refuses to open
+        # the result. Three of these four decks shipped that way and would not
+        # open, while every check here passed them — because they all read the
+        # python-pptx object model, which is the one layer that cannot see it.
+        # Rendering could not catch it either: LibreOffice tolerates it happily.
+        'notes_master': declares_notes_master(path),
     }
 
 
@@ -139,8 +148,9 @@ def main():
         # tell intent from accident, and a noisy gate is one people learn to
         # ignore. Rendering to PDF is the real check for this class now that
         # libreoffice-impress is installed; see render_decks.sh.
-        faults += n_off + n_small + len(r['no_notes'])
-        status = 'OK' if not (n_off or n_small or r['no_notes']) else 'FAULTS'
+        no_master = not r['notes_master']
+        faults += n_off + n_small + len(r['no_notes']) + (1 if no_master else 0)
+        status = 'OK' if not (n_off or n_small or r['no_notes'] or no_master) else 'FAULTS'
         print(f"\n{path}  ({r['slides']} slides)  {status}")
         print(f"   off-slide shapes      : {n_off}")
         for s, over, label in r['offslide'][:6]:
@@ -152,10 +162,14 @@ def main():
         for sl, ox, oy in r['overlaps'][:5]:
             print(f"        slide {sl:3d}  {ox}\" x {oy}\" intersection")
         print(f"   slides without notes  : {r['no_notes'] or 'none'}")
+        print("   opens in PowerPoint   : "
+              + ('yes' if r['notes_master']
+                 else 'NO — notes master not declared in presentation.xml'))
         print(f"   emoji runs w/o Segoe  : {n_emoji}"
               + (f"  e.g. {r['emoji_fonts'][:3]}" if n_emoji else ''))
 
-    print(f"\n{'=' * 62}\nTotal hard faults (off-slide + tiny text + missing notes): {faults}")
+    print(f"\n{'=' * 62}\nTotal hard faults "
+          f"(off-slide + tiny text + missing notes + undeclared notes master): {faults}")
     if strict and faults:
         print('FAILED — do not present until these are fixed.')
         return 1
