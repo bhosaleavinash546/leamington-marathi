@@ -1,0 +1,946 @@
+{
+  "_audit": {
+    "part": "Fuel_tank.STEP",
+    "commodity": "blow_moulding",
+    "mode": "both",
+    "volume": 200000,
+    "deep": false,
+    "httpStatus": 200,
+    "seconds": 118.3,
+    "capturedAt": "2026-08-12T19:16:33.397Z"
+  },
+  "response": {
+    "success": true,
+    "analysis": {
+      "partName": "Automotive HDPE Fuel Tank (EBM, multilayer barrier)",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 1528.35,
+          "y": 657.63,
+          "z": 593.69
+        },
+        "estimatedVolumeCm3": 10595.902,
+        "estimatedSurfaceAreaCm2": 47571.289,
+        "estimatedWeightKg": {
+          "aluminum": 28.6089,
+          "steel": 83.1778,
+          "castIron": 75.7607,
+          "plastic": 11.1257
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "Cylindrical faces (pipe stubs/vent tubes/bosses)",
+          "description": "1375 cylindrical faces, radii 1-42mm, consistent with moulded-in fill/vent/mounting stubs on a fuel tank",
+          "count": 1375,
+          "significance": "High"
+        }
+      ],
+      "aiExplanation": "",
+      "confidenceLevel": "Low",
+      "manufacturabilityScore": 60,
+      "processRecommendations": [],
+      "manufacturabilityRisks": [],
+      "analysisLimitations": [],
+      "materialAnalysis": {
+        "primarySuggestion": {
+          "materialId": "",
+          "name": "Unspecified",
+          "confidencePct": 50
+        },
+        "alternatives": []
+      },
+      "costInputSuggestions": {
+        "recommendedCommodity": "machining",
+        "estimatedOperations": [],
+        "costRange": {
+          "low": 0,
+          "mid": 0,
+          "high": 0,
+          "currency": "GBP"
+        },
+        "blowMoulding": {
+          "wallThicknessMm": 5
+        },
+        "fieldConfidences": {
+          "bm-wall": 0.85
+        }
+      }
+    },
+    "sanityWarnings": [],
+    "ruleOverrides": {
+      "overridden": [
+        {
+          "field": "blowMoulding.wallThicknessMm",
+          "ruleId": "blowMoulding.wallThicknessMm",
+          "to": 5,
+          "basis": "ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds)",
+          "confidence": 0.85,
+          "contradicted": false
+        }
+      ],
+      "notWritten": [],
+      "undecided": [
+        "material.resin"
+      ]
+    },
+    "aiSuppressed": [
+      {
+        "field": "netWeightKg",
+        "ruleId": "blowMoulding.partWeightKg",
+        "decisionId": "material.resin",
+        "aiValue": 11.1257
+      }
+    ],
+    "ruleFields": {
+      "bm-wall": {
+        "fieldId": "bm-wall",
+        "value": 5,
+        "basis": "ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds)",
+        "source": "geometry",
+        "confidence": 0.85,
+        "ruleId": "blowMoulding.wallThicknessMm"
+      }
+    },
+    "deterministicAnalysis": {
+      "partName": "cv-cad-bd13ae50d20459e0",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 1528.35,
+          "y": 657.63,
+          "z": 593.69
+        },
+        "estimatedVolumeCm3": 10595.902,
+        "estimatedSurfaceAreaCm2": 47571.289,
+        "estimatedWeightKg": {
+          "aluminum": 28.6089,
+          "steel": 83.1778,
+          "plastic": 11.1257
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "boss",
+          "description": "1× Ø24.0 × 9 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø30.0 × 15 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø52.0 × 35 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø80.0 × 3 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø80.0 × 45 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø80.0 × 105 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø80.0 × 131 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "4× Ø16.0 × 2 mm blind",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø40.0 × 53 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø60.0 × 45 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø60.0 × 105 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø60.0 × 138 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "4× Ø0.0 × 0 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "face",
+          "description": "4× Ø0.0 × 0 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "face",
+          "description": "4× Ø0.0 × 0 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "face",
+          "description": "4× Ø0.0 × 0 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "face",
+          "description": "4× Ø0.0 × 0 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "face",
+          "description": "16× Ø0.0 × 0 mm",
+          "count": 16,
+          "significance": "High"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 127 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 135 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "2× Ø0.0 × 18 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "2× Ø0.0 × 31 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "4× Ø0.0 × 41 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "pocket",
+          "description": "4× Ø0.0 × 35 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "pocket",
+          "description": "12× Ø0.0 × 27 mm",
+          "count": 12,
+          "significance": "High"
+        },
+        {
+          "type": "bend",
+          "description": "372 bend(s), 31649 mm total length",
+          "count": 372,
+          "significance": "High"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "",
+          "name": "",
+          "confidencePct": 0,
+          "reasoning": ""
+        },
+        "alternatives": []
+      },
+      "processRecommendations": [
+        {
+          "process": "blow_moulding",
+          "commodityType": "blow_moulding",
+          "confidencePct": 50,
+          "reasoning": "selected by the deterministic rules for this commodity",
+          "estimatedCycleTimeHr": 0
+        }
+      ],
+      "manufacturabilityScore": 47,
+      "manufacturabilityRisks": [],
+      "costInputSuggestions": {
+        "recommendedCommodity": "blow_moulding",
+        "netWeightKg": 0,
+        "materialId": "",
+        "estimatedCycleTimeHr": 0,
+        "estimatedSetupTimeHr": 0,
+        "estimatedOperations": [],
+        "blowMoulding": {
+          "wallThicknessMm": 5
+        },
+        "fieldConfidences": {
+          "bm-wall": 0.85
+        }
+      },
+      "aiExplanation": "Derived deterministically for blow_moulding from the measured geometry. No AI call was made; every figure below is arithmetic on a measurement or a library lookup, and each states its own basis.\n\n  • blowMoulding.wallThicknessMm = 5 — ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds) [geometry, bm-wall]\n\nStill open (1):\n  • Which resin is this moulded in? — The geometry is the same whichever resin fills it, but the resin sets the weight, the £/kg and the cooling time — and cooling is most of the cycle. The 10596 cm³ measured here weighs 10.172 kg in HDPE and 14.622 kg in PET Bottle Grade (1101).",
+      "confidenceLevel": "Low",
+      "analysisLimitations": [
+        "Unanswered: Which resin is this moulded in?",
+        "DFM checks ran against the measured geometry. Checks that need a drawing callout — tolerances, which face is critical, whether a weld line is in a load path — did not run, so this list is a floor and not a ceiling."
+      ]
+    },
+    "diff": {
+      "diffs": [
+        {
+          "field": "blowMoulding.wallThicknessMm",
+          "ruleValue": 5,
+          "deltaPct": null,
+          "basis": "ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds)",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "costRange.currency",
+          "aiValue": "GBP",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.high",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.low",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.mid",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "estimatedSetupTimeHr",
+          "ruleValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.bm-wall",
+          "ruleValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "materialId",
+          "ruleValue": "",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "netWeightKg",
+          "ruleValue": 0,
+          "aiValue": 11.1257,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "recommendedCommodity",
+          "ruleValue": "blow_moulding",
+          "aiValue": "machining",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "differ"
+        }
+      ],
+      "agreed": 0,
+      "differed": 2,
+      "ruleOnly": 5,
+      "aiOnly": 4,
+      "undecided": [
+        "material.resin"
+      ]
+    },
+    "aiOriginal": {
+      "recommendedCommodity": "machining",
+      "netWeightKg": 11.1257,
+      "estimatedOperations": [],
+      "costRange": {
+        "low": 0,
+        "mid": 0,
+        "high": 0,
+        "currency": "GBP"
+      }
+    },
+    "decisions": [
+      {
+        "id": "material.resin",
+        "kind": "material_grade",
+        "question": "Which resin is this moulded in?",
+        "why": "The geometry is the same whichever resin fills it, but the resin sets the weight, the £/kg and the cooling time — and cooling is most of the cycle. The 10596 cm³ measured here weighs 10.172 kg in HDPE and 14.622 kg in PET Bottle Grade (1101).",
+        "options": [
+          {
+            "value": "mat-hdpe",
+            "label": "HDPE",
+            "consequence": "10.172 kg at £1.06/kg · cools at 3.5 s/mm²",
+            "leaning": true
+          },
+          {
+            "value": "mat-pp-homo",
+            "label": "PP Homopolymer (MFI 12)",
+            "consequence": "9.589 kg at £0.96/kg · cools at 3.16 s/mm²",
+            "leaning": false
+          },
+          {
+            "value": "mat-pet-bg",
+            "label": "PET Bottle Grade (1101)",
+            "consequence": "14.622 kg at £1.21/kg · cools at 3 s/mm²",
+            "leaning": false
+          }
+        ],
+        "blockedFieldIds": [
+          "bm-mat",
+          "bm-part-vol",
+          "bm-part-wt",
+          "bm-flash-wt",
+          "bm-process",
+          "bm-cav",
+          "bm-mach",
+          "bm-cool-f",
+          "bm-blow-t",
+          "bm-open-close",
+          "bm-mould-mat",
+          "bm-mould-life",
+          "bm-mould-cost"
+        ],
+        "blockedRuleIds": [
+          "blowMoulding.materialId",
+          "blowMoulding.partVolumeL",
+          "blowMoulding.partWeightKg",
+          "blowMoulding.flashWeightKg",
+          "blowMoulding.process",
+          "blowMoulding.subtype",
+          "blowMoulding.barrierMultilayer",
+          "blowMoulding.cavities",
+          "blowMoulding.machineId",
+          "blowMoulding.coolTimeFactorSPerMm2",
+          "blowMoulding.blowTimeSec",
+          "blowMoulding.openCloseSec",
+          "blowMoulding.mouldMaterial",
+          "blowMoulding.mouldLife",
+          "blowMoulding.mouldCostGBP"
+        ],
+        "severity": "blocking"
+      }
+    ],
+    "mode": "both",
+    "fromCache": false,
+    "geometrySource": "occt",
+    "annualVolume": 200000,
+    "occtGeometry": {
+      "status": "success",
+      "partName": "cv-cad-bd13ae50d20459e0",
+      "boundingBox": {
+        "xMm": 1528.35,
+        "yMm": 657.63,
+        "zMm": 593.69
+      },
+      "volume": {
+        "mm3": 10595901.6,
+        "cm3": 10595.902
+      },
+      "surfaceArea": {
+        "mm2": 4757128.9,
+        "cm2": 47571.289
+      },
+      "fillRatio": 0.0178,
+      "topology": {
+        "available": true,
+        "solidCount": 3,
+        "shellCount": 3,
+        "voidCount": 0,
+        "freeEdgeCount": 264,
+        "freeEdgeRatio": 0.0337,
+        "enclosesSealedVoid": false,
+        "openShell": true
+      },
+      "weights": {
+        "aluminiumKg": 28.6089,
+        "steelKg": 83.1778,
+        "plasticKg": 11.1257,
+        "castIronKg": 75.7607,
+        "copperKg": 94.9393,
+        "titaniumKg": 46.9398
+      },
+      "faces": {
+        "total": 3444,
+        "byType": {
+          "TORUS": 728,
+          "CYLINDER": 1375,
+          "CONE": 26,
+          "PLANE": 518,
+          "BSPLINE": 694,
+          "OTHER": 103
+        }
+      },
+      "edges": {
+        "total": 7840,
+        "byType": {
+          "CIRCLE": 3446,
+          "LINE": 2639,
+          "BSPLINE": 1491,
+          "OTHER": 264
+        },
+        "sampleCircleRadiiMm": [
+          0.5,
+          1,
+          1.5,
+          1.9,
+          2,
+          2.5,
+          3,
+          4,
+          4.8,
+          5,
+          5.8,
+          6,
+          8,
+          9,
+          9.8,
+          10,
+          10.2,
+          11,
+          11.2,
+          11.8,
+          12,
+          12.2,
+          12.5,
+          13,
+          13.5,
+          14.2,
+          15,
+          16,
+          16.2,
+          17.8
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 1375,
+        "cylindricalFaceRadiiMm": [
+          1,
+          1.5,
+          2,
+          2.5,
+          3,
+          5,
+          5.8,
+          6,
+          8,
+          9,
+          10,
+          10.2,
+          11.8,
+          12,
+          12.2,
+          14.2,
+          15,
+          16,
+          16.2,
+          17.8,
+          18,
+          20,
+          22,
+          26,
+          30,
+          33.8,
+          35.8,
+          38,
+          40,
+          42
+        ],
+        "estimatedHoleCount": 8,
+        "holeRadiiMm": [
+          8,
+          20,
+          30
+        ],
+        "bossShaftCount": 7,
+        "bossShaftRadiiMm": [
+          12,
+          15,
+          26,
+          40
+        ],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 518,
+        "freeFormFaceCount": 694,
+        "planarFaceAreaMm2": 1896829
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 24,
+          "depthMm": 8.7,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 30,
+          "depthMm": 15,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 52,
+          "depthMm": 34.8,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 80,
+          "depthMm": 2.8,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 80,
+          "depthMm": 44.9,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 80,
+          "depthMm": 105.1,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 80,
+          "depthMm": 131.3,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 16,
+          "depthMm": 2,
+          "through": false,
+          "count": 4
+        },
+        {
+          "kind": "hole",
+          "diaMm": 40,
+          "depthMm": 53,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 60,
+          "depthMm": 44.9,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 60,
+          "depthMm": 105.1,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 60,
+          "depthMm": 137.9,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 35857
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 31371
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 28702
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 27981
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 16688
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 8021
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 7397
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 16,
+          "areaMm2": 6963
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 126.7,
+          "through": null,
+          "count": 1,
+          "areaMm2": 35857
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 134.5,
+          "through": null,
+          "count": 1,
+          "areaMm2": 31371
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 18.4,
+          "through": null,
+          "count": 2,
+          "areaMm2": 27981
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 30.7,
+          "through": null,
+          "count": 2,
+          "areaMm2": 16688
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 40.8,
+          "through": null,
+          "count": 4,
+          "areaMm2": 7397
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 34.7,
+          "through": null,
+          "count": 4,
+          "areaMm2": 3618
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 27.2,
+          "through": null,
+          "count": 12,
+          "areaMm2": 2589
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 372,
+        "totalBendLengthMm": 31648.7,
+        "thicknessMm": 4.15
+      },
+      "wallThickness": {
+        "minMm": 4.15,
+        "maxMm": 18.34,
+        "p95Mm": 9.95,
+        "meanMm": 5.04,
+        "stdDevMm": 2.82,
+        "sampleCount": 29,
+        "method": "ray_cast",
+        "uniformity": "moderate"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 753,
+        "zeroDraftFaceCount": 384,
+        "adequateDraftFaceCount": 756,
+        "minPositiveDraftDeg": 3.17,
+        "maxPositiveDraftDeg": 90,
+        "analyzedFaceCount": 1893
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Y",
+            "faceCount": 69
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 44
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 15
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 379.4,
+        "drillBoreTimeMins": 4,
+        "estimatedTotalMins": 428.4,
+        "estimatedTotalHrs": 7.1394,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 300000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 50000,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 180000,
+        "progressiveDieCostGBP": 90000
+      },
+      "manufacturabilityScore": 47,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 1.2944,
+        "sandCycleTimeHrFerrous": 3.1804,
+        "forgeStrokes": 8,
+        "investWaxCostGBP": 713.57,
+        "investShellCostGBP": 2140.71
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "detectedHardware": {
+        "available": true,
+        "detected": [],
+        "solidCount": 3,
+        "note": "multi-solid model but no weld-nut/stud-like bodies matched"
+      }
+    },
+    "stlGeometry": null,
+    "preprocessed": {
+      "format": "STEP",
+      "partName": "Fuel tank",
+      "boundingBoxEstMm": null,
+      "entityStats": {
+        "PLANE": 518,
+        "B_SPLINE_SURFACE_WITH_KNOTS": 662,
+        "EDGE_LOOP": 3462,
+        "CIRCLE": 3446,
+        "ADVANCED_FACE": 3444,
+        "CYLINDRICAL_SURFACE": 1375,
+        "TOROIDAL_SURFACE": 728,
+        "SPHERICAL_SURFACE": 103,
+        "ADVANCED_BREP_SHAPE_REPRESENTATION": 1,
+        "CONICAL_SURFACE": 26,
+        "MANIFOLD_SOLID_BREP": 3
+      }
+    },
+    "dfmJobId": "ea03e822-64d1-4178-8045-993a85634938"
+  }
+}
