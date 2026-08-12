@@ -2479,3 +2479,42 @@ than failing obscurely.
     FILE, so a repo-resident script always found the app's React 18 first and
     died on a version clash. Recorded because it will be the same dance next
     time the icon set changes.
+
+## 46. Deck figures are counted, and slide numbers count themselves
+
+**Context**: Refreshing all four decks exposed why they had drifted 132, 129 and
+110 commits without anyone noticing. Two mechanical reasons, both fixable.
+
+**Figures were retyped.** `make-dfm-deck.mjs` already imported its counts from
+the catalogue and stayed accurate; the other three hard-coded theirs and every
+one was wrong — 285 tests against 758, 139 register entries against 180, "13 AI
+tools" against 22. Horizon's register size was *technically* read from a data
+file, which is worse: it looked derived while the file itself was typed by hand
+in July. `scripts/make-horizon-deck-data.mjs` now recounts it from the live
+register.
+
+It deliberately does **not** regenerate the `bev` block or the lens example
+names. Those are one live query's recorded output. Recomputing them from the
+register would silently convert evidence of a run into an assertion — the same
+class of error as a report inventing a measurement.
+
+**Slide numbers were retyped too**, which sounds trivial and is not: the
+platform deck numbered every `header()` call and Horizon numbered every
+`footer()` call plus the "/16" total. Inserting one slide meant editing a dozen
+call sites, so the cost of adding a slide when the product gained a capability
+was high enough that nobody paid it. Both now count themselves.
+
+**Consequences**:
+  * Adding the DFM/DFA and Horizon slides to the platform deck collided with its
+    capability numbering — it would have shipped two "Capability 4"s. Renumbered
+    downstream. Worth noting because auto-numbering the SLIDES does not fix the
+    hand-written KICKERS, which are still prose.
+  * `pptx-qa.mjs` measures a mixed-size text run at its largest font, so a 26pt
+    number beside an 11pt label reports as an overflow it is not. Horizon's 21
+    "hard" faults are almost all this plus deliberate off-canvas decorative art.
+    The check is still worth running — it found four real faults in this refresh
+    — but its output needs reading, not obeying.
+  * LibreOffice cannot open ANY exceljs workbook or pptxgenjs deck in this
+    container, so there is still no visual render. Verified it refuses a plain
+    two-cell workbook, which rules out the Excel image support added this week
+    as the cause.
