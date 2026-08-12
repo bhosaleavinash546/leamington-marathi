@@ -20,22 +20,38 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
 
-INDIGO  = RGBColor(0x4F, 0x46, 0xE5)
-BLUE    = RGBColor(0x25, 0x63, 0xEB)
-DARK    = RGBColor(0x0F, 0x17, 0x2A)
-BODY    = RGBColor(0x33, 0x41, 0x55)
-MUTED   = RGBColor(0x64, 0x74, 0x8B)
-BG      = RGBColor(0xFF, 0xFF, 0xFF)
-PANEL   = RGBColor(0xF1, 0xF5, 0xF9)
-PANEL2  = RGBColor(0xEF, 0xF6, 0xFF)
-GREENBG = RGBColor(0xEC, 0xFD, 0xF5)
-AMBERBG = RGBColor(0xFF, 0xFB, 0xEB)
-GREEN   = RGBColor(0x05, 0x96, 0x69)
-AMBER   = RGBColor(0xD9, 0x77, 0x06)
-RED     = RGBColor(0xDC, 0x26, 0x26)
-VIOLET  = RGBColor(0x7C, 0x3A, 0xED)
-CYAN    = RGBColor(0x08, 0x91, 0xB2)
-LINE    = RGBColor(0xE2, 0xE8, 0xF0)
+# Same hex values as build_workflow_deck.mjs, build_pptx.py and the Agentic
+# builder, so all four decks read as one pack. This deck was already light but a
+# DIFFERENT light — white page, near-black headings, indigo accent.
+#
+# The page/card relationship inverts: the page is now tinted and the cards are
+# white, where before the page was white and the panels tinted.
+INDIGO  = RGBColor(0x1D, 0x6F, 0xB8)
+BLUE    = RGBColor(0x1D, 0x6F, 0xB8)
+DARK    = RGBColor(0x16, 0x32, 0x5C)   # navy
+BODY    = RGBColor(0x3A, 0x43, 0x56)   # slate
+MUTED   = RGBColor(0x6B, 0x72, 0x80)
+BG      = RGBColor(0xF4, 0xF7, 0xFB)   # page
+PANEL   = RGBColor(0xFF, 0xFF, 0xFF)   # card
+PANEL2  = RGBColor(0xE8, 0xF1, 0xFA)   # pale blue callout
+GREENBG = RGBColor(0xEA, 0xF6, 0xEF)
+AMBERBG = RGBColor(0xFC, 0xF3, 0xE3)
+GREEN   = RGBColor(0x2E, 0x8B, 0x57)
+AMBER   = RGBColor(0xB7, 0x79, 0x1F)
+RED     = RGBColor(0xB0, 0x3A, 0x2E)
+VIOLET  = RGBColor(0x6B, 0x3F, 0xA0)
+CYAN    = RGBColor(0x0E, 0x80, 0x74)
+LINE    = RGBColor(0xDC, 0xE3, 0xEE)
+NAVY    = RGBColor(0x16, 0x32, 0x5C)   # dark plates
+
+# BG doubled as a TEXT colour for white type on coloured fills, and as the fill
+# for white cards sitting on a tinted panel. Now that BG is the tinted page,
+# both of those need saying explicitly.
+ON_DARK  = RGBColor(0xFF, 0xFF, 0xFF)
+HERO_SUB = RGBColor(0xCA, 0xDC, 0xFC)
+HERO_DIM = RGBColor(0x8F, 0xA3, 0xCC)
+
+TITLE_FONT = 'Cambria'
 
 W, H = Inches(13.333), Inches(7.5)
 prs = Presentation()
@@ -94,7 +110,7 @@ def _emit_runs(p, t, size, color, bold, italic, base_font='Calibri'):
 
 
 def text(slide, x, y, w, h, runs, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP,
-         space_after=4, line_spacing=1.0):
+         space_after=4, line_spacing=1.0, font='Calibri'):
     tb = slide.shapes.add_textbox(x, y, w, h)
     tf = tb.text_frame; tf.word_wrap = True; tf.vertical_anchor = anchor
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
@@ -104,22 +120,24 @@ def text(slide, x, y, w, h, runs, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP,
         for r in para:
             t, size, color, bold = r[0], r[1], r[2], r[3]
             italic = r[4] if len(r) > 4 else False
-            _emit_runs(p, t, size, color, bold, italic)
+            _emit_runs(p, t, size, color, bold, italic, base_font=font)
     return tb
 
-def logo(slide, x=Inches(0.35), y=Inches(0.22), scale=1.0):
+def logo(slide, x=Inches(0.35), y=Inches(0.22), scale=1.0, on_dark=False):
     s = scale
-    badge = box(slide, x, y, Inches(0.42 * s), Inches(0.42 * s), fill=INDIGO, round_=True, radius=0.28)
+    badge = box(slide, x, y, Inches(0.42 * s), Inches(0.42 * s),
+                fill=ON_DARK if on_dark else INDIGO, round_=True, radius=0.28)
     tf = badge.text_frame
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
     r = p.add_run(); r.text = 'cv'
-    r.font.size = Pt(17 * s); r.font.bold = True; r.font.color.rgb = BG; r.font.name = 'Calibri'
+    r.font.size = Pt(17 * s); r.font.bold = True; r.font.name = 'Calibri'
+    r.font.color.rgb = NAVY if on_dark else ON_DARK
     text(slide, x + Inches(0.52 * s), y - Inches(0.03 * s), Inches(2.6), Inches(0.32),
-         [[('CostVision', 18 * s, BLUE, True)]])
+         [[('CostVision', 18 * s, ON_DARK if on_dark else BLUE, True)]])
     text(slide, x + Inches(0.52 * s), y + Inches(0.24 * s), Inches(2.8), Inches(0.22),
-         [[('AI  COST  INTELLIGENCE', 7.5 * s, MUTED, False)]])
+         [[('AI  COST  INTELLIGENCE', 7.5 * s, HERO_DIM if on_dark else MUTED, False)]])
 
 def notes(slide, txt):
     slide.notes_slide.notes_text_frame.text = txt
@@ -128,15 +146,24 @@ def header(title, kicker=None):
     slide = prs.slides.add_slide(BLANK)
     box(slide, 0, 0, W, H, fill=BG)
     logo(slide)
-    box(slide, 0, Inches(0.78), W, Pt(2.2), fill=INDIGO)
+    box(slide, 0, Inches(0.78), W, Pt(2.2), fill=NAVY)
     if kicker:
         text(slide, Inches(0.45), Inches(0.95), Inches(11.5), Inches(0.3),
              [[(kicker.upper(), 11, BLUE, True)]])
         ty = Inches(1.22)
     else:
         ty = Inches(1.02)
-    text(slide, Inches(0.45), ty, Inches(12.4), Inches(0.6), [[(title, 27, DARK, True)]])
+    text(slide, Inches(0.45), ty, Inches(12.4), Inches(0.6), [[(title, 27, DARK, True)]],
+         font=TITLE_FONT)
     return slide
+
+# Both "technology / accuracy / speed" slides run their panels to a common
+# bottom. Trimming the copy freed room inside them, and that room is spent on
+# larger type rather than left as empty panel.
+_COL_PANEL_TOP, _COL_PANEL_BOTTOM = Inches(2.0), Inches(6.15)
+
+def _col_panel_h(cols):
+    return _COL_PANEL_BOTTOM - _COL_PANEL_TOP
 
 def flow_box(slide, x, y, w, h, title, sub, color, fill=None):
     b = box(slide, x, y, w, h, fill=(fill or PANEL), round_=True, radius=0.12)
@@ -160,24 +187,26 @@ def down_arrow(slide, x, y, h=Inches(0.32)):
 
 
 # ═══════════════ 1 — TITLE ═══════════════
+# A navy plate, as the other three decks open on. The only slide here where
+# white type is correct.
 s = prs.slides.add_slide(BLANK)
-box(s, 0, 0, W, H, fill=BG)
-box(s, 0, 0, W, Inches(0.16), fill=INDIGO)
-logo(s, x=Inches(0.5), y=Inches(0.45), scale=1.25)
+box(s, 0, 0, W, H, fill=NAVY)
+box(s, 0, 0, W, Inches(0.16), fill=BLUE)
+logo(s, x=Inches(0.5), y=Inches(0.45), scale=1.25, on_dark=True)
 text(s, Inches(0.9), Inches(2.15), Inches(11.8), Inches(1.0),
-     [[('CostVision Implementation Blueprint', 36, DARK, True)]])
+     [[('CostVision Implementation Blueprint', 36, ON_DARK, True)]], font=TITLE_FONT)
 text(s, Inches(0.9), Inches(3.1), Inches(11.4), Inches(0.9),
-     [[('Secure deployment inside our network — integrated into CAPEE, our existing should-cost software.', 19, BODY, False)],
-      [('All CAD models, drawings and images stay inside the company. Verified in the code.', 19, BODY, False)]])
+     [[('Secure deployment inside our network — integrated into CAPEE, our existing should-cost software.', 19, HERO_SUB, False)],
+      [('All CAD models, drawings and images stay inside the company. Verified in the code.', 19, HERO_SUB, False)]])
 for i, (t, c) in enumerate([('100% CAD stays internal', GREEN), ('AI controls BUILT & tested', BLUE), ('~3–5 weeks remaining', VIOLET), ('6-phase rollout', CYAN)]):
     x = Inches(0.9 + i * 2.95)
-    chip = box(s, x, Inches(4.55), Inches(2.7), Inches(0.52), fill=PANEL, round_=True, radius=0.5)
+    chip = box(s, x, Inches(4.55), Inches(2.7), Inches(0.52), fill=ON_DARK, round_=True, radius=0.5)
     tf = chip.text_frame; tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
     r = p.add_run(); r.text = t; r.font.size = Pt(12.5); r.font.bold = True; r.font.color.rgb = c; r.font.name = 'Calibri'
 text(s, Inches(0.9), Inches(6.5), Inches(11), Inches(0.4),
-     [[('Management briefing  ·  July 2026  ·  Grounded in a line-by-line audit of the platform code', 12, MUTED, False)]])
-box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=INDIGO)
+     [[('Management briefing  ·  July 2026  ·  Grounded in a line-by-line audit of the platform code', 12, HERO_DIM, False)]])
+box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=BLUE)
 notes(s, "Welcome. This session is the implementation blueprint for CostVision: how we deploy it securely so that "
          "no CAD data ever leaves our network, and how we integrate it with our existing CAPEE costing tool. "
          "Everything in this deck comes from an actual audit of the platform's code — not vendor promises. "
@@ -241,8 +270,8 @@ notes(s, "Thirty seconds of background for anyone new. CostVision costs parts bo
 # ═══════════════ 3A — AGENTIC vs AUTONOMOUS AGENTIC (EXAMPLES) ═══════════════
 s = header('Agentic vs autonomous agentic — with examples', 'The concept · explained')
 text(s, Inches(0.45), Inches(1.78), Inches(12.4), Inches(0.4),
-     [[('Two levels of "agentic". On the left the AI acts because you asked and you stay in the loop; '
-        'on the right it acts on its own, unattended, within limits you set.', 12.5, BODY, False, True)]],
+     [[('Two levels. On the left it acts because you asked. On the right it acts on its own, '
+        'within limits you set.', 12.5, BODY, False, True)]],
      line_spacing=1.05)
 
 def _agent_panel(x, accent, fillc, head, tag, examples):
@@ -253,7 +282,7 @@ def _agent_panel(x, accent, fillc, head, tag, examples):
     text(s, x + Inches(0.28), y + Inches(0.54), w - Inches(0.5), Inches(0.32), [[(tag, 10.5, MUTED, False, True)]])
     ry, rh = y + Inches(0.98), Inches(0.7)
     for lab, sub in examples:
-        box(s, x + Inches(0.24), ry, w - Inches(0.48), rh, fill=BG, round_=True, radius=0.08)
+        box(s, x + Inches(0.24), ry, w - Inches(0.48), rh, fill=PANEL, round_=True, radius=0.08)
         box(s, x + Inches(0.24), ry, Inches(0.05), rh, fill=accent)
         text(s, x + Inches(0.42), ry, w - Inches(0.66), rh,
              [[(lab + '   ', 11, DARK, True), (sub, 9.5, MUTED, False)]],
@@ -262,21 +291,21 @@ def _agent_panel(x, accent, fillc, head, tag, examples):
 
 _agent_panel(Inches(0.45), BLUE, PANEL, 'Agentic AI',
     'Assisted — you trigger it and stay in the loop; a human approves',
-    [('AI Agent', 'Describe a part in plain English — it builds the full cost model for you.'),
-     ('CAD / photo → cost', 'Upload a STEP file — it measures the geometry and interprets material & process.'),
-     ('Negotiation coach', "Open a part — it drafts the buyer's counter-argument and target price."),
-     ('Rate-data assistant', 'Ask a costing question — it answers from your own rates, with citations.')])
+    [('AI Agent', 'Describe a part in plain English; it builds the cost model.'),
+     ('CAD / photo → cost', 'Upload a file; it measures the part and picks the process.'),
+     ('Negotiation coach', 'Open a part; it drafts your counter-argument and target.'),
+     ('Rate-data assistant', 'Ask a costing question; it answers from your own rates.')])
 _agent_panel(Inches(6.8), VIOLET, PANEL2, 'Autonomous Agentic AI',
     'Self-directed — runs unattended on a schedule, within limits you set',
-    [('Savings monitor', 'Runs on the server, compares paid vs should-cost, opens findings itself — £0.5M/yr found unattended.'),
-     ('Self-audit', 'Re-checks every estimate for known errors and corrects within bounds — nobody asks it to.'),
-     ('Calibration & drift', 'Learns from logged quotes, re-derives factors, and watches for drift continuously.'),
-     ('Outcome-weighted ranking', 'Learns which findings actually convert and re-prioritises the queue on its own.')])
+    [('Savings monitor', 'Compares what we pay with should-cost — £0.5M/yr found unattended.'),
+     ('Self-audit', 'Re-checks every estimate and corrects it. Nobody asks it to.'),
+     ('Calibration & drift', 'Learns from logged quotes and watches for drift.'),
+     ('Outcome-weighted ranking', 'Learns which findings actually convert, and re-ranks them.')])
 
 box(s, Inches(0.45), Inches(6.5), Inches(12.43), Inches(0.68), fill=DARK, round_=True, radius=0.08)
 text(s, Inches(0.78), Inches(6.5), Inches(11.9), Inches(0.68),
-     [[('The common thread:  ', 11.5, BG, True),
-       ('you set the boundaries and every action stays glass-box and auditable — autonomy never means the AI sets a price in secret.',
+     [[('The common thread:  ', 11.5, ON_DARK, True),
+       ('you set the boundaries, and every action stays auditable. Autonomy never means the AI sets a price in secret.',
         11.5, RGBColor(0xE8, 0xEE, 0xFF), False)]],
      anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.0)
 notes(s, "Slow down here if the room is new to the word 'agentic', because there are really two levels and people run "
@@ -451,16 +480,16 @@ notes(s, "Three ways to deploy. Option A: fully air-gapped — everything on our
 s = header('Target architecture — everything inside our walls', 'Architecture')
 box(s, Inches(0.45), Inches(1.95), Inches(9.2), Inches(4.95), fill=PANEL, round_=True, radius=0.04)
 text(s, Inches(0.7), Inches(2.05), Inches(8.5), Inches(0.3), [[('COMPANY INTERNAL NETWORK', 11, MUTED, True)]])
-flow_box(s, Inches(0.85), Inches(2.45), Inches(4.0), Inches(0.75), 'Engineers (browser)  +  CAPEE', 'single sign-on (Azure AD)', BLUE, fill=BG)
-flow_box(s, Inches(5.15), Inches(2.45), Inches(4.2), Inches(0.75), 'Corporate API Gateway', 'authentication · rate limits · audit logs', INDIGO, fill=BG)
+flow_box(s, Inches(0.85), Inches(2.45), Inches(4.0), Inches(0.75), 'Engineers (browser)  +  CAPEE', 'single sign-on (Azure AD)', BLUE, fill=PANEL)
+flow_box(s, Inches(5.15), Inches(2.45), Inches(4.2), Inches(0.75), 'Corporate API Gateway', 'authentication · rate limits · audit logs', INDIGO, fill=PANEL)
 down_arrow(s, Inches(2.7), Inches(3.28))
 down_arrow(s, Inches(7.1), Inches(3.28))
 flow_box(s, Inches(0.85), Inches(3.68), Inches(8.5), Inches(1.05), 'CostVision server (frontend + backend on our VM)',
-         'geometry engine (CAD, in-memory) · 18 cost engines · learning loop · report generation', VIOLET, fill=BG)
+         'geometry engine (CAD, in-memory) · 18 cost engines · learning loop · report generation', VIOLET, fill=PANEL)
 down_arrow(s, Inches(2.7), Inches(4.82))
 down_arrow(s, Inches(7.1), Inches(4.82))
-flow_box(s, Inches(0.85), Inches(5.22), Inches(4.0), Inches(0.85), 'Corporate database (PostgreSQL)', 'rates · knowledge base · encrypted at rest', CYAN, fill=BG)
-flow_box(s, Inches(5.15), Inches(5.22), Inches(4.2), Inches(0.85), 'Internal AI gateway', 'ONLY allowed exit · inspected · logged', AMBER, fill=BG)
+flow_box(s, Inches(0.85), Inches(5.22), Inches(4.0), Inches(0.85), 'Corporate database (PostgreSQL)', 'rates · knowledge base · encrypted at rest', CYAN, fill=PANEL)
+flow_box(s, Inches(5.15), Inches(5.22), Inches(4.2), Inches(0.85), 'Internal AI gateway', 'ONLY allowed exit · inspected · logged', AMBER, fill=PANEL)
 box(s, Inches(10.0), Inches(4.9), Inches(2.9), Inches(2.0), fill=PANEL2, round_=True, radius=0.08)
 text(s, Inches(10.2), Inches(5.05), Inches(2.5), Inches(1.8),
      [[('Our cloud tenancy', 12.5, BLUE, True)],
@@ -651,7 +680,7 @@ for i, (n, t, d, c) in enumerate(phases):
     tf.margin_left = Inches(0.16); tf.margin_right = Inches(0.05)
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     p = tf.paragraphs[0]; r = p.add_run(); r.text = f'{n} · {t}'
-    r.font.size = Pt(11.5); r.font.bold = True; r.font.color.rgb = BG; r.font.name = 'Calibri'
+    r.font.size = Pt(11.5); r.font.bold = True; r.font.color.rgb = ON_DARK; r.font.name = 'Calibri'
     p2 = tf.add_paragraph(); r2 = p2.add_run(); r2.text = d
     r2.font.size = Pt(9.5); r2.font.color.rgb = RGBColor(0xE8, 0xEE, 0xFF); r2.font.name = 'Calibri'
 gates = [
@@ -762,10 +791,10 @@ notes(s, "Backup slide, for the question 'has anyone done this before — are we
 # ═══════════════ 17 — BACKUP: WHERE COSTVISION STANDS APART ═══════════════
 s = header('Why ours — what no vendor offers today', 'Backup · Differentiation')
 diffs = [
-    ('PCB photo → costed BOM', 'Photograph a circuit board, get a costed bill of materials with live component pricing. Design tools generate BOMs; no mainstream costing suite costs a board from photos.', GREEN),
-    ('Self-learning on OUR data', 'Calibrates itself on our real PO prices (error 10.9% → 0.3% after 3 quotes in testing) and raises findings autonomously. Incumbents are still marketing toward this.', GREEN),
-    ('Runs inside our walls', 'Commercial tools are cloud SaaS — our CAD would live in their cloud. CostVision is on-prem with private AI routing and a provable air-gapped switch, both already built.', GREEN),
-    ('One platform, no module licences', '19 commodity engines + automotive software costing + carbon + RFQ generation in one codebase. Vendors sell comparable breadth as separately licensed modules.', GREEN),
+    ('Costs a board from a photograph', 'No mainstream costing suite does this. Design tools build a BOM during design; none of them price one from a picture.', GREEN),
+    ('Learns from our own prices', 'Error fell from 10.9% to 0.3% after three real quotes. The incumbents are still marketing toward this.', GREEN),
+    ('Runs inside our walls', 'Commercial tools are cloud — our CAD would live in their cloud. This one is on-premise, with the controls already built.', GREEN),
+    ('One platform, no module licences', '19 commodities, software costing, carbon and RFQ in one product. Vendors sell that breadth as separate licences.', GREEN),
 ]
 for i, (t, d, c) in enumerate(diffs):
     x = Inches(0.45 + (i % 2) * 6.35); y = Inches(2.0 + (i // 2) * 1.62)
@@ -776,11 +805,11 @@ for i, (t, d, c) in enumerate(diffs):
 box(s, Inches(0.45), Inches(5.4), Inches(12.45), Inches(1.0), fill=AMBERBG, round_=True, radius=0.08)
 text(s, Inches(0.75), Inches(5.53), Inches(11.9), Inches(0.8),
      [[('Honest caveat: ', 12, AMBER, True),
-       ('vendors like aPriori have decades of curated global cost data behind their numbers. Our answer is the '
-        'learning loop: every quote CAPEE logs turns OUR history into a moat no vendor can buy — and our rates stay confidential.', 11.5, BODY, False)]],
+       ('vendors like aPriori have decades of curated cost data behind their numbers. Our answer is the learning '
+        'loop — every quote we log builds a history no vendor can sell us, and our rates stay confidential.', 11.5, BODY, False)]],
      line_spacing=1.15)
 text(s, Inches(0.45), Inches(6.55), Inches(12.4), Inches(0.35),
-     [[('Positioning: not "better than aPriori" — an internal, secure, self-learning costing engine behind CAPEE that gets smarter on our own data.', 12, DARK, True)]])
+     [[('Positioning: not "better than aPriori" — a secure, in-house engine behind CAPEE that gets smarter on our own data.', 12, DARK, True)]])
 text(s, Inches(0.45), Inches(6.95), Inches(12.4), Inches(0.25),
      [[('Sources: apriori.com · siemens.com/teamcenter · tset.com · globenewswire.com (A2MAC1-Tset, 18 Jun 2026) · dfma.com · emithran.com · flux.ai · circuitmind.io', 8.5, MUTED, False, True)]])
 notes(s, "The second half of the backup answer: given the market exists, why build our own? Four things no vendor "
@@ -931,20 +960,18 @@ notes(s, "The evidence slide, for when someone asks 'does it actually work?' The
 # ═══════════════ 21 — BACKUP: LIKELY QUESTIONS ═══════════════
 s = header('Built since this plan was written', 'Backup · What changed')
 add = [
-    ('Geometric DFM — the tool reads the part, not the price', GREEN,
-     'Engineering said the old design advice was too generic, because it inferred problems from the finished cost. '
-     'A second layer now opens the 3D model and measures every face. 19 rules across 6 commodity packs, each citing a '
-     'published standard. A finding names the exact faces that cause it, and the model highlights them on screen.'),
-    ('Gear cutting as its own commodity', BLUE,
-     'Requested by cost engineering and the plant. Gears no longer go through the milling model. The tool picks the '
-     'process from the geometry — hobbing, shaping, power skiving, broaching — sizes the machine, and derives the '
-     'cycle from gear-generation arithmetic rather than a rule of thumb.'),
+    ('The tool now reads the part, not the price', GREEN,
+     'Your engineers said the old design advice was too generic. It now opens the 3D model and measures every '
+     'face — 19 rules, each citing a published standard, and it shows you the exact faces at fault.'),
+    ('Gear cutting is its own commodity', BLUE,
+     'Asked for by cost engineering and the plant. Gears no longer go through the milling model — the tool picks '
+     'the process from the geometry and works the cycle out from the gear itself.'),
     ('Landed cost, duty and customs', VIOLET,
-     'Duty on customs value, CBAM, rules of origin, incoterms and a customs verification sign-off sheet. A '
-     'should-cost now lands at your door, not at the supplier gate.'),
+     'Duty, carbon border levy, rules of origin and incoterms. The should-cost now lands at your door, not at the '
+     'supplier gate.'),
     ('Long-term agreements priced correctly', CYAN,
-     'Annual buy rate and programme lifetime are now separate inputs. A five-year award no longer prices every '
-     'component as if the whole programme were bought in year one.'),
+     'Annual volume and programme lifetime are separate inputs now, so a five-year award is not priced as if it '
+     'were all bought in year one.'),
 ]
 for i, (t, c, d) in enumerate(add):
     y = Inches(1.95 + i * 1.22)
@@ -956,8 +983,8 @@ for i, (t, c, d) in enumerate(add):
 box(s, Inches(0.45), Inches(6.85), Inches(12.45), Inches(0.42), fill=AMBERBG, round_=True, radius=0.06)
 text(s, Inches(0.75), Inches(6.85), Inches(11.9), Inches(0.42),
      [[('Straight about the gap: ', 10.5, AMBER, True),
-       ('the gear model runs on representative shop figures until the plant supplies its own, and no gear has yet been '
-        'checked against a known actual cost. The tool prints that on every gear estimate.', 10.5, BODY, False)]],
+       ('the gear model runs on representative shop figures until the plant supplies its own, and no gear has yet '
+        'been checked against a known actual. Every gear estimate says so.', 10.5, BODY, False)]],
      anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.1)
 notes(s, "This slide is here because the plan you approved is a few months old now, and four things have been built "
          "since that are worth knowing about. "
@@ -1000,11 +1027,11 @@ for i, (n, t, rank, d, c) in enumerate(asks):
     box(s, Inches(0.45), y, Inches(12.45), Inches(1.2), fill=PANEL, round_=True, radius=0.08)
     box(s, Inches(0.45), y, Inches(0.09), Inches(1.2), fill=c)
     box(s, Inches(0.72), y + Inches(0.3), Inches(0.6), Inches(0.6), fill=c, round_=True, radius=0.3)
-    text(s, Inches(0.72), y + Inches(0.3), Inches(0.6), Inches(0.6), [[(n, 20, BG, True)]],
+    text(s, Inches(0.72), y + Inches(0.3), Inches(0.6), Inches(0.6), [[(n, 20, ON_DARK, True)]],
          align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
     text(s, Inches(1.55), y + Inches(0.16), Inches(7.0), Inches(0.34), [[(t, 15, DARK, True)]])
     box(s, Inches(10.6), y + Inches(0.18), Inches(2.1), Inches(0.3), fill=c, round_=True, radius=0.15)
-    text(s, Inches(10.6), y + Inches(0.18), Inches(2.1), Inches(0.3), [[(rank, 10, BG, True)]],
+    text(s, Inches(10.6), y + Inches(0.18), Inches(2.1), Inches(0.3), [[(rank, 10, ON_DARK, True)]],
          align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
     text(s, Inches(1.55), y + Inches(0.56), Inches(11.1), Inches(0.56), [[(d, 10.5, BODY, False)]],
          line_spacing=1.14)
@@ -1115,13 +1142,14 @@ cols3 = [
         'Works from photos alone — no CAD, no drawings needed',
     ]),
 ]
+_COL4_H = _col_panel_h(cols3)
 for i, (t, c, items) in enumerate(cols3):
     x = Inches(0.45 + i * 4.25)
-    box(s, x, Inches(2.0), Inches(4.0), Inches(4.15), fill=(PANEL2 if i == 0 else PANEL if i == 2 else GREENBG), round_=True, radius=0.06)
+    box(s, x, Inches(2.0), Inches(4.0), _COL4_H, fill=(PANEL2 if i == 0 else PANEL if i == 2 else GREENBG), round_=True, radius=0.06)
     box(s, x, Inches(2.0), Inches(4.0), Inches(0.09), fill=c)
     text(s, x + Inches(0.25), Inches(2.2), Inches(3.55), Inches(0.4), [[(t, 14.5, c, True)]])
-    text(s, x + Inches(0.25), Inches(2.68), Inches(3.55), Inches(3.4),
-         [[('• ' + it, 10.5, BODY, False)] for it in items], space_after=7, line_spacing=1.12)
+    text(s, x + Inches(0.25), Inches(2.68), Inches(3.55), _COL4_H - Inches(0.75),
+         [[('• ' + it, 11.5, BODY, False)] for it in items], space_after=10, line_spacing=1.15)
 box(s, Inches(0.45), Inches(6.42), Inches(12.45), Inches(0.85), fill=AMBERBG, round_=True, radius=0.08)
 text(s, Inches(0.75), Inches(6.53), Inches(11.9), Inches(0.65),
      [[('Honest limits: ', 12, AMBER, True),
@@ -1171,34 +1199,33 @@ notes(s, "The CAD-to-cost workflow. An engineer uploads a STEP, IGES or STL mode
 s = header('CAD file to cost — technology, accuracy, speed', 'Backup · Feature deep-dive')
 cols4 = [
     ('Technology', BLUE, [
-        'OCCT (Open CASCADE) geometry kernel — runs inside our backend',
-        'Pure-TypeScript STL fast path — no external process at all',
-        '18 deterministic physics cost engines do the actual costing',
-        'AI translates the measured geometry into process inputs — it never receives the CAD file itself',
-        'Rate library + 20-country regional rates drive every figure',
+        'The same geometry kernel commercial CAD tools are built on',
+        '18 physics cost engines do the actual costing',
+        'The AI never receives the CAD file — only the measurements',
+        'Our own rate library, across 20 countries',
     ]),
     ('Why it is accurate', GREEN, [
-        'Measured, not estimated — exact volume → exact material mass',
-        'Physics build-ups traceable line by line (no black box)',
-        'DFM sanity checks: wall thickness, clamp tonnage, press force',
-        'Honest uncertainty band shown with every result',
-        'Calibration on 3 real quotes took machining error 10.9% → 0.3%',
+        'Measured, not estimated — real volume, real mass',
+        'Every figure traceable line by line',
+        'Checks wall thickness, tonnage and press force',
+        'An honest uncertainty band on every result',
+        'Three real quotes took the error from 10.9% to 0.3%',
     ]),
     ('Speed', VIOLET, [
-        'Geometry read and measured in seconds',
-        'Costing computes instantly once inputs are filled',
-        'Model-to-first-price: a few minutes, mostly review time',
-        'Manual alternative: hours of take-off per part',
-        'Same flow in 13 commodities — one skill to learn',
+        'Geometry measured in seconds',
+        'A first price in a few minutes, mostly review time',
+        'By hand: hours of take-off per part',
+        'The same flow in 13 commodities — one skill to learn',
     ]),
 ]
+_COL4_H = _col_panel_h(cols4)
 for i, (t, c, items) in enumerate(cols4):
     x = Inches(0.45 + i * 4.25)
-    box(s, x, Inches(2.0), Inches(4.0), Inches(4.15), fill=(PANEL2 if i == 0 else PANEL if i == 2 else GREENBG), round_=True, radius=0.06)
+    box(s, x, Inches(2.0), Inches(4.0), _COL4_H, fill=(PANEL2 if i == 0 else PANEL if i == 2 else GREENBG), round_=True, radius=0.06)
     box(s, x, Inches(2.0), Inches(4.0), Inches(0.09), fill=c)
     text(s, x + Inches(0.25), Inches(2.2), Inches(3.55), Inches(0.4), [[(t, 14.5, c, True)]])
-    text(s, x + Inches(0.25), Inches(2.68), Inches(3.55), Inches(3.4),
-         [[('• ' + it, 10.5, BODY, False)] for it in items], space_after=7, line_spacing=1.12)
+    text(s, x + Inches(0.25), Inches(2.68), Inches(3.55), _COL4_H - Inches(0.75),
+         [[('• ' + it, 11.5, BODY, False)] for it in items], space_after=10, line_spacing=1.15)
 box(s, Inches(0.45), Inches(6.42), Inches(12.45), Inches(0.85), fill=GREENBG, round_=True, radius=0.08)
 text(s, Inches(0.75), Inches(6.53), Inches(11.9), Inches(0.65),
      [[('Security, restated: ', 12, GREEN, True),

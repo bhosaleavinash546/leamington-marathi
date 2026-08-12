@@ -19,21 +19,40 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
 
-# ── Brand palette (light theme) ────────────────────────────────────────────────
-INDIGO  = RGBColor(0x4F, 0x46, 0xE5)   # logo badge
-BLUE    = RGBColor(0x25, 0x63, 0xEB)   # wordmark / primary accent
-DARK    = RGBColor(0x0F, 0x17, 0x2A)   # headings
-BODY    = RGBColor(0x33, 0x41, 0x55)   # body text
-MUTED   = RGBColor(0x64, 0x74, 0x8B)   # captions
-BG      = RGBColor(0xFF, 0xFF, 0xFF)
-PANEL   = RGBColor(0xF1, 0xF5, 0xF9)   # light slate panel
-PANEL2  = RGBColor(0xEF, 0xF6, 0xFF)   # light blue panel
-GREEN   = RGBColor(0x05, 0x96, 0x69)
-AMBER   = RGBColor(0xD9, 0x77, 0x06)
-RED     = RGBColor(0xDC, 0x26, 0x26)
-VIOLET  = RGBColor(0x7C, 0x3A, 0xED)
-CYAN    = RGBColor(0x08, 0x91, 0xB2)
-LINE    = RGBColor(0xE2, 0xE8, 0xF0)
+# ── Brand palette ─────────────────────────────────────────────────────────────
+# Same hex values as build_workflow_deck.mjs and build_pptx.py, so all four decks
+# read as one pack. This deck was already light, but a DIFFERENT light — white
+# page, near-black headings, indigo accent — which looked like a separate product
+# when shown next to the other two.
+#
+# Note the page/card relationship inverts: the page is now the tinted colour and
+# the cards are white, where before the page was white and the panels tinted.
+INDIGO  = RGBColor(0x1D, 0x6F, 0xB8)   # logo badge
+BLUE    = RGBColor(0x1D, 0x6F, 0xB8)   # wordmark / primary accent
+DARK    = RGBColor(0x16, 0x32, 0x5C)   # headings — navy
+BODY    = RGBColor(0x3A, 0x43, 0x56)   # body text — slate
+MUTED   = RGBColor(0x6B, 0x72, 0x80)   # captions
+BG      = RGBColor(0xF4, 0xF7, 0xFB)   # page
+PANEL   = RGBColor(0xFF, 0xFF, 0xFF)   # card
+PANEL2  = RGBColor(0xE8, 0xF1, 0xFA)   # pale blue callout
+GREEN   = RGBColor(0x2E, 0x8B, 0x57)
+AMBER   = RGBColor(0xB7, 0x79, 0x1F)
+RED     = RGBColor(0xB0, 0x3A, 0x2E)
+VIOLET  = RGBColor(0x6B, 0x3F, 0xA0)
+CYAN    = RGBColor(0x0E, 0x80, 0x74)
+LINE    = RGBColor(0xDC, 0xE3, 0xEE)
+NAVY    = RGBColor(0x16, 0x32, 0x5C)   # dark plates (table headers, masthead)
+
+# BG doubles as a TEXT colour wherever white type sits on a coloured fill. Now
+# that BG is the tinted page, those sites need an explicit white or the type goes
+# dirty against the accent behind it.
+ON_DARK  = RGBColor(0xFF, 0xFF, 0xFF)
+HERO_SUB = RGBColor(0xCA, 0xDC, 0xFC)   # subtitle on the navy plate
+HERO_DIM = RGBColor(0x8F, 0xA3, 0xCC)   # footnote on the navy plate
+
+# Workflow and Executive set titles in Cambria; matching that is most of what
+# makes the decks look related.
+TITLE_FONT = 'Cambria'
 
 W, H = Inches(13.333), Inches(7.5)
 
@@ -103,7 +122,7 @@ def _emit_runs(p, t, size, color, bold, italic, base_font='Calibri'):
 
 
 def text(slide, x, y, w, h, runs, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP,
-         space_after=4, line_spacing=1.0):
+         space_after=4, line_spacing=1.0, font='Calibri'):
     """runs: list of paragraphs; each paragraph = list of (text, size, color, bold[, italic])."""
     tb = slide.shapes.add_textbox(x, y, w, h)
     tf = tb.text_frame
@@ -118,23 +137,25 @@ def text(slide, x, y, w, h, runs, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP,
         for r in para:
             t, size, color, bold = r[0], r[1], r[2], r[3]
             italic = r[4] if len(r) > 4 else False
-            _emit_runs(p, t, size, color, bold, italic)
+            _emit_runs(p, t, size, color, bold, italic, base_font=font)
     return tb
 
-def logo(slide, x=Inches(0.35), y=Inches(0.22), scale=1.0):
+def logo(slide, x=Inches(0.35), y=Inches(0.22), scale=1.0, on_dark=False):
     """CostVision logo — indigo rounded 'cv' badge + blue wordmark + grey tagline."""
     s = scale
-    badge = box(slide, x, y, Inches(0.42 * s), Inches(0.42 * s), fill=INDIGO, round_=True, radius=0.28)
+    badge = box(slide, x, y, Inches(0.42 * s), Inches(0.42 * s),
+                fill=ON_DARK if on_dark else INDIGO, round_=True, radius=0.28)
     tf = badge.text_frame
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
     r = p.add_run(); r.text = 'cv'
-    r.font.size = Pt(17 * s); r.font.bold = True; r.font.color.rgb = BG; r.font.name = 'Calibri'
+    r.font.size = Pt(17 * s); r.font.bold = True; r.font.name = 'Calibri'
+    r.font.color.rgb = NAVY if on_dark else ON_DARK
     text(slide, x + Inches(0.52 * s), y - Inches(0.03 * s), Inches(2.6), Inches(0.32),
-         [[('CostVision', 18 * s, BLUE, True)]])
+         [[('CostVision', 18 * s, ON_DARK if on_dark else BLUE, True)]])
     text(slide, x + Inches(0.52 * s), y + Inches(0.24 * s), Inches(2.8), Inches(0.22),
-         [[('AI  COST  INTELLIGENCE', 7.5 * s, MUTED, False)]])
+         [[('AI  COST  INTELLIGENCE', 7.5 * s, HERO_DIM if on_dark else MUTED, False)]])
 
 def notes(slide, txt):
     slide.notes_slide.notes_text_frame.text = txt
@@ -144,14 +165,15 @@ def header(title, kicker=None):
     slide = prs.slides.add_slide(BLANK)
     box(slide, 0, 0, W, H, fill=BG)                       # background
     logo(slide)
-    box(slide, 0, Inches(0.78), W, Pt(2.2), fill=INDIGO)  # header rule
+    box(slide, 0, Inches(0.78), W, Pt(2.2), fill=NAVY)    # header rule
     if kicker:
         text(slide, Inches(0.45), Inches(0.95), Inches(11.5), Inches(0.3),
              [[(kicker.upper(), 11, BLUE, True)]])
         ty = Inches(1.22)
     else:
         ty = Inches(1.02)
-    text(slide, Inches(0.45), ty, Inches(12.4), Inches(0.6), [[(title, 27, DARK, True)]])
+    text(slide, Inches(0.45), ty, Inches(12.4), Inches(0.6), [[(title, 27, DARK, True)]],
+         font=TITLE_FONT)
     return slide
 
 def kpi_card(slide, x, y, w, h, big, label, sub, color=BLUE):
@@ -174,7 +196,7 @@ def chevron(slide, x, y, w, h, label, sub, color):
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     p = tf.paragraphs[0]; p.alignment = PP_ALIGN.LEFT
     r = p.add_run(); r.text = label
-    r.font.size = Pt(12.5); r.font.bold = True; r.font.color.rgb = BG; r.font.name = 'Calibri'
+    r.font.size = Pt(12.5); r.font.bold = True; r.font.color.rgb = ON_DARK; r.font.name = 'Calibri'
     p2 = tf.add_paragraph(); p2.alignment = PP_ALIGN.LEFT
     r2 = p2.add_run(); r2.text = sub
     r2.font.size = Pt(8.5); r2.font.color.rgb = RGBColor(0xE8, 0xEE, 0xFF); r2.font.name = 'Calibri'
@@ -205,24 +227,26 @@ def style_chart(chart, series_colors):
 # ════════════════════════════════════════════════════════════════════════════
 # 1 — TITLE
 # ════════════════════════════════════════════════════════════════════════════
+# A navy plate, as the Workflow and Executive decks open on. This is the only
+# slide in the deck where white type is correct.
 s = prs.slides.add_slide(BLANK)
-box(s, 0, 0, W, H, fill=BG)
-box(s, 0, 0, W, Inches(0.16), fill=INDIGO)
-logo(s, x=Inches(0.5), y=Inches(0.45), scale=1.25)
+box(s, 0, 0, W, H, fill=NAVY)
+box(s, 0, 0, W, Inches(0.16), fill=BLUE)
+logo(s, x=Inches(0.5), y=Inches(0.45), scale=1.25, on_dark=True)
 text(s, Inches(0.9), Inches(2.35), Inches(11.5), Inches(1.0),
-     [[('Agentic AI in CostVision', 46, DARK, True)]])
+     [[('Agentic AI in CostVision', 46, ON_DARK, True)]], font=TITLE_FONT)
 text(s, Inches(0.9), Inches(3.35), Inches(11.0), Inches(0.6),
-     [[('A costing tool that learns from every analysis, remembers your parts,', 19, BODY, False)],
-      [('and finds savings on its own — while staying fully auditable.', 19, BODY, False)]])
+     [[('A costing tool that learns from every analysis, remembers your parts,', 19, HERO_SUB, False)],
+      [('and finds savings on its own — while staying fully auditable.', 19, HERO_SUB, False)]])
 for i, (t, c) in enumerate([('Remembers', BLUE), ('Recognises', CYAN), ('Self-corrects', VIOLET), ('Acts autonomously', GREEN)]):
     x = Inches(0.9 + i * 2.85)
-    chip = box(s, x, Inches(4.6), Inches(2.6), Inches(0.52), fill=PANEL, round_=True, radius=0.5)
+    chip = box(s, x, Inches(4.6), Inches(2.6), Inches(0.52), fill=ON_DARK, round_=True, radius=0.5)
     tf = chip.text_frame; tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
     r = p.add_run(); r.text = t; r.font.size = Pt(13); r.font.bold = True; r.font.color.rgb = c; r.font.name = 'Calibri'
 text(s, Inches(0.9), Inches(6.5), Inches(11), Inches(0.4),
-     [[('Management briefing  ·  July 2026  ·  All figures verified from live system runs', 12, MUTED, False)]])
-box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=INDIGO)
+     [[('Management briefing  ·  July 2026  ·  All figures verified from live system runs', 12, HERO_DIM, False)]])
+box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=BLUE)
 notes(s, "Welcome. Today I'll show you the Agentic AI capability we have built into CostVision. "
          "In one sentence: the tool no longer just calculates — it learns from every analysis we run, "
          "remembers every part, gets more accurate with every real quote we log, and even works unattended, "
@@ -233,20 +257,20 @@ notes(s, "Welcome. Today I'll show you the Agentic AI capability we have built i
 # ════════════════════════════════════════════════════════════════════════════
 s = header('What we built — in one slide', 'Executive summary')
 kpi_card(s, Inches(0.45), Inches(2.0), Inches(3.0), Inches(1.75), '36×', 'Error reduction',
-         'Estimating error fell from 10.9% to 0.3% after the tool learned from just 3 real quotes (verified live).', GREEN)
+         'Estimating error fell from 10.9% to 0.3% after just three real quotes.', GREEN)
 kpi_card(s, Inches(3.65), Inches(2.0), Inches(3.0), Inches(1.75), '£512k/yr', 'Found autonomously',
-         'In our live demo the background agent flagged £512k/yr of pricing issues — with nobody at the keyboard.', RED)
+         'Pricing issues the agent found on its own, with nobody at the keyboard.', RED)
 kpi_card(s, Inches(6.85), Inches(2.0), Inches(3.0), Inches(1.75), '99%', 'Part recognition',
-         'A new bracket was matched to 3 past bracket analyses at 98–99% similarity, with reasons shown.', CYAN)
+         'A new bracket matched to three past ones, with the reasons shown.', CYAN)
 kpi_card(s, Inches(10.05), Inches(2.0), Inches(2.85), Inches(1.75), '1,777', 'Automated tests',
-         'Every capability is covered by automated tests (77 suites) and was exercised end-to-end on the running system.', VIOLET)
+         'Every capability tested, and run end to end on the live system.', VIOLET)
 box(s, Inches(0.45), Inches(4.1), Inches(12.45), Inches(2.7), fill=PANEL2, round_=True, radius=0.06)
 text(s, Inches(0.75), Inches(4.35), Inches(11.9), Inches(2.3),
      [[('The idea, in plain words', 15, DARK, True)],
-      [('Until now, every costing started from zero and the result depended on who did it. ', 13.5, BODY, False),
-       ('Now the tool keeps an organisational memory: ', 13.5, DARK, True),
-       ('every analysis is stored, every real supplier quote teaches it, and every new part is compared against everything we have costed before. ', 13.5, BODY, False)],
-      [('The knowledge stays in our database, on our servers — it becomes a company asset that gets more valuable with use, and it does not walk out of the door when an expert leaves.', 13.5, BODY, False)]],
+      [('Costing used to start from zero every time, and the answer depended on who did it. ', 13.5, BODY, False),
+       ('Now the tool remembers. ', 13.5, DARK, True),
+       ('Every analysis is kept, every real quote teaches it, and every new part is compared with what we have costed before.', 13.5, BODY, False)],
+      [('It runs on our servers, so the knowledge becomes a company asset — and it does not leave when an expert does.', 13.5, BODY, False)]],
      space_after=8, line_spacing=1.15)
 notes(s, "Four headline numbers, all verified. One: after learning from only three real quotes, the estimating error "
          "in a segment dropped from about 11% to under 1%. Two: the autonomous monitor found half a million pounds a year "
@@ -260,10 +284,10 @@ notes(s, "Four headline numbers, all verified. One: after learning from only thr
 # ════════════════════════════════════════════════════════════════════════════
 s = header('What "Agentic AI" means here — four plain words', 'The concept')
 cards = [
-    ('🧠', 'Remembers', 'Every costing is saved as a "case": the part, the inputs, the result, and any real quote. Shared across the whole team.', BLUE),
-    ('🔎', 'Recognises', 'Start a new part and it instantly finds the most similar past parts — like an experienced engineer saying "we\'ve done this before".', CYAN),
-    ('🎯', 'Self-corrects', 'Log the real supplier price and the tool measures its own error, then corrects future estimates in that category. Accuracy is measured, not claimed.', VIOLET),
-    ('🤖', 'Acts', 'A background agent re-checks all stored parts on a schedule and raises findings by itself: "you are overpaying here — worth £400k/yr."', GREEN),
+    ('🧠', 'Remembers', 'Every costing is kept — the part, the inputs, the result, the real quote. Shared across the team.', BLUE),
+    ('🔎', 'Recognises', 'Start a new part and it finds the closest ones you have already costed.', CYAN),
+    ('🎯', 'Self-corrects', 'Log the real price and it measures its own error, then corrects itself. Accuracy is measured, not claimed.', VIOLET),
+    ('🤖', 'Acts', 'It re-checks every stored part on a schedule and tells you where you are overpaying.', GREEN),
 ]
 for i, (icon, t, d, c) in enumerate(cards):
     x = Inches(0.45 + i * 3.24)
@@ -659,7 +683,7 @@ cols_w = [(cols_x[i + 1] if i + 1 < len(cols_x) else _tbl_right) - cols_x[i]
           for i in range(len(cols_x))]
 box(s, Inches(0.45), Inches(2.5), Inches(12.45), Inches(0.5), fill=DARK, round_=False)
 for i, htext in enumerate(hdr):
-    text(s, cols_x[i], Inches(2.58), cols_w[i], Inches(0.35), [[(htext, 11.5, BG, True)]])
+    text(s, cols_x[i], Inches(2.58), cols_w[i], Inches(0.35), [[(htext, 11.5, ON_DARK, True)]])
 rows = [
     ('Cast Housing', '£200k/yr', '20% — rarely closes', '£40k', RED),
     ('Machined Knuckle', '£100k/yr', '80% — usually closes', '£80k', GREEN),
@@ -788,22 +812,22 @@ text(s, Inches(0.45), Inches(5.82), Inches(6.15), Inches(0.42),
 box(s, Inches(6.85), Inches(2.45), Inches(6.05), Inches(3.35), fill=PANEL, round_=True, radius=0.05)
 text(s, Inches(7.15), Inches(2.62), Inches(5.5), Inches(0.35), [[('What we fixed this year', 14, DARK, True)]])
 fixes = [
-    ('Empty-BOM bug — killed', 'Complex boards used to return nothing; now we read every block the model emits.', GREEN),
-    ('Catalogue grounding', 'Confirmed parts snap to real market prices — offline, no external API.', BLUE),
-    ('Class-median cap + magnitude guard', 'A misread part can no longer dominate: one MCU £84 → £18, capped & flagged.', VIOLET),
-    ('Deterministic fabrication', 'Fab is derived from stable board features — the headline no longer swings run-to-run.', CYAN),
-    ('Confirmed vs needs-verification', 'The headline splits the £ you can trust from the £ to firm up.', AMBER),
+    ('Complex boards no longer come back empty', GREEN),
+    ('Part prices checked against a real catalogue', BLUE),
+    ('One misread part can no longer skew the total', VIOLET),
+    ('Same photo, same answer, every run', CYAN),
+    ('It separates the £ you can trust from the £ to verify', AMBER),
 ]
-for i, (a, b, c) in enumerate(fixes):
+for i, (a, c) in enumerate(fixes):
     y = Inches(3.05 + i * 0.55)
     box(s, Inches(7.15), y + Inches(0.05), Inches(0.09), Inches(0.42), fill=c)
-    text(s, Inches(7.42), y, Inches(5.35), Inches(0.55),
-         [[('✓  ' + a + ' — ', 11.5, DARK, True), (b, 10.5, BODY, False)]], line_spacing=1.0)
+    text(s, Inches(7.42), y + Inches(0.06), Inches(5.35), Inches(0.42),
+         [[('✓  ' + a, 12, BODY, False)]], line_spacing=1.0)
 box(s, Inches(0.45), Inches(5.98), Inches(12.45), Inches(0.85), fill=PANEL2, round_=True, radius=0.10)
 text(s, Inches(0.75), Inches(6.12), Inches(12.0), Inches(0.6),
      [[('Result:  ', 12.5, BLUE, True),
-       ('the 2–3× over-costing is gone. That live ECU came back ASIL-B, 23 BOM lines, £69.11/board — with '
-        '£37.65 confirmed and £24.64 honestly flagged to verify. Same photo, same answer, every run.', 12, BODY, False)]],
+       ('the over-costing is gone. That live ECU came back at £69.11 a board — £37.65 confirmed, '
+        '£24.64 flagged to verify. From a photograph, in about a minute.', 12, BODY, False)]],
      line_spacing=1.15)
 notes(s, "")  # notes rewritten below
 
@@ -907,7 +931,7 @@ for i, (what, steps, cost, col, added) in enumerate(rows):
         box(s, sx, y + Inches(0.13), STEP_W, STEP_H, fill=col if is_new else BG,
             line=None if is_new else MUTED, round_=True, radius=0.06)
         text(s, sx, y + Inches(0.13), STEP_W, STEP_H,
-             [[(st, 9.5, BG if is_new else BODY, is_new)]],
+             [[(st, 9.5, ON_DARK if is_new else BODY, is_new)]],
              align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
         if k < len(steps) - 1:
             arrow = s.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, sx + STEP_W + Inches(0.04),
