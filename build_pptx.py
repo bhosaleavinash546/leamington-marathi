@@ -187,9 +187,9 @@ def comm_card(slide, x, y, w, h, icon, name, sub, color=BORDER):
     txb(slide, icon, x, y + Inches(0.06), w, Inches(0.32),
         size=13, color=TEXT_W, align=PP_ALIGN.CENTER)
     txb(slide, name, x, y + Inches(0.38), w, Inches(0.22),
-        size=7.5, bold=True, color=TEXT_W, align=PP_ALIGN.CENTER)
-    txb(slide, sub, x, y + Inches(0.58), w, Inches(0.22),
-        size=6.5, color=TEXT_D, align=PP_ALIGN.CENTER)
+        size=7.0, bold=True, color=TEXT_W, align=PP_ALIGN.CENTER)
+    txb(slide, sub, x, y + Inches(0.58), w, Inches(0.34),
+        size=6.0, color=TEXT_D, align=PP_ALIGN.CENTER)
 
 # ─── TABLE HELPER ─────────────────────────────────────────────────────────────
 
@@ -795,13 +795,13 @@ notes(slide,
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 7 — 21 Commodities
+# SLIDE 7 — 22 Commodities
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 9, "Full Coverage", "21 Manufacturing Commodities — One Platform",
+slide_header(slide, 9, "Full Coverage", "22 Manufacturing Commodities — One Platform",
              "Every major manufacturing process — all modelled to engineering depth with full routing, yield, and tooling logic.")
 
-# 21 commodity cards in 7×3 grid
+# 22 commodity cards in 7-wide grid
 commodities = [
     ("⚙️",  "CNC Machining",       "3/4/5-axis, turning, grinding"),
     ("🪨",  "Casting",              "HPDC, gravity, investment, sand"),
@@ -809,6 +809,7 @@ commodities = [
     ("🔨",  "Forging",              "Hot, warm, cold die forging"),
     ("🪗",  "Sheet Metal",          "Progressive/transfer die"),
     ("🔩",  "Sheet Metal Fab",      "Laser · punch · press brake · MIG"),
+    ("⚙️",  "Gear Cutting",         "Hob · shape · skive · broach · grind"),
     ("🏺",  "Injection Moulding",   "Thermoplastics, multi-cavity"),
     ("🫧",  "Blow Moulding",        "HDPE, PET, extrusion blow"),
     ("🔩",  "Extrusion",            "Profile, pipe, sheet, rod"),
@@ -826,7 +827,7 @@ commodities = [
     ("🤖",  "AI Agent",             "Natural language → any commodity"),
 ]
 
-cols_c = 7
+cols_c = 8   # 22 cards: 8 wide keeps it to 3 rows (7 wide would spill a 4th)
 cw_c = (W - Inches(0.9)) / cols_c - Inches(0.05)
 ch_c = Inches(1.32)
 sx_c = Inches(0.45)
@@ -836,11 +837,11 @@ for i, (ico, name, sub) in enumerate(commodities):
     r, c = divmod(i, cols_c)
     cx2 = sx_c + c * (cw_c + Inches(0.055))
     cy2 = sy_c + r * (ch_c + Inches(0.065))
-    col = ACCENT_B if i < 18 else ACCENT_G
+    col = ACCENT_B if i < 19 else ACCENT_G   # last three are cross-cutting, not a process
     comm_card(slide, cx2, cy2, cw_c, ch_c, ico, name, sub, color=col)
 
 notes(slide,
-    "Breadth is the point of this slide. Twenty-one commodities, from CNC machining and casting and "
+    "Breadth is the point of this slide. Twenty-two commodities, from CNC machining and casting and "
     "forging, through the whole plastics family — injection, blow, extrusion, thermoforming, "
     "rotomoulding — into rubber and composites, then electronics: PCB fabrication, assembly, wiring "
     "harness, and body-in-white. "
@@ -932,7 +933,7 @@ adv_left = [
      "• Critical for LTA negotiations and make-vs-buy decisions\n"
      "• Visualise break-even volume vs manual costing cost"),
     (ACCENT_G, "🔗 Assembly BOM Rollup",
-     "Build multi-level assemblies from any combination of 21 commodities:\n\n"
+     "Build multi-level assemblies from any combination of 22 commodities:\n\n"
      "• Add components one-by-one with commodity type, weight, volume\n"
      "• Each component costed using its own should-cost model\n"
      "• Roll up to a total assembly cost with full per-component breakdown\n"
@@ -1070,7 +1071,15 @@ notes(slide,
     "And if you want more than the rule-based read, there's a deep-analysis button that has the AI "
     "write the root-cause commentary and a negotiation strategy. So the cost number comes with a "
     "'here's how to make it cheaper' attached — at the concept stage, where it's still free to act "
-    "on.")
+    "on. "
+    "One important update since the last time I showed you this. Your engineering team told me, "
+    "quite bluntly, that these findings were too generic — that reading the cost and guessing "
+    "backwards isn't good enough. They were right. So there's now a second layer underneath this "
+    "one that opens the 3D model itself and measures every face on the part. Nineteen rules, and "
+    "every one of them cites a published standard rather than my opinion. It doesn't say 'tooling "
+    "looks high' — it says which specific faces on the part cannot come out of the die, and you can "
+    "click one and see it highlighted on the model. That is the difference between a hint and an "
+    "argument you can take to a supplier.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1270,7 +1279,7 @@ rect(slide, rx12, Inches(5.5), Inches(0.06), Inches(1.42), ACCENT_B)
 txb(slide, "Built to be trusted, not just believed", rx12 + Inches(0.16), Inches(5.58),
     rw12 - Inches(0.25), Inches(0.28), size=9.5, bold=True, color=TEXT_W)
 cred_items = [
-    "1,005 automated tests across 86 suites — a logic regression fails the build, not the demo",
+    "1,777 automated tests across 136 suites — a logic regression fails the build, not the demo",
     "The self-audit re-checks every estimate before you ever see the number",
     "The CAD geometry engine ships inside a container whose build is verified in CI",
 ]
@@ -1503,7 +1512,7 @@ txb(slide, "📍 Current Capabilities — Live Today", Inches(0.6), Inches(2.08)
     Inches(5.6), Inches(0.3), size=9.5, bold=True, color=ACCENT_G)
 
 live_items = [
-    "21 commodity should-cost models — fully parametric, engineering-grade",
+    "22 commodity should-cost models — fully parametric, engineering-grade",
     "AI Agent — describe a part in plain English, AI builds the cost model",
     "AI CAD Analysis — STEP / photo → geometry → cost in minutes",
     "Self-audit — re-checks every estimate, corrects known errors, geometry stays truth",
@@ -1515,7 +1524,7 @@ live_items = [
     "20 global regions · 10 currencies with live auto-switching",
     "6-sheet Excel + professional PDF report with part photo",
     "Cloud sync, team sharing & secure JWT authentication",
-    "1,005 automated tests · CAD engine ships in a CI-verified container",
+    "1,777 automated tests · CAD engine ships in a CI-verified container",
 ]
 
 yy15 = Inches(2.44)

@@ -179,7 +179,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   // ── why believe the picture: four measured facts ──
   s.addShape('roundRect', { x: 0.45, y: 1.18, w: 2.0, h: 0.83, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText('WHY TRUST THIS PICTURE', { x: 0.56, y: 1.23, w: 1.85, h: 0.15, fontFace: 'Calibri', fontSize: 6.6, bold: true, color: GREEN, charSpacing: 0.4, margin: 0 });
-  s.addText('Same file + answers = same price\n12 of 18 commodities rules-driven\n1,530 automated tests\n6 real parts · fleet error ≈13%',
+  s.addText('Same file + answers = same price\n12 of 19 commodities rules-driven\n1,777 automated tests\n6 real parts · fleet error ≈13%',
     { x: 0.56, y: 1.39, w: 1.85, h: 0.6, fontFace: 'Calibri', fontSize: 6.9, color: SLATE, margin: 0, valign: 'top' });
   // ── OUTSIDE the tool: the OPTIONAL AI ──
   s.addShape('roundRect', { x: 2.55, y: 1.02, w: 5.2, h: 1.12, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5, dashType: 'dash' }, rectRadius: 0.09 });
@@ -980,7 +980,7 @@ FOOT = FOOT_MAIN;
   ], {
     x: 6.6, y: 2.66, w: 3.1, h: 2.5, holeSize: 60,
     chartColors: ['0E8074', 'B7791F'], showLegend: true, legendPos: 'b', legendFontSize: 8.5,
-    showValue: false, showTitle: true, title: '18 commodities', titleFontSize: 10, titleColor: '16325C',
+    showValue: false, showTitle: true, title: '19 commodities', titleFontSize: 10, titleColor: '16325C',
   });
   s.addChart('doughnut', [
     { name: 'Verification', labels: ['Inside manual band (3)', 'Within ±30% (3)', 'No manual yet (2)'], values: [3, 3, 2] },
@@ -2748,6 +2748,114 @@ partSlide('assets/workflow-deck/part-bumper.png',
 }
 
 
+// ══════════ 23a1 · NEW COMMODITY · GEAR CUTTING ══════════
+// Added 12 Aug 2026. Every figure below comes from scripts/gear-worked-example.ts
+// run against the shipped engine — not typed in by hand.
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'New: Gear Cutting Has Its Own Cost Model', 'Asked for by cost engineering and the plant — a gear is not a milled part with teeth drawn on', TEAL);
+  owner(s, 10.33, 0.28, 'OWNER: THE ENGINE', TEAL, TEAL_T);
+
+  // ── the problem, stated plainly ──
+  s.addShape('roundRect', { x: 0.5, y: 1.22, w: 12.33, h: 0.62, fill: { color: AMBER_T }, line: { color: AMBER, width: 1.25 }, rectRadius: 0.08 });
+  s.addText([
+    { text: 'Before: ', options: { bold: true, color: AMBER, fontSize: 11 } },
+    { text: 'a transmission gear went through the machining model as a generic milled part. That model cannot see teeth, module or quality grade — and those three things are what a gear actually costs.', options: { color: SLATE, fontSize: 10.5 } },
+  ], { x: 0.72, y: 1.22, w: 11.9, h: 0.62, fontFace: 'Calibri', margin: 0, valign: 'middle' });
+
+  // ── the central idea: quality grade ADDS operations ──
+  s.addText('The idea that makes it work: a tighter quality grade adds OPERATIONS, it is not a multiplier',
+    { x: 0.5, y: 2.02, w: 12.33, h: 0.28, fontFace: 'Calibri', fontSize: 12.5, bold: true, color: NAVY, margin: 0 });
+
+  const rows = [
+    ['ISO class 9 — as cut', 'hob → deburr → inspect', '£8.26', '95 s', GREEN],
+    ['ISO class 6 — hardened + ground', 'hob → deburr → carburise → GRIND → inspect', '£13.55', '141 s', AMBER],
+    ['Internal ring gear, class 7', 'power skive → deburr → carburise → inspect', '£11.19', '115 s', BLUE],
+  ];
+  rows.forEach(([what, route, cost, cyc, col], i) => {
+    const y = 2.42 + i * 0.62;
+    s.addShape('roundRect', { x: 0.5, y, w: 12.33, h: 0.54, fill: { color: CARD }, line: { color: LINE, width: 0.75 }, rectRadius: 0.06 });
+    s.addShape('rect', { x: 0.5, y, w: 0.055, h: 0.54, fill: { color: col } });
+    s.addText(what, { x: 0.72, y, w: 3.3, h: 0.54, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(route, { x: 4.1, y, w: 5.5, h: 0.54, fontFace: 'Consolas', fontSize: 9.2, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(cost, { x: 9.7, y, w: 1.4, h: 0.54, fontFace: 'Cambria', fontSize: 15, bold: true, color: col, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(cyc, { x: 11.2, y, w: 1.4, h: 0.54, fontFace: 'Calibri', fontSize: 10.5, color: MUTED, align: 'right', margin: 0, valign: 'middle' });
+  });
+
+  s.addShape('roundRect', { x: 0.5, y: 4.36, w: 6.05, h: 1.5, fill: { color: TEAL_T }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
+  s.addText('THE CYCLE TIME IS ARITHMETIC, NOT A GUESS', { x: 0.7, y: 4.46, w: 5.7, h: 0.22, fontFace: 'Calibri', fontSize: 9, bold: true, color: TEAL, charSpacing: 0.5, margin: 0 });
+  s.addText('A hob with Ns starts at n rpm drives a z-tooth gear at n×Ns/z. That is a gear train, not an estimate — so the tool prints the sum:',
+    { x: 0.7, y: 4.7, w: 5.7, h: 0.42, fontFace: 'Calibri', fontSize: 9.5, color: SLATE, margin: 0 });
+  s.addText('travel 45.3 mm at 2.2 mm/rev × 1 cut = 32 s cutting + 18 s handling',
+    { x: 0.7, y: 5.16, w: 5.7, h: 0.6, fontFace: 'Consolas', fontSize: 8.6, color: NAVY, margin: 0, valign: 'top' });
+
+  s.addShape('roundRect', { x: 6.78, y: 4.36, w: 6.05, h: 1.5, fill: { color: BLUE_T }, line: { color: BLUE, width: 1 }, rectRadius: 0.08 });
+  s.addText('IT PICKS THE MACHINE, AND REFUSES WHEN IT CANNOT', { x: 6.98, y: 4.46, w: 5.7, h: 0.22, fontFace: 'Calibri', fontSize: 9, bold: true, color: BLUE, charSpacing: 0.5, margin: 0 });
+  [['14 gear machines in the rate library — hobbers, shapers, skivers, grinders, broach, honer, checker', 0],
+   ['Sized on module × diameter × face width, not diameter alone', 1],
+   ['A gear beyond every machine is BLOCKED, never costed on the biggest one', 2]]
+    .forEach(([t, i]) => {
+      const y = 4.72 + i * 0.36;
+      s.addShape('ellipse', { x: 7.02, y: y + 0.09, w: 0.09, h: 0.09, fill: { color: BLUE } });
+      s.addText(t, { x: 7.22, y, w: 5.45, h: 0.34, fontFace: 'Calibri', fontSize: 9, color: SLATE, margin: 0, valign: 'middle' });
+    });
+
+  s.addShape('roundRect', { x: 0.5, y: 6.02, w: 12.33, h: 0.5, fill: { color: 'FDEEEC' }, line: { color: RED, width: 1 }, rectRadius: 0.07 });
+  s.addText([
+    { text: 'Said plainly: ', options: { bold: true, color: RED, fontSize: 10 } },
+    { text: 'all 80 shop numbers — feeds, speeds, tool life, heat-treat rates — are representative, not from your plant. The tool prints that warning on every gear estimate. It shows the right structure; it is not yet a quotable number.', options: { color: SLATE, fontSize: 10 } },
+  ], { x: 0.72, y: 6.02, w: 11.9, h: 0.5, fontFace: 'Calibri', margin: 0, valign: 'middle' });
+
+  footer(s, ++PG);
+  s.addNotes(
+    'This one is new since we last met, and it came straight from you. Cost engineering and the plant asked why gears went through the tool as if they were just milled parts. Fair question, because that is exactly what was happening, and the machining model cannot see a tooth. ' +
+    'So gears now have their own model. Look at the three rows in the middle. Same gear, same size, same programme. The only thing changing is how accurate we ask it to be. ' +
+    'Top row, a loose gear, we just cut the teeth and check it. Eight pounds twenty-six. Middle row, we ask for a tight gear. Now it has to be hardened in a furnace, and because hardening bends it slightly, it then has to be ground. Two extra machines. Thirteen fifty-five. ' +
+    'That is the important bit, so let me say it a different way. Asking for a tighter gear does not make the same operations cost more. It adds operations. Any tool that just multiplies by one-point-four is wrong, and it will be wrong in the direction that loses you money. ' +
+    'The bottom row is an internal ring gear. A hob physically cannot get inside a bore, so the tool does not even offer it — it picks power skiving instead. Geometry decides, not preference. ' +
+    'Bottom left: the cycle time is not a guess. It is the gear train arithmetic, and the tool prints the sum so your plant can argue with it. ' +
+    'And the red bar at the bottom is me being straight with you. The structure is right, the arithmetic is right, but the feeds and speeds are representative numbers, not yours. Give me your machine list and your feeds and this becomes a real should-cost. Until then it is directional, and the tool says so itself on every single output.'
+  );
+}
+
+// ══════════ 23a2 · WHAT THE GEAR AUDIT FOUND ══════════
+{
+  const s = pres.addSlide(); s.background = { color: PAGE };
+  title(s, 'We Then Attacked Our Own Gear Model', 'Seven faults found — every one of them returned a confident, sensible-looking number', RED);
+  owner(s, 10.33, 0.28, 'OWNER: US', RED, 'FDEEEC');
+
+  const faults = [
+    ['Volume did nothing', 'The same gear cost £13.05 at 1,000 a year and £13.05 at a million a year. Identical to the penny.', 'Fixture, programming, first-article and broach capital now amortise. £35.81 at 1k/yr → £13.46 at 1M/yr.'],
+    ['A gear with zero teeth got a price', '£11.12. So did negative teeth and zero face width. A zero amortisation volume returned "not a number".', '16 impossible definitions are now refused, each naming the field that is wrong.'],
+    ['An internal gear was sent to the wrong grinder', 'A generating grinder works from outside and cannot enter a bore. Not a smaller machine — the wrong machine.', 'Grinder choice is now internal-aware; honing and shaving are refused on internal gears.'],
+    ['Quality grade stopped mattering once grinding started', 'Class 6, 5 and 4 all ground for exactly 39.3 seconds — contradicting the whole point of the model.', 'Tighter classes now buy spark-out passes, and the tool shows them in the sum.'],
+  ];
+  faults.forEach(([t, was, now], i) => {
+    const y = 1.3 + i * 1.16;
+    s.addShape('roundRect', { x: 0.5, y, w: 12.33, h: 1.06, fill: { color: CARD }, line: { color: LINE, width: 0.75 }, rectRadius: 0.07 });
+    s.addShape('rect', { x: 0.5, y, w: 0.055, h: 1.06, fill: { color: RED } });
+    s.addText(t, { x: 0.74, y: y + 0.08, w: 3.5, h: 0.3, fontFace: 'Calibri', fontSize: 11, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(was, { x: 0.74, y: y + 0.4, w: 3.5, h: 0.58, fontFace: 'Calibri', fontSize: 8.6, color: MUTED, margin: 0, valign: 'top' });
+    s.addShape('roundRect', { x: 4.4, y: y + 0.14, w: 8.28, h: 0.78, fill: { color: GREEN_T }, rectRadius: 0.06 });
+    s.addText(now, { x: 4.6, y: y + 0.14, w: 7.9, h: 0.78, fontFace: 'Calibri', fontSize: 9.8, color: SLATE, margin: 0, valign: 'middle' });
+  });
+
+  s.addShape('roundRect', { x: 0.5, y: 6.02, w: 12.33, h: 0.5, fill: { color: TEAL_T }, line: { color: TEAL, width: 1 }, rectRadius: 0.07 });
+  s.addText('All seven are now locked down by 38 automated tests, so they cannot come back. Total suite: 1,777 tests.',
+    { x: 0.72, y: 6.02, w: 11.9, h: 0.5, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: TEAL, margin: 0, valign: 'middle' });
+
+  footer(s, ++PG);
+  s.addNotes(
+    'I want to show you this slide because it is the one that should give you the most confidence, even though it is a list of our own mistakes. ' +
+    'After building the gear model, we did not just test that it works. We attacked it — deliberately fed it nonsense and looked for answers that were wrong but looked right. That is the dangerous kind of wrong. You can argue with a number that looks silly. You cannot argue with one that looks fine and is not. ' +
+    'We found seven. Take the first. The same gear cost thirteen pounds and five pence whether you made a thousand a year or a million. Identical to the penny. That is the very first thing any of you would check, and it was flat, because we had never modelled the one-off costs — the fixture, the programming, the first article approval, the broach. Now they are in, and a low-volume gear correctly costs nearly three times a high-volume one. ' +
+    'The second one is embarrassing and I will say it anyway. A gear with zero teeth returned eleven pounds twelve. It should have refused. Now it refuses, and it tells you which field is wrong. ' +
+    'The third is a genuine manufacturing error. We were sending internal ring gears to a grinder that physically cannot reach inside a bore. Your plant would have spotted that in a second and lost trust in everything else on the page. ' +
+    'And the fourth undermined the whole feature — once a gear was being ground, asking for tighter and tighter accuracy changed nothing at all. ' +
+    'Every one of those is now fixed and locked down with tests, so they cannot quietly return. I would rather show you this slide than have your plant head find any of it in a meeting.'
+  );
+}
+
 // ══════════ 23b · WHAT IT CANNOT DO ══════════
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
@@ -3406,9 +3514,9 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   // ── the cost engine, in the middle ──
   s.addShape('roundRect', { x: 4.54, y: 1.06, w: 4.26, h: 1.62, fill: { color: TEAL_T }, line: { color: TEAL, width: 2 }, rectRadius: 0.1 });
   s.addText('THE COST ENGINE  ·  src/engine/', { x: 4.68, y: 1.11, w: 4.0, h: 0.22, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: TEAL, margin: 0, valign: 'middle' });
-  s.addText('TypeScript · 29,229 lines · 1,530 tests · same code runs in the browser and on the server',
+  s.addText('TypeScript · 27,181 lines · 1,777 tests · same code runs in the browser and on the server',
     { x: 4.68, y: 1.32, w: 4.0, h: 0.18, fontFace: 'Calibri', fontSize: 6.9, italic: true, color: NAVY, margin: 0 });
-  [['core.ts works out the 8 cost buckets', 0], ['18 commodity modules', 1], ['Optimisers pick the cheapest capable machine', 2], ['Guardrails check every number', 3]]
+  [['core.ts works out the 8 cost buckets', 0], ['19 commodity modules', 1], ['Optimisers pick the cheapest capable machine', 2], ['Guardrails check every number', 3]]
     .forEach(([t, i]) => {
       const cx = 4.68 + (i % 2) * 2.02, cy = 1.53 + Math.floor(i / 2) * 0.185;
       s.addShape('ellipse', { x: cx, y: cy + 0.05, w: 0.07, h: 0.07, fill: { color: TEAL } });
@@ -3570,7 +3678,7 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   s.addText([
     { text: 'Same sentence as the previous slide:  ', options: { bold: true, color: TEAL, fontSize: 10.5 } },
     { text: 'computeUniversalStack(UniversalStackInput, RateLibrary) → PartCostResult', options: { bold: true, color: NAVY, fontSize: 10.5, fontFace: MONO } },
-    { text: '   — a pure transform between two typed structures. Same input, same output, forever. That is what makes 1,530 tests possible and why the identical code runs in the browser and on the server.', options: { color: SLATE, fontSize: 9.5 } },
+    { text: '   — a pure transform between two typed structures. Same input, same output, forever. That is what makes 1,777 tests possible and why the identical code runs in the browser and on the server.', options: { color: SLATE, fontSize: 9.5 } },
   ], { x: 0.72, y: 4.68, w: 11.9, h: 0.62, fontFace: 'Calibri', margin: 0, valign: 'middle' });
 
   // ── where fields come from, and the rules a data person will ask about ──

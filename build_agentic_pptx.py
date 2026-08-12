@@ -204,7 +204,7 @@ kpi_card(s, Inches(3.65), Inches(2.0), Inches(3.0), Inches(1.75), '£512k/yr', '
          'In our live demo the background agent flagged £512k/yr of pricing issues — with nobody at the keyboard.', RED)
 kpi_card(s, Inches(6.85), Inches(2.0), Inches(3.0), Inches(1.75), '99%', 'Part recognition',
          'A new bracket was matched to 3 past bracket analyses at 98–99% similarity, with reasons shown.', CYAN)
-kpi_card(s, Inches(10.05), Inches(2.0), Inches(2.85), Inches(1.75), '917', 'Automated tests',
+kpi_card(s, Inches(10.05), Inches(2.0), Inches(2.85), Inches(1.75), '1,777', 'Automated tests',
          'Every capability is covered by automated tests (77 suites) and was exercised end-to-end on the running system.', VIOLET)
 box(s, Inches(0.45), Inches(4.1), Inches(12.45), Inches(2.7), fill=PANEL2, round_=True, radius=0.06)
 text(s, Inches(0.75), Inches(4.35), Inches(11.9), Inches(2.3),
@@ -469,7 +469,7 @@ for i, (t, d, c) in enumerate(quad):
     text(s, x + Inches(0.3), y + Inches(0.2), Inches(5.6), Inches(0.45), [[(t, 15, c, True)]])
     text(s, x + Inches(0.3), y + Inches(0.72), Inches(5.55), Inches(1.25), [[(d, 12, BODY, False)]], line_spacing=1.15)
 text(s, Inches(0.45), Inches(6.7), Inches(12.4), Inches(0.5),
-     [[('Together with 18 commodity cost engines, CAD-to-cost, and PCB photo-to-BOM — the agentic layer sits on top of all of it.', 12, MUTED, False, True)]])
+     [[('Together with 19 commodity cost engines, CAD-to-cost, and PCB photo-to-BOM — the agentic layer sits on top of all of it.', 12, MUTED, False, True)]])
 notes(s, "The learning loop is the headline, but it sits on a wider AI platform we've built. The assistant answers "
          "from our own rate data with citations. The RFQ analyst turns a full quote package into a costed, "
          "risk-flagged negotiation brief. CAD feature costing tells designers which specific features drive cost. "
@@ -521,7 +521,7 @@ rows = [
     ('Confidence band on the same part', '±20.4%  →  ±2.8%', GREEN),
     ('Similar-part recognition on live example', '98–99% match, reasons shown', CYAN),
     ('Autonomous findings in unattended demo', '£512,000 / yr surfaced', RED),
-    ('Automated tests protecting all of this', '917 passing (77 suites)', VIOLET),
+    ('Automated tests protecting all of this', '1,777 passing (77 suites)', VIOLET),
 ]
 for i, (a, b, c) in enumerate(rows):
     y = Inches(2.1 + i * 0.72)
@@ -804,11 +804,82 @@ notes(s, "The one slide that says why this beats what's on the market. The compe
 # ════════════════════════════════════════════════════════════════════════════
 # 14 — NEXT STEPS
 # ════════════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════════════
+# NEW 2026-08 — GEOMETRIC DFM: the tool reads the PART, not the price
+# ════════════════════════════════════════════════════════════════════════════
+s = header('It now reads the part itself', 'New capability — geometric DFM')
+box(s, Inches(0.45), Inches(1.95), Inches(12.45), Inches(0.85), fill=PANEL2, round_=True, radius=0.05)
+text(s, Inches(0.75), Inches(2.05), Inches(11.9), Inches(0.65),
+     [[('The old way: ', 12.5, AMBER, True),
+       ('look at the finished cost and infer what might be wrong.  ', 12.5, BODY, False),
+       ('Now: ', 12.5, GREEN, True),
+       ('scan the 3D model, measure every face, and name the exact features that cost money.', 12.5, BODY, False)]],
+     line_spacing=1.15)
+
+cards = [
+    ('19', 'cited rules', 'Every rule names a published source — ASM Handbook, NADCA,\nMachinery\'s Handbook. No citation, no ship.', GREEN),
+    ('6', 'commodity packs', 'Casting, forging, machining, injection & blow moulding,\nsheet metal — each with its own physics.', BLUE),
+    ('Faces', 'named, not counted', 'A finding says "face 186 sits at 135° to the draw", not\n"tooling looks high". You can click it and see it.', INDIGO),
+]
+for i, (big, label, sub, col) in enumerate(cards):
+    x = Inches(0.45 + i * 4.2)
+    box(s, x, Inches(3.0), Inches(3.95), Inches(1.75), fill=PANEL, round_=True, radius=0.05)
+    text(s, x + Inches(0.25), Inches(3.15), Inches(3.5), Inches(0.55), [[(big, 30, col, True)]])
+    text(s, x + Inches(0.25), Inches(3.72), Inches(3.5), Inches(0.3), [[(label, 12, DARK, True)]])
+    text(s, x + Inches(0.25), Inches(4.05), Inches(3.5), Inches(0.65),
+         [[(sub, 10, BODY, False)]], line_spacing=1.12)
+
+box(s, Inches(0.45), Inches(4.95), Inches(12.45), Inches(1.45), fill=PANEL, round_=True, radius=0.05)
+text(s, Inches(0.75), Inches(5.08), Inches(11.9), Inches(0.35),
+     [[('It runs on its own, and it says what it did NOT check', 14, DARK, True)]])
+for i, t in enumerate([
+        'The scan runs in the background after upload — nobody waits for it.',
+        'Each finding carries the measured value, the threshold and the standard it came from.',
+        'Every part also lists what could not be checked, so a short list is never mistaken for a clean part.']):
+    text(s, Inches(0.75), Inches(5.48 + i * 0.31), Inches(11.9), Inches(0.3),
+         [[('•  ', 11, GREEN, True), (t, 11, BODY, False)]])
+box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=INDIGO)
+
+# ════════════════════════════════════════════════════════════════════════════
+# NEW 2026-08 — GEAR COMMODITY: the engine reasons about the process route
+# ════════════════════════════════════════════════════════════════════════════
+s = header('Gears: it now picks the process, not just the price', 'New commodity — asked for by cost engineering and the plant')
+box(s, Inches(0.45), Inches(1.95), Inches(12.45), Inches(0.8), fill=PANEL2, round_=True, radius=0.05)
+text(s, Inches(0.75), Inches(2.05), Inches(11.9), Inches(0.6),
+     [[('Ask for a more accurate gear and the tool does not multiply the price. ', 12.5, BODY, False),
+       ('It adds machines.', 12.5, GREEN, True)]], line_spacing=1.15)
+
+rows = [
+    ('Loose gear (ISO 9)', 'cut the teeth → deburr → check', '£8.26', GREEN),
+    ('Accurate gear (ISO 6)', 'cut → deburr → harden in a furnace → GRIND → check', '£13.55', AMBER),
+    ('Internal ring gear', 'power-skive (a hob cannot reach inside a bore) → harden → check', '£11.19', BLUE),
+]
+for i, (what, route, cost, col) in enumerate(rows):
+    y = Inches(2.95 + i * 0.72)
+    box(s, Inches(0.45), y, Inches(12.45), Inches(0.62), fill=PANEL, round_=True, radius=0.04)
+    text(s, Inches(0.72), y, Inches(3.1), Inches(0.62), [[(what, 12, DARK, True)]], anchor=MSO_ANCHOR.MIDDLE)
+    text(s, Inches(3.95), y, Inches(6.9), Inches(0.62), [[(route, 11, BODY, False)]], anchor=MSO_ANCHOR.MIDDLE)
+    text(s, Inches(11.0), y, Inches(1.7), Inches(0.62), [[(cost, 17, col, True)]],
+         align=PP_ALIGN.RIGHT, anchor=MSO_ANCHOR.MIDDLE)
+
+box(s, Inches(0.45), Inches(5.2), Inches(6.1), Inches(1.2), fill=PANEL, round_=True, radius=0.05)
+text(s, Inches(0.72), Inches(5.32), Inches(5.6), Inches(0.3), [[('It refuses rather than guesses', 12.5, GREEN, True)]])
+text(s, Inches(0.72), Inches(5.65), Inches(5.6), Inches(0.65),
+     [[('A gear no machine in the library can make is blocked outright — never quietly costed on the nearest machine.', 10.5, BODY, False)]],
+     line_spacing=1.12)
+box(s, Inches(6.8), Inches(5.2), Inches(6.1), Inches(1.2), fill=PANEL, round_=True, radius=0.05)
+text(s, Inches(7.07), Inches(5.32), Inches(5.6), Inches(0.3), [[('And it tells you what it does not know', 12.5, AMBER, True)]])
+text(s, Inches(7.07), Inches(5.65), Inches(5.6), Inches(0.65),
+     [[('All 80 shop figures are representative until the plant supplies its own. Every gear estimate prints that warning.', 10.5, BODY, False)]],
+     line_spacing=1.12)
+box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=INDIGO)
+
+# ════════════════════════════════════════════════════════════════════════════
 s = header('Where we are, and the ask', 'Next steps')
 box(s, Inches(0.45), Inches(2.0), Inches(6.0), Inches(4.4), fill=PANEL, round_=True, radius=0.05)
 text(s, Inches(0.75), Inches(2.25), Inches(5.4), Inches(0.4), [[('Status today', 16, GREEN, True)]])
 st = [
-    'All capabilities built, tested (917 tests) and live — incl. 6 new for 2026',
+    'All capabilities built, tested (1,777 tests) and live — incl. 6 new for 2026',
     'Verified end-to-end on the running system',
     'Zero extra licence cost — built into our tool',
     'Runs on-premise; no data leaves the company',
@@ -853,7 +924,7 @@ SPEAKER_NOTES = [
     "If you remember four numbers, remember these. Error fell thirty-six-fold — eleven percent down to under one — after "
     "the tool learned from just three real quotes. The background agent found half a million pounds a year of pricing "
     "issues with nobody at the keyboard. It recognised a brand-new bracket against past parts at ninety-nine percent and "
-    "told us why. And it's production-grade — nine hundred and seventeen automated tests. But here's the one line that "
+    "told us why. And it's production-grade — one thousand seven hundred and seventy-seven automated tests. But here's the one line that "
     "matters: costing intelligence used to live in people's heads and walk out the door when they left. Now it "
     "accumulates as a company asset that gets more valuable every day we use it.",
 
@@ -930,7 +1001,7 @@ SPEAKER_NOTES = [
     "Everything on this slide was measured on the running system — live server, real database, real API calls — not "
     "projected. Segment error dropped to well under one percent in BOTH directions of bias. The confidence band "
     "tightened seven-fold. Recognition hit ninety-nine percent on the live example. The unattended agent surfaced half "
-    "a million pounds. And nine hundred and seventeen tests stand guard so none of it quietly regresses. One honest "
+    "a million pounds. And one thousand seven hundred and seventy-seven tests stand guard so none of it quietly regresses. One honest "
     "caveat, because credibility is the whole game here: these demos ran on small seeded datasets — real-world accuracy "
     "builds as OUR data accumulates. The mechanism is proven. The asset grows with use.",
 
@@ -1000,7 +1071,19 @@ SPEAKER_NOTES = [
     "exist anywhere else.",
 
     # 20 — NEXT STEPS
-    "To close. The capability is built, tested — nine hundred and seventeen tests — and live, at no extra licence cost, "
+    "Two new capabilities since we last spoke, and this is the first. Until now the tool looked at the finished cost and worked backwards — tooling looks high, so something about the shape must be expensive. That is inference. Now it opens the 3D model and measures every single face on the part, and it tells you exactly which features cost money. "
+    "Nineteen rules, and every one of them cites a published standard — the ASM Handbook, the die-casting association, Machinery's Handbook. That was a rule I set myself: no citation, no ship. If we cannot say where a threshold came from, it does not go in. "
+    "Six commodity packs, because a casting and a sheet-metal part fail in completely different ways. "
+    "The middle card is the one engineers care about. It does not say tooling looks high. It says face one-eight-six sits at a hundred and thirty-five degrees to the draw direction and cannot come out of the die. You can click it and see the face highlighted on the model. That is a conversation with a supplier, not a hunch. "
+    "Two more things at the bottom. It runs by itself in the background after upload, so nobody waits. And — this is the part I insisted on — every part also lists what it could NOT check. A short list of problems must never be mistaken for a clean part.",
+
+    "The second new thing, and this one came directly from cost engineering and the plant asking for it. Gears used to go through the tool as if they were ordinary milled parts, and the milling model cannot see a tooth. "
+    "Look at the three rows. Same gear, same size, same programme. The only thing changing is how accurate we ask it to be. A loose gear, we cut the teeth and check it — eight pounds twenty-six. An accurate gear has to be hardened in a furnace, and because hardening bends it slightly, it then has to be ground. Two extra machines. Thirteen fifty-five. "
+    "So asking for a better gear does not make the same work cost more. It adds machines. Any tool that just multiplies by one-point-four is wrong. "
+    "Bottom row is an internal ring gear. A hob physically cannot get inside a bore, so the tool does not even offer it — it picks a different process. Geometry decides, not preference. "
+    "The two boxes underneath matter as much as the numbers. If we cannot make a gear on any machine we know about, the tool refuses rather than quietly costing it on the nearest one. And it is honest that the shop figures are representative until your plant gives us theirs — it prints that warning on every single gear estimate. I would rather it under-claim than have your plant head catch it out.",
+
+        "To close. The capability is built, tested — one thousand seven hundred and seventy-seven tests — and live, at no extra licence cost, "
     "running on our own infrastructure. I'll be straight about the one dependency: the intelligence starts empty and "
     "grows with use. So the ask is three small decisions. One: make 'Log Actual £' a one-click habit when quotes come "
     "in. Two: approve a one-off import of our historical quotes so the system starts smart — a day or two of effort. "

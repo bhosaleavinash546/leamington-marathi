@@ -159,7 +159,7 @@ text(s, Inches(0.8), Inches(2.35), Inches(11.8), Inches(1.1),
         'and connecting it to CAPEE.  (~5–7 weeks, existing teams, no licence spend.)', 17, BODY, False)]],
      line_spacing=1.2)
 pts = [
-    ('Why now', 'The tool is built, tested (1,005 automated tests) and proven on live runs — the value is waiting on deployment, not development.', BLUE),
+    ('Why now', 'The tool is built, tested (1,777 automated tests) and proven on live runs — the value is waiting on deployment, not development.', BLUE),
     ('Why it is safe', 'CAD processing already runs fully inside the server. The private AI routing and the air-gapped switch are now BUILT and tested live.', GREEN),
     ('Why CAPEE wins', 'CAPEE is our existing should-cost software; CostVision plugs into it to upgrade its engine with AI, physics and memory. No rip-and-replace.', VIOLET),
 ]
@@ -195,7 +195,7 @@ box(s, Inches(0.45), Inches(5.55), Inches(12.45), Inches(1.3), fill=GREENBG, rou
 text(s, Inches(0.8), Inches(5.75), Inches(11.8), Inches(0.95),
      [[('Proven, not promised:  ', 13.5, GREEN, True),
        ('estimating error cut from 10.9% to 0.3% after learning from 3 real quotes  ·  £512k/yr of pricing issues '
-        'found autonomously in the live demo  ·  1,005 automated tests protect it all.', 13.5, BODY, False)]],
+        'found autonomously in the live demo  ·  1,777 automated tests protect it all.', 13.5, BODY, False)]],
      line_spacing=1.2)
 notes(s, "Thirty seconds of background for anyone new. CostVision costs parts bottom-up with physics across 18 "
          "manufacturing processes. It reads CAD files directly, it can cost a circuit board from photographs, and — "
@@ -645,7 +645,7 @@ s = header('Risks — and how we manage them', 'Honest view')
 risks = [
     ('Cloud tenancy not approved', 'Medium', 'Fall back to Option A (air-gapped) — deterministic engines keep full value today; add a self-hosted vision model later if needed.', AMBER),
     ('Learning depends on logged quotes', 'Medium', 'The CAPEE PO-price hook automates it — quotes flow in without anyone changing habits. Plus a one-off historical import to start smart.', BLUE),
-    ('Single-team knowledge of the platform', 'Low–Med', '1,005 automated tests, written architecture docs, and a named CAPEE-side maintainer trained during Phase 4.', VIOLET),
+    ('Single-team knowledge of the platform', 'Low–Med', '1,777 automated tests, written architecture docs, and a named CAPEE-side maintainer trained during Phase 4.', VIOLET),
     ('Adoption ("another tool")', 'Low', 'Users stay in CAPEE — CostVision works behind the scenes. Nothing new to learn except better answers appearing.', GREEN),
 ]
 for i, (t, sev, m, c) in enumerate(risks):
@@ -730,7 +730,7 @@ diffs = [
     ('PCB photo → costed BOM', 'Photograph a circuit board, get a costed bill of materials with live component pricing. Design tools generate BOMs; no mainstream costing suite costs a board from photos.', GREEN),
     ('Self-learning on OUR data', 'Calibrates itself on our real PO prices (error 10.9% → 0.3% after 3 quotes in testing) and raises findings autonomously. Incumbents are still marketing toward this.', GREEN),
     ('Runs inside our walls', 'Commercial tools are cloud SaaS — our CAD would live in their cloud. CostVision is on-prem with private AI routing and a provable air-gapped switch, both already built.', GREEN),
-    ('One platform, no module licences', '18 commodity engines + automotive software costing + carbon + RFQ generation in one codebase. Vendors sell comparable breadth as separately licensed modules.', GREEN),
+    ('One platform, no module licences', '19 commodity engines + automotive software costing + carbon + RFQ generation in one codebase. Vendors sell comparable breadth as separately licensed modules.', GREEN),
 ]
 for i, (t, d, c) in enumerate(diffs):
     x = Inches(0.45 + (i % 2) * 6.35); y = Inches(2.0 + (i // 2) * 1.62)
@@ -777,7 +777,7 @@ text(s, Inches(7.6), Inches(2.0), Inches(5.3), Inches(2.4),
 box(s, Inches(7.6), Inches(4.35), Inches(5.3), Inches(1.15), fill=GREENBG, round_=True, radius=0.1)
 text(s, Inches(7.85), Inches(4.5), Inches(4.85), Inches(0.9),
      [[('Proven live today:  ', 11.5, GREEN, True),
-       ('a full workbook uploaded and accepted — 328 materials, 155 machines, 42 labour, 11 energy, 9 FX and '
+       ('a full workbook uploaded and accepted — 328 materials, 171 machines, 42 labour, 11 energy, 9 FX and '
         '23 overhead rows — then activated.', 11, BODY, False)]], line_spacing=1.15)
 text(s, Inches(7.6), Inches(5.7), Inches(5.3), Inches(1.4),
      [[('Also built in:', 12, DARK, True)],
@@ -873,7 +873,7 @@ text(s, Inches(0.45), Inches(6.5), Inches(7.3), Inches(0.6),
      line_spacing=1.1)
 stats = [
     ('99%', 'part-match accuracy — the AI memory finds the right similar past part', BLUE),
-    ('1,005', 'automated tests protect every engine and feature on each change', VIOLET),
+    ('1,777', 'automated tests protect every engine and feature on each change', VIOLET),
     ('3 quotes', 'is all the calibration needs before accuracy lands under 1%', GREEN),
     ('£512k/yr', 'findings raised by the autonomous agent in the live demo', CYAN),
 ]
@@ -890,17 +890,65 @@ notes(s, "The evidence slide, for when someone asks 'does it actually work?' The
          "below one percent and the band tightens to under three. That is the self-learning loop working — and it "
          "is why CAPEE's PO prices matter so much, because they are exactly the fuel this loop runs on. On the "
          "right: the part-matching memory finds the right historical part ninety-nine percent of the time; "
-         "seven hundred and ninety-three automated tests protect the platform on every change; and the autonomous "
+         "one thousand seven hundred and seventy-seven automated tests protect the platform on every change; and the autonomous "
          "agent found half a million pounds a year of pricing issues in the demo without anyone asking it to.")
 
 # ═══════════════ 21 — BACKUP: LIKELY QUESTIONS ═══════════════
+s = header('Built since this plan was written', 'Backup · What changed')
+add = [
+    ('Geometric DFM — the tool reads the part, not the price', GREEN,
+     'Engineering said the old design advice was too generic, because it inferred problems from the finished cost. '
+     'A second layer now opens the 3D model and measures every face. 19 rules across 6 commodity packs, each citing a '
+     'published standard. A finding names the exact faces that cause it, and the model highlights them on screen.'),
+    ('Gear cutting as its own commodity', BLUE,
+     'Requested by cost engineering and the plant. Gears no longer go through the milling model. The tool picks the '
+     'process from the geometry — hobbing, shaping, power skiving, broaching — sizes the machine, and derives the '
+     'cycle from gear-generation arithmetic rather than a rule of thumb.'),
+    ('Landed cost, duty and customs', VIOLET,
+     'Duty on customs value, CBAM, rules of origin, incoterms and a customs verification sign-off sheet. A '
+     'should-cost now lands at your door, not at the supplier gate.'),
+    ('Long-term agreements priced correctly', CYAN,
+     'Annual buy rate and programme lifetime are now separate inputs. A five-year award no longer prices every '
+     'component as if the whole programme were bought in year one.'),
+]
+for i, (t, c, d) in enumerate(add):
+    y = Inches(1.95 + i * 1.22)
+    box(s, Inches(0.45), y, Inches(12.45), Inches(1.08), fill=PANEL, round_=True, radius=0.08)
+    box(s, Inches(0.45), y, Inches(0.09), Inches(1.08), fill=c)
+    text(s, Inches(0.75), y + Inches(0.1), Inches(11.9), Inches(0.32), [[(t, 13, c, True)]])
+    text(s, Inches(0.75), y + Inches(0.44), Inches(11.9), Inches(0.58), [[(d, 10.5, BODY, False)]],
+         line_spacing=1.12)
+box(s, Inches(0.45), Inches(6.85), Inches(12.45), Inches(0.42), fill=AMBERBG, round_=True, radius=0.06)
+text(s, Inches(0.75), Inches(6.85), Inches(11.9), Inches(0.42),
+     [[('Straight about the gap: ', 10.5, AMBER, True),
+       ('the gear model runs on representative shop figures until the plant supplies its own, and no gear has yet been '
+        'checked against a known actual cost. The tool prints that on every gear estimate.', 10.5, BODY, False)]],
+     anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.1)
+notes(s, "This slide is here because the plan you approved is a few months old now, and four things have been built "
+         "since that are worth knowing about. "
+         "First, and the one your engineers pushed hardest for: the design-for-manufacture advice used to look at the "
+         "finished cost and guess backwards. They told me that was too generic, and they were right. It now opens the "
+         "3D model and measures every face on the part. Nineteen rules, every one citing a published standard rather "
+         "than my opinion, and when it flags something it shows you exactly which faces on the model are the problem. "
+         "Second, gears. Cost engineering and the plant asked for this directly. Gears used to go through the tool as "
+         "ordinary milled parts, which cannot see a tooth. Now the tool picks the manufacturing process from the "
+         "geometry itself and works the cycle time out from the machine kinematics. "
+         "Third, landed cost. A should-cost now includes duty, carbon border tax and origin rules, so the number is "
+         "what the part costs at our door rather than at the supplier's gate. "
+         "Fourth, long-term agreements are now priced properly — the annual quantity and the programme lifetime are "
+         "separate, which they always should have been. "
+         "And the amber bar is me being straight. The gear model is structurally right but it is running on "
+         "representative shop figures, not yours, and we have not yet checked a gear against a cost we know. The tool "
+         "says so itself on every estimate. Give me your machine list and two costed gears and that gap closes.")
+
+# ═══════════════ 21b — BACKUP: LIKELY QUESTIONS ═══════════════
 s = header('Questions you may be asking', 'Backup · Straight answers')
 qa = [
     ('Why not just buy aPriori?', 'A SaaS suite means our CAD and rates live in a vendor cloud, it cannot learn from our '
      'quote history, and it costs six figures every year. CostVision is on-prem, self-learning, and our IP.'),
     ('Is our data training a public AI?', 'No. AI calls run zero-retention in our own cloud tenancy (Option B) — and in '
      'air-gapped mode there are provably no external calls at all. Nothing is ever used to train public models.'),
-    ('What if the key developer leaves?', '1,005 automated tests define how everything must behave, the architecture is '
+    ('What if the key developer leaves?', '1,777 automated tests define how everything must behave, the architecture is '
      'documented in writing, and Phase 4 trains a named CAPEE-side maintainer.'),
     ('What does it cost to run?', 'One VM, a standard corporate database, and pay-per-use AI in our tenancy. '
      'No licences, no per-seat fees.'),
