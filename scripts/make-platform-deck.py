@@ -93,7 +93,14 @@ def txt(s, x, y, w, h, runs, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP, space=1
 def notes(s, text):
     s.notes_slide.notes_text_frame.text = text
 
-def header(s, kicker, title, idx):
+_slide_no = [0]
+
+def header(s, kicker, title, idx=None):
+    """Slide chrome. `idx` is COUNTED, not typed: a deck that renumbers itself
+    is a deck somebody will actually insert a slide into."""
+    if idx is None:
+        _slide_no[0] += 1
+        idx = _slide_no[0]
     rect(s, 0, 0, EMU_W, Inches(1.35), fill=NAVY2)
     rect(s, 0, Inches(1.35), EMU_W, Pt(3), fill=TEAL)
     rect(s, Inches(0.55), Inches(0.42), Inches(0.11), Inches(0.55), fill=GOLD)
@@ -193,7 +200,7 @@ notes(s, "Open warmly: 'Thanks for making time. I want to walk you through Brain
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 2 — THE PROBLEM
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Why this matters", "The Cost-Engineering Challenge", 2); footer(s)
+s = slide(); bg(s); header(s, "Why this matters", "The Cost-Engineering Challenge"); footer(s)
 pains = [
     ("●", "Slow to insight", "Manual should-costing and VAVE workshops take days to weeks per part — ideas arrive after the design is frozen.", ROSE),
     ("◆", "Hard to defend", "Spreadsheet estimates and gut-feel savings don't survive scrutiny in a sourcing or programme review.", GOLD),
@@ -217,7 +224,7 @@ notes(s, "Frame the pain the Director already feels. Two moves matter here: firs
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 3 — WHAT IS BRAINSPARK
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Overview", "What is BrainSpark?", 3); footer(s)
+s = slide(); bg(s); header(s, "Overview", "What is BrainSpark?"); footer(s)
 txt(s, Inches(0.6), Inches(1.65), Inches(12), Inches(0.9),
     [[("A single platform that generates ", 18, LIGHT, False), ("cost-reduction & value-improvement ideas", 18, TEAL, True),
       (" across the whole vehicle — and prices every one of them on a deterministic should-cost engine.", 18, LIGHT, False)]], space=1.1)
@@ -239,7 +246,7 @@ notes(s, "This is the elevator pitch in one slide. Say it plainly: 'BrainSpark g
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 4 — THE USP / TRUST ARCHITECTURE
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "The core differentiator", "Our USP: AI Proposes, the Engine Verifies", 4); footer(s)
+s = slide(); bg(s); header(s, "The core differentiator", "Our USP: AI Proposes, the Engine Verifies"); footer(s)
 txt(s, Inches(0.6), Inches(1.6), Inches(12.1), Inches(0.55),
     [("Most AI tools estimate savings. BrainSpark checks every figure against real engineering — so nothing is hallucinated.", 15, SLATE, False)])
 # three-stage trust flow
@@ -268,7 +275,7 @@ notes(s, "This is the most important slide — slow down. The trap with AI is co
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 5 — WHOLE-VEHICLE COVERAGE
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Breadth", "Whole-Vehicle System Coverage", 5); footer(s)
+s = slide(); bg(s); header(s, "Breadth", "Whole-Vehicle System Coverage"); footer(s)
 txt(s, Inches(0.6), Inches(1.6), Inches(12), Inches(0.5),
     [("One platform spans the full vehicle — powertrain to trim, ICE to BEV — with curated levers and benchmarks for each system.", 14, SLATE, False)])
 systems = [
@@ -292,7 +299,7 @@ notes(s, "The point of this slide is breadth. Cost tools are usually single-comm
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 6 — FEATURE: AI IDEA GENERATION
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Capability 1", "AI Idea Generation", 6); footer(s)
+s = slide(); bg(s); header(s, "Capability 1", "AI Idea Generation"); footer(s)
 txt(s, Inches(0.6), Inches(1.6), Inches(6.4), Inches(0.5), [("Pick a system, set the context, generate.", 15, TEAL, True, FONTSB)])
 pts = [
     ("System-aware & grounded", "Ideas tuned to system, vehicle type, volume and region — with live web search for current prices and innovations."),
@@ -325,7 +332,7 @@ notes(s, "Now we go one level down into the first capability. The story: an engi
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 7 — FEATURE: SHOULD-COST ENGINE
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Capability 2", "Deterministic Should-Cost Engine", 7); footer(s)
+s = slide(); bg(s); header(s, "Capability 2", "Deterministic Should-Cost Engine"); footer(s)
 txt(s, Inches(0.6), Inches(1.6), Inches(12), Inches(0.5),
     [("Bottom-up piece-price from real drivers — no black box, fully reproducible.", 15, TEAL, True, FONTSB)])
 drivers = [
@@ -352,7 +359,7 @@ notes(s, "This is the engine behind every number. Stress that it's bottom-up and
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 8 — FEATURE: CAD-TO-COST
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Capability 3", "Feature-Based CAD-to-Cost", 8); footer(s)
+s = slide(); bg(s); header(s, "Capability 3", "Feature-Based CAD-to-Cost"); footer(s)
 txt(s, Inches(0.6), Inches(1.6), Inches(12.1), Inches(0.5),
     [("Upload a STEP / STL model or a 2D drawing — cost is driven by the geometry itself, the way aPriori-class tools work.", 14.5, TEAL, True, FONTSB)])
 # pipeline
@@ -377,7 +384,7 @@ notes(s, "This is the slide engineers get excited about. Instead of guessing cos
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 9 — PCB & ELECTRONICS COST INTELLIGENCE (NEW)
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Capability 3b — new", "Electronics: PCB Cost Intelligence", 9); footer(s)
+s = slide(); bg(s); header(s, "Capability 3b — new", "Electronics: PCB Cost Intelligence"); footer(s)
 txt(s, Inches(0.6), Inches(1.55), Inches(12.1), Inches(0.5),
     [("Photograph a circuit board — get a multi-country should-cost with live component prices and a full cost breakdown.", 14.5, TEAL, True, FONTSB)])
 # left: the pipeline
@@ -411,9 +418,82 @@ for t, b, c in outs:
 notes(s, "This one is brand new since the last update, and it fills a real gap — electronics. The workflow is deliberately simple: photograph the board, or drop in the BOM as Excel or PDF, and the AI reads the components off the image. Where a part number resolves, we pull a live distributor price and tag it LIVE; where it doesn't, the estimate is clearly tagged as AI — we never blur the two. Then the engine costs assembly, test and fabrication across twelve manufacturing countries side by side, with a proper sensitivity view and an open-book cost breakdown a supplier would recognise. If procurement has ever asked 'what should this ECU cost from Vietnam versus China?' — this answers it in minutes.")
 
 # ════════════════════════════════════════════════════════════════════════════
+# DFM / DFA STUDIO
+#
+# This deck predated the tool entirely — the largest capability gap in it.
+# Figures here are the ones the DFM deck counts from the code: 248 rules across
+# 35 process families, 33 thresholds from a first-hand primary source, and a
+# geometry gate of 200 analytic checks.
+# ════════════════════════════════════════════════════════════════════════════
+s = slide(); bg(s); header(s, "Capability 4 — new", "DFM / DFA Studio: Manufacturability, Measured"); footer(s)
+txt(s, Inches(0.6), Inches(1.55), Inches(12.1), Inches(0.5),
+    [("Upload a STEP file. Every rule your chosen process breaks — marked on the faces that broke it, priced by the same engines that quote the part.", 14.5, TEAL, True, FONTSB)])
+dfm_steps = [
+    ("↑", "Read", "OpenCascade measures draft, undercuts, wall thickness and tool reach from the B-rep — no AI in the measurement"),
+    ("◆", "Judge", "248 rules across 35 process families, thresholds resolved for YOUR alloy, each one citing its source"),
+    ("●", "Locate", "Every finding paints the actual faces that broke it; click a face to jump back to its finding"),
+    ("▲", "Decide", "Findings priced per part and per year, written as actions with an owner-role and a target date"),
+]
+y = Inches(2.2)
+for g, t, b in dfm_steps:
+    icon_badge(s, Inches(0.6), y, g, GOLD, d=Inches(0.46))
+    txt(s, Inches(1.25), y-Inches(0.04), Inches(5.6), Inches(0.4), [(t, 13.5, WHITE, True, FONTSB)])
+    txt(s, Inches(1.25), y+Inches(0.33), Inches(5.65), Inches(0.75), [(b, 11, SLATE, False)], space=1.03)
+    y += Inches(1.08)
+rect(s, Inches(7.1), Inches(1.95), Inches(5.6), Inches(4.6), fill=NAVY2, line=BORDER, line_w=1.0, shape=MSO_SHAPE.ROUNDED_RECTANGLE, shadow=True)
+txt(s, Inches(7.4), Inches(2.15), Inches(5.0), Inches(0.4), [("WHY IT IS BELIEVABLE", 11, SLATED, True, FONTSB)])
+dfm_outs = [
+    ("Three outcomes, not two", "pass, fail, or NOT EVALUATED with the reason — a rule that could not run is never a pass", TEAL),
+    ("200 / 200 geometry gate", "every fixture is a shape whose truth is arithmetic; CI fails on any regression", EMER),
+    ("Nine primary standards, read", "NADCA, SFSA, DuPont, Covestro, ISO 8062-4, DIN 16742 — 33 thresholds now first-hand", GOLD),
+    ("It reads the drawing too", "2D tolerances judged by the same rules, then cross-checked against the 3D model", PURPLE),
+]
+yy = Inches(2.6)
+for t, b, c in dfm_outs:
+    icon_badge(s, Inches(7.4), yy, "▪", c, d=Inches(0.36))
+    txt(s, Inches(7.95), yy-Inches(0.05), Inches(4.6), Inches(0.4), [(t, 12.5, WHITE, True, FONTSB)], space=1.0)
+    txt(s, Inches(7.95), yy+Inches(0.3), Inches(4.6), Inches(0.6), [(b, 10.5, SLATE, False)], space=1.02)
+    yy += Inches(0.98)
+notes(s, "This is the newest major tool and it closes the loop between design and cost. You upload a STEP file, tell it the material and the process, and it measures the part — draft angles, undercuts, wall thickness, whether a cutter can physically reach a surface. That measurement is pure geometry; there is no AI anywhere in it. Then 248 rules across 35 process families judge it, with the threshold resolved for your specific alloy, and every rule citing where its number came from. The thing suppliers react to is on the right of the third row: a finding does not just say 'undercut' — it paints the actual faces that broke the rule, and you can click a painted face to jump back to the finding. Two points of discipline worth stressing to a sceptic. First, three outcomes: pass, fail, or NOT EVALUATED with the reason — a rule that could not run is never quietly counted as a pass. Second, the accuracy gate: two hundred analytic fixtures whose correct answer is arithmetic, and CI fails on any regression. And since most of our supply base still puts requirements on a 2D drawing, it reads the drawing as well and tells you where the drawing and the model disagree.")
+
+# ════════════════════════════════════════════════════════════════════════════
+# HORIZON — technology foresight
+# ════════════════════════════════════════════════════════════════════════════
+s = slide(); bg(s); header(s, "Capability 5 — new", "Horizon: Which Technology, and When"); footer(s)
+txt(s, Inches(0.6), Inches(1.55), Inches(12.1), Inches(0.5),
+    [("Sourcing decisions outlive the technology they were made on. Horizon dates the change — with evidence, and with a band around every year.", 14.5, TEAL, True, FONTSB)])
+hz_steps = [
+    ("◆", "Curated register", "180 technologies across every commodity, ICE through BEV — each with adoption, cost trajectory and a confidence tier"),
+    ("↑", "Evidence, computed", "Patent-filing velocity from PatentsView and cited retrieval — the numbers come from engines, never from the model"),
+    ("●", "Segment lenses", "One click focuses the whole register on our battleground — off-road, luxury SUV, software-defined vehicle"),
+    ("▲", "Prediction ledger", "Old forecasts are snapshotted and scored against what happened. A foresight tool that never grades itself is astrology"),
+]
+y = Inches(2.2)
+for g, t, b in hz_steps:
+    icon_badge(s, Inches(0.6), y, g, PURPLE, d=Inches(0.46))
+    txt(s, Inches(1.25), y-Inches(0.04), Inches(5.6), Inches(0.4), [(t, 13.5, WHITE, True, FONTSB)])
+    txt(s, Inches(1.25), y+Inches(0.33), Inches(5.65), Inches(0.75), [(b, 11, SLATE, False)], space=1.03)
+    y += Inches(1.08)
+rect(s, Inches(7.1), Inches(1.95), Inches(5.6), Inches(4.6), fill=NAVY2, line=BORDER, line_w=1.0, shape=MSO_SHAPE.ROUNDED_RECTANGLE, shadow=True)
+txt(s, Inches(7.4), Inches(2.15), Inches(5.0), Inches(0.4), [("WHAT ONE QUERY RETURNS", 11, SLATED, True, FONTSB)])
+hz_outs = [
+    ("Three horizon lanes", "act now, plan for it, or watch — so a roadmap can be built from it", TEAL),
+    ("Crossing years, with a band", "when a technology reaches a quarter and half its market — never a single false-precision year", GOLD),
+    ("Regulatory radar", "dated obligations with their LEGAL status, not just the headline", ROSE),
+    ("A board-ready report", "expert-panel critique and a branded multi-page PDF, one click each", EMER),
+]
+yy = Inches(2.6)
+for t, b, c in hz_outs:
+    icon_badge(s, Inches(7.4), yy, "▪", c, d=Inches(0.36))
+    txt(s, Inches(7.95), yy-Inches(0.05), Inches(4.6), Inches(0.4), [(t, 12.5, WHITE, True, FONTSB)], space=1.0)
+    txt(s, Inches(7.95), yy+Inches(0.3), Inches(4.6), Inches(0.6), [(b, 10.5, SLATE, False)], space=1.02)
+    yy += Inches(0.98)
+notes(s, "The other tool this deck did not cover. The problem it solves is one we all live with: a sourcing decision commits us for seven years, and we make it on today's technology assumptions. Horizon dates the change. Behind it is a curated register of a hundred and eighty technologies across every commodity, from ICE through to battery-electric, each carrying an adoption curve, a cost trajectory and a confidence tier. The evidence layer is the part that separates it from asking a chatbot: patent-filing velocity is computed from the real PatentsView database, and retrieved sources are cited or the finding is dropped server-side. Numbers come from engines; the AI writes the prose. Two things to point at on the right. Crossing years always come with a band — anyone who gives you a single year for the future is selling false precision. And the prediction ledger: it snapshots its own old forecasts and scores them against what actually happened. A foresight tool that never checks its own predictions is astrology, and I would rather show you our error than hide it.")
+
+# ════════════════════════════════════════════════════════════════════════════
 # SLIDE 10 — ACCURACY CHART (feature vs mass)
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Proof point", "Feature-Based Accuracy vs a Mass Estimate", 10); footer(s)
+s = slide(); bg(s); header(s, "Proof point", "Feature-Based Accuracy vs a Mass Estimate"); footer(s)
 txt(s, Inches(0.6), Inches(1.6), Inches(12), Inches(0.5),
     [("Held-out benchmark — average error vs reference prices (lower is better). Same parts, two methods.", 13.5, SLATE, False)])
 # Hand-drawn grouped bar chart — no embedded workbook, fully native shapes.
@@ -453,7 +533,7 @@ notes(s, "Proof, not claims. This is a held-out benchmark — parts the model wa
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 11 — INNOVATION METHODS (now 11 methods)
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Capability 4", "Eleven Structured Innovation Methods — Built In", 11); footer(s)
+s = slide(); bg(s); header(s, "Capability 6", "Eleven Structured Innovation Methods — Built In"); footer(s)
 txt(s, Inches(0.6), Inches(1.55), Inches(12), Inches(0.5),
     [("Real methodology as deterministic logic — not a chatbot prompt. The AI turns each method's output into concrete, engine-checked embodiments.", 13, SLATE, False)])
 methods = [
@@ -480,7 +560,7 @@ notes(s, "A differentiator versus generic AI tools: these are genuine engineerin
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 12 — SELF-IMPROVING AI: DEEP MODE + LEARNING LOOP (NEW)
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "New — how it gets better", "Deep Mode & the Learning Loop", 12); footer(s)
+s = slide(); bg(s); header(s, "New — how it gets better", "Deep Mode & the Learning Loop"); footer(s)
 txt(s, Inches(0.6), Inches(1.55), Inches(12.1), Inches(0.5),
     [("The same architecture the research labs use for scientific discovery: propose, critique, rank, repair — verified at every step.", 14, TEAL, True, FONTSB)])
 # left: deep mode pipeline
@@ -517,7 +597,7 @@ notes(s, "This slide answers the question every director should ask about AI too
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 13 — MARKETPLACE + ANALYTICS
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Capabilities 5 & 6", "Idea Marketplace + Decision Analytics", 13); footer(s)
+s = slide(); bg(s); header(s, "Capabilities 7 & 8", "Idea Marketplace + Decision Analytics"); footer(s)
 # left: marketplace
 rect(s, Inches(0.6), Inches(1.7), Inches(5.9), Inches(4.85), fill=NAVY2, line=BORDER, line_w=1.0, shape=MSO_SHAPE.ROUNDED_RECTANGLE, shadow=True)
 icon_badge(s, Inches(0.9), Inches(1.95), "★", EMER, d=Inches(0.6))
@@ -545,7 +625,7 @@ notes(s, "Two capabilities that make it a platform rather than a gadget. On the 
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 14 — END-TO-END WORKFLOW
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "How it works", "End-to-End Workflow", 14); footer(s)
+s = slide(); bg(s); header(s, "How it works", "End-to-End Workflow"); footer(s)
 txt(s, Inches(0.6), Inches(1.55), Inches(12), Inches(0.45),
     [("From a part or a CAD file to a tracked, defensible saving — one continuous flow.", 14, SLATE, False)])
 flow = [("1","Select / Upload","Choose a system or drop a CAD model","↑",TEAL),
@@ -574,7 +654,7 @@ notes(s, "Tie it all together as one flow. Select a system or upload a CAD file;
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 15 — AI CAPABILITIES
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Under the hood", "AI Capabilities", 15); footer(s)
+s = slide(); bg(s); header(s, "Under the hood", "AI Capabilities"); footer(s)
 ai = [
     ("★","Agentic reasoning","The AI calls the cost engine as a tool, tests alternatives, and learns from rejections — it explores, it doesn't just answer.",TEAL),
     ("◆","Grounded web search","Live search for current commodity prices and recent OEM innovations before it generates.",GOLD),
@@ -592,7 +672,7 @@ notes(s, "For a technically-curious Director, here's what the AI actually does �
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 16 — TECHNOLOGY STACK
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Engineering", "Technology & Tools Used", 16); footer(s)
+s = slide(); bg(s); header(s, "Engineering", "Technology & Tools Used"); footer(s)
 groups = [
     ("AI & Reasoning", TEAL, ["Anthropic Claude (Opus / Sonnet)", "Agentic tool-use loop", "Expert-panel & tournament ranking", "Structured JSON output"]),
     ("Frontend", BLUE, ["React + TypeScript + Vite", "Tailwind CSS UI", "Three.js 3D CAD viewer", "PWA / mobile (Capacitor)"]),
@@ -615,11 +695,11 @@ notes(s, "Keep this light unless the Director is technical. Headline: it's built
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 17 — THE ENGINEERING EFFORT (NEW)
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "Behind the scenes", "The Engineering Effort Behind the Tool", 17); footer(s)
+s = slide(); bg(s); header(s, "Behind the scenes", "The Engineering Effort Behind the Tool"); footer(s)
 txt(s, Inches(0.6), Inches(1.55), Inches(12.1), Inches(0.5),
     [("Engineer-directed, AI-accelerated development — the same human + AI leverage the tool itself delivers.", 14.5, TEAL, True, FONTSB)])
 # top stat strip
-estats = [("42,600+", "lines of production code"), ("150+", "source files"), ("285", "automated tests"), ("1 : 7.7", "test-to-product code ratio")]
+estats = [("95,000+", "lines of production code"), ("279", "source files"), ("758", "automated tests"), ("CI-gated", "accuracy benchmarks")]
 sx = Inches(0.6)
 for v, l in estats:
     rect(s, sx, Inches(2.15), Inches(2.95), Inches(1.05), fill=NAVY2, line=BORDER, line_w=1.0, shape=MSO_SHAPE.ROUNDED_RECTANGLE)
@@ -646,7 +726,7 @@ for t, v, c in code:
 rect(s, Inches(7.65), Inches(3.42), Inches(5.08), Inches(3.25), fill=NAVY2, line=BORDER, line_w=1.0, shape=MSO_SHAPE.ROUNDED_RECTANGLE, shadow=True)
 txt(s, Inches(7.95), Inches(3.56), Inches(4.5), Inches(0.35), [("WHAT THAT DISCIPLINE BUYS", 11, SLATED, True, FONTSB)])
 buys = [
-    "Every cost engine ships with unit tests — 285 run on every change",
+    "Every cost engine ships with unit tests — 758 run on every change",
     "Accuracy proven on held-out parts, not tuned to look good",
     "AI changes are A/B-measured; a debt report flags unmeasured claims",
     "Daily automatic backups, a decision log & an honest known-gaps register",
@@ -662,7 +742,7 @@ notes(s, "This slide is about the effort and the standard — and be upfront abo
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 18 — BENEFITS
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "The value", "Benefits & Business Impact", 18); footer(s)
+s = slide(); bg(s); header(s, "The value", "Benefits & Business Impact"); footer(s)
 ben = [
     ("●","Speed","Costed ideas in minutes","From part or CAD to a defensible number in minutes, not the days a manual should-cost takes.",TEAL),
     ("✓","Confidence","Numbers that survive review","Every figure is engine-verified and reproducible — defensible in sourcing and programme gates.",EMER),
@@ -708,9 +788,9 @@ notes(s, "Transition to the live tool. Keep the demo tight — five beats, mirro
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 20 — ROADMAP
 # ════════════════════════════════════════════════════════════════════════════
-s = slide(); bg(s); header(s, "What's next", "Roadmap", 20); footer(s)
-phases = [("NOW","Live today", EMER, ["Self-improving AI ideation + Deep Mode","PCB suite: photo → BOM → 12-country cost","Should-cost + quote-gap closure","11 innovation methods, engine-checked","Marketplace, scorecards & patent check"]),
-          ("NEXT","3–6 months", GOLD, ["Feature-based casting & moulding","Weld / assembly cost models","Empirical confidence bands","Commonality & variant reduction"]),
+s = slide(); bg(s); header(s, "What's next", "Roadmap"); footer(s)
+phases = [("NOW","Live today", EMER, ["DFM / DFA Studio — 248 rules, 35 families","Horizon foresight — 180 technologies dated","Self-improving AI ideation + Deep Mode","PCB suite: photo → BOM → 12-country cost","Marketplace, scorecards & patent check"]),
+          ("NEXT","3–6 months", GOLD, ["Weld / assembly cost models","Empirical confidence bands","Commonality & variant reduction","Wider 2D-drawing coverage (GD&T datums)"]),
           ("LATER","Vision", TEAL, ["Composite & paint models","Team collaboration & approvals","ERP / PLM integration","Portfolio-level cost intelligence"])]
 x = Inches(0.6)
 for tag, when, c, items in phases:
@@ -724,7 +804,7 @@ for tag, when, c, items in phases:
         icon_badge(s, x+Inches(0.28), yy, "▪", c, d=Inches(0.32))
         txt(s, x+Inches(0.7), yy-Inches(0.02), Inches(3.1), Inches(0.6), [(it, 11.5, LIGHT, False)], space=1.02)
     x += Inches(4.08)
-notes(s, "Show momentum and a credible path — and note how much moved from 'next' into 'now' since the last version of this deck: the PCB suite, Deep Mode, the learning loop, the new methods, scorecards and the patent check all shipped in the past fortnight. 'Next' is the near-term engineering: more commodity models and tighter empirical confidence bands. 'Later' is the vision — collaboration, PLM/ERP integration and portfolio-level cost intelligence. The subtext for the Director: this isn't finished-and-frozen, it's a living platform with visible velocity — and with a little support it accelerates.")
+notes(s, "Show momentum and a credible path — and note how much moved from 'next' into 'now' since the last version of this deck: the whole DFM/DFA Studio and the Horizon foresight tool are both new, and the feature-based casting and moulding models that sat under 'next' last time shipped inside the Studio. 'Next' is the near-term engineering: more commodity models and tighter empirical confidence bands. 'Later' is the vision — collaboration, PLM/ERP integration and portfolio-level cost intelligence. The subtext for the Director: this isn't finished-and-frozen, it's a living platform with visible velocity — and with a little support it accelerates.")
 
 # ════════════════════════════════════════════════════════════════════════════
 # SLIDE 18 — ASK / CLOSE
