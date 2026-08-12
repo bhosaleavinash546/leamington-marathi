@@ -151,7 +151,8 @@ def slide_header(slide, slide_num, section_label, title_text, subtitle_text=""):
         Inches(0.4), H - Inches(0.4), W - Inches(0.8), Inches(0.35),
         size=7.5, color=TEXT_D, align=PP_ALIGN.CENTER)
 
-def card(slide, x, y, w, h, title, body, accent=ACCENT_B, icon=""):
+def card(slide, x, y, w, h, title, body, accent=ACCENT_B, icon="",
+         title_pt=9.5, body_pt=8.5):
     """Card with coloured left border, title, body."""
     # Card background
     r = rect(slide, x, y, w, h, SURFACE2, BORDER, Pt(0.5))
@@ -159,11 +160,11 @@ def card(slide, x, y, w, h, title, body, accent=ACCENT_B, icon=""):
     rect(slide, x, y, Inches(0.06), h, accent)
     # Icon + Title
     title_text = f"{icon}  {title}" if icon else title
-    txb(slide, title_text, x + Inches(0.14), y + Inches(0.1), w - Inches(0.2), Inches(0.32),
-        size=9.5, bold=True, color=TEXT_W)
+    txb(slide, title_text, x + Inches(0.14), y + Inches(0.1), w - Inches(0.2), Inches(0.34),
+        size=title_pt, bold=True, color=TEXT_W)
     # Body
-    txb(slide, body, x + Inches(0.14), y + Inches(0.38), w - Inches(0.2), h - Inches(0.5),
-        size=8.5, color=TEXT_G, wrap=True)
+    txb(slide, body, x + Inches(0.14), y + Inches(0.42), w - Inches(0.2), h - Inches(0.54),
+        size=body_pt, color=TEXT_G, wrap=True)
 
 def stat_card(slide, x, y, w, h, number, label, color=ACCENT_B):
     """Stat card with big number."""
@@ -216,12 +217,12 @@ def flow_box(slide, x, y, w, h, num, icon, title, body, color=ACCENT_B):
 def comm_card(slide, x, y, w, h, icon, name, sub, color=BORDER):
     """Small commodity card."""
     rect(slide, x, y, w, h, SURFACE2, color, Pt(0.8))
-    txb(slide, icon, x, y + Inches(0.06), w, Inches(0.32),
-        size=13, color=TEXT_W, align=PP_ALIGN.CENTER)
-    txb(slide, name, x, y + Inches(0.34), w, Inches(0.22),
-        size=8.0, bold=True, color=TEXT_W, align=PP_ALIGN.CENTER)
-    txb(slide, sub, x, y + Inches(0.56), w, Inches(0.5),
-        size=7.5, color=TEXT_D, align=PP_ALIGN.CENTER)
+    txb(slide, icon, x, y + Inches(0.18), w, Inches(0.40),
+        size=17, color=TEXT_W, align=PP_ALIGN.CENTER)
+    txb(slide, name, x, y + Inches(0.64), w, Inches(0.26),
+        size=9.0, bold=True, color=TEXT_W, align=PP_ALIGN.CENTER)
+    txb(slide, sub, x, y + Inches(0.94), w, Inches(0.58),
+        size=8.0, color=TEXT_D, align=PP_ALIGN.CENTER)
 
 # ─── TABLE HELPER ─────────────────────────────────────────────────────────────
 
@@ -841,16 +842,16 @@ slide_header(slide, 9, "Full Coverage", "21 Manufacturing Commodities — One Pl
 
 # 21 commodity cards
 commodities = [
-    ("⚙️",  "CNC Machining",       "3/4/5-axis, turning, grinding"),
+    ("🛠️", "CNC Machining",        "3/4/5-axis, turning, grinding"),
     ("🪨",  "Casting",              "HPDC, gravity, investment, sand"),
     ("🏗️", "Cast + Machine",       "Casting + post-ops + HT"),
     ("🔨",  "Forging",              "Hot, warm, cold die forging"),
     ("🪗",  "Sheet Metal",          "Progressive/transfer die"),
-    ("🔩",  "Sheet Metal Fab",      "Laser · punch · press brake · MIG"),
+    ("✂️",  "Sheet Metal Fab",      "Laser · punch · press brake · MIG"),
     ("⚙️",  "Gear Cutting",         "Hob · shape · skive · broach · grind"),
     ("🏺",  "Injection Moulding",   "Thermoplastics, multi-cavity"),
     ("🫧",  "Blow Moulding",        "HDPE, PET, extrusion blow"),
-    ("🔩",  "Extrusion",            "Profile, pipe, sheet, rod"),
+    ("📏",  "Extrusion",            "Profile, pipe, sheet, rod"),
     ("♨️",  "Thermoforming",        "Vacuum, pressure, twin-sheet"),
     ("🔄",  "Rotational Moulding",  "Large hollow shapes, LLDPE"),
     ("🧱",  "Rubber Moulding",      "Compression, injection, LSR"),
@@ -860,16 +861,22 @@ commodities = [
     ("🖥️", "PCB Fabrication",      "2–16L, HDI, rigid-flex, RF/μwave"),
     ("🔌",  "PCBA / SMD",           "SMT, TH, reflow, conformal coat"),
     ("🔗",  "Wiring Harness",       "Cut-strip-crimp, test, sub-asm"),
-    ("🔗",  "Assembly BOM Rollup",  "Multi-part BOM, full cost rollup"),
+    ("🧩",  "Assembly BOM Rollup",  "Multi-part BOM, full cost rollup"),
     ("🤖",  "AI Agent",             "Natural language → any commodity"),
 ]
+
+# Two cards sharing a glyph reads as a mistake from the back of the room — ⚙️,
+# 🔩 and 🔗 were each doing duty on two commodities until the render showed it.
+assert len({icon for icon, _, _ in commodities}) == len(commodities), \
+    'two commodity cards share an icon'
 
 # 6 wide x 4 rows. Eight columns fitted the page but squeezed the subtitle to
 # 6 pt, which no projector makes legible; the card must be wide enough to carry
 # 7.5 pt type, so the column count follows the type, not the other way round.
-cols_c = 6
+cols_c = 7                      # 21 cards = exactly 3 full rows, no orphans
 cw_c = (W - Inches(0.9)) / cols_c - Inches(0.055)
-ch_c = Inches(1.15)
+_rows_c = -(-len(commodities) // cols_c)
+ch_c = (Inches(6.95) - Inches(1.98) - Inches(0.065) * (_rows_c - 1)) / _rows_c
 sx_c = Inches(0.45)
 sy_c = Inches(1.98)
 
@@ -904,7 +911,7 @@ slide_header(slide, 10, "Engineering Depth", "Should-Cost Model Architecture",
 depth_cards = [
     (ACCENT_B, "📦 Material Database",
      "30+ materials: alloy steels, aluminium grades, engineering plastics, elastomers, composites, PCB laminates, copper alloys. FX-adjusted per region."),
-    (ACCENT_G, "⚙️ Machine & Rate Library",
+    (ACCENT_G, "🏭 Machine & Rate Library",
      "50+ machine types: CNC centres, presses, moulding machines, SMT lines, reflow ovens, test equipment. Hourly rates editable per project and region."),
     (ORANGE,   "🛤️ Routing & Process Logic",
      "AI-driven operation sequencing. Each operation: machine ID, cycle time (hr), OEE, setup time, labour grade, overhead allocation."),
@@ -916,12 +923,16 @@ depth_cards = [
      "20 regions — each with calibrated labour tiers (skilled/semi-skilled/engineer/inspector), energy costs, and machine hour rates."),
     (ORANGE,   "📊 Benchmarks & Sensitivity",
      "Every cost element benchmarked vs aPriori/Cleansheet ranges. Tornado chart shows top 10 cost drivers at ±10%. Scenario A/B/C comparison."),
-    (ACCENT_P, "📉 Learning Curve (Wright's Law)",
-     "Configure 85% (or custom) learning curve to project volume-driven cost reduction. Essential for programme pricing and LTA negotiations."),
+    (ACCENT_P, "📉 Learning Curve",
+     "Wright's Law: configure an 85% (or custom) curve to project volume-driven cost reduction. Essential for programme pricing and LTA negotiations."),
     (ACCENT_G, "💰 Supplier Quote Comparison",
      "Log supplier quotes (name, date, price, currency). Compare vs should-cost instantly — identify margin gaps and overhead inflation."),
     (ACCENT_B, "🤖 AI-Driven Assumptions",
      "Where geometry is unknown, Claude AI fills assumptions transparently — material, complexity, process, geometry — with explanation of every decision."),
+    (ORANGE,   "⚙️ Gear Cutting Kinematics",
+     "Hobbing, shaping, power-skiving and grinding cycles derived from gear-train arithmetic rather than rules of thumb. Machine sized on module × diameter × face width."),
+    (ACCENT_P, "🚢 Landed Cost & Customs",
+     "Duty on customs value, CBAM carbon border levy, rules of origin and incoterms — the cost at our door, not at the supplier's gate."),
 ]
 
 # Card width is DERIVED from the slide, never typed. A hardcoded 3.88" put
@@ -932,16 +943,30 @@ COLS_D = 4
 MARGIN_D = Inches(0.45)
 gap_d = Inches(0.1)
 cw_d = (W - MARGIN_D * 2 - gap_d * (COLS_D - 1)) / COLS_D
-ch_d = Inches(1.28)
+# 12 cards over 4 columns is exactly 3 full rows — no orphan row — and the card
+# height is derived so the block finishes just above the footer instead of
+# leaving 1.5" of dead slide beneath it.
 sx_d = MARGIN_D
 sy_d = Inches(1.98)
+BOTTOM_D = Inches(6.95)
+rows_d = -(-len(depth_cards) // COLS_D)
+ch_d = (BOTTOM_D - sy_d - gap_d * (rows_d - 1)) / rows_d
 assert sx_d + (COLS_D - 1) * (cw_d + gap_d) + cw_d <= W, 'depth grid overflows the slide'
+assert sy_d + (rows_d - 1) * (ch_d + gap_d) + ch_d <= BOTTOM_D + Inches(0.01)
+# The card body sits at a fixed offset below the title, so a title that wraps to
+# a second line lands ON the body text. "Learning Curve (Wright's Law)" (31 ch)
+# did exactly that; "Tooling & NRE Amortisation" (28 ch) is the longest measured
+# to stay on one line at 10.5 pt in a 3.03" card. Budget set from the render.
+TITLE_CH_MAX = 29
+for _, _t, _ in depth_cards:
+    assert len(_t) <= TITLE_CH_MAX, f'card title wraps onto the body: {_t!r}'
 
 for i, (col, title, body) in enumerate(depth_cards):
     r, c = divmod(i, COLS_D)
     cx_d = sx_d + c * (cw_d + gap_d)
     cy_d = sy_d + r * (ch_d + gap_d)
-    card(slide, cx_d, cy_d, cw_d, ch_d, title, body, accent=col)
+    card(slide, cx_d, cy_d, cw_d, ch_d, title, body, accent=col,
+         title_pt=10.5, body_pt=9.5)
 
 notes(slide,
     "If anyone in the room is going to be sceptical, it's usually about depth — is this a real "
