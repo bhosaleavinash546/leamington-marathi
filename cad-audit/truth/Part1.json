@@ -1,0 +1,22 @@
+{
+  "file": "Part1.stp",
+  "status": "success",
+  "volumeCm3": 429.434,
+  "surfaceAreaCm2": 829.77,
+  "bboxMm": [
+    274.48,
+    114.97,
+    58.23
+  ],
+  "bboxVolumeCm3": 1837.49,
+  "fillRatio": 0.2337,
+  "wall2VoverS_mm": 10.351,
+  "solids": 1,
+  "massKg": {
+    "aluminium": 1.1595,
+    "steel": 3.3711,
+    "cast_iron": 3.0919,
+    "plastic": 0.4509
+  },
+  "measureSeconds": 0.7
+}

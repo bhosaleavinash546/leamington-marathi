@@ -40,6 +40,43 @@ export function proseFamily(fam: MaterialFamily): string {
   return fam === 'plastic' ? 'a plastic' : fam === 'copper alloy' ? 'a copper alloy' : fam;
 }
 
+/**
+ * Resolve whatever arrived in `costInputSuggestions.materialId` to an id the
+ * form can actually select, or null if it cannot be resolved at all.
+ *
+ * The live audit (cad-audit/FINDINGS.md F1/F8) found three shapes arriving:
+ *   - a real library id            → returned unchanged
+ *   - a family token ('steel')     → what the metal rules emit (apply.ts maps
+ *     `machining.materialId` from a FAMILY decision)
+ *   - an invented id ('mat-hss')   → the model's habit, which the prompt itself
+ *     used to teach
+ * The old path passed all three to setMaterial(), which silently kept the DOM
+ * default when the id matched no option — so a steel flange was costed as the
+ * form's default aluminium at the steel weight, and a ductile-iron casting as
+ * LM25. The headless mapper has resolved these since the A/B
+ * (to-cost-params.ts::resolveMaterialId); this is the browser's equivalent.
+ */
+export function resolveFormMaterialId(
+  materialId: string,
+  commodity: string,
+  knownIds: ReadonlySet<string>,
+): string | null {
+  if (!materialId) return null;
+  if (knownIds.has(materialId)) return materialId;
+
+  // A family token, or an invented id that still names its family.
+  const fam = (['plastic', 'aluminium', 'magnesium', 'titanium', 'cast iron', 'steel', 'copper alloy']
+    .includes(materialId) ? materialId : familyFromFilename(materialId)) as MaterialFamily | null;
+  if (!fam) return null;
+
+  const cast = /cast|forg/.test(commodity);
+  const rep: Record<MaterialFamily, string> = cast
+    ? { aluminium: 'mat-lm25', magnesium: 'mat-mag-am60', titanium: '', 'cast iron': 'mat-gjs500', steel: 'mat-steel1045', 'copper alloy': '', plastic: '' }
+    : { aluminium: 'mat-al6061', magnesium: 'mat-mag-am60', titanium: 'mat-ti6al4v', 'cast iron': 'mat-gjs500', steel: 'mat-steel1045', 'copper alloy': 'mat-brass-cz121', plastic: 'mat-pa6' };
+  const id = rep[fam] || '';
+  return id && knownIds.has(id) ? id : null;
+}
+
 export interface MaterialSuggestion { materialId: string; name: string; confidencePct: number; reasoning?: string; [k: string]: unknown; }
 
 /**

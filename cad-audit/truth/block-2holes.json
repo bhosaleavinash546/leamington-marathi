@@ -1,0 +1,22 @@
+{
+  "file": "block-2holes.step",
+  "status": "success",
+  "volumeCm3": 44.858,
+  "surfaceAreaCm2": 97.42,
+  "bboxMm": [
+    60.0,
+    40.0,
+    20.0
+  ],
+  "bboxVolumeCm3": 48.0,
+  "fillRatio": 0.9346,
+  "wall2VoverS_mm": 9.209,
+  "solids": 1,
+  "massKg": {
+    "aluminium": 0.1211,
+    "steel": 0.3521,
+    "cast_iron": 0.323,
+    "plastic": 0.0471
+  },
+  "measureSeconds": 0.0
+}

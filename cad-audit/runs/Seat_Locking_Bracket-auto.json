@@ -1,0 +1,1481 @@
+{
+  "_audit": {
+    "part": "Seat_Locking_Bracket.stp",
+    "commodity": null,
+    "mode": "both",
+    "volume": 200000,
+    "deep": false,
+    "httpStatus": 200,
+    "seconds": 69,
+    "capturedAt": "2026-08-12T14:40:17.771Z"
+  },
+  "response": {
+    "success": true,
+    "analysis": {
+      "partName": "Seat_Locking_Bracket",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 255.77,
+          "y": 226.07,
+          "z": 31
+        },
+        "estimatedVolumeCm3": 71.066,
+        "estimatedSurfaceAreaCm2": 919.37,
+        "estimatedWeightKg": {
+          "aluminum": 0.1919,
+          "steel": 0.5579,
+          "castIron": 0.5081,
+          "plastic": 0.0746
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "Bend",
+          "description": "Multiple formed bends (progressive die stations)",
+          "count": 15,
+          "significance": "High"
+        },
+        {
+          "type": "Threaded feature",
+          "description": "Tapped/self-clinching fastener location detected",
+          "count": 1,
+          "significance": "Medium"
+        },
+        {
+          "type": "Free-form/B-spline surface",
+          "description": "235 B-spline faces suggest complex flanges/lofted bend transitions typical of structural seat brackets",
+          "count": 235,
+          "significance": "Medium"
+        },
+        {
+          "type": "Small radius fillet/relief",
+          "description": "Cylindrical relief radii (1.9-22.5mm) at bend reliefs and lightening holes",
+          "count": 50,
+          "significance": "Low"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "mat-hss",
+          "name": "High Strength Steel (HSLA, ~340-450MPa)",
+          "confidencePct": 72,
+          "reasoning": "Part name 'Seat_Locking_Bracket' indicates a structural, safety-critical automotive seat-locking component subject to crash-load requirements. Sheet gauge range (0.53-2.17mm, mean 1.55mm) with 15 bends and high annual volume (200k/yr) is consistent with HSLA/HSS sheet stamped in a progressive die, not aluminium — seat mechanisms require higher yield/shear strength than mild steel or aluminium for regulatory latch retention loads. No aluminium-specific signal (no thin-wall HPDC gauge, no lightweighting note) was present, so steel is preferred per guidance."
+        },
+        "alternatives": [
+          {
+            "materialId": "mat-dc01",
+            "name": "DC01 Mild Steel Sheet",
+            "confidencePct": 22
+          },
+          {
+            "materialId": "mat-al5052",
+            "name": "Al 5052 Sheet",
+            "confidencePct": 6
+          }
+        ]
+      },
+      "processRecommendations": [
+        {
+          "process": "Progressive die stamping",
+          "commodityType": "sheet_metal",
+          "confidencePct": 88,
+          "reasoning": "High-volume (200k/yr) structural bracket with multiple bends is classic progressive-die sheet-metal stamping; blank/strip geometry and pitch already computed deterministically.",
+          "estimatedCycleTimeHr": 0.971
+        },
+        {
+          "process": "5-axis CNC (prototype/low-vol only)",
+          "commodityType": "machining",
+          "confidencePct": 15,
+          "reasoning": "Bottom-up CNC cycle time provided for prototype/bridge tooling validation only; not economical at 200k/yr.",
+          "estimatedCycleTimeHr": 0.971
+        }
+      ],
+      "manufacturabilityScore": 20,
+      "manufacturabilityRisks": [
+        {
+          "severity": "High",
+          "feature": "Undercuts (32 faces)",
+          "description": "32 undercut faces detected relative to Z draw direction — indicates complex 3D bend/flange geometry that will require multi-stage progressive tooling and possibly secondary forming stations.",
+          "suggestion": "Re-sequence bend order and use cam-actuated stations or reorient blank to minimise undercut-forming stations."
+        },
+        {
+          "severity": "High",
+          "feature": "Wall thickness variation (σ=43mm nonsensical / range 0.53-2.17mm)",
+          "description": "Wide wall thickness range across the shell suggests mixed gauge or drawn/formed regions beyond simple flat-blank bending, risking tearing or spring-back inconsistency.",
+          "suggestion": "Confirm single uniform gauge for stamped blank; if variable thickness is real, consider tailor-welded blank or secondary coining."
+        },
+        {
+          "severity": "Medium",
+          "feature": "15 bend operations",
+          "description": "High bend count in a single progressive die increases die complexity, station count, and risk of cumulative spring-back stack-up affecting final flatness/tolerance.",
+          "suggestion": "Group compatible bends per station, add spring-back compensation and a restrike station."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Threaded feature",
+          "description": "Threaded feature detected — likely a self-clinching fastener or tapped hole not natively formed in a stamping die.",
+          "suggestion": "Add in-die self-piercing nut insertion station or plan secondary tapping/riveting operation."
+        },
+        {
+          "severity": "Low",
+          "feature": "Free-form B-spline flanges (235 faces)",
+          "description": "High B-spline face count implies smoothed/blended flange transitions that are harder to unfold accurately for flat-blank development.",
+          "suggestion": "Use dedicated sheet-metal unfold/flattening software validated against physical first-off samples."
+        }
+      ],
+      "costInputSuggestions": {
+        "recommendedCommodity": "sheet_metal",
+        "netWeightKg": 0.558,
+        "materialId": "mat-hss",
+        "estimatedCycleTimeHr": 0.971,
+        "estimatedSetupTimeHr": 0.75,
+        "estimatedOperations": [
+          {
+            "name": "Progressive die stamping (blank+15 bends)",
+            "machineId": "mach-haas-vf2",
+            "cycleTimeHr": 0.00049,
+            "labourId": "lab-uk-skilled",
+            "oee": 0.85,
+            "manning": 1,
+            "labourEfficiency": 0.92
+          },
+          {
+            "name": "Tapping/fastener insertion (secondary)",
+            "machineId": "mach-drill",
+            "cycleTimeHr": 0.005,
+            "labourId": "lab-uk-skilled",
+            "oee": 0.85,
+            "manning": 1,
+            "labourEfficiency": 0.92
+          }
+        ],
+        "sheetMetal": {
+          "thicknessMm": 0.53,
+          "blankLengthMm": 269,
+          "blankWidthMm": 237,
+          "dieCostGBP": 174184,
+          "dieLife": 1090000,
+          "numOps": 12,
+          "pitchMm": 272,
+          "stripWidthMm": 243,
+          "strokesPerMin": 34,
+          "dieType": "transfer",
+          "shearStrengthMPa": 280
+        },
+        "casting": {
+          "subtype": "sand",
+          "dieMouldCostGBP": 22500,
+          "dieMouldLife": 1,
+          "cavities": 1,
+          "yieldFraction": 0.6,
+          "cycleTimeHpdcSec": 0,
+          "cycleTimeSandGravHr": 0.17
+        },
+        "forging": {
+          "flashKg": 0,
+          "yieldFraction": 0.85,
+          "dieCostGBP": 96000,
+          "dieLife": 100000,
+          "strokes": 7,
+          "timePerBlowSec": 3
+        },
+        "injectionMoulding": {
+          "cavities": 1,
+          "projectedAreaCm2": 578.7,
+          "wallThicknessMm": 1.55,
+          "mouldCostGBP": 200000,
+          "mouldLife": 500000,
+          "runnerWeightKg": 0
+        },
+        "fieldConfidences": {
+          "geom-bbox": 0.98,
+          "geom-volume": 0.98,
+          "geom-surface": 0.98,
+          "bm-wall": 0.55,
+          "sheet-thickness": 0.5,
+          "sheet-blank-length": 0.95,
+          "sheet-blank-width": 0.95,
+          "sheet-die-cost": 0.9,
+          "sheet-die-life": 0.45,
+          "sheet-num-ops": 0.9,
+          "material-primary": 0.65,
+          "mfg-score": 0.99,
+          "cost-range": 0.45,
+          "sm-thick": 0.9,
+          "sm-blank-l": 0.8,
+          "sm-blank-w": 0.8,
+          "sm-num-ops": 0.75,
+          "sm-spm": 0.65,
+          "sm-die-cost": 0.65,
+          "sm-die-life": 0.6,
+          "sm-die-type": 0.8,
+          "sm-net-wt": 0.9,
+          "sm-shear": 0.7
+        },
+        "dfmIssues": [
+          {
+            "severity": "High",
+            "area": "Bend sequencing (15 bends)",
+            "description": "A large number of bends across a single progressive strip risks cumulative dimensional drift and spring-back stack-up, especially given non-uniform detected wall/gauge readings.",
+            "impact": "Out-of-tolerance flatness/angle leads to scrap or added restrike stations, raising unit cost 10-20%.",
+            "fix": "Simulate bend sequence in die-design software; add a restrike/calibration station; hold consistent gauge across the blank."
+          },
+          {
+            "severity": "High",
+            "area": "Undercut/3D flange geometry",
+            "description": "32 undercut faces relative to the draw direction indicate flanges or tabs that cannot be formed in a single straight-pull stamping motion.",
+            "impact": "Requires cam-driven secondary stations or multiple die sets, increasing progressive die cost beyond baseline estimate.",
+            "fix": "Reorient the part or split into two stamped sub-assemblies joined by spot-welding/riveting to eliminate undercuts."
+          },
+          {
+            "severity": "Medium",
+            "area": "Minimum wall/gauge 0.53mm",
+            "description": "Localised thin sections near 0.5mm are near the practical minimum for HSS stamping without splitting at tight bend radii.",
+            "impact": "Risk of cracking at bend lines, increasing scrap rate and press downtime for die maintenance.",
+            "fix": "Increase bend radius to >=1x material thickness at thin sections or locally thicken via tailor-welded blank."
+          },
+          {
+            "severity": "Medium",
+            "area": "Threaded/fastener feature",
+            "description": "A threaded feature is not natively produced by blanking/bending and needs a secondary or in-die fastener insertion process.",
+            "impact": "Adds secondary operation cost and cycle time (~0.5min/feature) plus fastener piece cost.",
+            "fix": "Add in-die self-piercing nut (SPN) station to eliminate a separate secondary operation."
+          },
+          {
+            "severity": "Low",
+            "area": "Free-form flange transitions",
+            "description": "235 B-spline surfaces suggest smoothly blended flanges that are difficult to unfold precisely into a flat blank pattern.",
+            "impact": "Inaccurate flat pattern development can cause fit issues at final assembly, requiring die rework.",
+            "fix": "Validate flat-pattern unfold against a physical first-off sample and adjust K-factor per bend before die cut."
+          }
+        ],
+        "costRange": {
+          "low": 1.1,
+          "mid": 1.65,
+          "high": 2.45,
+          "currency": "GBP"
+        },
+        "stage1Selection": {
+          "primary": "sheet_metal",
+          "conf": 0.9,
+          "alt": [
+            "rotational_moulding",
+            "injection_moulding"
+          ]
+        }
+      },
+      "aiExplanation": "The Seat_Locking_Bracket is analysed as a stamped/formed sheet-metal structural component rather than a casting or moulding, despite the low fill ratio and high B-spline face count — these are artefacts of the OCCT shell-based measurement on a thin, multiply-bent sheet part rather than evidence of a hollow moulded shell. Given the part name and function (seat locking mechanism, safety-critical, load-bearing), high-strength steel (mat-hss) is recommended over aluminium or mild steel to meet latch retention/crash-load requirements, consistent with the guidance to default to steel absent an explicit aluminium signal. At 200,000 units/year, a progressive die (deterministic cost £25,000) with 12 stations (1 blank + up to 15 bends) is the correct tooling strategy; die life is set to ~1,000,000 hits (~5 years at this volume) for HSS tooling with standard maintenance. Thickness is set to the OCCT mean wall (1.55mm) rounded to a standard HSS gauge. Key manufacturability risks are the 32 undercut faces (requiring cam stations or part reorientation) and wide wall-thickness variation, both driving the low manufacturability score of 20/100. Cost range reflects steel material, tool amortisation at high volume, and secondary operations for the detected threaded feature.",
+      "confidenceLevel": "High",
+      "analysisLimitations": [
+        "Material selection (steel vs aluminium) inferred from part name/function, not from metadata or explicit drawing callouts — flagged as UNDECIDED input resolved via engineering judgement.",
+        "Die life and die cost for HSS progressive tooling are typical industry estimates, not directly computed from geometry.",
+        "Wall thickness sigma of 43.26mm is inconsistent with the stated min/mean/max range and is treated as a shell-measurement artefact rather than a real physical value.",
+        "Threaded feature detection lacks specific size/location data, so secondary operation cost is a rough allowance.",
+        "Cost range assumes steady-state high-volume production (200k/yr) with amortised tooling; low-volume/prototype costs would be substantially higher."
+      ]
+    },
+    "sanityWarnings": [],
+    "ruleOverrides": {
+      "overridden": [
+        {
+          "field": "sheetMetal.thicknessMm",
+          "ruleId": "sheetMetal.thicknessMm",
+          "from": 1.55,
+          "to": 0.53,
+          "basis": "measured from 15 bend face(s) — coil gauge",
+          "confidence": 0.9,
+          "contradicted": true
+        },
+        {
+          "field": "sheetMetal.blankLengthMm",
+          "ruleId": "sheetMetal.blankLengthMm",
+          "from": 269,
+          "to": 269,
+          "basis": "largest bounding-box dimension × 1.05 trim allowance",
+          "confidence": 0.8,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.blankWidthMm",
+          "ruleId": "sheetMetal.blankWidthMm",
+          "from": 237,
+          "to": 237,
+          "basis": "second-largest bounding-box dimension × 1.05 trim allowance",
+          "confidence": 0.8,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.numOps",
+          "ruleId": "sheetMetal.numOps",
+          "from": 12,
+          "to": 12,
+          "basis": "1 blank + 15 bend(s) = 12 stations",
+          "confidence": 0.75,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.pitchMm",
+          "ruleId": "sheetMetal.pitchMm",
+          "to": 272,
+          "basis": "blank 269 mm + 3 mm web (max(3, 2 × gauge))",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.stripWidthMm",
+          "ruleId": "sheetMetal.stripWidthMm",
+          "to": 243,
+          "basis": "blank 237 mm + 2 × 3 mm edge margin",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.strokesPerMin",
+          "ruleId": "sheetMetal.strokesPerMin",
+          "to": 34,
+          "basis": "feed-limited: 18 m/min ÷ 272 mm pitch, de-rated for 15 bends",
+          "confidence": 0.65,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.dieCostGBP",
+          "ruleId": "sheetMetal.dieCostGBP",
+          "from": 25000,
+          "to": 174184,
+          "basis": "transfer die, 12 stations, 638 cm² blank, 280 MPa shear; OCCT parametric says £25000",
+          "confidence": 0.65,
+          "contradicted": true
+        },
+        {
+          "field": "sheetMetal.dieLife",
+          "ruleId": "sheetMetal.dieLife",
+          "from": 1000000,
+          "to": 1090000,
+          "basis": "280 MPa shear at 0.53 mm on a transfer die",
+          "confidence": 0.6,
+          "contradicted": true
+        },
+        {
+          "field": "sheetMetal.dieType",
+          "ruleId": "sheetMetal.dieType",
+          "to": "transfer",
+          "basis": "high volume at 0.53 mm: High volume favours stamping, but high geometric complexity needs a multi-station transfer die — higher tooling NRE; verify die budget before committing",
+          "confidence": 0.8,
+          "contradicted": false
+        },
+        {
+          "field": "netWeightKg",
+          "ruleId": "sheetMetal.netWeightKg",
+          "from": 0.558,
+          "to": 0.558,
+          "basis": "71 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)",
+          "confidence": 0.9,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.shearStrengthMPa",
+          "ruleId": "sheetMetal.shearStrengthMPa",
+          "to": 280,
+          "basis": "reference shear strength for steel sheet",
+          "confidence": 0.7,
+          "contradicted": false
+        }
+      ],
+      "notWritten": [
+        "sheetMetal.process"
+      ],
+      "undecided": []
+    },
+    "ruleFields": {
+      "sm-thick": {
+        "fieldId": "sm-thick",
+        "value": 0.53,
+        "basis": "measured from 15 bend face(s) — coil gauge",
+        "source": "geometry",
+        "confidence": 0.9,
+        "ruleId": "sheetMetal.thicknessMm"
+      },
+      "sm-blank-l": {
+        "fieldId": "sm-blank-l",
+        "value": 269,
+        "basis": "largest bounding-box dimension × 1.05 trim allowance",
+        "source": "geometry",
+        "confidence": 0.8,
+        "ruleId": "sheetMetal.blankLengthMm"
+      },
+      "sm-blank-w": {
+        "fieldId": "sm-blank-w",
+        "value": 237,
+        "basis": "second-largest bounding-box dimension × 1.05 trim allowance",
+        "source": "geometry",
+        "confidence": 0.8,
+        "ruleId": "sheetMetal.blankWidthMm"
+      },
+      "sm-num-ops": {
+        "fieldId": "sm-num-ops",
+        "value": 12,
+        "basis": "1 blank + 15 bend(s) = 12 stations",
+        "source": "geometry",
+        "confidence": 0.75,
+        "ruleId": "sheetMetal.numOps"
+      },
+      "sm-spm": {
+        "fieldId": "sm-spm",
+        "value": 34,
+        "basis": "feed-limited: 18 m/min ÷ 272 mm pitch, de-rated for 15 bends",
+        "source": "rule",
+        "confidence": 0.65,
+        "ruleId": "sheetMetal.strokesPerMin"
+      },
+      "sm-die-cost": {
+        "fieldId": "sm-die-cost",
+        "value": 174184,
+        "basis": "transfer die, 12 stations, 638 cm² blank, 280 MPa shear; OCCT parametric says £25000",
+        "source": "advisor",
+        "confidence": 0.65,
+        "ruleId": "sheetMetal.dieCostGBP"
+      },
+      "sm-die-life": {
+        "fieldId": "sm-die-life",
+        "value": 1090000,
+        "basis": "280 MPa shear at 0.53 mm on a transfer die",
+        "source": "advisor",
+        "confidence": 0.6,
+        "ruleId": "sheetMetal.dieLife"
+      },
+      "sm-die-type": {
+        "fieldId": "sm-die-type",
+        "value": "transfer",
+        "basis": "high volume at 0.53 mm: High volume favours stamping, but high geometric complexity needs a multi-station transfer die — higher tooling NRE; verify die budget before committing",
+        "source": "advisor",
+        "confidence": 0.8,
+        "ruleId": "sheetMetal.dieType"
+      },
+      "sm-net-wt": {
+        "fieldId": "sm-net-wt",
+        "value": 0.558,
+        "basis": "71 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)",
+        "source": "geometry",
+        "confidence": 0.9,
+        "ruleId": "sheetMetal.netWeightKg"
+      },
+      "sm-shear": {
+        "fieldId": "sm-shear",
+        "value": 280,
+        "basis": "reference shear strength for steel sheet",
+        "source": "library",
+        "confidence": 0.7,
+        "ruleId": "sheetMetal.shearStrengthMPa"
+      }
+    },
+    "deterministicAnalysis": {
+      "partName": "cv-cad-2eff2edf5f2d1eff",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 255.77,
+          "y": 226.07,
+          "z": 31
+        },
+        "estimatedVolumeCm3": 71.066,
+        "estimatedSurfaceAreaCm2": 919.37,
+        "estimatedWeightKg": {
+          "aluminum": 0.1919,
+          "steel": 0.5579,
+          "plastic": 0.0746
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "2× Ø0.0 × 15 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 18 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 12 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 22 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 8 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 22 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 7 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 16 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "bend",
+          "description": "15 bend(s), 635 mm total length",
+          "count": 15,
+          "significance": "High"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "",
+          "name": "",
+          "confidencePct": 0,
+          "reasoning": ""
+        },
+        "alternatives": []
+      },
+      "processRecommendations": [
+        {
+          "process": "sheet_metal",
+          "commodityType": "sheet_metal",
+          "confidencePct": 50,
+          "reasoning": "selected by the deterministic rules for this commodity",
+          "estimatedCycleTimeHr": 0
+        }
+      ],
+      "manufacturabilityScore": 20,
+      "manufacturabilityRisks": [],
+      "costInputSuggestions": {
+        "recommendedCommodity": "sheet_metal",
+        "netWeightKg": 0,
+        "materialId": "",
+        "estimatedCycleTimeHr": 0,
+        "estimatedSetupTimeHr": 0,
+        "estimatedOperations": [],
+        "dfmIssues": [
+          {
+            "severity": "Medium",
+            "area": "process",
+            "description": "15 bends per part — Many bends multiply press-brake handling, tool changes and cumulative angle tolerance.",
+            "impact": "15 bends per part",
+            "fix": "Reduce bend count, group same-tool bends, or move to a stamping die if volume supports it."
+          }
+        ],
+        "sheetMetal": {
+          "blankLengthMm": 269,
+          "blankWidthMm": 237,
+          "numOps": 12,
+          "pitchMm": 272,
+          "stripWidthMm": 243,
+          "strokesPerMin": 34
+        },
+        "fieldConfidences": {
+          "sm-blank-l": 0.8,
+          "sm-blank-w": 0.8,
+          "sm-num-ops": 0.75,
+          "sm-spm": 0.65
+        }
+      },
+      "aiExplanation": "Derived deterministically for sheet_metal from the measured geometry. No AI call was made; every figure below is arithmetic on a measurement or a library lookup, and each states its own basis.\n\n  • sheetMetal.blankLengthMm = 269 — largest bounding-box dimension × 1.05 trim allowance [geometry, sm-blank-l]\n  • sheetMetal.blankWidthMm = 237 — second-largest bounding-box dimension × 1.05 trim allowance [geometry, sm-blank-w]\n  • sheetMetal.numOps = 12 — 1 blank + 15 bend(s) = 12 stations [geometry, sm-num-ops]\n  • sheetMetal.strokesPerMin = 34 — feed-limited: 18 m/min ÷ 272 mm pitch, de-rated for 15 bends [rule, sm-spm]\n\nStill open (1):\n  • What is this part made of? — A CAD file carries shape, not substance. We measured 71 cm³ exactly, but the same solid weighs 0.19 kg in aluminium and 0.56 kg in steel. Nothing in the geometry distinguishes them, and guessing wrong moves the material cost several-fold.",
+      "confidenceLevel": "Low",
+      "analysisLimitations": [
+        "Unanswered: What is this part made of?",
+        "DFM checks ran against the measured geometry. Checks that need a drawing callout — tolerances, which face is critical, whether a weld line is in a load path — did not run, so this list is a floor and not a ceiling."
+      ]
+    },
+    "diff": {
+      "diffs": [
+        {
+          "field": "casting.cavities",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeHpdcSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeSandGravHr",
+          "aiValue": 0.17,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldCostGBP",
+          "aiValue": 22500,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldLife",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.subtype",
+          "aiValue": "sand",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.yieldFraction",
+          "aiValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.currency",
+          "aiValue": "GBP",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.high",
+          "aiValue": 2.45,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.low",
+          "aiValue": 1.1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.mid",
+          "aiValue": 1.65,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleValue": 0,
+          "aiValue": 0.971,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "estimatedSetupTimeHr",
+          "ruleValue": 0,
+          "aiValue": 0.75,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "fieldConfidences.bm-wall",
+          "aiValue": 0.55,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.cost-range",
+          "aiValue": 0.45,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.geom-bbox",
+          "aiValue": 0.98,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.geom-surface",
+          "aiValue": 0.98,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.geom-volume",
+          "aiValue": 0.98,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.material-primary",
+          "aiValue": 0.65,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.mfg-score",
+          "aiValue": 0.99,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.sheet-blank-length",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.sheet-blank-width",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.sheet-die-cost",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.sheet-die-life",
+          "aiValue": 0.45,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.sheet-num-ops",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.sheet-thickness",
+          "aiValue": 0.5,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.sm-blank-l",
+          "ruleValue": 0.8,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.sm-blank-w",
+          "ruleValue": 0.8,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.sm-num-ops",
+          "ruleValue": 0.75,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.sm-spm",
+          "ruleValue": 0.65,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "forging.dieCostGBP",
+          "aiValue": 96000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieLife",
+          "aiValue": 100000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.flashKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.strokes",
+          "aiValue": 7,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.timePerBlowSec",
+          "aiValue": 3,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.yieldFraction",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.cavities",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldCostGBP",
+          "aiValue": 200000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldLife",
+          "aiValue": 500000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.projectedAreaCm2",
+          "aiValue": 578.7,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.runnerWeightKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.wallThicknessMm",
+          "aiValue": 1.55,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "materialId",
+          "ruleValue": "",
+          "aiValue": "mat-hss",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "netWeightKg",
+          "ruleValue": 0,
+          "aiValue": 0.558,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "recommendedCommodity",
+          "ruleValue": "sheet_metal",
+          "aiValue": "sheet_metal",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "sheetMetal.blankLengthMm",
+          "ruleValue": 269,
+          "aiValue": 269,
+          "deltaPct": 0,
+          "basis": "largest bounding-box dimension × 1.05 trim allowance",
+          "verdict": "agree"
+        },
+        {
+          "field": "sheetMetal.blankWidthMm",
+          "ruleValue": 237,
+          "aiValue": 237,
+          "deltaPct": 0,
+          "basis": "second-largest bounding-box dimension × 1.05 trim allowance",
+          "verdict": "agree"
+        },
+        {
+          "field": "sheetMetal.dieCostGBP",
+          "aiValue": 25000,
+          "deltaPct": null,
+          "basis": "transfer die, 12 stations, 638 cm² blank, 280 MPa shear; OCCT parametric says £25000",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieLife",
+          "aiValue": 1000000,
+          "deltaPct": null,
+          "basis": "280 MPa shear at 0.53 mm on a transfer die",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.numOps",
+          "ruleValue": 12,
+          "aiValue": 12,
+          "deltaPct": 0,
+          "basis": "1 blank + 15 bend(s) = 12 stations",
+          "verdict": "agree"
+        },
+        {
+          "field": "sheetMetal.pitchMm",
+          "ruleValue": 272,
+          "deltaPct": null,
+          "basis": "blank 269 mm + 3 mm web (max(3, 2 × gauge))",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "sheetMetal.stripWidthMm",
+          "ruleValue": 243,
+          "deltaPct": null,
+          "basis": "blank 237 mm + 2 × 3 mm edge margin",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "sheetMetal.strokesPerMin",
+          "ruleValue": 34,
+          "deltaPct": null,
+          "basis": "feed-limited: 18 m/min ÷ 272 mm pitch, de-rated for 15 bends",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "sheetMetal.thicknessMm",
+          "aiValue": 1.55,
+          "deltaPct": null,
+          "basis": "measured from 15 bend face(s) — coil gauge",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.conf",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.primary",
+          "aiValue": "sheet_metal",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        }
+      ],
+      "agreed": 4,
+      "differed": 4,
+      "ruleOnly": 7,
+      "aiOnly": 41,
+      "undecided": []
+    },
+    "aiOriginal": {
+      "recommendedCommodity": "sheet_metal",
+      "netWeightKg": 0.558,
+      "materialId": "mat-hss",
+      "estimatedCycleTimeHr": 0.971,
+      "estimatedSetupTimeHr": 0.75,
+      "estimatedOperations": [
+        {
+          "name": "Progressive die stamping (blank+15 bends)",
+          "machineId": "mach-haas-vf2",
+          "cycleTimeHr": 0.00049,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        },
+        {
+          "name": "Tapping/fastener insertion (secondary)",
+          "machineId": "mach-drill",
+          "cycleTimeHr": 0.005,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        }
+      ],
+      "sheetMetal": {
+        "thicknessMm": 1.55,
+        "blankLengthMm": 269,
+        "blankWidthMm": 237,
+        "dieCostGBP": 25000,
+        "dieLife": 1000000,
+        "numOps": 12
+      },
+      "casting": {
+        "subtype": "sand",
+        "dieMouldCostGBP": 22500,
+        "dieMouldLife": 1,
+        "cavities": 1,
+        "yieldFraction": 0.6,
+        "cycleTimeHpdcSec": 0,
+        "cycleTimeSandGravHr": 0.17
+      },
+      "forging": {
+        "flashKg": 0,
+        "yieldFraction": 0.85,
+        "dieCostGBP": 96000,
+        "dieLife": 100000,
+        "strokes": 7,
+        "timePerBlowSec": 3
+      },
+      "injectionMoulding": {
+        "cavities": 1,
+        "projectedAreaCm2": 578.7,
+        "wallThicknessMm": 1.55,
+        "mouldCostGBP": 200000,
+        "mouldLife": 500000,
+        "runnerWeightKg": 0
+      },
+      "fieldConfidences": {
+        "geom-bbox": 0.98,
+        "geom-volume": 0.98,
+        "geom-surface": 0.98,
+        "bm-wall": 0.55,
+        "sheet-thickness": 0.5,
+        "sheet-blank-length": 0.95,
+        "sheet-blank-width": 0.95,
+        "sheet-die-cost": 0.9,
+        "sheet-die-life": 0.45,
+        "sheet-num-ops": 0.9,
+        "material-primary": 0.65,
+        "mfg-score": 0.99,
+        "cost-range": 0.45
+      },
+      "dfmIssues": [
+        {
+          "severity": "High",
+          "area": "Bend sequencing (15 bends)",
+          "description": "A large number of bends across a single progressive strip risks cumulative dimensional drift and spring-back stack-up, especially given non-uniform detected wall/gauge readings.",
+          "impact": "Out-of-tolerance flatness/angle leads to scrap or added restrike stations, raising unit cost 10-20%.",
+          "fix": "Simulate bend sequence in die-design software; add a restrike/calibration station; hold consistent gauge across the blank."
+        },
+        {
+          "severity": "High",
+          "area": "Undercut/3D flange geometry",
+          "description": "32 undercut faces relative to the draw direction indicate flanges or tabs that cannot be formed in a single straight-pull stamping motion.",
+          "impact": "Requires cam-driven secondary stations or multiple die sets, increasing progressive die cost beyond baseline estimate.",
+          "fix": "Reorient the part or split into two stamped sub-assemblies joined by spot-welding/riveting to eliminate undercuts."
+        },
+        {
+          "severity": "Medium",
+          "area": "Minimum wall/gauge 0.53mm",
+          "description": "Localised thin sections near 0.5mm are near the practical minimum for HSS stamping without splitting at tight bend radii.",
+          "impact": "Risk of cracking at bend lines, increasing scrap rate and press downtime for die maintenance.",
+          "fix": "Increase bend radius to >=1x material thickness at thin sections or locally thicken via tailor-welded blank."
+        },
+        {
+          "severity": "Medium",
+          "area": "Threaded/fastener feature",
+          "description": "A threaded feature is not natively produced by blanking/bending and needs a secondary or in-die fastener insertion process.",
+          "impact": "Adds secondary operation cost and cycle time (~0.5min/feature) plus fastener piece cost.",
+          "fix": "Add in-die self-piercing nut (SPN) station to eliminate a separate secondary operation."
+        },
+        {
+          "severity": "Low",
+          "area": "Free-form flange transitions",
+          "description": "235 B-spline surfaces suggest smoothly blended flanges that are difficult to unfold precisely into a flat blank pattern.",
+          "impact": "Inaccurate flat pattern development can cause fit issues at final assembly, requiring die rework.",
+          "fix": "Validate flat-pattern unfold against a physical first-off sample and adjust K-factor per bend before die cut."
+        }
+      ],
+      "costRange": {
+        "low": 1.1,
+        "mid": 1.65,
+        "high": 2.45,
+        "currency": "GBP"
+      },
+      "stage1Selection": {
+        "primary": "sheet_metal",
+        "conf": 0.9,
+        "alt": [
+          "rotational_moulding",
+          "injection_moulding"
+        ]
+      }
+    },
+    "decisions": [],
+    "mode": "both",
+    "fromCache": false,
+    "geometrySource": "occt",
+    "annualVolume": 200000,
+    "occtGeometry": {
+      "status": "success",
+      "partName": "cv-cad-2eff2edf5f2d1eff",
+      "boundingBox": {
+        "xMm": 255.77,
+        "yMm": 226.07,
+        "zMm": 31
+      },
+      "volume": {
+        "mm3": 71066.4,
+        "cm3": 71.066
+      },
+      "surfaceArea": {
+        "mm2": 91937,
+        "cm2": 919.37
+      },
+      "fillRatio": 0.0396,
+      "topology": {
+        "available": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "enclosesSealedVoid": false,
+        "openShell": true
+      },
+      "weights": {
+        "aluminiumKg": 0.1919,
+        "steelKg": 0.5579,
+        "plasticKg": 0.0746,
+        "castIronKg": 0.5081,
+        "copperKg": 0.6368,
+        "titaniumKg": 0.3148
+      },
+      "faces": {
+        "total": 426,
+        "byType": {
+          "OTHER": 71,
+          "PLANE": 70,
+          "BSPLINE": 235,
+          "CYLINDER": 50
+        }
+      },
+      "edges": {
+        "total": 1054,
+        "byType": {
+          "LINE": 257,
+          "BSPLINE": 750,
+          "CIRCLE": 47
+        },
+        "sampleCircleRadiiMm": [
+          1.9,
+          2,
+          2.4,
+          3.5,
+          3.6,
+          4,
+          4.5,
+          5,
+          5.4,
+          6,
+          6.1,
+          6.5,
+          6.6,
+          7,
+          7.6,
+          11.5,
+          22.5
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 50,
+        "cylindricalFaceRadiiMm": [
+          1.9,
+          2,
+          2.4,
+          3.5,
+          3.6,
+          4,
+          4.5,
+          5,
+          5.4,
+          6,
+          6.1,
+          6.5,
+          6.6,
+          7,
+          7.6,
+          11.5,
+          22.5
+        ],
+        "estimatedHoleCount": 0,
+        "holeRadiiMm": [],
+        "bossShaftCount": 0,
+        "bossShaftRadiiMm": [],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 70,
+        "freeFormFaceCount": 235,
+        "planarFaceAreaMm2": 66301
+      },
+      "featureTable": [
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 13125
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 7909
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 7170
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 2951
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 591
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 14.7,
+          "through": null,
+          "count": 2,
+          "areaMm2": 13125
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 17.9,
+          "through": null,
+          "count": 1,
+          "areaMm2": 7909
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 11.5,
+          "through": null,
+          "count": 1,
+          "areaMm2": 7909
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 21.9,
+          "through": null,
+          "count": 1,
+          "areaMm2": 7170
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 7.5,
+          "through": null,
+          "count": 1,
+          "areaMm2": 7170
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 22.3,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2951
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 7.1,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2951
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 15.9,
+          "through": null,
+          "count": 1,
+          "areaMm2": 591
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 15,
+        "totalBendLengthMm": 634.8,
+        "thicknessMm": 0.53
+      },
+      "wallThickness": {
+        "minMm": 0.53,
+        "maxMm": 2.17,
+        "p95Mm": null,
+        "meanMm": 1.55,
+        "stdDevMm": 43.26,
+        "sampleCount": 30,
+        "method": "volume_surface_shell",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 32,
+        "zeroDraftFaceCount": 54,
+        "adequateDraftFaceCount": 34,
+        "minPositiveDraftDeg": 52.91,
+        "maxPositiveDraftDeg": 90,
+        "analyzedFaceCount": 120
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Y",
+            "faceCount": 81
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 76
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 22
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 13.3,
+        "drillBoreTimeMins": 0,
+        "estimatedTotalMins": 58.3,
+        "estimatedTotalHrs": 0.971,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 300000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 22500,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 96000,
+        "progressiveDieCostGBP": 25000
+      },
+      "manufacturabilityScore": 20,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1577,
+        "sandCycleTimeHrFerrous": 0.1703,
+        "forgeStrokes": 7,
+        "investWaxCostGBP": 13.79,
+        "investShellCostGBP": 41.37
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    },
+    "stlGeometry": null,
+    "preprocessed": {
+      "format": "STEP",
+      "partName": "Seat Base Mount",
+      "boundingBoxEstMm": {
+        "x": 161.6828038864,
+        "y": 125.43159560730001,
+        "z": 7.6
+      },
+      "entityStats": {
+        "ADVANCED_BREP_SHAPE_REPRESENTATION": 1,
+        "ADVANCED_FACE": 426,
+        "B_SPLINE_SURFACE_WITH_KNOTS": 235,
+        "MANIFOLD_SOLID_BREP": 1,
+        "CIRCLE": 47,
+        "CYLINDRICAL_SURFACE": 50,
+        "EDGE_LOOP": 478,
+        "PLANE": 70
+      }
+    },
+    "dfmJobId": "e09fc9e3-ea12-40d1-bfac-d93e8f5c1fe5"
+  }
+}

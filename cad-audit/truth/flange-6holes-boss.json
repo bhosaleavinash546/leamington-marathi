@@ -1,0 +1,22 @@
+{
+  "file": "flange-6holes-boss.step",
+  "status": "success",
+  "volumeCm3": 63.938,
+  "surfaceAreaCm2": 148.41,
+  "bboxMm": [
+    80.0,
+    80.0,
+    20.0
+  ],
+  "bboxVolumeCm3": 128.0,
+  "fillRatio": 0.4995,
+  "wall2VoverS_mm": 8.616,
+  "solids": 1,
+  "massKg": {
+    "aluminium": 0.1726,
+    "steel": 0.5019,
+    "cast_iron": 0.4604,
+    "plastic": 0.0671
+  },
+  "measureSeconds": 0.0
+}

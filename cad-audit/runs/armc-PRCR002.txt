@@ -1,0 +1,40 @@
+Measuring PRCR002.stp …
+
+──────────────────────────────────────────────────────────────────────────
+  PRCR002.stp  ·  forging  ·  200,000/yr
+──────────────────────────────────────────────────────────────────────────
+  Measured: 1037.1 cm³ · 277×223×182 mm
+
+  Eight-bucket breakdown
+    rawMaterial        £18.28
+    process            £20.48
+    labour             £12.90
+    tooling             £1.16
+    packaging           £0.39
+    logistics           £0.78
+    overhead            £6.34
+    margin              £4.83
+    TOTAL              £65.15
+
+  Derivation
+    forge-mat              steel          1037 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)
+    forge-part-wt          8.141          1037 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)
+    forge-proj-area        187.6          parting-plane silhouette: bbox face × √fill for a solid, bbox face for a shell
+    forge-shape            moderate       76 free-form face(s), 44 undercut face(s), 364 faces total
+    forge-yield            0.743          closed-die stock yield band 0.55–0.8, midpoint 0.675, scaled by the 10% flash so the billet lands at part ÷ 0.675
+    forge-flash            0.814          10% of part weight squeezed out at the flash land
+    forge-mach             forge-press-1600t F = Kt × σflow × A: moderate shape in carbon-steel over 187.6 cm² = 861 t (1.2 safety)
+    forge-strokes          8              blows to fill the impression, from the measured shape
+    forge-time-per-blow    10             ram travel + dwell per blow on a mechanical press
+    forge-die-steel        h13            H13 — the impression-die workhorse
+    forge-die-impr         2              blocker + finisher
+    forge-die-cost         36141          2-impression h13 die over 187.6 cm²: £8875 block + £21739 sinking + £3770 HT + £1757 polish; OCCT parametric says £180000
+    forge-die-life         35271          carbon-steel at 187.6 cm², moderate impression
+    forge-heat-energy      0.35           energy to bring carbon-steel to forging temperature
+    forge-ht-cost          0.3            normalise for a carbon-steel forging
+    forge-descale          0.12           forge scale pickled off before machining
+    forge-ndt              2.5            MPI on a safety-critical closed-die forging
+
+  Assumed (not measured): oee, manning, labourEfficiency, rejectRate, labourId, materialId (steel → mat-steel1045, representative grade — not a drawing callout), secondary-machining NRE £15000 (fixtures + programming)
+──────────────────────────────────────────────────────────────────────────
+

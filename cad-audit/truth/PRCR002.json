@@ -1,0 +1,22 @@
+{
+  "file": "PRCR002.stp",
+  "status": "success",
+  "volumeCm3": 1037.113,
+  "surfaceAreaCm2": 1370.06,
+  "bboxMm": [
+    276.78,
+    223.15,
+    181.86
+  ],
+  "bboxVolumeCm3": 11232.09,
+  "fillRatio": 0.0923,
+  "wall2VoverS_mm": 15.14,
+  "solids": 2,
+  "massKg": {
+    "aluminium": 2.8002,
+    "steel": 8.1413,
+    "cast_iron": 7.4672,
+    "plastic": 1.089
+  },
+  "measureSeconds": 1.4
+}

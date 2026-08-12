@@ -1,0 +1,22 @@
+{
+  "file": "Casting_Braket.stp",
+  "status": "success",
+  "volumeCm3": 320.015,
+  "surfaceAreaCm2": 628.27,
+  "bboxMm": [
+    132.62,
+    125.0,
+    120.03
+  ],
+  "bboxVolumeCm3": 1989.76,
+  "fillRatio": 0.1608,
+  "wall2VoverS_mm": 10.187,
+  "solids": 1,
+  "massKg": {
+    "aluminium": 0.864,
+    "steel": 2.5121,
+    "cast_iron": 2.3041,
+    "plastic": 0.336
+  },
+  "measureSeconds": 0.6
+}

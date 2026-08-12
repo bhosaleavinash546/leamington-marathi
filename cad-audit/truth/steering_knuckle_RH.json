@@ -1,0 +1,22 @@
+{
+  "file": "steering_knuckle_RH.stp",
+  "status": "success",
+  "volumeCm3": 356.101,
+  "surfaceAreaCm2": 789.25,
+  "bboxMm": [
+    236.81,
+    210.05,
+    116.49
+  ],
+  "bboxVolumeCm3": 5794.44,
+  "fillRatio": 0.0615,
+  "wall2VoverS_mm": 9.024,
+  "solids": 1,
+  "massKg": {
+    "aluminium": 0.9615,
+    "steel": 2.7954,
+    "cast_iron": 2.5639,
+    "plastic": 0.3739
+  },
+  "measureSeconds": 0.7
+}

@@ -1,0 +1,52 @@
+{
+  "_audit": {
+    "part": "Casting_Braket.stp",
+    "commodity": "casting",
+    "mode": "both",
+    "label": "Casting_Braket-casting",
+    "capturedAt": "2026-08-12T14:54:33.890Z",
+    "pageErrors": []
+  },
+  "state": {
+    "region": "CN",
+    "annualVolume": "200000",
+    "form": {
+      "ai-autofill-input": "",
+      "costing-country-sel": "CN",
+      "part-name": "Cast Structural Mounting Bracket",
+      "cad-inline-input": "",
+      "cast-subtype": "sand",
+      "cast-mat": "mat-gjs500",
+      "cast-part-wt": "2.288",
+      "cast-yield": "0.65",
+      "cast-reject": "0.03",
+      "cast-lab": "lab-uk-skilled",
+      "cast-oee": "0.8",
+      "cast-manning": "1",
+      "cast-lab-eff": "0.92",
+      "cast-amort": "200000",
+      "cast-sand-line": "sand-cast-line",
+      "cast-sand-ct": "0.1846",
+      "cast-sand-pat-cost": "14500",
+      "cast-sand-pat-life": "8000",
+      "cast-sand-core": "1.5",
+      "cast-mf-mach": "mach-vmc3",
+      "cast-mf-lab": "lab-uk-skilled",
+      "cast-mf-stock": "near_net",
+      "cast-mf-finish": "1.0",
+      "cast-mf-tooling": "150000",
+      "packaging": "0.14",
+      "logistics": "0.25",
+      "overhead-pct": "12",
+      "margin-pct": "8",
+      "annual-volume": "200000",
+      "programme-years": "",
+      "learning-curve-pct": "85",
+      "reference-volume": "1000",
+      "lc-enabled": "on",
+      "target-price": ""
+    },
+    "totalText": null,
+    "breakdownText": null
+  }
+}

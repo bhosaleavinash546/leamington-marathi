@@ -1,0 +1,29 @@
+Measuring flange-6holes-boss.step …
+
+──────────────────────────────────────────────────────────────────────────
+  flange-6holes-boss.step  ·  machining  ·  200,000/yr
+──────────────────────────────────────────────────────────────────────────
+  Measured: 63.9 cm³ · 80×80×20 mm
+
+  Eight-bucket breakdown
+    rawMaterial         £1.17
+    process             £3.89
+    labour              £2.40
+    tooling             £0.00
+    packaging           £0.06
+    logistics           £0.06
+    overhead            £0.90
+    margin              £0.68
+    TOTAL               £9.15
+
+  Derivation
+    mach-mat               aluminium      64 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer)
+    mach-net-wt            0.173          64 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer)
+    mach-stock-wt          0.346          80×80×20 mm solid billet in aluminium = 0.346 kg, of which the part is 50%
+    mach-mat-util          0.501          80×80×20 mm solid billet in aluminium = 0.346 kg, of which the part is 50%
+    mach-setup-time        0.5            2 fixturing(s) of the turned routing × 15 min
+    mach-setup-mach        mach-lathe-cnc cost-ranked 3 routing(s): turned £4.09 (turning-led routing: mach-lathe-cnc £40/hr + mach-drill £30/hr, 2 setup(s) × 15 min / batch 5000 + 0.8 min handling per part per setup) vs split-3axis £5.09 (2-direction split routing: mach-haas-vf2 £45/hr + mach-drill £30/hr, 3 setup(s) × 15 min / batch 5000 + 0.8 min handling per part per setup) vs consolidated-5axis £7.18 (single-setup 5-axis consolidation: mach-haas-umc500 £75/hr, 1 setup(s) × 15 min / batch 5000 + 0.8 min handling per part per setup) → turned, £1.01/part cheaper than split-3axis
+
+  Assumed (not measured): oee, manning, labourEfficiency, rejectRate, labourId, materialId (aluminium → mat-al6082-bar, representative grade — not a drawing callout), batchSize=5000 (annualVolume / 20), partsPerCycle=1, labourTimeHr=cycleTimeHr
+──────────────────────────────────────────────────────────────────────────
+

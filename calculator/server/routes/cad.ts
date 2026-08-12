@@ -37,7 +37,11 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // are keyed on inputs, not prompt content) are invalidated. v2: filename material
 // prior + confidence-inversion promotion.
 // v13: cost-ranked machining routing (optimiser picks the machine; basis shows alternatives).
-const CAD_PROMPT_VERSION = 13;
+// v14: live-audit fixes — forced-commodity weight family (F2), sheet-metal
+//      mass-consistent gauge floor (F4), cast_and_machine operations as data
+//      not prose (F7), valid prompt material ids (F5), honest material
+//      provenance labels. Bumped so cached pre-fix analyses cannot be served.
+const CAD_PROMPT_VERSION = 14;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -231,7 +235,14 @@ export function enforceGeometryCommodity(
   // was mis-read as injection moulding). If the kernel measured real bends at a
   // sheet gauge, it is sheet metal, not a moulding.
   const sm = geo.sheetMetal;
+  // The bend signal must agree with the MEAN wall before it may reclassify: the
+  // bend detector reads a forging's fillets as "25 bends at a 0.45 mm gauge"
+  // (live audit, PRCR002 stub axle) while the mean wall is 34 mm. A real
+  // stamped panel's mean wall IS its gauge, give or take doubled flanges —
+  // mean ≤ 8 mm keeps every genuine sheet part (max seen 6 mm) and rejects
+  // every chunky solid (min seen 9 mm).
   if (sm && (sm.bendCount ?? 0) >= 2 && (sm.thicknessMm ?? 99) > 0 && (sm.thicknessMm ?? 99) <= 6 &&
+      (wall == null || wall <= 8) &&
       !['sheet_metal', 'sheet_metal_fab', 'biw_assembly'].includes(commodity)) {
     return {
       commodity: 'sheet_metal',
@@ -240,6 +251,24 @@ export function enforceGeometryCommodity(
         `Geometry override: kernel measured ${sm.bendCount} bends at a ${sm.thicknessMm?.toFixed(1)} mm ` +
         `sheet gauge (fill ${fill.toFixed(3)}, ${maxDim.toFixed(0)} mm envelope) — a formed sheet-metal ` +
         `panel, not ${commodity.replace(/_/g, ' ')}. Reclassified as sheet_metal.`,
+    };
+  }
+
+  // The REVERSE sheet-metal guard. The live audit's auto runs classified an
+  // 8 kg forged stub axle as sheet_metal (mean wall 15.1 mm) — and the wrong
+  // class dragged blank/gauge/die arithmetic into money. Every genuine sheet
+  // part measured ≤ ~6 mm mean wall; every chunky solid ≥ 9 mm. A part this
+  // thick has no coil gauge, so sheet metal is impossible; machining is the
+  // least-wrong near-net class the geometry alone can defend (the specialist
+  // prompt and rules refine from there).
+  if (['sheet_metal', 'sheet_metal_fab'].includes(commodity) && wall != null && wall > 8) {
+    return {
+      commodity: 'machining',
+      corrected: true,
+      reason:
+        `Geometry override: mean wall ${wall.toFixed(1)} mm — no sheet coil is stamped at that ` +
+        `thickness (sheet parts measure ≤ ~6 mm). A ${maxDim.toFixed(0)} mm near-net solid, ` +
+        `reclassified as machining; confirm casting/forging with the engineer.`,
     };
   }
 
@@ -709,7 +738,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     // repair retry gives us robust parsing without that limit.
     analysis = await cadAnalyzeJSON(anthropic!, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
-    normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights);
+    normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights, selectedCommodity);
     // Everything the rules could decide is now written over whatever the model
     // returned. Telling it "use verbatim" was a request; this is the guarantee.
     if (ruleSpec) {
@@ -878,7 +907,12 @@ async function cadAnalyzeJSON(
  *  clamped to it and the cast-iron mass is not discarded. */
 interface MeasuredWeights { aluminiumKg?: number; steelKg?: number; castIronKg?: number; plasticKg?: number }
 
-function normalizeCADAnalysis(a: Record<string, unknown>, measured?: MeasuredWeights): void {
+// Exported for tests — the live audit found forced-commodity runs taking the
+// aluminium default mass because the plastic guard below read only the AI's own
+// commodity field (cad-audit/FINDINGS.md F2).
+export function normalizeCADAnalysis(
+  a: Record<string, unknown>, measured?: MeasuredWeights, selectedCommodity?: string,
+): void {
   const num = (v: unknown, d: number) => (Number.isFinite(Number(v)) ? Number(v) : d);
   const str = (v: unknown, d: string) => (typeof v === 'string' && v ? v : d);
   const obj = (v: unknown) => (v && typeof v === 'object' ? v as Record<string, unknown> : {});
@@ -976,7 +1010,12 @@ function normalizeCADAnalysis(a: Record<string, unknown>, measured?: MeasuredWei
     // aluminium default. (An HDPE fuel tank costed at aluminium density read 28 kg
     // instead of ~10 kg.) The name regex also now recognises HDPE/PE/PVC/PET, which
     // it silently missed before — those fell through to the aluminium weight.
-    const plasticCommodity = /blow_mould|injection_mould|rotational_mould|thermoform/.test(String(ci.recommendedCommodity));
+    // The SELECTED commodity must participate: on a forced injection-moulding
+    // run where the model left recommendedCommodity empty, this guard silently
+    // missed and a 2.16 kg PP bumper was weighted as 5.56 kg of aluminium
+    // (live audit F2). The engineer's forced choice outranks the model's field.
+    const commodityForWeight = selectedCommodity || String(ci.recommendedCommodity ?? '');
+    const plasticCommodity = /blow_mould|injection_mould|rotational_mould|thermoform/.test(commodityForWeight);
     // Cast iron (grey OR ductile) must use the cast-iron mass (7.15 g/cm³), not the
     // steel mass (7.85) — the latter over-stated an iron knuckle's weight ~10%.
     const isCastIron = /\biron\b|gjl|gjs|ggg|ductile|nodular|grey cast|gray cast|cast iron/.test(matHint);
@@ -1032,7 +1071,11 @@ interface UserOverrides {
 export const CAD_FORGING_BILLET_MATERIALS =
   'mat-steel1020, mat-steel4340, mat-steel4130, mat-steel-38mnvs6, mat-ss304l-bar, mat-ss316l-bar, mat-al6061-forge, mat-al7075-forge, mat-ti-6al4v-forge, mat-inconel718-forge, mat-brass-cz122-forge';
 export const CAD_GENERIC_MATERIALS =
-  'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-hdpe, mat-pa6, mat-pc, mat-lm25, mat-gjs500, mat-gjs600, mat-gjl350, mat-adi, mat-az91d, mat-ss304c, mat-bronze-c905';
+  // Every id here MUST exist in the rate library — this list teaches the model
+  // what ids look like, and it repeats what it is taught. `mat-hss` (in no
+  // library) lived here for months and came back in live runs, where the form
+  // silently dropped it and costed the default grade (audit F5).
+  'mat-al6061, mat-al6082-bar, mat-dc01, mat-steel1045, mat-ss316-sheet, mat-brass-cz121, mat-pp, mat-hdpe, mat-pa6, mat-pc, mat-lm25, mat-gjs500, mat-gjs600, mat-gjl350, mat-adi, mat-mag-az91, mat-ss304-bar, mat-bronze-c905';
 
 // Injection moulding needs a real thermoplastic menu, not the 4 resins in the generic
 // list. Without this an ABS / POM / PBT / PC-ABS / glass-filled-nylon part gets mapped to
@@ -1371,7 +1414,15 @@ function withAIMaterial(ctx: RuleContext, analysis: Record<string, unknown>): Ru
 
   const answers: Record<string, unknown> = { ...ctx.answers };
   const family = familyFromMaterialId(materialId);
-  if (family) answers['material.family'] = family;
+  if (family) {
+    answers['material.family'] = family;
+    // The basis text downstream says WHO settled the family. Folding the
+    // model's answer in as a bare answer made every derivation read
+    // "confirmed by engineer" when no engineer had confirmed anything
+    // (audit provenance finding). Only tag as AI when the engineer has not
+    // actually answered.
+    if (!ctx.answers['material.family']) answers['material.familySource'] = 'ai';
+  }
   answers['material.resin'] = materialId;
   answers['material.elastomer'] = materialId;
   const laminate = systemForFibreId(materialId);
@@ -2005,7 +2056,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     // repair retry gives us robust parsing without that limit.
     analysis = await cadAnalyzeJSON(anthropic!, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
-    normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights);
+    normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights, selectedCommodity);
     // Everything the rules could decide is now written over whatever the model
     // returned. Telling it "use verbatim" was a request; this is the guarantee.
     if (ruleSpec) {

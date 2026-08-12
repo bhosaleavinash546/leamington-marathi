@@ -57,23 +57,56 @@ export function blankDims(ctx: RuleContext): { lengthMm: number; widthMm: number
  * the weaker source is visible on the report.
  */
 export function gaugeMm(ctx: RuleContext): { mm: number; basis: string; confidence: number } | null {
+  let read: { mm: number; basis: string; confidence: number } | null = null;
   const sm = ctx.geo.sheetMetal;
   if (sm?.thicknessMm && sm.thicknessMm > 0) {
-    return {
+    read = {
       mm: Math.round(sm.thicknessMm * 100) / 100,
       basis: `measured from ${sm.bendCount ?? 0} bend face(s) — coil gauge`,
       confidence: 0.9,
     };
+  } else {
+    const min = ctx.geo.wallThickness?.minMm;
+    if (min && min > 0) {
+      read = {
+        mm: Math.round(min * 100) / 100,
+        basis: 'ray-cast minimum wall — no bends detected, so this may read low on a radius',
+        confidence: 0.5,
+      };
+    }
   }
-  const min = ctx.geo.wallThickness?.minMm;
-  if (min && min > 0) {
-    return {
-      mm: Math.round(min * 100) / 100,
-      basis: 'ray-cast minimum wall — no bends detected, so this may read low on a radius',
-      confidence: 0.5,
-    };
+  if (!read) return null;
+
+  // Mass-consistency floor. A gauge read off a coined edge or a radius can come
+  // back far below the true coil thickness — the live audit's seat bracket read
+  // 0.53 mm against a true ~1.5 mm coil, which priced a 0.558 kg part out of a
+  // 0.265 kg blank (utilisation 210%). You cannot stamp a part heavier than its
+  // blank: the measured solid volume spread over the blank footprint is the
+  // thinnest gauge the mass allows, so anything below it is a misread.
+  const volMm3 = ctx.geo.volume?.mm3 ?? (ctx.geo.volume?.cm3 ? ctx.geo.volume.cm3 * 1000 : 0);
+  const b = blankDims(ctx);
+  if (volMm3 > 0 && b) {
+    const massFloorMm = volMm3 / (b.lengthMm * b.widthMm);
+    // Fire only on an EGREGIOUS shortfall. A formed part's unfolded flat
+    // pattern is larger than the bbox blank this footprint approximates, so a
+    // read up to ~35% under the bbox floor can still be a true coil gauge
+    // (deep drape, tall flanges). A read at HALF the floor cannot — the seat
+    // bracket's 0.53 mm vs a 1.11 mm floor (2.1×) is a misread, the trim
+    // panel's 1.9 mm vs a 2.27 mm floor (1.19×) is a drape.
+    if (read.mm * 1.35 < massFloorMm) {
+      return {
+        // Ceil, not round: rounding 1.1149 down to 1.11 re-breaks the very
+        // invariant this branch exists to hold.
+        mm: Math.ceil(massFloorMm * 100) / 100,
+        basis: `raised from ${read.mm.toFixed(2)} mm (${read.basis.split(' — ')[0]}) to the ` +
+          `mass-consistent floor — measured ${(volMm3 / 1000).toFixed(0)} cm³ over a ` +
+          `${b.lengthMm}×${b.widthMm} blank needs ≥${massFloorMm.toFixed(2)} mm; ` +
+          `a thinner read means the blank could not weigh as much as the part`,
+        confidence: 0.6,
+      };
+    }
   }
-  return null;
+  return read;
 }
 
 /** Hole count from the exact feature table. */

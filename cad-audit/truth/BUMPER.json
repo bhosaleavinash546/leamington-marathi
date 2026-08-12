@@ -1,0 +1,22 @@
+{
+  "file": "BUMPER.stp",
+  "status": "success",
+  "volumeCm3": 2059.899,
+  "surfaceAreaCm2": 16261.69,
+  "bboxMm": [
+    1690.94,
+    647.38,
+    528.1
+  ],
+  "bboxVolumeCm3": 578106.63,
+  "fillRatio": 0.0036,
+  "wall2VoverS_mm": 2.533,
+  "solids": 1,
+  "massKg": {
+    "aluminium": 5.5617,
+    "steel": 16.1702,
+    "cast_iron": 14.8313,
+    "plastic": 2.1629
+  },
+  "measureSeconds": 9.6
+}

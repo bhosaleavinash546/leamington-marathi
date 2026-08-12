@@ -1,0 +1,1141 @@
+{
+  "_audit": {
+    "part": "BUMPER.stp",
+    "commodity": null,
+    "mode": "both",
+    "volume": 200000,
+    "deep": false,
+    "httpStatus": 200,
+    "seconds": 138.5,
+    "capturedAt": "2026-08-12T14:48:41.539Z"
+  },
+  "response": {
+    "success": true,
+    "analysis": {
+      "partName": "BUMPER (automotive fascia)",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 1690.94,
+          "y": 647.38,
+          "z": 528.1
+        },
+        "estimatedVolumeCm3": 2059.899,
+        "estimatedSurfaceAreaCm2": 16261.69,
+        "estimatedWeightKg": {
+          "aluminum": 5.5617,
+          "steel": 16.1702,
+          "castIron": 14.7283,
+          "plastic": 2.1629
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "Free-form surface",
+          "description": "Bspline surfaces forming the styled outer/inner bumper skin",
+          "count": 492,
+          "significance": "High"
+        },
+        {
+          "type": "Undercut",
+          "description": "Side-wall undercuts requiring side-actions or lifters to release from a single-direction draw",
+          "count": 4,
+          "significance": "High"
+        },
+        {
+          "type": "Zero-draft face",
+          "description": "Faces with no draft angle relative to draw direction [0,0,1] — will drag/scuff on ejection",
+          "count": 2,
+          "significance": "Medium"
+        },
+        {
+          "type": "Threaded feature",
+          "description": "Likely boss/insert thread locations for fascia mounting clips/brackets",
+          "count": 1,
+          "significance": "Medium"
+        },
+        {
+          "type": "Thin uniform-ish shell wall",
+          "description": "2.53–3.54mm nominal wall typical of PP bumper fascia moulding",
+          "count": 1,
+          "significance": "High"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "mat-pp",
+          "name": "Polypropylene (PP, likely TPO/EPDM-modified impact grade)",
+          "confidencePct": 78,
+          "reasoning": "Part name 'BUMPER', huge thin-shell panel (2.5mm nominal wall), free-form styled surface, and fill ratio consistent with a moulded plastic fascia. Automotive bumper fascias are almost universally unfilled/impact-modified PP (TPO) rather than glass-filled PP, because glass fill reduces impact elongation and causes fibre read-through under paint. Resolved from part name/geometry per 'Moulded plastic' guidance."
+        },
+        "alternatives": [
+          {
+            "materialId": "mat-pp-gf30",
+            "name": "PP 30% glass-filled",
+            "confidencePct": 10
+          },
+          {
+            "materialId": "mat-abs",
+            "name": "ABS",
+            "confidencePct": 7
+          },
+          {
+            "materialId": "mat-pc-abs",
+            "name": "PC/ABS blend",
+            "confidencePct": 5
+          }
+        ]
+      },
+      "processRecommendations": [
+        {
+          "process": "Injection Moulding",
+          "commodityType": "injection_moulding",
+          "confidencePct": 85,
+          "reasoning": "Stage-1 classifier and geometry (thin 2.5mm shell, large free-form panel, single hollow shell, 200k/yr volume) strongly favour high-volume thermoplastic injection moulding of a single-cavity bumper fascia tool.",
+          "estimatedCycleTimeHr": 0.0128
+        },
+        {
+          "process": "Blow Moulding",
+          "commodityType": "blow_moulding",
+          "confidencePct": 12,
+          "reasoning": "Fill ratio 0.0036 (enclosed hollow shell) superficially resembles a blow-moulded hollow part, but the styled free-form exterior with local wall variation (2.53–3.54mm) and typical bumper-fascia design is far more consistent with injection moulding of an open shell panel than a sealed blow-moulded vessel.",
+          "estimatedCycleTimeHr": 0.02
+        },
+        {
+          "process": "Thermoforming",
+          "commodityType": "thermoforming",
+          "confidencePct": 3,
+          "reasoning": "Possible for a simplified cover panel but unlikely given the surface detail and undercut features implied by tooling.",
+          "estimatedCycleTimeHr": 0.015
+        }
+      ],
+      "manufacturabilityScore": 53,
+      "manufacturabilityRisks": [
+        {
+          "severity": "High",
+          "feature": "4 undercut faces",
+          "description": "Undercuts along draw direction [0,0,1] will lock the part in the mould without side-action tooling.",
+          "suggestion": "Add mechanical side-actions/lifters or split the tool along a secondary parting line; re-orient draw if possible."
+        },
+        {
+          "severity": "Medium",
+          "feature": "2 zero-draft faces",
+          "description": "Faces with no draft will scuff, gall, or resist ejection, increasing cycle time and part damage risk.",
+          "suggestion": "Add minimum 1–2° draft to all vertical faces along the pull direction."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Non-uniform wall (σ=5.30mm across 2.53–3.54mm)",
+          "description": "Wall thickness transitions can create sink marks, differential shrinkage, and warpage on this large flat/curved panel.",
+          "suggestion": "Smooth wall transitions with generous ribs/radii and target ≤10% thickness change between adjacent sections."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Large projected area single-cavity tool (10,946.8 cm²)",
+          "description": "Very large flow length from a limited gate count risks weld lines, hesitation marks, and uneven pack pressure across the panel.",
+          "suggestion": "Use multiple sequential valve-gated hot-drops with flow simulation to balance fill and hide weld lines in low-visibility zones."
+        },
+        {
+          "severity": "Low",
+          "feature": "Threaded feature",
+          "description": "Thread feature likely for a mounting insert/clip boss; direct-threaded plastic bosses can strip under vibration load.",
+          "suggestion": "Use moulded-in brass threaded inserts or self-tapping boss design rather than direct plastic threads."
+        }
+      ],
+      "costInputSuggestions": {
+        "recommendedCommodity": "injection_moulding",
+        "netWeightKg": 2.163,
+        "materialId": "mat-pp",
+        "estimatedCycleTimeHr": 0.0128,
+        "estimatedSetupTimeHr": 0.75,
+        "estimatedOperations": [],
+        "injectionMoulding": {
+          "cavities": 1,
+          "projectedAreaCm2": 10946.8,
+          "wallThicknessMm": 2.5,
+          "mouldCostGBP": 200000,
+          "mouldLife": 500000,
+          "runnerWeightKg": 0.15,
+          "ejectTimeSec": 2
+        },
+        "casting": {
+          "subtype": "sand",
+          "dieMouldCostGBP": 0,
+          "dieMouldLife": 0,
+          "cavities": 0,
+          "yieldFraction": 0,
+          "cycleTimeHpdcSec": 0,
+          "cycleTimeSandGravHr": 0
+        },
+        "forging": {
+          "flashKg": 0,
+          "yieldFraction": 0,
+          "dieCostGBP": 0,
+          "dieLife": 0,
+          "strokes": 0,
+          "timePerBlowSec": 0
+        },
+        "sheetMetal": {
+          "thicknessMm": 0,
+          "blankLengthMm": 0,
+          "blankWidthMm": 0,
+          "dieCostGBP": 0,
+          "dieLife": 0,
+          "numOps": 0
+        },
+        "fieldConfidences": {
+          "imm-wall": 0.9,
+          "imm-proj-area": 0.9,
+          "imm-material": 0.65,
+          "imm-weight": 0.85,
+          "imm-cav": 0.6,
+          "imm-pressure": 0.45,
+          "imm-cooltime-factor": 0.4,
+          "imm-filltime": 0.4,
+          "imm-packtime": 0.4,
+          "imm-ejecttime": 0.9,
+          "imm-runner-weight": 0.4,
+          "imm-side-actions": 0.55,
+          "imm-mould-cost": 0.9,
+          "imm-mould-life": 0.5,
+          "bm-wall": 0.72,
+          "manufacturability-score": 0.95,
+          "imm-area": 0.75,
+          "imm-eject": 0.6
+        },
+        "dfmIssues": [
+          {
+            "severity": "High",
+            "area": "Undercut faces (x4)",
+            "description": "Undercut geometry along the primary draw direction blocks straight-pull ejection.",
+            "impact": "Requires side-actions/lifters, increasing mould cost by 15–25% and cycle time by 2–4s per shot.",
+            "fix": "Redesign undercut regions or add mechanical core-pulls/lifters synchronized to the ejection stroke."
+          },
+          {
+            "severity": "Medium",
+            "area": "Zero-draft vertical walls",
+            "description": "2 faces have no draft angle, causing ejection drag marks and potential part sticking.",
+            "impact": "Increased scrap rate and mould maintenance (polishing/texture wear).",
+            "fix": "Apply minimum 1.5° draft on all faces parallel to pull direction."
+          },
+          {
+            "severity": "Medium",
+            "area": "Non-uniform wall section (2.53–3.54mm)",
+            "description": "Local thickness variation up to ~40% promotes differential cooling shrinkage.",
+            "impact": "Visible sink marks and warpage on the large styled surface, risking cosmetic rejects.",
+            "fix": "Core out thick sections to maintain nominal 2.5–2.8mm wall and add ribbing instead of solid mass."
+          },
+          {
+            "severity": "Medium",
+            "area": "Large single-cavity flow length",
+            "description": "Projected area of ~1.1m² fed from limited gates on a thin 2.5mm wall risks hesitation and weld lines.",
+            "impact": "Visible weld lines on Class-A painted surface, potential short-shots at high volume cycle rates.",
+            "fix": "Use sequential valve-gated hot runner with 4–6 drops positioned per mould-flow simulation."
+          },
+          {
+            "severity": "Low",
+            "area": "Threaded boss feature",
+            "description": "Direct-moulded thread in PP is prone to stripping under repeated fastening.",
+            "impact": "Field failures/warranty claims on bracket attachment points.",
+            "fix": "Specify moulded-in brass insert or ultrasonic-welded insert boss."
+          }
+        ],
+        "costRange": {
+          "low": 6.2,
+          "mid": 9.5,
+          "high": 15,
+          "currency": "GBP"
+        },
+        "stage1Selection": {
+          "primary": "injection_moulding",
+          "conf": 0.85,
+          "alt": [
+            "sheet_metal",
+            "thermoforming"
+          ]
+        }
+      },
+      "aiExplanation": "BUMPER.stp is a large (1.69m x 0.65m x 0.53m) thin-shell (2.5mm nominal wall) free-form panel (99% B-spline surfaces) consistent with an automotive bumper fascia. Resolving the UNDECIDED injection-moulding inputs as 'Moulded plastic': material selected as unfilled/impact-modified PP (TPO), single-cavity tool sized to the ~1.1m2 projected area, and cycle time estimated from wall-thickness cooling. Key manufacturability risks are the 4 undercuts and 2 zero-draft faces requiring side-actions/lifters, non-uniform wall thickness risking sink and warpage, and the large flow length across a single cavity risking weld lines on the Class-A surface.",
+      "confidenceLevel": "Low",
+      "analysisLimitations": []
+    },
+    "sanityWarnings": [],
+    "ruleOverrides": {
+      "overridden": [
+        {
+          "field": "injectionMoulding.wallThicknessMm",
+          "ruleId": "injectionMoulding.wallThicknessMm",
+          "from": 2.5,
+          "to": 2.5,
+          "basis": "thin-shell wall from 2·V/S (ray-cast overshot the cavity) (non-uniform uniformity)",
+          "confidence": 0.9,
+          "contradicted": false
+        },
+        {
+          "field": "injectionMoulding.projectedAreaCm2",
+          "ruleId": "injectionMoulding.projectedAreaCm2",
+          "from": 10946.8,
+          "to": 10946.8,
+          "basis": "projection: bbox face × √fill for a solid, bbox face (worst case) for a shell",
+          "confidence": 0.75,
+          "contradicted": false
+        },
+        {
+          "field": "injectionMoulding.ejectTimeSec",
+          "ruleId": "injectionMoulding.ejectTimeSec",
+          "to": 2,
+          "basis": "mould open + eject + close, standard toggle press",
+          "confidence": 0.6,
+          "contradicted": false
+        }
+      ],
+      "notWritten": [],
+      "undecided": [
+        "commodity.thinWallRoute"
+      ]
+    },
+    "ruleFields": {
+      "imm-wall": {
+        "fieldId": "imm-wall",
+        "value": 2.5,
+        "basis": "thin-shell wall from 2·V/S (ray-cast overshot the cavity) (non-uniform uniformity)",
+        "source": "geometry",
+        "confidence": 0.9,
+        "ruleId": "injectionMoulding.wallThicknessMm"
+      },
+      "imm-area": {
+        "fieldId": "imm-area",
+        "value": 10946.8,
+        "basis": "projection: bbox face × √fill for a solid, bbox face (worst case) for a shell",
+        "source": "geometry",
+        "confidence": 0.75,
+        "ruleId": "injectionMoulding.projectedAreaCm2"
+      },
+      "imm-eject": {
+        "fieldId": "imm-eject",
+        "value": 2,
+        "basis": "mould open + eject + close, standard toggle press",
+        "source": "rule",
+        "confidence": 0.6,
+        "ruleId": "injectionMoulding.ejectTimeSec"
+      }
+    },
+    "deterministicAnalysis": {
+      "partName": "cv-cad-b11c81a2ecaa531c",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 1690.94,
+          "y": 647.38,
+          "z": 528.1
+        },
+        "estimatedVolumeCm3": 2059.899,
+        "estimatedSurfaceAreaCm2": 16261.69,
+        "estimatedWeightKg": {
+          "aluminum": 5.5617,
+          "steel": 16.1702,
+          "plastic": 2.1629
+        }
+      },
+      "detectedFeatures": [],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "",
+          "name": "",
+          "confidencePct": 0,
+          "reasoning": ""
+        },
+        "alternatives": []
+      },
+      "processRecommendations": [
+        {
+          "process": "injection_moulding",
+          "commodityType": "injection_moulding",
+          "confidencePct": 50,
+          "reasoning": "selected by the deterministic rules for this commodity",
+          "estimatedCycleTimeHr": 0
+        }
+      ],
+      "manufacturabilityScore": 53,
+      "manufacturabilityRisks": [],
+      "costInputSuggestions": {
+        "recommendedCommodity": "injection_moulding",
+        "netWeightKg": 0,
+        "materialId": "",
+        "estimatedCycleTimeHr": 0,
+        "estimatedSetupTimeHr": 0,
+        "estimatedOperations": [],
+        "dfmIssues": [
+          {
+            "severity": "Critical",
+            "area": "geometry",
+            "description": "Draft -1° below 1° minimum — Zero/negative draft means the part cannot release — it drags, scuffs and jams on ejection.",
+            "impact": "Draft -1° below 1° minimum",
+            "fix": "Add ≥ 1° draft to all vertical faces (more for deep or textured walls); increase toward 5° for heavy grain."
+          },
+          {
+            "severity": "High",
+            "area": "tooling",
+            "description": "4 undercuts need side-actions / lifters — Each undercut adds a slide or lifter — raising tool cost, maintenance and cycle time, and capping cavitation.",
+            "impact": "4 undercuts need side-actions / lifters",
+            "fix": "Design out undercuts with pass-through cores / bump-offs where the resin allows, or consolidate them onto one moving side."
+          },
+          {
+            "severity": "High",
+            "area": "process",
+            "description": "Flow-length/wall 668 exceeds ~200 (L/t) — Beyond the resin's L/t limit the melt freezes before filling — short shots, high pressure and weak weld lines.",
+            "impact": "Flow-length/wall 668 exceeds ~200 (L/t)",
+            "fix": "Add gates to shorten each flow path, thicken flow leaders, or select a higher-flow (higher-MFI) grade."
+          }
+        ],
+        "injectionMoulding": {
+          "wallThicknessMm": 2.5,
+          "projectedAreaCm2": 10946.8,
+          "ejectTimeSec": 2
+        },
+        "fieldConfidences": {
+          "imm-wall": 0.9,
+          "imm-area": 0.75,
+          "imm-eject": 0.6
+        }
+      },
+      "aiExplanation": "Derived deterministically for injection_moulding from the measured geometry. No AI call was made; every figure below is arithmetic on a measurement or a library lookup, and each states its own basis.\n\n  • injectionMoulding.wallThicknessMm = 2.5 — thin-shell wall from 2·V/S (ray-cast overshot the cavity) (non-uniform uniformity) [geometry, imm-wall]\n  • injectionMoulding.projectedAreaCm2 = 10946.8 — projection: bbox face × √fill for a solid, bbox face (worst case) for a shell [geometry, imm-area]\n  • injectionMoulding.ejectTimeSec = 2 — mould open + eject + close, standard toggle press [rule, imm-eject]\n\nStill open (1):\n  • Is this a pressed metal part or a moulded plastic one? — The kernel measured a 2.5 mm uniform wall filling 0% of the bounding box, and found no bends. A thin steel pressing and a thin plastic moulding are the same shape — nothing in the geometry separates them, and the two cost very differently: one buys a press tool and coil, the other buys a mould and resin.",
+      "confidenceLevel": "Low",
+      "analysisLimitations": [
+        "Unanswered: Is this a pressed metal part or a moulded plastic one?",
+        "DFM checks ran against the measured geometry. Checks that need a drawing callout — tolerances, which face is critical, whether a weld line is in a load path — did not run, so this list is a floor and not a ceiling."
+      ]
+    },
+    "diff": {
+      "diffs": [
+        {
+          "field": "casting.cavities",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeHpdcSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeSandGravHr",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.subtype",
+          "aiValue": "sand",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.yieldFraction",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.currency",
+          "aiValue": "GBP",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.high",
+          "aiValue": 15,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.low",
+          "aiValue": 6.2,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.mid",
+          "aiValue": 9.5,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleValue": 0,
+          "aiValue": 0.0128,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "estimatedSetupTimeHr",
+          "ruleValue": 0,
+          "aiValue": 0.75,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "fieldConfidences.bm-wall",
+          "aiValue": 0.72,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-area",
+          "ruleValue": 0.75,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.imm-cav",
+          "aiValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-cooltime-factor",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-eject",
+          "ruleValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.imm-ejecttime",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-filltime",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-material",
+          "aiValue": 0.65,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-mould-cost",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-mould-life",
+          "aiValue": 0.5,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-packtime",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-pressure",
+          "aiValue": 0.45,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-proj-area",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-runner-weight",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-side-actions",
+          "aiValue": 0.55,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.imm-wall",
+          "ruleValue": 0.9,
+          "aiValue": 0.9,
+          "deltaPct": 0,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "fieldConfidences.imm-weight",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.manufacturability-score",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.flashKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.strokes",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.timePerBlowSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.yieldFraction",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.cavities",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.ejectTimeSec",
+          "ruleValue": 2,
+          "deltaPct": null,
+          "basis": "mould open + eject + close, standard toggle press",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "injectionMoulding.mouldCostGBP",
+          "aiValue": 200000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldLife",
+          "aiValue": 500000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.projectedAreaCm2",
+          "ruleValue": 10946.8,
+          "aiValue": 10946.8,
+          "deltaPct": 0,
+          "basis": "projection: bbox face × √fill for a solid, bbox face (worst case) for a shell",
+          "verdict": "agree"
+        },
+        {
+          "field": "injectionMoulding.runnerWeightKg",
+          "aiValue": 0.15,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.wallThicknessMm",
+          "ruleValue": 2.5,
+          "aiValue": 2.5,
+          "deltaPct": 0,
+          "basis": "thin-shell wall from 2·V/S (ray-cast overshot the cavity) (non-uniform uniformity)",
+          "verdict": "agree"
+        },
+        {
+          "field": "materialId",
+          "ruleValue": "",
+          "aiValue": "mat-pp",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "netWeightKg",
+          "ruleValue": 0,
+          "aiValue": 2.163,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "recommendedCommodity",
+          "ruleValue": "injection_moulding",
+          "aiValue": "injection_moulding",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "sheetMetal.blankLengthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.blankWidthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.numOps",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.thicknessMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.conf",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.primary",
+          "aiValue": "injection_moulding",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        }
+      ],
+      "agreed": 4,
+      "differed": 4,
+      "ruleOnly": 3,
+      "aiOnly": 44,
+      "undecided": [
+        "commodity.thinWallRoute"
+      ]
+    },
+    "aiOriginal": {
+      "recommendedCommodity": "injection_moulding",
+      "netWeightKg": 2.163,
+      "materialId": "mat-pp",
+      "estimatedCycleTimeHr": 0.0128,
+      "estimatedSetupTimeHr": 0.75,
+      "estimatedOperations": [],
+      "injectionMoulding": {
+        "cavities": 1,
+        "projectedAreaCm2": 10946.8,
+        "wallThicknessMm": 2.5,
+        "mouldCostGBP": 200000,
+        "mouldLife": 500000,
+        "runnerWeightKg": 0.15
+      },
+      "casting": {
+        "subtype": "sand",
+        "dieMouldCostGBP": 0,
+        "dieMouldLife": 0,
+        "cavities": 0,
+        "yieldFraction": 0,
+        "cycleTimeHpdcSec": 0,
+        "cycleTimeSandGravHr": 0
+      },
+      "forging": {
+        "flashKg": 0,
+        "yieldFraction": 0,
+        "dieCostGBP": 0,
+        "dieLife": 0,
+        "strokes": 0,
+        "timePerBlowSec": 0
+      },
+      "sheetMetal": {
+        "thicknessMm": 0,
+        "blankLengthMm": 0,
+        "blankWidthMm": 0,
+        "dieCostGBP": 0,
+        "dieLife": 0,
+        "numOps": 0
+      },
+      "fieldConfidences": {
+        "imm-wall": 0.9,
+        "imm-proj-area": 0.9,
+        "imm-material": 0.65,
+        "imm-weight": 0.85,
+        "imm-cav": 0.6,
+        "imm-pressure": 0.45,
+        "imm-cooltime-factor": 0.4,
+        "imm-filltime": 0.4,
+        "imm-packtime": 0.4,
+        "imm-ejecttime": 0.9,
+        "imm-runner-weight": 0.4,
+        "imm-side-actions": 0.55,
+        "imm-mould-cost": 0.9,
+        "imm-mould-life": 0.5,
+        "bm-wall": 0.72,
+        "manufacturability-score": 0.95
+      },
+      "dfmIssues": [
+        {
+          "severity": "High",
+          "area": "Undercut faces (x4)",
+          "description": "Undercut geometry along the primary draw direction blocks straight-pull ejection.",
+          "impact": "Requires side-actions/lifters, increasing mould cost by 15–25% and cycle time by 2–4s per shot.",
+          "fix": "Redesign undercut regions or add mechanical core-pulls/lifters synchronized to the ejection stroke."
+        },
+        {
+          "severity": "Medium",
+          "area": "Zero-draft vertical walls",
+          "description": "2 faces have no draft angle, causing ejection drag marks and potential part sticking.",
+          "impact": "Increased scrap rate and mould maintenance (polishing/texture wear).",
+          "fix": "Apply minimum 1.5° draft on all faces parallel to pull direction."
+        },
+        {
+          "severity": "Medium",
+          "area": "Non-uniform wall section (2.53–3.54mm)",
+          "description": "Local thickness variation up to ~40% promotes differential cooling shrinkage.",
+          "impact": "Visible sink marks and warpage on the large styled surface, risking cosmetic rejects.",
+          "fix": "Core out thick sections to maintain nominal 2.5–2.8mm wall and add ribbing instead of solid mass."
+        },
+        {
+          "severity": "Medium",
+          "area": "Large single-cavity flow length",
+          "description": "Projected area of ~1.1m² fed from limited gates on a thin 2.5mm wall risks hesitation and weld lines.",
+          "impact": "Visible weld lines on Class-A painted surface, potential short-shots at high volume cycle rates.",
+          "fix": "Use sequential valve-gated hot runner with 4–6 drops positioned per mould-flow simulation."
+        },
+        {
+          "severity": "Low",
+          "area": "Threaded boss feature",
+          "description": "Direct-moulded thread in PP is prone to stripping under repeated fastening.",
+          "impact": "Field failures/warranty claims on bracket attachment points.",
+          "fix": "Specify moulded-in brass insert or ultrasonic-welded insert boss."
+        }
+      ],
+      "costRange": {
+        "low": 6.2,
+        "mid": 9.5,
+        "high": 15,
+        "currency": "GBP"
+      },
+      "stage1Selection": {
+        "primary": "injection_moulding",
+        "conf": 0.85,
+        "alt": [
+          "sheet_metal",
+          "thermoforming"
+        ]
+      }
+    },
+    "decisions": [
+      {
+        "id": "commodity.thinWallRoute",
+        "kind": "commodity",
+        "question": "Is this a pressed metal part or a moulded plastic one?",
+        "why": "The kernel measured a 2.5 mm uniform wall filling 0% of the bounding box, and found no bends. A thin steel pressing and a thin plastic moulding are the same shape — nothing in the geometry separates them, and the two cost very differently: one buys a press tool and coil, the other buys a mould and resin.",
+        "options": [
+          {
+            "value": "sheet_metal",
+            "label": "Pressed metal",
+            "consequence": "16.17 kg in steel · press tool + coil"
+          },
+          {
+            "value": "injection_moulding",
+            "label": "Moulded plastic",
+            "consequence": "2.16 kg in plastic · mould + resin"
+          }
+        ],
+        "blockedFieldIds": [
+          "imm-mat",
+          "imm-part-wt",
+          "imm-cav",
+          "imm-cav-press",
+          "imm-mach",
+          "imm-cool-f",
+          "imm-fill",
+          "imm-pack",
+          "imm-runner-wt",
+          "imm-side-actions",
+          "imm-steel-class",
+          "imm-mould-life",
+          "imm-mould-cost"
+        ],
+        "blockedRuleIds": [
+          "injectionMoulding.materialId",
+          "injectionMoulding.partWeightKg",
+          "injectionMoulding.cavities",
+          "injectionMoulding.cavityPressureMPa",
+          "injectionMoulding.machineId",
+          "injectionMoulding.coolTimeFactorSPerMm2",
+          "injectionMoulding.fillTimeSec",
+          "injectionMoulding.packTimeSec",
+          "injectionMoulding.runnerWeightKg",
+          "injectionMoulding.sideActionsLifters",
+          "injectionMoulding.steelClass",
+          "injectionMoulding.mouldLife",
+          "injectionMoulding.mouldCostGBP"
+        ],
+        "severity": "blocking"
+      }
+    ],
+    "mode": "both",
+    "fromCache": false,
+    "geometrySource": "occt",
+    "annualVolume": 200000,
+    "occtGeometry": {
+      "status": "success",
+      "partName": "cv-cad-b11c81a2ecaa531c",
+      "boundingBox": {
+        "xMm": 1690.94,
+        "yMm": 647.38,
+        "zMm": 528.1
+      },
+      "volume": {
+        "mm3": 2059899.5,
+        "cm3": 2059.899
+      },
+      "surfaceArea": {
+        "mm2": 1626169,
+        "cm2": 16261.69
+      },
+      "fillRatio": 0.0036,
+      "topology": {
+        "available": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 3,
+        "freeEdgeRatio": 0.0021,
+        "enclosesSealedVoid": false,
+        "openShell": true
+      },
+      "weights": {
+        "aluminiumKg": 5.5617,
+        "steelKg": 16.1702,
+        "plasticKg": 2.1629,
+        "castIronKg": 14.7283,
+        "copperKg": 18.4567,
+        "titaniumKg": 9.1254
+      },
+      "faces": {
+        "total": 498,
+        "byType": {
+          "BSPLINE": 492,
+          "PLANE": 6
+        }
+      },
+      "edges": {
+        "total": 1406,
+        "byType": {
+          "LINE": 11,
+          "BSPLINE": 1392,
+          "OTHER": 3
+        },
+        "sampleCircleRadiiMm": []
+      },
+      "features": {
+        "cylindricalFaceCount": 0,
+        "cylindricalFaceRadiiMm": [],
+        "estimatedHoleCount": 0,
+        "holeRadiiMm": [],
+        "bossShaftCount": 0,
+        "bossShaftRadiiMm": [],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 6,
+        "freeFormFaceCount": 492,
+        "planarFaceAreaMm2": 59
+      },
+      "featureTable": [],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 21.8
+      },
+      "wallThickness": {
+        "minMm": 2.53,
+        "maxMm": 3.5419999999999994,
+        "p95Mm": null,
+        "meanMm": 2.53,
+        "stdDevMm": 5.3,
+        "sampleCount": 4,
+        "method": "volume_surface_shell",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 4,
+        "zeroDraftFaceCount": 2,
+        "adequateDraftFaceCount": 0,
+        "minPositiveDraftDeg": null,
+        "maxPositiveDraftDeg": null,
+        "analyzedFaceCount": 6
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Y",
+            "faceCount": 93
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 60
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 17
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 0,
+        "drillBoreTimeMins": 0,
+        "estimatedTotalMins": 45,
+        "estimatedTotalHrs": 0.7502,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 300000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 50000,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 180000,
+        "progressiveDieCostGBP": 90000
+      },
+      "manufacturabilityScore": 53,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.3725,
+        "sandCycleTimeHrFerrous": 0.7391,
+        "forgeStrokes": 7,
+        "investWaxCostGBP": 243.93,
+        "investShellCostGBP": 731.78
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    },
+    "stlGeometry": null,
+    "preprocessed": {
+      "format": "STEP",
+      "partName": "BUMPER CLOSE VOLUME",
+      "boundingBoxEstMm": {
+        "x": 1699.057963273,
+        "y": 651.0281949289999,
+        "z": 570.6443908379999
+      },
+      "entityStats": {
+        "ADVANCED_BREP_SHAPE_REPRESENTATION": 1,
+        "ADVANCED_FACE": 498,
+        "B_SPLINE_SURFACE_WITH_KNOTS": 492,
+        "MANIFOLD_SOLID_BREP": 1,
+        "EDGE_LOOP": 502,
+        "PLANE": 6
+      }
+    },
+    "dfmJobId": "2f20f9eb-2ee1-4670-8439-06618b73a559"
+  }
+}

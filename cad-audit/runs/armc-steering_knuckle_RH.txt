@@ -1,0 +1,8 @@
+Measuring steering_knuckle_RH.stp …
+
+──────────────────────────────────────────────────────────────────────────
+  steering_knuckle_RH.stp  ·  cast_and_machine  ·  200,000/yr
+──────────────────────────────────────────────────────────────────────────
+  Measured: 356.1 cm³ · 116×237×210 mm
+
+  No cost mapping for 'cast_and_machine' yet (have: casting, forging, machining, injection_moulding, sheet_metal, blow_moulding).

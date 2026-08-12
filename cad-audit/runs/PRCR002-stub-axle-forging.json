@@ -1,0 +1,1863 @@
+{
+  "_audit": {
+    "part": "PRCR002.stp",
+    "commodity": "forging",
+    "mode": "both",
+    "volume": 200000,
+    "deep": false,
+    "httpStatus": 200,
+    "seconds": 127.8,
+    "capturedAt": "2026-08-12T14:34:25.879Z"
+  },
+  "response": {
+    "success": true,
+    "analysis": {
+      "partName": "PRCR002 – Forged Structural/Drivetrain Component",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 276.78,
+          "y": 223.15,
+          "z": 181.86
+        },
+        "estimatedVolumeCm3": 1037.113,
+        "estimatedSurfaceAreaCm2": 1370.059,
+        "estimatedWeightKg": {
+          "aluminum": 2.8002,
+          "steel": 8.1413,
+          "castIron": 7.4154,
+          "plastic": 1.089
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "Holes (drilled/bored)",
+          "description": "21 holes r<30mm requiring post-forge drilling/boring/reaming",
+          "count": 21,
+          "significance": "High"
+        },
+        {
+          "type": "Threaded features",
+          "description": "Tapped/threaded bores detected — cannot be forged net-shape, machined after forging",
+          "count": 1,
+          "significance": "Medium"
+        },
+        {
+          "type": "Boss/shaft features",
+          "description": "Large diameter bosses/shafts (r=10–57mm) forming main load-bearing sections",
+          "count": 7,
+          "significance": "High"
+        },
+        {
+          "type": "Undercut faces",
+          "description": "44 faces with negative draft relative to Z draw direction — conflicts with single-plane forging draw",
+          "count": 44,
+          "significance": "High"
+        },
+        {
+          "type": "Free-form (B-spline) surfaces",
+          "description": "76 organic/blended surfaces increasing die-sinking complexity",
+          "count": 76,
+          "significance": "Medium"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "mat-steel-38mnvs6",
+          "name": "38MnVS6 Microalloyed Forging Steel",
+          "confidencePct": 62,
+          "reasoning": "Thick, dense, complex solid (fill ratio 0.092 driven by internal geometry not thin shell) with bosses/shafts up to 57mm radius, multiple bores and threads — classic profile of a forged automotive drivetrain/suspension component (knuckle/arm/hub-type part). Per guidance, thick-section forged parts of this nature default to steel rather than aluminium absent an explicit lightweighting signal. 38MnVS6 is a precipitation-hardening microalloyed steel purpose-built for hot closed-die forging without post-forge heat treatment, common in this part class."
+        },
+        "alternatives": [
+          {
+            "materialId": "mat-steel4340",
+            "name": "AISI 4340 Alloy Steel",
+            "confidencePct": 22
+          },
+          {
+            "materialId": "mat-steel4130",
+            "name": "AISI 4130 Alloy Steel",
+            "confidencePct": 12
+          },
+          {
+            "materialId": "mat-al7075-forge",
+            "name": "Al 7075 Forging Alloy",
+            "confidencePct": 4
+          }
+        ]
+      },
+      "processRecommendations": [
+        {
+          "process": "Closed-die hot forging",
+          "commodityType": "forging",
+          "confidencePct": 95,
+          "reasoning": "User-forced ground truth; part geometry (thick bosses, moderate free-form blending, high strength requirement implied by drivetrain-type shape) suits closed-die forging at 200k/yr volume, followed by machining of holes/threads.",
+          "estimatedCycleTimeHr": 0.03
+        },
+        {
+          "process": "CNC finish machining (post-forge)",
+          "commodityType": "machining",
+          "confidencePct": 60,
+          "reasoning": "21 holes, threaded features, and 3 machining setups are required after forging to achieve final bores/threads; bottom-up CNC estimate used verbatim.",
+          "estimatedCycleTimeHr": 0.6699
+        }
+      ],
+      "manufacturabilityScore": 18,
+      "manufacturabilityRisks": [
+        {
+          "severity": "High",
+          "feature": "Undercuts (44 faces)",
+          "description": "Numerous undercut faces relative to single draw direction cannot be forged in one blow; will require die re-orientation, split-die design, or secondary machining to form these features.",
+          "suggestion": "Re-orient parting line to minimize undercuts or convert undercut features to post-forge machined details."
+        },
+        {
+          "severity": "High",
+          "feature": "Non-uniform section (σ=46.6mm)",
+          "description": "Very high variance in wall/section thickness (0.45mm to 170mm) risks incomplete die fill, cold shuts, and flow-line discontinuities in thin regions adjacent to massive bosses.",
+          "suggestion": "Add fillets/ribs to smooth section transitions and add draft to ease metal flow into thin zones."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Threaded/drilled features",
+          "description": "21 holes plus threads cannot be forged net-shape and require a dedicated multi-setup machining line, adding cost and cycle time at 200k/yr volume.",
+          "suggestion": "Consolidate hole operations on one setup where possible; consider coining pilot holes in the forging to reduce drilling stock removal."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Free-form surfaces (76 faces)",
+          "description": "High B-spline face content increases die-sinking (CNC) time and inspection complexity for the forging die cavity.",
+          "suggestion": "Simplify blended surfaces to standard radii/fillets where functionally permissible to reduce die cost."
+        }
+      ],
+      "costInputSuggestions": {
+        "recommendedCommodity": "forging",
+        "netWeightKg": 8.141,
+        "materialId": "steel",
+        "estimatedCycleTimeHr": 0.6699,
+        "estimatedSetupTimeHr": 0.75,
+        "estimatedOperations": [
+          {
+            "name": "CNC Milling Setup 1 (+Z, 73 faces)",
+            "machineId": "mach-vmc5",
+            "cycleTimeHr": 0.3,
+            "labourId": "lab-uk-skilled",
+            "oee": 0.85,
+            "manning": 1,
+            "labourEfficiency": 0.92
+          },
+          {
+            "name": "CNC Milling Setup 2 (+Y, 71 faces)",
+            "machineId": "mach-haas-vf2",
+            "cycleTimeHr": 0.195,
+            "labourId": "lab-uk-skilled",
+            "oee": 0.85,
+            "manning": 1,
+            "labourEfficiency": 0.92
+          },
+          {
+            "name": "Drilling/Boring 21 holes + tap",
+            "machineId": "mach-drill",
+            "cycleTimeHr": 0.175,
+            "labourId": "lab-uk-skilled",
+            "oee": 0.85,
+            "manning": 1,
+            "labourEfficiency": 0.92
+          }
+        ],
+        "forging": {
+          "flashKg": 0.814,
+          "yieldFraction": 0.743,
+          "dieCostGBP": 36141,
+          "dieLife": 35271,
+          "strokes": 8,
+          "timePerBlowSec": 10,
+          "projectedAreaCm2": 187.6,
+          "forgeId": "forge-press-1600t",
+          "dieSteel": "h13",
+          "dieImpressions": 2,
+          "heatingEnergyKwhPerKg": 0.35,
+          "heatTreatCostPerKg": 0.3,
+          "descaleCostPerKg": 0.12,
+          "ndtCostPerPart": 0
+        },
+        "casting": {
+          "subtype": "sand",
+          "dieMouldCostGBP": 0,
+          "dieMouldLife": 0,
+          "cavities": 0,
+          "yieldFraction": 0,
+          "cycleTimeHpdcSec": 0,
+          "cycleTimeSandGravHr": 0
+        },
+        "sheetMetal": {
+          "thicknessMm": 0,
+          "blankLengthMm": 0,
+          "blankWidthMm": 0,
+          "dieCostGBP": 0,
+          "dieLife": 0,
+          "numOps": 0
+        },
+        "injectionMoulding": {
+          "cavities": 0,
+          "projectedAreaCm2": 187.6,
+          "wallThicknessMm": 0,
+          "mouldCostGBP": 0,
+          "mouldLife": 0,
+          "runnerWeightKg": 0
+        },
+        "fieldConfidences": {
+          "materialFamily": 0.6,
+          "partWeightKg": 0.9,
+          "process": 0.95,
+          "projectedAreaCm2": 0.95,
+          "shapeComplexity": 0.95,
+          "yieldFraction": 0.45,
+          "flashAndScaleKg": 0.4,
+          "forgeId": 0.35,
+          "strokesToForm": 0.9,
+          "timePerBlowSec": 0.9,
+          "dieSteel": 0.4,
+          "dieImpressions": 0.4,
+          "dieCostGBP": 0.9,
+          "dieLife": 0.4,
+          "heatingEnergyKwhPerKg": 0.35,
+          "heatTreatCostPerKg": 0.35,
+          "descaleCostPerKg": 0.3,
+          "ndtCostPerPart": 0.3,
+          "manufacturabilityScore": 0.95,
+          "forge-mat": 1,
+          "forge-part-wt": 0.95,
+          "forge-proj-area": 0.8,
+          "forge-yield": 0.75,
+          "forge-flash": 0.6,
+          "forge-mach": 0.85,
+          "forge-strokes": 0.7,
+          "forge-time-per-blow": 0.6,
+          "forge-die-steel": 0.7,
+          "forge-die-impr": 0.6,
+          "forge-die-cost": 0.65,
+          "forge-die-life": 0.6,
+          "forge-heat-energy": 0.7,
+          "forge-ht-cost": 0.6,
+          "forge-descale": 0.6,
+          "forge-ndt": 0.65
+        },
+        "dfmIssues": [
+          {
+            "severity": "High",
+            "area": "Undercuts / draw direction",
+            "description": "44 undercut faces conflict with a single Z-axis draw direction typical of closed-die forging.",
+            "impact": "Requires split dies, side-relief inserts, or extra machining — increases tooling cost by 15–25% and lead time.",
+            "fix": "Reorient part or split the die along a plane that eliminates most undercuts; move remaining undercuts to post-forge machining."
+          },
+          {
+            "severity": "High",
+            "area": "Large boss/shaft transitions",
+            "description": "Boss radii up to 57mm adjacent to sections down to 0.45mm nominal create abrupt metal-flow gradients in the die cavity.",
+            "impact": "Risk of laps, cold shuts, and incomplete fill leading to scrap rates >5% at start-of-run.",
+            "fix": "Increase fillet radii at boss-to-web transitions and add generous draft (≥7°) to aid metal flow."
+          },
+          {
+            "severity": "Medium",
+            "area": "Threaded & precision bores (21 holes)",
+            "description": "Threads and close-tolerance bores cannot be forged net-shape and require full secondary machining across 3 setups.",
+            "impact": "Adds ~0.67hr machining + 0.75hr setup per part, dominating unit cost at high volume.",
+            "fix": "Pre-form pilot holes in the forging to reduce stock removal; fixture design to combine setups."
+          },
+          {
+            "severity": "Medium",
+            "area": "Free-form die cavity (76 B-spline faces)",
+            "description": "High proportion of blended/organic surfaces increases 5-axis die-sinking time and die polishing cost.",
+            "impact": "Die cost and lead time increase 10–20% versus a simpler faceted geometry.",
+            "fix": "Simplify non-functional blended surfaces to standard radii/fillets to reduce die-sinking time and polishing effort."
+          }
+        ],
+        "costRange": {
+          "low": 0,
+          "mid": 0,
+          "high": 0,
+          "currency": "GBP"
+        }
+      },
+      "aiExplanation": "",
+      "confidenceLevel": "Low",
+      "analysisLimitations": []
+    },
+    "sanityWarnings": [
+      {
+        "code": "near_net_machining_capped",
+        "message": "Machining time 0.67 h looked machined-from-solid; a 8.1 kg near-net forging part only needs finish machining — capped to 0.67 h.",
+        "severity": "warn"
+      }
+    ],
+    "ruleOverrides": {
+      "overridden": [
+        {
+          "field": "materialId",
+          "ruleId": "forging.materialId",
+          "from": "mat-steel-38mnvs6",
+          "to": "steel",
+          "basis": "1037 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)",
+          "confidence": 1,
+          "contradicted": true
+        },
+        {
+          "field": "netWeightKg",
+          "ruleId": "forging.partWeightKg",
+          "from": 8.141,
+          "to": 8.141,
+          "basis": "1037 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)",
+          "confidence": 0.95,
+          "contradicted": false
+        },
+        {
+          "field": "forging.projectedAreaCm2",
+          "ruleId": "forging.projectedAreaCm2",
+          "to": 187.6,
+          "basis": "parting-plane silhouette: bbox face × √fill for a solid, bbox face for a shell",
+          "confidence": 0.8,
+          "contradicted": false
+        },
+        {
+          "field": "forging.yieldFraction",
+          "ruleId": "forging.yieldFraction",
+          "from": 0.7,
+          "to": 0.743,
+          "basis": "closed-die stock yield band 0.55–0.8, midpoint 0.675, scaled by the 10% flash so the billet lands at part ÷ 0.675",
+          "confidence": 0.75,
+          "contradicted": true
+        },
+        {
+          "field": "forging.flashKg",
+          "ruleId": "forging.flashAndScaleKg",
+          "from": 3.49,
+          "to": 0.814,
+          "basis": "10% of part weight squeezed out at the flash land",
+          "confidence": 0.6,
+          "contradicted": true
+        },
+        {
+          "field": "forging.forgeId",
+          "ruleId": "forging.forgeId",
+          "to": "forge-press-1600t",
+          "basis": "F = Kt × σflow × A: moderate shape in carbon-steel over 187.6 cm² = 861 t (1.2 safety)",
+          "confidence": 0.85,
+          "contradicted": false
+        },
+        {
+          "field": "forging.strokes",
+          "ruleId": "forging.strokesToForm",
+          "from": 8,
+          "to": 8,
+          "basis": "blows to fill the impression, from the measured shape",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "forging.timePerBlowSec",
+          "ruleId": "forging.timePerBlowSec",
+          "from": 10,
+          "to": 10,
+          "basis": "ram travel + dwell per blow on a mechanical press",
+          "confidence": 0.6,
+          "contradicted": false
+        },
+        {
+          "field": "forging.dieSteel",
+          "ruleId": "forging.dieSteel",
+          "to": "h13",
+          "basis": "H13 — the impression-die workhorse",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "forging.dieImpressions",
+          "ruleId": "forging.dieImpressions",
+          "to": 2,
+          "basis": "blocker + finisher",
+          "confidence": 0.6,
+          "contradicted": false
+        },
+        {
+          "field": "forging.dieCostGBP",
+          "ruleId": "forging.dieCost",
+          "from": 180000,
+          "to": 36141,
+          "basis": "2-impression h13 die over 187.6 cm²: £8875 block + £21739 sinking + £3770 HT + £1757 polish; OCCT parametric says £180000",
+          "confidence": 0.65,
+          "contradicted": true
+        },
+        {
+          "field": "forging.dieLife",
+          "ruleId": "forging.dieLife",
+          "from": 80000,
+          "to": 35271,
+          "basis": "carbon-steel at 187.6 cm², moderate impression",
+          "confidence": 0.6,
+          "contradicted": true
+        },
+        {
+          "field": "forging.heatingEnergyKwhPerKg",
+          "ruleId": "forging.heatingEnergyKwhPerKg",
+          "to": 0.35,
+          "basis": "energy to bring carbon-steel to forging temperature",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "forging.heatTreatCostPerKg",
+          "ruleId": "forging.heatTreatCostPerKg",
+          "to": 0.3,
+          "basis": "normalise for a carbon-steel forging",
+          "confidence": 0.6,
+          "contradicted": false
+        },
+        {
+          "field": "forging.descaleCostPerKg",
+          "ruleId": "forging.descaleCostPerKg",
+          "to": 0.12,
+          "basis": "forge scale pickled off before machining",
+          "confidence": 0.6,
+          "contradicted": false
+        },
+        {
+          "field": "forging.ndtCostPerPart",
+          "ruleId": "forging.ndtCostPerPart",
+          "to": 0,
+          "basis": "not safety-critical — no NDT",
+          "confidence": 0.65,
+          "contradicted": false
+        }
+      ],
+      "notWritten": [
+        "forging.process",
+        "forging.shapeComplexity"
+      ],
+      "undecided": []
+    },
+    "ruleFields": {
+      "forge-mat": {
+        "fieldId": "forge-mat",
+        "value": "steel",
+        "basis": "1037 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)",
+        "source": "engineer",
+        "confidence": 1,
+        "ruleId": "forging.materialId"
+      },
+      "forge-part-wt": {
+        "fieldId": "forge-part-wt",
+        "value": 8.141,
+        "basis": "1037 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)",
+        "source": "geometry",
+        "confidence": 0.95,
+        "ruleId": "forging.partWeightKg"
+      },
+      "forge-proj-area": {
+        "fieldId": "forge-proj-area",
+        "value": 187.6,
+        "basis": "parting-plane silhouette: bbox face × √fill for a solid, bbox face for a shell",
+        "source": "geometry",
+        "confidence": 0.8,
+        "ruleId": "forging.projectedAreaCm2"
+      },
+      "forge-shape": {
+        "fieldId": "forge-shape",
+        "value": "moderate",
+        "basis": "76 free-form face(s), 44 undercut face(s), 364 faces total",
+        "source": "geometry",
+        "confidence": 0.65,
+        "ruleId": "forging.shapeComplexity"
+      },
+      "forge-yield": {
+        "fieldId": "forge-yield",
+        "value": 0.743,
+        "basis": "closed-die stock yield band 0.55–0.8, midpoint 0.675, scaled by the 10% flash so the billet lands at part ÷ 0.675",
+        "source": "library",
+        "confidence": 0.75,
+        "ruleId": "forging.yieldFraction"
+      },
+      "forge-flash": {
+        "fieldId": "forge-flash",
+        "value": 0.814,
+        "basis": "10% of part weight squeezed out at the flash land",
+        "source": "rule",
+        "confidence": 0.6,
+        "ruleId": "forging.flashAndScaleKg"
+      },
+      "forge-mach": {
+        "fieldId": "forge-mach",
+        "value": "forge-press-1600t",
+        "basis": "F = Kt × σflow × A: moderate shape in carbon-steel over 187.6 cm² = 861 t (1.2 safety)",
+        "source": "advisor",
+        "confidence": 0.85,
+        "ruleId": "forging.forgeId"
+      },
+      "forge-strokes": {
+        "fieldId": "forge-strokes",
+        "value": 8,
+        "basis": "blows to fill the impression, from the measured shape",
+        "source": "geometry",
+        "confidence": 0.7,
+        "ruleId": "forging.strokesToForm"
+      },
+      "forge-time-per-blow": {
+        "fieldId": "forge-time-per-blow",
+        "value": 10,
+        "basis": "ram travel + dwell per blow on a mechanical press",
+        "source": "rule",
+        "confidence": 0.6,
+        "ruleId": "forging.timePerBlowSec"
+      },
+      "forge-die-steel": {
+        "fieldId": "forge-die-steel",
+        "value": "h13",
+        "basis": "H13 — the impression-die workhorse",
+        "source": "rule",
+        "confidence": 0.7,
+        "ruleId": "forging.dieSteel"
+      },
+      "forge-die-impr": {
+        "fieldId": "forge-die-impr",
+        "value": 2,
+        "basis": "blocker + finisher",
+        "source": "rule",
+        "confidence": 0.6,
+        "ruleId": "forging.dieImpressions"
+      },
+      "forge-die-cost": {
+        "fieldId": "forge-die-cost",
+        "value": 36141,
+        "basis": "2-impression h13 die over 187.6 cm²: £8875 block + £21739 sinking + £3770 HT + £1757 polish; OCCT parametric says £180000",
+        "source": "advisor",
+        "confidence": 0.65,
+        "ruleId": "forging.dieCost"
+      },
+      "forge-die-life": {
+        "fieldId": "forge-die-life",
+        "value": 35271,
+        "basis": "carbon-steel at 187.6 cm², moderate impression",
+        "source": "advisor",
+        "confidence": 0.6,
+        "ruleId": "forging.dieLife"
+      },
+      "forge-heat-energy": {
+        "fieldId": "forge-heat-energy",
+        "value": 0.35,
+        "basis": "energy to bring carbon-steel to forging temperature",
+        "source": "library",
+        "confidence": 0.7,
+        "ruleId": "forging.heatingEnergyKwhPerKg"
+      },
+      "forge-ht-cost": {
+        "fieldId": "forge-ht-cost",
+        "value": 0.3,
+        "basis": "normalise for a carbon-steel forging",
+        "source": "library",
+        "confidence": 0.6,
+        "ruleId": "forging.heatTreatCostPerKg"
+      },
+      "forge-descale": {
+        "fieldId": "forge-descale",
+        "value": 0.12,
+        "basis": "forge scale pickled off before machining",
+        "source": "library",
+        "confidence": 0.6,
+        "ruleId": "forging.descaleCostPerKg"
+      },
+      "forge-ndt": {
+        "fieldId": "forge-ndt",
+        "value": 0,
+        "basis": "not safety-critical — no NDT",
+        "source": "library",
+        "confidence": 0.65,
+        "ruleId": "forging.ndtCostPerPart"
+      }
+    },
+    "deterministicAnalysis": {
+      "partName": "cv-cad-e4608d19b7ec604b",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 276.78,
+          "y": 223.15,
+          "z": 181.86
+        },
+        "estimatedVolumeCm3": 1037.113,
+        "estimatedSurfaceAreaCm2": 1370.059,
+        "estimatedWeightKg": {
+          "aluminum": 2.8002,
+          "steel": 8.1413,
+          "plastic": 1.089
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "boss",
+          "description": "1× Ø20.0 × 4 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø24.0 × 25 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø35.0 × 47 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø55.0 × 32 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø57.0 × 7 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø77.0 × 2 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø114.0 × 7 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø3.1 × 3 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø6.3 × 4 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø10.0 × 23 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "2× Ø14.0 × 8 mm blind",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "2× Ø14.0 × 40 mm blind",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "2× Ø14.0 × 59 mm blind",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø16.0 × 3 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø24.0 × 18 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø37.0 × 45 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø39.0 × 45 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "2× Ø40.0 × 3 mm blind",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "2× Ø40.0 × 7 mm blind",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "2× Ø42.5 × 2 mm blind",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø45.0 × 3 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø46.0 × 6 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "bend",
+          "description": "25 bend(s), 775 mm total length",
+          "count": 25,
+          "significance": "High"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "",
+          "name": "",
+          "confidencePct": 0,
+          "reasoning": ""
+        },
+        "alternatives": []
+      },
+      "processRecommendations": [
+        {
+          "process": "forging",
+          "commodityType": "forging",
+          "confidencePct": 50,
+          "reasoning": "selected by the deterministic rules for this commodity",
+          "estimatedCycleTimeHr": 0
+        }
+      ],
+      "manufacturabilityScore": 18,
+      "manufacturabilityRisks": [],
+      "costInputSuggestions": {
+        "recommendedCommodity": "forging",
+        "netWeightKg": 0,
+        "materialId": "",
+        "estimatedCycleTimeHr": 0,
+        "estimatedSetupTimeHr": 0,
+        "estimatedOperations": [],
+        "dfmIssues": [
+          {
+            "severity": "Critical",
+            "area": "geometry",
+            "description": "Web 0.45 mm below closed-die minimum 3 mm — Thin webs cool fast and resist metal flow — incomplete fill, forging laps and excessive die pressure/wear.",
+            "impact": "Web 0.45 mm below closed-die minimum 3 mm",
+            "fix": "Thicken the web to ≥ 3 mm, or move to a lower-web process (precision 1.5 mm / cold 1 mm)."
+          },
+          {
+            "severity": "High",
+            "area": "tooling",
+            "description": "Draft -1° below recommended 3° — Insufficient die draft prevents clean part release — galling, ejection cracks and rapid die wear.",
+            "impact": "Draft -1° below recommended 3°",
+            "fix": "Add ≥ 3° draft on impression walls (deep cavities need 5–7°). Precision/warm forging can run reduced draft with ejectors."
+          }
+        ],
+        "forging": {
+          "projectedAreaCm2": 187.6,
+          "strokes": 8,
+          "timePerBlowSec": 10
+        },
+        "fieldConfidences": {
+          "forge-proj-area": 0.8,
+          "forge-strokes": 0.7,
+          "forge-time-per-blow": 0.6
+        }
+      },
+      "aiExplanation": "Derived deterministically for forging from the measured geometry. No AI call was made; every figure below is arithmetic on a measurement or a library lookup, and each states its own basis.\n\n  • forging.projectedAreaCm2 = 187.6 — parting-plane silhouette: bbox face × √fill for a solid, bbox face for a shell [geometry, forge-proj-area]\n  • forging.shapeComplexity = moderate — 76 free-form face(s), 44 undercut face(s), 364 faces total [geometry, forge-shape]\n  • forging.strokesToForm = 8 — blows to fill the impression, from the measured shape [geometry, forge-strokes]\n  • forging.timePerBlowSec = 10 — ram travel + dwell per blow on a mechanical press [rule, forge-time-per-blow]\n\nStill open (1):\n  • What is this part made of? — A CAD file carries shape, not substance. We measured 1037 cm³ exactly, but the same solid weighs 2.80 kg in aluminium and 8.14 kg in steel. Nothing in the geometry distinguishes them, and guessing wrong moves the material cost several-fold.",
+      "confidenceLevel": "Low",
+      "analysisLimitations": [
+        "Unanswered: What is this part made of?",
+        "DFM checks ran against the measured geometry. Checks that need a drawing callout — tolerances, which face is critical, whether a weld line is in a load path — did not run, so this list is a floor and not a ceiling.",
+        "Computed but not carried into the form: forging.shapeComplexity"
+      ]
+    },
+    "diff": {
+      "diffs": [
+        {
+          "field": "casting.cavities",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeHpdcSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeSandGravHr",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.subtype",
+          "aiValue": "sand",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.yieldFraction",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.currency",
+          "aiValue": "GBP",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.high",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.low",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.mid",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleValue": 0,
+          "aiValue": 0.67,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "estimatedSetupTimeHr",
+          "ruleValue": 0,
+          "aiValue": 0.75,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "fieldConfidences.descaleCostPerKg",
+          "aiValue": 0.3,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.dieCostGBP",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.dieImpressions",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.dieLife",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.dieSteel",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.flashAndScaleKg",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.forge-proj-area",
+          "ruleValue": 0.8,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.forge-strokes",
+          "ruleValue": 0.7,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.forge-time-per-blow",
+          "ruleValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.forgeId",
+          "aiValue": 0.35,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.heatTreatCostPerKg",
+          "aiValue": 0.35,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.heatingEnergyKwhPerKg",
+          "aiValue": 0.35,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.manufacturabilityScore",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.materialFamily",
+          "aiValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.ndtCostPerPart",
+          "aiValue": 0.3,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.partWeightKg",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.process",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.projectedAreaCm2",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.shapeComplexity",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.strokesToForm",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.timePerBlowSec",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.yieldFraction",
+          "aiValue": 0.45,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieCostGBP",
+          "aiValue": 180000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieLife",
+          "aiValue": 80000,
+          "deltaPct": null,
+          "basis": "carbon-steel at 187.6 cm², moderate impression",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.flashKg",
+          "aiValue": 3.49,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.projectedAreaCm2",
+          "ruleValue": 187.6,
+          "deltaPct": null,
+          "basis": "parting-plane silhouette: bbox face × √fill for a solid, bbox face for a shell",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "forging.strokes",
+          "ruleValue": 8,
+          "aiValue": 8,
+          "deltaPct": 0,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "forging.timePerBlowSec",
+          "ruleValue": 10,
+          "aiValue": 10,
+          "deltaPct": 0,
+          "basis": "ram travel + dwell per blow on a mechanical press",
+          "verdict": "agree"
+        },
+        {
+          "field": "forging.yieldFraction",
+          "aiValue": 0.7,
+          "deltaPct": null,
+          "basis": "closed-die stock yield band 0.55–0.8, midpoint 0.675, scaled by the 10% flash so the billet lands at part ÷ 0.675",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.cavities",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.projectedAreaCm2",
+          "aiValue": 187.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.runnerWeightKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.wallThicknessMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "materialId",
+          "ruleValue": "",
+          "aiValue": "mat-steel-38mnvs6",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "netWeightKg",
+          "ruleValue": 0,
+          "aiValue": 8.141,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "recommendedCommodity",
+          "ruleValue": "forging",
+          "aiValue": "forging",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "sheetMetal.blankLengthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.blankWidthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.numOps",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.thicknessMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        }
+      ],
+      "agreed": 3,
+      "differed": 4,
+      "ruleOnly": 4,
+      "aiOnly": 46,
+      "undecided": []
+    },
+    "aiOriginal": {
+      "recommendedCommodity": "forging",
+      "netWeightKg": 8.141,
+      "materialId": "mat-steel-38mnvs6",
+      "estimatedCycleTimeHr": 0.67,
+      "estimatedSetupTimeHr": 0.75,
+      "estimatedOperations": [
+        {
+          "name": "CNC Milling Setup 1 (+Z, 73 faces)",
+          "machineId": "mach-vmc5",
+          "cycleTimeHr": 0.3,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        },
+        {
+          "name": "CNC Milling Setup 2 (+Y, 71 faces)",
+          "machineId": "mach-haas-vf2",
+          "cycleTimeHr": 0.195,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        },
+        {
+          "name": "Drilling/Boring 21 holes + tap",
+          "machineId": "mach-drill",
+          "cycleTimeHr": 0.175,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        }
+      ],
+      "forging": {
+        "flashKg": 3.49,
+        "yieldFraction": 0.7,
+        "dieCostGBP": 180000,
+        "dieLife": 80000,
+        "strokes": 8,
+        "timePerBlowSec": 10
+      },
+      "casting": {
+        "subtype": "sand",
+        "dieMouldCostGBP": 0,
+        "dieMouldLife": 0,
+        "cavities": 0,
+        "yieldFraction": 0,
+        "cycleTimeHpdcSec": 0,
+        "cycleTimeSandGravHr": 0
+      },
+      "sheetMetal": {
+        "thicknessMm": 0,
+        "blankLengthMm": 0,
+        "blankWidthMm": 0,
+        "dieCostGBP": 0,
+        "dieLife": 0,
+        "numOps": 0
+      },
+      "injectionMoulding": {
+        "cavities": 0,
+        "projectedAreaCm2": 187.6,
+        "wallThicknessMm": 0,
+        "mouldCostGBP": 0,
+        "mouldLife": 0,
+        "runnerWeightKg": 0
+      },
+      "fieldConfidences": {
+        "materialFamily": 0.6,
+        "partWeightKg": 0.9,
+        "process": 0.95,
+        "projectedAreaCm2": 0.95,
+        "shapeComplexity": 0.95,
+        "yieldFraction": 0.45,
+        "flashAndScaleKg": 0.4,
+        "forgeId": 0.35,
+        "strokesToForm": 0.9,
+        "timePerBlowSec": 0.9,
+        "dieSteel": 0.4,
+        "dieImpressions": 0.4,
+        "dieCostGBP": 0.9,
+        "dieLife": 0.4,
+        "heatingEnergyKwhPerKg": 0.35,
+        "heatTreatCostPerKg": 0.35,
+        "descaleCostPerKg": 0.3,
+        "ndtCostPerPart": 0.3,
+        "manufacturabilityScore": 0.95
+      },
+      "dfmIssues": [
+        {
+          "severity": "High",
+          "area": "Undercuts / draw direction",
+          "description": "44 undercut faces conflict with a single Z-axis draw direction typical of closed-die forging.",
+          "impact": "Requires split dies, side-relief inserts, or extra machining — increases tooling cost by 15–25% and lead time.",
+          "fix": "Reorient part or split the die along a plane that eliminates most undercuts; move remaining undercuts to post-forge machining."
+        },
+        {
+          "severity": "High",
+          "area": "Large boss/shaft transitions",
+          "description": "Boss radii up to 57mm adjacent to sections down to 0.45mm nominal create abrupt metal-flow gradients in the die cavity.",
+          "impact": "Risk of laps, cold shuts, and incomplete fill leading to scrap rates >5% at start-of-run.",
+          "fix": "Increase fillet radii at boss-to-web transitions and add generous draft (≥7°) to aid metal flow."
+        },
+        {
+          "severity": "Medium",
+          "area": "Threaded & precision bores (21 holes)",
+          "description": "Threads and close-tolerance bores cannot be forged net-shape and require full secondary machining across 3 setups.",
+          "impact": "Adds ~0.67hr machining + 0.75hr setup per part, dominating unit cost at high volume.",
+          "fix": "Pre-form pilot holes in the forging to reduce stock removal; fixture design to combine setups."
+        },
+        {
+          "severity": "Medium",
+          "area": "Free-form die cavity (76 B-spline faces)",
+          "description": "High proportion of blended/organic surfaces increases 5-axis die-sinking time and die polishing cost.",
+          "impact": "Die cost and lead time increase 10–20% versus a simpler faceted geometry.",
+          "fix": "Simplify non-functional blended surfaces to standard radii/fillets to reduce die-sinking time and polishing effort."
+        }
+      ],
+      "costRange": {
+        "low": 0,
+        "mid": 0,
+        "high": 0,
+        "currency": "GBP"
+      }
+    },
+    "decisions": [],
+    "mode": "both",
+    "fromCache": false,
+    "geometrySource": "occt",
+    "annualVolume": 200000,
+    "occtGeometry": {
+      "status": "success",
+      "partName": "cv-cad-e4608d19b7ec604b",
+      "boundingBox": {
+        "xMm": 276.78,
+        "yMm": 223.15,
+        "zMm": 181.86
+      },
+      "volume": {
+        "mm3": 1037112.9,
+        "cm3": 1037.113
+      },
+      "surfaceArea": {
+        "mm2": 137005.9,
+        "cm2": 1370.059
+      },
+      "fillRatio": 0.0923,
+      "topology": {
+        "available": true,
+        "solidCount": 2,
+        "shellCount": 2,
+        "voidCount": 0,
+        "freeEdgeCount": 4,
+        "freeEdgeRatio": 0.0046,
+        "enclosesSealedVoid": false,
+        "openShell": true
+      },
+      "weights": {
+        "aluminiumKg": 2.8002,
+        "steelKg": 8.1413,
+        "plasticKg": 1.089,
+        "castIronKg": 7.4154,
+        "copperKg": 9.2925,
+        "titaniumKg": 4.5944
+      },
+      "faces": {
+        "total": 364,
+        "byType": {
+          "TORUS": 34,
+          "PLANE": 67,
+          "CYLINDER": 132,
+          "CONE": 55,
+          "BSPLINE": 76
+        }
+      },
+      "edges": {
+        "total": 878,
+        "byType": {
+          "CIRCLE": 366,
+          "BSPLINE": 235,
+          "LINE": 277
+        },
+        "sampleCircleRadiiMm": [
+          0,
+          0.5,
+          1.5,
+          1.6,
+          2,
+          2.5,
+          3,
+          3.1,
+          4,
+          4.1,
+          4.2,
+          5,
+          5.6,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11.1,
+          11.5,
+          12,
+          14,
+          14.7,
+          15,
+          15.1,
+          15.5,
+          16,
+          16.4,
+          17,
+          17.5
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 132,
+        "cylindricalFaceRadiiMm": [
+          0.5,
+          1.5,
+          1.6,
+          2,
+          3,
+          3.1,
+          4,
+          4.2,
+          5,
+          6,
+          7,
+          8,
+          10,
+          12,
+          14,
+          14.7,
+          15,
+          15.5,
+          16,
+          17,
+          17.5,
+          18.5,
+          19.5,
+          20,
+          21.2,
+          22.5,
+          23,
+          27.5,
+          28.5,
+          31.5
+        ],
+        "estimatedHoleCount": 21,
+        "holeRadiiMm": [
+          1.6,
+          3.1,
+          5,
+          7,
+          8,
+          12,
+          18.5,
+          19.5,
+          20,
+          21.2,
+          22.5,
+          23
+        ],
+        "bossShaftCount": 7,
+        "bossShaftRadiiMm": [
+          10,
+          12,
+          17.5,
+          27.5,
+          28.5,
+          38.5,
+          57
+        ],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 67,
+        "freeFormFaceCount": 76,
+        "planarFaceAreaMm2": 42790
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 20,
+          "depthMm": 4,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 24,
+          "depthMm": 24.7,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 35,
+          "depthMm": 47.2,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 55,
+          "depthMm": 31.6,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 57,
+          "depthMm": 7,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 77,
+          "depthMm": 2,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 114,
+          "depthMm": 6.9,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 3.15,
+          "depthMm": 3,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 6.3,
+          "depthMm": 3.7,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 10,
+          "depthMm": 22.5,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 14,
+          "depthMm": 8,
+          "through": false,
+          "count": 2
+        },
+        {
+          "kind": "hole",
+          "diaMm": 14,
+          "depthMm": 39.5,
+          "through": false,
+          "count": 2
+        },
+        {
+          "kind": "hole",
+          "diaMm": 14,
+          "depthMm": 59,
+          "through": false,
+          "count": 2
+        },
+        {
+          "kind": "hole",
+          "diaMm": 16,
+          "depthMm": 3.2,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 24,
+          "depthMm": 17.5,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 37,
+          "depthMm": 45,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 39,
+          "depthMm": 45,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 40,
+          "depthMm": 2.5,
+          "through": false,
+          "count": 2
+        },
+        {
+          "kind": "hole",
+          "diaMm": 40,
+          "depthMm": 7.4,
+          "through": false,
+          "count": 2
+        },
+        {
+          "kind": "hole",
+          "diaMm": 42.5,
+          "depthMm": 1.9,
+          "through": false,
+          "count": 2
+        },
+        {
+          "kind": "hole",
+          "diaMm": 45,
+          "depthMm": 3,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 46,
+          "depthMm": 5.5,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 10594
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 4683
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 3158
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2940
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2381
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2212
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1046
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 910
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 25,
+        "totalBendLengthMm": 774.5,
+        "thicknessMm": 0.45
+      },
+      "wallThickness": {
+        "minMm": 0.45,
+        "maxMm": 169.95,
+        "p95Mm": 169.85,
+        "meanMm": 34.1,
+        "stdDevMm": 46.62,
+        "sampleCount": 24,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 44,
+        "zeroDraftFaceCount": 105,
+        "adequateDraftFaceCount": 50,
+        "minPositiveDraftDeg": 4.57,
+        "maxPositiveDraftDeg": 90,
+        "analyzedFaceCount": 199
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Z",
+            "faceCount": 73
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 71
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 35
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 8.6,
+        "drillBoreTimeMins": 10.5,
+        "estimatedTotalMins": 64.1,
+        "estimatedTotalHrs": 1.0676,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 300000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 33000,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 180000,
+        "progressiveDieCostGBP": 30000
+      },
+      "manufacturabilityScore": 18,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.262,
+        "sandCycleTimeHrFerrous": 0.4466,
+        "forgeStrokes": 8,
+        "investWaxCostGBP": 20.55,
+        "investShellCostGBP": 61.65
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "detectedHardware": {
+        "available": true,
+        "detected": [],
+        "solidCount": 2,
+        "note": "multi-solid model but no weld-nut/stud-like bodies matched"
+      }
+    },
+    "stlGeometry": null,
+    "preprocessed": {
+      "format": "STEP",
+      "partName": "PRCR002",
+      "boundingBoxEstMm": {
+        "x": 702.4892746016001,
+        "y": 228.0284858481,
+        "z": 645.6888
+      },
+      "entityStats": {
+        "TOROIDAL_SURFACE": 34,
+        "EDGE_LOOP": 395,
+        "ADVANCED_FACE": 364,
+        "PLANE": 67,
+        "CYLINDRICAL_SURFACE": 132,
+        "CONICAL_SURFACE": 55,
+        "B_SPLINE_SURFACE_WITH_KNOTS": 2,
+        "MANIFOLD_SOLID_BREP": 2,
+        "CIRCLE": 362,
+        "ADVANCED_BREP_SHAPE_REPRESENTATION": 1
+      }
+    },
+    "dfmJobId": "7c10c11d-6e76-40bf-9c8f-9a9237bb9185"
+  }
+}

@@ -82,10 +82,15 @@ export function materialFacts(ctx: RuleContext): MaterialFacts {
 
   const answered = ctx.answers[MATERIAL_FAMILY_DECISION_ID] as MaterialFamily | undefined;
   if (answered && candidates.includes(answered)) {
+    // "confirmed by engineer" was printed even when the answer was folded in
+    // from the model's own material suggestion (server withAIMaterial) — a
+    // provenance lie the live audit flagged. Name the true source.
+    const fromAI = ctx.answers['material.familySource'] === 'ai';
     return {
       family: answered,
       massKg: massFor(volumeCm3, answered),
-      basis: `${volumeCm3.toFixed(0)} cm³ × ${DENSITY_KG_PER_CM3[answered]} kg/cm³ (${answered}, confirmed by engineer)`,
+      basis: `${volumeCm3.toFixed(0)} cm³ × ${DENSITY_KG_PER_CM3[answered]} kg/cm³ ` +
+        `(${answered}, ${fromAI ? 'from the AI material suggestion — not engineer-confirmed' : 'confirmed by engineer'})`,
     };
   }
 

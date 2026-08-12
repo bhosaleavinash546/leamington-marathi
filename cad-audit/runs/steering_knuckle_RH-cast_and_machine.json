@@ -1,0 +1,1672 @@
+{
+  "_audit": {
+    "part": "steering_knuckle_RH.stp",
+    "commodity": "cast_and_machine",
+    "mode": "both",
+    "volume": 200000,
+    "deep": false,
+    "httpStatus": 200,
+    "seconds": 81.6,
+    "capturedAt": "2026-08-12T14:30:28.892Z"
+  },
+  "response": {
+    "success": true,
+    "analysis": {
+      "partName": "steering_knuckle_RH",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 116.49,
+          "y": 236.81,
+          "z": 210.05
+        },
+        "estimatedVolumeCm3": 356.101,
+        "estimatedSurfaceAreaCm2": 789.253,
+        "estimatedWeightKg": {
+          "aluminum": 0.9615,
+          "steel": 2.7954,
+          "castIron": 2.5461,
+          "plastic": 0.3739
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "Cylindrical bores/bosses",
+          "description": "124 cylindrical faces incl. 14 holes (r 5–7.5mm) and 3 boss/shaft features (r 12.5–39mm) — likely bearing bore, tie-rod & ball-joint bores",
+          "count": 124,
+          "significance": "High"
+        },
+        {
+          "type": "Threaded features",
+          "description": "Threaded holes detected, requiring tapping/thread-milling post-cast",
+          "count": 1,
+          "significance": "High"
+        },
+        {
+          "type": "Undercuts",
+          "description": "52 undercut faces requiring side-cores or re-orientation in the mould",
+          "count": 52,
+          "significance": "High"
+        },
+        {
+          "type": "Free-form B-spline surfaces",
+          "description": "24 free-form surfaces — likely blend/fillet transitions typical of a knuckle arm casting",
+          "count": 24,
+          "significance": "Medium"
+        },
+        {
+          "type": "Planar machined pads",
+          "description": "99 planar faces, many likely as-cast draft faces with a subset requiring machined datum/mating pads",
+          "count": 99,
+          "significance": "Medium"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "mat-gjs500",
+          "name": "Ductile (spheroidal graphite) iron GJS500-7",
+          "confidencePct": 60,
+          "reasoning": "Part is a steering knuckle — a suspension/drivetrain component subjected to high cyclic loads. Combined with the cast_and_machine forced process and 200,000 units/year volume, this profile matches standard automotive practice: sand or high-pressure sand-moulded ductile iron casting followed by CNC finish machining of bores and mating faces. Ductile iron offers the strength/fatigue performance needed for a knuckle at a fraction of steel forging cost, and is far more consistent with the wall-thickness/undercut profile here than aluminium (no HPDC-thin-wall or lightweighting signal present)."
+        },
+        "alternatives": [
+          {
+            "materialId": "mat-gjs600",
+            "name": "Ductile iron GJS600-3 (higher strength)",
+            "confidencePct": 25
+          },
+          {
+            "materialId": "mat-adi",
+            "name": "Austempered ductile iron (ADI)",
+            "confidencePct": 10
+          },
+          {
+            "materialId": "mat-lm25",
+            "name": "Aluminium casting alloy LM25",
+            "confidencePct": 5
+          }
+        ]
+      },
+      "processRecommendations": [
+        {
+          "process": "Sand casting + CNC finish machining",
+          "commodityType": "cast_and_machine",
+          "confidencePct": 85,
+          "reasoning": "User-forced process; geometry (52 undercuts, non-uniform thick sections, 3 machining setups, 14 holes) is classic near-net sand-cast knuckle with post-machining of bores/pads.",
+          "estimatedCycleTimeHr": 0.296
+        }
+      ],
+      "manufacturabilityScore": 46,
+      "manufacturabilityRisks": [
+        {
+          "severity": "High",
+          "feature": "Undercuts (52 faces)",
+          "description": "52 undercut faces relative to a single draw direction will require side-cores/slides in the sand tooling or multiple machining re-orientations.",
+          "suggestion": "Consolidate undercuts onto fewer mould-parting directions or design them as post-cast machined features to simplify the pattern/core-box."
+        },
+        {
+          "severity": "High",
+          "feature": "Zero-draft faces (102)",
+          "description": "102 faces show zero draft, which will cause pattern sticking and core damage during sand-mould stripping, raising scrap and rework.",
+          "suggestion": "Add minimum 1–3° draft to all non-critical faces before pattern release."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Thin wall (min 1.36mm)",
+          "description": "Minimum wall of 1.36mm is well below the safe fill thickness for ferrous sand casting (typically 4–6mm), risking cold-shuts, misruns or porosity.",
+          "suggestion": "Increase local minimum wall to ≥4mm or add ribbing instead of thin unsupported webs."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Bearing/ball-joint bores (r 31.5–37.5mm)",
+          "description": "Large bores need generous as-cast machining stock and tight post-machining tolerance/finish for bearing seating.",
+          "suggestion": "Cast bores 2–3mm undersize on diameter and finish-bore in a single fixtured operation to hold concentricity."
+        },
+        {
+          "severity": "Low",
+          "feature": "Free-form B-spline surfaces (24)",
+          "description": "Free-form blends increase pattern/core CNC-machining cost and complicate CMM inspection.",
+          "suggestion": "Simplify blends to standard fillet radii where not load-critical."
+        }
+      ],
+      "costInputSuggestions": {
+        "recommendedCommodity": "cast_and_machine",
+        "netWeightKg": 2.546,
+        "materialId": "mat-gjs500",
+        "estimatedCycleTimeHr": 0.2161,
+        "estimatedSetupTimeHr": 1,
+        "estimatedOperations": "Milling — +Z (60 faces) 0.018 hr on mach-haas-vf2; Milling — +X (51 faces) 0.016 hr on mach-haas-vf2; Milling — +Y (30 faces) 0.009 hr on mach-haas-vf2; Drilling — 14 holes (1×Ø10.0×12, 1×Ø11.0×5, 1×Ø11.0×16, 1×Ø12.0×2, 2×Ø12.5×16, 1×Ø12.5×25, 1×Ø15.0×19, 1×Ø15.0×25, 1×Ø63.0×3, 1×Ø68.0×4, 1×Ø68.0×37, 1×Ø71.0×3, 1×Ø75.0×6) [geometry-measured] 0.173 hr on mach-drill",
+        "casting": {
+          "subtype": "sand",
+          "dieMouldCostGBP": 17000,
+          "dieMouldLife": 8000,
+          "cavities": 2,
+          "yieldFraction": 0.65,
+          "cycleTimeHpdcSec": 0,
+          "cycleTimeSandGravHr": 0.1885
+        },
+        "forging": {
+          "flashKg": 0,
+          "yieldFraction": 0,
+          "dieCostGBP": 0,
+          "dieLife": 0,
+          "strokes": 0,
+          "timePerBlowSec": 0
+        },
+        "sheetMetal": {
+          "thicknessMm": 0,
+          "blankLengthMm": 0,
+          "blankWidthMm": 0,
+          "dieCostGBP": 0,
+          "dieLife": 0,
+          "numOps": 0
+        },
+        "injectionMoulding": {
+          "cavities": 0,
+          "projectedAreaCm2": 0,
+          "wallThicknessMm": 0,
+          "mouldCostGBP": 0,
+          "mouldLife": 0,
+          "runnerWeightKg": 0
+        },
+        "fieldConfidences": {
+          "geom-bbox": 0.98,
+          "geom-volume": 0.98,
+          "geom-surface": 0.98,
+          "cast-material": 0.6,
+          "cast-subtype": 0.55,
+          "cast-die-cost": 0.85,
+          "cast-die-life": 0.4,
+          "cast-cavities": 0.4,
+          "cast-yield": 0.45,
+          "cast-cycle-sandgrav": 0.85,
+          "machining-cycle-time": 0.9,
+          "machining-setup-time": 0.9,
+          "manufacturability-score": 1,
+          "cam-cast-subtype": 0.85,
+          "cam-cast-yield": 0.8,
+          "cam-cast-wt": 1,
+          "cam-hpdc-die-cost": 0.7,
+          "cam-hpdc-die-life": 0.6,
+          "cam-sand-ct": 0.7,
+          "cam-mach-setup-mach": 0.75
+        },
+        "dfmIssues": [
+          {
+            "severity": "High",
+            "area": "Undercuts / draft",
+            "description": "52 undercut faces and 102 zero-draft faces conflict with a single mould draw direction, forcing side-cores or split patterns.",
+            "impact": "Increases pattern/tooling cost and cycle time; risk of core breakage and scrap.",
+            "fix": "Re-orient part or add draft/split-line features to remove undercuts before tooling design."
+          },
+          {
+            "severity": "Medium",
+            "area": "Thin wall sections",
+            "description": "Local wall thickness down to 1.36mm is below reliable ferrous sand-casting fill thickness.",
+            "impact": "Higher risk of misruns, porosity and rejected castings.",
+            "fix": "Thicken critical thin webs to ≥4mm or replace with ribs/gussets."
+          },
+          {
+            "severity": "Medium",
+            "area": "Bearing bore / ball-joint bore",
+            "description": "Large-diameter functional bores (31.5–37.5mm) are cast near-net and need controlled machining stock and fixturing to hold concentricity.",
+            "impact": "Excess or insufficient stock causes tool wear, tolerance drift, or scrap.",
+            "fix": "Specify uniform 2–3mm machining allowance on all functional bores and finish in one clamped operation."
+          },
+          {
+            "severity": "High",
+            "area": "Multi-setup machining",
+            "description": "3 required setups (+Z, +X, +Y) driven by geometry orientation of undercuts/bosses increase fixture changes and cumulative positional error.",
+            "impact": "Longer cycle time, higher labour cost, and stack-up tolerance risk between setups.",
+            "fix": "Design common datum features accessible from a single 5-axis setup to consolidate operations."
+          },
+          {
+            "severity": "Low",
+            "area": "Free-form blend surfaces",
+            "description": "24 B-spline surfaces complicate pattern equipment machining and inspection programming.",
+            "impact": "Higher pattern-making cost and inspection time.",
+            "fix": "Standardise blends to constant-radius fillets where not structurally required."
+          }
+        ],
+        "costRange": {
+          "low": 6.5,
+          "mid": 9.8,
+          "high": 14.5,
+          "currency": "GBP"
+        },
+        "stage1Selection": {
+          "primary": "cast_and_machine",
+          "conf": 1,
+          "alt": []
+        },
+        "machining": {
+          "setupCount": 4,
+          "machineId": "mach-haas-vf2"
+        }
+      },
+      "aiExplanation": "This is a right-hand steering knuckle — a safety-critical suspension component. The sparse fill ratio (0.0615) combined with thick, non-uniform walls (1.36–46.75mm), 52 undercuts, and a mix of cylindrical bores/bosses (bearing seat, ball-joint and tie-rod bores) is fully consistent with a near-net sand-cast ductile-iron part that is subsequently CNC-machined on 3 setups to finish bores, mounting pads and threaded holes. Given the load-bearing, drivetrain-adjacent nature of the part and no aluminium/thin-wall HPDC signal, ductile iron (GJS500/600) is recommended over aluminium, in line with real-world steering knuckle production practice. At 200,000 units/year, high-throughput green-sand or shell-moulding lines with a durable metal pattern (£17k) are economically favoured over die costs for HPDC/forging.",
+      "confidenceLevel": "High",
+      "analysisLimitations": [
+        "Material (ductile iron vs steel forging vs aluminium) is inferred from part type and geometry signals, not from explicit metadata — treat as medium confidence.",
+        "Cavity count and pattern life are rule-of-thumb estimates for a high-volume automotive sand-casting line, not derived from OCCT geometry.",
+        "Cost range assumes UK labour rates and standard sand-casting + 3-axis/5-axis finish machining; actual costs will vary with supplier tooling amortisation strategy."
+      ]
+    },
+    "sanityWarnings": [],
+    "ruleOverrides": {
+      "overridden": [
+        {
+          "field": "casting.subtype",
+          "ruleId": "casting.subtype",
+          "from": "sand",
+          "to": "sand",
+          "basis": "sand: ductile iron — sand casting has the lowest tooling NRE and no upper size limit; ductile-iron/steel castings finish by fettling + machining [pressure-tight, tolerance class, safety-critical assumed — confirm before quoting]",
+          "confidence": 0.85,
+          "contradicted": false
+        },
+        {
+          "field": "casting.yieldFraction",
+          "ruleId": "casting.yieldFraction",
+          "from": 0.6,
+          "to": 0.65,
+          "basis": "sand yield band 0.55–0.75, midpoint",
+          "confidence": 0.8,
+          "contradicted": true
+        },
+        {
+          "field": "netWeightKg",
+          "ruleId": "casting.netWeightKg",
+          "from": 2.546,
+          "to": 2.546,
+          "basis": "356 cm³ × 0.00715 kg/cm³ (cast iron, confirmed by engineer)",
+          "confidence": 1,
+          "contradicted": false
+        },
+        {
+          "field": "casting.dieMouldCostGBP",
+          "ruleId": "casting.dieMouldCostGBP",
+          "from": 17000,
+          "to": 17000,
+          "basis": "OCCT parametric sand tooling estimate",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "casting.dieMouldLife",
+          "ruleId": "casting.dieMouldLife",
+          "from": 500000,
+          "to": 8000,
+          "basis": "sand tool life band",
+          "confidence": 0.6,
+          "contradicted": true
+        },
+        {
+          "field": "casting.cycleTimeSandGravHr",
+          "ruleId": "casting.cycleTimeSandGravHr",
+          "from": 0.252,
+          "to": 0.1885,
+          "basis": "OCCT sand cycle estimate from part mass",
+          "confidence": 0.7,
+          "contradicted": true
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleId": "machining.estimatedCycleTimeHr",
+          "from": 0.296,
+          "to": 0.2161,
+          "basis": "0.216 hr, inside the 0.278 hr near-net finish envelope",
+          "confidence": 0.75,
+          "contradicted": true
+        },
+        {
+          "field": "estimatedSetupTimeHr",
+          "ruleId": "machining.setupTimeHr",
+          "from": 0.75,
+          "to": 1,
+          "basis": "4 datum/fixture setup(s) of the split-3axis routing × 15 min",
+          "confidence": 0.7,
+          "contradicted": true
+        },
+        {
+          "field": "estimatedOperations",
+          "ruleId": "machining.operations",
+          "from": [
+            {
+              "name": "Setup 1 (+Z) — Milling of mounting pads & datum faces",
+              "machineId": "mach-haas-vf2",
+              "cycleTimeHr": 0.137,
+              "labourId": "lab-uk-skilled",
+              "oee": 0.85,
+              "manning": 1,
+              "labourEfficiency": 0.92
+            },
+            {
+              "name": "Setup 2/3 (+X/+Y) — Drilling, boring & tapping of holes/bores",
+              "machineId": "mach-drill",
+              "cycleTimeHr": 0.159,
+              "labourId": "lab-uk-skilled",
+              "oee": 0.85,
+              "manning": 1,
+              "labourEfficiency": 0.92
+            }
+          ],
+          "to": "Milling — +Z (60 faces) 0.018 hr on mach-haas-vf2; Milling — +X (51 faces) 0.016 hr on mach-haas-vf2; Milling — +Y (30 faces) 0.009 hr on mach-haas-vf2; Drilling — 14 holes (1×Ø10.0×12, 1×Ø11.0×5, 1×Ø11.0×16, 1×Ø12.0×2, 2×Ø12.5×16, 1×Ø12.5×25, 1×Ø15.0×19, 1×Ø15.0×25, 1×Ø63.0×3, 1×Ø68.0×4, 1×Ø68.0×37, 1×Ø71.0×3, 1×Ø75.0×6) [geometry-measured] 0.173 hr on mach-drill",
+          "basis": "sums to 0.216 hr of finish machining",
+          "confidence": 0.7,
+          "contradicted": true
+        },
+        {
+          "field": "machining.setupCount",
+          "ruleId": "machining.setupCount",
+          "to": 4,
+          "basis": "4 fixturing(s) of the split-3axis routing (3 approach direction(s) measured)",
+          "confidence": 0.8,
+          "contradicted": false
+        },
+        {
+          "field": "machining.machineId",
+          "ruleId": "machining.machineId",
+          "to": "mach-haas-vf2",
+          "basis": "cost-ranked 2 routing(s): split-3axis £9.54 (3-direction split routing: mach-haas-vf2 £45/hr + mach-drill £30/hr, 4 setup(s) × 15 min / batch 5000 + 0.8 min handling per part per setup) vs consolidated-5axis £17.21 (single-setup 5-axis consolidation: mach-haas-umc500 £75/hr, 1 setup(s) × 15 min / batch 5000 + 0.8 min handling per part per setup) → split-3axis, £7.67/part cheaper than consolidated-5axis",
+          "confidence": 0.75,
+          "contradicted": false
+        }
+      ],
+      "notWritten": [],
+      "undecided": []
+    },
+    "ruleFields": {
+      "cam-cast-subtype": {
+        "fieldId": "cam-cast-subtype",
+        "value": "sand",
+        "basis": "sand: ductile iron — sand casting has the lowest tooling NRE and no upper size limit; ductile-iron/steel castings finish by fettling + machining [pressure-tight, tolerance class, safety-critical assumed — confirm before quoting]",
+        "source": "advisor",
+        "confidence": 0.85,
+        "ruleId": "casting.subtype"
+      },
+      "cam-cast-yield": {
+        "fieldId": "cam-cast-yield",
+        "value": 0.65,
+        "basis": "sand yield band 0.55–0.75, midpoint",
+        "source": "library",
+        "confidence": 0.8,
+        "ruleId": "casting.yieldFraction"
+      },
+      "cam-cast-wt": {
+        "fieldId": "cam-cast-wt",
+        "value": 2.546,
+        "basis": "356 cm³ × 0.00715 kg/cm³ (cast iron, confirmed by engineer)",
+        "source": "geometry",
+        "confidence": 1,
+        "ruleId": "casting.netWeightKg"
+      },
+      "cam-hpdc-die-cost": {
+        "fieldId": "cam-hpdc-die-cost",
+        "value": 17000,
+        "basis": "OCCT parametric sand tooling estimate",
+        "source": "geometry",
+        "confidence": 0.7,
+        "ruleId": "casting.dieMouldCostGBP"
+      },
+      "cam-hpdc-die-life": {
+        "fieldId": "cam-hpdc-die-life",
+        "value": 8000,
+        "basis": "sand tool life band",
+        "source": "library",
+        "confidence": 0.6,
+        "ruleId": "casting.dieMouldLife"
+      },
+      "cam-sand-ct": {
+        "fieldId": "cam-sand-ct",
+        "value": 0.1885,
+        "basis": "OCCT sand cycle estimate from part mass",
+        "source": "geometry",
+        "confidence": 0.7,
+        "ruleId": "casting.cycleTimeSandGravHr"
+      },
+      "cam-mach-setup-time": {
+        "fieldId": "cam-mach-setup-time",
+        "value": 1,
+        "basis": "4 datum/fixture setup(s) of the split-3axis routing × 15 min",
+        "source": "rule",
+        "confidence": 0.7,
+        "ruleId": "castAndMachine.machiningSetupTimeHr"
+      },
+      "cam-mach-setup-mach": {
+        "fieldId": "cam-mach-setup-mach",
+        "value": "mach-haas-vf2",
+        "basis": "cost-ranked 2 routing(s): split-3axis £9.54 (3-direction split routing: mach-haas-vf2 £45/hr + mach-drill £30/hr, 4 setup(s) × 15 min / batch 5000 + 0.8 min handling per part per setup) vs consolidated-5axis £17.21 (single-setup 5-axis consolidation: mach-haas-umc500 £75/hr, 1 setup(s) × 15 min / batch 5000 + 0.8 min handling per part per setup) → split-3axis, £7.67/part cheaper than consolidated-5axis",
+        "source": "advisor",
+        "confidence": 0.75,
+        "ruleId": "machining.machineId"
+      }
+    },
+    "deterministicAnalysis": {
+      "partName": "cv-cad-9d2c0a2c248018c0",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 116.49,
+          "y": 236.81,
+          "z": 210.05
+        },
+        "estimatedVolumeCm3": 356.101,
+        "estimatedSurfaceAreaCm2": 789.253,
+        "estimatedWeightKg": {
+          "aluminum": 0.9615,
+          "steel": 2.7954,
+          "plastic": 0.3739
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "boss",
+          "description": "2× Ø25.0 × 17 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø31.0 × 3 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø31.0 × 26 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø78.0 × 16 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø10.0 × 12 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø11.0 × 5 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø11.0 × 16 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø12.0 × 2 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "2× Ø12.5 × 16 mm blind",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø12.5 × 25 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø15.0 × 19 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø15.0 × 25 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø63.0 × 3 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø68.0 × 4 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø68.0 × 37 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø71.0 × 3 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø75.0 × 6 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 20 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 34 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 34 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 7 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 68 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "bend",
+          "description": "28 bend(s), 686 mm total length",
+          "count": 28,
+          "significance": "High"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "",
+          "name": "",
+          "confidencePct": 0,
+          "reasoning": ""
+        },
+        "alternatives": []
+      },
+      "processRecommendations": [
+        {
+          "process": "cast_and_machine",
+          "commodityType": "cast_and_machine",
+          "confidencePct": 50,
+          "reasoning": "selected by the deterministic rules for this commodity",
+          "estimatedCycleTimeHr": 0
+        }
+      ],
+      "manufacturabilityScore": 46,
+      "manufacturabilityRisks": [],
+      "costInputSuggestions": {
+        "recommendedCommodity": "cast_and_machine",
+        "netWeightKg": 0,
+        "materialId": "",
+        "estimatedCycleTimeHr": 0,
+        "estimatedSetupTimeHr": 0.75,
+        "estimatedOperations": "",
+        "dfmIssues": [
+          {
+            "severity": "High",
+            "area": "geometry",
+            "description": "Non-uniform sections (heavy:thin ≈ 34.4:1) — Heavy sections solidify last and shrink, drawing porosity/sink at the hot spot.",
+            "impact": "Non-uniform sections (heavy:thin ≈ 34.4:1)",
+            "fix": "Even out wall thickness, core out heavy bosses, add fillets to taper transitions, or feed the hot spot with a riser/chill."
+          },
+          {
+            "severity": "High",
+            "area": "tooling",
+            "description": "Draft -1° below recommended 0.5° — Insufficient draft galls the die/pattern, raises ejection force and accelerates tool wear (or breaks the sand mould).",
+            "impact": "Draft -1° below recommended 0.5°",
+            "fix": "Add ≥ 0.5° draft on all as-cast vertical walls; deep pockets need more. Investment casting can run near-zero draft if this is fixed."
+          }
+        ],
+        "machining": {
+          "setupCount": 3
+        }
+      },
+      "aiExplanation": "Derived deterministically for cast_and_machine from the measured geometry. No AI call was made; every figure below is arithmetic on a measurement or a library lookup, and each states its own basis.\n\n  • castAndMachine.machiningSetupTimeHr = 0.75 — 3 datum/fixture setup(s) × 15 min [rule, cam-mach-setup-time]\n\nStill open (1):\n  • What is this part made of? — A CAD file carries shape, not substance. We measured 356 cm³ exactly, but the same solid weighs 0.96 kg in aluminium and 2.79 kg in steel. Nothing in the geometry distinguishes them, and guessing wrong moves the material cost several-fold.",
+      "confidenceLevel": "Low",
+      "analysisLimitations": [
+        "Unanswered: What is this part made of?",
+        "DFM checks ran against the measured geometry. Checks that need a drawing callout — tolerances, which face is critical, whether a weld line is in a load path — did not run, so this list is a floor and not a ceiling."
+      ]
+    },
+    "diff": {
+      "diffs": [
+        {
+          "field": "casting.cavities",
+          "aiValue": 2,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeHpdcSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeSandGravHr",
+          "aiValue": 0.252,
+          "deltaPct": null,
+          "basis": "OCCT sand cycle estimate from part mass",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldCostGBP",
+          "aiValue": 17000,
+          "deltaPct": null,
+          "basis": "OCCT parametric sand tooling estimate",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldLife",
+          "aiValue": 500000,
+          "deltaPct": null,
+          "basis": "sand tool life band",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.subtype",
+          "aiValue": "sand",
+          "deltaPct": null,
+          "basis": "sand: ductile iron — sand casting has the lowest tooling NRE and no upper size limit; ductile-iron/steel castings finish by fettling + machining [pressure-tight, tolerance class, safety-critical assumed — confirm before quoting]",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.yieldFraction",
+          "aiValue": 0.6,
+          "deltaPct": null,
+          "basis": "sand yield band 0.55–0.75, midpoint",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.currency",
+          "aiValue": "GBP",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.high",
+          "aiValue": 14.5,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.low",
+          "aiValue": 6.5,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.mid",
+          "aiValue": 9.8,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleValue": 0,
+          "aiValue": 0.296,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "estimatedOperations",
+          "ruleValue": "",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "estimatedSetupTimeHr",
+          "ruleValue": 0.75,
+          "aiValue": 0.75,
+          "deltaPct": 0,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "fieldConfidences.cast-cavities",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.cast-cycle-sandgrav",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.cast-die-cost",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.cast-die-life",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.cast-material",
+          "aiValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.cast-subtype",
+          "aiValue": 0.55,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.cast-yield",
+          "aiValue": 0.45,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.geom-bbox",
+          "aiValue": 0.98,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.geom-surface",
+          "aiValue": 0.98,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.geom-volume",
+          "aiValue": 0.98,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.machining-cycle-time",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.machining-setup-time",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.manufacturability-score",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.flashKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.strokes",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.timePerBlowSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.yieldFraction",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.cavities",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.projectedAreaCm2",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.runnerWeightKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.wallThicknessMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "machining.setupCount",
+          "ruleValue": 3,
+          "deltaPct": null,
+          "basis": "4 fixturing(s) of the split-3axis routing (3 approach direction(s) measured)",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "materialId",
+          "ruleValue": "",
+          "aiValue": "mat-gjs500",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "netWeightKg",
+          "ruleValue": 0,
+          "aiValue": 2.546,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "recommendedCommodity",
+          "ruleValue": "cast_and_machine",
+          "aiValue": "cast_and_machine",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "sheetMetal.blankLengthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.blankWidthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.numOps",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.thicknessMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.conf",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.primary",
+          "aiValue": "cast_and_machine",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        }
+      ],
+      "agreed": 2,
+      "differed": 3,
+      "ruleOnly": 2,
+      "aiOnly": 44,
+      "undecided": []
+    },
+    "aiOriginal": {
+      "recommendedCommodity": "cast_and_machine",
+      "netWeightKg": 2.546,
+      "materialId": "mat-gjs500",
+      "estimatedCycleTimeHr": 0.296,
+      "estimatedSetupTimeHr": 0.75,
+      "estimatedOperations": [
+        {
+          "name": "Setup 1 (+Z) — Milling of mounting pads & datum faces",
+          "machineId": "mach-haas-vf2",
+          "cycleTimeHr": 0.137,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        },
+        {
+          "name": "Setup 2/3 (+X/+Y) — Drilling, boring & tapping of holes/bores",
+          "machineId": "mach-drill",
+          "cycleTimeHr": 0.159,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        }
+      ],
+      "casting": {
+        "subtype": "sand",
+        "dieMouldCostGBP": 17000,
+        "dieMouldLife": 500000,
+        "cavities": 2,
+        "yieldFraction": 0.6,
+        "cycleTimeHpdcSec": 0,
+        "cycleTimeSandGravHr": 0.252
+      },
+      "forging": {
+        "flashKg": 0,
+        "yieldFraction": 0,
+        "dieCostGBP": 0,
+        "dieLife": 0,
+        "strokes": 0,
+        "timePerBlowSec": 0
+      },
+      "sheetMetal": {
+        "thicknessMm": 0,
+        "blankLengthMm": 0,
+        "blankWidthMm": 0,
+        "dieCostGBP": 0,
+        "dieLife": 0,
+        "numOps": 0
+      },
+      "injectionMoulding": {
+        "cavities": 0,
+        "projectedAreaCm2": 0,
+        "wallThicknessMm": 0,
+        "mouldCostGBP": 0,
+        "mouldLife": 0,
+        "runnerWeightKg": 0
+      },
+      "fieldConfidences": {
+        "geom-bbox": 0.98,
+        "geom-volume": 0.98,
+        "geom-surface": 0.98,
+        "cast-material": 0.6,
+        "cast-subtype": 0.55,
+        "cast-die-cost": 0.85,
+        "cast-die-life": 0.4,
+        "cast-cavities": 0.4,
+        "cast-yield": 0.45,
+        "cast-cycle-sandgrav": 0.85,
+        "machining-cycle-time": 0.9,
+        "machining-setup-time": 0.9,
+        "manufacturability-score": 1
+      },
+      "dfmIssues": [
+        {
+          "severity": "High",
+          "area": "Undercuts / draft",
+          "description": "52 undercut faces and 102 zero-draft faces conflict with a single mould draw direction, forcing side-cores or split patterns.",
+          "impact": "Increases pattern/tooling cost and cycle time; risk of core breakage and scrap.",
+          "fix": "Re-orient part or add draft/split-line features to remove undercuts before tooling design."
+        },
+        {
+          "severity": "Medium",
+          "area": "Thin wall sections",
+          "description": "Local wall thickness down to 1.36mm is below reliable ferrous sand-casting fill thickness.",
+          "impact": "Higher risk of misruns, porosity and rejected castings.",
+          "fix": "Thicken critical thin webs to ≥4mm or replace with ribs/gussets."
+        },
+        {
+          "severity": "Medium",
+          "area": "Bearing bore / ball-joint bore",
+          "description": "Large-diameter functional bores (31.5–37.5mm) are cast near-net and need controlled machining stock and fixturing to hold concentricity.",
+          "impact": "Excess or insufficient stock causes tool wear, tolerance drift, or scrap.",
+          "fix": "Specify uniform 2–3mm machining allowance on all functional bores and finish in one clamped operation."
+        },
+        {
+          "severity": "High",
+          "area": "Multi-setup machining",
+          "description": "3 required setups (+Z, +X, +Y) driven by geometry orientation of undercuts/bosses increase fixture changes and cumulative positional error.",
+          "impact": "Longer cycle time, higher labour cost, and stack-up tolerance risk between setups.",
+          "fix": "Design common datum features accessible from a single 5-axis setup to consolidate operations."
+        },
+        {
+          "severity": "Low",
+          "area": "Free-form blend surfaces",
+          "description": "24 B-spline surfaces complicate pattern equipment machining and inspection programming.",
+          "impact": "Higher pattern-making cost and inspection time.",
+          "fix": "Standardise blends to constant-radius fillets where not structurally required."
+        }
+      ],
+      "costRange": {
+        "low": 6.5,
+        "mid": 9.8,
+        "high": 14.5,
+        "currency": "GBP"
+      },
+      "stage1Selection": {
+        "primary": "cast_and_machine",
+        "conf": 1,
+        "alt": []
+      }
+    },
+    "decisions": [],
+    "mode": "both",
+    "fromCache": false,
+    "geometrySource": "occt",
+    "annualVolume": 200000,
+    "occtGeometry": {
+      "status": "success",
+      "partName": "cv-cad-9d2c0a2c248018c0",
+      "boundingBox": {
+        "xMm": 116.49,
+        "yMm": 236.81,
+        "zMm": 210.05
+      },
+      "volume": {
+        "mm3": 356101.1,
+        "cm3": 356.101
+      },
+      "surfaceArea": {
+        "mm2": 78925.3,
+        "cm2": 789.253
+      },
+      "fillRatio": 0.0615,
+      "topology": {
+        "available": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "enclosesSealedVoid": false,
+        "openShell": true
+      },
+      "weights": {
+        "aluminiumKg": 0.9615,
+        "steelKg": 2.7954,
+        "plasticKg": 0.3739,
+        "castIronKg": 2.5461,
+        "copperKg": 3.1907,
+        "titaniumKg": 1.5775
+      },
+      "faces": {
+        "total": 310,
+        "byType": {
+          "PLANE": 99,
+          "CYLINDER": 124,
+          "TORUS": 40,
+          "CONE": 17,
+          "BSPLINE": 24,
+          "OTHER": 6
+        }
+      },
+      "edges": {
+        "total": 806,
+        "byType": {
+          "CIRCLE": 329,
+          "LINE": 321,
+          "BSPLINE": 156
+        },
+        "sampleCircleRadiiMm": [
+          0.1,
+          0.2,
+          0.4,
+          0.5,
+          1,
+          2,
+          3,
+          3.5,
+          4,
+          5,
+          5.5,
+          6,
+          6.2,
+          6.8,
+          7,
+          7.5,
+          8,
+          8.1,
+          8.5,
+          10,
+          12.5,
+          13,
+          14.5,
+          15,
+          15.5,
+          16.5,
+          17,
+          17.5,
+          18.5,
+          20
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 124,
+        "cylindricalFaceRadiiMm": [
+          0.1,
+          0.2,
+          1,
+          2,
+          3,
+          4,
+          5,
+          5.5,
+          6,
+          6.2,
+          7.5,
+          8,
+          10,
+          12.5,
+          13,
+          15.5,
+          18.5,
+          20,
+          23,
+          25,
+          26,
+          28,
+          30,
+          31.5,
+          34,
+          35.5,
+          37.5,
+          39,
+          40,
+          44
+        ],
+        "estimatedHoleCount": 14,
+        "holeRadiiMm": [
+          5,
+          5.5,
+          6,
+          6.2,
+          7.5,
+          31.5,
+          34,
+          35.5,
+          37.5
+        ],
+        "bossShaftCount": 5,
+        "bossShaftRadiiMm": [
+          12.5,
+          15.5,
+          39
+        ],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 99,
+        "freeFormFaceCount": 24,
+        "planarFaceAreaMm2": 29842
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 25,
+          "depthMm": 17,
+          "through": null,
+          "count": 2
+        },
+        {
+          "kind": "boss",
+          "diaMm": 31,
+          "depthMm": 3,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 31,
+          "depthMm": 26,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 78,
+          "depthMm": 16,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 10,
+          "depthMm": 11.7,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 11,
+          "depthMm": 5,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 11,
+          "depthMm": 15.5,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 12,
+          "depthMm": 2,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 12.5,
+          "depthMm": 16,
+          "through": false,
+          "count": 2
+        },
+        {
+          "kind": "hole",
+          "diaMm": 12.5,
+          "depthMm": 25,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 15,
+          "depthMm": 18.9,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 15,
+          "depthMm": 25,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 63,
+          "depthMm": 3,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 68,
+          "depthMm": 3.8,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 68,
+          "depthMm": 36.5,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 71,
+          "depthMm": 2.7,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 75,
+          "depthMm": 6,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1544
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1298
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1184
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1161
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1012
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1001
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 962
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 956
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 20,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1544
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 34,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1161
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 34,
+          "through": null,
+          "count": 1,
+          "areaMm2": 913
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 6.5,
+          "through": null,
+          "count": 1,
+          "areaMm2": 758
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 68,
+          "through": null,
+          "count": 1,
+          "areaMm2": 491
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 28,
+        "totalBendLengthMm": 686.4,
+        "thicknessMm": 1.36
+      },
+      "wallThickness": {
+        "minMm": 1.36,
+        "maxMm": 46.75,
+        "p95Mm": 42.73,
+        "meanMm": 23.03,
+        "stdDevMm": 13.04,
+        "sampleCount": 26,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 52,
+        "zeroDraftFaceCount": 102,
+        "adequateDraftFaceCount": 69,
+        "minPositiveDraftDeg": 4.52,
+        "maxPositiveDraftDeg": 90,
+        "analyzedFaceCount": 223
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Z",
+            "faceCount": 60
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 51
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 30
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 6,
+        "drillBoreTimeMins": 7,
+        "estimatedTotalMins": 58,
+        "estimatedTotalHrs": 0.9661,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 300000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 17000,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 128000,
+        "progressiveDieCostGBP": 30000
+      },
+      "manufacturabilityScore": 46,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1885,
+        "sandCycleTimeHrFerrous": 0.2518,
+        "forgeStrokes": 6,
+        "investWaxCostGBP": 11.84,
+        "investShellCostGBP": 35.52
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    },
+    "stlGeometry": null,
+    "preprocessed": {
+      "format": "STEP",
+      "partName": "STEERING_KNUCKLE_PATTERN",
+      "boundingBoxEstMm": {
+        "x": 412.7801956763,
+        "y": 852.7543689627,
+        "z": 757.5821933606001
+      },
+      "entityStats": {
+        "PLANE": 99,
+        "EDGE_LOOP": 329,
+        "ADVANCED_FACE": 310,
+        "CYLINDRICAL_SURFACE": 124,
+        "TOROIDAL_SURFACE": 40,
+        "CONICAL_SURFACE": 17,
+        "SPHERICAL_SURFACE": 6,
+        "MANIFOLD_SOLID_BREP": 1,
+        "CIRCLE": 329,
+        "ADVANCED_BREP_SHAPE_REPRESENTATION": 1
+      }
+    },
+    "dfmJobId": "e62d49e0-aa2b-4cc5-a74f-6bb6b86e09cb"
+  }
+}

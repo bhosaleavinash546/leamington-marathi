@@ -32,6 +32,6 @@ CAST + MACHINE COST INPUT RULES:
   cycleTimeSandGravHr: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
   machiningCycleTimeHr=0  [pending the material answer — deterministic, use verbatim]
   machiningSetupTimeHr=0.75  [1 datum/fixture setup(s) × 45 min — deterministic, use verbatim]
-  machiningOperations=  [pending the material answer — deterministic, use verbatim]
+  machiningOperations: pending the material answer
   setupCount=1  [no setup analysis available — assuming a single setup — deterministic, use verbatim]
   machineId: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)

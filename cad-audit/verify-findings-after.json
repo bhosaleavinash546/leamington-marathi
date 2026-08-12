@@ -1,0 +1,254 @@
+[
+  {
+    "part": "armA-knuckle-armA-AFTER-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "CRITICAL",
+    "detail": "provenance section says 2.528 kg, Key Assumptions says 2.625 kg (Δ 4%) — the report contradicts itself"
+  },
+  {
+    "part": "armA-Part1-armA-AFTER-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "CRITICAL",
+    "detail": "provenance section says 1.151 kg, Key Assumptions says 1.195 kg (Δ 4%) — the report contradicts itself"
+  },
+  {
+    "part": "armA-flange-armA-AFTER-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 170.5 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-knuckle-armA-AFTER-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 159.9 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-Part1-armA-AFTER-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 163.8 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "BUMPER-forced-AFTER",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "flange-mach-AFTER",
+    "check": "G5-material-token",
+    "severity": "INFO",
+    "detail": "costInputSuggestions.materialId='steel' is a family token — resolved to a representative grade by both consumers (F1)"
+  },
+  {
+    "part": "flange-mach-AFTER",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "knuckle-cam-AFTER",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "PRCR002-auto-AFTER",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "material_low_confidence"
+  },
+  {
+    "part": "PRCR002-auto-AFTER2",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "near_net_machining_capped"
+  },
+  {
+    "part": "seat-sm-AFTER",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "cycle_time_implausible"
+  },
+  {
+    "part": "armA-flange-armA-AFTER-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "PASS",
+    "detail": "provenance section says 0.502 kg, Key Assumptions says 0.502 kg (Δ 0%) — the report contradicts itself"
+  },
+  {
+    "part": "BUMPER-forced-AFTER",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "BUMPER-forced-AFTER",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 2059.899 cm³ vs truth 2059.899 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "BUMPER-forced-AFTER",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 1.8539 → 0.90 g/cm³ = plastic (PP)"
+  },
+  {
+    "part": "BUMPER-forced-AFTER",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-pp and weight agree (plastic)"
+  },
+  {
+    "part": "BUMPER-forced-AFTER",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-pp"
+  },
+  {
+    "part": "flange-mach-AFTER",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "flange-mach-AFTER",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 63.938 cm³ vs truth 63.938 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "flange-mach-AFTER",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 0.502 → 7.85 g/cm³ = steel"
+  },
+  {
+    "part": "flange-mach-AFTER",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "steel and weight agree (steel)"
+  },
+  {
+    "part": "knuckle-cam-AFTER",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "knuckle-cam-AFTER",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 356.101 cm³ vs truth 356.101 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "knuckle-cam-AFTER",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 2.546 → 7.15 g/cm³ = cast iron"
+  },
+  {
+    "part": "knuckle-cam-AFTER",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-gjs500 and weight agree (cast iron)"
+  },
+  {
+    "part": "knuckle-cam-AFTER",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-gjs500"
+  },
+  {
+    "part": "PRCR002-auto-AFTER",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "PRCR002-auto-AFTER",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 1037.113 cm³ vs truth 1037.113 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "PRCR002-auto-AFTER",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 8.141 → 7.85 g/cm³ = steel"
+  },
+  {
+    "part": "PRCR002-auto-AFTER",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-dc01 and weight agree (steel)"
+  },
+  {
+    "part": "PRCR002-auto-AFTER",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-dc01"
+  },
+  {
+    "part": "PRCR002-auto-AFTER2",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "PRCR002-auto-AFTER2",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 1037.113 cm³ vs truth 1037.113 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "PRCR002-auto-AFTER2",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 7.415 → 7.15 g/cm³ = cast iron"
+  },
+  {
+    "part": "PRCR002-auto-AFTER2",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-gjs500 and weight agree (cast iron)"
+  },
+  {
+    "part": "PRCR002-auto-AFTER2",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-gjs500"
+  },
+  {
+    "part": "seat-sm-AFTER",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "seat-sm-AFTER",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 71.066 cm³ vs truth 71.066 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "seat-sm-AFTER",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 0.558 → 7.85 g/cm³ = steel"
+  },
+  {
+    "part": "seat-sm-AFTER",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-dc01 and weight agree (steel)"
+  },
+  {
+    "part": "seat-sm-AFTER",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-dc01"
+  }
+]

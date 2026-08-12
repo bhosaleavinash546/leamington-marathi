@@ -1,0 +1,51 @@
+{
+  "_audit": {
+    "part": "Part1.stp",
+    "commodity": "casting",
+    "mode": "both",
+    "label": "Part1-armA-AFTER",
+    "capturedAt": "2026-08-12T15:41:24.131Z",
+    "pageErrors": []
+  },
+  "state": {
+    "region": "CN",
+    "annualVolume": "200000",
+    "form": {
+      "ai-autofill-input": "",
+      "costing-country-sel": "CN",
+      "part-name": "Motorcycle Triple Clamp / Steering Yoke",
+      "cad-inline-input": "",
+      "cast-subtype": "gravity",
+      "cast-mat": "mat-lm25",
+      "cast-part-wt": "1.159",
+      "cast-yield": "0.7",
+      "cast-reject": "0.03",
+      "cast-lab": "lab-uk-skilled",
+      "cast-oee": "0.8",
+      "cast-manning": "1",
+      "cast-lab-eff": "0.92",
+      "cast-amort": "200000",
+      "cast-grav-mach": "grav-die-cast-std",
+      "cast-grav-ct": "0.0800",
+      "cast-grav-mould-cost": "80000",
+      "cast-grav-mould-life": "50000",
+      "cast-mf-mach": "mach-vmc3",
+      "cast-mf-lab": "lab-uk-skilled",
+      "cast-mf-stock": "near_net",
+      "cast-mf-finish": "1.0",
+      "cast-mf-tooling": "150000",
+      "packaging": "0.1",
+      "logistics": "0.15",
+      "overhead-pct": "12",
+      "margin-pct": "8",
+      "annual-volume": "200000",
+      "programme-years": "",
+      "learning-curve-pct": "85",
+      "reference-volume": "1000",
+      "lc-enabled": "on",
+      "target-price": ""
+    },
+    "totalText": null,
+    "breakdownText": null
+  }
+}

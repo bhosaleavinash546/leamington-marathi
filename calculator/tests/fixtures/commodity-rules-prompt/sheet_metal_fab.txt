@@ -5,17 +5,17 @@
 ### context: full
 SHEET METAL COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
-  thicknessMm=2.4  [measured from 4 bend face(s) — coil gauge — deterministic, use verbatim]
+  thicknessMm=12.25  [raised from 2.40 mm (measured from 4 bend face(s)) to the mass-consistent floor — measured 1037 cm³ over a 336×252 blank needs ≥12.25 mm; a thinner read means the blank could not weigh as much as the part — deterministic, use verbatim]
   blankLengthMm=336  [largest bounding-box dimension × 1.05 trim allowance — deterministic, use verbatim]
   blankWidthMm=252  [second-largest bounding-box dimension × 1.05 trim allowance — deterministic, use verbatim]
   numOps=6  [1 blank + 4 bend(s) + 1 pierce = 6 stations — deterministic, use verbatim]
-  pitchMm=341  [blank 336 mm + 5 mm web (max(3, 2 × gauge)) — deterministic, use verbatim]
-  stripWidthMm=262  [blank 252 mm + 2 × 5 mm edge margin — deterministic, use verbatim]
-  strokesPerMin=42  [feed-limited: 18 m/min ÷ 341 mm pitch, de-rated for 4 bends — deterministic, use verbatim]
-  dieCostGBP=90947  [progressive die, 6 stations, 847 cm² blank, 170 MPa shear; OCCT parametric says £92300 — deterministic, use verbatim]
-  dieLife=1310000  [170 MPa shear at 2.4 mm on a progressive die — deterministic, use verbatim]
-  dieType=progressive  [high volume at 2.4 mm: High volume favours progressive stamping — lowest piece cost once tooling amortized — deterministic, use verbatim]
-  process=Progressive Stamping  [high volume: High volume favours progressive stamping — lowest piece cost once tooling amortized — deterministic, use verbatim]
+  pitchMm=361  [blank 336 mm + 25 mm web (max(3, 2 × gauge)) — deterministic, use verbatim]
+  stripWidthMm=301  [blank 252 mm + 2 × 25 mm edge margin — deterministic, use verbatim]
+  strokesPerMin=40  [feed-limited: 18 m/min ÷ 361 mm pitch, de-rated for 4 bends — deterministic, use verbatim]
+  dieCostGBP=59387  [single_stage die, 6 stations, 847 cm² blank, 170 MPa shear; OCCT parametric says £92300 — deterministic, use verbatim]
+  dieLife=1050000  [170 MPa shear at 12.25 mm on a single_stage die — deterministic, use verbatim]
+  dieType=single_stage  [high volume at 12.25 mm: laser produces clean dross-free edge on stainless/aluminium — deterministic, use verbatim]
+  process=Laser Cutting  [high volume: laser produces clean dross-free edge on stainless/aluminium — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   shearStrengthMPa=170  [reference shear strength for aluminium sheet — deterministic, use verbatim]
 

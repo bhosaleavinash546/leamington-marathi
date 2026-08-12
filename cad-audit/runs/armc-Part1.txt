@@ -1,0 +1,29 @@
+Measuring Part1.stp …
+
+──────────────────────────────────────────────────────────────────────────
+  Part1.stp  ·  casting  ·  200,000/yr
+──────────────────────────────────────────────────────────────────────────
+  Measured: 429.4 cm³ · 58×274×115 mm
+
+  Eight-bucket breakdown
+    rawMaterial         £2.91
+    process            £22.04
+    labour             £11.59
+    tooling             £1.95
+    packaging           £0.18
+    logistics           £0.32
+    overhead            £4.62
+    margin              £3.49
+    TOTAL              £47.10
+
+  Derivation
+    cast-subtype           sand           sand: ductile iron — sand casting has the lowest tooling NRE and no upper size limit; ductile-iron/steel castings finish by fettling + machining
+    cast-yield             0.65           sand yield band 0.55–0.75, midpoint
+    cast-part-wt           3.07           429 cm³ × 0.00715 kg/cm³ (cast iron, confirmed by engineer)
+    cast-hpdc-die-cost     15000          OCCT parametric sand tooling estimate
+    cast-hpdc-die-life     8000           sand tool life band
+    cast-sand-ct           0.1964         OCCT sand cycle estimate from part mass
+
+  Assumed (not measured): oee, manning, labourEfficiency, rejectRate, labourId, materialId (cast iron → mat-gjl250, representative grade — not a drawing callout), sand.mouldLineId, sand.coreCostPerPart, secondary-machining NRE £15000 (fixtures + programming)
+──────────────────────────────────────────────────────────────────────────
+

@@ -1,0 +1,943 @@
+{
+  "_audit": {
+    "part": "Casting_Braket.stp",
+    "commodity": null,
+    "mode": "both",
+    "volume": 200000,
+    "deep": false,
+    "httpStatus": 200,
+    "seconds": 104.9,
+    "capturedAt": "2026-08-12T14:29:05.900Z"
+  },
+  "response": {
+    "success": true,
+    "analysis": {
+      "part_name": "unknown",
+      "material": "unknown",
+      "thickness_mm": 0,
+      "blank_layout": {
+        "strip_width_mm": 0,
+        "pitch_mm": 0,
+        "material_utilisation_pct": 0,
+        "grain_direction": "unknown"
+      },
+      "press": {
+        "tonnage_estimate_kN": 0,
+        "stroke_mm": 0,
+        "bed_size_mm": "unknown"
+      },
+      "die_design": {
+        "stations": 0,
+        "operations": [],
+        "bend_radius_mm": 0,
+        "springback_allowance_deg": 0
+      },
+      "cost_estimate": {
+        "tooling_cost_usd": 0,
+        "piece_cost_usd": 0,
+        "annual_volume": 0
+      },
+      "notes": "No valid JSON content was provided to correct; this is a default template structure.",
+      "partName": "CAD Part",
+      "aiExplanation": "",
+      "confidenceLevel": "Low",
+      "manufacturabilityScore": 60,
+      "detectedFeatures": [],
+      "processRecommendations": [],
+      "manufacturabilityRisks": [],
+      "analysisLimitations": [],
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "estimatedVolumeCm3": 0,
+        "estimatedSurfaceAreaCm2": 0,
+        "estimatedWeightKg": {
+          "aluminum": 0.864,
+          "steel": 2.5121,
+          "castIron": 2.2881,
+          "plastic": 0.336
+        }
+      },
+      "materialAnalysis": {
+        "primarySuggestion": {
+          "materialId": "",
+          "name": "Unspecified",
+          "confidencePct": 50
+        },
+        "alternatives": []
+      },
+      "costInputSuggestions": {
+        "recommendedCommodity": "machining",
+        "netWeightKg": 0.864,
+        "estimatedOperations": [],
+        "costRange": {
+          "low": 0,
+          "mid": 0,
+          "high": 0,
+          "currency": "GBP"
+        },
+        "sheetMetal": {
+          "blankLengthMm": 139,
+          "blankWidthMm": 131,
+          "numOps": 12,
+          "pitchMm": 142,
+          "stripWidthMm": 137,
+          "strokesPerMin": 65
+        },
+        "fieldConfidences": {
+          "sm-blank-l": 0.8,
+          "sm-blank-w": 0.8,
+          "sm-num-ops": 0.75,
+          "sm-spm": 0.65
+        }
+      }
+    },
+    "sanityWarnings": [],
+    "ruleOverrides": {
+      "overridden": [
+        {
+          "field": "sheetMetal.blankLengthMm",
+          "ruleId": "sheetMetal.blankLengthMm",
+          "to": 139,
+          "basis": "largest bounding-box dimension × 1.05 trim allowance",
+          "confidence": 0.8,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.blankWidthMm",
+          "ruleId": "sheetMetal.blankWidthMm",
+          "to": 131,
+          "basis": "second-largest bounding-box dimension × 1.05 trim allowance",
+          "confidence": 0.8,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.numOps",
+          "ruleId": "sheetMetal.numOps",
+          "to": 12,
+          "basis": "1 blank + 43 bend(s) + 1 pierce = 12 stations",
+          "confidence": 0.75,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.pitchMm",
+          "ruleId": "sheetMetal.pitchMm",
+          "to": 142,
+          "basis": "blank 139 mm + 3 mm web (max(3, 2 × gauge))",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.stripWidthMm",
+          "ruleId": "sheetMetal.stripWidthMm",
+          "to": 137,
+          "basis": "blank 131 mm + 2 × 3 mm edge margin",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "sheetMetal.strokesPerMin",
+          "ruleId": "sheetMetal.strokesPerMin",
+          "to": 65,
+          "basis": "feed-limited: 18 m/min ÷ 142 mm pitch, de-rated for 43 bends",
+          "confidence": 0.65,
+          "contradicted": false
+        }
+      ],
+      "notWritten": [],
+      "undecided": [
+        "material.family"
+      ]
+    },
+    "ruleFields": {
+      "sm-blank-l": {
+        "fieldId": "sm-blank-l",
+        "value": 139,
+        "basis": "largest bounding-box dimension × 1.05 trim allowance",
+        "source": "geometry",
+        "confidence": 0.8,
+        "ruleId": "sheetMetal.blankLengthMm"
+      },
+      "sm-blank-w": {
+        "fieldId": "sm-blank-w",
+        "value": 131,
+        "basis": "second-largest bounding-box dimension × 1.05 trim allowance",
+        "source": "geometry",
+        "confidence": 0.8,
+        "ruleId": "sheetMetal.blankWidthMm"
+      },
+      "sm-num-ops": {
+        "fieldId": "sm-num-ops",
+        "value": 12,
+        "basis": "1 blank + 43 bend(s) + 1 pierce = 12 stations",
+        "source": "geometry",
+        "confidence": 0.75,
+        "ruleId": "sheetMetal.numOps"
+      },
+      "sm-spm": {
+        "fieldId": "sm-spm",
+        "value": 65,
+        "basis": "feed-limited: 18 m/min ÷ 142 mm pitch, de-rated for 43 bends",
+        "source": "rule",
+        "confidence": 0.65,
+        "ruleId": "sheetMetal.strokesPerMin"
+      }
+    },
+    "deterministicAnalysis": {
+      "partName": "cv-cad-2f13add27a4337de",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 132.62,
+          "y": 120.03,
+          "z": 125
+        },
+        "estimatedVolumeCm3": 320.015,
+        "estimatedSurfaceAreaCm2": 628.266,
+        "estimatedWeightKg": {
+          "aluminum": 0.864,
+          "steel": 2.5121,
+          "plastic": 0.336
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "boss",
+          "description": "1× Ø18.0 × 14 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø4.0 × 7 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø4.9 × 15 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø13.0 × 8 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "2× Ø13.0 × 19 mm blind",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø13.0 × 41 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "3× Ø14.0 × 1 mm blind",
+          "count": 3,
+          "significance": "Medium"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø20.0 × 1 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "1× Ø0.0 × 0 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 15 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 11 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "bend",
+          "description": "43 bend(s), 1446 mm total length",
+          "count": 43,
+          "significance": "High"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "",
+          "name": "",
+          "confidencePct": 0,
+          "reasoning": ""
+        },
+        "alternatives": []
+      },
+      "processRecommendations": [
+        {
+          "process": "sheet_metal",
+          "commodityType": "sheet_metal",
+          "confidencePct": 50,
+          "reasoning": "selected by the deterministic rules for this commodity",
+          "estimatedCycleTimeHr": 0
+        }
+      ],
+      "manufacturabilityScore": 46,
+      "manufacturabilityRisks": [],
+      "costInputSuggestions": {
+        "recommendedCommodity": "sheet_metal",
+        "netWeightKg": 0,
+        "materialId": "",
+        "estimatedCycleTimeHr": 0,
+        "estimatedSetupTimeHr": 0,
+        "estimatedOperations": [],
+        "dfmIssues": [
+          {
+            "severity": "Medium",
+            "area": "process",
+            "description": "43 bends per part — Many bends multiply press-brake handling, tool changes and cumulative angle tolerance.",
+            "impact": "43 bends per part",
+            "fix": "Reduce bend count, group same-tool bends, or move to a stamping die if volume supports it."
+          }
+        ],
+        "sheetMetal": {
+          "blankLengthMm": 139,
+          "blankWidthMm": 131,
+          "numOps": 12,
+          "pitchMm": 142,
+          "stripWidthMm": 137,
+          "strokesPerMin": 65
+        },
+        "fieldConfidences": {
+          "sm-blank-l": 0.8,
+          "sm-blank-w": 0.8,
+          "sm-num-ops": 0.75,
+          "sm-spm": 0.65
+        }
+      },
+      "aiExplanation": "Derived deterministically for sheet_metal from the measured geometry. No AI call was made; every figure below is arithmetic on a measurement or a library lookup, and each states its own basis.\n\n  • sheetMetal.blankLengthMm = 139 — largest bounding-box dimension × 1.05 trim allowance [geometry, sm-blank-l]\n  • sheetMetal.blankWidthMm = 131 — second-largest bounding-box dimension × 1.05 trim allowance [geometry, sm-blank-w]\n  • sheetMetal.numOps = 12 — 1 blank + 43 bend(s) + 1 pierce = 12 stations [geometry, sm-num-ops]\n  • sheetMetal.strokesPerMin = 65 — feed-limited: 18 m/min ÷ 142 mm pitch, de-rated for 43 bends [rule, sm-spm]\n\nStill open (1):\n  • What is this part made of? — A CAD file carries shape, not substance. We measured 320 cm³ exactly, but the same solid weighs 0.86 kg in aluminium and 2.51 kg in steel. Nothing in the geometry distinguishes them, and guessing wrong moves the material cost several-fold.",
+      "confidenceLevel": "Low",
+      "analysisLimitations": [
+        "Unanswered: What is this part made of?",
+        "DFM checks ran against the measured geometry. Checks that need a drawing callout — tolerances, which face is critical, whether a weld line is in a load path — did not run, so this list is a floor and not a ceiling."
+      ]
+    },
+    "diff": {
+      "diffs": [
+        {
+          "field": "costRange.currency",
+          "aiValue": "GBP",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.high",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.low",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.mid",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "estimatedSetupTimeHr",
+          "ruleValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.sm-blank-l",
+          "ruleValue": 0.8,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.sm-blank-w",
+          "ruleValue": 0.8,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.sm-num-ops",
+          "ruleValue": 0.75,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.sm-spm",
+          "ruleValue": 0.65,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "materialId",
+          "ruleValue": "",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "netWeightKg",
+          "ruleValue": 0,
+          "aiValue": 0.864,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "recommendedCommodity",
+          "ruleValue": "sheet_metal",
+          "aiValue": "machining",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "sheetMetal.blankLengthMm",
+          "ruleValue": 139,
+          "deltaPct": null,
+          "basis": "largest bounding-box dimension × 1.05 trim allowance",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "sheetMetal.blankWidthMm",
+          "ruleValue": 131,
+          "deltaPct": null,
+          "basis": "second-largest bounding-box dimension × 1.05 trim allowance",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "sheetMetal.numOps",
+          "ruleValue": 12,
+          "deltaPct": null,
+          "basis": "1 blank + 43 bend(s) + 1 pierce = 12 stations",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "sheetMetal.pitchMm",
+          "ruleValue": 142,
+          "deltaPct": null,
+          "basis": "blank 139 mm + 3 mm web (max(3, 2 × gauge))",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "sheetMetal.stripWidthMm",
+          "ruleValue": 137,
+          "deltaPct": null,
+          "basis": "blank 131 mm + 2 × 3 mm edge margin",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "sheetMetal.strokesPerMin",
+          "ruleValue": 65,
+          "deltaPct": null,
+          "basis": "feed-limited: 18 m/min ÷ 142 mm pitch, de-rated for 43 bends",
+          "verdict": "rule-only"
+        }
+      ],
+      "agreed": 0,
+      "differed": 2,
+      "ruleOnly": 13,
+      "aiOnly": 4,
+      "undecided": [
+        "material.family"
+      ]
+    },
+    "aiOriginal": {
+      "recommendedCommodity": "machining",
+      "netWeightKg": 0.864,
+      "estimatedOperations": [],
+      "costRange": {
+        "low": 0,
+        "mid": 0,
+        "high": 0,
+        "currency": "GBP"
+      }
+    },
+    "decisions": [
+      {
+        "id": "material.family",
+        "kind": "material_family",
+        "question": "What is this part made of?",
+        "why": "A CAD file carries shape, not substance. We measured 320 cm³ exactly, but the same solid weighs 0.86 kg in aluminium and 2.51 kg in steel. Nothing in the geometry distinguishes them, and guessing wrong moves the material cost several-fold.",
+        "options": [
+          {
+            "value": "steel",
+            "label": "Steel",
+            "consequence": "2.51 kg",
+            "leaning": false
+          },
+          {
+            "value": "aluminium",
+            "label": "Aluminium",
+            "consequence": "0.86 kg",
+            "leaning": false
+          }
+        ],
+        "blockedFieldIds": [
+          "sm-thick",
+          "sm-die-cost",
+          "sm-die-life",
+          "sm-die-type",
+          "sm-net-wt",
+          "sm-shear"
+        ],
+        "blockedRuleIds": [
+          "sheetMetal.thicknessMm",
+          "sheetMetal.dieCostGBP",
+          "sheetMetal.dieLife",
+          "sheetMetal.dieType",
+          "sheetMetal.process",
+          "sheetMetal.netWeightKg",
+          "sheetMetal.shearStrengthMPa"
+        ],
+        "severity": "blocking"
+      }
+    ],
+    "mode": "both",
+    "fromCache": false,
+    "geometrySource": "occt",
+    "annualVolume": 200000,
+    "occtGeometry": {
+      "status": "success",
+      "partName": "cv-cad-2f13add27a4337de",
+      "boundingBox": {
+        "xMm": 132.62,
+        "yMm": 120.03,
+        "zMm": 125
+      },
+      "volume": {
+        "mm3": 320015.4,
+        "cm3": 320.015
+      },
+      "surfaceArea": {
+        "mm2": 62826.6,
+        "cm2": 628.266
+      },
+      "fillRatio": 0.1608,
+      "topology": {
+        "available": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 17,
+        "freeEdgeRatio": 0.0311,
+        "enclosesSealedVoid": false,
+        "openShell": true
+      },
+      "weights": {
+        "aluminiumKg": 0.864,
+        "steelKg": 2.5121,
+        "plasticKg": 0.336,
+        "castIronKg": 2.2881,
+        "copperKg": 2.8673,
+        "titaniumKg": 1.4177
+      },
+      "faces": {
+        "total": 230,
+        "byType": {
+          "CYLINDER": 99,
+          "PLANE": 39,
+          "CONE": 2,
+          "TORUS": 24,
+          "BSPLINE": 54,
+          "OTHER": 12
+        }
+      },
+      "edges": {
+        "total": 546,
+        "byType": {
+          "CIRCLE": 185,
+          "LINE": 169,
+          "BSPLINE": 175,
+          "OTHER": 17
+        },
+        "sampleCircleRadiiMm": [
+          2,
+          2.5,
+          3,
+          4,
+          6,
+          6.5,
+          7,
+          9,
+          10,
+          13,
+          13.2,
+          14,
+          15,
+          15.2,
+          16,
+          17,
+          17.2,
+          19,
+          20,
+          21,
+          23,
+          25,
+          48,
+          50
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 99,
+        "cylindricalFaceRadiiMm": [
+          2,
+          2.5,
+          6,
+          6.5,
+          7,
+          9,
+          10,
+          12,
+          14,
+          15,
+          15.2,
+          19,
+          20,
+          23,
+          25,
+          29,
+          36,
+          50
+        ],
+        "estimatedHoleCount": 10,
+        "holeRadiiMm": [
+          2,
+          2.5,
+          6.5,
+          7,
+          10
+        ],
+        "bossShaftCount": 1,
+        "bossShaftRadiiMm": [
+          9
+        ],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 39,
+        "freeFormFaceCount": 54,
+        "planarFaceAreaMm2": 30093
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 18,
+          "depthMm": 13.5,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 4,
+          "depthMm": 6.5,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 4.92,
+          "depthMm": 14.5,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 13,
+          "depthMm": 8,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 13,
+          "depthMm": 19,
+          "through": false,
+          "count": 2
+        },
+        {
+          "kind": "hole",
+          "diaMm": 13,
+          "depthMm": 41,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 14,
+          "depthMm": 1,
+          "through": false,
+          "count": 3
+        },
+        {
+          "kind": "hole",
+          "diaMm": 20,
+          "depthMm": 1,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 4385
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2406
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2191
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1921
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1892
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1839
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1838
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1694
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 15,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1839
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 11,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1265
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 43,
+        "totalBendLengthMm": 1445.5,
+        "thicknessMm": 1.54
+      },
+      "wallThickness": {
+        "minMm": 1.54,
+        "maxMm": 30.21,
+        "p95Mm": 30.05,
+        "meanMm": 17.63,
+        "stdDevMm": 8.83,
+        "sampleCount": 22,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 21,
+        "zeroDraftFaceCount": 70,
+        "adequateDraftFaceCount": 47,
+        "minPositiveDraftDeg": 13.28,
+        "maxPositiveDraftDeg": 90,
+        "analyzedFaceCount": 138
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Y",
+            "faceCount": 30
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 24
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 18
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 6,
+        "drillBoreTimeMins": 5,
+        "estimatedTotalMins": 56,
+        "estimatedTotalHrs": 0.9336,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 300000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 14500,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 58000,
+        "progressiveDieCostGBP": 25000
+      },
+      "manufacturabilityScore": 46,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1846,
+        "sandCycleTimeHrFerrous": 0.2415,
+        "forgeStrokes": 8,
+        "investWaxCostGBP": 9.42,
+        "investShellCostGBP": 28.27
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    },
+    "stlGeometry": null,
+    "preprocessed": {
+      "format": "STEP",
+      "partName": "Casting Bracket",
+      "boundingBoxEstMm": {
+        "x": 124.522961568,
+        "y": 120.0258438072,
+        "z": 130
+      },
+      "entityStats": {
+        "ADVANCED_BREP_SHAPE_REPRESENTATION": 1,
+        "ADVANCED_FACE": 230,
+        "B_SPLINE_SURFACE_WITH_KNOTS": 54,
+        "MANIFOLD_SOLID_BREP": 1,
+        "CIRCLE": 185,
+        "CONICAL_SURFACE": 1,
+        "CYLINDRICAL_SURFACE": 82,
+        "TOROIDAL_SURFACE": 24,
+        "EDGE_LOOP": 244,
+        "PLANE": 30,
+        "SPHERICAL_SURFACE": 12
+      }
+    },
+    "dfmJobId": "9e3a8e9f-c9fb-48ef-921e-07423cdc5b7c"
+  }
+}

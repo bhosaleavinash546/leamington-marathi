@@ -1,0 +1,22 @@
+{
+  "file": "Fuel_tank.STEP",
+  "status": "success",
+  "volumeCm3": 10595.902,
+  "surfaceAreaCm2": 47571.29,
+  "bboxMm": [
+    1528.35,
+    657.63,
+    593.69
+  ],
+  "bboxVolumeCm3": 596717.8,
+  "fillRatio": 0.0178,
+  "wall2VoverS_mm": 4.455,
+  "solids": 3,
+  "massKg": {
+    "aluminium": 28.6089,
+    "steel": 83.1778,
+    "cast_iron": 76.2905,
+    "plastic": 11.1257
+  },
+  "measureSeconds": 24.0
+}

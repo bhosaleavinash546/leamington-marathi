@@ -1,0 +1,37 @@
+Measuring Fuel_tank.STEP …
+
+──────────────────────────────────────────────────────────────────────────
+  Fuel_tank.STEP  ·  blow_moulding  ·  200,000/yr
+──────────────────────────────────────────────────────────────────────────
+  Measured: 10595.9 cm³ · 1528×658×594 mm
+
+  Eight-bucket breakdown
+    rawMaterial        £19.60
+    process             £2.77
+    labour              £0.62
+    tooling             £0.34
+    packaging           £1.29
+    logistics           £1.43
+    overhead            £2.80
+    margin              £2.31
+    TOTAL              £31.16
+
+  Derivation
+    bm-wall                5              ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds)
+    bm-mat                 mat-hdpe-fuel-coex HDPE upgraded to the 6-layer EVOH barrier grade
+    bm-part-vol            60             Over 20 L confirmed by the engineer; the measured envelope holds at most 586.1 L
+    bm-part-wt             10.1721        HDPE at 960 kg/m³ — 10596 cm³ measured (chosen by the engineer)
+    bm-flash-wt            2.2379         22% of part weight — pinch-off and neck trim; a large accumulator parison sheds more than a bottle
+    bm-process             ebm_coex5      co-extruded barrier wall — 5-layer EBM head
+    bm-cav                 1              Over 20 L: under 250 ml -> 4, up to 2 L -> 2, above -> 1
+    bm-mach                blow-ebm-large 12.410 kg gross shot (part + flash)
+    bm-cool-f              3.5            transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)]: α_eff 0.0471 mm²/s, melt 210°C / mould 30°C / eject 75°C → 3.5 s/mm²; cool ≈ 88.9 s at 5.0 mm
+    bm-blow-t              20             3 s + 0.8 s per litre at 60 L, capped at 20 s
+    bm-open-close          8              4 s + 0.1 s per litre at 60 L, capped at 8 s
+    bm-mould-mat           aluminium      cast/CNC aluminium — the EBM workhorse, and it conducts heat out faster than steel
+    bm-mould-life          500000         documented cycle life for a aluminium blow mould
+    bm-mould-cost          68963          1-cavity EBM aluminium tool at 60 L
+
+  Assumed (not measured): oee, manning, labourEfficiency, rejectRate, labourId, machineId, coolTimeFactor, parisonExtrusionTime
+──────────────────────────────────────────────────────────────────────────
+

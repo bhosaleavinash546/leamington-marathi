@@ -157,21 +157,32 @@ const SETUP_RULE: RuleDef = {
   },
 };
 
-const OPERATIONS_RULE: RuleDef = {
+const OPERATIONS_RULE: RuleDef<ReturnType<typeof castAndMachineOperationPlan>> = {
   id: 'castAndMachine.machiningOperations',
   path: 'machining.operations',
   label: 'machiningOperations',
   evaluate: (ctx) => {
     const ops = castAndMachineOperationPlan(ctx);
     if (ops.length === 0) {
-      return decided('castAndMachine.machiningOperations', '', 'rule',
+      return decided('castAndMachine.machiningOperations', [], 'rule',
         'pending the material answer', 0.1);
     }
     const total = ops.reduce((s, o) => s + o.cycleTimeHr, 0);
-    return decided('castAndMachine.machiningOperations',
-      ops.map(o => `${o.name} ${fmt(o.cycleTimeHr, 3)} hr on ${o.machineId}`).join('; '),
-      'geometry',
+    // The VALUE must be the OperationPlan[] — this path maps to
+    // `estimatedOperations`, whose every consumer (`applyCADToForm`'s CAM loop,
+    // `printCADAnalysisPDF`) `.map()`s an array. The prose join that used to be
+    // emitted here crashed both, making cast_and_machine un-costable from CAD
+    // in the browser (live audit F7). promptLine below renders the readable
+    // summary; the data stays data.
+    return decided('castAndMachine.machiningOperations', ops, 'geometry',
       `sums to ${fmt(total, 3)} hr of finish machining`, 0.7);
+  },
+  promptLine: (outcome) => {
+    if (!outcome.ok) return '  machiningOperations: UNDECIDED';
+    const ops = outcome.decided.value;
+    if (!Array.isArray(ops) || ops.length === 0) return '  machiningOperations: pending the material answer';
+    const summary = ops.map(o => `${o.name} ${fmt(o.cycleTimeHr, 3)} hr on ${o.machineId}`).join('; ');
+    return `  machiningOperations=${summary}  [${outcome.decided.basis} — deterministic, use verbatim]`;
   },
 };
 

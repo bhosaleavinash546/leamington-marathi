@@ -1,0 +1,686 @@
+[
+  {
+    "part": "armA-Casting_Braket-casting-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "CRITICAL",
+    "detail": "provenance section says 2.272 kg, Key Assumptions says 2.359 kg (Δ 4%) — the report contradicts itself"
+  },
+  {
+    "part": "armA-flange-armA-smoke-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "CRITICAL",
+    "detail": "provenance section says 0.173 kg, Key Assumptions says 0.502 kg (Δ 190%) — the report contradicts itself"
+  },
+  {
+    "part": "armA-flange-machining-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "CRITICAL",
+    "detail": "provenance section says 0.173 kg, Key Assumptions says 0.502 kg (Δ 190%) — the report contradicts itself"
+  },
+  {
+    "part": "armA-Part1-casting-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "CRITICAL",
+    "detail": "provenance section says 1.151 kg, Key Assumptions says 1.195 kg (Δ 4%) — the report contradicts itself"
+  },
+  {
+    "part": "armA-Casting_Braket-casting-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 158.1 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-flange-armA-smoke-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 170.8 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-flange-machining-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 170.8 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-Part1-casting-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 163.8 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-PRCR002-forging-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "MINOR",
+    "detail": "visible bucket percentages sum 163.8 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "armA-Seat_Locking_Bracket-sheet_metal-shouldcost",
+    "check": "P2-bucket-sum",
+    "severity": "INFO",
+    "detail": "visible bucket percentages sum 106.9 (headline chips omit minor buckets by design)"
+  },
+  {
+    "part": "block-2holes-machining",
+    "check": "G5-material-token",
+    "severity": "INFO",
+    "detail": "costInputSuggestions.materialId='steel' is a family token — resolved to a representative grade by both consumers (F1)"
+  },
+  {
+    "part": "block-2holes-machining",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "BUMPER-auto",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "BUMPER-injection_moulding",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "process_geometry_implausible"
+  },
+  {
+    "part": "BUMPER-injection_moulding-deep",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "Casting_Braket-auto",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "Casting_Braket-casting",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "flange-6holes-boss-auto",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "near_net_machining_capped"
+  },
+  {
+    "part": "flange-6holes-boss-machining",
+    "check": "G5-material-token",
+    "severity": "INFO",
+    "detail": "costInputSuggestions.materialId='steel' is a family token — resolved to a representative grade by both consumers (F1)"
+  },
+  {
+    "part": "flange-6holes-boss-machining",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "Fuel_tank-auto",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "Fuel_tank-blow_moulding",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "Part1-auto",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "PRCR002-stub-axle-auto",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "PRCR002-stub-axle-forging",
+    "check": "G5-material-token",
+    "severity": "INFO",
+    "detail": "costInputSuggestions.materialId='steel' is a family token — resolved to a representative grade by both consumers (F1)"
+  },
+  {
+    "part": "PRCR002-stub-axle-forging",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "near_net_machining_capped"
+  },
+  {
+    "part": "Seat_Locking_Bracket-auto",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "Seat_Locking_Bracket-sheet_metal",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "cycle_time_implausible"
+  },
+  {
+    "part": "steering_knuckle_RH-auto",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine-deep",
+    "check": "G6-sanity",
+    "severity": "INFO",
+    "detail": "no sanity warnings recorded"
+  },
+  {
+    "part": "armA-PRCR002-forging-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "PASS",
+    "detail": "provenance section says 8.141 kg, Key Assumptions says 8.141 kg (Δ 0%) — the report contradicts itself"
+  },
+  {
+    "part": "armA-Seat_Locking_Bracket-sheet_metal-shouldcost",
+    "check": "P1-weight-consistency",
+    "severity": "PASS",
+    "detail": "provenance section says 0.558 kg, Key Assumptions says 0.558 kg (Δ 0%) — the report contradicts itself"
+  },
+  {
+    "part": "block-2holes-machining",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "block-2holes-machining",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 44.858 cm³ vs truth 44.858 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "block-2holes-machining",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 0.352 → 7.85 g/cm³ = steel"
+  },
+  {
+    "part": "block-2holes-machining",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "steel and weight agree (steel)"
+  },
+  {
+    "part": "BUMPER-auto",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "BUMPER-auto",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 2059.899 cm³ vs truth 2059.899 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "BUMPER-auto",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 2.163 → 1.05 g/cm³ = plastic"
+  },
+  {
+    "part": "BUMPER-auto",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-pp and weight agree (plastic)"
+  },
+  {
+    "part": "BUMPER-auto",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-pp"
+  },
+  {
+    "part": "BUMPER-injection_moulding",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "BUMPER-injection_moulding",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 2059.899 cm³ vs truth 2059.899 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "BUMPER-injection_moulding",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 5.5617 → 2.70 g/cm³ = aluminium"
+  },
+  {
+    "part": "BUMPER-injection_moulding-deep",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "BUMPER-injection_moulding-deep",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 2059.899 cm³ vs truth 2059.899 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "BUMPER-injection_moulding-deep",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 1.8539 → 0.90 g/cm³ = plastic (PP)"
+  },
+  {
+    "part": "BUMPER-injection_moulding-deep",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-pp and weight agree (plastic)"
+  },
+  {
+    "part": "BUMPER-injection_moulding-deep",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-pp"
+  },
+  {
+    "part": "Casting_Braket-auto",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "Casting_Braket-auto",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 320.015 cm³ vs truth 320.015 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "Casting_Braket-auto",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 0.864 → 2.70 g/cm³ = aluminium"
+  },
+  {
+    "part": "Casting_Braket-casting",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "Casting_Braket-casting",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 320.015 cm³ vs truth 320.015 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "Casting_Braket-casting",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 2.288 → 7.15 g/cm³ = cast iron"
+  },
+  {
+    "part": "Casting_Braket-casting",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-gjs500 and weight agree (cast iron)"
+  },
+  {
+    "part": "Casting_Braket-casting",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-gjs500"
+  },
+  {
+    "part": "flange-6holes-boss-auto",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "flange-6holes-boss-auto",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 63.938 cm³ vs truth 63.938 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "flange-6holes-boss-auto",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 0.457 → 7.15 g/cm³ = cast iron"
+  },
+  {
+    "part": "flange-6holes-boss-auto",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-gjs500 and weight agree (cast iron)"
+  },
+  {
+    "part": "flange-6holes-boss-auto",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-gjs500"
+  },
+  {
+    "part": "flange-6holes-boss-machining",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "flange-6holes-boss-machining",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 63.938 cm³ vs truth 63.938 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "flange-6holes-boss-machining",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 0.502 → 7.85 g/cm³ = steel"
+  },
+  {
+    "part": "flange-6holes-boss-machining",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "steel and weight agree (steel)"
+  },
+  {
+    "part": "Fuel_tank-auto",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "Fuel_tank-auto",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 10595.902 cm³ vs truth 10595.902 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "Fuel_tank-auto",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 83.178 → 7.85 g/cm³ = steel"
+  },
+  {
+    "part": "Fuel_tank-auto",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-dc01 and weight agree (steel)"
+  },
+  {
+    "part": "Fuel_tank-auto",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-dc01"
+  },
+  {
+    "part": "Fuel_tank-blow_moulding",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "Fuel_tank-blow_moulding",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 10595.902 cm³ vs truth 10595.902 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "Fuel_tank-blow_moulding",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 11.126 → 1.05 g/cm³ = plastic"
+  },
+  {
+    "part": "Fuel_tank-blow_moulding",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-hdpe and weight agree (plastic)"
+  },
+  {
+    "part": "Fuel_tank-blow_moulding",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-hdpe"
+  },
+  {
+    "part": "Part1-auto",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "Part1-auto",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 429.434 cm³ vs truth 429.434 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "Part1-auto",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 3.07 → 7.15 g/cm³ = cast iron"
+  },
+  {
+    "part": "Part1-auto",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-gjs500 and weight agree (cast iron)"
+  },
+  {
+    "part": "Part1-auto",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-gjs500"
+  },
+  {
+    "part": "PRCR002-stub-axle-auto",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "PRCR002-stub-axle-auto",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 1037.113 cm³ vs truth 1037.113 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "PRCR002-stub-axle-auto",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 8.141 → 7.85 g/cm³ = steel"
+  },
+  {
+    "part": "PRCR002-stub-axle-auto",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-dc01 and weight agree (steel)"
+  },
+  {
+    "part": "PRCR002-stub-axle-auto",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-dc01"
+  },
+  {
+    "part": "PRCR002-stub-axle-forging",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "PRCR002-stub-axle-forging",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 1037.113 cm³ vs truth 1037.113 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "PRCR002-stub-axle-forging",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 8.141 → 7.85 g/cm³ = steel"
+  },
+  {
+    "part": "PRCR002-stub-axle-forging",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "steel and weight agree (steel)"
+  },
+  {
+    "part": "Seat_Locking_Bracket-auto",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "Seat_Locking_Bracket-auto",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 71.066 cm³ vs truth 71.066 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "Seat_Locking_Bracket-auto",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 0.558 → 7.85 g/cm³ = steel"
+  },
+  {
+    "part": "Seat_Locking_Bracket-auto",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-hss and weight agree (steel)"
+  },
+  {
+    "part": "Seat_Locking_Bracket-auto",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-hss"
+  },
+  {
+    "part": "Seat_Locking_Bracket-sheet_metal",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "Seat_Locking_Bracket-sheet_metal",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 71.066 cm³ vs truth 71.066 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "Seat_Locking_Bracket-sheet_metal",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 0.558 → 7.85 g/cm³ = steel"
+  },
+  {
+    "part": "Seat_Locking_Bracket-sheet_metal",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-hss and weight agree (steel)"
+  },
+  {
+    "part": "Seat_Locking_Bracket-sheet_metal",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-hss"
+  },
+  {
+    "part": "steering_knuckle_RH-auto",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "steering_knuckle_RH-auto",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 356.101 cm³ vs truth 356.101 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "steering_knuckle_RH-auto",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 2.7954 → 7.85 g/cm³ = steel"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 356.101 cm³ vs truth 356.101 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 2.546 → 7.15 g/cm³ = cast iron"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-gjs500 and weight agree (cast iron)"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-gjs500"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine-deep",
+    "check": "G1-geometry-source",
+    "severity": "PASS",
+    "detail": "occt"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine-deep",
+    "check": "G2-volume",
+    "severity": "PASS",
+    "detail": "pipeline 356.101 cm³ vs truth 356.101 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine-deep",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 2.546 → 7.15 g/cm³ = cast iron"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine-deep",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-gjs600 and weight agree (cast iron)"
+  },
+  {
+    "part": "steering_knuckle_RH-cast_and_machine-deep",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-gjs600"
+  }
+]

@@ -1,0 +1,1550 @@
+{
+  "_audit": {
+    "part": "Fuel_tank.STEP",
+    "commodity": "blow_moulding",
+    "mode": "both",
+    "volume": 200000,
+    "deep": false,
+    "httpStatus": 200,
+    "seconds": 156.7,
+    "capturedAt": "2026-08-12T14:51:19.997Z"
+  },
+  "response": {
+    "success": true,
+    "analysis": {
+      "partName": "Fuel_tank",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 1528.35,
+          "y": 657.63,
+          "z": 593.69
+        },
+        "estimatedVolumeCm3": 10595.902,
+        "estimatedSurfaceAreaCm2": 47571.289,
+        "estimatedWeightKg": {
+          "aluminum": 28.6089,
+          "steel": 83.1778,
+          "castIron": 75.7607,
+          "plastic": 11.1257
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "Free-form shell body",
+          "description": "694 B-spline surfaces forming the organic saddle/underbody tank shape typical of automotive fuel tanks",
+          "count": 694,
+          "significance": "High"
+        },
+        {
+          "type": "Boss/fitting features",
+          "description": "Cylindrical bosses (r=12,15,26,40mm) for filler neck, vent valve, and pump-module flange",
+          "count": 12,
+          "significance": "High"
+        },
+        {
+          "type": "Mounting/vent holes",
+          "description": "Holes at r=8,20,30mm for straps, grommets and vent lines",
+          "count": 8,
+          "significance": "Medium"
+        },
+        {
+          "type": "Threaded ports",
+          "description": "Threaded features detected — likely pump module lock-ring or fitting threads, typically post-moulded inserts on tanks",
+          "count": 1,
+          "significance": "Medium"
+        },
+        {
+          "type": "Pinch-weld thickened zones",
+          "description": "Max wall 18.34mm vs mean 5.04mm indicates parison pinch-off/weld lines at parting plane",
+          "count": 1,
+          "significance": "High"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "mat-hdpe",
+          "name": "HDPE (6-layer barrier grade)",
+          "confidencePct": 80,
+          "reasoning": "Part is a large automotive fuel tank (bounding box 1.5m, hollow shell, fill ratio 0.0178, wall 4-18mm). HDPE with EVOH barrier is the industry-standard resin for extrusion blow moulded fuel/AdBlue tanks requiring hydrocarbon permeation barrier; PP and PET are not used for fuel containment. Resin selected from part function/geometry, not from title-block metadata."
+        },
+        "alternatives": [
+          {
+            "materialId": "mat-pp",
+            "name": "PP Homopolymer (MFI 12)",
+            "confidencePct": 8
+          },
+          {
+            "materialId": "mat-pa6",
+            "name": "PA6 (barrier alternative)",
+            "confidencePct": 5
+          }
+        ]
+      },
+      "processRecommendations": [
+        {
+          "process": "Extrusion Blow Moulding (6-layer barrier)",
+          "commodityType": "blow_moulding",
+          "confidencePct": 92,
+          "reasoning": "USER-FORCED process. Large hollow single-piece tank with 5mm nominal wall, thick pinch-weld zones (up to 18.34mm), and 753 undercuts consistent with a shuttle-type multilayer EBM machine using accumulator-head parison programming and blow-pin/side-action tooling for the filler neck and pump flange.",
+          "estimatedCycleTimeHr": 0.025
+        }
+      ],
+      "manufacturabilityScore": 47,
+      "manufacturabilityRisks": [
+        {
+          "severity": "High",
+          "feature": "753 undercut faces",
+          "description": "Numerous undercuts (fittings, baffle bosses, filler neck) require blow-pin side actions, split-cavity inserts and precise pinch-off alignment, increasing mould complexity and risk of witness-line leak paths.",
+          "suggestion": "Consolidate undercut features onto the parting plane where possible; use retractable core pins for filler neck/vent bosses rather than full side-action inserts."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Wall thickness variation (σ=2.82mm, 4.15–18.34mm)",
+          "description": "Wide wall variation between thin body sections and thick pinch welds causes uneven cooling, sink, and warpage risk, and extends cycle time governed by the thickest section.",
+          "suggestion": "Programme parison wall-thickness profile (die-head parison control) to equalise draw-down and minimise pinch-weld bulk."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Multilayer barrier uniformity",
+          "description": "6-layer coextrusion (HDPE/tie/EVOH/tie/HDPE) must maintain continuous EVOH barrier layer through pinch welds and around bosses; local thinning risks HC permeation failure.",
+          "suggestion": "Verify layer distribution via cross-section sampling near pinch welds and boss features during PPAP."
+        },
+        {
+          "severity": "Low",
+          "feature": "Free-form organic surfaces (694 B-spline faces)",
+          "description": "Complex packaging-driven contour increases mould machining time and CMM inspection complexity.",
+          "suggestion": "Use 5-axis mould cavity machining and laser-scanning inspection fixtures."
+        }
+      ],
+      "costInputSuggestions": {
+        "recommendedCommodity": "blow_moulding",
+        "netWeightKg": 11.126,
+        "materialId": "mat-hdpe",
+        "estimatedCycleTimeHr": 0.025,
+        "estimatedSetupTimeHr": 2,
+        "estimatedOperations": [],
+        "blowMoulding": {
+          "subtype": "ebm",
+          "wallThicknessMm": 5,
+          "flashWeightKg": 2.2,
+          "cavities": 1,
+          "mouldCostGBP": 180000,
+          "mouldLife": 500000,
+          "blowTimeSec": 10,
+          "openCloseSec": 6,
+          "barrierMultilayer": true
+        },
+        "casting": {
+          "subtype": "sand",
+          "dieMouldCostGBP": 50000,
+          "dieMouldLife": 1000,
+          "cavities": 1,
+          "yieldFraction": 0.85,
+          "cycleTimeHpdcSec": 0,
+          "cycleTimeSandGravHr": 1.294
+        },
+        "forging": {
+          "flashKg": 0,
+          "yieldFraction": 0.8,
+          "dieCostGBP": 180000,
+          "dieLife": 50000,
+          "strokes": 8,
+          "timePerBlowSec": 0
+        },
+        "sheetMetal": {
+          "thicknessMm": 5,
+          "blankLengthMm": 1528.35,
+          "blankWidthMm": 657.63,
+          "dieCostGBP": 90000,
+          "dieLife": 100000,
+          "numOps": 3
+        },
+        "injectionMoulding": {
+          "cavities": 1,
+          "projectedAreaCm2": 10046,
+          "wallThicknessMm": 5,
+          "mouldCostGBP": 200000,
+          "mouldLife": 500000,
+          "runnerWeightKg": 0
+        },
+        "fieldConfidences": {
+          "bm-wall": 0.85,
+          "bm-material": 0.6,
+          "bm-partweight": 0.75,
+          "bm-flashweight": 0.4,
+          "bm-subtype": 0.85,
+          "bm-barrier": 0.8,
+          "bm-cavities": 0.55,
+          "bm-mouldcost": 0.4,
+          "bm-mouldlife": 0.4,
+          "bm-blowtime": 0.4,
+          "bm-openclose": 0.4,
+          "manufacturability-score": 0.95,
+          "tooling-costs": 0.9
+        },
+        "dfmIssues": [
+          {
+            "severity": "High",
+            "area": "Pinch weld / parting line",
+            "description": "Max wall 18.34mm vs 5.04mm mean indicates thick pinch-off zones where parison material doubles up; these are common failure initiation sites under fuel-vapour pressure cycling.",
+            "impact": "Risk of weld-line leaks in service, scrap/rework at trim stage, and warranty exposure.",
+            "fix": "Optimise parison programming and pinch-off land geometry; add rib reinforcement at pinch-weld line."
+          },
+          {
+            "severity": "High",
+            "area": "Undercut bosses (753 faces)",
+            "description": "Filler neck, vent, and pump-module bosses create undercuts relative to the blow axis, requiring side-action blow pins or split inserts.",
+            "impact": "Increases mould cost (~15-20%) and cycle time; risk of flash/witness marks at fitting interfaces affecting sealing.",
+            "fix": "Design bosses to be moulded in-line with draw direction or add them as post-moulded welded fittings (spin-weld/vibration-weld domes)."
+          },
+          {
+            "severity": "Medium",
+            "area": "Barrier layer continuity",
+            "description": "6-layer HDPE/EVOH coextrusion must maintain a continuous EVOH barrier through thickness transitions and pinch welds.",
+            "impact": "Non-uniform barrier layer can fail hydrocarbon-permeation regulatory limits (evap emissions).",
+            "fix": "Increase EVOH layer ratio locally at pinch weld tooling or add a barrier reinforcement patch."
+          },
+          {
+            "severity": "Medium",
+            "area": "Thin wall near bosses (min 4.15mm)",
+            "description": "Local wall thinning at boss root during blow stretch increases blow-out and porosity risk.",
+            "impact": "Higher scrap rate, especially at higher line speed for the 200k/yr volume target.",
+            "fix": "Increase local parison thickness profile at boss locations or add pre-blow assist."
+          },
+          {
+            "severity": "Low",
+            "area": "Large single-parison size",
+            "description": "1.5m long parison for a single-shot tank is prone to sag/drawdown non-uniformity top-to-bottom.",
+            "impact": "Wall thickness scatter (σ=2.82mm) reduces structural consistency and adds inspection burden.",
+            "fix": "Use multi-die-head parison thickness profiling and a vertical shuttle mould to minimise sag time."
+          }
+        ],
+        "costRange": {
+          "low": 13,
+          "mid": 17.5,
+          "high": 23,
+          "currency": "GBP"
+        },
+        "stage1Selection": {
+          "primary": "auto",
+          "conf": 0,
+          "alt": []
+        }
+      },
+      "aiExplanation": "The geometry (1.53m x 0.66m x 0.59m hollow shell, fill ratio 0.0178, wall 4.15-18.34mm mean 5.04mm, 753 undercuts, 694 free-form faces) is characteristic of an automotive extrusion-blow-moulded fuel tank. The user-forced process (blow_moulding) and part shape/function point to HDPE 6-layer barrier resin rather than PP or PET, since fuel tanks require EVOH hydrocarbon barrier and structural stiffness that PET/PP cannot provide at this size. Deterministic OCCT values (wall thickness, volume, weights, manufacturability score, tooling cost baselines) were used verbatim; UNDECIDED blow-moulding cost fields (material, subtype, flash, cavities, mould cost/life, blow/open-close times, barrier flag) were estimated from part function and typical large-tank EBM practice, each flagged with a lower confidence score.",
+      "confidenceLevel": "High",
+      "analysisLimitations": [
+        "No blow-moulding-specific machineId exists in the valid machine list; process selection and cycle time are geometry-derived estimates.",
+        "Flash weight, mould cost/life, and blow/open-close timing are typical-practice estimates, not derived from supplier quotes.",
+        "Cavities assumed at 1 due to large part size; multi-cavity shuttle tooling not modelled."
+      ]
+    },
+    "sanityWarnings": [],
+    "ruleOverrides": {
+      "overridden": [
+        {
+          "field": "blowMoulding.wallThicknessMm",
+          "ruleId": "blowMoulding.wallThicknessMm",
+          "from": 5,
+          "to": 5,
+          "basis": "ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds)",
+          "confidence": 0.85,
+          "contradicted": false
+        }
+      ],
+      "notWritten": [],
+      "undecided": [
+        "blow.capacityL"
+      ]
+    },
+    "ruleFields": {
+      "bm-wall": {
+        "fieldId": "bm-wall",
+        "value": 5,
+        "basis": "ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds)",
+        "source": "geometry",
+        "confidence": 0.85,
+        "ruleId": "blowMoulding.wallThicknessMm"
+      }
+    },
+    "deterministicAnalysis": {
+      "partName": "cv-cad-1e844b19e00eed54",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 1528.35,
+          "y": 657.63,
+          "z": 593.69
+        },
+        "estimatedVolumeCm3": 10595.902,
+        "estimatedSurfaceAreaCm2": 47571.289,
+        "estimatedWeightKg": {
+          "aluminum": 28.6089,
+          "steel": 83.1778,
+          "plastic": 11.1257
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "boss",
+          "description": "1× Ø24.0 × 9 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø30.0 × 15 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø52.0 × 35 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø80.0 × 3 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø80.0 × 45 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø80.0 × 105 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "boss",
+          "description": "1× Ø80.0 × 131 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "4× Ø16.0 × 2 mm blind",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø40.0 × 53 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø60.0 × 45 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø60.0 × 105 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "hole",
+          "description": "1× Ø60.0 × 138 mm blind",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "4× Ø0.0 × 0 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "face",
+          "description": "4× Ø0.0 × 0 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "face",
+          "description": "4× Ø0.0 × 0 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "face",
+          "description": "4× Ø0.0 × 0 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "face",
+          "description": "4× Ø0.0 × 0 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "face",
+          "description": "16× Ø0.0 × 0 mm",
+          "count": 16,
+          "significance": "High"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 127 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "1× Ø0.0 × 135 mm",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "2× Ø0.0 × 18 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "2× Ø0.0 × 31 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "pocket",
+          "description": "4× Ø0.0 × 41 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "pocket",
+          "description": "4× Ø0.0 × 35 mm",
+          "count": 4,
+          "significance": "Medium"
+        },
+        {
+          "type": "pocket",
+          "description": "12× Ø0.0 × 27 mm",
+          "count": 12,
+          "significance": "High"
+        },
+        {
+          "type": "bend",
+          "description": "372 bend(s), 31649 mm total length",
+          "count": 372,
+          "significance": "High"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "",
+          "name": "",
+          "confidencePct": 0,
+          "reasoning": ""
+        },
+        "alternatives": []
+      },
+      "processRecommendations": [
+        {
+          "process": "blow_moulding",
+          "commodityType": "blow_moulding",
+          "confidencePct": 50,
+          "reasoning": "selected by the deterministic rules for this commodity",
+          "estimatedCycleTimeHr": 0
+        }
+      ],
+      "manufacturabilityScore": 47,
+      "manufacturabilityRisks": [],
+      "costInputSuggestions": {
+        "recommendedCommodity": "blow_moulding",
+        "netWeightKg": 0,
+        "materialId": "",
+        "estimatedCycleTimeHr": 0,
+        "estimatedSetupTimeHr": 0,
+        "estimatedOperations": [],
+        "blowMoulding": {
+          "wallThicknessMm": 5
+        },
+        "fieldConfidences": {
+          "bm-wall": 0.85
+        }
+      },
+      "aiExplanation": "Derived deterministically for blow_moulding from the measured geometry. No AI call was made; every figure below is arithmetic on a measurement or a library lookup, and each states its own basis.\n\n  • blowMoulding.wallThicknessMm = 5 — ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds) [geometry, bm-wall]\n\nStill open (1):\n  • Which resin is this moulded in? — The geometry is the same whichever resin fills it, but the resin sets the weight, the £/kg and the cooling time — and cooling is most of the cycle. The 10596 cm³ measured here weighs 10.172 kg in HDPE and 14.622 kg in PET Bottle Grade (1101).",
+      "confidenceLevel": "Low",
+      "analysisLimitations": [
+        "Unanswered: Which resin is this moulded in?",
+        "DFM checks ran against the measured geometry. Checks that need a drawing callout — tolerances, which face is critical, whether a weld line is in a load path — did not run, so this list is a floor and not a ceiling."
+      ]
+    },
+    "diff": {
+      "diffs": [
+        {
+          "field": "blowMoulding.barrierMultilayer",
+          "aiValue": true,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "blowMoulding.blowTimeSec",
+          "aiValue": 10,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "blowMoulding.cavities",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "blowMoulding.flashWeightKg",
+          "aiValue": 2.2,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "blowMoulding.mouldCostGBP",
+          "aiValue": 180000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "blowMoulding.mouldLife",
+          "aiValue": 500000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "blowMoulding.openCloseSec",
+          "aiValue": 6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "blowMoulding.subtype",
+          "aiValue": "ebm",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "blowMoulding.wallThicknessMm",
+          "ruleValue": 5,
+          "aiValue": 5,
+          "deltaPct": 0,
+          "basis": "ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds)",
+          "verdict": "agree"
+        },
+        {
+          "field": "casting.cavities",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeHpdcSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeSandGravHr",
+          "aiValue": 1.294,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldCostGBP",
+          "aiValue": 50000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldLife",
+          "aiValue": 1000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.subtype",
+          "aiValue": "sand",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.yieldFraction",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.currency",
+          "aiValue": "GBP",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.high",
+          "aiValue": 23,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.low",
+          "aiValue": 13,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.mid",
+          "aiValue": 17.5,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleValue": 0,
+          "aiValue": 0.025,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "estimatedSetupTimeHr",
+          "ruleValue": 0,
+          "aiValue": 2,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "fieldConfidences.bm-barrier",
+          "aiValue": 0.8,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-blowtime",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-cavities",
+          "aiValue": 0.55,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-flashweight",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-material",
+          "aiValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-mouldcost",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-mouldlife",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-openclose",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-partweight",
+          "aiValue": 0.75,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-subtype",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-wall",
+          "ruleValue": 0.85,
+          "aiValue": 0.9,
+          "deltaPct": -0.0555555555555556,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "fieldConfidences.manufacturability-score",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.tooling-costs",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieCostGBP",
+          "aiValue": 180000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieLife",
+          "aiValue": 50000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.flashKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.strokes",
+          "aiValue": 8,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.timePerBlowSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.yieldFraction",
+          "aiValue": 0.8,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.cavities",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldCostGBP",
+          "aiValue": 200000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldLife",
+          "aiValue": 500000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.projectedAreaCm2",
+          "aiValue": 10046,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.runnerWeightKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.wallThicknessMm",
+          "aiValue": 5,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "materialId",
+          "ruleValue": "",
+          "aiValue": "mat-hdpe",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "netWeightKg",
+          "ruleValue": 0,
+          "aiValue": 11.126,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "recommendedCommodity",
+          "ruleValue": "blow_moulding",
+          "aiValue": "blow_moulding",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "sheetMetal.blankLengthMm",
+          "aiValue": 1528.35,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.blankWidthMm",
+          "aiValue": 657.63,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieCostGBP",
+          "aiValue": 90000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieLife",
+          "aiValue": 100000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.numOps",
+          "aiValue": 3,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.thicknessMm",
+          "aiValue": 5,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.conf",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.primary",
+          "aiValue": "auto",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        }
+      ],
+      "agreed": 2,
+      "differed": 5,
+      "ruleOnly": 0,
+      "aiOnly": 51,
+      "undecided": [
+        "blow.capacityL"
+      ]
+    },
+    "aiOriginal": {
+      "recommendedCommodity": "blow_moulding",
+      "netWeightKg": 11.126,
+      "materialId": "mat-hdpe",
+      "estimatedCycleTimeHr": 0.025,
+      "estimatedSetupTimeHr": 2,
+      "estimatedOperations": [],
+      "blowMoulding": {
+        "subtype": "ebm",
+        "wallThicknessMm": 5,
+        "flashWeightKg": 2.2,
+        "cavities": 1,
+        "mouldCostGBP": 180000,
+        "mouldLife": 500000,
+        "blowTimeSec": 10,
+        "openCloseSec": 6,
+        "barrierMultilayer": true
+      },
+      "casting": {
+        "subtype": "sand",
+        "dieMouldCostGBP": 50000,
+        "dieMouldLife": 1000,
+        "cavities": 1,
+        "yieldFraction": 0.85,
+        "cycleTimeHpdcSec": 0,
+        "cycleTimeSandGravHr": 1.294
+      },
+      "forging": {
+        "flashKg": 0,
+        "yieldFraction": 0.8,
+        "dieCostGBP": 180000,
+        "dieLife": 50000,
+        "strokes": 8,
+        "timePerBlowSec": 0
+      },
+      "sheetMetal": {
+        "thicknessMm": 5,
+        "blankLengthMm": 1528.35,
+        "blankWidthMm": 657.63,
+        "dieCostGBP": 90000,
+        "dieLife": 100000,
+        "numOps": 3
+      },
+      "injectionMoulding": {
+        "cavities": 1,
+        "projectedAreaCm2": 10046,
+        "wallThicknessMm": 5,
+        "mouldCostGBP": 200000,
+        "mouldLife": 500000,
+        "runnerWeightKg": 0
+      },
+      "fieldConfidences": {
+        "bm-wall": 0.9,
+        "bm-material": 0.6,
+        "bm-partweight": 0.75,
+        "bm-flashweight": 0.4,
+        "bm-subtype": 0.85,
+        "bm-barrier": 0.8,
+        "bm-cavities": 0.55,
+        "bm-mouldcost": 0.4,
+        "bm-mouldlife": 0.4,
+        "bm-blowtime": 0.4,
+        "bm-openclose": 0.4,
+        "manufacturability-score": 0.95,
+        "tooling-costs": 0.9
+      },
+      "dfmIssues": [
+        {
+          "severity": "High",
+          "area": "Pinch weld / parting line",
+          "description": "Max wall 18.34mm vs 5.04mm mean indicates thick pinch-off zones where parison material doubles up; these are common failure initiation sites under fuel-vapour pressure cycling.",
+          "impact": "Risk of weld-line leaks in service, scrap/rework at trim stage, and warranty exposure.",
+          "fix": "Optimise parison programming and pinch-off land geometry; add rib reinforcement at pinch-weld line."
+        },
+        {
+          "severity": "High",
+          "area": "Undercut bosses (753 faces)",
+          "description": "Filler neck, vent, and pump-module bosses create undercuts relative to the blow axis, requiring side-action blow pins or split inserts.",
+          "impact": "Increases mould cost (~15-20%) and cycle time; risk of flash/witness marks at fitting interfaces affecting sealing.",
+          "fix": "Design bosses to be moulded in-line with draw direction or add them as post-moulded welded fittings (spin-weld/vibration-weld domes)."
+        },
+        {
+          "severity": "Medium",
+          "area": "Barrier layer continuity",
+          "description": "6-layer HDPE/EVOH coextrusion must maintain a continuous EVOH barrier through thickness transitions and pinch welds.",
+          "impact": "Non-uniform barrier layer can fail hydrocarbon-permeation regulatory limits (evap emissions).",
+          "fix": "Increase EVOH layer ratio locally at pinch weld tooling or add a barrier reinforcement patch."
+        },
+        {
+          "severity": "Medium",
+          "area": "Thin wall near bosses (min 4.15mm)",
+          "description": "Local wall thinning at boss root during blow stretch increases blow-out and porosity risk.",
+          "impact": "Higher scrap rate, especially at higher line speed for the 200k/yr volume target.",
+          "fix": "Increase local parison thickness profile at boss locations or add pre-blow assist."
+        },
+        {
+          "severity": "Low",
+          "area": "Large single-parison size",
+          "description": "1.5m long parison for a single-shot tank is prone to sag/drawdown non-uniformity top-to-bottom.",
+          "impact": "Wall thickness scatter (σ=2.82mm) reduces structural consistency and adds inspection burden.",
+          "fix": "Use multi-die-head parison thickness profiling and a vertical shuttle mould to minimise sag time."
+        }
+      ],
+      "costRange": {
+        "low": 13,
+        "mid": 17.5,
+        "high": 23,
+        "currency": "GBP"
+      },
+      "stage1Selection": {
+        "primary": "auto",
+        "conf": 0,
+        "alt": []
+      }
+    },
+    "decisions": [
+      {
+        "id": "material.resin",
+        "kind": "material_grade",
+        "question": "Which resin is this moulded in?",
+        "why": "The geometry is the same whichever resin fills it, but the resin sets the weight, the £/kg and the cooling time — and cooling is most of the cycle. The 10596 cm³ measured here weighs 10.172 kg in HDPE and 14.622 kg in PET Bottle Grade (1101).",
+        "options": [
+          {
+            "value": "mat-hdpe",
+            "label": "HDPE",
+            "consequence": "10.172 kg at £1.06/kg · cools at 3.5 s/mm²",
+            "leaning": true
+          },
+          {
+            "value": "mat-pp-homo",
+            "label": "PP Homopolymer (MFI 12)",
+            "consequence": "9.589 kg at £0.96/kg · cools at 3.16 s/mm²",
+            "leaning": false
+          },
+          {
+            "value": "mat-pet-bg",
+            "label": "PET Bottle Grade (1101)",
+            "consequence": "14.622 kg at £1.21/kg · cools at 3 s/mm²",
+            "leaning": false
+          }
+        ],
+        "blockedFieldIds": [
+          "bm-mat",
+          "bm-part-vol",
+          "bm-part-wt",
+          "bm-flash-wt",
+          "bm-process",
+          "bm-cav",
+          "bm-mach",
+          "bm-cool-f",
+          "bm-blow-t",
+          "bm-open-close",
+          "bm-mould-mat",
+          "bm-mould-life",
+          "bm-mould-cost"
+        ],
+        "blockedRuleIds": [
+          "blowMoulding.materialId",
+          "blowMoulding.partVolumeL",
+          "blowMoulding.partWeightKg",
+          "blowMoulding.flashWeightKg",
+          "blowMoulding.process",
+          "blowMoulding.subtype",
+          "blowMoulding.barrierMultilayer",
+          "blowMoulding.cavities",
+          "blowMoulding.machineId",
+          "blowMoulding.coolTimeFactorSPerMm2",
+          "blowMoulding.blowTimeSec",
+          "blowMoulding.openCloseSec",
+          "blowMoulding.mouldMaterial",
+          "blowMoulding.mouldLife",
+          "blowMoulding.mouldCostGBP"
+        ],
+        "severity": "blocking"
+      }
+    ],
+    "mode": "both",
+    "fromCache": false,
+    "geometrySource": "occt",
+    "annualVolume": 200000,
+    "occtGeometry": {
+      "status": "success",
+      "partName": "cv-cad-1e844b19e00eed54",
+      "boundingBox": {
+        "xMm": 1528.35,
+        "yMm": 657.63,
+        "zMm": 593.69
+      },
+      "volume": {
+        "mm3": 10595901.6,
+        "cm3": 10595.902
+      },
+      "surfaceArea": {
+        "mm2": 4757128.9,
+        "cm2": 47571.289
+      },
+      "fillRatio": 0.0178,
+      "topology": {
+        "available": true,
+        "solidCount": 3,
+        "shellCount": 3,
+        "voidCount": 0,
+        "freeEdgeCount": 264,
+        "freeEdgeRatio": 0.0337,
+        "enclosesSealedVoid": false,
+        "openShell": true
+      },
+      "weights": {
+        "aluminiumKg": 28.6089,
+        "steelKg": 83.1778,
+        "plasticKg": 11.1257,
+        "castIronKg": 75.7607,
+        "copperKg": 94.9393,
+        "titaniumKg": 46.9398
+      },
+      "faces": {
+        "total": 3444,
+        "byType": {
+          "TORUS": 728,
+          "CYLINDER": 1375,
+          "CONE": 26,
+          "PLANE": 518,
+          "BSPLINE": 694,
+          "OTHER": 103
+        }
+      },
+      "edges": {
+        "total": 7840,
+        "byType": {
+          "CIRCLE": 3446,
+          "LINE": 2639,
+          "BSPLINE": 1491,
+          "OTHER": 264
+        },
+        "sampleCircleRadiiMm": [
+          0.5,
+          1,
+          1.5,
+          1.9,
+          2,
+          2.5,
+          3,
+          4,
+          4.8,
+          5,
+          5.8,
+          6,
+          8,
+          9,
+          9.8,
+          10,
+          10.2,
+          11,
+          11.2,
+          11.8,
+          12,
+          12.2,
+          12.5,
+          13,
+          13.5,
+          14.2,
+          15,
+          16,
+          16.2,
+          17.8
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 1375,
+        "cylindricalFaceRadiiMm": [
+          1,
+          1.5,
+          2,
+          2.5,
+          3,
+          5,
+          5.8,
+          6,
+          8,
+          9,
+          10,
+          10.2,
+          11.8,
+          12,
+          12.2,
+          14.2,
+          15,
+          16,
+          16.2,
+          17.8,
+          18,
+          20,
+          22,
+          26,
+          30,
+          33.8,
+          35.8,
+          38,
+          40,
+          42
+        ],
+        "estimatedHoleCount": 8,
+        "holeRadiiMm": [
+          8,
+          20,
+          30
+        ],
+        "bossShaftCount": 7,
+        "bossShaftRadiiMm": [
+          12,
+          15,
+          26,
+          40
+        ],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 518,
+        "freeFormFaceCount": 694,
+        "planarFaceAreaMm2": 1896829
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 24,
+          "depthMm": 8.7,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 30,
+          "depthMm": 15,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 52,
+          "depthMm": 34.8,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 80,
+          "depthMm": 2.8,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 80,
+          "depthMm": 44.9,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 80,
+          "depthMm": 105.1,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 80,
+          "depthMm": 131.3,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 16,
+          "depthMm": 2,
+          "through": false,
+          "count": 4
+        },
+        {
+          "kind": "hole",
+          "diaMm": 40,
+          "depthMm": 53,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 60,
+          "depthMm": 44.9,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 60,
+          "depthMm": 105.1,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 60,
+          "depthMm": 137.9,
+          "through": false,
+          "count": 1
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 35857
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 31371
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 28702
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 27981
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 16688
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 8021
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 7397
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 16,
+          "areaMm2": 6963
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 126.7,
+          "through": null,
+          "count": 1,
+          "areaMm2": 35857
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 134.5,
+          "through": null,
+          "count": 1,
+          "areaMm2": 31371
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 18.4,
+          "through": null,
+          "count": 2,
+          "areaMm2": 27981
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 30.7,
+          "through": null,
+          "count": 2,
+          "areaMm2": 16688
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 40.8,
+          "through": null,
+          "count": 4,
+          "areaMm2": 7397
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 34.7,
+          "through": null,
+          "count": 4,
+          "areaMm2": 3618
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 27.2,
+          "through": null,
+          "count": 12,
+          "areaMm2": 2589
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 372,
+        "totalBendLengthMm": 31648.7,
+        "thicknessMm": 4.15
+      },
+      "wallThickness": {
+        "minMm": 4.15,
+        "maxMm": 18.34,
+        "p95Mm": 9.95,
+        "meanMm": 5.04,
+        "stdDevMm": 2.82,
+        "sampleCount": 29,
+        "method": "ray_cast",
+        "uniformity": "moderate"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 753,
+        "zeroDraftFaceCount": 384,
+        "adequateDraftFaceCount": 756,
+        "minPositiveDraftDeg": 3.17,
+        "maxPositiveDraftDeg": 90,
+        "analyzedFaceCount": 1893
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Y",
+            "faceCount": 69
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 44
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 15
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 379.4,
+        "drillBoreTimeMins": 4,
+        "estimatedTotalMins": 428.4,
+        "estimatedTotalHrs": 7.1394,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 300000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 50000,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 180000,
+        "progressiveDieCostGBP": 90000
+      },
+      "manufacturabilityScore": 47,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 1.2944,
+        "sandCycleTimeHrFerrous": 3.1804,
+        "forgeStrokes": 8,
+        "investWaxCostGBP": 713.57,
+        "investShellCostGBP": 2140.71
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "detectedHardware": {
+        "available": true,
+        "detected": [],
+        "solidCount": 3,
+        "note": "multi-solid model but no weld-nut/stud-like bodies matched"
+      }
+    },
+    "stlGeometry": null,
+    "preprocessed": {
+      "format": "STEP",
+      "partName": "Fuel tank",
+      "boundingBoxEstMm": null,
+      "entityStats": {
+        "PLANE": 518,
+        "B_SPLINE_SURFACE_WITH_KNOTS": 662,
+        "EDGE_LOOP": 3462,
+        "CIRCLE": 3446,
+        "ADVANCED_FACE": 3444,
+        "CYLINDRICAL_SURFACE": 1375,
+        "TOROIDAL_SURFACE": 728,
+        "SPHERICAL_SURFACE": 103,
+        "ADVANCED_BREP_SHAPE_REPRESENTATION": 1,
+        "CONICAL_SURFACE": 26,
+        "MANIFOLD_SOLID_BREP": 3
+      }
+    },
+    "dfmJobId": "4d901fb6-1818-41c9-b125-0f100077ff70"
+  }
+}

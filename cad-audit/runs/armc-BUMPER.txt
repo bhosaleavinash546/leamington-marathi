@@ -1,0 +1,40 @@
+Measuring BUMPER.stp …
+[geometry] thin-shell wall corrected: 27.1 mm → 2.53 mm (2·V/S)
+
+──────────────────────────────────────────────────────────────────────────
+  BUMPER.stp  ·  injection_moulding  ·  200,000/yr
+──────────────────────────────────────────────────────────────────────────
+  Measured: 2059.9 cm³ · 1691×647×528 mm
+
+  Eight-bucket breakdown
+    rawMaterial         £1.98
+    process             £2.77
+    labour              £0.16
+    tooling             £1.56
+    packaging           £0.93
+    logistics           £0.67
+    overhead            £0.78
+    margin              £0.71
+    TOTAL               £9.55
+
+  Derivation
+    imm-wall               2.5            thin-shell wall from 2·V/S (ray-cast overshot the cavity) (non-uniform uniformity)
+    imm-area               10946.8        projection: bbox face × √fill for a solid, bbox face (worst case) for a shell
+    imm-mat                mat-pp-impact  PP Impact Copolymer (PP-B) at 900 kg/m³ — 2060 cm³ measured (chosen by the engineer)
+    imm-part-wt            1.8539         PP Impact Copolymer (PP-B) at 900 kg/m³ — 2060 cm³ measured (chosen by the engineer)
+    imm-cav                1              cost-ranked 1 cavitation(s) at 200,000/yr: 1-up £4.4833/part (imm-3500t £306/hr, production tool £312,157 → £1.5608/part NRE (4493 t exceeds the largest press — costed on it regardless)) → 1-up; 2-up infeasible (8,986 t > 3,500 t largest press), 4-up infeasible (17,972 t > 3,500 t largest press), 8-up infeasible (35,944 t > 3,500 t largest press) — machine+labour+tool NRE; material cancels (runner is per-shot)
+    imm-cav-press          35             peak cavity pressure for PP Impact Copolymer (PP-B)
+    imm-mach               imm-3500t      10946.8 cm² x 1 cavity at 35 MPa = 4493 t clamp (1.15 safety)
+    imm-cool-f             3.16           transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)]: α_eff 0.0539 mm²/s, melt 230°C / mould 40°C / eject 85°C → 3.16 s/mm²; cool ≈ 19.8 s at 2.5 mm
+    imm-fill               1.5            0.5 s per mm of wall (2.5 mm), floored at 1.5 s
+    imm-pack               2              0.8 s per mm of wall (2.5 mm), floored at 2.0 s
+    imm-eject              2              mould open + eject + close, standard toggle press
+    imm-runner-wt          0.2781         15% of part weight × 1-cavity shot — cold runner and sprue per SHOT (the cost model allocates it per cavity); a hot runner would make this 0
+    imm-side-actions       1              4 undercut face(s) -> 1 slide/lifter(s) at ~6 faces each
+    imm-steel-class        production     200,000/yr over 5 years in 1 cavity = 1,000,000 shots
+    imm-mould-life         1000000        documented life for a production tool
+    imm-mould-cost         312157         1-cavity production tool, 10946.8 cm²/cavity, 1 slide(s) — advisor £487211 ⊕ OCCT £200000 (geometric mean)
+
+  Assumed (not measured): oee, manning, labourEfficiency, rejectRate, labourId, machineId, fill/pack/eject split, coolTimeFactor
+──────────────────────────────────────────────────────────────────────────
+

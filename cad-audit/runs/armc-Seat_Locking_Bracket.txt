@@ -1,0 +1,34 @@
+Measuring Seat_Locking_Bracket.stp …
+[geometry] thin-shell wall corrected: 24.9 mm → 1.55 mm (2·V/S)
+
+──────────────────────────────────────────────────────────────────────────
+  Seat_Locking_Bracket.stp  ·  sheet_metal  ·  200,000/yr
+──────────────────────────────────────────────────────────────────────────
+  Measured: 71.1 cm³ · 256×226×31 mm
+
+  Eight-bucket breakdown
+    rawMaterial         £0.43
+    process             £0.02
+    labour              £0.03
+    tooling             £0.87
+    packaging           £0.07
+    logistics           £0.09
+    overhead            £0.16
+    margin              £0.13
+    TOTAL               £1.80
+
+  Derivation
+    sm-thick               0.53           measured from 15 bend face(s) — coil gauge
+    sm-blank-l             269            largest bounding-box dimension × 1.05 trim allowance
+    sm-blank-w             237            second-largest bounding-box dimension × 1.05 trim allowance
+    sm-num-ops             12             1 blank + 15 bend(s) = 12 stations
+    sm-spm                 34             feed-limited: 18 m/min ÷ 272 mm pitch, de-rated for 15 bends
+    sm-die-cost            174184         transfer die, 12 stations, 638 cm² blank, 280 MPa shear; OCCT parametric says £25000
+    sm-die-life            1090000        280 MPa shear at 0.53 mm on a transfer die
+    sm-die-type            transfer       high volume at 0.53 mm: High volume favours stamping, but high geometric complexity needs a multi-station transfer die — higher tooling NRE; verify die budget before committing
+    sm-net-wt              0.558          71 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)
+    sm-shear               280            reference shear strength for steel sheet
+
+  Assumed (not measured): oee, manning, labourEfficiency, rejectRate, labourId, materialId (steel → mat-dc04, representative grade — not a drawing callout), pressId, strokesPerMin, strip layout
+──────────────────────────────────────────────────────────────────────────
+

@@ -2087,15 +2087,22 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
   }
 
   const ci  = r.costInputSuggestions;
-  const opsText = ci.estimatedOperations.map(o => `${o.name} (${o.machineId}, ${o.cycleTimeHr.toFixed(4)} hr)`).join('\n');
+  // Live analyses arrive with fields missing (a deterministic run has no AI
+  // cycle estimate; ops can be absent) — 4 of 16 audit captures crashed this
+  // renderer on `undefined.toFixed`, which in the product means the export
+  // button silently does nothing. Render what exists, dash what does not.
+  const numOr = (v: unknown, digits: number, unit: string): string =>
+    typeof v === 'number' && Number.isFinite(v) ? `${v.toFixed(digits)}${unit}` : '—';
+  const opsArr = Array.isArray(ci.estimatedOperations) ? ci.estimatedOperations : [];
+  const opsText = opsArr.map(o => `${o.name} (${o.machineId}, ${numOr(o.cycleTimeHr, 4, ' hr')})`).join('\n');
 
   // col widths: 42 + 54 + 32 + (182-128) = 42+54+32+54 = 182 ✓
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG },
     body: [
-      ['Net Weight',          `${ci.netWeightKg.toFixed(3)} kg`,              'Material',      ci.materialId],
-      ['Recommended Process', ci.recommendedCommodity,                         'Cycle Time',   `${ci.estimatedCycleTimeHr.toFixed(4)} hr/part`],
-      ['Setup Time',          `${ci.estimatedSetupTimeHr.toFixed(3)} hr`,     'Operations',   `${ci.estimatedOperations.length} ops`],
+      ['Net Weight',          numOr(ci.netWeightKg, 3, ' kg'),                'Material',      ci.materialId ?? '—'],
+      ['Recommended Process', ci.recommendedCommodity ?? '—',                  'Cycle Time',   numOr(ci.estimatedCycleTimeHr, 4, ' hr/part')],
+      ['Setup Time',          numOr(ci.estimatedSetupTimeHr, 3, ' hr'),       'Operations',   `${opsArr.length} ops`],
       ['Operations Detail',   opsText,                                         '',             ''],
     ],
     theme: 'plain',
@@ -2110,11 +2117,22 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
   });
   y = lY() + 6;
 
-  // Process-specific params
+  // Process-specific params. Live analyses carry these sections PARTIALLY
+  // filled (the audit's bumper had injectionMoulding with no mouldCost/mouldLife
+  // — the rules only decide what geometry can settle), and an undefined here
+  // crashed the whole export. Format what exists, dash the rest.
+  const int0 = (v: unknown): string =>
+    typeof v === 'number' && Number.isFinite(v) ? v.toLocaleString() : '—';
+  const money0 = (v: unknown): string =>
+    typeof v === 'number' && Number.isFinite(v) ? cadMoney0(v) : '—';
+  const numF = (v: unknown, digits: number, unit = ''): string =>
+    typeof v === 'number' && Number.isFinite(v) ? `${v.toFixed(digits)}${unit}` : '—';
+  const pctF = (v: unknown): string =>
+    typeof v === 'number' && Number.isFinite(v) ? `${(v * 100).toFixed(1)}%` : '—';
   const specific: string[][] = [];
-  if (ci.casting)          { specific.push(['Casting Subtype', ci.casting.subtype], ['Die/Mould Cost', cadMoney0(ci.casting.dieMouldCostGBP)], ['Die Life', `${ci.casting.dieMouldLife.toLocaleString()} shots`], ['Cavities', String(ci.casting.cavities)], ['Yield', `${(ci.casting.yieldFraction * 100).toFixed(1)}%`]); }
-  if (ci.forging)          { specific.push(['Flash Weight', `${ci.forging.flashKg.toFixed(3)} kg`], ['Yield', `${(ci.forging.yieldFraction * 100).toFixed(1)}%`], ['Die Cost', cadMoney0(ci.forging.dieCostGBP)], ['Strokes', String(ci.forging.strokes)]); }
-  if (ci.injectionMoulding){ specific.push(['Cavities', String(ci.injectionMoulding.cavities)], ['Wall Thickness', `${ci.injectionMoulding.wallThicknessMm} mm`], ['Mould Cost', cadMoney0(ci.injectionMoulding.mouldCostGBP)], ['Mould Life', `${ci.injectionMoulding.mouldLife.toLocaleString()} shots`], ['Projected Area', `${ci.injectionMoulding.projectedAreaCm2.toFixed(1)} cm²`]); }
+  if (ci.casting)          { specific.push(['Casting Subtype', ci.casting.subtype ?? '—'], ['Die/Mould Cost', money0(ci.casting.dieMouldCostGBP)], ['Die Life', `${int0(ci.casting.dieMouldLife)} shots`], ['Cavities', String(ci.casting.cavities ?? '—')], ['Yield', pctF(ci.casting.yieldFraction)]); }
+  if (ci.forging)          { specific.push(['Flash Weight', numF(ci.forging.flashKg, 3, ' kg')], ['Yield', pctF(ci.forging.yieldFraction)], ['Die Cost', money0(ci.forging.dieCostGBP)], ['Strokes', String(ci.forging.strokes ?? '—')]); }
+  if (ci.injectionMoulding){ specific.push(['Cavities', String(ci.injectionMoulding.cavities ?? '—')], ['Wall Thickness', `${ci.injectionMoulding.wallThicknessMm ?? '—'} mm`], ['Mould Cost', money0(ci.injectionMoulding.mouldCostGBP)], ['Mould Life', `${int0(ci.injectionMoulding.mouldLife)} shots`], ['Projected Area', numF(ci.injectionMoulding.projectedAreaCm2, 1, ' cm²')]); }
   if (specific.length > 0) {
     ck(specific.length * 5 + 12);
     doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...GREY3);

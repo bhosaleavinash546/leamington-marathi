@@ -1,0 +1,5 @@
+# The two large user uploads (20 MB + 31 MB) are not committed — re-upload to
+# reproduce those runs. The other five parts are small enough to keep so the
+# audit is re-runnable end to end.
+parts/BUMPER.stp
+parts/Fuel_tank.STEP

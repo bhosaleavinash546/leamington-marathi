@@ -77,13 +77,16 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
     to: 'estimatedOperations',
     // OperationPlan[] → SuggestedOperation[]: the plan deliberately carries no
     // labour/OEE (those are shop context, not geometry); consumers default them.
+    // Non-array fallback is [] — the old `: v` passthrough let a prose string
+    // reach `estimatedOperations`, and every consumer of that field `.map()`s
+    // it (the browser CAM loop, the analysis PDF), crashing both (audit F7).
     transform: v => Array.isArray(v)
       ? v.map(o => ({
           name: String((o as { name: unknown }).name),
           machineId: String((o as { machineId: unknown }).machineId),
           cycleTimeHr: num((o as { cycleTimeHr: unknown }).cycleTimeHr),
         }))
-      : v,
+      : [],
   },
   'injectionMoulding.fillTimeSec': { to: 'injectionMoulding.fillTimeSec' },
   'injectionMoulding.packTimeSec': { to: 'injectionMoulding.packTimeSec' },

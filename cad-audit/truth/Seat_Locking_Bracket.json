@@ -1,0 +1,22 @@
+{
+  "file": "Seat_Locking_Bracket.stp",
+  "status": "success",
+  "volumeCm3": 71.066,
+  "surfaceAreaCm2": 919.37,
+  "bboxMm": [
+    255.77,
+    226.07,
+    31.0
+  ],
+  "bboxVolumeCm3": 1792.32,
+  "fillRatio": 0.0397,
+  "wall2VoverS_mm": 1.546,
+  "solids": 1,
+  "massKg": {
+    "aluminium": 0.1919,
+    "steel": 0.5579,
+    "cast_iron": 0.5117,
+    "plastic": 0.0746
+  },
+  "measureSeconds": 2.1
+}

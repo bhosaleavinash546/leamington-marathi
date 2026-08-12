@@ -76,7 +76,7 @@ import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js
 import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '../engine/regional-rates.js';
 import { featureToOperation, drillingOpFromFeatures } from '../engine/feature-ops.js';
 import { computeFeatureMachining, defaultInclude, type StockCondition } from '../engine/feature-machining.js';
-import { familyFromFilename, familyFromDensity, type MaterialFamily } from '../engine/material-family.js';
+import { familyFromFilename, familyFromDensity, resolveFormMaterialId, type MaterialFamily } from '../engine/material-family.js';
 import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../engine/geometry-sanity.js';
 import type { FeatureRow } from '../engine/feature-ops.js';
 import type { OperationInput } from '../engine/types.js';
@@ -10721,7 +10721,11 @@ function cadPartPhotoDataUrlPresent(): boolean { return cadPartPhotoBase64.lengt
 function setMaterial(selectEl: HTMLSelectElement | null, materialId: string): void {
   if (!selectEl || !materialId) return;
   const opt = Array.from(selectEl.options).find(o => o.value === materialId);
-  if (opt) { selectEl.value = opt.value; markAIFilled(selectEl); }
+  if (opt) { selectEl.value = opt.value; markAIFilled(selectEl); return; }
+  // A silent keep-the-default here is how an aluminium grade ended up costed at
+  // a steel weight (live audit F1). applyCADToForm resolves ids before calling;
+  // if something still misses, say so rather than quietly costing the default.
+  console.warn(`[CAD] setMaterial: '${materialId}' matches no option in #${selectEl.id} — form keeps '${selectEl.value}'`);
 }
 
 function setNumericField(id: string, value: number | null | undefined, decimals = 3): void {
@@ -11017,6 +11021,19 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
   if (!c.materialId) {
     const fb = _fallbackMaterialIdForFamily(familyFromFilename(cadFile?.name || ''), targetCommodity);
     if (fb) c.materialId = fb;
+  }
+  // materialId can also arrive as a family token ('steel' — what the metal
+  // rules emit) or an invented id ('mat-hss'). setMaterial() used to no-op on
+  // those and the form silently kept its default grade, so a steel flange was
+  // costed as the default aluminium AT THE STEEL WEIGHT and a ductile-iron
+  // casting as LM25 (live audit F1/F8). Resolve to a real grade of the SAME
+  // family here, before any field is applied, so grade and weight stay coherent.
+  if (c.materialId && !library.materials.some(m => m.id === c.materialId)) {
+    const resolved = resolveFormMaterialId(c.materialId, targetCommodity,
+      new Set(library.materials.map(m => m.id)));
+    console.warn(`[CAD] materialId '${c.materialId}' is not a library id — ` +
+      (resolved ? `resolved to representative grade '${resolved}'` : 'could not be resolved; form default will be used'));
+    if (resolved) c.materialId = resolved;
   }
   // Longest bounding-box axis (mm) — used to derive an extrusion profile length.
   const bboxMaxMm = Math.max(r.geometry.boundingBoxMm.x, r.geometry.boundingBoxMm.y, r.geometry.boundingBoxMm.z);

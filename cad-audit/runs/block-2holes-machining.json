@@ -1,0 +1,1167 @@
+{
+  "_audit": {
+    "part": "block-2holes.step",
+    "commodity": "machining",
+    "mode": "both",
+    "volume": 200000,
+    "deep": false,
+    "httpStatus": 200,
+    "seconds": 73.4,
+    "capturedAt": "2026-08-12T14:44:34.486Z"
+  },
+  "response": {
+    "success": true,
+    "analysis": {
+      "partName": "Machined Block with Two Through-Holes",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 60,
+          "y": 40,
+          "z": 20
+        },
+        "estimatedVolumeCm3": 44.858,
+        "estimatedSurfaceAreaCm2": 97.425,
+        "estimatedWeightKg": {
+          "aluminum": 0.1211,
+          "steel": 0.3521,
+          "castIron": 0.3207,
+          "plastic": 0.0471
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "Through-hole (cylindrical)",
+          "description": "2× drilled holes, r=5mm, likely dowel/clearance holes",
+          "count": 2,
+          "significance": "High"
+        },
+        {
+          "type": "Planar prismatic faces",
+          "description": "6 orthogonal planar faces forming a rectangular block",
+          "count": 6,
+          "significance": "Medium"
+        },
+        {
+          "type": "Zero-draft walls",
+          "description": "All 6 primary faces at 90° (no draft) — consistent with machined-from-solid part, not cast/moulded",
+          "count": 6,
+          "significance": "Low"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "mat-dc01",
+          "name": "Mild/Low-Carbon Steel (DC01-equivalent bar stock)",
+          "confidencePct": 55,
+          "reasoning": "No aluminium signal present (no lightweighting note, no thin HPDC-style wall, no Al hint in filename). Per guidance, a dense, thick-section solid block (min wall 9.95mm, near-solid fill ratio 0.93) with no explicit lightweight material call-out defaults to steel over aluminium. Chosen mild steel (DC01-equivalent, density 7.85 g/cm³) as the generic machinable steel rather than stainless, since no corrosion/food-grade signal exists either."
+        },
+        "alternatives": [
+          {
+            "materialId": "mat-al6061",
+            "name": "Aluminium 6061-T6",
+            "confidencePct": 30
+          },
+          {
+            "materialId": "mat-ss304c",
+            "name": "Stainless Steel 304",
+            "confidencePct": 15
+          }
+        ]
+      },
+      "processRecommendations": [
+        {
+          "process": "CNC Milling (3-axis, 3 setups)",
+          "commodityType": "machining",
+          "confidencePct": 90,
+          "reasoning": "User-forced machining process. Geometry is simple prismatic block with 2 drilled holes across 3 approach directions (+X:4f, +Y:2f, +Z:2f), consistent with a 3-axis VMC job requiring 3 setups.",
+          "estimatedCycleTimeHr": 0.795
+        }
+      ],
+      "manufacturabilityScore": 87,
+      "manufacturabilityRisks": [
+        {
+          "severity": "Medium",
+          "feature": "3 orthogonal setups (+X,+Y,+Z)",
+          "description": "Each re-orientation introduces alignment/stack-up error and adds non-cutting setup time (0.75hr of 0.795hr total, ~94%)",
+          "suggestion": "Consolidate features to 2 setups using a sub-plate/vice with indexing, or use a 4/5-axis machine to cut setup count."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Wall thickness min=9.95mm near hole",
+          "description": "Minimum section thickness is close to hole diameter (10mm), risking distortion/chatter during drilling near thin section",
+          "suggestion": "Verify hole edge distance from wall boundary and consider peck drilling or reduced feed near thin sections."
+        },
+        {
+          "severity": "Low",
+          "feature": "2× Ø10mm holes",
+          "description": "Standard drill-size holes, low risk but require tight positional tolerance if used for dowel/location",
+          "suggestion": "Specify reamed/bored tolerance only if functionally required to avoid unnecessary secondary operations."
+        }
+      ],
+      "costInputSuggestions": {
+        "recommendedCommodity": "machining",
+        "netWeightKg": 0.352,
+        "materialId": "steel",
+        "estimatedCycleTimeHr": 0.045,
+        "estimatedSetupTimeHr": 1,
+        "estimatedOperations": [
+          {
+            "name": "Milling — +X (4 faces)",
+            "machineId": "mach-haas-vf2",
+            "cycleTimeHr": 0.0133
+          },
+          {
+            "name": "Milling — +Y (2 faces)",
+            "machineId": "mach-haas-vf2",
+            "cycleTimeHr": 0.0067
+          },
+          {
+            "name": "Milling — +Z (2 faces)",
+            "machineId": "mach-haas-vf2",
+            "cycleTimeHr": 0.0067
+          },
+          {
+            "name": "Drilling — 2 holes (2×Ø10.0×20) [geometry-measured]",
+            "machineId": "mach-drill",
+            "cycleTimeHr": 0.0183
+          }
+        ],
+        "casting": {
+          "subtype": "sand",
+          "dieMouldCostGBP": 2500,
+          "dieMouldLife": 500,
+          "cavities": 1,
+          "yieldFraction": 0.7,
+          "cycleTimeHpdcSec": 0,
+          "cycleTimeSandGravHr": 0.163
+        },
+        "forging": {
+          "flashKg": 0.05,
+          "yieldFraction": 0.85,
+          "dieCostGBP": 15000,
+          "dieLife": 50000,
+          "strokes": 6,
+          "timePerBlowSec": 3
+        },
+        "sheetMetal": {
+          "thicknessMm": 0,
+          "blankLengthMm": 0,
+          "blankWidthMm": 0,
+          "dieCostGBP": 0,
+          "dieLife": 0,
+          "numOps": 0
+        },
+        "injectionMoulding": {
+          "cavities": 0,
+          "projectedAreaCm2": 0,
+          "wallThicknessMm": 0,
+          "mouldCostGBP": 0,
+          "mouldLife": 0,
+          "runnerWeightKg": 0
+        },
+        "fieldConfidences": {
+          "bm-boundingBox": 0.98,
+          "bm-volume": 0.98,
+          "bm-surfaceArea": 0.98,
+          "bm-weight-steel": 0.9,
+          "bm-material": 0.5,
+          "bm-setupCount": 0.95,
+          "bm-setupTime": 0.95,
+          "bm-cycleTime": 0.9,
+          "bm-manufacturabilityScore": 0.95,
+          "bm-machineId": 0.6,
+          "mach-mat": 1,
+          "mach-net-wt": 0.95,
+          "mach-stock-wt": 0.8,
+          "mach-mat-util": 0.8,
+          "mach-setup-time": 0.7,
+          "mach-setup-mach": 0.75
+        },
+        "dfmIssues": [
+          {
+            "severity": "Medium",
+            "area": "Setup count (3 orientations)",
+            "description": "Part requires re-orientation across +X, +Y, +Z faces (4+2+2 features), driving setup time to 94% of total cycle time",
+            "impact": "At 200,000 units/year, setup dominates non-value-add time unless heavily amortized via fixturing/pallet systems",
+            "fix": "Design features to be accessible from 2 or fewer faces, or invest in multi-axis fixturing/pallet automation for high volume"
+          },
+          {
+            "severity": "Medium",
+            "area": "Thin section near hole (9.95mm min wall)",
+            "description": "Minimum wall thickness measured near a hole is close to the hole diameter, increasing risk of deflection/chatter",
+            "impact": "Potential dimensional inaccuracy or surface finish issues on the thin wall during drilling/milling",
+            "fix": "Increase wall-to-hole edge distance or reduce feed/speed locally; consider support fixturing at that wall"
+          },
+          {
+            "severity": "Low",
+            "area": "Hole tolerance/position",
+            "description": "If holes function as locating/dowel features, 3-setup machining increases risk of positional stack-up error between orientations",
+            "impact": "Could require secondary boring/reaming operation to hold tight true-position tolerance",
+            "fix": "Machine both holes in a single setup if possible, or specify realistic (non-precision) tolerance if not functionally critical"
+          },
+          {
+            "severity": "Low",
+            "area": "Stock utilization",
+            "description": "Near-solid block (fill ratio 0.93) machined from bar stock removes only ~7% of material, mostly to hole bores",
+            "impact": "High material utilization is good for cost, but bar-stock sizing should match bounding box tightly to avoid excess stock cost",
+            "fix": "Source near-net bar stock (60x40mm cross-section) to minimize scrap"
+          }
+        ],
+        "costRange": {
+          "low": 2.6,
+          "mid": 3.25,
+          "high": 4.8,
+          "currency": "GBP"
+        },
+        "stage1Selection": {
+          "primary": "auto",
+          "conf": 0,
+          "alt": []
+        },
+        "machining": {
+          "stockWeightKg": 0.377,
+          "materialUtilization": 0.934,
+          "setupCount": 4,
+          "machineId": "mach-haas-vf2"
+        }
+      },
+      "aiExplanation": "This is a simple prismatic steel block (60x40x20mm) with two Ø10mm through-holes, machined from bar stock in 3 setups (+X, +Y, +Z) per the deterministic geometry analysis. Material was inferred as mild steel (DC01-equivalent) rather than aluminium because no lightweighting or thin-wall HPDC signal is present, and the guidance directs toward steel for dense, thick-section, unspecified metal parts. Cycle time (0.795hr total, of which 0.75hr is setup across 3 orientations) and manufacturability score (87/100) are used verbatim from the OCCT-derived bottom-up estimate. At 200,000 units/year, setup time should be amortized across batches in the actual cost model; unit cost estimate reflects this with setup partially amortized rather than charged in full per part.",
+      "confidenceLevel": "High",
+      "analysisLimitations": [
+        "Material selection (steel vs aluminium) is inferred from guidance heuristics, not from explicit metadata, drawing notes, or filename — flagged as UNDECIDED in the brief.",
+        "Hole depth (through vs blind) and functional tolerance requirements not specified in geometry data, affecting DFM risk assessment.",
+        "Cost range assumes amortized setup time at typical high-volume batch sizes (200–500 units per changeover); actual batching strategy may shift the unit cost.",
+        "No thread/tap features detected; if either hole is intended to be threaded, cycle time and tooling would need revision."
+      ]
+    },
+    "sanityWarnings": [],
+    "ruleOverrides": {
+      "overridden": [
+        {
+          "field": "materialId",
+          "ruleId": "machining.materialId",
+          "from": "mat-dc01",
+          "to": "steel",
+          "basis": "45 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)",
+          "confidence": 1,
+          "contradicted": true
+        },
+        {
+          "field": "netWeightKg",
+          "ruleId": "machining.netWeightKg",
+          "from": 0.352,
+          "to": 0.352,
+          "basis": "45 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)",
+          "confidence": 0.95,
+          "contradicted": false
+        },
+        {
+          "field": "machining.stockWeightKg",
+          "ruleId": "machining.stockWeightKg",
+          "to": 0.377,
+          "basis": "60×40×20 mm solid billet in steel = 0.377 kg, of which the part is 93%",
+          "confidence": 0.8,
+          "contradicted": false
+        },
+        {
+          "field": "machining.materialUtilization",
+          "ruleId": "machining.materialUtilization",
+          "to": 0.934,
+          "basis": "60×40×20 mm solid billet in steel = 0.377 kg, of which the part is 93%",
+          "confidence": 0.8,
+          "contradicted": false
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleId": "machining.estimatedCycleTimeHr",
+          "from": 0.795,
+          "to": 0.045,
+          "basis": "bottom-up B-rep cutting estimate over 8 faces",
+          "confidence": 0.8,
+          "contradicted": true
+        },
+        {
+          "field": "machining.setupCount",
+          "ruleId": "machining.setupCount",
+          "to": 4,
+          "basis": "4 fixturing(s) of the split-3axis routing (3 approach direction(s) measured)",
+          "confidence": 0.8,
+          "contradicted": false
+        },
+        {
+          "field": "estimatedSetupTimeHr",
+          "ruleId": "machining.setupTimeHr",
+          "from": 0.75,
+          "to": 1,
+          "basis": "4 fixturing(s) of the split-3axis routing × 15 min",
+          "confidence": 0.7,
+          "contradicted": true
+        },
+        {
+          "field": "machining.machineId",
+          "ruleId": "machining.machineId",
+          "to": "mach-haas-vf2",
+          "basis": "cost-ranked 2 routing(s): split-3axis £4.16 (3-direction split routing: mach-haas-vf2 £45/hr + mach-drill £30/hr, 4 setup(s) × 15 min / batch 5000 + 0.8 min handling per part per setup) vs consolidated-5axis £4.38 (single-setup 5-axis consolidation: mach-haas-umc500 £75/hr, 1 setup(s) × 15 min / batch 5000 + 0.8 min handling per part per setup) → split-3axis, £0.22/part cheaper than consolidated-5axis",
+          "confidence": 0.75,
+          "contradicted": false
+        },
+        {
+          "field": "estimatedOperations",
+          "ruleId": "machining.operations",
+          "from": [
+            {
+              "name": "Face/Contour Milling",
+              "machineId": "mach-vmc3",
+              "cycleTimeHr": 0.0283,
+              "labourId": "lab-uk-skilled",
+              "oee": 0.85,
+              "manning": 1,
+              "labourEfficiency": 0.92
+            },
+            {
+              "name": "Drilling 2× Ø10mm",
+              "machineId": "mach-drill",
+              "cycleTimeHr": 0.0167,
+              "labourId": "lab-uk-skilled",
+              "oee": 0.85,
+              "manning": 1,
+              "labourEfficiency": 0.92
+            }
+          ],
+          "to": [
+            {
+              "name": "Milling — +X (4 faces)",
+              "machineId": "mach-haas-vf2",
+              "cycleTimeHr": 0.0133
+            },
+            {
+              "name": "Milling — +Y (2 faces)",
+              "machineId": "mach-haas-vf2",
+              "cycleTimeHr": 0.0067
+            },
+            {
+              "name": "Milling — +Z (2 faces)",
+              "machineId": "mach-haas-vf2",
+              "cycleTimeHr": 0.0067
+            },
+            {
+              "name": "Drilling — 2 holes (2×Ø10.0×20) [geometry-measured]",
+              "machineId": "mach-drill",
+              "cycleTimeHr": 0.0183
+            }
+          ],
+          "basis": "sums to 0.045 hr — the capped bottom-up cycle, apportioned by face count",
+          "confidence": 0.75,
+          "contradicted": true
+        }
+      ],
+      "notWritten": [
+        "machining.operationCount"
+      ],
+      "undecided": []
+    },
+    "ruleFields": {
+      "mach-mat": {
+        "fieldId": "mach-mat",
+        "value": "steel",
+        "basis": "45 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)",
+        "source": "engineer",
+        "confidence": 1,
+        "ruleId": "machining.materialId"
+      },
+      "mach-net-wt": {
+        "fieldId": "mach-net-wt",
+        "value": 0.352,
+        "basis": "45 cm³ × 0.00785 kg/cm³ (steel, confirmed by engineer)",
+        "source": "geometry",
+        "confidence": 0.95,
+        "ruleId": "machining.netWeightKg"
+      },
+      "mach-stock-wt": {
+        "fieldId": "mach-stock-wt",
+        "value": 0.377,
+        "basis": "60×40×20 mm solid billet in steel = 0.377 kg, of which the part is 93%",
+        "source": "geometry",
+        "confidence": 0.8,
+        "ruleId": "machining.stockWeightKg"
+      },
+      "mach-mat-util": {
+        "fieldId": "mach-mat-util",
+        "value": 0.934,
+        "basis": "60×40×20 mm solid billet in steel = 0.377 kg, of which the part is 93%",
+        "source": "geometry",
+        "confidence": 0.8,
+        "ruleId": "machining.materialUtilization"
+      },
+      "mach-setup-time": {
+        "fieldId": "mach-setup-time",
+        "value": 1,
+        "basis": "4 fixturing(s) of the split-3axis routing × 15 min",
+        "source": "rule",
+        "confidence": 0.7,
+        "ruleId": "machining.setupTimeHr"
+      },
+      "mach-setup-mach": {
+        "fieldId": "mach-setup-mach",
+        "value": "mach-haas-vf2",
+        "basis": "cost-ranked 2 routing(s): split-3axis £4.16 (3-direction split routing: mach-haas-vf2 £45/hr + mach-drill £30/hr, 4 setup(s) × 15 min / batch 5000 + 0.8 min handling per part per setup) vs consolidated-5axis £4.38 (single-setup 5-axis consolidation: mach-haas-umc500 £75/hr, 1 setup(s) × 15 min / batch 5000 + 0.8 min handling per part per setup) → split-3axis, £0.22/part cheaper than consolidated-5axis",
+        "source": "advisor",
+        "confidence": 0.75,
+        "ruleId": "machining.machineId"
+      }
+    },
+    "deterministicAnalysis": {
+      "partName": "cv-cad-f66bc09a085bd192",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 60,
+          "y": 40,
+          "z": 20
+        },
+        "estimatedVolumeCm3": 44.858,
+        "estimatedSurfaceAreaCm2": 97.425,
+        "estimatedWeightKg": {
+          "aluminum": 0.1211,
+          "steel": 0.3521,
+          "plastic": 0.0471
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "hole",
+          "description": "2× Ø10.0 × 20 mm through",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "",
+          "name": "",
+          "confidencePct": 0,
+          "reasoning": ""
+        },
+        "alternatives": []
+      },
+      "processRecommendations": [
+        {
+          "process": "machining",
+          "commodityType": "machining",
+          "confidencePct": 50,
+          "reasoning": "selected by the deterministic rules for this commodity",
+          "estimatedCycleTimeHr": 0
+        }
+      ],
+      "manufacturabilityScore": 87,
+      "manufacturabilityRisks": [],
+      "costInputSuggestions": {
+        "recommendedCommodity": "machining",
+        "netWeightKg": 0,
+        "materialId": "",
+        "estimatedCycleTimeHr": 0,
+        "estimatedSetupTimeHr": 0.75,
+        "estimatedOperations": [],
+        "machining": {
+          "setupCount": 3
+        },
+        "fieldConfidences": {
+          "mach-setup-time": 0.7
+        }
+      },
+      "aiExplanation": "Derived deterministically for machining from the measured geometry. No AI call was made; every figure below is arithmetic on a measurement or a library lookup, and each states its own basis.\n\n  • machining.setupTimeHr = 0.75 — 3 setup(s) × 15 min [rule, mach-setup-time]\n\nStill open (1):\n  • What is this part made of? — A CAD file carries shape, not substance. We measured 45 cm³ exactly, but the same solid weighs 0.12 kg in aluminium and 0.35 kg in steel. Nothing in the geometry distinguishes them, and guessing wrong moves the material cost several-fold.",
+      "confidenceLevel": "Low",
+      "analysisLimitations": [
+        "Unanswered: What is this part made of?",
+        "No DFM analyser exists for machining; an empty issue list here means \"not checked\", not \"nothing found\"."
+      ]
+    },
+    "diff": {
+      "diffs": [
+        {
+          "field": "casting.cavities",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeHpdcSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeSandGravHr",
+          "aiValue": 0.163,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldCostGBP",
+          "aiValue": 2500,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldLife",
+          "aiValue": 500,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.subtype",
+          "aiValue": "sand",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.yieldFraction",
+          "aiValue": 0.7,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.currency",
+          "aiValue": "GBP",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.high",
+          "aiValue": 4.8,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.low",
+          "aiValue": 2.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.mid",
+          "aiValue": 3.25,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleValue": 0,
+          "aiValue": 0.795,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "estimatedSetupTimeHr",
+          "ruleValue": 0.75,
+          "aiValue": 0.75,
+          "deltaPct": 0,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "fieldConfidences.bm-boundingBox",
+          "aiValue": 0.98,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-cycleTime",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-machineId",
+          "aiValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-manufacturabilityScore",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-material",
+          "aiValue": 0.5,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-setupCount",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-setupTime",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-surfaceArea",
+          "aiValue": 0.98,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-volume",
+          "aiValue": 0.98,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-weight-steel",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.mach-setup-time",
+          "ruleValue": 0.7,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "forging.dieCostGBP",
+          "aiValue": 15000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieLife",
+          "aiValue": 50000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.flashKg",
+          "aiValue": 0.05,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.strokes",
+          "aiValue": 6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.timePerBlowSec",
+          "aiValue": 3,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.yieldFraction",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.cavities",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.projectedAreaCm2",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.runnerWeightKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.wallThicknessMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "machining.setupCount",
+          "ruleValue": 3,
+          "deltaPct": null,
+          "basis": "4 fixturing(s) of the split-3axis routing (3 approach direction(s) measured)",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "materialId",
+          "ruleValue": "",
+          "aiValue": "mat-dc01",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "netWeightKg",
+          "ruleValue": 0,
+          "aiValue": 0.352,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "recommendedCommodity",
+          "ruleValue": "machining",
+          "aiValue": "machining",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "sheetMetal.blankLengthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.blankWidthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.numOps",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.thicknessMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.conf",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.primary",
+          "aiValue": "auto",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        }
+      ],
+      "agreed": 2,
+      "differed": 3,
+      "ruleOnly": 2,
+      "aiOnly": 41,
+      "undecided": []
+    },
+    "aiOriginal": {
+      "recommendedCommodity": "machining",
+      "netWeightKg": 0.352,
+      "materialId": "mat-dc01",
+      "estimatedCycleTimeHr": 0.795,
+      "estimatedSetupTimeHr": 0.75,
+      "estimatedOperations": [
+        {
+          "name": "Face/Contour Milling",
+          "machineId": "mach-vmc3",
+          "cycleTimeHr": 0.0283,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        },
+        {
+          "name": "Drilling 2× Ø10mm",
+          "machineId": "mach-drill",
+          "cycleTimeHr": 0.0167,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        }
+      ],
+      "casting": {
+        "subtype": "sand",
+        "dieMouldCostGBP": 2500,
+        "dieMouldLife": 500,
+        "cavities": 1,
+        "yieldFraction": 0.7,
+        "cycleTimeHpdcSec": 0,
+        "cycleTimeSandGravHr": 0.163
+      },
+      "forging": {
+        "flashKg": 0.05,
+        "yieldFraction": 0.85,
+        "dieCostGBP": 15000,
+        "dieLife": 50000,
+        "strokes": 6,
+        "timePerBlowSec": 3
+      },
+      "sheetMetal": {
+        "thicknessMm": 0,
+        "blankLengthMm": 0,
+        "blankWidthMm": 0,
+        "dieCostGBP": 0,
+        "dieLife": 0,
+        "numOps": 0
+      },
+      "injectionMoulding": {
+        "cavities": 0,
+        "projectedAreaCm2": 0,
+        "wallThicknessMm": 0,
+        "mouldCostGBP": 0,
+        "mouldLife": 0,
+        "runnerWeightKg": 0
+      },
+      "fieldConfidences": {
+        "bm-boundingBox": 0.98,
+        "bm-volume": 0.98,
+        "bm-surfaceArea": 0.98,
+        "bm-weight-steel": 0.9,
+        "bm-material": 0.5,
+        "bm-setupCount": 0.95,
+        "bm-setupTime": 0.95,
+        "bm-cycleTime": 0.9,
+        "bm-manufacturabilityScore": 0.95,
+        "bm-machineId": 0.6
+      },
+      "dfmIssues": [
+        {
+          "severity": "Medium",
+          "area": "Setup count (3 orientations)",
+          "description": "Part requires re-orientation across +X, +Y, +Z faces (4+2+2 features), driving setup time to 94% of total cycle time",
+          "impact": "At 200,000 units/year, setup dominates non-value-add time unless heavily amortized via fixturing/pallet systems",
+          "fix": "Design features to be accessible from 2 or fewer faces, or invest in multi-axis fixturing/pallet automation for high volume"
+        },
+        {
+          "severity": "Medium",
+          "area": "Thin section near hole (9.95mm min wall)",
+          "description": "Minimum wall thickness measured near a hole is close to the hole diameter, increasing risk of deflection/chatter",
+          "impact": "Potential dimensional inaccuracy or surface finish issues on the thin wall during drilling/milling",
+          "fix": "Increase wall-to-hole edge distance or reduce feed/speed locally; consider support fixturing at that wall"
+        },
+        {
+          "severity": "Low",
+          "area": "Hole tolerance/position",
+          "description": "If holes function as locating/dowel features, 3-setup machining increases risk of positional stack-up error between orientations",
+          "impact": "Could require secondary boring/reaming operation to hold tight true-position tolerance",
+          "fix": "Machine both holes in a single setup if possible, or specify realistic (non-precision) tolerance if not functionally critical"
+        },
+        {
+          "severity": "Low",
+          "area": "Stock utilization",
+          "description": "Near-solid block (fill ratio 0.93) machined from bar stock removes only ~7% of material, mostly to hole bores",
+          "impact": "High material utilization is good for cost, but bar-stock sizing should match bounding box tightly to avoid excess stock cost",
+          "fix": "Source near-net bar stock (60x40mm cross-section) to minimize scrap"
+        }
+      ],
+      "costRange": {
+        "low": 2.6,
+        "mid": 3.25,
+        "high": 4.8,
+        "currency": "GBP"
+      },
+      "stage1Selection": {
+        "primary": "auto",
+        "conf": 0,
+        "alt": []
+      }
+    },
+    "decisions": [],
+    "mode": "both",
+    "fromCache": false,
+    "geometrySource": "occt",
+    "annualVolume": 200000,
+    "occtGeometry": {
+      "status": "success",
+      "partName": "cv-cad-f66bc09a085bd192",
+      "boundingBox": {
+        "xMm": 60,
+        "yMm": 40,
+        "zMm": 20
+      },
+      "volume": {
+        "mm3": 44858.4,
+        "cm3": 44.858
+      },
+      "surfaceArea": {
+        "mm2": 9742.5,
+        "cm2": 97.425
+      },
+      "fillRatio": 0.9346,
+      "topology": {
+        "available": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "enclosesSealedVoid": false,
+        "openShell": true
+      },
+      "weights": {
+        "aluminiumKg": 0.1211,
+        "steelKg": 0.3521,
+        "plasticKg": 0.0471,
+        "castIronKg": 0.3207,
+        "copperKg": 0.4019,
+        "titaniumKg": 0.1987
+      },
+      "faces": {
+        "total": 8,
+        "byType": {
+          "PLANE": 6,
+          "CYLINDER": 2
+        }
+      },
+      "edges": {
+        "total": 18,
+        "byType": {
+          "LINE": 14,
+          "CIRCLE": 4
+        },
+        "sampleCircleRadiiMm": [
+          5
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 2,
+        "cylindricalFaceRadiiMm": [
+          5
+        ],
+        "estimatedHoleCount": 2,
+        "holeRadiiMm": [
+          5
+        ],
+        "bossShaftCount": 0,
+        "bossShaftRadiiMm": [],
+        "threadFeaturesDetected": false,
+        "planarFaceCount": 6,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 8486
+      },
+      "featureTable": [
+        {
+          "kind": "hole",
+          "diaMm": 10,
+          "depthMm": 20,
+          "through": true,
+          "count": 2
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 2243
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 1200
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 800
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 9.95
+      },
+      "wallThickness": {
+        "minMm": 9.95,
+        "maxMm": 39.95,
+        "p95Mm": 39.95,
+        "meanMm": 23.28,
+        "stdDevMm": 12.47,
+        "sampleCount": 3,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 6,
+        "adequateDraftFaceCount": 2,
+        "minPositiveDraftDeg": 90,
+        "maxPositiveDraftDeg": 90,
+        "analyzedFaceCount": 8
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+X",
+            "faceCount": 4
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 2
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 2
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 1.7,
+        "drillBoreTimeMins": 1,
+        "estimatedTotalMins": 47.7,
+        "estimatedTotalHrs": 0.795,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 40000,
+        "gravityMouldCostGBP": 8000,
+        "sandPatternCostGBP": 2500,
+        "imMouldCostGBP": 15000,
+        "forgeDieCostGBP": 15000,
+        "progressiveDieCostGBP": 20000
+      },
+      "manufacturabilityScore": 87,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1548,
+        "sandCycleTimeHrFerrous": 0.1628,
+        "forgeStrokes": 6,
+        "investWaxCostGBP": 1.46,
+        "investShellCostGBP": 4.38
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    },
+    "stlGeometry": null,
+    "preprocessed": {
+      "format": "STEP",
+      "partName": "Open CASCADE STEP translator 7.9 2",
+      "boundingBoxEstMm": {
+        "x": 60,
+        "y": 40,
+        "z": 20
+      },
+      "entityStats": {
+        "ADVANCED_BREP_SHAPE_REPRESENTATION": 1,
+        "MANIFOLD_SOLID_BREP": 1,
+        "ADVANCED_FACE": 8,
+        "EDGE_LOOP": 12,
+        "PLANE": 6,
+        "CIRCLE": 4,
+        "CYLINDRICAL_SURFACE": 2
+      }
+    },
+    "dfmJobId": "bab07ffb-d3a7-497b-8a45-600344b73ee1"
+  }
+}
