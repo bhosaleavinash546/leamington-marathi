@@ -63,7 +63,7 @@
     "part": "FINAL-BUMPER-api",
     "check": "G6-sanity",
     "severity": "INFO",
-    "detail": "no sanity warnings recorded"
+    "detail": "process_geometry_implausible, material_process_mismatch"
   },
   {
     "part": "FINAL-Fuel_tank-api",
@@ -117,13 +117,13 @@
     "part": "FINAL-BUMPER-api",
     "check": "G4-family-coherence",
     "severity": "PASS",
-    "detail": "mat-pp and weight agree (plastic)"
+    "detail": "mat-pp-impact and weight agree (plastic)"
   },
   {
     "part": "FINAL-BUMPER-api",
     "check": "G5-material-token",
     "severity": "PASS",
-    "detail": "mat-pp"
+    "detail": "mat-pp-impact"
   },
   {
     "part": "FINAL-Fuel_tank-api",
@@ -136,5 +136,23 @@
     "check": "G2-volume",
     "severity": "PASS",
     "detail": "pipeline 10595.902 cm³ vs truth 10595.902 cm³ (Δ 0.00%)"
+  },
+  {
+    "part": "FINAL-Fuel_tank-api",
+    "check": "G3-density",
+    "severity": "PASS",
+    "detail": "netWeightKg 10.1721 → 0.96 g/cm³ = plastic (PE)"
+  },
+  {
+    "part": "FINAL-Fuel_tank-api",
+    "check": "G4-family-coherence",
+    "severity": "PASS",
+    "detail": "mat-hdpe-fuel-coex and weight agree (plastic)"
+  },
+  {
+    "part": "FINAL-Fuel_tank-api",
+    "check": "G5-material-token",
+    "severity": "PASS",
+    "detail": "mat-hdpe-fuel-coex"
   }
 ]

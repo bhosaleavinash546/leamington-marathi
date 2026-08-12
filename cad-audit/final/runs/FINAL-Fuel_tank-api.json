@@ -6,13 +6,13 @@
     "volume": 200000,
     "deep": false,
     "httpStatus": 200,
-    "seconds": 118.3,
-    "capturedAt": "2026-08-12T19:16:33.397Z"
+    "seconds": 105.3,
+    "capturedAt": "2026-08-12T19:31:45.381Z"
   },
   "response": {
     "success": true,
     "analysis": {
-      "partName": "Automotive HDPE Fuel Tank (EBM, multilayer barrier)",
+      "partName": "Automotive Fuel Tank (blow-moulded plastic, barrier multilayer)",
       "geometry": {
         "boundingBoxMm": {
           "x": 1528.35,
@@ -30,42 +30,227 @@
       },
       "detectedFeatures": [
         {
-          "type": "Cylindrical faces (pipe stubs/vent tubes/bosses)",
-          "description": "1375 cylindrical faces, radii 1-42mm, consistent with moulded-in fill/vent/mounting stubs on a fuel tank",
-          "count": 1375,
+          "type": "Hollow shell / low fill ratio",
+          "description": "Fill ratio 0.0178 confirms thin-wall hollow blow-moulded body, not a solid casting",
+          "count": 1,
           "significance": "High"
+        },
+        {
+          "type": "Wall thickness variation",
+          "description": "Mean 5.04mm, max 18.34mm at pinch-weld/boss regions, σ=2.82mm — typical of EBM parison programming with local pinch-off thickening",
+          "count": 29,
+          "significance": "High"
+        },
+        {
+          "type": "Undercuts / side features",
+          "description": "753 undercut faces — brackets, straps, filler neck bosses, baffle mounts requiring split-mould or hand-loaded inserts",
+          "count": 753,
+          "significance": "High"
+        },
+        {
+          "type": "Bosses/necks (cylindrical, r≥30mm)",
+          "description": "Filler neck, vent, and mounting boss features consistent with fuel tank fittings",
+          "count": 12,
+          "significance": "Medium"
+        },
+        {
+          "type": "Threaded features",
+          "description": "Threaded fitting(s) for filler cap / sender unit, likely moulded-in or post-tapped inserts",
+          "count": 1,
+          "significance": "Medium"
         }
       ],
-      "aiExplanation": "",
-      "confidenceLevel": "Low",
-      "manufacturabilityScore": 60,
-      "processRecommendations": [],
-      "manufacturabilityRisks": [],
-      "analysisLimitations": [],
       "materialAnalysis": {
+        "fromMetadata": false,
         "primarySuggestion": {
-          "materialId": "",
-          "name": "Unspecified",
-          "confidencePct": 50
+          "materialId": "mat-hdpe",
+          "name": "HDPE (High-Density Polyethylene, fuel-tank grade)",
+          "confidencePct": 70,
+          "reasoning": "Large hollow automotive fuel tank geometry (1.5m x 0.66m x 0.59m), thick pinch-weld sections, and low fill ratio are classic signatures of extrusion blow moulded HDPE fuel tanks. HDPE with a 6-layer HDPE/tie/EVOH/tie/HDPE barrier construction is the industry-standard resin system for automotive fuel tanks due to chemical resistance, impact toughness, and permeation control. PP and PET are not used for fuel tanks (PET used for beverage bottles via SBM, PP for chemical drums/small IBM bottles)."
         },
-        "alternatives": []
+        "alternatives": [
+          {
+            "materialId": "mat-pp",
+            "name": "PP Homopolymer (MFI 12)",
+            "confidencePct": 15
+          },
+          {
+            "materialId": "mat-pa6",
+            "name": "PA6 (barrier co-extrusion layer only)",
+            "confidencePct": 10
+          }
+        ]
       },
-      "costInputSuggestions": {
-        "recommendedCommodity": "machining",
-        "estimatedOperations": [],
-        "costRange": {
-          "low": 0,
-          "mid": 0,
-          "high": 0,
-          "currency": "GBP"
+      "processRecommendations": [
+        {
+          "process": "Extrusion Blow Moulding (EBM)",
+          "commodityType": "blow_moulding",
+          "confidencePct": 95,
+          "reasoning": "USER-FORCED process. Large single-cavity hollow tank with variable wall (thick pinch welds up to 18.34mm), size >1.5m, and 753 undercut/boss features matches continuous-extrusion parison blow moulding with a split (clam-shell) mould and moving pinch/weld inserts — not IBM (too large, too many undercuts for precision small-bottle process) and not SBM (SBM is stretch-oriented PET bottle process, unsuitable for non-round barrier tanks).",
+          "estimatedCycleTimeHr": 0.0417
+        }
+      ],
+      "manufacturabilityScore": 47,
+      "manufacturabilityRisks": [
+        {
+          "severity": "High",
+          "feature": "753 undercut faces",
+          "description": "Numerous undercuts (mounting straps, baffle bosses, fitting bosses) require split-mould pinch inserts, moving cores, or post-moulding drilling/welding of brackets",
+          "suggestion": "Consolidate undercuts onto the parting line where possible; use retractable core pins for deep bosses; review brackets for post-assembly (welded studs) instead of moulded-in undercuts"
         },
+        {
+          "severity": "High",
+          "feature": "Wall thickness variation (4.15–18.34mm)",
+          "description": "Thick pinch-weld/boss zones (up to 18.34mm, 3.6x the mean) create local hot spots increasing cooling time, sink, and residual stress at weld lines — a critical fuel-tank leak risk area",
+          "suggestion": "Programme parison wall profiling (die/mandrel gap control) to even out thickness; add local cooling in pinch zones; specify weld-line minimum thickness per fuel-tank permeation standard"
+        },
+        {
+          "severity": "Medium",
+          "feature": "Large single-cavity size (1528mm)",
+          "description": "Very large parison length increases sag/drawdown risk, leading to non-uniform wall distribution over the length of the tank",
+          "suggestion": "Use accumulator-head extrusion with programmed die gap (parison programming) rather than continuous extrusion to control sag"
+        },
+        {
+          "severity": "Medium",
+          "feature": "384 zero-draft faces",
+          "description": "Zero-draft flat/vertical panels increase mould release friction risk and can cause local thinning during blow-up",
+          "suggestion": "Add minimum 1–2° draft on large flat panels where cosmetically acceptable"
+        }
+      ],
+      "costInputSuggestions": {
+        "recommendedCommodity": "blow_moulding",
+        "netWeightKg": 10.1721,
+        "materialId": "mat-hdpe-fuel-coex",
+        "estimatedCycleTimeHr": 0.0417,
+        "estimatedSetupTimeHr": 0.75,
+        "estimatedOperations": [],
         "blowMoulding": {
-          "wallThicknessMm": 5
+          "subtype": "ebm",
+          "wallThicknessMm": 5,
+          "flashWeightKg": 2.2379,
+          "cavities": 1,
+          "mouldCostGBP": 68963,
+          "mouldLife": 500000,
+          "blowTimeSec": 20,
+          "openCloseSec": 8,
+          "barrierMultilayer": true
+        },
+        "casting": {
+          "subtype": "sand",
+          "dieMouldCostGBP": 50000,
+          "dieMouldLife": 500,
+          "cavities": 1,
+          "yieldFraction": 0.85,
+          "cycleTimeHpdcSec": 0,
+          "cycleTimeSandGravHr": 1.294
+        },
+        "forging": {
+          "flashKg": 0,
+          "yieldFraction": 0,
+          "dieCostGBP": 0,
+          "dieLife": 0,
+          "strokes": 0,
+          "timePerBlowSec": 0
+        },
+        "sheetMetal": {
+          "thicknessMm": 0,
+          "blankLengthMm": 0,
+          "blankWidthMm": 0,
+          "dieCostGBP": 0,
+          "dieLife": 0,
+          "numOps": 0
+        },
+        "injectionMoulding": {
+          "cavities": 0,
+          "projectedAreaCm2": 0,
+          "wallThicknessMm": 0,
+          "mouldCostGBP": 0,
+          "mouldLife": 0,
+          "runnerWeightKg": 0
         },
         "fieldConfidences": {
-          "bm-wall": 0.85
+          "bm-wall": 0.85,
+          "bm-material": 0.55,
+          "bm-volume": 0.7,
+          "bm-weight": 0.65,
+          "bm-flash": 0.4,
+          "bm-process": 0.85,
+          "bm-subtype": 0.85,
+          "bm-barrier": 0.75,
+          "bm-cavities": 0.6,
+          "bm-machine": 0.3,
+          "bm-cooltimefactor": 0.4,
+          "bm-blowtime": 0.4,
+          "bm-openclose": 0.4,
+          "bm-mouldmaterial": 0.3,
+          "bm-mouldlife": 0.35,
+          "bm-mouldcost": 0.35,
+          "bm-mat": 1,
+          "bm-part-wt": 0.95,
+          "bm-flash-wt": 0.6,
+          "bm-cav": 0.7,
+          "bm-blow-t": 0.6,
+          "bm-open-close": 0.6,
+          "bm-mould-life": 0.7,
+          "bm-mould-cost": 0.6
+        },
+        "dfmIssues": [
+          {
+            "severity": "High",
+            "area": "Pinch-weld thickness (max 18.34mm)",
+            "description": "Local wall thickness at pinch/weld lines is 3.6x the mean wall, creating slow-cooling hot spots and potential weak weld-line permeation paths critical for a fuel tank",
+            "impact": "Extended cycle time (cooling-dominated), risk of field leaks/warranty failures, extra QC (leak/burst testing)",
+            "fix": "Refine parison programming (die/mandrel profile) to reduce pinch-off excess material; add localized mould cooling channels at weld zones; specify minimum weld-line thickness per SAE/ISO fuel tank permeation spec"
+          },
+          {
+            "severity": "High",
+            "area": "753 undercut / boss features",
+            "description": "High undercut count for brackets, filler neck, vent and sender bosses requires numerous mould side-actions or pinch-off inserts",
+            "impact": "Increased mould complexity and cost, longer mould build lead time, risk of flash/witness lines at inserts",
+            "fix": "Move non-critical brackets to post-mould welded/bonded studs; group undercuts along the parting plane where feasible"
+          },
+          {
+            "severity": "Medium",
+            "area": "6-layer barrier co-extrusion",
+            "description": "HDPE/tie/EVOH/tie/HDPE barrier structure requires a precision 6-layer die head with tight layer-thickness control to guarantee permeation compliance",
+            "impact": "Higher tooling (die head) cost and tighter process control (higher scrap if layer ratios drift)",
+            "fix": "Specify layer-thickness monitoring (ultrasonic gauge) and maintain EVOH layer ≥ minimum per permeation regulation"
+          },
+          {
+            "severity": "Medium",
+            "area": "Large parison sag over 1.5m length",
+            "description": "Long, heavy parison for a part of this length is prone to gravitational sag/drawdown, producing thin walls at the top and thick at the bottom",
+            "impact": "Non-uniform wall thickness lowers burst strength and increases scrap/rework",
+            "fix": "Use accumulator-head extrusion with programmed die gap opening timed to counter sag, and orient parting line to minimize drop height"
+          },
+          {
+            "severity": "Low",
+            "area": "384 zero-draft faces",
+            "description": "Flat, near-vertical panels with no draft increase mould release drag during ejection of the blown part while still warm",
+            "impact": "Minor surface scuffing/witness marks, marginally longer cycle for careful ejection",
+            "fix": "Add 1-2° draft to large flat panels not constrained by packaging envelope"
+          }
+        ],
+        "costRange": {
+          "low": 19.5,
+          "mid": 27,
+          "high": 38,
+          "currency": "GBP"
+        },
+        "stage1Selection": {
+          "primary": "auto",
+          "conf": 0,
+          "alt": []
         }
-      }
+      },
+      "aiExplanation": "This is a large (1.53m x 0.66m x 0.59m) hollow thin-wall shell with a very low fill ratio (0.0178), consistent with an automotive fuel tank. Wall thickness is thin and fairly uniform (mean 5.04mm) except at pinch-weld/boss zones which read up to 18.34mm — a classic EBM parison pinch-off signature, not a cast or machined solid. The user has forced blow_moulding as the process; given the part's role (fuel tank), size, and thick weld zones, Extrusion Blow Moulding (EBM) with a single large clam-shell mould is the correct subtype (vs IBM for small precision bottles or SBM for PET beverage containers). Material was undecided in the geometry package; HDPE with a 6-layer HDPE/EVOH barrier structure was selected as the industry-standard resin for automotive fuel tanks (chemical resistance + permeation control), over PP (used for drums/IBM bottles) and PET (used for SBM beverage bottles, unsuitable for hydrocarbon service). Net part weight was recalculated at HDPE's true density (0.955 g/cm3) rather than the generic 1.05 g/cm3 'Plastic' figure supplied, giving ~10.12kg net, with an estimated ~2.5kg of trim flash from the continuous parison process (pinch weld waste, typically reground and reused). Mould cost, cavity count, and cycle time (blow/cool/open-close) are rule-of-thumb estimates informed by geometry (size, wall, undercuts) since no OCCT-deterministic blow-moulding parameters were provided beyond wall thickness.",
+      "confidenceLevel": "High",
+      "analysisLimitations": [
+        "Resin identity (HDPE vs PP vs PET) was not specified in metadata; HDPE assumed based on part function as a fuel tank, industry convention",
+        "Flash weight, cavity count, blow/cool/open-close times, and mould cost are rule-of-thumb estimates informed by geometry, not measured/deterministic values",
+        "No matching blow-moulding machineId exists in the provided valid machineId list (all listed IDs are CNC/machining equipment) — estimatedOperations left empty to avoid mis-assigning a machining resource to a blow-moulding process",
+        "Barrier layer structure (6-layer HDPE/EVOH) assumed from part function (automotive fuel tank) per project guidance, not confirmed from drawing notes"
+      ]
     },
     "sanityWarnings": [],
     "ruleOverrides": {
@@ -73,25 +258,113 @@
         {
           "field": "blowMoulding.wallThicknessMm",
           "ruleId": "blowMoulding.wallThicknessMm",
+          "from": 5,
           "to": 5,
           "basis": "ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds)",
           "confidence": 0.85,
           "contradicted": false
+        },
+        {
+          "field": "materialId",
+          "ruleId": "blowMoulding.materialId",
+          "from": "mat-hdpe",
+          "to": "mat-hdpe-fuel-coex",
+          "basis": "HDPE upgraded to the 6-layer EVOH barrier grade",
+          "confidence": 1,
+          "contradicted": true
+        },
+        {
+          "field": "netWeightKg",
+          "ruleId": "blowMoulding.partWeightKg",
+          "from": 10.12,
+          "to": 10.1721,
+          "basis": "HDPE at 960 kg/m³ — 10596 cm³ measured (chosen by the engineer)",
+          "confidence": 0.95,
+          "contradicted": true
+        },
+        {
+          "field": "blowMoulding.flashWeightKg",
+          "ruleId": "blowMoulding.flashWeightKg",
+          "from": 2.53,
+          "to": 2.2379,
+          "basis": "22% of part weight — pinch-off and neck trim; a large accumulator parison sheds more than a bottle",
+          "confidence": 0.6,
+          "contradicted": true
+        },
+        {
+          "field": "blowMoulding.subtype",
+          "ruleId": "blowMoulding.subtype",
+          "from": "ebm",
+          "to": "ebm",
+          "basis": "co-extruded barrier wall — 5-layer EBM head",
+          "confidence": 0.8,
+          "contradicted": false
+        },
+        {
+          "field": "blowMoulding.barrierMultilayer",
+          "ruleId": "blowMoulding.barrierMultilayer",
+          "from": true,
+          "to": true,
+          "basis": "confirmed as a co-extruded EVOH barrier wall",
+          "confidence": 0.85,
+          "contradicted": false
+        },
+        {
+          "field": "blowMoulding.cavities",
+          "ruleId": "blowMoulding.cavities",
+          "from": 1,
+          "to": 1,
+          "basis": "Over 20 L: under 250 ml -> 4, up to 2 L -> 2, above -> 1",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "blowMoulding.blowTimeSec",
+          "ruleId": "blowMoulding.blowTimeSec",
+          "from": 18,
+          "to": 20,
+          "basis": "3 s + 0.8 s per litre at 60 L, capped at 20 s",
+          "confidence": 0.6,
+          "contradicted": true
+        },
+        {
+          "field": "blowMoulding.openCloseSec",
+          "ruleId": "blowMoulding.openCloseSec",
+          "from": 10,
+          "to": 8,
+          "basis": "4 s + 0.1 s per litre at 60 L, capped at 8 s",
+          "confidence": 0.6,
+          "contradicted": true
+        },
+        {
+          "field": "blowMoulding.mouldLife",
+          "ruleId": "blowMoulding.mouldLife",
+          "from": 500000,
+          "to": 500000,
+          "basis": "documented cycle life for a aluminium blow mould",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "blowMoulding.mouldCostGBP",
+          "ruleId": "blowMoulding.mouldCostGBP",
+          "from": 220000,
+          "to": 68963,
+          "basis": "1-cavity EBM aluminium tool at 60 L",
+          "confidence": 0.6,
+          "contradicted": true
         }
       ],
-      "notWritten": [],
-      "undecided": [
-        "material.resin"
-      ]
+      "notWritten": [
+        "blowMoulding.coolTimeFactorSPerMm2",
+        "blowMoulding.machineId",
+        "blowMoulding.mouldMaterial",
+        "blowMoulding.partVolumeL",
+        "blowMoulding.process"
+      ],
+      "undecided": []
     },
-    "aiSuppressed": [
-      {
-        "field": "netWeightKg",
-        "ruleId": "blowMoulding.partWeightKg",
-        "decisionId": "material.resin",
-        "aiValue": 11.1257
-      }
-    ],
+    "aiSuppressed": [],
     "ruleFields": {
       "bm-wall": {
         "fieldId": "bm-wall",
@@ -100,10 +373,114 @@
         "source": "geometry",
         "confidence": 0.85,
         "ruleId": "blowMoulding.wallThicknessMm"
+      },
+      "bm-mat": {
+        "fieldId": "bm-mat",
+        "value": "mat-hdpe-fuel-coex",
+        "basis": "HDPE upgraded to the 6-layer EVOH barrier grade",
+        "source": "engineer",
+        "confidence": 1,
+        "ruleId": "blowMoulding.materialId"
+      },
+      "bm-part-vol": {
+        "fieldId": "bm-part-vol",
+        "value": 60,
+        "basis": "Over 20 L confirmed by the engineer; the measured envelope holds at most 586.1 L",
+        "source": "engineer",
+        "confidence": 0.7,
+        "ruleId": "blowMoulding.partVolumeL"
+      },
+      "bm-part-wt": {
+        "fieldId": "bm-part-wt",
+        "value": 10.1721,
+        "basis": "HDPE at 960 kg/m³ — 10596 cm³ measured (chosen by the engineer)",
+        "source": "geometry",
+        "confidence": 0.95,
+        "ruleId": "blowMoulding.partWeightKg"
+      },
+      "bm-flash-wt": {
+        "fieldId": "bm-flash-wt",
+        "value": 2.2379,
+        "basis": "22% of part weight — pinch-off and neck trim; a large accumulator parison sheds more than a bottle",
+        "source": "rule",
+        "confidence": 0.6,
+        "ruleId": "blowMoulding.flashWeightKg"
+      },
+      "bm-process": {
+        "fieldId": "bm-process",
+        "value": "ebm_coex5",
+        "basis": "co-extruded barrier wall — 5-layer EBM head",
+        "source": "rule",
+        "confidence": 0.8,
+        "ruleId": "blowMoulding.process"
+      },
+      "bm-cav": {
+        "fieldId": "bm-cav",
+        "value": 1,
+        "basis": "Over 20 L: under 250 ml -> 4, up to 2 L -> 2, above -> 1",
+        "source": "rule",
+        "confidence": 0.7,
+        "ruleId": "blowMoulding.cavities"
+      },
+      "bm-mach": {
+        "fieldId": "bm-mach",
+        "value": "blow-ebm-large",
+        "basis": "12.410 kg gross shot (part + flash)",
+        "source": "advisor",
+        "confidence": 0.85,
+        "ruleId": "blowMoulding.machineId"
+      },
+      "bm-cool-f": {
+        "fieldId": "bm-cool-f",
+        "value": 3.5,
+        "basis": "transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)]: α_eff 0.0471 mm²/s, melt 210°C / mould 30°C / eject 75°C → 3.5 s/mm²; cool ≈ 88.9 s at 5.0 mm",
+        "source": "library",
+        "confidence": 0.8,
+        "ruleId": "blowMoulding.coolTimeFactorSPerMm2"
+      },
+      "bm-blow-t": {
+        "fieldId": "bm-blow-t",
+        "value": 20,
+        "basis": "3 s + 0.8 s per litre at 60 L, capped at 20 s",
+        "source": "rule",
+        "confidence": 0.6,
+        "ruleId": "blowMoulding.blowTimeSec"
+      },
+      "bm-open-close": {
+        "fieldId": "bm-open-close",
+        "value": 8,
+        "basis": "4 s + 0.1 s per litre at 60 L, capped at 8 s",
+        "source": "rule",
+        "confidence": 0.6,
+        "ruleId": "blowMoulding.openCloseSec"
+      },
+      "bm-mould-mat": {
+        "fieldId": "bm-mould-mat",
+        "value": "aluminium",
+        "basis": "cast/CNC aluminium — the EBM workhorse, and it conducts heat out faster than steel",
+        "source": "rule",
+        "confidence": 0.75,
+        "ruleId": "blowMoulding.mouldMaterial"
+      },
+      "bm-mould-life": {
+        "fieldId": "bm-mould-life",
+        "value": 500000,
+        "basis": "documented cycle life for a aluminium blow mould",
+        "source": "library",
+        "confidence": 0.7,
+        "ruleId": "blowMoulding.mouldLife"
+      },
+      "bm-mould-cost": {
+        "fieldId": "bm-mould-cost",
+        "value": 68963,
+        "basis": "1-cavity EBM aluminium tool at 60 L",
+        "source": "advisor",
+        "confidence": 0.6,
+        "ruleId": "blowMoulding.mouldCostGBP"
       }
     },
     "deterministicAnalysis": {
-      "partName": "cv-cad-bd13ae50d20459e0",
+      "partName": "cv-cad-5fbcf020ca5b7130",
       "geometry": {
         "boundingBoxMm": {
           "x": 1528.35,
@@ -300,10 +677,10 @@
       },
       "processRecommendations": [
         {
-          "process": "blow_moulding",
+          "process": "ebm_coex5",
           "commodityType": "blow_moulding",
-          "confidencePct": 50,
-          "reasoning": "selected by the deterministic rules for this commodity",
+          "confidencePct": 100,
+          "reasoning": "co-extruded barrier wall — 5-layer EBM head",
           "estimatedCycleTimeHr": 0
         }
       ],
@@ -311,33 +688,163 @@
       "manufacturabilityRisks": [],
       "costInputSuggestions": {
         "recommendedCommodity": "blow_moulding",
-        "netWeightKg": 0,
-        "materialId": "",
+        "netWeightKg": 10.1721,
+        "materialId": "mat-hdpe-fuel-coex",
         "estimatedCycleTimeHr": 0,
         "estimatedSetupTimeHr": 0,
         "estimatedOperations": [],
         "blowMoulding": {
-          "wallThicknessMm": 5
+          "wallThicknessMm": 5,
+          "flashWeightKg": 2.2379,
+          "subtype": "ebm",
+          "barrierMultilayer": true,
+          "cavities": 1,
+          "blowTimeSec": 20,
+          "openCloseSec": 8,
+          "mouldLife": 500000,
+          "mouldCostGBP": 68963
         },
         "fieldConfidences": {
-          "bm-wall": 0.85
+          "bm-wall": 0.85,
+          "bm-mat": 1,
+          "bm-part-wt": 0.95,
+          "bm-flash-wt": 0.6,
+          "bm-cav": 0.7,
+          "bm-blow-t": 0.6,
+          "bm-open-close": 0.6,
+          "bm-mould-life": 0.7,
+          "bm-mould-cost": 0.6
         }
       },
-      "aiExplanation": "Derived deterministically for blow_moulding from the measured geometry. No AI call was made; every figure below is arithmetic on a measurement or a library lookup, and each states its own basis.\n\n  • blowMoulding.wallThicknessMm = 5 — ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds) [geometry, bm-wall]\n\nStill open (1):\n  • Which resin is this moulded in? — The geometry is the same whichever resin fills it, but the resin sets the weight, the £/kg and the cooling time — and cooling is most of the cycle. The 10596 cm³ measured here weighs 10.172 kg in HDPE and 14.622 kg in PET Bottle Grade (1101).",
-      "confidenceLevel": "Low",
+      "aiExplanation": "Derived deterministically for blow_moulding from the measured geometry. No AI call was made; every figure below is arithmetic on a measurement or a library lookup, and each states its own basis.\n\n  • blowMoulding.wallThicknessMm = 5 — ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds) [geometry, bm-wall]\n  • blowMoulding.materialId = mat-hdpe-fuel-coex — HDPE upgraded to the 6-layer EVOH barrier grade [engineer, bm-mat]\n  • blowMoulding.partVolumeL = 60 — Over 20 L confirmed by the engineer; the measured envelope holds at most 586.1 L [engineer, bm-part-vol]\n  • blowMoulding.partWeightKg = 10.1721 — HDPE at 960 kg/m³ — 10596 cm³ measured (chosen by the engineer) [geometry, bm-part-wt]\n  • blowMoulding.flashWeightKg = 2.2379 — 22% of part weight — pinch-off and neck trim; a large accumulator parison sheds more than a bottle [rule, bm-flash-wt]\n  • blowMoulding.process = ebm_coex5 — co-extruded barrier wall — 5-layer EBM head [rule, bm-process]\n  • blowMoulding.cavities = 1 — Over 20 L: under 250 ml -> 4, up to 2 L -> 2, above -> 1 [rule, bm-cav]\n  • blowMoulding.machineId = blow-ebm-large — 12.410 kg gross shot (part + flash) [advisor, bm-mach]\n  • blowMoulding.coolTimeFactorSPerMm2 = 3.5 — transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)]: α_eff 0.0471 mm²/s, melt 210°C / mould 30°C / eject 75°C → 3.5 s/mm²; cool ≈ 88.9 s at 5.0 mm [library, bm-cool-f]\n  • blowMoulding.blowTimeSec = 20 — 3 s + 0.8 s per litre at 60 L, capped at 20 s [rule, bm-blow-t]\n  • blowMoulding.openCloseSec = 8 — 4 s + 0.1 s per litre at 60 L, capped at 8 s [rule, bm-open-close]\n  • blowMoulding.mouldMaterial = aluminium — cast/CNC aluminium — the EBM workhorse, and it conducts heat out faster than steel [rule, bm-mould-mat]\n  • blowMoulding.mouldLife = 500000 — documented cycle life for a aluminium blow mould [library, bm-mould-life]\n  • blowMoulding.mouldCostGBP = 68963 — 1-cavity EBM aluminium tool at 60 L [advisor, bm-mould-cost]",
+      "confidenceLevel": "Medium",
       "analysisLimitations": [
-        "Unanswered: Which resin is this moulded in?",
-        "DFM checks ran against the measured geometry. Checks that need a drawing callout — tolerances, which face is critical, whether a weld line is in a load path — did not run, so this list is a floor and not a ceiling."
+        "DFM checks ran against the measured geometry. Checks that need a drawing callout — tolerances, which face is critical, whether a weld line is in a load path — did not run, so this list is a floor and not a ceiling.",
+        "Computed but not carried into the form: blowMoulding.coolTimeFactorSPerMm2, blowMoulding.machineId, blowMoulding.mouldMaterial, blowMoulding.partVolumeL, blowMoulding.process"
       ]
     },
     "diff": {
       "diffs": [
         {
+          "field": "blowMoulding.barrierMultilayer",
+          "ruleValue": true,
+          "aiValue": true,
+          "deltaPct": null,
+          "basis": "confirmed as a co-extruded EVOH barrier wall",
+          "verdict": "agree"
+        },
+        {
+          "field": "blowMoulding.blowTimeSec",
+          "ruleValue": 20,
+          "aiValue": 18,
+          "deltaPct": 0.1111111111111111,
+          "basis": "3 s + 0.8 s per litre at 60 L, capped at 20 s",
+          "verdict": "differ"
+        },
+        {
+          "field": "blowMoulding.cavities",
+          "ruleValue": 1,
+          "aiValue": 1,
+          "deltaPct": 0,
+          "basis": "Over 20 L: under 250 ml -> 4, up to 2 L -> 2, above -> 1",
+          "verdict": "agree"
+        },
+        {
+          "field": "blowMoulding.flashWeightKg",
+          "ruleValue": 2.2379,
+          "aiValue": 2.53,
+          "deltaPct": -0.11545454545454548,
+          "basis": "22% of part weight — pinch-off and neck trim; a large accumulator parison sheds more than a bottle",
+          "verdict": "differ"
+        },
+        {
+          "field": "blowMoulding.mouldCostGBP",
+          "ruleValue": 68963,
+          "aiValue": 220000,
+          "deltaPct": -0.6865318181818182,
+          "basis": "1-cavity EBM aluminium tool at 60 L",
+          "verdict": "differ"
+        },
+        {
+          "field": "blowMoulding.mouldLife",
+          "ruleValue": 500000,
+          "aiValue": 500000,
+          "deltaPct": 0,
+          "basis": "documented cycle life for a aluminium blow mould",
+          "verdict": "agree"
+        },
+        {
+          "field": "blowMoulding.openCloseSec",
+          "ruleValue": 8,
+          "aiValue": 10,
+          "deltaPct": -0.2,
+          "basis": "4 s + 0.1 s per litre at 60 L, capped at 8 s",
+          "verdict": "differ"
+        },
+        {
+          "field": "blowMoulding.subtype",
+          "ruleValue": "ebm",
+          "aiValue": "ebm",
+          "deltaPct": null,
+          "basis": "co-extruded barrier wall — 5-layer EBM head",
+          "verdict": "agree"
+        },
+        {
           "field": "blowMoulding.wallThicknessMm",
           "ruleValue": 5,
-          "deltaPct": null,
+          "aiValue": 5,
+          "deltaPct": 0,
           "basis": "ray-cast mean wall over 29 samples (average governs the programmed EBM cycle; thick reads are pinch welds)",
-          "verdict": "rule-only"
+          "verdict": "agree"
+        },
+        {
+          "field": "casting.cavities",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeHpdcSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeSandGravHr",
+          "aiValue": 1.294,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldCostGBP",
+          "aiValue": 50000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldLife",
+          "aiValue": 500,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.subtype",
+          "aiValue": "sand",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.yieldFraction",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
         },
         {
           "field": "costRange.currency",
@@ -348,21 +855,21 @@
         },
         {
           "field": "costRange.high",
-          "aiValue": 0,
+          "aiValue": 38,
           "deltaPct": null,
           "basis": "",
           "verdict": "ai-only"
         },
         {
           "field": "costRange.low",
-          "aiValue": 0,
+          "aiValue": 19.5,
           "deltaPct": null,
           "basis": "",
           "verdict": "ai-only"
         },
         {
           "field": "costRange.mid",
-          "aiValue": 0,
+          "aiValue": 27,
           "deltaPct": null,
           "basis": "",
           "verdict": "ai-only"
@@ -370,135 +877,485 @@
         {
           "field": "estimatedCycleTimeHr",
           "ruleValue": 0,
-          "deltaPct": null,
-          "basis": "",
-          "verdict": "rule-only"
-        },
-        {
-          "field": "estimatedSetupTimeHr",
-          "ruleValue": 0,
-          "deltaPct": null,
-          "basis": "",
-          "verdict": "rule-only"
-        },
-        {
-          "field": "fieldConfidences.bm-wall",
-          "ruleValue": 0.85,
-          "deltaPct": null,
-          "basis": "",
-          "verdict": "rule-only"
-        },
-        {
-          "field": "materialId",
-          "ruleValue": "",
-          "deltaPct": null,
-          "basis": "",
-          "verdict": "rule-only"
-        },
-        {
-          "field": "netWeightKg",
-          "ruleValue": 0,
-          "aiValue": 11.1257,
+          "aiValue": 0.0417,
           "deltaPct": -1,
           "basis": "",
           "verdict": "differ"
         },
         {
-          "field": "recommendedCommodity",
-          "ruleValue": "blow_moulding",
-          "aiValue": "machining",
+          "field": "estimatedSetupTimeHr",
+          "ruleValue": 0,
+          "aiValue": 0.75,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "fieldConfidences.bm-barrier",
+          "aiValue": 0.75,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-blow-t",
+          "ruleValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.bm-blowtime",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-cav",
+          "ruleValue": 0.7,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.bm-cavities",
+          "aiValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-cooltimefactor",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-flash",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-flash-wt",
+          "ruleValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.bm-machine",
+          "aiValue": 0.3,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-mat",
+          "ruleValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.bm-material",
+          "aiValue": 0.55,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-mould-cost",
+          "ruleValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.bm-mould-life",
+          "ruleValue": 0.7,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.bm-mouldcost",
+          "aiValue": 0.35,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-mouldlife",
+          "aiValue": 0.35,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-mouldmaterial",
+          "aiValue": 0.3,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-open-close",
+          "ruleValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.bm-openclose",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-part-wt",
+          "ruleValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.bm-process",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-subtype",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-volume",
+          "aiValue": 0.7,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.bm-wall",
+          "ruleValue": 0.85,
+          "aiValue": 0.95,
+          "deltaPct": -0.10526315789473682,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "fieldConfidences.bm-weight",
+          "aiValue": 0.65,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.flashKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.strokes",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.timePerBlowSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.yieldFraction",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.cavities",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.projectedAreaCm2",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.runnerWeightKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.wallThicknessMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "materialId",
+          "ruleValue": "mat-hdpe-fuel-coex",
+          "aiValue": "mat-hdpe",
           "deltaPct": null,
           "basis": "",
           "verdict": "differ"
+        },
+        {
+          "field": "netWeightKg",
+          "ruleValue": 10.1721,
+          "aiValue": 10.12,
+          "deltaPct": 0.0051482213438736315,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "recommendedCommodity",
+          "ruleValue": "blow_moulding",
+          "aiValue": "blow_moulding",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "sheetMetal.blankLengthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.blankWidthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.numOps",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.thicknessMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.conf",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "stage1Selection.primary",
+          "aiValue": "auto",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
         }
       ],
-      "agreed": 0,
-      "differed": 2,
-      "ruleOnly": 5,
-      "aiOnly": 4,
-      "undecided": [
-        "material.resin"
-      ]
+      "agreed": 7,
+      "differed": 8,
+      "ruleOnly": 8,
+      "aiOnly": 46,
+      "undecided": []
     },
     "aiOriginal": {
-      "recommendedCommodity": "machining",
-      "netWeightKg": 11.1257,
+      "recommendedCommodity": "blow_moulding",
+      "netWeightKg": 10.12,
+      "materialId": "mat-hdpe",
+      "estimatedCycleTimeHr": 0.0417,
+      "estimatedSetupTimeHr": 0.75,
       "estimatedOperations": [],
+      "blowMoulding": {
+        "subtype": "ebm",
+        "wallThicknessMm": 5,
+        "flashWeightKg": 2.53,
+        "cavities": 1,
+        "mouldCostGBP": 220000,
+        "mouldLife": 500000,
+        "blowTimeSec": 18,
+        "openCloseSec": 10,
+        "barrierMultilayer": true
+      },
+      "casting": {
+        "subtype": "sand",
+        "dieMouldCostGBP": 50000,
+        "dieMouldLife": 500,
+        "cavities": 1,
+        "yieldFraction": 0.85,
+        "cycleTimeHpdcSec": 0,
+        "cycleTimeSandGravHr": 1.294
+      },
+      "forging": {
+        "flashKg": 0,
+        "yieldFraction": 0,
+        "dieCostGBP": 0,
+        "dieLife": 0,
+        "strokes": 0,
+        "timePerBlowSec": 0
+      },
+      "sheetMetal": {
+        "thicknessMm": 0,
+        "blankLengthMm": 0,
+        "blankWidthMm": 0,
+        "dieCostGBP": 0,
+        "dieLife": 0,
+        "numOps": 0
+      },
+      "injectionMoulding": {
+        "cavities": 0,
+        "projectedAreaCm2": 0,
+        "wallThicknessMm": 0,
+        "mouldCostGBP": 0,
+        "mouldLife": 0,
+        "runnerWeightKg": 0
+      },
+      "fieldConfidences": {
+        "bm-wall": 0.95,
+        "bm-material": 0.55,
+        "bm-volume": 0.7,
+        "bm-weight": 0.65,
+        "bm-flash": 0.4,
+        "bm-process": 0.85,
+        "bm-subtype": 0.85,
+        "bm-barrier": 0.75,
+        "bm-cavities": 0.6,
+        "bm-machine": 0.3,
+        "bm-cooltimefactor": 0.4,
+        "bm-blowtime": 0.4,
+        "bm-openclose": 0.4,
+        "bm-mouldmaterial": 0.3,
+        "bm-mouldlife": 0.35,
+        "bm-mouldcost": 0.35
+      },
+      "dfmIssues": [
+        {
+          "severity": "High",
+          "area": "Pinch-weld thickness (max 18.34mm)",
+          "description": "Local wall thickness at pinch/weld lines is 3.6x the mean wall, creating slow-cooling hot spots and potential weak weld-line permeation paths critical for a fuel tank",
+          "impact": "Extended cycle time (cooling-dominated), risk of field leaks/warranty failures, extra QC (leak/burst testing)",
+          "fix": "Refine parison programming (die/mandrel profile) to reduce pinch-off excess material; add localized mould cooling channels at weld zones; specify minimum weld-line thickness per SAE/ISO fuel tank permeation spec"
+        },
+        {
+          "severity": "High",
+          "area": "753 undercut / boss features",
+          "description": "High undercut count for brackets, filler neck, vent and sender bosses requires numerous mould side-actions or pinch-off inserts",
+          "impact": "Increased mould complexity and cost, longer mould build lead time, risk of flash/witness lines at inserts",
+          "fix": "Move non-critical brackets to post-mould welded/bonded studs; group undercuts along the parting plane where feasible"
+        },
+        {
+          "severity": "Medium",
+          "area": "6-layer barrier co-extrusion",
+          "description": "HDPE/tie/EVOH/tie/HDPE barrier structure requires a precision 6-layer die head with tight layer-thickness control to guarantee permeation compliance",
+          "impact": "Higher tooling (die head) cost and tighter process control (higher scrap if layer ratios drift)",
+          "fix": "Specify layer-thickness monitoring (ultrasonic gauge) and maintain EVOH layer ≥ minimum per permeation regulation"
+        },
+        {
+          "severity": "Medium",
+          "area": "Large parison sag over 1.5m length",
+          "description": "Long, heavy parison for a part of this length is prone to gravitational sag/drawdown, producing thin walls at the top and thick at the bottom",
+          "impact": "Non-uniform wall thickness lowers burst strength and increases scrap/rework",
+          "fix": "Use accumulator-head extrusion with programmed die gap opening timed to counter sag, and orient parting line to minimize drop height"
+        },
+        {
+          "severity": "Low",
+          "area": "384 zero-draft faces",
+          "description": "Flat, near-vertical panels with no draft increase mould release drag during ejection of the blown part while still warm",
+          "impact": "Minor surface scuffing/witness marks, marginally longer cycle for careful ejection",
+          "fix": "Add 1-2° draft to large flat panels not constrained by packaging envelope"
+        }
+      ],
       "costRange": {
-        "low": 0,
-        "mid": 0,
-        "high": 0,
+        "low": 19.5,
+        "mid": 27,
+        "high": 38,
         "currency": "GBP"
+      },
+      "stage1Selection": {
+        "primary": "auto",
+        "conf": 0,
+        "alt": []
       }
     },
-    "decisions": [
-      {
-        "id": "material.resin",
-        "kind": "material_grade",
-        "question": "Which resin is this moulded in?",
-        "why": "The geometry is the same whichever resin fills it, but the resin sets the weight, the £/kg and the cooling time — and cooling is most of the cycle. The 10596 cm³ measured here weighs 10.172 kg in HDPE and 14.622 kg in PET Bottle Grade (1101).",
-        "options": [
-          {
-            "value": "mat-hdpe",
-            "label": "HDPE",
-            "consequence": "10.172 kg at £1.06/kg · cools at 3.5 s/mm²",
-            "leaning": true
-          },
-          {
-            "value": "mat-pp-homo",
-            "label": "PP Homopolymer (MFI 12)",
-            "consequence": "9.589 kg at £0.96/kg · cools at 3.16 s/mm²",
-            "leaning": false
-          },
-          {
-            "value": "mat-pet-bg",
-            "label": "PET Bottle Grade (1101)",
-            "consequence": "14.622 kg at £1.21/kg · cools at 3 s/mm²",
-            "leaning": false
-          }
-        ],
-        "blockedFieldIds": [
-          "bm-mat",
-          "bm-part-vol",
-          "bm-part-wt",
-          "bm-flash-wt",
-          "bm-process",
-          "bm-cav",
-          "bm-mach",
-          "bm-cool-f",
-          "bm-blow-t",
-          "bm-open-close",
-          "bm-mould-mat",
-          "bm-mould-life",
-          "bm-mould-cost"
-        ],
-        "blockedRuleIds": [
-          "blowMoulding.materialId",
-          "blowMoulding.partVolumeL",
-          "blowMoulding.partWeightKg",
-          "blowMoulding.flashWeightKg",
-          "blowMoulding.process",
-          "blowMoulding.subtype",
-          "blowMoulding.barrierMultilayer",
-          "blowMoulding.cavities",
-          "blowMoulding.machineId",
-          "blowMoulding.coolTimeFactorSPerMm2",
-          "blowMoulding.blowTimeSec",
-          "blowMoulding.openCloseSec",
-          "blowMoulding.mouldMaterial",
-          "blowMoulding.mouldLife",
-          "blowMoulding.mouldCostGBP"
-        ],
-        "severity": "blocking"
-      }
-    ],
+    "decisions": [],
     "mode": "both",
     "fromCache": false,
     "geometrySource": "occt",
     "annualVolume": 200000,
     "occtGeometry": {
       "status": "success",
-      "partName": "cv-cad-bd13ae50d20459e0",
+      "partName": "cv-cad-5fbcf020ca5b7130",
       "boundingBox": {
         "xMm": 1528.35,
         "yMm": 657.63,
@@ -941,6 +1798,6 @@
         "MANIFOLD_SOLID_BREP": 3
       }
     },
-    "dfmJobId": "ea03e822-64d1-4178-8045-993a85634938"
+    "dfmJobId": "e5d29814-6981-4085-a056-8647a8820610"
   }
 }
