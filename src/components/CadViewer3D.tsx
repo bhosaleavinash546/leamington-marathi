@@ -54,7 +54,8 @@ export interface CadViewerRef {
   fit(): Promise<void>;
   setAnnotations(items: Parameters<CADViewerHandle['setAnnotations']>[0]): Promise<void>;
   projectAnchors(): Promise<ReturnType<CADViewerHandle['projectAnchors']>>;
-  flyTo(anchor: [number, number, number], opts?: { distance?: number; facing?: string }): Promise<void>;
+  flyTo(anchor: [number, number, number],
+        opts?: { distance?: number; facing?: string; immediate?: boolean }): Promise<void>;
   setBodyColours(colours: Map<number, number> | null): Promise<void>;
   setExplode(factor: number): Promise<void>;
   ready(): Promise<CADViewerHandle | null>;

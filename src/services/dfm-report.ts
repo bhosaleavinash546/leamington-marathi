@@ -108,9 +108,28 @@ export interface DfmFigure {
    * The ISO capture serves as both: the markers are vector, so the one raster is
    * drawn twice with and without them rather than captured twice.
    */
-  role?: 'hero' | 'evidence' | 'section';
+  role?: 'hero' | 'evidence' | 'section' | 'finding';
   /** For a section figure: the finding the cut was made for. */
   sectionOf?: string;
+  /**
+   * ── A `finding` FIGURE ────────────────────────────────────────────────────
+   * One render per finding, showing ONLY that finding's faces, tinted in its
+   * own severity colour, with the camera square to them.
+   *
+   * The hero and evidence views paint every finding at once, which answers
+   * "where are the problems" and not "which faces is THIS one about" — on a
+   * casting with nine amber regions those are different questions, and the
+   * second is the one a supplier has to act on. These are the answer to it.
+   */
+  ruleId?: string;
+  /** How many faces are tinted in this figure. */
+  faceCount?: number;
+  /**
+   * The TRUE face count when the engine capped the id list it sent (it caps at
+   * 40). Present only when something was dropped, so a caption can say
+   * "40 of 67" exactly when that is true and never imply a total it lacks.
+   */
+  faceTotal?: number | null;
   /** JPEG/PNG data URI straight from the viewer. */
   dataUri: string;
   width: number;
@@ -343,6 +362,20 @@ export interface DfmFigureNotes {
   markable?: number;
   /** Why there is no picture at all, when there is none. */
   captureError?: string;
+  /**
+   * Rule id -> why THAT finding has no figure of its own. Complete and
+   * uncapped, unlike `notLocated`, which is filtered by the page-one marker
+   * budget. Every finding printed without a picture is looked up here, so the
+   * report can say WHY rather than leave a gap the reader reads as an
+   * oversight — the same three-state honesty the rules keep.
+   */
+  noFigureReason?: Record<string, string>;
+  /**
+   * Locatable findings whose figure was dropped by the capture's own cap.
+   * Stated in the report; a truncated set of pictures must never read as the
+   * complete set.
+   */
+  droppedFigures?: number;
 }
 
 export function exportDfmPdf(
@@ -430,6 +463,16 @@ export function exportDfmPdf(
   }
 
   const allFindings = data.results.flatMap(r => r.findings);
+  /**
+   * Rule id -> its own evidence figure.
+   *
+   * These are captured one per finding with only that finding's faces painted,
+   * so a card can print the geometry it is arguing about instead of asking the
+   * reader to find it on a shared view carrying nine other tints.
+   */
+  const findingFigures = new Map(
+    figures.filter(f => f.role === 'finding' && f.ruleId).map(f => [f.ruleId as string, f]),
+  );
   const totalUnevaluated = data.results.reduce((s, r) => s + r.notEvaluated.length, 0);
   const totalRules = data.results.reduce((s, r) => s + r.ruleCount, 0);
   const totalEvaluated = data.results.reduce((s, r) => s + r.evaluatedCount, 0);
@@ -1496,11 +1539,24 @@ export function exportDfmPdf(
   // a rule whose offending feature the kernel could not place — the reader has
   // no way to know unless it is written down. The old report drew the rings it
   // could and said nothing about the rest, which reads as "that is all of them".
-  if ((figureNotes.notLocated?.length ?? 0) > 0 || (figureNotes.droppedByCap ?? 0) > 0) {
+  if ((figureNotes.notLocated?.length ?? 0) > 0 || (figureNotes.droppedByCap ?? 0) > 0
+      || (figureNotes.droppedFigures ?? 0) > 0) {
     ensure(26);
     y += 3;
     mono(6.4, true); setText(doc, GOLD);
     doc.text('FINDINGS NOT MARKED ON THE MODEL', ML, y); y += 5;
+    // The per-finding figures have their own budget, and it is a different one
+    // from the marker cap above: each is a full render, and twenty of them is
+    // a slow export and a heavy file. Worst-first, and the remainder is named
+    // here — a truncated set of pictures must never read as the complete set.
+    if (figureNotes.droppedFigures) {
+      wrapped(`${figureNotes.droppedFigures} further finding(s) carry located geometry but have no `
+        + 'picture of their own in this report, because the per-finding figures are capped worst-first '
+        + 'to keep the file printable. Their faces ARE tinted on the shared views above, and clicking '
+        + 'the finding in the Studio shows each one on the model.',
+      8.4, BODY, CW, 4);
+      y += 1;
+    }
     if (figureNotes.droppedByCap) {
       wrapped(`${figureNotes.droppedByCap} further finding(s) are locatable but fall past the `
         + `${figureNotes.markable ?? 0}-marker limit for one view. They are in the findings table `
@@ -1616,6 +1672,16 @@ export function exportDfmPdf(
       sans(11, 'bold');
       const titleLines: string[] = doc.splitTextToSize(pdfSafe(f.title), CW - 34);
       const bandH = 6.5 + titleLines.length * 5.2;
+      // ── THE EVIDENCE PICTURE FOR THIS FINDING ─────────────────────────────
+      //
+      // Its own faces, tinted in its own severity colour, camera square to
+      // them. The hero on page one paints every finding at once, which shows a
+      // reader WHERE the problems are and cannot show them which faces THIS
+      // one is about — on a casting with nine amber regions those are
+      // different questions, and the supplier acts on the second.
+      const fig = findingFigures.get(f.id);
+      const figW = 78, figH = fig ? Math.round((figW * fig.height) / fig.width) : 0;
+      const noFigWhy = fig ? null : (figureNotes.noFigureReason?.[f.id] ?? null);
 
       // Pre-measure the WHOLE card so it either fits or starts on a fresh page.
       // Reserving a fixed guess instead let a long finding begin near the bottom
@@ -1629,6 +1695,8 @@ export function exportDfmPdf(
         + 3.8 + measure(costText, 9.1, CW - 9, 4.1)      // "COST IMPACT" + body
         + (f.cost?.externalGuideline ? measure(f.cost.externalGuideline, 8.8, CW - 9, 4.0, 'italic') : 0)
         + (f.cost?.caveat ? measure(f.cost.caveat, 8.8, CW - 9, 4.0, 'italic') + 1 : 0)
+        + (fig ? figH + 7 : 0)                            // figure + its caption
+        + (noFigWhy ? 4.4 : 0)                            // or the reason there is none
         + 4 + 8;                                          // source line + rule
       ensure(cardH);
       const top = y - 4;
@@ -1698,6 +1766,37 @@ export function exportDfmPdf(
           y += 4;
         }
         y += 1;
+      }
+      // THE FACES THIS FINDING IS ABOUT, in its own severity colour.
+      if (fig) {
+        ensure(figH + 7);
+        try {
+          doc.addImage(fig.dataUri, 'JPEG', ML + 4.5, y, figW, figH, undefined, 'FAST');
+          setDraw(doc, RULE, 0.2); doc.rect(ML + 4.5, y, figW, figH);
+          y += figH + 3;
+          mono(6); setText(doc, MUT);
+          // The caption states the COUNT, and states it as a fraction whenever
+          // the engine capped the id list — a picture of 40 faces captioned
+          // "40 faces" on a part with 67 tells the reader it showed everything.
+          const n = fig.faceCount ?? 0;
+          const count = fig.faceTotal && fig.faceTotal > n
+            ? `${n} of ${fig.faceTotal} faces tinted`
+            : `${n} face${n === 1 ? '' : 's'} tinted`;
+          doc.text(fit(doc, `THE GEOMETRY THAT BROKE THIS RULE — ${count}, ${f.severity} severity`, CW - 9),
+            ML + 4.5, y);
+          y += 4;
+        } catch {
+          // A figure that will not embed must not take the finding down with
+          // it; the text of the finding is the part that matters.
+          y += 2;
+        }
+      } else if (noFigWhy) {
+        // NO PICTURE, AND WHY. A finding with neither reads as an oversight,
+        // and two of the three reasons are facts about the measurement rather
+        // than gaps in the tool.
+        mono(6); setText(doc, MUT); ensure(5);
+        doc.text(fit(doc, `NOT SHOWN ON THE MODEL: ${noFigWhy}`, CW - 9), ML + 4.5, y);
+        y += 4.4;
       }
       mono(6); setText(doc, MUT); ensure(5);
       doc.text(fit(doc, `SOURCE [${SOURCE_GRADE[f.sourceStatus || 'industry-consensus']}]: ${f.source}`, CW - 9), ML + 4.5, y); y += 4;
@@ -2116,7 +2215,20 @@ export function exportDfmPdf(
 
 // ── Excel ────────────────────────────────────────────────────────────────────
 
-export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = null): Promise<void> {
+export async function exportDfmXlsx(
+  data: DfmReportData,
+  diff: DfmDiff | null = null,
+  /**
+   * The same per-finding evidence renders the PDF prints, so the workbook can
+   * carry the picture as well as the numbers. Optional: a caller with no 3D
+   * view open still gets a complete workbook, minus the Evidence sheet.
+   */
+  figures: DfmFigure[] = [],
+  figureNotes: DfmFigureNotes = {},
+): Promise<void> {
+  const findingFigures = new Map(
+    figures.filter(f => f.role === 'finding' && f.ruleId).map(f => [f.ruleId as string, f]),
+  );
   const subject = data.partName || data.fileName || 'Part';
   const today = new Date().toISOString().split('T')[0];
   const sheets: SheetSpec[] = [];
@@ -2679,6 +2791,22 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
             : 'process-wide (no material given)',
       f.measuredBasis ?? '',
       f.instances?.length ? `${f.instanceCount ?? f.instances.length} of ${f.instanceTotal ?? '?'} features` : '',
+      // ── WHERE THIS FINDING IS ON THE MODEL ────────────────────────────────
+      //
+      // A workbook row that states a breach and says nothing about where it is
+      // sends the reader back to the PDF or the Studio to find out. These two
+      // columns carry the same answer the screen gives: how many faces were
+      // highlighted (as a fraction whenever the engine capped its own list) and,
+      // when none were, WHY — which is a fact about the measurement at least as
+      // often as it is a gap in the tool.
+      (() => {
+        const fig = findingFigures.get(f.id);
+        if (!fig) return '';
+        const n = fig.faceCount ?? 0;
+        return fig.faceTotal && fig.faceTotal > n ? `${n} of ${fig.faceTotal}` : String(n);
+      })(),
+      findingFigures.has(f.id) ? 'yes — see Evidence sheet'
+        : (figureNotes.noFigureReason?.[f.id] ?? ''),
       f.fix, f.source,
     ]);
   // An empty findings sheet is the most dangerous page in the whole export: a
@@ -2696,16 +2824,68 @@ export async function exportDfmXlsx(data: DfmReportData, diff: DfmDiff | null = 
         ? `No rule was breached. ${evaluatedTotal} of ${ruleTotal} rules could be evaluated on this geometry — see the "Not evaluated" sheet for the remaining ${ruleTotal - evaluatedTotal}.`
         : `NOT A CLEAN RESULT. None of the ${ruleTotal} rules could be evaluated on this geometry, so this sheet is empty because nothing was checked — not because nothing was wrong. Every rule and its reason is on the "Not evaluated" sheet.`,
     headerRow: 0, zebra: true, autoFilter: true,
-    colWidths: [24, 10, 44, 48, 12, 12, 18, 12, 14, 16, 52, 34, 40, 20, 52, 44],
-    wrapCols: [2, 3, 10, 12, 14, 15],
+    colWidths: [24, 10, 44, 48, 12, 12, 18, 12, 14, 16, 52, 34, 40, 20, 14, 46, 52, 44],
+    wrapCols: [2, 3, 10, 12, 15, 16, 17],
     numFmt: { 8: '#,##0.00', 9: '#,##0' },
     statusColors: [{ match: 'high', argb: 'FFFDECEC' }, { match: 'medium', argb: 'FFFFF7E8' }],
     rows: [[
       'Process', 'Severity', 'Finding', 'In plain words', 'Measured', 'Unit', 'Guideline',
       'Cost status', 'Saving EUR/part', 'Saving EUR/year', 'Basis or reason',
-      'Threshold basis', 'Measured basis', 'Offending features', 'What to do', 'Source',
+      'Threshold basis', 'Measured basis', 'Offending features',
+      'Faces highlighted', 'Shown on model', 'What to do', 'Source',
     ], ...findingRows],
   });
+
+  // ── EVIDENCE: the geometry behind each finding, as a picture ──────────────
+  //
+  // A workbook is where a supplier and a buyer argue about numbers, and until
+  // now the argument's evidence lived only in the PDF. Each row here is one
+  // finding with the render of ITS faces, tinted in its severity colour, beside
+  // the measurement that failed. Same images the report prints, so the two
+  // artefacts cannot disagree about what a finding looks like.
+  const evidence = data.results
+    .flatMap(r => r.findings.map(f => ({ r, f })))
+    .filter(({ f }) => findingFigures.has(f.id))
+    .sort((a, b) => (SEV_RANK[a.f.severity] ?? 3) - (SEV_RANK[b.f.severity] ?? 3));
+  if (evidence.length) {
+    // One tall row per finding, so the picture has somewhere to sit. exceljs
+    // anchors by cell, and a picture over a default-height row would spill
+    // across every row beneath it.
+    const IMG_W = 320, IMG_H = 228;
+    const ROW_H = IMG_H * 0.78;            // points; ~1.33 px per point
+    const rows: (string | number)[][] = [[
+      'Severity', 'Finding', 'Measured', 'Guideline', 'Faces highlighted', 'Evidence',
+    ]];
+    const images: NonNullable<SheetSpec['images']> = [];
+    evidence.forEach(({ f }, i) => {
+      const fig = findingFigures.get(f.id)!;
+      const n = fig.faceCount ?? 0;
+      rows.push([
+        f.severity, f.title,
+        `${f.measured ?? '—'} ${f.unit ?? ''}`.trim(), f.thresholdText ?? '',
+        fig.faceTotal && fig.faceTotal > n ? `${n} of ${fig.faceTotal} faces` : `${n} face${n === 1 ? '' : 's'}`,
+        '',
+      ]);
+      images.push({
+        dataUri: fig.dataUri, row: i + 1, col: 5, widthPx: IMG_W, heightPx: IMG_H,
+      });
+    });
+    sheets.push({
+      name: 'Evidence',
+      title: 'The geometry behind each finding',
+      subtitle: (figureNotes.droppedFigures ?? 0) > 0
+        ? `Each picture shows ONLY that finding's faces, tinted by severity, with the camera square to them. `
+          + `${figureNotes.droppedFigures} further located finding(s) have no picture here — the set is capped `
+          + 'worst-first to keep the file openable, and they are still listed on the Findings sheet.'
+        : "Each picture shows ONLY that finding's faces, tinted by severity, with the camera square to them. "
+          + 'A face count given as "40 of 67" means the geometry engine capped the id list it sent, not that the rest are clean.',
+      headerRow: 0, zebra: true,
+      colWidths: [10, 46, 16, 20, 18, 48],
+      wrapCols: [1, 3],
+      rows, images,
+      rowHeights: Object.fromEntries(evidence.map((_, i) => [i + 1, ROW_H])),
+    });
+  }
 
   // Not-evaluated is its own sheet on purpose. Buried at the bottom of the
   // findings sheet it would read as a footnote; it is the coverage statement.

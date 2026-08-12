@@ -2396,3 +2396,48 @@ still renders and its leader marks the spot.
     top-left-most tinted pixel, which is an anti-aliased silhouette; signing up
     per run into a 5-per-15-minute rate limit) produced three separate false
     "product is broken" readings. Verify the harness before believing it.
+
+## 44. The highlight travels into the PDF and the workbook
+
+**Context**: Decisions 42-43 made every finding show its own geometry on screen.
+The exported artefacts did not follow. The PDF painted every finding's faces
+into ONE shared view — which answers "where are the problems" and cannot answer
+"which faces is THIS one about" — and the workbook carried the numbers with no
+picture at all, sending a reader back to the PDF to find out what a row meant.
+
+**Decision**: one evidence render per finding, captured once and used by both.
+
+  * `captureFigures` emits a `role: 'finding'` figure per LOCATABLE finding:
+    only that finding's faces, its own severity colour, camera square to them.
+    Built from `placedFindings`, deliberately NOT from `annotations` — the
+    latter is capped for page one's marker budget, and a finding printed in the
+    table with no picture beside it is the gap this closes.
+  * The PDF draws it inside the finding's card, captioned with the face count.
+  * The workbook gains an **Evidence** sheet embedding the same renders, and the
+    Findings sheet gains `Faces highlighted` and `Shown on model` columns. This
+    needed image support in `xlsx-write` (`SheetSpec.images`, `rowHeights`) —
+    a picture is anchored to a cell and does not push anything aside, so a sheet
+    carrying images has to make room for them.
+
+**Honesty, in both artefacts**: a finding with no picture prints WHY, from a
+complete uncapped map keyed by rule id — whole-part by nature, no coordinates
+from the engine, or located at a point rather than on a face (a callout, not a
+highlight). A face count reads "40 of 67" whenever the kernel capped its own id
+list. The per-finding figures have their own cap (12, worst first) because each
+is a full render, and the remainder is stated rather than dropped silently.
+
+**Consequences**:
+  * `flyTo` gained `immediate`: a capture cannot wait on a tween, and a
+    snapshot taken mid-flight is a picture of the camera moving.
+  * A defect the exports made visible and the screen never would: `flyTo` only
+    overrides the approach direction when the painted layer HAS a dominant
+    normal, and a curved wall deliberately has none — so those figures inherited
+    the pose the PREVIOUS figure left behind. On the steering knuckle that
+    produced an arbitrary close-up with the part unrecognisable. Each figure now
+    resets to isometric first, so an abstaining normal falls back to a standard
+    view rather than to an accident.
+  * Verified by exporting both artefacts from a real analysis of
+    `steering_knuckle_RH.stp`: 526 kB PDF with the under-drafted wall red inside
+    its own card and "measured across the whole part" printed under the finding
+    that has no face; 185 kB workbook with 4 images anchored on the Evidence
+    sheet at the right rows.

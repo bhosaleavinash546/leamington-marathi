@@ -556,15 +556,26 @@ export default function DfmStudioPage() {
         dfa: dfa?.dfa ?? null,
         subject: { part: result.partName, material, process: costProcess },
       };
+      // BOTH artefacts get the same evidence. The workbook used to carry the
+      // numbers and send the reader to the PDF to see what a row meant; it now
+      // embeds the same per-finding renders, captured once from the same viewer
+      // state, so the two cannot disagree about what a finding looks like.
+      const cap = await captureFigures();
+      const notes = {
+        notLocated: located.notLocated,
+        droppedByCap: located.droppedByCap,
+        markable: located.annotations.length,
+        captureError: cap.error,
+        // Why each finding has no picture of its own — complete and uncapped,
+        // so no card is left silently without one.
+        noFigureReason: noFigureReasons(),
+        droppedFigures: cap.droppedFigures ?? 0,
+      };
       if (kind === 'pdf') {
-        const cap = await captureFigures();
-        mod.exportDfmPdf(payload as never, cap.figures, {
-          notLocated: located.notLocated,
-          droppedByCap: located.droppedByCap,
-          markable: located.annotations.length,
-          captureError: cap.error,
-        }, revisionDiff as never);
-      } else await mod.exportDfmXlsx(payload as never, revisionDiff as never);
+        mod.exportDfmPdf(payload as never, cap.figures, notes, revisionDiff as never);
+      } else {
+        await mod.exportDfmXlsx(payload as never, revisionDiff as never, cap.figures, notes);
+      }
       // A file that appears silently in a downloads folder leaves the reader
       // wondering whether the click registered at all.
       toast.success(kind === 'pdf' ? 'Report exported as PDF' : 'Workbook exported as Excel');
@@ -588,7 +599,34 @@ export default function DfmStudioPage() {
    * draws its markers as vector on top — sharp at print resolution rather than
    * upscaled screen text.
    */
-  async function captureFigures(): Promise<{ figures: DfmFigure[]; error?: string }> {
+  /** Severity order for the per-finding figures — worst first, like everything. */
+  const SEV_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2, info: 3 };
+
+  /**
+   * Why each finding has NO evidence figure, keyed by rule id.
+   *
+   * Three genuinely different situations, and the report prints whichever
+   * applies rather than leaving a card with a gap where a picture should be:
+   * the measure is whole-part by nature, the geometry engine returned no
+   * coordinates, or it IS located but at a point rather than on a face — which
+   * is a callout, not a highlight, and says so.
+   */
+  function noFigureReasons(): Record<string, string> {
+    const out: Record<string, string> = {};
+    for (const r of (result?.results ?? [])) {
+      for (const f of (r.findings ?? [])) {
+        const loc = placedFindings.get(f.id);
+        if (!loc) continue;
+        if (!loc.located) out[f.id] = loc.reason;
+        else if (!loc.faceIds.length) {
+          out[f.id] = 'the engine measured this at a point, not on a face, so there is a marker but nothing to tint';
+        }
+      }
+    }
+    return out;
+  }
+
+  async function captureFigures(): Promise<{ figures: DfmFigure[]; error?: string; droppedFigures?: number }> {
     const v = viewerRef.current;
     if (!v || !file) return { figures: [], error: 'No 3D view was open when the report was exported.' };
     const W = 1400, H = 1000;
@@ -702,7 +740,75 @@ export default function DfmStudioPage() {
         finally { await v.sectionThrough(null).catch(() => {}); }
       }
 
-      return { figures };
+      // ── ONE FIGURE PER FINDING ───────────────────────────────────────────
+      //
+      // Everything above paints every finding at once, which answers "where
+      // are the problems". A supplier reading a finding needs the other
+      // question answered — WHICH faces is this one about — and on a casting
+      // carrying nine amber regions the shared view cannot answer it.
+      //
+      // Deliberately built from `placedFindings`, not from `annotations`:
+      // the latter is capped at ANNOTATION_CAP for page-one's marker budget,
+      // and a finding printed in the table with no picture beside it is the
+      // gap this whole wave exists to close.
+      // The LOCATED half of the union, so the loop below needs no re-narrowing.
+      type Located = Extract<FindingLocation, { located: true }>;
+      const perFinding: Array<{ id: string; sev: string; loc: Located }> = [];
+      for (const r of (result?.results ?? [])) {
+        for (const f of (r.findings ?? [])) {
+          const loc = placedFindings.get(f.id);
+          if (loc?.located && loc.faceIds.length) {
+            perFinding.push({ id: f.id, sev: f.severity ?? 'medium', loc });
+          }
+        }
+      }
+      perFinding.sort((a, b) =>
+        (SEV_ORDER[a.sev] ?? 9) - (SEV_ORDER[b.sev] ?? 9) || a.id.localeCompare(b.id));
+
+      // A STATED CAP, not a silent one. Each figure is a full render, and
+      // twenty of them is several megabytes of PDF and a slow export. Worst
+      // first, and what was dropped is reported to the caller so the report
+      // can say so rather than let the reader assume the list ended.
+      const FIGURE_CAP = 12;
+      const shown = perFinding.slice(0, FIGURE_CAP);
+      const droppedFigures = perFinding.length - shown.length;
+
+      // The shared severity paint is cleared first: leaving it on would put
+      // every OTHER finding's tint in this finding's portrait, which is the
+      // ambiguity these figures exist to remove.
+      for (const l of paintedLayers) await v.clearLayer(l);
+      await v.setAnnotations([]);
+      for (const { id, sev, loc } of shown) {
+        try {
+          await v.clearLayer('report-one');
+          await v.paintFaces('report-one', loc.faceIds,
+            { colour: SEV_TINT[sev] ?? SEV_TINT.info, opacity: 0.8 });
+          // BACK TO ISO FIRST, every time.
+          //
+          // `flyTo` only overrides the approach direction when the painted
+          // layer HAS a dominant one, and a curved wall — a cylindrical
+          // zero-draft face, a bore — deliberately has none. Without this reset
+          // those figures inherited whatever pose the PREVIOUS finding's figure
+          // left behind, which on the steering knuckle produced an arbitrary
+          // close-up with the part unrecognisable. Now an abstaining normal
+          // falls back to the standard isometric rather than to an accident.
+          await v.setView('iso');
+          // `immediate`: a capture cannot wait on a tween, and a snapshot taken
+          // mid-flight is a picture of the camera moving.
+          await v.flyTo(loc.xyz, { facing: 'report-one', immediate: true });
+          const uri = await v.snapshot({ width: 900, height: 640, clean: true });
+          if (!uri) continue;
+          figures.push({
+            id: `finding-${id}`, view: 'iso', role: 'finding', ruleId: id,
+            width: 900, height: 640, dataUri: uri, callouts: [],
+            faceCount: loc.faceIds.length,
+            faceTotal: loc.faceTotal ?? null,
+          });
+        } catch { /* one bad figure must not lose the rest */ }
+      }
+      await v.clearLayer('report-one');
+
+      return { figures, droppedFigures };
     } catch (e) {
       return { figures: [], error: e instanceof Error ? e.message : 'The 3D view could not be captured.' };
     } finally {

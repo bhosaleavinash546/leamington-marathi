@@ -161,7 +161,8 @@ export interface CADViewerHandle {
   /** Ease the camera to look at a point in the part's own coordinates. */
   /** `facing` names a painted layer: the camera comes in along ITS normal, so a
    *  wall parallel to the current line of sight is seen rather than glimpsed. */
-  flyTo(anchor: [number, number, number], opts?: { distance?: number; facing?: string }): void;
+  flyTo(anchor: [number, number, number],
+        opts?: { distance?: number; facing?: string; immediate?: boolean }): void;
   /** Shade bodies by id (a body id is the DFA part index). null resets. */
   setBodyColours(colours: Map<number, number> | null): void;
   /** Slide bodies apart: 0 assembled, 1 fully exploded. */
@@ -598,7 +599,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
    */
   let fly: { from: Vec3; to: Vec3; fromT: Vec3; toT: Vec3; t: number } | null = null;
   function flyTo(anchor: [number, number, number],
-                 opts: { distance?: number; facing?: string } = {}): void {
+                 opts: { distance?: number; facing?: string; immediate?: boolean } = {}): void {
     const target = toWorld(anchor);
     // HOW FAR BACK: the part stays in frame, and a big feature pushes further.
     //
@@ -648,8 +649,21 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         .addScaledVector(camera.up, 0.3)
         .normalize();
     }
+    const to = target.clone().addScaledVector(dir, d);
+    // A CAPTURE CANNOT WAIT FOR AN ANIMATION. The report exports one framed
+    // render per finding; animating each move would mean sleeping ~300 ms a
+    // figure and hoping the tween had finished before the snapshot, which is a
+    // race that fails silently as a half-flown camera. `immediate` puts the
+    // camera where the animation would have ended.
+    if (opts.immediate) {
+      camera.position.copy(to);
+      controls.target.copy(target);
+      controls.update();
+      fly = null;
+      return;
+    }
     fly = {
-      from: camera.position.clone(), to: target.clone().addScaledVector(dir, d),
+      from: camera.position.clone(), to,
       fromT: controls.target.clone(), toT: target.clone(), t: 0,
     };
   }

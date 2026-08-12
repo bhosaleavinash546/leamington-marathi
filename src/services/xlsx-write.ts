@@ -33,6 +33,32 @@ export interface SheetSpec {
   autoFilter?: boolean;
   /** Colour a whole body row by a keyword found in any cell. */
   statusColors?: { match: string; argb: string; fontArgb?: string }[];
+  /**
+   * Pictures anchored to cells.
+   *
+   * A DFM finding's evidence is a RENDER of the faces that broke the rule, and
+   * a workbook that carries the numbers but not the picture sends the reader
+   * back to the PDF to see what the row is talking about. `row`/`col` are
+   * 0-based into `rows` and are shifted by the title band automatically, so a
+   * caller places an image against the data row it belongs to and does not
+   * have to know how tall the branding is.
+   */
+  images?: Array<{
+    /** `data:image/jpeg;base64,...` straight from the viewer. */
+    dataUri: string;
+    row: number;
+    col: number;
+    widthPx: number;
+    heightPx: number;
+  }>;
+  /**
+   * Explicit row heights in POINTS, keyed by 0-based index into `rows`.
+   *
+   * A picture is anchored to a cell and does not push anything out of the way,
+   * so a row left at the default height gets a render lying across the ten rows
+   * beneath it. A sheet carrying images has to make room for them.
+   */
+  rowHeights?: Record<number, number>;
 }
 
 const BRAND = {
@@ -125,6 +151,33 @@ export async function downloadXlsx(filename: string, sheets: SheetSpec[]): Promi
       const cell = ws.getCell(f.row + offset + 1, f.col + 1);
       cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: f.argb } };
       if (f.bold) cell.font = { ...(cell.font ?? {}), bold: true };
+    }
+
+    // Room for the pictures, before they are placed.
+    for (const [idx, h] of Object.entries(spec.rowHeights ?? {})) {
+      ws.getRow(Number(idx) + offset + 1).height = h;
+    }
+
+    // Pictures last: they float over the grid, so nothing above needs to know
+    // about them. A malformed data URI is skipped rather than allowed to take
+    // the whole workbook down — the numbers are the part that must arrive.
+    for (const img of spec.images ?? []) {
+      const comma = img.dataUri.indexOf(',');
+      if (comma < 0) continue;
+      const header = img.dataUri.slice(0, comma);
+      const base64 = img.dataUri.slice(comma + 1);
+      const extension = /png/i.test(header) ? 'png' : 'jpeg';
+      try {
+        const id = wb.addImage({ base64, extension });
+        ws.addImage(id, {
+          // `tl` is zero-based in exceljs's own frame, and `offset` counts the
+          // rows the title band inserted — so a caller's row 0 is the first row
+          // of `rows` in both cases.
+          tl: { col: img.col, row: img.row + offset },
+          ext: { width: img.widthPx, height: img.heightPx },
+          editAs: 'oneCell',
+        });
+      } catch { /* one bad picture must not lose the workbook */ }
     }
   }
   const buf = await wb.xlsx.writeBuffer();
