@@ -44,7 +44,10 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // v15: gap closures — AI values suppressed for blocked-rule fields, AI-sourced
 //      material keeps the decision open as a blocking confirm, gear hand-off,
 //      blocking sanity codes.
-const CAD_PROMPT_VERSION = 15;
+// v16: engineer material confirm wins over AI on reanalyse (withAIMaterial),
+//      and casting/cast_and_machine emit the material GRADE from the confirmed
+//      family (was AI grade on cast-iron mass). Final-verification-run fixes.
+const CAD_PROMPT_VERSION = 16;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -1473,26 +1476,35 @@ export function answersFromContext(
  * id answers all four, so all four are set and each derive module takes the one
  * it recognises.
  */
-function withAIMaterial(ctx: RuleContext, analysis: Record<string, unknown>): RuleContext {
+export function withAIMaterial(ctx: RuleContext, analysis: Record<string, unknown>): RuleContext {
   const ci = analysis.costInputSuggestions as { materialId?: unknown } | undefined;
   const materialId = typeof ci?.materialId === 'string' ? ci.materialId : '';
   if (!materialId) return ctx;
 
   const answers: Record<string, unknown> = { ...ctx.answers };
   const family = familyFromMaterialId(materialId);
-  if (family) {
+  // THE ENGINEER'S ANSWER WINS. When a material decision has been answered
+  // (re-analysis with decisionAnswers), the confirmed family must NOT be
+  // clobbered by the model's guess — doing so silently reverted a cast-iron
+  // confirmation back to the AI's aluminium on the mode=both/reanalyze path,
+  // defeating the whole point of the confirm gate (found in the final
+  // verification run). Only fold the model's family in when nobody answered;
+  // then it is tagged as the model's, not the engineer's.
+  const engineerAnswered = typeof ctx.answers['material.family'] === 'string'
+    && (ctx.answers['material.family'] as string).length > 0;
+  if (family && !engineerAnswered) {
     answers['material.family'] = family;
-    // The basis text downstream says WHO settled the family. Folding the
-    // model's answer in as a bare answer made every derivation read
-    // "confirmed by engineer" when no engineer had confirmed anything
-    // (audit provenance finding). Only tag as AI when the engineer has not
-    // actually answered.
-    if (!ctx.answers['material.family']) answers['material.familySource'] = 'ai';
+    answers['material.familySource'] = 'ai';
   }
-  answers['material.resin'] = materialId;
-  answers['material.elastomer'] = materialId;
-  const laminate = systemForFibreId(materialId);
-  if (laminate) answers['material.laminate'] = laminate.value;
+  // Grade-level answers for the plastic/rubber/composite specs: only supply
+  // these when the engineer has not pinned the grade-level answer either, for
+  // the same reason.
+  if (typeof ctx.answers['material.resin'] !== 'string') answers['material.resin'] = materialId;
+  if (typeof ctx.answers['material.elastomer'] !== 'string') answers['material.elastomer'] = materialId;
+  if (typeof ctx.answers['material.laminate'] !== 'string') {
+    const laminate = systemForFibreId(materialId);
+    if (laminate) answers['material.laminate'] = laminate.value;
+  }
   return { ...ctx, answers };
 }
 

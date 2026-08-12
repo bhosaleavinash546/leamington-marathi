@@ -75,12 +75,70 @@ async function main(): Promise<void> {
     if (commodity) await page.selectOption('#cad-commodity-override', commodity);
     log(`file set, vol=200000, mode=${mode}, commodity=${commodity || 'auto'}`);
 
-    // Analyze & Calculate — the whole applyCADToForm → collect<X>Input path.
-    await page.click('#cad-analyze-calc-btn', { timeout: 15_000 });
+    // Blocking-sanity acknowledgements arrive as window.confirm — accept and
+    // record, so the trail shows an acknowledgement was demanded.
+    const dialogs: string[] = [];
+    page.on('dialog', d => { dialogs.push(d.message().slice(0, 160)); void d.accept(); });
 
-    // Big parts measure for minutes; the UI's own timeout is 150 s.
-    await page.waitForSelector('#results-tabs', { state: 'visible', timeout: 170_000 });
-    log('calculated — results rendered');
+    const answers = new Map<string, string>();
+    argv.forEach((a, i) => {
+      if (!a.startsWith('--answer')) return;
+      const kv = a.includes('=') && !a.startsWith('--answer=') ? a.slice(a.indexOf('=') + 1) : argv[i + 1];
+      const eq = kv?.indexOf('=') ?? -1;
+      if (kv && eq > 0) answers.set(kv.slice(0, eq), kv.slice(eq + 1));
+    });
+    const answered: Array<{ id: string; value: string; how: string }> = [];
+
+    // Analyze FIRST (not Analyze & Calculate): the post-fix engine raises a
+    // blocking material-confirm decision, and "& Calculate" would switch to the
+    // costing form and sweep the decision panel off-screen before it can be
+    // answered. Analyze-only keeps the panel on the CAD view — the exact flow
+    // the gate's banner tells the engineer to follow.
+    await page.click('#cad-analyze-btn', { timeout: 15_000 });
+    await page.waitForSelector('#cad-results .panel-title, #cad-decisions-panel, #cad-apply-calc-btn',
+      { state: 'attached', timeout: 200_000 });
+    log('analysed');
+
+    const panel = page.locator('#cad-decisions-panel');
+    if (await panel.count() > 0) {
+      for (const block of await page.locator('.cad-decision').all()) {
+        const id = await block.getAttribute('data-decision-id') ?? '';
+        const wanted = answers.get(id);
+        if (wanted) {
+          await block.locator(`input[type=radio][value="${wanted}"]`).check();
+          answered.push({ id, value: wanted, how: 'engineer answer (flag)' });
+        } else {
+          const leaning = block.locator('label:has-text("(likely)") input[type=radio]');
+          if (await leaning.count() > 0) {
+            await leaning.first().check();
+            answered.push({ id, value: await leaning.first().getAttribute('value') ?? '', how: 'confirmed the leaning' });
+          }
+        }
+      }
+      if (answered.length) {
+        log(`answering ${answered.length} blocking decision(s): ${answered.map(a => `${a.id}=${a.value}`).join(', ')}`);
+        // Wait for the re-analysis network round-trip to COMPLETE before costing
+        // — clicking Apply&Calc while /reanalyze is still in flight costs the
+        // stale first analysis (which still carries the AI's material).
+        const reanalyzed = page.waitForResponse(
+          resp => resp.url().includes('/api/cad/reanalyze') && resp.status() === 200,
+          { timeout: 180_000 });
+        await page.click('#cad-decisions-apply');
+        await reanalyzed;
+        await page.waitForTimeout(1500);   // let the re-render settle
+        log('re-analysed with the answer folded in');
+      }
+    }
+
+    // Apply the analysed inputs to the form AND calculate — the engineer's
+    // "Apply & Calculate" after reviewing.
+    await page.locator('#cad-apply-calc-btn').first().waitFor({ state: 'visible', timeout: 60_000 });
+    await page.click('#cad-apply-calc-btn');
+
+    // Big parts measure for minutes; the UI's own analysis timeout is 150 s.
+    await page.waitForSelector('#results-tabs', { state: 'visible', timeout: 200_000 });
+    log('calculated — results rendered'
+      + (dialogs.length ? ` (acknowledged ${dialogs.length} blocking sanity dialog(s))` : ''));
 
     // Capture what the product actually computed, from the page itself.
     // String-form evaluate: tsx's esbuild transform injects a __name helper
@@ -103,7 +161,8 @@ async function main(): Promise<void> {
     })()`);
     writeFileSync(join(outdir, `armA-${label}.json`), JSON.stringify({
       _audit: { part: basename(file), commodity: commodity || null, mode, label,
-                capturedAt: new Date().toISOString(), pageErrors },
+                capturedAt: new Date().toISOString(), pageErrors,
+                decisionsAnswered: answered, sanityDialogs: dialogs },
       state,
     }, null, 2));
     log('page state captured');

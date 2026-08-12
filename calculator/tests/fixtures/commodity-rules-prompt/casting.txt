@@ -5,6 +5,7 @@
 ### context: full
 CASTING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  materialId=mat-adc12  [aluminium → mat-adc12 (representative casting grade — not a drawing callout) — deterministic, use verbatim]
   subtype=hpdc  [hpdc: thin-wall aluminium at 100,000/yr — HPDC gives the lowest piece cost and best surface finish once the die is amortised [pressure-tight, tolerance class, safety-critical assumed — confirm before quoting] — deterministic, use verbatim]
   yieldFraction=0.65  [hpdc yield band 0.55–0.75, midpoint — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
@@ -17,6 +18,7 @@ CASTING COST INPUT RULES:
 CASTING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  materialId: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
   subtype: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
   yieldFraction: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
   netWeightKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)

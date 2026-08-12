@@ -50,6 +50,17 @@ async function main(): Promise<void> {
   form.set('noCache', 'true');
   if (commodity) form.set('commodity', commodity);
   if (has('deep')) form.set('deepAnalysis', 'true');
+  // Engineer answers, as the route's decisionAnswers map — so a costed API run
+  // can supply the material the geometry cannot settle (the same thing the
+  // browser's decision panel does). --answer key=value, repeatable.
+  const decisionAnswers: Record<string, string> = {};
+  argv.forEach((a, i) => {
+    if (!a.startsWith('--answer')) return;
+    const kv = a.includes('=') && !a.startsWith('--answer=') ? a.slice(a.indexOf('=') + 1) : argv[i + 1];
+    const eq = kv?.indexOf('=') ?? -1;
+    if (kv && eq > 0) decisionAnswers[kv.slice(0, eq)] = kv.slice(eq + 1);
+  });
+  if (Object.keys(decisionAnswers).length) form.set('decisionAnswers', JSON.stringify(decisionAnswers));
 
   const t0 = Date.now();
   process.stderr.write(`[${label}] POST /api/cad/analyze mode=${mode} commodity=${commodity ?? 'auto'} vol=${volume}\n`);

@@ -62,6 +62,9 @@ const num = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v)
 const RULE_PATH_MAP: Record<string, FieldMapping> = {
   // ── shared top-level fields ────────────────────────────────────────────────
   'casting.netWeightKg': { to: 'netWeightKg' },
+  // The confirmed-family grade overwrites the AI's — else cast-iron mass was
+  // priced at the AI's aluminium grade (final verification run).
+  'casting.materialId': { to: 'materialId' },
   'machining.netWeightKg': { to: 'netWeightKg' },
   'machining.estimatedCycleTimeHr': { to: 'estimatedCycleTimeHr' },
   'machining.setupTimeHr': { to: 'estimatedSetupTimeHr' },

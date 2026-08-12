@@ -5,6 +5,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { suppressAIForUndecided } from '../src/engine/cost-input-rules/apply.js';
+import { withAIMaterial } from '../server/routes/cad.js';
 import { runCostInputRules } from '../src/engine/cost-input-rules/engine.js';
 import { specForCommodity } from '../src/engine/cost-input-rules/index.js';
 import type { RuleContext } from '../src/engine/cost-input-rules/types.js';
@@ -61,6 +62,29 @@ describe('gap 2 — AI values are suppressed for fields owned by a rule that is 
     const suppressed = suppressAIForUndecided(analysis, result, spec)
       .filter(x => x.field.startsWith('injectionMoulding.mould'));
     expect(suppressed).toEqual([]);
+  });
+});
+
+describe("gap 1 (re-analysis path) — the engineer's material confirm wins over the AI guess", () => {
+  // The final verification run caught this: on mode=both/reanalyze, withAIMaterial
+  // overwrote the confirmed family with the model's, silently reverting a
+  // cast-iron confirmation to the AI's aluminium.
+  const base = { geo: BUMPER_GEO, geometryQuality: 'occt', commodity: 'casting',
+    commoditySource: 'engineer', annualVolume: 200000, filename: 'part.stp' } as unknown as RuleContext;
+  const aiAluminium = { costInputSuggestions: { materialId: 'mat-lm25' } };  // AI said aluminium
+
+  it('keeps the engineer-answered cast iron instead of folding in the AI aluminium', () => {
+    const ctx = { ...base, answers: { 'material.family': 'cast iron' } } as unknown as RuleContext;
+    const out = withAIMaterial(ctx, aiAluminium);
+    expect(out.answers['material.family']).toBe('cast iron');
+    expect(out.answers['material.familySource']).not.toBe('ai');
+  });
+
+  it('still folds the AI family in (tagged as AI) when the engineer has NOT answered', () => {
+    const ctx = { ...base, answers: {} } as unknown as RuleContext;
+    const out = withAIMaterial(ctx, aiAluminium);
+    expect(out.answers['material.family']).toBe('aluminium');
+    expect(out.answers['material.familySource']).toBe('ai');
   });
 });
 

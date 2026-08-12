@@ -25,7 +25,7 @@ import {
   estimateHPDCDieCost, estimateGravityMouldCost, estimateSandPatternCost, estimateInvestmentToolCost,
 } from '../../casting-tooling.js';
 import { projectedAreaCm2 } from '../derive/envelope.js';
-import { materialFacts, toCastingAlloyFamily } from '../derive/material.js';
+import { materialFacts, toCastingAlloyFamily, representativeMaterialId } from '../derive/material.js';
 import {
   pressureTightDecision, toleranceClassDecision, safetyCriticalDecision,
   answeredBool, answeredToleranceClass, assumedNote,
@@ -158,6 +158,24 @@ export const CASTING_RULES: CommodityRuleSpec = {
   commodity: 'casting',
   header: 'CASTING COST INPUT RULES:',
   rules: [
+    {
+      // The material GRADE, derived from the confirmed family. Casting used to
+      // emit only the weight from the family and leave the grade as the AI's —
+      // so a cast-iron confirmation produced cast-iron MASS priced at the AI's
+      // aluminium GRADE (found in the final verification run: mat-lm25 @ 2.288
+      // kg). The grade must track the family the engineer confirmed.
+      id: 'casting.materialId',
+      path: 'casting.materialId',
+      fieldId: 'cast-mat',
+      label: 'materialId',
+      evaluate: (ctx) => {
+        const mat = materialFacts(ctx);
+        if (mat.decision) return ask(mat.decision);
+        const id = representativeMaterialId('casting', mat.family!);
+        return decided('casting.materialId', id ?? mat.family!, 'geometry',
+          `${mat.family} → ${id ?? mat.family} (representative casting grade — not a drawing callout)`, 0.85);
+      },
+    },
     {
       id: 'casting.subtype',
       path: 'casting.subtype',

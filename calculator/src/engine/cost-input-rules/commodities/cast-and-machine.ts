@@ -36,6 +36,7 @@ import { materialFacts } from '../derive/material.js';
  */
 const FIELD_ID_MAP: Record<string, string> = {
   // casting half
+  'cast-mat': 'cam-mat',
   'cast-subtype': 'cam-cast-subtype',
   'cast-yield': 'cam-cast-yield',
   'cast-part-wt': 'cam-cast-wt',
