@@ -38,8 +38,8 @@ const GATED = DFM_RULES.filter((r) => r.blocking).length;
 // Recorded by hand because running the suite inside the deck build would take
 // two minutes. Dated for the same reason the sweep is: a stale number should be
 // visible rather than quietly believed.
-const TESTS = 727;
-const TESTS_DATE = '11 Aug 2026';
+const TESTS = 758;
+const TESTS_DATE = '12 Aug 2026';
 
 // From `node benchmark/commodity-sweep.mjs`, recorded with the run date so a
 // stale table is visible rather than silently believed.
@@ -76,7 +76,14 @@ const SHOT = {
   diff: img('pdf-qa/diff_page.png'),
   forming: img('pdf-qa/forming.png'),
   iso: img('pdf-qa/live-iso.png'),
+  // Shot on 12 Aug 2026 from the live tool and the real exports it produced:
+  // PRCR012's 40 unreachable faces painted in the viewer, and page 7 of the
+  // steering-knuckle report where a finding carries its own figure.
+  highlight: img('deck-assets/dfm-highlight.png'),
+  pdfCard: img('deck-assets/dfm-pdf-card.png'),
 };
+/** The render embedded in the workbook's Evidence sheet (JPEG, not PNG). */
+const XLSX_RENDER = `data:image/jpeg;base64,${readFileSync(new URL('deck-assets/dfm-xlsx-render.jpg', import.meta.url)).toString('base64')}`;
 
 const pres = new pptxgen();
 pres.layout = 'LAYOUT_WIDE';          // 13.3 x 7.5 in — set BEFORE any slide
@@ -87,7 +94,7 @@ const W = 13.33;
 const H = 7.5;
 const M = 0.62;                        // page margin
 let slideNo = 0;
-const TOTAL = 17;
+const TOTAL = 19;
 
 /** Every content slide shares one footer, so the deck reads as one document. */
 function footer(s) {
@@ -334,6 +341,55 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   ].join('\n'));
 }
 
+// ── 4b · The 2D drawing ─────────────────────────────────────────────────────
+//
+// No screenshot on this slide on purpose: the authored test drawing from the
+// live run did not survive, and a mocked-up drawing would be the one fabricated
+// image in a deck whose whole argument is that its pictures are real. The
+// numbers below ARE the live run's own result.
+{
+  const s = pres.addSlide(); s.background = { color: PAPER };
+  heading(s, 'The other half of the spec', 'The drawing carries the tolerances');
+  s.addText('A STEP file does not know its own tolerances. Most parts still declare them on a 2D drawing — so the Studio reads that too, and then makes the two argue.',
+    { x: M, y: 1.62, w: 11.9, h: 0.5, fontSize: 13.5, color: BODY, fontFace: 'Calibri', margin: 0 });
+
+  const steps = [
+    ['1 · READ', 'Vision extracts', 'Dimensions with their tolerances, GD&T frames, surface finishes, and the general-tolerance note — as structured data, never free text.'],
+    ['2 · JUDGE', 'The same rules run', 'The extracted tolerances feed the SAME commodity rules the geometry does. A drawing tolerance is judged against the process capability, not just recorded.'],
+    ['3 · CHECK', 'The model disagrees', 'Every dimension the drawing declares is measured on the 3D model. Agreement is confirmed, disagreement is a CONFLICT, and neither is silently resolved.'],
+  ];
+  steps.forEach(([tag, title, body], i) => {
+    const x = M + i * 4.02;
+    s.addShape(pres.ShapeType.roundRect, { x, y: 2.35, w: 3.78, h: 2.35, fill: { color: PANEL }, rectRadius: 0.06, line: { color: PANEL } });
+    s.addText(tag, { x: x + 0.22, y: 2.52, w: 3.3, h: 0.26, fontSize: 10, bold: true, color: GOLD, fontFace: 'Calibri', charSpacing: 1.5, margin: 0 });
+    s.addText(title, { x: x + 0.22, y: 2.82, w: 3.3, h: 0.34, fontSize: 15, bold: true, color: INK, fontFace: 'Cambria', margin: 0 });
+    s.addText(body, { x: x + 0.22, y: 3.22, w: 3.36, h: 1.35, fontSize: 11, color: BODY, fontFace: 'Calibri', lineSpacing: 16, margin: 0 });
+  });
+
+  s.addText('ON A REAL AUTHORED DRAWING, WITH FAULTS PLANTED ON PURPOSE', {
+    x: M, y: 4.98, w: 11.9, h: 0.24, fontSize: 10, bold: true, color: MUT, fontFace: 'Calibri', charSpacing: 1.5, margin: 0,
+  });
+  stat(s, M, 5.32, 3.78, '3', 'CONFIRMED BY THE MODEL', GREEN, 'The drawing said it; the geometry measured the same thing.');
+  stat(s, M + 4.02, 5.32, 3.78, '1', 'CONFLICT, NAMED', RED, 'Drawing and model disagree. The report prints both numbers and refuses to pick.');
+  stat(s, M + 8.04, 5.32, 3.78, '1', 'NOT FOUND ON THE MODEL', MUT, 'Declared on the drawing, absent from the geometry — reported, not quietly dropped.');
+  footer(s);
+  s.addNotes([
+    'One thing the last few slides skipped: everything I have shown you is measured from the 3D model. But a STEP file does not know its own tolerances. In most of our supply base the requirements still live on a 2D drawing.',
+    '',
+    'So the Studio reads the drawing as well. Three steps, left to right.',
+    '',
+    'It extracts — dimensions with tolerances, geometric frames, surface finishes, the general-tolerance note in the corner — as structured data, not as a paragraph of text.',
+    '',
+    'Then it JUDGES. And this is the part that matters: those tolerances go into the same commodity rules the geometry does. It is not filing your drawing away, it is asking whether a die caster can actually hold what you have written.',
+    '',
+    'Then it CHECKS the drawing against the model. Every dimension the drawing declares gets measured on the 3D geometry.',
+    '',
+    'The numbers along the bottom are from a real run on a drawing we authored with faults planted in it deliberately, because a test you cannot fail proves nothing. Three dimensions confirmed. One CONFLICT — the drawing and the model disagree, and the tool prints both numbers and refuses to decide which is right, because that is an engineering judgement and not its call. And one declared on the drawing that it could not find on the model at all — reported, not quietly dropped.',
+    '',
+    'If you take one thing from this slide: the tool does not merge the two sources into a comfortable single answer. It shows you where they disagree.',
+  ].join('\n'));
+}
+
 // ── 4 · Three outcomes ──────────────────────────────────────────────────────
 {
   const s = pres.addSlide(); s.background = { color: PAPER };
@@ -423,34 +479,71 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
 {
   const s = pres.addSlide(); s.background = { color: PAPER };
   heading(s, 'Located evidence', 'The finding, marked on the part that caused it');
-  s.addImage({ data: SHOT.evidence, x: M, y: 1.6, w: 5.6, h: 7.92 * (5.6 / 8.27) });
+  // The real thing, shot from the live tool: PRCR012 with the 40 faces a
+  // standard cutter cannot reach painted in high-severity red.
+  s.addImage({ data: SHOT.highlight, x: M, y: 1.62, w: 4.98 / (520 / 418), h: 4.98 });
   s.addText([
-    { text: 'A ring on the geometry, numbered, with a legend beneath.', options: { bold: true, breakLine: true } },
-    { text: 'Every marker comes from a rule that FAILED — not from the geometry. An earlier version marked every rib and pocket the recogniser found, which put forty rings on a casting, most of them on features that broke nothing.', options: { breakLine: true } },
+    { text: 'Click a finding. It takes the model.', options: { bold: true, breakLine: true } },
+    { text: 'Its own faces are painted in its own severity colour, with the camera brought square to them — not a ring floating above the area, the surfaces the rule was measured on.', options: { breakLine: true } },
     { text: '', options: { breakLine: true } },
-    { text: 'Worst first, capped at eight, one ring per finding on its worst instance. Rings that would collide are pushed apart with a leader line back to the true point.', options: { breakLine: true } },
+    { text: 'It runs both ways: click a painted face and the finding that painted it opens. Where two findings share a face the more severe wins the click, and the banner counts the other.', options: { breakLine: true } },
     { text: '', options: { breakLine: true } },
-    { text: 'And what CANNOT be marked is named: a tolerance is a property of the whole part, so the report says so instead of pinning it somewhere plausible.', options: {} },
-  ], { x: 6.5, y: 1.75, w: 6.2, h: 3.4, fontSize: 12.5, color: BODY, fontFace: 'Calibri', lineSpacing: 21, margin: 0 });
+    { text: 'Three outcomes again, not two. A finding shows faces, or a callout when the engine measured a POINT rather than a surface, or it states in grey why it can be shown at all — "measured across the whole part, so there is no single face to mark".', options: {} },
+  ], { x: 5.5, y: 1.72, w: 7.2, h: 3.5, fontSize: 12.5, color: BODY, fontFace: 'Calibri', lineSpacing: 21, margin: 0 });
 
-  s.addShape(pres.ShapeType.roundRect, { x: 6.5, y: 5.35, w: 6.2, h: 1.0, fill: { color: PANEL }, rectRadius: 0.06, line: { color: PANEL } });
-  s.addText('A supplier can act on this without opening CAD. That is the difference between a report that asserts and a report that shows.',
-    { x: 6.72, y: 5.52, w: 5.8, h: 0.7, fontSize: 12, italic: true, color: INK, fontFace: 'Calibri', margin: 0 });
+  s.addShape(pres.ShapeType.roundRect, { x: 5.5, y: 5.42, w: 7.2, h: 1.12, fill: { color: PANEL }, rectRadius: 0.06, line: { color: PANEL } });
+  s.addText([
+    { text: 'And it never overstates what it painted.  ', options: { bold: true } },
+    { text: 'This part has 67 faces the cutter cannot reach; the kernel caps the list it sends at 40. The caption reads "40 of 67", not "40".', options: {} },
+  ], { x: 5.72, y: 5.6, w: 6.8, h: 0.8, fontSize: 12, italic: true, color: INK, fontFace: 'Calibri', margin: 0 });
   footer(s);
   s.addNotes([
     'This is the slide I would slow down on, because it is the one suppliers react to.',
     '',
-    'On the left is a page straight out of the report. You can see the part, and you can see numbered rings on it. Underneath, a legend tells you what each ring is: wall area below the minimum die casting draft, forty-one per cent, limit is five.',
+    'What you are looking at is a real machined part in the tool, and every red surface is a face a standard cutter cannot reach. Not an arrow pointing at the area — the actual faces, tinted.',
     '',
-    'The important thing is what the rings are NOT. They are not every feature the tool found. Every ring is a rule that FAILED. If a rib is perfectly fine, no ring.',
+    'You click a finding in the list and it takes over the model: its faces paint in its own severity colour, and the camera comes round square to them so you are not looking at the problem edge-on.',
     '',
-    'That sounds obvious but we got it wrong first time round. An early version marked everything it recognised, and a casting came back with forty rings on it, most of them on features that broke no rule at all. It was showing what it had MEASURED instead of what it had CONCLUDED. Nobody could read it.',
+    'Now, the version of this I showed you before drew numbered RINGS on the picture. That was honest but it was weak, and a supplier told us why: on a casting with nine ribs, a ring near a rib does not tell you WHICH rib. So we fixed it properly. The engine already knew which B-rep faces it measured — it was computing the face identifiers and then throwing them away in four separate places. Now it keeps them.',
     '',
-    'So now: worst first, maximum of eight rings, one ring per finding placed on the worst example of it. And where two rings would sit on top of each other, they get pushed apart with a leader line back to the real point.',
+    'It also runs backwards, which people like more than I expected. You see a red face, you click it, and the finding that painted it opens in the list. If two findings claim the same face, the more severe one wins the click and the banner tells you another one is there — because quietly hiding the second would be the same sin as never showing it.',
     '',
-    'And one more piece of honesty. Some findings cannot be pointed at. A tolerance belongs to the whole part, not to one face. Rather than pin it somewhere plausible and mislead you, the report lists it separately and says why it is not marked.',
+    'And the honesty rule survives into the picture. Some findings have faces. Some were measured at a POINT, not on a surface — those get a marker and the tool says so. And some genuinely cannot be pointed at: a wall-thickness distribution is a property of the whole part, and rather than pin it somewhere plausible the tool writes, in grey, why there is nothing to mark.',
     '',
-    'The reason this matters: a supplier can act on this page without opening CAD.',
+    'One last detail, bottom right, and it is the one I would want you to hold me to. This part has sixty-seven unreachable faces. The geometry kernel caps the list it sends at forty. So the caption says forty OF sixty-seven. A tool that painted forty and said "forty" would be telling you it had shown you everything.',
+  ].join('\n'));
+}
+
+// ── 6b · The evidence travels into the deliverables ─────────────────────────
+{
+  const s = pres.addSlide(); s.background = { color: PAPER };
+  heading(s, 'It leaves the screen', 'The same evidence, inside the PDF and the workbook');
+  s.addImage({ data: SHOT.pdfCard, x: M, y: 1.62, w: 4.98 / (776 / 800), h: 4.98 });
+
+  s.addText([
+    { text: 'A finding argues its case where it is written down.', options: { bold: true, breakLine: true } },
+    { text: 'Each finding\'s card in the PDF carries its own render — only that finding\'s faces, its own severity colour, camera square to them — captioned with the face count.', options: { breakLine: true } },
+    { text: '', options: { breakLine: true } },
+    { text: 'Look at the card above it: no picture, and a grey line saying why. "Measured across the whole part, so there is no single face to mark." A gap with no explanation reads as an oversight.', options: {} },
+  ], { x: 6.85, y: 1.72, w: 5.85, h: 2.5, fontSize: 12.5, color: BODY, fontFace: 'Calibri', lineSpacing: 21, margin: 0 });
+
+  s.addShape(pres.ShapeType.roundRect, { x: 6.85, y: 4.35, w: 5.85, h: 2.2, fill: { color: PANEL }, rectRadius: 0.06, line: { color: PANEL } });
+  s.addImage({ data: XLSX_RENDER, x: 7.05, y: 4.55, w: 1.85, h: 1.85 * (640 / 900) });
+  s.addText([
+    { text: 'The workbook too.', options: { bold: true, breakLine: true } },
+    { text: 'A new Evidence sheet embeds the same renders beside each measurement, and the Findings sheet gained two columns: how many faces were highlighted, and — when none were — why.', options: {} },
+  ], { x: 9.1, y: 4.6, w: 3.4, h: 1.7, fontSize: 11, color: BODY, fontFace: 'Calibri', lineSpacing: 17, margin: 0 });
+  footer(s);
+  s.addNotes([
+    'A fair challenge to the last slide is: that is lovely on your screen, but I forward a PDF to a supplier in Poland and a workbook to my buyer. So does the evidence travel?',
+    '',
+    'It does now. On the left is page seven of a real report on a steering knuckle. Look at the second finding — under-drafted wall — and it has its own picture, inside its own card, showing only ITS faces in red, with the camera square to them. Captioned with the face count.',
+    '',
+    'Now look at the finding ABOVE it. Non-uniform wall thickness. No picture — and a grey line explaining why: measured across the whole part, so there is no single face to mark. That is deliberate. A card with a gap where a picture should be reads as an oversight, and the supplier stops trusting the rest of the page.',
+    '',
+    'And the workbook, bottom right. It used to carry the numbers and send you back to the PDF to find out what a row meant. It now has an Evidence sheet with the same renders embedded next to each measurement, and the Findings sheet gained two columns — how many faces were highlighted, and when none were, the reason.',
+    '',
+    'The point worth stressing: those are the SAME images, captured once from the same viewer state. The screen, the PDF and the workbook cannot disagree with each other about what a finding looks like.',
   ].join('\n'));
 }
 
@@ -556,7 +649,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   s.addText('NEW — WHAT THE STANDARD PROMISES', { x: M + 0.28, y: 5.13, w: 5.4, h: 0.24, fontSize: 10, bold: true, color: GOLD, fontFace: 'Calibri', charSpacing: 1.5, margin: 0 });
   s.addText('Capability bands, before any rule fires', { x: M + 0.28, y: 5.4, w: 5.4, h: 0.32, fontSize: 14, bold: true, color: 'FFFFFF', fontFace: 'Cambria', margin: 0 });
   s.addText('For die castings and steel castings the report now opens with what NADCA #402 or SFSA 2000 promises at this part\'s own size — tolerance band, machining allowance, flatness — so a purchasing conversation starts from the standard, not from a finding.',
-    { x: M + 0.28, y: 5.72, w: 5.5, h: 0.62, fontSize: 10, color: 'CBD5E1', fontFace: 'Calibri', margin: 0 });
+    { x: M + 0.28, y: 5.72, w: 5.5, h: 0.74, fontSize: 10, color: 'CBD5E1', fontFace: 'Calibri', margin: 0 });
   footer(s);
   s.addNotes([
     'Two things on this slide.',
@@ -580,7 +673,7 @@ function stat(s, x, y, w, value, label, colour = INK, note) {
   s.addText('Tested against arithmetic, not itself', { x: M, y: 0.86, w: 11.5, h: 0.72, fontSize: 30, bold: true, color: 'FFFFFF', fontFace: 'Cambria', margin: 0 });
 
   const facts = [
-    ['199/199', 'GEOMETRY ACCURACY GATE', 'Every fixture is a shape whose truth is arithmetic — a 3.000° cone, a 25 mm wall. CI fails on any regression.'],
+    ['200/200', 'GEOMETRY ACCURACY GATE', 'Every fixture is a shape whose truth is arithmetic — a 3.000° cone, a 25 mm wall. CI fails on any regression.'],
     [String(TESTS), 'AUTOMATED TESTS', `Plus HTTP integration tests and an accessibility gate on every page. ${TESTS_DATE}.`],
     ['93', 'SHAPED PARTS SWEPT', 'Ten commodities, ten variants each, through the full production path.'],
     ['0', 'AI-WRITTEN NUMBERS', 'No language model touches this analysis at any point.'],
