@@ -11,6 +11,7 @@ import type { DfmFigure } from '../services/dfm-report';
 import { selectFindingAnnotations, chooseSecondView, sectionCandidate } from '../services/dfm-annotations.mjs';
 import { diffAnalyses, comparability } from '../services/dfm-diff.mjs';
 import { useAuth } from '../contexts/AuthContext';
+import { toast } from '../hooks/useToast';
 // ── The studio's own material and motion ────────────────────────────────────
 // Precision-instrument identity: graph-paper ground, drawing-frame ticks, a
 // swept gauge. Everything decorative sits behind prefers-reduced-motion in
@@ -283,6 +284,16 @@ export default function DfmStudioPage() {
   // Drag-over feedback for the two dropzones. A drop target that does not
   // acknowledge the drag is the commonest reason a file gets dropped on the
   // page background and nothing happens.
+  // Once a report exists the setup form has done its job. It collapses to a
+  // one-line context bar so the answer is at the top of the page instead of
+  // 900px below it; `setupOpen` is the explicit way back in, and choosing a
+  // new file or drawing re-opens it automatically (see pick / pickDrawing).
+  const [setupOpen, setSetupOpen] = useState(true);
+  // Which findings are expanded. A finding is six paragraphs of reasoning —
+  // measured value, evidence, rationale, fix, cost, source grade — and eight
+  // of them stacked is a wall nobody reads to the end of. Collapsed, the list
+  // is scannable; the reasoning is one click away and never lost.
+  const [openFindings, setOpenFindings] = useState<Set<string>>(new Set());
   const [dragOver, setDragOver] = useState(false);
   const [dragOverDrawing, setDragOverDrawing] = useState(false);
   const [loading, setLoading] = useState<'' | 'dfm' | 'dfa'>('');
@@ -315,7 +326,7 @@ export default function DfmStudioPage() {
   const [explode, setExplode] = useState(0);
 
   const pick = useCallback((f: File | null) => {
-    setFile(f); setResult(null); setDfa(null); setError(''); setAnswers({});
+    setFile(f); setResult(null); setDfa(null); setError(''); setAnswers({}); setSetupOpen(true);
   }, []);
 
   /** Jump the reader to a step. 128px clears the app header and the sticky bar. */
@@ -330,7 +341,7 @@ export default function DfmStudioPage() {
 
   /** Read the drawing file and send it for extraction. Nothing is judged here. */
   async function pickDrawing(f: File | null) {
-    setDrawingFile(f); setDrawing(null); setExcludedDims(new Set()); setResult(null);
+    setDrawingFile(f); setDrawing(null); setExcludedDims(new Set()); setResult(null); setSetupOpen(true);
     if (!f) return;
     if (!token) { setError('Please sign in.'); return; }
     setExtracting(true); setError('');
@@ -431,7 +442,17 @@ export default function DfmStudioPage() {
           let ev: any;
           try { ev = JSON.parse(line.slice(6)); } catch { continue; }
           if (ev.type === 'stage') setStages(prev => [...prev, ev]);
-          else if (ev.type === 'result') setResult(ev.result);
+          else if (ev.type === 'result') {
+            setResult(ev.result); setSetupOpen(false);
+            // The expensive ones open themselves. A high-severity finding is
+            // the reason the report exists; making the reader click for it
+            // would be collapsing the wrong thing.
+            setOpenFindings(new Set(
+              (ev.result.results ?? [])
+                .flatMap((r: ProcessResult) => r.findings)
+                .filter((f: Finding) => f.severity === 'high')
+                .map((f: Finding) => f.id)));
+          }
           else if (ev.type === 'error') throw new Error(ev.error);
         }
       }
@@ -530,8 +551,13 @@ export default function DfmStudioPage() {
           captureError: cap.error,
         }, revisionDiff as never);
       } else await mod.exportDfmXlsx(payload as never, revisionDiff as never);
+      // A file that appears silently in a downloads folder leaves the reader
+      // wondering whether the click registered at all.
+      toast.success(kind === 'pdf' ? 'Report exported as PDF' : 'Workbook exported as Excel');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Export failed');
+      const msg = e instanceof Error ? e.message : 'Export failed';
+      setError(msg);
+      toast.error(msg);
     } finally { setExporting(''); }
   }
 
@@ -1043,8 +1069,70 @@ export default function DfmStudioPage() {
           </div>
         </div>
 
+        {/* ── THE CONTEXT BAR ────────────────────────────────────────────────
+            What the setup form becomes once it has been answered. A report is
+            read far more often than it is configured, so the configuration
+            steps aside and states itself in one line — with the way back in
+            one click away. The chips carry `layoutId`s, so they travel from
+            the form to this bar rather than one set vanishing as another
+            appears. */}
+        <AnimatePresence initial={false}>
+          {!setupOpen && result && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              transition={m.springSoft}
+              onMouseMove={spot}
+              className="dfm-panel dfm-spot px-4 py-3 mb-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+              <span className="dfm-label text-slate-500 shrink-0">Analysing</span>
+              <motion.span layoutId="ctx-part" transition={m.springSoft}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/10 text-slate-200 text-xs font-medium">
+                <Layers size={12} className="text-gold-400" aria-hidden="true" />
+                {file?.name ?? result.partName}
+              </motion.span>
+              {drawing && (
+                <motion.span layoutId="ctx-drawing" transition={m.springSoft}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-500/25 text-sky-300 text-xs font-medium">
+                  <FileText size={12} aria-hidden="true" />
+                  {drawing.dimensions.length} drawing dims
+                </motion.span>
+              )}
+              <motion.span layoutId="ctx-material" transition={m.springSoft}
+                className="px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/10 text-slate-200 text-xs">
+                {material || 'no material'}
+              </motion.span>
+              <motion.span layoutId="ctx-process" transition={m.springSoft}
+                className="px-2.5 py-1 rounded-lg bg-gold-500/10 border border-gold-500/25 text-gold-300 text-xs font-medium">
+                {costProcess || result.processFamily || 'every family'}
+              </motion.span>
+              <span className="px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/10 text-slate-400 text-xs dfm-num">
+                {annualVolume.toLocaleString()}/yr · {region}
+              </span>
+              <div className="flex-1" />
+              <motion.button type="button" onClick={() => setSetupOpen(true)} {...m.press}
+                className="px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:text-white hover:border-white/25 text-xs font-medium transition-colors
+                           focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60">
+                Change inputs
+              </motion.button>
+              <motion.button type="button" onClick={() => { setSetupOpen(true); void analyse(); }} {...m.press}
+                disabled={loading !== ''}
+                className="px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 text-xs font-medium transition-colors disabled:opacity-50
+                           focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60">
+                Re-run
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Input */}
-        <div id="step-part" onMouseMove={spot} className="dfm-panel dfm-spot dfm-framed p-6 mb-6 scroll-mt-32">
+        <AnimatePresence initial={false}>
+        {setupOpen && (
+        <motion.div id="step-part" onMouseMove={spot}
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={m.reduced ? { duration: 0 } : { duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+          style={{ overflow: 'hidden' }}
+          className="dfm-panel dfm-spot dfm-framed p-6 mb-6 scroll-mt-32">
           <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-3">
             <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold-500 text-navy-950 text-[11px] font-bold">1</span>
             The part
@@ -1581,7 +1669,9 @@ export default function DfmStudioPage() {
             </p>
           )}
           {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
-        </div>
+        </motion.div>
+        )}
+        </AnimatePresence>
 
         {/* ── PORTFOLIO RESULTS ────────────────────────────────────────────────
           Worst first, because the only reason to scan a portfolio is to find the
@@ -1718,6 +1808,18 @@ export default function DfmStudioPage() {
           )}
         </AnimatePresence>
 
+        {/* ── THE WORKSPACE ──────────────────────────────────────────────────
+            Two columns once there is a report and a model to show it on: the
+            findings stream reads on the left while the part stays in view on
+            the right. The viewer used to sit ABOVE the findings, which meant
+            "Show on model" scrolled the reader away from the very sentence
+            that sent them there — the control worked and the interaction did
+            not. Sticky, beside the text, the two finally cooperate.
+
+            Below xl it stacks back to one column in the same order, so the
+            narrow layout loses nothing but the adjacency. */}
+        <div className={result && file ? 'xl:grid xl:grid-cols-[minmax(0,1fr)_460px] xl:gap-6 xl:items-start' : ''}>
+        <div className={result && file ? 'xl:order-2 xl:sticky xl:top-[132px]' : ''}>
         {/* GEOMETRY FIRST. This viewer used to live inside the results block, so a
             user stared at a form for up to 30 s with their part invisible, then
             saw it only once the analysis returned. CadToCostPage has always done
@@ -1771,7 +1873,7 @@ export default function DfmStudioPage() {
               )}
             </div>
             <CadViewer3D ref={viewerRef} file={file} token={token} highlightFaceIds={highlightIds}
-              className="h-[420px] rounded-xl overflow-hidden" />
+              className={`${result && file ? 'h-[300px] xl:h-[340px]' : 'h-[420px]'} rounded-xl overflow-hidden`} />
             <p className="text-slate-600 text-[11px] mt-2">
               {result
                 ? 'An undercut is occluded in both tool halves and buys a slide or a lifter. A zero-draft wall drags out but scuffs, and is fixable with a degree of taper. They are deliberately shown as different problems.'
@@ -1779,7 +1881,9 @@ export default function DfmStudioPage() {
             </p>
           </div>
         )}
+        </div>{/* /right rail */}
 
+        <div className={result && file ? 'xl:order-1 min-w-0' : ''}>
         {result && (
           <motion.div variants={m.stagger()} initial="hidden" animate="show" className="space-y-5">
             {/* ── THE HEADLINE ───────────────────────────────────────────────
@@ -1857,7 +1961,7 @@ export default function DfmStudioPage() {
                   ].map((k) => (
                     <div key={k.label} className="min-w-0">
                       <p className={`dfm-kpi-value ${k.tone}`}>
-                        <TickNumber value={k.value} prefix={k.prefix ?? ''} suffix={k.suffix ?? ''} />
+                        <TickNumber value={k.value} prefix={k.prefix ?? ''} suffix={k.suffix ?? ''} delay={m.beat(2)} />
                       </p>
                       <p className="dfm-label text-slate-500 mt-1.5">{k.label}</p>
                       {k.viz === 'severity' && summary.findings > 0 && (
@@ -1868,7 +1972,7 @@ export default function DfmStudioPage() {
                               <motion.span key={i} className={cls}
                                 initial={{ width: 0 }}
                                 animate={{ width: `${(n / summary.findings) * 100}%` }}
-                                transition={m.t(0.7, 0.15 + i * 0.06)} />
+                                transition={m.t(0.7, m.beat(3) + i * 0.06)} />
                             ))}
                         </div>
                       )}
@@ -1877,7 +1981,7 @@ export default function DfmStudioPage() {
                           <motion.span className="bg-slate-400/70"
                             initial={{ width: 0 }}
                             animate={{ width: `${(summary.evaluated / summary.ruleCount) * 100}%` }}
-                            transition={m.t(0.7, 0.15)} />
+                            transition={m.t(0.7, m.beat(3))} />
                         </div>
                       )}
                       <p className="text-[11px] text-slate-600 mt-1.5">{k.sub}</p>
@@ -2179,7 +2283,7 @@ export default function DfmStudioPage() {
                         <motion.span className="block h-full bg-slate-400/70"
                           initial={{ width: 0 }}
                           animate={{ width: `${Math.max(0, Math.min(100, r.coveragePct))}%` }}
-                          transition={m.t(0.6, 0.1)} />
+                          transition={m.t(0.6, m.beat(2))} />
                       </span>
                       <span className="dfm-num">{r.coveragePct}% ({r.evaluatedCount}/{r.ruleCount})</span>
                     </span>
@@ -2195,18 +2299,31 @@ export default function DfmStudioPage() {
 
                 <motion.div variants={m.stagger()} initial="hidden" animate="show">
                 {r.findings.map(f => (
-                  <motion.div key={f.id} variants={m.staggerItem}
-                    whileHover={m.reduced ? undefined : { y: -1 }}
+                  <motion.div key={f.id} variants={m.staggerItem} layout={m.reduced ? false : 'position'}
+                    transition={m.springSoft}
                     className={`dfm-spine dfm-lift rounded-xl border p-4 pl-5 mb-3 ${SEV_STYLE[f.severity]}`}>
                     <div className="flex items-start justify-between gap-3 mb-1">
-                      <h4 className="text-white font-semibold text-sm">{f.title}</h4>
+                      <button type="button"
+                        onClick={() => setOpenFindings(prev => {
+                          const next = new Set(prev);
+                          if (next.has(f.id)) next.delete(f.id); else next.add(f.id);
+                          return next;
+                        })}
+                        aria-expanded={openFindings.has(f.id)}
+                        className="flex items-start gap-2 text-left min-w-0 group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 rounded">
+                        <ChevronRight size={14} aria-hidden="true"
+                          className={`shrink-0 mt-0.5 opacity-60 group-hover:opacity-100 transition-transform ${openFindings.has(f.id) ? 'rotate-90' : ''}`} />
+                        <h4 className="text-white font-semibold text-sm">{f.title}</h4>
+                      </button>
                       <div className="flex items-center gap-2 shrink-0">
                         {/* THE POINT OF THE WHOLE WAVE: a finding that can show
                             you the face that caused it. Only offered when the
                             engine actually located this kind of finding — a
                             button that flies to nowhere is worse than none. */}
                         {anchorFor(f.id) && (
-                          <motion.button type="button" onClick={() => showOnModel(f.id)} {...m.press}
+                          <motion.button type="button"
+                            onClick={() => { showOnModel(f.id); setOpenFindings(prev => new Set(prev).add(f.id)); }}
+                            {...m.press}
                             className="px-2 py-0.5 rounded-md border border-current/40 text-[10px]
                                        font-semibold uppercase tracking-wider hover:bg-white/10
                                        focus:outline-none focus:ring-2 focus:ring-gold-500/60">
@@ -2216,9 +2333,25 @@ export default function DfmStudioPage() {
                         <span className="text-[10px] font-bold uppercase tracking-wider">{f.severity}</span>
                       </div>
                     </div>
-                    <p className="text-xs opacity-90 mb-2">
-                      Measured <span className="font-semibold">{f.measured ?? '—'} {f.unit}</span> · guideline {f.thresholdText}
+                    {/* ALWAYS VISIBLE: the measurement and the guideline it
+                        failed. That is the finding; the rest is the argument
+                        for it, and the argument is one click away. */}
+                    <p className="text-xs opacity-90 pl-6">
+                      Measured <span className="font-semibold dfm-num">{f.measured ?? '—'} {f.unit}</span> · guideline <span className="dfm-num">{f.thresholdText}</span>
+                      {f.cost?.priced && f.cost.annualDeltaEur ? (
+                        <span className="text-emerald-300"> · €{f.cost.annualDeltaEur.toLocaleString()}/yr at stake</span>
+                      ) : null}
                     </p>
+                    <AnimatePresence initial={false}>
+                    {openFindings.has(f.id) && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={m.reduced ? { duration: 0 } : { duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      style={{ overflow: 'hidden' }}
+                      className="pl-6">
+                    <div className="pt-3">
                     {/* WHERE the measured side came from — the model's own PMI,
                         the uploaded 2D drawing, or a typed declaration. Three
                         kinds of evidence a reader must never confuse. */}
@@ -2257,6 +2390,10 @@ export default function DfmStudioPage() {
                       </span>
                       {' · '}{f.source}
                     </p>
+                    </div>
+                    </motion.div>
+                    )}
+                    </AnimatePresence>
                   </motion.div>
                 ))}
                 </motion.div>
@@ -2404,7 +2541,7 @@ export default function DfmStudioPage() {
                                 className="absolute inset-y-1 right-1 rounded bg-gold-500/[0.13]"
                                 initial={{ width: 0 }}
                                 animate={{ width: `${Math.max(4, Math.min(100, (cheapestRouteEur / (r.piecePriceEur as number)) * 100))}%` }}
-                                transition={m.t(0.65, 0.05)} />
+                                transition={m.t(0.65, m.beat(2))} />
                             )}
                             <span className="relative">
                               {r.piecePriceEur === null
@@ -2515,6 +2652,9 @@ export default function DfmStudioPage() {
             </p>
           </motion.div>
         )}
+
+        </div>{/* /content column */}
+        </div>{/* /workspace */}
 
         {!result && !dfa && (
           <motion.div variants={m.panel} initial="hidden" animate="show" className="dfm-panel dfm-framed p-6">

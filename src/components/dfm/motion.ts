@@ -44,6 +44,18 @@ export const STAGGER = 0.045;
 
 export interface DfmMotion {
   reduced: boolean;
+  /** Spring for anything the hand touches — presses, chips, toggles. */
+  spring: Transition;
+  /** A softer spring for panels and layout moves. */
+  springSoft: Transition;
+  /**
+   * ORCHESTRATION. A results screen has an order of importance, and the
+   * reveal should follow it: the dial before the numbers, the numbers before
+   * the bars, the bars before the list. `beat(n)` returns the delay for the
+   * nth beat of that sequence, so every component reads its position from one
+   * place instead of each carrying a magic number.
+   */
+  beat: (n: number) => number;
   /** Standard entrance: rise + fade. Under reduced motion, fade only. */
   rise: Variants;
   /** A list container that cascades its children in. */
@@ -82,8 +94,22 @@ export function useDfmMotion(): DfmMotion {
       exit: { opacity: 0, y: reduced ? 0 : -8, transition: t(DUR.micro) },
     };
 
+    // Tuned rather than defaulted: stiffness 380 / damping 30 lands in ~260 ms
+    // with no perceptible overshoot on a small element, which is the "solid
+    // object, no bounce" feel a measuring tool should have. Under reduced
+    // motion both collapse to an instant transition.
+    const spring: Transition = reduced
+      ? { duration: 0 }
+      : { type: 'spring', stiffness: 380, damping: 30, mass: 0.7 };
+    const springSoft: Transition = reduced
+      ? { duration: 0 }
+      : { type: 'spring', stiffness: 210, damping: 26, mass: 0.9 };
+
     return {
       reduced,
+      spring,
+      springSoft,
+      beat: (n: number) => (reduced ? 0 : n * 0.09),
       rise,
       stagger: (delayChildren = 0): Variants => ({
         hidden: {},

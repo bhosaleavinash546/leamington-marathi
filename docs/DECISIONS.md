@@ -2242,3 +2242,45 @@ rail, and a 270° gauge that sweeps to the measured score.
     analysing → results → each section, plus a `reducedMotion: 'reduce'`
     pass confirming the page is complete and static rather than degraded.
     The repo's axe gate reports 0 serious/critical on /dfm-studio.
+
+## The studio becomes a workspace: the form steps aside, the model stays in view, the findings collapse
+
+**Date**: 2026-08-12
+**Context**: two visual passes had made the studio look better without making
+it work better. A design review of the real renders found four failures that
+no amount of surface polish would fix: after an analysis the reader still
+scrolled past ~900 px of settings form to reach the answer; the 3D viewer sat
+ABOVE the findings, so "Show on model" scrolled the reader away from the very
+sentence that sent them there; every finding dumped six paragraphs
+(measurement, evidence, rationale, fix, cost, source) so eight of them was a
+wall nobody finished; and the motion fired all at once, with no order of
+importance.
+**Decision**:
+  * **The setup collapses to a context bar.** Once a report exists the form
+    becomes one line — part, drawing, material, process, volume — with
+    "Change inputs" and "Re-run" beside it. The chips carry `layoutId`s so
+    they TRAVEL from form to bar rather than one set vanishing as another
+    appears. Choosing a new file or drawing re-opens the form automatically.
+  * **Two columns.** On xl the findings stream reads on the left while the
+    part stays visible in a sticky right rail, so painting a finding onto the
+    model no longer costs the reader their place. Below xl it stacks in the
+    same order and loses only the adjacency.
+  * **Progressive disclosure on findings.** Collapsed, a finding is its
+    title, its measurement against the guideline, and what it costs — the
+    scannable line. Expanded, the full argument. High-severity findings open
+    themselves, because the expensive ones are why the report exists.
+  * **Choreography, not simultaneity.** `beat(n)` gives the reveal an order —
+    dial, then numbers, then bars, then the list — and spring transitions
+    (stiffness 380 / damping 30, no perceptible overshoot) replace tweens on
+    everything the hand touches.
+**Consequences**:
+  * Two defects in the shared CAD viewer surfaced once it was docked in a
+    460 px rail and were fixed there: the toolbar wrapped into three stacked
+    rows that ate half the viewport (it now scrolls in one row), and finding
+    callouts ran off the right edge so the label naming the problem was the
+    part you could not read (now bounded to two lines, with the full text in
+    the card it came from).
+  * Exports now confirm themselves with a toast; a file appearing silently in
+    a downloads folder left the reader unsure the click had registered.
+  * Verified on real renders again, including a reduced-motion pass; axe
+    reports 0 serious/critical on /dfm-studio and 748 tests pass.

@@ -17,6 +17,7 @@ export default function TickNumber({
   value,
   decimals = 0,
   duration = 0.45,
+  delay = 0,
   prefix = '',
   suffix = '',
   fallback = '—',
@@ -25,6 +26,8 @@ export default function TickNumber({
   value: number | null | undefined;
   decimals?: number;
   duration?: number;
+  /** Hold before counting, so a row of figures can land as a sequence. */
+  delay?: number;
   prefix?: string;
   suffix?: string;
   fallback?: string;
@@ -42,9 +45,9 @@ export default function TickNumber({
     const from = shown;
     const delta = target - from;
     if (delta === 0) return;
-    const t0 = performance.now();
+    const t0 = performance.now() + delay * 1000;
     const step = (now: number) => {
-      const k = Math.min(1, (now - t0) / (duration * 1000));
+      const k = Math.min(1, Math.max(0, (now - t0) / (duration * 1000)));
       // Cubic ease-out: fast off the mark, settling rather than braking.
       const eased = 1 - Math.pow(1 - k, 3);
       setShown(from + delta * eased);
@@ -56,7 +59,7 @@ export default function TickNumber({
     // `shown` is deliberately not a dependency: it is the animation's own
     // output, and depending on it would restart the tween every frame.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target, finite, reduced, duration]);
+  }, [target, finite, reduced, duration, delay]);
 
   if (!finite) return <span className={`dfm-num ${className}`}>{fallback}</span>;
   return (
