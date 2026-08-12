@@ -4,6 +4,7 @@ Produces a professional .pptx file with dark theme, data tables,
 two-column layouts and branded colour scheme.
 """
 
+import re
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -50,6 +51,42 @@ def add_slide():
     fill.fore_color.rgb = BG
     return slide
 
+# ── Emoji font handling ──────────────────────────────────────────────────────
+# Calibri carries no colour-emoji coverage, so an emoji inside a Calibri run is
+# left to font fallback — which resolves differently on every machine, and to an
+# empty box where the fallback is missing. Splitting the run and naming an emoji
+# font for the pictographic part makes the deck render the same on somebody
+# else's laptop as it does here.
+#
+# Dingbats (U+2700-27BF, the tick and cross) are deliberately NOT routed here:
+# Calibri draws them cleanly as typographic marks, and an emoji font would turn
+# a neat tick into a colour sticker.
+# U+2700-27BF is split deliberately: the tick/cross family (U+2713-2718)
+# renders as clean typographic marks in Calibri, but its neighbours (the
+# pencil, the question mark) render as colour emoji on most systems and so
+# belong with the pictographs.
+_PICTO = re.compile('([\U0001F300-\U0001FAFF\u2600-\u26FF\u2700-\u2712\u2719-\u27BF\uFE0F]+)')
+EMOJI_FONT = 'Segoe UI Emoji'
+
+
+def _emit_runs(p, t, size, color, bold, italic, base_font='Calibri'):
+    """Add `t` to paragraph `p`, giving pictographs an emoji font."""
+    for part in _PICTO.split(t):
+        if not part:
+            continue
+        run = p.add_run()
+        run.text = part
+        f = run.font
+        f.size = Pt(size)
+        f.color.rgb = color
+        f.bold = bold
+        f.italic = italic
+        if _PICTO.fullmatch(part):
+            f.name = EMOJI_FONT
+        elif base_font:
+            f.name = base_font
+
+
 def txb(slide, text, x, y, w, h,
         size=18, bold=False, color=TEXT_W, align=PP_ALIGN.LEFT,
         wrap=True, italic=False):
@@ -59,12 +96,7 @@ def txb(slide, text, x, y, w, h,
     tf.word_wrap = wrap
     p = tf.paragraphs[0]
     p.alignment = align
-    run = p.add_run()
-    run.text = text
-    run.font.size = Pt(size)
-    run.font.bold = bold
-    run.font.italic = italic
-    run.font.color.rgb = color
+    _emit_runs(p, text, size, color, bold, italic, base_font=None)
     return tf_box
 
 def rect(slide, x, y, w, h, fill_color, line_color=None, line_width=Pt(0)):
@@ -91,7 +123,7 @@ def slide_header(slide, slide_num, section_label, title_text, subtitle_text=""):
 
     # Slide number (top-left)
     txb(slide, f"SLIDE {slide_num:02d} / 19", Inches(0.35), Inches(0.12), Inches(2), Inches(0.35),
-        size=7, color=TEXT_D, bold=True)
+        size=7.5, color=TEXT_D, bold=True)
 
     # CostVision logo (top-right)
     txb(slide, "CostVision", W - Inches(1.9), Inches(0.10), Inches(1.6), Inches(0.35),
@@ -179,17 +211,17 @@ def flow_box(slide, x, y, w, h, num, icon, title, body, color=ACCENT_B):
         size=7.5, bold=True, color=TEXT_W, align=PP_ALIGN.CENTER)
     # Body
     txb(slide, body, x + Inches(0.06), y + Inches(0.92), w - Inches(0.12), h - Inches(1.0),
-        size=7, color=TEXT_G, align=PP_ALIGN.CENTER, wrap=True)
+        size=7.5, color=TEXT_G, align=PP_ALIGN.CENTER, wrap=True)
 
 def comm_card(slide, x, y, w, h, icon, name, sub, color=BORDER):
     """Small commodity card."""
     rect(slide, x, y, w, h, SURFACE2, color, Pt(0.8))
     txb(slide, icon, x, y + Inches(0.06), w, Inches(0.32),
         size=13, color=TEXT_W, align=PP_ALIGN.CENTER)
-    txb(slide, name, x, y + Inches(0.38), w, Inches(0.22),
-        size=7.0, bold=True, color=TEXT_W, align=PP_ALIGN.CENTER)
-    txb(slide, sub, x, y + Inches(0.58), w, Inches(0.34),
-        size=6.0, color=TEXT_D, align=PP_ALIGN.CENTER)
+    txb(slide, name, x, y + Inches(0.34), w, Inches(0.22),
+        size=8.0, bold=True, color=TEXT_W, align=PP_ALIGN.CENTER)
+    txb(slide, sub, x, y + Inches(0.56), w, Inches(0.5),
+        size=7.5, color=TEXT_D, align=PP_ALIGN.CENTER)
 
 # ─── TABLE HELPER ─────────────────────────────────────────────────────────────
 
@@ -496,13 +528,19 @@ for role, msg in chats:
     cy2 += bh + Inches(0.08)
 
 # Key benefits pills
-txb(slide, "Key Benefits", rx, cy2 + Inches(0.05), rw, Inches(0.25),
-    size=8.5, bold=True, color=ACCENT_G)
 benefits = ["⚡ Zero manual form-filling", "🎯 Works for any commodity", "✓ Validates all AI assumptions", "📊 Full audit trail"]
+# The chat transcript above grows, so this block has to be clamped rather than
+# offset — two rows of pills used to finish 0.13" below the bottom of the slide.
+PILL_H, PILL_GAP = Inches(0.25), Inches(0.05)
+rows_b = (len(benefits) + 1) // 2
+block_h = rows_b * PILL_H + (rows_b - 1) * PILL_GAP
+by_base = min(cy2 + Inches(0.34), H - Inches(0.28) - block_h)
+txb(slide, "Key Benefits", rx, by_base - Inches(0.29), rw, Inches(0.25),
+    size=8.5, bold=True, color=ACCENT_G)
 for i, b in enumerate(benefits):
     bx = rx + Inches(0.1) + (i % 2) * Inches(3.0)
-    by = cy2 + Inches(0.34) + (i // 2) * Inches(0.3)
-    txb(slide, b, bx, by, Inches(2.9), Inches(0.25), size=7.5, color=TEXT_G)
+    by = by_base + (i // 2) * (PILL_H + PILL_GAP)
+    txb(slide, b, bx, by, Inches(2.9), PILL_H, size=7.5, color=TEXT_G)
 
 notes(slide,
     "This is the feature that gets the biggest reaction in a live demo, so let me walk the flow on "
@@ -575,7 +613,7 @@ for i, (lbl, val, col) in enumerate(det):
     dy = ry + Inches(0.5) + (i // 2) * Inches(0.52)
     rect(slide, dx, dy, Inches(2.7), Inches(0.46), SURFACE2, BORDER, Pt(0.3))
     txb(slide, lbl, dx + Inches(0.08), dy + Inches(0.03), Inches(2.54), Inches(0.18),
-        size=7, color=TEXT_D)
+        size=7.5, color=TEXT_D)
     txb(slide, val, dx + Inches(0.08), dy + Inches(0.22), Inches(2.54), Inches(0.2),
         size=8.5, bold=True, color=col)
 
@@ -598,7 +636,7 @@ for pct, col, lbl in bar_data:
 
 txb(slide, "  ".join(f"■ {l}" for _, _, l in bar_data),
     rx + Inches(0.15), ry + Inches(2.86), rw - Inches(0.3), Inches(0.22),
-    size=7, color=TEXT_D)
+    size=7.5, color=TEXT_D)
 
 # File types supported
 rect(slide, Inches(0.45), Inches(2.12), Inches(6.7), Inches(0.88), SURFACE2, BORDER, Pt(0.5))
@@ -827,9 +865,12 @@ commodities = [
     ("🤖",  "AI Agent",             "Natural language → any commodity"),
 ]
 
-cols_c = 8   # 22 cards: 8 wide keeps it to 3 rows (7 wide would spill a 4th)
-cw_c = (W - Inches(0.9)) / cols_c - Inches(0.05)
-ch_c = Inches(1.32)
+# 6 wide x 4 rows. Eight columns fitted the page but squeezed the subtitle to
+# 6 pt, which no projector makes legible; the card must be wide enough to carry
+# 7.5 pt type, so the column count follows the type, not the other way round.
+cols_c = 6
+cw_c = (W - Inches(0.9)) / cols_c - Inches(0.055)
+ch_c = Inches(1.15)
 sx_c = Inches(0.45)
 sy_c = Inches(1.98)
 
@@ -884,18 +925,21 @@ depth_cards = [
      "Where geometry is unknown, Claude AI fills assumptions transparently — material, complexity, process, geometry — with explanation of every decision."),
 ]
 
-cw_d = Inches(3.88)
-ch_d = Inches(1.28)
-sx_d = Inches(0.45)
-sy_d = Inches(1.98)
+# Card width is DERIVED from the slide, never typed. A hardcoded 3.88" put
+# column 4 at 12.39"-16.27" on a 13.33" slide, so cards 3 and 7 — "Tooling &
+# NRE Amortisation" and "Learning Curve" — rendered entirely off the screen.
+# The speaker note tells the presenter to point at one of them.
+COLS_D = 4
+MARGIN_D = Inches(0.45)
 gap_d = Inches(0.1)
+cw_d = (W - MARGIN_D * 2 - gap_d * (COLS_D - 1)) / COLS_D
+ch_d = Inches(1.28)
+sx_d = MARGIN_D
+sy_d = Inches(1.98)
+assert sx_d + (COLS_D - 1) * (cw_d + gap_d) + cw_d <= W, 'depth grid overflows the slide'
 
 for i, (col, title, body) in enumerate(depth_cards):
-    r, c = divmod(i, 4) if i < 8 else (2, i - 8)
-    if i < 8:
-        r, c = divmod(i, 4)
-    else:
-        r, c = 2, i - 8
+    r, c = divmod(i, COLS_D)
     cx_d = sx_d + c * (cw_d + gap_d)
     cy_d = sy_d + r * (ch_d + gap_d)
     card(slide, cx_d, cy_d, cw_d, ch_d, title, body, accent=col)
@@ -1021,7 +1065,7 @@ txb(slide, "~19.3%", Inches(8.4), Inches(2.34), Inches(2.5), Inches(0.36),
     size=20, bold=True, color=ACCENT_G)
 txb(slide, "All scores are 1–10 (10 = perfect)  |  Savings are RSS-combined from top 3 issues",
     Inches(10.8), Inches(2.2), Inches(2.0), Inches(0.54),
-    size=7, color=TEXT_D, wrap=True)
+    size=7.5, color=TEXT_D, wrap=True)
 
 # Four quadrant cards
 dfm_dfa = [

@@ -57,8 +57,8 @@ function footer(s, page) {
 }
 function title(s, t, sub, tint) {
   if (tint) s.addShape('rect', { x: 0, y: 0, w: W, h: 0.09, fill: { color: tint } });
-  s.addText(t, { x: 0.5, y: 0.24, w: 12.3, h: 0.5, fontFace: 'Cambria', fontSize: 25, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-  if (sub) s.addText(sub, { x: 0.5, y: 0.78, w: 12.3, h: 0.3, fontFace: 'Calibri', fontSize: 12, italic: true, color: MUTED, margin: 0 });
+  s.addText(t, { x: 0.5, y: 0.24, w: 12.3, h: 0.5, fontFace: 'Cambria', fontSize: 25.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+  if (sub) s.addText(sub, { x: 0.5, y: 0.78, w: 12.3, h: 0.3, fontFace: 'Calibri', fontSize: 12.0, italic: true, color: MUTED, margin: 0 });
 }
 /** CostVision logo mark — matches the app's CV tile. */
 function logoMark(s, x, y, size, bg = '4F46E5', fg = 'FFFFFF') {
@@ -75,17 +75,17 @@ function owner(s, x, y, label, col, tint) {
 {
   const s = pres.addSlide(); s.background = { color: NAVY };
   logoMark(s, 0.8, 1.3, 0.8, '4F46E5');
-  s.addText('CostVision', { x: 1.78, y: 1.42, w: 6, h: 0.4, fontFace: 'Calibri', fontSize: 19, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
+  s.addText('CostVision', { x: 1.78, y: 1.42, w: 6, h: 0.4, fontFace: 'Calibri', fontSize: 19.0, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
   s.addText('AI Cost Intelligence', { x: 1.78, y: 1.78, w: 6, h: 0.3, fontFace: 'Calibri', fontSize: 11.5, color: '8FA3CC', margin: 0, valign: 'middle' });
-  s.addText('How CostVision Actually Works', { x: 0.8, y: 2.25, w: 11.7, h: 0.8, fontFace: 'Cambria', fontSize: 42, bold: true, color: 'FFFFFF', margin: 0 });
-  s.addText('Who does what — followed end to end on one real part', { x: 0.8, y: 3.15, w: 11.7, h: 0.45, fontFace: 'Calibri', fontSize: 20, color: 'CADCFC', margin: 0 });
+  s.addText('How CostVision Actually Works', { x: 0.8, y: 2.25, w: 11.7, h: 0.8, fontFace: 'Cambria', fontSize: 42.0, bold: true, color: 'FFFFFF', margin: 0 });
+  s.addText('Who does what — followed end to end on one real part', { x: 0.8, y: 3.15, w: 11.7, h: 0.45, fontFace: 'Calibri', fontSize: 20.0, color: 'CADCFC', margin: 0 });
   s.addShape('roundRect', { x: 0.8, y: 3.95, w: 11.7, h: 0.75, fill: { color: '24406E' }, rectRadius: 0.1 });
   s.addText([
     { text: 'The one line to remember:  ', options: { color: '9FB6DF', bold: true } },
     { text: 'the rules derive every input, the engine does every calculation, a person approves the answer — and the AI is an optional second opinion.', options: { color: 'FFFFFF', bold: true } },
-  ], { x: 1.1, y: 3.95, w: 11.1, h: 0.75, fontFace: 'Calibri', fontSize: 15, margin: 0, valign: 'middle' });
+  ], { x: 1.1, y: 3.95, w: 11.1, h: 0.75, fontFace: 'Calibri', fontSize: 15.0, margin: 0, valign: 'middle' });
   s.addText('Worked example: die-cast aluminium housing · 2.8 kg · 60,000 per year · made in China',
-    { x: 0.8, y: 5.1, w: 11.7, h: 0.3, fontFace: 'Calibri', fontSize: 13, color: '8FA3CC', margin: 0 });
+    { x: 0.8, y: 5.1, w: 11.7, h: 0.3, fontFace: 'Calibri', fontSize: 13.0, color: '8FA3CC', margin: 0 });
   s.addNotes(
     'Thank you all for coming back. In the last session I showed you what this tool produces. The feedback I got — very fairly — was that the workflow itself was still a black box. People told me they could not follow who does what, and where the AI actually sits in all this. So today I am going to open the box. ' +
     'I am going to take one real part — a die-cast aluminium housing, the sort of thing we buy tens of thousands of a year — and walk it through the tool from the moment we upload the CAD file to the moment a buyer walks into a supplier meeting with a number. Every single step. ' +
@@ -99,18 +99,18 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   const s = pres.addSlide(); s.background = { color: NAVY };
   s.addShape('rect', { x: 0, y: 0, w: W, h: 0.09, fill: { color: col } });
   logoMark(s, 0.8, 0.6, 0.55);
-  s.addText(kicker, { x: 0.8, y: 2.0, w: 8, h: 0.32, fontFace: 'Calibri', fontSize: 13, bold: true, color: col, charSpacing: 1.6, margin: 0 });
-  s.addText(name, { x: 0.8, y: 2.42, w: 9.6, h: 0.75, fontFace: 'Cambria', fontSize: 34, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
-  s.addText(sub, { x: 0.8, y: 3.26, w: 9.6, h: 0.34, fontFace: 'Calibri', fontSize: 15, color: '8FA3CC', margin: 0 });
+  s.addText(kicker, { x: 0.8, y: 2.0, w: 8, h: 0.32, fontFace: 'Calibri', fontSize: 13.0, bold: true, color: col, charSpacing: 1.6, margin: 0 });
+  s.addText(name, { x: 0.8, y: 2.42, w: 9.6, h: 0.75, fontFace: 'Cambria', fontSize: 34.0, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
+  s.addText(sub, { x: 0.8, y: 3.26, w: 9.6, h: 0.34, fontFace: 'Calibri', fontSize: 15.0, color: '8FA3CC', margin: 0 });
   items.forEach((t, i) => {
     const y = 3.98 + i * 0.36;
     s.addShape('ellipse', { x: 0.86, y: y + 0.1, w: 0.11, h: 0.11, fill: { color: col } });
-    s.addText(t, { x: 1.18, y, w: 8.6, h: 0.32, fontFace: 'Calibri', fontSize: 12, color: 'CADCFC', margin: 0, valign: 'middle' });
+    s.addText(t, { x: 1.18, y, w: 8.6, h: 0.32, fontFace: 'Calibri', fontSize: 12.0, color: 'CADCFC', margin: 0, valign: 'middle' });
   });
   if (mins) {
     s.addShape('roundRect', { x: 10.6, y: 2.42, w: 2.23, h: 1.0, fill: { color: '24406E' }, rectRadius: 0.1 });
-    s.addText(mins, { x: 10.6, y: 2.52, w: 2.23, h: 0.5, fontFace: 'Cambria', fontSize: 26, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
-    s.addText('minutes', { x: 10.6, y: 3.0, w: 2.23, h: 0.3, fontFace: 'Calibri', fontSize: 11, color: '8FA3CC', align: 'center', margin: 0 });
+    s.addText(mins, { x: 10.6, y: 2.52, w: 2.23, h: 0.5, fontFace: 'Cambria', fontSize: 26.0, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
+    s.addText('minutes', { x: 10.6, y: 3.0, w: 2.23, h: 0.3, fontFace: 'Calibri', fontSize: 11.0, color: '8FA3CC', align: 'center', margin: 0 });
   }
   footer(s, ++PG);
   s.addNotes(notes);
@@ -120,8 +120,8 @@ function divider(kicker, name, sub, col, items, mins, notes) {
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
   logoMark(s, 0.5, 0.22, 0.6);
-  s.addText('What We Are Going to Cover', { x: 1.25, y: 0.2, w: 8.6, h: 0.44, fontFace: 'Cambria', fontSize: 24, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-  s.addText('Four sections, about an hour — or five slides if that is all the time there is', { x: 1.25, y: 0.66, w: 9, h: 0.28, fontFace: 'Calibri', fontSize: 12, italic: true, color: MUTED, margin: 0 });
+  s.addText('What We Are Going to Cover', { x: 1.25, y: 0.2, w: 8.6, h: 0.44, fontFace: 'Cambria', fontSize: 24.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+  s.addText('Four sections, about an hour — or five slides if that is all the time there is', { x: 1.25, y: 0.66, w: 9, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, italic: true, color: MUTED, margin: 0 });
 
   const secs = [
     ['1', 'Orientation & the business case', 'Slides 3–13', 'How it connects, the PCB flow, who else does this in the market, and the money case ending in one decision', '24 min', BLUE, true],
@@ -133,11 +133,11 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     const y = 1.22 + i * 1.16;
     s.addShape('roundRect', { x: 0.5, y, w: 12.33, h: 1.04, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
     s.addShape('ellipse', { x: 0.78, y: y + 0.28, w: 0.48, h: 0.48, fill: { color: col } });
-    s.addText(String(n), { x: 0.78, y: y + 0.28, w: 0.48, h: 0.48, fontFace: 'Cambria', fontSize: 19, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
-    s.addText(String(name), { x: 1.42, y: y + 0.14, w: 7.4, h: 0.32, fontFace: 'Calibri', fontSize: 13, bold: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(String(n), { x: 0.78, y: y + 0.28, w: 0.48, h: 0.48, fontFace: 'Cambria', fontSize: 19.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(String(name), { x: 1.42, y: y + 0.14, w: 7.4, h: 0.32, fontFace: 'Calibri', fontSize: 13.0, bold: true, color: col, margin: 0, valign: 'middle' });
     s.addText(String(desc), { x: 1.42, y: y + 0.48, w: 8.6, h: 0.46, fontFace: 'Calibri', fontSize: 10.2, color: SLATE, margin: 0, valign: 'top' });
     s.addText(String(range), { x: 10.2, y: y + 0.16, w: 1.5, h: 0.28, fontFace: 'Calibri', fontSize: 9.6, color: MUTED, align: 'right', margin: 0, valign: 'middle' });
-    s.addText(String(mins), { x: 11.85, y: y + 0.16, w: 0.85, h: 0.28, fontFace: 'Calibri', fontSize: 11, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(String(mins), { x: 11.85, y: y + 0.16, w: 0.85, h: 0.28, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
     if (exec) {
       s.addShape('roundRect', { x: 10.2, y: y + 0.52, w: 2.5, h: 0.3, fill: { color: GREEN_T }, line: { color: GREEN, width: 1 }, rectRadius: 0.15 });
       s.addText('★  on the 10-minute path', { x: 10.2, y: y + 0.52, w: 2.5, h: 0.3, fontFace: 'Calibri', fontSize: 8.4, bold: true, color: GREEN, align: 'center', valign: 'middle', margin: 0 });
@@ -167,7 +167,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
   logoMark(s, 0.5, 0.22, 0.6);
-  s.addText('How It All Connects — One Picture', { x: 1.25, y: 0.2, w: 8.6, h: 0.44, fontFace: 'Cambria', fontSize: 24, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+  s.addText('How It All Connects — One Picture', { x: 1.25, y: 0.2, w: 8.6, h: 0.44, fontFace: 'Cambria', fontSize: 24.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
   s.addText('Everything badged AUTO runs unattended — the rules pick the machine and tonnage, the engine writes the DFM/DFA and saving ideas; the engineer is the only manual step.', { x: 1.25, y: 0.66, w: 8.9, h: 0.28, fontFace: 'Calibri', fontSize: 11.5, italic: true, color: MUTED, margin: 0 });
   // ── legend (top right) ──
   const legend = [['Measure', BLUE], ['Rules', '4F46E5'], ['AI (optional)', PURPLE], ['Guardrail', AMBER], ['Engine', TEAL], ['Human / output', GREEN]];
@@ -178,14 +178,14 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   });
   // ── why believe the picture: four measured facts ──
   s.addShape('roundRect', { x: 0.45, y: 1.18, w: 2.0, h: 0.83, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
-  s.addText('WHY TRUST THIS PICTURE', { x: 0.56, y: 1.23, w: 1.85, h: 0.15, fontFace: 'Calibri', fontSize: 6.6, bold: true, color: GREEN, charSpacing: 0.4, margin: 0 });
+  s.addText('WHY TRUST THIS PICTURE', { x: 0.56, y: 1.23, w: 1.85, h: 0.15, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: GREEN, charSpacing: 0.4, margin: 0 });
   s.addText('Same file + answers = same price\n12 of 19 commodities rules-driven\n1,777 automated tests\n6 real parts · fleet error ≈13%',
-    { x: 0.56, y: 1.39, w: 1.85, h: 0.6, fontFace: 'Calibri', fontSize: 6.9, color: SLATE, margin: 0, valign: 'top' });
+    { x: 0.56, y: 1.39, w: 1.85, h: 0.6, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, margin: 0, valign: 'top' });
   // ── OUTSIDE the tool: the OPTIONAL AI ──
   s.addShape('roundRect', { x: 2.55, y: 1.02, w: 5.2, h: 1.12, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5, dashType: 'dash' }, rectRadius: 0.09 });
   s.addShape('ellipse', { x: 2.70, y: 1.28, w: 0.44, h: 0.44, fill: { color: PURPLE } });
   s.addImage({ data: I.eye, x: 2.81, y: 1.39, w: 0.22, h: 0.22 });
-  s.addText('OPTIONAL AI — off by default, the only outbound call', { x: 3.28, y: 1.08, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
+  s.addText('OPTIONAL AI — off by default, the only outbound call', { x: 3.28, y: 1.08, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
   s.addText([
     { text: 'Three modes: ', options: { color: SLATE } },
     { text: 'Rules only (default) · Compare · AI-led. ', options: { bold: true, color: NAVY } },
@@ -193,11 +193,11 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     { text: 'One required use: a PCB PHOTO ', options: { bold: true, color: PURPLE } },
     { text: '— vision reads the board; prices still come from the offline catalogue.', options: { color: SLATE } },
   ], { x: 3.28, y: 1.27, w: 4.35, h: 0.46, fontFace: 'Calibri', fontSize: 7.8, margin: 0, valign: 'top' });
-  s.addText('Routable to a private endpoint · AIR_GAPPED=1 refuses the call — CAD and manual costing still work; only the PCB photo path stops', { x: 3.28, y: 1.77, w: 4.35, h: 0.32, fontFace: 'Calibri', fontSize: 7.0, italic: true, color: PURPLE, margin: 0, valign: 'top' });
+  s.addText('Routable to a private endpoint · AIR_GAPPED=1 refuses the call — CAD and manual costing still work; only the PCB photo path stops', { x: 3.28, y: 1.77, w: 4.35, h: 0.32, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: PURPLE, margin: 0, valign: 'top' });
   s.addShape('roundRect', { x: 8.0, y: 1.02, w: 4.83, h: 0.99, fill: { color: CARD }, line: { color: LINE, width: 1, dashType: 'dash' }, rectRadius: 0.09 });
-  s.addText('OPTIONAL FEEDS — off by default, none of them price a part', { x: 8.2, y: 1.12, w: 4.5, h: 0.22, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
+  s.addText('OPTIONAL FEEDS — off by default, none of them price a part', { x: 8.2, y: 1.12, w: 4.5, h: 0.22, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
   s.addText('Live component pricing (PCB only) · industry news · metal-price ticker (display only)',
-    { x: 8.2, y: 1.38, w: 4.5, h: 0.5, fontFace: 'Calibri', fontSize: 9, color: SLATE, margin: 0, valign: 'top' });
+    { x: 8.2, y: 1.38, w: 4.5, h: 0.5, fontFace: 'Calibri', fontSize: 9.0, color: SLATE, margin: 0, valign: 'top' });
   // ── the boundary ──
   s.addShape('roundRect', { x: 0.45, y: 2.18, w: 12.4, h: 4.4, fill: { color: 'FFFFFF' }, line: { color: TEAL, width: 1.75, dashType: 'dash' }, rectRadius: 0.12 });
   s.addShape('roundRect', { x: 0.75, y: 2.05, w: 3.5, h: 0.28, fill: { color: TEAL }, rectRadius: 0.14 });
@@ -212,7 +212,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   const node = (x, y, w, h, col, tint, ttl, body, ico) => {
     s.addShape('roundRect', { x, y, w, h, fill: { color: tint }, line: { color: col, width: 1.4 }, rectRadius: 0.09 });
     if (ico) { s.addShape('ellipse', { x: x + 0.14, y: y + 0.12, w: 0.34, h: 0.34, fill: { color: col } }); s.addImage({ data: ico, x: x + 0.22, y: y + 0.20, w: 0.18, h: 0.18 }); }
-    s.addText(ttl, { x: x + (ico ? 0.56 : 0.16), y: y + 0.11, w: w - (ico ? 0.70 : 0.32), h: 0.30, fontFace: 'Calibri', fontSize: 10, bold: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(ttl, { x: x + (ico ? 0.56 : 0.16), y: y + 0.11, w: w - (ico ? 0.70 : 0.32), h: 0.30, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: col, margin: 0, valign: 'middle' });
     s.addText(body, { x: x + 0.16, y: y + 0.47, w: w - 0.32, h: h - 0.60, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
   };
   // inputs (left) and outputs (right)
@@ -231,7 +231,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.65, y: 3.54, w: 2.0, h: 0.68, fill: { color: 'FFFFFF' }, line: { color: PURPLE, width: 1.5 }, rectRadius: 0.07 });
   s.addText('Photo of a PCB', { x: 0.78, y: 3.56, w: 1.74, h: 0.26, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'middle' });
   s.addShape('roundRect', { x: 0.78, y: 3.86, w: 1.15, h: 0.19, fill: { color: PURPLE }, rectRadius: 0.095 });
-  s.addText('NEEDS THE AI', { x: 0.78, y: 3.86, w: 1.15, h: 0.19, fontFace: 'Calibri', fontSize: 6.2, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.4 });
+  s.addText('NEEDS THE AI', { x: 0.78, y: 3.86, w: 1.15, h: 0.19, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.4 });
   s.addShape('line', { x: 0.55, y: 1.98, w: 0, h: 1.90, line: { color: PURPLE, width: 1.4, dashType: 'dash', beginArrowType: 'triangle', endArrowType: 'triangle' } });
   s.addShape('line', { x: 0.55, y: 1.98, w: 2.0, h: 0, line: { color: PURPLE, width: 1.4, dashType: 'dash', endArrowType: 'triangle' } });
   col(11.05, 1.8, 'WHAT COMES OUT', GREEN, ['8-bucket cost — every\nfigure shows its basis', 'Operation list —\nwhat takes the time', 'Confidence band +\n20-country comparison', 'DFM/DFA + savings\nranked in £/part\n(engine, not AI)', 'PDF · Excel · PowerPoint\nnegotiation pack'], 2.74, 0.76);
@@ -247,12 +247,12 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 5.35, y: 4.06, w: 2.15, h: 1.58, fill: { color: '0E5A5A' }, rectRadius: 0.1 });
   s.addShape('ellipse', { x: 6.16, y: 4.20, w: 0.5, h: 0.5, fill: { color: '17A398' } });
   s.addImage({ data: I.calc, x: 6.29, y: 4.33, w: 0.24, h: 0.24 });
-  s.addText('COST ENGINE', { x: 5.45, y: 4.76, w: 1.95, h: 0.3, fontFace: 'Calibri', fontSize: 12, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
+  s.addText('COST ENGINE', { x: 5.45, y: 4.76, w: 1.95, h: 0.3, fontFace: 'Calibri', fontSize: 12.0, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
   s.addText('Fixed arithmetic. 8 buckets.\nNo AI, no judgement.', { x: 5.45, y: 5.08, w: 1.95, h: 0.44, fontFace: 'Calibri', fontSize: 8.2, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
   // who runs unattended, and where the person is — the automation map
   const chip = (x, y, label, bg) => {
     s.addShape('roundRect', { x, y, w: 0.6, h: 0.17, fill: { color: bg }, rectRadius: 0.085 });
-    s.addText(label, { x, y, w: 0.6, h: 0.17, fontFace: 'Calibri', fontSize: 6.2, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
+    s.addText(label, { x, y, w: 0.6, h: 0.17, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
   };
   chip(4.27, 2.59, 'AUTO', BLUE);       // kernel
   chip(4.27, 3.97, 'AUTO', '4F46E5');   // rules + optimisers
@@ -277,7 +277,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   // the flywheel: won quotes / invoices return and calibrate the estimates
   s.addShape('line', { x: 10.60, y: 4.92, w: 0.45, h: 0, flipH: true,
     line: { color: GREEN, width: 1.4, dashType: 'dash', endArrowType: 'triangle' } });
-  s.addText('actuals\nfeed back', { x: 10.56, y: 4.50, w: 0.55, h: 0.38, fontFace: 'Calibri', fontSize: 6.0, italic: true, color: GREEN, align: 'center', margin: 0, valign: 'top' });
+  s.addText('actuals\nfeed back', { x: 10.56, y: 4.50, w: 0.55, h: 0.38, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: GREEN, align: 'center', margin: 0, valign: 'top' });
   link(10.60, 3.29, 11.05, 3.29, GREEN);
   // read-in-one-line
   s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
@@ -295,14 +295,14 @@ function divider(kicker, name, sub, col, items, mins, notes) {
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
   logoMark(s, 0.5, 0.22, 0.6);
-  s.addText('The PCB Photo → Should-Cost — One Picture', { x: 1.25, y: 0.2, w: 9.6, h: 0.44, fontFace: 'Cambria', fontSize: 24, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-  s.addText('The one flow where the AI is required — its eyes read the board; the catalogue prices it, the engine costs it, the engineer owns the doubtful lines.', { x: 1.25, y: 0.66, w: 11.0, h: 0.28, fontFace: 'Calibri', fontSize: 11, italic: true, color: MUTED, margin: 0 });
+  s.addText('The PCB Photo → Should-Cost — One Picture', { x: 1.25, y: 0.2, w: 9.6, h: 0.44, fontFace: 'Cambria', fontSize: 24.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+  s.addText('The one flow where the AI is required — its eyes read the board; the catalogue prices it, the engine costs it, the engineer owns the doubtful lines.', { x: 1.25, y: 0.66, w: 11.0, h: 0.28, fontFace: 'Calibri', fontSize: 11.0, italic: true, color: MUTED, margin: 0 });
 
   // ── OUTSIDE: AI VISION — required for this input ──
   s.addShape('roundRect', { x: 2.55, y: 1.02, w: 7.6, h: 0.99, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5 }, rectRadius: 0.09 });
   s.addShape('ellipse', { x: 2.70, y: 1.28, w: 0.44, h: 0.44, fill: { color: PURPLE } });
   s.addImage({ data: I.eye, x: 2.81, y: 1.39, w: 0.22, h: 0.22 });
-  s.addText('AI VISION — REQUIRED here (a photo has no geometry to measure) · the only outbound call', { x: 3.28, y: 1.08, w: 6.8, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
+  s.addText('AI VISION — REQUIRED here (a photo has no geometry to measure) · the only outbound call', { x: 3.28, y: 1.08, w: 6.8, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
   s.addText([
     { text: 'Pass 1: ', options: { bold: true, color: NAVY } },
     { text: 'names the board (dims, layers, finish) and EVERY component — reference, package, part number where legible — with a confidence per line. ', options: { color: SLATE } },
@@ -331,7 +331,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   };
   const chip2 = (x, y, label, bg) => {
     s.addShape('roundRect', { x, y, w: 0.6, h: 0.17, fill: { color: bg }, rectRadius: 0.085 });
-    s.addText(label, { x, y, w: 0.6, h: 0.17, fontFace: 'Calibri', fontSize: 6.2, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
+    s.addText(label, { x, y, w: 0.6, h: 0.17, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
   };
 
   // inputs / outputs
@@ -359,9 +359,9 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   node2(8.2, 4.76, 2.5, 0.92, TEAL, TEAL_T, 'Country rates', 'Real per-country labour £/hr and electricity £/kWh (IPC/CBRE published figures) — not scaled guesses.', null);
 
   s.addShape('roundRect', { x: 2.85, y: 5.42, w: 2.35, h: 1.04, fill: { color: 'FBEAE8' }, line: { color: RED, width: 1.25 }, rectRadius: 0.09 });
-  s.addText('IF THE NETWORK IS OFF', { x: 3.00, y: 5.48, w: 2.05, h: 0.18, fontFace: 'Calibri', fontSize: 7.2, bold: true, color: RED, charSpacing: 0.4, margin: 0 });
+  s.addText('IF THE NETWORK IS OFF', { x: 3.00, y: 5.48, w: 2.05, h: 0.18, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: RED, charSpacing: 0.4, margin: 0 });
   s.addText('AIR_GAPPED=1 blocks this flow — a photo cannot be costed without the vision read. CAD and manual costing are unaffected.\nLive distributor pricing exists but is OFF by default; the offline catalogue is the source.',
-    { x: 3.00, y: 5.66, w: 2.05, h: 0.74, fontFace: 'Calibri', fontSize: 6.6, color: SLATE, margin: 0, valign: 'top' });
+    { x: 3.00, y: 5.66, w: 2.05, h: 0.74, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, margin: 0, valign: 'top' });
   // flows
   link2(2.65, 3.29, 2.85, 3.29, BLUE);                       // photos → (up via AI) parser
   link2(3.95, 3.90, 3.95, 4.06, '4F46E5');                   // parser ↓ stabiliser
@@ -384,7 +384,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: GREEN } },
     { text: 'the AI’s eyes read the board and name every part — then the offline catalogue prices it, the deterministic fab + assembly models cost it, and the engineer owns every doubtful line. The model never prices a component.', options: { color: SLATE } },
-  ], { x: 0.65, y: 6.70, w: 12.0, h: 0.42, fontFace: 'Calibri', fontSize: 10, margin: 0, valign: 'middle' });
+  ], { x: 0.65, y: 6.70, w: 12.0, h: 0.42, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -548,7 +548,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
       const isSvc = i === 1 && String(v).startsWith('SERVICE');
       s.addText(v, {
         x, y, w: cw[i], h: 0.452, fontFace: i === 3 ? 'Calibri' : 'Calibri',
-        fontSize: i === 0 ? 8.1 : i === 3 ? 9.0 : i === 5 ? 6.4 : 6.9,
+        fontSize: i === 0 ? 8.1 : i === 3 ? 9.0 : 7.5,
         bold: i === 0 || i === 3 || isSvc,
         color: i === 0 ? NAVY : i === 3 ? acol : i === 5 ? MUTED : (isSvc ? PURPLE : SLATE),
         italic: i === 5,
@@ -702,7 +702,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
     s.addText(hd, { x: x + 0.18, y: 3.76, w: 3.62, h: 0.26, fontFace: 'Calibri', fontSize: 8.4, bold: true, color: col, charSpacing: 0.4, margin: 0, valign: 'middle' });
     s.addText(body, { x: x + 0.18, y: 4.06, w: 3.62, h: 1.14, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
     s.addShape('roundRect', { x: x + 0.18, y: 5.24, w: 3.62, h: 0.6, fill: { color: tint }, line: null, rectRadius: 0.06 });
-    s.addText(note, { x: x + 0.28, y: 5.24, w: 3.42, h: 0.6, fontFace: 'Calibri', fontSize: 7.4, italic: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(note, { x: x + 0.28, y: 5.24, w: 3.42, h: 0.6, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: col, margin: 0, valign: 'middle' });
   });
 
   s.addShape('roundRect', { x: 0.5, y: 6.06, w: 12.33, h: 0.9, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1.2 }, rectRadius: 0.08 });
@@ -752,10 +752,10 @@ FOOT = FOOT_MAIN;
     s.addShape('roundRect', { x, y: 1.14, w: 3.94, h: 1.9, fill: { color: CARD }, line: { color: col, width: 1.5 }, rectRadius: 0.1 });
     s.addShape('ellipse', { x: x + 0.16, y: 1.26, w: 0.34, h: 0.34, fill: { color: col } });
     s.addImage({ data: ico, x: x + 0.24, y: 1.34, w: 0.18, h: 0.18 });
-    s.addText(t, { x: x + 0.58, y: 1.24, w: 3.2, h: 0.3, fontFace: 'Calibri', fontSize: 11, bold: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(t, { x: x + 0.58, y: 1.24, w: 3.2, h: 0.3, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: col, margin: 0, valign: 'middle' });
     s.addText(body, { x: x + 0.16, y: 1.64, w: 3.62, h: 0.8, fontFace: 'Calibri', fontSize: 8.3, color: SLATE, margin: 0, valign: 'top' });
     s.addShape('roundRect', { x: x + 0.16, y: 2.48, w: 3.62, h: 0.46, fill: { color: 'F0F4F9' }, rectRadius: 0.05 });
-    s.addText(ev, { x: x + 0.26, y: 2.48, w: 3.42, h: 0.46, fontFace: 'Calibri', fontSize: 7.4, italic: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(ev, { x: x + 0.26, y: 2.48, w: 3.42, h: 0.46, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: NAVY, margin: 0, valign: 'middle' });
   });
 
   // The calculation as a chain, so each term can be attacked separately.
@@ -770,14 +770,14 @@ FOOT = FOOT_MAIN;
     const x = 0.5 + i * 3.13;
     s.addShape('roundRect', { x, y: 3.40, w: 2.78, h: 1.28, fill: { color: last ? GREEN_T : CARD }, line: { color: last ? GREEN : LINE, width: last ? 1.5 : 1 }, rectRadius: 0.09 });
     s.addText(label, { x: x + 0.14, y: 3.48, w: 2.5, h: 0.24, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: last ? GREEN : NAVY, margin: 0 });
-    s.addText(val, { x: x + 0.14, y: 3.72, w: 2.5, h: 0.42, fontFace: 'Cambria', fontSize: 21, bold: true, color: last ? GREEN : NAVY, margin: 0, valign: 'middle' });
-    s.addText(note, { x: x + 0.14, y: 4.14, w: 2.5, h: 0.5, fontFace: 'Calibri', fontSize: 7.4, color: col, margin: 0, valign: 'top' });
-    if (!last) s.addText(i === 2 ? '=' : '×', { x: x + 2.80, y: 3.84, w: 0.31, h: 0.4, fontFace: 'Cambria', fontSize: 15, bold: true, color: MUTED, align: 'center', margin: 0, valign: 'middle' });
+    s.addText(val, { x: x + 0.14, y: 3.72, w: 2.5, h: 0.42, fontFace: 'Cambria', fontSize: 21.0, bold: true, color: last ? GREEN : NAVY, margin: 0, valign: 'middle' });
+    s.addText(note, { x: x + 0.14, y: 4.14, w: 2.5, h: 0.5, fontFace: 'Calibri', fontSize: 7.5, color: col, margin: 0, valign: 'top' });
+    if (!last) s.addText(i === 2 ? '=' : '×', { x: x + 2.80, y: 3.84, w: 0.31, h: 0.4, fontFace: 'Cambria', fontSize: 15.0, bold: true, color: MUTED, align: 'center', margin: 0, valign: 'middle' });
   });
 
   // Assumptions, visible — so the room argues with the model, not with the idea.
   s.addShape('roundRect', { x: 0.5, y: 4.78, w: 7.55, h: 1.2, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
-  s.addText('WHAT WE ASSUMED — SWAP ANY OF THESE FOR OUR REAL NUMBERS', { x: 0.68, y: 4.85, w: 7.2, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
+  s.addText('WHAT WE ASSUMED — SWAP ANY OF THESE FOR OUR REAL NUMBERS', { x: 0.68, y: 4.85, w: 7.2, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
   s.addText([
     { text: '40 parts in the pilot basket · £500k average annual purchased value each · 8% identified · 20% captured.\n', options: { color: SLATE } },
     { text: 'Deliberately conservative: ', options: { bold: true, color: NAVY } },
@@ -786,18 +786,18 @@ FOOT = FOOT_MAIN;
 
   // Cost of doing nothing.
   s.addShape('roundRect', { x: 8.28, y: 4.78, w: 4.55, h: 1.2, fill: { color: 'FBEAE8' }, line: { color: RED, width: 1 }, rectRadius: 0.09 });
-  s.addText('IF WE DO NOTHING', { x: 8.46, y: 4.85, w: 4.2, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: RED, charSpacing: 0.4, margin: 0 });
+  s.addText('IF WE DO NOTHING', { x: 8.46, y: 4.85, w: 4.2, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: RED, charSpacing: 0.4, margin: 0 });
   s.addText('Quotes keep being accepted without a floor price · cost keeps being discovered after the design is locked, when the cheap levers have closed · findings like 43%-tooling keep arriving too late to act on · a should-cost stays half a day of an engineer, so only the biggest parts ever get one.',
     { x: 8.46, y: 5.07, w: 4.2, h: 0.86, fontFace: 'Calibri', fontSize: 8.1, color: SLATE, margin: 0, valign: 'top' });
 
   // The number that makes the pilot decision easy.
   s.addShape('roundRect', { x: 0.5, y: 6.10, w: 12.33, h: 0.86, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
-    { text: 'Break-even: ', options: { bold: true, color: '9FB6E0', fontSize: 12 } },
-    { text: 'the pilot pays for itself if we capture ', options: { color: 'FFFFFF', fontSize: 12 } },
-    { text: '1.6% ', options: { bold: true, color: '6EE7B7', fontSize: 15 } },
-    { text: 'of what it identifies — one pound in sixty. Every point of capture above that is ≈£16k a year.   ', options: { color: 'FFFFFF', fontSize: 12 } },
-    { text: 'We are not asking you to believe 20%. We are asking whether 1.6% is plausible.', options: { bold: true, color: 'FFFFFF', fontSize: 12 } },
+    { text: 'Break-even: ', options: { bold: true, color: '9FB6E0', fontSize: 12.0 } },
+    { text: 'the pilot pays for itself if we capture ', options: { color: 'FFFFFF', fontSize: 12.0 } },
+    { text: '1.6% ', options: { bold: true, color: '6EE7B7', fontSize: 15.0 } },
+    { text: 'of what it identifies — one pound in sixty. Every point of capture above that is ≈£16k a year.   ', options: { color: 'FFFFFF', fontSize: 12.0 } },
+    { text: 'We are not asking you to believe 20%. We are asking whether 1.6% is plausible.', options: { bold: true, color: 'FFFFFF', fontSize: 12.0 } },
   ], { x: 0.85, y: 6.16, w: 11.65, h: 0.74, fontFace: 'Calibri', margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
@@ -831,7 +831,7 @@ FOOT = FOOT_MAIN;
     if (i < 3) s.addImage({ data: I.arrow, x: x + 1.41, y: 1.92, w: 0.12, h: 0.12 });
   });
   s.addText([
-    { text: 'End to end: 10–15 minutes ', options: { bold: true, color: TEAL, fontSize: 12 } },
+    { text: 'End to end: 10–15 minutes ', options: { bold: true, color: TEAL, fontSize: 12.0 } },
     { text: 'for a CAD part, engineer at the screen throughout. The tool computes; the engineer answers and approves.', options: { color: SLATE, fontSize: 9.5 } },
     { text: ' In CAPEE these inputs are keyed by hand from the CAD — automatic feeding is the largest single saving.', options: { color: NAVY, fontSize: 8.2, bold: true } },
   ], { x: 0.5, y: 2.64, w: 5.9, h: 0.42, fontFace: 'Calibri', margin: 0, valign: 'top' });
@@ -946,7 +946,7 @@ FOOT = FOOT_MAIN;
   kpis.forEach(([n, d, c], i) => {
     const x = 0.5 + i * 3.16;
     s.addShape('roundRect', { x, y: 1.18, w: 2.96, h: 1.12, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
-    s.addText(n, { x: x + 0.15, y: 1.26, w: 2.65, h: 0.52, fontFace: 'Cambria', fontSize: 30, bold: true, color: c, margin: 0 });
+    s.addText(n, { x: x + 0.15, y: 1.26, w: 2.65, h: 0.52, fontFace: 'Cambria', fontSize: 30.0, bold: true, color: c, margin: 0 });
     s.addText(d, { x: x + 0.15, y: 1.80, w: 2.65, h: 0.44, fontFace: 'Calibri', fontSize: 8.6, color: MUTED, margin: 0, valign: 'top' });
   });
   // Accuracy evidence — the six verified parts
@@ -973,7 +973,7 @@ FOOT = FOOT_MAIN;
   s.addText([
     { text: 'Fleet error ≈13% vs the AI path’s 28% on the same parts. ', options: { bold: true, color: NAVY } },
     { text: 'Every miss is visible and every over-estimate errs on the negotiating side — no silent under-quote. Validated on these 6 parts; validation on unseen parts is the next step and is said so out loud.', options: { color: SLATE } },
-  ], { x: 0.5, y: 5.02, w: 5.9, h: 0.8, fontFace: 'Calibri', fontSize: 9, margin: 0, valign: 'top' });
+  ], { x: 0.5, y: 5.02, w: 5.9, h: 0.8, fontFace: 'Calibri', fontSize: 9.0, margin: 0, valign: 'top' });
   // Donuts: commodity coverage + verification state
   s.addChart('doughnut', [
     { name: 'Commodity coverage', labels: ['Deterministic rules (12)', 'AI-assisted (6)'], values: [12, 6] },
@@ -995,7 +995,7 @@ FOOT = FOOT_MAIN;
   s.addText([
     { text: 'What we are NOT claiming — ', options: { bold: true, color: AMBER } },
     { text: 'the tool does not read drawings or tolerances yet; it stops and asks the engineer for the material rather than guessing; accuracy is verified on 6 parts and the validation set is being widened before any accuracy figure goes into a supplier commitment. Every number above is reproducible from the tool today — the evidence pack (per-part derivations, all three benchmark rounds) accompanies this deck.', options: { color: SLATE } },
-  ], { x: 1.05, y: 6.02, w: 11.6, h: 0.9, fontFace: 'Calibri', fontSize: 9, margin: 0, valign: 'middle' });
+  ], { x: 1.05, y: 6.02, w: 11.6, h: 0.9, fontFace: 'Calibri', fontSize: 9.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
     'Second half of the business case: evidence, coverage, and what it costs to run. Four headline figures, all measured. Sixteen to thirty times faster on the baseline we confirmed ourselves. Zero marginal cost per estimate in the default mode — there is no AI call, no per-seat metering on the costing path, it is arithmetic on our own server. Twenty manufacturing regions priced on every single run. And every line of every estimate prints its own derivation — that is what makes it usable in a supplier meeting. The table is the accuracy evidence: six real parts with independent manual bottom-up costs. Three inside the manual band. Three within about thirty percent, every one of them an over-estimate — the miss direction you can live with, because an over-estimate is a negotiating position and an under-estimate is a signed mistake. Fleet error thirteen percent, against twenty-eight for the AI path on the same parts. The two donuts: twelve of eighteen commodities run fully deterministic today, and of the eight parts we costed, all eight produced a number — the AI path managed five of eight before we hardened it. And the amber strip is deliberate, because this deck goes up, and the fastest way to lose the room is to overclaim: it does not read drawings yet, it asks rather than guesses on material, and six parts is six parts — we widen the validation set before any of these figures goes into a commitment. Everything on this slide can be regenerated from the tool this afternoon.'
@@ -1013,13 +1013,13 @@ FOOT = FOOT_MAIN;
   s.addShape('roundRect', { x: 0.5, y: 1.14, w: 5.6, h: 1.5, fill: { color: GREEN_T }, line: { color: GREEN, width: 2 }, rectRadius: 0.1 });
   s.addText('WHAT WE ARE ASKING FOR', { x: 0.72, y: 1.22, w: 5.2, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: GREEN, charSpacing: 0.6, margin: 0 });
   s.addText([
-    { text: 'Approve a 90-day pilot on 40 parts.\n', options: { bold: true, color: NAVY, fontSize: 15 } },
+    { text: 'Approve a 90-day pilot on 40 parts.\n', options: { bold: true, color: NAVY, fontSize: 15.0 } },
     { text: 'One named owner · 0.3 FTE · one VM · ≈£25k one-off · no licence, no per-seat and no per-estimate cost. Nothing recurring is committed until the day-90 review.', options: { color: SLATE, fontSize: 9.5 } },
   ], { x: 0.72, y: 1.48, w: 5.2, h: 1.08, fontFace: 'Calibri', margin: 0, valign: 'top' });
 
   // Scope.
   s.addShape('roundRect', { x: 0.5, y: 2.76, w: 5.6, h: 1.42, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
-  s.addText('PILOT SCOPE — AGREED UP FRONT', { x: 0.72, y: 2.84, w: 5.2, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
+  s.addText('PILOT SCOPE — AGREED UP FRONT', { x: 0.72, y: 2.84, w: 5.2, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
   [
     ['In', '40 live parts across 4–5 commodities we already buy, chosen with purchasing — a mix of quoted parts and parts still in design.'],
     ['Out', 'No supplier is told a price comes from a tool. Every number is reviewed and owned by an engineer before it leaves the building.'],
@@ -1030,7 +1030,7 @@ FOOT = FOOT_MAIN;
   });
 
   // Timeline.
-  s.addText('90 DAYS, THREE PHASES', { x: 0.5, y: 4.32, w: 5.6, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: NAVY, charSpacing: 0.4, margin: 0 });
+  s.addText('90 DAYS, THREE PHASES', { x: 0.5, y: 4.32, w: 5.6, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: NAVY, charSpacing: 0.4, margin: 0 });
   [
     ['Days 1–30', 'Set up + calibrate', 'One VM, our own rates loaded, the 6 validated parts re-run to confirm the baseline, two engineers trained.', TEAL],
     ['Days 31–60', 'Run the basket', 'The 40 parts costed. Every estimate logged against the quote or the actual PO. Top levers taken to suppliers.', BLUE],
@@ -1056,8 +1056,8 @@ FOOT = FOOT_MAIN;
   ].forEach(([k, v], i) => {
     const y = 1.76 + i * 0.45;
     s.addShape('roundRect', { x: 6.5, y, w: 0.95, h: 0.4, fill: { color: 'E8EDF6' }, rectRadius: 0.05 });
-    s.addText(k, { x: 6.5, y, w: 0.95, h: 0.4, fontFace: 'Calibri', fontSize: 8, bold: true, color: NAVY, align: 'center', valign: 'middle', margin: 0 });
-    s.addText(v, { x: 7.55, y, w: 5.1, h: 0.4, fontFace: 'Calibri', fontSize: 8, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(k, { x: 6.5, y, w: 0.95, h: 0.4, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: NAVY, align: 'center', valign: 'middle', margin: 0 });
+    s.addText(v, { x: 7.55, y, w: 5.1, h: 0.4, fontFace: 'Calibri', fontSize: 8.0, color: SLATE, margin: 0, valign: 'middle' });
   });
 
   // Risks, each with the mitigation already built.
@@ -1072,13 +1072,13 @@ FOOT = FOOT_MAIN;
   ].forEach(([q, a], i) => {
     const y = 4.10 + i * 0.46;
     s.addText(q, { x: 6.5, y, w: 2.55, h: 0.44, fontFace: 'Calibri', fontSize: 7.6, bold: true, italic: true, color: NAVY, margin: 0, valign: 'middle' });
-    s.addText(a, { x: 9.15, y, w: 3.5, h: 0.44, fontFace: 'Calibri', fontSize: 7.4, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(a, { x: 9.15, y, w: 3.5, h: 0.44, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, margin: 0, valign: 'middle' });
   });
 
   // The close.
   s.addShape('roundRect', { x: 0.5, y: 6.10, w: 12.33, h: 0.86, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
-    { text: 'The decision on the table:  ', options: { bold: true, color: '9FB6E0', fontSize: 12 } },
+    { text: 'The decision on the table:  ', options: { bold: true, color: '9FB6E0', fontSize: 12.0 } },
     { text: '≈£25k and 90 days to find out whether a tool that is already built and already validated on six parts holds up on forty of ours. If it misses the criteria we stop and nothing recurring has been committed. If it meets them, the same £25k has already bought its way out at a 1.6% capture rate.', options: { color: 'FFFFFF', fontSize: 11.5 } },
   ], { x: 0.85, y: 6.14, w: 11.65, h: 0.78, fontFace: 'Calibri', margin: 0, valign: 'middle' });
   footer(s, ++PG);
@@ -1099,13 +1099,13 @@ function partSlide(img, kicker, name, sub, tint, specs, note, notes) {
   title(s, kicker, sub, tint);
   s.addImage({ path: img, x: 0.45, y: 1.24, w: 7.9, h: 4.42 });
   s.addShape('roundRect', { x: 8.55, y: 1.24, w: 4.28, h: 4.42, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText(name, { x: 8.8, y: 1.36, w: 3.8, h: 0.5, fontFace: 'Calibri', fontSize: 13, bold: true, color: tint, margin: 0, valign: 'middle' });
+  s.addText(name, { x: 8.8, y: 1.36, w: 3.8, h: 0.5, fontFace: 'Calibri', fontSize: 13.0, bold: true, color: tint, margin: 0, valign: 'middle' });
   s.addText('WHAT THE KERNEL WILL MEASURE', { x: 8.8, y: 1.92, w: 3.8, h: 0.22, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: MUTED, charSpacing: 0.6, margin: 0 });
   specs.forEach(([k, v], i) => {
     const y = 2.2 + i * 0.30;
     if (i % 2 === 0) s.addShape('rect', { x: 8.7, y: y - 0.02, w: 3.98, h: 0.28, fill: { color: PAGE } });
     s.addText(k, { x: 8.8, y, w: 2.35, h: 0.32, fontFace: 'Calibri', fontSize: 9.6, color: SLATE, margin: 0, valign: 'middle' });
-    s.addText(v, { x: 11.15, y, w: 1.45, h: 0.32, fontFace: 'Calibri', fontSize: 10, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(v, { x: 11.15, y, w: 1.45, h: 0.32, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
   });
   s.addText(note, { x: 8.8, y: 2.2 + specs.length * 0.30 + 0.2, w: 3.8, h: 0.55, fontFace: 'Calibri', fontSize: 9.5, italic: true, color: SLATE, margin: 0, valign: 'top' });
   s.addText('Illustration — drawn to the dimensions the tool actually measured on this part.',
@@ -1144,7 +1144,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addShape('ellipse', { x: 0.72, y: 1.5, w: 0.7, h: 0.7, fill: { color: NAVY } });
   s.addImage({ data: I.cube, x: 0.9, y: 1.68, w: 0.34, h: 0.34 });
   s.addText('Die-cast aluminium housing — cast in a steel mould, then machine-finished', {
-    x: 1.6, y: 1.42, w: 11, h: 0.34, fontFace: 'Calibri', fontSize: 16, bold: true, color: NAVY, margin: 0 });
+    x: 1.6, y: 1.42, w: 11, h: 0.34, fontFace: 'Calibri', fontSize: 16.0, bold: true, color: NAVY, margin: 0 });
   const chips = ['2.8 kg finished', '~3 mm walls', '2 precision bores', '16 holes to thread', '2 machined faces', '60,000 a year', 'Made in China'];
   chips.forEach((c, i) => {
     const x = 1.6 + (i % 7) * 1.58;
@@ -1167,15 +1167,15 @@ partSlide('assets/workflow-deck/part-housing.png',
     s.addText(name, { x, y, w: pw, h: 0.42, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.8 });
     s.addText(`owner: ${who}`, { x, y: y + 0.48, w: pw, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, italic: true, color: col, align: 'center', margin: 0 });
     steps.forEach((st, j) => s.addText(st, { x: x + 0.14, y: y + 0.78 + j * 0.36, w: pw - 0.28, h: 0.34, fontFace: 'Calibri', fontSize: 9.3, color: SLATE, margin: 0, valign: 'top' }));
-    s.addText(tag, { x: x + 0.14, y: y + h - 0.42, w: pw - 0.28, h: 0.32, fontFace: 'Calibri', fontSize: 9, bold: true, italic: true, color: col, align: 'center', margin: 0 });
+    s.addText(tag, { x: x + 0.14, y: y + h - 0.42, w: pw - 0.28, h: 0.32, fontFace: 'Calibri', fontSize: 9.0, bold: true, italic: true, color: col, align: 'center', margin: 0 });
   });
 
   s.addShape('roundRect', { x: 0.5, y: 5.45, w: 12.33, h: 1.15, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText('Notice the proportions', { x: 0.8, y: 5.58, w: 5, h: 0.28, fontFace: 'Calibri', fontSize: 12, bold: true, color: NAVY, margin: 0 });
+  s.addText('Notice the proportions', { x: 0.8, y: 5.58, w: 5, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, bold: true, color: NAVY, margin: 0 });
   s.addText([
     { text: 'Of the twelve stages, the AI owns exactly one. ', options: { bold: true, color: PURPLE } },
     { text: 'Three are measurement, two are automatic safety checks, four are arithmetic, and two are human review. That ratio is the design — the AI is the smallest, most bounded part of the tool, not the centre of it.', options: { color: SLATE } },
-  ], { x: 0.8, y: 5.86, w: 11.75, h: 0.7, fontFace: 'Calibri', fontSize: 12, margin: 0, valign: 'middle' });
+  ], { x: 0.8, y: 5.86, w: 11.75, h: 0.7, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -1197,7 +1197,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addImage({ data: I.upload, x: 0.87, y: 1.64, w: 0.26, h: 0.26 });
   s.addText('1 · The engineer uploads', { x: 1.4, y: 1.55, w: 2.4, h: 0.3, fontFace: 'Calibri', fontSize: 12.5, bold: true, color: BLUE, margin: 0, valign: 'middle' });
   s.addText('The 3D CAD file — plus the two facts a drawing can never contain:', { x: 0.75, y: 2.1, w: 3, h: 0.55, fontFace: 'Calibri', fontSize: 10.5, color: SLATE, margin: 0, valign: 'top' });
-  s.addText('• How many per year — 60,000\n• Where we plan to make it — China', { x: 0.85, y: 2.68, w: 3, h: 0.6, fontFace: 'Calibri', fontSize: 11, bold: true, color: NAVY, margin: 0, valign: 'top' });
+  s.addText('• How many per year — 60,000\n• Where we plan to make it — China', { x: 0.85, y: 2.68, w: 3, h: 0.6, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: NAVY, margin: 0, valign: 'top' });
   s.addText('These drive tooling spread and labour rates.', { x: 0.75, y: 3.32, w: 3, h: 0.4, fontFace: 'Calibri', fontSize: 9.5, italic: true, color: MUTED, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 4.2, y: 1.32, w: 5.0, h: 2.5, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
@@ -1207,7 +1207,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   const meas = [['Solid volume (exact)', '1,037 cm³'], ['Weight if aluminium', '2.80 kg'], ['Wall thickness', '≈ 3 mm'], ['Precision bores / holes', '2 / 16'], ['Faces to machine flat', '2']];
   meas.forEach(([k, v], i) => {
     const y = 2.06 + i * 0.33;
-    s.addText(k, { x: 4.45, y, w: 3.2, h: 0.3, fontFace: 'Calibri', fontSize: 11, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(k, { x: 4.45, y, w: 3.2, h: 0.3, fontFace: 'Calibri', fontSize: 11.0, color: SLATE, margin: 0, valign: 'middle' });
     s.addText(v, { x: 7.6, y, w: 1.4, h: 0.3, fontFace: 'Calibri', fontSize: 11.5, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
   });
 
@@ -1230,7 +1230,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addText([
     { text: 'Where is the AI so far?  Nowhere. ', options: { bold: true, color: PURPLE } },
     { text: 'Everything on this slide happened before the AI was involved at all. That ordering is intentional: the measurements exist first, so that when the AI does speak, there is already an independent set of facts to check it against.', options: { color: SLATE } },
-  ], { x: 0.8, y: 5.83, w: 11.75, h: 0.7, fontFace: 'Calibri', fontSize: 12, margin: 0, valign: 'middle' });
+  ], { x: 0.8, y: 5.83, w: 11.75, h: 0.7, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -1253,11 +1253,11 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addText([
     { text: 'The same class of engine that sits underneath CATIA, SolidWorks and NX. ', options: { bold: true, color: NAVY } },
     { text: 'It reads the real CAD geometry — the mathematical surfaces, not a picture of them — so a cylinder is genuinely a cylinder with a radius and an axis, not a mesh of triangles that looks round.', options: { color: SLATE } },
-  ], { x: 0.75, y: 1.76, w: 5.6, h: 1.0, fontFace: 'Calibri', fontSize: 11, margin: 0, valign: 'top' });
+  ], { x: 0.75, y: 1.76, w: 5.6, h: 1.0, fontFace: 'Calibri', fontSize: 11.0, margin: 0, valign: 'top' });
   s.addText('CostVision uses Open CASCADE (OCCT), driven from Python through the OCP bindings.',
-    { x: 0.75, y: 2.82, w: 5.6, h: 0.34, fontFace: 'Calibri', fontSize: 11, bold: true, color: BLUE, margin: 0, valign: 'top' });
+    { x: 0.75, y: 2.82, w: 5.6, h: 0.34, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: BLUE, margin: 0, valign: 'top' });
   s.addText('Reads STEP and IGES — the neutral formats every OEM and supplier already exchanges. STL meshes take a separate, simpler path.',
-    { x: 0.75, y: 3.2, w: 5.6, h: 0.55, fontFace: 'Calibri', fontSize: 10, italic: true, color: MUTED, margin: 0, valign: 'top' });
+    { x: 0.75, y: 3.2, w: 5.6, h: 0.55, fontFace: 'Calibri', fontSize: 10.0, italic: true, color: MUTED, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 6.85, y: 1.3, w: 5.98, h: 2.6, fill: { color: BLUE_T }, line: { color: BLUE, width: 1.25 }, rectRadius: 0.1 });
   s.addText('IS IT OPEN SOURCE?  YES — AND THAT MATTERS', { x: 7.1, y: 1.44, w: 5.5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: BLUE, charSpacing: 0.6, margin: 0 });
@@ -1269,8 +1269,8 @@ partSlide('assets/workflow-deck/part-housing.png',
   lic.forEach(([n, l, w], i) => {
     const y = 1.84 + i * 0.42;
     s.addText(n, { x: 7.1, y, w: 2.5, h: 0.3, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-    s.addText(l, { x: 9.6, y, w: 1.85, h: 0.3, fontFace: 'Calibri', fontSize: 10, color: BLUE, bold: true, margin: 0, valign: 'middle' });
-    s.addText(w, { x: 11.45, y, w: 1.3, h: 0.3, fontFace: 'Calibri', fontSize: 9, italic: true, color: MUTED, margin: 0, valign: 'middle' });
+    s.addText(l, { x: 9.6, y, w: 1.85, h: 0.3, fontFace: 'Calibri', fontSize: 10.0, color: BLUE, bold: true, margin: 0, valign: 'middle' });
+    s.addText(w, { x: 11.45, y, w: 1.3, h: 0.3, fontFace: 'Calibri', fontSize: 9.0, italic: true, color: MUTED, margin: 0, valign: 'middle' });
   });
   s.addText([
     { text: 'No per-seat CAD licence, no vendor lock-in, and no third party ever sees the model. ', options: { bold: true, color: NAVY } },
@@ -1278,7 +1278,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   ], { x: 7.1, y: 3.15, w: 5.5, h: 0.65, fontFace: 'Calibri', fontSize: 10.5, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 4.12, w: 12.33, h: 1.62, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText('HOW IT ACTUALLY MEASURES — four things, no estimation anywhere', { x: 0.8, y: 4.24, w: 11, h: 0.28, fontFace: 'Calibri', fontSize: 12, bold: true, color: NAVY, margin: 0 });
+  s.addText('HOW IT ACTUALLY MEASURES — four things, no estimation anywhere', { x: 0.8, y: 4.24, w: 11, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, bold: true, color: NAVY, margin: 0 });
   const how = [
     ['Volume & mass', 'Integrates the solid exactly, then publishes a weight for every candidate density — aluminium, steel, plastic, iron, copper, titanium.'],
     ['Holes & bosses', 'Walks every cylindrical face: diameter from the exact radius, depth from the surface parameter span, through-vs-blind by comparing depth to the bounding box.'],
@@ -1288,7 +1288,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   how.forEach(([h, t], i) => {
     const x = 0.8 + (i % 4) * 3.05;
     s.addText(h, { x, y: 4.6, w: 2.85, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: BLUE, margin: 0 });
-    s.addText(t, { x, y: 4.86, w: 2.85, h: 0.8, fontFace: 'Calibri', fontSize: 9, color: SLATE, margin: 0, valign: 'top' });
+    s.addText(t, { x, y: 4.86, w: 2.85, h: 0.8, fontFace: 'Calibri', fontSize: 9.0, color: SLATE, margin: 0, valign: 'top' });
   });
 
   s.addShape('roundRect', { x: 0.5, y: 5.92, w: 12.33, h: 0.95, fill: { color: BLUE_T }, line: { color: BLUE, width: 1 }, rectRadius: 0.1 });
@@ -1318,12 +1318,12 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 6.0, h: 2.75, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.25 }, rectRadius: 0.1 });
   s.addText('WHAT THE AI IS GIVEN', { x: 0.75, y: 1.45, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: PURPLE, charSpacing: 1, margin: 0 });
   s.addText('Runs only in the Compare and AI-led modes — the default Rules-only path makes no AI call: the rules derive the inputs and the ENGINEER answers the material and duty questions. When it does run, it is given only the measurements — never a price list, never the rate library.',
-    { x: 0.75, y: 1.76, w: 5.5, h: 0.7, fontFace: 'Calibri', fontSize: 11, color: SLATE, margin: 0, valign: 'top' });
+    { x: 0.75, y: 1.76, w: 5.5, h: 0.7, fontFace: 'Calibri', fontSize: 11.0, color: SLATE, margin: 0, valign: 'top' });
   s.addText('WHAT IT SAYS BACK', { x: 0.75, y: 2.48, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: PURPLE, charSpacing: 1, margin: 0 });
   const says = [['Material family', 'Aluminium die-casting alloy'], ['How it is made', 'High-pressure die cast'], ['Then what', 'Machine-finished on a cutting machine'], ['How sure it is', '84% confident']];
   says.forEach(([k, v], i) => {
     const y = 2.8 + i * 0.3;
-    s.addText(k, { x: 0.85, y, w: 1.8, h: 0.28, fontFace: 'Calibri', fontSize: 10, color: MUTED, margin: 0, valign: 'middle' });
+    s.addText(k, { x: 0.85, y, w: 1.8, h: 0.28, fontFace: 'Calibri', fontSize: 10.0, color: MUTED, margin: 0, valign: 'middle' });
     s.addText(v, { x: 2.7, y, w: 3.6, h: 0.28, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0, valign: 'middle' });
   });
 
@@ -1353,7 +1353,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addText([
     { text: 'In plain terms: ', options: { bold: true, color: GREEN } },
     { text: 'the AI does the job an experienced engineer does in the first ten seconds of picking up a part — "ah, that\'s a die-cast housing, that\'ll be machined after". It saves setup time. It does not do the costing, it cannot — and on the default Rules-only path this whole stage is skipped: the engineer\u2019s answers replace the AI\u2019s reading.', options: { color: SLATE } },
-  ], { x: 0.8, y: 5.83, w: 11.75, h: 0.7, fontFace: 'Calibri', fontSize: 12, margin: 0, valign: 'middle' });
+  ], { x: 0.8, y: 5.83, w: 11.75, h: 0.7, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -1393,12 +1393,12 @@ partSlide('assets/workflow-deck/part-housing.png',
     const col = i % 2, row = Math.floor(i / 2);
     const x = 0.5 + col * 6.33, y = 1.3 + row * 1.72, w = 6.0, hh = 1.55;
     s.addShape('roundRect', { x, y, w, h: hh, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
-    s.addText(h, { x: x + 0.22, y: y + 0.09, w: w - 0.4, h: 0.28, fontFace: 'Calibri', fontSize: 12, bold: true, color: AMBER, margin: 0 });
+    s.addText(h, { x: x + 0.22, y: y + 0.09, w: w - 0.4, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, bold: true, color: AMBER, margin: 0 });
     s.addText([{ text: '✕  ', options: { color: RED, bold: true } }, { text: before, options: { color: MUTED, italic: true } }],
       { x: x + 0.22, y: y + 0.4, w: w - 0.4, h: 0.24, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
     s.addText([{ text: '✓  ', options: { color: GREEN, bold: true } }, { text: after, options: { color: SLATE } }],
       { x: x + 0.22, y: y + 0.65, w: w - 0.42, h: 0.62, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'top' });
-    s.addText(why, { x: x + 0.22, y: y + hh - 0.32, w: w - 0.4, h: 0.26, fontFace: 'Calibri', fontSize: 9, bold: true, italic: true, color: AMBER, margin: 0 });
+    s.addText(why, { x: x + 0.22, y: y + hh - 0.32, w: w - 0.4, h: 0.26, fontFace: 'Calibri', fontSize: 9.0, bold: true, italic: true, color: AMBER, margin: 0 });
   });
 
   s.addShape('roundRect', { x: 0.5, y: 4.82, w: 12.33, h: 1.05, fill: { color: AMBER_T }, line: { color: AMBER, width: 1.25 }, rectRadius: 0.1 });
@@ -1408,7 +1408,7 @@ partSlide('assets/workflow-deck/part-housing.png',
     { text: 'When the AI and the measurements disagree, ', options: { color: SLATE } },
     { text: 'the measurements win — automatically, every time. ', options: { bold: true, color: NAVY } },
     { text: 'The tool corrects the input, records what it changed and why, and shows the engineer. It never proceeds silently.', options: { color: SLATE } },
-  ], { x: 1.2, y: 4.95, w: 11.4, h: 0.85, fontFace: 'Calibri', fontSize: 12, margin: 0, valign: 'middle' });
+  ], { x: 1.2, y: 4.95, w: 11.4, h: 0.85, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
 
   s.addShape('roundRect', { x: 0.5, y: 6.02, w: 12.33, h: 0.85, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addText([
@@ -1436,7 +1436,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   owner(s, 10.3, 0.74, 'OWNER: THE ENGINE', TEAL, TEAL_T);
 
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 6.0, h: 2.5, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText('A · Why this process, not another', { x: 0.75, y: 1.44, w: 5.5, h: 0.3, fontFace: 'Calibri', fontSize: 13, bold: true, color: TEAL, margin: 0 });
+  s.addText('A · Why this process, not another', { x: 0.75, y: 1.44, w: 5.5, h: 0.3, fontFace: 'Calibri', fontSize: 13.0, bold: true, color: TEAL, margin: 0 });
   s.addText('The engine tests the measured shape against what each process can physically do:', { x: 0.75, y: 1.76, w: 5.5, h: 0.32, fontFace: 'Calibri', fontSize: 10.5, color: MUTED, margin: 0 });
   const routes = [
     ['High-pressure die casting', 'thin walls + hollow + 60k/yr', GREEN, 'CHOSEN'],
@@ -1447,13 +1447,13 @@ partSlide('assets/workflow-deck/part-housing.png',
   routes.forEach(([name, why, col, tag], i) => {
     const y = 2.16 + i * 0.4;
     s.addShape('roundRect', { x: 0.75, y, w: 0.72, h: 0.3, fill: { color: tag === 'CHOSEN' ? GREEN_T : PAGE }, line: { color: tag === 'CHOSEN' ? GREEN : LINE, width: 0.75 }, rectRadius: 0.15 });
-    s.addText(tag, { x: 0.75, y, w: 0.72, h: 0.3, fontFace: 'Calibri', fontSize: 6.8, bold: true, color: col, align: 'center', valign: 'middle', margin: 0 });
-    s.addText(name, { x: 1.58, y, w: 2.3, h: 0.3, fontFace: 'Calibri', fontSize: 10, bold: tag === 'CHOSEN', color: tag === 'CHOSEN' ? NAVY : MUTED, margin: 0, valign: 'middle' });
+    s.addText(tag, { x: 0.75, y, w: 0.72, h: 0.3, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: col, align: 'center', valign: 'middle', margin: 0 });
+    s.addText(name, { x: 1.58, y, w: 2.3, h: 0.3, fontFace: 'Calibri', fontSize: 10.0, bold: tag === 'CHOSEN', color: tag === 'CHOSEN' ? NAVY : MUTED, margin: 0, valign: 'middle' });
     s.addText(why, { x: 3.9, y, w: 2.5, h: 0.3, fontFace: 'Calibri', fontSize: 8.8, italic: true, color: MUTED, margin: 0, valign: 'middle' });
   });
 
   s.addShape('roundRect', { x: 6.75, y: 1.3, w: 6.08, h: 2.5, fill: { color: TEAL_T }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.1 });
-  s.addText('B · Why a 1,600-tonne press', { x: 7.0, y: 1.44, w: 5.5, h: 0.3, fontFace: 'Calibri', fontSize: 13, bold: true, color: TEAL, margin: 0 });
+  s.addText('B · Why a 1,600-tonne press', { x: 7.0, y: 1.44, w: 5.5, h: 0.3, fontFace: 'Calibri', fontSize: 13.0, bold: true, color: TEAL, margin: 0 });
   s.addText('Molten metal is injected under pressure and tries to force the mould open. The press must clamp it shut.',
     { x: 7.0, y: 1.76, w: 5.6, h: 0.5, fontFace: 'Calibri', fontSize: 10.5, color: SLATE, margin: 0, valign: 'top' });
   const steps = [
@@ -1464,7 +1464,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   ];
   steps.forEach(([t, v], i) => {
     const y = 2.32 + i * 0.33;
-    s.addText(t, { x: 7.05, y, w: 4.1, h: 0.3, fontFace: 'Calibri', fontSize: 10, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(t, { x: 7.05, y, w: 4.1, h: 0.3, fontFace: 'Calibri', fontSize: 10.0, color: SLATE, margin: 0, valign: 'middle' });
     s.addText(v, { x: 11.2, y, w: 1.45, h: 0.3, fontFace: 'Calibri', fontSize: 9.5, bold: true, color: i === 3 ? NAVY : MUTED, align: 'right', margin: 0, valign: 'middle' });
   });
 
@@ -1485,7 +1485,7 @@ partSlide('assets/workflow-deck/part-housing.png',
     { text: 'offered a second opinion ("die casting" — it agreed). ', options: { color: SLATE } },
     { text: 'A pinned engineer choice overrides both. ', options: { bold: true, color: NAVY } },
     { text: 'And if anyone — AI or person — had said "sand casting", the 3 mm walls would have argued back with the physics.', options: { color: SLATE } },
-  ], { x: 0.8, y: 5.7, w: 11.75, h: 0.85, fontFace: 'Calibri', fontSize: 11, margin: 0, valign: 'middle' });
+  ], { x: 0.8, y: 5.7, w: 11.75, h: 0.85, fontFace: 'Calibri', fontSize: 11.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -1507,13 +1507,13 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     s.addText(v, { x: x + w - 1.85, y: yy, w: 1.6, h: 0.3, fontFace: 'Calibri', fontSize: 10.2, bold: true, color: i === chain.length - 1 ? TEAL : NAVY, align: 'right', margin: 0, valign: 'middle' });
   });
   const ly = y + 0.44 + chain.length * 0.30 + 0.10;
-  s.addText('Then the ladder — smallest machine that covers it', { x: x + 0.25, y: ly, w: w - 0.5, h: 0.24, fontFace: 'Calibri', fontSize: 9, bold: true, italic: true, color: MUTED, margin: 0 });
+  s.addText('Then the ladder — smallest machine that covers it', { x: x + 0.25, y: ly, w: w - 0.5, h: 0.24, fontFace: 'Calibri', fontSize: 9.0, bold: true, italic: true, color: MUTED, margin: 0 });
   rows.forEach(([t, r, v], i) => {
     const yy = ly + 0.26 + i * 0.31;
     const on = v === 'CHOSEN';
     if (on) s.addShape('roundRect', { x: x + 0.2, y: yy - 0.03, w: w - 0.42, h: 0.33, fill: { color: 'FFFFFF' }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.06 });
-    s.addText(t, { x: x + 0.38, y: yy, w: 1.2, h: 0.28, fontFace: 'Calibri', fontSize: 10, bold: on, color: on ? NAVY : SLATE, margin: 0, valign: 'middle' });
-    s.addText(r, { x: x + 1.6, y: yy, w: 1.4, h: 0.28, fontFace: 'Calibri', fontSize: 10, bold: on, color: on ? NAVY : SLATE, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(t, { x: x + 0.38, y: yy, w: 1.2, h: 0.28, fontFace: 'Calibri', fontSize: 10.0, bold: on, color: on ? NAVY : SLATE, margin: 0, valign: 'middle' });
+    s.addText(r, { x: x + 1.6, y: yy, w: 1.4, h: 0.28, fontFace: 'Calibri', fontSize: 10.0, bold: on, color: on ? NAVY : SLATE, align: 'right', margin: 0, valign: 'middle' });
     s.addText(v, { x: x + 3.15, y: yy, w: w - 3.4, h: 0.28, fontFace: 'Calibri', fontSize: 8.8, italic: !on, bold: on, color: on ? TEAL : MUTED, margin: 0, valign: 'middle' });
   });
   if (note) s.addText(note, { x: x + 0.25, y: y + h - 0.31, w: w - 0.5, h: 0.26, fontFace: 'Calibri', fontSize: 8.6, italic: true, color: MUTED, margin: 0, valign: 'middle' });
@@ -1622,7 +1622,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     { x: 0.75, y: 4.4, w: 8.3, h: 0.3, fontFace: 'Calibri', fontSize: 9.2, italic: true, color: MUTED, margin: 0 });
 
   s.addShape('roundRect', { x: 9.45, y: 1.28, w: 3.38, h: 3.5, fill: { color: TEAL_T }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.1 });
-  s.addText('HOW A CYCLE TIME IS BUILT', { x: 9.68, y: 1.4, w: 3, h: 0.26, fontFace: 'Calibri', fontSize: 10, bold: true, color: TEAL, charSpacing: 0.8, margin: 0 });
+  s.addText('HOW A CYCLE TIME IS BUILT', { x: 9.68, y: 1.4, w: 3, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: TEAL, charSpacing: 0.8, margin: 0 });
   const build = [
     ['Casting', 'fill + hold under pressure + cool until solid + open and eject = 55 seconds'],
     ['Machining', 'metal to remove / how fast the cutter removes it, + tool changes, + moving between features, + load and unload'],
@@ -1690,12 +1690,12 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   });
 
   s.addShape('roundRect', { x: 7.75, y: 1.28, w: 5.08, h: 1.75, fill: { color: '0E5A5A' }, rectRadius: 0.1 });
-  s.addText('SHOULD-COST — MADE IN CHINA', { x: 8.0, y: 1.42, w: 4.6, h: 0.26, fontFace: 'Calibri', fontSize: 10, bold: true, color: '9FD9CF', charSpacing: 1, margin: 0 });
-  s.addText('£38.55', { x: 8.0, y: 1.7, w: 4.6, h: 0.75, fontFace: 'Cambria', fontSize: 44, bold: true, color: 'FFFFFF', margin: 0 });
-  s.addText('per part, at 60,000 a year', { x: 8.0, y: 2.5, w: 4.6, h: 0.28, fontFace: 'Calibri', fontSize: 11, color: 'CDEDE7', margin: 0 });
+  s.addText('SHOULD-COST — MADE IN CHINA', { x: 8.0, y: 1.42, w: 4.6, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: '9FD9CF', charSpacing: 1, margin: 0 });
+  s.addText('£38.55', { x: 8.0, y: 1.7, w: 4.6, h: 0.75, fontFace: 'Cambria', fontSize: 44.0, bold: true, color: 'FFFFFF', margin: 0 });
+  s.addText('per part, at 60,000 a year', { x: 8.0, y: 2.5, w: 4.6, h: 0.28, fontFace: 'Calibri', fontSize: 11.0, color: 'CDEDE7', margin: 0 });
 
   s.addShape('roundRect', { x: 7.75, y: 3.2, w: 5.08, h: 1.68, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText('THE SAME PART, PRICED ELSEWHERE', { x: 8.0, y: 3.32, w: 4.6, h: 0.26, fontFace: 'Calibri', fontSize: 10, bold: true, color: NAVY, charSpacing: 0.8, margin: 0 });
+  s.addText('THE SAME PART, PRICED ELSEWHERE', { x: 8.0, y: 3.32, w: 4.6, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: NAVY, charSpacing: 0.8, margin: 0 });
   const geo = [['India', '£37.17', SLATE], ['China', '£38.55', TEAL], ['Mexico', '£40.44', SLATE], ['United Kingdom', '£59.60', NAVY]];
   geo.forEach(([c, v, col], i) => {
     const y = 3.58 + i * 0.26;
@@ -1731,7 +1731,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   owner(s, 10.3, 0.74, 'OWNER: THE ENGINEER', GREEN, GREEN_T);
 
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 6.0, h: 2.35, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText('11 · A range, not false precision', { x: 0.75, y: 1.44, w: 5.5, h: 0.3, fontFace: 'Calibri', fontSize: 13, bold: true, color: GREEN, margin: 0 });
+  s.addText('11 · A range, not false precision', { x: 0.75, y: 1.44, w: 5.5, h: 0.3, fontFace: 'Calibri', fontSize: 13.0, bold: true, color: GREEN, margin: 0 });
   s.addText('4,000 simulated runs, varying the inputs the tool is least sure about. Tooling is varied most; overhead and margin are policy, so they follow.',
     { x: 0.75, y: 1.78, w: 5.5, h: 0.55, fontFace: 'Calibri', fontSize: 10.5, color: SLATE, margin: 0, valign: 'top' });
   // Scale: £28 .. £50 across the track, so the band and the marker sit where the numbers say.
@@ -1740,14 +1740,14 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   s.addShape('roundRect', { x: TX, y: 2.46, w: TW, h: 0.34, fill: { color: 'DCE3EE' }, rectRadius: 0.17 });
   s.addShape('roundRect', { x: px(32.31), y: 2.46, w: px(45.38) - px(32.31), h: 0.34, fill: { color: TEAL }, rectRadius: 0.17 });
   s.addShape('rect', { x: px(38.55) - 0.028, y: 2.38, w: 0.056, h: 0.5, fill: { color: NAVY } });
-  s.addText('P10  £32.31', { x: px(32.31) - 0.55, y: 2.9, w: 1.1, h: 0.24, fontFace: 'Calibri', fontSize: 9, color: MUTED, align: 'center', margin: 0 });
+  s.addText('P10  £32.31', { x: px(32.31) - 0.55, y: 2.9, w: 1.1, h: 0.24, fontFace: 'Calibri', fontSize: 9.0, color: MUTED, align: 'center', margin: 0 });
   s.addText('£38.55', { x: px(38.55) - 0.6, y: 2.9, w: 1.2, h: 0.24, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, align: 'center', margin: 0 });
-  s.addText('P90  £45.38', { x: px(45.38) - 0.55, y: 2.9, w: 1.1, h: 0.24, fontFace: 'Calibri', fontSize: 9, color: MUTED, align: 'center', margin: 0 });
+  s.addText('P90  £45.38', { x: px(45.38) - 0.55, y: 2.9, w: 1.1, h: 0.24, fontFace: 'Calibri', fontSize: 9.0, color: MUTED, align: 'center', margin: 0 });
   s.addText('±17% on this part. The band widens when the tool is less certain — a machining-heavy casting carries more cycle-time risk than a simple pressing.',
     { x: 0.75, y: 3.2, w: 5.5, h: 0.42, fontFace: 'Calibri', fontSize: 9.6, italic: true, color: MUTED, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 6.75, y: 1.3, w: 6.08, h: 2.35, fill: { color: GREEN_T }, line: { color: GREEN, width: 1.25 }, rectRadius: 0.1 });
-  s.addText('12 · What the engineer actually gets', { x: 7.0, y: 1.44, w: 5.5, h: 0.3, fontFace: 'Calibri', fontSize: 13, bold: true, color: GREEN, margin: 0 });
+  s.addText('12 · What the engineer actually gets', { x: 7.0, y: 1.44, w: 5.5, h: 0.3, fontFace: 'Calibri', fontSize: 13.0, bold: true, color: GREEN, margin: 0 });
   const outs = [
     'The 8-bucket breakdown, with every figure traceable',
     'The operation list — what takes the time and why',
@@ -1763,7 +1763,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   s.addShape('roundRect', { x: 0.5, y: 3.88, w: 12.33, h: 1.4, fill: { color: CARD }, line: { color: GREEN, width: 1.5 }, rectRadius: 0.1 });
   s.addShape('ellipse', { x: 0.78, y: 4.22, w: 0.6, h: 0.6, fill: { color: GREEN } });
   s.addImage({ data: I.person, x: 0.94, y: 4.38, w: 0.28, h: 0.28 });
-  s.addText('Nothing leaves the tool unapproved', { x: 1.6, y: 4.0, w: 11, h: 0.3, fontFace: 'Calibri', fontSize: 13, bold: true, color: GREEN, margin: 0 });
+  s.addText('Nothing leaves the tool unapproved', { x: 1.6, y: 4.0, w: 11, h: 0.3, fontFace: 'Calibri', fontSize: 13.0, bold: true, color: GREEN, margin: 0 });
   s.addText([
     { text: 'Every AI suggestion arrives as an editable pre-fill — highlighted, never silently applied. ', options: { color: SLATE } },
     { text: 'Our engineer can change the material, the process, the machine, the cycle time or the rates, and the whole cost recalculates instantly. ', options: { bold: true, color: NAVY } },
@@ -1775,7 +1775,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     { text: 'And if a supplier quotes £52 for this part?  ', options: { bold: true, color: '9FB6E0' } },
     { text: 'That is above the P90. Our buyer no longer has to feel it is high — they can see it, line by line, and ask the right question:  ', options: { color: 'FFFFFF' } },
     { text: '"your machining time looks about 30% above what this geometry needs — walk me through your fixturing."', options: { bold: true, italic: true, color: 'FFFFFF' } },
-  ], { x: 0.85, y: 5.6, w: 11.65, h: 1.15, fontFace: 'Calibri', fontSize: 13, margin: 0, valign: 'middle' });
+  ], { x: 0.85, y: 5.6, w: 11.65, h: 1.15, fontFace: 'Calibri', fontSize: 13.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -1802,7 +1802,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     const y = 1.18 + i * 1.28;
     s.addShape('roundRect', { x: 0.5, y, w: 7.1, h: 1.16, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
     s.addShape('ellipse', { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fill: { color: GREEN } });
-    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
     s.addText(t.slice(4), { x: 1.2, y: y + 0.1, w: 6.3, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0 });
     s.addText(d, { x: 1.2, y: y + 0.38, w: 6.25, h: 0.74, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'top' });
   });
@@ -1815,9 +1815,9 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     s.addShape('rect', { x: 8.35 + i * 0.38, y: 2.62 - h * 0.95, w: 0.3, h: h * 0.95, fill: { color: i >= 1 && i <= 9 ? '9FD9CF' : 'DCE3EE' } });
   });
   s.addShape('line', { x: 8.73, y: 2.72, w: 3.04, h: 0, line: { color: TEAL, width: 2 } });
-  s.addText('P10', { x: 8.55, y: 2.78, w: 0.5, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: TEAL, margin: 0 });
-  s.addText('P50 — the estimate', { x: 9.65, y: 2.78, w: 1.5, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: NAVY, margin: 0 });
-  s.addText('P90', { x: 11.55, y: 2.78, w: 0.5, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: TEAL, margin: 0 });
+  s.addText('P10', { x: 8.55, y: 2.78, w: 0.5, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: TEAL, margin: 0 });
+  s.addText('P50 — the estimate', { x: 9.65, y: 2.78, w: 1.5, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: NAVY, margin: 0 });
+  s.addText('P90', { x: 11.55, y: 2.78, w: 0.5, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: TEAL, margin: 0 });
   s.addText('4,000 simulated totals for one part (illustrative shape) — the quoted band is the middle 80%',
     { x: 8.15, y: 3.02, w: 4.5, h: 0.24, fontFace: 'Calibri', fontSize: 7.8, italic: true, color: MUTED, margin: 0 });
   const promises = [
@@ -1831,13 +1831,13 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     s.addShape('ellipse', { x: 8.09, y: y + 0.11, w: 0.34, h: 0.34, fill: { color: c } });
     s.addImage({ data: ico, x: 8.17, y: y + 0.19, w: 0.18, h: 0.18 });
     s.addText(t, { x: 8.52, y: y + 0.09, w: 4.2, h: 0.22, fontFace: 'Calibri', fontSize: 9.5, bold: true, color: c, margin: 0 });
-    s.addText(d, { x: 8.52, y: y + 0.33, w: 4.22, h: 0.52, fontFace: 'Calibri', fontSize: 8, color: SLATE, margin: 0, valign: 'top' });
+    s.addText(d, { x: 8.52, y: y + 0.33, w: 4.22, h: 0.52, fontFace: 'Calibri', fontSize: 8.0, color: SLATE, margin: 0, valign: 'top' });
   });
   s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Why it matters:  ', options: { bold: true, color: GREEN } },
     { text: 'a single number pretends to a precision the inputs never had. The band is the same arithmetic run 4,000 times with each input as uncertain as its provenance says it is — so “£26 ± 18%” is a statement of evidence, not of confidence.', options: { color: SLATE } },
-  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10, margin: 0, valign: 'middle' });
+  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
     'A question I get every time is where the plus-or-minus comes from, so here is the mechanism, exactly as the code does it. Step one: every cost line already carries a confidence grade from its provenance — measured geometry and library rates are High, derived values Medium, assumptions Low. Step two: those grades become spreads — five, twelve and twenty-two percent at one sigma — with per-bucket reality on top: tooling estimates get one-point-eight times the spread because tooling is genuinely the least certain thing we estimate, packaging and logistics get less because they are contracted, and overhead and margin are never perturbed at all because they are policy percentages — they are recomputed inside every trial exactly as the real engine composes them. Step three: four thousand trials. Each one multiplies every base bucket by a lognormal factor — always positive, mean one — and rebuilds the stack. Step four: sort the four thousand totals and read off the tenth, fiftieth and ninetieth percentiles. That is the band on the result card. Three properties worth stating. It is seeded, so the same part gives the same band every time — it is reproducible and it is unit-tested. It is calibrated: once we have enough real actuals in a segment, a conformal layer replaces the prior with a band that provably covers the target share of real outcomes — that is a statistical guarantee, and until we have the data the tool says it is on the prior. And it is honest by construction: assumptions widen the band automatically, so a part costed on guesses cannot pretend to precision. The one line: the band is the same arithmetic run four thousand times with each input exactly as uncertain as its provenance says.'
@@ -1859,7 +1859,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     const y = 1.18 + i * 1.28;
     s.addShape('roundRect', { x: 0.5, y, w: 7.1, h: 1.16, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
     s.addShape('ellipse', { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fill: { color: TEAL } });
-    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
     s.addText(t.slice(4), { x: 1.2, y: y + 0.1, w: 6.3, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0 });
     s.addText(d, { x: 1.2, y: y + 0.38, w: 6.25, h: 0.74, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'top' });
   });
@@ -1883,13 +1883,13 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     s.addShape('ellipse', { x: 8.09, y: y + 0.11, w: 0.34, h: 0.34, fill: { color: c } });
     s.addImage({ data: ico, x: 8.17, y: y + 0.19, w: 0.18, h: 0.18 });
     s.addText(t, { x: 8.52, y: y + 0.09, w: 4.2, h: 0.22, fontFace: 'Calibri', fontSize: 9.5, bold: true, color: c, margin: 0 });
-    s.addText(d, { x: 8.52, y: y + 0.33, w: 4.22, h: 0.52, fontFace: 'Calibri', fontSize: 8, color: SLATE, margin: 0, valign: 'top' });
+    s.addText(d, { x: 8.52, y: y + 0.33, w: 4.22, h: 0.52, fontFace: 'Calibri', fontSize: 8.0, color: SLATE, margin: 0, valign: 'top' });
   });
   s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'E7F4F2' }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: TEAL } },
     { text: 'the same measured geometry and the same costed numbers are pushed through fixed engineering thresholds — the DFM/DFA report is arithmetic you can audit, not opinion you have to trust. The appendix prints every rule, parameter, advisor and lever in full.', options: { color: SLATE } },
-  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10, margin: 0, valign: 'middle' });
+  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
     'Sections twelve to fifteen of every report — DFM, DFA, cost optimisation and the roadmap — come from one deterministic rule engine, and I want to show exactly how, because the honest answer to "is this AI opinion?" is no. Step one: the engine runs AFTER the costing and reads the finished result — the eight buckets and the same measured inputs the estimate used. It critiques the numbers that were actually costed. Step two: fifty-two fixed thresholds fire — material utilisation below sixty percent is critical, below seventy-two major; OEE below seventy critical; every bucket compared to its commodity benchmark band. Each hit carries a severity, a saving percentage and a recommendation, all constants in code. Step three: ten per-process advisor modules add the geometry findings — heavy sections that will draw porosity, sharp corners that start hot tears, missing draft, near-net opportunities — read from the measured solid, not guessed. Step four: the score is arithmetic — start at ten, minus two per critical, one per major, half per minor — and the roadmap is a filter of the same actions by risk and timeframe. Two properties to underline. The saving headline is root-sum-square of the top three issues capped at forty percent — we deliberately do not add up every opportunity, because stacked savings never materialise additively. And the AI cannot touch any of it: in AI mode it may add commentary to the analysis panel, but no score, severity or saving in this report comes from a model. Source: src slash engine slash dfm-dfa dot ts plus the ten advisor modules — one function, feeding both the screen and the PDF, so the two can never disagree.'
@@ -1910,7 +1910,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     const y = 1.18 + i * 1.28;
     s.addShape('roundRect', { x: 0.5, y, w: 7.1, h: 1.16, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
     s.addShape('ellipse', { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fill: { color: '4F46E5' } });
-    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
     s.addText(t.slice(4), { x: 1.2, y: y + 0.1, w: 6.3, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0 });
     s.addText(d, { x: 1.2, y: y + 0.36, w: 6.25, h: 0.78, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
   });
@@ -1935,13 +1935,13 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     s.addShape('ellipse', { x: 8.09, y: y + 0.11, w: 0.34, h: 0.34, fill: { color: c } });
     s.addImage({ data: ico, x: 8.17, y: y + 0.19, w: 0.18, h: 0.18 });
     s.addText(t, { x: 8.52, y: y + 0.09, w: 4.2, h: 0.22, fontFace: 'Calibri', fontSize: 9.5, bold: true, color: c, margin: 0 });
-    s.addText(d, { x: 8.52, y: y + 0.32, w: 4.22, h: 0.52, fontFace: 'Calibri', fontSize: 8, color: SLATE, margin: 0, valign: 'top' });
+    s.addText(d, { x: 8.52, y: y + 0.32, w: 4.22, h: 0.52, fontFace: 'Calibri', fontSize: 8.0, color: SLATE, margin: 0, valign: 'top' });
   });
   s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'EEF2FF' }, line: { color: '4F46E5', width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: '4F46E5' } },
     { text: 'the should-cost models the most efficient plausible supplier — so the tool takes the optimal machine itself, and its suggestions are reserved for levers only you can pull, each one priced by the same arithmetic that built the estimate.', options: { color: SLATE } },
-  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10, margin: 0, valign: 'middle' });
+  ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
     'A buyer challenged us with exactly the right question: the tool costed a five-machine routing and then recommended consolidating it with multi-axis machining — why did it not just pick the right machine in the first place? So now it does, and I want to show the mechanism. Step one: before any pound is booked, the routing optimiser prices the feasible alternatives — the split routing on cheap three-axis stations with a fixturing per approach direction, the single-setup five-axis consolidation, the turning-led route when the part is round — including batch setup amortisation and the per-part handling every extra fixturing costs. Cheapest capable routing wins. Step two: the losers are printed in the derivation trace next to the chosen machine, so the process line comes with its own defence. Step three: the suggestion layer reads the same arithmetic — it no longer critiques the tool’s own choices, it flips to "routing verified optimal" when the lever is already taken, and every finding is tagged with who owns the lever. And step four is my favourite, because it is the honest one: on the very report that prompted the question, the old advice said multi-axis consolidation, eleven percent, long term. The optimiser ranked it and consolidation loses on that part. The new suggestion is a quick-win re-quote: the same machining content on the cheapest capable machines is six pounds ninety-five cheaper per part — twenty percent of the machining spend — and the report says out loud that consolidation was ranked and does not win. Three rules of engagement: the AI never picks the machine, an engineer’s explicit choice is respected with the delta surfaced beside it, and if there is no verifiable delta there is no claim.'
@@ -1963,8 +1963,8 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     const y = 1.18 + i * 1.06;
     s.addShape('roundRect', { x: 0.5, y, w: 6.6, h: 0.96, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
     s.addShape('ellipse', { x: 0.64, y: y + 0.1, w: 0.36, h: 0.36, fill: { color: TEAL } });
-    s.addText(String(i + 1), { x: 0.64, y: y + 0.1, w: 0.36, h: 0.36, fontFace: 'Cambria', fontSize: 13, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
-    s.addText(t.slice(4), { x: 1.12, y: y + 0.07, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 10, bold: true, color: NAVY, margin: 0 });
+    s.addText(String(i + 1), { x: 0.64, y: y + 0.1, w: 0.36, h: 0.36, fontFace: 'Cambria', fontSize: 13.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(t.slice(4), { x: 1.12, y: y + 0.07, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: NAVY, margin: 0 });
     s.addText(d, { x: 1.12, y: y + 0.3, w: 5.95, h: 0.64, fontFace: 'Calibri', fontSize: 7.7, color: SLATE, margin: 0, valign: 'top' });
   });
   // Right: the bumper mould as the ACTUAL quotation the engine prints
@@ -1985,13 +1985,13 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   q.forEach(([item, how, cost], i) => {
     const y = 1.56 + i * 0.335;
     s.addText(item, { x: 7.55, y, w: 2.9, h: 0.3, fontFace: 'Calibri', fontSize: 8.2, color: NAVY, margin: 0, valign: 'middle' });
-    s.addText(how, { x: 10.3, y, w: 1.35, h: 0.3, fontFace: 'Courier New', fontSize: 7.0, color: MUTED, margin: 0, valign: 'middle' });
+    s.addText(how, { x: 10.3, y, w: 1.35, h: 0.3, fontFace: 'Courier New', fontSize: 7.5, color: MUTED, margin: 0, valign: 'middle' });
     s.addText(cost, { x: 11.6, y, w: 1.05, h: 0.3, fontFace: 'Courier New', fontSize: 7.8, bold: false, color: SLATE, align: 'right', margin: 0, valign: 'middle' });
   });
   s.addShape('line', { x: 7.55, y: 4.96, w: 5.1, h: 0, line: { color: TEAL, width: 1 } });
   s.addText([
     { text: 'Engine total £423,985', options: { bold: true, color: TEAL, fontSize: 10.5 } },
-    { text: '  vs the toolmaker’s real quotation ', options: { color: SLATE, fontSize: 9 } },
+    { text: '  vs the toolmaker’s real quotation ', options: { color: SLATE, fontSize: 9.0 } },
     { text: '£420,000', options: { bold: true, color: NAVY, fontSize: 10.5 } },
     { text: '  — within 1%. 4,797 toolroom hours; every line is a number a toolmaker can argue with, and that is the point.', options: { color: SLATE, fontSize: 8.4 } },
   ], { x: 7.55, y: 5.06, w: 5.1, h: 1.1, fontFace: 'Calibri', margin: 0, valign: 'top' });
@@ -2029,7 +2029,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     const x = 0.5 + col * 6.28, y = 1.2 + row * 2.56, w = 6.05, hh = 2.42;
     s.addShape('roundRect', { x, y, w, h: hh, fill: { color: CARD }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.09 });
     s.addText(h, { x: x + 0.2, y: y + 0.1, w: w - 0.4, h: 0.22, fontFace: 'Courier New', fontSize: 8.4, bold: true, color: NAVY, margin: 0 });
-    s.addText(f, { x: x + 0.2, y: y + 0.36, w: w - 0.4, h: 0.88, fontFace: 'Courier New', fontSize: 6.9, color: SLATE, margin: 0, valign: 'top' });
+    s.addText(f, { x: x + 0.2, y: y + 0.36, w: w - 0.4, h: 0.88, fontFace: 'Courier New', fontSize: 7.5, color: SLATE, margin: 0, valign: 'top' });
     s.addText(d, { x: x + 0.2, y: y + 1.28, w: w - 0.4, h: 1.08, fontFace: 'Calibri', fontSize: 7.8, color: SLATE, margin: 0, valign: 'top' });
   });
   s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'E7F4F2' }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
@@ -2061,7 +2061,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   ];
   prov.forEach(([k, v], i) => {
     const y = 1.76 + i * 0.32;
-    s.addText(k, { x: 0.78, y, w: 1.95, h: 0.3, fontFace: 'Calibri', fontSize: 10, bold: true, color: TEAL, margin: 0, valign: 'middle' });
+    s.addText(k, { x: 0.78, y, w: 1.95, h: 0.3, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: TEAL, margin: 0, valign: 'middle' });
     s.addText(v, { x: 2.78, y, w: 3.7, h: 0.3, fontFace: 'Calibri', fontSize: 9.6, color: SLATE, margin: 0, valign: 'middle' });
   });
   s.addText('Not one of those six lines contains an AI-generated number.',
@@ -2094,7 +2094,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   s.addText([
     { text: 'Reproducibility test: ', options: { bold: true, color: TEAL } },
     { text: 'run the same file with the same inputs a hundred times and you get £38.55 a hundred times. The arithmetic is fixed code, so the answer cannot drift between runs, between engineers, or between one supplier meeting and the next.', options: { color: SLATE } },
-  ], { x: 0.8, y: 5.87, w: 11.75, h: 0.85, fontFace: 'Calibri', fontSize: 12, margin: 0, valign: 'middle' });
+  ], { x: 0.8, y: 5.87, w: 11.75, h: 0.85, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -2124,8 +2124,8 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     const x = 0.5 + i * (lw + lg), y = 1.32, h = 3.55;
     s.addShape('roundRect', { x, y, w: lw, h, fill: { color: tint }, line: { color: col, width: 1.25 }, rectRadius: 0.09 });
     s.addShape('rect', { x, y, w: lw, h: 0.44, fill: { color: col } });
-    s.addText(who, { x, y, w: lw, h: 0.44, fontFace: 'Calibri', fontSize: 11, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.8 });
-    s.addText(does, { x: x + 0.1, y: y + 0.52, w: lw - 0.2, h: 0.28, fontFace: 'Calibri', fontSize: 10, bold: true, italic: true, color: col, align: 'center', margin: 0 });
+    s.addText(who, { x, y, w: lw, h: 0.44, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.8 });
+    s.addText(does, { x: x + 0.1, y: y + 0.52, w: lw - 0.2, h: 0.28, fontFace: 'Calibri', fontSize: 10.0, bold: true, italic: true, color: col, align: 'center', margin: 0 });
     items.forEach((t, j) => s.addText('• ' + t, { x: x + 0.14, y: y + 0.88 + j * 0.44, w: lw - 0.28, h: 0.42, fontFace: 'Calibri', fontSize: 9.5, color: SLATE, margin: 0, valign: 'top' }));
     s.addShape('roundRect', { x: x + 0.12, y: y + h - 0.55, w: lw - 0.24, h: 0.44, fill: { color: CARD }, line: { color: col, width: 0.75 }, rectRadius: 0.08 });
     s.addText(rule, { x: x + 0.14, y: y + h - 0.55, w: lw - 0.28, h: 0.44, fontFace: 'Calibri', fontSize: 8.8, bold: true, color: col, align: 'center', valign: 'middle', margin: 0 });
@@ -2133,7 +2133,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
 
   s.addShape('roundRect', { x: 0.5, y: 5.1, w: 12.33, h: 0.85, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText('The rules derive.  The engine calculates.  A person approves.  The AI is an optional second opinion.', {
-    x: 0.5, y: 5.1, w: 12.33, h: 0.85, fontFace: 'Cambria', fontSize: 19, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    x: 0.5, y: 5.1, w: 12.33, h: 0.85, fontFace: 'Cambria', fontSize: 19.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
 
   s.addShape('roundRect', { x: 0.5, y: 6.1, w: 12.33, h: 0.78, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addText([
@@ -2172,12 +2172,12 @@ divider('SECTION THREE', 'An Injection-Moulded Bumper Fascia', 'The same method,
   s.addShape('roundRect', { x: 0.5, y: 1.28, w: 12.33, h: 1.22, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addShape('ellipse', { x: 0.75, y: 1.5, w: 0.72, h: 0.72, fill: { color: NAVY } });
   s.addImage({ data: I.cube, x: 0.95, y: 1.7, w: 0.32, h: 0.32 });
-  s.addText('Front bumper fascia — talc-filled polypropylene, moulded in one shot, then painted', { x: 1.68, y: 1.42, w: 11, h: 0.34, fontFace: 'Calibri', fontSize: 15, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+  s.addText('Front bumper fascia — talc-filled polypropylene, moulded in one shot, then painted', { x: 1.68, y: 1.42, w: 11, h: 0.34, fontFace: 'Calibri', fontSize: 15.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
   const chips = ['4.2 kg', '3.0 mm walls', '1,800 × 550 mm', '6 undercut slides', 'Class-A painted', '60,000 a year', 'Made in China'];
   chips.forEach((c, i) => {
     const x = 1.68 + i * 1.58;
     s.addShape('roundRect', { x, y: 1.86, w: 1.48, h: 0.36, fill: { color: PURPLE_T }, rectRadius: 0.17 });
-    s.addText(c, { x, y: 1.86, w: 1.48, h: 0.36, fontFace: 'Calibri', fontSize: 9, bold: true, color: NAVY, align: 'center', valign: 'middle', margin: 0 });
+    s.addText(c, { x, y: 1.86, w: 1.48, h: 0.36, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: NAVY, align: 'center', valign: 'middle', margin: 0 });
   });
 
   const phases = [
@@ -2192,7 +2192,7 @@ divider('SECTION THREE', 'An Injection-Moulded Bumper Fascia', 'The same method,
     const x = 0.5 + i * (pw + gap), y = 2.72, h = 2.28;
     s.addShape('roundRect', { x, y, w: pw, h, fill: { color: tint }, line: { color: col, width: 1.25 }, rectRadius: 0.09 });
     s.addShape('rect', { x, y, w: pw, h: 0.4, fill: { color: col } });
-    s.addText(name, { x, y, w: pw, h: 0.4, fontFace: 'Calibri', fontSize: 10, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.8 });
+    s.addText(name, { x, y, w: pw, h: 0.4, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.8 });
     s.addText(`owner: ${who}`, { x, y: y + 0.45, w: pw, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, italic: true, color: col, align: 'center', margin: 0 });
     steps.forEach((st, j) => s.addText(st, { x: x + 0.14, y: y + 0.74 + j * 0.34, w: pw - 0.28, h: 0.32, fontFace: 'Calibri', fontSize: 9.2, color: SLATE, margin: 0, valign: 'top' }));
     s.addText(tag, { x: x + 0.12, y: y + h - 0.4, w: pw - 0.24, h: 0.3, fontFace: 'Calibri', fontSize: 8.6, bold: true, italic: true, color: col, align: 'center', margin: 0 });
@@ -2245,27 +2245,27 @@ partSlide('assets/workflow-deck/part-bumper.png',
   ];
   meas.forEach(([k, v], i) => {
     const y = 2.14 + i * 0.38;
-    s.addText(k, { x: 0.78, y, w: 3.6, h: 0.34, fontFace: 'Calibri', fontSize: 10, color: SLATE, margin: 0, valign: 'middle' });
-    s.addText(v, { x: 4.35, y, w: 1.3, h: 0.34, fontFace: 'Calibri', fontSize: 11, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(k, { x: 0.78, y, w: 3.6, h: 0.34, fontFace: 'Calibri', fontSize: 10.0, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(v, { x: 4.35, y, w: 1.3, h: 0.34, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
   });
 
   s.addShape('roundRect', { x: 6.15, y: 1.3, w: 3.35, h: 2.9, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.25 }, rectRadius: 0.1 });
-  s.addText('WHAT THE OPTIONAL AI SAYS BACK', { x: 6.4, y: 1.44, w: 3.4, h: 0.26, fontFace: 'Calibri', fontSize: 10, bold: true, color: PURPLE, charSpacing: 0.8, margin: 0 });
+  s.addText('WHAT THE OPTIONAL AI SAYS BACK', { x: 6.4, y: 1.44, w: 3.4, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: PURPLE, charSpacing: 0.8, margin: 0 });
   const says = [['Material family', 'Talc-filled polypropylene'], ['How it is made', 'Injection moulded, one shot'], ['Then what', 'Painted, Class-A finish'], ['How sure it is', '0.87 confident']];
   says.forEach(([k, v], i) => {
     const y = 1.78 + i * 0.52;
-    s.addText(k, { x: 6.4, y, w: 2.9, h: 0.22, fontFace: 'Calibri', fontSize: 9, color: MUTED, margin: 0 });
+    s.addText(k, { x: 6.4, y, w: 2.9, h: 0.22, fontFace: 'Calibri', fontSize: 9.0, color: MUTED, margin: 0 });
     s.addText(v, { x: 6.4, y: y + 0.21, w: 2.9, h: 0.3, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0, valign: 'top' });
   });
   s.addText('Four words. No numbers.', { x: 6.4, y: 3.88, w: 2.9, h: 0.26, fontFace: 'Calibri', fontSize: 9.5, bold: true, italic: true, color: PURPLE, margin: 0 });
 
   s.addShape('roundRect', { x: 9.75, y: 1.3, w: 3.08, h: 2.9, fill: { color: BLUE_T }, line: { color: BLUE, width: 1.25 }, rectRadius: 0.1 });
-  s.addText('THE UNDERCUT COUNT', { x: 10.0, y: 1.44, w: 2.6, h: 0.26, fontFace: 'Calibri', fontSize: 10, bold: true, color: BLUE, charSpacing: 0.8, margin: 0 });
+  s.addText('THE UNDERCUT COUNT', { x: 10.0, y: 1.44, w: 2.6, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: BLUE, charSpacing: 0.8, margin: 0 });
   s.addText([
     { text: 'The kernel classifies every face by its angle to the mould-opening direction. ', options: { color: SLATE } },
     { text: 'Six faces point back against the draw. ', options: { bold: true, color: NAVY } },
     { text: 'Each one needs a sliding section in the tool — and each slide is real money in the mould.', options: { color: SLATE } },
-  ], { x: 10.0, y: 1.8, w: 2.6, h: 1.6, fontFace: 'Calibri', fontSize: 10, margin: 0, valign: 'top' });
+  ], { x: 10.0, y: 1.8, w: 2.6, h: 1.6, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'top' });
   s.addText('Nobody counted these by eye.', { x: 10.0, y: 3.5, w: 2.6, h: 0.5, fontFace: 'Calibri', fontSize: 9.5, bold: true, italic: true, color: BLUE, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 4.42, w: 12.33, h: 1.15, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
@@ -2317,14 +2317,14 @@ partSlide('assets/workflow-deck/part-bumper.png',
     const y = 4.72 + i * 0.42;
     const on = v === 'CHOSEN';
     if (on) s.addShape('roundRect', { x: 0.7, y: y - 0.04, w: 7.1, h: 0.4, fill: { color: 'FFFFFF' }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.06 });
-    s.addText(t, { x: 0.9, y, w: 1.3, h: 0.32, fontFace: 'Calibri', fontSize: 11, bold: true, color: on ? NAVY : SLATE, margin: 0, valign: 'middle' });
-    s.addText(r, { x: 2.3, y, w: 1.6, h: 0.32, fontFace: 'Calibri', fontSize: 11, bold: on, color: on ? NAVY : SLATE, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(t, { x: 0.9, y, w: 1.3, h: 0.32, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: on ? NAVY : SLATE, margin: 0, valign: 'middle' });
+    s.addText(r, { x: 2.3, y, w: 1.6, h: 0.32, fontFace: 'Calibri', fontSize: 11.0, bold: on, color: on ? NAVY : SLATE, align: 'right', margin: 0, valign: 'middle' });
     s.addText(v, { x: 4.2, y, w: 1.6, h: 0.32, fontFace: 'Calibri', fontSize: 9.5, italic: !on, bold: on, color: on ? TEAL : MUTED, margin: 0, valign: 'middle' });
     if (on) s.addText('2,902 t needed → smallest press that covers it', { x: 5.7, y, w: 2.0, h: 0.32, fontFace: 'Calibri', fontSize: 8.4, italic: true, color: TEAL, margin: 0, valign: 'middle' });
   });
 
   s.addShape('roundRect', { x: 8.25, y: 4.2, w: 4.58, h: 2.35, fill: { color: CARD }, line: { color: RED, width: 1.5 }, rectRadius: 0.1 });
-  s.addText('WHY THIS ONE CHECK IS WORTH THE TOOL', { x: 8.5, y: 4.32, w: 4.1, h: 0.28, fontFace: 'Calibri', fontSize: 10, bold: true, color: RED, charSpacing: 0.4, margin: 0 });
+  s.addText('WHY THIS ONE CHECK IS WORTH THE TOOL', { x: 8.5, y: 4.32, w: 4.1, h: 0.28, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: RED, charSpacing: 0.4, margin: 0 });
   s.addText([
     { text: 'Accept a 2,000 t default and you cost the moulding at £178.54/hr instead of £306.12 — ', options: { color: SLATE } },
     { text: '42% too cheap.\n\n', options: { bold: true, color: RED } },
@@ -2356,7 +2356,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
     const y = 1.18 + i * 1.28;
     s.addShape('roundRect', { x: 0.5, y, w: 7.1, h: 1.16, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
     s.addShape('ellipse', { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fill: { color: PURPLE } });
-    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(String(i + 1), { x: 0.66, y: y + 0.14, w: 0.4, h: 0.4, fontFace: 'Cambria', fontSize: 15.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
     s.addText(t.slice(4), { x: 1.2, y: y + 0.08, w: 6.3, h: 0.24, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0 });
     s.addText(d, { x: 1.2, y: y + 0.33, w: 6.25, h: 0.82, fontFace: 'Calibri', fontSize: 7.9, color: SLATE, margin: 0, valign: 'top' });
   });
@@ -2430,7 +2430,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
     const y = 1.78 + i * 0.32;
     if (hi) s.addShape('roundRect', { x: 6.95, y: y - 0.03, w: 5.72, h: 0.33, fill: { color: TEAL_T }, rectRadius: 0.05 });
     s.addText(String(k), { x: 7.03, y, w: 3.2, h: 0.3, fontFace: 'Calibri', fontSize: 9.6, bold: Boolean(hi) || i === 4, color: hi ? TEAL : SLATE, margin: 0, valign: 'middle' });
-    s.addText(String(src), { x: 10.25, y, w: 1.35, h: 0.3, fontFace: 'Calibri', fontSize: 8, italic: true, color: hi ? TEAL : MUTED, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(String(src), { x: 10.25, y, w: 1.35, h: 0.3, fontFace: 'Calibri', fontSize: 8.0, italic: true, color: hi ? TEAL : MUTED, align: 'right', margin: 0, valign: 'middle' });
     s.addText(String(v), { x: 11.65, y, w: 1.0, h: 0.3, fontFace: 'Calibri', fontSize: 9.8, bold: true, color: hi ? TEAL : NAVY, align: 'right', margin: 0, valign: 'middle' });
   });
   s.addShape('line', { x: 7.03, y: 3.76, w: 5.6, h: 0, line: { color: LINE, width: 1 } });
@@ -2486,8 +2486,8 @@ partSlide('assets/workflow-deck/part-bumper.png',
     s.addText(v, { x: 4.4, y, w: 1.4, h: 0.3, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: big ? TEAL : NAVY, align: 'right', margin: 0, valign: 'middle' });
   });
   s.addShape('line', { x: 0.78, y: 3.46, w: 5.02, h: 0, line: { color: LINE, width: 1 } });
-  s.addText('Total cycle', { x: 0.78, y: 3.52, w: 3.6, h: 0.3, fontFace: 'Calibri', fontSize: 11, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-  s.addText('55.0 s', { x: 4.4, y: 3.52, w: 1.4, h: 0.3, fontFace: 'Calibri', fontSize: 11, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
+  s.addText('Total cycle', { x: 0.78, y: 3.52, w: 3.6, h: 0.3, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+  s.addText('55.0 s', { x: 4.4, y: 3.52, w: 1.4, h: 0.3, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
 
   s.addShape('roundRect', { x: 6.25, y: 1.3, w: 6.58, h: 2.65, fill: { color: TEAL_T }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.1 });
   s.addText('AND WHAT THOSE 55 SECONDS COST', { x: 6.5, y: 1.42, w: 6, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: TEAL, charSpacing: 0.5, margin: 0 });
@@ -2503,11 +2503,11 @@ partSlide('assets/workflow-deck/part-bumper.png',
     s.addText(v, { x: 10.05, y, w: 2.55, h: 0.34, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0, valign: 'middle' });
   });
   s.addShape('roundRect', { x: 6.5, y: 3.3, w: 6.1, h: 0.4, fill: { color: 'FFFFFF' }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.08 });
-  s.addText('Moulding one bumper:  £5.67  —  and that is the whole making cost', { x: 6.5, y: 3.3, w: 6.1, h: 0.4, fontFace: 'Calibri', fontSize: 11, bold: true, color: NAVY, align: 'center', valign: 'middle', margin: 0 });
-  s.addText('£5.5063 + £0.1682 = £5.6745 — the two lines above are rounded to the penny.', { x: 6.5, y: 3.73, w: 6.1, h: 0.2, fontFace: 'Calibri', fontSize: 8, italic: true, color: MUTED, align: 'center', margin: 0 });
+  s.addText('Moulding one bumper:  £5.67  —  and that is the whole making cost', { x: 6.5, y: 3.3, w: 6.1, h: 0.4, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: NAVY, align: 'center', valign: 'middle', margin: 0 });
+  s.addText('£5.5063 + £0.1682 = £5.6745 — the two lines above are rounded to the penny.', { x: 6.5, y: 3.73, w: 6.1, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, italic: true, color: MUTED, align: 'center', margin: 0 });
 
   s.addShape('roundRect', { x: 0.5, y: 4.15, w: 7.5, h: 2.4, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText('THE EIGHT BUCKETS — bumper fascia, made in China', { x: 0.75, y: 4.26, w: 6.9, h: 0.26, fontFace: 'Calibri', fontSize: 11, bold: true, color: NAVY, margin: 0 });
+  s.addText('THE EIGHT BUCKETS — bumper fascia, made in China', { x: 0.75, y: 4.26, w: 6.9, h: 0.26, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: NAVY, margin: 0 });
   s.addChart(pres.ChartType.bar, [{
     name: '£ per part',
     labels: ['Margin', 'Overhead', 'Logistics', 'Packaging', 'Tooling', 'Labour', 'Process', 'Material'],
@@ -2522,17 +2522,17 @@ partSlide('assets/workflow-deck/part-bumper.png',
   });
 
   s.addShape('roundRect', { x: 8.25, y: 4.15, w: 4.58, h: 1.12, fill: { color: '0E5A5A' }, rectRadius: 0.1 });
-  s.addText('SHOULD-COST — MADE IN CHINA', { x: 8.5, y: 4.25, w: 4.1, h: 0.24, fontFace: 'Calibri', fontSize: 9, bold: true, color: '9FD9CF', charSpacing: 0.8, margin: 0 });
-  s.addText('£26.08', { x: 8.5, y: 4.46, w: 2.3, h: 0.6, fontFace: 'Cambria', fontSize: 33, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
-  s.addText('unpainted, ex-works,\nat 60,000 a year', { x: 10.85, y: 4.5, w: 1.85, h: 0.55, fontFace: 'Calibri', fontSize: 9, color: 'CDEDE7', margin: 0, valign: 'middle' });
+  s.addText('SHOULD-COST — MADE IN CHINA', { x: 8.5, y: 4.25, w: 4.1, h: 0.24, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: '9FD9CF', charSpacing: 0.8, margin: 0 });
+  s.addText('£26.08', { x: 8.5, y: 4.46, w: 2.3, h: 0.6, fontFace: 'Cambria', fontSize: 33.0, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
+  s.addText('unpainted, ex-works,\nat 60,000 a year', { x: 10.85, y: 4.5, w: 1.85, h: 0.55, fontFace: 'Calibri', fontSize: 9.0, color: 'CDEDE7', margin: 0, valign: 'middle' });
 
   s.addShape('roundRect', { x: 8.25, y: 5.42, w: 4.58, h: 1.13, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText('THE SAME PART, PRICED ELSEWHERE', { x: 8.45, y: 5.5, w: 4.2, h: 0.24, fontFace: 'Calibri', fontSize: 9, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
+  s.addText('THE SAME PART, PRICED ELSEWHERE', { x: 8.45, y: 5.5, w: 4.2, h: 0.24, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
   const geo = [['China', '£26.08'], ['India', '£26.13'], ['Mexico', '£27.04'], ['UK', '£31.06']];
   geo.forEach(([c, v], i) => {
     const x = 8.45 + (i % 4) * 1.06;
-    s.addText(c, { x, y: 5.76, w: 1.0, h: 0.22, fontFace: 'Calibri', fontSize: 9, color: MUTED, align: 'center', margin: 0 });
-    s.addText(v, { x, y: 5.96, w: 1.0, h: 0.26, fontFace: 'Calibri', fontSize: 11, bold: true, color: i === 0 ? TEAL : NAVY, align: 'center', margin: 0 });
+    s.addText(c, { x, y: 5.76, w: 1.0, h: 0.22, fontFace: 'Calibri', fontSize: 9.0, color: MUTED, align: 'center', margin: 0 });
+    s.addText(v, { x, y: 5.96, w: 1.0, h: 0.26, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: i === 0 ? TEAL : NAVY, align: 'center', margin: 0 });
   });
   s.addText('Only 19% between China and the UK — on the casting it was 55%.', { x: 8.45, y: 6.24, w: 4.2, h: 0.24, fontFace: 'Calibri', fontSize: 8.4, italic: true, color: MUTED, align: 'center', margin: 0 });
   footer(s, ++PG);
@@ -2590,12 +2590,12 @@ partSlide('assets/workflow-deck/part-bumper.png',
   const del = [['Moulded, ex-works (China)', '£26.08'], ['+ Paint line (China rates)', '£13.14']];
   del.forEach(([k, v], i) => {
     const y = 1.9 + i * 0.36;
-    s.addText(k, { x: 8.6, y, w: 2.6, h: 0.32, fontFace: 'Calibri', fontSize: 10, color: 'CDEDE7', margin: 0, valign: 'middle' });
-    s.addText(v, { x: 11.2, y, w: 1.4, h: 0.32, fontFace: 'Calibri', fontSize: 11, bold: true, color: 'FFFFFF', align: 'right', margin: 0, valign: 'middle' });
+    s.addText(k, { x: 8.6, y, w: 2.6, h: 0.32, fontFace: 'Calibri', fontSize: 10.0, color: 'CDEDE7', margin: 0, valign: 'middle' });
+    s.addText(v, { x: 11.2, y, w: 1.4, h: 0.32, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: 'FFFFFF', align: 'right', margin: 0, valign: 'middle' });
   });
   s.addShape('line', { x: 8.6, y: 2.7, w: 4, h: 0, line: { color: '9FD9CF', width: 1 } });
-  s.addText('£39.22', { x: 8.6, y: 2.82, w: 4, h: 0.7, fontFace: 'Cambria', fontSize: 34, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
-  s.addText('painted, ex-works, per part', { x: 8.6, y: 3.56, w: 4, h: 0.26, fontFace: 'Calibri', fontSize: 10, color: 'CDEDE7', align: 'center', margin: 0 });
+  s.addText('£39.22', { x: 8.6, y: 2.82, w: 4, h: 0.7, fontFace: 'Cambria', fontSize: 34.0, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
+  s.addText('painted, ex-works, per part', { x: 8.6, y: 3.56, w: 4, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, color: 'CDEDE7', align: 'center', margin: 0 });
   s.addText('Paint is a third of the delivered cost — and half of THAT is one litre of basecoat.',
     { x: 8.6, y: 3.9, w: 4, h: 0.56, fontFace: 'Calibri', fontSize: 9.2, italic: true, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
 
@@ -2610,7 +2610,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addText([
     { text: 'Honest note:  ', options: { bold: true, color: AMBER } },
     { text: 'the paint line is a separate costing in the tool, not a bucket inside the moulding one — because in the real world it is usually a separate supplier with its own overhead and margin. The £39.22 above adds the two ex-works costs; it does not double-count either supplier’s margin.', options: { color: SLATE } },
-  ], { x: 0.8, y: 6.2, w: 11.75, h: 0.6, fontFace: 'Calibri', fontSize: 11, margin: 0, valign: 'middle' });
+  ], { x: 0.8, y: 6.2, w: 11.75, h: 0.6, fontFace: 'Calibri', fontSize: 11.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -2632,23 +2632,23 @@ partSlide('assets/workflow-deck/part-bumper.png',
 
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 6.05, h: 2.62, fill: { color: CARD }, line: { color: TEAL, width: 1.75 }, rectRadius: 0.1 });
   s.addShape('ellipse', { x: 0.75, y: 1.5, w: 0.5, h: 0.5, fill: { color: TEAL } });
-  s.addText('1', { x: 0.75, y: 1.5, w: 0.5, h: 0.5, fontFace: 'Cambria', fontSize: 20, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
-  s.addText('The tool is the product', { x: 1.4, y: 1.5, w: 4.9, h: 0.5, fontFace: 'Calibri', fontSize: 15, bold: true, color: TEAL, margin: 0, valign: 'middle' });
+  s.addText('1', { x: 0.75, y: 1.5, w: 0.5, h: 0.5, fontFace: 'Cambria', fontSize: 20.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+  s.addText('The tool is the product', { x: 1.4, y: 1.5, w: 4.9, h: 0.5, fontFace: 'Calibri', fontSize: 15.0, bold: true, color: TEAL, margin: 0, valign: 'middle' });
   s.addText([
     { text: 'Tooling is £11.20 of the £26.08 part — 43%, the biggest single bucket. ', options: { bold: true, color: NAVY } },
     { text: 'It is larger than the resin, the press and the labour ', options: { color: SLATE } },
     { text: 'added together ', options: { bold: true, color: NAVY } },
     { text: '(£4.46 + £2.45 + £0.05 = £6.96).\n\nOn the casting, tooling was £2.17 — six percent. Same method, same engine, and the money has moved to a completely different bucket.', options: { color: SLATE } },
-  ], { x: 0.78, y: 2.12, w: 5.5, h: 1.7, fontFace: 'Calibri', fontSize: 11, margin: 0, valign: 'top' });
+  ], { x: 0.78, y: 2.12, w: 5.5, h: 1.7, fontFace: 'Calibri', fontSize: 11.0, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 6.78, y: 1.3, w: 6.05, h: 2.62, fill: { color: CARD }, line: { color: GREEN, width: 1.75 }, rectRadius: 0.1 });
   s.addShape('ellipse', { x: 7.03, y: 1.5, w: 0.5, h: 0.5, fill: { color: GREEN } });
-  s.addText('2', { x: 7.03, y: 1.5, w: 0.5, h: 0.5, fontFace: 'Cambria', fontSize: 20, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
-  s.addText('Offshoring barely pays here', { x: 7.68, y: 1.5, w: 4.9, h: 0.5, fontFace: 'Calibri', fontSize: 15, bold: true, color: GREEN, margin: 0, valign: 'middle' });
+  s.addText('2', { x: 7.03, y: 1.5, w: 0.5, h: 0.5, fontFace: 'Cambria', fontSize: 20.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+  s.addText('Offshoring barely pays here', { x: 7.68, y: 1.5, w: 4.9, h: 0.5, fontFace: 'Calibri', fontSize: 15.0, bold: true, color: GREEN, margin: 0, valign: 'middle' });
   s.addText([
     { text: 'China £26.08 against a UK £31.06 — a 19% gap. On the casting the same comparison was 55%.\n\n', options: { bold: true, color: NAVY } },
     { text: 'The tool, the packaging and the logistics do not get cheaper by moving the factory, and the resin is a world price. Only press hours and labour move — and this part has barely any labour in it.', options: { color: SLATE } },
-  ], { x: 7.06, y: 2.12, w: 5.5, h: 1.7, fontFace: 'Calibri', fontSize: 11, margin: 0, valign: 'top' });
+  ], { x: 7.06, y: 2.12, w: 5.5, h: 1.7, fontFace: 'Calibri', fontSize: 11.0, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 4.12, w: 12.33, h: 1.42, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addText('What each finding changes on Monday morning', { x: 0.8, y: 4.24, w: 11.5, h: 0.28, fontFace: 'Calibri', fontSize: 12.5, bold: true, color: NAVY, margin: 0 });
@@ -2663,7 +2663,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addText([
     { text: 'Ask yourself honestly:  ', options: { bold: true, color: '9FB6E0' } },
     { text: 'before this run, would anyone have told you the tool was 43% of a bumper, or that offshoring it saves only 19%? That is what the method is for.', options: { color: 'FFFFFF' } },
-  ], { x: 0.85, y: 5.78, w: 11.65, h: 0.7, fontFace: 'Calibri', fontSize: 12, margin: 0, valign: 'middle' });
+  ], { x: 0.85, y: 5.78, w: 11.65, h: 0.7, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -2682,38 +2682,38 @@ partSlide('assets/workflow-deck/part-bumper.png',
   title(s, 'Stages 11–12 · The Band, and What the Two Parts Teach', 'Same tool, same method — two completely different answers about where the money is', GREEN);
 
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 6.05, h: 1.88, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText('11 · The honest range on this part', { x: 0.75, y: 1.42, w: 5.5, h: 0.28, fontFace: 'Calibri', fontSize: 12, bold: true, color: GREEN, margin: 0 });
+  s.addText('11 · The honest range on this part', { x: 0.75, y: 1.42, w: 5.5, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, bold: true, color: GREEN, margin: 0 });
   const TX = 0.78, TW = 5.5, LO = 16, HI = 37, px = v => TX + ((v - LO) / (HI - LO)) * TW;
   s.addShape('roundRect', { x: TX, y: 1.86, w: TW, h: 0.3, fill: { color: 'DCE3EE' }, rectRadius: 0.15 });
   s.addShape('roundRect', { x: px(19.83), y: 1.86, w: px(33.16) - px(19.83), h: 0.3, fill: { color: TEAL }, rectRadius: 0.15 });
   s.addShape('rect', { x: px(26.08) - 0.026, y: 1.79, w: 0.052, h: 0.44, fill: { color: NAVY } });
   s.addText('P10  £19.83', { x: px(19.83) - 0.6, y: 2.24, w: 1.2, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, color: MUTED, align: 'center', margin: 0 });
-  s.addText('£26.08', { x: px(26.08) - 0.6, y: 2.24, w: 1.2, h: 0.22, fontFace: 'Calibri', fontSize: 10, bold: true, color: NAVY, align: 'center', margin: 0 });
+  s.addText('£26.08', { x: px(26.08) - 0.6, y: 2.24, w: 1.2, h: 0.22, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: NAVY, align: 'center', margin: 0 });
   s.addText('P90  £33.16', { x: px(33.16) - 0.6, y: 2.24, w: 1.2, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, color: MUTED, align: 'center', margin: 0 });
   s.addText('±26% — wider than the casting, because so much of the answer rides on one tooling quotation.',
     { x: 0.78, y: 2.56, w: 5.5, h: 0.56, fontFace: 'Calibri', fontSize: 9.4, italic: true, color: MUTED, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 6.78, y: 1.3, w: 6.05, h: 1.88, fill: { color: GREEN_T }, line: { color: GREEN, width: 1.25 }, rectRadius: 0.1 });
-  s.addText('12 · The lever the engineer actually has', { x: 7.03, y: 1.42, w: 5.5, h: 0.28, fontFace: 'Calibri', fontSize: 12, bold: true, color: GREEN, margin: 0 });
+  s.addText('12 · The lever the engineer actually has', { x: 7.03, y: 1.42, w: 5.5, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, bold: true, color: GREEN, margin: 0 });
   const amort = [['1 year — 60,000 parts', '£11.20', '£26.08'], ['3 years — 180,000', '£3.73', '£16.97'], ['5 years — 300,000', '£2.24', '£15.14']];
   s.addText('Amortise the tool over', { x: 7.03, y: 1.74, w: 2.5, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: MUTED, margin: 0 });
   s.addText('Tooling/part', { x: 9.6, y: 1.74, w: 1.3, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: MUTED, align: 'right', margin: 0 });
   s.addText('Part cost', { x: 11.0, y: 1.74, w: 1.5, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: MUTED, align: 'right', margin: 0 });
   amort.forEach(([k, t, v], i) => {
     const y = 1.99 + i * 0.29;
-    s.addText(k, { x: 7.03, y, w: 2.5, h: 0.26, fontFace: 'Calibri', fontSize: 10, color: SLATE, margin: 0, valign: 'middle' });
-    s.addText(t, { x: 9.6, y, w: 1.3, h: 0.26, fontFace: 'Calibri', fontSize: 10, color: SLATE, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(k, { x: 7.03, y, w: 2.5, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(t, { x: 9.6, y, w: 1.3, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, color: SLATE, align: 'right', margin: 0, valign: 'middle' });
     s.addText(v, { x: 11.0, y, w: 1.5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: i === 2 ? GREEN : NAVY, align: 'right', margin: 0, valign: 'middle' });
   });
-  s.addText('Same part, same supplier — a commercial decision worth £10.94.', { x: 7.03, y: 2.88, w: 5.5, h: 0.26, fontFace: 'Calibri', fontSize: 9, bold: true, italic: true, color: GREEN, margin: 0 });
+  s.addText('Same part, same supplier — a commercial decision worth £10.94.', { x: 7.03, y: 2.88, w: 5.5, h: 0.26, fontFace: 'Calibri', fontSize: 9.0, bold: true, italic: true, color: GREEN, margin: 0 });
 
   // ── the contrast ──
   s.addShape('roundRect', { x: 0.5, y: 3.34, w: 12.33, h: 2.42, fill: { color: CARD }, line: { color: NAVY, width: 1.5 }, rectRadius: 0.1 });
-  s.addText('TWO PARTS, ONE METHOD — and the money is in a completely different place', { x: 0.8, y: 3.45, w: 11.5, h: 0.28, fontFace: 'Calibri', fontSize: 12, bold: true, color: NAVY, charSpacing: 0.3, margin: 0 });
+  s.addText('TWO PARTS, ONE METHOD — and the money is in a completely different place', { x: 0.8, y: 3.45, w: 11.5, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, bold: true, color: NAVY, charSpacing: 0.3, margin: 0 });
   const hdr = ['', 'Die-cast housing', 'Bumper fascia', 'What it means'];
   const cx = [0.8, 3.7, 6.1, 8.5];
   const cw = [2.8, 2.3, 2.3, 4.3];
-  hdr.forEach((h, i) => s.addText(h, { x: cx[i], y: 3.78, w: cw[i], h: 0.24, fontFace: 'Calibri', fontSize: 9, bold: true, color: MUTED, margin: 0 }));
+  hdr.forEach((h, i) => s.addText(h, { x: cx[i], y: 3.78, w: cw[i], h: 0.24, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: MUTED, margin: 0 }));
   const rows = [
     ['Making the part', '£32.57', '£5.67', 'One shot beats four machining operations'],
     ['Tooling per part', '£2.17', '£11.20', 'The mould, not the machine, is the cost'],
@@ -2734,7 +2734,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addText([
     { text: 'This is the whole argument for the tool:  ', options: { bold: true, color: '9FB6E0' } },
     { text: 'nobody could have told you in advance that the money was in machining on one part and in tooling on the other. The method finds it. Every time, on any part, without anyone having to already know the answer.', options: { color: 'FFFFFF' } },
-  ], { x: 0.85, y: 6.0, w: 11.65, h: 0.62, fontFace: 'Calibri', fontSize: 12, margin: 0, valign: 'middle' });
+  ], { x: 0.85, y: 6.0, w: 11.65, h: 0.62, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -2759,7 +2759,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   // ── the problem, stated plainly ──
   s.addShape('roundRect', { x: 0.5, y: 1.22, w: 12.33, h: 0.62, fill: { color: AMBER_T }, line: { color: AMBER, width: 1.25 }, rectRadius: 0.08 });
   s.addText([
-    { text: 'Before: ', options: { bold: true, color: AMBER, fontSize: 11 } },
+    { text: 'Before: ', options: { bold: true, color: AMBER, fontSize: 11.0 } },
     { text: 'a transmission gear went through the machining model as a generic milled part. That model cannot see teeth, module or quality grade — and those three things are what a gear actually costs.', options: { color: SLATE, fontSize: 10.5 } },
   ], { x: 0.72, y: 1.22, w: 11.9, h: 0.62, fontFace: 'Calibri', margin: 0, valign: 'middle' });
 
@@ -2767,43 +2767,74 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addText('The idea that makes it work: a tighter quality grade adds OPERATIONS, it is not a multiplier',
     { x: 0.5, y: 2.02, w: 12.33, h: 0.28, fontFace: 'Calibri', fontSize: 12.5, bold: true, color: NAVY, margin: 0 });
 
+  // Drawn as a ROUTE, not a sentence. The whole claim of the slide is that a
+  // tighter class adds stations, and an arrow chain shows that at a glance in a
+  // way an arrow typed inside a text string never can — the third row is
+  // visibly a different line, and the second is visibly two stations longer.
+  // Sized so the LONGEST route (5 stations) still clears the price column at
+  // 10.90": 3.95 + 4x(1.18+0.22) + 1.18 = 10.73".
+  const STEP_W = 1.18, STEP_H = 0.40, STEP_GAP = 0.22, ROUTE_X = 3.95;
   const rows = [
-    ['ISO class 9 — as cut', 'hob → deburr → inspect', '£8.26', '95 s', GREEN],
-    ['ISO class 6 — hardened + ground', 'hob → deburr → carburise → GRIND → inspect', '£13.55', '141 s', AMBER],
-    ['Internal ring gear, class 7', 'power skive → deburr → carburise → inspect', '£11.19', '115 s', BLUE],
+    ['ISO class 9 — as cut',            ['Hob', 'Deburr', 'Inspect'],                        '£8.26',  '95 s',  GREEN, []],
+    ['ISO class 6 — hardened + ground', ['Hob', 'Deburr', 'Carburise', 'Grind', 'Inspect'],  '£13.55', '141 s', AMBER, [2, 3]],
+    ['Internal ring gear, class 7',     ['Power skive', 'Deburr', 'Carburise', 'Inspect'],   '£11.19', '115 s', BLUE,  [2]],
   ];
-  rows.forEach(([what, route, cost, cyc, col], i) => {
-    const y = 2.42 + i * 0.62;
-    s.addShape('roundRect', { x: 0.5, y, w: 12.33, h: 0.54, fill: { color: CARD }, line: { color: LINE, width: 0.75 }, rectRadius: 0.06 });
-    s.addShape('rect', { x: 0.5, y, w: 0.055, h: 0.54, fill: { color: col } });
-    s.addText(what, { x: 0.72, y, w: 3.3, h: 0.54, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-    s.addText(route, { x: 4.1, y, w: 5.5, h: 0.54, fontFace: 'Consolas', fontSize: 9.2, color: SLATE, margin: 0, valign: 'middle' });
-    s.addText(cost, { x: 9.7, y, w: 1.4, h: 0.54, fontFace: 'Cambria', fontSize: 15, bold: true, color: col, align: 'right', margin: 0, valign: 'middle' });
-    s.addText(cyc, { x: 11.2, y, w: 1.4, h: 0.54, fontFace: 'Calibri', fontSize: 10.5, color: MUTED, align: 'right', margin: 0, valign: 'middle' });
+  rows.forEach(([what, steps, cost, cyc, col, added], i) => {
+    const y = 2.42 + i * 0.66;
+    s.addShape('roundRect', { x: 0.5, y, w: 12.33, h: 0.58, fill: { color: CARD }, line: { color: LINE, width: 0.75 }, rectRadius: 0.06 });
+    s.addShape('rect', { x: 0.5, y, w: 0.055, h: 0.58, fill: { color: col } });
+    s.addText(what, { x: 0.72, y, w: 3.1, h: 0.58, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+
+    steps.forEach((st, k) => {
+      const sx = ROUTE_X + k * (STEP_W + STEP_GAP);
+      const isNew = added.includes(k);          // the stations the class bought
+      s.addShape('roundRect', {
+        x: sx, y: y + 0.09, w: STEP_W, h: STEP_H, rectRadius: 0.05,
+        fill: { color: isNew ? col : 'FFFFFF' },
+        line: { color: isNew ? col : MUTED, width: isNew ? 1.25 : 0.75 },
+      });
+      s.addText(st, {
+        x: sx, y: y + 0.09, w: STEP_W, h: STEP_H, fontFace: 'Calibri', fontSize: 8.2,
+        bold: isNew, color: isNew ? 'FFFFFF' : SLATE, align: 'center', margin: 0, valign: 'middle',
+      });
+      if (k < steps.length - 1) {
+        s.addShape('line', {
+          x: sx + STEP_W + 0.045, y: y + 0.09 + STEP_H / 2, w: STEP_GAP - 0.09, h: 0,
+          line: { color: MUTED, width: 1.5, endArrowType: 'triangle' },
+        });
+      }
+    });
+
+    s.addText(cost, { x: 10.9, y, w: 1.0, h: 0.58, fontFace: 'Cambria', fontSize: 15.0, bold: true, color: col, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(cyc,  { x: 11.95, y, w: 0.85, h: 0.58, fontFace: 'Calibri', fontSize: 9.5, color: MUTED, align: 'right', margin: 0, valign: 'middle' });
   });
+  // Legend for the highlight, so the colour is read as meaning rather than decoration.
+  s.addShape('roundRect', { x: ROUTE_X, y: 4.44, w: 0.22, h: 0.13, fill: { color: AMBER }, rectRadius: 0.03 });
+  s.addText('= the station the tighter class ADDED — not the same work costing more',
+    { x: ROUTE_X + 0.3, y: 4.38, w: 8.0, h: 0.24, fontFace: 'Calibri', fontSize: 9.0, italic: true, color: MUTED, margin: 0, valign: 'middle' });
 
-  s.addShape('roundRect', { x: 0.5, y: 4.36, w: 6.05, h: 1.5, fill: { color: TEAL_T }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
-  s.addText('THE CYCLE TIME IS ARITHMETIC, NOT A GUESS', { x: 0.7, y: 4.46, w: 5.7, h: 0.22, fontFace: 'Calibri', fontSize: 9, bold: true, color: TEAL, charSpacing: 0.5, margin: 0 });
+  s.addShape('roundRect', { x: 0.5, y: 4.72, w: 6.05, h: 1.36, fill: { color: TEAL_T }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
+  s.addText('THE CYCLE TIME IS ARITHMETIC, NOT A GUESS', { x: 0.7, y: 4.80, w: 5.7, h: 0.22, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: TEAL, charSpacing: 0.5, margin: 0 });
   s.addText('A hob with Ns starts at n rpm drives a z-tooth gear at n×Ns/z. That is a gear train, not an estimate — so the tool prints the sum:',
-    { x: 0.7, y: 4.7, w: 5.7, h: 0.42, fontFace: 'Calibri', fontSize: 9.5, color: SLATE, margin: 0 });
+    { x: 0.7, y: 5.03, w: 5.7, h: 0.42, fontFace: 'Calibri', fontSize: 9.5, color: SLATE, margin: 0 });
   s.addText('travel 45.3 mm at 2.2 mm/rev × 1 cut = 32 s cutting + 18 s handling',
-    { x: 0.7, y: 5.16, w: 5.7, h: 0.6, fontFace: 'Consolas', fontSize: 8.6, color: NAVY, margin: 0, valign: 'top' });
+    { x: 0.7, y: 5.46, w: 5.7, h: 0.55, fontFace: 'Consolas', fontSize: 8.6, color: NAVY, margin: 0, valign: 'top' });
 
-  s.addShape('roundRect', { x: 6.78, y: 4.36, w: 6.05, h: 1.5, fill: { color: BLUE_T }, line: { color: BLUE, width: 1 }, rectRadius: 0.08 });
-  s.addText('IT PICKS THE MACHINE, AND REFUSES WHEN IT CANNOT', { x: 6.98, y: 4.46, w: 5.7, h: 0.22, fontFace: 'Calibri', fontSize: 9, bold: true, color: BLUE, charSpacing: 0.5, margin: 0 });
+  s.addShape('roundRect', { x: 6.78, y: 4.72, w: 6.05, h: 1.36, fill: { color: BLUE_T }, line: { color: BLUE, width: 1 }, rectRadius: 0.08 });
+  s.addText('IT PICKS THE MACHINE, AND REFUSES WHEN IT CANNOT', { x: 6.98, y: 4.80, w: 5.7, h: 0.22, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: BLUE, charSpacing: 0.5, margin: 0 });
   [['14 gear machines in the rate library — hobbers, shapers, skivers, grinders, broach, honer, checker', 0],
    ['Sized on module × diameter × face width, not diameter alone', 1],
    ['A gear beyond every machine is BLOCKED, never costed on the biggest one', 2]]
     .forEach(([t, i]) => {
-      const y = 4.72 + i * 0.36;
+      const y = 5.06 + i * 0.33;
       s.addShape('ellipse', { x: 7.02, y: y + 0.09, w: 0.09, h: 0.09, fill: { color: BLUE } });
-      s.addText(t, { x: 7.22, y, w: 5.45, h: 0.34, fontFace: 'Calibri', fontSize: 9, color: SLATE, margin: 0, valign: 'middle' });
+      s.addText(t, { x: 7.22, y, w: 5.45, h: 0.34, fontFace: 'Calibri', fontSize: 9.0, color: SLATE, margin: 0, valign: 'middle' });
     });
 
   s.addShape('roundRect', { x: 0.5, y: 6.02, w: 12.33, h: 0.5, fill: { color: 'FDEEEC' }, line: { color: RED, width: 1 }, rectRadius: 0.07 });
   s.addText([
-    { text: 'Said plainly: ', options: { bold: true, color: RED, fontSize: 10 } },
-    { text: 'all 80 shop numbers — feeds, speeds, tool life, heat-treat rates — are representative, not from your plant. The tool prints that warning on every gear estimate. It shows the right structure; it is not yet a quotable number.', options: { color: SLATE, fontSize: 10 } },
+    { text: 'Said plainly: ', options: { bold: true, color: RED, fontSize: 10.0 } },
+    { text: 'all 80 shop numbers — feeds, speeds, tool life, heat-treat rates — are representative, not from your plant. The tool prints that warning on every gear estimate. It shows the right structure; it is not yet a quotable number.', options: { color: SLATE, fontSize: 10.0 } },
   ], { x: 0.72, y: 6.02, w: 11.9, h: 0.5, fontFace: 'Calibri', margin: 0, valign: 'middle' });
 
   footer(s, ++PG);
@@ -2834,7 +2865,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
     const y = 1.3 + i * 1.16;
     s.addShape('roundRect', { x: 0.5, y, w: 12.33, h: 1.06, fill: { color: CARD }, line: { color: LINE, width: 0.75 }, rectRadius: 0.07 });
     s.addShape('rect', { x: 0.5, y, w: 0.055, h: 1.06, fill: { color: RED } });
-    s.addText(t, { x: 0.74, y: y + 0.08, w: 3.5, h: 0.3, fontFace: 'Calibri', fontSize: 11, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(t, { x: 0.74, y: y + 0.08, w: 3.5, h: 0.3, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
     s.addText(was, { x: 0.74, y: y + 0.4, w: 3.5, h: 0.58, fontFace: 'Calibri', fontSize: 8.6, color: MUTED, margin: 0, valign: 'top' });
     s.addShape('roundRect', { x: 4.4, y: y + 0.14, w: 8.28, h: 0.78, fill: { color: GREEN_T }, rectRadius: 0.06 });
     s.addText(now, { x: 4.6, y: y + 0.14, w: 7.9, h: 0.78, fontFace: 'Calibri', fontSize: 9.8, color: SLATE, margin: 0, valign: 'middle' });
@@ -2882,7 +2913,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addText([
     { text: 'Why show you this:  ', options: { bold: true, color: '9FB6E0' } },
     { text: 'a tool that claims no limits is a tool nobody should trust with a supplier negotiation. Every one of these six is either on the roadmap, or is a job we have deliberately left with a person.', options: { color: 'FFFFFF' } },
-  ], { x: 0.85, y: 6.2, w: 11.65, h: 0.62, fontFace: 'Calibri', fontSize: 12, margin: 0, valign: 'middle' });
+  ], { x: 0.85, y: 6.2, w: 11.65, h: 0.62, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -2936,13 +2967,13 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   stats.forEach(([n, unit, body, col], i) => {
     const x = 0.5 + i * 3.13;
     s.addShape('roundRect', { x, y: 1.3, w: 2.95, h: 2.06, fill: { color: CARD }, line: { color: col, width: 1.5 }, rectRadius: 0.1 });
-    s.addText(n, { x: x + 0.16, y: 1.4, w: 1.0, h: 0.6, fontFace: 'Cambria', fontSize: 32, bold: true, color: col, margin: 0, valign: 'middle' });
-    s.addText(unit, { x: x + 1.14, y: 1.46, w: 1.75, h: 0.5, fontFace: 'Calibri', fontSize: 12, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(n, { x: x + 0.16, y: 1.4, w: 1.0, h: 0.6, fontFace: 'Cambria', fontSize: 32.0, bold: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(unit, { x: x + 1.14, y: 1.46, w: 1.75, h: 0.5, fontFace: 'Calibri', fontSize: 12.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
     s.addText(body, { x: x + 0.16, y: 2.12, w: 2.63, h: 1.16, fontFace: 'Calibri', fontSize: 8.8, color: SLATE, margin: 0, valign: 'top' });
   });
 
   s.addShape('roundRect', { x: 0.5, y: 3.56, w: 12.33, h: 1.56, fill: { color: TEAL_T }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.1 });
-  s.addText('HOW IT WORKS — FIVE STEPS, ALL ARITHMETIC', { x: 0.8, y: 3.66, w: 11.5, h: 0.24, fontFace: 'Calibri', fontSize: 9, bold: true, color: TEAL, charSpacing: 0.5, margin: 0 });
+  s.addText('HOW IT WORKS — FIVE STEPS, ALL ARITHMETIC', { x: 0.8, y: 3.66, w: 11.5, h: 0.24, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: TEAL, charSpacing: 0.5, margin: 0 });
   const steps = [
     ['1 · Read', 'The finished costing is reduced to 10 core parameters and 9 extended signals — buckets, operations, tooling basis, pack rates.'],
     ['2 · Check', 'All 52 threshold rules run — each a plain test like "tooling above 20% of part cost" — and the geometry advisors read the solid.'],
@@ -2952,7 +2983,7 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   ];
   steps.forEach(([h, t], i) => {
     const x = 0.72 + i * 2.4;
-    s.addText(h, { x, y: 3.94, w: 2.25, h: 0.24, fontFace: 'Calibri', fontSize: 10, bold: true, color: NAVY, margin: 0 });
+    s.addText(h, { x, y: 3.94, w: 2.25, h: 0.24, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: NAVY, margin: 0 });
     s.addText(t, { x, y: 4.2, w: 2.25, h: 0.86, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
   });
 
@@ -2966,7 +2997,7 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   s.addText([
     { text: 'What the next seven slides are:  ', options: { bold: true, color: '9FB6E0' } },
     { text: 'the complete rule book, transcribed from the tool’s source code — the 19 parameters, all 52 rules with exact thresholds, the 10 geometry advisors, and all 36 idea levers.', options: { color: 'FFFFFF' } },
-  ], { x: 0.85, y: 6.22, w: 11.65, h: 0.6, fontFace: 'Calibri', fontSize: 12, margin: 0, valign: 'middle' });
+  ], { x: 0.85, y: 6.22, w: 11.65, h: 0.6, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
@@ -3004,8 +3035,8 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
     const y = 1.48 + i * 0.435;
     s.addShape('roundRect', { x: 0.5, y, w: 9.75, h: 0.4, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.07 });
     s.addShape('ellipse', { x: cx[0], y: y + 0.07, w: 0.26, h: 0.26, fill: { color: i < 7 ? TEAL : BLUE } });
-    s.addText(r[0], { x: cx[0], y: y + 0.07, w: 0.26, h: 0.26, fontFace: 'Calibri', fontSize: 9, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
-    s.addText(r[1], { x: cx[1], y, w: cw[1], h: 0.4, fontFace: 'Calibri', fontSize: 10, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(r[0], { x: cx[0], y: y + 0.07, w: 0.26, h: 0.26, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+    s.addText(r[1], { x: cx[1], y, w: cw[1], h: 0.4, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
     s.addText(r[2], { x: cx[2], y, w: cw[2], h: 0.4, fontFace: 'Calibri', fontSize: 8.8, color: SLATE, margin: 0, valign: 'middle' });
     s.addText(r[3], { x: cx[3], y, w: cw[3], h: 0.4, fontFace: 'Calibri', fontSize: 8.4, italic: true, color: MUTED, margin: 0, valign: 'middle' });
   });
@@ -3014,13 +3045,13 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
 
   // extended signals
   s.addShape('roundRect', { x: 0.5, y: 6.14, w: 9.75, h: 0.86, fill: { color: 'EDF3FB' }, line: { color: BLUE, width: 1 }, rectRadius: 0.08 });
-  s.addText('+ 9 EXTENDED SIGNALS (added with the 360° upgrade)', { x: 0.68, y: 6.2, w: 9.4, h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: BLUE, charSpacing: 0.5, margin: 0 });
+  s.addText('+ 9 EXTENDED SIGNALS (added with the 360° upgrade)', { x: 0.68, y: 6.2, w: 9.4, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: BLUE, charSpacing: 0.5, margin: 0 });
   s.addText('11 packaging share · 12 logistics share · 13 labour efficiency · 14 per-operation cost split (which op carries the money) · 15 consumables cost (cores, patterns, shell) · 16 tooling investment (NRE) and its amortisation basis vs the annual volume · 17 manning and parts-per-cycle · 18 labour-vs-machine cycle time · 19 operation names (welding, inspection, rework, heat-treat signals)',
     { x: 0.68, y: 6.4, w: 9.4, h: 0.56, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
 
   // ranking card — deliberately NOT a scoring card
   s.addShape('roundRect', { x: 10.45, y: 1.48, w: 2.38, h: 5.52, fill: { color: CARD }, line: { color: GREEN, width: 1.5 }, rectRadius: 0.1 });
-  s.addText('HOW THE RANKING\nWORKS', { x: 10.62, y: 1.62, w: 2.05, h: 0.55, fontFace: 'Calibri', fontSize: 10, bold: true, color: GREEN, charSpacing: 0.4, margin: 0 });
+  s.addText('HOW THE RANKING\nWORKS', { x: 10.62, y: 1.62, w: 2.05, h: 0.55, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: GREEN, charSpacing: 0.4, margin: 0 });
   s.addText([
     { text: 'Every finding is priced:\n', options: { bold: true, color: NAVY } },
     { text: 'saving % × this part’s cost = ', options: { color: SLATE } },
@@ -3052,10 +3083,10 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   owner(s, 10.33, 0.28, 'OWNER: THE ENGINE', TEAL, TEAL_T);
 
   const rcx = [0.72, 4.1, 9.85, 12.0], rcw = [3.3, 5.6, 2.0, 0.65];
-  s.addText('RULE', { x: rcx[0], y: 1.26, w: rcw[0], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('FIRES WHEN', { x: rcx[1], y: 1.26, w: rcw[1], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('SEVERITY', { x: rcx[2], y: 1.26, w: rcw[2], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('SAVE', { x: rcx[3], y: 1.26, w: rcw[3], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, align: 'right', charSpacing: 0.5, margin: 0 });
+  s.addText('RULE', { x: rcx[0], y: 1.26, w: rcw[0], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('FIRES WHEN', { x: rcx[1], y: 1.26, w: rcw[1], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('SEVERITY', { x: rcx[2], y: 1.26, w: rcw[2], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('SAVE', { x: rcx[3], y: 1.26, w: rcw[3], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, align: 'right', charSpacing: 0.5, margin: 0 });
 
   const rules = [
     ['Low material utilisation', 'Under 60% of the bought material ends up in the part — over 40% is waste', 'Critical', '12%'],
@@ -3077,8 +3108,8 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
     const y = 1.52 + i * 0.335;
     if (i % 2 === 0) s.addShape('rect', { x: 0.5, y: y - 0.015, w: 12.33, h: 0.325, fill: { color: CARD } });
     s.addText(r[0], { x: rcx[0], y, w: rcw[0], h: 0.3, fontFace: 'Calibri', fontSize: 9.2, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-    s.addText(r[1], { x: rcx[1], y, w: rcw[1], h: 0.3, fontFace: 'Calibri', fontSize: 9, color: SLATE, margin: 0, valign: 'middle' });
-    s.addText(r[2], { x: rcx[2], y, w: rcw[2], h: 0.3, fontFace: 'Calibri', fontSize: 9, bold: true, color: SEV[r[2]], margin: 0, valign: 'middle' });
+    s.addText(r[1], { x: rcx[1], y, w: rcw[1], h: 0.3, fontFace: 'Calibri', fontSize: 9.0, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(r[2], { x: rcx[2], y, w: rcw[2], h: 0.3, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: SEV[r[2]], margin: 0, valign: 'middle' });
     s.addText(r[3], { x: rcx[3], y, w: rcw[3], h: 0.3, fontFace: 'Calibri', fontSize: 9.2, bold: true, color: TEAL, align: 'right', margin: 0, valign: 'middle' });
   });
 
@@ -3100,11 +3131,11 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   owner(s, 10.33, 0.28, 'OWNER: THE ENGINE', TEAL, TEAL_T);
 
   const ccx = [0.72, 2.42, 5.5, 11.0, 12.35], ccw = [1.65, 3.0, 5.4, 1.3, 0.35];
-  s.addText('COMMODITY', { x: ccx[0], y: 1.2, w: ccw[0], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('CHECK', { x: ccx[1], y: 1.2, w: ccw[1], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('FIRES WHEN', { x: ccx[2], y: 1.2, w: ccw[2], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('SEVERITY', { x: ccx[3], y: 1.2, w: ccw[3], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('SAVE', { x: ccx[4], y: 1.2, w: ccw[4], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, align: 'right', charSpacing: 0.4, margin: 0 });
+  s.addText('COMMODITY', { x: ccx[0], y: 1.2, w: ccw[0], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('CHECK', { x: ccx[1], y: 1.2, w: ccw[1], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('FIRES WHEN', { x: ccx[2], y: 1.2, w: ccw[2], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('SEVERITY', { x: ccx[3], y: 1.2, w: ccw[3], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('SAVE', { x: ccx[4], y: 1.2, w: ccw[4], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, align: 'right', charSpacing: 0.4, margin: 0 });
 
   const rules = [
     ['Machining ±cast', 'Split routing across stations', 'Over 4 real ops on over 2 stations, not consolidated — quote a consolidation', 'Major', '10%'],
@@ -3165,10 +3196,10 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   owner(s, 10.33, 0.28, 'OWNER: THE ENGINE', TEAL, TEAL_T);
 
   const rcx = [0.72, 4.1, 9.85, 12.0], rcw = [3.3, 5.6, 2.0, 0.65];
-  s.addText('RULE', { x: rcx[0], y: 1.26, w: rcw[0], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('FIRES WHEN', { x: rcx[1], y: 1.26, w: rcw[1], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('SEVERITY', { x: rcx[2], y: 1.26, w: rcw[2], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('SAVE', { x: rcx[3], y: 1.26, w: rcw[3], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, align: 'right', charSpacing: 0.5, margin: 0 });
+  s.addText('RULE', { x: rcx[0], y: 1.26, w: rcw[0], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('FIRES WHEN', { x: rcx[1], y: 1.26, w: rcw[1], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('SEVERITY', { x: rcx[2], y: 1.26, w: rcw[2], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('SAVE', { x: rcx[3], y: 1.26, w: rcw[3], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, align: 'right', charSpacing: 0.5, margin: 0 });
 
   const rules = [
     ['Split routing — setups/transfers', 'Over 4 real operations across over 2 stations — each transfer adds handling and variation', 'Major', '8%'],
@@ -3187,8 +3218,8 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
     const y = 1.52 + i * 0.335;
     if (i % 2 === 0) s.addShape('rect', { x: 0.5, y: y - 0.015, w: 12.33, h: 0.325, fill: { color: CARD } });
     s.addText(r[0], { x: rcx[0], y, w: rcw[0], h: 0.3, fontFace: 'Calibri', fontSize: 9.2, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-    s.addText(r[1], { x: rcx[1], y, w: rcw[1], h: 0.3, fontFace: 'Calibri', fontSize: 9, color: SLATE, margin: 0, valign: 'middle' });
-    s.addText(r[2], { x: rcx[2], y, w: rcw[2], h: 0.3, fontFace: 'Calibri', fontSize: 9, bold: true, color: SEV[r[2]], margin: 0, valign: 'middle' });
+    s.addText(r[1], { x: rcx[1], y, w: rcw[1], h: 0.3, fontFace: 'Calibri', fontSize: 9.0, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(r[2], { x: rcx[2], y, w: rcw[2], h: 0.3, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: SEV[r[2]], margin: 0, valign: 'middle' });
     s.addText(r[3], { x: rcx[3], y, w: rcw[3], h: 0.3, fontFace: 'Calibri', fontSize: 9.2, bold: true, color: TEAL, align: 'right', margin: 0, valign: 'middle' });
   });
 
@@ -3217,10 +3248,10 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   owner(s, 10.33, 0.28, 'OWNER: THE ENGINE', TEAL, TEAL_T);
 
   const acx = [0.72, 2.6, 7.35, 12.0], acw = [1.8, 4.6, 4.55, 0.65];
-  s.addText('ADVISOR', { x: acx[0], y: 1.26, w: acw[0], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('WHAT IT READS FROM THE MEASURED SOLID', { x: acx[1], y: 1.26, w: acw[1], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('EXAMPLE FINDING', { x: acx[2], y: 1.26, w: acw[2], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
-  s.addText('CHECKS', { x: acx[3], y: 1.26, w: acw[3], h: 0.2, fontFace: 'Calibri', fontSize: 8, bold: true, color: MUTED, align: 'right', charSpacing: 0.4, margin: 0 });
+  s.addText('ADVISOR', { x: acx[0], y: 1.26, w: acw[0], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('WHAT IT READS FROM THE MEASURED SOLID', { x: acx[1], y: 1.26, w: acw[1], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('EXAMPLE FINDING', { x: acx[2], y: 1.26, w: acw[2], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.5, margin: 0 });
+  s.addText('CHECKS', { x: acx[3], y: 1.26, w: acw[3], h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, align: 'right', charSpacing: 0.4, margin: 0 });
 
   const advisors = [
     ['Casting', 'Wall thickness range, draft angle, section ratio, machining stock, sharp corners, isolated heavy sections', 'Heavy section solidifies last — shrink porosity at the hot spot', '7'],
@@ -3338,7 +3369,7 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   };
   const row = (y, [t, w, sv, rk, tf], zebra) => {
     if (zebra) s.addShape('rect', { x: 0.5, y: y - 0.005, w: 12.33, h: 0.215, fill: { color: CARD } });
-    s.addText(t, { x: lcx[0], y, w: lcw[0], h: 0.21, fontFace: 'Calibri', fontSize: 8, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(t, { x: lcx[0], y, w: lcw[0], h: 0.21, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
     s.addText(w, { x: lcx[1], y, w: lcw[1], h: 0.21, fontFace: 'Calibri', fontSize: 7.9, color: SLATE, margin: 0, valign: 'middle' });
     s.addText(sv, { x: lcx[2], y, w: lcw[2], h: 0.21, fontFace: 'Calibri', fontSize: 8.3, bold: true, color: TEAL, margin: 0, valign: 'middle' });
     s.addText(rk, { x: lcx[3], y, w: lcw[3], h: 0.21, fontFace: 'Calibri', fontSize: 7.9, bold: true, color: RISKC[rk], margin: 0, valign: 'middle' });
@@ -3410,28 +3441,28 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   // headline strip
   s.addShape('roundRect', { x: 0.5, y: 1.18, w: 12.33, h: 0.72, fill: { color: GREEN_T }, line: { color: GREEN, width: 1.25 }, rectRadius: 0.08 });
   s.addText([
-    { text: 'Combined opportunity £5.55/part ', options: { bold: true, color: GREEN, fontSize: 13 } },
-    { text: '(~22% of the £25.14 piece cost)  ·  10 ranked opportunities across 4 categories  ·  machining', options: { color: SLATE, fontSize: 11 } },
+    { text: 'Combined opportunity £5.55/part ', options: { bold: true, color: GREEN, fontSize: 13.0 } },
+    { text: '(~22% of the £25.14 piece cost)  ·  10 ranked opportunities across 4 categories  ·  machining', options: { color: SLATE, fontSize: 11.0 } },
   ], { x: 0.78, y: 1.18, w: 11.8, h: 0.72, fontFace: 'Calibri', margin: 0, valign: 'middle' });
 
   const ccx = [0.72, 1.25, 4.9, 10.15, 11.25, 12.15], ccw = [0.4, 3.6, 5.2, 1.0, 0.85, 1.1];
   const header = y => {
     ['#', 'ACTION', 'WHY IT IS ON THE LIST', 'SAVE/PART', 'RISK', 'TIMEFRAME'].forEach((h, i) =>
-      s.addText(h, { x: ccx[i], y, w: ccw[i], h: 0.18, fontFace: 'Calibri', fontSize: 7.4, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 }));
+      s.addText(h, { x: ccx[i], y, w: ccw[i], h: 0.18, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 }));
   };
   const band = (y, label, best, col, tint) => {
     s.addShape('roundRect', { x: 0.5, y, w: 12.33, h: 0.22, fill: { color: tint }, rectRadius: 0.05 });
-    s.addText(label, { x: 0.72, y, w: 8, h: 0.22, fontFace: 'Calibri', fontSize: 8, bold: true, color: col, charSpacing: 0.5, margin: 0, valign: 'middle' });
-    s.addText(`best ${best}/part`, { x: 10.0, y, w: 2.6, h: 0.22, fontFace: 'Calibri', fontSize: 8, bold: true, color: col, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(label, { x: 0.72, y, w: 8, h: 0.22, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: col, charSpacing: 0.5, margin: 0, valign: 'middle' });
+    s.addText(`best ${best}/part`, { x: 10.0, y, w: 2.6, h: 0.22, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: col, align: 'right', margin: 0, valign: 'middle' });
   };
   const row = (y, [n, action, why, save, risk, tf], zebra) => {
     if (zebra) s.addShape('rect', { x: 0.5, y: y - 0.005, w: 12.33, h: 0.245, fill: { color: CARD } });
     s.addText(n, { x: ccx[0], y, w: ccw[0], h: 0.24, fontFace: 'Calibri', fontSize: 8.4, bold: true, color: MUTED, margin: 0, valign: 'middle' });
     s.addText(action, { x: ccx[1], y, w: ccw[1], h: 0.24, fontFace: 'Calibri', fontSize: 8.4, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-    s.addText(why, { x: ccx[2], y, w: ccw[2], h: 0.24, fontFace: 'Calibri', fontSize: 8, color: SLATE, margin: 0, valign: 'middle' });
-    s.addText(save, { x: ccx[3], y, w: ccw[3], h: 0.24, fontFace: 'Calibri', fontSize: 9, bold: true, color: GREEN, align: 'right', margin: 0, valign: 'middle' });
-    s.addText(risk, { x: ccx[4], y, w: ccw[4], h: 0.24, fontFace: 'Calibri', fontSize: 8, bold: true, color: RISKC[risk], margin: 0, valign: 'middle' });
-    s.addText(tf, { x: ccx[5], y, w: ccw[5], h: 0.24, fontFace: 'Calibri', fontSize: 8, bold: true, color: TIMEC[tf], margin: 0, valign: 'middle' });
+    s.addText(why, { x: ccx[2], y, w: ccw[2], h: 0.24, fontFace: 'Calibri', fontSize: 8.0, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(save, { x: ccx[3], y, w: ccw[3], h: 0.24, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: GREEN, align: 'right', margin: 0, valign: 'middle' });
+    s.addText(risk, { x: ccx[4], y, w: ccw[4], h: 0.24, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: RISKC[risk], margin: 0, valign: 'middle' });
+    s.addText(tf, { x: ccx[5], y, w: ccw[5], h: 0.24, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: TIMEC[tf], margin: 0, valign: 'middle' });
   };
 
   let y = 2.02;
@@ -3497,12 +3528,12 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
     s.addShape('ellipse', { x: x + 0.45, y: y + 0.07, w: 0.28, h: 0.28, fill: { color: col } });
     s.addText(String(n), { x: x + 0.45, y: y + 0.07, w: 0.28, h: 0.28, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
     s.addText(ttl, { x: x + 0.05, y: y + 0.38, w: w - 0.1, h: 0.2, fontFace: 'Calibri', fontSize: 8.8, bold: true, color: col, align: 'center', margin: 0 });
-    s.addText(job, { x: x + 0.06, y: y + 0.58, w: w - 0.12, h: 0.42, fontFace: 'Calibri', fontSize: 7.0, color: SLATE, align: 'center', margin: 0, valign: 'top' });
+    s.addText(job, { x: x + 0.06, y: y + 0.58, w: w - 0.12, h: 0.42, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, align: 'center', margin: 0, valign: 'top' });
     // the hand-off
     s.addShape('roundRect', { x: x + 0.06, y: y + 1.02, w: w - 0.12, h: 0.54, fill: { color: 'F0F4F9' }, line: { color: LINE, width: 0.75 }, rectRadius: 0.05 });
-    s.addText('HANDS ON', { x: x + 0.06, y: y + 1.04, w: w - 0.12, h: 0.12, fontFace: 'Calibri', fontSize: 5.4, bold: true, color: MUTED, align: 'center', charSpacing: 0.3, margin: 0 });
-    s.addText(obj, { x: x + 0.03, y: y + 1.16, w: w - 0.06, h: 0.14, fontFace: MONO, fontSize: 6.2, bold: true, color: NAVY, align: 'center', margin: 0 });
-    s.addText(objPlain, { x: x + 0.06, y: y + 1.30, w: w - 0.12, h: 0.24, fontFace: 'Calibri', fontSize: 6.2, color: SLATE, align: 'center', margin: 0, valign: 'top' });
+    s.addText('HANDS ON', { x: x + 0.06, y: y + 1.04, w: w - 0.12, h: 0.12, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: MUTED, align: 'center', charSpacing: 0.3, margin: 0 });
+    s.addText(obj, { x: x + 0.03, y: y + 1.16, w: w - 0.06, h: 0.14, fontFace: MONO, fontSize: 7.5, bold: true, color: NAVY, align: 'center', margin: 0 });
+    s.addText(objPlain, { x: x + 0.06, y: y + 1.30, w: w - 0.12, h: 0.24, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, align: 'center', margin: 0, valign: 'top' });
   };
 
   step(0.50, 1, 'Upload', 'A CAD file, a PCB photo, or a typed form', 'the file', 'STEP · IGES · STL · JPG', BLUE);
@@ -3515,22 +3546,22 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   s.addShape('roundRect', { x: 4.54, y: 1.06, w: 4.26, h: 1.62, fill: { color: TEAL_T }, line: { color: TEAL, width: 2 }, rectRadius: 0.1 });
   s.addText('THE COST ENGINE  ·  src/engine/', { x: 4.68, y: 1.11, w: 4.0, h: 0.22, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: TEAL, margin: 0, valign: 'middle' });
   s.addText('TypeScript · 27,181 lines · 1,777 tests · same code runs in the browser and on the server',
-    { x: 4.68, y: 1.32, w: 4.0, h: 0.18, fontFace: 'Calibri', fontSize: 6.9, italic: true, color: NAVY, margin: 0 });
+    { x: 4.68, y: 1.32, w: 4.0, h: 0.18, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: NAVY, margin: 0 });
   [['core.ts works out the 8 cost buckets', 0], ['19 commodity modules', 1], ['Optimisers pick the cheapest capable machine', 2], ['Guardrails check every number', 3]]
     .forEach(([t, i]) => {
       const cx = 4.68 + (i % 2) * 2.02, cy = 1.53 + Math.floor(i / 2) * 0.185;
       s.addShape('ellipse', { x: cx, y: cy + 0.05, w: 0.07, h: 0.07, fill: { color: TEAL } });
-      s.addText(t, { x: cx + 0.12, y: cy, w: 1.9, h: 0.18, fontFace: 'Calibri', fontSize: 6.5, color: SLATE, margin: 0, valign: 'middle' });
+      s.addText(t, { x: cx + 0.12, y: cy, w: 1.9, h: 0.18, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, margin: 0, valign: 'middle' });
     });
   s.addShape('roundRect', { x: 4.68, y: 1.92, w: 3.98, h: 0.3, fill: { color: CARD }, line: { color: TEAL, width: 0.75 }, rectRadius: 0.05 });
   s.addText([
-    { text: 'HANDS ON  ', options: { fontSize: 5.6, bold: true, color: MUTED } },
-    { text: 'PartCostResult', options: { fontFace: MONO, fontSize: 7.4, bold: true, color: NAVY } },
-    { text: '  — the 8 buckets, plus where every number came from', options: { fontSize: 6.6, color: SLATE } },
+    { text: 'HANDS ON  ', options: { fontSize: 7.5, bold: true, color: MUTED } },
+    { text: 'PartCostResult', options: { fontFace: MONO, fontSize: 7.5, bold: true, color: NAVY } },
+    { text: '  — the 8 buckets, plus where every number came from', options: { fontSize: 7.5, color: SLATE } },
   ], { x: 4.76, y: 1.92, w: 3.82, h: 0.3, fontFace: 'Calibri', margin: 0, valign: 'middle' });
   s.addShape('roundRect', { x: 4.68, y: 2.28, w: 3.98, h: 0.3, fill: { color: NAVY }, rectRadius: 0.05 });
   s.addText('Numbers in, numbers out. No database, no network, no file access.',
-    { x: 4.78, y: 2.28, w: 3.78, h: 0.3, fontFace: 'Calibri', fontSize: 6.9, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
+    { x: 4.78, y: 2.28, w: 3.78, h: 0.3, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
 
   s.addShape('line', { x: 8.84, y: 1.87, w: 0.22, h: 0, line: { color: TEAL, width: 2.5, endArrowType: 'triangle' } });
 
@@ -3540,7 +3571,7 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
 
   // ── what is actually inside those parcels ────────────────────────────────
   s.addShape('roundRect', { x: 0.5, y: 2.78, w: 12.33, h: 0.66, fill: { color: 'F0F4F9' }, line: { color: LINE, width: 1 }, rectRadius: 0.07 });
-  s.addText('WHAT IS INSIDE EACH PARCEL', { x: 0.68, y: 2.82, w: 3, h: 0.16, fontFace: 'Calibri', fontSize: 7, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
+  s.addText('WHAT IS INSIDE EACH PARCEL', { x: 0.68, y: 2.82, w: 3, h: 0.16, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
   const parcels = [
     ['OCCTGeometry', 'bounding box · volume · wall thickness · draft angles · setup count · hole and boss table'],
     ['UniversalStackInput', 'material and utilisation · per-operation cycle time, OEE, manning · tooling · overhead · margin'],
@@ -3549,14 +3580,14 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   ];
   parcels.forEach(([k, v], i) => {
     const y = 2.99 + (i % 2) * 0.20, x = 0.68 + Math.floor(i / 2) * 6.15;
-    s.addText(k, { x, y, w: 1.32, h: 0.18, fontFace: MONO, fontSize: 6.4, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-    s.addText(v, { x: x + 1.34, y, w: 4.7, h: 0.18, fontFace: 'Calibri', fontSize: 6.4, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(k, { x, y, w: 1.32, h: 0.18, fontFace: MONO, fontSize: 7.5, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(v, { x: x + 1.34, y, w: 4.7, h: 0.18, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, margin: 0, valign: 'middle' });
   });
 
   // ── the facts table ───────────────────────────────────────────────────────
   const cx = [0.5, 3.05, 6.10, 7.22, 9.72], cw = [2.55, 2.95, 0.80, 2.40, 3.11];
   const th = ['Component', 'Built with', 'Lines', 'Free to use?', 'Calls out to the internet?'];
-  th.forEach((h, i) => s.addText(h, { x: cx[i], y: 3.54, w: cw[i], h: 0.24, fontFace: 'Calibri', fontSize: 8, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i === 2 ? 'right' : 'left', valign: 'middle', margin: 0.06 }));
+  th.forEach((h, i) => s.addText(h, { x: cx[i], y: 3.54, w: cw[i], h: 0.24, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i === 2 ? 'right' : 'left', valign: 'middle', margin: 0.06 }));
 
   const rows = [
     ['Geometry kernel', 'Python 3 + Open CASCADE (via OCP)', '1,587', 'Yes — LGPL-2.1 + exc. / Apache-2.0', 'No', GREEN],
@@ -3575,7 +3606,7 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
     const ai = ri === 8;
     [0, 1, 2, 3, 4].forEach(i => {
       s.addText(String(r[i]), {
-        x: cx[i], y, w: cw[i], h: 0.196, fontFace: 'Calibri', fontSize: 7.4,
+        x: cx[i], y, w: cw[i], h: 0.196, fontFace: 'Calibri', fontSize: 7.5,
         bold: i === 0 || i === 4, italic: i === 2,
         color: i === 4 ? r[5] : (i === 0 ? (ai ? PURPLE : NAVY) : SLATE),
         fill: { color: ai ? 'F1EBF8' : (ri % 2 ? 'F0F4F9' : 'FFFFFF') },
@@ -3584,7 +3615,7 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
     });
   });
   s.addText('Line counts measured from the repository. Licences as published by each project — worth a formal review before anything is distributed outside the company.',
-    { x: 0.5, y: 5.76, w: 12.33, h: 0.18, fontFace: 'Calibri', fontSize: 6.9, italic: true, color: MUTED, margin: 0 });
+    { x: 0.5, y: 5.76, w: 12.33, h: 0.18, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: MUTED, margin: 0 });
 
   // ── the network answer ────────────────────────────────────────────────────
   s.addShape('roundRect', { x: 0.5, y: 6.00, w: 12.33, h: 0.94, fill: { color: CARD }, line: { color: NAVY, width: 1.5 }, rectRadius: 0.08 });
@@ -3598,9 +3629,9 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   net.forEach(([k, v, d, col], i) => {
     const y = 6.24 + (i % 2) * 0.32, x = 0.68 + Math.floor(i / 2) * 6.15;
     s.addShape('ellipse', { x, y: y + 0.05, w: 0.08, h: 0.08, fill: { color: col } });
-    s.addText(k, { x: x + 0.15, y, w: 1.0, h: 0.16, fontFace: 'Calibri', fontSize: 7.2, bold: true, color: col, margin: 0, valign: 'middle' });
-    s.addText(v, { x: x + 1.17, y, w: 1.5, h: 0.16, fontFace: 'Calibri', fontSize: 7.2, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-    s.addText(d, { x: x + 0.15, y: y + 0.15, w: 5.7, h: 0.15, fontFace: 'Calibri', fontSize: 6.5, color: SLATE, margin: 0, valign: 'middle' });
+    s.addText(k, { x: x + 0.15, y, w: 1.0, h: 0.16, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(v, { x: x + 1.17, y, w: 1.5, h: 0.16, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: NAVY, margin: 0, valign: 'middle' });
+    s.addText(d, { x: x + 0.15, y: y + 0.15, w: 5.7, h: 0.15, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, margin: 0, valign: 'middle' });
   });
 
   footer(s, ++PG);
@@ -3628,7 +3659,7 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   title(s, 'Backup — Data Contracts, Field by Field', 'The exact objects behind the four parcels on the previous slide. Type and field names copied from the source', NAVY);
   // backup marker — this slide is not in the running order
   s.addShape('roundRect', { x: 10.62, y: 0.26, w: 2.21, h: 0.3, fill: { color: AMBER_T }, line: { color: AMBER, width: 1 }, rectRadius: 0.15 });
-  s.addText('BACKUP — ONLY IF ASKED', { x: 10.62, y: 0.26, w: 2.21, h: 0.3, fontFace: 'Calibri', fontSize: 8, bold: true, color: AMBER, align: 'center', valign: 'middle', margin: 0 });
+  s.addText('BACKUP — ONLY IF ASKED', { x: 10.62, y: 0.26, w: 2.21, h: 0.3, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: AMBER, align: 'center', valign: 'middle', margin: 0 });
 
   const MONO = 'Consolas';
 
@@ -3638,11 +3669,11 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
     s.addShape('roundRect', { x, y, w, h: 0.42, fill: { color: col }, rectRadius: 0.09 });
     s.addShape('rect', { x, y: y + 0.26, w, h: 0.16, fill: { color: col } });
     s.addShape('ellipse', { x: x + 0.11, y: y + 0.09, w: 0.24, h: 0.24, fill: { color: 'FFFFFF' } });
-    s.addText(String(n), { x: x + 0.11, y: y + 0.09, w: 0.24, h: 0.24, fontFace: 'Calibri', fontSize: 8, bold: true, color: col, align: 'center', valign: 'middle', margin: 0 });
+    s.addText(String(n), { x: x + 0.11, y: y + 0.09, w: 0.24, h: 0.24, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: col, align: 'center', valign: 'middle', margin: 0 });
     s.addText(name, { x: x + 0.42, y: y + 0.04, w: w - 0.52, h: 0.20, fontFace: MONO, fontSize: 8.4, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
-    s.addText(where, { x: x + 0.42, y: y + 0.22, w: w - 0.52, h: 0.16, fontFace: 'Calibri', fontSize: 6.6, color: 'FFFFFF', margin: 0, valign: 'middle' });
-    s.addText(fields, { x: x + 0.12, y: y + 0.48, w: w - 0.24, h: h - 0.48 - 0.24, fontFace: MONO, fontSize: 6.1, color: SLATE, margin: 0, valign: 'top', lineSpacingMultiple: 0.98 });
-    s.addText(note, { x: x + 0.12, y: y + h - 0.24, w: w - 0.24, h: 0.2, fontFace: 'Calibri', fontSize: 6.6, italic: true, color: col, margin: 0, valign: 'middle' });
+    s.addText(where, { x: x + 0.42, y: y + 0.22, w: w - 0.52, h: 0.16, fontFace: 'Calibri', fontSize: 7.5, color: 'FFFFFF', margin: 0, valign: 'middle' });
+    s.addText(fields, { x: x + 0.12, y: y + 0.48, w: w - 0.24, h: h - 0.48 - 0.24, fontFace: MONO, fontSize: 7.5, color: SLATE, margin: 0, valign: 'top', lineSpacingMultiple: 0.98 });
+    s.addText(note, { x: x + 0.12, y: y + h - 0.24, w: w - 0.24, h: 0.2, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: col, margin: 0, valign: 'middle' });
   };
 
   const CW = 2.34, GAP = 0.155, Y = 1.14, H = 3.42;

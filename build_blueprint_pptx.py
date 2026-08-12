@@ -11,6 +11,7 @@ Regenerate:  python3 build_blueprint_pptx.py
 Output:      CostVision-Implementation-Blueprint.pptx
 """
 
+import re
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
@@ -56,6 +57,42 @@ def box(slide, x, y, w, h, fill=None, line=None, round_=False, radius=0.12):
     shp.shadow.inherit = False
     return shp
 
+# ── Emoji font handling ──────────────────────────────────────────────────────
+# Calibri carries no colour-emoji coverage, so an emoji inside a Calibri run is
+# left to font fallback — which resolves differently on every machine, and to an
+# empty box where the fallback is missing. Splitting the run and naming an emoji
+# font for the pictographic part makes the deck render the same on somebody
+# else's laptop as it does here.
+#
+# Dingbats (U+2700-27BF, the tick and cross) are deliberately NOT routed here:
+# Calibri draws them cleanly as typographic marks, and an emoji font would turn
+# a neat tick into a colour sticker.
+# U+2700-27BF is split deliberately: the tick/cross family (U+2713-2718)
+# renders as clean typographic marks in Calibri, but its neighbours (the
+# pencil, the question mark) render as colour emoji on most systems and so
+# belong with the pictographs.
+_PICTO = re.compile('([\U0001F300-\U0001FAFF\u2600-\u26FF\u2700-\u2712\u2719-\u27BF\uFE0F]+)')
+EMOJI_FONT = 'Segoe UI Emoji'
+
+
+def _emit_runs(p, t, size, color, bold, italic, base_font='Calibri'):
+    """Add `t` to paragraph `p`, giving pictographs an emoji font."""
+    for part in _PICTO.split(t):
+        if not part:
+            continue
+        run = p.add_run()
+        run.text = part
+        f = run.font
+        f.size = Pt(size)
+        f.color.rgb = color
+        f.bold = bold
+        f.italic = italic
+        if _PICTO.fullmatch(part):
+            f.name = EMOJI_FONT
+        elif base_font:
+            f.name = base_font
+
+
 def text(slide, x, y, w, h, runs, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP,
          space_after=4, line_spacing=1.0):
     tb = slide.shapes.add_textbox(x, y, w, h)
@@ -67,9 +104,7 @@ def text(slide, x, y, w, h, runs, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP,
         for r in para:
             t, size, color, bold = r[0], r[1], r[2], r[3]
             italic = r[4] if len(r) > 4 else False
-            run = p.add_run(); run.text = t
-            f = run.font; f.size = Pt(size); f.color.rgb = color; f.bold = bold
-            f.italic = italic; f.name = 'Calibri'
+            _emit_runs(p, t, size, color, bold, italic)
     return tb
 
 def logo(slide, x=Inches(0.35), y=Inches(0.22), scale=1.0):
@@ -942,6 +977,63 @@ notes(s, "This slide is here because the plan you approved is a few months old n
          "says so itself on every estimate. Give me your machine list and two costed gears and that gap closes.")
 
 # ═══════════════ 21b — BACKUP: LIKELY QUESTIONS ═══════════════
+s = header('What we need from the plant to make this quotable', 'Backup · The ask')
+text(s, Inches(0.45), Inches(1.9), Inches(12.45), Inches(0.5),
+     [[('The engine is built and the arithmetic is auditable. What it does not yet have is ', 12.5, BODY, False),
+       ('your', 12.5, DARK, True),
+       (' shop data — and until it does, a gear estimate is directional, not quotable. Three things close that gap.',
+        12.5, BODY, False)]], line_spacing=1.15)
+
+asks = [
+    ('1', 'The gear machine list', 'Highest impact',
+     'Machine class, £/hr, and the capacity limits — biggest module, largest diameter, widest face. '
+     'The tool currently picks from 14 representative machine classes; yours replace them outright.', GREEN),
+    ('2', 'Feeds, speeds and tool life', 'Second',
+     'Cutting speed and axial feed by material and module band, hob and cutter price, and parts between '
+     'regrinds. These drive the cycle time, and the cycle time drives the cost.', BLUE),
+    ('3', 'Two gears you already know the cost of', 'The proof',
+     'Ideally one hobbed-only and one hardened-and-ground. Without them nothing above is validated — '
+     'the model is internally consistent but unproven against reality.', VIOLET),
+]
+for i, (n, t, rank, d, c) in enumerate(asks):
+    y = Inches(2.6 + i * 1.34)
+    box(s, Inches(0.45), y, Inches(12.45), Inches(1.2), fill=PANEL, round_=True, radius=0.08)
+    box(s, Inches(0.45), y, Inches(0.09), Inches(1.2), fill=c)
+    box(s, Inches(0.72), y + Inches(0.3), Inches(0.6), Inches(0.6), fill=c, round_=True, radius=0.3)
+    text(s, Inches(0.72), y + Inches(0.3), Inches(0.6), Inches(0.6), [[(n, 20, BG, True)]],
+         align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    text(s, Inches(1.55), y + Inches(0.16), Inches(7.0), Inches(0.34), [[(t, 15, DARK, True)]])
+    box(s, Inches(10.6), y + Inches(0.18), Inches(2.1), Inches(0.3), fill=c, round_=True, radius=0.15)
+    text(s, Inches(10.6), y + Inches(0.18), Inches(2.1), Inches(0.3), [[(rank, 10, BG, True)]],
+         align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    text(s, Inches(1.55), y + Inches(0.56), Inches(11.1), Inches(0.56), [[(d, 10.5, BODY, False)]],
+         line_spacing=1.14)
+
+box(s, Inches(0.45), Inches(6.68), Inches(12.45), Inches(0.5), fill=GREENBG, round_=True, radius=0.07)
+text(s, Inches(0.75), Inches(6.68), Inches(11.9), Inches(0.5),
+     [[('Effort on your side: ', 11, GREEN, True),
+       ('roughly half a day to export the machine list and the feeds table, plus two costings you have '
+        'already done. Nothing new has to be measured.', 11, BODY, False)]],
+     anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.1)
+notes(s, "This slide is aimed squarely at you" + chr(44) + " and it is short on purpose. "
+         "The gear model is built. The arithmetic behind the cycle times is the gear-train maths, and you can "
+         "check it line by line — the tool prints the sum. What it does not have is your shop. Right now it is "
+         "running on representative feeds and speeds and a representative machine list, and it says so on every "
+         "single estimate it produces. I would rather it under-claim than have it quietly pretend. "
+         "So there are three things I need, and they are in order of how much each one moves the number. "
+         "First, your gear machine list — the classes, the hourly rates, and the capacity limits. That is the "
+         "single biggest one, because right now the tool is choosing between fourteen machine classes I have "
+         "described rather than fourteen machines you actually own. "
+         "Second, the feeds and speeds by material and module, plus what a hob costs and how many parts it cuts "
+         "between regrinds. Those drive the cycle time, and the cycle time drives the cost. "
+         "Third, and this is the one that turns it from a model into a proven model — two gears where you already "
+         "know the real cost. Ideally one that is just hobbed and one that is hardened and ground, because those "
+         "are the two ends of the range. Until we do that comparison, everything I have shown you is internally "
+         "consistent but unproven. "
+         "The effort is about half a day of exports plus two costings you have already done. Nothing new has to "
+         "be measured, and nothing has to be created for me.")
+
+# ═══════════════ BACKUP: LIKELY QUESTIONS ═══════════════
 s = header('Questions you may be asking', 'Backup · Straight answers')
 qa = [
     ('Why not just buy aPriori?', 'A SaaS suite means our CAD and rates live in a vendor cloud, it cannot learn from our '

@@ -10,6 +10,7 @@ Regenerate:  python3 build_agentic_pptx.py
 Output:      CostVision-Agentic-AI-Management-Presentation.pptx
 """
 
+import re
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -65,6 +66,42 @@ def box(slide, x, y, w, h, fill=None, line=None, round_=False, radius=0.12):
     shp.shadow.inherit = False
     return shp
 
+# ── Emoji font handling ──────────────────────────────────────────────────────
+# A run that mixes text and emoji and is set to Calibri leaves the emoji to font
+# fallback: Calibri carries no colour-emoji coverage, so the glyph resolves to
+# whatever the viewing machine happens to offer — or to an empty box. Splitting
+# the run and naming an emoji font for the pictographic part makes the deck
+# render the same on someone else's laptop as it does on ours.
+#
+# Dingbats (U+2700-27BF, e.g. the tick and cross) are deliberately NOT routed
+# here: Calibri draws them cleanly as typographic marks, and pushing them to an
+# emoji font would turn a neat tick into a colour sticker.
+# U+2700-27BF is split deliberately: the tick/cross family (U+2713-2718)
+# renders as clean typographic marks in Calibri, but its neighbours (the
+# pencil, the question mark) render as colour emoji on most systems and so
+# belong with the pictographs.
+_PICTO = re.compile('([\U0001F300-\U0001FAFF\u2600-\u26FF\u2700-\u2712\u2719-\u27BF\uFE0F]+)')
+EMOJI_FONT = 'Segoe UI Emoji'
+
+
+def _emit_runs(p, t, size, color, bold, italic, base_font='Calibri'):
+    """Add `t` to paragraph `p`, giving pictographs an emoji font."""
+    for part in _PICTO.split(t):
+        if not part:
+            continue
+        run = p.add_run()
+        run.text = part
+        f = run.font
+        f.size = Pt(size)
+        f.color.rgb = color
+        f.bold = bold
+        f.italic = italic
+        if _PICTO.fullmatch(part):
+            f.name = EMOJI_FONT
+        elif base_font:
+            f.name = base_font
+
+
 def text(slide, x, y, w, h, runs, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP,
          space_after=4, line_spacing=1.0):
     """runs: list of paragraphs; each paragraph = list of (text, size, color, bold[, italic])."""
@@ -81,10 +118,7 @@ def text(slide, x, y, w, h, runs, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP,
         for r in para:
             t, size, color, bold = r[0], r[1], r[2], r[3]
             italic = r[4] if len(r) > 4 else False
-            run = p.add_run(); run.text = t
-            f = run.font
-            f.size = Pt(size); f.color.rgb = color; f.bold = bold; f.italic = italic
-            f.name = 'Calibri'
+            _emit_runs(p, t, size, color, bold, italic)
     return tb
 
 def logo(slide, x=Inches(0.35), y=Inches(0.22), scale=1.0):
@@ -617,9 +651,15 @@ text(s, Inches(0.45), Inches(1.85), Inches(12.4), Inches(0.45),
 # comparison table
 hdr = ['Finding', 'Raw gap (impact)', 'Learned conversion', 'Expected realizable']
 cols_x = [Inches(0.6), Inches(4.4), Inches(7.4), Inches(10.2)]
+# Column widths run to the NEXT column, and the last one stops at the table's
+# right edge. A flat 3.4" for every header pushed "Expected realizable" 0.27"
+# past the slide, where it was simply not on screen.
+_tbl_right = Inches(0.45) + Inches(12.45) - Inches(0.15)
+cols_w = [(cols_x[i + 1] if i + 1 < len(cols_x) else _tbl_right) - cols_x[i]
+          for i in range(len(cols_x))]
 box(s, Inches(0.45), Inches(2.5), Inches(12.45), Inches(0.5), fill=DARK, round_=False)
 for i, htext in enumerate(hdr):
-    text(s, cols_x[i], Inches(2.58), Inches(3.4), Inches(0.35), [[(htext, 11.5, BG, True)]])
+    text(s, cols_x[i], Inches(2.58), cols_w[i], Inches(0.35), [[(htext, 11.5, BG, True)]])
 rows = [
     ('Cast Housing', '£200k/yr', '20% — rarely closes', '£40k', RED),
     ('Machined Knuckle', '£100k/yr', '80% — usually closes', '£80k', GREEN),
@@ -627,10 +667,9 @@ rows = [
 for i, (a, b, c, d, col) in enumerate(rows):
     y = Inches(3.0 + i * 0.62)
     box(s, Inches(0.45), y, Inches(12.45), Inches(0.6), fill=PANEL if i % 2 == 0 else BG)
-    text(s, cols_x[0], y + Inches(0.14), Inches(3.6), Inches(0.35), [[(a, 12.5, DARK, True)]])
-    text(s, cols_x[1], y + Inches(0.14), Inches(3.0), Inches(0.35), [[(b, 12, BODY, False)]])
-    text(s, cols_x[2], y + Inches(0.14), Inches(2.8), Inches(0.35), [[(c, 12, BODY, False)]])
-    text(s, cols_x[3], y + Inches(0.14), Inches(2.6), Inches(0.35), [[(d, 13, col, True)]])
+    for ci, (val, sz, cl, bd) in enumerate([(a, 12.5, DARK, True), (b, 12, BODY, False),
+                                            (c, 12, BODY, False), (d, 13, col, True)]):
+        text(s, cols_x[ci], y + Inches(0.14), cols_w[ci], Inches(0.35), [[(val, sz, cl, bd)]])
 box(s, Inches(0.45), Inches(4.5), Inches(12.45), Inches(0.95), fill=PANEL2, round_=True, radius=0.08)
 text(s, Inches(0.75), Inches(4.66), Inches(11.9), Inches(0.7),
      [[('The result: ', 12.5, BLUE, True),
