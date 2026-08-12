@@ -38,7 +38,19 @@ export function selectFindingAnnotations(
  * successful one.
  */
 export type FindingLocation =
-  | { located: true; xyz: [number, number, number]; faceIds: number[]; note: string }
+  | {
+      located: true;
+      xyz: [number, number, number];
+      faceIds: number[];
+      /**
+       * The TRUE number of faces when `faceIds` is a truncation of a larger set
+       * (the kernel caps some id lists at 40). Null when nothing was dropped —
+       * so a caller can say "40 of 67" exactly when that is the case, and never
+       * imply a count it does not have.
+       */
+      faceTotal: number | null;
+      note: string;
+    }
   | { located: false; reason: string };
 
 export function locateFinding(analysis: unknown, finding: unknown): FindingLocation;

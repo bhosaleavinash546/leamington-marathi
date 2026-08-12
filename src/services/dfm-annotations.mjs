@@ -199,9 +199,15 @@ REGION_SOURCE.unreachableAreaPct = {
   // from the region the marker happens to sit on.
   faces: (_r, g) => (Array.isArray(g?.dfm?.toolAccess?.unreachableFaceIds)
     ? g.dfm.toolAccess.unreachableFaceIds : []),
+  // HOW MANY THERE REALLY ARE. The kernel caps the id list at 40; PRCR012 has
+  // 67 unreachable faces, so a highlight that paints 40 and says "40 faces"
+  // tells the reader it has shown them everything. It has not.
+  total: (_r, g) => numOrNull(g?.dfm?.toolAccess?.unreachableFaceCount),
   worst: (a, b) => (Number(b.areaMm2) || 0) - (Number(a.areaMm2) || 0),
   note: (r, n) => (n > 1 ? `largest of ${n} unreachable patches` : 'the unreachable surface'),
 };
+
+const numOrNull = (v) => (Number.isFinite(Number(v)) ? Number(v) : null);
 REGION_SOURCE.minHoleDiaToThickness = {
   at: (g) => (g?.geometry?.featureTable || []).filter((f) => f.kind === 'hole'),
   xyz: (r) => r.axisPointXYZ || (Array.isArray(r.instancesXYZ) ? r.instancesXYZ[0] : null),
@@ -227,6 +233,12 @@ REGION_SOURCE.overhangAreaBelowDeg = {
   },
   xyz: (r) => r.atXYZ,
   faces: (r) => (Array.isArray(r.faceIds) ? r.faceIds : []),
+  // Same cap, same honesty: the per-cutoff id lists are truncated at 40 and the
+  // counts are published beside them.
+  total: (_r, g, f) => {
+    const key = overhangKeyFor(f);
+    return key ? numOrNull(g?.dfm?.overhang?.overhangFaceCountByDeg?.[key]) : null;
+  },
   worst: () => 0,
   note: (r) => `${r.faceIds.length} down-facing ${r.faceIds.length === 1 ? 'face' : 'faces'}`,
 };
@@ -388,9 +400,15 @@ function locate(f, geo) {
   if (!regions.length) return null;
   const sorted = [...regions].sort(src.worst);
   const worst = sorted[0];
+  const faceIds = src.faces(worst, geo, f) || [];
+  // THE TRUE COUNT, when the engine capped what it sent. A highlight that
+  // paints 40 of 67 faces and reports "40" is a silent truncation, and this
+  // tool's whole argument is that it does not do those.
+  const total = src.total ? src.total(worst, geo, f) : null;
   return {
     xyz: src.xyz(worst),
-    faceIds: src.faces(worst, geo, f) || [],
+    faceIds,
+    faceTotal: total != null && total > faceIds.length ? total : null,
     note: src.note(worst, regions.length),
   };
 }
@@ -421,6 +439,9 @@ export function locateFinding(analysis, finding) {
       located: true,
       xyz: placed.xyz.map(Number),
       faceIds: Array.isArray(placed.faceIds) ? placed.faceIds : [],
+      // Present ONLY when the painted set is a truncation of a larger one, so a
+      // caller can print "40 of 67" rather than an confident "40".
+      faceTotal: placed.faceTotal ?? null,
       note: placed.note,
     };
   }

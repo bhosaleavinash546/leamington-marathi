@@ -2346,3 +2346,53 @@ the rest — resolving a tie silently would hide a finding.
   * 756 tests pass, axe reports 0 serious/critical, and the rib case is proven
     on `ribbed-plate.step`: the max-thickness rule paints the 5.0 mm rib and the
     min-thickness rule the 2.4 mm one.
+
+## 43. What seven production parts changed about face highlighting
+
+**Context**: Decision 42 was proven on analytic fixtures — a 120 mm ribbed plate,
+a 40 mm boss plate. Running the same feature over seven real uploads (a die-cast
+bracket, a steering knuckle, two seat pressings, two machined parts, a moulded
+volume; 384 kB to 5.4 MB, 209 to 426 faces) changed four decisions that the
+fixtures could not have surfaced.
+
+**1. Framing follows the part, not the feature.** The obvious move is to zoom to
+the highlighted face. Tried at two strengths and judged on the renders: at
+0.28x part radius a ~3 mm undercut on the 256 mm Seat_Locking_Bracket filled the
+screen with featureless grey; at 0.75x the bracket lost the landmarks that say
+where you are. In neither case did the offending face become more visible — it
+is a thin wall seen nearly edge-on, and magnification does not change that. A
+cost engineer's next question after "which face" is "where on the part", and an
+image with no part in it cannot answer it. So the part-framing distance is a
+FLOOR and feature size only ever pulls the camera BACK, which handles the case
+that did need it: a full-length draft wall otherwise fills the screen edge to
+edge and reads as "the whole part is wrong".
+
+**2. A face click must not toggle.** The button toggles — pressing it again is
+how a reader puts the model back. Clicking a painted face went through the same
+path, so clicking the face you were just shown CLEARED it. "What is wrong with
+this face" has the same answer however many times it is asked.
+
+**3. Truncated highlights say so.** PRCR012 has 67 faces the cutter cannot
+reach; the kernel caps id lists at 40, and the banner read "40 faces tinted" —
+telling the reader it had shown them everything. It now reads "40 of 67 faces
+tinted", and `locateFinding` carries `faceTotal` only when something was
+genuinely dropped, so a caller cannot print a misleading "40 of 40" either.
+
+**4. An occluded anchor is usually correct.** `projectAnchors` reported the
+anchor invisible on four of seven parts right after the camera flew to face the
+highlight, which looked like a bug and is not: a corner centroid sits inside a
+concave corner and a thinnest-section point is inside the material. The callout
+still renders and its leader marks the spot.
+
+**Consequences**:
+  * Across the seven parts: 20 failing findings, 16 offered the model and
+    painted faces, 4 stated why not, and **zero were silent** — the property the
+    whole design rests on.
+  * The reverse link (click a painted face, land on its finding) was confirmed
+    on four of the parts plus the analytic fixture. Where the scripted click did
+    not resolve, the viewer's face chip was EMPTY or named a face outside the
+    capped set — the synthetic click missing the solid, not the link failing.
+  * A QA lesson worth keeping: the harness's own defects (aiming at the
+    top-left-most tinted pixel, which is an anti-aliased silhouette; signing up
+    per run into a 5-per-15-minute rate limit) produced three separate false
+    "product is broken" readings. Verify the harness before believing it.

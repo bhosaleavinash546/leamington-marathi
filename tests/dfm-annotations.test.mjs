@@ -463,6 +463,52 @@ test('unreachable surface paints the faces the sweep failed on', () => {
   assert.deepEqual(out.faceIds, [15, 11, 14]);
 });
 
+test('a TRUNCATED highlight reports the true total, never just what it painted', () => {
+  // The kernel caps these id lists at 40. Measured on a real part (PRCR012):
+  // 67 faces the cutter cannot reach, 40 ids sent. A highlight that paints 40
+  // and says "40 faces" has told the reader it showed them everything.
+  const G = {
+    dfm: {
+      toolAccess: {
+        unreachableRegions: [{ areaMm2: 480, atXYZ: [5, 5, 5] }],
+        unreachableFaceIds: Array.from({ length: 40 }, (_, i) => i + 1),
+        unreachableFaceCount: 67,
+      },
+    },
+  };
+  const out = locateFinding(G, finding({ measure: 'unreachableAreaPct' }));
+  assert.equal(out.located, true);
+  assert.equal(out.faceIds.length, 40);
+  assert.equal(out.faceTotal, 67);
+
+  // Nothing dropped => no total, so a caller cannot print a misleading "40 of
+  // 40" and cannot be tempted to invent one.
+  const whole = locateFinding({
+    dfm: {
+      toolAccess: {
+        unreachableRegions: [{ areaMm2: 480, atXYZ: [5, 5, 5] }],
+        unreachableFaceIds: [3, 4], unreachableFaceCount: 2,
+      },
+    },
+  }, finding({ measure: 'unreachableAreaPct' }));
+  assert.equal(whole.faceTotal, null);
+});
+
+test('a truncated overhang highlight reports the total for ITS cutoff', () => {
+  const G = {
+    dfm: {
+      overhang: {
+        overhangFaceIdsByDeg: { 45: [1, 2, 3] },
+        overhangFaceCountByDeg: { 45: 9 },
+        overhangWorstAtXYZByDeg: { 45: [1, 1, 1] },
+      },
+    },
+  };
+  const out = locateFinding(G, finding({ measure: 'overhangAreaBelowDeg', measuredAtDeg: 45 }));
+  assert.deepEqual(out.faceIds, [1, 2, 3]);
+  assert.equal(out.faceTotal, 9);
+});
+
 test('a circular aperture is joined to its bore wall; a slot is not given one', () => {
   const G = {
     geometry: { featureTable: [{ kind: 'hole', diaMm: 6, faceIds: [8] }] },

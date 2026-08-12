@@ -1065,9 +1065,14 @@ export default function DfmStudioPage() {
    * finding's paint on screen beside the new finding's callout, which is not a
    * missing highlight but a wrong one.
    */
-  const focusFinding = useCallback((ruleId: string, opts: { fly?: boolean } = {}) => {
+  const focusFinding = useCallback((ruleId: string, opts: { fly?: boolean; toggle?: boolean } = {}) => {
     const fly = opts.fly ?? true;
-    if (focusedFinding === ruleId) { clearFocus(); return; }
+    // The BUTTON toggles — pressing it again is how a reader puts the model
+    // back. A FACE CLICK must not: "what is wrong with this face" has the same
+    // answer however many times it is asked, and clearing the highlight the
+    // reader just clicked on is the opposite of an answer. Only the button and
+    // Esc clear.
+    if ((opts.toggle ?? true) && focusedFinding === ruleId) { clearFocus(); return; }
     const v = viewerRef.current;
     if (!v) return;
     void v.clearLayer('finding');
@@ -1140,6 +1145,9 @@ export default function DfmStudioPage() {
   const focusedTitle = focusedFinding ? (findingById(focusedFinding)?.title ?? null) : null;
   const focusedPlace = focusedFinding ? placedFindings.get(focusedFinding) : undefined;
   const focusedFaceCount = focusedPlace?.located ? focusedPlace.faceIds.length : 0;
+  // The engine caps some id lists at 40. PRCR012 has 67 unreachable faces, and
+  // a banner reading "40 faces tinted" told the reader that was all of them.
+  const focusedFaceTotal = focusedPlace?.located ? focusedPlace.faceTotal : null;
 
   /** Esc gives the model back. A takeover the keyboard cannot undo is a trap. */
   useEffect(() => {
@@ -1157,7 +1165,7 @@ export default function DfmStudioPage() {
     if (faceId == null) return;
     const hit = findingByFace.get(faceId);
     if (!hit) return;
-    focusFinding(hit.ruleId, { fly: false });
+    focusFinding(hit.ruleId, { fly: false, toggle: false });
     // Set AFTER focusFinding, which clears it — this is the one caller that has
     // something to say about the face rather than about the finding.
     setSharedWithFocus(hit.others);
@@ -2056,7 +2064,11 @@ export default function DfmStudioPage() {
                              border-gold-500/25 bg-gold-500/[0.07] px-3 py-1.5">
                   <span className="text-[11px] text-slate-300 min-w-0 truncate">
                     Showing <span className="text-gold-300 font-semibold">{focusedTitle ?? 'one finding'}</span>
-                    {focusedFaceCount ? ` — ${focusedFaceCount} face${focusedFaceCount === 1 ? '' : 's'} tinted` : ' — callout only'}
+                    {focusedFaceCount
+                      ? (focusedFaceTotal
+                        ? ` — ${focusedFaceCount} of ${focusedFaceTotal} faces tinted`
+                        : ` — ${focusedFaceCount} face${focusedFaceCount === 1 ? '' : 's'} tinted`)
+                      : ' — callout only'}
                     {/* A face can break more than one rule, and the click opened
                         the more severe of them. Counting the rest is the
                         difference between resolving a tie and hiding one. */}

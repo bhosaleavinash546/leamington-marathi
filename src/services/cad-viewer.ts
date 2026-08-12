@@ -600,7 +600,30 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   function flyTo(anchor: [number, number, number],
                  opts: { distance?: number; facing?: string } = {}): void {
     const target = toWorld(anchor);
-    const d = opts.distance ?? partRadius * 1.5;
+    // HOW FAR BACK: the part stays in frame, and a big feature pushes further.
+    //
+    // The tempting move is to zoom to the FEATURE, and it is wrong. Tried on
+    // Seat_Locking_Bracket — a ~3 mm undercut on a 256 mm pressing — it put the
+    // camera 48 mm from the surface and produced a full-screen grey field with
+    // no landmark in it. A cost engineer's next question after "which face" is
+    // "where on the part", and an image with no part in it cannot answer it.
+    // The callout's dot and leader already mark the position to the millimetre;
+    // magnification adds nothing and costs the context.
+    //
+    // So the part-framing distance is a FLOOR, not a default: feature size only
+    // ever pulls the camera further BACK. Both closer settings were tried on
+    // the seven production parts and judged on the renders: at 0.28x the
+    // Seat_Locking_Bracket undercut filled the screen with featureless grey,
+    // and at 0.75x the bracket lost the landmarks that say where you are — in
+    // neither case did the offending face become any more visible, because it
+    // is a thin wall seen nearly edge-on and magnification does not change
+    // that. What DOES need handling is the opposite end: a full-length draft
+    // wall at part distance fills the screen edge to edge and reads as "the
+    // whole part is wrong".
+    const lr = opts.facing ? layerRadius(opts.facing) : null;
+    const d = opts.distance ?? (lr
+      ? Math.min(partRadius * 2.4, Math.max(partRadius * 1.5, lr * 3.2))
+      : partRadius * 1.5);
     // WHICH WAY TO APPROACH FROM.
     //
     // Keeping the current orbit direction is right for "take me nearer this
@@ -629,6 +652,20 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       from: camera.position.clone(), to: target.clone().addScaledVector(dir, d),
       fromT: controls.target.clone(), toT: target.clone(), t: 0,
     };
+  }
+
+  /** How big the painted layer is: the radius of the sphere enclosing it. */
+  function layerRadius(layer: string): number | null {
+    const ms = faceLayers.get(layer);
+    if (!ms?.length) return null;
+    const box = new THREE.Box3();
+    for (const m of ms) {
+      m.geometry.computeBoundingBox();
+      if (m.geometry.boundingBox) box.union(m.geometry.boundingBox.clone().translate(m.position));
+    }
+    if (box.isEmpty()) return null;
+    const r = box.getSize(new THREE.Vector3()).length() / 2;
+    return r > 1e-6 ? r : null;
   }
 
   /**
