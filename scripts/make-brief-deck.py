@@ -189,7 +189,7 @@ rect(s, Inches(7.0), Inches(5.45), Inches(5.73), Inches(1.3), fill=NAVY2, line=B
 mini_icon(s, Inches(7.22), Inches(5.58), "shield", EMER, d=Inches(0.3))
 txt(s, Inches(7.64), Inches(5.6), Inches(4.9), Inches(0.3), [("PROOF, NOT PROMISES", 8.5, SLATED, True, FONTSB)])
 txt(s, Inches(7.22), Inches(5.95), Inches(5.3), Inches(0.35),
-    [[("Core engine: ", 10.5, LIGHT, False), ("100% hit-rate · 8.3% avg. error", 10.5, INK, True, FONTSB), (" (CI-gated) · 285 tests", 10.5, LIGHT, False)]], space=1.0)
+    [[("Core engine: ", 10.5, LIGHT, False), ("100% hit-rate · 8.3% avg. error", 10.5, INK, True, FONTSB), (" (CI-gated) · 758 tests", 10.5, LIGHT, False)]], space=1.0)
 mini_icon(s, Inches(7.22), Inches(6.32), "play", GOLD, d=Inches(0.3))
 txt(s, Inches(7.64), Inches(6.36), Inches(5.0), Inches(0.32),
     [[("Next: ", 10.5, GOLD, True, FONTSB), ("5-minute live demo, then a pilot on one programme.", 10.5, LIGHT, False)]])

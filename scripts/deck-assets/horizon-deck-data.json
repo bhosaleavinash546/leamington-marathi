@@ -129,19 +129,19 @@
       }
     ]
   },
-  "registerSize": 139,
+  "registerSize": 180,
   "byCommodity": {
-    "Battery": 20,
-    "EDU": 13,
-    "Powertrain": 11,
-    "Chassis": 14,
+    "Battery": 29,
+    "EDU": 16,
+    "Powertrain": 14,
+    "Chassis": 23,
     "Driveline": 11,
-    "BIW": 12,
-    "Interior": 15,
-    "Exterior": 12,
-    "Electrical": 31
+    "BIW": 13,
+    "Interior": 18,
+    "Exterior": 14,
+    "Electrical": 42
   },
-  "anchorCount": 14,
+  "anchorCount": 15,
   "anchors": [
     {
       "name": "EU General Safety Regulation 2",
@@ -328,7 +328,7 @@
       ]
     },
     "luxury": {
-      "count": 20,
+      "count": 22,
       "examples": [
         "Air suspension cost collapse",
         "Power-articulating lounge/zero-g front seats",
@@ -339,7 +339,7 @@
       ]
     },
     "software": {
-      "count": 24,
+      "count": 25,
       "examples": [
         "Zonal E/E architecture + central compute",
         "End-to-end AI driving stacks",
