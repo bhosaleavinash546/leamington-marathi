@@ -833,13 +833,13 @@ notes(slide,
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 7 — 22 Commodities
+# SLIDE 7 — 21 Commodities
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 9, "Full Coverage", "22 Manufacturing Commodities — One Platform",
+slide_header(slide, 9, "Full Coverage", "21 Manufacturing Commodities — One Platform",
              "Every major manufacturing process — all modelled to engineering depth with full routing, yield, and tooling logic.")
 
-# 22 commodity cards in 7-wide grid
+# 21 commodity cards
 commodities = [
     ("⚙️",  "CNC Machining",       "3/4/5-axis, turning, grinding"),
     ("🪨",  "Casting",              "HPDC, gravity, investment, sand"),
@@ -861,7 +861,6 @@ commodities = [
     ("🔌",  "PCBA / SMD",           "SMT, TH, reflow, conformal coat"),
     ("🔗",  "Wiring Harness",       "Cut-strip-crimp, test, sub-asm"),
     ("🔗",  "Assembly BOM Rollup",  "Multi-part BOM, full cost rollup"),
-    ("📉",  "Extrusion (Profile)",  "Continuous linear profiles"),
     ("🤖",  "AI Agent",             "Natural language → any commodity"),
 ]
 
@@ -882,7 +881,7 @@ for i, (ico, name, sub) in enumerate(commodities):
     comm_card(slide, cx2, cy2, cw_c, ch_c, ico, name, sub, color=col)
 
 notes(slide,
-    "Breadth is the point of this slide. Twenty-two commodities, from CNC machining and casting and "
+    "Breadth is the point of this slide. Twenty-one commodities, from CNC machining and casting and "
     "forging, through the whole plastics family — injection, blow, extrusion, thermoforming, "
     "rotomoulding — into rubber and composites, then electronics: PCB fabrication, assembly, wiring "
     "harness, and body-in-white. "
@@ -977,7 +976,7 @@ adv_left = [
      "• Critical for LTA negotiations and make-vs-buy decisions\n"
      "• Visualise break-even volume vs manual costing cost"),
     (ACCENT_G, "🔗 Assembly BOM Rollup",
-     "Build multi-level assemblies from any combination of 22 commodities:\n\n"
+     "Build multi-level assemblies from any combination of 21 commodities:\n\n"
      "• Add components one-by-one with commodity type, weight, volume\n"
      "• Each component costed using its own should-cost model\n"
      "• Roll up to a total assembly cost with full per-component breakdown\n"
@@ -1556,7 +1555,7 @@ txb(slide, "📍 Current Capabilities — Live Today", Inches(0.6), Inches(2.08)
     Inches(5.6), Inches(0.3), size=9.5, bold=True, color=ACCENT_G)
 
 live_items = [
-    "22 commodity should-cost models — fully parametric, engineering-grade",
+    "21 commodity should-cost models — fully parametric, engineering-grade",
     "AI Agent — describe a part in plain English, AI builds the cost model",
     "AI CAD Analysis — STEP / photo → geometry → cost in minutes",
     "Self-audit — re-checks every estimate, corrects known errors, geometry stays truth",

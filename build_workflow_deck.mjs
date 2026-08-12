@@ -2831,11 +2831,11 @@ partSlide('assets/workflow-deck/part-bumper.png',
       s.addText(t, { x: 7.22, y, w: 5.45, h: 0.34, fontFace: 'Calibri', fontSize: 9.0, color: SLATE, margin: 0, valign: 'middle' });
     });
 
-  s.addShape('roundRect', { x: 0.5, y: 6.02, w: 12.33, h: 0.5, fill: { color: 'FDEEEC' }, line: { color: RED, width: 1 }, rectRadius: 0.07 });
+  s.addShape('roundRect', { x: 0.5, y: 6.20, w: 12.33, h: 0.5, fill: { color: 'FDEEEC' }, line: { color: RED, width: 1 }, rectRadius: 0.07 });
   s.addText([
     { text: 'Said plainly: ', options: { bold: true, color: RED, fontSize: 10.0 } },
     { text: 'all 80 shop numbers — feeds, speeds, tool life, heat-treat rates — are representative, not from your plant. The tool prints that warning on every gear estimate. It shows the right structure; it is not yet a quotable number.', options: { color: SLATE, fontSize: 10.0 } },
-  ], { x: 0.72, y: 6.02, w: 11.9, h: 0.5, fontFace: 'Calibri', margin: 0, valign: 'middle' });
+  ], { x: 0.72, y: 6.20, w: 11.9, h: 0.5, fontFace: 'Calibri', margin: 0, valign: 'middle' });
 
   footer(s, ++PG);
   s.addNotes(

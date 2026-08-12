@@ -888,27 +888,48 @@ text(s, Inches(0.75), Inches(2.05), Inches(11.9), Inches(0.6),
      [[('Ask for a more accurate gear and the tool does not multiply the price. ', 12.5, BODY, False),
        ('It adds machines.', 12.5, GREEN, True)]], line_spacing=1.15)
 
+# Drawn as a route rather than typed as a sentence: the claim is that a tighter
+# class ADDS stations, and a chain of boxes shows that instantly where an arrow
+# inside a text string does not. `added` marks the stations the class bought.
 rows = [
-    ('Loose gear (ISO 9)', 'cut the teeth → deburr → check', '£8.26', GREEN),
-    ('Accurate gear (ISO 6)', 'cut → deburr → harden in a furnace → GRIND → check', '£13.55', AMBER),
-    ('Internal ring gear', 'power-skive (a hob cannot reach inside a bore) → harden → check', '£11.19', BLUE),
+    ('Loose gear (ISO 9)',    ['Cut teeth', 'Deburr', 'Check'],                          '£8.26',  GREEN, []),
+    ('Accurate gear (ISO 6)', ['Cut teeth', 'Deburr', 'Harden', 'Grind', 'Check'],       '£13.55', AMBER, [2, 3]),
+    ('Internal ring gear',    ['Power-skive', 'Deburr', 'Harden', 'Check'],              '£11.19', BLUE,  [2]),
 ]
-for i, (what, route, cost, col) in enumerate(rows):
-    y = Inches(2.95 + i * 0.72)
-    box(s, Inches(0.45), y, Inches(12.45), Inches(0.62), fill=PANEL, round_=True, radius=0.04)
-    text(s, Inches(0.72), y, Inches(3.1), Inches(0.62), [[(what, 12, DARK, True)]], anchor=MSO_ANCHOR.MIDDLE)
-    text(s, Inches(3.95), y, Inches(6.9), Inches(0.62), [[(route, 11, BODY, False)]], anchor=MSO_ANCHOR.MIDDLE)
-    text(s, Inches(11.0), y, Inches(1.7), Inches(0.62), [[(cost, 17, col, True)]],
+STEP_W, STEP_H, STEP_GAP, ROUTE_X = Inches(1.25), Inches(0.42), Inches(0.24), Inches(3.85)
+for i, (what, steps, cost, col, added) in enumerate(rows):
+    y = Inches(2.95 + i * 0.78)
+    box(s, Inches(0.45), y, Inches(12.45), Inches(0.68), fill=PANEL, round_=True, radius=0.04)
+    text(s, Inches(0.72), y, Inches(3.0), Inches(0.68), [[(what, 12, DARK, True)]], anchor=MSO_ANCHOR.MIDDLE)
+    for k, st in enumerate(steps):
+        sx = ROUTE_X + k * (STEP_W + STEP_GAP)
+        is_new = k in added
+        box(s, sx, y + Inches(0.13), STEP_W, STEP_H, fill=col if is_new else BG,
+            line=None if is_new else MUTED, round_=True, radius=0.06)
+        text(s, sx, y + Inches(0.13), STEP_W, STEP_H,
+             [[(st, 9.5, BG if is_new else BODY, is_new)]],
+             align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+        if k < len(steps) - 1:
+            arrow = s.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, sx + STEP_W + Inches(0.04),
+                                       y + Inches(0.27), STEP_GAP - Inches(0.08), Inches(0.14))
+            arrow.fill.solid(); arrow.fill.fore_color.rgb = MUTED
+            arrow.line.fill.background()
+            arrow.shadow.inherit = False
+    text(s, Inches(11.2), y, Inches(1.55), Inches(0.68), [[(cost, 17, col, True)]],
          align=PP_ALIGN.RIGHT, anchor=MSO_ANCHOR.MIDDLE)
+box(s, ROUTE_X, Inches(5.35), Inches(0.22), Inches(0.13), fill=AMBER, round_=True, radius=0.03)
+text(s, ROUTE_X + Inches(0.3), Inches(5.28), Inches(8.0), Inches(0.26),
+     [[('= the station the tighter class ADDED — not the same work costing more', 10, MUTED, False, True)]],
+     anchor=MSO_ANCHOR.MIDDLE)
 
-box(s, Inches(0.45), Inches(5.2), Inches(6.1), Inches(1.2), fill=PANEL, round_=True, radius=0.05)
-text(s, Inches(0.72), Inches(5.32), Inches(5.6), Inches(0.3), [[('It refuses rather than guesses', 12.5, GREEN, True)]])
-text(s, Inches(0.72), Inches(5.65), Inches(5.6), Inches(0.65),
+box(s, Inches(0.45), Inches(5.62), Inches(6.1), Inches(1.2), fill=PANEL, round_=True, radius=0.05)
+text(s, Inches(0.72), Inches(5.74), Inches(5.6), Inches(0.3), [[('It refuses rather than guesses', 12.5, GREEN, True)]])
+text(s, Inches(0.72), Inches(6.07), Inches(5.6), Inches(0.65),
      [[('A gear no machine in the library can make is blocked outright — never quietly costed on the nearest machine.', 10.5, BODY, False)]],
      line_spacing=1.12)
-box(s, Inches(6.8), Inches(5.2), Inches(6.1), Inches(1.2), fill=PANEL, round_=True, radius=0.05)
-text(s, Inches(7.07), Inches(5.32), Inches(5.6), Inches(0.3), [[('And it tells you what it does not know', 12.5, AMBER, True)]])
-text(s, Inches(7.07), Inches(5.65), Inches(5.6), Inches(0.65),
+box(s, Inches(6.8), Inches(5.62), Inches(6.1), Inches(1.2), fill=PANEL, round_=True, radius=0.05)
+text(s, Inches(7.07), Inches(5.74), Inches(5.6), Inches(0.3), [[('And it tells you what it does not know', 12.5, AMBER, True)]])
+text(s, Inches(7.07), Inches(6.07), Inches(5.6), Inches(0.65),
      [[('All 80 shop figures are representative until the plant supplies its own. Every gear estimate prints that warning.', 10.5, BODY, False)]],
      line_spacing=1.12)
 box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=INDIGO)
