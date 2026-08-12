@@ -9,6 +9,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   selectFindingAnnotations, chooseSecondView, sectionCandidate, ANNOTATION_CAP,
+  locateFinding,
 } from '../src/services/dfm-annotations.mjs';
 
 const finding = (o = {}) => ({
@@ -350,6 +351,151 @@ test('a thin wall earns a cut; a draft angle does not', () => {
   // for, because the whole point is which evidence is invisible from outside.
   assert.equal(annotations[0].ruleId, 'draft');
   assert.equal(sectionCandidate(annotations).ruleId, 'thin');
+});
+
+// ── HIGHLIGHTING: a finding must point at its own faces ────────────────────
+//
+// The regression these guard is one line. `locate()`'s instance branch returned
+// `faceIds: []` unconditionally, so every finding anchored on an instance — all
+// three rib measures, hole and boss slenderness, minimum feature size — arrived
+// with a coordinate and nothing paintable. On screen that is a callout floating
+// beside a part with nine ribs and no way to tell which one is 1.4x the wall.
+
+test('a rib finding paints THE RIB — the instance carries its own faces', () => {
+  const out = selectFindingAnnotations({
+    dfm: GEO,
+    results: [{
+      findings: [finding({
+        measure: 'maxRibThicknessToWall',
+        instances: [
+          { ratio: 1.6, thicknessMm: 6.5, atXYZ: [6, 0, 0], faceIds: [31, 32] },
+          { ratio: 0.5, thicknessMm: 2.0, atXYZ: [4, 0, 0], faceIds: [30] },
+        ],
+        instanceTotal: 2,
+      })],
+    }],
+  });
+  // The WORST rib's faces, and not an empty list — which is what shipped.
+  assert.deepEqual(out.annotations[0].faceIds, [31, 32]);
+  assert.deepEqual(out.annotations[0].anchorXYZ, [6, 0, 0]);
+});
+
+test('hole and boss instances carry their bore walls too', () => {
+  const at = (measure, faceIds) => selectFindingAnnotations({
+    dfm: GEO,
+    results: [{ findings: [finding({ measure, instances: [{ atXYZ: [1, 2, 3], faceIds }] })] }],
+  }).annotations[0].faceIds;
+  assert.deepEqual(at('maxHoleDepthToDia', [8]), [8]);
+  assert.deepEqual(at('maxBossHeightToDia', [7]), [7]);
+  // An instance the kernel gave no faces for stays empty rather than borrowing
+  // somebody else's — the marker is still placed, on its coordinate.
+  assert.deepEqual(at('maxHoleDepthToDia', undefined), []);
+});
+
+test('locateFinding resolves one finding and is NOT subject to the figure cap', () => {
+  // Nine findings; the printed figure holds ANNOTATION_CAP of them. A reader who
+  // clicks the ninth is asking about the ninth, and "the figure only had room
+  // for eight" is not an answer to that question.
+  const findings = Array.from({ length: 9 }, (_, i) => finding({ id: `f${i}` }));
+  const analysis = { dfm: GEO, results: [{ findings }] };
+  const picture = selectFindingAnnotations(analysis);
+  assert.equal(picture.annotations.length, ANNOTATION_CAP);
+  assert.ok(picture.droppedByCap > 0);
+
+  const ninth = locateFinding(analysis, findings[8]);
+  assert.equal(ninth.located, true);
+  assert.deepEqual(ninth.faceIds, [12]);          // the 900 mm2 undercut
+  assert.deepEqual(ninth.xyz, [5, 5, 5]);
+});
+
+test('locateFinding says WHY when it cannot place a finding — never an empty answer', () => {
+  const whole = locateFinding({ dfm: GEO }, finding({ measure: 'setupCount' }));
+  assert.equal(whole.located, false);
+  assert.match(whole.reason, /whole part/);
+
+  // A measure with no geometry source at all is a MAPPING gap, and says so —
+  // distinct from "the engine measured it and returned no coordinates".
+  const unmapped = locateFinding({ dfm: GEO }, finding({ measure: 'someMeasureNobodyMapped' }));
+  assert.equal(unmapped.located, false);
+  assert.match(unmapped.reason, /no geometry source/);
+
+  const noCoords = locateFinding(
+    { dfm: { draft: { undercutRegions: [{ faceId: 1, areaMm2: 5 }] } } }, finding());
+  assert.equal(noCoords.located, false);
+  assert.match(noCoords.reason, /no coordinates/);
+
+  assert.equal(locateFinding({}, null).located, false);
+});
+
+test('an overhang finding paints the faces of the angle IT was measured at', () => {
+  const G = {
+    dfm: {
+      overhang: {
+        overhangFaceIdsByDeg: { 20: [], 30: [], 40: [1], 45: [1], 60: [1, 2] },
+        overhangWorstAtXYZByDeg: { 20: null, 30: null, 40: [3, 3, 3], 45: [3, 3, 3], 60: [3, 3, 3] },
+      },
+    },
+  };
+  const run = (deg) => locateFinding(G, finding({ measure: 'overhangAreaBelowDeg', measuredAtDeg: deg }));
+  // The analytic wedge case: 34% of the surface is below 40 degrees and NOTHING
+  // is below 20. One shared face set would have painted the same faces for both
+  // and contradicted the percentage the finding quotes.
+  assert.deepEqual(run(45).faceIds, [1]);
+  assert.deepEqual(run(60).faceIds, [1, 2]);
+  assert.equal(run(20).located, false);
+  // No cutoff on the finding means no guess about which one it meant.
+  assert.equal(locateFinding(G, finding({ measure: 'overhangAreaBelowDeg' })).located, false);
+});
+
+test('unreachable surface paints the faces the sweep failed on', () => {
+  const G = {
+    dfm: {
+      toolAccess: {
+        unreachableRegions: [{ areaMm2: 480, atXYZ: [5, 5, 5] }],
+        unreachableFaceIds: [15, 11, 14],
+      },
+    },
+  };
+  const out = locateFinding(G, finding({ measure: 'unreachableAreaPct' }));
+  assert.equal(out.located, true);
+  // Area-ranked as the kernel emitted them, not re-sorted into a tidy order —
+  // worst first is the ranking the highlight and the callout both rely on.
+  assert.deepEqual(out.faceIds, [15, 11, 14]);
+});
+
+test('a circular aperture is joined to its bore wall; a slot is not given one', () => {
+  const G = {
+    geometry: { featureTable: [{ kind: 'hole', diaMm: 6, faceIds: [8] }] },
+    dfm: {
+      apertures: {
+        apertures: [
+          { equivalentDiaMm: 6, circleDiaMm: 6, circular: true, centroidXYZ: [1, 1, 1] },
+        ],
+      },
+    },
+  };
+  assert.deepEqual(locateFinding(G, finding({ measure: 'minApertureToThickness' })).faceIds, [8]);
+
+  // A slot's opening is a wire on a planar face. Painting that face would light
+  // up the whole top of the plate to show a 3 mm slot, so it gets no faces —
+  // the marker still lands on the opening.
+  const slot = {
+    ...G,
+    dfm: { apertures: { apertures: [{ equivalentDiaMm: 3, circular: false, centroidXYZ: [2, 2, 2] }] } },
+  };
+  const out = locateFinding(slot, finding({ measure: 'minApertureToThickness' }));
+  assert.equal(out.located, true);
+  assert.deepEqual(out.faceIds, []);
+  assert.deepEqual(out.xyz, [2, 2, 2]);
+});
+
+test('a fillet-margin finding points at the corner the margin was measured at', () => {
+  for (const measure of ['resinFilletMargin', 'sfsaJunctionFilletMargin', 'nadcaFilletToWall']) {
+    const out = locateFinding(SHEET, finding({ measure }));
+    assert.equal(out.located, true, measure);
+    assert.deepEqual(out.faceIds, [71], measure);        // R0.8, the tightest
+    assert.deepEqual(out.xyz, [2, 3, 4], measure);
+  }
 });
 
 test('no section when nothing marked is internal', () => {

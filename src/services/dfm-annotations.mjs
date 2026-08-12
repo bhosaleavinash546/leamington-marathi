@@ -40,11 +40,16 @@ const WHOLE_PART_MEASURES = new Set([
   // no face where "the p50 wall is 30 mm" is true. The p5 wall is different: it
   // IS a place, and it has one (`wallP5Mm` resolves to the thinnest region).
   'wallP50Mm',
-  'setupCount', 'axisymmetricAreaPct', 'unreachableAreaPct', 'wallSpreadRatio',
+  'setupCount', 'axisymmetricAreaPct', 'wallSpreadRatio',
   'tightestToleranceMm', 'slendernessLtoD', 'circumscribingCircleMm',
-  'drawDepthToWidth', 'pressDepthToWallRatio', 'overhangAreaBelowDeg',
+  'drawDepthToWidth', 'pressDepthToWallRatio',
   'blindHoleCount',
 ]);
+// `unreachableAreaPct` and `overhangAreaBelowDeg` were listed here AND carried a
+// region source below, which is a contradiction: whichever way it resolved, one
+// of the two was lying. Both are percentages of area, but the area is made of
+// FACES the kernel can name — it just wasn't emitting the ids. It is now, so
+// they are placed rather than excused, and the excuse is gone with them.
 // TEN measures used to sit in that list and should never have. A hole-to-hole
 // gap, a short flange, a tight bend and an unreachable pocket all HAPPEN AT A
 // PLACE; calling them properties of the whole part was a filing decision, not
@@ -67,6 +72,12 @@ const WHOLE_PART_MEASURES = new Set([
  *
  * `pick` returns the worst region, using whatever "worst" means for that rule:
  * the largest undercut, the flattest wall, the thinnest section.
+ *
+ * Two entries take more than the region: `at(geo, finding)` because an overhang
+ * rule names the angle it means and the face set differs per angle, and
+ * `faces(region, geo)` because a couple of measures are area percentages whose
+ * faces are listed once on the block rather than per region. Both extra
+ * arguments are optional — every source that does not need them ignores them.
  */
 const REGION_SOURCE = {
   undercutFaceCount: {
@@ -152,7 +163,23 @@ REGION_SOURCE.minApertureToThickness = {
   // choice does not depend on somebody else's ordering staying that way.
   at: (g) => g?.dfm?.apertures?.apertures,
   xyz: (r) => r.centroidXYZ,
-  faces: () => [],
+  // AN APERTURE IS A WIRE, NOT A FACE. The recogniser finds an opening as a
+  // paired inner wire on two planar faces, and the face it sits on is the face
+  // the opening goes THROUGH — painting it would light up the whole top of the
+  // plate to show a Ø6 hole. The wall of the opening is a different face, and
+  // the bore pass already knows it by diameter, so a CIRCULAR aperture is
+  // joined to its hole row and gets the bore wall. A slot has no such row and
+  // gets no faces rather than the wrong ones; it still carries its centroid, so
+  // the marker lands on the opening either way.
+  faces: (r, g) => {
+    if (!r.circular) return [];
+    const d = Number(r.circleDiaMm ?? r.equivalentDiaMm);
+    if (!Number.isFinite(d) || d <= 0) return [];
+    const row = (g?.geometry?.featureTable || [])
+      .filter((f) => f.kind === 'hole' && Math.abs(Number(f.diaMm) - d) <= 0.05)
+      .sort((a, b) => Math.abs(Number(a.diaMm) - d) - Math.abs(Number(b.diaMm) - d))[0];
+    return Array.isArray(row?.faceIds) ? row.faceIds : [];
+  },
   worst: (a, b) => (Number(a.equivalentDiaMm) || 0) - (Number(b.equivalentDiaMm) || 0),
   note: (r, n) => (n > 1 ? `smallest of ${n} openings` : 'the opening'),
 };
@@ -167,17 +194,70 @@ REGION_SOURCE.holeToBendClearanceMm =
 REGION_SOURCE.unreachableAreaPct = {
   at: (g) => g?.dfm?.toolAccess?.unreachableRegions,
   xyz: (r) => r.atXYZ,
-  faces: () => [],
+  // The percentage is a union over triangles, so the faces belong to the
+  // MEASURE and not to any one patch — read from the block, area-ranked, not
+  // from the region the marker happens to sit on.
+  faces: (_r, g) => (Array.isArray(g?.dfm?.toolAccess?.unreachableFaceIds)
+    ? g.dfm.toolAccess.unreachableFaceIds : []),
   worst: (a, b) => (Number(b.areaMm2) || 0) - (Number(a.areaMm2) || 0),
   note: (r, n) => (n > 1 ? `largest of ${n} unreachable patches` : 'the unreachable surface'),
 };
 REGION_SOURCE.minHoleDiaToThickness = {
   at: (g) => (g?.geometry?.featureTable || []).filter((f) => f.kind === 'hole'),
   xyz: (r) => r.axisPointXYZ || (Array.isArray(r.instancesXYZ) ? r.instancesXYZ[0] : null),
-  faces: () => [],
+  faces: (r) => (Array.isArray(r.faceIds) ? r.faceIds : []),
   worst: (a, b) => (Number(a.diaMm) || 0) - (Number(b.diaMm) || 0),
   note: (r, n) => (n > 1 ? `smallest of ${n} hole sizes, D${r.diaMm}` : `the D${r.diaMm} hole`),
 };
+
+// ── OVERHANG: the faces of the angle the rule actually read ────────────────
+//
+// The rule names its cutoff (`overhangCutoffDeg`) and the finding carries it as
+// `measuredAtDeg`, so the face set is chosen by that angle rather than by a
+// house default. It matters: the analytic wedge is 30° from the plate, which is
+// 34% of the surface below 40° and nothing at all below 20°. A single set would
+// have painted no faces for a rule that had just failed the part.
+REGION_SOURCE.overhangAreaBelowDeg = {
+  at: (g, f) => {
+    const key = overhangKeyFor(f);
+    const ids = key && g?.dfm?.overhang?.overhangFaceIdsByDeg?.[key];
+    if (!Array.isArray(ids) || !ids.length) return [];
+    const at = g?.dfm?.overhang?.overhangWorstAtXYZByDeg?.[key];
+    return isXYZ(at) ? [{ atXYZ: at, faceIds: ids }] : [];
+  },
+  xyz: (r) => r.atXYZ,
+  faces: (r) => (Array.isArray(r.faceIds) ? r.faceIds : []),
+  worst: () => 0,
+  note: (r) => `${r.faceIds.length} down-facing ${r.faceIds.length === 1 ? 'face' : 'faces'}`,
+};
+
+/**
+ * The key into the overhang maps for the angle THIS finding was measured at.
+ * Null when the finding does not carry one, so the source abstains rather than
+ * guessing an angle and painting the wrong faces.
+ */
+function overhangKeyFor(f) {
+  const cut = f?.measuredAtDeg;
+  if (cut == null || !Number.isFinite(Number(cut))) return null;
+  // The kernel keys whole angles as "45", not "45.0".
+  return String(Number(cut)).replace(/\.0+$/, '');
+}
+
+// ── FILLET MARGINS: the corner the margin was measured at ──────────────────
+//
+// Three families each compute "is the internal fillet big enough for the wall"
+// as a margin against a book requirement, and all three had nowhere to point —
+// yet the margin is derived from `minInternalCornerRadiusMm`, whose corner the
+// recogniser locates exactly. The finding is about that corner; it now says so.
+for (const measure of ['resinFilletMargin', 'sfsaJunctionFilletMargin', 'nadcaFilletToWall']) {
+  REGION_SOURCE[measure] = {
+    at: (g) => g?.dfm?.features?.internalCorners,
+    xyz: (r) => r.centroidXYZ,
+    faces: (r) => (r.faceId == null ? [] : [r.faceId]),
+    worst: (a, b) => (Number(a.radiusMm) || 0) - (Number(b.radiusMm) || 0),
+    note: (r, n) => (n > 1 ? `tightest of ${n} corners, R${r.radiusMm}` : `the R${r.radiusMm} corner`),
+  };
+}
 
 const isXYZ = (v) => Array.isArray(v) && v.length === 3 && v.every((n) => Number.isFinite(Number(n)));
 
@@ -226,9 +306,7 @@ export function selectFindingAnnotations(analysis, opts = {}) {
         id: f.id,
         title: f.title,
         severity: f.severity,
-        reason: WHOLE_PART_MEASURES.has(f.measure)
-          ? 'measured across the whole part, so there is no single face to mark'
-          : 'the geometry engine returned no coordinates for the offending feature',
+        reason: unlocatableReason(f),
       });
       continue;
     }
@@ -291,18 +369,78 @@ function locate(f, geo) {
     const n = Number(f.instanceTotal ?? f.instanceCount ?? instances.length);
     return {
       xyz,
-      faceIds: [],
+      // THE FACES OF THE OFFENDING FEATURE, not an empty list.
+      //
+      // This branch hardcoded `[]` — so every finding anchored on an instance
+      // (all three rib measures, hole and boss slenderness, minimum feature
+      // size) got a callout floating at a coordinate and NOTHING painted. It
+      // was the single reason "which rib is 1.4x the wall?" had no answer on a
+      // part carrying nine ribs. The ids were already on the instance by the
+      // time they arrived here; the branch just never looked.
+      faceIds: Array.isArray(inst.faceIds) ? inst.faceIds : [],
       note: n > 1 ? `worst of ${n}` : 'the offending feature',
     };
   }
 
   const src = REGION_SOURCE[f.measure];
   if (!src) return null;
-  const regions = (src.at(geo) || []).filter((r) => isXYZ(src.xyz(r)));
+  const regions = (src.at(geo, f) || []).filter((r) => isXYZ(src.xyz(r)));
   if (!regions.length) return null;
   const sorted = [...regions].sort(src.worst);
   const worst = sorted[0];
-  return { xyz: src.xyz(worst), faceIds: src.faces(worst), note: src.note(worst, regions.length) };
+  return {
+    xyz: src.xyz(worst),
+    faceIds: src.faces(worst, geo, f) || [],
+    note: src.note(worst, regions.length),
+  };
+}
+
+/**
+ * WHERE ONE FINDING IS, resolved on demand and without a cap.
+ *
+ * `selectFindingAnnotations` above answers a different question — which handful
+ * of markers fit on a printed figure — and its `ANNOTATION_CAP` exists for that
+ * page's ink budget. Interactive highlighting must not inherit it: a reader who
+ * clicks the ninth finding is asking about the ninth finding, and "the figure
+ * only had room for eight" is not an answer to that.
+ *
+ * Always returns an object. Either it locates the finding, or it says WHY it
+ * could not — the same three-state honesty the rules themselves keep, so the UI
+ * can print the reason instead of rendering a button that does nothing.
+ *
+ * @param {object} analysis  the /api/dfm result: { results, dfm, geometry }
+ * @param {object} finding   one finding row from `results[].findings`
+ * @returns {{located: true, xyz: number[], faceIds: number[], note: string}
+ *          |{located: false, reason: string}}
+ */
+export function locateFinding(analysis, finding) {
+  if (!finding) return { located: false, reason: 'no finding was given' };
+  const placed = locate(finding, analysis ?? {});
+  if (placed) {
+    return {
+      located: true,
+      xyz: placed.xyz.map(Number),
+      faceIds: Array.isArray(placed.faceIds) ? placed.faceIds : [],
+      note: placed.note,
+    };
+  }
+  return { located: false, reason: unlocatableReason(finding) };
+}
+
+/**
+ * Why a finding has no place on the model — in the reader's words, not the
+ * engine's. Three genuinely different situations, and collapsing them into one
+ * message ("could not be located") would hide the only one that is a gap rather
+ * than a fact about the measurement.
+ */
+export function unlocatableReason(f) {
+  if (WHOLE_PART_MEASURES.has(f?.measure)) {
+    return 'measured across the whole part, so there is no single face to mark';
+  }
+  if (!REGION_SOURCE[f?.measure]) {
+    return 'this measure has no geometry source yet — the number is sound, the location is not mapped';
+  }
+  return 'the geometry engine returned no coordinates for the offending feature';
 }
 
 /**

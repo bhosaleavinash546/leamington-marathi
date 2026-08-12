@@ -241,7 +241,7 @@ def _extract_feature_table(wrapped, extents, skip_faces=None, solid_classifier=N
         except Exception:
             continue
 
-    instances, axes = {}, {}
+    instances, axes, face_ids = {}, {}, {}
     for (dc, foot, r), members in groups.items():
         # One frame per GROUP, taken from the group's representative axis, so
         # every member is measured against exactly the same angular zero.
@@ -289,6 +289,21 @@ def _extract_feature_table(wrapped, extents, skip_faces=None, solid_classifier=N
                    bool(through) if through is not None else None)
             ident = tuple(round(v, 2) for v in (s_lo, s_hi) + foot + dc)
             instances.setdefault(key, set()).add(ident)
+            # THE FACES THIS BORE IS MADE OF, kept rather than dropped.
+            #
+            # Every member of the cluster carries the face index it came from,
+            # and until now the unpack above bound it to `_fid` and threw it
+            # away — so a "hole too deep for its diameter" finding could name
+            # the hole and never show it. The viewer paints by face id, the
+            # index convention is shared (1-based TopTools_IndexedMapOfShape),
+            # and the ids were already in hand: the highlight was one `set`
+            # short the whole time.
+            #
+            # A row is a GROUP of identical bores, so this is the union across
+            # every instance of that group — highlighting the finding lights
+            # up all six M6 holes, which is what the finding is about.
+            face_ids.setdefault(key, set()).update(
+                c[6] for c in cluster if isinstance(c[6], int) and c[6] > 0)
             # WHICH FACES ARE BORE WALLS.
             #
             # The draft sweep judges every wall against one figure, and a cored
@@ -320,6 +335,9 @@ def _extract_feature_table(wrapped, extents, skip_faces=None, solid_classifier=N
             "axisXYZ": list(anchor[0]) if anchor else None,
             "axisPointXYZ": list(anchor[1]) if anchor else None,
             "instancesXYZ": anchor[2][:24] if anchor else None,
+            # The bore-wall faces of every instance in this group, so a finding
+            # about this hole can paint the hole. Sorted for a stable payload.
+            "faceIds": sorted(face_ids.get(key, ())) or None,
         })
     rows.sort(key=lambda r: (r["kind"], r["diaMm"], r["depthMm"]))
     return rows, _bore_wall_faces(wrapped, skip)

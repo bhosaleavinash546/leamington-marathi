@@ -341,6 +341,10 @@ export function extractMeasures(geo = {}, opts = {}) {
       diaMm: f.diaMm, depthMm: f.depthMm, through: f.through, count: f.count,
       atXYZ: f.axisPointXYZ ?? null,
       instancesXYZ: Array.isArray(f.instancesXYZ) ? f.instancesXYZ.slice(0, 8) : null,
+      // The bore-wall faces this row is made of, carried so a finding about
+      // this hole can PAINT the hole rather than drop a marker near it. The
+      // kernel computes these; they were being discarded a layer above.
+      faceIds: Array.isArray(f.faceIds) ? f.faceIds : null,
     }))
     .filter(r => Number.isFinite(r.ratio) && r.ratio > 0)
     .sort((a, b) => b.ratio - a.ratio);
@@ -370,6 +374,7 @@ export function extractMeasures(geo = {}, opts = {}) {
       diaMm: f.diaMm, depthMm: f.depthMm, through: f.through, count: f.count,
       atXYZ: f.axisPointXYZ ?? null,
       instancesXYZ: Array.isArray(f.instancesXYZ) ? f.instancesXYZ.slice(0, 8) : null,
+      faceIds: Array.isArray(f.faceIds) ? f.faceIds : null,
     }))
     .filter(r => Number.isFinite(r.ratio) && r.ratio > 0)
     .sort((a, b) => (ascending ? a.ratio - b.ratio : b.ratio - a.ratio));
@@ -404,6 +409,11 @@ export function extractMeasures(geo = {}, opts = {}) {
         ratio: Math.round((Number(r[key]) / nominalWall) * 1000) / 1000,
         thicknessMm: r.thicknessMm, heightMm: r.heightMm, lengthMm: r.lengthMm,
         atXYZ: r.centroidXYZ ?? null,
+        // THE RIB'S OWN FACES. The recogniser has carried these since the AAG
+        // pass landed and this mapping dropped them, so every rib finding
+        // arrived with a coordinate and nothing paintable — "this rib is 1.4x
+        // the wall" with no way to see WHICH rib on a part carrying nine.
+        faceIds: Array.isArray(r.faceIds) ? r.faceIds : null,
       }))
       .filter(r => Number.isFinite(r.ratio) && r.ratio > 0)
       .sort((a, b) => (ascending ? a.ratio - b.ratio : b.ratio - a.ratio));

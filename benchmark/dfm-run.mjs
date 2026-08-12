@@ -208,7 +208,11 @@ async function main() {
             : what === 'featureTableCylinders'
               ? (g.featureTable || []).flatMap(r => (r.kind === 'hole' || r.kind === 'boss') && r.faceIds ? r.faceIds : [])
               : [];
-          if (!ids.length && what === 'featureTableCylinders') continue;  // no ids exported yet
+          // No escape hatch. This check used to `continue` when the list came
+          // back empty, on the grounds that the kernel did not export feature
+          // table face ids yet — so the day it started exporting them WRONG,
+          // and the day it stopped exporting them at all, both read as a pass.
+          // The ids exist now; an empty list is a regression and fails here.
           const types = ids.map(i => byId.get(i)?.type ?? 'MISSING');
           record(fx.file, `face id -> ${what}`,
             types.length > 0 && types.every(ty => ty === wantType),

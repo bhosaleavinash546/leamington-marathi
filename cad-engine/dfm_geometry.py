@@ -809,6 +809,8 @@ def tool_accessibility(tess, inter, directions=None, tool_dia_mm=10.0, reach=1e5
     # per-direction percentages — a face reachable from three sides would
     # otherwise be counted three times and the union could exceed 100%.
     unreached = []
+    unreached_face_area = {}
+    faces_idx = tess.get("face")
     for i in sampled:
         ar = tess["area"][i] * step
         nx, ny, nz = tess["nx"][i], tess["ny"][i], tess["nz"][i]
@@ -847,14 +849,23 @@ def tool_accessibility(tess, inter, directions=None, tool_dia_mm=10.0, reach=1e5
             # so a marker lands on a face the cutter genuinely misses.
             unreached.append((ar, round(tess["cx"][i], 3), round(tess["cy"][i], 3),
                               round(tess["cz"][i], 3)))
+            # ...and WHICH FACE it is, so the finding can paint it rather than
+            # drop a marker in space. Same convention as everything else here.
+            if faces_idx is not None:
+                fid = faces_idx[i]
+                if fid:
+                    unreached_face_area[fid] = unreached_face_area.get(fid, 0.0) + ar
 
     unreached.sort(key=lambda t: -t[0])
+    unreached_faces = [f for f, _a in sorted(unreached_face_area.items(), key=lambda kv: -kv[1])]
 
     return {
         "toolDiaMm": round(float(tool_dia_mm), 2),
         "unreachableRegions": [
             {"areaMm2": round(a, 2), "atXYZ": [x, y, z]} for (a, x, y, z) in unreached[:8]
         ],
+        "unreachableFaceIds": unreached_faces[:40],
+        "unreachableFaceCount": len(unreached_faces),
         "reachableAreaPct": round(100.0 * reached_any / total_area, 2) if total_area else 0.0,
         "unreachableAreaPct": round(100.0 - (100.0 * reached_any / total_area), 2) if total_area else 0.0,
         "byDirection": per_dir,
@@ -911,6 +922,28 @@ def overhang(tess, build=(0.0, 0.0, 1.0)):
     below = {c: 0.0 for c in OVERHANG_CUTOFFS_DEG}
     down_area = 0.0
     worst_deg = None
+    # WHICH FACES OVERHANG, not just how much area does.
+    #
+    # This loop already knows the face every triangle belongs to and emitted
+    # nothing but percentages, so an "unsupported overhang" finding could state
+    # a number and never show the reader a single face.
+    #
+    # Accumulated PER CUTOFF rather than once, because a rule names the angle it
+    # means (`overhangCutoffDeg`) and the answer genuinely differs: the analytic
+    # wedge is 30 degrees from the plate, so it is 34% of the surface below 40
+    # and nothing at all below 20. A single set keyed on the shallowest cutoff
+    # highlighted no faces for a rule that had just failed the part — the
+    # percentage and the picture would have disagreed. Each cutoff gets the set
+    # that belongs to it, and the mapping layer asks for the one its rule used.
+    face_area = {c: {} for c in OVERHANG_CUTOFFS_DEG}
+    # ...and WHERE each of those faces is. A face id paints the surface, but a
+    # callout still needs a point to hang its leader on, and the overhang block
+    # reported none — so the one finding whose whole content is "this surface
+    # needs support" could not be drawn on the part. The area-weighted centroid
+    # of the triangles that failed IS the place, and this loop already holds
+    # their centres.
+    face_moment = {c: {} for c in OVERHANG_CUTOFFS_DEG}
+    faces = tess.get("face")
     for i in range(n):
         ar = tess["area"][i]
         if ar <= 0:
@@ -930,17 +963,57 @@ def overhang(tess, build=(0.0, 0.0, 1.0)):
         surface_deg = math.degrees(math.acos(c))
         if worst_deg is None or surface_deg < worst_deg:
             worst_deg = surface_deg
+        fid = faces[i] if faces is not None else None
         for cut in OVERHANG_CUTOFFS_DEG:
             if surface_deg < cut:
                 below[cut] += ar
+                if fid:
+                    bucket = face_area[cut]
+                    bucket[fid] = bucket.get(fid, 0.0) + ar
+                    mom = face_moment[cut].get(fid) or [0.0, 0.0, 0.0]
+                    mom[0] += tess["cx"][i] * ar
+                    mom[1] += tess["cy"][i] * ar
+                    mom[2] += tess["cz"][i] * ar
+                    face_moment[cut][fid] = mom
+
+    def _ranked(bucket):
+        return [f for f, _a in sorted(bucket.items(), key=lambda kv: -kv[1])]
+
+    faces_by_cut = {c: _ranked(face_area[c]) for c in OVERHANG_CUTOFFS_DEG}
+
+    def _worst_at(c):
+        """Centroid of the LARGEST overhanging face at this cutoff, or None."""
+        ranked = faces_by_cut[c]
+        if not ranked:
+            return None
+        fid = ranked[0]
+        a = face_area[c].get(fid) or 0.0
+        if a <= 0:
+            return None
+        m = face_moment[c][fid]
+        return [round(m[0] / a, 3), round(m[1] / a, 3), round(m[2] / a, 3)]
+
+    def _key(c):
+        return str(c).rstrip("0").rstrip(".") if c % 1 == 0 else str(c)
 
     return {
         "buildDirectionXYZ": [round(v, 4) for v in (bx, by, bz)],
+        # The faces behind each entry of the curve below, keyed identically so a
+        # finding that quotes `overhangAreaBelowDeg["45"]` can paint exactly the
+        # faces that figure counted. Worst-area first and capped, like every
+        # other id list here; the count is reported separately so a truncated
+        # highlight cannot read as "these are all of them".
+        "overhangFaceIdsByDeg": {_key(c): faces_by_cut[c][:40] for c in OVERHANG_CUTOFFS_DEG},
+        "overhangFaceCountByDeg": {_key(c): len(faces_by_cut[c]) for c in OVERHANG_CUTOFFS_DEG},
+        # Where to point: the centre of the biggest offending face at each
+        # cutoff, so the leader lands ON the surface that needs support rather
+        # than in the middle of the part.
+        "overhangWorstAtXYZByDeg": {_key(c): _worst_at(c) for c in OVERHANG_CUTOFFS_DEG},
         "downFacingAreaPct": round(100.0 * down_area / total, 2),
         # The curve. `overhangAreaBelowDeg["45"]` is the share of the whole
         # surface that is a downward face lying flatter than 45 degrees.
         "overhangAreaBelowDeg": {
-            str(c).rstrip("0").rstrip(".") if c % 1 == 0 else str(c): round(100.0 * below[c] / total, 2)
+            _key(c): round(100.0 * below[c] / total, 2)
             for c in OVERHANG_CUTOFFS_DEG
         },
         "shallowestOverhangDeg": round(worst_deg, 2) if worst_deg is not None else None,
