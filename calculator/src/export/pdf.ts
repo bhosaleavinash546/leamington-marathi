@@ -2063,10 +2063,14 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
 
   // ── §7 Cost Range & Suggested Inputs ────────────────────────────────────
   ck(28);
-  section('§7 — Cost Range & Suggested Inputs');
+  // The range below is the MODEL'S opinion, not engine arithmetic — the audit
+  // found it rendered as headline money indistinguishable from calculated
+  // output. The title now says whose number it is; the engine's own uncertainty
+  // band lives in the should-cost report (§7 there), not here.
+  section('§7 — AI Indicative Cost Range (model opinion — not engine-calculated)');
 
   const cr = r.costInputSuggestions.costRange;
-  if (cr) {
+  if (cr && (cr.low || cr.mid || cr.high)) {
     doc.setFillColor(...LITE3);
     doc.roundedRect(MG, y, CW, 18, 2, 2, 'F');
     doc.setDrawColor(...TEAL); doc.setLineWidth(0.3);

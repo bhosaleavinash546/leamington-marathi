@@ -1,0 +1,220 @@
+{
+  "_audit": {
+    "part": "spur_gear_test.step",
+    "commodity": "gear",
+    "mode": "both",
+    "volume": 200000,
+    "deep": false,
+    "httpStatus": 200,
+    "seconds": 0.9,
+    "capturedAt": "2026-08-12T17:40:02.961Z"
+  },
+  "response": {
+    "success": false,
+    "handoff": "gear",
+    "error": "Gear parts are costed by the dedicated gear engine (module, tooth count and ISO 1328 quality class drive the process — none is derivable from B-rep metrics). Open the Gear Cutting form; the measured envelope is prefilled below.",
+    "gearPrefill": {
+      "outerDiameterMm": 80,
+      "faceWidthMm": 20,
+      "measuredVolumeCm3": 63.938
+    },
+    "geometrySource": "occt",
+    "occtGeometry": {
+      "status": "success",
+      "partName": "cv-cad-656d3d0dba697e12",
+      "boundingBox": {
+        "xMm": 80,
+        "yMm": 80,
+        "zMm": 20
+      },
+      "volume": {
+        "mm3": 63937.7,
+        "cm3": 63.938
+      },
+      "surfaceArea": {
+        "mm2": 14840.9,
+        "cm2": 148.409
+      },
+      "fillRatio": 0.4995,
+      "topology": {
+        "available": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "enclosesSealedVoid": false,
+        "openShell": true
+      },
+      "weights": {
+        "aluminiumKg": 0.1726,
+        "steelKg": 0.5019,
+        "plasticKg": 0.0671,
+        "castIronKg": 0.4572,
+        "copperKg": 0.5729,
+        "titaniumKg": 0.2832
+      },
+      "faces": {
+        "total": 11,
+        "byType": {
+          "CYLINDER": 8,
+          "PLANE": 3
+        }
+      },
+      "edges": {
+        "total": 24,
+        "byType": {
+          "CIRCLE": 16,
+          "LINE": 8
+        },
+        "sampleCircleRadiiMm": [
+          3,
+          15,
+          40
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 8,
+        "cylindricalFaceRadiiMm": [
+          3,
+          15,
+          40
+        ],
+        "estimatedHoleCount": 6,
+        "holeRadiiMm": [
+          3
+        ],
+        "bossShaftCount": 2,
+        "bossShaftRadiiMm": [
+          15,
+          40
+        ],
+        "threadFeaturesDetected": false,
+        "planarFaceCount": 3,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 9714
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 30,
+          "depthMm": 8,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "diaMm": 80,
+          "depthMm": 12,
+          "through": null,
+          "count": 1
+        },
+        {
+          "kind": "hole",
+          "diaMm": 6,
+          "depthMm": 12,
+          "through": false,
+          "count": 6
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 4857
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 4150
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 707
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 11.95
+      },
+      "wallThickness": {
+        "minMm": 11.95,
+        "maxMm": 19.95,
+        "p95Mm": 19.95,
+        "meanMm": 15.95,
+        "stdDevMm": 4,
+        "sampleCount": 2,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 8,
+        "adequateDraftFaceCount": 3,
+        "minPositiveDraftDeg": 90,
+        "maxPositiveDraftDeg": 90,
+        "analyzedFaceCount": 11
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 2,
+        "principalDirections": [
+          {
+            "directionLabel": "+X",
+            "faceCount": 8
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 3
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 30,
+        "planarMillingTimeMins": 1.9,
+        "drillBoreTimeMins": 3,
+        "estimatedTotalMins": 34.9,
+        "estimatedTotalHrs": 0.5824,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 40000,
+        "gravityMouldCostGBP": 8000,
+        "sandPatternCostGBP": 2500,
+        "imMouldCostGBP": 30000,
+        "forgeDieCostGBP": 15000,
+        "progressiveDieCostGBP": 25000
+      },
+      "manufacturabilityScore": 100,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1569,
+        "sandCycleTimeHrFerrous": 0.1683,
+        "forgeStrokes": 5,
+        "investWaxCostGBP": 2.23,
+        "investShellCostGBP": 6.68
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    }
+  }
+}

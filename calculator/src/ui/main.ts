@@ -276,7 +276,11 @@ let _cadDecisions: CADDecision[] = [];
 let _cadDecisionAnswers: Record<string, string> = {};
 /** The rules-vs-AI comparison. Only mode='both' produces one; else null. */
 let _cadDiff: CADDiff | null = null;
-let cadSanityWarnings: Array<{ code: string; message: string; severity: 'warn' | 'error' }> = [];
+let cadSanityWarnings: Array<{ code: string; message: string; severity: 'warn' | 'error'; blocking?: boolean }> = [];
+// Blocking sanity codes the engineer has explicitly acknowledged this session
+// (per part+code, so a new analysis re-asks). Audit gap 4: the bumper costed
+// with `process_geometry_implausible` on the record and nobody shown it.
+const _cadSanityAcks = new Set<string>();
 let cadFromCache = false;
 // Provenance for the accuracy harness: 'cad' when the last applied inputs came
 // from a CAD analysis; consumed (and reset) by pushCostingRecord.
@@ -6247,6 +6251,27 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
       error?: string;
     };
 
+    // Gear hand-off: not an error, a refusal with the measurements attached.
+    // The gear ENGINE exists (gear.ts, gear-cycle.ts, ISO 1328 route logic) but
+    // has no UI form yet — saying so beats costing a gear as generic machining
+    // with none of the gear guards (audit gap 6).
+    {
+      const ho = data as unknown as { handoff?: string; error?: string;
+        gearPrefill?: { outerDiameterMm?: number; faceWidthMm?: number; measuredVolumeCm3?: number | null } | null };
+      if (ho.handoff === 'gear') {
+        const g = ho.gearPrefill;
+        updateProgress(100, 'Gear detected — handed off');
+        const box = document.getElementById('cad-results');
+        if (box) box.innerHTML = `<div class="warn-box" style="padding:12px;border-left:4px solid var(--warning)">
+          <strong>⚙️ This part is a gear — not costed as machining.</strong><br>
+          ${escHtml(ho.error ?? '')}<br>
+          ${g ? `Measured envelope: Ø${g.outerDiameterMm} mm × ${g.faceWidthMm} mm face` +
+            (g.measuredVolumeCm3 ? ` · ${g.measuredVolumeCm3.toFixed(1)} cm³` : '') + '.<br>' : ''}
+          <em>The gear cost engine (hobbing/shaping/skiving/grinding kinematics, ISO 1328 routes)
+          runs today via the engineering API — a dedicated form is on the roadmap.</em></div>`;
+        return;
+      }
+    }
     if (!res.ok || !data.success) throw new Error(data.error ?? `Server error ${res.status}`);
 
     updateProgress(100, data.geometrySource === 'occt' ? 'OCCT complete — precise geometry extracted' : 'Complete (text-parsed)');
@@ -11742,6 +11767,21 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
     // persistent host that survives the swap.
     if (cadFile) void showPersistentCADViewer(cadFile);
 
+    // A CAD apply must not inherit the feature-panel's £150,000 NRE default:
+    // reproducing the audit bracket's tooling bucket required exactly that
+    // phantom (£150k ÷ 200k volume = £0.75/part nobody specified). The panel's
+    // default is for engineers who open it BY HAND and expect a starting point;
+    // a CAD-driven costing states only what was derived — NRE starts at 0 and
+    // is the engineer's to add.
+    for (const prefix of ['mach', 'cast', 'forge']) {
+      const nre = document.getElementById(`${prefix}-mf-tooling`) as HTMLInputElement | null;
+      if (nre && nre.value === '150000') {
+        nre.value = '0';
+        nre.setAttribute('data-prov', 'estimated');
+        nre.title = 'CAD apply: fixture/programming NRE not derived — add your own figure';
+      }
+    }
+
     if (autoCalculate) {
       compute();
     }
@@ -13795,6 +13835,18 @@ function compute(): void {
   // need re-applying after every switch. Guarding the handler also covers the
   // programmatic clicks and the analyse-and-calculate path, which a disabled
   // attribute would not.
+  // Blocking sanity findings require one explicit acknowledgement each — never
+  // a silent cost on a measured contradiction (audit gap 4).
+  const blockingSanity = cadSanityWarnings.filter(w => w.blocking && !_cadSanityAcks.has(w.code));
+  if (blockingSanity.length && _pendingCostingSource === 'cad') {
+    const w = blockingSanity[0];
+    const ok = window.confirm(
+      `Sanity check: ${w.message}\n\nThis contradiction affects the money if costed as-is. `
+      + 'Cost anyway?\n\n(OK = proceed with this figure on the record; Cancel = go back and fix the inputs.)');
+    if (!ok) return;
+    for (const bw of blockingSanity) _cadSanityAcks.add(bw.code);
+  }
+
   const pending = openCADDecisions();
   if (pending.length) {
     errBox.style.display = '';

@@ -204,6 +204,20 @@ costable until answered — by design"); the browser should gate the same way �
 recommendation #1, a behavioural change not made silently. The auto run of the same part
 (where the AI does supply a material) is coherent (`mat-gjs500`, 3.07 kg).
 
+## Gap closures (second pass — all six recommendations implemented and live-verified)
+
+| Gap | Closure | Live proof |
+|---|---|---|
+| 1. Undecided material costed defaults | An AI-sourced material keeps the question **open as a blocking confirm** with the model's pick as the leaning (`pendingDecisions`, cad.ts). The browser's existing Calculate gate then refuses until the engineer clicks. | Part1 forced-casting now returns `material.family / blocking` with leaning "cast iron" and the why-text naming the run-to-run flip — no silent cost |
+| 2. Blocked rules let AI money stand | `suppressAIForUndecided` (apply.ts): fields owned by a rule that is ASKING are cleared, the clearing recorded in `aiSuppressed` with the model's claimed value. | Unit test replays the bumper's stock £200k/500k → suppressed while resin is open; nothing suppressed once answered (rules overwrite instead) |
+| 3. §7 raw AI money | Retitled "§7 — AI Indicative Cost Range (model opinion — not engine-calculated)"; all-zero ranges no longer render. | test asserts the label |
+| 4. Sanity never blocks | `blocking: true` on `process_geometry_implausible` and >50% weight contradictions; browser requires one explicit acknowledgement per code before a CAD-sourced Calculate. | unit test on the bumper geometry |
+| 5. Phantom £150k NRE | CAD applies zero the untouched `*-mf-tooling` default with provenance + tooltip; manual form use keeps the default. | bracket tooling bucket now = pattern + stated NRE only |
+| 6. Gear absorbed by machining | `gear` added to stage-1 vocabulary and the CAD dropdown; a gear-named or gear-classified part gets a **hand-off response** with the measured envelope (never costed as machining silently). Sharper finding en route: the gear ENGINE has **no UI form at all** — the browser hand-off says so honestly; the form is roadmap. | live: gear-named STEP → `handoff:'gear'`, prefill Ø80 × 20 mm face, 63.9 cm³ |
+
+`CAD_PROMPT_VERSION` 15. Suite: **1,796 tests pass** (6 new), typecheck clean, prompt
+baselines unchanged, dist rebuilt.
+
 ## Recommendations (architectural — reported, not silently changed)
 1. **Sanity warnings should be able to block** (or at minimum force an explicit engineer
    acknowledgement): the bumper's aluminium-mass run carried `process_geometry_implausible`

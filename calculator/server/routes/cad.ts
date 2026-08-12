@@ -25,7 +25,7 @@ import { inferCommodity } from '../../src/engine/cost-input-rules/derive/commodi
 import { familyFromMaterialId } from '../../src/engine/cost-input-rules/derive/material.js';
 import { systemForFibreId } from '../../src/engine/cost-input-rules/derive/laminate.js';
 import { renderCommodityRulesPrompt, runCostInputRules } from '../../src/engine/cost-input-rules/engine.js';
-import { applyRuleDecisions, toRuleFields } from '../../src/engine/cost-input-rules/apply.js';
+import { applyRuleDecisions, toRuleFields, suppressAIForUndecided, type AISuppression } from '../../src/engine/cost-input-rules/apply.js';
 import { RULE_ENGINE_VERSION, type RuleContext, type Decision } from '../../src/engine/cost-input-rules/types.js';
 
 const router = Router();
@@ -41,7 +41,10 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 //      mass-consistent gauge floor (F4), cast_and_machine operations as data
 //      not prose (F7), valid prompt material ids (F5), honest material
 //      provenance labels. Bumped so cached pre-fix analyses cannot be served.
-const CAD_PROMPT_VERSION = 14;
+// v15: gap closures — AI values suppressed for blocked-rule fields, AI-sourced
+//      material keeps the decision open as a blocking confirm, gear hand-off,
+//      blocking sanity codes.
+const CAD_PROMPT_VERSION = 15;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -187,7 +190,7 @@ Volume: ${vol.cm3.toFixed(1)} cm³  Fill ratio: ${fill.toFixed(2)}  Faces: ${fac
 Wall mean: ${wallMean?.toFixed(1) ?? 'N/A'} mm
 Weights — Al: ${weights.aluminiumKg.toFixed(3)} kg  Steel: ${weights.steelKg.toFixed(3)} kg  Plastic: ${weights.plasticKg.toFixed(3)} kg${thinWallHint}
 
-Valid commodity types: machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly
+Valid commodity types: machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly, gear
 
 Return JSON only (no prose) — this is FORMAT only, choose the type from the geometry above, do NOT copy the placeholder: {"primary":"<type>","conf":0.0,"alt":[{"type":"<type>","conf":0.0}]}`;
 }
@@ -572,6 +575,34 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   // answer.
   let commodityDecision: Decision | null = null;
 
+  // ── Gear hand-off ─────────────────────────────────────────────────────────
+  // A gear cannot be honestly costed from B-rep metrics alone: module, tooth
+  // count and quality class set the process and none of them is derivable here
+  // yet. Costing it as machining silently ran a gear past every gear-model
+  // guard (audit gap 6), so a part named or forced as a gear is HANDED OFF to
+  // the dedicated gear engine with the measured envelope prefilled — never
+  // costed as generic machining without saying so.
+  const gearNamed = /\bgears?\b|\bpinion\b|_gear|gear_/i.test(originalname);
+  if (forcedCommodity === 'gear' || (!forcedCommodity && gearNamed)) {
+    const bb = geo.status === 'success' ? geo.boundingBox : null;
+    const dims = bb ? [bb.xMm, bb.yMm, bb.zMm].sort((a, b) => b - a) : null;
+    res.status(200).json({
+      success: false,
+      handoff: 'gear',
+      error: 'Gear parts are costed by the dedicated gear engine (module, tooth count and '
+        + 'ISO 1328 quality class drive the process — none is derivable from B-rep metrics). '
+        + 'Open the Gear Cutting form; the measured envelope is prefilled below.',
+      gearPrefill: dims ? {
+        outerDiameterMm: Math.round(dims[0] * 10) / 10,
+        faceWidthMm: Math.round(dims[2] * 10) / 10,
+        measuredVolumeCm3: geo.status === 'success' ? geo.volume?.cm3 ?? null : null,
+      } : null,
+      geometrySource,
+      occtGeometry: geo.status === 'success' ? geo : null,
+    });
+    return;
+  }
+
   if (forcedCommodity) {
     selectedCommodity = forcedCommodity;
     stage1Selection = { primary: forcedCommodity, conf: 1.0, alt: [] };
@@ -612,6 +643,27 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     } catch (err) {
       console.warn('[CAD] Stage 1 Haiku failed, using default commodity:', (err as Error).message);
     }
+    // Stage-1 may now say 'gear' — same hand-off as a forced gear: the gear
+    // engine owns gears, machining must not silently absorb them.
+    if (selectedCommodity === 'gear') {
+      const bb = geo.status === 'success' ? geo.boundingBox : null;
+      const dims = bb ? [bb.xMm, bb.yMm, bb.zMm].sort((a, b) => b - a) : null;
+      res.status(200).json({
+        success: false,
+        handoff: 'gear',
+        error: 'The classifier reads this part as a gear. Gears are costed by the dedicated '
+          + 'gear engine (module, tooth count, ISO 1328 class) — open the Gear Cutting form; '
+          + 'the measured envelope is prefilled.',
+        gearPrefill: dims ? {
+          outerDiameterMm: Math.round(dims[0] * 10) / 10,
+          faceWidthMm: Math.round(dims[2] * 10) / 10,
+          measuredVolumeCm3: geo.status === 'success' ? geo.volume?.cm3 ?? null : null,
+        } : null,
+        geometrySource,
+        occtGeometry: geo.status === 'success' ? geo : null,
+      });
+      return;
+    }
     // Deterministic geometry guard — physics overrides a stochastic AI hint.
     const guarded = enforceGeometryCommodity(selectedCommodity, geo);
     if (guarded.corrected) {
@@ -642,6 +694,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   // said: every mode returns a rules-corrected analysis, so an "AI arm" built
   // from the response would be the rules compared against themselves.
   let aiOriginal: Record<string, unknown> | null = null;
+  let aiSuppressed: AISuppression[] = [];
   let deterministicAnalysis: CADAnalysisResult | null = null;
 
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
@@ -755,6 +808,16 @@ router.post('/analyze', analyzeLimiter, upload.fields([
         ruleSpec, withAIMaterial(ruleCtx, analysis as Record<string, unknown>));
       ruleOverrides = applyRuleDecisions(
         analysis as Parameters<typeof applyRuleDecisions>[0], resolved);
+      // A rule that is ASKING must not let the model answer silently: fields
+      // owned by blocked rules are cleared and the clearing is on the record.
+      // (Audit gap 2: the model's stock mouldCostGBP=200000 costed the bumper's
+      // tooling because the resin question was open and nothing said so.)
+      aiSuppressed = suppressAIForUndecided(
+        analysis as Parameters<typeof suppressAIForUndecided>[0], resolved, ruleSpec);
+      if (aiSuppressed.length) {
+        console.log(`[CAD] Suppressed ${aiSuppressed.length} AI value(s) pending decisions: `
+          + aiSuppressed.map(x => `${x.field}=${String(x.aiValue)}`).join(', '));
+      }
       ruleFields = toRuleFields(resolved);
       const contradicted = ruleOverrides.overridden.filter(o => o.contradicted);
       if (contradicted.length) {
@@ -793,6 +856,9 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     // What the deterministic rules decided, what the model had said, and what
     // nobody could decide. The report renders this as the provenance trail.
     ruleOverrides,
+    // AI values cleared because their owning rule is still asking a question —
+    // the consumer must treat these fields as UNANSWERED, not zero.
+    aiSuppressed,
     // Every rule value keyed by form field id. The form is the consumer, so this
     // addresses the form directly rather than going through the model's response
     // schema, which has nowhere to put 54 of the 131 values the rules compute.
@@ -805,7 +871,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     aiOriginal,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
-    decisions: ruleOverrides?.undecided.length ? ruleSpec ? runCostInputRules(ruleSpec, ruleCtx).decisions : [] : [],
+    decisions: pendingDecisions(ruleSpec, ruleCtx, withAIMaterial(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0),
     mode: analysisMode,
     fromCache: false,
     geometrySource,
@@ -1430,6 +1496,40 @@ function withAIMaterial(ctx: RuleContext, analysis: Record<string, unknown>): Ru
   return { ...ctx, answers };
 }
 
+/**
+ * The decision list a costing must still answer.
+ *
+ * Two sources: rules that stayed blocked even WITH the model's material folded
+ * in, and — the audit's Part1 lesson — the material question itself whenever
+ * the family was settled ONLY by the model. The same unknown casting came back
+ * aluminium LM25 on one run and ductile iron GJS-500 on another (a 2.6x money
+ * swing) because geometry cannot decide a material and the fold-in silently
+ * accepted whichever way the model guessed. So an AI-sourced family keeps the
+ * question OPEN as a blocking confirm, with the model's pick marked as the
+ * leaning: one click for the engineer, no silent guess in the money.
+ */
+function pendingDecisions(
+  ruleSpec: ReturnType<typeof specForCommodity>,
+  ruleCtx: RuleContext,
+  withAI: RuleContext,
+  undecidedCount: number,
+): Decision[] {
+  if (!ruleSpec) return [];
+  const aiAnsweredMaterial =
+    withAI.answers['material.familySource'] === 'ai' && !ruleCtx.answers['material.family'];
+  if (!undecidedCount && !aiAnsweredMaterial) return [];
+  // Re-run WITHOUT the AI material: these are the questions a person still owns.
+  const bare = runCostInputRules(ruleSpec, ruleCtx).decisions;
+  if (!aiAnsweredMaterial) return bare;
+  const aiFamily = withAI.answers['material.family'];
+  return bare.map(d => d.id !== 'material.family' ? d : {
+    ...d,
+    why: `${d.why} The model suggests ${String(aiFamily)} — confirm or correct it; `
+      + 'the same part has been guessed differently on different runs.',
+    options: d.options.map(o => ({ ...o, leaning: o.value === aiFamily })),
+  });
+}
+
 export type AnalysisMode = 'deterministic' | 'ai' | 'both';
 
 /**
@@ -1990,6 +2090,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   // said: every mode returns a rules-corrected analysis, so an "AI arm" built
   // from the response would be the rules compared against themselves.
   let aiOriginal: Record<string, unknown> | null = null;
+  let aiSuppressed: AISuppression[] = [];
   let deterministicAnalysis: CADAnalysisResult | null = null;
 
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
@@ -2073,6 +2174,16 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
         ruleSpec, withAIMaterial(ruleCtx, analysis as Record<string, unknown>));
       ruleOverrides = applyRuleDecisions(
         analysis as Parameters<typeof applyRuleDecisions>[0], resolved);
+      // A rule that is ASKING must not let the model answer silently: fields
+      // owned by blocked rules are cleared and the clearing is on the record.
+      // (Audit gap 2: the model's stock mouldCostGBP=200000 costed the bumper's
+      // tooling because the resin question was open and nothing said so.)
+      aiSuppressed = suppressAIForUndecided(
+        analysis as Parameters<typeof suppressAIForUndecided>[0], resolved, ruleSpec);
+      if (aiSuppressed.length) {
+        console.log(`[CAD] Suppressed ${aiSuppressed.length} AI value(s) pending decisions: `
+          + aiSuppressed.map(x => `${x.field}=${String(x.aiValue)}`).join(', '));
+      }
       ruleFields = toRuleFields(resolved);
       const contradicted = ruleOverrides.overridden.filter(o => o.contradicted);
       if (contradicted.length) {
@@ -2105,6 +2216,9 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     // What the deterministic rules decided, what the model had said, and what
     // nobody could decide. The report renders this as the provenance trail.
     ruleOverrides,
+    // AI values cleared because their owning rule is still asking a question —
+    // the consumer must treat these fields as UNANSWERED, not zero.
+    aiSuppressed,
     // Every rule value keyed by form field id. The form is the consumer, so this
     // addresses the form directly rather than going through the model's response
     // schema, which has nowhere to put 54 of the 131 values the rules compute.
@@ -2117,7 +2231,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     aiOriginal,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
-    decisions: ruleOverrides?.undecided.length ? ruleSpec ? runCostInputRules(ruleSpec, ruleCtx).decisions : [] : [],
+    decisions: pendingDecisions(ruleSpec, ruleCtx, withAIMaterial(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0),
     mode: analysisMode,
     fromCache: false,
     geometrySource: 'occt' as const,

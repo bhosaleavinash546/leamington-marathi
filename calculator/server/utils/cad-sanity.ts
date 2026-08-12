@@ -10,6 +10,11 @@
 
 export interface CADSanityWarning {
   code: string;
+  /** True when the incoherence corrupts money if costed as-is (audit gap 4):
+   *  the browser must require an explicit acknowledgement before Calculate.
+   *  Advisory severities never block; only measured-vs-claimed contradictions
+   *  of the mass/process class do. */
+  blocking?: boolean;
   message: string;
   severity: 'warn' | 'error';
 }
@@ -115,6 +120,7 @@ export function runCADSanityChecks(
       if (drift > 0.20) {
         w.push({
           code: `weight_inconsistent_${family}`,
+          blocking: drift > 0.5,
           message: `${family} weight ${aiKg.toFixed(3)} kg is ${(drift * 100).toFixed(0)}% off volume x density (${expectedKg.toFixed(3)} kg) — check before quoting.`,
           severity: drift > 0.5 ? 'error' : 'warn',
         });
@@ -191,6 +197,7 @@ export function runCADSanityChecks(
     ) {
       w.push({
         code: 'process_geometry_implausible',
+        blocking: true,
         message: `A ${wall.toFixed(1)} mm wall at ${(fill * 100).toFixed(0)}% fill is unusual for "${c}" — a large thin-wall casting misruns and a thin shell is rarely machined from solid. Confirm HPDC, or an injection/blow-moulded or sheet-metal process.`,
         severity: 'warn',
       });
@@ -217,6 +224,7 @@ export function runCADSanityChecks(
     if (THIN_WALL_PROCESSES.has(c) && fill != null && fill > 0.6) {
       w.push({
         code: 'process_geometry_implausible',
+        blocking: true,
         message: `A near-solid part (${(fill * 100).toFixed(0)}% fill) is inconsistent with the thin-wall process "${c}" — this looks machined, cast or forged. Confirm the process.`,
         severity: 'warn',
       });

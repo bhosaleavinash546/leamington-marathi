@@ -3,6 +3,7 @@
 export const CAD_COMMODITY_OPTIONS: Array<{ value: string; label: string }> = [
   { value: '', label: '— Auto-detect (AI selects) —' },
   { value: 'machining', label: 'Machining (CNC)' },
+  { value: 'gear', label: 'Gear Cutting (hands off to the Gear form)' },
   { value: 'casting', label: 'Casting (HPDC / Sand / Gravity)' },
   { value: 'cast_and_machine', label: 'Cast + Machine' },
   { value: 'forging', label: 'Forging (Closed-die)' },

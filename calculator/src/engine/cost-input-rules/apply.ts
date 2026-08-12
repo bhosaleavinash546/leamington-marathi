@@ -358,4 +358,48 @@ export function toRuleFields(result: CostInputRuleResult): Record<string, RuleFi
   return out;
 }
 
+/** One AI value cleared because the rule that owns the field is still asking. */
+export interface AISuppression {
+  field: string; ruleId: string; decisionId: string; aiValue: unknown;
+}
+
+/**
+ * A rule that is ASKING a question must not let the model answer it silently.
+ *
+ * The live audit's bumper: the resin decision was open, so the injection-
+ * moulding tooling rules were blocked -- and the model's stock answer
+ * (mouldCostGBP 200000, mouldLife 500000, byte-identical across every part
+ * audited) flowed into the tooling bucket as if something had decided it.
+ * The CLI refuses to cost in exactly this state; this makes the analysis
+ * payload tell the same truth: fields owned by a blocked rule are cleared,
+ * the clearing is recorded, and the decision list says what must be answered.
+ *
+ * Suppression is keyed on each decision's `blockedRuleIds` -- the engine's
+ * precise record of which rules returned blocked -- translated to analysis
+ * fields through the rule's own `path` and RULE_PATH_MAP. Rules skipped by
+ * `appliesWhen` are untouched: not applying is not the same as asking.
+ */
+export function suppressAIForUndecided(
+  analysis: { costInputSuggestions?: Record<string, unknown> },
+  result: CostInputRuleResult,
+  spec: { rules: Array<{ id: string; path: string }> },
+): AISuppression[] {
+  const ci = analysis.costInputSuggestions;
+  if (!ci || !result.decisions?.length) return [];
+  const pathOf = new Map(spec.rules.map(r => [r.id, r.path]));
+  const out: AISuppression[] = [];
+  for (const d of result.decisions) {
+    for (const ruleId of d.blockedRuleIds ?? []) {
+      const rulePath = pathOf.get(ruleId);
+      const mapping = rulePath ? RULE_PATH_MAP[rulePath] : undefined;
+      if (!mapping) continue;
+      const prev = readPath(ci, mapping.to);
+      if (prev === undefined || prev === null || prev === '' || prev === 0) continue;
+      writePath(ci, mapping.to, undefined);
+      out.push({ field: mapping.to, ruleId, decisionId: d.id, aiValue: prev });
+    }
+  }
+  return out;
+}
+
 export { RULE_PATH_MAP };
