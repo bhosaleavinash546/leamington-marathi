@@ -109,10 +109,48 @@ export interface GearFinishingParams {
   gearGrindDressingSecPerPart: GearParam;
   /** Stock left per flank for grinding after heat treat, mm. Distortion-driven. */
   grindingStockPerFlankMm: GearParam;
+  /**
+   * Spark-out passes on the grinder, by ISO flank class.
+   *
+   * Grinding stock is set by heat-treat distortion (a material property, above),
+   * but how long the wheel then dwells is set by the CLASS being held: a class-4
+   * gear is not a class-7 gear with the same wheel time. Without this, grinding
+   * took an identical 39.3 s at class 6, 5 and 4 — which quietly contradicted the
+   * whole premise that quality grade drives cost.
+   *
+   * Keyed by class; classes tighter than the tightest key use the tightest entry.
+   */
+  grindSparkOutPassesByClass: Record<number, GearParam>;
+  /** Seconds per spark-out traverse of the face. */
+  grindSparkOutSecPerPass: GearParam;
   /** Honing, after grinding, for NVH. Seconds per part. */
   honingSecPerPart: GearParam;
   /** Shaving, before heat treat, as an alternative to grinding. Seconds per part. */
   shavingSecPerPart: GearParam;
+}
+
+/**
+ * One-time programme costs, amortised over the programme rather than charged
+ * per part.
+ *
+ * Their absence was the single biggest should-cost gap in the first build: with
+ * only perishable tooling modelled, a gear cost exactly the same at 1,000/yr as
+ * at 1,000,000/yr, because per-part tool cost is volume-independent by
+ * construction. That is the opposite of the first thing a cost engineer checks.
+ *
+ * A broach is the sharpest case. Routing to broaching above 250k/yr is justified
+ * in the advisor by "the volume carries the tool cost" — but if no tool cost
+ * exists, the justification is empty and broaching looks free.
+ */
+export interface GearNREParams {
+  /** Dedicated work-holding for the gear cutting operation. */
+  fixtureCostGBP: GearParam;
+  /** CNC programming, trial cuts and first-article/PPAP approval. */
+  programmingAndPPAPGBP: GearParam;
+  /** A broach cuts ONE geometry and cannot be reground into another. */
+  broachCapitalGBP: GearParam;
+  /** Master gear / checking fixture for the metrology loop. */
+  inspectionMasterGBP: GearParam;
 }
 
 export interface GearAncillaryParams {
@@ -136,6 +174,7 @@ export interface GearShopData {
   tools: GearToolParams;
   finishing: GearFinishingParams;
   ancillary: GearAncillaryParams;
+  nre: GearNREParams;
 }
 
 // ─── Representative defaults ─────────────────────────────────────────────────
@@ -205,11 +244,21 @@ export const DEFAULT_GEAR_SHOP_DATA: GearShopData = {
     gearGrindSpecificRateMm3PerMmSec: p(2.5), gearGrindWheelWidthMm: p(25),
     gearGrindDressingSecPerPart: p(8),
     grindingStockPerFlankMm: p(0.08, 'post-carburise distortion allowance'),
+    grindSparkOutPassesByClass: {
+      8: p(0), 7: p(1), 6: p(1), 5: p(2), 4: p(3), 3: p(4),
+    },
+    grindSparkOutSecPerPass: p(6),
     honingSecPerPart: p(45), shavingSecPerPart: p(35),
   },
   ancillary: {
     caseHardenCostPerKgGBP: p(1.60, 'carburise + quench + temper, batch furnace'),
     deburrSecPerPart: p(25), inspectionSecPerPart: p(20), loadUnloadSec: p(18),
+  },
+  nre: {
+    fixtureCostGBP: p(8_000),
+    programmingAndPPAPGBP: p(6_500, 'CNC programming, trial cuts, first-article/PPAP'),
+    broachCapitalGBP: p(45_000, 'geometry-specific; cuts one gear form only'),
+    inspectionMasterGBP: p(4_000, 'master gear / checking fixture'),
   },
 };
 
@@ -259,6 +308,7 @@ export function loadGearShopData(doc: unknown): GearShopData {
   walk(d.tools, 'tools');
   walk(d.finishing, 'finishing');
   walk(d.ancillary, 'ancillary');
+  walk(d.nre, 'nre');
 
   ACTIVE = d;
   return d;
@@ -317,6 +367,7 @@ export function gearDataCoverage(data: GearShopData = ACTIVE): GearDataCoverage 
     for (const v of Object.values(rec)) walk(v);
   };
   walk(data.cutting); walk(data.tools); walk(data.finishing); walk(data.ancillary);
+  walk(data.nre);
   const total = counts.unverified + counts['plant-supplied'] + counts.verified;
   return {
     total,

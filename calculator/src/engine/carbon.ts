@@ -73,6 +73,11 @@ const PROCESS_KWH_PER_KG: Record<string, number> = {
   forging: 3.2, injection_moulding: 1.1, blow_moulding: 1.0, extrusion: 0.9, thermoforming: 1.0,
   rotational_moulding: 2.4, rubber: 1.3, composites: 4.0, painting: 0.8, biw_assembly: 0.5,
   pcb_fab: 3.0, pcba: 1.5, wiring_harness: 0.2,
+  // Gear cutting is machining-like per kg, but a case-hardened gear also
+  // carries a carburise/quench/temper furnace cycle and, when it is ground,
+  // a second energy-intensive finishing pass — so it sits well above plain
+  // machining. Absent this key the generic 1.2 default applied.
+  gear: 3.6,
 };
 
 // ── Grid carbon intensity (kgCO₂e per kWh) by region code (2024-ish averages) ──

@@ -104,6 +104,10 @@ export interface GearAnalysis {
   metalRemovedMm3: number;
   totalCycleSec: number;
   toolingCostPerPart: number;
+  /** One-time programme cost, £. Amortised over `amortizationVolume`, not per part. */
+  nreCostGBP: number;
+  /** Itemised, so the report can show what the NRE is made of. */
+  nreLines: Array<{ item: string; costGBP: number; reason: string }>;
   heatTreatCostPerPart: number;
   /** Present whenever the estimate rests on representative shop data. */
   dataWarning: string | null;
@@ -126,6 +130,75 @@ const LABOUR_BY_PROCESS: Partial<Record<GearProcess, string>> = {
   inspection: 'lab-uk-inspector',
 };
 const DEFAULT_LABOUR = 'lab-uk-skilled';
+
+/**
+ * ISO 1328-1 flank tolerance classes actually defined by the standard.
+ *
+ * Outside this window a "class" is not tight or loose, it is meaningless — and
+ * the router would silently treat class 99 as very loose and skip all finishing,
+ * producing a cheap, confident, wrong number.
+ */
+export const ISO_1328_CLASS_MIN = 1;
+export const ISO_1328_CLASS_MAX = 11;
+
+/** A reject rate above this is almost certainly a data-entry error, not a process. */
+export const IMPLAUSIBLE_REJECT_RATE = 0.30;
+
+/**
+ * Reject inputs that cannot describe a real gear.
+ *
+ * Every one of these was reachable and produced a plausible-looking cost before
+ * this existed: zero teeth costed at £11.12, zero face width at £11.62, and an
+ * `amortizationVolume` of 0 produced a total of NaN that propagated all the way
+ * to the 8-bucket breakdown. A should-cost tool that prices a gear with no teeth
+ * has no business being called industrial grade.
+ */
+export function validateGearInputs(i: GearInputs): string[] {
+  const errs: string[] = [];
+  const finite = (v: number, name: string, min = 0): void => {
+    if (!Number.isFinite(v)) { errs.push(`${name} is not a finite number.`); return; }
+    if (v <= min) errs.push(`${name} must be greater than ${min} — got ${v}.`);
+  };
+  finite(i.normalModuleMm, 'Normal module (mm)');
+  finite(i.teeth, 'Tooth count');
+  finite(i.faceWidthMm, 'Face width (mm)');
+  finite(i.netWeightKg, 'Net gear weight (kg)');
+  finite(i.annualVolume, 'Annual volume');
+  finite(i.amortizationVolume, 'Amortisation volume');
+  finite(i.batchSize, 'Batch size');
+
+  if (Number.isFinite(i.teeth) && i.teeth > 0 && !Number.isInteger(i.teeth)) {
+    errs.push(`Tooth count must be a whole number — got ${i.teeth}.`);
+  }
+  // Below ~7 teeth a standard 20° involute undercuts at the root and the gear is
+  // not manufacturable without profile shift, which this model does not carry.
+  if (Number.isInteger(i.teeth) && i.teeth > 0 && i.teeth < 7) {
+    errs.push(`${i.teeth} teeth undercuts on a standard 20° involute. A gear this small needs `
+      + 'profile shift, which this model does not carry — cost it as a special.');
+  }
+  if (!Number.isFinite(i.helixAngleDeg) || Math.abs(i.helixAngleDeg) >= 60) {
+    errs.push(`Helix angle must be between -60° and 60° — got ${i.helixAngleDeg}°. `
+      + 'Beyond that the part is a worm, not a helical gear, and needs a different model.');
+  }
+  if (!Number.isFinite(i.qualityClass)
+      || i.qualityClass < ISO_1328_CLASS_MIN || i.qualityClass > ISO_1328_CLASS_MAX) {
+    errs.push(`ISO 1328 flank class must be ${ISO_1328_CLASS_MIN}–${ISO_1328_CLASS_MAX} `
+      + `(lower is tighter) — got ${i.qualityClass}.`);
+  }
+  if (!Number.isFinite(i.blankCostPerPart) || i.blankCostPerPart < 0) {
+    errs.push(`Blank cost must be a finite non-negative number — got ${i.blankCostPerPart}.`);
+  }
+  if (i.rejectRate !== undefined
+      && (!Number.isFinite(i.rejectRate) || i.rejectRate < 0 || i.rejectRate >= 1)) {
+    errs.push(`Reject rate must be a fraction in [0, 1) — got ${i.rejectRate}.`);
+  }
+  if (i.setupTimeHrPerOperation !== undefined
+      && (!Number.isFinite(i.setupTimeHrPerOperation) || i.setupTimeHrPerOperation < 0)) {
+    errs.push(`Setup time must be a finite non-negative number of hours — got `
+      + `${i.setupTimeHrPerOperation}.`);
+  }
+  return errs;
+}
 
 /** Outside diameter, mm — pitch + two addenda. What the machine must swing. */
 export function gearOuterDiameterMm(i: Pick<GearInputs, 'teeth' | 'normalModuleMm' | 'helixAngleDeg'>): number {
@@ -156,6 +229,64 @@ export function toolCostPerPart(p: {
 }
 
 /**
+ * Sanity-check an implied volumetric removal rate.
+ *
+ * The first version compared against a flat 500,000 mm³/min and was decorative:
+ * measured across the model's whole envelope the implied rate runs from
+ * 1.4 cm³/min on a module 0.5 pinion to 1,650 cm³/min on a module 20 truck gear.
+ * Both are legitimate, so no single threshold can separate a real coarse gear
+ * from a wrong fine one — the flat guard never fired on anything.
+ *
+ * Normalising by module² collapses that three-order-of-magnitude spread into a
+ * narrow band. Structurally the removed volume goes as z·m²·b while the cut time
+ * goes as z·b·m/(f·v), so the rate scales with module and with the feed and
+ * speed the shop data supplies — and because that data itself scales feed up and
+ * speed down with module, the observed ratio sits between about 4 and 13 across
+ * the entire envelope.
+ *
+ * The band below is therefore deliberately wide: it will not fire on any gear
+ * the model can legitimately produce, and it WILL fire when a feed or a cutting
+ * speed is out by an order of magnitude — which is the failure this exists to
+ * catch, because a wrong feed produces a cycle time indistinguishable from a
+ * right one.
+ */
+export const MRR_PER_MODULE_SQ_MIN = 1.0;
+export const MRR_PER_MODULE_SQ_MAX = 30.0;
+
+/**
+ * Grinding is a FINISHING process and has its own band, ~30x lower.
+ *
+ * The first version of this guard applied the roughing band to every cycle and
+ * immediately flagged the grinding pass on a perfectly normal transmission gear:
+ * grinding removes 0.08 mm of stock per flank, not the whole tooth space, so
+ * 1.8 cm³/min is correct rather than suspicious. A false positive on the very
+ * first worked example is exactly the failure this project treats as worse than
+ * a missed finding — an engineer shown one wrong warning stops reading the rest.
+ */
+export const GRIND_MRR_PER_MODULE_SQ_MIN = 0.05;
+export const GRIND_MRR_PER_MODULE_SQ_MAX = 3.0;
+
+/** Roughing processes generate the tooth space; grinding only finishes it. */
+const FINISHING_PROCESSES = new Set(['grinding', 'honing', 'shaving']);
+
+export function checkRemovalRate(
+  rateMm3PerMin: number, moduleMm: number, process = 'hobbing',
+): string | null {
+  if (!Number.isFinite(rateMm3PerMin) || rateMm3PerMin <= 0 || !(moduleMm > 0)) return null;
+  const finishing = FINISHING_PROCESSES.has(process);
+  const lo = finishing ? GRIND_MRR_PER_MODULE_SQ_MIN : MRR_PER_MODULE_SQ_MIN;
+  const hi = finishing ? GRIND_MRR_PER_MODULE_SQ_MAX : MRR_PER_MODULE_SQ_MAX;
+  const normalised = rateMm3PerMin / 1000 / (moduleMm * moduleMm);   // cm³/min per mm²
+  if (normalised >= lo && normalised <= hi) return null;
+  const dir = normalised > hi ? 'far above' : 'far below';
+  return `the cycle implies ${(rateMm3PerMin / 1000).toFixed(1)} cm³/min of metal removal, which `
+    + `is ${dir} the plausible ${finishing ? 'finishing' : 'roughing'} band for module `
+    + `${moduleMm} (${normalised.toFixed(2)} vs ${lo}–${hi} cm³/min per mm² of module). The `
+    + `${finishing ? 'stock allowance or removal rate' : 'cutting speed or feed'} in the shop data `
+    + `is probably wrong for this module band — the cycle time will look normal but is not.`;
+}
+
+/**
  * Analyse the gear: route it, size each machine, time each operation.
  *
  * Separated from `computeGearDrivers` so the UI and the report can show the
@@ -165,6 +296,31 @@ export function toolCostPerPart(p: {
 export function analyseGear(inputs: GearInputs): GearAnalysis {
   const data = inputs.shopData ?? activeGearShopData();
   const warnings: string[] = [];
+
+  const invalid = validateGearInputs(inputs);
+  if (invalid.length) {
+    return {
+      route: { cuttingProcess: 'hobbing', steps: [], achievableQualityClass: 99, warnings: [] },
+      operations: [], pitchDiameterMm: 0, outerDiameterMm: 0, metalRemovedMm3: 0,
+      totalCycleSec: 0, toolingCostPerPart: 0, nreCostGBP: 0, nreLines: [],
+      heatTreatCostPerPart: 0, dataWarning: gearDataWarning(data), warnings,
+      blocked: `The gear definition is not costable: ${invalid.join(' ')}`,
+    };
+  }
+
+  // Setup absent is not setup free. Every gear operation needs the machine set,
+  // the cutter trammed and a first-off checked; defaulting silently to zero
+  // under-costs a low-volume gear by more than any other single assumption.
+  if (inputs.setupTimeHrPerOperation === undefined) {
+    warnings.push('No setup time was given, so setup is EXCLUDED from this estimate. On a small '
+      + 'batch that is the dominant cost — supply setup hours per operation before comparing this '
+      + 'to a quote.');
+  }
+  if ((inputs.rejectRate ?? 0) > IMPLAUSIBLE_REJECT_RATE) {
+    warnings.push(`A ${((inputs.rejectRate ?? 0) * 100).toFixed(0)}% reject rate is far outside `
+      + 'normal gear production. Confirm it is not a data-entry error — it multiplies blank, heat '
+      + 'treat and every cycle.');
+  }
 
   const route = adviseGearRoute({
     normalModuleMm: inputs.normalModuleMm,
@@ -187,8 +343,8 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
   const base = {
     route, operations: [] as GearOperationDetail[],
     pitchDiameterMm: pitchDia, outerDiameterMm: outerDia, metalRemovedMm3: metalRemoved,
-    totalCycleSec: 0, toolingCostPerPart: 0, heatTreatCostPerPart: 0,
-    dataWarning: gearDataWarning(data), warnings,
+    totalCycleSec: 0, toolingCostPerPart: 0, nreCostGBP: 0, nreLines: [],
+    heatTreatCostPerPart: 0, dataWarning: gearDataWarning(data), warnings,
   };
 
   if (route.blocked) return { ...base, blocked: route.blocked };
@@ -207,18 +363,23 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
     };
   }
 
+  // `internal` rides along: a generating grinder cannot enter a bore, and
+  // honing and shaving are external-only processes, not smaller machines.
   const envelope = {
     normalModuleMm: inputs.normalModuleMm,
     outerDiameterMm: outerDia,
     faceWidthMm: inputs.faceWidthMm,
+    internal: inputs.internal,
   };
 
   const ops: GearOperationDetail[] = [];
+  const nreLines: Array<{ item: string; costGBP: number; reason: string }> = [];
   let toolingPerPart = 0;
   let heatTreat = 0;
   const A = data.ancillary;
   const F = data.finishing;
   const T = data.tools;
+  const N = data.nre;
 
   for (const step of route.steps) {
     const pick = pickGearMachineId(step.process, envelope);
@@ -288,7 +449,16 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         break;
       }
       case 'grinding': {
+        // Tighter classes buy their accuracy in spark-out passes, not in stock.
+        const byClass = F.grindSparkOutPassesByClass;
+        const keys = Object.keys(byClass).map(Number).sort((a, b) => a - b);
+        const tightest = keys[0];
+        const key = keys.find(k => k >= inputs.qualityClass) ?? keys[keys.length - 1];
+        const passes = byClass[Math.max(key, inputs.qualityClass <= tightest ? tightest : key)]
+          ?? byClass[key];
         cycle = grindingCycleSec({
+          sparkOutPasses: passes?.value ?? 0,
+          sparkOutSecPerPass: F.grindSparkOutSecPerPass.value,
           teeth: inputs.teeth, normalModuleMm: inputs.normalModuleMm,
           helixAngleDeg: inputs.helixAngleDeg, faceWidthMm: inputs.faceWidthMm,
           grindingStockPerFlankMm: F.grindingStockPerFlankMm.value,
@@ -311,6 +481,13 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         flatSec = 0;
         break;
       case 'broaching':
+        // The broach is the reason broaching needs volume. Charging none made the
+        // advisor's own justification ("the volume carries the tool cost") empty.
+        nreLines.push({
+          item: 'Broach', costGBP: N.broachCapitalGBP.value,
+          reason: 'A broach cuts one gear form and cannot be reground into another, so its whole '
+            + 'cost belongs to this programme.',
+        });
         // A broach is a single stroke; its time is dominated by handling. Without
         // a stroke-rate in the shop data there is nothing honest to compute, so
         // this is handling only and says so.
@@ -345,19 +522,43 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
     });
 
     // Cross-check every generated cycle against the metal it claims to remove.
-    if (cycle && cycle.removalRateMm3PerMin > 500_000) {
-      warnings.push(
-        `${step.label} implies ${(cycle.removalRateMm3PerMin / 1000).toFixed(0)} cm³/min of metal `
-        + `removal, which is beyond any gear machine. The feed or speed in the shop data is `
-        + `probably wrong for this module.`);
+    if (cycle) {
+      const check = checkRemovalRate(
+        cycle.removalRateMm3PerMin, inputs.normalModuleMm, step.process);
+      if (check) warnings.push(`${step.label}: ${check}`);
     }
+  }
+
+  // Every gear programme buys work-holding, a programme and an approved
+  // first article, whatever the route. These are what make a 1,000/yr gear
+  // cost more per part than a 1,000,000/yr gear — without them the model was
+  // completely volume-insensitive.
+  nreLines.push(
+    { item: 'Dedicated fixture', costGBP: N.fixtureCostGBP.value,
+      reason: 'Work-holding for the gear cutting operation.' },
+    { item: 'Programming & first article', costGBP: N.programmingAndPPAPGBP.value,
+      reason: 'CNC programming, trial cuts and PPAP approval before production.' },
+    { item: 'Inspection master', costGBP: N.inspectionMasterGBP.value,
+      reason: `Master gear / checking fixture for ISO class ${inputs.qualityClass} metrology.` },
+  );
+  const nreCostGBP = nreLines.reduce((s, l) => s + l.costGBP, 0);
+
+  const totalCycleSec = ops.reduce((s, o) => s + o.cycleSec, 0);
+  const nrePerPart = nreCostGBP / Math.max(1, inputs.amortizationVolume);
+  if (nrePerPart > 0.25 * (inputs.blankCostPerPart || 1)) {
+    warnings.push(
+      `One-time cost is £${nrePerPart.toFixed(2)}/part at ${inputs.amortizationVolume.toLocaleString()} `
+      + `parts (£${nreCostGBP.toLocaleString()} total) — a material share of the piece price. At `
+      + 'this volume the programme cost, not the cutting, is the thing to negotiate.');
   }
 
   return {
     ...base,
     operations: ops,
-    totalCycleSec: ops.reduce((s, o) => s + o.cycleSec, 0),
+    totalCycleSec,
     toolingCostPerPart: toolingPerPart,
+    nreCostGBP,
+    nreLines,
     heatTreatCostPerPart: heatTreat,
     warnings,
   };
@@ -418,8 +619,14 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
   // Perishable gear tooling is a per-part consumable, not an amortised die, so
   // it is converted to a total over the amortisation volume rather than being
   // dropped into a bucket that divides it again.
+  // Two different things share this bucket, and they behave differently with
+  // volume. Perishable tooling (hobs, cutters, wheels) is per-part by nature, so
+  // it is grossed up by the amortisation volume and divides straight back out.
+  // NRE (fixture, programming, broach) is a fixed programme cost, so it is added
+  // once and genuinely divides down as volume rises. Before this, only the first
+  // term existed and the piece price was identical at 1k/yr and 1M/yr.
   const tooling: ToolingInput = {
-    totalToolingCost: a.toolingCostPerPart * inputs.amortizationVolume,
+    totalToolingCost: a.toolingCostPerPart * inputs.amortizationVolume + a.nreCostGBP,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };

@@ -116,8 +116,20 @@ const GEAR_SKIVER_TIERS: readonly GearMachineEnvelope[] = [
   { id: 'gear-skive-medium', maxModuleMm: 8, maxDiameterMm: 600, maxFaceWidthMm: 200 },
 ];
 
-const GEAR_GRINDER_TIERS: readonly GearMachineEnvelope[] = [
+/**
+ * Gear grinders, split by what they can physically reach.
+ *
+ * A GENERATING grinder runs a threaded wheel that meshes with the gear from
+ * outside — it cannot enter a bore, so it is external-only. A PROFILE grinder
+ * uses a form wheel on a quill and is the route for internal teeth. Selecting
+ * on size alone put an internal ring gear on a generating grinder, which is a
+ * machine that cannot perform the operation at all.
+ */
+const GEAR_GRINDER_TIERS_EXTERNAL: readonly GearMachineEnvelope[] = [
   { id: 'gear-grind-generating', maxModuleMm: 6, maxDiameterMm: 400, maxFaceWidthMm: 200 },
+  { id: 'gear-grind-profile', maxModuleMm: 12, maxDiameterMm: 1200, maxFaceWidthMm: 500 },
+];
+const GEAR_GRINDER_TIERS_INTERNAL: readonly GearMachineEnvelope[] = [
   { id: 'gear-grind-profile', maxModuleMm: 12, maxDiameterMm: 1200, maxFaceWidthMm: 500 },
 ];
 
@@ -177,16 +189,32 @@ function pickGearTier(
 /** Machine for a gear cutting or finishing operation. */
 export function pickGearMachineId(
   process: string,
-  p: { normalModuleMm: number; outerDiameterMm: number; faceWidthMm: number },
+  p: { normalModuleMm: number; outerDiameterMm: number; faceWidthMm: number; internal?: boolean },
 ): GearMachinePick {
   switch (process) {
     case 'hobbing':  return pickGearTier(GEAR_HOBBER_TIERS, 'gear hobber', p);
     case 'shaping':  return pickGearTier(GEAR_SHAPER_TIERS, 'gear shaper', p);
     case 'skiving':  return pickGearTier(GEAR_SKIVER_TIERS, 'power skiving machine', p);
-    case 'grinding': return pickGearTier(GEAR_GRINDER_TIERS, 'gear grinder', p);
+    case 'grinding':
+      return p.internal
+        ? pickGearTier(GEAR_GRINDER_TIERS_INTERNAL, 'internal (profile) gear grinder', p)
+        : pickGearTier(GEAR_GRINDER_TIERS_EXTERNAL, 'gear grinder', p);
     case 'broaching':     return { machineId: GEAR_FIXED_MACHINES.broach, envelope: null };
-    case 'honing':        return { machineId: GEAR_FIXED_MACHINES.hone, envelope: null };
-    case 'shaving':       return { machineId: GEAR_FIXED_MACHINES.shave, envelope: null };
+    // Honing and shaving both work a gear from outside. Asked for on an internal
+    // gear they are the wrong operation, not a smaller machine, so they block.
+    case 'honing':
+      return p.internal
+        ? { machineId: GEAR_FIXED_MACHINES.hone, envelope: null,
+            blocked: 'Gear honing works the flank from outside and cannot reach internal teeth. '
+              + 'An internal gear needing that finish is honed on a dedicated internal honing '
+              + 'machine, which the rate library does not carry.' }
+        : { machineId: GEAR_FIXED_MACHINES.hone, envelope: null };
+    case 'shaving':
+      return p.internal
+        ? { machineId: GEAR_FIXED_MACHINES.shave, envelope: null,
+            blocked: 'Gear shaving is an external-only process — the shaving cutter cannot enter '
+              + 'a bore. Finish an internal gear by skiving to size or by profile grinding.' }
+        : { machineId: GEAR_FIXED_MACHINES.shave, envelope: null };
     case 'deburr':        return { machineId: GEAR_FIXED_MACHINES.deburr, envelope: null };
     case 'inspection':    return { machineId: GEAR_FIXED_MACHINES.inspect, envelope: null };
     case 'milling_5ax':   return { machineId: GEAR_FIXED_MACHINES.mill, envelope: null };

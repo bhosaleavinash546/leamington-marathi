@@ -286,6 +286,18 @@ export interface GrindingCycleInputs {
   wheelWidthMm: number;
   /** Seconds of dressing amortised over the parts between dresses. Empirical. */
   dressingSecPerPart: number;
+  /**
+   * Spark-out passes after stock removal, set by the ISO class being held.
+   *
+   * A spark-out pass removes (almost) no stock — it lets the wheel run out the
+   * elastic deflection in the machine and the part, which is what actually buys
+   * the last classes of accuracy. Modelling it as extra time at the same removal
+   * rate would be wrong; each pass is one traverse of the face at the finishing
+   * feed, so it is added as time, not as volume.
+   */
+  sparkOutPasses?: number;
+  /** Seconds per spark-out pass. Empirical. */
+  sparkOutSecPerPass?: number;
   loadUnloadSec: number;
 }
 
@@ -309,7 +321,10 @@ export function grindingCycleSec(i: GrindingCycleInputs): CycleBreakdown {
   const volume = 2 * i.teeth * flankAreaMm2 * i.grindingStockPerFlankMm;
 
   const rateMm3PerSec = safe(i.specificRemovalRateMm3PerMmSec * i.wheelWidthMm);
-  const cuttingSec = volume / rateMm3PerSec + i.dressingSecPerPart;
+  const stockSec = volume / rateMm3PerSec;
+  const passes = Math.max(0, i.sparkOutPasses ?? 0);
+  const sparkOutSec = passes * (i.sparkOutSecPerPass ?? 0);
+  const cuttingSec = stockSec + sparkOutSec + i.dressingSecPerPart;
 
   return {
     cuttingSec,
@@ -320,7 +335,8 @@ export function grindingCycleSec(i: GrindingCycleInputs): CycleBreakdown {
       `2 flanks x ${i.teeth}z x ${flankAreaMm2.toFixed(0)} mm² x `
       + `${i.grindingStockPerFlankMm} mm stock = ${volume.toFixed(0)} mm³ at `
       + `${i.specificRemovalRateMm3PerMmSec} mm³/mm·s x ${i.wheelWidthMm} mm wheel = `
-      + `${(volume / rateMm3PerSec).toFixed(0)} s + ${i.dressingSecPerPart} s dressing `
-      + `+ ${i.loadUnloadSec} s handling`,
+      + `${stockSec.toFixed(0)} s`
+      + (passes > 0 ? ` + ${passes} spark-out pass(es) ${sparkOutSec.toFixed(0)} s` : '')
+      + ` + ${i.dressingSecPerPart} s dressing + ${i.loadUnloadSec} s handling`,
   };
 }

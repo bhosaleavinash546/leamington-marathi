@@ -83,6 +83,22 @@ const COMMODITY_BENCHMARKS: Record<string, CommodityBenchmarks> = {
     toolingPct: [4, 14], overheadPct: [8, 14], marginPct: [6, 11],
     typicalMatUtil: 0.75, oeeBenchmark: 0.80,
   },
+  /**
+   * Gear cutting sits between machining and forging in shape: the blank is a
+   * bought-in pass-through so material stays high, but the cutting, hardening
+   * and grinding operations make process the second-largest bucket and push
+   * tooling above a plain machined part (hobs, cutters and wheels are
+   * perishable, and the programme carries fixture and PPAP NRE).
+   *
+   * Without this entry `DEFAULT_BENCHMARK` applied, which is MACHINING — so a
+   * gear's bucket split was silently judged against the wrong process and every
+   * benchmark flag it raised was measured off the wrong baseline.
+   */
+  gear: {
+    materialPct: [28, 50], processPct: [20, 38], labourPct: [8, 18],
+    toolingPct: [3, 12], overheadPct: [8, 15], marginPct: [5, 12],
+    typicalMatUtil: 0.95, oeeBenchmark: 0.78,
+  },
   sheet_metal: {
     materialPct: [30, 52], processPct: [18, 35], labourPct: [10, 22],
     toolingPct: [2, 10], overheadPct: [8, 14], marginPct: [5, 12],

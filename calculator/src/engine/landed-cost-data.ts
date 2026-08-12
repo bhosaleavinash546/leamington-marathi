@@ -150,6 +150,22 @@ export const HS_CANDIDATES: Record<string, TariffLine[]> = {
     },
   ],
 
+  gear: [
+    {
+      hsCode: '8483409000',
+      description: 'Gears and gearing, other than toothed wheels, chain sprockets and other '
+        + 'transmission elements presented separately',
+      mfnDutyPct: 3.7,
+      status: 'estimate',
+      source: 'Gears classify to heading 8483 (transmission shafts, gears, gearing) rather than '
+        + 'the generic 8708 vehicle-parts heading used by the other commodities here. Rate NOT '
+        + 'verified against the live tariff — the build environment cannot reach it. Confirm the '
+        + 'commodity code with your customs broker before quoting duty.',
+      verifyUrl: `${UK_TARIFF}8483409000`,
+      reviewed: '2026-08-09',
+    },
+  ],
+
   injection_moulding: [
     {
       hsCode: '8708299000',
