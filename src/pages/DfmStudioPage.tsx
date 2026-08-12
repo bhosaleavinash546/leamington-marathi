@@ -8,7 +8,10 @@ import {
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import CadViewer3D, { type CadViewerRef } from '../components/CadViewer3D';
 import type { DfmFigure } from '../services/dfm-report';
-import { selectFindingAnnotations, chooseSecondView, sectionCandidate } from '../services/dfm-annotations.mjs';
+import {
+  selectFindingAnnotations, chooseSecondView, sectionCandidate, locateFinding,
+  type FindingLocation,
+} from '../services/dfm-annotations.mjs';
 import { diffAnalyses, comparability } from '../services/dfm-diff.mjs';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '../hooks/useToast';
@@ -294,6 +297,17 @@ export default function DfmStudioPage() {
   // of them stacked is a wall nobody reads to the end of. Collapsed, the list
   // is scannable; the reasoning is one click away and never lost.
   const [openFindings, setOpenFindings] = useState<Set<string>>(new Set());
+  // WHICH FINDING HAS THE MODEL. At most one, by construction: a viewport
+  // showing four findings at once in four colours is a picture of the whole
+  // part again, which is the state the reader was already in. Null means the
+  // model is back to whatever the global toggles asked for.
+  const [focusedFinding, setFocusedFinding] = useState<string | null>(null);
+  // How many OTHER findings also claim the face the reader just clicked. A face
+  // can break more than one rule — the same under-drafted rib wall is both a
+  // draft finding and a rib finding — and the click can only open one of them.
+  // Resolving to the more severe and saying nothing would quietly hide the
+  // other; this is what lets the banner admit it.
+  const [sharedWithFocus, setSharedWithFocus] = useState(0);
   const [dragOver, setDragOver] = useState(false);
   const [dragOverDrawing, setDragOverDrawing] = useState(false);
   const [loading, setLoading] = useState<'' | 'dfm' | 'dfa'>('');
@@ -976,43 +990,195 @@ export default function DfmStudioPage() {
 
   useEffect(() => { void viewerRef.current?.setExplode(explode); }, [explode]);
 
-  // Pin them as soon as an analysis lands, and clear them when it is replaced.
-  useEffect(() => {
-    void viewerRef.current?.setAnnotations(showCallouts ? annotations : []);
-  }, [annotations, showCallouts]);
+  // ── WHERE EVERY FINDING IS ─────────────────────────────────────────────────
+  //
+  // `annotations` above is the PRINTED FIGURE's marker list, and it is capped at
+  // eight because that is how many rings fit on a page. Screen highlighting must
+  // not inherit that cap: a reader who clicks the ninth finding is asking about
+  // the ninth finding, and "the figure only had room for eight" is not an answer
+  // to that question. So every failing finding is resolved here, on its own.
+  //
+  // The result is three-state, like everything else in this tool: faces, or an
+  // anchor with no faces, or a stated reason why neither exists.
+  const placedFindings = useMemo(() => {
+    const out = new Map<string, FindingLocation>();
+    for (const r of (result?.results ?? [])) {
+      for (const f of (r.findings ?? [])) out.set(f.id, locateFinding(result, f));
+    }
+    return out;
+  }, [result]);
+
+  /** The finding row behind a rule id, wherever in the families it lives. */
+  const findingById = useCallback((ruleId: string): Finding | undefined => {
+    for (const r of (result?.results ?? [])) {
+      for (const f of (r.findings ?? [])) if (f.id === ruleId) return f;
+    }
+    return undefined;
+  }, [result]);
 
   /**
-   * Which marker backs a rule id.
+   * FACE -> FINDING, the link run backwards.
    *
-   * This was a list of string-prefix guesses — `endsWith('-undercuts')` and so
-   * on — which meant a rule whose id did not match one of five patterns had no
-   * button however well located its evidence was, and a matching id pointed at
-   * whatever region happened to be first rather than the one that failed. The
-   * annotation now carries its own `ruleId`, so the lookup is an identity rather
-   * than an inference.
+   * A reader who sees a tinted face and wants to know what is wrong with it
+   * should be able to click it. Where two findings claim the same face the more
+   * severe one wins the click and the loser is counted, so the UI can say "1
+   * other finding is on this face" rather than silently hiding it.
    */
-  function anchorFor(ruleId: string) {
-    return annotations.find(a => a.ruleId === ruleId);
-  }
-
-  /** Fly to a finding's anchor and make sure its callout is on screen. */
-  function showOnModel(ruleId: string) {
-    const a = anchorFor(ruleId);
-    if (!a) return;
-    setShowCallouts(true);
-    void viewerRef.current?.flyTo(a.anchorXYZ);
-    if (a.faceIds?.length) {
-      void viewerRef.current?.paintFaces('finding', a.faceIds, { colour: 0xf59e0b, opacity: 0.7 });
+  const findingByFace = useMemo(() => {
+    const rank: Record<string, number> = { high: 0, medium: 1, low: 2, info: 3 };
+    const out = new Map<number, { ruleId: string; severity: string; others: number }>();
+    for (const r of (result?.results ?? [])) {
+      for (const f of (r.findings ?? [])) {
+        const placed = placedFindings.get(f.id);
+        if (!placed?.located) continue;
+        for (const id of placed.faceIds ?? []) {
+          const prev = out.get(id);
+          if (!prev) { out.set(id, { ruleId: f.id, severity: f.severity, others: 0 }); continue; }
+          const better = (rank[f.severity] ?? 9) < (rank[prev.severity] ?? 9);
+          out.set(id, better
+            ? { ruleId: f.id, severity: f.severity, others: prev.others + 1 }
+            : { ...prev, others: prev.others + 1 });
+        }
+      }
     }
-    viewerRef.current?.ready().then(() => {
-      document.querySelector('.cv3d-host')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return out;
+  }, [result, placedFindings]);
+
+  /** The severity palette, shared with the report capture so screen and print agree. */
+  const SEV_COLOUR: Record<string, number> = {
+    high: 0xdc2626, medium: 0xf59e0b, low: 0x0d9488, info: 0x64748b,
+  };
+
+  /** Put the model back to whatever the global toggles were showing. */
+  const clearFocus = useCallback(() => {
+    setFocusedFinding(null);
+    setSharedWithFocus(0);
+    void viewerRef.current?.clearLayer('finding');
+  }, []);
+
+  /**
+   * Give ONE finding the model: its faces in its own severity colour, one
+   * callout naming the measurement, and the camera framing it.
+   *
+   * `clearLayer('finding')` runs FIRST and unconditionally. Without it — which
+   * is how this shipped — clicking a finding that has no faces left the PREVIOUS
+   * finding's paint on screen beside the new finding's callout, which is not a
+   * missing highlight but a wrong one.
+   */
+  const focusFinding = useCallback((ruleId: string, opts: { fly?: boolean } = {}) => {
+    const fly = opts.fly ?? true;
+    if (focusedFinding === ruleId) { clearFocus(); return; }
+    const v = viewerRef.current;
+    if (!v) return;
+    void v.clearLayer('finding');
+
+    const finding = findingById(ruleId);
+    const placed = placedFindings.get(ruleId);
+    if (!finding || !placed?.located) { setFocusedFinding(null); return; }
+
+    setFocusedFinding(ruleId);
+    // Reset unless the caller sets it: a shared-face note belongs to the face
+    // that was clicked, not to the next finding chosen from the list.
+    setSharedWithFocus(0);
+    const painted = !!placed.faceIds?.length;
+    // Paint, THEN fly — awaited rather than fired together, because the camera
+    // reads the layer's normal and a layer that does not exist yet has none.
+    const paint = painted
+      ? v.paintFaces('finding', placed.faceIds,
+        { colour: SEV_COLOUR[finding.severity ?? 'medium'] ?? SEV_COLOUR.medium, opacity: 0.78 })
+      : Promise.resolve();
+    // Approach along the painted faces' own normal. Without it a highlighted
+    // wall that happens to lie edge-on to the current orbit paints perfectly and
+    // renders as a coloured LINE — the tool did the work and the reader could
+    // not see it. `facing` is ignored when nothing was painted.
+    //
+    // NOT when the reader got here by clicking the face itself: they are already
+    // looking at it, and swinging the camera to a view they did not ask for
+    // makes a confirmation feel like a jump-cut.
+    if (fly) {
+      void paint.then(() => v.flyTo(placed.xyz, painted ? { facing: 'finding' } : undefined));
+      void v.ready().then(() => {
+        document.querySelector('.cv3d-host')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
+  }, [focusedFinding, clearFocus, findingById, placedFindings]);
+
+  // Pin the callouts as soon as an analysis lands, and clear them when it is
+  // replaced.
+  //
+  // A FOCUSED FINDING GETS THE VIEWPORT TO ITSELF: one callout, its own. Leaving
+  // the other seven up while one is isolated asks the reader to find the label
+  // that belongs to the tinted face, which is the hunt this feature exists to
+  // remove. The full set returns the moment the focus clears.
+  useEffect(() => {
+    if (!focusedFinding) {
+      void viewerRef.current?.setAnnotations(showCallouts ? annotations : []);
+      return;
+    }
+    // Built from the finding, NOT looked up in `annotations` — that list is
+    // capped for the printed figure, so a lookup would leave every finding past
+    // the eighth painted but unlabelled.
+    const finding = findingById(focusedFinding);
+    const placed = placedFindings.get(focusedFinding);
+    if (!finding || !placed?.located) { void viewerRef.current?.setAnnotations([]); return; }
+    const unit = String(finding.unit ?? '').trim();
+    void viewerRef.current?.setAnnotations([{
+      id: `finding-${focusedFinding}`,
+      anchorXYZ: placed.xyz,
+      label: finding.title,
+      // The measurement against its own limit — a callout reading only "Rib
+      // thickness" tells an engineer nothing they cannot already see.
+      value: [
+        [finding.measured ?? null, unit].filter(v => v !== null && v !== '').join(' '),
+        finding.thresholdText ? `limit ${finding.thresholdText}` : '',
+      ].filter(Boolean).join('  ·  '),
+      severity: finding.severity,
+    }]);
+  }, [annotations, showCallouts, focusedFinding, findingById, placedFindings]);
+
+  /** What the focus banner names — read from the finding, so it cannot drift. */
+  const focusedTitle = focusedFinding ? (findingById(focusedFinding)?.title ?? null) : null;
+  const focusedPlace = focusedFinding ? placedFindings.get(focusedFinding) : undefined;
+  const focusedFaceCount = focusedPlace?.located ? focusedPlace.faceIds.length : 0;
+
+  /** Esc gives the model back. A takeover the keyboard cannot undo is a trap. */
+  useEffect(() => {
+    if (!focusedFinding) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') clearFocus(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [focusedFinding, clearFocus]);
+
+  /** A new analysis invalidates the focus — the face ids belong to the old part. */
+  useEffect(() => { setFocusedFinding(null); }, [result]);
+
+  /** Clicking a painted face opens the finding that painted it. */
+  const onFaceSelect = useCallback((faceId: number | null) => {
+    if (faceId == null) return;
+    const hit = findingByFace.get(faceId);
+    if (!hit) return;
+    focusFinding(hit.ruleId, { fly: false });
+    // Set AFTER focusFinding, which clears it — this is the one caller that has
+    // something to say about the face rather than about the finding.
+    setSharedWithFocus(hit.others);
+    setOpenFindings(prev => new Set(prev).add(hit.ruleId));
+    // Scrolled on the next frame: the row has to exist and be expanded before
+    // it can be scrolled to, and both happen in this render.
+    requestAnimationFrame(() => {
+      document.getElementById(`finding-${hit.ruleId}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
-  }
+  }, [findingByFace, focusFinding]);
 
   const highlightIds: number[] | null =
-    highlight === 'undercuts' ? (draft.undercutFaceIds ?? null)
-      : highlight === 'zeroDraft' ? (draft.zeroDraftFaceIds ?? null)
-        : null;
+    // A FOCUSED FINDING OWNS THE MODEL. The global undercut / zero-draft wash is
+    // a different question ("where are all the undercuts?") in a different
+    // colour, and leaving it on underneath makes the reader decode two overlays
+    // at once. It comes straight back when the focus clears.
+    focusedFinding ? null
+      : highlight === 'undercuts' ? (draft.undercutFaceIds ?? null)
+        : highlight === 'zeroDraft' ? (draft.zeroDraftFaceIds ?? null)
+          : null;
 
   return (
     <div className="dfm-shell min-h-screen bg-navy-950 pt-20 pb-16 px-4">
@@ -1873,10 +2039,44 @@ export default function DfmStudioPage() {
               )}
             </div>
             <CadViewer3D ref={viewerRef} file={file} token={token} highlightFaceIds={highlightIds}
+              onFaceSelect={onFaceSelect}
               className={`${result && file ? 'h-[300px] xl:h-[340px]' : 'h-[420px]'} rounded-xl overflow-hidden`} />
+            {/* WHAT THE MODEL IS CURRENTLY SHOWING, when it is not showing the
+                default. An isolated finding changes what every colour on the
+                part means, and a viewport that changed meaning without saying so
+                is how a reader misreads a picture with total confidence. */}
+            <AnimatePresence initial={false}>
+              {focusedFinding && (
+                <motion.div
+                  initial={m.reduced ? { opacity: 0 } : { opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={m.reduced ? { opacity: 0 } : { opacity: 0, y: -6 }}
+                  transition={m.t(0.2)}
+                  className="mt-2 flex items-center justify-between gap-3 rounded-lg border
+                             border-gold-500/25 bg-gold-500/[0.07] px-3 py-1.5">
+                  <span className="text-[11px] text-slate-300 min-w-0 truncate">
+                    Showing <span className="text-gold-300 font-semibold">{focusedTitle ?? 'one finding'}</span>
+                    {focusedFaceCount ? ` — ${focusedFaceCount} face${focusedFaceCount === 1 ? '' : 's'} tinted` : ' — callout only'}
+                    {/* A face can break more than one rule, and the click opened
+                        the more severe of them. Counting the rest is the
+                        difference between resolving a tie and hiding one. */}
+                    {sharedWithFocus > 0 && (
+                      <span className="text-slate-500">
+                        {' '}· {sharedWithFocus} other finding{sharedWithFocus === 1 ? '' : 's'} on this face
+                      </span>
+                    )}
+                  </span>
+                  <button type="button" onClick={clearFocus}
+                    className="shrink-0 text-[10px] uppercase tracking-wider text-slate-400
+                               hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold-500/60 rounded px-1">
+                    Clear <span className="text-slate-600">(Esc)</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <p className="text-slate-600 text-[11px] mt-2">
               {result
-                ? 'An undercut is occluded in both tool halves and buys a slide or a lifter. A zero-draft wall drags out but scuffs, and is fixable with a degree of taper. They are deliberately shown as different problems.'
+                ? 'Click any finding’s "Show on model" to isolate it here — or click a tinted face to jump back to the finding that tinted it. An undercut is occluded in both tool halves and buys a slide or a lifter; a zero-draft wall drags out but scuffs, and is fixable with a degree of taper.'
                 : 'Orbit, section and measure the part now. Run the analysis and the findings will be painted onto these faces.'}
             </p>
           </div>
@@ -2298,10 +2498,12 @@ export default function DfmStudioPage() {
                 )}
 
                 <motion.div variants={m.stagger()} initial="hidden" animate="show">
-                {r.findings.map(f => (
-                  <motion.div key={f.id} variants={m.staggerItem} layout={m.reduced ? false : 'position'}
+                {r.findings.map(f => { const place = placedFindings.get(f.id); return (
+                  <motion.div key={f.id} id={`finding-${f.id}`} variants={m.staggerItem}
+                    layout={m.reduced ? false : 'position'}
                     transition={m.springSoft}
-                    className={`dfm-spine dfm-lift rounded-xl border p-4 pl-5 mb-3 ${SEV_STYLE[f.severity]}`}>
+                    className={`dfm-spine dfm-lift rounded-xl border p-4 pl-5 mb-3 ${SEV_STYLE[f.severity]}
+                                ${focusedFinding === f.id ? 'dfm-focused' : ''}`}>
                     <div className="flex items-start justify-between gap-3 mb-1">
                       <button type="button"
                         onClick={() => setOpenFindings(prev => {
@@ -2316,18 +2518,24 @@ export default function DfmStudioPage() {
                         <h4 className="text-white font-semibold text-sm">{f.title}</h4>
                       </button>
                       <div className="flex items-center gap-2 shrink-0">
-                        {/* THE POINT OF THE WHOLE WAVE: a finding that can show
-                            you the face that caused it. Only offered when the
-                            engine actually located this kind of finding — a
-                            button that flies to nowhere is worse than none. */}
-                        {anchorFor(f.id) && (
+                        {/* THE POINT OF THE WHOLE WAVE: a finding that shows you
+                            the geometry that caused it. Offered only when this
+                            finding — not merely its KIND — was actually located;
+                            a button that flies to nowhere is worse than none.
+                            The reason it could not be is printed below instead,
+                            because "we chose not to mark this" and "we forgot"
+                            must never look the same. */}
+                        {place?.located && (
                           <motion.button type="button"
-                            onClick={() => { showOnModel(f.id); setOpenFindings(prev => new Set(prev).add(f.id)); }}
+                            onClick={() => { focusFinding(f.id); setOpenFindings(prev => new Set(prev).add(f.id)); }}
                             {...m.press}
-                            className="px-2 py-0.5 rounded-md border border-current/40 text-[10px]
-                                       font-semibold uppercase tracking-wider hover:bg-white/10
-                                       focus:outline-none focus:ring-2 focus:ring-gold-500/60">
-                            Show on model
+                            aria-pressed={focusedFinding === f.id}
+                            className={`px-2 py-0.5 rounded-md border text-[10px] font-semibold uppercase
+                                        tracking-wider focus:outline-none focus:ring-2 focus:ring-gold-500/60
+                                        ${focusedFinding === f.id
+                                          ? 'border-current bg-current/20'
+                                          : 'border-current/40 hover:bg-white/10'}`}>
+                            {focusedFinding === f.id ? 'On model — clear' : 'Show on model'}
                           </motion.button>
                         )}
                         <span className="text-[10px] font-bold uppercase tracking-wider">{f.severity}</span>
@@ -2342,6 +2550,25 @@ export default function DfmStudioPage() {
                         <span className="text-emerald-300"> · €{f.cost.annualDeltaEur.toLocaleString()}/yr at stake</span>
                       ) : null}
                     </p>
+                    {/* WHY THIS ONE CANNOT BE SHOWN. Said in grey, in the same
+                        place the button would have been, because a finding with
+                        no button and no explanation reads as an oversight — and
+                        two of these three reasons are facts about the
+                        measurement rather than gaps in the tool. */}
+                    {place && !place.located && (
+                      <p className="text-[11px] text-slate-500 pl-6 mt-1 italic">
+                        Not shown on the model: {place.reason}
+                      </p>
+                    )}
+                    {/* Located, but the engine holds no FACE for it — only a
+                        point. The callout lands in the right place and nothing
+                        is tinted, and saying so is cheaper than letting the
+                        reader wonder why the part did not change colour. */}
+                    {place?.located && !place.faceIds.length && (
+                      <p className="text-[11px] text-slate-500 pl-6 mt-1 italic">
+                        Marked with a callout only — the engine measured this at a point, not on a face.
+                      </p>
+                    )}
                     <AnimatePresence initial={false}>
                     {openFindings.has(f.id) && (
                     <motion.div
@@ -2395,7 +2622,7 @@ export default function DfmStudioPage() {
                     )}
                     </AnimatePresence>
                   </motion.div>
-                ))}
+                ); })}
                 </motion.div>
                 {/* Only an all-clear when something was actually checked. With
                     zero evaluated rules this would be a green tick on a family

@@ -23,6 +23,13 @@ interface CadViewer3DProps {
   token?: string | null;
   /** Fired when the measurement list changes. */
   onMeasurementsChange?: (m: MeasurementRecord[]) => void;
+  /**
+   * Fired with the B-rep face id the user clicked, or null for empty space.
+   * The DFM Studio uses it to run the finding link BACKWARDS: it paints a
+   * finding's faces on the model, and a reader who clicks one of those faces
+   * is taken to the finding that painted it.
+   */
+  onFaceSelect?: (faceId: number | null) => void;
   className?: string;
 }
 
@@ -47,14 +54,14 @@ export interface CadViewerRef {
   fit(): Promise<void>;
   setAnnotations(items: Parameters<CADViewerHandle['setAnnotations']>[0]): Promise<void>;
   projectAnchors(): Promise<ReturnType<CADViewerHandle['projectAnchors']>>;
-  flyTo(anchor: [number, number, number], opts?: { distance?: number }): Promise<void>;
+  flyTo(anchor: [number, number, number], opts?: { distance?: number; facing?: string }): Promise<void>;
   setBodyColours(colours: Map<number, number> | null): Promise<void>;
   setExplode(factor: number): Promise<void>;
   ready(): Promise<CADViewerHandle | null>;
 }
 
 const CadViewer3D = forwardRef<CadViewerRef, CadViewer3DProps>(function CadViewer3D(
-  { file, token, highlightFaceIds, onMeasurementsChange, className }: CadViewer3DProps, ref,
+  { file, token, highlightFaceIds, onMeasurementsChange, onFaceSelect, className }: CadViewer3DProps, ref,
 ) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const handleRef = useRef<CADViewerHandle | null>(null);
@@ -63,8 +70,13 @@ const CadViewer3D = forwardRef<CadViewerRef, CadViewer3DProps>(function CadViewe
   // Keep the latest token/callback without forcing viewer re-creation.
   const tokenRef = useRef(token);
   const cbRef = useRef(onMeasurementsChange);
+  const faceCbRef = useRef(onFaceSelect);
   tokenRef.current = token;
   cbRef.current = onMeasurementsChange;
+  // Held in a ref for the same reason as the others: the viewer is created once,
+  // and closing over the first render's callback would leave the reverse link
+  // pointing at a stale set of findings after the next analysis.
+  faceCbRef.current = onFaceSelect;
 
   // Create the viewer once, dispose on unmount.
   useEffect(() => {
@@ -74,6 +86,7 @@ const CadViewer3D = forwardRef<CadViewerRef, CadViewer3DProps>(function CadViewe
     const ready = createCADViewer(host, {
       headers: (): Record<string, string> => (tokenRef.current ? { Authorization: `Bearer ${tokenRef.current}` } : {}),
       onMeasurementsChange: (m) => cbRef.current?.(m),
+      onFaceSelect: (id) => faceCbRef.current?.(id),
     }).then((h) => {
       if (disposed) { h.dispose(); throw new Error('unmounted'); }
       handleRef.current = h;

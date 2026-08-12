@@ -298,6 +298,28 @@
   opacity: 0.85;
 }
 
+/* THE FINDING THAT CURRENTLY OWNS THE MODEL.
+   ------------------------------------------
+   Clicking a finding isolates it in the viewport, and the viewport is a
+   separate column — often a separate scroll position — from the list. Without
+   a mark on the row, a reader who scrolls back has no way to tell which of
+   eleven findings the tinted faces belong to. The spine brightens to full and
+   the card lifts a hair: the same two signals the row already uses for hover,
+   held rather than transient, so nothing new has to be learned.
+
+   Colour is deliberately NOT set here — it inherits `currentColor` from the
+   severity class the row already carries, so the highlighted row and the
+   painted faces are the same colour without either side knowing about the
+   other. */
+.dfm-focused {
+  box-shadow: 0 0 0 1px currentColor, 0 8px 24px rgb(0 0 0 / 0.35);
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
+}
+.dfm-focused.dfm-spine::before { opacity: 1; width: 4px; }
+@media (prefers-reduced-motion: no-preference) {
+  .dfm-focused { transition: box-shadow 0.22s ease, background-color 0.22s ease; }
+}
+
 /* ── DATA VIZ ─────────────────────────────────────────────────────────────── */
 .dfm-gauge-track { stroke: rgb(255 255 255 / 0.07); }
 .dfm-bar {

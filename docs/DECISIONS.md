@@ -2284,3 +2284,65 @@ importance.
     a downloads folder left the reader unsure the click had registered.
   * Verified on real renders again, including a reduced-motion pass; axe
     reports 0 serious/critical on /dfm-studio and 748 tests pass.
+
+## 42. Every finding points at its own geometry, and says so when it cannot
+
+**Context**: The viewer could answer two questions — "where are the undercuts",
+"where are the zero-draft walls" — through global toggles, and a handful of
+findings had a `Show on model` button. Everything else stated a number and left
+the engineer to hunt. Asked "which of these nine ribs is 1.4x the wall?", the
+tool had no answer, despite the recogniser having carried that rib's face ids
+since the AAG pass landed.
+
+**Decision**: A finding highlights the geometry that produced it, in its own
+severity colour, or states in grey why it cannot.
+
+Face identity needed no work: one convention (1-based `TopTools_IndexedMapOfShape`
+over `TopAbs_FACE`) is already shared by the viewer tessellation, the DFM pass,
+the recogniser and the bore pass, and is declared on the wire. What was missing
+was plumbing — four places computed a face id and discarded it:
+
+  * `_extract_feature_table` bound each cluster member's face index to `_fid`
+    and dropped it; kept and unioned per row, so a hole or boss finding paints
+    the bores it is about.
+  * `overhang()` reported percentages only. It now emits the faces behind each
+    entry of the curve **keyed by cutoff**, because the answer genuinely differs
+    per angle: the analytic wedge is 34% of the surface below 40 degrees and
+    nothing at all below 20, so one shared set would have painted no faces for a
+    rule that had just failed the part.
+  * `toolAccess` knew which triangles the cutter missed and published a bare
+    percentage.
+  * `locate()`'s instance branch returned `faceIds: []` unconditionally. One
+    line, and the reason every rib, hole and boss finding arrived with a
+    coordinate and nothing paintable.
+
+**Three states, not two.** `locateFinding()` returns faces, or an anchor with no
+faces, or a reason — and the reasons are distinguished: whole-part by nature
+("three setups" is true of no face), an unmapped measure (a gap in the tool),
+and the engine returning no coordinates. Collapsing them would hide the only one
+that is a defect rather than a fact about the measurement.
+
+**Not the figure's cap.** `selectFindingAnnotations`' `ANNOTATION_CAP = 8` is a
+printed page's ink budget. `locateFinding()` deliberately does not inherit it:
+"the figure only had room for eight" is not an answer to someone clicking the
+ninth finding.
+
+**Two-way.** Clicking a painted face opens the finding that painted it. Where
+two findings claim one face the more severe wins the click and the banner counts
+the rest — resolving a tie silently would hide a finding.
+
+**Consequences**:
+  * Three viewer defects surfaced only under live QA on the analytic fixtures
+    and were fixed there: painted overlays did not follow `setExplode` (now
+    split per body, with the offset ROTATED out of the part frame — the pins'
+    highlight landed beside its pin until it was); the camera kept its orbit on
+    focus, so a highlighted wall lying edge-on rendered as a coloured line; and
+    the first fix for that averaged the facet normals, which on a rib prism
+    cancel to the rib's LENGTH — it now takes the dominant flat direction, or
+    abstains when none dominates (a bore has no single outside view).
+  * The benchmark's `featureTableCylinders` check had an escape hatch that
+    skipped when the id list was empty, so wrong ids and absent ids both read as
+    a pass. Removed; the gate is 200/200 and the check is live.
+  * 756 tests pass, axe reports 0 serious/critical, and the rib case is proven
+    on `ribbed-plate.step`: the max-thickness rule paints the 5.0 mm rib and the
+    min-thickness rule the 2.4 mm one.

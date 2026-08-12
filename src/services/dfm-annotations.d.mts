@@ -31,6 +31,21 @@ export function selectFindingAnnotations(
   totalFailing: number;
 };
 
+/**
+ * One finding's place on the model, resolved on demand and WITHOUT the figure
+ * cap. Either it is located, or it carries the reason it is not — there is no
+ * third shape, so a caller cannot accidentally render an empty highlight as a
+ * successful one.
+ */
+export type FindingLocation =
+  | { located: true; xyz: [number, number, number]; faceIds: number[]; note: string }
+  | { located: false; reason: string };
+
+export function locateFinding(analysis: unknown, finding: unknown): FindingLocation;
+
+/** Why a finding has no place on the model, in the reader's words. */
+export function unlocatableReason(finding: unknown): string;
+
 export function chooseSecondView(
   missing: string[],
   byView: Record<string, string[]>,

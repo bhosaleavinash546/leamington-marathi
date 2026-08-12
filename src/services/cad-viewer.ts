@@ -46,6 +46,14 @@ export interface CADViewerOptions {
   onSnapshot?: (dataUrl: string) => void;
   /** Called whenever the measurement list changes. */
   onMeasurementsChange?: (measurements: MeasurementRecord[]) => void;
+  /**
+   * Called with the B-rep face id the user clicked, or null when they clicked
+   * empty space. This is what makes the finding link TWO-WAY: the page can paint
+   * a finding's faces, and a reader who spots a tinted face can click it and be
+   * taken back to the finding that tinted it. `null` matters as much as the id —
+   * clicking away is how a reader dismisses a selection.
+   */
+  onFaceSelect?: (faceId: number | null) => void;
   /** Extra headers for the tessellate fetch — value or live-resolving function. */
   headers?: Record<string, string> | (() => Record<string, string>);
   /** Persist measurements per file (localStorage). Default true. */
@@ -151,7 +159,9 @@ export interface CADViewerHandle {
   /** Screen positions of the current annotations, for drawing over a capture. */
   projectAnchors(): ProjectedAnchor[];
   /** Ease the camera to look at a point in the part's own coordinates. */
-  flyTo(anchor: [number, number, number], opts?: { distance?: number }): void;
+  /** `facing` names a painted layer: the camera comes in along ITS normal, so a
+   *  wall parallel to the current line of sight is seen rather than glimpsed. */
+  flyTo(anchor: [number, number, number], opts?: { distance?: number; facing?: string }): void;
   /** Shade bodies by id (a body id is the DFA part index). null resets. */
   setBodyColours(colours: Map<number, number> | null): void;
   /** Slide bodies apart: 0 assembled, 1 fully exploded. */
@@ -403,7 +413,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
    * on the part vanished. Selection now lives on its own layer, so inspecting
    * geometry never erases the analysis painted onto it.
    */
-  const faceLayers = new Map<string, Mesh3>();
+  /** Layer name -> its per-body highlight meshes. See paintFaces for the split. */
+  const faceLayers = new Map<string, Mesh3[]>();
   /** The layer plain `highlightFaces()` paints — the other pages' behaviour. */
   const DEFAULT_LAYER = 'default';
   const SELECTION_LAYER = 'selection';
@@ -429,6 +440,15 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let bodyIdOfSlot: number[] = [];
   /** Body centroids in world space, for the exploded view. */
   let bodyCentres: Array<InstanceType<typeof THREE.Vector3>> = [];
+  /**
+   * Where each body slot's triangles start in the master arrays.
+   *
+   * Triangles are sorted contiguously by slot when the mesh is built, so this
+   * plus the next entry bounds a body. Needed by paintFaces: a highlight has to
+   * be split per body or it cannot follow an exploded assembly, and this is the
+   * only record of which triangle belongs to which body.
+   */
+  let bodyTriStart: number[] = [];
   let explodeFactor = 0;
   let fileKey = '';
   let disposed = false;
@@ -577,14 +597,88 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
    * is exactly the friction this is supposed to remove.
    */
   let fly: { from: Vec3; to: Vec3; fromT: Vec3; toT: Vec3; t: number } | null = null;
-  function flyTo(anchor: [number, number, number], opts: { distance?: number } = {}): void {
+  function flyTo(anchor: [number, number, number],
+                 opts: { distance?: number; facing?: string } = {}): void {
     const target = toWorld(anchor);
     const d = opts.distance ?? partRadius * 1.5;
-    const dir = camera.position.clone().sub(controls.target).normalize();
+    // WHICH WAY TO APPROACH FROM.
+    //
+    // Keeping the current orbit direction is right for "take me nearer this
+    // point" and wrong for "show me this face": a highlighted wall parallel to
+    // the line of sight paints correctly and renders as a coloured LINE, which
+    // reads as a rendering artefact rather than as the evidence. When the caller
+    // names a painted layer, the camera comes in along that layer's own
+    // area-weighted normal, so the face it is about is the face you see.
+    let dir = camera.position.clone().sub(controls.target).normalize();
+    const n = opts.facing ? layerNormal(opts.facing) : null;
+    if (n) {
+      // The camera goes to the side the face POINTS AT — n as it comes, never
+      // flipped toward wherever the camera already was. The first version kept
+      // the existing side "to avoid a disorienting flip", and on the analytic
+      // ribbed plate that put the camera behind the highlighted wall every
+      // time: the tinted face was the one surface you could not see. Preserving
+      // the reader's orientation is not worth showing them the back of the
+      // evidence.
+      dir = n.clone().multiplyScalar(0.88)
+        // A little off-square: dead-on, a flat face has no silhouette and the
+        // part loses all sense of depth.
+        .addScaledVector(camera.up, 0.3)
+        .normalize();
+    }
     fly = {
       from: camera.position.clone(), to: target.clone().addScaledVector(dir, d),
       fromT: controls.target.clone(), toT: target.clone(), t: 0,
     };
+  }
+
+  /**
+   * The direction to look at a painted layer FROM, or null if there isn't one.
+   *
+   * NOT the area-weighted sum of the facet normals. A rib is a prism: its two
+   * big side walls point exactly opposite and cancel, so the sum comes out
+   * along the rib's LENGTH and the camera flies to the one view where a
+   * highlighted rib is a vertical stripe. Measured on the analytic ribbed plate,
+   * which is how that was caught.
+   *
+   * What a reader wants is the layer's BIGGEST FLAT PART, seen square on. So
+   * facets are binned by direction and the largest bin wins — provided it is
+   * genuinely dominant. A bore's facets spread evenly over every direction and
+   * no bin dominates; there is no single view of a hole from outside it, and
+   * saying so (null, keep the current orbit) beats picking one at random.
+   */
+  function layerNormal(layer: string): InstanceType<typeof THREE.Vector3> | null {
+    const ms = faceLayers.get(layer);
+    if (!ms?.length) return null;
+    const bins: Array<{ n: InstanceType<typeof THREE.Vector3>; area: number }> = [];
+    const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+    const ab = new THREE.Vector3(), ac = new THREE.Vector3(), cross = new THREE.Vector3();
+    let total = 0;
+    for (const m of ms) {
+      const pos = m.geometry.getAttribute('position');
+      if (!pos) continue;
+      for (let i = 0; i + 2 < pos.count; i += 3) {
+        a.fromBufferAttribute(pos as never, i);
+        b.fromBufferAttribute(pos as never, i + 1);
+        c.fromBufferAttribute(pos as never, i + 2);
+        // |cross| is twice the triangle's area, so this weights and orients in
+        // one step.
+        cross.crossVectors(ab.subVectors(b, a), ac.subVectors(c, a));
+        const area = cross.length();
+        if (area <= 0) continue;
+        cross.divideScalar(area);
+        total += area;
+        // 15 degrees of tolerance: fine enough to keep the two sides of a rib
+        // apart, coarse enough that a tessellated fillet does not shatter into
+        // forty bins that each lose to a flat sliver.
+        const bin = bins.find(x => x.n.dot(cross) > 0.966);
+        if (bin) bin.area += area;
+        else bins.push({ n: cross.clone(), area });
+      }
+    }
+    if (!bins.length || total <= 0) return null;
+    bins.sort((x, y) => y.area - x.area);
+    // A third of the painted area facing one way is enough to call it the front.
+    return bins[0].area / total >= 0.33 ? bins[0].n.clone() : null;
   }
   function stepFly(): void {
     if (!fly) return;
@@ -675,8 +769,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     // EVERY overlay layer, not just one. A section plane that cuts the part but
     // leaves a finding highlight floating in the removed material is worse than
     // no section at all — it puts the evidence somewhere the material is not.
-    for (const m of faceLayers.values()) {
-      (m.material as InstanceType<typeof THREE.MeshBasicMaterial>).clippingPlanes = planes;
+    for (const ms of faceLayers.values()) {
+      for (const m of ms) {
+        (m.material as InstanceType<typeof THREE.MeshBasicMaterial>).clippingPlanes = planes;
+      }
     }
   }
   function updateClipPlane(): void {
@@ -808,7 +904,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     for (const m of bodyMeshes) removeAndDispose(partGroup, m);
     for (const e of bodyEdges) if (e) removeAndDispose(partGroup, e);
     bodyMeshes = []; bodyEdges = []; bodyMats = []; bodyVisible = [];
-    bodyIdOfSlot = []; bodyCentres = []; explodeFactor = 0;
+    bodyIdOfSlot = []; bodyCentres = []; bodyTriStart = []; explodeFactor = 0;
     // A previous part's callouts would otherwise hang in space over the new one,
     // anchored to coordinates that no longer mean anything.
     clearCallouts();
@@ -899,6 +995,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         const mesh = new THREE.Mesh(geometry, mat);
         mesh.userData = { triOffset: triCursor, bodySlot: bi };
         bodyIdOfSlot[bi] = bodyList[bi];
+        bodyTriStart[bi] = triCursor;
         // Centroid of this body's own bounding box, kept for the explode: each
         // body slides along the vector from the assembly centre to its own, so
         // the parts separate the way a hand would pull them apart.
@@ -1285,31 +1382,64 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
                       style?: { colour?: number; opacity?: number }): void {
     clearLayer(layer);
     if (!masterPositions || !triFaceAll || !faceIds.size) return;
-    const tris: number[] = [];
-    for (let t = 0; t < triFaceAll.length; t++) if (faceIds.has(triFaceAll[t])) tris.push(t);
-    if (!tris.length) return;
-    const hp = new Float32Array(tris.length * 9);
-    tris.forEach((t, i) => hp.set(masterPositions!.subarray(t * 9, t * 9 + 9), i * 9));
-    const hg = new THREE.BufferGeometry();
-    hg.setAttribute('position', new THREE.BufferAttribute(hp, 3));
-    hg.computeVertexNormals();
-    const mesh = new THREE.Mesh(hg, new THREE.MeshBasicMaterial({
-      color: style?.colour ?? 0x4f8ef7,
-      transparent: true, opacity: style?.opacity ?? 0.55,
-      depthTest: true, polygonOffset: true, polygonOffsetFactor: -2,
-      side: THREE.DoubleSide,
-    }));
-    mesh.applyMatrix4(partGroup.matrixWorld);
-    overlayGroup.add(mesh);
-    faceLayers.set(layer, mesh);
+    // ONE SUB-MESH PER BODY, not one mesh for the layer.
+    //
+    // A single merged highlight is baked in world space and lives in
+    // `overlayGroup`, which `setExplode` never touches — so on an exploded
+    // assembly the paint stayed behind while the body it belonged to slid away,
+    // and the tint ended up sitting on a NEIGHBOURING part. A highlight in the
+    // wrong place is worse than none, because it looks like an answer. Split by
+    // body, each piece carries its body's offset and travels with it.
+    const perSlot = new Map<number, number[]>();
+    for (let t = 0; t < triFaceAll.length; t++) {
+      if (!faceIds.has(triFaceAll[t])) continue;
+      const slot = slotOfTri(t);
+      const list = perSlot.get(slot);
+      if (list) list.push(t); else perSlot.set(slot, [t]);
+    }
+    if (!perSlot.size) return;
+
+    const meshes: Mesh3[] = [];
+    for (const [slot, tris] of perSlot) {
+      const hp = new Float32Array(tris.length * 9);
+      tris.forEach((t, i) => hp.set(masterPositions!.subarray(t * 9, t * 9 + 9), i * 9));
+      const hg = new THREE.BufferGeometry();
+      hg.setAttribute('position', new THREE.BufferAttribute(hp, 3));
+      hg.computeVertexNormals();
+      const mesh = new THREE.Mesh(hg, new THREE.MeshBasicMaterial({
+        color: style?.colour ?? 0x4f8ef7,
+        transparent: true, opacity: style?.opacity ?? 0.55,
+        depthTest: true, polygonOffset: true, polygonOffsetFactor: -2,
+        side: THREE.DoubleSide,
+      }));
+      mesh.applyMatrix4(partGroup.matrixWorld);
+      mesh.userData = { bodySlot: slot };
+      // Match the body's CURRENT explode position, so painting while already
+      // exploded lands correctly rather than only after the next slider move.
+      const off = bodyOffsetInWorld(slot);
+      if (off) mesh.position.copy(off);
+      overlayGroup.add(mesh);
+      meshes.push(mesh);
+    }
+    faceLayers.set(layer, meshes);
     // Section planes must cut the overlay too, or a clipped part shows a
     // floating highlight hanging in the void where the material was removed.
     applyClipping();
   }
 
+  /** Which body slot a master-order triangle belongs to. */
+  function slotOfTri(t: number): number {
+    // Triangles are contiguous per slot, so the last start at or below `t` wins.
+    // Bodies are few (single digits on every real assembly) and this runs once
+    // per painted triangle, so a linear scan beats the ceremony of a search.
+    let slot = 0;
+    for (let i = 0; i < bodyTriStart.length; i++) if (bodyTriStart[i] <= t) slot = i;
+    return slot;
+  }
+
   function clearLayer(layer: string): void {
-    const m = faceLayers.get(layer);
-    if (m) { removeAndDispose(overlayGroup, m); faceLayers.delete(layer); }
+    const ms = faceLayers.get(layer);
+    if (ms) { for (const m of ms) removeAndDispose(overlayGroup, m); faceLayers.delete(layer); }
   }
 
   function clearAllLayers(): void {
@@ -1442,6 +1572,33 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       const e = bodyEdges[bi];
       if (e) e.position.copy(offset);
     }
+    // THE HIGHLIGHTS TRAVEL WITH THEIR BODIES. Without this the finding paint
+    // stays where the assembled part was and ends up tinting whichever
+    // neighbour slid into that space — an authoritative-looking wrong answer.
+    for (const ms of faceLayers.values()) {
+      for (const m of ms) {
+        const slot = m.userData.bodySlot as number | undefined;
+        const target = slot == null ? null : bodyOffsetInWorld(slot);
+        if (target) m.position.copy(target);
+      }
+    }
+  }
+
+  /**
+   * A body's explode offset, converted from the part's frame to the world.
+   *
+   * `bodyMeshes[i].position` is a CHILD of `partGroup`, which carries the
+   * Z-up -> Y-up rotation this viewer applies to every CAD file. Highlight
+   * overlays live in `overlayGroup` in world space, so copying that position
+   * across untranslated sends the paint off at ninety degrees to the body it
+   * belongs to — measured on the bolted assembly, where the tinted pin's
+   * highlight landed beside the pin instead of on it. Rotate, don't copy.
+   */
+  function bodyOffsetInWorld(slot: number): InstanceType<typeof THREE.Vector3> | null {
+    const p = bodyMeshes[slot]?.position;
+    if (!p) return null;
+    const rot = new THREE.Matrix4().extractRotation(partGroup.matrixWorld);
+    return p.clone().applyMatrix4(rot);
   }
 
   /** An anchor in the PART's own coordinates -> world space. */
@@ -1465,6 +1622,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const faceId = triFaceAll[triGlobal];
     const face = faceById.get(faceId);
     if (!face) return;
+    // Announced BEFORE the chip is built, so a listener that scrolls a finding
+    // into view is not waiting on DOM work it does not care about.
+    opts.onFaceSelect?.(faceId);
     // Its own layer: inspecting a face must not erase the findings overlay.
     paintFaces(SELECTION_LAYER, new Set([faceId]));
 
@@ -1498,7 +1658,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const down = (canvas as unknown as { __downAt?: [number, number] }).__downAt;
     if (!down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 5) return; // it was a drag
     const hits = raycastMeshes(ev);
-    if (!hits.length) { if (tool === 'select') clearHighlight(); return; }
+    if (!hits.length) {
+      if (tool === 'select') { clearHighlight(); opts.onFaceSelect?.(null); }
+      return;
+    }
     const hit = hits[0];
     if (tool === 'select') {
       const triGlobal = ((hit.object as Mesh3).userData.triOffset as number) + (hit.faceIndex ?? 0);
