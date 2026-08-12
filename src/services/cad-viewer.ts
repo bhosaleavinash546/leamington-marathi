@@ -323,7 +323,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.localClippingEnabled = true;
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xffffff);
+  // THEME-AWARE GROUND. A white viewport punched a bright rectangle through
+  // every dark page that hosts this viewer — the single loudest visual defect
+  // in the DFM Studio. The part is still lit and shaded exactly as before;
+  // only what sits behind it changes, and the light theme keeps its white.
+  const prefersLight = typeof document !== 'undefined'
+    && document.documentElement.getAttribute('data-theme') === 'light';
+  scene.background = new THREE.Color(prefersLight ? 0xffffff : 0x0c1424);
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 10000);
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
@@ -925,7 +931,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     });
 
     const gridSize = Math.max(partSpan.x, partSpan.y) * 2.2 || 10;
-    grid = new THREE.GridHelper(gridSize, 20, 0x9aa4b0, 0xdde2e8); // light greys — readable on the white viewport
+    // Grid greys follow the ground: readable on either, never glaring.
+    const lightBg = typeof document !== 'undefined'
+      && document.documentElement.getAttribute('data-theme') === 'light';
+    grid = lightBg
+      ? new THREE.GridHelper(gridSize, 20, 0x9aa4b0, 0xdde2e8)
+      : new THREE.GridHelper(gridSize, 20, 0x3b4a63, 0x1e2a3f);
     grid.rotation.x = Math.PI / 2;
     grid.position.z = -partSpan.z / 2 - partRadius * 0.02;
     partGroup.add(grid);

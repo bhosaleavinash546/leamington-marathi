@@ -22,6 +22,7 @@ import ScoreRing from '../components/dfm/ScoreRing';
 import TickNumber from '../components/dfm/TickNumber';
 import StepRail, { type RailStep } from '../components/dfm/StepRail';
 import SectionNav, { type NavSection } from '../components/dfm/SectionNav';
+import { useSpotlight } from '../components/dfm/useSpotlight';
 
 // DFM / DFA Studio. Upload a STEP or IGES part and get a manufacturability
 // analysis measured from the geometry, plus an assembly analysis when the file
@@ -228,6 +229,8 @@ export default function DfmStudioPage() {
   // The page's motion vocabulary, already resolved against the reader's
   // reduced-motion preference — see components/dfm/motion.ts.
   const m = useDfmMotion();
+  // The pointer-tracked light on every panel — see useSpotlight().
+  const spot = useSpotlight();
   const inputRef = useRef<HTMLInputElement>(null);
   // Reaches into the viewer to paint finding layers and capture report figures.
   const viewerRef = useRef<CadViewerRef | null>(null);
@@ -864,6 +867,16 @@ export default function DfmStudioPage() {
   // The headline numbers of a finished analysis, computed once for the KPI
   // strip. Every one is a sum over what the engines returned — nothing here
   // is a ratio this page invented.
+  // The cheapest priced route sets the scale for the comparison bars in the
+  // routes table. Absent when nothing was priced, and the bars then do not
+  // render at all rather than drawing against a guess.
+  const cheapestRouteEur = useMemo(() => {
+    const priced = (result?.routes?.routes ?? [])
+      .map(r => r.piecePriceEur)
+      .filter((v): v is number => typeof v === 'number' && Number.isFinite(v) && v > 0);
+    return priced.length ? Math.min(...priced) : 0;
+  }, [result]);
+
   const summary = useMemo(() => {
     if (!result) return null;
     const rs = result.results ?? [];
@@ -877,6 +890,8 @@ export default function DfmStudioPage() {
       familyCount: rs.length,
       findings: findings.length,
       high: findings.filter(f => f.severity === 'high').length,
+      medium: findings.filter(f => f.severity === 'medium').length,
+      low: findings.filter(f => f.severity === 'low').length,
       evaluated: rs.reduce((n, r) => n + r.evaluatedCount, 0),
       ruleCount: rs.reduce((n, r) => n + r.ruleCount, 0),
       annualEur: rs.reduce((n, r) => n + (r.impact?.annualEur ?? 0), 0),
@@ -977,6 +992,7 @@ export default function DfmStudioPage() {
     <div className="dfm-shell min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       {/* The ground this tool works on: two-level squared paper, faded away
           from the reading column. Decorative and inert. */}
+      <div className="dfm-aura" aria-hidden="true" />
       <div className="dfm-grid" aria-hidden="true" />
       <div className="dfm-content max-w-6xl mx-auto">
         {/* ── TOOL HEADER ────────────────────────────────────────────────────
@@ -1028,7 +1044,7 @@ export default function DfmStudioPage() {
         </div>
 
         {/* Input */}
-        <div id="step-part" className="dfm-panel dfm-framed p-6 mb-6 scroll-mt-32">
+        <div id="step-part" onMouseMove={spot} className="dfm-panel dfm-spot dfm-framed p-6 mb-6 scroll-mt-32">
           <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-3">
             <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold-500 text-navy-950 text-[11px] font-bold">1</span>
             The part
@@ -1264,8 +1280,7 @@ export default function DfmStudioPage() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <label className="text-sm text-slate-200 font-medium">Material
                   <select value={material} onChange={e => setMaterial(e.target.value)}
-                    className={`mt-1.5 w-full bg-navy-800 border rounded-lg px-3 py-2.5 text-white text-sm
-                                focus:outline-none focus:border-gold-500/60 ${material ? 'border-white/15' : 'border-amber-500/50'}`}>
+                    className="dfm-select mt-1.5" data-unset={material ? 'false' : 'true'}>
                     {/* Short, because a ~200 px select truncated the old label
                         mid-sentence. What it COSTS you to leave it unset is said
                         in full in the line below, where there is room for it. */}
@@ -1336,18 +1351,18 @@ export default function DfmStudioPage() {
               <div className="grid sm:grid-cols-3 gap-3">
                 <label className="text-xs text-slate-400">Region
                   <select value={region} onChange={e => setRegion(e.target.value)}
-                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
+                    className="dfm-select mt-1">
                     {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
                 </label>
                 <label className="text-xs text-slate-400">Annual volume
                   <input type="number" value={annualVolume} min={1}
                     onChange={e => setAnnualVolume(Math.max(1, Number(e.target.value) || 1))}
-                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40" />
+                    className="dfm-select mt-1" />
                 </label>
                 <label className="text-xs text-slate-400">Draw / parting direction
                   <select value={drawAxis} onChange={e => setDrawAxis(e.target.value as '' | 'x' | 'y' | 'z')}
-                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
+                    className="dfm-select mt-1">
                     <option value="">Find the best (least undercut)</option>
                     <option value="x">Pin to +X</option>
                     <option value="y">Pin to +Y</option>
@@ -1372,11 +1387,11 @@ export default function DfmStudioPage() {
                     disabled={drawingSupplies.tolerance}
                     title={drawingSupplies.tolerance ? 'The uploaded drawing carries toleranced dimensions, and those are judged each at their own size — a single typed band would be weaker evidence.' : undefined}
                     onChange={e => setTightestTolMm(e.target.value)}
-                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40 placeholder:text-slate-600 disabled:opacity-50" />
+                    className="dfm-input mt-1" />
                 </label>
                 <label className="text-xs text-slate-400">Tolerance grade (NADCA #402)
                   <select value={toleranceGrade} onChange={e => setToleranceGrade(e.target.value as 'standard' | 'precision')}
-                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
+                    className="dfm-select mt-1">
                     <option value="standard">Standard — first-quote assumption</option>
                     <option value="precision">Precision — costs die money, declared deliberately</option>
                   </select>
@@ -1385,11 +1400,11 @@ export default function DfmStudioPage() {
                   <input type="number" value={flatnessCalloutMm} min={0} step={0.01}
                     placeholder={drawingSupplies.flatness ? 'drawing supplies one; typing here overrides it' : 'e.g. 0.3'}
                     onChange={e => setFlatnessCalloutMm(e.target.value)}
-                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40 placeholder:text-slate-600" />
+                    className="dfm-input mt-1" />
                 </label>
                 <label className="text-xs text-slate-400">Production series (SFSA 2000, steel castings)
                   <select value={productionSeries} onChange={e => setProductionSeries(e.target.value as 'short' | 'long')}
-                    className="mt-1 w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-gold-500/40">
+                    className="dfm-select mt-1">
                     <option value="short">Short — first article, no pattern iteration yet</option>
                     <option value="long">Long — tooling iterated, dimensions centred</option>
                   </select>
@@ -1525,11 +1540,10 @@ export default function DfmStudioPage() {
                  gate is invisible until you click and nothing happens.
                  When it IS armed it carries the gold glow, so the one action
                  the page is built around is unmistakably the primary. */
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-500 text-navy-950 font-semibold text-sm
-                         hover:bg-gold-400 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60
-                         disabled:bg-transparent disabled:text-slate-500 disabled:border disabled:border-white/15
-                         disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:shadow-none
-                         ${canAnalyse && loading === '' ? 'shadow-glow-gold' : ''}`}>
+              className="dfm-cta flex items-center gap-2 px-5 py-2.5 rounded-xl text-navy-950 font-semibold text-sm
+                         transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60
+                         disabled:text-slate-500 disabled:border disabled:border-white/15
+                         disabled:cursor-not-allowed">
               {loading === 'dfm' ? <ButtonSpinner size={14} /> : <Ruler size={15} aria-hidden="true" />}
               {loading === 'dfm' ? 'Measuring…' : 'Analyse manufacturability'}
             </motion.button>
@@ -1576,7 +1590,7 @@ export default function DfmStudioPage() {
           are your parts". */}
         {batch && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-          className="dfm-panel dfm-framed p-5 mb-6">
+          onMouseMove={spot} className="dfm-panel dfm-spot dfm-framed p-5 mb-6">
           <h3 className="text-white font-semibold text-sm flex items-center gap-2 mb-1">
             <Boxes size={15} className="text-gold-400" aria-hidden="true" />
             Portfolio scan — {batch.parts.length} parts
@@ -1677,6 +1691,29 @@ export default function DfmStudioPage() {
                   </li>
                 )}
               </ol>
+
+              {/* The shape of the report, while the report is still being
+                  measured. Deliberately carries NO numbers and no score dial:
+                  a skeleton that hints at a figure is a figure. */}
+              {loading === 'dfm' && (
+                <div className="mt-4 pt-4 border-t border-white/[0.07]">
+                  <div className="flex items-center gap-5">
+                    <div className="dfm-skeleton rounded-full shrink-0" style={{ width: 92, height: 92 }} />
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <div className="dfm-skeleton h-5 w-1/3" />
+                      <div className="dfm-skeleton h-3 w-1/4" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5">
+                    {[0, 1, 2, 3].map(i => (
+                      <div key={i} className="space-y-2">
+                        <div className="dfm-skeleton h-7 w-14" />
+                        <div className="dfm-skeleton h-2.5 w-20" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -1688,7 +1725,7 @@ export default function DfmStudioPage() {
             below" — and that is the right way round: the part appears the moment
             it is chosen, and the findings paint onto it when they arrive. */}
         {file && /\.(step|stp|igs|iges)$/i.test(file.name) && (
-          <div id="sec-geometry" className="dfm-panel p-5 mb-6 scroll-mt-32">
+          <div id="sec-geometry" onMouseMove={spot} className="dfm-panel dfm-spot p-5 mb-6 scroll-mt-32">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
               <p className="dfm-label text-slate-500 flex items-center gap-1.5">
                 <Crosshair size={12} className={`text-gold-500/70 ${result ? '' : 'dfm-idle'}`} aria-hidden="true" />
@@ -1752,8 +1789,8 @@ export default function DfmStudioPage() {
                 counted findings, the priced impact, and the coverage that says
                 how much of the catalogue actually ran. Every figure is summed
                 from what the engines returned — see `summary` above. */}
-            <motion.div variants={m.staggerItem} id="sec-summary"
-              className="dfm-panel dfm-framed relative overflow-hidden p-5 scroll-mt-32">
+            <motion.div variants={m.staggerItem} id="sec-summary" onMouseMove={spot}
+              className="dfm-panel dfm-spot dfm-framed relative overflow-hidden p-6 scroll-mt-32">
               {/* One scan per analysis: keyed on the content so a new result
                   replays it and nothing loops. */}
               {!m.reduced && (
@@ -1764,19 +1801,26 @@ export default function DfmStudioPage() {
                 <div className="flex items-center gap-5 min-w-0">
                   <ScoreRing
                     score={summary?.score ?? null}
+                    size={116}
                     label="DFM score"
                     sublabel={summary && summary.scoredFamilies > 1
                       ? `mean of ${summary.scoredFamilies} rule families`
                       : summary?.score === null ? 'nothing could be evaluated' : undefined}
                   />
-                  <div className="min-w-0 border-l border-white/10 pl-5">
-                    <p className="dfm-label text-slate-500">Part</p>
-                    <h2 className="text-white font-bold text-lg leading-tight truncate max-w-[22rem]">
+                  <div className="min-w-0 border-l border-white/10 pl-6">
+                    <p className="dfm-label text-slate-500 mb-1">Part</p>
+                    <h2 className="dfm-display text-[26px] leading-none truncate max-w-[24rem]">
                       {result.partName || file?.name}
                     </h2>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      {result.material ?? 'material not set'}
-                      {result.processFamily ? ` · ${result.processFamily}` : ''}
+                    <p className="text-xs text-slate-500 mt-2 flex items-center gap-2 flex-wrap">
+                      <span className="px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/10 text-slate-300">
+                        {result.material ?? 'material not set'}
+                      </span>
+                      {result.processFamily && (
+                        <span className="px-2 py-0.5 rounded-md bg-gold-500/10 border border-gold-500/25 text-gold-300">
+                          {result.processFamily}
+                        </span>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -1795,23 +1839,48 @@ export default function DfmStudioPage() {
               </div>
 
               {summary && (
-                <div className="mt-4 pt-4 border-t border-white/[0.07] grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="mt-5 pt-5 border-t border-white/[0.07] grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-5">
                   {[
                     { label: 'Findings', value: summary.findings,
-                      sub: `${summary.high} high severity`, tone: summary.high > 0 ? 'text-red-400' : 'text-white' },
+                      sub: `${summary.high} high severity`, tone: summary.high > 0 ? 'text-red-400' : 'text-white',
+                      // The mix, not just the count: three lows and three highs
+                      // are the same number and a completely different morning.
+                      viz: 'severity' as const },
                     { label: 'Rules evaluated', value: summary.evaluated,
-                      sub: `of ${summary.ruleCount} that apply`, tone: 'text-white' },
+                      sub: `of ${summary.ruleCount} that apply`, tone: 'text-white',
+                      viz: 'coverage' as const },
                     { label: 'Priced impact', value: summary.annualEur, prefix: '€', suffix: '/yr',
-                      sub: summary.annualEur > 0 ? 'upper bound, engine-priced' : 'nothing priced', tone: summary.annualEur > 0 ? 'text-emerald-400' : 'text-slate-500' },
+                      sub: summary.annualEur > 0 ? 'upper bound, engine-priced' : 'nothing priced',
+                      tone: summary.annualEur > 0 ? 'text-emerald-400' : 'text-slate-500' },
                     { label: 'Not evaluated', value: summary.notEvaluated,
                       sub: 'measurement unavailable', tone: 'text-slate-300' },
                   ].map((k) => (
-                    <div key={k.label}>
+                    <div key={k.label} className="min-w-0">
                       <p className={`dfm-kpi-value ${k.tone}`}>
                         <TickNumber value={k.value} prefix={k.prefix ?? ''} suffix={k.suffix ?? ''} />
                       </p>
-                      <p className="dfm-label text-slate-500 mt-1">{k.label}</p>
-                      <p className="text-[11px] text-slate-600 mt-0.5">{k.sub}</p>
+                      <p className="dfm-label text-slate-500 mt-1.5">{k.label}</p>
+                      {k.viz === 'severity' && summary.findings > 0 && (
+                        <div className="dfm-bar mt-2 flex" role="img"
+                          aria-label={`${summary.high} high, ${summary.medium} medium, ${summary.low} low severity`}>
+                          {([['bg-red-500', summary.high], ['bg-amber-500', summary.medium], ['bg-teal-500', summary.low]] as const)
+                            .map(([cls, n], i) => n > 0 && (
+                              <motion.span key={i} className={cls}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(n / summary.findings) * 100}%` }}
+                                transition={m.t(0.7, 0.15 + i * 0.06)} />
+                            ))}
+                        </div>
+                      )}
+                      {k.viz === 'coverage' && summary.ruleCount > 0 && (
+                        <div className="dfm-bar mt-2">
+                          <motion.span className="bg-slate-400/70"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(summary.evaluated / summary.ruleCount) * 100}%` }}
+                            transition={m.t(0.7, 0.15)} />
+                        </div>
+                      )}
+                      <p className="text-[11px] text-slate-600 mt-1.5">{k.sub}</p>
                     </div>
                   ))}
                 </div>
@@ -2091,7 +2160,7 @@ export default function DfmStudioPage() {
             {/* Per-process results */}
             <div id="sec-findings" className="scroll-mt-32 space-y-5">
             {result.results.filter(r => r.ruleCount > 0).map(r => (
-              <motion.div key={r.process} variants={m.staggerItem} className="dfm-panel p-5">
+              <motion.div key={r.process} variants={m.staggerItem} onMouseMove={spot} className="dfm-panel dfm-spot dfm-lift p-5" whileInView="show" viewport={{ once: true, margin: "-80px" }}>
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
                   <h3 className="text-white font-semibold">{r.processName}</h3>
                   <div className="flex items-center gap-4 text-xs">
@@ -2244,7 +2313,7 @@ export default function DfmStudioPage() {
                 and CO2e are three different questions in three different units,
                 and one number would hide the trade-off the reader is here for. */}
             {result.routes && result.routes.routes.length > 0 && (
-              <motion.div variants={m.staggerItem} id="sec-routes" className="dfm-panel p-5 scroll-mt-32">
+              <motion.div variants={m.staggerItem} id="sec-routes" onMouseMove={spot} className="dfm-panel dfm-spot p-5 scroll-mt-32" whileInView="show" viewport={{ once: true, margin: "-80px" }}>
                 <div className="flex items-baseline justify-between flex-wrap gap-2 mb-1">
                   <h3 className="text-white font-semibold text-sm flex items-center gap-2">
                     <Layers size={15} className="text-gold-400" aria-hidden="true" />
@@ -2325,10 +2394,23 @@ export default function DfmStudioPage() {
                             {r.evaluatedCount}/{r.ruleCount}
                             {r.scoreCaveat && <span className="block text-amber-400/70" title={r.scoreCaveat}>partial</span>}
                           </td>
-                          <td className="text-right py-2 px-2 tabular-nums text-white">
-                            {r.piecePriceEur === null
-                              ? <span className="text-slate-500" title={r.costReason}>not priced</span>
-                              : `EUR ${r.piecePriceEur.toFixed(2)}`}
+                          <td className="text-right py-2 px-2 tabular-nums text-white relative">
+                            {/* The cheapest route sets the scale; every other
+                                bar is that route's price over this one's, so
+                                the column reads as a comparison at a glance
+                                rather than as seven numbers to subtract. */}
+                            {Number.isFinite(r.piecePriceEur as number) && (r.piecePriceEur as number) > 0 && cheapestRouteEur > 0 && (
+                              <motion.span aria-hidden="true"
+                                className="absolute inset-y-1 right-1 rounded bg-gold-500/[0.13]"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${Math.max(4, Math.min(100, (cheapestRouteEur / (r.piecePriceEur as number)) * 100))}%` }}
+                                transition={m.t(0.65, 0.05)} />
+                            )}
+                            <span className="relative">
+                              {r.piecePriceEur === null
+                                ? <span className="text-slate-500">not priced<span className="sr-only">: {r.costReason}</span></span>
+                                : `EUR ${r.piecePriceEur.toFixed(2)}`}
+                            </span>
                           </td>
                           <td className="text-right py-2 px-2 tabular-nums text-slate-300">
                             {r.toolingEur === null ? '—' : `EUR ${Math.round(r.toolingEur).toLocaleString('en-GB')}`}
@@ -2362,8 +2444,8 @@ export default function DfmStudioPage() {
 
         {/* DFA */}
         {dfa?.dfa && (
-          <motion.div id="sec-dfa" variants={m.panel} initial="hidden" animate="show"
-            className="dfm-panel p-5 mt-5 scroll-mt-32">
+          <motion.div id="sec-dfa" variants={m.panel} initial="hidden" animate="show" onMouseMove={spot}
+            className="dfm-panel dfm-spot p-5 mt-5 scroll-mt-32">
             <h3 className="text-white font-semibold mb-3 flex items-center gap-2"><Boxes size={17} className="text-teal-400" /> Design for Assembly</h3>
             <div className="grid sm:grid-cols-4 gap-4 text-sm mb-4">
               <Metric label="Parts" value={String(dfa.dfa.totalParts)} />
