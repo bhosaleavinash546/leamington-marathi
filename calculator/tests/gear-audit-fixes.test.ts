@@ -181,9 +181,17 @@ describe('defect 5 — quality class must move the grinding time', () => {
       const a = analyseGear(gear({ qualityClass: q }));
       return a.operations.find(o => o.process === 'grinding')?.cycleSec ?? 0;
     });
+    // Class 7 now grinds too (hardened + distortion), and the representative
+    // spark-out table gives 7 and 6 the same single pass — adjacent classes
+    // sharing a pass count is real shop data, so the pin is non-decreasing
+    // step-to-step with a STRICT increase across the range (defect 5 was the
+    // time not moving at all).
     for (let i = 1; i < times.length; i++) {
-      expect(times[i], `class ${[7, 6, 5, 4][i]} should grind longer`).toBeGreaterThan(times[i - 1]);
+      expect(times[i], `class ${[7, 6, 5, 4][i]} must not grind for less`)
+        .toBeGreaterThanOrEqual(times[i - 1]);
     }
+    expect(times[0]).toBeGreaterThan(0);
+    expect(times[times.length - 1]).toBeGreaterThan(times[0]);
   });
 
   it('the extra time is spark-out, and the basis says so', () => {

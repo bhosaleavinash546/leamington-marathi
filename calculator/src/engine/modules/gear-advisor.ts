@@ -187,6 +187,15 @@ export interface GearRouteRecommendation {
   warnings: string[];
 }
 
+/**
+ * ISO classes lost to carburise-and-quench distortion, minimum.
+ *
+ * Press quenching and good fixturing hold it to one class; free quenching
+ * loses two or more. One is the OPTIMISTIC bound, which is the right default
+ * for deciding whether hard finishing is needed: a route that needs grinding
+ * at the optimistic bound certainly needs it in the real furnace.
+ */
+export const CASE_HARDENING_DISTORTION_CLASSES = 1;
 /** Volume above which a dedicated broach can pay for itself. Empirical, stated. */
 export const BROACHING_VOLUME_THRESHOLD = 250_000;
 /** Below this, dedicated gear tooling rarely pays and milling wins. */
@@ -276,19 +285,28 @@ export function adviseGearRoute(i: GearRouteInputs): GearRouteRecommendation {
   const needsFinishing = i.qualityClass < asCut;
 
   if (i.caseHardened) {
-    // Hardening distorts. If the class is tighter than the cut process holds,
-    // the finishing MUST come after hardening — a soft-finished gear loses the
-    // accuracy in the furnace. This ordering is the whole reason grinding costs.
-    if (needsFinishing) {
+    // Hardening distorts, and the distortion costs AT LEAST one ISO class: a
+    // gear hobbed to class 7 comes out of the carburising furnace at 8 or
+    // worse. So on a hardened gear the class the customer receives is
+    // `asCut + CASE_HARDENING_DISTORTION_CLASSES`, and any requested class
+    // tighter than that MUST buy a hard-finishing operation after the furnace.
+    // The old rule compared against `asCut` alone, which let a "class 7"
+    // carburised gear ship the as-hobbed route with only a warning — the exact
+    // cheap-confident-wrong shape this module exists to refuse (a plant head
+    // caught it in the live cost report: process bucket implausibly small).
+    const deliveredAsHardened = asCut + CASE_HARDENING_DISTORTION_CLASSES;
+    if (i.qualityClass < deliveredAsHardened) {
       steps.push({
         process: 'case_hardening', label: GEAR_PROCESS_REFERENCE.case_hardening.label,
         reason: 'Case-hardening steel — carburise, quench and temper for surface durability.',
       });
       steps.push({
         process: 'grinding', label: GEAR_PROCESS_REFERENCE.grinding.label,
-        reason: `ISO class ${i.qualityClass} is tighter than ${GEAR_PROCESS_REFERENCE[cutting].label} `
-          + `holds as-cut (class ${asCut}), and hardening distorts the cut geometry. Grinding after `
-          + `heat treat is the only route that corrects both.`,
+        reason: `${GEAR_PROCESS_REFERENCE[cutting].label} holds class ${asCut} as-cut, and `
+          + `carburising distorts at least ${CASE_HARDENING_DISTORTION_CLASSES} class — as-hardened `
+          + `this gear delivers class ${deliveredAsHardened} at best, tighter than nothing. `
+          + `ISO class ${i.qualityClass} therefore requires grinding after heat treat: the only `
+          + `operation that corrects both the cut and the distortion.`,
       });
     } else {
       steps.push({
@@ -296,9 +314,10 @@ export function adviseGearRoute(i: GearRouteInputs): GearRouteRecommendation {
         reason: 'Case-hardening steel — carburise, quench and temper for surface durability.',
       });
       warnings.push(
-        `Class ${i.qualityClass} is within what ${GEAR_PROCESS_REFERENCE[cutting].label} holds `
-        + `as-cut, so no hard finishing was added. Heat-treat distortion may still push the gear `
-        + `out of class — confirm with the plant whether this part runs as-hardened.`);
+        `Class ${i.qualityClass} survives heat-treat distortion on the as-cut `
+        + `${GEAR_PROCESS_REFERENCE[cutting].label} geometry (class ${asCut} + `
+        + `${CASE_HARDENING_DISTORTION_CLASSES} distortion allowance), so no hard finishing was `
+        + `added. Confirm with the plant whether this part runs as-hardened.`);
     }
   } else if (needsFinishing) {
     // Not hardened, so a soft finishing pass is enough and far cheaper.

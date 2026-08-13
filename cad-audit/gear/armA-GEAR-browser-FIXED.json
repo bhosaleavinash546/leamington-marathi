@@ -1,0 +1,57 @@
+{
+  "_audit": {
+    "part": "test-gear-m3-z38.step",
+    "commodity": null,
+    "mode": "both",
+    "label": "GEAR-browser-FIXED",
+    "capturedAt": "2026-08-13T07:04:51.662Z",
+    "pageErrors": [],
+    "decisionsAnswered": [
+      {
+        "id": "gear.materialClass",
+        "value": "case_hardening_steel",
+        "how": "engineer answer (flag)"
+      }
+    ],
+    "sanityDialogs": []
+  },
+  "state": {
+    "region": "CN",
+    "annualVolume": "200000",
+    "form": {
+      "ai-autofill-input": "",
+      "costing-country-sel": "CN",
+      "part-name": "Spur Gear, 38T, m3, 30mm face, bore 40mm",
+      "cad-inline-input": "",
+      "gear-module": "3",
+      "gear-teeth": "38",
+      "gear-helix": "0",
+      "gear-face": "30",
+      "gear-quality": "7",
+      "gear-internal": "no",
+      "gear-matclass": "case_hardening_steel",
+      "gear-mat": "mat-steel-20mncr5",
+      "gear-caseh": "yes",
+      "gear-net-wt": "2.088",
+      "gear-blank-cost": "4.76",
+      "gear-prep-ct": "290",
+      "gear-batch": "16670",
+      "gear-process": "",
+      "gear-setup": "0.75",
+      "gear-reject": "0.02",
+      "gear-amort": "200000",
+      "packaging": "0.13",
+      "logistics": "0.23",
+      "overhead-pct": "12",
+      "margin-pct": "8",
+      "annual-volume": "200000",
+      "programme-years": "",
+      "learning-curve-pct": "85",
+      "reference-volume": "1000",
+      "lc-enabled": "on",
+      "target-price": ""
+    },
+    "totalText": null,
+    "breakdownText": null
+  }
+}

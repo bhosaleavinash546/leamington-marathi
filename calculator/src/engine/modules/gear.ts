@@ -61,8 +61,20 @@ export interface GearInputs {
   nvhCritical?: boolean;
 
   // ── The blank, priced elsewhere ──
-  /** £ per part for the forged or turned blank, from forging.ts / machining.ts. */
+  /** £ per part for the blank MATERIAL (bar slice or bought-in forged blank).
+   *  Conversion work does not belong in here — see `blankPrepCycleSec`. */
   blankCostPerPart: number;
+  /**
+   * Turning time to make the blank (face, OD, bore), seconds per part.
+   *
+   * When set, blank preparation is costed as a real lathe OPERATION — machine
+   * rate, labour, OEE — and lands in the process/labour buckets where
+   * conversion cost belongs. Folding it into `blankCostPerPart` instead put
+   * ~30% of a gear's cost into "Raw Material" and made the process bucket
+   * implausibly small (caught by a plant head reading the live report).
+   * Leave 0/absent for a bought-in blank whose quote already covers it.
+   */
+  blankPrepCycleSec?: number;
   /** Finished gear weight, kg — drives heat-treat cost, which is bought by weight. */
   netWeightKg: number;
   /** Blank material id, for the report. Cost comes from `blankCostPerPart`. */
@@ -196,6 +208,11 @@ export function validateGearInputs(i: GearInputs): string[] {
       && (!Number.isFinite(i.setupTimeHrPerOperation) || i.setupTimeHrPerOperation < 0)) {
     errs.push(`Setup time must be a finite non-negative number of hours — got `
       + `${i.setupTimeHrPerOperation}.`);
+  }
+  if (i.blankPrepCycleSec !== undefined
+      && (!Number.isFinite(i.blankPrepCycleSec) || i.blankPrepCycleSec < 0)) {
+    errs.push(`Blank turning cycle must be a finite non-negative number of seconds — got `
+      + `${i.blankPrepCycleSec}.`);
   }
   return errs;
 }
@@ -596,6 +613,25 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
   const setupHr = inputs.setupTimeHrPerOperation ?? 0;
   const batch = Math.max(1, inputs.batchSize);
 
+  // Blank turning is conversion work, so it is an OPERATION on a lathe with
+  // machine + labour + OEE — not a number hidden inside the material bucket.
+  const blankPrepOps: OperationInput[] = (inputs.blankPrepCycleSec && inputs.blankPrepCycleSec > 0)
+    ? [(() => {
+        const cycleHr = (inputs.blankPrepCycleSec! / 3600 + setupHr / batch) * rejectUplift;
+        return {
+          operationName: 'Blank turning (face, OD, bore)',
+          machineId: 'mach-lathe-cnc',
+          labourId: inputs.labourId ?? DEFAULT_LABOUR,
+          cycleTimeHr: cycleHr,
+          partsPerCycle: 1,
+          oee: 0.80,
+          manning: 1,
+          labourTimeHr: cycleHr,
+          labourEfficiency: 0.90,
+        };
+      })()]
+    : [];
+
   const operations: OperationInput[] = a.operations
     // Heat treat carries cost by weight, not machine hours — including it as a
     // zero-cycle operation would put an empty row on the operation sheet.
@@ -615,6 +651,7 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
         labourEfficiency: 0.90,
       };
     });
+  operations.unshift(...blankPrepOps);
 
   // Perishable gear tooling is a per-part consumable, not an amortised die, so
   // it is converted to a total over the amortisation volume rather than being
@@ -647,7 +684,8 @@ export function getGearInputSchema(): Record<string, string> {
       + '| stainless | cast_iron | bronze | plastic',
     caseHardened: 'boolean — carburise/quench/temper, which forces hard finishing when the class is tight',
     nvhCritical: 'boolean? — buys a honing pass geometry alone would not',
-    blankCostPerPart: 'number — £ for the forged/turned blank, from the forging or machining module',
+    blankCostPerPart: 'number — £ for the blank MATERIAL (bar slice or bought-in forged blank); conversion goes in blankPrepCycleSec',
+    blankPrepCycleSec: 'number? — lathe seconds to face/turn/bore the blank; costed as a process operation, 0 for a bought-in blank',
     netWeightKg: 'number — finished gear weight kg; heat treat is bought by weight',
     materialId: 'string — blank material id from the rate library, for the report',
     annualVolume: 'number — annual build rate; drives broach-vs-skive and prototype routing',

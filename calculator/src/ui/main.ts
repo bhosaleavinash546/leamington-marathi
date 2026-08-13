@@ -5052,7 +5052,10 @@ function renderGearForm(): string {
       <div class="field-group"><label>Net Gear Weight (kg) <span title="Finished weight — drives heat treat, which is bought by the kg. From CAD: measured volume × grade density.">ℹ</span></label><input type="number" id="gear-net-wt" step="0.001" min="0.001" value="2.088"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Blank Cost (£/part) <span title="The turned/forged blank, priced before any tooth is cut. From CAD: bar slice × library £/kg + turning prep, stated in full in the trace. Replace with the forged-blank quote when one exists.">ℹ</span></label><input type="number" id="gear-blank-cost" step="0.01" min="0" value="10.64"/></div>
+      <div class="field-group"><label>Blank Material (£/part) <span title="MATERIAL only: the sawn bar slice net of chip recovery, or a bought-in forged blank's quote. Conversion work goes in Blank Turning below — folding it in here misstates the material bucket.">ℹ</span></label><input type="number" id="gear-blank-cost" step="0.01" min="0" value="4.76"/></div>
+      <div class="field-group"><label>Blank Turning (s/part, 0 = bought-in) <span title="Lathe seconds to face/turn/bore the blank. Costed as a process operation (machine rate + labour + OEE), so conversion lands in the process bucket. Set 0 when the blank is bought in and its quote covers turning.">ℹ</span></label><input type="number" id="gear-prep-ct" step="5" min="0" value="290"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Batch Size <span title="Parts per setup batch — setup hours are spread over it.">ℹ</span></label><input type="number" id="gear-batch" step="10" min="1" value="16670"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Process &amp; Programme</div>
@@ -6357,6 +6360,8 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     renderCADResults(cadAnalysisResult, autoCalculate, resolvedAnnualVol);
   } catch (err) {
     progress.style.display = 'none';
+    // A render bug and a dead server look identical in the panel without this.
+    console.error('[CAD] analysis render failed:', err);
     const cadErrEl = document.getElementById('cad-results');
     if (cadErrEl) cadErrEl.innerHTML = `
       <div class="risk-card High" style="margin-top:10px">
@@ -6737,16 +6742,24 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
       }
       const costRange = r.costInputSuggestions.costRange;
       const toolingPerPart = toolingCost > 0 ? toolingCost / annualVolume : 0;
-      const totalMidWithTooling = costRange ? costRange.mid + toolingPerPart : null;
+      const totalMidWithTooling = costRange && typeof costRange.mid === 'number'
+        ? costRange.mid + toolingPerPart : null;
+      // A blocked decision SUPPRESSES the AI's value for the fields it owns
+      // (that is the confirm gate working) — those must render as pending,
+      // not crash the whole results panel on undefined.toFixed.
+      const numOr = (v: unknown, dp: number, unit = ''): string =>
+        typeof v === 'number' && Number.isFinite(v)
+          ? `${v.toFixed(dp)}${unit}`
+          : '<em style="color:var(--text-muted)">— pending decision below</em>';
       return `
     <div style="margin-bottom:12px">
       <div class="panel-title" style="margin-bottom:6px">Suggested Cost Inputs <span style="font-size:0.68rem;color:var(--text-muted);font-weight:400">@ ${annualVolume.toLocaleString()} pcs/yr · UK-rate basis — use the regional panel for other countries</span></div>
       <table class="breakdown-table" style="font-size:0.78rem">
-        <tr><td>Net weight</td><td><strong>${r.costInputSuggestions.netWeightKg.toFixed(3)} kg</strong>${confBadge('netWeightKg', 'mach-net-wt', 'cast-part-wt', 'bm-wall')}</td></tr>
-        <tr><td>Material</td><td>${escHtml(r.materialAnalysis.primarySuggestion.name)} (${r.costInputSuggestions.materialId})${confBadge('materialId', 'mach-mat', 'cast-mat', 'imm-mat')}</td></tr>
-        <tr><td>Est. cycle time</td><td>${r.costInputSuggestions.estimatedCycleTimeHr.toFixed(4)} hr/part${confBadge('estimatedCycleTimeHr', 'mach-cycle', 'cast-hpdc-ct')}</td></tr>
-        <tr><td>Setup time</td><td>${r.costInputSuggestions.estimatedSetupTimeHr.toFixed(2)} hr${confBadge('estimatedSetupTimeHr', 'mach-setup-time')}</td></tr>
-        <tr><td>Operations</td><td>${r.costInputSuggestions.estimatedOperations.map(o => escHtml(o.name)).join(', ')}</td></tr>
+        <tr><td>Net weight</td><td><strong>${numOr(r.costInputSuggestions.netWeightKg, 3, ' kg')}</strong>${confBadge('netWeightKg', 'mach-net-wt', 'cast-part-wt', 'bm-wall')}</td></tr>
+        <tr><td>Material</td><td>${escHtml(r.materialAnalysis.primarySuggestion.name)} (${r.costInputSuggestions.materialId || '—'})${confBadge('materialId', 'mach-mat', 'cast-mat', 'imm-mat')}</td></tr>
+        <tr><td>Est. cycle time</td><td>${numOr(r.costInputSuggestions.estimatedCycleTimeHr, 4, ' hr/part')}${confBadge('estimatedCycleTimeHr', 'mach-cycle', 'cast-hpdc-ct')}</td></tr>
+        <tr><td>Setup time</td><td>${numOr(r.costInputSuggestions.estimatedSetupTimeHr, 2, ' hr')}${confBadge('estimatedSetupTimeHr', 'mach-setup-time')}</td></tr>
+        <tr><td>Operations</td><td>${(r.costInputSuggestions.estimatedOperations ?? []).map(o => escHtml(o.name)).join(', ')}</td></tr>
         ${toolingCost > 0 ? `<tr><td>${escHtml(toolingLabel)} (OCCT est.)</td><td>£${toolingCost.toLocaleString('en-GB', { maximumFractionDigits: 0 })}</td></tr>
         <tr><td>Tooling/part @ ${annualVolume.toLocaleString()} pcs</td><td style="color:var(--accent)"><strong>£${toolingPerPart.toFixed(3)}</strong></td></tr>` : ''}
         ${totalMidWithTooling !== null && toolingCost > 0 ? `<tr style="border-top:1px solid var(--border)"><td><strong>Est. total/part (incl. tooling)</strong></td><td><strong style="color:var(--accent)">£${totalMidWithTooling.toFixed(2)}</strong></td></tr>` : ''}
@@ -11474,6 +11487,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('gear-helix', gg.helixAngleDeg, 1);
           setNumericField('gear-face', gg.faceWidthMm, 1);
           setNumericField('gear-blank-cost', gg.blankCostPerPart, 2);
+          setNumericField('gear-prep-ct', gg.blankPrepCycleSec, 0);
           setNumericField('gear-batch', gg.batchSize, 0);
           const setSel = (id: string, v: string | undefined): void => {
             if (v === undefined) return;
@@ -12918,6 +12932,7 @@ function currentGearInputs(): GearInputs {
     materialClass: matClass,
     caseHardened: sel('gear-caseh') === 'yes',
     blankCostPerPart: num('gear-blank-cost'),
+    blankPrepCycleSec: num('gear-prep-ct') || undefined,
     netWeightKg: num('gear-net-wt'),
     materialId: sel('gear-mat') || GEAR_GRADE_BY_CLASS[matClass],
     annualVolume: num('annual-volume') || 100_000,
@@ -12982,6 +12997,15 @@ function collectGearInput(): UniversalStackInput {
     `Gear route: ${a.operations.map(o => o.label).join(' → ')} — cutting cycle `
     + `${(a.totalCycleSec / 60).toFixed(2)} min/part; perishable tooling £${a.toolingCostPerPart.toFixed(2)}/part; `
     + `NRE £${a.nreCostGBP.toFixed(0)} amortised over ${inputs.amortizationVolume.toLocaleString()} parts.`);
+  // Say what the material bucket is made of — a plant head reading "Raw
+  // Material 70%" deserves the itemisation, not a puzzle.
+  if (a.heatTreatCostPerPart > 0) {
+    _smExtraWarnings.push(
+      `Raw Material bucket = blank material £${inputs.blankCostPerPart.toFixed(2)} + subcontract `
+      + `${a.route.steps.some(s => s.process === 'case_hardening') ? 'carburise/quench' : 'heat treat'} `
+      + `£${a.heatTreatCostPerPart.toFixed(2)}/part (bought by weight, purchased-service convention). `
+      + 'Blank turning and all tooth-cutting/finishing are separate operations in the process bucket.');
+  }
   const drivers = computeGearDrivers(inputs);
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }

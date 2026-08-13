@@ -271,16 +271,32 @@ function moduleOf(ctx: RuleContext): RuleOutcome<number> {
 // ── the blank: bar stock + turning prep, stated in full ─────────────────────
 
 interface BlankDerivation {
-  cost: number; basis: string; stockKg: number; netKg: number;
+  /** Blank MATERIAL only, £ — bar slice net of chip recovery. */
+  materialCost: number;
+  materialBasis: string;
+  /** Turning seconds to face/turn/bore the blank — a process OPERATION. */
+  prepCycleSec: number;
+  prepBasis: string;
+  stockKg: number;
+  netKg: number;
 }
 
 /**
- * Blank cost = sawn bar slice × library £/kg − chip recovery + turning prep.
+ * The blank, split the way a cost engineer reads a breakdown:
+ *
+ *   - MATERIAL: sawn bar slice × library £/kg − chip recovery. This, and only
+ *     this, belongs in the Raw Material bucket.
+ *   - CONVERSION: face/turn/bore time at a stated removal rate. This is a
+ *     lathe OPERATION and lands in the process/labour buckets.
+ *
+ * The first version summed both into one `blankCostPerPart`, which pushed
+ * ~30% of the gear's cost into "Raw Material" and left the process bucket
+ * implausibly small — a plant head caught it on the live report.
  *
  * Stock envelope: (tip Ø + 4 mm) × (face + 6 mm) — saw kerf, facing stock and
- * OD clean-up. Prep = load + face/turn/bore at a stated removal rate on the
- * library's CNC lathe rate. Every figure appears in the basis; the whole line
- * is overridable in the form, which is where a forged-blank price would go.
+ * OD clean-up. Every figure appears in the basis; both lines are overridable
+ * in the form, which is where a forged-blank quote would go (price in the
+ * material line, prep cycle 0).
  */
 function deriveBlank(ctx: RuleContext, matClass: GearMaterialClass): BlankDerivation | null {
   const od = tipOdOf(ctx);
@@ -304,23 +320,25 @@ function deriveBlank(ctx: RuleContext, matClass: GearMaterialClass): BlankDeriva
   const blankCm3 = Math.PI / 4 * (od.od * od.od - bore * bore) * face / 1000;
   const removalCm3 = Math.max(stockCm3 - blankCm3, 0);
 
-  const matCost = stockKg * mat.pricePerKg
-    - Math.max(stockKg - netKg, 0) * (mat.scrapRecoveryPricePerKg ?? 0);
+  const materialCost = Math.round((stockKg * mat.pricePerKg
+    - Math.max(stockKg - netKg, 0) * (mat.scrapRecoveryPricePerKg ?? 0)) * 100) / 100;
 
   const MRR = matClass === 'plastic' ? 80 : matClass === 'bronze' ? 60 : 40; // cm³/min turning
   const prepMin = 1.5 + removalCm3 / MRR;
-  const latheRate = DEFAULT_RATE_LIBRARY.machines.find(m => m.id === 'mach-lathe-cnc')?.computedRatePerHr ?? 40;
-  const labourRate = DEFAULT_RATE_LIBRARY.labour.find(l => l.id === 'lab-uk-skilled')?.fullyLoadedRatePerHr ?? 32;
-  const prepCost = prepMin / 60 * (latheRate / 0.85 + labourRate);
+  const prepCycleSec = Math.round(prepMin * 60);
 
-  const cost = Math.round((matCost + prepCost) * 100) / 100;
   return {
-    cost, stockKg: Math.round(stockKg * 1000) / 1000, netKg: Math.round(netKg * 1000) / 1000,
-    basis: `bar slice Ø${fmt(stockOd, 0)}×${fmt(stockLen, 0)} mm = ${fmt(stockKg, 2)} kg `
-      + `${mat.grade} × £${fmt(mat.pricePerKg)}/kg − chips × £${fmt(mat.scrapRecoveryPricePerKg ?? 0)}/kg `
-      + `= £${fmt(matCost)}; turning prep ${fmt(prepMin, 1)} min `
-      + `(${fmt(removalCm3, 0)} cm³ @ ${MRR} cm³/min + load) on CNC lathe £${fmt(latheRate, 0)}/hr ÷ 0.85 OEE `
-      + `+ £${fmt(labourRate, 0)}/hr = £${fmt(prepCost)}. Replace with the forged-blank quote when one exists.`,
+    materialCost,
+    prepCycleSec,
+    stockKg: Math.round(stockKg * 1000) / 1000,
+    netKg: Math.round(netKg * 1000) / 1000,
+    materialBasis: `bar slice Ø${fmt(stockOd, 0)}×${fmt(stockLen, 0)} mm = ${fmt(stockKg, 2)} kg `
+      + `${mat.grade} × £${fmt(mat.pricePerKg)}/kg − chips × £${fmt(mat.scrapRecoveryPricePerKg ?? 0)}/kg. `
+      + 'MATERIAL only — turning is costed as an operation. '
+      + 'Replace with the forged-blank quote (and zero the turning cycle) when one exists.',
+    prepBasis: `face/turn/bore: ${fmt(removalCm3, 0)} cm³ off the bar @ ${MRR} cm³/min `
+      + `+ 1.5 min load/datum = ${fmt(prepMin, 1)} min on the CNC lathe — costed as a process `
+      + 'operation with machine rate, labour and OEE, not folded into material.',
   };
 }
 
@@ -475,14 +493,31 @@ export const GEAR_RULES: CommodityRuleSpec = {
       id: 'gear.blankCostPerPart',
       path: 'gear.blankCostPerPart',
       fieldId: 'gear-blank-cost',
-      label: 'blankCostPerPart',
+      label: 'blankMaterialCostPerPart',
       evaluate: (ctx) => {
         const mc = answeredMaterialClass(ctx);
         if (mc === null) return ask(materialClassDecision());
         const b = deriveBlank(ctx, mc);
-        if (!b) return ask(entryDecision('gear.blankCost', 'blank cost per part', '£',
+        if (!b) return ask(entryDecision('gear.blankCost', 'blank material cost per part', '£',
           'The blank envelope could not be derived from the measured geometry.'));
-        return decided('gear.blankCostPerPart', b.cost, 'rule', b.basis, 0.55,
+        return decided('gear.blankCostPerPart', b.materialCost, 'rule', b.materialBasis, 0.6,
+          [GEAR_MATERIAL_DECISION_ID, GEAR_HELIX_DECISION_ID]);
+      },
+    },
+    {
+      // Conversion, not material: the lathe minutes to make the blank. Costed
+      // downstream as an operation so it lands in the process/labour buckets.
+      id: 'gear.blankPrepCycleSec',
+      path: 'gear.blankPrepCycleSec',
+      fieldId: 'gear-prep-ct',
+      label: 'blankPrepCycleSec',
+      evaluate: (ctx) => {
+        const mc = answeredMaterialClass(ctx);
+        if (mc === null) return ask(materialClassDecision());
+        const b = deriveBlank(ctx, mc);
+        if (!b) return ask(entryDecision('gear.blankPrep', 'blank turning cycle', 's',
+          'The blank envelope could not be derived from the measured geometry.'));
+        return decided('gear.blankPrepCycleSec', b.prepCycleSec, 'rule', b.prepBasis, 0.55,
           [GEAR_MATERIAL_DECISION_ID, GEAR_HELIX_DECISION_ID]);
       },
     },

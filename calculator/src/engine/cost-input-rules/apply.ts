@@ -120,6 +120,7 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'gear.materialId': { to: 'materialId' },
   'gear.netWeightKg': { to: 'netWeightKg' },
   'gear.blankCostPerPart': { to: 'gear.blankCostPerPart' },
+  'gear.blankPrepCycleSec': { to: 'gear.blankPrepCycleSec' },
   'gear.cycleTimeHr': { to: 'estimatedCycleTimeHr' },
   'gear.batchSize': { to: 'gear.batchSize' },
   'sheetMetal.shearStrengthMPa': { to: 'sheetMetal.shearStrengthMPa' },

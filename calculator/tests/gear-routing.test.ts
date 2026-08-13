@@ -54,6 +54,22 @@ describe('quality class adds operations rather than scaling a number', () => {
     expect(tight.operations.length).toBeGreaterThan(loose.operations.length);
   });
 
+  it('a class EQUAL to the as-cut class still grinds when hardened — distortion eats a class', () => {
+    // Hobbing holds class 7 as-cut, but carburising loses at least one class:
+    // as-hardened this gear delivers class 8, so a requested class 7 must buy
+    // grinding after the furnace. The old rule shipped it as-hobbed with only
+    // a warning — a plant head caught the implausibly small process bucket on
+    // the live report.
+    const hardened = analyseGear(transmissionGear({ qualityClass: 7, caseHardened: true }));
+    expect(hardened.operations.map(o => o.process)).toContain('grinding');
+    const grind = hardened.route.steps.find(s => s.process === 'grinding');
+    expect(grind?.reason).toMatch(/distort/i);
+    // Unhardened, the same class 7 is exactly what hobbing holds — no finishing.
+    const soft = analyseGear(transmissionGear({ qualityClass: 7, caseHardened: false }));
+    expect(soft.operations.map(o => o.process)).not.toContain('grinding');
+    expect(soft.operations.map(o => o.process)).not.toContain('shaving');
+  });
+
   it('grinding comes AFTER hardening, because hardening distorts', () => {
     const a = analyseGear(transmissionGear({ qualityClass: 5, caseHardened: true }));
     const order = a.route.steps.map(s => s.process);

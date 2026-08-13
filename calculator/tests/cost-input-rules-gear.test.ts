@@ -119,7 +119,7 @@ describe('gear rules — what geometry decides vs what it asks', () => {
     expect(r.byRule['gear.netWeightKg'].source).toBe('geometry');
   });
 
-  it('blank cost reproduces by hand from library rates', () => {
+  it('blank MATERIAL and blank TURNING are split, each reproducing by hand', () => {
     const r = runCostInputRules(GEAR_RULES, ctx(ANSWERED));
     const g = (r.suggestions as { gear: Record<string, unknown> }).gear;
 
@@ -130,15 +130,17 @@ describe('gear rules — what geometry decides vs what it asks', () => {
     const netKg = 265.959 * 7850 / 1e6;                               // 2.088 kg
     const matCost = stockKg * mat.pricePerKg - (stockKg - netKg) * mat.scrapRecoveryPricePerKg;
     const blankCm3 = Math.PI / 4 * (120 * 120 - 40 * 40) * 30 / 1000; // 301.6 cm³
-    const prepMin = 1.5 + (stockCm3 - blankCm3) / 40;
-    const lathe = DEFAULT_RATE_LIBRARY.machines.find(m => m.id === 'mach-lathe-cnc')!.computedRatePerHr;
-    const labour = DEFAULT_RATE_LIBRARY.labour.find(l => l.id === 'lab-uk-skilled')!.fullyLoadedRatePerHr;
-    const prepCost = prepMin / 60 * (lathe / 0.85 + labour);
-    const expected = Math.round((matCost + prepCost) * 100) / 100;
+    const prepSec = Math.round((1.5 + (stockCm3 - blankCm3) / 40) * 60);
 
-    expect(g.blankCostPerPart).toBeCloseTo(expected, 2);
+    // MATERIAL line: the bar slice net of chips — and nothing else. The first
+    // version folded the turning cost in here, misstating the material bucket
+    // by ~30% of the part cost (caught by a plant head on the live report).
+    expect(g.blankCostPerPart).toBeCloseTo(Math.round(matCost * 100) / 100, 2);
     expect(r.byRule['gear.blankCostPerPart'].basis).toContain('20MnCr5');
-    expect(r.byRule['gear.blankCostPerPart'].basis).toContain('Replace with the forged-blank quote');
+    expect(r.byRule['gear.blankCostPerPart'].basis).toContain('MATERIAL only');
+    // CONVERSION line: lathe seconds, costed downstream as an operation.
+    expect(g.blankPrepCycleSec).toBe(prepSec);
+    expect(r.byRule['gear.blankPrepCycleSec'].basis).toContain('process');
   });
 
   it('no metrology: teeth/module/face become drawing entries, never bbox guesses', () => {
@@ -181,7 +183,7 @@ describe('gear rules — what geometry decides vs what it asks', () => {
     expect(r.byRule['gear.qualityClass'].confidence).toBeLessThan(1);
   });
 
-  it('the decided inputs drive computeGearDrivers → computeUniversalStack to a real cost', () => {
+  it('the decided inputs drive computeGearDrivers → computeUniversalStack, with conversion in PROCESS', () => {
     const r = runCostInputRules(GEAR_RULES, ctx(ANSWERED));
     const g = (r.suggestions as { gear: Record<string, number | boolean | string> }).gear;
     const drivers = computeGearDrivers({
@@ -194,12 +196,23 @@ describe('gear rules — what geometry decides vs what it asks', () => {
       materialClass: g.materialClass as 'case_hardening_steel',
       caseHardened: g.caseHardened as boolean,
       blankCostPerPart: g.blankCostPerPart as number,
+      blankPrepCycleSec: g.blankPrepCycleSec as number,
       netWeightKg: 2.088,
       materialId: g.materialId as string,
       annualVolume: 200_000,
       amortizationVolume: 1_000_000,
       batchSize: g.batchSize as number,
     });
+
+    // The buckets read the way a cost engineer expects:
+    //  - Raw Material carries ONLY the bar slice (+ purchased heat treat).
+    expect(drivers.rawMaterial.directCost).toBeCloseTo(g.blankCostPerPart as number, 2);
+    //  - Blank turning is a real lathe operation, first in the routing.
+    expect(drivers.operations[0].operationName).toMatch(/Blank turning/);
+    expect(drivers.operations[0].machineId).toBe('mach-lathe-cnc');
+    //  - A hardened class-7 gear grinds after heat treat (distortion).
+    expect(drivers.operations.map(o => o.operationName).join(' ')).toMatch(/grinding/i);
+
     const stack = computeUniversalStack({
       partName: 'test gear', rawMaterial: drivers.rawMaterial,
       operations: drivers.operations, tooling: drivers.tooling,
@@ -208,6 +221,10 @@ describe('gear rules — what geometry decides vs what it asks', () => {
     }, DEFAULT_RATE_LIBRARY);
     expect(stack.total).toBeGreaterThan(g.blankCostPerPart as number);
     expect(stack.total).toBeLessThan(60);
-    for (const b of Object.values(stack.breakdown)) expect(Number.isFinite(b)).toBe(true);
+    // Conversion (process + labour) must now OUTWEIGH the bar steel — the
+    // inversion the plant head flagged is structurally impossible again.
+    const b = stack.breakdown as unknown as Record<string, number>;
+    expect(b.process + b.labour).toBeGreaterThan(g.blankCostPerPart as number);
+    for (const v of Object.values(stack.breakdown)) expect(Number.isFinite(v)).toBe(true);
   });
 });
