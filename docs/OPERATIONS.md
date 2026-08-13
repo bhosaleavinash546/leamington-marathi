@@ -3,6 +3,44 @@
 Status of the production-readiness gaps, kept current so nobody discovers them in an incident.
 "Pilot" below = a handful of trusted users on one instance.
 
+## Repository and environment — read this before anything else
+
+**BrainSpark has no repository of its own.** It is a branch —
+`claude/auto-cost-reduction-tool-mzol0x` — inside `bhosaleavinash546/leamington-marathi`, whose
+`main` branch is an unrelated product: the Leamington Marathi community website (GitHub Pages,
+`CNAME` → `leamingtonmarathi.com`). `main` has no `package.json`, no `server.mjs`, no `.github/`.
+A third unrelated project, a Marathi panchang engine, sits on its own branch in the same repo.
+
+**The failure this causes.** An ephemeral container clones the repo at the *default* branch — the
+website — and may then create the working branch from that commit instead of checking out the
+remote branch that holds the work. Observed 2026-08-12:
+
+```
+efa16de  checkout: moving from efa16de… to claude/auto-cost-reduction-tool-mzol0x
+```
+
+The checkout looks like the website and BrainSpark appears to have vanished. Nothing is lost — the
+remote branch is intact — but the session will happily start work from the wrong base.
+
+**Check on every fresh container, before touching anything:**
+
+```bash
+git rev-parse HEAD                      # must NOT be main's tip
+ls package.json server.mjs              # both present => you are on BrainSpark
+```
+
+**Restore if wrong** (destroys uncommitted work — confirm there is none first):
+
+```bash
+git fetch origin claude/auto-cost-reduction-tool-mzol0x
+git reset --hard origin/claude/auto-cost-reduction-tool-mzol0x
+```
+
+**The real fix is a repository of its own**, which makes a fresh clone correct by construction and
+needs no check and no rescue. See DECISIONS 48 for why an in-repo `SessionStart` hook cannot solve
+this, and for the migration commands — they are ready to run by anyone whose GitHub access is not
+bound to this single repo.
+
 ## Handled
 
 | Concern | State |

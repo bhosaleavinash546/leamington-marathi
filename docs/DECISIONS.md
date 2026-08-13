@@ -2576,3 +2576,72 @@ mapping would be a stronger claim than the literature supports.
     break the contradiction" pass.
 
 790 tests (32 new), tsc clean, axe 0 serious/critical, DFM gate 200/200.
+
+## 48. BrainSpark should own its repository; a startup hook cannot substitute
+
+**Context**: BrainSpark has no repository, image or devcontainer of its own. It
+is a 331-commit branch inside `bhosaleavinash546/leamington-marathi`, a repo
+whose `main` is the Leamington Marathi community website — GitHub Pages, live on
+`leamingtonmarathi.com`. A third product, a Marathi panchang engine, occupies a
+further branch. Three unrelated products, one repo, separated only by branch.
+
+Ephemeral containers clone at the *default* branch, which is the website. On
+2026-08-12 a container did exactly that and then created the working branch at
+the website's tip rather than checking out the remote branch holding the work.
+The reflog records it: `checkout: moving from efa16de… to
+claude/auto-cost-reduction-tool-mzol0x`, both at `efa16de`. BrainSpark looked
+like it had reverted to a Marathi community site. Nothing was lost — the remote
+was intact throughout — but a session that had not noticed would have built on
+the wrong base.
+
+**Decision**: BrainSpark gets its own repository, whose default branch *is* the
+product. A fresh clone is then correct by construction.
+
+**Why not the cheaper fixes** — each was considered and each fails:
+
+  * **A tracked `SessionStart` hook** that fetches and fast-forwards the branch.
+    The hook would live on the BrainSpark branch, and on a mis-clone the
+    BrainSpark branch is precisely what is *not* in the checkout, so the hook is
+    not there to fire. The only branch it could fire from is `main` — the live
+    website's — which means putting BrainSpark rescue logic into the website
+    repo and running it for every website session. (`.claude/` is gitignored
+    here too, so it would also need an exception.)
+  * **Documenting the recipe in `CLAUDE.md`** fails identically: on a mis-clone
+    `CLAUDE.md` is not in the checkout either.
+  * **Changing the repo's default branch** to the BrainSpark branch would fix
+    the clone and break the website's Pages publishing source, re-basing every
+    website PR. Rejected.
+
+**Status: blocked, not done.** This session's GitHub access is bound to
+`leamington-marathi` alone — `create_repository` returns 403 "Resource not
+accessible by integration", and git cannot authenticate to any other repository
+path. The probe was run first precisely so a partial migration was never
+started; nothing was changed. The migration is three commands for anyone whose
+access is not so bound:
+
+```bash
+# 1. create an EMPTY github.com/<owner>/brainspark (no README — an auto-init
+#    commit collides with pushing a branch as main)
+git remote add brainspark https://github.com/<owner>/brainspark.git
+git push -u brainspark claude/auto-cost-reduction-tool-mzol0x:main
+```
+
+Pushing the branch *as* `main` carries all 331 commits, squashing and rewriting
+nothing, and makes BrainSpark the default branch of its own repo.
+
+**Consequences**:
+  * The branch in `leamington-marathi` is **not** deleted by the migration and
+    `main` is not touched. The website is unaffected and the branch remains a
+    complete backup. Removing it later is a separate, explicit decision.
+  * After migrating, re-point `origin` at the new repo so a bare `git push`
+    cannot reach the website repo by accident.
+  * PR #35 (`costvision/cad-agentic-review`), an older BrainSpark-lineage branch
+    still open against this repo, does not come along. It needs its own call.
+  * Until the migration happens, OPERATIONS.md carries the check-and-restore
+    recipe for a fresh container. That is a workaround for a structural fault,
+    and should be deleted the day the fault is fixed — not kept as procedure.
+  * Unrelated to where the code lives: all runtime data (`./data` — users, saved
+    analyses, uploaded STEP parts, marketplace approvals, feedback signals — and
+    `data/backups`) is gitignored and exists only inside the container. It does
+    not survive a reclaim, and moving repositories does not change that. Real
+    persistence is a separate piece of work.
