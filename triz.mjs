@@ -153,5 +153,131 @@ export function recommendPrinciples(improvingId, worseningId, topN = 4) {
 
 /** Compact catalogue for prompts/UI. */
 export function trizCatalogue() {
-  return { principles: PRINCIPLES, parameters: PARAMETERS };
+  return { principles: PRINCIPLES, parameters: PARAMETERS, separations: SEPARATIONS };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PHYSICAL CONTRADICTIONS — the other half of TRIZ, and the half that does not
+// depend on the 39-parameter mapping.
+//
+// A TECHNICAL contradiction is "improving A worsens B" — two different
+// parameters, and the route above resolves it. A PHYSICAL contradiction is
+// sharper and far more common in cost work: ONE property must take two opposite
+// values at once. The wall must be thick (it carries load) and thin (it costs
+// money and mass). The fastener must be tight (it must not come loose) and
+// loose (it must come apart for service).
+//
+// Why this matters here specifically: the technical-contradiction route depends
+// on mapping free text onto Altshuller's 39 generic parameters, and that step is
+// the documented weak point of the whole method — published work puts the share
+// of real problems that fit those parameters at roughly 10-15%, and different
+// practitioners map the same problem differently. A physical contradiction skips
+// it entirely. You name the property and the two values it must take; there is
+// nothing to classify and nothing to get wrong.
+//
+// The four separation strategies are classical. The PRINCIPLE SETS attached to
+// each are not as settled as the four strategies themselves — published lists
+// differ between sources in both membership and length. So each carries its own
+// `sourceStatus`, using the same vocabulary as the DFM rule catalogue, and the
+// UI prints the grade beside the recommendation. A tool that silently picked one
+// author's list and presented it as "the" mapping would be making a stronger
+// claim than the literature supports.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const SEPARATIONS = [
+  {
+    id: 'space',
+    name: 'Separate in space',
+    ask: 'Does {property} need both values in the SAME PLACE, or in different places?',
+    // Widely reproduced across TRIZ teaching material; membership varies by a
+    // principle or two between authors, hence the consensus grade.
+    principles: [1, 2, 3, 4, 7, 13, 17, 24, 26, 30],
+    sourceStatus: 'industry-consensus',
+    source: 'Classical separation-principle teaching material; membership varies slightly between published lists.',
+    cost: 'The single most productive one in cost work — it is where tailored blanks come from. The blank is thick where the load path needs it and thin everywhere else, so you stop paying for strength the part never uses.',
+    examples: [
+      'Tailor-rolled / tailor-welded blank — gauge only where the load is.',
+      'Local induction hardening instead of through-hardening the whole shaft.',
+      'Rib the panel where it buckles; leave the rest at minimum wall.',
+    ],
+  },
+  {
+    id: 'time',
+    name: 'Separate in time',
+    ask: 'Does {property} need both values at the SAME MOMENT, or at different moments?',
+    principles: [9, 10, 11, 15, 16, 18, 19, 20, 21, 29, 34, 37],
+    sourceStatus: 'industry-consensus',
+    source: 'Classical separation-principle teaching material; membership varies slightly between published lists.',
+    cost: 'Usually deletes a process step or a variant rather than material — the part is stiff during forming and compliant in service, or rigid for shipping and flexible when fitted.',
+    examples: [
+      'Shot-peen the spring so it can be thinner in service than the forming stress alone would allow.',
+      'Pre-applied thread-locker: liquid at assembly, solid in service — deletes a dispensing station.',
+      'Heat-shrink boot: open when fitted, tight afterwards — deletes the clamp.',
+    ],
+  },
+  {
+    id: 'condition',
+    name: 'Separate on condition',
+    ask: 'Does {property} need both values under the SAME CONDITION, or can a condition decide which applies?',
+    principles: [3, 28, 29, 31, 32, 35, 36, 38, 39, 40],
+    sourceStatus: 'industry-consensus',
+    source: 'Classical separation-principle teaching material; membership varies slightly between published lists.',
+    cost: 'Buys variant reduction: one part that behaves differently under different loads, temperatures or fields replaces two part numbers, and one part number is nearly always cheaper than two.',
+    examples: [
+      'Switchable engine mount — soft at idle, stiff under load — replaces two mount variants.',
+      'Phase-change material: absorbs heat only above its transition, shaving peak-cooling hardware.',
+      'Shear-thickening damper: compliant to small inputs, rigid to impacts.',
+    ],
+  },
+  {
+    id: 'system',
+    name: 'Separate between the parts and the whole',
+    ask: 'Can the WHOLE have one value for {property} while its PARTS have the opposite — or the other way round?',
+    principles: [1, 5, 6, 12, 22, 25, 27, 33, 40],
+    sourceStatus: 'industry-consensus',
+    source: 'Classical separation-principle teaching material (also called separation by scale or by system level).',
+    cost: 'The route to composites, foams and lattices — and to gigacasting, which is the same move run upward: the whole becomes one part while the functions stay separate.',
+    examples: [
+      'Foamed core, solid skin — stiff as a whole, light in the part (MuCell, sandwich panels).',
+      'A sieve is solid at the macro scale and porous at the micro scale.',
+      'Segmented cooling plate: rigid assembly, individually compliant cells.',
+    ],
+  },
+];
+
+/**
+ * Resolve a PHYSICAL contradiction: one property, two opposite required values.
+ *
+ * Returns all four strategies, always — the strategies are cheap to read and
+ * which one applies is an engineering judgement about the specific part, not
+ * something this function can decide. Ranking them would be inventing a
+ * preference the method does not have.
+ *
+ * @param {string} property   e.g. "wall thickness"
+ * @param {string} highWhy    why it must be high, e.g. "carries the bolt load"
+ * @param {string} lowWhy     why it must be low, e.g. "mass and material cost"
+ */
+export function separationStrategies(property, highWhy = '', lowWhy = '') {
+  const prop = String(property || '').trim();
+  if (prop.length < 2) throw new Error('name the property that must take two opposite values');
+  const hi = String(highWhy || '').trim();
+  const lo = String(lowWhy || '').trim();
+  return {
+    contradiction: {
+      property: prop.slice(0, 120),
+      mustBeHigh: hi.slice(0, 200) || null,
+      mustBeLow: lo.slice(0, 200) || null,
+      statement: `"${prop}" must be HIGH${hi ? ` (${hi})` : ''} and LOW${lo ? ` (${lo})` : ''} at the same time.`,
+    },
+    // No 39-parameter mapping happened, and saying so is the point: this route
+    // is immune to the step that makes the technical-contradiction route
+    // unreliable.
+    basis: 'physical contradiction — resolved by separation, with no mapping onto the 39 parameters',
+    strategies: SEPARATIONS.map(s => ({
+      ...s,
+      question: s.ask.replaceAll('{property}', `"${prop}"`),
+      principles: s.principles.map(id => PRINCIPLES.find(p => p.id === id)).filter(Boolean),
+    })),
+  };
+}
+

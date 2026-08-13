@@ -2,7 +2,9 @@
 // curated pairs are deterministic, and the affinity model covers every pair.
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { PRINCIPLES, PARAMETERS, recommendPrinciples, trizCatalogue } from '../triz.mjs';
+import {
+  PRINCIPLES, PARAMETERS, SEPARATIONS, recommendPrinciples, trizCatalogue, separationStrategies,
+} from '../triz.mjs';
 
 describe('triz core', () => {
   it('has exactly the 40 classical principles, ids 1..40, all fields present', () => {
@@ -69,5 +71,87 @@ describe('triz core', () => {
     const c = trizCatalogue();
     assert.equal(c.principles.length, 40);
     assert.equal(c.parameters.length, 39);
+    assert.equal(c.separations.length, 4);
+  });
+});
+
+// ── Physical contradictions ─────────────────────────────────────────────────
+//
+// The route that does NOT map onto the 39 parameters. Everything pinned here is
+// about it staying that way, and about the principle lists admitting how firmly
+// they are sourced.
+describe('triz physical contradictions', () => {
+  it('has the four classical separation strategies, each with real principles', () => {
+    assert.deepEqual(SEPARATIONS.map(s => s.id), ['space', 'time', 'condition', 'system']);
+    for (const s of SEPARATIONS) {
+      assert.ok(s.principles.length >= 8, `${s.id} has too few principles to be the classical set`);
+      for (const id of s.principles) assert.ok(id >= 1 && id <= 40, `${s.id} references principle ${id}`);
+      assert.equal(new Set(s.principles).size, s.principles.length, `${s.id} repeats a principle`);
+      assert.ok(s.cost && s.cost.length > 40, `${s.id} needs a real cost rationale`);
+      assert.ok(Array.isArray(s.examples) && s.examples.length >= 3, `${s.id} needs worked examples`);
+    }
+  });
+
+  it('GRADES every principle list — published lists differ and the tool must say so', () => {
+    // The four strategies are settled; which principles belong to each is not.
+    // Asserting one author's list as fact would be a stronger claim than the
+    // literature supports, so each carries the same source vocabulary the DFM
+    // catalogue uses.
+    const GRADES = ['standard-named', 'industry-consensus', 'engine-derived', 'customer-standard'];
+    for (const s of SEPARATIONS) {
+      assert.ok(GRADES.includes(s.sourceStatus), `${s.id} has an unrecognised sourceStatus`);
+      assert.ok(s.source && s.source.length > 20, `${s.id} must name where its list came from`);
+    }
+  });
+
+  it('resolves a physical contradiction WITHOUT touching the 39 parameters', () => {
+    const r = separationStrategies('wall thickness', 'carries the bolt load', 'mass and material cost');
+    assert.equal(r.strategies.length, 4);
+    assert.match(r.basis, /no mapping onto the 39 parameters/);
+    assert.equal(r.contradiction.property, 'wall thickness');
+    assert.match(r.contradiction.statement, /must be HIGH \(carries the bolt load\) and LOW \(mass and material cost\)/);
+  });
+
+  it('names the property back in every strategy question', () => {
+    const r = separationStrategies('clamp load');
+    for (const s of r.strategies) {
+      assert.match(s.question, /"clamp load"/, `${s.id} did not name the property`);
+      assert.ok(!s.question.includes('{property}'), `${s.id} left the placeholder unsubstituted`);
+    }
+  });
+
+  it('every strategy carries the placeholder — the substitution cannot fail quietly', () => {
+    // This was a real bug: the substitution was a plain replace of the phrase
+    // "the property", and the one strategy whose wording did not contain that
+    // phrase silently produced a question naming nothing at all.
+    for (const s of SEPARATIONS) {
+      assert.ok(s.ask.includes('{property}'), `${s.id} has no {property} placeholder to substitute`);
+    }
+  });
+
+  it('expands principle ids into the full principle objects', () => {
+    const r = separationStrategies('stiffness');
+    const space = r.strategies.find(s => s.id === 'space');
+    assert.ok(space.principles.every(p => p && p.id && p.name && p.hint));
+    // Separation in space is where tailored blanks come from — principle 3,
+    // Local quality, must be in that set or the mapping is wrong.
+    assert.ok(space.principles.some(p => p.id === 3), 'Local quality belongs to separation in space');
+  });
+
+  it('returns all four strategies unranked — which one applies is an engineering call', () => {
+    const a = separationStrategies('thickness').strategies.map(s => s.id);
+    const b = separationStrategies('a completely different property').strategies.map(s => s.id);
+    assert.deepEqual(a, b, 'strategy order must not vary with the input — that would imply a ranking');
+  });
+
+  it('refuses an empty or one-character property rather than returning generic advice', () => {
+    assert.throws(() => separationStrategies(''), /name the property/);
+    assert.throws(() => separationStrategies('x'), /name the property/);
+  });
+
+  it('is deterministic', () => {
+    const a = separationStrategies('wall thickness', 'load', 'cost');
+    const b = separationStrategies('wall thickness', 'load', 'cost');
+    assert.deepEqual(a, b);
   });
 });

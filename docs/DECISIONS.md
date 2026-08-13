@@ -2518,3 +2518,61 @@ was high enough that nobody paid it. Both now count themselves.
     container, so there is still no visual render. Verified it refuses a plain
     two-cell workbook, which rules out the Excel image support added this week
     as the cause.
+
+## 47. TRIZ Studio gets the two tools that do not need the 39 parameters
+
+**Context**: TRIZ Studio implemented one instrument — technical contradiction →
+40 principles — and everything it produced hung off one step: an LLM mapping
+free text onto Altshuller's 39 generic engineering parameters. Published work
+puts the share of real problems that fit those parameters at roughly 10–15%, and
+the reliability literature is blunt that the mapping repeats poorly: two
+practitioners given the same problem pick different parameters. The Studio did
+that mapping once, invisibly, with no alternates and no override.
+
+**Decision**: rather than deepen the matrix first, add the two classical tools
+that **do not use that mapping at all**.
+
+**Trimming** (`triz-trimming.mjs`) is the subtraction tool and the one with the
+strongest published cost record — a documented application reports 83% component
+count and 95% component cost removed. The three classical rules are encoded:
+**A** the object goes too, **B** the object does it itself, **C** something
+already present does it. The core decides which rules are *available* and what
+money each releases; the LLM answers only the narrow question the fired rule
+poses. Rule C is withheld when there is genuinely no third component — offering
+"let something else do it" on a two-part system is noise dressed as method.
+
+It is fed by `functionCostMatrix()`, which already produced components ×
+functions with a validated cost allocation. That is why trimming was cheap:
+the input already existed. The adaptor marks every converted row
+`objectInferred`, because FAST records what a function *serves*, not what it
+*acts upon*, and inventing the object would be inventing the analysis.
+
+**Physical contradictions** (`separationStrategies` in `triz.mjs`) resolve one
+property that must take two opposite values, via separation in space, time,
+condition, or between parts and whole. The four strategies are settled; the
+principle list attached to each is not, and published lists differ — so each
+carries a `sourceStatus` using the DFM catalogue's vocabulary and the UI prints
+the grade beside the recommendation. Asserting one author's list as *the*
+mapping would be a stronger claim than the literature supports.
+
+**Consequences**:
+  * No cost is ever invented. A model with no costs yields candidates with
+    `costReleased: null` and is ordered alphabetically, with the UI saying the
+    order is not a priority. An uncosted component sorts LAST, not as zero —
+    absent is not cheap.
+  * `trimmingUpside` sums only over candidates the caller marks confirmed. Every
+    candidate is an open engineering question until answered, and totalling them
+    would be the fabrication this codebase refuses everywhere else.
+  * A real bug the tests caught: the strategy question was built by replacing
+    the phrase "the property", and the one strategy whose wording lacked that
+    phrase silently produced a question naming nothing. Now an explicit
+    `{property}` placeholder, with a test asserting every strategy carries one.
+  * The Studio footer claimed a "deterministic contradiction matrix". The core
+    holds 20 curated pairs of a possible 1,482 and says so in its own header.
+    Corrected — adding two tools to a page that overstated would compound it.
+  * Deferred and recorded: the full 39×39 matrix with empty cells preserved,
+    top-3 candidate mappings the user can switch between, ideality scoring,
+    feeding TRIZ real DFM/FAST part data, and an adversarial "does this actually
+    break the contradiction" pass.
+
+790 tests (32 new), tsc clean, axe 0 serious/critical, DFM gate 200/200.
