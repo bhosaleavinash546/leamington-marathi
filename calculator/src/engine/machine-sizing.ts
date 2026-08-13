@@ -225,7 +225,22 @@ export function pickGearMachineId(
     // costing error rather than as "this is not a machine operation".
     case 'case_hardening': return { machineId: HEAT_TREAT_NOT_A_MACHINE, envelope: null };
     case 'quench_temper':  return { machineId: HEAT_TREAT_NOT_A_MACHINE, envelope: null };
-    case 'nitriding':      return { machineId: HEAT_TREAT_NOT_A_MACHINE, envelope: null };
+    // Every route bought BY WEIGHT from a furnace resolves to the same sentinel:
+    // it carries cost but no machine hours, so putting a real machine's name
+    // against a zero cycle would read as a costing error rather than as "this is
+    // not a machine operation".
+    case 'nitriding':
+    case 'lpc_carburising':
+    case 'carbonitriding':
+    case 'martempering':
+    case 'austempering':
+    case 'fnc':
+    case 'wash':
+    case 'temper':
+    case 'shot_peen':
+    case 'straighten':
+    case 'press_quench':
+      return { machineId: HEAT_TREAT_NOT_A_MACHINE, envelope: null };
     // Induction hardening IS a rated machine: seconds per part on a coil and a
     // quench, not hours in a sub-contract furnace bought by weight.
     case 'induction_hardening':

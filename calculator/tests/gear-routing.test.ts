@@ -20,6 +20,7 @@ import {
 import { adviseGearRoute, GEAR_PROCESS_REFERENCE } from '../src/engine/modules/gear-advisor.js';
 import { pickGearMachineId } from '../src/engine/machine-sizing.js';
 import { gearDataWarning, activeGearShopData, resolveCutting } from '../src/engine/gear-shop-data.js';
+import { computeHeatTreatRate } from '../src/engine/gear-heat-treat-rate.js';
 import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
@@ -46,13 +47,32 @@ describe('quality class adds operations rather than scaling a number', () => {
   });
 
   it('a tight class on a hardened gear ADDS heat treat and grinding', () => {
-    const loose = analyseGear(transmissionGear({ qualityClass: 8, caseHardened: true }));
+    // The loose case is class 9, not 8. Carburising costs TWO ISO classes of
+    // distortion (workbook grades oil-quench carburising "High", the worst of
+    // the 35 processes it surveys), so hobbing's as-cut class 7 delivers class 9
+    // out of the furnace. Class 8 therefore now needs grinding where the earlier
+    // 1-class assumption let it ship as-quenched — the boundary moved on
+    // evidence, and this test moved with it rather than pinning the old guess.
+    const loose = analyseGear(transmissionGear({ qualityClass: 9, caseHardened: true }));
     const tight = analyseGear(transmissionGear({ qualityClass: 5, caseHardened: true }));
 
     expect(tight.operations.map(o => o.process)).toContain('grinding');
     expect(loose.operations.map(o => o.process)).not.toContain('grinding');
     // The route is LONGER, not merely dearer — that is the whole claim.
     expect(tight.operations.length).toBeGreaterThan(loose.operations.length);
+  });
+
+  it('carburising costs two classes, so class 8 no longer ships as-quenched', () => {
+    // Pins the change itself, so a future edit that quietly reverts the
+    // distortion allowance fails here with the reason attached.
+    const c8 = analyseGear(transmissionGear({ qualityClass: 8, caseHardened: true }));
+    expect(c8.operations.map(o => o.process)).toContain('grinding');
+    // Nitriding costs none, so the SAME class 8 ships straight off the hobber.
+    const n8 = analyseGear(transmissionGear({
+      qualityClass: 8, caseHardened: false,
+      materialClass: 'through_hardening_steel', hardeningRoute: 'nitriding',
+    }));
+    expect(n8.operations.map(o => o.process)).not.toContain('grinding');
   });
 
   it('a class EQUAL to the as-cut class still grinds when hardened — distortion eats a class', () => {
@@ -206,13 +226,22 @@ describe('the model refuses rather than guesses', () => {
 describe('the heat-treat route follows the material, and is priced by weight', () => {
   const kg = 0.65;   // transmissionGear netWeightKg
 
-  it('case-hardening steel carburises, priced at the shop rate x net weight', () => {
+  it('case-hardening steel carburises, priced by the bottom-up build-up', () => {
     const a = analyseGear(transmissionGear({ qualityClass: 6, caseHardened: true }));
     const ht = a.operations.find(o => o.process === 'case_hardening');
     expect(ht).toBeTruthy();
-    const rate = activeGearShopData().ancillary.caseHardenCostPerKgGBP.value;
-    expect(a.heatTreatCostPerPart).toBeCloseTo(rate * kg, 9);
-    expect(ht!.basis).toMatch(/furnace, by weight/);
+    // Costed from energy + labour + capital + overhead + QC at the region's own
+    // tariffs, not a flat GBP/kg. The furnace step alone must equal the engine.
+    const furnace = computeHeatTreatRate('gas_carburise', 'UK').ratePerKg * kg;
+    const line = a.heatTreatBreakdown.find(x => /carburise/i.test(x.step));
+    expect(line!.costPerPart).toBeCloseTo(furnace, 9);
+    // The PACKAGE is larger, because washing and tempering are unbundled — the
+    // whole point of the workbook's "compare like scopes" warning.
+    expect(a.heatTreatCostPerPart).toBeGreaterThan(furnace);
+    expect(a.heatTreatBreakdown.map(x => x.step).join(' ')).toMatch(/[Ww]ash/);
+    expect(a.heatTreatBreakdown.map(x => x.step).join(' ')).toMatch(/[Tt]emper/);
+    // The basis prints the derivation, not an assertion.
+    expect(ht!.basis).toMatch(/energy .* labour .* capital/);
     // It is a purchased service, not a machine: no cycle time, no machine row.
     expect(ht!.cycleSec).toBe(0);
     expect(ht!.machineId).toBe('furnace-subcontract');
@@ -224,8 +253,9 @@ describe('the heat-treat route follows the material, and is priced by weight', (
     }));
     expect(a.route.steps.map(s => s.process)).toContain('quench_temper');
     expect(a.route.steps.map(s => s.process)).not.toContain('case_hardening');
-    const rate = activeGearShopData().ancillary.quenchTemperCostPerKgGBP.value;
-    expect(a.heatTreatCostPerPart).toBeCloseTo(rate * kg, 9);
+    const furnace = computeHeatTreatRate('quench_temper', 'UK').ratePerKg * kg;
+    const line = a.heatTreatBreakdown.find(x => /harden and temper/i.test(x.step));
+    expect(line!.costPerPart).toBeCloseTo(furnace, 9);
     // The hole this closes: it used to be exactly zero.
     expect(a.heatTreatCostPerPart).toBeGreaterThan(0);
     // And cheaper than carburising — no long carbon-diffusion cycle.
@@ -321,12 +351,19 @@ describe('nitriding and induction hardening', () => {
     expect(grind?.reason).toMatch(/remove the thin case|precedes the furnace/i);
   });
 
-  it('nitriding is dearer per kg than carburising — the saving is downstream', () => {
+  it('nitriding is dearer per kg at the FURNACE than carburising', () => {
+    // Per kg of furnace time nitriding is far dearer — a 45 h cycle against 7 h.
+    expect(computeHeatTreatRate('nitride', 'UK').ratePerKg)
+      .toBeGreaterThan(computeHeatTreatRate('gas_carburise', 'UK').ratePerKg * 2);
     const nit = analyseGear(nitridable({ hardeningRoute: 'nitriding', qualityClass: 7 }));
+    const line = nit.heatTreatBreakdown.find(x => /nitride/i.test(x.step));
+    expect(line!.costPerPart)
+      .toBeCloseTo(computeHeatTreatRate('nitride', 'UK').ratePerKg * 0.65, 9);
+    // But the PACKAGES are closer than the furnace rates suggest, because
+    // carburising drags two washes and a temper behind it while nitriding needs
+    // one pre-clean and nothing after. Unbundling is what makes that visible.
     const carb = analyseGear(transmissionGear({ qualityClass: 7, caseHardened: true }));
-    expect(nit.heatTreatCostPerPart).toBeGreaterThan(carb.heatTreatCostPerPart);
-    const rate = activeGearShopData().ancillary.nitrideCostPerKgGBP.value;
-    expect(nit.heatTreatCostPerPart).toBeCloseTo(rate * 0.65, 9);
+    expect(nit.heatTreatBreakdown.length).toBeLessThan(carb.heatTreatBreakdown.length);
   });
 
   it('a coarse-module gear warns that the nitrided case is too thin to carry it', () => {

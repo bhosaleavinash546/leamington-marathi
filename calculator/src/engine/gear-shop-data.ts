@@ -157,11 +157,20 @@ export interface GearNREParams {
 }
 
 export interface GearAncillaryParams {
-  /** Carburise + quench + temper, £/kg of gear. */
+  /**
+   * SUPERSEDED by the bottom-up build-up in `gear-heat-treat-rate.ts`.
+   *
+   * These three flat rates were the whole heat-treat model until a plant-supplied
+   * research workbook let it be rebuilt from energy, labour, capital, overhead
+   * and QC. The workbook validated them to +6% / -4% / +19% on the same scope, so
+   * they were defensible — they simply could not price load density, case depth
+   * or captive-vs-buy, and could not show their working.
+   *
+   * Retained ONLY as a documented fallback and as a calibration reference; no
+   * costing path reads them. Delete once the build-up has a plant's own figures.
+   */
   caseHardenCostPerKgGBP: GearParam;
-  /** Harden + temper for through-hardening steels, bought by weight. */
   quenchTemperCostPerKgGBP: GearParam;
-  /** Nitriding, bought by weight. Dear per kg: the cycle runs 10-90 hours. */
   nitrideCostPerKgGBP: GearParam;
   /** Induction hardening is a MACHINE, not a purchased service — it is costed
    *  in seconds on a rated machine. Heat time rises with the case depth the

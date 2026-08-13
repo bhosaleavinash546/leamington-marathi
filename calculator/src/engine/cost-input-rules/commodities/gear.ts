@@ -39,6 +39,7 @@ export const GEAR_TEETH_DECISION_ID = 'gear.teethEntry';
 export const GEAR_MODULE_DECISION_ID = 'gear.moduleEntry';
 export const GEAR_FACE_DECISION_ID = 'gear.faceWidthEntry';
 export const GEAR_HARDENING_DECISION_ID = 'gear.hardeningRoute';
+export const GEAR_CASE_DEPTH_DECISION_ID = 'gear.effectiveCaseDepthMm';
 
 /** Representative library grade per cutting class — same move as the casting
  *  family → grade resolution. Every id verified against `DEFAULT_RATE_LIBRARY`. */
@@ -112,8 +113,11 @@ function answeredMaterialClass(ctx: RuleContext): GearMaterialClass | null {
  */
 function answeredHardening(ctx: RuleContext): HardeningRoute | null {
   const raw = String(ctx.answers[GEAR_HARDENING_DECISION_ID] ?? '');
-  const valid: HardeningRoute[] =
-    ['none', 'case_hardening', 'quench_temper', 'nitriding', 'induction_hardening'];
+  const valid: HardeningRoute[] = [
+    'none', 'case_hardening', 'lpc_carburising', 'carbonitriding',
+    'quench_temper', 'martempering', 'austempering',
+    'nitriding', 'fnc', 'induction_hardening',
+  ];
   return (valid as string[]).includes(raw) ? raw as HardeningRoute : null;
 }
 
@@ -137,11 +141,21 @@ function hardeningDecision(mc: GearMaterialClass): Decision {
   };
   const options = [
     opt('case_hardening', 'Carburise, quench and temper',
-      'deep hard case; distorts ~1 ISO class, so a tight class buys grinding after'),
+      'deep case; distorts 2 ISO classes, so anything tighter than class 9 buys grinding after'),
+    opt('lpc_carburising', 'Low-pressure (vacuum) carburise',
+      'EV/NVH route — half the distortion of oil quenching and no post-wash, at ~2x the rate'),
+    opt('carbonitriding', 'Carbonitride',
+      'the cheapest case route, for small gears at case depths under 0.4 mm'),
     opt('quench_temper', 'Harden and temper (through)',
-      'core strength; distorts ~1 ISO class, grinding after for a tight class'),
+      'core strength; distorts 1 ISO class, grinding after for a tight class'),
+    opt('martempering', 'Martemper (hot-oil quench)',
+      'buys back distortion on thin sections at a small premium over plain Q&T'),
+    opt('austempering', 'Austemper (bainitic)',
+      'toughness with very low distortion — the ADI route'),
     opt('nitriding', 'Nitride',
       'no distortion — often skips hard finishing entirely, but dear per kg and a thin case'),
+    opt('fnc', 'Ferritic nitrocarburise',
+      'the low-cost nitride substitute: 8 h rather than 45 h, near-zero distortion'),
     opt('induction_hardening', 'Induction harden',
       'seconds on a coil rather than furnace hours; geometry-specific coil as NRE'),
     opt('none', 'Leave soft — no hardening',
@@ -528,6 +542,36 @@ export const GEAR_RULES: CommodityRuleSpec = {
         // load case the CAD cannot see, and either would change the operation
         // list rather than merely the rate.
         return ask(hardeningDecision(mc));
+      },
+    },
+    {
+      /**
+       * Effective case depth — a DRAWING figure, and a costly one.
+       *
+       * Carburising time goes as ECD^2, so 0.6 -> 1.2 mm roughly quadruples the
+       * carburising segment. Published rate cards famously do not price this
+       * (the source workbook's Indian card rises 11% for a 50% deeper case),
+       * which is why benchmarking against them under-costs a deep-case gear.
+       *
+       * Advisory, not blocking: 0.70 mm is the library reference and a defensible
+       * default, and the basis says so. It only matters on carburising routes.
+       */
+      id: 'gear.effectiveCaseDepthMm',
+      path: 'gear.effectiveCaseDepthMm',
+      fieldId: 'gear-ecd',
+      label: 'effectiveCaseDepthMm',
+      evaluate: (ctx) => {
+        const answered = answeredEntry(ctx, GEAR_CASE_DEPTH_DECISION_ID);
+        if (answered && answered > 0 && answered < 5) {
+          const prov = answerProvenance(ctx, GEAR_CASE_DEPTH_DECISION_ID);
+          return decided('gear.effectiveCaseDepthMm', answered, prov.source,
+            `${answered} mm effective case depth${prov.note || ' — from the drawing'}`,
+            prov.conf, [GEAR_CASE_DEPTH_DECISION_ID]);
+        }
+        return decided('gear.effectiveCaseDepthMm', 0.70, 'library',
+          'no case depth stated — using the 0.70 mm reference the cycle times are built around. '
+          + 'Carburising time scales as ECD², so a drawing calling 1.2 mm costs roughly 3x the '
+          + 'furnace time of one calling 0.7 mm; take it off the drawing before quoting.', 0.5);
       },
     },
     {

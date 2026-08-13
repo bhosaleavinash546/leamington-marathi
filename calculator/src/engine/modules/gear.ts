@@ -35,8 +35,12 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import {
   adviseGearRoute, GEAR_PROCESS_REFERENCE, HARDENING_ROUTE_UNSUITABLE, resolveHardeningRoute,
+  HARDENING_ROUTE_SPEC,
   type GearProcess, type GearRouteRecommendation, type GearQualityClass, type HardeningRoute,
 } from './gear-advisor.js';
+import {
+  computeHeatTreatRate, type HeatTreatRateBreakdown,
+} from '../gear-heat-treat-rate.js';
 import { pickGearMachineId, HEAT_TREAT_NOT_A_MACHINE } from '../machine-sizing.js';
 import {
   hobbingCycleSec, shapingCycleSec, skivingCycleSec, grindingCycleSec,
@@ -69,6 +73,42 @@ export interface GearInputs {
    */
   hardeningRoute?: HardeningRoute;
   nvhCritical?: boolean;
+  /**
+   * Effective case depth required, mm.
+   *
+   * Carburising time scales as ECD^2 (Fick's second law), so 0.6 -> 1.2 mm
+   * roughly QUADRUPLES the carburising segment of the cycle. A flat rate per kg
+   * charges a shallow and a deep case identically, which is the second error the
+   * source workbook warns about. Absent means the library's 0.70 mm reference.
+   */
+  effectiveCaseDepthMm?: number;
+  /**
+   * Actual kg of PART per furnace load.
+   *
+   * THE highest-leverage heat-treat input: capital, maintenance, overhead and QC
+   * are incurred per LOAD, so racking 250 kg where the library assumes 600 kg
+   * roughly doubles them per kg. The workbook calls load density "the single
+   * biggest error in gear HT should-cost".
+   */
+  heatTreatLoadKg?: number;
+  /** Captive furnace line (no SG&A, margin or freight) or bought from a
+   *  commercial heat-treater. The gap is 25-35% on the same physical process. */
+  heatTreatSourcing?: 'captive' | 'subcontract';
+  /** Minimum charge a commercial heat-treater applies per lot. Below roughly
+   *  200-300 kg the per-kg rate is meaningless without it. */
+  heatTreatMinimumLotChargeGBP?: number;
+  heatTreatLotKg?: number;
+  /** Region the heat treat is bought in. Energy, labour and capital differ
+   *  enormously; heat treat is the LEAST labour-arbitraged step in the route
+   *  because energy dominates, so this must not be inherited from a UK basis
+   *  and silently currency-converted. */
+  region?: string;
+  /** Root-fillet peening — +20-40% bending fatigue, standard on automotive
+   *  gears. Off by default: the model warns rather than inventing the cost. */
+  shotPeened?: boolean;
+  /** Post-quench straightening. "The most commonly omitted line in gear
+   *  heat-treat should-cost" — again warned about rather than assumed. */
+  straightened?: boolean;
 
   // ── The blank, priced elsewhere ──
   /** £ per part for the blank MATERIAL (bar slice or bought-in forged blank).
@@ -131,6 +171,12 @@ export interface GearAnalysis {
   /** Itemised, so the report can show what the NRE is made of. */
   nreLines: Array<{ item: string; costGBP: number; reason: string }>;
   heatTreatCostPerPart: number;
+  /**
+   * Every heat-treat step costed bottom-up, so the report can show the
+   * derivation the way a machine rate already does instead of asserting a
+   * per-kg number.
+   */
+  heatTreatBreakdown: Array<{ step: string; ratePerKg: number; costPerPart: number; basis: string }>;
   /** Present whenever the estimate rests on representative shop data. */
   dataWarning: string | null;
   /** Non-fatal cautions from routing and machine selection. */
@@ -181,8 +227,13 @@ export const CANNOT_BE_CARBURISED: Partial<Record<GearMaterialClass, string>> =
 /** Past participle per route, so the refusal reads as a sentence. */
 const HARDENING_VERB: Record<Exclude<HardeningRoute, 'none'>, string> = {
   case_hardening: 'carburised',
+  lpc_carburising: 'low-pressure carburised',
+  carbonitriding: 'carbonitrided',
   quench_temper: 'through-hardened',
+  martempering: 'martempered',
+  austempering: 'austempered',
   nitriding: 'nitrided',
+  fnc: 'nitrocarburised',
   induction_hardening: 'induction hardened',
 };
 
@@ -376,7 +427,8 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
       route: { cuttingProcess: 'hobbing', steps: [], achievableQualityClass: 99, warnings: [] },
       operations: [], pitchDiameterMm: 0, outerDiameterMm: 0, metalRemovedMm3: 0,
       totalCycleSec: 0, toolingCostPerPart: 0, nreCostGBP: 0, nreLines: [],
-      heatTreatCostPerPart: 0, dataWarning: gearDataWarning(data), warnings,
+      heatTreatCostPerPart: 0, heatTreatBreakdown: [],
+      dataWarning: gearDataWarning(data), warnings,
       blocked: `The gear definition is not costable: ${invalid.join(' ')}`,
     };
   }
@@ -408,6 +460,8 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
     // quenched and tempered — that furnace pass used to carry £0, silently.
     hardeningRoute: effectiveHardeningRoute(inputs),
     nvhCritical: inputs.nvhCritical,
+    shotPeened: inputs.shotPeened,
+    straightened: inputs.straightened,
     annualVolume: inputs.annualVolume,
     forcedCuttingProcess: inputs.forcedCuttingProcess,
   });
@@ -430,7 +484,8 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
     route, operations: [] as GearOperationDetail[],
     pitchDiameterMm: pitchDia, outerDiameterMm: outerDia, metalRemovedMm3: metalRemoved,
     totalCycleSec: 0, toolingCostPerPart: 0, nreCostGBP: 0, nreLines: [],
-    heatTreatCostPerPart: 0, dataWarning: gearDataWarning(data), warnings,
+    heatTreatCostPerPart: 0, heatTreatBreakdown: [],
+    dataWarning: gearDataWarning(data), warnings,
   };
 
   if (route.blocked) return { ...base, blocked: route.blocked };
@@ -459,6 +514,36 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
   };
 
   const ops: GearOperationDetail[] = [];
+  const heatTreatBreakdown: GearAnalysis['heatTreatBreakdown'] = [];
+  /**
+   * Cost one by-weight heat-treat step from the bottom-up rate engine.
+   *
+   * Replaces three flat GBP/kg figures. Those were validated to within 6% by the
+   * source workbook, so they were not wrong — they simply could not price load
+   * density, case depth or captive-vs-buy, and could not explain themselves.
+   */
+  const byWeight = (step: GearProcess, processKey: string): number => {
+    let r: HeatTreatRateBreakdown;
+    try {
+      r = computeHeatTreatRate(processKey, inputs.region ?? 'UK', {
+        effectiveCaseDepthMm: inputs.effectiveCaseDepthMm,
+        netLoadKg: inputs.heatTreatLoadKg,
+        sourcing: inputs.heatTreatSourcing,
+        minimumLotChargeGBP: inputs.heatTreatMinimumLotChargeGBP,
+        lotSizeKg: inputs.heatTreatLotKg,
+      });
+    } catch (e) {
+      // An unknown process must stop the costing, not fall back to a neighbour.
+      throw new Error(`Gear heat treat: ${(e as Error).message}`);
+    }
+    const cost = r.ratePerKg * inputs.netWeightKg;
+    heatTreatBreakdown.push({
+      step: r.label, ratePerKg: r.ratePerKg, costPerPart: cost, basis: r.basis,
+    });
+    heatTreatStepBasis.set(step, r.basis);
+    return cost;
+  };
+  const heatTreatStepBasis = new Map<GearProcess, string>();
   const nreLines: Array<{ item: string; costGBP: number; reason: string }> = [];
   let toolingPerPart = 0;
   let heatTreat = 0;
@@ -564,22 +649,40 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
       case 'honing':   flatSec = F.honingSecPerPart.value + A.loadUnloadSec.value; break;
       case 'deburr':   flatSec = A.deburrSecPerPart.value; break;
       case 'inspection': flatSec = A.inspectionSecPerPart.value; break;
+      // Every furnace and ancillary step bought BY WEIGHT is costed by the
+      // bottom-up rate engine: energy + labour + capital annuity + maintenance
+      // + consumables + fixtures + overhead + QC, at the region's own tariffs.
       case 'case_hardening':
-        // Bought by weight from a furnace, so it carries cost but no machine time.
-        heatTreat += A.caseHardenCostPerKgGBP.value * inputs.netWeightKg;
-        flatSec = 0;
-        break;
+      case 'lpc_carburising':
+      case 'carbonitriding':
       case 'quench_temper':
-        // Same purchased-by-weight convention; cheaper than carburising because
-        // there is no long carbon-diffusion cycle at temperature.
-        heatTreat += A.quenchTemperCostPerKgGBP.value * inputs.netWeightKg;
+      case 'martempering':
+      case 'austempering':
+      case 'nitriding':
+      case 'fnc': {
+        const key = HARDENING_ROUTE_SPEC[step.process as Exclude<HardeningRoute, 'none'>].processKey;
+        heatTreat += byWeight(step.process, key);
         flatSec = 0;
         break;
-      case 'nitriding':
-        // Also bought by weight, but DEARER than carburising rather than
-        // cheaper: the cycle sits at temperature for 10-90 hours. The saving
-        // is downstream — a nitrided gear usually skips grinding entirely.
-        heatTreat += A.nitrideCostPerKgGBP.value * inputs.netWeightKg;
+      }
+      case 'wash':
+        heatTreat += byWeight(step.process, 'wash');
+        flatSec = 0;
+        break;
+      case 'temper':
+        heatTreat += byWeight(step.process, 'temper_standalone');
+        flatSec = 0;
+        break;
+      case 'shot_peen':
+        heatTreat += byWeight(step.process, 'shot_peen');
+        flatSec = 0;
+        break;
+      case 'straighten':
+        heatTreat += byWeight(step.process, 'straighten');
+        flatSec = 0;
+        break;
+      case 'press_quench':
+        heatTreat += byWeight(step.process, 'press_quench');
         flatSec = 0;
         break;
       case 'induction_hardening': {
@@ -647,19 +750,8 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
       cycleSec,
       basis: cycle
         ? cycle.basis
-        : step.process === 'case_hardening'
-          ? `${inputs.netWeightKg} kg × £${A.caseHardenCostPerKgGBP.value}/kg = `
-            + `£${(A.caseHardenCostPerKgGBP.value * inputs.netWeightKg).toFixed(2)} (furnace, by weight)`
-        : step.process === 'quench_temper'
-          ? `${inputs.netWeightKg} kg × £${A.quenchTemperCostPerKgGBP.value}/kg = `
-            + `£${(A.quenchTemperCostPerKgGBP.value * inputs.netWeightKg).toFixed(2)} (furnace, by weight)`
-        : step.process === 'nitriding'
-          ? `${inputs.netWeightKg} kg × £${A.nitrideCostPerKgGBP.value}/kg = `
-            + `£${(A.nitrideCostPerKgGBP.value * inputs.netWeightKg).toFixed(2)} (furnace, by weight — `
-            + 'a 10-90 h cycle, so dearer per kg than carburising; the saving is the grinding it avoids)'
-        : inductionBasis
-          ? inductionBasis
-          : `${cycleSec} s flat rate from the shop data`,
+        : heatTreatStepBasis.get(step.process)
+          ?? (inductionBasis || `${cycleSec} s flat rate from the shop data`),
     });
 
     // Cross-check every generated cycle against the metal it claims to remove.
@@ -701,6 +793,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
     nreCostGBP,
     nreLines,
     heatTreatCostPerPart: heatTreat,
+    heatTreatBreakdown,
     warnings,
   };
 }

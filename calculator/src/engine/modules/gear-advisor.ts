@@ -37,9 +37,19 @@ export type GearProcess =
   | 'grinding'
   | 'honing'
   | 'case_hardening'
+  | 'lpc_carburising'
+  | 'carbonitriding'
   | 'quench_temper'
+  | 'martempering'
+  | 'austempering'
   | 'nitriding'
+  | 'fnc'
   | 'induction_hardening'
+  | 'wash'
+  | 'temper'
+  | 'shot_peen'
+  | 'straighten'
+  | 'press_quench'
   | 'deburr'
   | 'inspection';
 
@@ -167,6 +177,79 @@ export const GEAR_PROCESS_REFERENCE: Record<GearProcess, GearProcessReference> =
       + 'weight, and it hardens only the teeth - the bore and web stay as machined.',
     note: 'Needs ~0.35% C or more to form martensite. The inductor coil is geometry-specific NRE.',
   },
+  lpc_carburising: {
+    process: 'lpc_carburising', label: 'Low-pressure (vacuum) carburise + gas quench',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [0.1, 50],
+    source: 'Workbook HT-03. Acetylene carburising under vacuum with 10-20 bar N2 quench. No '
+      + 'intergranular oxidation and far less distortion than oil quenching, which is why EV '
+      + 'e-axle and NVH-critical gears specify it. Roughly 2x the batch-carburising rate.',
+  },
+  carbonitriding: {
+    process: 'carbonitriding', label: 'Carbonitride (gas, N + C)',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [0.1, 50],
+    source: 'Workbook HT-04. Lower temperature and shorter cycle than carburising, at ECD under '
+      + '0.4 mm — the cheapest case-hardening route, for small gears, sprockets and pump gears.',
+  },
+  martempering: {
+    process: 'martempering', label: 'Martemper (hot-oil quench)',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [0.1, 50],
+    source: 'Workbook HT-17. Quenching into 150-200 degC oil halves the thermal gradient, buying '
+      + 'back distortion on thin-wall rings and distortion-sensitive gears.',
+  },
+  austempering: {
+    process: 'austempering', label: 'Austemper (isothermal bainitic)',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [0.1, 50],
+    source: 'Workbook HT-18. Isothermal hold in salt gives bainite at 40-50 HRC with very low '
+      + 'distortion. The defining route for ADI gears.',
+  },
+  fnc: {
+    process: 'fnc', label: 'Ferritic nitrocarburise',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [0.1, 20],
+    source: 'Workbook HT-08. 560-580 degC, 500-700 HV in a 10-20 um compound layer, near-zero '
+      + 'distortion. An 8 h cycle against nitriding 45 h makes it the low-cost substitute for '
+      + 'case hardening wherever a shallow case carries the load.',
+  },
+  wash: {
+    process: 'wash', label: 'Wash / degrease',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [0.1, 50],
+    source: 'Workbook HT-31. Mandatory before carburising (atmosphere control) and after oil '
+      + 'quench, so it appears twice in a normal route. Routinely omitted from cost models.',
+  },
+  temper: {
+    process: 'temper', label: 'Temper',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [0.1, 50],
+    source: 'Workbook HT-24. Mandatory after any martensitic hardening. Usually bundled inside a '
+      + 'hardening quote — unbundled here so two suppliers can be compared on the same scope.',
+  },
+  shot_peen: {
+    process: 'shot_peen', label: 'Shot peen (root fillet)',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [0.1, 50],
+    source: 'Workbook HT-28. Compressive residual stress of -700 to -1000 MPa in the root fillet '
+      + 'buys 20-40% bending fatigue strength. Standard on automotive gears.',
+  },
+  straighten: {
+    process: 'straighten', label: 'Straighten (post-quench press)',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [0.1, 50],
+    source: 'Workbook HT-29. Pinion shafts and long gears to a TIR under 0.05 mm. Almost pure '
+      + 'labour, and the most commonly omitted line in gear heat-treat should-cost.',
+  },
+  press_quench: {
+    process: 'press_quench', label: 'Press (die) quench',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [0.1, 50],
+    source: 'Workbook HT-27. Roundness and flatness held in the die during the quench, for ring '
+      + 'gears and thin annular gears. One part per cycle, so it is dear per kg — but it replaces '
+      + 'distortion that would otherwise have to be ground out.',
+  },
   deburr: {
     process: 'deburr', label: 'Chamfer and deburr',
     bestQualityClass: 99, internalCapable: true, externalCapable: true,
@@ -214,6 +297,10 @@ export interface GearRouteInputs {
   hardeningRoute?: HardeningRoute;
   /** Noise-critical — buys a honing pass that geometry alone would not. */
   nvhCritical?: boolean;
+  /** Root-fillet shot peening: +20-40% bending fatigue strength. */
+  shotPeened?: boolean;
+  /** Post-quench straightening to a TIR under ~0.05 mm. */
+  straightened?: boolean;
   annualVolume: number;
   /** Force the cutting process, bypassing selection. The engineer's override. */
   forcedCuttingProcess?: GearProcess;
@@ -241,7 +328,9 @@ export interface GearRouteRecommendation {
 
 /** The furnace/coil pass a gear takes after cutting. `none` = left soft. */
 export type HardeningRoute =
-  | 'none' | 'case_hardening' | 'quench_temper' | 'nitriding' | 'induction_hardening';
+  | 'none' | 'case_hardening' | 'lpc_carburising' | 'carbonitriding'
+  | 'quench_temper' | 'martempering' | 'austempering'
+  | 'nitriding' | 'fnc' | 'induction_hardening';
 
 /**
  * ISO classes lost to hardening distortion, minimum, by route.
@@ -258,10 +347,19 @@ export type HardeningRoute =
  */
 export const HARDENING_DISTORTION_CLASSES: Record<HardeningRoute, number> = {
   none: 0,
-  case_hardening: 1,
-  quench_temper: 1,
-  nitriding: 0,
-  induction_hardening: 1,
+  // RAISED FROM 1 on workbook evidence: it grades oil-quench carburising
+  // distortion "High", the worst of the 35 processes surveyed. A gear hobbed to
+  // class 7 therefore delivers class 9 as-quenched, not class 8 — which means
+  // more gears need post-furnace grinding than the model previously charged for.
+  case_hardening: 2,
+  lpc_carburising: 1,      // "Low-Med" — the whole reason LPC is specified
+  carbonitriding: 1,       // "Medium"
+  quench_temper: 1,        // "Medium"
+  martempering: 1,         // "Low" — hot oil halves the thermal gradient
+  austempering: 0,         // "Very low"
+  nitriding: 0,            // "Very low" — sub-critical, no phase change
+  fnc: 0,                  // "Very low"
+  induction_hardening: 1,  // "Low-Med" spin / "Medium" single-tooth
 };
 
 /** Back-compat alias for the carburising figure this table generalised. */
@@ -287,6 +385,16 @@ const HARDENING_REASON: Record<Exclude<HardeningRoute, 'none'>, string> = {
     + 'geometry survives the furnace and hard finishing can often be skipped entirely.',
   induction_hardening: 'Induction hardened — the flanks and roots are heated and quenched '
     + 'locally in seconds, so only the teeth are hardened and the bore and web stay machinable.',
+  lpc_carburising: 'Low-pressure carburised with gas quench — no intergranular oxidation and '
+    + 'much less distortion than oil, which is why EV and NVH-critical gears specify it.',
+  carbonitriding: 'Carbonitrided — a lower-temperature, shorter-cycle case for small gears where '
+    + 'a case under 0.4 mm carries the load. The cheapest case-hardening route.',
+  martempering: 'Martempered — quenched into hot oil so the thermal gradient, and therefore the '
+    + 'distortion, is halved on a thin-wall section.',
+  austempering: 'Austempered — isothermal hold to bainite for toughness with very low distortion. '
+    + 'The defining route for ADI.',
+  fnc: 'Ferritic nitrocarburised — a shallow, very hard compound layer at 560-580 degC with '
+    + 'near-zero distortion, in an 8 h cycle rather than nitriding’s 45 h.',
 };
 
 /**
@@ -321,6 +429,35 @@ export const HARDENING_ROUTE_UNSUITABLE: Record<
     case_hardening_steel: '20MnCr5/8620 carry too little nitride-forming alloy to build a useful '
       + 'nitrided case — they are specified to be carburised. Nitride 31CrMoV9 or 42CrMo4 instead.',
   },
+  lpc_carburising: {
+    plastic: 'a polymer has no metallurgy to harden.',
+    bronze: 'a copper alloy has no iron matrix to diffuse carbon into.',
+    cast_iron: 'cast iron is already carbon-saturated — carburising it achieves nothing.',
+    alloy_steel_prehardened: 'a pre-hardened bar arrives at hardness.',
+  },
+  carbonitriding: {
+    plastic: 'a polymer has no metallurgy to harden.',
+    bronze: 'a copper alloy has no iron matrix to diffuse carbon into.',
+    cast_iron: 'cast iron is already carbon-saturated — carburising it achieves nothing.',
+    alloy_steel_prehardened: 'a pre-hardened bar arrives at hardness.',
+  },
+  martempering: {
+    plastic: 'a polymer has no metallurgy to harden.',
+    bronze: 'a copper alloy does not harden by quenching.',
+    alloy_steel_prehardened: 'the bar is supplied already quenched and tempered.',
+  },
+  austempering: {
+    plastic: 'a polymer has no metallurgy to harden.',
+    bronze: 'a copper alloy does not transform to bainite.',
+    alloy_steel_prehardened: 'the bar is supplied already hardened.',
+  },
+  fnc: {
+    // NOTE: unlike nitriding, FNC does NOT need Al/Cr/Mo/V — it builds a compound
+    // layer on plain and low-alloy steels too, which is exactly why it is the
+    // cheap substitute. So no case_hardening_steel exclusion here.
+    plastic: 'a polymer has no metallurgy to harden.',
+    bronze: 'nitrocarburising needs an iron matrix to form the compound layer.',
+  },
   induction_hardening: {
     plastic: 'a polymer has no metallurgy to harden.',
     bronze: 'a copper alloy does not form martensite.',
@@ -329,6 +466,46 @@ export const HARDENING_ROUTE_UNSUITABLE: Record<
       + 'or more, so use 42CrMo4/1045, or carburise this grade instead.',
     alloy_steel_prehardened: 'the bar is already at hardness through the section.',
   },
+};
+
+/**
+ * How each hardening route maps onto the heat-treat process library, and what
+ * ELSE the furnace package contains.
+ *
+ * The workbook's sixth warning is that quotes bundle tempering, washing,
+ * straightening and hardness testing into a headline rate, so two suppliers can
+ * quote different scopes at the same number. Unbundling them is the only way to
+ * benchmark honestly — and it is also the only way the model can show that a
+ * carburised gear is washed TWICE (before, for atmosphere control; after, to get
+ * the quench oil off) while a low-pressure carburised one is washed not at all.
+ *
+ * `processKey` indexes `GEAR_HEAT_TREAT_PROCESSES` in `gear-heat-treat-data.ts`.
+ */
+export interface HardeningRouteSpec {
+  processKey: string;
+  /** Add a stand-alone temper step. False where the library process already
+   *  includes it (HT-15 is "austenitise + oil quench + temper") or where the
+   *  route needs none (nitriding and FNC are sub-critical; austempering holds
+   *  isothermally to bainite). */
+  needsTemper: boolean;
+  /** Wash passes. Two for an oil quench, one for a salt bath or a pre-clean,
+   *  none for low-pressure carburising — a vacuum process comes out bright. */
+  washPasses: number;
+}
+
+export const HARDENING_ROUTE_SPEC: Record<Exclude<HardeningRoute, 'none'>, HardeningRouteSpec> = {
+  case_hardening:      { processKey: 'gas_carburise',   needsTemper: true,  washPasses: 2 },
+  lpc_carburising:     { processKey: 'lpc_carburise',   needsTemper: true,  washPasses: 0 },
+  carbonitriding:      { processKey: 'carbonitride',    needsTemper: true,  washPasses: 2 },
+  quench_temper:       { processKey: 'quench_temper',   needsTemper: false, washPasses: 2 },
+  martempering:        { processKey: 'martemper',       needsTemper: true,  washPasses: 2 },
+  austempering:        { processKey: 'austemper',       needsTemper: false, washPasses: 1 },
+  nitriding:           { processKey: 'nitride',         needsTemper: false, washPasses: 1 },
+  fnc:                 { processKey: 'fnc',             needsTemper: false, washPasses: 1 },
+  // Induction is a rated machine with a geometry-driven cycle, not a furnace
+  // bought by weight, so `modules/gear.ts` costs it from coil kinematics and
+  // this row exists only for completeness.
+  induction_hardening: { processKey: 'induction_spin',  needsTemper: false, washPasses: 0 },
 };
 
 /** Resolve the explicit route, falling back to the legacy boolean flags. */
@@ -445,8 +622,44 @@ export function adviseGearRoute(i: GearRouteInputs): GearRouteRecommendation {
     const distortion = HARDENING_DISTORTION_CLASSES[hardening];
     const delivered = asCut + distortion;
     const ref = GEAR_PROCESS_REFERENCE[hardening];
-    const furnace = { process: hardening, label: ref.label, reason: HARDENING_REASON[hardening] };
+    const spec = HARDENING_ROUTE_SPEC[hardening];
     const needsHardFinish = i.qualityClass < delivered;
+
+    /**
+     * The furnace PACKAGE, unbundled.
+     *
+     * A heat-treat quote normally states one number covering the furnace, the
+     * washes either side of it and the temper. Emitting them as separate steps
+     * is what lets two suppliers be compared on the same scope — and it makes
+     * visible that an oil-quench route is washed twice while a low-pressure
+     * carburised one is not washed at all.
+     */
+    const furnacePackage = (): GearRouteStep[] => {
+      const out: GearRouteStep[] = [];
+      if (spec.washPasses > 0) {
+        out.push({
+          process: 'wash', label: GEAR_PROCESS_REFERENCE.wash.label,
+          reason: 'Pre-clean before the furnace — surface contamination upsets atmosphere '
+            + 'control and shows up as soft spots.',
+        });
+      }
+      out.push({ process: hardening, label: ref.label, reason: HARDENING_REASON[hardening] });
+      if (spec.washPasses > 1) {
+        out.push({
+          process: 'wash', label: GEAR_PROCESS_REFERENCE.wash.label,
+          reason: 'Post-quench wash — the quench oil has to come off before tempering and '
+            + 'before anything downstream can touch the part.',
+        });
+      }
+      if (spec.needsTemper) {
+        out.push({
+          process: 'temper', label: GEAR_PROCESS_REFERENCE.temper.label,
+          reason: 'Mandatory after a martensitic quench, to restore toughness. Usually bundled '
+            + 'inside the hardening quote; shown separately so scopes can be compared.',
+        });
+      }
+      return out;
+    };
 
     if (NITRIDES_LAST.has(hardening)) {
       // Grind BEFORE the furnace. Two independent reasons, either sufficient:
@@ -462,7 +675,7 @@ export function adviseGearRoute(i: GearRouteInputs): GearRouteRecommendation {
             + 'remove the thin case — so on this route grinding precedes the furnace.',
         });
       }
-      steps.push(furnace);
+      steps.push(...furnacePackage());
       if (!needsHardFinish) {
         warnings.push(
           `Nitriding holds the as-cut geometry (class ${asCut}), so no hard finishing was added — `
@@ -480,7 +693,7 @@ export function adviseGearRoute(i: GearRouteInputs): GearRouteRecommendation {
           + 'crushing. Confirm with the gear engineer, or carburise instead.');
       }
     } else {
-      steps.push(furnace);
+      steps.push(...furnacePackage());
       if (needsHardFinish) {
         steps.push({
           process: 'grinding', label: GEAR_PROCESS_REFERENCE.grinding.label,
@@ -521,6 +734,35 @@ export function adviseGearRoute(i: GearRouteInputs): GearRouteRecommendation {
       process: 'honing', label: GEAR_PROCESS_REFERENCE.honing.label,
       reason: 'Noise-critical — honing improves flank finish beyond what grinding leaves.',
     });
+  }
+
+  // ── 3. Post-hardening operations that quotes routinely bundle or omit ─────
+  const hardened = hardening !== 'none';
+  if (i.straightened) {
+    steps.push({
+      process: 'straighten', label: GEAR_PROCESS_REFERENCE.straighten.label,
+      reason: 'Post-quench straightening to bring runout back inside tolerance. Almost pure '
+        + 'labour, and the line most often missing from a heat-treat should-cost.',
+    });
+  } else if (hardened && HARDENING_DISTORTION_CLASSES[hardening] > 0) {
+    // Not added — but the omission is stated, because silently leaving it out is
+    // precisely how heat-treat cost gets under-stated.
+    warnings.push(
+      'No straightening allowed for. A quenched gear or shaft normally needs a press '
+      + 'straighten to hold runout, and it is the most commonly omitted line in gear '
+      + 'heat-treat cost. Confirm it is genuinely not required, or enable it.');
+  }
+  if (i.shotPeened) {
+    steps.push({
+      process: 'shot_peen', label: GEAR_PROCESS_REFERENCE.shot_peen.label,
+      reason: 'Root-fillet peening puts the surface into compression, buying 20-40% bending '
+        + 'fatigue strength — standard on automotive transmission gears.',
+    });
+  } else if (hardened && i.qualityClass <= 7) {
+    warnings.push(
+      'No shot peening allowed for. A hardened gear at ISO class 7 or tighter is usually a '
+      + 'power-transmission part, where root-fillet peening is standard practice and is often '
+      + 'quoted inside the heat-treat package. Confirm whether the supplier includes it.');
   }
 
   steps.push({

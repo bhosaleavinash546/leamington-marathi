@@ -334,6 +334,7 @@ export interface CADAnalysisResult {
       materialClass?: string;
       caseHardened?: boolean;
       hardeningRoute?: string;
+      effectiveCaseDepthMm?: number;
       blankCostPerPart?: number;
       blankPrepCycleSec?: number;
       batchSize?: number;

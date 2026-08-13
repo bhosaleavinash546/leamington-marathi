@@ -47,7 +47,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // v16: engineer material confirm wins over AI on reanalyse (withAIMaterial),
 //      and casting/cast_and_machine emit the material GRADE from the confirmed
 //      family (was AI grade on cast-iron mass). Final-verification-run fixes.
-const CAD_PROMPT_VERSION = 18;
+const CAD_PROMPT_VERSION = 20;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -924,13 +924,38 @@ function extractJson(text: string): string {
   // Strip closing code fence
   s = s.replace(/\s*```\s*$/i, '');
   s = s.trim();
-  // Extract from first { to last } to discard any surrounding prose
+  // Take the first BALANCED object, not first-{ to last-}.
+  //
+  // The naive span breaks on the commonest real failure: a model that emits a
+  // complete object, then a sentence of prose, then a second object. First-to-
+  // last then returns `{...} prose {...}`, which fails with "Unexpected
+  // non-whitespace character after JSON" at exactly the character where the
+  // first object closed — observed live on a gear re-analysis, where even the
+  // repair retry then failed because it was handed the same malformed span.
+  //
+  // Scanning for balance respects strings and escapes, so a brace inside a
+  // quoted reason string does not end the object early.
   const first = s.indexOf('{');
-  const last = s.lastIndexOf('}');
-  if (first !== -1 && last !== -1 && last > first) {
-    s = s.slice(first, last + 1);
+  if (first === -1) return s;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = first; i < s.length; i++) {
+    const c = s[i];
+    if (escaped) { escaped = false; continue; }
+    if (c === '\\') { escaped = true; continue; }
+    if (c === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (c === '{') depth++;
+    else if (c === '}') {
+      depth--;
+      if (depth === 0) return s.slice(first, i + 1);
+    }
   }
-  return s;
+  // Unbalanced (genuinely truncated) — hand back the widest span and let the
+  // caller's repair attempt try, rather than failing here with less context.
+  const last = s.lastIndexOf('}');
+  return last > first ? s.slice(first, last + 1) : s;
 }
 
 /**
@@ -1527,9 +1552,17 @@ const GEAR_AI_ANSWERABLE = [
       const q = Number(g.qualityClass);
       return Number.isFinite(q) && q >= 1 && q <= 11 ? String(q) : null;
     } },
+  { id: 'gear.effectiveCaseDepthMm', pick: (g: Record<string, unknown>) => {
+      // A drawing case-depth read is a real figure and worth using — but it is
+      // the MODEL's read, so it is folded in tagged 'ai' with reduced
+      // confidence and a basis that says so, never as an engineer's answer.
+      const d = Number(g.effectiveCaseDepthMm);
+      return Number.isFinite(d) && d > 0 && d < 5 ? String(d) : null;
+    } },
   { id: 'gear.hardeningRoute', pick: (g: Record<string, unknown>) =>
       typeof g.hardeningRoute === 'string'
-        && ['case_hardening', 'quench_temper', 'nitriding', 'induction_hardening', 'none']
+        && ['case_hardening', 'lpc_carburising', 'carbonitriding', 'quench_temper',
+             'martempering', 'austempering', 'nitriding', 'fnc', 'induction_hardening', 'none']
              .includes(g.hardeningRoute)
         ? g.hardeningRoute : null },
   { id: 'gear.materialClass', pick: (g: Record<string, unknown>) =>
@@ -1590,7 +1623,8 @@ function pendingDecisions(
     withAI.answers['material.familySource'] === 'ai' && !ruleCtx.answers['material.family'];
   // Gear drawing-reads the model supplied and the engineer has not confirmed —
   // same Part1 lesson, applied to helix / ISO class / material class.
-  const aiGearIds = ['gear.helix', 'gear.qualityClass', 'gear.materialClass', 'gear.hardeningRoute']
+  const aiGearIds = ['gear.helix', 'gear.qualityClass', 'gear.materialClass', 'gear.hardeningRoute',
+                     'gear.effectiveCaseDepthMm']
     .filter(id => withAI.answers[`${id}Source`] === 'ai' && ruleCtx.answers[id] === undefined);
   if (!undecidedCount && !aiAnsweredMaterial && !aiGearIds.length) return [];
   // Re-run WITHOUT the AI answers: these are the questions a person still owns.
@@ -1721,9 +1755,24 @@ function buildJSONSchema(commodity: string, geo: OCCTGeometry): string {
       "qualityClass": number,
       "materialClass": "case_hardening_steel"|"through_hardening_steel"|"alloy_steel_prehardened"|"stainless"|"cast_iron"|"bronze"|"plastic",
       "caseHardened": true|false,
-      "hardeningRoute": "case_hardening"|"quench_temper"|"nitriding"|"induction_hardening"|"none"|null,
+      "hardeningRoute": "case_hardening"|"lpc_carburising"|"carbonitriding"|"quench_temper"|"martempering"|"austempering"|"nitriding"|"fnc"|"induction_hardening"|"none"|null,
+      "effectiveCaseDepthMm": number|null,
+      "qualityClass": number|null,
       "drawingTeeth": number|null
     },
+    // STRICT TYPES on these three - a value in the wrong shape is DISCARDED by
+    // the rules layer, so a drawing figure returned as prose is a figure lost:
+    //   hardeningRoute        EXACTLY one of the tokens above, lower_snake_case,
+    //                         and NOTHING else. Not a sentence. Not a case depth.
+    //                         "CARBURISE + HARDEN"/"CASE HARDEN" -> "case_hardening";
+    //                         "NITRIDE" -> "nitriding"; "INDUCTION HARDEN" ->
+    //                         "induction_hardening"; "HARDEN AND TEMPER"/"Q&T" ->
+    //                         "quench_temper". null when the drawing is silent.
+    //   effectiveCaseDepthMm  a NUMBER of millimetres and nothing else. A banded
+    //                         callout takes the MID-BAND: "CASE DEPTH 0.6-0.9 mm"
+    //                         -> 0.75. Carburising time scales as the SQUARE of
+    //                         this, so it materially changes cost. null if absent.
+    //   qualityClass          a NUMBER 1-11. "ISO 1328 CLASS 7" -> 7. Not a string.
     // hardeningRoute: read the heat-treatment callout off the drawing. "CARBURISE
     // + HARDEN"/"CASE HARDEN" -> case_hardening; "HARDEN AND TEMPER"/"Q&T" ->
     // quench_temper; "NITRIDE"/"NITRIDED"/"GAS NITRIDE" -> nitriding;

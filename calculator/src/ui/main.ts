@@ -12,9 +12,12 @@ import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMould
 import { analyseInjectionDFM, type ResinType } from '../engine/modules/injection-advisor.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
-import { computeGearDrivers, analyseGear, validateGearInputs, type GearInputs } from '../engine/modules/gear.js';
+import {
+  computeGearDrivers, analyseGear, validateGearInputs, effectiveHardeningRoute, type GearInputs,
+} from '../engine/modules/gear.js';
+import { computeHeatTreatRate, ENERGY_FLOOR_RATIO } from '../engine/gear-heat-treat-rate.js';
 import type { GearMaterialClass } from '../engine/gear-shop-data.js';
-import { HARDENING_ROUTE_UNSUITABLE } from '../engine/modules/gear-advisor.js';
+import { HARDENING_ROUTE_UNSUITABLE, HARDENING_ROUTE_SPEC } from '../engine/modules/gear-advisor.js';
 import type { GearProcess, HardeningRoute } from '../engine/modules/gear-advisor.js';
 import {
   estimateForgingTonnage, resolveFurnaceEnergyPricePerKwh, estimateForgingDieCost,
@@ -5058,6 +5061,22 @@ function renderGearForm(): string {
         <option value="induction_hardening">Induction harden</option>
         <option value="none">Leave soft — no hardening</option>
       </select></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Heat Treatment <span style="font-weight:400;color:var(--text-muted)">(costed bottom-up: energy + labour + capital + overhead)</span></div>
+    <div class="field-row">
+      <div class="field-group"><label>Effective Case Depth (mm) <span title="Carburising time scales as ECD squared (Fick's second law), so 0.6 to 1.2 mm roughly QUADRUPLES the carburising cycle. Applies to carburising and carbonitriding only. Reference is 0.70 mm. From the drawing.">ℹ</span></label><input type="number" id="gear-ecd" step="0.05" min="0" value="0.7"/></div>
+      <div class="field-group"><label>Furnace Load (kg of parts) <span title="THE highest-leverage heat-treat input. Capital, maintenance, overhead and QC are incurred per LOAD, so racking 250 kg where the process assumes 600 kg roughly doubles them per kg. Leave 0 to use the process default.">ℹ</span></label><input type="number" id="gear-ht-load" step="10" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Heat Treat Sourcing <span title="A captive furnace line carries no SG&amp;A, no supplier margin and no freight — a 25-35% gap on the same physical process.">ℹ</span></label><select id="gear-ht-sourcing">
+        <option value="subcontract" selected>Sub-contract — commercial heat-treater</option>
+        <option value="captive">Captive — our own furnace line</option>
+      </select></div>
+      <div class="field-group"><label>Lot Minimum Charge (£, 0=none) <span title="Every commercial heat-treater applies a minimum per load or per order. Below roughly 200-300 kg per lot the per-kg rate is meaningless without it.">ℹ</span></label><input type="number" id="gear-ht-min-charge" step="10" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Shot Peened <span title="Root-fillet peening buys 20-40% bending fatigue strength and is standard on automotive transmission gears. Off by default — the model warns rather than inventing the cost.">ℹ</span></label><select id="gear-shot-peen"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+      <div class="field-group"><label>Straightened <span title="Post-quench press straightening to hold runout. The most commonly omitted line in gear heat-treat should-cost.">ℹ</span></label><select id="gear-straighten"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
       <div class="field-group"><label>Net Gear Weight (kg) <span title="Finished weight — drives heat treat, which is bought by the kg. From CAD: measured volume × grade density.">ℹ</span></label><input type="number" id="gear-net-wt" step="0.001" min="0.001" value="2.088"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -11536,6 +11555,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setSel('gear-matclass', gg.materialClass);
           setSel('gear-caseh', gg.caseHardened === undefined ? undefined : gg.caseHardened ? 'yes' : 'no');
           setSel('gear-hardening', gg.hardeningRoute);
+          setNumericField('gear-ecd', gg.effectiveCaseDepthMm, 2);
         }
         updateGearRouteNote();
         break;
@@ -12971,6 +12991,18 @@ function currentGearInputs(): GearInputs {
     caseHardened: sel('gear-caseh') === 'yes',
     ...(sel('gear-hardening') ? { hardeningRoute: sel('gear-hardening') as HardeningRoute } : {}),
     blankCostPerPart: num('gear-blank-cost'),
+    effectiveCaseDepthMm: num('gear-ecd') || undefined,
+    heatTreatLoadKg: num('gear-ht-load') || undefined,
+    heatTreatSourcing: sel('gear-ht-sourcing') === 'captive' ? 'captive' : 'subcontract',
+    heatTreatMinimumLotChargeGBP: num('gear-ht-min-charge') || undefined,
+    heatTreatLotKg: (num('gear-ht-load') || 0) > 0 ? num('gear-ht-load') : undefined,
+    shotPeened: sel('gear-shot-peen') === 'yes',
+    straightened: sel('gear-straighten') === 'yes',
+    // Heat treat is CONVERSION cost — energy, labour, capital — so it must be
+    // costed at the region it is bought in, not at UK rates and currency
+    // converted. China's heat treat is ~0.4x the UK's; its material multiplier
+    // is 0.88, and applying that instead was wrong by roughly 2x.
+    region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
     blankPrepCycleSec: num('gear-prep-ct') || undefined,
     netWeightKg: num('gear-net-wt'),
     materialId: sel('gear-mat') || GEAR_GRADE_BY_CLASS[matClass],
@@ -13026,7 +13058,8 @@ function wireGearForm(): void {
   });
   for (const id of ['gear-module', 'gear-teeth', 'gear-helix', 'gear-face', 'gear-quality',
                     'gear-internal', 'gear-caseh', 'gear-hardening', 'gear-process',
-                    'gear-batch', 'gear-reject']) {
+                    'gear-batch', 'gear-reject', 'gear-ecd', 'gear-ht-load',
+                    'gear-ht-sourcing', 'gear-shot-peen', 'gear-straighten']) {
     document.getElementById(id)?.addEventListener('input', updateGearRouteNote);
     document.getElementById(id)?.addEventListener('change', updateGearRouteNote);
   }
@@ -13049,18 +13082,36 @@ function collectGearInput(): UniversalStackInput {
   // Say what the material bucket is made of — a plant head reading "Raw
   // Material 47%" deserves the itemisation, not a puzzle. The furnace pass is
   // named by the route that was actually chosen, and priced by weight.
-  // Every route bought BY WEIGHT lands in the material bucket, so name it there.
-  // Missing a route here is how nitriding — 60% of a nitrided gear's cost — came
-  // out of the report unexplained.
-  const byWeight: GearProcess[] = ['case_hardening', 'quench_temper', 'nitriding'];
-  const furnace = a.operations.find(o => byWeight.includes(o.process));
-  if (a.heatTreatCostPerPart > 0 && furnace) {
+  // The heat-treat PACKAGE, itemised. Every by-weight step is listed with its
+  // own rate, because a supplier quote bundles them into one number and the
+  // only way to benchmark two suppliers is to compare the same scope.
+  if (a.heatTreatBreakdown.length) {
+    const items = a.heatTreatBreakdown
+      .map(x => `${x.step.toLowerCase()} £${x.costPerPart.toFixed(2)}`)
+      .join(' + ');
     _smExtraWarnings.push(
-      `Raw Material bucket = blank material £${inputs.blankCostPerPart.toFixed(2)} + `
-      + `${furnace.label.toLowerCase()} £${a.heatTreatCostPerPart.toFixed(2)}/part `
-      + `(${furnace.basis}) — a purchased service bought by weight, so it carries no machine `
-      + 'hours. Blank turning and all tooth cutting/finishing are separate operations in the '
-      + 'process bucket.');
+      `Raw Material bucket = blank material £${inputs.blankCostPerPart.toFixed(2)} + heat-treat `
+      + `package £${a.heatTreatCostPerPart.toFixed(2)}/part (${items}). Bought by weight, so it `
+      + 'carries no machine hours. Blank turning and all tooth cutting/finishing are separate '
+      + 'operations in the process bucket.');
+    // The derivation of the dominant step, so the biggest number can be checked.
+    const biggest = [...a.heatTreatBreakdown].sort((x, y) => y.costPerPart - x.costPerPart)[0];
+    _smExtraWarnings.push(`Heat-treat rate derivation — ${biggest.basis}`);
+    // The negotiation test: divide a QUOTED rate by the energy cost alone. Below
+    // ~2.5x the quote cannot be covering labour, capital and overhead, and the
+    // four possible explanations are all worth asking a supplier about.
+    const htRate = computeHeatTreatRate(
+      HARDENING_ROUTE_SPEC[
+        (effectiveHardeningRoute(inputs) === 'none' ? 'case_hardening' : effectiveHardeningRoute(inputs)) as Exclude<HardeningRoute, 'none'>
+      ].processKey,
+      inputs.region ?? 'UK',
+      { effectiveCaseDepthMm: inputs.effectiveCaseDepthMm, netLoadKg: inputs.heatTreatLoadKg });
+    _smExtraWarnings.push(
+      `Heat-treat energy floor: £${htRate.energyFloorPerKg.toFixed(3)}/kg is the energy cost alone `
+      + `for ${htRate.label.toLowerCase()} in ${htRate.region}. Divide any supplier quote by it — `
+      + `below about ${ENERGY_FLOOR_RATIO}x, the quote is not covering labour, capital and overhead, `
+      + 'and the reason is worth asking: cheaper energy than grid tariff, a denser furnace charge '
+      + 'than assumed, a loss-leader to win the machining package, or a rate not covering capital.');
   }
   // Induction is the one hardening route that is a machine, so it lands in the
   // PROCESS bucket instead — say so, or the material bucket looks short.
