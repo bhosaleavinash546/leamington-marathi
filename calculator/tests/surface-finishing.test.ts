@@ -21,8 +21,10 @@ import {
 } from '../src/engine/surface-treatment-data.js';
 import {
   STANDARD_POWDER_COAT_STAGES, STANDARD_FORGING_ZINC_STAGES,
-  STANDARD_CASTING_ECOAT_STAGES, computeSurfaceTreatment,
+  STANDARD_CASTING_ECOAT_STAGES, STANDARD_ZINC_PLATE_STAGES,
+  computeSurfaceTreatment, consumablesPerPartFrom,
 } from '../src/engine/surface-treatment-rate.js';
+import { computePaintingDrivers } from '../src/engine/modules/painting.js';
 import { computeUniversalStack, validateStackInput } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 
@@ -390,5 +392,93 @@ describe('a drawing callout maps to a route deterministically', () => {
         labourId: 'lab-uk-semiskilled', partsPerRack: 6, racksPerHour: 20,
       }), route).not.toThrow();
     }
+  });
+});
+
+describe('AUDIT REGRESSIONS — defects found by tracing inputs to arithmetic', () => {
+  /**
+   * These pin defects that shipped. Each existed because a value was computed
+   * correctly and then not consumed — the failure mode is dead wiring, not bad
+   * maths, and it is invisible to a test that only exercises the engine.
+   */
+
+  it('A1: a zinc route through the PAINTING form carries its deposited metal', () => {
+    // painting.ts summed chemistry + colour change ONLY. When deposited metal
+    // and effluent were added to the engine, only the new commodity path was
+    // updated — so a plated part costed here silently lost its zinc, the very
+    // pass-through the report calls a floor no supplier can quote below.
+    const plated = {
+      surfaceAreaM2: 0.8, coats: [],
+      lineId: 'plating-line-barrel', labourId: 'lab-uk-semiskilled',
+      lineRatePartsPerHr: 120, oee: 0.85, manning: 2, labourEfficiency: 0.95,
+      rejectReworkPct: 0, toolingCost: 0, amortizationVolume: 200_000,
+      stages: STANDARD_ZINC_PLATE_STAGES, partsPerRack: 100, racksPerHour: 3,
+    };
+    const d = computePaintingDrivers(plated as never);
+    const surface = computeSurfaceTreatment({
+      stages: STANDARD_ZINC_PLATE_STAGES, surfaceAreaM2: 0.8,
+      partsPerRack: 100, racksPerHour: 3,
+    });
+    expect(surface.depositedMetalPerPart).toBeGreaterThan(0);
+    expect(surface.effluentPerPart).toBeGreaterThan(0);
+    // The consumable must contain BOTH, not just chemistry.
+    const consumable = d.rawMaterial.consumablesCostPerPart ?? 0;
+    expect(consumable).toBeGreaterThanOrEqual(
+      surface.chemistryPerPart + surface.effluentPerPart + surface.depositedMetalPerPart - 1e-9);
+  });
+
+  it('A1: both callers form the consumable the same way', () => {
+    // One definition, so a future cost line reaches every caller or none.
+    const surface = computeSurfaceTreatment({
+      stages: STANDARD_ZINC_PLATE_STAGES, surfaceAreaM2: 0.8,
+      partsPerRack: 100, racksPerHour: 3,
+    });
+    expect(consumablesPerPartFrom(surface))
+      .toBeCloseTo(surface.addersPerPart - surface.maskingLabourPerPart, 12);
+    // And masking labour is excluded, because it is emitted as an operation.
+    const masked = computeSurfaceTreatment({
+      stages: ['degrease', 'masking', 'zinc_plate', 'demask'], surfaceAreaM2: 0.8,
+      partsPerRack: 100, racksPerHour: 3, maskedFeatures: 3,
+    });
+    expect(masked.maskingLabourPerPart).toBeGreaterThan(0);
+    expect(consumablesPerPartFrom(masked)).toBeLessThan(masked.addersPerPart);
+  });
+
+  it('A2: the pressing\'s real thickness reaches the geometry bridge', () => {
+    // Coated area is 2000/(t x rho) x shape, so bridging a 0.8 mm pressing as
+    // the 1.5 mm reference form understated its area by nearly 2x — while
+    // `inputs.thicknessMm` sat in scope, unused.
+    const at = (thicknessMm: number) => computeSheetMetalDrivers(bracket({
+      thicknessMm,
+      surfaceFinishing: {
+        stages: STANDARD_POWDER_COAT_STAGES, productForm: 'sheet_standard',
+        partsPerRack: 6, racksPerHour: 20,
+      },
+    })).rawMaterial.consumablesCostPerPart ?? 0;
+
+    const thin = at(0.8);
+    const std = at(1.5);
+    expect(thin).toBeGreaterThan(std);
+    // Area is inversely proportional to thickness, and chemistry follows area.
+    expect(thin / std).toBeCloseTo(1.5 / 0.8, 2);
+  });
+
+  it('A2: an explicit form entry still overrides the commodity figure', () => {
+    const d = computeSheetMetalDrivers(bracket({
+      thicknessMm: 1.5,
+      surfaceFinishing: {
+        stages: STANDARD_POWDER_COAT_STAGES, productForm: 'sheet_standard',
+        thicknessMm: 0.8, partsPerRack: 6, racksPerHour: 20,
+      },
+    }));
+    const override = d.rawMaterial.consumablesCostPerPart ?? 0;
+    const native = computeSheetMetalDrivers(bracket({
+      thicknessMm: 1.5,
+      surfaceFinishing: {
+        stages: STANDARD_POWDER_COAT_STAGES, productForm: 'sheet_standard',
+        partsPerRack: 6, racksPerHour: 20,
+      },
+    })).rawMaterial.consumablesCostPerPart ?? 0;
+    expect(override / native).toBeCloseTo(1.5 / 0.8, 2);
   });
 });

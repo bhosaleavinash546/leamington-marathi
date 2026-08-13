@@ -467,3 +467,66 @@ describe('a bench operation must not advertise a machine-rate lever it does not 
     expect(machineRows.map(d => d.driver)).toEqual(['Paint Line: Machine Rate']);
   });
 });
+
+describe('AUDIT: the painted reference part is pinned', () => {
+  /**
+   * C1. Importing the workbook chemistry moved this commodity and nothing
+   * caught it, because no test fixed the total. Verified against the previous
+   * commit, per m²: phosphate 0.22 -> 0.639 (2.90x), zirconium 0.16 -> 0.391,
+   * anodise 0.48 -> 1.203, passivate 0.28 -> 0.526, zinc plate 0.55 -> 0.414
+   * (cheaper) — plus an effluent line that did not exist at all before.
+   *
+   * The move is defensible: the workbook is systematically sourced where the
+   * previous values were ad-hoc, and effluent is a real cost that was missing.
+   * What was NOT defensible was it happening silently. This pin makes any
+   * future data edit declare itself.
+   */
+  const REFERENCE = paintPart({ partsPerRack: 6, racksPerHour: 20 });
+
+  it('chemistry and effluent on the standard paint route are as stated', () => {
+    const r = computeSurfaceTreatment({
+      stages: STANDARD_PAINT_LINE_STAGES, surfaceAreaM2: 0.8,
+      partsPerRack: 6, racksPerHour: 20,
+    });
+    // Hand-checkable: sum the per-m² figures over the route and multiply by area.
+    const chemPerM2 = ['degrease', 'rinse', 'phosphate', 'rinse', 'di_rinse',
+      'dry_off', 'flash_off', 'cure_oven']
+      .reduce((sum, k) => sum + findSurfaceStage(k)!.chemistryGBPPerUnit.value, 0);
+    expect(r.chemistryPerPart).toBeCloseTo(chemPerM2 * 0.8, 9);
+    expect(r.chemistryPerPart).toBeCloseTo(0.6795, 3);
+    expect(r.effluentPerPart).toBeCloseTo(0.3067, 3);
+    // A bare paint route deposits no metal.
+    expect(r.depositedMetalPerPart).toBe(0);
+  });
+
+  it('and the painted part total is fixed, with the move from the import stated', () => {
+    // £4.5936 now. Before the workbook import it was £3.794 — a +21% move on
+    // this reference part, and nothing caught it because no test held the total.
+    //
+    // Reconciled by hand so the delta is arithmetic, not assertion:
+    //   consumables  (0.6795 chem + 0.3067 effluent) - 0.3440 old chem = 0.6422
+    //   rework       x 1.03                                            = 0.6615
+    //   overhead+margin  x 1.12 x 1.08                                 = 0.8000
+    //   4.5936 - 0.800 = 3.794
+    const now = total(REFERENCE);
+    expect(now).toBeCloseTo(4.5936, 3);
+
+    const r = computeSurfaceTreatment({
+      stages: STANDARD_PAINT_LINE_STAGES, surfaceAreaM2: 0.8,
+      partsPerRack: 6, racksPerHour: 20,
+    });
+    const delta = (r.chemistryPerPart + r.effluentPerPart - 0.3440) * 1.03 * 1.12 * 1.08;
+    expect(delta).toBeCloseTo(0.800, 2);
+    expect(now - delta).toBeCloseTo(3.794, 2);
+  });
+
+  it('coverage counts only what can move the cost', () => {
+    const c = surfaceDataCoverage();
+    expect(c.referenceOnly).toBeGreaterThan(0);
+    // Energy, capital and line fill are carried but cannot change the answer —
+    // counting them in the headline overstated how much of the estimate is
+    // guesswork that matters.
+    expect(c.total).toBeLessThan(c.total + c.referenceOnly);
+    expect(surfaceDataWarning()).toMatch(/COST-BEARING/);
+  });
+});

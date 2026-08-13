@@ -36,7 +36,7 @@
  */
 import type { OperationInput } from '../types.js';
 import {
-  computeSurfaceTreatment, type SurfaceTreatmentBreakdown,
+  computeSurfaceTreatment, consumablesPerPartFrom, type SurfaceTreatmentBreakdown,
 } from '../surface-treatment-rate.js';
 import {
   findSurfaceStage, surfaceDataWarning, DEFAULT_SURFACE_LINE, type SurfaceStage,
@@ -259,9 +259,9 @@ export function computeSurfaceFinishing(
     });
   }
 
-  // Masking labour is an OPERATION, so it must not also be a consumable.
-  const consumablesPerPart = surface.chemistryPerPart + surface.effluentPerPart
-    + surface.depositedMetalPerPart + surface.colourChangePerPart;
+  // Masking labour is an OPERATION, so it must not also be a consumable. Shared
+  // helper rather than a hand-rolled sum — see its doc comment for why.
+  const consumablesPerPart = consumablesPerPartFrom(surface);
 
   warnings.push(...routeWarnings(stages, inputs, surface, area));
 
@@ -328,9 +328,22 @@ export type CommodityFinishingInput =
  */
 export function finishingForCommodity(
   spec: CommodityFinishingInput | undefined,
-  defaults: { massKg: number; labourId: string; region?: string; productForm?: string },
+  defaults: {
+    massKg: number; labourId: string; region?: string; productForm?: string;
+    /**
+     * The part's real wall or section thickness, mm, where the commodity knows
+     * it. Sheet metal always does. Casting and forging do not carry a section
+     * thickness input, so they pass nothing and the reference form's thickness
+     * stands until the user overrides it on the form.
+     */
+    thicknessMm?: number;
+  },
 ): SurfaceFinishingResult | null {
   if (!spec) return null;
+  // An explicit form entry wins over the commodity's own figure — the user may
+  // be costing a coated feature on a part whose nominal thickness is not what
+  // the coated surface sees.
+  const thicknessMm = spec.thicknessMm ?? defaults.thicknessMm;
   return computeSurfaceFinishing({
     ...spec,
     labourId: spec.labourId ?? defaults.labourId,
@@ -338,6 +351,7 @@ export function finishingForCommodity(
     ...(spec.region ?? defaults.region ? { region: spec.region ?? defaults.region } : {}),
     ...(spec.productForm ?? defaults.productForm
       ? { productForm: spec.productForm ?? defaults.productForm } : {}),
+    ...(thicknessMm && thicknessMm > 0 ? { thicknessMm } : {}),
   });
 }
 

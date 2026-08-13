@@ -1,6 +1,6 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import {
-  computeSurfaceTreatment, type SurfaceTreatmentBreakdown,
+  computeSurfaceTreatment, consumablesPerPartFrom, type SurfaceTreatmentBreakdown,
 } from '../surface-treatment-rate.js';
 import { findSurfaceStage, surfaceDataWarning } from '../surface-treatment-data.js';
 
@@ -216,11 +216,13 @@ export function computePaintingDrivers(inputs: PaintingInputs): CommodityDrivers
 
   const { surface } = analysePainting(inputs);
 
-  // Bath chemistry and the colour-change purge are consumables the paint film
-  // formula cannot see, and no machine rate contains them either.
-  const consumables = surface
-    ? surface.chemistryPerPart + surface.colourChangePerPart
-    : 0;
+  // Bath chemistry, effluent, deposited metal and the colour-change purge are
+  // consumables the paint film formula cannot see, and no machine rate contains
+  // them either. Taken from the shared helper rather than re-summed here: this
+  // line used to add up chemistry and colour change ONLY, so when deposited
+  // metal and effluent were added to the engine a zinc-plated part costed on
+  // this form silently lost its zinc.
+  const consumables = surface ? consumablesPerPartFrom(surface) : 0;
 
   // Rework uplift applies to everything consumed on a part that is then redone.
   const reworkUplift = 1 + inputs.rejectReworkPct;

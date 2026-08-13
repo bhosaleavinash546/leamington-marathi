@@ -288,6 +288,23 @@ export function computeSurfaceTreatment(
   };
 }
 
+/**
+ * The consumable subtotal for the material bucket: everything in
+ * `addersPerPart` EXCEPT masking labour, which is emitted as its own bench
+ * operation and would otherwise be counted twice.
+ *
+ * ONE definition, deliberately, because the alternative caused a real bug.
+ * `painting.ts` and `surface-finishing.ts` each used to form this subtotal by
+ * hand, and when deposited metal and effluent were added to the engine only one
+ * of them was updated — so a zinc-plated part costed on the painting form
+ * silently lost its zinc, the very pass-through the report calls a floor no
+ * supplier can quote below. A caller that adds a new cost line now gets it
+ * everywhere or nowhere.
+ */
+export function consumablesPerPartFrom(s: SurfaceTreatmentBreakdown): number {
+  return s.addersPerPart - s.maskingLabourPerPart;
+}
+
 /** Pre-treat + paint: the common automotive recipe. A starting point, not a
  *  claim about any particular shop — which is why stages are an input. */
 export const STANDARD_PAINT_LINE_STAGES = [

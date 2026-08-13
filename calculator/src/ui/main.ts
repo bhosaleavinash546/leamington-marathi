@@ -27,7 +27,7 @@ import {
 } from '../engine/modules/forging-advisor.js';
 import { computePaintingDrivers, analysePainting } from '../engine/modules/painting.js';
 import {
-  finishingForCommodity, type CommodityFinishingInput,
+  finishingForCommodity, surfaceRouteFromCallout, type CommodityFinishingInput,
 } from '../engine/modules/surface-finishing.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
 import { computePCBFabDrivers } from '../engine/modules/pcb-fab.js';
@@ -11946,6 +11946,13 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       }
     }
 
+    // Surface treatment: the MEASURED coated area and the drawing's finish
+    // callout. Both existed and neither reached the form — the engine preferred
+    // measured area over the geometry bridge while nothing ever supplied one,
+    // so every CAD-driven part silently bridged; and the drawing read returned
+    // a finish callout that nothing consumed.
+    applyCADSurfaceFinishing(targetCommodity, r);
+
     // Surface provenance: how much of this form is measured geometry vs AI guess.
     applyRuleFieldsToForm();
   markBlockedDecisionFields();
@@ -13322,6 +13329,85 @@ function paintMachineMismatch(route: string, machineId: string): string | null {
 }
 
 // ─── Surface finishing, shared by sheet metal / casting / forging ────────────
+
+/** Which prefix each commodity's surface-treatment block uses. */
+const SURFACE_PREFIX_BY_COMMODITY: Partial<Record<CommodityType, string>> = {
+  sheet_metal: 'sm', casting: 'cast', forging: 'forge',
+};
+
+/**
+ * Push the MEASURED coated area and the drawing's finish callout into the form.
+ *
+ * Both of these were computed and then thrown away. The engine prefers a
+ * measured area over the geometry bridge — and nothing ever supplied one, so
+ * every CAD-driven part quietly used the bridge while the report claimed
+ * measurement was preferred. Separately, the CAD prompt asked the model for a
+ * structured surface-treatment block and no code read it.
+ *
+ * Everything here is ADVISORY: the fields are prefilled and visible, the route
+ * is only pre-selected when the drawing actually stated one, and an
+ * unrecognised callout sets nothing rather than guessing at a route that could
+ * be 5x out.
+ */
+function applyCADSurfaceFinishing(
+  targetCommodity: CommodityType,
+  r: { costInputSuggestions?: Record<string, unknown> },
+): void {
+  const prefix = SURFACE_PREFIX_BY_COMMODITY[targetCommodity];
+  if (!prefix || !document.getElementById(`${prefix}-sf-route`)) return;
+
+  // ── Measured wetted area, cm² -> m². A units slip here is a 10^4 error. ──
+  const cm2 = cadOCCTGeometry?.surfaceArea?.cm2;
+  if (typeof cm2 === 'number' && cm2 > 0) {
+    setNumericField(`${prefix}-sf-area`, cm2 / 10_000, 4);
+    _smExtraWarnings.push(
+      `Surface treatment: coated area ${(cm2 / 10_000).toFixed(4)} m² MEASURED from the CAD `
+      + 'geometry and used in place of the mass-and-wall-thickness bridge. Confirm it is the '
+      + 'COATED area — a masked or machined-after-coating face is measured here but not coated.');
+  }
+
+  // ── The drawing's finish callout, mapped deterministically ──────────────
+  const st = r.costInputSuggestions?.surfaceTreatment as {
+    callout?: string | null; thicknessUm?: number | null;
+    maskedFeatureCount?: number | null; tensileStrengthMPa?: number | null;
+    saltSprayHours?: number | null; readFrom?: string | null;
+  } | undefined;
+  if (!st) return;
+
+  const route = surfaceRouteFromCallout(st.callout);
+  if (route && SURFACE_FINISH_ROUTES[route]) {
+    const el = document.getElementById(`${prefix}-sf-route`) as HTMLSelectElement | null;
+    if (el && Array.from(el.options).some(o => o.value === route)) {
+      el.value = route;
+      _smExtraWarnings.push(
+        `Surface treatment: route "${SURFACE_ROUTE_LABELS[route]}" read from the drawing callout `
+        + `"${st.callout}"${st.readFrom ? ` (${st.readFrom})` : ''}. This is an AI READ of a `
+        + 'drawing note, not an engineer\'s confirmation — check it before quoting.');
+    }
+  } else if (st.callout) {
+    // A callout we cannot map is worth MORE noise, not less: something is
+    // specified on the print and the cost does not contain it.
+    _smExtraWarnings.push(
+      `Surface treatment: the drawing states "${st.callout}" and this tool has no route for it, `
+      + 'so NO coating cost is included. Add it manually or the part is being costed bare.');
+  }
+
+  if (typeof st.thicknessUm === 'number' && st.thicknessUm > 0) {
+    setNumericField(`${prefix}-sf-um`, st.thicknessUm, 0);
+  }
+  if (typeof st.maskedFeatureCount === 'number' && st.maskedFeatureCount > 0) {
+    setNumericField(`${prefix}-sf-mask`, st.maskedFeatureCount, 0);
+  }
+  if (typeof st.tensileStrengthMPa === 'number' && st.tensileStrengthMPa > 0) {
+    setNumericField(`${prefix}-sf-mpa`, st.tensileStrengthMPa, 0);
+  }
+  if (typeof st.saltSprayHours === 'number' && st.saltSprayHours > 0) {
+    _smExtraWarnings.push(
+      `Surface treatment: drawing calls for ${st.saltSprayHours} h salt spray. The passivate and `
+      + 'sealer choice moves salt-spray life 2-3x at very low cost and is usually bundled inside a '
+      + 'plating quote — unbundle it, it is the highest-leverage VAVE item on the line.');
+  }
+}
 
 /**
  * Finishing routes offered inside a commodity form.

@@ -562,32 +562,62 @@ export function findSurfaceStage(key: string): SurfaceStage | null {
     ?? null;
 }
 
+/**
+ * Parameters carried here that CANNOT move the cost in this model.
+ *
+ * Three reasons, all deliberate:
+ *   - `powerKw`, `electricityKwhPerUnit`, `gasKwhPerUnit` — energy is already
+ *     inside the line's machine rate. These exist for the Faraday audit.
+ *   - `capitalGBP` and the whole line-economics block — this model does NOT
+ *     build a line rate (see the header of `surface-treatment-rate.ts`), so
+ *     capital, WACC, depreciation, maintenance and overhead are reference.
+ *   - `lineFill` — our throughput is expressed CONCRETELY as parts-per-rack x
+ *     racks-per-hour, which already contains the fill. Multiplying by a fill
+ *     fraction on top would double-count the same lever, so it is documentation
+ *     of the class norm rather than an input.
+ *
+ * Counting these in the coverage headline overstated it: the report said "252
+ * of 252 parameters are representative" when a large share of them could not
+ * change the answer whatever they were set to. What a reader needs to know is
+ * how much of the DATA THAT MOVES THE COST is real.
+ */
+const REFERENCE_ONLY_KEYS = new Set([
+  'powerKw', 'capitalGBP', 'lineFill', 'electricityKwhPerUnit', 'gasKwhPerUnit',
+  'operatingHoursPerYear', 'oee', 'wacc', 'depreciationLifeYears',
+  'maintenancePctOfCapital', 'overheadPerLinePerYearGBP',
+]);
+
 export interface SurfaceDataCoverage {
+  /** Parameters that actually move the cost. */
   total: number; unverified: number; plantSupplied: number; verified: number;
   hasUnverified: boolean;
+  /** Carried for reference or for the physics audit; cannot move the cost. */
+  referenceOnly: number;
 }
 
-/** How much of the surface-treatment data is real. Mirrors `gearDataCoverage`. */
+/** How much of the COST-BEARING surface data is real. Mirrors `gearDataCoverage`. */
 export function surfaceDataCoverage(
   stages: Record<string, SurfaceStage> = SURFACE_STAGES,
   line: SurfaceLineEconomics = DEFAULT_SURFACE_LINE,
 ): SurfaceDataCoverage {
   const counts = { unverified: 0, 'plant-supplied': 0, verified: 0 };
-  const walk = (o: unknown): void => {
+  let referenceOnly = 0;
+  const walk = (o: unknown, key?: string): void => {
     if (!o || typeof o !== 'object') return;
     const rec = o as Record<string, unknown>;
     if ('value' in rec && 'status' in rec) {
+      if (key && REFERENCE_ONLY_KEYS.has(key)) { referenceOnly += 1; return; }
       const s = (rec as unknown as ShopParam).status;
       if (s in counts) counts[s] += 1;
       return;
     }
-    for (const v of Object.values(rec)) walk(v);
+    for (const [k, v] of Object.entries(rec)) walk(v, k);
   };
   walk(stages); walk(line); walk(PLATING_DEPOSIT_UM_PER_MIN); walk(SURFACE_METAL_PRICES);
   const total = counts.unverified + counts['plant-supplied'] + counts.verified;
   return {
     total, unverified: counts.unverified, plantSupplied: counts['plant-supplied'],
-    verified: counts.verified, hasUnverified: counts.unverified > 0,
+    verified: counts.verified, hasUnverified: counts.unverified > 0, referenceOnly,
   };
 }
 
@@ -596,8 +626,10 @@ export function surfaceDataCoverage(
 export function surfaceDataWarning(): string | null {
   const c = surfaceDataCoverage();
   if (!c.hasUnverified) return null;
-  return `${c.unverified} of ${c.total} surface-treatment parameters are representative values, `
-    + 'not plant data. Chemistry costs, oven ratings, dwell times, plating rates, line fill and '
-    + 'rack capacities were not measured on your line. The structure is right and the number is '
-    + 'NOT quotable until the line data is supplied — line loading alone moves it more than 50%.';
+  return `${c.unverified} of ${c.total} COST-BEARING surface-treatment parameters are `
+    + 'representative values, not plant data (a further ' + c.referenceOnly + ' are carried for '
+    + 'reference or for the physics audit and cannot move the cost). Chemistry and effluent costs, '
+    + 'dwell times, plating rates and deposited-metal prices were not measured on your line. The '
+    + 'structure is right and the number is NOT quotable until the line data is supplied — rack '
+    + 'density alone moves it more than 50%.';
 }

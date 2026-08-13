@@ -314,10 +314,15 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
   // share of the part — a 1.5 mm steel pressing carries roughly 8x the coated
   // area per kilogram of a 12 mm forging, which is why the area comes from
   // measured CAD or the geometry bridge rather than from a per-kg factor.
+  // The bridge converts mass to coated area as 2000/(t x rho) x shape, so the
+  // wall thickness IS the answer. This module already knows the real one, and
+  // defaulting to the 1.5 mm reference form while `inputs.thicknessMm` sat in
+  // scope understated a 0.8 mm pressing's coated area by nearly 2x.
   const finishing = finishingForCommodity(inputs.surfaceFinishing, {
     massKg: inputs.netWeightKg,
     labourId: inputs.labourId,
     productForm: 'sheet_standard',
+    ...(inputs.thicknessMm > 0 ? { thicknessMm: inputs.thicknessMm } : {}),
   });
   if (finishing) {
     operations.push(...finishing.operations);
