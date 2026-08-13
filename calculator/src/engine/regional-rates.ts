@@ -341,6 +341,70 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
 };
 
+// ─── Surface treatment — the factors coating cost turns on ────────────────────
+
+/**
+ * Effluent and chemistry factors for surface treatment, UK = 1.00.
+ *
+ * These exist because **labour is a smaller share of coating cost than most cost
+ * engineers assume, and effluent is a much larger one.** Waste-water treatment,
+ * sludge disposal, heavy-metal discharge limits, VOC abatement, IED permitting
+ * and REACH authorisation are where the EU and UK genuinely carry structural
+ * cost against China and India — and `machineRateMultiplier` cannot express it,
+ * because it is not a machine cost. Modelling it inside a labour factor, which
+ * is the usual shortcut, gets both the size and the direction of the gap wrong.
+ *
+ * Proprietary coating chemistry (Atotech/MKS, Chemetall, Coventya, Axalta, Akzo,
+ * PPG) is priced GLOBALLY with only a modest local discount, which is why the
+ * chemical factor moves far less than labour does — India in particular loses
+ * most of its labour advantage here.
+ *
+ * ANCHORS (Surface Treatment & Coating Should-Cost Model workbook, sheet 03,
+ * rebased from its Europe = 1.00 to our UK = 1.00): UK 1.00, Europe 0.95,
+ * China 0.52, India 0.57 on effluent; UK 1.00, Europe 0.95, China 0.71,
+ * India 0.90 on chemistry. Every OTHER region here is interpolated from those
+ * four by regulatory regime and is an estimate, not a sourced figure.
+ */
+export interface SurfaceRegionalFactors {
+  /** Effluent treatment, sludge disposal, permitting and EHS vs UK. */
+  effluent: number;
+  /** Proprietary coating and plating chemistry vs UK. */
+  chemical: number;
+}
+
+export const SURFACE_REGIONAL_FACTORS: Record<ManufacturingRegion, SurfaceRegionalFactors> = {
+  // Anchored by the workbook
+  UK: { effluent: 1.00, chemical: 1.00 },
+  DE: { effluent: 0.95, chemical: 0.95 },
+  CN: { effluent: 0.52, chemical: 0.71 },
+  IN: { effluent: 0.57, chemical: 0.90 },
+  // Interpolated — EU/EEA members carry the same IED and REACH burden as Germany,
+  // discounted for lower gate fees and enforcement cost in the east.
+  FR: { effluent: 0.95, chemical: 0.95 },
+  NL: { effluent: 1.00, chemical: 0.95 },
+  SE: { effluent: 0.98, chemical: 0.95 },
+  IT: { effluent: 0.90, chemical: 0.95 },
+  ES: { effluent: 0.88, chemical: 0.95 },
+  PL: { effluent: 0.80, chemical: 0.92 },
+  CZ: { effluent: 0.80, chemical: 0.92 },
+  HU: { effluent: 0.78, chemical: 0.92 },
+  RO: { effluent: 0.72, chemical: 0.90 },
+  // Outside REACH: lower compliance cost, but chemistry is still bought globally.
+  TR: { effluent: 0.60, chemical: 0.88 },
+  US: { effluent: 0.75, chemical: 0.90 },
+  KR: { effluent: 0.72, chemical: 0.90 },
+  BR: { effluent: 0.62, chemical: 0.92 },
+  MX: { effluent: 0.58, chemical: 0.88 },
+  TH: { effluent: 0.55, chemical: 0.85 },
+  VN: { effluent: 0.50, chemical: 0.85 },
+};
+
+/** Surface factors for a region, defaulting to UK rather than to 1.0 by accident. */
+export function surfaceFactors(region: string): SurfaceRegionalFactors {
+  return SURFACE_REGIONAL_FACTORS[region as ManufacturingRegion]
+    ?? SURFACE_REGIONAL_FACTORS.UK;
+}
+
 // ─── Authentic country prices — Extrusion grades ───────────────────────────────
 
 /**

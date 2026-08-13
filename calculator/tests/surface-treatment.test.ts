@@ -98,9 +98,26 @@ describe('the machine rate already contains the oven — do not charge it twice'
     expect(r).not.toHaveProperty('energy');
     expect(r).not.toHaveProperty('capital');
     expect(r).not.toHaveProperty('overhead');
-    // Only the three things no machine rate contains.
+    // The adders are EXACTLY the things no machine rate contains, and nothing
+    // else. Written as an exhaustive sum so adding a line without thinking
+    // about whether the machine rate already holds it fails here.
     expect(r.addersPerPart).toBeCloseTo(
-      r.chemistryPerPart + r.maskingLabourPerPart + r.colourChangePerPart, 9);
+      r.chemistryPerPart + r.effluentPerPart + r.depositedMetalPerPart
+      + r.maskingLabourPerPart + r.colourChangePerPart, 9);
+  });
+
+  it('and the workbook\'s standalone-line fixed cost is NOT imported either', () => {
+    // The supplied workbook costs each process as its own line with its own
+    // overhead, capital and permit, then subtracts a 25-35% "integrated-line
+    // credit" to undo the double-count. We cost line time once on a machine
+    // rate, so there is nothing to credit back — and no credit factor to get
+    // wrong. Capital is carried in the data for reference and never charged.
+    const r = computeSurfaceTreatment({
+      stages: STANDARD_PAINT_LINE_STAGES, surfaceAreaM2: 0.8, partsPerRack: 6, racksPerHour: 20,
+    });
+    expect(r).not.toHaveProperty('integratedLineCredit');
+    expect(r).not.toHaveProperty('capitalRecovery');
+    expect(r).not.toHaveProperty('maintenance');
   });
 
   it('the paint line machine still carries the line time', () => {
@@ -187,8 +204,8 @@ describe('plating — a process family the model did not have', () => {
   });
 
   it('zinc-nickel is dearer than plain zinc on both chemistry and time', () => {
-    expect(SURFACE_STAGES.zinc_nickel.chemistryGBPPerM2.value)
-      .toBeGreaterThan(SURFACE_STAGES.zinc_plate.chemistryGBPPerM2.value * 2);
+    expect(SURFACE_STAGES.zinc_nickel.chemistryGBPPerUnit.value)
+      .toBeGreaterThan(SURFACE_STAGES.zinc_plate.chemistryGBPPerUnit.value * 2);
     expect(PLATING_DEPOSIT_UM_PER_MIN.zinc_nickel.value)
       .toBeLessThan(PLATING_DEPOSIT_UM_PER_MIN.zinc_plate.value);
   });
@@ -230,9 +247,13 @@ describe('the model refuses rather than guesses', () => {
     }
   });
 
-  it('stages resolve by key and by ST-nn id', () => {
+  it('stages resolve by key, by our id, and by the workbook id', () => {
     expect(findSurfaceStage('cure_oven')).toBe(SURFACE_STAGES.cure_oven);
-    expect(findSurfaceStage('ST-08')).toBe(SURFACE_STAGES.cure_oven);
+    expect(findSurfaceStage('SF-12')).toBe(SURFACE_STAGES.cure_oven);
+    // Our numbering deliberately differs from the workbook's — ours is SF-nn so
+    // a report cannot print "ST-02 Rinse" beside a workbook whose ST-02 is shot
+    // blasting. The workbook id still resolves, via workbookRef.
+    expect(findSurfaceStage('ST-15')).toBe(SURFACE_STAGES.zinc_plate);
     expect(findSurfaceStage('nope')).toBeNull();
   });
 });

@@ -1048,6 +1048,33 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       'UK', 'REPRESENTATIVE — UK rack plating and sulphuric anodising class. Higher capital and '
       + 'lower throughput than barrel: parts are jigged individually. Target ~£67/hr. Replace '
       + 'with plant data.'),
+    // ── Mechanical prep and mass-basis finishing ──────────────────────────
+    // Sheet metal, casting and forging routes start on equipment a paint line
+    // does not have. Costing shot blasting on a paint line's build-up — gas
+    // ovens, spray booths, an RTO — over-states it about 3x; these are the
+    // machines those stages actually run on. Throughput is set by the barrel or
+    // bowl in KILOGRAMS, which is why the stages that use them are mass-basis.
+    makeMachine('blast-machine', 'Shot Blast Machine (tumble / hanger)',
+      { annualDepreciation: 26000, maintenance: 18000, energy: 14000, floorSpace: 9000, indirectSupport: 11000, financeCost: 4500, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'REPRESENTATIVE — UK descaling/cleaning cell class: blast wheels, shot recovery and '
+      + 'separation, dust extraction. Maintenance is high relative to capital because blades, '
+      + 'liners and the separator are consumable wear parts. Replace with plant data.'),
+    makeMachine('mass-finish-bowl', 'Vibratory / Mass Finishing Bowl',
+      { annualDepreciation: 14000, maintenance: 9000, energy: 7000, floorSpace: 7000, indirectSupport: 8000, financeCost: 2400, annualAvailableHours: 4000, machineUtilization: 0.75 },
+      'UK', 'REPRESENTATIVE — UK deburr/polish cell class: bowl, media separation, compound '
+      + 'dosing, water treatment. Low capital, long cycles; media and compound are the real '
+      + 'variable cost and are charged as stage chemistry. Replace with plant data.'),
+    makeMachine('galvanising-kettle', 'Hot Dip Galvanising Kettle (batch, EN ISO 1461)',
+      { annualDepreciation: 200000, maintenance: 105000, energy: 240000, floorSpace: 60000, indirectSupport: 55000, financeCost: 34000, annualAvailableHours: 5000, machineUtilization: 0.80 },
+      'UK', 'REPRESENTATIVE — UK batch galvanising plant class: kettle, furnace, flux and pickle '
+      + 'tanks, fume extraction, effluent. Energy dominates because the kettle is held molten '
+      + 'continuously whether or not work is passing. The ZINC is NOT in this rate — it is a '
+      + 'separate pass-through that scales with surface area, not with kettle time.'),
+    makeMachine('impregnation-plant', 'Vacuum Resin Impregnation Plant (casting porosity)',
+      { annualDepreciation: 30000, maintenance: 15000, energy: 11000, floorSpace: 8000, indirectSupport: 10000, financeCost: 5200, annualAvailableHours: 4000, machineUtilization: 0.78 },
+      'UK', 'REPRESENTATIVE — UK casting impregnation cell class: vacuum vessel, resin recovery, '
+      + 'wash and cure stations. Casting-specific; its value is the pressure-test reject it '
+      + 'prevents rather than anything it adds to the part. Replace with plant data.'),
     // ── BIW / Assembly ────────────────────────────────────────────────────
     makeMachine('robot-weld-station', 'Robot Welding Station',
       { annualDepreciation: 35000, maintenance: 14000, energy: 6000, floorSpace: 8000, indirectSupport: 7000, financeCost: 4375, annualAvailableHours: 4000, machineUtilization: 0.82 },

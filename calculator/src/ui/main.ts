@@ -26,6 +26,9 @@ import {
   type ForgingProcess, type ComplexityLevel, type ToleranceClass,
 } from '../engine/modules/forging-advisor.js';
 import { computePaintingDrivers, analysePainting } from '../engine/modules/painting.js';
+import {
+  finishingForCommodity, type CommodityFinishingInput,
+} from '../engine/modules/surface-finishing.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
 import { computePCBFabDrivers } from '../engine/modules/pcb-fab.js';
 import type { PCBTechnology, PCBQualityGrade } from '../engine/modules/pcb-fab.js';
@@ -3670,7 +3673,8 @@ function renderSheetMetalForm(): string {
         </div>
         <div id="sm-adv-result" style="margin-top:6px;font-size:0.75rem;display:none"></div>
       </div>
-    </details>`;
+    </details>
+    ${renderSurfaceFinishingSection('sm', 'sheet')}`;
 }
 
 // ─── Form: Sheet Metal Fabrication ───────────────────────────────────────────
@@ -4899,7 +4903,8 @@ function renderCastingForm(): string {
       <div class="field-row" style="margin-top:6px">
         <div class="field-group"><label title="Fraction of wax recovered via dewaxing autoclave and reused. Typical: 80–90% (0.80–0.90). Reduces effective wax cost per part. Lost wax = 10–20% contamination/loss.">Wax Recovery (0–1) ⓘ</label><input type="number" id="cast-inv-wax-rec" step="0.05" min="0" max="1" value="0.80" title="Wax recovery fraction via autoclave dewaxing. 0.80 = 80% reused. Typical foundry: 0.75–0.90."/></div>
       </div>
-    </div>`;
+    </div>
+    ${renderSurfaceFinishingSection('cast', 'casting')}`;
 }
 
 function updateCastingSubtype(): void {
@@ -5012,7 +5017,8 @@ function renderForgingForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Trim Cycle (hr, 0=none)</label><input type="number" id="forge-trim-ct" step="0.001" min="0" value="0"/></div>
-    </div>`;
+    </div>
+    ${renderSurfaceFinishingSection('forge', 'forging')}`;
 }
 
 // ─── Form: Gear Cutting ───────────────────────────────────────────────────────
@@ -12634,7 +12640,11 @@ function collectSheetMetalInput(): UniversalStackInput {
     );
   }
 
+  const smSurfaceFinishing = collectSurfaceFinishing('sm');
+  reportSurfaceFinishing(smSurfaceFinishing, num('sm-net-wt'), sel('sm-lab'));
+
   const drivers = computeSheetMetalDrivers({
+    ...(smSurfaceFinishing ? { surfaceFinishing: smSurfaceFinishing } : {}),
     materialId,
     netWeightKg: num('sm-net-wt'),
     blankLengthMm: num('sm-blank-l'),
@@ -12862,10 +12872,13 @@ function collectCastingInput(): UniversalStackInput {
   }
 
   const secondary = collectSecondaryMachining('cast');
+  const surfaceFinishing = collectSurfaceFinishing('cast');
+  reportSurfaceFinishing(surfaceFinishing, common.partWeightKg, common.labourId);
   const drivers = computeCastingDrivers({
     ...common, ...extra,
     secondaryMachiningOps: secondary?.ops,
     secondaryMachiningToolingCost: secondary?.toolingCost,
+    ...(surfaceFinishing ? { surfaceFinishing } : {}),
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -12906,6 +12919,8 @@ function collectForgingInput(): UniversalStackInput {
   const preformLabourId = sel('forge-preform-lab') || undefined;
 
   const forgeSecondary = collectSecondaryMachining('forge');
+  const forgeSurfaceFinishing = collectSurfaceFinishing('forge');
+  reportSurfaceFinishing(forgeSurfaceFinishing, partWeightKg, sel('forge-lab'));
 
   const drivers = computeForgingDrivers({
     materialId,
@@ -12942,6 +12957,7 @@ function collectForgingInput(): UniversalStackInput {
     trimmingMachineId: trimCt > 0 ? trimmingMachineId : undefined,
     trimmingLabourId: trimCt > 0 ? trimmingLabourId : undefined,
     trimmingCycleHr: trimCt > 0 ? trimCt : undefined,
+    ...(forgeSurfaceFinishing ? { surfaceFinishing: forgeSurfaceFinishing } : {}),
   });
 
   // F2-A: surface the predicted die life when auto-derived.
@@ -13303,6 +13319,174 @@ function paintMachineMismatch(route: string, machineId: string): string | null {
       + `not have — it over-states a plated part by roughly 2x. Select ${want}.`
     : `A paint route is running on "${machineId}", a PLATING line, whose rate carries no ovens. `
       + `That under-states a painted part. Select ${want}.`;
+}
+
+// ─── Surface finishing, shared by sheet metal / casting / forging ────────────
+
+/**
+ * Finishing routes offered inside a commodity form.
+ *
+ * These three commodities carried NO surface treatment at all, so a coated
+ * bracket was costed as a bare bracket and the coating had to be run as a
+ * separate painting study and added by hand — which in practice meant it was
+ * usually left out entirely.
+ */
+const SURFACE_FINISH_ROUTES: Record<string, string[] | undefined> = {
+  '': undefined,
+  powder_coat: ['degrease', 'rinse', 'iron_phosphate', 'rinse', 'di_rinse', 'dry_off', 'powder_coat', 'cure_oven'],
+  powder_coat_zn: ['degrease', 'rinse', 'phosphate', 'rinse', 'di_rinse', 'dry_off', 'powder_coat', 'cure_oven'],
+  e_coat: ['degrease', 'rinse', 'zirconium', 'rinse', 'di_rinse', 'dry_off', 'e_coat', 'cure_oven'],
+  zinc_plate: ['degrease', 'rinse', 'pickle', 'rinse', 'zinc_plate', 'rinse', 'passivate', 'dry_off'],
+  zinc_nickel: ['degrease', 'rinse', 'pickle', 'rinse', 'zinc_nickel', 'rinse', 'passivate', 'dry_off'],
+  zinc_flake: ['degrease', 'rinse', 'zinc_flake', 'cure_oven'],
+  anodise: ['degrease', 'rinse', 'anodise', 'rinse', 'dry_off'],
+  galvanise: ['degrease', 'rinse', 'pickle', 'rinse', 'galvanise'],
+  blast_only: ['shot_blast'],
+  blast_zinc: ['shot_blast', 'degrease', 'rinse', 'pickle', 'rinse', 'zinc_plate', 'rinse', 'passivate', 'dry_off'],
+  cast_ecoat: ['shot_blast', 'impregnation', 'degrease', 'rinse', 'zirconium', 'rinse', 'di_rinse', 'dry_off', 'e_coat', 'cure_oven'],
+  mass_finish: ['mass_finish'],
+};
+
+const SURFACE_ROUTE_LABELS: Record<string, string> = {
+  '': 'None — bare part',
+  powder_coat: 'Powder coat (iron phosphate pre-treat)',
+  powder_coat_zn: 'Powder coat (zinc phosphate pre-treat)',
+  e_coat: 'E-coat / KTL (zirconium pre-treat)',
+  zinc_plate: 'Zinc plate + passivate',
+  zinc_nickel: 'Zinc-nickel + passivate',
+  zinc_flake: 'Zinc flake dip-spin (no H₂ embrittlement)',
+  anodise: 'Sulphuric anodise (aluminium)',
+  galvanise: 'Hot dip galvanise',
+  blast_only: 'Shot blast only (descale)',
+  blast_zinc: 'Shot blast → zinc plate + passivate',
+  cast_ecoat: 'Blast → impregnate → e-coat (casting)',
+  mass_finish: 'Vibratory mass finish (deburr)',
+};
+
+/** The bridge forms offered, by commodity family. */
+const SURFACE_FORMS: Record<string, Array<[string, string]>> = {
+  sheet: [
+    ['sheet_standard', 'Sheet — standard 1.5 mm steel'],
+    ['sheet_thin', 'Sheet — thin 0.8 mm steel'],
+    ['sheet_heavy', 'Sheet — heavy 3.0 mm steel'],
+    ['sheet_aluminium', 'Sheet — aluminium 1.5 mm'],
+  ],
+  casting: [
+    ['cast_hpdc', 'Casting — Al HPDC 3.5 mm wall'],
+    ['cast_gravity', 'Casting — Al gravity/LPDC 6 mm'],
+    ['cast_iron', 'Casting — grey/ductile iron 6 mm'],
+  ],
+  forging: [
+    ['forge_standard', 'Forging — steel standard 12 mm'],
+    ['forge_light', 'Forging — steel light 8 mm'],
+    ['forge_heavy', 'Forging — steel heavy 25 mm'],
+  ],
+};
+
+/**
+ * The surface-treatment block, shared by all three commodity forms.
+ *
+ * `prefix` namespaces the field ids (sm / cast / forge) so one implementation
+ * serves three forms and they cannot drift apart.
+ */
+function renderSurfaceFinishingSection(prefix: string, family: 'sheet' | 'casting' | 'forging'): string {
+  const routes = Object.entries(SURFACE_ROUTE_LABELS)
+    .map(([v, l]) => `<option value="${v}"${v === '' ? ' selected' : ''}>${escHtml(l)}</option>`).join('');
+  const forms = SURFACE_FORMS[family]
+    .map(([v, l], i) => `<option value="${v}"${i === 0 ? ' selected' : ''}>${escHtml(l)}</option>`).join('');
+  return `
+    <div class="section-title" style="margin-top:8px">Surface Treatment / Coating
+      <span style="font-weight:400;color:var(--text-muted)">(priced per m², bridged from mass — see the derivation on the report)</span>
+    </div>
+    <div class="field-row">
+      <div class="field-group"><label>Finishing Route <span title="Coating is priced per SQUARE METRE, not per kg. A 1.5 mm stamping carries ~8x the coated area per kilogram of a 12 mm forging, so a per-kg coating factor with no product form is meaningless. Leave as None for a bare part — the cost is then unchanged.">ℹ</span></label>
+        <select id="${prefix}-sf-route">${routes}</select></div>
+      <div class="field-group"><label>Product Form (bridge) <span title="Used ONLY when no measured CAD area is supplied. Specific area = 2000/(wall_mm x density) x shape factor.">ℹ</span></label>
+        <select id="${prefix}-sf-form">${forms}</select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Measured Coated Area (m², 0=bridge) <span title="Wetted area measured from CAD. GROUND TRUTH when present — one measured part beats every shape factor in the table.">ℹ</span></label>
+        <input type="number" id="${prefix}-sf-area" step="0.001" min="0" value="0"/></div>
+      <div class="field-group"><label>Wall / Section Thickness (mm, 0=form default)</label>
+        <input type="number" id="${prefix}-sf-thk" step="0.1" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Parts per Rack / Barrel <span title="THE lever. Every time-based cost is divided by it; halving it moves a coated part ~55%. The workbook that informed this model calls line fill its single highest-leverage input.">ℹ</span></label>
+        <input type="number" id="${prefix}-sf-rack" step="1" min="1" value="6"/></div>
+      <div class="field-group"><label>Racks per Hour</label>
+        <input type="number" id="${prefix}-sf-racks" step="1" min="1" value="20"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Deposit Thickness (µm, 0=spec) <span title="Plating dwell is LINEAR in thickness and on a hoist line one load occupies the tank, so a thick deposit caps throughput as well as costing metal.">ℹ</span></label>
+        <input type="number" id="${prefix}-sf-um" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Masked Features per Part <span title="Masking is charged PER FEATURE and applied TWICE (mask + de-mask). On a part with several masked threads it can exceed the coating cost. Most consistently omitted line in coating quotes.">ℹ</span></label>
+        <input type="number" id="${prefix}-sf-mask" step="1" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Tensile Strength (MPa, 0=n/a) <span title="Above ~1000 MPa an electroplated steel part MUST have a hydrogen de-embrittlement bake per ASTM B850 / ISO 4042, starting within 4 h of plating. Enter it and the model checks the route.">ℹ</span></label>
+        <input type="number" id="${prefix}-sf-mpa" step="50" min="0" value="0"/></div>
+      <div class="field-group"><label>Plating Reject (0–1) <span title="A rejected plated part is stripped and re-plated at roughly 4.5x a first-pass part, so a 3% reject is nearer a 13% cost adder.">ℹ</span></label>
+        <input type="number" id="${prefix}-sf-reject" step="0.005" min="0" max="0.3" value="0"/></div>
+    </div>`;
+}
+
+/**
+ * Read the surface-treatment block. Returns undefined when no route is chosen,
+ * which leaves the commodity's cost exactly as it was.
+ */
+function collectSurfaceFinishing(prefix: string): CommodityFinishingInput | undefined {
+  const route = sel(`${prefix}-sf-route`);
+  const stages = SURFACE_FINISH_ROUTES[route];
+  if (!stages) return undefined;
+
+  const masked = num(`${prefix}-sf-mask`);
+  // Masking is a per-feature operation; add the mask/de-mask pair only when the
+  // part actually has masked features, rather than carrying a zero-cost stage.
+  const withMasking = masked > 0
+    ? [...stages.slice(0, -1), 'masking', stages[stages.length - 1], 'demask']
+    : stages;
+
+  const area = num(`${prefix}-sf-area`);
+  const thk = num(`${prefix}-sf-thk`);
+  const um = num(`${prefix}-sf-um`);
+  const mpa = num(`${prefix}-sf-mpa`);
+  const reject = num(`${prefix}-sf-reject`);
+
+  return {
+    stages: withMasking,
+    productForm: sel(`${prefix}-sf-form`),
+    ...(area > 0 ? { measuredAreaM2: area } : {}),
+    ...(thk > 0 ? { thicknessMm: thk } : {}),
+    partsPerRack: Math.max(1, num(`${prefix}-sf-rack`)),
+    racksPerHour: Math.max(1, num(`${prefix}-sf-racks`)),
+    ...(um > 0 ? { depositThicknessUm: um } : {}),
+    ...(masked > 0 ? { maskedFeatures: masked } : {}),
+    ...(mpa > 0 ? { tensileStrengthMPa: mpa } : {}),
+    ...(reject > 0 ? { platingRejectPct: reject } : {}),
+    annualVolume: num('annual-volume') || 100000,
+    region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
+  };
+}
+
+/**
+ * Run the finishing analysis for its WARNINGS and derivation, and push them at
+ * the report. The cost itself is computed inside the commodity module — this is
+ * the same split painting uses, so the notes reach the PDF rather than living
+ * only in an input box.
+ */
+function reportSurfaceFinishing(
+  spec: CommodityFinishingInput | undefined, massKg: number, labourId: string,
+): void {
+  if (!spec) return;
+  try {
+    const r = finishingForCommodity(spec, { massKg, labourId });
+    if (!r) return;
+    _smExtraWarnings.push(`Surface treatment — ${r.basis}`);
+    for (const w of r.warnings) _smExtraWarnings.push(`Surface treatment: ${w}`);
+  } catch (err) {
+    _smExtraWarnings.push(
+      `Surface treatment could not be costed: ${err instanceof Error ? err.message : String(err)}`);
+  }
 }
 
 const PAINT_STAGE_ROUTES: Record<string, string[] | undefined> = {

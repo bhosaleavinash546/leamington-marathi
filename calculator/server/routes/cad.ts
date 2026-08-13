@@ -47,7 +47,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // v16: engineer material confirm wins over AI on reanalyse (withAIMaterial),
 //      and casting/cast_and_machine emit the material GRADE from the confirmed
 //      family (was AI grade on cast-iron mass). Final-verification-run fixes.
-const CAD_PROMPT_VERSION = 20;
+const CAD_PROMPT_VERSION = 21;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -118,15 +118,39 @@ const parseStlLimiter = rateLimit({ windowMs: 10 * 60_000, max: 120, standardHea
 const SPECIALIST_SYSTEM_PROMPTS: Record<string, string> = {
   machining: `You are a senior CNC process engineer with 20+ years experience in precision machining should-cost. You specialise in cycle-time estimation from geometry (feature-based MBD), fixturing, cutting parameter selection, and make-vs-buy analysis. Estimate material removal rates, tool changes, and setup count from B-rep topology. Return ONLY valid JSON.`,
 
-  casting: `You are an expert foundry engineer specialising in HPDC, gravity die, sand casting, and investment casting. You can derive gating/risering requirements, solidification time, yield losses, and tooling costs from part geometry. You understand the trade-offs between processes by alloy, weight class, and annual volume. Return ONLY valid JSON.`,
+  casting: `    "surfaceTreatment": {
+      "callout": string|null,
+      "thicknessUm": number|null,
+      "saltSprayHours": number|null,
+      "maskedFeatureCount": number|null,
+      "tensileStrengthMPa": number|null,
+      "readFrom": string|null
+    },
+You are an expert foundry engineer specialising in HPDC, gravity die, sand casting, and investment casting. You can derive gating/risering requirements, solidification time, yield losses, and tooling costs from part geometry. You understand the trade-offs between processes by alloy, weight class, and annual volume. Return ONLY valid JSON.`,
 
   cast_and_machine: `You are a near-net-shape manufacturing specialist combining foundry and CNC expertise. You assess which features must be cast-to-print vs machined, determine as-cast tolerances, and plan the minimum machining operations after casting. You understand how to optimise the cast/machine split to minimise total cost. Return ONLY valid JSON.`,
 
-  forging: `You are a closed-die forging engineer with deep expertise in billet sizing, flash allowance, stroke sequencing (blocker/finisher), trimming, heat treatment, and die cost estimation. You assess part geometry for forgeability: grain flow, parting line position, undercuts, and taper. Return ONLY valid JSON.`,
+  forging: `    "surfaceTreatment": {
+      "callout": string|null,
+      "thicknessUm": number|null,
+      "saltSprayHours": number|null,
+      "maskedFeatureCount": number|null,
+      "tensileStrengthMPa": number|null,
+      "readFrom": string|null
+    },
+You are a closed-die forging engineer with deep expertise in billet sizing, flash allowance, stroke sequencing (blocker/finisher), trimming, heat treatment, and die cost estimation. You assess part geometry for forgeability: grain flow, parting line position, undercuts, and taper. Return ONLY valid JSON.`,
 
   gear: `You are a gear manufacturing process engineer with deep expertise in hobbing, shaping, power skiving, gear grinding (generating and profile), shaving, honing, and heat treatment of gears (carburise/quench, through-harden, nitride). You read gear drawings fluently: normal module, tooth count, helix angle and hand, face width, ISO 1328 / AGMA 2015 quality class, material and heat-treat callouts, profile/lead modifications. CRITICAL: the tooth count and tip diameter in the geometry block are COUNTED/MEASURED off the B-rep by the geometry kernel — never contradict them; if an attached drawing disagrees, report the discrepancy in the reasoning instead of silently picking one. The HEAT-TREATMENT callout (carburise / harden-and-temper / nitride / induction harden) is a drawing note and changes the operation list, not just a rate - report it in costInputSuggestions.gear.hardeningRoute when the drawing states it. Helix angle, quality class, hardening route and material CANNOT be derived from the solid — read them from the drawing when one is attached, otherwise leave them to the stated UNDECIDED questions. Return ONLY valid JSON.`,
 
-  sheet_metal: `You are a progressive die tooling engineer with expertise in stamping, blanking, drawing, and forming. You estimate blank layout and material utilisation, press tonnage, and die cost from part envelope. You understand material springback, bend radii, and formability limits. Return ONLY valid JSON.`,
+  sheet_metal: `    "surfaceTreatment": {
+      "callout": string|null,
+      "thicknessUm": number|null,
+      "saltSprayHours": number|null,
+      "maskedFeatureCount": number|null,
+      "tensileStrengthMPa": number|null,
+      "readFrom": string|null
+    },
+You are a progressive die tooling engineer with expertise in stamping, blanking, drawing, and forming. You estimate blank layout and material utilisation, press tonnage, and die cost from part envelope. You understand material springback, bend radii, and formability limits. Return ONLY valid JSON.`,
 
   sheet_metal_fab: `You are a laser-cut, press-brake, and MIG/TIG welding job shop estimator. You decompose fabricated assemblies into individual blanking, forming, and joining operations. You understand laser cutting speed by material and thickness, bend time per hit, and welding deposition rates. Return ONLY valid JSON.`,
 
@@ -719,7 +743,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   if (drawingUpload) {
     userContent.push(
       { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: drawingUpload.buffer.toString('base64') } },
-      { type: 'text', text: 'An engineering drawing PDF is attached. Extract tolerances, GD&T callouts, surface finishes, thread specifications and material/heat-treat notes from it, and factor them into the process recommendations, DFM issues and cycle-time estimates (tight tolerances and fine finishes add operations such as grinding, honing or CMM inspection). For a GEAR drawing, also read: normal module, tooth count, helix angle and hand, face width, ISO 1328 / AGMA quality class, material grade, the heat-treatment callout (carburise / harden+temper / nitride / induction) and case depth — return them in costInputSuggestions.gear.* and say which drawing field each came from. If the drawing tooth count disagrees with the measured geometry, report the discrepancy explicitly rather than picking one silently.' },
+      { type: 'text', text: 'An engineering drawing PDF is attached. Extract tolerances, GD&T callouts, surface finishes, thread specifications and material/heat-treat notes from it, and factor them into the process recommendations, DFM issues and cycle-time estimates (tight tolerances and fine finishes add operations such as grinding, honing or CMM inspection). For a GEAR drawing, also read: normal module, tooth count, helix angle and hand, face width, ISO 1328 / AGMA quality class, material grade, the heat-treatment callout (carburise / harden+temper / nitride / induction) and case depth — return them in costInputSuggestions.gear.* and say which drawing field each came from. If the drawing tooth count disagrees with the measured geometry, report the discrepancy explicitly rather than picking one silently. SURFACE TREATMENT / COATING is a drawing note and changes the OPERATION LIST, not just a rate — read it and return it in costInputSuggestions.surfaceTreatment: the finish callout (zinc plate, zinc-nickel, e-coat/KTL, powder coat, hot dip galvanise, anodise, zinc flake, phosphate, shot blast), the deposit or film THICKNESS in microns, the salt-spray requirement in HOURS (e.g. "720 h NSS"), the number of MASKED features (threads, bores, sealing or earth faces marked "no coating"/"mask"), and the substrate tensile strength or hardness if stated. Masking is charged per feature and applied twice, and a plated steel part above ~1000 MPa needs a hydrogen de-embrittlement bake — so the masked count and the strength are cost-bearing, not decoration. Say which drawing field each value came from, and return null for anything the drawing does not state rather than inferring it from the material.' },
     );
     console.log(`[CAD] Engineering drawing attached: ${drawingUpload.originalname} (${(drawingUpload.size / 1024).toFixed(0)} KB)`);
   }

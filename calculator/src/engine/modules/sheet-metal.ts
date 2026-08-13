@@ -1,4 +1,5 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import { estimateStampingDieCost, estimateStampingDieLife } from './sheet-metal-advisor.js';
 import type { SheetHardwareItem } from './sheet-metal-hardware.js';
 import {
@@ -59,6 +60,9 @@ export interface SheetMetalInputs {
   furnaceCycleHrPerPart?: number;        // effective furnace occupancy per part
   /** Generic per-part material-bucket consumable (e.g. lamination join + anneal energy + coating). */
   extraConsumablesPerPart?: number;
+  /** Paint, powder, plating or galvanising applied to the pressing. Absent
+   *  leaves the part bare and the cost bit-identical to before. */
+  surfaceFinishing?: CommodityFinishingInput;
   rejectRate?: number;                  // 0–1 scrap fraction; uplifts both material and cycle time
   /**
    * Material density kg/m³. When supplied (>0), gross material is computed from the
@@ -303,7 +307,30 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
     mode: 'amortized',
   };
 
-  return { rawMaterial, operations, tooling };
+  // ── Surface finishing ────────────────────────────────────────────────────
+  // A painted or plated pressing was previously costed as a bare pressing: the
+  // coating had to be run as a separate `painting` study and added by hand, so
+  // in practice it was usually left out. On a thin stamping that is a large
+  // share of the part — a 1.5 mm steel pressing carries roughly 8x the coated
+  // area per kilogram of a 12 mm forging, which is why the area comes from
+  // measured CAD or the geometry bridge rather than from a per-kg factor.
+  const finishing = finishingForCommodity(inputs.surfaceFinishing, {
+    massKg: inputs.netWeightKg,
+    labourId: inputs.labourId,
+    productForm: 'sheet_standard',
+  });
+  if (finishing) {
+    operations.push(...finishing.operations);
+  }
+  const totalConsumables = consumablesCostPerPart + (finishing?.consumablesPerPart ?? 0);
+
+  return {
+    rawMaterial: totalConsumables > 0
+      ? { ...rawMaterial, consumablesCostPerPart: totalConsumables }
+      : rawMaterial,
+    operations,
+    tooling,
+  };
 }
 
 /** Indicative blanking/piercing tonnage estimate (kN). Not used in cost model — reference only. */

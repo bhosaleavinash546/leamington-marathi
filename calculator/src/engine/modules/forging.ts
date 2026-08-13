@@ -1,9 +1,13 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import { estimateForgingDieCost, type DieSteel, type ShapeComplexity } from './forging-advisor.js';
 
 export interface ForgingInputs {
   materialId: string;
   partWeightKg: number;
+  /** Blast, pre-treat, plating or galvanising applied to the forging. Absent
+   *  leaves the part as-forged and the cost bit-identical to before. */
+  surfaceFinishing?: CommodityFinishingInput;
   flashAndScaleKg: number;   // flash + scale loss
   yieldFraction: number;     // billet → forgeable fraction 0–1 (accounts for end-of-bar crop, etc.)
   forgeId: string;           // forge machine ID
@@ -203,8 +207,35 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
     ? { ...tooling, totalToolingCost: tooling.totalToolingCost + inputs.secondaryMachiningToolingCost }
     : tooling;
 
+  // ── Surface finishing ────────────────────────────────────────────────────
+  // Forgings had only `descaleCostPerKg`, a flat per-kg number standing in for
+  // shot blasting. That is now a real mass-basis operation on a blast machine
+  // (SF-08) — see the double-count guard below, which fires when both are set.
+  const finishing = finishingForCommodity(
+    inputs.surfaceFinishing
+      ? {
+        ...inputs.surfaceFinishing,
+        ...(descaleCostPerPart > 0 && !inputs.surfaceFinishing.supersededFlatCost
+          ? {
+            supersededFlatCost: {
+              label: 'descaleCostPerKg',
+              perPart: descaleCostPerPart,
+              supersededByStageId: 'SF-08',
+            },
+          }
+          : {}),
+      }
+      : undefined,
+    {
+      massKg: inputs.partWeightKg,
+      labourId: inputs.labourId,
+      productForm: 'forge_standard',
+    });
+  if (finishing) operations.push(...finishing.operations);
+  const totalConsumables = consumablesCostPerPart + (finishing?.consumablesPerPart ?? 0);
+
   return {
-    rawMaterial: consumablesCostPerPart > 0 ? { ...rawMaterial, consumablesCostPerPart } : rawMaterial,
+    rawMaterial: totalConsumables > 0 ? { ...rawMaterial, consumablesCostPerPart: totalConsumables } : rawMaterial,
     operations,
     tooling: finalTooling,
   };

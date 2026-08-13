@@ -1,4 +1,5 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 
 export type CastingSubtype = 'hpdc' | 'sand' | 'gravity' | 'investment';
 
@@ -6,6 +7,9 @@ export interface CastingInputs {
   subtype: CastingSubtype;
   materialId: string;        // alloy material ID
   partWeightKg: number;
+  /** Blast, impregnation, pre-treat and coating applied to the casting. Absent
+   *  leaves the part as-cast and the cost bit-identical to before. */
+  surfaceFinishing?: CommodityFinishingInput;
   castingYield: number;      // 0–1, part_weight / pour_weight
   rejectRate: number;        // 0–1, adds uplift to material needed
   labourId: string;
@@ -235,9 +239,23 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     tooling = { ...tooling, totalToolingCost: tooling.totalToolingCost + inputs.secondaryMachiningToolingCost };
   }
 
+  // ── Surface finishing ────────────────────────────────────────────────────
+  // Castings had no surface treatment at all, and two of the operations they
+  // most commonly carry are MASS-based rather than area-based: shot blast to
+  // descale, and vacuum resin impregnation to seal porosity. Impregnation is
+  // casting-specific and its value is the pressure-test reject it prevents, not
+  // anything it adds to the part.
+  const finishing = finishingForCommodity(inputs.surfaceFinishing, {
+    massKg: inputs.partWeightKg,
+    labourId: inputs.labourId,
+    productForm: 'cast_hpdc',
+  });
+  if (finishing) operations.push(...finishing.operations);
+  const totalConsumables = consumablesCostPerPart + (finishing?.consumablesPerPart ?? 0);
+
   return {
-    rawMaterial: consumablesCostPerPart > 0
-      ? { ...rawMaterial, consumablesCostPerPart }
+    rawMaterial: totalConsumables > 0
+      ? { ...rawMaterial, consumablesCostPerPart: totalConsumables }
       : rawMaterial,
     operations,
     tooling,
