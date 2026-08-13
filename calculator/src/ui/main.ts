@@ -12,6 +12,9 @@ import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMould
 import { analyseInjectionDFM, type ResinType } from '../engine/modules/injection-advisor.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
+import { computeGearDrivers, analyseGear, validateGearInputs, type GearInputs } from '../engine/modules/gear.js';
+import type { GearMaterialClass } from '../engine/gear-shop-data.js';
+import type { GearProcess } from '../engine/modules/gear-advisor.js';
 import {
   estimateForgingTonnage, resolveFurnaceEnergyPricePerKwh, estimateForgingDieCost,
   estimateForgingDieLife, forgingHeatKwhPerKg, adviseForgingProcess, analyseForgingDFM,
@@ -5008,6 +5011,67 @@ function renderForgingForm(): string {
     </div>`;
 }
 
+// ─── Form: Gear Cutting ───────────────────────────────────────────────────────
+function renderGearForm(): string {
+  return `
+    <div class="section-title">Gear Definition <span style="font-weight:400;color:var(--text-muted)">(drawing / measured CAD)</span></div>
+    <div class="field-row">
+      <div class="field-group"><label>Normal Module (mm) <span title="mn off the drawing. From CAD: derived as tip Ø ÷ (z + 2) for a spur (standard addendum), corrected by cos β for helical.">ℹ</span></label><input type="number" id="gear-module" step="0.01" min="0.3" value="3"/></div>
+      <div class="field-group"><label>Teeth (z) <span title="From CAD: counted from tip-circle patches on the B-rep — measured, not guessed.">ℹ</span></label><input type="number" id="gear-teeth" step="1" min="7" value="38"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Helix Angle β (°, 0 = spur) <span title="A drawing figure — the CAD B-rep is never trusted to settle it. Positive or negative, |β| < 60°.">ℹ</span></label><input type="number" id="gear-helix" step="0.5" min="-59" max="59" value="0"/></div>
+      <div class="field-group"><label>Face Width (mm)</label><input type="number" id="gear-face" step="0.5" min="1" value="30"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>ISO 1328 Class <span title="Flank tolerance class, lower is tighter. Decides the finishing route: ≤6 ground, 7 hard-finished, ≥8 cut-and-harden. Automotive transmissions land 5–8.">ℹ</span></label><select id="gear-quality">
+        <option value="5">Class 5 — precision ground</option>
+        <option value="6">Class 6 — ground, EV/NVH-critical</option>
+        <option value="7" selected>Class 7 — finished automotive</option>
+        <option value="8">Class 8 — commercial / industrial</option>
+        <option value="9">Class 9 — agricultural</option>
+        <option value="10">Class 10 — low-speed, as-cut</option>
+      </select></div>
+      <div class="field-group"><label>Internal (ring) Gear</label><select id="gear-internal"><option value="no" selected>No — external</option><option value="yes">Yes — internal</option></select></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Material &amp; Blank</div>
+    <div class="field-row">
+      <div class="field-group"><label>Material Class <span title="Cutting behaviour, not chemistry — sets feeds/speeds bands, heat-treat route and finishing.">ℹ</span></label><select id="gear-matclass">
+        <option value="case_hardening_steel" selected>Case-hardening steel (20MnCr5 / 8620)</option>
+        <option value="through_hardening_steel">Through-hardening steel (42CrMo4 / EN19)</option>
+        <option value="alloy_steel_prehardened">Pre-hardened alloy steel (~30 HRC)</option>
+        <option value="cast_iron">Cast iron / ADI</option>
+        <option value="stainless">Stainless steel</option>
+        <option value="bronze">Bronze (worm wheels)</option>
+        <option value="plastic">Engineering plastic (POM / PA)</option>
+      </select></div>
+      <div class="field-group"><label>Material (grade)</label><select id="gear-mat" class="material-select"></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Case Hardened <span title="Carburise + quench after cutting. Auto-follows the material class; override for special routes.">ℹ</span></label><select id="gear-caseh"><option value="yes" selected>Yes — carburise + quench</option><option value="no">No</option></select></div>
+      <div class="field-group"><label>Net Gear Weight (kg) <span title="Finished weight — drives heat treat, which is bought by the kg. From CAD: measured volume × grade density.">ℹ</span></label><input type="number" id="gear-net-wt" step="0.001" min="0.001" value="2.088"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Blank Cost (£/part) <span title="The turned/forged blank, priced before any tooth is cut. From CAD: bar slice × library £/kg + turning prep, stated in full in the trace. Replace with the forged-blank quote when one exists.">ℹ</span></label><input type="number" id="gear-blank-cost" step="0.01" min="0" value="10.64"/></div>
+      <div class="field-group"><label>Batch Size <span title="Parts per setup batch — setup hours are spread over it.">ℹ</span></label><input type="number" id="gear-batch" step="10" min="1" value="16670"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Process &amp; Programme</div>
+    <div class="field-row">
+      <div class="field-group"><label>Cutting Process <span title="Auto lets the router choose from geometry + class + volume (hobbing / shaping / skiving); internal gears cannot be hobbed. Override only to model a named line.">ℹ</span></label><select id="gear-process">
+        <option value="" selected>Auto — router decides</option>
+        <option value="hobbing">Hobbing</option>
+        <option value="shaping">Shaping</option>
+        <option value="skiving">Power skiving</option>
+      </select></div>
+      <div class="field-group"><label>Setup (hr/operation, 0=none)</label><input type="number" id="gear-setup" step="0.25" min="0" value="0.75"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Reject Rate (0–1, 0=none) <span title="Scrap after heat treat + final inspection. Uplifts material, time and tooling by 1/(1−r).">ℹ</span></label><input type="number" id="gear-reject" step="0.005" min="0" max="0.29" value="0.02"/></div>
+      <div class="field-group"><label>Amort. Volume</label><input type="number" id="gear-amort" step="1000" min="1" value="200000"/></div>
+    </div>
+    <div id="gear-route-note" style="margin-top:10px;font-size:0.76rem;color:var(--text-muted);line-height:1.6"></div>`;
+}
+
 // ─── Form: Painting ───────────────────────────────────────────────────────────
 
 function renderPaintingForm(): string {
@@ -6251,24 +6315,21 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
       error?: string;
     };
 
-    // Gear hand-off: not an error, a refusal with the measurements attached.
-    // The gear ENGINE exists (gear.ts, gear-cycle.ts, ISO 1328 route logic) but
-    // has no UI form yet — saying so beats costing a gear as generic machining
-    // with none of the gear guards (audit gap 6).
+    // Legacy gear hand-off (pre-rules-pack servers / cached responses only —
+    // the server now routes gears through the gear commodity with a full
+    // decision-gated analysis). Open the Gear Cutting form with what was sent.
     {
       const ho = data as unknown as { handoff?: string; error?: string;
         gearPrefill?: { outerDiameterMm?: number; faceWidthMm?: number; measuredVolumeCm3?: number | null } | null };
       if (ho.handoff === 'gear') {
         const g = ho.gearPrefill;
-        updateProgress(100, 'Gear detected — handed off');
-        const box = document.getElementById('cad-results');
-        if (box) box.innerHTML = `<div class="warn-box" style="padding:12px;border-left:4px solid var(--warning)">
-          <strong>⚙️ This part is a gear — not costed as machining.</strong><br>
-          ${escHtml(ho.error ?? '')}<br>
-          ${g ? `Measured envelope: Ø${g.outerDiameterMm} mm × ${g.faceWidthMm} mm face` +
-            (g.measuredVolumeCm3 ? ` · ${g.measuredVolumeCm3.toFixed(1)} cm³` : '') + '.<br>' : ''}
-          <em>The gear cost engine (hobbing/shaping/skiving/grinding kinematics, ISO 1328 routes)
-          runs today via the engineering API — a dedicated form is on the roadmap.</em></div>`;
+        updateProgress(100, 'Gear detected — opening the Gear Cutting form');
+        switchCommodity('gear');
+        setTimeout(() => {
+          if (g?.faceWidthMm) setNumericField('gear-face', g.faceWidthMm, 1);
+          updateGearRouteNote();
+        }, 60);
+        showToast('This part is a gear — the Gear Cutting form is open. Re-analyse on the current server for measured teeth/module prefill.', 'info');
         return;
       }
     }
@@ -6478,7 +6539,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   const recommendedCommodity = r.costInputSuggestions.recommendedCommodity as CommodityType;
   const commodityLabel: Record<string, string> = {
     machining: 'Machining', sheet_metal: 'Sheet Metal', sheet_metal_fab: 'SM Fab',
-    injection_moulding: 'Injection Moulding', casting: 'Casting', forging: 'Forging',
+    injection_moulding: 'Injection Moulding', casting: 'Casting', forging: 'Forging', gear: 'Gear Cutting',
     cast_and_machine: 'Cast+Machine', rubber: 'Rubber', composites: 'Composites',
     blow_moulding: 'Blow Moulding', thermoforming: 'Thermoforming',
     rotational_moulding: 'Rotomoulding', wiring_harness: 'Harness',
@@ -10765,7 +10826,7 @@ function setNumericField(id: string, value: number | null | undefined, decimals 
 // Geometry-relevant commodities get a small "Upload CAD" panel on their form that
 // reuses the CAD-to-Cost OCCT pipeline and applyCADToForm() mapping.
 const CAD_INLINE_COMMODITIES = new Set<CommodityType>([
-  'machining', 'casting', 'cast_and_machine', 'forging', 'sheet_metal', 'sheet_metal_fab',
+  'machining', 'casting', 'cast_and_machine', 'forging', 'gear', 'sheet_metal', 'sheet_metal_fab',
   'injection_moulding', 'blow_moulding', 'extrusion', 'thermoforming', 'rotational_moulding', 'rubber', 'composites',
 ]);
 
@@ -10952,7 +11013,7 @@ function _fallbackMaterialIdForFamily(fam: MaterialFamily | null, commodity: Com
  *  a stale form default). Add a commodity here when it grows an amort field. */
 const COMMODITY_AMORT_FIELD: Record<string, string> = {
   machining: 'mach-amort', casting: 'cast-amort', cast_and_machine: 'cam-amort',
-  injection_moulding: 'imm-amort', forging: 'forge-amort', sheet_metal: 'sm-amort',
+  injection_moulding: 'imm-amort', forging: 'forge-amort', gear: 'gear-amort', sheet_metal: 'sm-amort',
   sheet_metal_fab: 'smf-amort', extrusion: 'ext-amort', thermoforming: 'tf-amort',
   rotational_moulding: 'rm-amort', composites: 'comp-amort', blow_moulding: 'bm-amort',
   rubber: 'rub-amort', wiring_harness: 'harn-amort', painting: 'paint-amort',
@@ -11396,6 +11457,35 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           }
         }
         populateMachinedFeatures('forge');
+        break;
+      }
+
+      case 'gear': {
+        // Every figure below is rule-engine owned: z/module/face measured off
+        // the B-rep, helix/class/material answered by the engineer in the
+        // decision panel, blank derived from library rates. Nothing here is an
+        // unbounded AI number.
+        setMaterial(el<HTMLSelectElement>('gear-mat'), c.materialId);
+        setNumericField('gear-net-wt', c.netWeightKg, 3);
+        const gg = c.gear;
+        if (gg) {
+          setNumericField('gear-module', gg.normalModuleMm, 2);
+          setNumericField('gear-teeth', gg.teeth, 0);
+          setNumericField('gear-helix', gg.helixAngleDeg, 1);
+          setNumericField('gear-face', gg.faceWidthMm, 1);
+          setNumericField('gear-blank-cost', gg.blankCostPerPart, 2);
+          setNumericField('gear-batch', gg.batchSize, 0);
+          const setSel = (id: string, v: string | undefined): void => {
+            if (v === undefined) return;
+            const e = el<HTMLSelectElement>(id);
+            if (e && Array.from(e.options).some(o => o.value === v)) { e.value = v; markAIFilled(e); }
+          };
+          setSel('gear-internal', gg.internal === undefined ? undefined : gg.internal ? 'yes' : 'no');
+          setSel('gear-quality', gg.qualityClass === undefined ? undefined : String(gg.qualityClass));
+          setSel('gear-matclass', gg.materialClass);
+          setSel('gear-caseh', gg.caseHardened === undefined ? undefined : gg.caseHardened ? 'yes' : 'no');
+        }
+        updateGearRouteNote();
         break;
       }
 
@@ -11963,6 +12053,17 @@ function switchCommodity(type: CommodityType): void {
         if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-steel1020')); if (opt) matEl.value = opt.value; }
         const machEl = el<HTMLSelectElement>('forge-mach');
         if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('forge-press-500t')); if (opt) machEl.value = opt.value; }
+      }, 0);
+      break;
+
+    case 'gear':
+      area.innerHTML = renderGearForm();
+      populateSelects();
+      wireGearForm();
+      setTimeout(() => {
+        const matEl = el<HTMLSelectElement>('gear-mat');
+        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-steel-20mncr5')); if (opt) matEl.value = opt.value; }
+        updateGearRouteNote();
       }, 0);
       break;
 
@@ -12785,6 +12886,103 @@ function collectForgingInput(): UniversalStackInput {
     }
   }
 
+  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
+// ─── Gear Cutting: form wiring + collection ──────────────────────────────────
+
+/** Representative library grade per gear material class — mirrors the rule pack. */
+const GEAR_GRADE_BY_CLASS: Record<string, string> = {
+  case_hardening_steel: 'mat-steel-20mncr5',
+  through_hardening_steel: 'mat-steel4140',
+  alloy_steel_prehardened: 'mat-steel4140',
+  stainless: 'mat-ss303',
+  cast_iron: 'mat-adi',
+  bronze: 'mat-bronze-pb1',
+  plastic: 'mat-pom-c',
+};
+
+function currentGearInputs(): GearInputs {
+  const matClass = validSel<GearMaterialClass>('gear-matclass',
+    ['case_hardening_steel', 'through_hardening_steel', 'alloy_steel_prehardened',
+     'stainless', 'cast_iron', 'bronze', 'plastic'],
+    'case_hardening_steel');
+  const forced = sel('gear-process');
+  return {
+    normalModuleMm: num('gear-module'),
+    teeth: Math.round(num('gear-teeth')),
+    helixAngleDeg: num('gear-helix'),
+    faceWidthMm: num('gear-face'),
+    internal: sel('gear-internal') === 'yes',
+    qualityClass: num('gear-quality') || 7,
+    materialClass: matClass,
+    caseHardened: sel('gear-caseh') === 'yes',
+    blankCostPerPart: num('gear-blank-cost'),
+    netWeightKg: num('gear-net-wt'),
+    materialId: sel('gear-mat') || GEAR_GRADE_BY_CLASS[matClass],
+    annualVolume: num('annual-volume') || 100_000,
+    amortizationVolume: num('gear-amort') || num('annual-volume') || 100_000,
+    batchSize: num('gear-batch') || Math.max(50, Math.round((num('annual-volume') || 100_000) / 12)),
+    setupTimeHrPerOperation: num('gear-setup') || undefined,
+    rejectRate: num('gear-reject') || undefined,
+    ...(forced ? { forcedCuttingProcess: forced as GearProcess } : {}),
+  };
+}
+
+/** Live route preview under the form: what the router chose, and why. */
+function updateGearRouteNote(): void {
+  const host = document.getElementById('gear-route-note');
+  if (!host) return;
+  try {
+    const a = analyseGear(currentGearInputs());
+    if (a.blocked) {
+      host.innerHTML = `<span style="color:var(--danger,#b91c1c)">⛔ ${escHtml(a.blocked)}</span>`;
+      return;
+    }
+    const ops = a.operations.map(o => `${escHtml(o.label)} (${o.cycleSec.toFixed(0)}s)`).join(' → ');
+    host.innerHTML = `<b>Route:</b> ${ops} · total ${(a.totalCycleSec / 60).toFixed(1)} min`
+      + (a.dataWarning ? `<br><span style="color:var(--warning,#b45309)">⚠ ${escHtml(a.dataWarning)}</span>` : '');
+  } catch { host.textContent = ''; }
+}
+
+function wireGearForm(): void {
+  const matclass = el<HTMLSelectElement>('gear-matclass');
+  matclass?.addEventListener('change', () => {
+    // Case-hardening follows the class, and so does the representative grade —
+    // the same class→grade resolution the CAD rule pack applies.
+    const mc = matclass.value;
+    const caseh = el<HTMLSelectElement>('gear-caseh');
+    if (caseh) caseh.value = mc === 'case_hardening_steel' ? 'yes' : 'no';
+    const matEl = el<HTMLSelectElement>('gear-mat');
+    const grade = GEAR_GRADE_BY_CLASS[mc];
+    if (matEl && grade) {
+      const opt = Array.from(matEl.options).find(o => o.value === grade);
+      if (opt) matEl.value = grade;
+    }
+    updateGearRouteNote();
+  });
+  for (const id of ['gear-module', 'gear-teeth', 'gear-helix', 'gear-face', 'gear-quality',
+                    'gear-internal', 'gear-caseh', 'gear-process', 'gear-batch', 'gear-reject']) {
+    document.getElementById(id)?.addEventListener('input', updateGearRouteNote);
+    document.getElementById(id)?.addEventListener('change', updateGearRouteNote);
+  }
+}
+
+function collectGearInput(): UniversalStackInput {
+  const inputs = currentGearInputs();
+  // The module refuses impossible gears (0 teeth, class 99, worm-range helix)
+  // rather than costing them plausibly — surface its reasons verbatim.
+  const errs = validateGearInputs(inputs);
+  if (errs.length) throw new Error(`Gear inputs invalid: ${errs.join(' ')}`);
+  const a = analyseGear(inputs);
+  if (a.blocked) throw new Error(`Gear cannot be costed: ${a.blocked}`);
+  for (const w of a.warnings) _smExtraWarnings.push(w);
+  if (a.dataWarning) _smExtraWarnings.push(a.dataWarning);
+  _smExtraWarnings.push(
+    `Gear route: ${a.operations.map(o => o.label).join(' → ')} — cutting cycle `
+    + `${(a.totalCycleSec / 60).toFixed(2)} min/part; perishable tooling £${a.toolingCostPerPart.toFixed(2)}/part; `
+    + `NRE £${a.nreCostGBP.toFixed(0)} amortised over ${inputs.amortizationVolume.toLocaleString()} parts.`);
+  const drivers = computeGearDrivers(inputs);
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
@@ -13802,6 +14000,7 @@ function collectInput(): UniversalStackInput {
     case 'rotational_moulding':  return collectRotationalMouldingInput();
     case 'casting':              return collectCastingInput();
     case 'forging':              return collectForgingInput();
+    case 'gear':                 return collectGearInput();
     case 'painting':             return collectPaintingInput();
     case 'biw_assembly':         return collectBIWInput();
     case 'pcb_fab':              return collectPCBFabInput();
@@ -14234,7 +14433,7 @@ function handleAIAutofill(): void {
         if (p.weightKg) {
           const wtMap: Record<string, string> = {
             machining:'mach-net-wt', injection_moulding:'imm-part-wt', casting:'cast-part-wt',
-            cast_and_machine:'cam-cast-wt', forging:'forge-part-wt', sheet_metal_fab:'smf-part-wt',
+            cast_and_machine:'cam-cast-wt', forging:'forge-part-wt', gear:'gear-net-wt', sheet_metal_fab:'smf-part-wt',
             sheet_metal:'sm-net-wt', blow_moulding:'bm-part-wt', thermoforming:'tf-part-wt',
             rotational_moulding:'rm-part-wt', rubber:'rub-part-wt', composites:'comp-part-wt',
           };
@@ -14492,7 +14691,7 @@ tr:not(:last-child) td{border-bottom:1px solid #f1f5f9}
 function getWeightInputId(commodity: string): string | null {
   const wt: Record<string, string> = {
     machining:'mach-net-wt', injection_moulding:'imm-part-wt', casting:'cast-part-wt',
-    forging:'forge-part-wt', sheet_metal_fab:'smf-part-wt', sheet_metal:'sm-net-wt',
+    forging:'forge-part-wt', gear:'gear-net-wt', sheet_metal_fab:'smf-part-wt', sheet_metal:'sm-net-wt',
     blow_moulding:'bm-part-wt', thermoforming:'tf-part-wt', rotational_moulding:'rm-part-wt',
     rubber:'rub-part-wt', composites:'comp-part-wt',
   };

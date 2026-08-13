@@ -352,7 +352,7 @@ describe('the registry', () => {
   it('resolves every converted commodity, and nothing else', () => {
     expect(Object.keys(RULE_SPECS).sort()).toEqual([
       'blow_moulding', 'cast_and_machine', 'casting', 'composites', 'forging',
-      'injection_moulding', 'machining', 'rotational_moulding', 'rubber',
+      'gear', 'injection_moulding', 'machining', 'rotational_moulding', 'rubber',
       'sheet_metal', 'sheet_metal_fab', 'thermoforming',
     ]);
     expect(specForCommodity('machining')).toBe(MACHINING_RULES);

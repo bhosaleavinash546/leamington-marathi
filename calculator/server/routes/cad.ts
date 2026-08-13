@@ -47,7 +47,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // v16: engineer material confirm wins over AI on reanalyse (withAIMaterial),
 //      and casting/cast_and_machine emit the material GRADE from the confirmed
 //      family (was AI grade on cast-iron mass). Final-verification-run fixes.
-const CAD_PROMPT_VERSION = 16;
+const CAD_PROMPT_VERSION = 17;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -123,6 +123,8 @@ const SPECIALIST_SYSTEM_PROMPTS: Record<string, string> = {
   cast_and_machine: `You are a near-net-shape manufacturing specialist combining foundry and CNC expertise. You assess which features must be cast-to-print vs machined, determine as-cast tolerances, and plan the minimum machining operations after casting. You understand how to optimise the cast/machine split to minimise total cost. Return ONLY valid JSON.`,
 
   forging: `You are a closed-die forging engineer with deep expertise in billet sizing, flash allowance, stroke sequencing (blocker/finisher), trimming, heat treatment, and die cost estimation. You assess part geometry for forgeability: grain flow, parting line position, undercuts, and taper. Return ONLY valid JSON.`,
+
+  gear: `You are a gear manufacturing process engineer with deep expertise in hobbing, shaping, power skiving, gear grinding (generating and profile), shaving, honing, and heat treatment of gears (carburise/quench, through-harden, nitride). You read gear drawings fluently: normal module, tooth count, helix angle and hand, face width, ISO 1328 / AGMA 2015 quality class, material and heat-treat callouts, profile/lead modifications. CRITICAL: the tooth count and tip diameter in the geometry block are COUNTED/MEASURED off the B-rep by the geometry kernel — never contradict them; if an attached drawing disagrees, report the discrepancy in the reasoning instead of silently picking one. Helix angle, quality class and material CANNOT be derived from the solid — read them from the drawing when one is attached, otherwise leave them to the stated UNDECIDED questions. Return ONLY valid JSON.`,
 
   sheet_metal: `You are a progressive die tooling engineer with expertise in stamping, blanking, drawing, and forming. You estimate blank layout and material utilisation, press tonnage, and die cost from part envelope. You understand material springback, bend radii, and formability limits. Return ONLY valid JSON.`,
 
@@ -327,11 +329,22 @@ export function enforceGeometryCommodity(
 
 // Assemble the measured-geometry + selection context the cross-commodity
 // plausibility checks (cad-sanity §7-9) consume. Applies to every commodity.
-function buildGeoSanityContext(geo: OCCTGeometry, analysis: unknown): CADGeometryContext {
+function buildGeoSanityContext(
+  geo: OCCTGeometry,
+  analysis: unknown,
+  aiOriginal?: Record<string, unknown> | null,
+): CADGeometryContext {
   const a = analysis as {
     costInputSuggestions?: { recommendedCommodity?: string };
     materialAnalysis?: { primarySuggestion?: { name?: string; confidencePct?: number } };
   };
+  // The model's untouched gear statements (drawing reads) — the rules overwrite
+  // the corrected analysis with measured values, so only the original can still
+  // contradict the geometry. `aiOriginal` is the pre-overwrite
+  // costInputSuggestions snapshot itself.
+  const aiGear = (aiOriginal as {
+    gear?: { teeth?: number; normalModuleMm?: number; drawingTeeth?: number | null };
+  } | null | undefined)?.gear;
   const ok = geo.status === 'success';
   const bb = ok ? geo.boundingBox : undefined;
   return {
@@ -343,6 +356,13 @@ function buildGeoSanityContext(geo: OCCTGeometry, analysis: unknown): CADGeometr
     materialConfidencePct: a?.materialAnalysis?.primarySuggestion?.confidencePct ?? null,
     aluminiumKg: ok ? (geo.weights?.aluminiumKg ?? null) : null,
     steelKg: ok ? (geo.weights?.steelKg ?? null) : null,
+    gearTeethMeasured: ok && geo.gear?.likelyGear ? geo.gear.teeth : null,
+    gearTipDiameterMm: ok && geo.gear?.likelyGear ? geo.gear.tipDiameterMm : null,
+    // Prefer the drawing's verbatim figure: the model is instructed to restate
+    // the measured count in `teeth`, so only `drawingTeeth` can still disagree.
+    gearTeethStated: typeof aiGear?.drawingTeeth === 'number' ? aiGear.drawingTeeth
+      : typeof aiGear?.teeth === 'number' ? aiGear.teeth : null,
+    gearModuleStatedMm: typeof aiGear?.normalModuleMm === 'number' ? aiGear.normalModuleMm : null,
   };
 }
 
@@ -578,38 +598,32 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   // answer.
   let commodityDecision: Decision | null = null;
 
-  // ── Gear hand-off ─────────────────────────────────────────────────────────
-  // A gear cannot be honestly costed from B-rep metrics alone: module, tooth
-  // count and quality class set the process and none of them is derivable here
-  // yet. Costing it as machining silently ran a gear past every gear-model
-  // guard (audit gap 6), so a part named or forced as a gear is HANDED OFF to
-  // the dedicated gear engine with the measured envelope prefilled — never
-  // costed as generic machining without saying so.
+  // ── Gear routing ──────────────────────────────────────────────────────────
+  // The gear engine + rules pack own gears end to end now: teeth, module and
+  // face width are MEASURED off the B-rep (`geo.gear`, tip-circle metrology),
+  // helix / ISO 1328 class / material class are blocking decisions the
+  // engineer answers, and the blank is rule-derived from library rates. A
+  // gear-named part or one whose tip-circle metrology says "gear" routes to
+  // the gear commodity directly — never absorbed by machining (audit gap 6),
+  // and no longer dead-ended in a hand-off either.
   const gearNamed = /\bgears?\b|\bpinion\b|_gear|gear_/i.test(originalname);
-  if (forcedCommodity === 'gear' || (!forcedCommodity && gearNamed)) {
-    const bb = geo.status === 'success' ? geo.boundingBox : null;
-    const dims = bb ? [bb.xMm, bb.yMm, bb.zMm].sort((a, b) => b - a) : null;
-    res.status(200).json({
-      success: false,
-      handoff: 'gear',
-      error: 'Gear parts are costed by the dedicated gear engine (module, tooth count and '
-        + 'ISO 1328 quality class drive the process — none is derivable from B-rep metrics). '
-        + 'Open the Gear Cutting form; the measured envelope is prefilled below.',
-      gearPrefill: dims ? {
-        outerDiameterMm: Math.round(dims[0] * 10) / 10,
-        faceWidthMm: Math.round(dims[2] * 10) / 10,
-        measuredVolumeCm3: geo.status === 'success' ? geo.volume?.cm3 ?? null : null,
-      } : null,
-      geometrySource,
-      occtGeometry: geo.status === 'success' ? geo : null,
-    });
-    return;
+  const gearMeasured = geo.status === 'success' && geo.gear?.likelyGear === true;
+  const gearRouted = !forcedCommodity && (gearNamed || gearMeasured);
+  if (gearRouted) {
+    selectedCommodity = 'gear';
+    stage1Selection = { primary: 'gear', conf: gearMeasured ? 0.95 : 0.85, alt: [] };
+    console.log(`[CAD] Gear routing: ${gearMeasured
+      ? `B-rep metrology counted ${geo.status === 'success' ? geo.gear?.teeth : '?'} tip-circle teeth`
+      : 'filename names a gear'} → gear commodity`);
   }
 
   if (forcedCommodity) {
     selectedCommodity = forcedCommodity;
     stage1Selection = { primary: forcedCommodity, conf: 1.0, alt: [] };
     console.log(`[CAD] User forced commodity: ${selectedCommodity}`);
+  } else if (gearRouted) {
+    // Decided above — skip Stage 1: a classifier has nothing to add to a
+    // counted set of tip-circle teeth or an explicit gear name.
   } else if (analysisMode === 'deterministic') {
     const verdict = inferCommodity(ruleContextFor(
       selectedCommodity, geo, originalname, userOverrides, decisionAnswers));
@@ -646,29 +660,14 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     } catch (err) {
       console.warn('[CAD] Stage 1 Haiku failed, using default commodity:', (err as Error).message);
     }
-    // Stage-1 may now say 'gear' — same hand-off as a forced gear: the gear
-    // engine owns gears, machining must not silently absorb them.
-    if (selectedCommodity === 'gear') {
-      const bb = geo.status === 'success' ? geo.boundingBox : null;
-      const dims = bb ? [bb.xMm, bb.yMm, bb.zMm].sort((a, b) => b - a) : null;
-      res.status(200).json({
-        success: false,
-        handoff: 'gear',
-        error: 'The classifier reads this part as a gear. Gears are costed by the dedicated '
-          + 'gear engine (module, tooth count, ISO 1328 class) — open the Gear Cutting form; '
-          + 'the measured envelope is prefilled.',
-        gearPrefill: dims ? {
-          outerDiameterMm: Math.round(dims[0] * 10) / 10,
-          faceWidthMm: Math.round(dims[2] * 10) / 10,
-          measuredVolumeCm3: geo.status === 'success' ? geo.volume?.cm3 ?? null : null,
-        } : null,
-        geometrySource,
-        occtGeometry: geo.status === 'success' ? geo : null,
-      });
-      return;
-    }
+    // Stage-1 may say 'gear' — that is a real commodity now, with its own rule
+    // pack: the gear engine owns gears, machining must not silently absorb them.
     // Deterministic geometry guard — physics overrides a stochastic AI hint.
-    const guarded = enforceGeometryCommodity(selectedCommodity, geo);
+    // ('gear' is exempt: the guard's corrections target hollow shells, and a
+    // counted tooth pattern outranks a fill-ratio heuristic.)
+    const guarded = selectedCommodity === 'gear'
+      ? { commodity: selectedCommodity, corrected: false as const }
+      : enforceGeometryCommodity(selectedCommodity, geo);
     if (guarded.corrected) {
       console.warn(`[CAD] ${guarded.reason}`);
       const priorPrimary = selectedCommodity;
@@ -720,7 +719,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   if (drawingUpload) {
     userContent.push(
       { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: drawingUpload.buffer.toString('base64') } },
-      { type: 'text', text: 'An engineering drawing PDF is attached. Extract tolerances, GD&T callouts, surface finishes, thread specifications and material/heat-treat notes from it, and factor them into the process recommendations, DFM issues and cycle-time estimates (tight tolerances and fine finishes add operations such as grinding, honing or CMM inspection).' },
+      { type: 'text', text: 'An engineering drawing PDF is attached. Extract tolerances, GD&T callouts, surface finishes, thread specifications and material/heat-treat notes from it, and factor them into the process recommendations, DFM issues and cycle-time estimates (tight tolerances and fine finishes add operations such as grinding, honing or CMM inspection). For a GEAR drawing, also read: normal module, tooth count, helix angle and hand, face width, ISO 1328 / AGMA quality class, material grade and case-hardening depth — return them in costInputSuggestions.gear.* and say which drawing field each came from. If the drawing tooth count disagrees with the measured geometry, report the discrepancy explicitly rather than picking one silently.' },
     );
     console.log(`[CAD] Engineering drawing attached: ${drawingUpload.originalname} (${(drawingUpload.size / 1024).toFixed(0)} KB)`);
   }
@@ -808,7 +807,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
         ? structuredClone((analysis as { costInputSuggestions?: Record<string, unknown> }).costInputSuggestions ?? {})
         : null;
       const resolved = runCostInputRules(
-        ruleSpec, withAIMaterial(ruleCtx, analysis as Record<string, unknown>));
+        ruleSpec, withAIAnswers(ruleCtx, analysis as Record<string, unknown>));
       ruleOverrides = applyRuleDecisions(
         analysis as Parameters<typeof applyRuleDecisions>[0], resolved);
       // A rule that is ASKING must not let the model answer silently: fields
@@ -849,7 +848,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null);
   // Cap near-net (cast/forged) machining time before it drives the cost, then run sanity.
   const machiningWarnings = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
-  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol, buildGeoSanityContext(geo, analysis))];
+  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol, buildGeoSanityContext(geo, analysis, aiOriginal))];
   if (sanityWarnings.length) console.log(`[CAD] Sanity: ${sanityWarnings.length} warning(s): ${sanityWarnings.map(x => x.code).join(', ')}`);
 
   const payload = {
@@ -874,7 +873,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     aiOriginal,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
-    decisions: pendingDecisions(ruleSpec, ruleCtx, withAIMaterial(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0),
+    decisions: pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0),
     mode: analysisMode,
     fromCache: false,
     geometrySource,
@@ -1032,6 +1031,11 @@ export function normalizeCADAnalysis(
 
   const ci = obj(a.costInputSuggestions);
   ci.recommendedCommodity = str(ci.recommendedCommodity, 'machining');
+  // The ROUTE decided the commodity (forced / gear-metrology / stage-1 + guard).
+  // The model restating a different one here silently re-aimed the browser at
+  // the wrong costing form — a gear came back "forging" and would have been
+  // costed as one. The selection is not the model's to change.
+  if (selectedCommodity) ci.recommendedCommodity = selectedCommodity;
 
   // Cost what we RECOMMEND. The model sometimes puts a lower-confidence
   // alternative in costInputSuggestions.materialId (e.g. it costed PP-GF30 while
@@ -1267,7 +1271,13 @@ ${toolingStr}
 
 === PROCESS-SPECIFIC ESTIMATES (geometry-derived — use these verbatim) ===
 ${psStr}
-
+${geo.gear?.likelyGear ? `
+=== GEAR METROLOGY (COUNTED/MEASURED off the B-rep — use these verbatim, never contradict them) ===
+Teeth: ${geo.gear.teeth} (${geo.gear.teethBasis})
+Tip diameter: ${geo.gear.tipDiameterMm} mm · Face width: ${geo.gear.faceWidthMm} mm · Bore: ${geo.gear.boreDiameterMm} mm
+Derived normal module (spur-equivalent): ${geo.gear.derivedNormalModuleMm} mm (${geo.gear.moduleBasis})
+Helix angle: NOT derivable from the solid — read it from the drawing or leave it to the UNDECIDED question.
+` : ''}
 Weight at density:
   Aluminium 2.70 g/cm³: ${w.aluminiumKg.toFixed(3)} kg
   Steel 7.85 g/cm³: ${w.steelKg.toFixed(3)} kg
@@ -1508,6 +1518,50 @@ export function withAIMaterial(ctx: RuleContext, analysis: Record<string, unknow
   return { ...ctx, answers };
 }
 
+/** The gear questions a drawing can answer, and their valid values. */
+const GEAR_AI_ANSWERABLE = [
+  { id: 'gear.helix', pick: (g: Record<string, unknown>) =>
+      typeof g.helixAngleDeg === 'number' && Math.abs(g.helixAngleDeg) < 60
+        ? String(g.helixAngleDeg) : null },
+  { id: 'gear.qualityClass', pick: (g: Record<string, unknown>) => {
+      const q = Number(g.qualityClass);
+      return Number.isFinite(q) && q >= 1 && q <= 11 ? String(q) : null;
+    } },
+  { id: 'gear.materialClass', pick: (g: Record<string, unknown>) =>
+      typeof g.materialClass === 'string'
+        && ['case_hardening_steel', 'through_hardening_steel', 'alloy_steel_prehardened',
+            'stainless', 'cast_iron', 'bronze', 'plastic'].includes(g.materialClass)
+        ? g.materialClass : null },
+] as const;
+
+/**
+ * Fold the model's drawing-read gear answers into the rule context.
+ *
+ * Helix, ISO class and material class are drawing figures the model may have
+ * genuinely read off an attached PDF. Same contract as `withAIMaterial`: the
+ * engineer's answer always wins, an AI-sourced answer is tagged as the model's,
+ * and `pendingDecisions` keeps the question OPEN as a blocking confirm with the
+ * model's read as the leaning — one click for the engineer, no silent ingestion
+ * of an OCR'd drawing field into money.
+ */
+export function withAIGearAnswers(ctx: RuleContext, analysis: Record<string, unknown>): RuleContext {
+  if (ctx.commodity !== 'gear') return ctx;
+  const gg = (analysis.costInputSuggestions as { gear?: Record<string, unknown> } | undefined)?.gear;
+  if (!gg) return ctx;
+  const answers: Record<string, unknown> = { ...ctx.answers };
+  for (const q of GEAR_AI_ANSWERABLE) {
+    if (ctx.answers[q.id] !== undefined) continue;       // the engineer answered
+    const v = q.pick(gg);
+    if (v !== null) { answers[q.id] = v; answers[`${q.id}Source`] = 'ai'; }
+  }
+  return { ...ctx, answers };
+}
+
+/** Compose every AI fold-in. Both /analyze paths call this, not the parts. */
+export function withAIAnswers(ctx: RuleContext, analysis: Record<string, unknown>): RuleContext {
+  return withAIGearAnswers(withAIMaterial(ctx, analysis), analysis);
+}
+
 /**
  * The decision list a costing must still answer.
  *
@@ -1529,17 +1583,32 @@ function pendingDecisions(
   if (!ruleSpec) return [];
   const aiAnsweredMaterial =
     withAI.answers['material.familySource'] === 'ai' && !ruleCtx.answers['material.family'];
-  if (!undecidedCount && !aiAnsweredMaterial) return [];
-  // Re-run WITHOUT the AI material: these are the questions a person still owns.
+  // Gear drawing-reads the model supplied and the engineer has not confirmed —
+  // same Part1 lesson, applied to helix / ISO class / material class.
+  const aiGearIds = ['gear.helix', 'gear.qualityClass', 'gear.materialClass']
+    .filter(id => withAI.answers[`${id}Source`] === 'ai' && ruleCtx.answers[id] === undefined);
+  if (!undecidedCount && !aiAnsweredMaterial && !aiGearIds.length) return [];
+  // Re-run WITHOUT the AI answers: these are the questions a person still owns.
   const bare = runCostInputRules(ruleSpec, ruleCtx).decisions;
-  if (!aiAnsweredMaterial) return bare;
-  const aiFamily = withAI.answers['material.family'];
-  return bare.map(d => d.id !== 'material.family' ? d : {
-    ...d,
-    why: `${d.why} The model suggests ${String(aiFamily)} — confirm or correct it; `
-      + 'the same part has been guessed differently on different runs.',
-    options: d.options.map(o => ({ ...o, leaning: o.value === aiFamily })),
-  });
+  let out = bare;
+  if (aiAnsweredMaterial) {
+    const aiFamily = withAI.answers['material.family'];
+    out = out.map(d => d.id !== 'material.family' ? d : {
+      ...d,
+      why: `${d.why} The model suggests ${String(aiFamily)} — confirm or correct it; `
+        + 'the same part has been guessed differently on different runs.',
+      options: d.options.map(o => ({ ...o, leaning: o.value === aiFamily })),
+    });
+  }
+  for (const id of aiGearIds) {
+    const aiValue = String(withAI.answers[id]);
+    out = out.map(d => d.id !== id ? d : {
+      ...d,
+      why: `${d.why} The model read "${aiValue}" off the drawing/context — confirm or correct it before it reaches the costing.`,
+      options: d.options.map(o => ({ ...o, leaning: o.value === aiValue })),
+    });
+  }
+  return out;
 }
 
 export type AnalysisMode = 'deterministic' | 'ai' | 'both';
@@ -1639,6 +1708,24 @@ function buildJSONSchema(commodity: string, geo: OCCTGeometry): string {
       "strokes": number,
       "timePerBlowSec": number
     },`,
+    gear: `    "gear": {
+      "teeth": number,
+      "normalModuleMm": number,
+      "helixAngleDeg": number,
+      "faceWidthMm": number,
+      "qualityClass": number,
+      "materialClass": "case_hardening_steel"|"through_hardening_steel"|"alloy_steel_prehardened"|"stainless"|"cast_iron"|"bronze"|"plastic",
+      "caseHardened": true|false,
+      "drawingTeeth": number|null
+    },
+    // drawingTeeth: the tooth count WRITTEN ON THE ATTACHED DRAWING, verbatim,
+    // even when it disagrees with the measured count (that disagreement is
+    // exactly what the sanity layer needs to see). null when no drawing.
+    // teeth/normalModuleMm/faceWidthMm: restate the MEASURED values from the
+    // GEAR METROLOGY block verbatim — they are counted off the B-rep and will
+    // overwrite whatever you return. helixAngleDeg/qualityClass/materialClass:
+    // read them from the attached drawing if one exists (say which field), else
+    // omit them — they are the engineer's UNDECIDED questions, not yours.`,
     sheet_metal: `    "sheetMetal": {
       "thicknessMm": number,
       "blankLengthMm": number,
@@ -2183,7 +2270,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
         ? structuredClone((analysis as { costInputSuggestions?: Record<string, unknown> }).costInputSuggestions ?? {})
         : null;
       const resolved = runCostInputRules(
-        ruleSpec, withAIMaterial(ruleCtx, analysis as Record<string, unknown>));
+        ruleSpec, withAIAnswers(ruleCtx, analysis as Record<string, unknown>));
       ruleOverrides = applyRuleDecisions(
         analysis as Parameters<typeof applyRuleDecisions>[0], resolved);
       // A rule that is ASKING must not let the model answer silently: fields
@@ -2220,7 +2307,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   }
 
   const machiningWarnings = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
-  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volume?.cm3 ?? null, buildGeoSanityContext(geo, analysis))];
+  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volume?.cm3 ?? null, buildGeoSanityContext(geo, analysis, aiOriginal))];
   const payload = {
     success: true,
     analysis,
@@ -2243,7 +2330,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     aiOriginal,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
-    decisions: pendingDecisions(ruleSpec, ruleCtx, withAIMaterial(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0),
+    decisions: pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0),
     mode: analysisMode,
     fromCache: false,
     geometrySource: 'occt' as const,

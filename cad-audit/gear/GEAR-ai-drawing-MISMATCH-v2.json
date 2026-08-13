@@ -1,0 +1,1474 @@
+{
+  "_audit": {
+    "part": "test-gear-m3-z38.step",
+    "commodity": null,
+    "mode": "both",
+    "volume": 200000,
+    "deep": false,
+    "httpStatus": 200,
+    "seconds": 120.5,
+    "capturedAt": "2026-08-13T06:16:30.218Z"
+  },
+  "response": {
+    "success": true,
+    "analysis": {
+      "partName": "Spur Gear – Transmission Output (GT-40-M3)",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 120,
+          "y": 119.76,
+          "z": 30
+        },
+        "estimatedVolumeCm3": 265.959,
+        "estimatedSurfaceAreaCm2": 429.681,
+        "estimatedWeightKg": {
+          "aluminum": 0.7181,
+          "steel": 2.0878,
+          "castIron": 1.9016,
+          "plastic": 0.2793
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "External spur gear teeth",
+          "description": "38 tip-circle patches counted at r≈60mm (measured) vs 40 stated on drawing",
+          "count": 38,
+          "significance": "High"
+        },
+        {
+          "type": "Through bore",
+          "description": "Ø40 H7 bore for shaft mounting",
+          "count": 1,
+          "significance": "High"
+        },
+        {
+          "type": "Threaded feature",
+          "description": "Thread detected on B-rep (likely a retaining/jacking hole not called out on drawing view shown)",
+          "count": 1,
+          "significance": "Medium"
+        },
+        {
+          "type": "Planar faces",
+          "description": "Front/back gear faces, flat and perpendicular to bore axis",
+          "count": 2,
+          "significance": "Medium"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": true,
+        "primarySuggestion": {
+          "materialId": "mat-steel1045",
+          "name": "20MnCr5 (1.7147) case-hardening steel — mapped to closest catalogue steel mat-steel1045 (no dedicated case-hardening grade in materialId list)",
+          "confidencePct": 80,
+          "reasoning": "Drawing explicitly calls out MATERIAL 20MnCr5 (1.7147), HEAT TREATMENT Carburise+Quench, case depth 0.6-0.9mm, 58-62 HRC. This is a classic case-hardening gear steel. No exact 20MnCr5 entry exists in the valid materialId list, so mat-steel1045 (generic carbon/alloy steel) is used as the nearest proxy; cost/weight should still reflect steel density (7.85 g/cm³)."
+        },
+        "alternatives": [
+          {
+            "materialId": "mat-adi",
+            "name": "Austempered Ductile Iron",
+            "confidencePct": 10
+          },
+          {
+            "materialId": "mat-gjs600",
+            "name": "Ductile Iron GJS-600",
+            "confidencePct": 5
+          }
+        ]
+      },
+      "processRecommendations": [
+        {
+          "process": "Closed-die forging (blank) + CNC turning/hobbing + post-carburise grinding",
+          "commodityType": "forging",
+          "confidencePct": 85,
+          "reasoning": "Solid, thick-section (fill ratio 0.617), drivetrain output gear, case-hardening steel, 200,000 units/yr volume — forged near-net blank followed by hobbing and hard-finish grinding is the standard high-volume route for this class of part.",
+          "estimatedCycleTimeHr": 1.1
+        },
+        {
+          "process": "CNC machining (bore, faces, teeth) as alternative to hobbing on low-tooling-investment lines",
+          "commodityType": "machining",
+          "confidencePct": 55,
+          "reasoning": "The generic bottom-up CNC estimate (0.817 hr) covers turning/milling/drilling only and does NOT include gear-tooth generation (hobbing/shaping) or the post-heat-treat grind required to hold ISO 1328 class 7 after carburise-quench distortion — it under-states true cycle time for this part.",
+          "estimatedCycleTimeHr": 0.817
+        }
+      ],
+      "manufacturabilityScore": 100,
+      "manufacturabilityRisks": [
+        {
+          "severity": "High",
+          "feature": "Tooth count",
+          "description": "Drawing states z=40 teeth; B-rep geometry kernel counted 38 tip-circle patches at r≈60mm. This is a direct, unresolved discrepancy between the drawing and the actual solid.",
+          "suggestion": "Confirm correct tooth count with design authority before releasing hob/grinding wheel tooling — do not silently pick one value."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Case-hardened teeth",
+          "description": "Carburise + quench to 58-62 HRC will distort tooth profile/lead beyond ISO class 7 tolerance as-hobbed.",
+          "suggestion": "Add post-heat-treat gear grinding operation with stock allowance left on flanks before hardening."
+        },
+        {
+          "severity": "Medium",
+          "feature": "Ø40 H7 bore",
+          "description": "Tight H7 bore tolerance combined with carburising will grow/shrink through heat treat.",
+          "suggestion": "Stop-off/copper-plate the bore before carburising and finish-bore/ream after heat treat to hold H7."
+        }
+      ],
+      "costInputSuggestions": {
+        "recommendedCommodity": "gear",
+        "netWeightKg": 2.088,
+        "materialId": "mat-steel-20mncr5",
+        "estimatedCycleTimeHr": 0.0279,
+        "estimatedSetupTimeHr": 0.75,
+        "estimatedOperations": [
+          {
+            "name": "Turn blank (OD/faces/bore rough)",
+            "machineId": "mach-lathe-cnc",
+            "cycleTimeHr": 0.2,
+            "labourId": "lab-uk-skilled",
+            "oee": 0.85,
+            "manning": 1,
+            "labourEfficiency": 0.92
+          },
+          {
+            "name": "Hob/generate teeth",
+            "machineId": "mach-vmc5",
+            "cycleTimeHr": 0.45,
+            "labourId": "lab-uk-skilled",
+            "oee": 0.85,
+            "manning": 1,
+            "labourEfficiency": 0.92
+          },
+          {
+            "name": "Grind teeth (post carburise-quench)",
+            "machineId": "mach-grind",
+            "cycleTimeHr": 0.35,
+            "labourId": "lab-uk-skilled",
+            "oee": 0.85,
+            "manning": 1,
+            "labourEfficiency": 0.92
+          },
+          {
+            "name": "Finish bore/faces post heat-treat",
+            "machineId": "mach-lathe-cnc",
+            "cycleTimeHr": 0.1,
+            "labourId": "lab-uk-skilled",
+            "oee": 0.85,
+            "manning": 1,
+            "labourEfficiency": 0.92
+          }
+        ],
+        "gear": {
+          "teeth": 38,
+          "normalModuleMm": 3,
+          "helixAngleDeg": 0,
+          "faceWidthMm": 30,
+          "qualityClass": 7,
+          "materialClass": "case_hardening_steel",
+          "caseHardened": true,
+          "drawingTeeth": 40,
+          "internal": false,
+          "blankCostPerPart": 10.64,
+          "batchSize": 16670
+        },
+        "casting": {
+          "subtype": "sand",
+          "dieMouldCostGBP": 7000,
+          "dieMouldLife": 5000,
+          "cavities": 1,
+          "yieldFraction": 0.7,
+          "cycleTimeHpdcSec": 0,
+          "cycleTimeSandGravHr": 0.226
+        },
+        "forging": {
+          "flashKg": 0.35,
+          "yieldFraction": 0.85,
+          "dieCostGBP": 20000,
+          "dieLife": 80000,
+          "strokes": 5,
+          "timePerBlowSec": 8
+        },
+        "sheetMetal": {
+          "thicknessMm": 0,
+          "blankLengthMm": 0,
+          "blankWidthMm": 0,
+          "dieCostGBP": 0,
+          "dieLife": 0,
+          "numOps": 0
+        },
+        "injectionMoulding": {
+          "cavities": 0,
+          "projectedAreaCm2": 0,
+          "wallThicknessMm": 0,
+          "mouldCostGBP": 0,
+          "mouldLife": 0,
+          "runnerWeightKg": 0
+        },
+        "fieldConfidences": {
+          "geometry-teeth": 0.97,
+          "gear-normalModuleMm": 0.95,
+          "gear-faceWidthMm": 0.97,
+          "gear-helixAngleDeg": 0.9,
+          "gear-qualityClass": 0.9,
+          "gear-materialClass": 0.85,
+          "gear-caseHardened": 0.9,
+          "gear-drawingTeeth": 0.95,
+          "netWeightKg": 0.9,
+          "materialId": 0.65,
+          "estimatedCycleTimeHr": 0.55,
+          "blankCostPerPart": 0.4,
+          "forge-dieCostGBP": 0.9,
+          "forge-strokes": 0.9,
+          "manufacturabilityScore": 0.95,
+          "gear-teeth": 0.95,
+          "gear-helix": 0.7,
+          "gear-module": 0.85,
+          "gear-face": 0.9,
+          "gear-internal": 0.9,
+          "gear-quality": 0.7,
+          "gear-matclass": 0.7,
+          "gear-caseh": 0.85,
+          "gear-mat": 0.85,
+          "gear-net-wt": 0.9,
+          "gear-blank-cost": 0.55,
+          "gear-batch": 0.6
+        },
+        "dfmIssues": [
+          {
+            "severity": "Critical",
+            "area": "Tooth count mismatch",
+            "description": "Drawing calls out z=40 teeth; measured B-rep shows 38 tip-circle clusters at r≈60mm — a real discrepancy, not a rounding issue.",
+            "impact": "Hobbing/grinding tooling cut to the wrong tooth count would scrap the entire batch and invalidate mesh/contact-ratio calculations for the mating gear.",
+            "fix": "Escalate to design authority to confirm the correct z before releasing hob and grinding wheel form; do not proceed on either value alone."
+          },
+          {
+            "severity": "High",
+            "area": "Case-hardening distortion vs ISO class 7",
+            "description": "Carburise + quench to 58-62 HRC case (0.6-0.9mm) will distort tooth lead/profile beyond the as-hobbed tolerance needed for ISO 1328 class 7.",
+            "impact": "Without a hard-finishing step, expect out-of-tolerance profile/lead and noise/NVH issues in the transmission.",
+            "fix": "Leave grinding stock on flanks before heat treat and add a post-carburise gear grind (or hard hobbing + shave-before-harden) operation."
+          },
+          {
+            "severity": "Medium",
+            "area": "Ø40 H7 bore through case-hardening cycle",
+            "description": "A precision H7 bore carried through carburising will pick up scale/growth and case hardness unless protected.",
+            "impact": "Bore may go out of tolerance or become too hard to finish-machine economically.",
+            "fix": "Copper-plate or stop-off the bore ID before carburising, then finish bore (ream/hone) to H7 after heat treat."
+          },
+          {
+            "severity": "Medium",
+            "area": "Detected thread feature",
+            "description": "A threaded feature is present on the solid but not called out on the drawing view supplied.",
+            "impact": "Uncontrolled thread spec risks mismatched fastener/plug and possible interference with tooling or heat-treat masking.",
+            "fix": "Confirm thread size/depth/purpose with design authority and add to drawing callouts before release."
+          }
+        ],
+        "costRange": {
+          "low": 0,
+          "mid": 0,
+          "high": 0,
+          "currency": "GBP"
+        }
+      },
+      "aiExplanation": "",
+      "confidenceLevel": "Low",
+      "analysisLimitations": []
+    },
+    "sanityWarnings": [
+      {
+        "code": "gear_teeth_mismatch",
+        "blocking": true,
+        "message": "Drawing/model says 40 teeth but the B-rep has 38 counted tip-circle teeth. Wrong drawing revision or misread — the counted geometry wins, and the mismatch must be resolved before quoting.",
+        "severity": "error"
+      }
+    ],
+    "ruleOverrides": {
+      "overridden": [
+        {
+          "field": "gear.teeth",
+          "ruleId": "gear.teeth",
+          "from": 38,
+          "to": 38,
+          "basis": "counted 38 tip-circle patch(es) at r≈60.0 mm clustered to 38 angular positions",
+          "confidence": 0.95,
+          "contradicted": false
+        },
+        {
+          "field": "gear.helixAngleDeg",
+          "ruleId": "gear.helixAngleDeg",
+          "from": 0,
+          "to": 0,
+          "basis": "spur — 0° helix (from the model’s drawing read — not engineer-confirmed)",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "gear.normalModuleMm",
+          "ruleId": "gear.normalModuleMm",
+          "from": 3,
+          "to": 3,
+          "basis": "mn = tip Ø 120.0 / (z 38 + 2) = 3.00 mm — standard addendum; recon 120.0 mm vs measured OD 120.0 mm",
+          "confidence": 0.85,
+          "contradicted": false
+        },
+        {
+          "field": "gear.faceWidthMm",
+          "ruleId": "gear.faceWidthMm",
+          "from": 30,
+          "to": 30,
+          "basis": "axial span of the tip-land patches = 30.0 mm",
+          "confidence": 0.9,
+          "contradicted": false
+        },
+        {
+          "field": "gear.internal",
+          "ruleId": "gear.internal",
+          "to": false,
+          "basis": "tip patches face outward — external gear",
+          "confidence": 0.9,
+          "contradicted": false
+        },
+        {
+          "field": "gear.qualityClass",
+          "ruleId": "gear.qualityClass",
+          "from": 7,
+          "to": 7,
+          "basis": "ISO 1328 class 7 (from the model’s drawing read — not engineer-confirmed)",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "gear.materialClass",
+          "ruleId": "gear.materialClass",
+          "from": "case_hardening_steel",
+          "to": "case_hardening_steel",
+          "basis": "case hardening steel (from the model’s drawing read — not engineer-confirmed)",
+          "confidence": 0.7,
+          "contradicted": false
+        },
+        {
+          "field": "gear.caseHardened",
+          "ruleId": "gear.caseHardened",
+          "from": true,
+          "to": true,
+          "basis": "case-hardening steel — carburise + quench after cutting",
+          "confidence": 0.85,
+          "contradicted": false
+        },
+        {
+          "field": "materialId",
+          "ruleId": "gear.materialId",
+          "from": "mat-steel1045",
+          "to": "mat-steel-20mncr5",
+          "basis": "20MnCr5 — the European transmission default — representative grade for case hardening steel",
+          "confidence": 0.85,
+          "contradicted": true
+        },
+        {
+          "field": "netWeightKg",
+          "ruleId": "gear.netWeightKg",
+          "from": 2.088,
+          "to": 2.088,
+          "basis": "266 cm³ × 7.85 g/cm³ (20MnCr5 (Gear Steel))",
+          "confidence": 0.9,
+          "contradicted": false
+        },
+        {
+          "field": "gear.blankCostPerPart",
+          "ruleId": "gear.blankCostPerPart",
+          "to": 10.64,
+          "basis": "bar slice Ø124×36 mm = 3.41 kg 20MnCr5 (Gear Steel) × £1.48/kg − chips × £0.22/kg = £4.76; turning prep 4.8 min (133 cm³ @ 40 cm³/min + load) on CNC lathe £40/hr ÷ 0.85 OEE + £26/hr = £5.88. Replace with the forged-blank quote when one exists.",
+          "confidence": 0.55,
+          "contradicted": false
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleId": "gear.cycleTimeHr",
+          "from": 1.1,
+          "to": 0.0279,
+          "basis": "Gear hobbing 56s + Chamfer and deburr 25s + Carburise, quench and temper 0s + Gear inspection 20s = 101 s — generating kinematics, same arithmetic as the costing",
+          "confidence": 0.7,
+          "contradicted": true
+        },
+        {
+          "field": "gear.batchSize",
+          "ruleId": "gear.batchSize",
+          "to": 16670,
+          "basis": "monthly delivery batches: 200,000/yr ÷ 12",
+          "confidence": 0.6,
+          "contradicted": false
+        }
+      ],
+      "notWritten": [],
+      "undecided": []
+    },
+    "aiSuppressed": [],
+    "ruleFields": {
+      "gear-teeth": {
+        "fieldId": "gear-teeth",
+        "value": 38,
+        "basis": "counted 38 tip-circle patch(es) at r≈60.0 mm clustered to 38 angular positions",
+        "source": "geometry",
+        "confidence": 0.95,
+        "ruleId": "gear.teeth"
+      },
+      "gear-helix": {
+        "fieldId": "gear-helix",
+        "value": 0,
+        "basis": "spur — 0° helix (from the model’s drawing read — not engineer-confirmed)",
+        "source": "ai",
+        "confidence": 0.7,
+        "ruleId": "gear.helixAngleDeg"
+      },
+      "gear-module": {
+        "fieldId": "gear-module",
+        "value": 3,
+        "basis": "mn = tip Ø 120.0 / (z 38 + 2) = 3.00 mm — standard addendum; recon 120.0 mm vs measured OD 120.0 mm",
+        "source": "geometry",
+        "confidence": 0.85,
+        "ruleId": "gear.normalModuleMm"
+      },
+      "gear-face": {
+        "fieldId": "gear-face",
+        "value": 30,
+        "basis": "axial span of the tip-land patches = 30.0 mm",
+        "source": "geometry",
+        "confidence": 0.9,
+        "ruleId": "gear.faceWidthMm"
+      },
+      "gear-internal": {
+        "fieldId": "gear-internal",
+        "value": false,
+        "basis": "tip patches face outward — external gear",
+        "source": "geometry",
+        "confidence": 0.9,
+        "ruleId": "gear.internal"
+      },
+      "gear-quality": {
+        "fieldId": "gear-quality",
+        "value": 7,
+        "basis": "ISO 1328 class 7 (from the model’s drawing read — not engineer-confirmed)",
+        "source": "ai",
+        "confidence": 0.7,
+        "ruleId": "gear.qualityClass"
+      },
+      "gear-matclass": {
+        "fieldId": "gear-matclass",
+        "value": "case_hardening_steel",
+        "basis": "case hardening steel (from the model’s drawing read — not engineer-confirmed)",
+        "source": "ai",
+        "confidence": 0.7,
+        "ruleId": "gear.materialClass"
+      },
+      "gear-caseh": {
+        "fieldId": "gear-caseh",
+        "value": true,
+        "basis": "case-hardening steel — carburise + quench after cutting",
+        "source": "rule",
+        "confidence": 0.85,
+        "ruleId": "gear.caseHardened"
+      },
+      "gear-mat": {
+        "fieldId": "gear-mat",
+        "value": "mat-steel-20mncr5",
+        "basis": "20MnCr5 — the European transmission default — representative grade for case hardening steel",
+        "source": "library",
+        "confidence": 0.85,
+        "ruleId": "gear.materialId"
+      },
+      "gear-net-wt": {
+        "fieldId": "gear-net-wt",
+        "value": 2.088,
+        "basis": "266 cm³ × 7.85 g/cm³ (20MnCr5 (Gear Steel))",
+        "source": "geometry",
+        "confidence": 0.9,
+        "ruleId": "gear.netWeightKg"
+      },
+      "gear-blank-cost": {
+        "fieldId": "gear-blank-cost",
+        "value": 10.64,
+        "basis": "bar slice Ø124×36 mm = 3.41 kg 20MnCr5 (Gear Steel) × £1.48/kg − chips × £0.22/kg = £4.76; turning prep 4.8 min (133 cm³ @ 40 cm³/min + load) on CNC lathe £40/hr ÷ 0.85 OEE + £26/hr = £5.88. Replace with the forged-blank quote when one exists.",
+        "source": "rule",
+        "confidence": 0.55,
+        "ruleId": "gear.blankCostPerPart"
+      },
+      "gear-batch": {
+        "fieldId": "gear-batch",
+        "value": 16670,
+        "basis": "monthly delivery batches: 200,000/yr ÷ 12",
+        "source": "rule",
+        "confidence": 0.6,
+        "ruleId": "gear.batchSize"
+      }
+    },
+    "deterministicAnalysis": {
+      "partName": "cv-cad-7778fb37071ce877",
+      "geometry": {
+        "boundingBoxMm": {
+          "x": 120,
+          "y": 119.76,
+          "z": 30
+        },
+        "estimatedVolumeCm3": 265.959,
+        "estimatedSurfaceAreaCm2": 429.681,
+        "estimatedWeightKg": {
+          "aluminum": 0.7181,
+          "steel": 2.0878,
+          "plastic": 0.2793
+        }
+      },
+      "detectedFeatures": [
+        {
+          "type": "hole",
+          "description": "1× Ø40.0 × 30 mm through",
+          "count": 1,
+          "significance": "Low"
+        },
+        {
+          "type": "face",
+          "description": "2× Ø0.0 × 0 mm",
+          "count": 2,
+          "significance": "Low"
+        }
+      ],
+      "materialAnalysis": {
+        "fromMetadata": false,
+        "primarySuggestion": {
+          "materialId": "",
+          "name": "",
+          "confidencePct": 0,
+          "reasoning": ""
+        },
+        "alternatives": []
+      },
+      "processRecommendations": [
+        {
+          "process": "gear",
+          "commodityType": "gear",
+          "confidencePct": 50,
+          "reasoning": "selected by the deterministic rules for this commodity",
+          "estimatedCycleTimeHr": 0
+        }
+      ],
+      "manufacturabilityScore": 100,
+      "manufacturabilityRisks": [],
+      "costInputSuggestions": {
+        "recommendedCommodity": "gear",
+        "netWeightKg": 0,
+        "materialId": "",
+        "estimatedCycleTimeHr": 0,
+        "estimatedSetupTimeHr": 0,
+        "estimatedOperations": [],
+        "gear": {
+          "teeth": 38,
+          "helixAngleDeg": 0,
+          "normalModuleMm": 3,
+          "faceWidthMm": 30,
+          "internal": false,
+          "qualityClass": 7,
+          "batchSize": 16670
+        },
+        "fieldConfidences": {
+          "gear-teeth": 0.95,
+          "gear-helix": 0.6,
+          "gear-module": 0.85,
+          "gear-face": 0.9,
+          "gear-internal": 0.9,
+          "gear-quality": 0.6,
+          "gear-batch": 0.6
+        }
+      },
+      "aiExplanation": "Derived deterministically for gear from the measured geometry. No AI call was made; every figure below is arithmetic on a measurement or a library lookup, and each states its own basis.\n\n  • gear.teeth = 38 — counted 38 tip-circle patch(es) at r≈60.0 mm clustered to 38 angular positions [geometry, gear-teeth]\n  • gear.helixAngleDeg = 0 — spur — 0° helix (assumed — confirm before quoting) [engineer, gear-helix]\n  • gear.normalModuleMm = 3 — mn = tip Ø 120.0 / (z 38 + 2) = 3.00 mm — standard addendum; recon 120.0 mm vs measured OD 120.0 mm (assumed — confirm before quoting) [geometry, gear-module]\n  • gear.faceWidthMm = 30 — axial span of the tip-land patches = 30.0 mm [geometry, gear-face]\n  • gear.internal = false — tip patches face outward — external gear [geometry, gear-internal]\n  • gear.qualityClass = 7 — ISO 1328 class 7 (assumed — confirm before quoting) [engineer, gear-quality]\n  • gear.batchSize = 16670 — monthly delivery batches: 200,000/yr ÷ 12 [rule, gear-batch]\n\nStill open (1):\n  • What is the gear cut from? — The solid weighs the same in 20MnCr5 and 42CrMo4, so the CAD cannot tell a carburised gear from a through-hardened one — and the choice changes the heat-treat route, the finishing route and the feeds the teeth are cut at.",
+      "confidenceLevel": "Low",
+      "analysisLimitations": [
+        "Unanswered: What is the gear cut from?",
+        "No DFM analyser exists for gear; an empty issue list here means \"not checked\", not \"nothing found\"."
+      ]
+    },
+    "diff": {
+      "diffs": [
+        {
+          "field": "casting.cavities",
+          "aiValue": 1,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeHpdcSec",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.cycleTimeSandGravHr",
+          "aiValue": 0.226,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldCostGBP",
+          "aiValue": 7000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.dieMouldLife",
+          "aiValue": 5000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.subtype",
+          "aiValue": "sand",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "casting.yieldFraction",
+          "aiValue": 0.7,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.currency",
+          "aiValue": "GBP",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.high",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.low",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "costRange.mid",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "estimatedCycleTimeHr",
+          "ruleValue": 0,
+          "aiValue": 1.1,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "estimatedSetupTimeHr",
+          "ruleValue": 0,
+          "aiValue": 0.75,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "fieldConfidences.blankCostPerPart",
+          "aiValue": 0.4,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.estimatedCycleTimeHr",
+          "aiValue": 0.55,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.forge-dieCostGBP",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.forge-strokes",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.gear-batch",
+          "ruleValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.gear-caseHardened",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.gear-drawingTeeth",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.gear-face",
+          "ruleValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.gear-faceWidthMm",
+          "aiValue": 0.97,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.gear-helix",
+          "ruleValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.gear-helixAngleDeg",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.gear-internal",
+          "ruleValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.gear-materialClass",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.gear-module",
+          "ruleValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.gear-normalModuleMm",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.gear-quality",
+          "ruleValue": 0.6,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.gear-qualityClass",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.gear-teeth",
+          "ruleValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "fieldConfidences.geometry-teeth",
+          "aiValue": 0.97,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.manufacturabilityScore",
+          "aiValue": 0.95,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.materialId",
+          "aiValue": 0.65,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "fieldConfidences.netWeightKg",
+          "aiValue": 0.9,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieCostGBP",
+          "aiValue": 20000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.dieLife",
+          "aiValue": 80000,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.flashKg",
+          "aiValue": 0.35,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.strokes",
+          "aiValue": 5,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.timePerBlowSec",
+          "aiValue": 8,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "forging.yieldFraction",
+          "aiValue": 0.85,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "gear.batchSize",
+          "ruleValue": 16670,
+          "deltaPct": null,
+          "basis": "monthly delivery batches: 200,000/yr ÷ 12",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "gear.caseHardened",
+          "aiValue": true,
+          "deltaPct": null,
+          "basis": "case-hardening steel — carburise + quench after cutting",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "gear.drawingTeeth",
+          "aiValue": 40,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "gear.faceWidthMm",
+          "ruleValue": 30,
+          "aiValue": 30,
+          "deltaPct": 0,
+          "basis": "axial span of the tip-land patches = 30.0 mm",
+          "verdict": "agree"
+        },
+        {
+          "field": "gear.helixAngleDeg",
+          "ruleValue": 0,
+          "aiValue": 0,
+          "deltaPct": 0,
+          "basis": "spur — 0° helix (from the model’s drawing read — not engineer-confirmed)",
+          "verdict": "agree"
+        },
+        {
+          "field": "gear.internal",
+          "ruleValue": false,
+          "deltaPct": null,
+          "basis": "tip patches face outward — external gear",
+          "verdict": "rule-only"
+        },
+        {
+          "field": "gear.materialClass",
+          "aiValue": "case_hardening_steel",
+          "deltaPct": null,
+          "basis": "case hardening steel (from the model’s drawing read — not engineer-confirmed)",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "gear.normalModuleMm",
+          "ruleValue": 3,
+          "aiValue": 3,
+          "deltaPct": 0,
+          "basis": "mn = tip Ø 120.0 / (z 38 + 2) = 3.00 mm — standard addendum; recon 120.0 mm vs measured OD 120.0 mm",
+          "verdict": "agree"
+        },
+        {
+          "field": "gear.qualityClass",
+          "ruleValue": 7,
+          "aiValue": 7,
+          "deltaPct": 0,
+          "basis": "ISO 1328 class 7 (from the model’s drawing read — not engineer-confirmed)",
+          "verdict": "agree"
+        },
+        {
+          "field": "gear.teeth",
+          "ruleValue": 38,
+          "aiValue": 38,
+          "deltaPct": 0,
+          "basis": "counted 38 tip-circle patch(es) at r≈60.0 mm clustered to 38 angular positions",
+          "verdict": "agree"
+        },
+        {
+          "field": "injectionMoulding.cavities",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.mouldLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.projectedAreaCm2",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.runnerWeightKg",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "injectionMoulding.wallThicknessMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "materialId",
+          "ruleValue": "",
+          "aiValue": "mat-steel1045",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "netWeightKg",
+          "ruleValue": 0,
+          "aiValue": 2.088,
+          "deltaPct": -1,
+          "basis": "",
+          "verdict": "differ"
+        },
+        {
+          "field": "recommendedCommodity",
+          "ruleValue": "gear",
+          "aiValue": "gear",
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "agree"
+        },
+        {
+          "field": "sheetMetal.blankLengthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.blankWidthMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieCostGBP",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.dieLife",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.numOps",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        },
+        {
+          "field": "sheetMetal.thicknessMm",
+          "aiValue": 0,
+          "deltaPct": null,
+          "basis": "",
+          "verdict": "ai-only"
+        }
+      ],
+      "agreed": 6,
+      "differed": 4,
+      "ruleOnly": 9,
+      "aiOnly": 47,
+      "undecided": []
+    },
+    "aiOriginal": {
+      "recommendedCommodity": "gear",
+      "netWeightKg": 2.088,
+      "materialId": "mat-steel1045",
+      "estimatedCycleTimeHr": 1.1,
+      "estimatedSetupTimeHr": 0.75,
+      "estimatedOperations": [
+        {
+          "name": "Turn blank (OD/faces/bore rough)",
+          "machineId": "mach-lathe-cnc",
+          "cycleTimeHr": 0.2,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        },
+        {
+          "name": "Hob/generate teeth",
+          "machineId": "mach-vmc5",
+          "cycleTimeHr": 0.45,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        },
+        {
+          "name": "Grind teeth (post carburise-quench)",
+          "machineId": "mach-grind",
+          "cycleTimeHr": 0.35,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        },
+        {
+          "name": "Finish bore/faces post heat-treat",
+          "machineId": "mach-lathe-cnc",
+          "cycleTimeHr": 0.1,
+          "labourId": "lab-uk-skilled",
+          "oee": 0.85,
+          "manning": 1,
+          "labourEfficiency": 0.92
+        }
+      ],
+      "gear": {
+        "teeth": 38,
+        "normalModuleMm": 3,
+        "helixAngleDeg": 0,
+        "faceWidthMm": 30,
+        "qualityClass": 7,
+        "materialClass": "case_hardening_steel",
+        "caseHardened": true,
+        "drawingTeeth": 40
+      },
+      "casting": {
+        "subtype": "sand",
+        "dieMouldCostGBP": 7000,
+        "dieMouldLife": 5000,
+        "cavities": 1,
+        "yieldFraction": 0.7,
+        "cycleTimeHpdcSec": 0,
+        "cycleTimeSandGravHr": 0.226
+      },
+      "forging": {
+        "flashKg": 0.35,
+        "yieldFraction": 0.85,
+        "dieCostGBP": 20000,
+        "dieLife": 80000,
+        "strokes": 5,
+        "timePerBlowSec": 8
+      },
+      "sheetMetal": {
+        "thicknessMm": 0,
+        "blankLengthMm": 0,
+        "blankWidthMm": 0,
+        "dieCostGBP": 0,
+        "dieLife": 0,
+        "numOps": 0
+      },
+      "injectionMoulding": {
+        "cavities": 0,
+        "projectedAreaCm2": 0,
+        "wallThicknessMm": 0,
+        "mouldCostGBP": 0,
+        "mouldLife": 0,
+        "runnerWeightKg": 0
+      },
+      "fieldConfidences": {
+        "geometry-teeth": 0.97,
+        "gear-normalModuleMm": 0.95,
+        "gear-faceWidthMm": 0.97,
+        "gear-helixAngleDeg": 0.9,
+        "gear-qualityClass": 0.9,
+        "gear-materialClass": 0.85,
+        "gear-caseHardened": 0.9,
+        "gear-drawingTeeth": 0.95,
+        "netWeightKg": 0.9,
+        "materialId": 0.65,
+        "estimatedCycleTimeHr": 0.55,
+        "blankCostPerPart": 0.4,
+        "forge-dieCostGBP": 0.9,
+        "forge-strokes": 0.9,
+        "manufacturabilityScore": 0.95
+      },
+      "dfmIssues": [
+        {
+          "severity": "Critical",
+          "area": "Tooth count mismatch",
+          "description": "Drawing calls out z=40 teeth; measured B-rep shows 38 tip-circle clusters at r≈60mm — a real discrepancy, not a rounding issue.",
+          "impact": "Hobbing/grinding tooling cut to the wrong tooth count would scrap the entire batch and invalidate mesh/contact-ratio calculations for the mating gear.",
+          "fix": "Escalate to design authority to confirm the correct z before releasing hob and grinding wheel form; do not proceed on either value alone."
+        },
+        {
+          "severity": "High",
+          "area": "Case-hardening distortion vs ISO class 7",
+          "description": "Carburise + quench to 58-62 HRC case (0.6-0.9mm) will distort tooth lead/profile beyond the as-hobbed tolerance needed for ISO 1328 class 7.",
+          "impact": "Without a hard-finishing step, expect out-of-tolerance profile/lead and noise/NVH issues in the transmission.",
+          "fix": "Leave grinding stock on flanks before heat treat and add a post-carburise gear grind (or hard hobbing + shave-before-harden) operation."
+        },
+        {
+          "severity": "Medium",
+          "area": "Ø40 H7 bore through case-hardening cycle",
+          "description": "A precision H7 bore carried through carburising will pick up scale/growth and case hardness unless protected.",
+          "impact": "Bore may go out of tolerance or become too hard to finish-machine economically.",
+          "fix": "Copper-plate or stop-off the bore ID before carburising, then finish bore (ream/hone) to H7 after heat treat."
+        },
+        {
+          "severity": "Medium",
+          "area": "Detected thread feature",
+          "description": "A threaded feature is present on the solid but not called out on the drawing view supplied.",
+          "impact": "Uncontrolled thread spec risks mismatched fastener/plug and possible interference with tooling or heat-treat masking.",
+          "fix": "Confirm thread size/depth/purpose with design authority and add to drawing callouts before release."
+        }
+      ],
+      "costRange": {
+        "low": 0,
+        "mid": 0,
+        "high": 0,
+        "currency": "GBP"
+      }
+    },
+    "decisions": [
+      {
+        "id": "gear.materialClass",
+        "kind": "material_grade",
+        "question": "What is the gear cut from?",
+        "why": "The solid weighs the same in 20MnCr5 and 42CrMo4, so the CAD cannot tell a carburised gear from a through-hardened one — and the choice changes the heat-treat route, the finishing route and the feeds the teeth are cut at. The model read \"case_hardening_steel\" off the drawing/context — confirm or correct it before it reaches the costing.",
+        "options": [
+          {
+            "value": "case_hardening_steel",
+            "label": "Case-hardening steel (20MnCr5 / 8620)",
+            "leaning": true,
+            "consequence": "carburise + quench after cutting; hard finishing needed above class 8"
+          },
+          {
+            "value": "through_hardening_steel",
+            "label": "Through-hardening steel (42CrMo4 / EN19)",
+            "consequence": "quench + temper; distortion lower than carburising",
+            "leaning": false
+          },
+          {
+            "value": "alloy_steel_prehardened",
+            "label": "Pre-hardened alloy steel (~30 HRC)",
+            "consequence": "no post-cut heat treat; slower cutting feeds",
+            "leaning": false
+          },
+          {
+            "value": "cast_iron",
+            "label": "Cast iron / ADI",
+            "consequence": "cast blank, austempered; no carburise",
+            "leaning": false
+          },
+          {
+            "value": "stainless",
+            "label": "Stainless steel",
+            "consequence": "slower feeds, no case hardening",
+            "leaning": false
+          },
+          {
+            "value": "bronze",
+            "label": "Bronze (worm wheels)",
+            "consequence": "free cutting, no heat treat",
+            "leaning": false
+          },
+          {
+            "value": "plastic",
+            "label": "Engineering plastic (POM / PA)",
+            "consequence": "cut soft or moulded; no heat treat",
+            "leaning": false
+          }
+        ],
+        "blockedFieldIds": [
+          "gear-matclass",
+          "gear-caseh",
+          "gear-mat",
+          "gear-net-wt",
+          "gear-blank-cost"
+        ],
+        "blockedRuleIds": [
+          "gear.materialClass",
+          "gear.caseHardened",
+          "gear.materialId",
+          "gear.netWeightKg",
+          "gear.blankCostPerPart",
+          "gear.cycleTimeHr"
+        ],
+        "severity": "blocking"
+      }
+    ],
+    "mode": "both",
+    "fromCache": false,
+    "geometrySource": "occt",
+    "annualVolume": 200000,
+    "occtGeometry": {
+      "status": "success",
+      "partName": "cv-cad-7778fb37071ce877",
+      "boundingBox": {
+        "xMm": 120,
+        "yMm": 119.76,
+        "zMm": 30
+      },
+      "volume": {
+        "mm3": 265959.5,
+        "cm3": 265.959
+      },
+      "surfaceArea": {
+        "mm2": 42968.1,
+        "cm2": 429.681
+      },
+      "fillRatio": 0.6169,
+      "topology": {
+        "available": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "enclosesSealedVoid": false,
+        "openShell": true
+      },
+      "weights": {
+        "aluminiumKg": 0.7181,
+        "steelKg": 2.0878,
+        "plasticKg": 0.2793,
+        "castIronKg": 1.9016,
+        "copperKg": 2.383,
+        "titaniumKg": 1.1782
+      },
+      "faces": {
+        "total": 155,
+        "byType": {
+          "OTHER": 76,
+          "CYLINDER": 77,
+          "PLANE": 2
+        }
+      },
+      "edges": {
+        "total": 459,
+        "byType": {
+          "LINE": 153,
+          "BSPLINE": 152,
+          "CIRCLE": 154
+        },
+        "sampleCircleRadiiMm": [
+          3.6,
+          20,
+          60
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 77,
+        "cylindricalFaceRadiiMm": [
+          3.6,
+          20,
+          60
+        ],
+        "estimatedHoleCount": 1,
+        "holeRadiiMm": [
+          20
+        ],
+        "bossShaftCount": 0,
+        "bossShaftRadiiMm": [],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 2,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 17731
+      },
+      "featureTable": [
+        {
+          "kind": "hole",
+          "diaMm": 40,
+          "depthMm": 30,
+          "through": true,
+          "count": 1
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 8865
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 0
+      },
+      "gear": {
+        "likelyGear": true,
+        "teeth": 38,
+        "tipDiameterMm": 120,
+        "faceWidthMm": 30,
+        "boreDiameterMm": 40,
+        "derivedNormalModuleMm": 3,
+        "moduleBasis": "OD 120.0 mm / (z 38 + 2) — standard addendum, external, spur-equivalent; helical parts need the drawing's normal module",
+        "teethBasis": "counted 38 tip-circle patch(es) at r≈60.0 mm clustered to 38 angular positions",
+        "helixAngleDeg": null,
+        "internal": false
+      },
+      "wallThickness": null,
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 77,
+        "adequateDraftFaceCount": 2,
+        "minPositiveDraftDeg": 90,
+        "maxPositiveDraftDeg": 90,
+        "analyzedFaceCount": 79
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+X",
+            "faceCount": 39
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 38
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 2
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 3.5,
+        "drillBoreTimeMins": 0.5,
+        "estimatedTotalMins": 49,
+        "estimatedTotalHrs": 0.8174,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 80000,
+        "gravityMouldCostGBP": 15000,
+        "sandPatternCostGBP": 7000,
+        "imMouldCostGBP": 55000,
+        "forgeDieCostGBP": 20000,
+        "progressiveDieCostGBP": 20000
+      },
+      "manufacturabilityScore": 100,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1787,
+        "sandCycleTimeHrFerrous": 0.2261,
+        "forgeStrokes": 5,
+        "investWaxCostGBP": 6.45,
+        "investShellCostGBP": 19.34
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    },
+    "stlGeometry": null,
+    "preprocessed": {
+      "format": "STEP",
+      "partName": "Open CASCADE STEP translator 7.9 1",
+      "boundingBoxEstMm": {
+        "x": 119.978517815081,
+        "y": 119.75622843710701,
+        "z": 30
+      },
+      "entityStats": {
+        "ADVANCED_BREP_SHAPE_REPRESENTATION": 1,
+        "MANIFOLD_SOLID_BREP": 1,
+        "ADVANCED_FACE": 155,
+        "EDGE_LOOP": 157,
+        "CYLINDRICAL_SURFACE": 77,
+        "PLANE": 2,
+        "CIRCLE": 232
+      }
+    },
+    "dfmJobId": null
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "part": "gear-m3-z38",
+  "note": "True involute spur gear from scripts/gen-test-gear.py: m=3, z=38, b=30, bore Ø40 — OD = m(z+2) = 120.00 exactly. Ground truth for the gear metrology.",
+  "features": { "hole": 1, "boss": 0, "pocket": 0 },
+  "materialFamily": "steel",
+  "volumeCm3": 265.96,
+  "volumeTolPct": 1,
+  "gear": {
+    "teeth": 38,
+    "normalModuleMm": 3.0,
+    "tipDiameterMm": 120.0,
+    "faceWidthMm": 30.0,
+    "boreDiameterMm": 40.0
+  }
+}

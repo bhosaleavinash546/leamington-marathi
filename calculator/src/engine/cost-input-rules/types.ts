@@ -216,7 +216,7 @@ export function answeredNumber(
 }
 
 /** Bump on any rule change. Part of the analysis cache key. */
-export const RULE_ENGINE_VERSION = 2;
+export const RULE_ENGINE_VERSION = 3;
 
 // ─── helpers used by every commodity module ─────────────────────────────────
 

@@ -106,16 +106,23 @@ describe('gap 4 — money-corrupting sanity findings carry blocking:true', () =>
   });
 });
 
-describe('gap 6 — the stage-1 vocabulary and dropdown know gear', () => {
-  it('cad.ts stage-1 prompt lists gear as a valid type', async () => {
+describe('gap 6 — gear is a first-class commodity, not a hand-off', () => {
+  it('cad.ts stage-1 prompt lists gear as a valid type and routes it', async () => {
     const { readFileSync } = await import('node:fs');
     const src = readFileSync(new URL('../server/routes/cad.ts', import.meta.url), 'utf8');
     expect(src).toMatch(/Valid commodity types:.*\bgear\b/);
-    expect(src).toMatch(/handoff: 'gear'/);
+    // The dead-end hand-off is GONE: a gear-named or metrology-recognised part
+    // routes to the gear commodity, whose rule pack asks the drawing questions.
+    expect(src).not.toMatch(/handoff: 'gear'/);
+    expect(src).toMatch(/gearRouted/);
   });
-  it('the CAD dropdown offers the gear hand-off', async () => {
+  it('the CAD dropdown offers gear', async () => {
     const { CAD_COMMODITY_OPTIONS } = await import('../src/ui/data/cad-options.js');
     expect(CAD_COMMODITY_OPTIONS.some(o => o.value === 'gear')).toBe(true);
+  });
+  it('the rule registry costs gear deterministically', async () => {
+    const { specForCommodity, GEAR_RULES } = await import('../src/engine/cost-input-rules/index.js');
+    expect(specForCommodity('gear')).toBe(GEAR_RULES);
   });
 });
 

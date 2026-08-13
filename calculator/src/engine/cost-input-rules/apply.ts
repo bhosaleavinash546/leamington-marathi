@@ -106,6 +106,22 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'forging.descaleCostPerKg': { to: 'forging.descaleCostPerKg' },
   'forging.ndtCostPerPart': { to: 'forging.ndtCostPerPart' },
   'forging.forgeId': { to: 'forging.forgeId' },
+  // Gear cutting — geometry-measured z/module/face, engineer-answered helix/
+  // quality/material class, rule-derived blank. materialId/netWeightKg land on
+  // the shared top-level fields, as for every metal commodity.
+  'gear.teeth': { to: 'gear.teeth' },
+  'gear.normalModuleMm': { to: 'gear.normalModuleMm' },
+  'gear.helixAngleDeg': { to: 'gear.helixAngleDeg' },
+  'gear.faceWidthMm': { to: 'gear.faceWidthMm' },
+  'gear.internal': { to: 'gear.internal' },
+  'gear.qualityClass': { to: 'gear.qualityClass' },
+  'gear.materialClass': { to: 'gear.materialClass' },
+  'gear.caseHardened': { to: 'gear.caseHardened' },
+  'gear.materialId': { to: 'materialId' },
+  'gear.netWeightKg': { to: 'netWeightKg' },
+  'gear.blankCostPerPart': { to: 'gear.blankCostPerPart' },
+  'gear.cycleTimeHr': { to: 'estimatedCycleTimeHr' },
+  'gear.batchSize': { to: 'gear.batchSize' },
   'sheetMetal.shearStrengthMPa': { to: 'sheetMetal.shearStrengthMPa' },
   'sheetMetal.dieType': { to: 'sheetMetal.dieType' },
   'sheetMetal.pitchMm': { to: 'sheetMetal.pitchMm' },

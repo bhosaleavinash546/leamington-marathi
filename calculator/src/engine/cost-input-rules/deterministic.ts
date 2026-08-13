@@ -108,7 +108,8 @@ function processOf(
   const sub = Object.values(s).find(v => v && typeof v === 'object');
   const chosen = (sub?.process ?? sub?.subtype ?? sub?.dieType) as string | undefined;
   const cycleHr = Number(
-    (s.machining?.estimatedCycleTimeHr as number | undefined) ?? 0);
+    (s.machining?.estimatedCycleTimeHr as number | undefined)
+    ?? (s.gear?.cycleTimeHr as number | undefined) ?? 0);
   const basis = Object.values(result.provenance)
     .find(p => /\.(process|subtype|dieType)$/.test(p.ruleId))?.basis;
   return [{
@@ -148,13 +149,21 @@ export function buildDeterministicAnalysis(
     partName,
     geometry: geometryOf(geo),
     detectedFeatures: featuresOf(geo),
-    materialAnalysis: {
+    materialAnalysis: (() => {
       // Measured, not inferred: a filename or an engineer's answer is metadata,
-      // a shape is not.
-      fromMetadata: !!ctx.answers['material.family'],
-      primarySuggestion: { materialId: '', name: '', confidencePct: 0, reasoning: '' },
-      alternatives: [],
-    },
+      // a shape is not. But an ANSWERED material is the highest-trust source
+      // this pipeline has — reporting it as 0% confident made the sanity layer
+      // demand a photo for a material the engineer had just confirmed.
+      const answered = ctx.answers['material.family'] ?? ctx.answers['gear.materialClass'];
+      return {
+        fromMetadata: !!answered,
+        primarySuggestion: answered
+          ? { materialId: '', name: String(answered).replace(/_/g, ' '), confidencePct: 100,
+              reasoning: 'confirmed by the engineer — not inferred from the shape' }
+          : { materialId: '', name: '', confidencePct: 0, reasoning: '' },
+        alternatives: [],
+      };
+    })(),
     processRecommendations: processOf(result, ctx.commodity),
     // Hard-assigned from geometry rather than echoed back by a model.
     manufacturabilityScore: geo.manufacturabilityScore ?? 0,

@@ -130,6 +130,24 @@ export interface OCCTGeometry {
   }>;
   /** Sheet-metal forming features — geometry-measured bend count for SM Fab. */
   sheetMetal?: { bendCount: number; totalBendLengthMm: number; thicknessMm: number };
+  /**
+   * Gear metrology, from the B-rep: teeth counted from tip-circle cylinder
+   * patches, module derived as OD/(z+2). Null/absent when the shape is not
+   * gear-like. Helix is deliberately never derived — a STEP file's flank
+   * surfaces cannot be trusted to settle it, so it stays a drawing question.
+   */
+  gear?: {
+    likelyGear: boolean;
+    teeth: number;
+    tipDiameterMm: number;
+    faceWidthMm: number;
+    boreDiameterMm: number;
+    derivedNormalModuleMm: number;
+    moduleBasis: string;
+    teethBasis: string;
+    helixAngleDeg: number | null;
+    internal: boolean;
+  } | null;
   error?: string;
   toolingCostEstimates?: {
     hpdcDieCostGBP: number;
@@ -304,6 +322,19 @@ export interface CADAnalysisResult {
       pitchMm?: number;
       stripWidthMm?: number;
       strokesPerMin?: number;
+    };
+    /** Gear cutting — rule-engine owned; every value carries provenance. */
+    gear?: {
+      normalModuleMm?: number;
+      teeth?: number;
+      helixAngleDeg?: number;
+      faceWidthMm?: number;
+      internal?: boolean;
+      qualityClass?: number;
+      materialClass?: string;
+      caseHardened?: boolean;
+      blankCostPerPart?: number;
+      batchSize?: number;
     };
     injectionMoulding?: {
       cavities: number;

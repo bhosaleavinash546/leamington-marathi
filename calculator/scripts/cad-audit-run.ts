@@ -45,6 +45,12 @@ async function main(): Promise<void> {
 
   const form = new FormData();
   form.set('cadFile', new Blob([readFileSync(file)]), name);
+  // Optional 2D engineering drawing rides along — the gear/drawing audit arm.
+  const drawing = flag('drawing');
+  if (drawing) {
+    form.set('drawingPdf',
+      new Blob([readFileSync(drawing)], { type: 'application/pdf' }), basename(drawing));
+  }
   form.set('annualVolume', volume);
   form.set('mode', mode);
   form.set('noCache', 'true');

@@ -1376,6 +1376,148 @@ def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.
     return out
 
 
+def _gear_metrics(wrapped):
+    """Gear metrology from the B-rep — measured, never guessed.
+
+    A gear's teeth end in TIP faces: cylindrical patches whose radius is the tip
+    circle and whose axis is the gear axis, one (or a fillet-split few) per
+    tooth. Counting distinct angular positions of those patches IS counting the
+    teeth — a measurement, robust to how the CAD was authored. From z and the
+    tip diameter the module follows for a standard-addendum external gear:
+    m = OD / (z + 2). Face width is the tip patches' axial span.
+
+    Deliberately NOT derived here: helix angle (needs flank-surface fitting),
+    quality class, hardness — those come from the drawing or the engineer, and
+    the consuming rules SAY so rather than defaulting.
+
+    Returns None when the shape does not read as a gear (fewer than 8 teeth
+    counted, or no dominant co-axial cylinder cluster).
+    """
+    import math as _m
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopAbs import TopAbs_FACE, TopAbs_Orientation
+    from OCP.TopoDS import TopoDS
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.GeomAbs import GeomAbs_SurfaceType
+
+    cyls = []
+    exp = TopExp_Explorer(wrapped, TopAbs_FACE)
+    while exp.More():
+        face = TopoDS.Face_s(exp.Current())
+        exp.Next()
+        try:
+            ad = BRepAdaptor_Surface(face)
+            if ad.GetType() != GeomAbs_SurfaceType.GeomAbs_Cylinder:
+                continue
+            cyl = ad.Cylinder()
+            ax = cyl.Axis(); d = ax.Direction(); pl = ax.Location()
+            reversed_param = not cyl.Position().Direct()
+            reversed_face = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
+            concave = reversed_face != reversed_param        # hole-like
+            umid = (ad.FirstUParameter() + ad.LastUParameter()) / 2.0
+            vspan = abs(ad.LastVParameter() - ad.FirstVParameter())
+            try:
+                pt = ad.Value(umid, (ad.FirstVParameter() + ad.LastVParameter()) / 2.0)
+                mid = (pt.X(), pt.Y(), pt.Z())
+            except Exception:
+                mid = None
+            cyls.append({
+                "r": cyl.Radius(), "concave": concave, "vspan": vspan, "mid": mid,
+                "dir": (d.X(), d.Y(), d.Z()), "loc": (pl.X(), pl.Y(), pl.Z()),
+                "uarc": abs(ad.LastUParameter() - ad.FirstUParameter()),
+            })
+        except Exception:
+            continue
+    if len(cyls) < 8:
+        return None
+
+    # Dominant axis DIRECTION (gear axis): the direction shared by the most
+    # cylindrical faces (sign-insensitive).
+    def dkey(v):
+        x, y, z = v
+        if (x, y, z) < (-x, -y, -z):
+            x, y, z = -x, -y, -z
+        return (round(x, 2), round(y, 2), round(z, 2))
+    clusters = {}
+    for c in cyls:
+        clusters.setdefault(dkey(c["dir"]), []).append(c)
+    axis_key, axial = max(clusters.items(), key=lambda kv: len(kv[1]))
+    if len(axial) < 8:
+        return None
+    adx, ady, adz = axis_key
+    n = _m.sqrt(adx * adx + ady * ady + adz * adz) or 1.0
+    adx, ady, adz = adx / n, ady / n, adz / n
+    # Axis point: mean of the co-axial faces' axis locations.
+    ax0 = (sum(c["loc"][0] for c in axial) / len(axial),
+           sum(c["loc"][1] for c in axial) / len(axial),
+           sum(c["loc"][2] for c in axial) / len(axial))
+
+    # Tip candidates: CONVEX co-axial cylinders within 1.5% of the max radius.
+    convex = [c for c in axial if not c["concave"]]
+    if not convex:
+        return None
+    tip_r = max(c["r"] for c in convex)
+    tips = [c for c in convex if c["r"] >= tip_r * 0.985 and c["mid"] is not None]
+    if len(tips) < 8:
+        return None
+
+    # Angular position of each tip patch around the axis; cluster to teeth.
+    ref = None
+    angles = []
+    for c in tips:
+        vx = c["mid"][0] - ax0[0]; vy = c["mid"][1] - ax0[1]; vz = c["mid"][2] - ax0[2]
+        dot = vx * adx + vy * ady + vz * adz
+        px, py, pz = vx - dot * adx, vy - dot * ady, vz - dot * adz
+        if ref is None:
+            rl = _m.sqrt(px * px + py * py + pz * pz) or 1.0
+            ref = (px / rl, py / rl, pz / rl)
+            perp = (ady * ref[2] - adz * ref[1],
+                    adz * ref[0] - adx * ref[2],
+                    adx * ref[1] - ady * ref[0])
+        a = _m.atan2(px * perp[0] + py * perp[1] + pz * perp[2],
+                     px * ref[0] + py * ref[1] + pz * ref[2])
+        angles.append(a % (2 * _m.pi))
+    angles.sort()
+    # Merge fillet-split patches: gaps well below the dominant pitch are the
+    # same tooth. The tooth pitch is the LARGE recurring gap.
+    gaps = [angles[i + 1] - angles[i] for i in range(len(angles) - 1)]
+    gaps.append(2 * _m.pi - angles[-1] + angles[0])
+    big = max(gaps)
+    teeth = sum(1 for g in gaps if g > big * 0.5)
+    if teeth < 8 or teeth > 400:
+        return None
+
+    face_width = max(c["vspan"] for c in tips)
+    tip_d = round(tip_r * 2, 3)
+    module = round(tip_d / (teeth + 2), 4)          # standard addendum, external
+
+    # Bore: largest full-arc concave co-axial cylinder clearly inside the tips.
+    bores = [c for c in axial if c["concave"] and c["uarc"] > 5.2 and c["r"] < tip_r * 0.8]
+    bore_d = round(max(b["r"] for b in bores) * 2, 2) if bores else None
+
+    return {
+        "likelyGear": True,
+        "teeth": teeth,
+        "tipDiameterMm": tip_d,
+        "faceWidthMm": round(face_width, 2),
+        "boreDiameterMm": bore_d,
+        "derivedNormalModuleMm": module,
+        "moduleBasis": f"OD {tip_d} mm / (z {teeth} + 2) — standard addendum, external, spur-equivalent; "
+                       "helical parts need the drawing's normal module",
+        "teethBasis": f"counted {len(tips)} tip-circle patch(es) at r≈{round(tip_r, 2)} mm "
+                      f"clustered to {teeth} angular positions",
+        "helixAngleDeg": None,   # not measured — drawing/engineer answers this
+        "internal": False,       # v1: external only; internal detection is roadmap
+    }
+
+
+def _safe_gear_metrics(wrapped):
+    try:
+        return _gear_metrics(wrapped)
+    except Exception:
+        return None
+
+
 def analyze(filepath: str) -> dict:
     try:
         from OCP.BRepGProp import BRepGProp
@@ -1577,6 +1719,9 @@ def analyze(filepath: str) -> dict:
             "featureTable": ft_rows,
             # Sheet-metal forming features (bends) — for the SM Fab press-brake cost.
             "sheetMetal": _detect_bends(wrapped, wall_stats["minMm"] if wall_stats else None),
+            # Gear metrology — teeth counted from tip-circle patches; None when
+            # the shape does not read as a gear.
+            "gear": _safe_gear_metrics(wrapped),
             # ── New precision analysis fields ─────────────────────────────
             "wallThickness": wall_stats,
             "draftAnalysis": draft_info,

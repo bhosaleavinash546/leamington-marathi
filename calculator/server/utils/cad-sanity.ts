@@ -40,6 +40,7 @@ interface AnalysisLike {
   costInputSuggestions?: {
     costRange?: { low?: number; mid?: number; high?: number };
     materialUtilization?: number;
+    gear?: { teeth?: number; normalModuleMm?: number };
   };
 }
 
@@ -55,6 +56,14 @@ export interface CADGeometryContext {
   /** Measured mass of the same solid at each family density (kg) — the Al↔steel gap. */
   aluminiumKg?: number | null;
   steelKg?: number | null;
+  /** Gear metrology off the B-rep: counted teeth + tip circle. Ground truth. */
+  gearTeethMeasured?: number | null;
+  gearTipDiameterMm?: number | null;
+  /** What the MODEL originally stated (drawing read), BEFORE the rules
+   *  overwrote it with the measured values — the only place a drawing-vs-
+   *  geometry contradiction is still visible on the rules-corrected path. */
+  gearTeethStated?: number | null;
+  gearModuleStatedMm?: number | null;
 }
 
 function looksAluminiumMaterial(name: string): boolean {
@@ -141,9 +150,13 @@ export function runCADSanityChecks(
 
   // 4. Cycle-time plausibility — outside [0.0005h (1.8s), 24h] per operation
   //    is physically implausible for a single part.
-  for (const p of analysis.processRecommendations ?? []) {
+  for (const [pi, p] of (analysis.processRecommendations ?? []).entries()) {
     const ct = p.estimatedCycleTimeHr;
     if (typeof ct !== 'number') continue;
+    // Secondary recommendations legitimately state 0 for batch operations
+    // (a carburise furnace has no per-part hours) — only the PRIMARY process
+    // claiming a zero cycle is the bug this check exists for.
+    if (ct === 0 && pi > 0) continue;
     if (ct < 0.0005 || ct > 24) {
       w.push({
         code: 'cycle_time_implausible',
@@ -251,6 +264,46 @@ export function runCADSanityChecks(
         message: `Costed as aluminium (~${alKg.toFixed(2)} kg). Geometry cannot distinguish metals — if this part is steel (a forged/cast axle, knuckle, spindle, hub, shaft or gear typically is), it weighs ~${stKg.toFixed(2)} kg (${(stKg / alKg).toFixed(1)}x) and the should-cost is materially higher. Confirm the material before quoting.`,
         severity: 'warn',
       });
+    }
+
+    // 11. Gear drawing-vs-geometry coherence. The tooth count is COUNTED off
+    //     the B-rep tip-circle patches — a drawing or model figure that
+    //     disagrees means the wrong drawing, the wrong revision, or a misread.
+    //     That contradiction corrupts every gear number downstream, so it blocks.
+    const gearCis = analysis.costInputSuggestions?.gear;
+    const zMeasured = context.gearTeethMeasured ?? null;
+    // Prefer the model's ORIGINAL statement: after `applyRuleDecisions` the
+    // suggestions carry the measured values by construction, and comparing
+    // those to themselves can never fire.
+    const zStated = context.gearTeethStated ?? gearCis?.teeth ?? null;
+    if (zMeasured && zStated && zStated !== zMeasured) {
+      w.push({
+        code: 'gear_teeth_mismatch',
+        blocking: true,
+        message: `Drawing/model says ${zStated} teeth but the B-rep has ${zMeasured} `
+          + 'counted tip-circle teeth. Wrong drawing revision or misread — the counted '
+          + 'geometry wins, and the mismatch must be resolved before quoting.',
+        severity: 'error',
+      });
+    }
+    //     Module × (z+2) must reconstruct the measured tip circle (standard
+    //     addendum). >3% off means a non-standard addendum, profile shift, or a
+    //     misread module — the cycle and tooling maths would quietly scale wrong.
+    const tipMeasured = context.gearTipDiameterMm ?? null;
+    const mStated = context.gearModuleStatedMm ?? gearCis?.normalModuleMm ?? null;
+    if (zMeasured && tipMeasured && typeof mStated === 'number' && mStated > 0) {
+      const recon = mStated * (zMeasured + 2);
+      const drift = Math.abs(recon - tipMeasured) / tipMeasured;
+      if (drift > 0.03) {
+        w.push({
+          code: 'gear_module_od_mismatch',
+          message: `Stated module ${mStated} mm × (z ${zMeasured} + 2) = `
+            + `${recon.toFixed(1)} mm tip Ø, but the measured tip circle is ${tipMeasured.toFixed(1)} mm `
+            + `(${(drift * 100).toFixed(1)}% off). Non-standard addendum / profile shift / helical `
+            + 'normal-vs-transverse module — confirm the drawing figure before quoting.',
+          severity: drift > 0.08 ? 'error' : 'warn',
+        });
+      }
     }
   }
 
