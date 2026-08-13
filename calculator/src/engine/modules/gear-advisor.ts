@@ -37,6 +37,7 @@ export type GearProcess =
   | 'grinding'
   | 'honing'
   | 'case_hardening'
+  | 'quench_temper'
   | 'deburr'
   | 'inspection';
 
@@ -135,6 +136,14 @@ export const GEAR_PROCESS_REFERENCE: Record<GearProcess, GearProcessReference> =
     source: 'Standard treatment for case-hardening gear steels (20MnCr5, 8620). Distorts the '
       + 'cut geometry, which is what makes a hard finishing operation necessary.',
   },
+  quench_temper: {
+    process: 'quench_temper', label: 'Harden and temper (through-hardening)',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [0.1, 50],
+    source: 'Standard treatment for through-hardening gear steels (42CrMo4/EN19): austenitise, '
+      + 'oil quench, temper to ~30–45 HRC through the section. No carbon case, but it still '
+      + 'distorts the cut geometry — the same reason a tight class must grind afterwards.',
+  },
   deburr: {
     process: 'deburr', label: 'Chamfer and deburr',
     bestQualityClass: 99, internalCapable: true, externalCapable: true,
@@ -160,6 +169,16 @@ export interface GearRouteInputs {
   qualityClass: GearQualityClass;
   /** Case-hardening steels must be hardened, and hardening forces hard finishing. */
   caseHardened: boolean;
+  /**
+   * Through-hardening steel (42CrMo4/EN19), hardened AFTER cutting.
+   *
+   * A quench-and-temper is a real furnace cost and a real distortion source,
+   * and the route used to ignore it entirely: a through-hardened gear carried
+   * £0 of heat treat, silently (caught in the plant head's heat-treat audit).
+   * Mutually exclusive with `caseHardened` — the caller derives both from the
+   * material class.
+   */
+  throughHardened?: boolean;
   /** Noise-critical — buys a honing pass that geometry alone would not. */
   nvhCritical?: boolean;
   annualVolume: number;
@@ -318,6 +337,29 @@ export function adviseGearRoute(i: GearRouteInputs): GearRouteRecommendation {
         + `${GEAR_PROCESS_REFERENCE[cutting].label} geometry (class ${asCut} + `
         + `${CASE_HARDENING_DISTORTION_CLASSES} distortion allowance), so no hard finishing was `
         + `added. Confirm with the plant whether this part runs as-hardened.`);
+    }
+  } else if (i.throughHardened) {
+    // Quench-and-temper after cutting: same furnace-distorts-the-flanks logic
+    // as carburising, and the same rule — a class the distorted geometry cannot
+    // deliver must buy grinding AFTER the furnace. (At ~30–45 HRC through the
+    // section, soft finishing after Q&T is not an option.)
+    const deliveredAsHardened = asCut + CASE_HARDENING_DISTORTION_CLASSES;
+    steps.push({
+      process: 'quench_temper', label: GEAR_PROCESS_REFERENCE.quench_temper.label,
+      reason: 'Through-hardening steel — harden and temper after cutting for core strength.',
+    });
+    if (i.qualityClass < deliveredAsHardened) {
+      steps.push({
+        process: 'grinding', label: GEAR_PROCESS_REFERENCE.grinding.label,
+        reason: `${GEAR_PROCESS_REFERENCE[cutting].label} holds class ${asCut} as-cut and `
+          + `quench-and-temper distorts at least ${CASE_HARDENING_DISTORTION_CLASSES} class — `
+          + `ISO class ${i.qualityClass} requires grinding after the furnace.`,
+      });
+    } else {
+      warnings.push(
+        `Class ${i.qualityClass} survives quench-and-temper distortion on the as-cut `
+        + `${GEAR_PROCESS_REFERENCE[cutting].label} geometry, so no hard finishing was added. `
+        + 'Confirm with the plant whether this part runs as-hardened.');
     }
   } else if (needsFinishing) {
     // Not hardened, so a soft finishing pass is enough and far cheaper.

@@ -156,6 +156,8 @@ export interface GearNREParams {
 export interface GearAncillaryParams {
   /** Carburise + quench + temper, £/kg of gear. */
   caseHardenCostPerKgGBP: GearParam;
+  /** Harden + temper for through-hardening steels, bought by weight. */
+  quenchTemperCostPerKgGBP: GearParam;
   /** Chamfer and deburr, seconds per part. */
   deburrSecPerPart: GearParam;
   /** Inspection on a gear checker, seconds per part, amortised over the sample rate. */
@@ -252,6 +254,7 @@ export const DEFAULT_GEAR_SHOP_DATA: GearShopData = {
   },
   ancillary: {
     caseHardenCostPerKgGBP: p(1.60, 'carburise + quench + temper, batch furnace'),
+    quenchTemperCostPerKgGBP: p(0.85, 'austenitise + oil quench + temper, batch furnace — no carburise cycle, so roughly half the carburise rate'),
     deburrSecPerPart: p(25), inspectionSecPerPart: p(20), loadUnloadSec: p(18),
   },
   nre: {

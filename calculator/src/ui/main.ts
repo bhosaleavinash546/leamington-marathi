@@ -12998,13 +12998,17 @@ function collectGearInput(): UniversalStackInput {
     + `${(a.totalCycleSec / 60).toFixed(2)} min/part; perishable tooling £${a.toolingCostPerPart.toFixed(2)}/part; `
     + `NRE £${a.nreCostGBP.toFixed(0)} amortised over ${inputs.amortizationVolume.toLocaleString()} parts.`);
   // Say what the material bucket is made of — a plant head reading "Raw
-  // Material 70%" deserves the itemisation, not a puzzle.
-  if (a.heatTreatCostPerPart > 0) {
+  // Material 47%" deserves the itemisation, not a puzzle. The furnace pass is
+  // named by the route that was actually chosen, and priced by weight.
+  const furnace = a.operations.find(
+    o => o.process === 'case_hardening' || o.process === 'quench_temper');
+  if (a.heatTreatCostPerPart > 0 && furnace) {
     _smExtraWarnings.push(
-      `Raw Material bucket = blank material £${inputs.blankCostPerPart.toFixed(2)} + subcontract `
-      + `${a.route.steps.some(s => s.process === 'case_hardening') ? 'carburise/quench' : 'heat treat'} `
-      + `£${a.heatTreatCostPerPart.toFixed(2)}/part (bought by weight, purchased-service convention). `
-      + 'Blank turning and all tooth-cutting/finishing are separate operations in the process bucket.');
+      `Raw Material bucket = blank material £${inputs.blankCostPerPart.toFixed(2)} + `
+      + `${furnace.label.toLowerCase()} £${a.heatTreatCostPerPart.toFixed(2)}/part `
+      + `(${furnace.basis}) — a purchased service bought by weight, so it carries no machine `
+      + 'hours. Blank turning and all tooth cutting/finishing are separate operations in the '
+      + 'process bucket.');
   }
   const drivers = computeGearDrivers(inputs);
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
@@ -14156,6 +14160,15 @@ function compute(): void {
           curvePct: result.learningCurveApplied.curvePct,
         },
       };
+    }
+
+    // Commodity derivation notes (the gear route, what the material bucket is
+    // made of, representative-data caveats) were reaching the on-screen warning
+    // box ONLY — the exported PDF prints `result.warnings`, so a plant head
+    // reading the report could not see how a bucket was composed. Carry them
+    // across so the report says the same thing the screen does.
+    if (_smExtraWarnings.length) {
+      result.warnings = [...(result.warnings ?? []), ..._smExtraWarnings];
     }
 
     lastResult = result;

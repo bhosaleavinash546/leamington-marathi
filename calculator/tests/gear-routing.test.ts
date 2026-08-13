@@ -14,6 +14,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   analyseGear, computeGearDrivers, toolCostPerPart, gearOuterDiameterMm,
+  validateGearInputs, CANNOT_BE_CARBURISED,
   type GearInputs,
 } from '../src/engine/modules/gear.js';
 import { adviseGearRoute, GEAR_PROCESS_REFERENCE } from '../src/engine/modules/gear-advisor.js';
@@ -163,14 +164,16 @@ describe('the model refuses rather than guesses', () => {
   });
 
   it('blocks a gear outside the shop data module bands rather than extrapolating', () => {
-    // Bronze has no cutting band at all in the representative data.
-    const a = analyseGear(transmissionGear({ materialClass: 'bronze' }));
+    // Bronze has no cutting band at all in the representative data. (caseHardened
+    // must be off: a bronze gear cannot be carburised, and that guard would
+    // legitimately refuse it one step earlier — a different, also-correct stop.)
+    const a = analyseGear(transmissionGear({ materialClass: 'bronze', caseHardened: false }));
     expect(a.blocked).toBeTruthy();
     expect(a.blocked).toMatch(/Extrapolating a feed/);
   });
 
   it('computeGearDrivers throws on a blocked gear rather than returning a partial cost', () => {
-    expect(() => computeGearDrivers(transmissionGear({ materialClass: 'bronze' })))
+    expect(() => computeGearDrivers(transmissionGear({ materialClass: 'bronze', caseHardened: false })))
       .toThrow(/Gear cannot be costed/);
   });
 
@@ -189,6 +192,91 @@ describe('the model refuses rather than guesses', () => {
     const pick = pickGearMachineId('hobbing',
       { normalModuleMm: 10, outerDiameterMm: 150, faceWidthMm: 40 });
     expect(pick.machineId).toBe('gear-hob-large');
+  });
+});
+
+/**
+ * The furnace pass: which one, and what it costs.
+ *
+ * A plant head asked how the tool decides the heat-treat process and how it
+ * prices it. Tracing it found a real hole: only CARBURISING existed, so a
+ * through-hardened 42CrMo4 gear — a completely normal industrial gear — carried
+ * £0 of heat treat and no distortion allowance, silently. These pin the fix.
+ */
+describe('the heat-treat route follows the material, and is priced by weight', () => {
+  const kg = 0.65;   // transmissionGear netWeightKg
+
+  it('case-hardening steel carburises, priced at the shop rate x net weight', () => {
+    const a = analyseGear(transmissionGear({ qualityClass: 6, caseHardened: true }));
+    const ht = a.operations.find(o => o.process === 'case_hardening');
+    expect(ht).toBeTruthy();
+    const rate = activeGearShopData().ancillary.caseHardenCostPerKgGBP.value;
+    expect(a.heatTreatCostPerPart).toBeCloseTo(rate * kg, 9);
+    expect(ht!.basis).toMatch(/furnace, by weight/);
+    // It is a purchased service, not a machine: no cycle time, no machine row.
+    expect(ht!.cycleSec).toBe(0);
+    expect(ht!.machineId).toBe('furnace-subcontract');
+  });
+
+  it('through-hardening steel gets quench-and-temper, NOT £0 and NOT carburising', () => {
+    const a = analyseGear(transmissionGear({
+      materialClass: 'through_hardening_steel', caseHardened: false, qualityClass: 8,
+    }));
+    expect(a.route.steps.map(s => s.process)).toContain('quench_temper');
+    expect(a.route.steps.map(s => s.process)).not.toContain('case_hardening');
+    const rate = activeGearShopData().ancillary.quenchTemperCostPerKgGBP.value;
+    expect(a.heatTreatCostPerPart).toBeCloseTo(rate * kg, 9);
+    // The hole this closes: it used to be exactly zero.
+    expect(a.heatTreatCostPerPart).toBeGreaterThan(0);
+    // And cheaper than carburising — no long carbon-diffusion cycle.
+    const carb = analyseGear(transmissionGear({ qualityClass: 8, caseHardened: true }));
+    expect(a.heatTreatCostPerPart).toBeLessThan(carb.heatTreatCostPerPart);
+  });
+
+  it('quench-and-temper distortion forces grinding on a tight class, like carburising', () => {
+    const tight = analyseGear(transmissionGear({
+      materialClass: 'through_hardening_steel', caseHardened: false, qualityClass: 6,
+    }));
+    const loose = analyseGear(transmissionGear({
+      materialClass: 'through_hardening_steel', caseHardened: false, qualityClass: 8,
+    }));
+    expect(tight.route.steps.map(s => s.process)).toContain('grinding');
+    expect(loose.route.steps.map(s => s.process)).not.toContain('grinding');
+    // And it comes AFTER the furnace — grinding a gear before hardening it
+    // throws the accuracy away in the quench tank.
+    const order = tight.route.steps.map(s => s.process);
+    expect(order.indexOf('grinding')).toBeGreaterThan(order.indexOf('quench_temper'));
+  });
+
+  it('cast iron / ADI carries no furnace line, and SAYS why', () => {
+    const a = analyseGear(transmissionGear({
+      materialClass: 'cast_iron', caseHardened: false, qualityClass: 9,
+    }));
+    expect(a.heatTreatCostPerPart).toBe(0);
+    // Zero with no explanation is indistinguishable from a missing cost.
+    expect(a.warnings.join(' ')).toMatch(/austempering is included in the .* material price/i);
+  });
+
+  it('a carburising callout on a material that cannot be carburised is refused', () => {
+    for (const mc of Object.keys(CANNOT_BE_CARBURISED)) {
+      const errs = validateGearInputs(transmissionGear({
+        materialClass: mc as never, caseHardened: true,
+      }));
+      expect(errs.join(' '), `${mc} was allowed to carburise`).toMatch(/cannot be carburised/);
+    }
+    // The legitimate case still passes.
+    expect(validateGearInputs(transmissionGear({ caseHardened: true }))).toEqual([]);
+  });
+
+  it('every furnace pass is a purchased consumable in material, never a machine row', () => {
+    for (const over of [
+      { caseHardened: true },
+      { materialClass: 'through_hardening_steel' as const, caseHardened: false },
+    ]) {
+      const d = computeGearDrivers(transmissionGear({ qualityClass: 8, ...over }));
+      expect(d.rawMaterial.consumablesCostPerPart).toBeGreaterThan(0);
+      expect(d.operations.some(o => /carburise|harden|temper/i.test(o.operationName))).toBe(false);
+    }
   });
 });
 

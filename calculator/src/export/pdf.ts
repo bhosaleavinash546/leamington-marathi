@@ -198,6 +198,33 @@ function secBar(doc: jsPDF, y: number, title: string, right?: string): number {
   return y + 13;
 }
 
+/**
+ * Make a string safe for the built-in Helvetica font.
+ *
+ * jsPDF's standard fonts are WinAnsi-encoded. A character outside that set —
+ * an arrow, a tick, a maths glyph, an emoji — does not merely drop: jsPDF
+ * emits it as multi-byte garbage and the WHOLE line renders letter-spaced and
+ * unreadable ("G e a r   r o u t e : ... !'"). A gear route note printed
+ * exactly like that on a live report, so this is a report-wide guard, not a
+ * gear one. Characters that ARE in WinAnsi (x, em dash, degree, pound, ±)
+ * pass through untouched.
+ */
+export function winAnsiSafe(s: string): string {
+  return s
+    .replace(/[\u2192\u2794\u27A1]/g, '->')      // arrows
+    .replace(/[\u2190]/g, '<-')
+    .replace(/[\u2713\u2714]/g, 'OK')             // ticks
+    .replace(/[\u2717\u2718\u2716]/g, 'x')       // crosses
+    .replace(/[\u2265]/g, '>=').replace(/[\u2264]/g, '<=')
+    .replace(/[\u2248]/g, '~').replace(/[\u2260]/g, '!=')
+    .replace(/[\u25CF\u25AA]/g, '-')              // block bullets
+    // A WHITELIST, not a Latin-1 cut-off. WinAnsi's upper range carries the
+    // typographic characters this codebase's prose is full of - em/en dash,
+    // curly quotes, bullet, ellipsis, euro, trademark. Cutting at Latin-1
+    // would silently mangle every existing report to fix one arrow.
+    .replace(/[^\u0020-\u00FF\u2013\u2014\u2018\u2019\u201A\u201C\u201D\u201E\u2020\u2021\u2022\u2026\u2030\u2039\u203A\u20AC\u2122\u0152\u0153\u0160\u0161\u0178\u017D\u017E\u0192\u02C6\u02DC]/g, '');
+}
+
 /** Draw a compact titled call-out box (tint fill + accent left rule + wrapped
  *  body lines). Returns the new y. Used for provenance / assumptions / exclusions
  *  / DFM advisories so they read as first-class report content, not footnotes. */
@@ -208,7 +235,7 @@ function calloutBox(
   doc.setFontSize(7.5); doc.setFont('helvetica', 'normal');
   const wrapped: string[] = [];
   for (const ln of lines) {
-    const parts = doc.splitTextToSize(ln, CW - 12) as string[];
+    const parts = doc.splitTextToSize(winAnsiSafe(ln), CW - 12) as string[];
     for (const p of parts) wrapped.push(p);
   }
   const boxH = 8 + wrapped.length * 3.9 + 2;
@@ -218,7 +245,7 @@ function calloutBox(
   doc.setFillColor(...accent);
   doc.rect(MG, y, 1.6, boxH, 'F');
   doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...accent);
-  doc.text(title, MG + 5, y + 5.5);
+  doc.text(winAnsiSafe(title), MG + 5, y + 5.5);
   doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
   let ty = y + 10.5;
   for (const w of wrapped) { doc.text(w, MG + 5, ty); ty += 3.9; }

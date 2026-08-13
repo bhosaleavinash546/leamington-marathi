@@ -223,6 +223,7 @@ export function pickGearMachineId(
     // name against zero cycle time on the operation sheet, which reads as a
     // costing error rather than as "this is not a machine operation".
     case 'case_hardening': return { machineId: HEAT_TREAT_NOT_A_MACHINE, envelope: null };
+    case 'quench_temper':  return { machineId: HEAT_TREAT_NOT_A_MACHINE, envelope: null };
     default:
       return {
         machineId: GEAR_FIXED_MACHINES.mill, envelope: null,

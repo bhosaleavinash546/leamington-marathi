@@ -157,6 +157,24 @@ export const ISO_1328_CLASS_MAX = 11;
 export const IMPLAUSIBLE_REJECT_RATE = 0.30;
 
 /**
+ * Material classes for which a carburising callout is a contradiction.
+ *
+ * Carburising diffuses carbon into a low-carbon steel surface. A material with
+ * no iron matrix, no carbon appetite, or one that arrives already hardened
+ * cannot take that treatment — and accepting the flag silently added £1.60/kg
+ * of furnace cost AND a post-furnace grinding operation to a part that gets
+ * neither. The value is the reason, printed to the engineer.
+ */
+export const CANNOT_BE_CARBURISED: Partial<Record<GearMaterialClass, string>> = {
+  plastic: 'a polymer has no metallurgy to harden.',
+  bronze: 'a copper alloy has no iron matrix to diffuse carbon into.',
+  cast_iron: 'cast iron is already carbon-saturated — the hardening routes are flame, '
+    + 'induction or austempering, and austempering is priced inside the ADI material.',
+  alloy_steel_prehardened: 'a pre-hardened bar arrives at hardness; the whole point of the '
+    + 'grade is that no post-cut furnace pass is needed.',
+};
+
+/**
  * Reject inputs that cannot describe a real gear.
  *
  * Every one of these was reachable and produced a plausible-looking cost before
@@ -213,6 +231,13 @@ export function validateGearInputs(i: GearInputs): string[] {
       && (!Number.isFinite(i.blankPrepCycleSec) || i.blankPrepCycleSec < 0)) {
     errs.push(`Blank turning cycle must be a finite non-negative number of seconds — got `
       + `${i.blankPrepCycleSec}.`);
+  }
+  // A carburising callout on a material that cannot be carburised is a
+  // contradiction, not a preference — and it silently added £1.60/kg of
+  // furnace cost plus a grinding operation to a part that gets neither.
+  if (i.caseHardened && CANNOT_BE_CARBURISED[i.materialClass]) {
+    errs.push(`${i.materialClass.replace(/_/g, ' ')} cannot be carburised — `
+      + `${CANNOT_BE_CARBURISED[i.materialClass]} Clear "case hardened", or correct the material class.`);
   }
   return errs;
 }
@@ -347,11 +372,24 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
     internal: inputs.internal,
     qualityClass: inputs.qualityClass,
     caseHardened: inputs.caseHardened,
+    // The material class decides the furnace route: a through-hardening steel
+    // that is not being carburised still gets quenched and tempered — that
+    // furnace pass used to carry £0, silently.
+    throughHardened: inputs.materialClass === 'through_hardening_steel' && !inputs.caseHardened,
     nvhCritical: inputs.nvhCritical,
     annualVolume: inputs.annualVolume,
     forcedCuttingProcess: inputs.forcedCuttingProcess,
   });
   warnings.push(...route.warnings);
+  // ADI's austempering is bought inside the material price (see the rate
+  // library's mat-adi source note) — say so rather than leaving a cast-iron
+  // gear's heat-treat line at zero unexplained.
+  if (inputs.materialClass === 'cast_iron') {
+    warnings.push(
+      'Cast iron / ADI: austempering is included in the EN-GJS-800 ADI material price, so no '
+      + 'separate heat-treat line appears. A plain grey/ductile iron blank with a hardening '
+      + 'callout needs that cost added to the blank quote.');
+  }
 
   const pitchDia = pitchDiameterMm(inputs.teeth, inputs.normalModuleMm, inputs.helixAngleDeg);
   const outerDia = gearOuterDiameterMm(inputs);
@@ -497,6 +535,12 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         heatTreat += A.caseHardenCostPerKgGBP.value * inputs.netWeightKg;
         flatSec = 0;
         break;
+      case 'quench_temper':
+        // Same purchased-by-weight convention; cheaper than carburising because
+        // there is no long carbon-diffusion cycle at temperature.
+        heatTreat += A.quenchTemperCostPerKgGBP.value * inputs.netWeightKg;
+        flatSec = 0;
+        break;
       case 'broaching':
         // The broach is the reason broaching needs volume. Charging none made the
         // advisor's own justification ("the volume carries the tool cost") empty.
@@ -535,6 +579,9 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         : step.process === 'case_hardening'
           ? `${inputs.netWeightKg} kg × £${A.caseHardenCostPerKgGBP.value}/kg = `
             + `£${(A.caseHardenCostPerKgGBP.value * inputs.netWeightKg).toFixed(2)} (furnace, by weight)`
+        : step.process === 'quench_temper'
+          ? `${inputs.netWeightKg} kg × £${A.quenchTemperCostPerKgGBP.value}/kg = `
+            + `£${(A.quenchTemperCostPerKgGBP.value * inputs.netWeightKg).toFixed(2)} (furnace, by weight)`
           : `${cycleSec} s flat rate from the shop data`,
     });
 
