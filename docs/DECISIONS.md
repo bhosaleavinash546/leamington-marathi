@@ -2597,20 +2597,48 @@ the wrong base.
 **Decision**: BrainSpark gets its own repository, whose default branch *is* the
 product. A fresh clone is then correct by construction.
 
-**Why not the cheaper fixes** — each was considered and each fails:
+**Why not the cheaper fixes** — anything living *inside* the repo fails for the
+same structural reason:
 
   * **A tracked `SessionStart` hook** that fetches and fast-forwards the branch.
     The hook would live on the BrainSpark branch, and on a mis-clone the
     BrainSpark branch is precisely what is *not* in the checkout, so the hook is
-    not there to fire. The only branch it could fire from is `main` — the live
-    website's — which means putting BrainSpark rescue logic into the website
-    repo and running it for every website session. (`.claude/` is gitignored
-    here too, so it would also need an exception.)
+    not there to fire. The docs confirm the mechanism — a repo's
+    `.claude/settings.json` hooks reach a cloud session only as "part of the
+    clone". The only branch it could fire from is `main` — the live website's —
+    which means putting BrainSpark rescue logic into the website repo and
+    running it for every website session. (`.claude/` is gitignored here too, so
+    it would also need an exception.)
   * **Documenting the recipe in `CLAUDE.md`** fails identically: on a mis-clone
     `CLAUDE.md` is not in the checkout either.
   * **Changing the repo's default branch** to the BrainSpark branch would fix
     the clone and break the website's Pages publishing source, re-basing every
     website PR. Rejected.
+
+**A partial mitigation that does live outside the repo.** The first draft of
+this entry said the cheaper fixes "cannot work", which was too strong — it only
+surveyed things inside the repo. A cloud environment's **setup script** is
+configured at `claude.ai/code`, not in the repository, runs as root after the
+clone and before Claude Code launches, and therefore survives a mis-clone. A
+script guarded on the remote URL can correct the checkout:
+
+```bash
+#!/bin/bash
+BR=claude/auto-cost-reduction-tool-mzol0x
+cd /home/user/leamington-marathi 2>/dev/null || exit 0
+git remote get-url origin 2>/dev/null | grep -q leamington-marathi || exit 0
+git fetch --quiet origin "$BR" || exit 0
+[ -z "$(git status --porcelain)" ] && git checkout -qB "$BR" "origin/$BR" || true
+exit 0                      # a non-zero exit fails the whole session
+```
+
+It is a mitigation, not the fix, for three documented reasons. The setup script
+is **skipped whenever a cached environment exists** — and the cache is exactly
+what a freshly provisioned VM starts from, so it will not fire on most of the
+sessions that need it. Environments are **not repo-scoped**, so the guard on the
+remote URL is load-bearing: without it the script runs for website sessions too.
+And it encodes one branch name in a place no one reviewing this repo will ever
+see. Worth setting today; not worth mistaking for the repository split.
 
 **Status: blocked, not done.** This session's GitHub access is bound to
 `leamington-marathi` alone — `create_repository` returns 403 "Resource not

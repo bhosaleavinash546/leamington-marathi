@@ -37,9 +37,9 @@ git reset --hard origin/claude/auto-cost-reduction-tool-mzol0x
 ```
 
 **The real fix is a repository of its own**, which makes a fresh clone correct by construction and
-needs no check and no rescue. See DECISIONS 48 for why an in-repo `SessionStart` hook cannot solve
-this, and for the migration commands — they are ready to run by anyone whose GitHub access is not
-bound to this single repo.
+needs no check and no rescue. See DECISIONS 48 for why nothing *inside* this repo can solve it, for
+the cloud-environment setup script that partially mitigates it from outside, and for the migration
+commands — ready to run by anyone whose GitHub access is not bound to this single repo.
 
 ## Handled
 
