@@ -122,7 +122,13 @@ export function runSensitivity(
     const op = input.operations[i];
 
     // Machine rate
-    const machine = library.machines.find(m => m.id === op.machineId);
+    // A bench operation buys no machine time. Perturbing the rate moves the
+    // part only through the OTHER operation that shares the machine, so the row
+    // duplicated the paint line's own lever under the masking operation's name
+    // — an identical ±2.4% listed twice, inviting a buyer to add them up.
+    const machine = op.benchOperation
+      ? undefined
+      : library.machines.find(m => m.id === op.machineId);
     if (machine) {
       try {
         const modLib = (factor: number): RateLibrary => ({

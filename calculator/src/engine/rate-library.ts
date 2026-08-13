@@ -1029,7 +1029,25 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     // ── Painting ──────────────────────────────────────────────────────────
     makeMachine('paint-line-std', 'Standard Paint Line (E-coat + Topcoat)',
       { annualDepreciation: 120000, maintenance: 50000, energy: 80000, floorSpace: 40000, indirectSupport: 30000, financeCost: 15000, annualAvailableHours: 4000, machineUtilization: 0.82 },
-      'UK', 'UK OEM paint line benchmark, Jun 2026'),
+      'UK', 'UK OEM paint line benchmark, Jun 2026. The £80k energy line is the whole line — '
+      + 'gas-fired cure and dry-off ovens plus heated tanks, roughly 580 kW over 3,280 productive '
+      + 'hours. Surface-treatment stage energy is therefore ALREADY here and must not be added '
+      + 'again on top (see surface-treatment-rate.ts).'),
+    // ── Plating and anodising ─────────────────────────────────────────────
+    // Added because a zinc-plate route was being costed on the paint line above,
+    // whose build-up is gas ovens, spray booths and an RTO. A plating line has
+    // none of those: it is rectifiers, tanks and an effluent plant, at roughly
+    // half the hourly rate. Costing one on the other over-stated plated parts.
+    makeMachine('plating-line-barrel', 'Barrel Plating Line (zinc, high volume)',
+      { annualDepreciation: 45000, maintenance: 22000, energy: 35000, floorSpace: 18000, indirectSupport: 20000, financeCost: 8000, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'REPRESENTATIVE — UK barrel zinc line class: tanks, rectifiers, barrels, effluent '
+      + 'plant and discharge consent. Rectifier-dominated electrical load, no ovens. Target '
+      + '~£46/hr. Replace with plant data.'),
+    makeMachine('plating-line-rack', 'Rack Plating / Anodising Line',
+      { annualDepreciation: 70000, maintenance: 30000, energy: 45000, floorSpace: 25000, indirectSupport: 28000, financeCost: 12000, annualAvailableHours: 4000, machineUtilization: 0.78 },
+      'UK', 'REPRESENTATIVE — UK rack plating and sulphuric anodising class. Higher capital and '
+      + 'lower throughput than barrel: parts are jigged individually. Target ~£67/hr. Replace '
+      + 'with plant data.'),
     // ── BIW / Assembly ────────────────────────────────────────────────────
     makeMachine('robot-weld-station', 'Robot Welding Station',
       { annualDepreciation: 35000, maintenance: 14000, energy: 6000, floorSpace: 8000, indirectSupport: 7000, financeCost: 4375, annualAvailableHours: 4000, machineUtilization: 0.82 },

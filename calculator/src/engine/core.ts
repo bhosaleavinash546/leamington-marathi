@@ -50,7 +50,16 @@ export function validateStackInput(
     const p = `operations[${i}] (${op.operationName})`;
 
     // Conditions written positively so NaN and ±Infinity are rejected too
-    if (!(Number.isFinite(op.cycleTimeHr) && op.cycleTimeHr > 0)) errors.push({ field: `${p}.cycleTimeHr`, message: 'Must be a positive finite number' });
+    // A bench operation legitimately has no machine time — it is an operator at
+    // a bench, not a machine running. Every other operation must have positive
+    // cycle time: zero there means the cycle was never set, which is a real bug
+    // this check exists to catch.
+    if (op.benchOperation) {
+      if (!(Number.isFinite(op.cycleTimeHr) && op.cycleTimeHr >= 0))
+        errors.push({ field: `${p}.cycleTimeHr`, message: 'Must be a finite non-negative number' });
+    } else if (!(Number.isFinite(op.cycleTimeHr) && op.cycleTimeHr > 0)) {
+      errors.push({ field: `${p}.cycleTimeHr`, message: 'Must be a positive finite number' });
+    }
     if (!(op.partsPerCycle >= 1)) errors.push({ field: `${p}.partsPerCycle`, message: 'Must be ≥ 1' });
     if (!(op.oee > 0 && op.oee <= 1)) errors.push({ field: `${p}.oee`, message: 'Must be in (0, 1]' });
     if (!(Number.isFinite(op.manning) && op.manning > 0)) errors.push({ field: `${p}.manning`, message: 'Must be a positive finite number' });
@@ -181,14 +190,21 @@ export function computeUniversalStack(
       labourEfficiency: op.labourEfficiency,
     });
 
-    traceability.push({
-      field: `${op.operationName}.machineRatePerHr`,
-      value: machine.computedRatePerHr,
-      unit: '£/hr',
-      rateSource: machine.sourceNote,
-      rateId: machine.id,
-      confidence: machine.confidence,
-    });
+    // A bench operation buys no machine time, so the machine rate is not one of
+    // its drivers. Tracing it anyway put a "Masking: Machine Rate £102/hr" row
+    // in the tornado worth £0.25 — the paint line's own lever, listed a second
+    // time against an operation that cannot be moved by it. In a negotiation
+    // document a phantom lever is worse than a missing one.
+    if (!op.benchOperation) {
+      traceability.push({
+        field: `${op.operationName}.machineRatePerHr`,
+        value: machine.computedRatePerHr,
+        unit: '£/hr',
+        rateSource: machine.sourceNote,
+        rateId: machine.id,
+        confidence: machine.confidence,
+      });
+    }
     traceability.push({
       field: `${op.operationName}.labourRatePerHr`,
       value: labour.fullyLoadedRatePerHr,

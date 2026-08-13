@@ -25,7 +25,7 @@ import {
   type FurnaceType, type ShapeComplexity, type DieSteel, type ForgingAlloyFamily,
   type ForgingProcess, type ComplexityLevel, type ToleranceClass,
 } from '../engine/modules/forging-advisor.js';
-import { computePaintingDrivers } from '../engine/modules/painting.js';
+import { computePaintingDrivers, analysePainting } from '../engine/modules/painting.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
 import { computePCBFabDrivers } from '../engine/modules/pcb-fab.js';
 import type { PCBTechnology, PCBQualityGrade } from '../engine/modules/pcb-fab.js';
@@ -5116,8 +5116,29 @@ function renderPaintingForm(): string {
       <div class="field-group"><label>Labour</label><select id="paint-lab" class="labour-select"></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Line Rate (parts/hr)</label><input type="number" id="paint-line-rate" step="1" min="1" value="60"/></div>
+      <div class="field-group"><label>Parts per Rack <span title="THE lever on a surface-treatment line. Every time-based cost is divided by it — a line that racks 12 parts a hook instead of 6 halves them. Measured on a real part, line loading moves the cost more than any other input (55%). Set 0 to fall back to the old single parts-per-hour figure.">ℹ</span></label><input type="number" id="paint-parts-per-rack" step="1" min="0" value="6"/></div>
+      <div class="field-group"><label>Racks per Hour</label><input type="number" id="paint-racks-per-hr" step="1" min="0" value="20"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Line Rate (parts/hr) <span title="Legacy single figure. Used ONLY when Parts per Rack is 0 — it bundles rack density, conveyor speed and part envelope into one number, which is what hid the biggest lever in this commodity.">ℹ</span></label><input type="number" id="paint-line-rate" step="1" min="1" value="60"/></div>
       <div class="field-group"><label>OEE</label><input type="number" id="paint-oee" step="0.01" min="0.01" max="1" value="0.85"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Process Stages <span style="font-weight:400;color:var(--text-muted)">(pre-treatment, ovens, masking, plating — costed per m² and per part, not as paint films)</span></div>
+    <div class="field-row">
+      <div class="field-group"><label>Route <span title="Pre-treatment is bath chemistry, not a paint film: it has no dry film thickness and no solids content, so it cannot be costed with the paint formula. Choose the route here and it is costed per m² of wetted area, with masking as real per-part labour.">ℹ</span></label><select id="paint-stages">
+        <option value="standard_paint" selected>Standard paint — degrease · rinse · phosphate · rinse · DI · dry · flash · cure</option>
+        <option value="paint_masked">Standard paint + masking / de-masking</option>
+        <option value="zirconium_paint">Zirconium pre-treat · dry · flash · cure</option>
+        <option value="zinc_plate">Zinc plate + passivate</option>
+        <option value="zinc_nickel">Zinc-nickel + passivate</option>
+        <option value="anodise">Sulphuric anodise</option>
+        <option value="">None — legacy line rate only</option>
+      </select></div>
+      <div class="field-group"><label>Plating Thickness (µm, 0=n/a) <span title="Deposit thickness sets bath dwell — LINEAR, unlike carburising's square law. On a hoist line one load occupies the tank, so a thick deposit also caps throughput and costs line time as well as chemistry.">ℹ</span></label><input type="number" id="paint-deposit-um" step="1" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Colour Change Cost (£, 0=none) <span title="Purge and scrapped paint at a colour change. Small on a long run, heavy on a short one.">ℹ</span></label><input type="number" id="paint-colour-cost" step="10" min="0" value="0"/></div>
+      <div class="field-group"><label>Parts per Colour Run</label><input type="number" id="paint-colour-run" step="100" min="1" value="2000"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Manning</label><input type="number" id="paint-manning" step="0.5" min="0" value="4"/></div>
@@ -5152,7 +5173,7 @@ function addCoatRow(d?: {coatType?: CoatType; materialId?: string; dftMicrons?: 
   tr.dataset.coatId = id;
   tr.innerHTML = `
     <td><select id="${id}-type">
-      <option value="pretreat">Pretreat</option><option value="e_coat">E-coat</option>
+      <option value="e_coat">E-coat</option>
       <option value="primer">Primer</option><option value="basecoat">Basecoat</option>
       <option value="clearcoat">Clearcoat</option><option value="powder">Powder</option>
     </select></td>
@@ -12143,6 +12164,17 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderPaintingForm();
       populateSelects();
       el('add-coat-btn')?.addEventListener('click', () => addCoatRow());
+      // Changing the route re-points the machine, so a plating route stops
+      // silently costing on a paint line.
+      el('paint-stages')?.addEventListener('change', () => {
+        const want = PAINT_ROUTE_MACHINE[sel('paint-stages')];
+        const lineEl = el<HTMLSelectElement>('paint-line');
+        if (!want || !lineEl) return;
+        if (Array.from(lineEl.options).some(o => o.value === want)) {
+          lineEl.value = want;
+          markAIFilled(lineEl);
+        }
+      });
       setTimeout(() => {
         const lineEl = el<HTMLSelectElement>('paint-line');
         if (lineEl) { const opt = Array.from(lineEl.options).find(o => o.value.includes('paint-line')); if (opt) lineEl.value = opt.value; }
@@ -13234,12 +13266,61 @@ function wireInjectionAdvisor(): void {
   });
 }
 
+/**
+ * Named routes the form offers, expanded to the engine's stage vocabulary.
+ *
+ * A route is a LIST, not a mode: a powder line, an e-coat line and a plating
+ * line share stages in different orders, and hard-coding one recipe is how a
+ * cost model ends up unable to price the shop it is pointed at.
+ */
+/**
+ * The machine each route actually runs on.
+ *
+ * A zinc-plate route was being costed on `paint-line-std`, whose build-up is gas
+ * ovens, spray booths and an RTO — none of which a plating line has. Same rule
+ * the rest of the tool follows: pick the machine the PROCESS needs rather than
+ * leaving whatever the form defaulted to.
+ */
+const PAINT_ROUTE_MACHINE: Record<string, string> = {
+  standard_paint: 'paint-line-std',
+  paint_masked: 'paint-line-std',
+  zirconium_paint: 'paint-line-std',
+  zinc_plate: 'plating-line-barrel',
+  zinc_nickel: 'plating-line-rack',
+  anodise: 'plating-line-rack',
+};
+
+/** True when the machine and the route disagree about what kind of line this is. */
+function paintMachineMismatch(route: string, machineId: string): string | null {
+  const want = PAINT_ROUTE_MACHINE[route];
+  if (!want || !machineId || want === machineId) return null;
+  const isPlatingRoute = want.startsWith('plating-');
+  const isPlatingMachine = machineId.startsWith('plating-');
+  if (isPlatingRoute === isPlatingMachine) return null;   // a defensible swap
+  return isPlatingRoute
+    ? `The ${route.replace(/_/g, ' ')} route is running on "${machineId}", a PAINT line. A paint `
+      + 'line\'s rate is built from gas ovens, spray booths and an RTO, which a plating line does '
+      + `not have — it over-states a plated part by roughly 2x. Select ${want}.`
+    : `A paint route is running on "${machineId}", a PLATING line, whose rate carries no ovens. `
+      + `That under-states a painted part. Select ${want}.`;
+}
+
+const PAINT_STAGE_ROUTES: Record<string, string[] | undefined> = {
+  standard_paint: ['degrease', 'rinse', 'phosphate', 'rinse', 'di_rinse', 'dry_off', 'flash_off', 'cure_oven'],
+  paint_masked:   ['degrease', 'rinse', 'phosphate', 'rinse', 'di_rinse', 'masking', 'dry_off', 'flash_off', 'cure_oven', 'demask'],
+  zirconium_paint:['degrease', 'rinse', 'zirconium', 'rinse', 'di_rinse', 'dry_off', 'flash_off', 'cure_oven'],
+  zinc_plate:     ['degrease', 'rinse', 'zinc_plate', 'rinse', 'passivate', 'dry_off'],
+  zinc_nickel:    ['degrease', 'rinse', 'zinc_nickel', 'rinse', 'passivate', 'dry_off'],
+  anodise:        ['degrease', 'rinse', 'anodise', 'rinse', 'dry_off'],
+  '':             undefined,
+};
+
 function collectPaintingInput(): UniversalStackInput {
   const coatRows = document.querySelectorAll<HTMLElement>('#coats-body tr[data-coat-id]');
   const coats = Array.from(coatRows).map(row => {
     const id = row.dataset.coatId!;
     return {
-      coatType: validSel<CoatType>(`${id}-type`, ['pretreat','e_coat','primer','basecoat','clearcoat','powder'], 'basecoat'),
+      coatType: validSel<CoatType>(`${id}-type`, ['e_coat','primer','basecoat','clearcoat','powder'], 'basecoat'),
       materialId: (el<HTMLInputElement>(`${id}-mat`))?.value ?? 'mat-virtual',
       dftMicrons: parseFloat((el<HTMLInputElement>(`${id}-dft`))?.value) || 20,
       solidsPct: parseFloat((el<HTMLInputElement>(`${id}-sol`))?.value) || 0.35,
@@ -13248,7 +13329,7 @@ function collectPaintingInput(): UniversalStackInput {
       pricePerL: parseFloat((el<HTMLInputElement>(`${id}-price`))?.value) || 10,
     };
   });
-  const drivers = computePaintingDrivers({
+  const paintInputs = {
     surfaceAreaM2: num('paint-area'),
     coats,
     lineId: sel('paint-line'),
@@ -13260,7 +13341,41 @@ function collectPaintingInput(): UniversalStackInput {
     rejectReworkPct: num('paint-rework'),
     toolingCost: num('paint-tooling'),
     amortizationVolume: num('paint-amort') || num('annual-volume') || 100000,
-  });
+    // The line, decomposed. Parts-per-rack of 0 keeps the legacy single-rate
+    // path, which the engine then warns about rather than silently accepting.
+    ...(PAINT_STAGE_ROUTES[sel('paint-stages')]
+      ? { stages: PAINT_STAGE_ROUTES[sel('paint-stages')] } : {}),
+    ...(num('paint-parts-per-rack') > 0 ? { partsPerRack: num('paint-parts-per-rack') } : {}),
+    ...(num('paint-racks-per-hr') > 0 ? { racksPerHour: num('paint-racks-per-hr') } : {}),
+    ...(num('paint-deposit-um') > 0 ? { depositThicknessUm: num('paint-deposit-um') } : {}),
+    ...(num('paint-colour-cost') > 0
+      ? { colourChangeCostGBP: num('paint-colour-cost'),
+          partsPerColourRun: num('paint-colour-run') || 2000 } : {}),
+    region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
+  };
+
+  // Surface the line's derivation and its cautions the way every other
+  // commodity does, so the biggest lever is visible on the report rather than
+  // hidden in an input box.
+  const mismatch = paintMachineMismatch(sel('paint-stages'), sel('paint-line'));
+  if (mismatch) _smExtraWarnings.push(`Line/process mismatch: ${mismatch}`);
+
+  const pa = analysePainting(paintInputs);
+  for (const w of pa.warnings) _smExtraWarnings.push(w);
+  if (pa.surface) {
+    const sf = pa.surface;
+    _smExtraWarnings.push(`Surface treatment — ${sf.basis}`);
+    if (sf.chemistryPerPart > 0 || sf.maskingLabourPerPart > 0) {
+      _smExtraWarnings.push(
+        `Bath chemistry £${sf.chemistryPerPart.toFixed(3)}/part and masking `
+        + `£${sf.maskingLabourPerPart.toFixed(3)}/part are NOT in the line's machine rate — `
+        + 'they are a consumable and a manual operation respectively, and neither was costed '
+        + 'at all before. The oven and the tanks ARE in the machine rate, so they are not '
+        + 'charged twice here.');
+    }
+  }
+
+  const drivers = computePaintingDrivers(paintInputs);
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 

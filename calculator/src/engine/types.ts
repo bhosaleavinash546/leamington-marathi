@@ -158,6 +158,18 @@ export interface OperationInput {
   manning: number;
   labourTimeHr: number;
   labourEfficiency: number;
+  /**
+   * A bench operation: an operator working on the part away from the line, so
+   * it consumes labour time but no machine time. Masking and de-masking on a
+   * paint line are the case this exists for.
+   *
+   * Declared explicitly rather than inferred from `cycleTimeHr === 0`, because
+   * the validator's "cycle time must be positive" rule catches a real and common
+   * bug — a machine operation whose cycle time was never set. Relaxing that rule
+   * for every operation would let the bug through; a flag the caller opts into
+   * keeps the guard everywhere else.
+   */
+  benchOperation?: boolean;
 }
 
 export interface ToolingInput {
