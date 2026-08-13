@@ -117,6 +117,7 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'gear.qualityClass': { to: 'gear.qualityClass' },
   'gear.materialClass': { to: 'gear.materialClass' },
   'gear.caseHardened': { to: 'gear.caseHardened' },
+  'gear.hardeningRoute': { to: 'gear.hardeningRoute' },
   'gear.materialId': { to: 'materialId' },
   'gear.netWeightKg': { to: 'netWeightKg' },
   'gear.blankCostPerPart': { to: 'gear.blankCostPerPart' },

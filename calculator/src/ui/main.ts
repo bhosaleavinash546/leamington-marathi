@@ -14,7 +14,8 @@ import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
 import { computeGearDrivers, analyseGear, validateGearInputs, type GearInputs } from '../engine/modules/gear.js';
 import type { GearMaterialClass } from '../engine/gear-shop-data.js';
-import type { GearProcess } from '../engine/modules/gear-advisor.js';
+import { HARDENING_ROUTE_UNSUITABLE } from '../engine/modules/gear-advisor.js';
+import type { GearProcess, HardeningRoute } from '../engine/modules/gear-advisor.js';
 import {
   estimateForgingTonnage, resolveFurnaceEnergyPricePerKwh, estimateForgingDieCost,
   estimateForgingDieLife, forgingHeatKwhPerKg, adviseForgingProcess, analyseForgingDFM,
@@ -5049,6 +5050,14 @@ function renderGearForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Case Hardened <span title="Carburise + quench after cutting. Auto-follows the material class; override for special routes.">ℹ</span></label><select id="gear-caseh"><option value="yes" selected>Yes — carburise + quench</option><option value="no">No</option></select></div>
+      <div class="field-group"><label>Hardening Route <span title="Auto follows the material class (carburise a case-hardening steel, quench-and-temper a through-hardening one). Nitriding adds no distortion, so it is ground BEFORE the furnace if at all and often skips finishing entirely. Induction hardening is a machine operation with a geometry-specific coil as NRE. Routes the metallurgy cannot support are refused.">ℹ</span></label><select id="gear-hardening">
+        <option value="" selected>Auto — from material class</option>
+        <option value="case_hardening">Carburise, quench and temper</option>
+        <option value="quench_temper">Harden and temper (through)</option>
+        <option value="nitriding">Nitride (gas/plasma)</option>
+        <option value="induction_hardening">Induction harden</option>
+        <option value="none">Leave soft — no hardening</option>
+      </select></div>
       <div class="field-group"><label>Net Gear Weight (kg) <span title="Finished weight — drives heat treat, which is bought by the kg. From CAD: measured volume × grade density.">ℹ</span></label><input type="number" id="gear-net-wt" step="0.001" min="0.001" value="2.088"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -6447,11 +6456,18 @@ function buildFeatureCostCard(): string {
  */
 function renderCADDecisionsPanel(): string {
   const open = _cadDecisions.filter(d => d.severity === 'blocking');
-  if (!open.length) return '';
+  // Advisory decisions are NOT blockers — the engine picked a defensible
+  // default and says so. They are shown because the default can be wrong in a
+  // way the geometry cannot see: a gear's hardening route is chosen against a
+  // load case, and nitriding vs carburising changes the operation list, not
+  // just a rate. Rendering only blockers meant these questions were computed
+  // and then never asked.
+  const advisory = _cadDecisions.filter(d => d.severity === 'advisory');
+  if (!open.length && !advisory.length) return '';
   const answered = open.filter(d => _cadDecisionAnswers[d.id]).length;
 
-  const rows = open.map(d => `
-    <div class="cad-decision" data-decision-id="${escHtml(d.id)}" style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(220,38,38,0.18)">
+  const decisionRow = (d: CADDecision, accent: string): string => `
+    <div class="cad-decision" data-decision-id="${escHtml(d.id)}" style="margin-top:10px;padding-top:10px;border-top:1px solid ${accent}">
       <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">${escHtml(d.question)}</div>
       <div style="font-size:0.7rem;color:var(--text-secondary);margin:3px 0 6px;line-height:1.5">${escHtml(d.why)}</div>
       ${d.entry
@@ -6475,18 +6491,35 @@ function renderCADDecisionsPanel(): string {
             ${o.leaning ? '<span style="color:var(--text-muted);font-style:italic"> (likely)</span>' : ''}
           </span>
         </label>`).join('')}
-    </div>`).join('');
+    </div>`;
 
-  return `<div id="cad-decisions-panel" style="margin-bottom:12px;padding:11px 13px;background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.28);border-left:3px solid #dc2626;border-radius:8px">
+  const blockingBlock = open.length ? `
     <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">&#9997;&#65039; ${open.length} question${open.length === 1 ? '' : 's'} only you can answer</div>
     <div style="font-size:0.7rem;color:var(--text-secondary);margin-top:3px;line-height:1.5">
       Nothing in the geometry settles these, so the costing is blocked until they are answered.
       A number derived from a guess here is the single largest documented source of error in this tool.
     </div>
-    ${rows}
+    ${open.map(d => decisionRow(d, 'rgba(220,38,38,0.18)')).join('')}` : '';
+
+  const advisoryBlock = advisory.length ? `
+    <div style="margin-top:${open.length ? '14px' : '0'};padding-top:${open.length ? '11px' : '0'};${open.length ? 'border-top:1px solid var(--border);' : ''}">
+      <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">&#128173; ${advisory.length} default${advisory.length === 1 ? '' : 's'} worth confirming</div>
+      <div style="font-size:0.7rem;color:var(--text-secondary);margin-top:3px;line-height:1.5">
+        The costing runs without these — a defensible default was chosen and is stated on the report.
+        Answer one only if the default is wrong; each changes the operation list, not just a rate.
+      </div>
+      ${advisory.map(d => decisionRow(d, 'var(--border)')).join('')}
+    </div>` : '';
+
+  const bg = open.length
+    ? 'background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.28);border-left:3px solid #dc2626'
+    : 'background:var(--surface-elevated);border:1px solid var(--border);border-left:3px solid var(--accent)';
+  return `<div id="cad-decisions-panel" style="margin-bottom:12px;padding:11px 13px;${bg};border-radius:8px">
+    ${blockingBlock}
+    ${advisoryBlock}
     <div style="margin-top:11px;display:flex;align-items:center;gap:9px">
       <button class="btn btn-primary" id="cad-decisions-apply" style="font-size:0.72rem;padding:5px 12px">Apply answers &amp; re-cost</button>
-      <span id="cad-decisions-status" style="font-size:0.7rem;color:var(--text-muted)">${answered}/${open.length} answered</span>
+      <span id="cad-decisions-status" style="font-size:0.7rem;color:var(--text-muted)">${open.length ? `${answered}/${open.length} answered` : 'optional'}</span>
     </div>
   </div>`;
 }
@@ -6505,7 +6538,11 @@ function wireCADDecisionsPanel(): void {
     }
     const open = _cadDecisions.filter(d => d.severity === 'blocking');
     const status = document.getElementById('cad-decisions-status');
-    if (status) status.textContent = `${open.filter(d => _cadDecisionAnswers[d.id]).length}/${open.length} answered`;
+    if (status) {
+      status.textContent = open.length
+        ? `${open.filter(d => _cadDecisionAnswers[d.id]).length}/${open.length} answered`
+        : 'optional';
+    }
   };
   panel.addEventListener('change', sync);
   panel.addEventListener('input', sync);
@@ -11498,6 +11535,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setSel('gear-quality', gg.qualityClass === undefined ? undefined : String(gg.qualityClass));
           setSel('gear-matclass', gg.materialClass);
           setSel('gear-caseh', gg.caseHardened === undefined ? undefined : gg.caseHardened ? 'yes' : 'no');
+          setSel('gear-hardening', gg.hardeningRoute);
         }
         updateGearRouteNote();
         break;
@@ -12931,6 +12969,7 @@ function currentGearInputs(): GearInputs {
     qualityClass: num('gear-quality') || 7,
     materialClass: matClass,
     caseHardened: sel('gear-caseh') === 'yes',
+    ...(sel('gear-hardening') ? { hardeningRoute: sel('gear-hardening') as HardeningRoute } : {}),
     blankCostPerPart: num('gear-blank-cost'),
     blankPrepCycleSec: num('gear-prep-ct') || undefined,
     netWeightKg: num('gear-net-wt'),
@@ -12965,9 +13004,18 @@ function wireGearForm(): void {
   matclass?.addEventListener('change', () => {
     // Case-hardening follows the class, and so does the representative grade —
     // the same class→grade resolution the CAD rule pack applies.
-    const mc = matclass.value;
+    const mc = matclass.value as GearMaterialClass;
     const caseh = el<HTMLSelectElement>('gear-caseh');
     if (caseh) caseh.value = mc === 'case_hardening_steel' ? 'yes' : 'no';
+    // A route this grade metallurgically cannot take is dropped back to Auto
+    // rather than left selected to fail validation on Calculate.
+    const hard = el<HTMLSelectElement>('gear-hardening');
+    if (hard && hard.value && hard.value !== 'none'
+        && HARDENING_ROUTE_UNSUITABLE[hard.value as Exclude<HardeningRoute, 'none'>]?.[mc]) {
+      showToast(`${hard.selectedOptions[0].text} is not available on ${mc.replace(/_/g, ' ')} — `
+        + 'hardening route reset to Auto.', 'warning');
+      hard.value = '';
+    }
     const matEl = el<HTMLSelectElement>('gear-mat');
     const grade = GEAR_GRADE_BY_CLASS[mc];
     if (matEl && grade) {
@@ -12977,7 +13025,8 @@ function wireGearForm(): void {
     updateGearRouteNote();
   });
   for (const id of ['gear-module', 'gear-teeth', 'gear-helix', 'gear-face', 'gear-quality',
-                    'gear-internal', 'gear-caseh', 'gear-process', 'gear-batch', 'gear-reject']) {
+                    'gear-internal', 'gear-caseh', 'gear-hardening', 'gear-process',
+                    'gear-batch', 'gear-reject']) {
     document.getElementById(id)?.addEventListener('input', updateGearRouteNote);
     document.getElementById(id)?.addEventListener('change', updateGearRouteNote);
   }
@@ -13000,8 +13049,11 @@ function collectGearInput(): UniversalStackInput {
   // Say what the material bucket is made of — a plant head reading "Raw
   // Material 47%" deserves the itemisation, not a puzzle. The furnace pass is
   // named by the route that was actually chosen, and priced by weight.
-  const furnace = a.operations.find(
-    o => o.process === 'case_hardening' || o.process === 'quench_temper');
+  // Every route bought BY WEIGHT lands in the material bucket, so name it there.
+  // Missing a route here is how nitriding — 60% of a nitrided gear's cost — came
+  // out of the report unexplained.
+  const byWeight: GearProcess[] = ['case_hardening', 'quench_temper', 'nitriding'];
+  const furnace = a.operations.find(o => byWeight.includes(o.process));
   if (a.heatTreatCostPerPart > 0 && furnace) {
     _smExtraWarnings.push(
       `Raw Material bucket = blank material £${inputs.blankCostPerPart.toFixed(2)} + `
@@ -13009,6 +13061,15 @@ function collectGearInput(): UniversalStackInput {
       + `(${furnace.basis}) — a purchased service bought by weight, so it carries no machine `
       + 'hours. Blank turning and all tooth cutting/finishing are separate operations in the '
       + 'process bucket.');
+  }
+  // Induction is the one hardening route that is a machine, so it lands in the
+  // PROCESS bucket instead — say so, or the material bucket looks short.
+  const induction = a.operations.find(o => o.process === 'induction_hardening');
+  if (induction) {
+    _smExtraWarnings.push(
+      `Hardening is in the PROCESS bucket, not material: ${induction.label.toLowerCase()} runs `
+      + `${induction.cycleSec.toFixed(0)} s/part on ${induction.machineId} (${induction.basis}). `
+      + 'Unlike a furnace bought by the kg, induction hardening is machine time.');
   }
   const drivers = computeGearDrivers(inputs);
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };

@@ -34,8 +34,8 @@
  */
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import {
-  adviseGearRoute, GEAR_PROCESS_REFERENCE,
-  type GearProcess, type GearRouteRecommendation, type GearQualityClass,
+  adviseGearRoute, GEAR_PROCESS_REFERENCE, HARDENING_ROUTE_UNSUITABLE, resolveHardeningRoute,
+  type GearProcess, type GearRouteRecommendation, type GearQualityClass, type HardeningRoute,
 } from './gear-advisor.js';
 import { pickGearMachineId, HEAT_TREAT_NOT_A_MACHINE } from '../machine-sizing.js';
 import {
@@ -58,6 +58,16 @@ export interface GearInputs {
   qualityClass: GearQualityClass;
   materialClass: GearMaterialClass;
   caseHardened: boolean;
+  /**
+   * The hardening route, chosen explicitly.
+   *
+   * Overrides `caseHardened` and the material-class default when set. It exists
+   * because nitriding and induction hardening are decisions taken against a
+   * LOAD CASE, not properties of the grade: 42CrMo4 is routinely
+   * through-hardened, nitrided or induction hardened, and the three give
+   * different routes, different distortion and different money.
+   */
+  hardeningRoute?: HardeningRoute;
   nvhCritical?: boolean;
 
   // ── The blank, priced elsewhere ──
@@ -165,14 +175,31 @@ export const IMPLAUSIBLE_REJECT_RATE = 0.30;
  * of furnace cost AND a post-furnace grinding operation to a part that gets
  * neither. The value is the reason, printed to the engineer.
  */
-export const CANNOT_BE_CARBURISED: Partial<Record<GearMaterialClass, string>> = {
-  plastic: 'a polymer has no metallurgy to harden.',
-  bronze: 'a copper alloy has no iron matrix to diffuse carbon into.',
-  cast_iron: 'cast iron is already carbon-saturated — the hardening routes are flame, '
-    + 'induction or austempering, and austempering is priced inside the ADI material.',
-  alloy_steel_prehardened: 'a pre-hardened bar arrives at hardness; the whole point of the '
-    + 'grade is that no post-cut furnace pass is needed.',
+export const CANNOT_BE_CARBURISED: Partial<Record<GearMaterialClass, string>> =
+  HARDENING_ROUTE_UNSUITABLE.case_hardening;
+
+/** Past participle per route, so the refusal reads as a sentence. */
+const HARDENING_VERB: Record<Exclude<HardeningRoute, 'none'>, string> = {
+  case_hardening: 'carburised',
+  quench_temper: 'through-hardened',
+  nitriding: 'nitrided',
+  induction_hardening: 'induction hardened',
 };
+
+/**
+ * The route this gear actually takes: explicit choice, else the legacy
+ * `caseHardened` flag, else the material class's own default. One definition,
+ * used by both the validator and the analysis, so they cannot disagree.
+ */
+export function effectiveHardeningRoute(
+  i: Pick<GearInputs, 'hardeningRoute' | 'caseHardened' | 'materialClass'>,
+): HardeningRoute {
+  return resolveHardeningRoute({
+    hardeningRoute: i.hardeningRoute,
+    caseHardened: i.caseHardened,
+    throughHardened: i.materialClass === 'through_hardening_steel' && !i.caseHardened,
+  });
+}
 
 /**
  * Reject inputs that cannot describe a real gear.
@@ -232,12 +259,16 @@ export function validateGearInputs(i: GearInputs): string[] {
     errs.push(`Blank turning cycle must be a finite non-negative number of seconds — got `
       + `${i.blankPrepCycleSec}.`);
   }
-  // A carburising callout on a material that cannot be carburised is a
-  // contradiction, not a preference — and it silently added £1.60/kg of
-  // furnace cost plus a grinding operation to a part that gets neither.
-  if (i.caseHardened && CANNOT_BE_CARBURISED[i.materialClass]) {
-    errs.push(`${i.materialClass.replace(/_/g, ' ')} cannot be carburised — `
-      + `${CANNOT_BE_CARBURISED[i.materialClass]} Clear "case hardened", or correct the material class.`);
+  // A hardening callout the metallurgy cannot support is a contradiction, not a
+  // preference — and it silently added furnace cost plus a grinding operation to
+  // a part that gets neither. Checked for whichever route is actually selected.
+  const hardening = effectiveHardeningRoute(i);
+  if (hardening !== 'none') {
+    const why = HARDENING_ROUTE_UNSUITABLE[hardening][i.materialClass];
+    if (why) {
+      errs.push(`${i.materialClass.replace(/_/g, ' ')} cannot be ${HARDENING_VERB[hardening]} — `
+        + `${why} Choose a different hardening route, or correct the material class.`);
+    }
   }
   return errs;
 }
@@ -372,10 +403,10 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
     internal: inputs.internal,
     qualityClass: inputs.qualityClass,
     caseHardened: inputs.caseHardened,
-    // The material class decides the furnace route: a through-hardening steel
-    // that is not being carburised still gets quenched and tempered — that
-    // furnace pass used to carry £0, silently.
-    throughHardened: inputs.materialClass === 'through_hardening_steel' && !inputs.caseHardened,
+    // The material class decides the furnace route unless the engineer named
+    // one: a through-hardening steel that is not being carburised still gets
+    // quenched and tempered — that furnace pass used to carry £0, silently.
+    hardeningRoute: effectiveHardeningRoute(inputs),
     nvhCritical: inputs.nvhCritical,
     annualVolume: inputs.annualVolume,
     forcedCuttingProcess: inputs.forcedCuttingProcess,
@@ -439,6 +470,9 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
   for (const step of route.steps) {
     const pick = pickGearMachineId(step.process, envelope);
     if (pick.blocked) return { ...base, blocked: pick.blocked };
+    // Set by the induction branch so its printed basis is the real arithmetic
+    // rather than the generic "flat rate from the shop data".
+    let inductionBasis = '';
 
     let cycle: CycleBreakdown | null = null;
     let flatSec: number | null = null;
@@ -541,6 +575,43 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         heatTreat += A.quenchTemperCostPerKgGBP.value * inputs.netWeightKg;
         flatSec = 0;
         break;
+      case 'nitriding':
+        // Also bought by weight, but DEARER than carburising rather than
+        // cheaper: the cycle sits at temperature for 10-90 hours. The saving
+        // is downstream — a nitrided gear usually skips grinding entirely.
+        heatTreat += A.nitrideCostPerKgGBP.value * inputs.netWeightKg;
+        flatSec = 0;
+        break;
+      case 'induction_hardening': {
+        // The one hardening route that is a MACHINE, not a purchased service:
+        // seconds on a rated cell, so it belongs in the process bucket with a
+        // machine rate and OEE like any other operation.
+        const singleShot = outerDia <= A.inductionSingleShotMaxOdMm.value;
+        const heatSec = singleShot
+          ? A.inductionHeatSecPerModuleMm.value * inputs.normalModuleMm
+          : A.inductionSecPerTooth.value * inputs.teeth;
+        flatSec = heatSec + A.inductionQuenchSec.value
+          + A.inductionTemperSecPerPart.value + A.loadUnloadSec.value;
+        inductionBasis =
+          (singleShot
+            ? `single-shot coil (Ø${outerDia.toFixed(0)} mm within the `
+              + `${A.inductionSingleShotMaxOdMm.value} mm encircling limit): `
+              + `${A.inductionHeatSecPerModuleMm.value} s/module × m${inputs.normalModuleMm} `
+              + `= ${heatSec.toFixed(0)} s heat`
+            : `tooth-by-tooth (Ø${outerDia.toFixed(0)} mm exceeds the `
+              + `${A.inductionSingleShotMaxOdMm.value} mm encircling limit): `
+              + `${A.inductionSecPerTooth.value} s × ${inputs.teeth}z = ${heatSec.toFixed(0)} s heat`)
+          + ` + ${A.inductionQuenchSec.value} s quench + ${A.inductionTemperSecPerPart.value} s `
+          + `in-line temper + ${A.loadUnloadSec.value} s handling`;
+        // The coil is profiled to this gear and cuts no other — programme cost,
+        // exactly like a broach.
+        nreLines.push({
+          item: 'Induction coil', costGBP: N.inductorCoilGBP.value,
+          reason: 'An induction coil is profiled to one gear geometry and cannot be reused on '
+            + 'another, so its whole cost belongs to this programme.',
+        });
+        break;
+      }
       case 'broaching':
         // The broach is the reason broaching needs volume. Charging none made the
         // advisor's own justification ("the volume carries the tool cost") empty.
@@ -582,6 +653,12 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         : step.process === 'quench_temper'
           ? `${inputs.netWeightKg} kg × £${A.quenchTemperCostPerKgGBP.value}/kg = `
             + `£${(A.quenchTemperCostPerKgGBP.value * inputs.netWeightKg).toFixed(2)} (furnace, by weight)`
+        : step.process === 'nitriding'
+          ? `${inputs.netWeightKg} kg × £${A.nitrideCostPerKgGBP.value}/kg = `
+            + `£${(A.nitrideCostPerKgGBP.value * inputs.netWeightKg).toFixed(2)} (furnace, by weight — `
+            + 'a 10-90 h cycle, so dearer per kg than carburising; the saving is the grinding it avoids)'
+        : inductionBasis
+          ? inductionBasis
           : `${cycleSec} s flat rate from the shop data`,
     });
 
@@ -729,7 +806,11 @@ export function getGearInputSchema(): Record<string, string> {
     qualityClass: 'number — ISO 1328 flank tolerance class, lower is tighter (automotive 5–8)',
     materialClass: 'case_hardening_steel | through_hardening_steel | alloy_steel_prehardened '
       + '| stainless | cast_iron | bronze | plastic',
-    caseHardened: 'boolean — carburise/quench/temper, which forces hard finishing when the class is tight',
+    caseHardened: 'boolean — legacy flag for carburise/quench/temper; hardeningRoute wins when set',
+    hardeningRoute: "HardeningRoute? — 'case_hardening' | 'quench_temper' | 'nitriding' "
+      + "| 'induction_hardening' | 'none'. Nitriding costs zero distortion classes, so it is "
+      + 'ground BEFORE the furnace if at all; induction hardening is a machine operation with a '
+      + 'geometry-specific coil as NRE',
     nvhCritical: 'boolean? — buys a honing pass geometry alone would not',
     blankCostPerPart: 'number — £ for the blank MATERIAL (bar slice or bought-in forged blank); conversion goes in blankPrepCycleSec',
     blankPrepCycleSec: 'number? — lathe seconds to face/turn/bore the blank; costed as a process operation, 0 for a bought-in blank',

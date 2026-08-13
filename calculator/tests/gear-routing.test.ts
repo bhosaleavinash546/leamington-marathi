@@ -280,6 +280,122 @@ describe('the heat-treat route follows the material, and is priced by weight', (
   });
 });
 
+/**
+ * Nitriding and induction hardening.
+ *
+ * Added after a plant head asked what the model does about them. Each is a real
+ * route with a real cost consequence, and neither is "carburising with a
+ * different rate":
+ *
+ *   - Nitriding runs below the transformation temperature, so it costs ZERO ISO
+ *     classes of distortion. That reverses the route order: the gear is ground
+ *     to size BEFORE the furnace (grinding after would remove the thin case),
+ *     and at a class the cutter already holds it skips finishing entirely.
+ *   - Induction hardening is the one hardening route that is a MACHINE, not a
+ *     purchased service — seconds on a rated cell, with a geometry-specific coil
+ *     as programme cost.
+ */
+describe('nitriding and induction hardening', () => {
+  const nitridable = (over: Partial<GearInputs> = {}): GearInputs => transmissionGear({
+    materialClass: 'through_hardening_steel', caseHardened: false, ...over,
+  });
+
+  it('nitriding costs no distortion, so a class the cutter holds skips finishing', () => {
+    // Hobbing holds class 7. Carburising would lose a class and force grinding;
+    // nitriding does not, so the gear ships off the hobber.
+    const nit = analyseGear(nitridable({ hardeningRoute: 'nitriding', qualityClass: 7 }));
+    expect(nit.route.steps.map(s => s.process)).toContain('nitriding');
+    expect(nit.route.steps.map(s => s.process)).not.toContain('grinding');
+
+    const carb = analyseGear(transmissionGear({ qualityClass: 7, caseHardened: true }));
+    expect(carb.route.steps.map(s => s.process)).toContain('grinding');
+  });
+
+  it('a tight class grinds BEFORE nitriding, not after', () => {
+    const a = analyseGear(nitridable({ hardeningRoute: 'nitriding', qualityClass: 6 }));
+    const order = a.route.steps.map(s => s.process);
+    expect(order).toContain('grinding');
+    expect(order.indexOf('grinding')).toBeLessThan(order.indexOf('nitriding'));
+    // And it says why — grinding a nitrided flank removes the case.
+    const grind = a.route.steps.find(s => s.process === 'grinding');
+    expect(grind?.reason).toMatch(/remove the thin case|precedes the furnace/i);
+  });
+
+  it('nitriding is dearer per kg than carburising — the saving is downstream', () => {
+    const nit = analyseGear(nitridable({ hardeningRoute: 'nitriding', qualityClass: 7 }));
+    const carb = analyseGear(transmissionGear({ qualityClass: 7, caseHardened: true }));
+    expect(nit.heatTreatCostPerPart).toBeGreaterThan(carb.heatTreatCostPerPart);
+    const rate = activeGearShopData().ancillary.nitrideCostPerKgGBP.value;
+    expect(nit.heatTreatCostPerPart).toBeCloseTo(rate * 0.65, 9);
+  });
+
+  it('a coarse-module gear warns that the nitrided case is too thin to carry it', () => {
+    const a = analyseGear(nitridable({
+      hardeningRoute: 'nitriding', normalModuleMm: 10, teeth: 30, qualityClass: 8,
+    }));
+    expect(a.warnings.join(' ')).toMatch(/crush/i);
+  });
+
+  it('induction hardening is a MACHINE operation, not a purchased service', () => {
+    const a = analyseGear(nitridable({ hardeningRoute: 'induction_hardening', qualityClass: 8 }));
+    const op = a.operations.find(o => o.process === 'induction_hardening');
+    expect(op).toBeTruthy();
+    expect(op!.machineId).toBe('gear-induction');
+    expect(op!.cycleSec).toBeGreaterThan(0);                 // real seconds
+    expect(a.heatTreatCostPerPart).toBe(0);                  // nothing by weight
+    // So it lands in the process bucket, with machine hours, not in material.
+    const d = computeGearDrivers(nitridable({ hardeningRoute: 'induction_hardening', qualityClass: 8 }));
+    expect(d.operations.some(o => /induction/i.test(o.operationName))).toBe(true);
+    expect(d.rawMaterial.consumablesCostPerPart ?? 0).toBe(0);
+  });
+
+  it('the induction coil is programme cost, charged only on that route', () => {
+    const ind = analyseGear(nitridable({ hardeningRoute: 'induction_hardening', qualityClass: 8 }));
+    const qt = analyseGear(nitridable({ hardeningRoute: 'quench_temper', qualityClass: 8 }));
+    expect(ind.nreLines.some(l => /coil/i.test(l.item))).toBe(true);
+    expect(qt.nreLines.some(l => /coil/i.test(l.item))).toBe(false);
+    expect(ind.nreCostGBP).toBeGreaterThan(qt.nreCostGBP);
+  });
+
+  it('a large gear is hardened tooth-by-tooth, and the cycle scales with tooth count', () => {
+    // m2.5 x z38 -> OD 100 mm (single shot); z140 -> OD 355 mm (past the coil limit).
+    const small = analyseGear(nitridable({ hardeningRoute: 'induction_hardening', qualityClass: 8 }));
+    const large = analyseGear(nitridable({
+      hardeningRoute: 'induction_hardening', qualityClass: 8, teeth: 140,
+    }));
+    const secs = (a: typeof small) =>
+      a.operations.find(o => o.process === 'induction_hardening')!.cycleSec;
+    expect(secs(large)).toBeGreaterThan(secs(small));
+    expect(large.operations.find(o => o.process === 'induction_hardening')!.basis)
+      .toMatch(/tooth-by-tooth/);
+    expect(small.operations.find(o => o.process === 'induction_hardening')!.basis)
+      .toMatch(/single-shot/);
+  });
+
+  it('refuses a route the metallurgy cannot support, naming the reason', () => {
+    // 20MnCr5 is 0.20% C: nothing to quench on induction heating, and too little
+    // nitride-forming alloy for a useful nitrided case.
+    for (const route of ['induction_hardening', 'nitriding'] as const) {
+      const errs = validateGearInputs(transmissionGear({
+        materialClass: 'case_hardening_steel', caseHardened: false, hardeningRoute: route,
+      }));
+      expect(errs.join(' '), route).toMatch(/cannot be (induction hardened|nitrided)/);
+    }
+    // 42CrMo4 takes both.
+    for (const route of ['induction_hardening', 'nitriding'] as const) {
+      expect(validateGearInputs(nitridable({ hardeningRoute: route }))).toEqual([]);
+    }
+  });
+
+  it('an explicit route overrides the material-class default', () => {
+    const dflt = analyseGear(nitridable({ qualityClass: 8 }));
+    expect(dflt.route.steps.map(s => s.process)).toContain('quench_temper');
+    const forced = analyseGear(nitridable({ hardeningRoute: 'none', qualityClass: 8 }));
+    expect(forced.route.steps.map(s => s.process)).not.toContain('quench_temper');
+    expect(forced.heatTreatCostPerPart).toBe(0);
+  });
+});
+
 describe('honesty about the data', () => {
   it('every estimate on representative data carries the warning', () => {
     const a = analyseGear(transmissionGear());

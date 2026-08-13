@@ -822,6 +822,18 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       'REPRESENTATIVE — UK chamfer/deburr cell class. Target ~£26/hr. Replace with plant data.'
     ),
     makeMachine(
+      'gear-induction',
+      'Gear Induction Hardening Cell (RF + quench + temper)',
+      {
+        annualDepreciation: 62000, maintenance: 26000, energy: 42000, floorSpace: 9000,
+        indirectSupport: 20000, financeCost: 15000,
+        annualAvailableHours: 4000, machineUtilization: 0.80,
+      },
+      'UK',
+      'REPRESENTATIVE — UK gear induction hardening cell. Energy-heavy (RF generator + quench '
+      + 'recirculation). Target ~£55/hr. Replace with plant data.'
+    ),
+    makeMachine(
       'gear-checker',
       'CNC Gear Checker (profile / lead / pitch)',
       {

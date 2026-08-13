@@ -151,6 +151,9 @@ export interface GearNREParams {
   broachCapitalGBP: GearParam;
   /** Master gear / checking fixture for the metrology loop. */
   inspectionMasterGBP: GearParam;
+  /** Induction coil, profiled to one gear geometry. Only charged when the
+   *  route actually induction hardens. */
+  inductorCoilGBP: GearParam;
 }
 
 export interface GearAncillaryParams {
@@ -158,6 +161,19 @@ export interface GearAncillaryParams {
   caseHardenCostPerKgGBP: GearParam;
   /** Harden + temper for through-hardening steels, bought by weight. */
   quenchTemperCostPerKgGBP: GearParam;
+  /** Nitriding, bought by weight. Dear per kg: the cycle runs 10-90 hours. */
+  nitrideCostPerKgGBP: GearParam;
+  /** Induction hardening is a MACHINE, not a purchased service — it is costed
+   *  in seconds on a rated machine. Heat time rises with the case depth the
+   *  module demands. */
+  inductionHeatSecPerModuleMm: GearParam;
+  inductionQuenchSec: GearParam;
+  /** In-line stress-relief temper following the quench. */
+  inductionTemperSecPerPart: GearParam;
+  /** Above this OD a coil cannot encircle the gear, so it is hardened
+   *  tooth-by-tooth and the cycle scales with tooth count instead. */
+  inductionSingleShotMaxOdMm: GearParam;
+  inductionSecPerTooth: GearParam;
   /** Chamfer and deburr, seconds per part. */
   deburrSecPerPart: GearParam;
   /** Inspection on a gear checker, seconds per part, amortised over the sample rate. */
@@ -255,6 +271,12 @@ export const DEFAULT_GEAR_SHOP_DATA: GearShopData = {
   ancillary: {
     caseHardenCostPerKgGBP: p(1.60, 'carburise + quench + temper, batch furnace'),
     quenchTemperCostPerKgGBP: p(0.85, 'austenitise + oil quench + temper, batch furnace — no carburise cycle, so roughly half the carburise rate'),
+    nitrideCostPerKgGBP: p(4.20, 'gas/plasma nitride — a 10-90 h cycle at temperature, so several times the carburise rate per kg'),
+    inductionHeatSecPerModuleMm: p(2.5, 'RF heat time rises with the case depth the module demands'),
+    inductionQuenchSec: p(6),
+    inductionTemperSecPerPart: p(20, 'in-line low-temperature stress-relief temper'),
+    inductionSingleShotMaxOdMm: p(250, 'above this a coil cannot encircle the gear — tooth-by-tooth instead'),
+    inductionSecPerTooth: p(4.0, 'tooth-by-tooth scanning on large gears'),
     deburrSecPerPart: p(25), inspectionSecPerPart: p(20), loadUnloadSec: p(18),
   },
   nre: {
@@ -262,6 +284,7 @@ export const DEFAULT_GEAR_SHOP_DATA: GearShopData = {
     programmingAndPPAPGBP: p(6_500, 'CNC programming, trial cuts, first-article/PPAP'),
     broachCapitalGBP: p(45_000, 'geometry-specific; cuts one gear form only'),
     inspectionMasterGBP: p(4_000, 'master gear / checking fixture'),
+    inductorCoilGBP: p(5_500, 'induction coil is profiled to one gear geometry and cannot be reused on another'),
   },
 };
 

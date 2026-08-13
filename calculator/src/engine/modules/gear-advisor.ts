@@ -38,6 +38,8 @@ export type GearProcess =
   | 'honing'
   | 'case_hardening'
   | 'quench_temper'
+  | 'nitriding'
+  | 'induction_hardening'
   | 'deburr'
   | 'inspection';
 
@@ -144,6 +146,27 @@ export const GEAR_PROCESS_REFERENCE: Record<GearProcess, GearProcessReference> =
       + 'oil quench, temper to ~30–45 HRC through the section. No carbon case, but it still '
       + 'distorts the cut geometry — the same reason a tight class must grind afterwards.',
   },
+  nitriding: {
+    process: 'nitriding', label: 'Nitride (gas/plasma)',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    // Beyond ~m8 the Hertzian contact stress runs deeper than a nitrided case
+    // can reach and the flank collapses under it. The window is a load limit,
+    // not a machine envelope.
+    moduleRangeMm: [0.5, 8],
+    source: 'Diffusion of nitrogen at ~500-570 C, below the transformation temperature. No phase '
+      + 'change, so distortion is minimal and the cut geometry survives the furnace. Case is thin '
+      + '(0.2-0.6 mm) and very hard; cycles run 10-90 h, so it is dear per kg and slow.',
+    note: 'Specified to AVOID hard finishing. Grinding after nitriding removes the case.',
+  },
+  induction_hardening: {
+    process: 'induction_hardening', label: 'Induction harden and temper',
+    bestQualityClass: 99, internalCapable: true, externalCapable: true,
+    moduleRangeMm: [1, 25],
+    source: 'Localised RF heating of the flanks and roots followed by an immediate quench. '
+      + 'Seconds per part rather than furnace hours, run on a rated machine rather than bought by '
+      + 'weight, and it hardens only the teeth - the bore and web stay as machined.',
+    note: 'Needs ~0.35% C or more to form martensite. The inductor coil is geometry-specific NRE.',
+  },
   deburr: {
     process: 'deburr', label: 'Chamfer and deburr',
     bestQualityClass: 99, internalCapable: true, externalCapable: true,
@@ -179,6 +202,16 @@ export interface GearRouteInputs {
    * material class.
    */
   throughHardened?: boolean;
+  /**
+   * The hardening route, explicitly.
+   *
+   * Wins over the two legacy booleans when set. It exists because nitriding and
+   * induction hardening are CHOICES an engineer makes against a load case, not
+   * properties derivable from the material grade: 42CrMo4 is routinely
+   * through-hardened, nitrided or induction hardened, and the three produce
+   * different routes, different distortion and different money.
+   */
+  hardeningRoute?: HardeningRoute;
   /** Noise-critical — buys a honing pass that geometry alone would not. */
   nvhCritical?: boolean;
   annualVolume: number;
@@ -206,15 +239,107 @@ export interface GearRouteRecommendation {
   warnings: string[];
 }
 
+/** The furnace/coil pass a gear takes after cutting. `none` = left soft. */
+export type HardeningRoute =
+  | 'none' | 'case_hardening' | 'quench_temper' | 'nitriding' | 'induction_hardening';
+
 /**
- * ISO classes lost to carburise-and-quench distortion, minimum.
+ * ISO classes lost to hardening distortion, minimum, by route.
  *
- * Press quenching and good fixturing hold it to one class; free quenching
- * loses two or more. One is the OPTIMISTIC bound, which is the right default
- * for deciding whether hard finishing is needed: a route that needs grinding
- * at the optimistic bound certainly needs it in the real furnace.
+ * The figures are OPTIMISTIC bounds, which is the right default for deciding
+ * whether hard finishing is needed: a route that needs grinding at the
+ * optimistic bound certainly needs it in the real furnace. Press quenching and
+ * good fixturing hold carburising to one class; free quenching loses two.
+ *
+ * Nitriding's ZERO is the entry that earns this table. It runs at ~500-570 °C,
+ * below the transformation temperature, so the part does not go through a phase
+ * change and barely moves — which is precisely why the route gets specified,
+ * and why a nitrided gear can ship straight off the hobber.
  */
-export const CASE_HARDENING_DISTORTION_CLASSES = 1;
+export const HARDENING_DISTORTION_CLASSES: Record<HardeningRoute, number> = {
+  none: 0,
+  case_hardening: 1,
+  quench_temper: 1,
+  nitriding: 0,
+  induction_hardening: 1,
+};
+
+/** Back-compat alias for the carburising figure this table generalised. */
+export const CASE_HARDENING_DISTORTION_CLASSES =
+  HARDENING_DISTORTION_CLASSES.case_hardening;
+
+/**
+ * Routes whose hardening step comes LAST, after any grinding.
+ *
+ * For every other route the furnace distorts the flanks and grinding follows to
+ * correct it. Nitriding inverts that: it adds no distortion to correct, and its
+ * 0.2-0.6 mm case would be ground straight off. So the gear is finished to size
+ * first and nitrided last.
+ */
+export const NITRIDES_LAST = new Set<HardeningRoute>(['nitriding']);
+
+/** Why each hardening route is on the routing, in the engineer's words. */
+const HARDENING_REASON: Record<Exclude<HardeningRoute, 'none'>, string> = {
+  case_hardening: 'Case-hardening steel — carburise, quench and temper for a deep, hard case '
+    + 'over a tough core.',
+  quench_temper: 'Through-hardening steel — harden and temper after cutting for core strength.',
+  nitriding: 'Nitrided for surface hardness without distortion — no phase change, so the cut '
+    + 'geometry survives the furnace and hard finishing can often be skipped entirely.',
+  induction_hardening: 'Induction hardened — the flanks and roots are heated and quenched '
+    + 'locally in seconds, so only the teeth are hardened and the bore and web stay machinable.',
+};
+
+/**
+ * Which material classes each hardening route can actually treat.
+ *
+ * Metallurgy, not preference. Carburising needs a low-carbon steel to diffuse
+ * carbon INTO; induction hardening needs enough carbon already present (~0.35%+)
+ * to form martensite, which is why a 0.20% C case-hardening grade cannot be
+ * induction hardened to any useful hardness; nitriding needs nitride-forming
+ * alloying (Al, Cr, Mo, V). The value is the refusal reason, shown to the
+ * engineer — a route that cannot work must not be silently priced.
+ */
+export const HARDENING_ROUTE_UNSUITABLE: Record<
+  Exclude<HardeningRoute, 'none'>, Partial<Record<string, string>>
+> = {
+  case_hardening: {
+    plastic: 'a polymer has no metallurgy to harden.',
+    bronze: 'a copper alloy has no iron matrix to diffuse carbon into.',
+    cast_iron: 'cast iron is already carbon-saturated — its hardening routes are flame, induction '
+      + 'or austempering, and austempering is priced inside the ADI material.',
+    alloy_steel_prehardened: 'a pre-hardened bar arrives at hardness; the whole point of the grade '
+      + 'is that no post-cut furnace pass is needed.',
+  },
+  quench_temper: {
+    plastic: 'a polymer has no metallurgy to harden.',
+    bronze: 'a copper alloy does not harden by quenching.',
+    alloy_steel_prehardened: 'the bar is supplied already quenched and tempered.',
+  },
+  nitriding: {
+    plastic: 'a polymer has no metallurgy to harden.',
+    bronze: 'nitriding needs nitride-forming alloying (Al, Cr, Mo, V) in an iron matrix.',
+    case_hardening_steel: '20MnCr5/8620 carry too little nitride-forming alloy to build a useful '
+      + 'nitrided case — they are specified to be carburised. Nitride 31CrMoV9 or 42CrMo4 instead.',
+  },
+  induction_hardening: {
+    plastic: 'a polymer has no metallurgy to harden.',
+    bronze: 'a copper alloy does not form martensite.',
+    case_hardening_steel: 'a 0.20% carbon case-hardening grade cannot form martensite on induction '
+      + 'heating — there is no carbon in solution to quench. Induction hardening needs ~0.35% C '
+      + 'or more, so use 42CrMo4/1045, or carburise this grade instead.',
+    alloy_steel_prehardened: 'the bar is already at hardness through the section.',
+  },
+};
+
+/** Resolve the explicit route, falling back to the legacy boolean flags. */
+export function resolveHardeningRoute(
+  i: Pick<GearRouteInputs, 'hardeningRoute' | 'caseHardened' | 'throughHardened'>,
+): HardeningRoute {
+  if (i.hardeningRoute) return i.hardeningRoute;
+  if (i.caseHardened) return 'case_hardening';
+  if (i.throughHardened) return 'quench_temper';
+  return 'none';
+}
 /** Volume above which a dedicated broach can pay for itself. Empirical, stated. */
 export const BROACHING_VOLUME_THRESHOLD = 250_000;
 /** Below this, dedicated gear tooling rarely pays and milling wins. */
@@ -303,63 +428,75 @@ export function adviseGearRoute(i: GearRouteInputs): GearRouteRecommendation {
   const asCut = GEAR_PROCESS_REFERENCE[cutting].bestQualityClass;
   const needsFinishing = i.qualityClass < asCut;
 
-  if (i.caseHardened) {
-    // Hardening distorts, and the distortion costs AT LEAST one ISO class: a
-    // gear hobbed to class 7 comes out of the carburising furnace at 8 or
-    // worse. So on a hardened gear the class the customer receives is
-    // `asCut + CASE_HARDENING_DISTORTION_CLASSES`, and any requested class
-    // tighter than that MUST buy a hard-finishing operation after the furnace.
-    // The old rule compared against `asCut` alone, which let a "class 7"
-    // carburised gear ship the as-hobbed route with only a warning — the exact
-    // cheap-confident-wrong shape this module exists to refuse (a plant head
-    // caught it in the live cost report: process bucket implausibly small).
-    const deliveredAsHardened = asCut + CASE_HARDENING_DISTORTION_CLASSES;
-    if (i.qualityClass < deliveredAsHardened) {
-      steps.push({
-        process: 'case_hardening', label: GEAR_PROCESS_REFERENCE.case_hardening.label,
-        reason: 'Case-hardening steel — carburise, quench and temper for surface durability.',
-      });
-      steps.push({
-        process: 'grinding', label: GEAR_PROCESS_REFERENCE.grinding.label,
-        reason: `${GEAR_PROCESS_REFERENCE[cutting].label} holds class ${asCut} as-cut, and `
-          + `carburising distorts at least ${CASE_HARDENING_DISTORTION_CLASSES} class — as-hardened `
-          + `this gear delivers class ${deliveredAsHardened} at best, tighter than nothing. `
-          + `ISO class ${i.qualityClass} therefore requires grinding after heat treat: the only `
-          + `operation that corrects both the cut and the distortion.`,
-      });
+  const hardening = resolveHardeningRoute(i);
+  if (hardening !== 'none') {
+    // Hardening distorts, and the distortion costs ISO classes. A gear hobbed
+    // to class 7 comes out of a carburising furnace at 8 or worse, so the class
+    // the customer actually receives is `asCut + distortion`, and any requested
+    // class tighter than that MUST buy a hard-finishing operation. Comparing
+    // against `asCut` alone let a "class 7" carburised gear ship the as-hobbed
+    // route with only a warning — the cheap-confident-wrong shape this module
+    // exists to refuse (a plant head caught it on a live cost report).
+    //
+    // Nitriding is the exception that makes the rule worth modelling: it runs
+    // below the transformation temperature and barely moves the part, so it
+    // costs ZERO classes. That is why it is specified — and it changes the
+    // ORDER of the route, not just the price. See `NITRIDES_LAST`.
+    const distortion = HARDENING_DISTORTION_CLASSES[hardening];
+    const delivered = asCut + distortion;
+    const ref = GEAR_PROCESS_REFERENCE[hardening];
+    const furnace = { process: hardening, label: ref.label, reason: HARDENING_REASON[hardening] };
+    const needsHardFinish = i.qualityClass < delivered;
+
+    if (NITRIDES_LAST.has(hardening)) {
+      // Grind BEFORE the furnace. Two independent reasons, either sufficient:
+      // the nitrided case is 0.2–0.6 mm and grinding it afterwards would cut
+      // straight through the hardness that was just bought; and nitriding does
+      // not distort, so there is nothing after the furnace left to correct.
+      if (needsHardFinish) {
+        steps.push({
+          process: 'grinding', label: GEAR_PROCESS_REFERENCE.grinding.label,
+          reason: `ISO class ${i.qualityClass} is tighter than ${GEAR_PROCESS_REFERENCE[cutting].label} `
+            + `holds as-cut (class ${asCut}), so the flanks are ground to size FIRST. Nitriding `
+            + 'adds no distortion to correct afterwards, and grinding a nitrided flank would '
+            + 'remove the thin case — so on this route grinding precedes the furnace.',
+        });
+      }
+      steps.push(furnace);
+      if (!needsHardFinish) {
+        warnings.push(
+          `Nitriding holds the as-cut geometry (class ${asCut}), so no hard finishing was added — `
+          + 'this is the reason the route is specified. Confirm the flank load case suits a thin '
+          + 'nitrided case rather than a deep carburised one.');
+      }
+      // The nitrided case is shallow. On a coarse-module gear the contact
+      // stress runs deeper than the case and the flank collapses beneath it —
+      // a failure a cost model must not price away silently.
+      const [, nitrideMaxModule] = ref.moduleRangeMm;
+      if (i.normalModuleMm > nitrideMaxModule) {
+        warnings.push(
+          `Module ${i.normalModuleMm} mm is beyond the ${nitrideMaxModule} mm the nitrided case `
+          + 'depth practically supports — contact stress reaches below the case and risks flank '
+          + 'crushing. Confirm with the gear engineer, or carburise instead.');
+      }
     } else {
-      steps.push({
-        process: 'case_hardening', label: GEAR_PROCESS_REFERENCE.case_hardening.label,
-        reason: 'Case-hardening steel — carburise, quench and temper for surface durability.',
-      });
-      warnings.push(
-        `Class ${i.qualityClass} survives heat-treat distortion on the as-cut `
-        + `${GEAR_PROCESS_REFERENCE[cutting].label} geometry (class ${asCut} + `
-        + `${CASE_HARDENING_DISTORTION_CLASSES} distortion allowance), so no hard finishing was `
-        + `added. Confirm with the plant whether this part runs as-hardened.`);
-    }
-  } else if (i.throughHardened) {
-    // Quench-and-temper after cutting: same furnace-distorts-the-flanks logic
-    // as carburising, and the same rule — a class the distorted geometry cannot
-    // deliver must buy grinding AFTER the furnace. (At ~30–45 HRC through the
-    // section, soft finishing after Q&T is not an option.)
-    const deliveredAsHardened = asCut + CASE_HARDENING_DISTORTION_CLASSES;
-    steps.push({
-      process: 'quench_temper', label: GEAR_PROCESS_REFERENCE.quench_temper.label,
-      reason: 'Through-hardening steel — harden and temper after cutting for core strength.',
-    });
-    if (i.qualityClass < deliveredAsHardened) {
-      steps.push({
-        process: 'grinding', label: GEAR_PROCESS_REFERENCE.grinding.label,
-        reason: `${GEAR_PROCESS_REFERENCE[cutting].label} holds class ${asCut} as-cut and `
-          + `quench-and-temper distorts at least ${CASE_HARDENING_DISTORTION_CLASSES} class — `
-          + `ISO class ${i.qualityClass} requires grinding after the furnace.`,
-      });
-    } else {
-      warnings.push(
-        `Class ${i.qualityClass} survives quench-and-temper distortion on the as-cut `
-        + `${GEAR_PROCESS_REFERENCE[cutting].label} geometry, so no hard finishing was added. `
-        + 'Confirm with the plant whether this part runs as-hardened.');
+      steps.push(furnace);
+      if (needsHardFinish) {
+        steps.push({
+          process: 'grinding', label: GEAR_PROCESS_REFERENCE.grinding.label,
+          reason: `${GEAR_PROCESS_REFERENCE[cutting].label} holds class ${asCut} as-cut, and `
+            + `${ref.label.toLowerCase()} distorts at least ${distortion} class — as-hardened this `
+            + `gear delivers class ${delivered} at best. ISO class ${i.qualityClass} therefore `
+            + 'requires grinding after heat treat: the only operation that corrects both the cut '
+            + 'and the distortion.',
+        });
+      } else {
+        warnings.push(
+          `Class ${i.qualityClass} survives ${ref.label.toLowerCase()} distortion on the as-cut `
+          + `${GEAR_PROCESS_REFERENCE[cutting].label} geometry (class ${asCut} + ${distortion} `
+          + 'distortion allowance), so no hard finishing was added. Confirm with the plant '
+          + 'whether this part runs as-hardened.');
+      }
     }
   } else if (needsFinishing) {
     // Not hardened, so a soft finishing pass is enough and far cheaper.

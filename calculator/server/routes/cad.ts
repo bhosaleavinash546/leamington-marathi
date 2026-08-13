@@ -47,7 +47,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // v16: engineer material confirm wins over AI on reanalyse (withAIMaterial),
 //      and casting/cast_and_machine emit the material GRADE from the confirmed
 //      family (was AI grade on cast-iron mass). Final-verification-run fixes.
-const CAD_PROMPT_VERSION = 17;
+const CAD_PROMPT_VERSION = 18;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -124,7 +124,7 @@ const SPECIALIST_SYSTEM_PROMPTS: Record<string, string> = {
 
   forging: `You are a closed-die forging engineer with deep expertise in billet sizing, flash allowance, stroke sequencing (blocker/finisher), trimming, heat treatment, and die cost estimation. You assess part geometry for forgeability: grain flow, parting line position, undercuts, and taper. Return ONLY valid JSON.`,
 
-  gear: `You are a gear manufacturing process engineer with deep expertise in hobbing, shaping, power skiving, gear grinding (generating and profile), shaving, honing, and heat treatment of gears (carburise/quench, through-harden, nitride). You read gear drawings fluently: normal module, tooth count, helix angle and hand, face width, ISO 1328 / AGMA 2015 quality class, material and heat-treat callouts, profile/lead modifications. CRITICAL: the tooth count and tip diameter in the geometry block are COUNTED/MEASURED off the B-rep by the geometry kernel — never contradict them; if an attached drawing disagrees, report the discrepancy in the reasoning instead of silently picking one. Helix angle, quality class and material CANNOT be derived from the solid — read them from the drawing when one is attached, otherwise leave them to the stated UNDECIDED questions. Return ONLY valid JSON.`,
+  gear: `You are a gear manufacturing process engineer with deep expertise in hobbing, shaping, power skiving, gear grinding (generating and profile), shaving, honing, and heat treatment of gears (carburise/quench, through-harden, nitride). You read gear drawings fluently: normal module, tooth count, helix angle and hand, face width, ISO 1328 / AGMA 2015 quality class, material and heat-treat callouts, profile/lead modifications. CRITICAL: the tooth count and tip diameter in the geometry block are COUNTED/MEASURED off the B-rep by the geometry kernel — never contradict them; if an attached drawing disagrees, report the discrepancy in the reasoning instead of silently picking one. The HEAT-TREATMENT callout (carburise / harden-and-temper / nitride / induction harden) is a drawing note and changes the operation list, not just a rate - report it in costInputSuggestions.gear.hardeningRoute when the drawing states it. Helix angle, quality class, hardening route and material CANNOT be derived from the solid — read them from the drawing when one is attached, otherwise leave them to the stated UNDECIDED questions. Return ONLY valid JSON.`,
 
   sheet_metal: `You are a progressive die tooling engineer with expertise in stamping, blanking, drawing, and forming. You estimate blank layout and material utilisation, press tonnage, and die cost from part envelope. You understand material springback, bend radii, and formability limits. Return ONLY valid JSON.`,
 
@@ -719,7 +719,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   if (drawingUpload) {
     userContent.push(
       { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: drawingUpload.buffer.toString('base64') } },
-      { type: 'text', text: 'An engineering drawing PDF is attached. Extract tolerances, GD&T callouts, surface finishes, thread specifications and material/heat-treat notes from it, and factor them into the process recommendations, DFM issues and cycle-time estimates (tight tolerances and fine finishes add operations such as grinding, honing or CMM inspection). For a GEAR drawing, also read: normal module, tooth count, helix angle and hand, face width, ISO 1328 / AGMA quality class, material grade and case-hardening depth — return them in costInputSuggestions.gear.* and say which drawing field each came from. If the drawing tooth count disagrees with the measured geometry, report the discrepancy explicitly rather than picking one silently.' },
+      { type: 'text', text: 'An engineering drawing PDF is attached. Extract tolerances, GD&T callouts, surface finishes, thread specifications and material/heat-treat notes from it, and factor them into the process recommendations, DFM issues and cycle-time estimates (tight tolerances and fine finishes add operations such as grinding, honing or CMM inspection). For a GEAR drawing, also read: normal module, tooth count, helix angle and hand, face width, ISO 1328 / AGMA quality class, material grade, the heat-treatment callout (carburise / harden+temper / nitride / induction) and case depth — return them in costInputSuggestions.gear.* and say which drawing field each came from. If the drawing tooth count disagrees with the measured geometry, report the discrepancy explicitly rather than picking one silently.' },
     );
     console.log(`[CAD] Engineering drawing attached: ${drawingUpload.originalname} (${(drawingUpload.size / 1024).toFixed(0)} KB)`);
   }
@@ -1527,6 +1527,11 @@ const GEAR_AI_ANSWERABLE = [
       const q = Number(g.qualityClass);
       return Number.isFinite(q) && q >= 1 && q <= 11 ? String(q) : null;
     } },
+  { id: 'gear.hardeningRoute', pick: (g: Record<string, unknown>) =>
+      typeof g.hardeningRoute === 'string'
+        && ['case_hardening', 'quench_temper', 'nitriding', 'induction_hardening', 'none']
+             .includes(g.hardeningRoute)
+        ? g.hardeningRoute : null },
   { id: 'gear.materialClass', pick: (g: Record<string, unknown>) =>
       typeof g.materialClass === 'string'
         && ['case_hardening_steel', 'through_hardening_steel', 'alloy_steel_prehardened',
@@ -1585,7 +1590,7 @@ function pendingDecisions(
     withAI.answers['material.familySource'] === 'ai' && !ruleCtx.answers['material.family'];
   // Gear drawing-reads the model supplied and the engineer has not confirmed —
   // same Part1 lesson, applied to helix / ISO class / material class.
-  const aiGearIds = ['gear.helix', 'gear.qualityClass', 'gear.materialClass']
+  const aiGearIds = ['gear.helix', 'gear.qualityClass', 'gear.materialClass', 'gear.hardeningRoute']
     .filter(id => withAI.answers[`${id}Source`] === 'ai' && ruleCtx.answers[id] === undefined);
   if (!undecidedCount && !aiAnsweredMaterial && !aiGearIds.length) return [];
   // Re-run WITHOUT the AI answers: these are the questions a person still owns.
@@ -1716,8 +1721,14 @@ function buildJSONSchema(commodity: string, geo: OCCTGeometry): string {
       "qualityClass": number,
       "materialClass": "case_hardening_steel"|"through_hardening_steel"|"alloy_steel_prehardened"|"stainless"|"cast_iron"|"bronze"|"plastic",
       "caseHardened": true|false,
+      "hardeningRoute": "case_hardening"|"quench_temper"|"nitriding"|"induction_hardening"|"none"|null,
       "drawingTeeth": number|null
     },
+    // hardeningRoute: read the heat-treatment callout off the drawing. "CARBURISE
+    // + HARDEN"/"CASE HARDEN" -> case_hardening; "HARDEN AND TEMPER"/"Q&T" ->
+    // quench_temper; "NITRIDE"/"NITRIDED"/"GAS NITRIDE" -> nitriding;
+    // "INDUCTION HARDEN"/"FLANK HARDEN" -> induction_hardening. null when the
+    // drawing does not say - do NOT infer it from the material grade.
     // drawingTeeth: the tooth count WRITTEN ON THE ATTACHED DRAWING, verbatim,
     // even when it disagrees with the measured count (that disagreement is
     // exactly what the sanity layer needs to see). null when no drawing.

@@ -24,10 +24,11 @@
  */
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import { analyseGear } from '../../modules/gear.js';
+import { HARDENING_ROUTE_UNSUITABLE, type HardeningRoute } from '../../modules/gear-advisor.js';
 import type { GearMaterialClass } from '../../gear-shop-data.js';
 import {
   decided, ask, fmt,
-  type CommodityRuleSpec, type Decision, type RuleContext, type RuleOutcome,
+  type CommodityRuleSpec, type Decision, type DecisionOption, type RuleContext, type RuleOutcome,
 } from '../types.js';
 
 /** Decision ids — the browser panel and `decisionAnswers` key off these. */
@@ -37,6 +38,7 @@ export const GEAR_MATERIAL_DECISION_ID = 'gear.materialClass';
 export const GEAR_TEETH_DECISION_ID = 'gear.teethEntry';
 export const GEAR_MODULE_DECISION_ID = 'gear.moduleEntry';
 export const GEAR_FACE_DECISION_ID = 'gear.faceWidthEntry';
+export const GEAR_HARDENING_DECISION_ID = 'gear.hardeningRoute';
 
 /** Representative library grade per cutting class — same move as the casting
  *  family → grade resolution. Every id verified against `DEFAULT_RATE_LIBRARY`. */
@@ -96,6 +98,66 @@ function answeredMaterialClass(ctx: RuleContext): GearMaterialClass | null {
   // carburised or 42CrMo4 through-hardened and the solid cannot tell you which.
   // A person answers this, or a drawing does — via the confirm-gated leaning.
   return null;
+}
+
+/**
+ * The hardening route, when the engineer has named one.
+ *
+ * Unanswered means "use the material class's own default" — carburise a
+ * case-hardening steel, quench-and-temper a through-hardening one. That default
+ * is derivable, so this decision is ADVISORY, not blocking: the costing runs
+ * either way. It is raised because nitriding and induction hardening are chosen
+ * against a load case the CAD cannot see, and a route that halves the finishing
+ * operations should be an explicit choice rather than an invisible default.
+ */
+function answeredHardening(ctx: RuleContext): HardeningRoute | null {
+  const raw = String(ctx.answers[GEAR_HARDENING_DECISION_ID] ?? '');
+  const valid: HardeningRoute[] =
+    ['none', 'case_hardening', 'quench_temper', 'nitriding', 'induction_hardening'];
+  return (valid as string[]).includes(raw) ? raw as HardeningRoute : null;
+}
+
+/** The route the material class implies when nobody has chosen one. */
+function defaultHardening(mc: GearMaterialClass): HardeningRoute {
+  if (mc === 'case_hardening_steel') return 'case_hardening';
+  if (mc === 'through_hardening_steel') return 'quench_temper';
+  return 'none';
+}
+
+function hardeningDecision(mc: GearMaterialClass): Decision {
+  const unsuitable = (r: Exclude<HardeningRoute, 'none'>): string | undefined =>
+    HARDENING_ROUTE_UNSUITABLE[r][mc];
+  const opt = (
+    value: HardeningRoute, label: string, consequence: string,
+  ): DecisionOption | null => {
+    if (value === 'none') return { value, label, consequence };
+    const why = unsuitable(value as Exclude<HardeningRoute, 'none'>);
+    // A route this grade metallurgically cannot take is not offered at all.
+    return why ? null : { value, label, consequence, leaning: value === defaultHardening(mc) };
+  };
+  const options = [
+    opt('case_hardening', 'Carburise, quench and temper',
+      'deep hard case; distorts ~1 ISO class, so a tight class buys grinding after'),
+    opt('quench_temper', 'Harden and temper (through)',
+      'core strength; distorts ~1 ISO class, grinding after for a tight class'),
+    opt('nitriding', 'Nitride',
+      'no distortion — often skips hard finishing entirely, but dear per kg and a thin case'),
+    opt('induction_hardening', 'Induction harden',
+      'seconds on a coil rather than furnace hours; geometry-specific coil as NRE'),
+    opt('none', 'Leave soft — no hardening',
+      'no furnace pass; a tight class is met by shaving rather than grinding'),
+  ].filter((o): o is DecisionOption => o !== null);
+
+  return {
+    id: GEAR_HARDENING_DECISION_ID, kind: 'tolerance_class',
+    question: 'Which hardening route does this gear take?',
+    why: 'The grade permits several, and the choice is made against a load case the CAD cannot '
+      + 'see. It changes the operation list, not just the price: nitriding adds no distortion so '
+      + 'the gear can ship straight off the hobber, while carburising forces a grinding pass. '
+      + `Unanswered, the ${mc.replace(/_/g, ' ')} default is used and stated.`,
+    options,
+    blockedFieldIds: [], blockedRuleIds: [], severity: 'advisory',
+  };
 }
 
 function answeredEntry(ctx: RuleContext, id: string): number | null {
@@ -442,6 +504,33 @@ export const GEAR_RULES: CommodityRuleSpec = {
       },
     },
     {
+      id: 'gear.hardeningRoute',
+      path: 'gear.hardeningRoute',
+      fieldId: 'gear-hardening',
+      label: 'hardeningRoute',
+      evaluate: (ctx) => {
+        const mc = answeredMaterialClass(ctx);
+        if (mc === null) return ask(materialClassDecision());
+        const chosen = answeredHardening(ctx);
+        if (chosen) {
+          // An answer folded in from the model's drawing read is NOT an
+          // engineer's answer, and must not be printed as one — the same
+          // provenance lie the material family already taught us.
+          const prov = answerProvenance(ctx, GEAR_HARDENING_DECISION_ID);
+          return decided('gear.hardeningRoute', chosen, prov.source,
+            `${chosen.replace(/_/g, ' ')}${prov.note || ' — chosen by the engineer'}`,
+            prov.conf, [GEAR_HARDENING_DECISION_ID]);
+        }
+        // Unanswered: ADVISORY, not blocking. Leaving the value unset is not a
+        // gap — `effectiveHardeningRoute` falls back to the material class's own
+        // route, so the costing runs and states what it assumed. The question is
+        // raised because nitriding and induction hardening are chosen against a
+        // load case the CAD cannot see, and either would change the operation
+        // list rather than merely the rate.
+        return ask(hardeningDecision(mc));
+      },
+    },
+    {
       id: 'gear.caseHardened',
       path: 'gear.caseHardened',
       fieldId: 'gear-caseh',
@@ -449,11 +538,12 @@ export const GEAR_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const mc = answeredMaterialClass(ctx);
         if (mc === null) return ask(materialClassDecision());
-        const ch = mc === 'case_hardening_steel';
+        const route = answeredHardening(ctx) ?? defaultHardening(mc);
+        const ch = route === 'case_hardening';
         return decided('gear.caseHardened', ch, 'rule',
-          ch ? 'case-hardening steel — carburise + quench after cutting'
-             : `${mc.replace(/_/g, ' ')} is not carburised`, 0.85,
-          [GEAR_MATERIAL_DECISION_ID]);
+          ch ? 'carburise + quench after cutting'
+             : `route is ${route.replace(/_/g, ' ')}, not carburising`, 0.85,
+          [GEAR_MATERIAL_DECISION_ID, GEAR_HARDENING_DECISION_ID]);
       },
     },
     {

@@ -139,6 +139,7 @@ export const GEAR_FIXED_MACHINES = {
   hone: 'gear-hone',
   shave: 'gear-shave',
   deburr: 'gear-deburr',
+  induction: 'gear-induction',
   inspect: 'gear-checker',
   mill: 'mach-vmc5',
 } as const;
@@ -224,6 +225,11 @@ export function pickGearMachineId(
     // costing error rather than as "this is not a machine operation".
     case 'case_hardening': return { machineId: HEAT_TREAT_NOT_A_MACHINE, envelope: null };
     case 'quench_temper':  return { machineId: HEAT_TREAT_NOT_A_MACHINE, envelope: null };
+    case 'nitriding':      return { machineId: HEAT_TREAT_NOT_A_MACHINE, envelope: null };
+    // Induction hardening IS a rated machine: seconds per part on a coil and a
+    // quench, not hours in a sub-contract furnace bought by weight.
+    case 'induction_hardening':
+      return { machineId: GEAR_FIXED_MACHINES.induction, envelope: null };
     default:
       return {
         machineId: GEAR_FIXED_MACHINES.mill, envelope: null,

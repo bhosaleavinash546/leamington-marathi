@@ -99,13 +99,28 @@ async function main(): Promise<void> {
       { state: 'attached', timeout: 200_000 });
     log('analysed');
 
-    const panel = page.locator('#cad-decisions-panel');
-    if (await panel.count() > 0) {
+    // Decisions arrive in WAVES, not all at once: a question can only be asked
+    // once its own prerequisite is answered (the hardening route is unaskable
+    // until the material class is known, because which routes are even
+    // metallurgically available depends on the grade). A single pass answered
+    // the first wave and then costed with the second still open, so this loops
+    // until a pass adds nothing new.
+    for (let pass = 1; pass <= 4; pass++) {
+      if (await page.locator('#cad-decisions-panel').count() === 0) break;
+      const before = answered.length;
       for (const block of await page.locator('.cad-decision').all()) {
         const id = await block.getAttribute('data-decision-id') ?? '';
+        if (answered.some(a => a.id === id)) continue;
         const wanted = answers.get(id);
         if (wanted) {
-          await block.locator(`input[type=radio][value="${wanted}"]`).check();
+          const radio = block.locator(`input[type=radio][value="${wanted}"]`);
+          if (await radio.count() === 0) {
+            // The option is absent because this grade cannot take that route —
+            // a refusal, and the audit must record it rather than pass silently.
+            answered.push({ id, value: wanted, how: 'REQUESTED BUT NOT OFFERED (route unavailable on this material)' });
+            continue;
+          }
+          await radio.check();
           answered.push({ id, value: wanted, how: 'engineer answer (flag)' });
         } else {
           const leaning = block.locator('label:has-text("(likely)") input[type=radio]');
@@ -115,19 +130,20 @@ async function main(): Promise<void> {
           }
         }
       }
-      if (answered.length) {
-        log(`answering ${answered.length} blocking decision(s): ${answered.map(a => `${a.id}=${a.value}`).join(', ')}`);
-        // Wait for the re-analysis network round-trip to COMPLETE before costing
-        // — clicking Apply&Calc while /reanalyze is still in flight costs the
-        // stale first analysis (which still carries the AI's material).
-        const reanalyzed = page.waitForResponse(
-          resp => resp.url().includes('/api/cad/reanalyze') && resp.status() === 200,
-          { timeout: 180_000 });
-        await page.click('#cad-decisions-apply');
-        await reanalyzed;
-        await page.waitForTimeout(1500);   // let the re-render settle
-        log('re-analysed with the answer folded in');
-      }
+      if (answered.length === before) break;          // nothing new this pass
+      const fresh = answered.slice(before).filter(a => !a.how.startsWith('REQUESTED BUT'));
+      if (!fresh.length) break;
+      log(`pass ${pass}: answering ${fresh.length} decision(s): ${fresh.map(a => `${a.id}=${a.value}`).join(', ')}`);
+      // Wait for the re-analysis network round-trip to COMPLETE before costing
+      // — clicking Apply&Calc while /reanalyze is still in flight costs the
+      // stale first analysis (which still carries the AI's material).
+      const reanalyzed = page.waitForResponse(
+        resp => resp.url().includes('/api/cad/reanalyze') && resp.status() === 200,
+        { timeout: 180_000 });
+      await page.click('#cad-decisions-apply');
+      await reanalyzed;
+      await page.waitForTimeout(1500);   // let the re-render settle
+      log('re-analysed with the answer folded in');
     }
 
     // Apply the analysed inputs to the form AND calculate — the engineer's
