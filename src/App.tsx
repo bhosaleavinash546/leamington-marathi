@@ -46,6 +46,7 @@ const InnovationStudioPage = lazy(() => import('./pages/InnovationStudioPage'));
 const ForesightPage = lazy(() => import('./pages/ForesightPage'));
 const HarnessCostPage = lazy(() => import('./pages/HarnessCostPage'));
 const ApiKeySettingsPage = lazy(() => import('./pages/ApiKeySettingsPage'));
+const TeamPage = lazy(() => import('./pages/TeamPage'));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -78,6 +79,7 @@ function AnimatedRoutes() {
         <Route path="/pipeline" element={<ProtectedRoute><PageTransition><PipelinePage /></PageTransition></ProtectedRoute>} />
         <Route path="/server-settings" element={<ProtectedRoute><PageTransition><ServerSettingsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/settings/api-key" element={<ProtectedRoute><PageTransition><ApiKeySettingsPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/team" element={<ProtectedRoute><PageTransition><TeamPage /></PageTransition></ProtectedRoute>} />
         <Route path="/mobile-settings" element={<ProtectedRoute><PageTransition><MobileSettingsPage /></PageTransition></ProtectedRoute>} />
 
         {/* Public share view */}
