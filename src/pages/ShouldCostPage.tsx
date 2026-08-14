@@ -678,7 +678,7 @@ export default function ShouldCostPage() {
             )}
           </div>
         </div>
-        <p className="text-center text-slate-600 text-xs">Bottom-up parametric estimate from CostVision rate libraries. Validate against detailed supplier breakdowns before commercial use.</p>
+        <p className="text-center text-slate-600 text-xs">Bottom-up parametric estimate from BrainSpark rate libraries. Validate against detailed supplier breakdowns before commercial use.</p>
       </div>
     </div>
   );

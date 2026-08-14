@@ -349,7 +349,7 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
 
     const genAt = new Date().toISOString();
     const summary = [
-      ['CostVision — Should-Cost Breakdown Structure (CBS)'],
+      ['BrainSpark — Should-Cost Breakdown Structure (CBS)'],
       [],
       ['Part', String(partName || 'Component')],
       ['Material (resolved)', matRes.key + (matRes.approx ? ' (approx match)' : '')],
@@ -364,6 +364,11 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
       ['Monte-Carlo P10', cv(sim.p10)],
       ['Monte-Carlo P50', cv(sim.p50)],
       ['Monte-Carlo P90', cv(sim.p90)],
+      // The band propagates input uncertainty; it does NOT bound model error,
+      // and on held-out parts the true price lands inside it far less often
+      // than the P10-P90 label implies. Saying so is the difference between a
+      // sensitivity range and a confidence interval the reader will trust.
+      ['P10–P90 caveat', 'Sensitivity to input assumptions only — it does not bound model error. Measured coverage on held-out reference parts is well below 80%, so treat this as a range of plausible inputs, not a confidence interval.'],
       ['Annual spend (total × volume)', Number((cv(calc.totalShouldCost) * vNum).toFixed(0))],
       ...(quotedCost && Number(quotedCost) > 0
         ? [['Supplier quote', Number(quotedCost)], ['Gap vs should-cost', Number((Number(quotedCost) - cv(calc.totalShouldCost)).toFixed(2))]]

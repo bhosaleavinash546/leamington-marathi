@@ -1,0 +1,187 @@
+{
+  "label": "current",
+  "summary": {
+    "parts": 6,
+    "failed": 4,
+    "meanIdeas": 14,
+    "diversityScore": 85.3,
+    "nearDupPairs": 0,
+    "mergedRate": 0,
+    "flagRate": 60.7,
+    "dropRate": 0,
+    "engineCheckRate": 46.4,
+    "contradictedRate": 30.8,
+    "evidenceRate": 100,
+    "dupRate": 89.3,
+    "tasteMatchRate": 0,
+    "ranAt": "2026-08-14T11:21:08.092Z"
+  },
+  "perPart": [
+    {
+      "part": "Front Knuckle / Upright",
+      "ideas": 15,
+      "flagged": 8,
+      "dropped": 0,
+      "merged": 0,
+      "diversityScore": 85.3,
+      "nearDupPairs": 0,
+      "engineChecked": 6,
+      "contradicted": 3,
+      "withEvidence": 15,
+      "priorArtDup": 13,
+      "tasteMatched": 0,
+      "refined": 0,
+      "critiqued": 0,
+      "seconds": 295,
+      "ideaDigest": [
+        {
+          "title": "HPDC AlSi10MnMg knuckle replacing GJS-450 cast iron",
+          "description": "Replace the GJS-450 ductile-iron front upright with a high-pressure die-cast AlSi10MnMg (Silafont-type, Fe<0.15%, T5/T6 temper) knuckle. On a premium SUV, HPDC is preferred over forging where geometry is complex (integrated damper-clamp ears, steering-arm bosses, multiple sensor mounts) because near-net casting captures features forging cannot without extra machining. Wall sections 4-8mm with gene"
+        },
+        {
+          "title": "Closed-die forged AA6082-T6 knuckle for peak fatigue",
+          "description": "For the loaded strut-type upright, adopt closed-die forged AA6082-T6 instead of casting where fatigue-critical or where a thinner, denser section is wanted. Forging gives grain flow around the ball-joint bore and steering-arm, delivering ~30% higher fatigue strength than HPDC at equal section, enabling a lighter part (~1.6kg/corner vs 1.9kg cast) and eliminating porosity-driven scrap. AA6082-T6 (M"
+        },
+        {
+          "title": "Cast-in steel bearing-seat insert (bimetal HPDC knuckle)",
+          "description": "Cast the aluminium upright around a pre-formed steel bearing-seat ring (bimetal HPDC), giving a hard 55-58HRC bore for the wheel-bearing outer race while the surrounding structure stays light aluminium. This deletes the separately pressed-in steel sleeve and its insertion/retention operation, and removes the risk of aluminium bore creep/wear under bearing preload and thermal cycling — a known dura"
+        },
+        {
+          "title": "Gen3 flanged hub-bearing unit deletes Gen1 press-fit",
+          "description": "Adopt a Gen3 flanged hub-bearing unit (HBU3) that bolts to the upright, replacing a Gen1 bearing that must be pressed into the knuckle bore with a separate hub and two snap rings. Gen3 arrives as a sealed, pre-greased, pre-loaded unit with integrated ABS encoder (magnetic pulse ring) and 4-bolt flange, so the knuckle simplifies to a flat machined face plus bolt pattern — no precision bore, no snap"
+        },
+        {
+          "title": "Cast-integrate caliper, steering-arm and ABS bosses",
+          "description": "Consolidate the caliper mounting bracket, steering-arm/tie-rod boss and ABS-sensor mount directly into the knuckle casting/forging rather than bolting on separate machined brackets. On many baseline designs the front caliper is carried on a separate cast bracket bolted to the knuckle; integrating it removes 1 bracket + 2 bolts per corner and their machining/kitting. The ABS-sensor boss and its cli"
+        },
+        {
+          "title": "Hollow-section salt-core HPDC knuckle removes inert mass",
+          "description": "Introduce a lost-salt-core into the HPDC AlSi10MnMg knuckle to create hollow sections in the strut-clamp arm and the region between bearing bore and steering-arm — zones that carry mainly compressive/bending load where a closed thin-wall tube is far more mass-efficient than solid metal. Salt cores (compacted/sintered NaCl-based) survive injection pressure, then are dissolved out in a water wash po"
+        },
+        {
+          "title": "Topology optimisation + non-critical tolerance relaxation",
+          "description": "Run a full topology/parametric optimisation on the upright against the real load cases (vertical bump, lateral cornering, brake torque, pothole abuse) to redistribute material to load paths and remove ~8-12% mass from an existing casting, while simultaneously relaxing GD&T on non-functional surfaces. Today many knuckle drawings carry blanket tight tolerances and machined faces that do not affect w"
+        },
+        {
+          "title": "Commonise knuckle across platform and left/right handing",
+          "description": "Rationalise the knuckle portfolio so one core casting serves multiple wheelbase/trim variants of the platform, and — where geometry allows — design a symmetric or handed-from-common-blank part that lets left and right corners share the same casting die with a mirrored machining program. Premium SUV programmes often carry 4-6 distinct knuckle part numbers across drive types, brake sizes and markets"
+        },
+        {
+          "title": "Nearshore knuckle casting + returnable-rack milk-run",
+          "description": "Attack the logistics cost of a heavy, high-value cast part by relocating knuckle casting/machining to a nearshore supplier within ~300km of the German assembly plant and switching from single-use packaging to a returnable, part-specific dunnage rack on a daily JIT milk-run. Knuckles are dense (2-3kg) and geometry-sensitive, so long-haul intercontinental freight adds cost, CO2, damage risk and week"
+        },
+        {
+          "title": "High-recycled secondary aluminium HPDC alloy",
+          "description": "Specify a high-recycled-content secondary aluminium HPDC alloy (e.g. a low-Fe secondary AlSi10MnMg or a rheocast/Castasil-type grade tolerant of scrap-derived feed) in place of prime-ingot alloy. Secondary aluminium carries a large embodied-CO2 and cost advantage (recycled Al can be 20-40% cheaper per tonne than prime and a fraction of the carbon), and modern impurity management (Fe controlled wit"
+        },
+        {
+          "title": "Delete E-coat; selective laser-clean isolation zones only",
+          "description": "For an aluminium knuckle, eliminate the full corrosion coating/E-coat step (unnecessary for self-passivating aluminium) and instead apply protection only where galvanically needed — at steel-fastener and steel-insert interfaces — using localised laser ablation to clean/prepare plus a thin isolating film or zinc-flake-coated fasteners. Legacy carry-over of an iron-era paint line onto an aluminium p"
+        },
+        {
+          "title": "Should-cost teardown negotiation + dual-source tooling",
+          "description": "Deploy a rigorous clean-sheet should-cost model on the knuckle (material weight × current LME/alloy price + machining minutes × regional rate + energy + scrap + SG&A + margin) and use it to renegotiate the Tier-1 price, while qualifying a second source and structuring tooling ownership so it is OEM-owned and transferable. Casting/machining suppliers often price on historical quotes that lag the al"
+        },
+        {
+          "title": "Squeeze/thixo-casting for higher yield vs HPDC porosity",
+          "description": "For fatigue-critical zones, consider squeeze casting or semi-solid thixocasting/rheocasting of AlSi7Mg (A356/357) instead of conventional HPDC. Semi-solid processing fills the die with laminar, low-turbulence flow, drastically cutting entrapped-gas porosity and delivering castings that respond fully to T6 with fatigue strength approaching forgings — but at casting-level geometry freedom and lower "
+        },
+        {
+          "title": "MQL near-dry machining of the knuckle bearing bore",
+          "description": "Convert the knuckle CNC finishing (bearing bore, wheel-end face, caliper pads) from flood coolant to Minimum Quantity Lubrication (MQL) near-dry machining. Flood coolant on a high-volume aluminium chassis line is a large hidden cost: coolant purchase, filtration, chip-decontamination, disposal, and part-cleaning before assembly. MQL delivers a microscopic oil-air mist at the cutting edge, producin"
+        },
+        {
+          "title": "AI inline CT + adaptive heat-treat to cut scrap",
+          "description": "Deploy an emerging closed-loop quality system: inline computed-tomography (fast CT / X-ray with AI defect classification) on 100% of HPDC knuckles feeding an adaptive T6 heat-treat and machining-datum controller. Today porosity scrap on structural HPDC is often found late (after machining) and whole parts are discarded, wasting all prior value-add. AI-driven inline CT catches porosity/cold-shut im"
+        }
+      ]
+    },
+    {
+      "part": "Front Bumper Beam",
+      "ideas": 13,
+      "flagged": 9,
+      "dropped": 0,
+      "merged": 0,
+      "diversityScore": 85.3,
+      "nearDupPairs": 0,
+      "engineChecked": 7,
+      "contradicted": 1,
+      "withEvidence": 13,
+      "priorArtDup": 12,
+      "tasteMatched": 0,
+      "refined": 0,
+      "critiqued": 0,
+      "seconds": 247,
+      "ideaDigest": [
+        {
+          "title": "Roll-form closed-octagon 1500MPa martensitic beam",
+          "description": "Replace the baseline stamped/roll-formed dual-phase B-section beam with a fully closed octagonal roll-formed section in 1500MPa martensitic steel (MS1500) at 1.5–1.6mm gauge, sweep-bent (stretch-bend) to the required bumper radius. The closed octagon maximises second moment of area per unit mass, delivering higher bending resistance for the NCAP 2026 MPDB high-overlap load path while allowing a th"
+        },
+        {
+          "title": "Hot-stamped 22MnB5 boron beam at reduced gauge",
+          "description": "Convert the beam to a hot-stamped (press-hardened) 22MnB5 boron steel section reaching ~1,500MPa after quenching, enabling wall-thickness reduction from ~1.8mm DP to ~1.3–1.4mm at equal bending strength. Direct hot stamping in a single tool forms and quenches the deep B- or hat-section, then tailored-tempered soft zones can be introduced at crush-can attachment to control fold initiation for MPDB."
+        },
+        {
+          "title": "Roll-form integral flutes to delete reinforcement insert",
+          "description": "Eliminate the separately welded internal reinforcement insert by roll-forming the beam with integral longitudinal stiffening flutes (ribs) rolled directly into the top and bottom flanges of a closed section in DP980/1200. The flutes raise local buckling resistance and section stiffness so a single closed profile matches the bending and MPDB energy absorption previously provided by beam + insert. T"
+        },
+        {
+          "title": "Aluminium extrusion beam with integrated crush cans",
+          "description": "Replace the steel beam + separate steel crush cans with a 6xxx (6082-T6 or 6014) aluminium multi-void extruded beam, and integrate the crush cans as extruded profiles friction-stir-welded (FSW) or MIG/CMT-welded to the beam ends in a symmetric L/R design. Multi-void extrusion gives excellent, tunable crush stability for MPDB via chamber wall thickness distribution. Aluminium at 2,700 €/t is far pr"
+        },
+        {
+          "title": "Single Al HPDC integrated front crash management system",
+          "description": "Consolidate the bumper beam, energy absorbers, tow-hook mount and pedestrian lower-stiffener brackets into a single high-pressure die-cast aluminium (A380 / AlSi10MnMg) front crash management module, replacing a 4–5-piece fabricated assembly. Following the ZEEKR X precedent, the casting integrates all mounting bosses and tow interface, eliminating dozens of joins and separate stamped brackets. Cas"
+        },
+        {
+          "title": "Commonise beam and crush-can interface across SUV variants",
+          "description": "Standardise a single front bumper beam and crush-can attachment interface across all body styles and trims of the SUV platform (standard SUV, coupe-SUV, long-wheelbase) using one DP980/1200 roll-formed beam with bracketed fascia adapters absorbing the styling differences. Today distinct beams per variant multiply tooling, validation and call-off SKUs. A common beam with variant-specific plastic/st"
+        },
+        {
+          "title": "Tailor-rolled blank beam for graded thickness",
+          "description": "Use a tailor-rolled blank (TRB) — continuously variable sheet thickness produced by flexible cold rolling — as the feedstock for the beam, so material is thick only at the high-bending-moment mid-span and thinner toward the crush-can ends, all in one part with no welds. Unlike a tailor-welded blank (which has a weld line and abrupt transition), TRB gives smooth thickness transitions ideal for opti"
+        },
+        {
+          "title": "Replace spot welds with laser/CMT joining at end plates",
+          "description": "Where the closed-section beam requires end-plate and crush-can attachment joins, replace resistance spot welding (RSW) with remote laser welding or CMT (Cold Metal Transfer) stitch welds. RSW on a closed hollow beam requires flange access and delivers discrete, lower-efficiency joints; laser welding produces continuous seams with higher joint strength per unit length, allowing fewer/shorter joins "
+        },
+        {
+          "title": "Relax coating spec exploiting fascia-shielded environment",
+          "description": "Re-specify the beam's corrosion protection to match its actual service environment: the bumper beam sits behind the fascia and behind the energy-absorbing foam, shielded from direct road-salt spray and stone impact. Premium SUVs often carry a full KTL + additional wax/PVC coating on the beam inherited from a conservative default. A tolerance/spec-relaxation review can downgrade from full multi-lay"
+        },
+        {
+          "title": "Nearshore JIT-sequenced beam supply to cut logistics cost",
+          "description": "Restructure the beam supply into a JIT/JIS (just-in-sequence) delivery from a nearshore roll-forming supplier located within a short-radius milk-run of the German BIW plant, eliminating long-distance inbound freight, buffer inventory and repacking. Front bumper beams are bulky, low-density-in-packaging parts (a lot of air shipped), so freight and warehousing cost per unit is disproportionately hig"
+        },
+        {
+          "title": "Competitive resourcing to should-cost with dual-source",
+          "description": "Apply a clean-sheet should-cost model to the beam and re-tender it competitively, introducing a second qualified source to break single-supplier price rigidity over the 5-year programme. Premium-OEM crash parts are often sole-sourced to an incumbent Tier-1 at legacy pricing; a structured should-cost teardown (material €/t from current indices — DP980 at 1,150 €/t, process minutes, tooling amortisa"
+        },
+        {
+          "title": "Steel-aluminium hybrid beam via emerging cold joining",
+          "description": "Emerging-technology lever: build a multi-material beam using a high-strength steel (PHS/MS1500) mid-span bending member combined with aluminium extruded crush cans, joined by emerging cold-joining technologies — self-piercing rivets with adhesive (rivet-bonding), flow-drill screws, or friction element welding (RIVTAC/EJOWELD) — that avoid the metallurgical incompatibility of fusion-welding steel t"
+        },
+        {
+          "title": "GFRP-SMC over-mould for integrated pedestrian lower stiffener",
+          "description": "Integrate the pedestrian-protection lower stiffener (lower load-path bracket, a separate steel/plastic part in the front-end module) into the beam assembly by over-moulding a glass-fibre SMC or long-glass PA6-GF30 stiffener directly onto/around the metal beam, consolidating parts and deleting fasteners. GFRP-SMC at 2.8 €/kg and PA6-GF30 at 3.2 €/kg are cheap per kg and mould net-shape with integra"
+        }
+      ]
+    },
+    {
+      "part": "Cell Module Housing",
+      "error": "fetch failed"
+    },
+    {
+      "part": "Stator Assembly",
+      "error": "fetch failed"
+    },
+    {
+      "part": "Front Seat Frame",
+      "error": "fetch failed"
+    },
+    {
+      "part": "Body Wiring Harness",
+      "error": "fetch failed"
+    }
+  ]
+}
