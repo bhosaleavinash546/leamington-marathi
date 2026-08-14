@@ -73,4 +73,21 @@ if (mape('v2Err') >= mape('v1Err')) {
   console.error(`  ✗ FAIL: v2 MAPE (${(mape('v2Err') * 100).toFixed(1)}%) did not beat v1 (${(mape('v1Err') * 100).toFixed(1)}%)`);
   process.exit(1);
 }
-console.log('  ✓ Engine v2 beats v1 on this held-out set.\n');
+
+// Guard against reading too much into a very small margin.
+//
+// The audit measured v2 at 29.4% against v1's 30.5% — a 1.04x edge on FOUR
+// fixtures whose reference prices are engineering-estimate anchors, not quotes.
+// That is not evidence v2 is the better model; it is evidence the two are
+// indistinguishable at this sample size. The gate still requires v2 not to
+// regress, but the verdict line now says what the number can actually support,
+// because "v2 beats v1" was being read as a settled result.
+const edge = mape('v1Err') / mape('v2Err');
+const MEANINGFUL = 1.25;
+if (edge < MEANINGFUL || rows.length < 8) {
+  console.log(`  ~ v2 does not regress against v1 (${edge.toFixed(2)}x on ${rows.length} fixtures).`);
+  console.log('    NOT a demonstrated improvement: the margin is inside the noise this many');
+  console.log('    estimate-anchored fixtures can resolve. Do not quote it as one.\n');
+} else {
+  console.log(`  ✓ Engine v2 beats v1 by ${edge.toFixed(2)}x on ${rows.length} held-out fixtures.\n`);
+}

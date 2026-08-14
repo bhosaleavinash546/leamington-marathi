@@ -2821,17 +2821,58 @@ app.post('/api/cad-analyze', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60
       ? [{ role: 'user', content: [mediaBlock, { type: 'text', text: prompt }] }]
       : [{ role: 'user', content: prompt }];
 
-    const response = await client.messages.create({ model: 'claude-opus-4-8', max_tokens: 4000, system: cachedSystem(CAD_COST_SYSTEM_PROMPT), messages }, { timeout: 180_000, maxRetries: 1 });
-    if (response.stop_reason === 'max_tokens') return res.status(502).json({ error: 'The analysis was too long to complete — try again.' });
-
-    const textBlock = response.content.find(b => b.type === 'text');
-    if (!textBlock) throw new Error('No response from AI.');
-    let raw = textBlock.text.trim();
-    if (raw.startsWith('```')) raw = raw.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
-    const js = raw.indexOf('{'), je = raw.lastIndexOf('}');
-    if (js === -1 || je <= js) throw new Error('Invalid JSON response from AI.');
+    // Forced tool-use, like every other structured call in the platform. This
+    // was the last handler still scanning for the first '{' and stripping code
+    // fences — the exact pattern llm-json.mjs exists to replace, and the one
+    // that produces "the AI response could not be parsed" 502s. It matters most
+    // here because on the fallback path (material/process unresolvable) the
+    // model supplies the cost breakdown itself, so an unschema'd blob was being
+    // read straight into a cost figure.
+    const CAD_COST_SCHEMA = {
+      type: 'object',
+      properties: {
+        partName: { type: 'string' },
+        inferredMaterial: { type: 'string' },
+        inferredProcess: { type: 'string' },
+        massEstimateKg: { type: 'number' },
+        complexity: { type: 'string', enum: ['Low', 'Medium', 'High'] },
+        confidence: { type: 'string', enum: ['verified', 'benchmarked', 'estimated', 'theoretical'] },
+        dfmaScore: { type: 'number' },
+        dfmaScoreRationale: { type: 'string' },
+        benchmarkReference: { type: 'string' },
+        annualSpend: { type: 'string' },
+        costBreakdown: {
+          type: 'object',
+          description: 'ONLY used when the deterministic engine could not cost the part; ignored otherwise.',
+          properties: {
+            material: { type: 'object', properties: { value: { type: 'number' }, basis: { type: 'string' } } },
+            process: { type: 'object', properties: { value: { type: 'number' }, basis: { type: 'string' } } },
+            tooling: { type: 'object', properties: { value: { type: 'number' }, basis: { type: 'string' } } },
+            overhead: { type: 'object', properties: { value: { type: 'number' }, basis: { type: 'string' } } },
+            totalUnit: { type: 'object', properties: { value: { type: 'number' } } },
+          },
+        },
+        recommendations: { type: 'array', items: { type: 'object' } },
+        topRisks: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['partName', 'complexity'],
+    };
     let llm;
-    try { llm = JSON.parse(raw.slice(js, je + 1)); } catch { return res.status(502).json({ error: 'The AI response could not be parsed — please retry.' }); }
+    try {
+      llm = await messagesJson(client, {
+        model: 'claude-opus-4-8',
+        maxTokens: 4000,
+        system: CAD_COST_SYSTEM_PROMPT,
+        cacheSystem: true,
+        messages,
+        schema: CAD_COST_SCHEMA,
+        toolName: 'emit_cad_cost',
+        toolDescription: 'Return the CAD cost analysis.',
+        requestOptions: { timeout: 180_000, maxRetries: 1 },
+      });
+    } catch (e) {
+      return res.status(502).json({ error: `The analysis could not be completed — ${e.message}` });
+    }
 
     // Numbers are the engine's when deterministic; the LLM only supplies narrative.
     const num0 = (v, d = 0) => { const n = Number(v); return Number.isFinite(n) ? n : d; };

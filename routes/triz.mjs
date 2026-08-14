@@ -203,7 +203,26 @@ export function registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic,
   app.post('/api/triz/trim', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req, res) => {
     const body = req.body ?? {};
     let functions = Array.isArray(body.functions) ? body.functions : null;
+    // A malformed FUNCTION MODEL is rejected with a precise 400. A malformed
+    // costs payload used to be dropped on the floor, and the response then said
+    // "no costs were given" — so a caller who sent costs in the wrong shape was
+    // told they had sent none, and the candidates came back unranked. Same
+    // input, same class of mistake, two very different answers. Reject both.
+    if (body.costs !== undefined && !Array.isArray(body.costs)) {
+      return res.status(400).json({
+        error: '`costs` must be an array of { name, cost } — e.g. [{"name":"steel bracket","cost":3.40}]. '
+          + `Received ${body.costs === null ? 'null' : typeof body.costs}.`,
+      });
+    }
     let costs = Array.isArray(body.costs) ? body.costs : null;
+    if (costs) {
+      const bad = costs.findIndex(c => !c || typeof c !== 'object' || !String(c.name ?? '').trim() || !Number.isFinite(Number(c.cost)));
+      if (bad !== -1) {
+        return res.status(400).json({
+          error: `costs[${bad}] is not a usable { name, cost } entry — every row needs a non-empty name and a numeric cost.`,
+        });
+      }
+    }
     let objectsInferred = false;
 
     // A FAST matrix converts straight into a function model — the reason this

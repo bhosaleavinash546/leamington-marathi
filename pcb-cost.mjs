@@ -198,6 +198,11 @@ export function costBom(input, opts = {}) {
       refDes: String(c.refDes || '').slice(0, 24),
       type: key, label: cls.label, package: pkg, mount, pins, qty,
       unitCost: round(unit, 4), lineCost: round(unit * qty, 3),
+      // Where this line's PRICE came from. An override is a figure a user typed
+      // or a vision pass read off a board photo; a class average is the
+      // engine's own curve. They are not the same kind of number and the board
+      // total is a blend of both, so the blend has to be reportable.
+      priceBasis: Number.isFinite(override) && override > 0 ? 'supplied' : 'class-average',
     };
   });
   componentCost *= ATTRITION * y;
@@ -251,6 +256,24 @@ export function costBom(input, opts = {}) {
     regionLabel: region.label,
     params: { volume, autoGrade, testStrategy, sides, panelUtil: round(panelUtil, 2), tariffPct },
     stats: { lineItems: lines.length, uniqueParts, totalPlacements: placements, bgaPlacements, thLeads, activeDevices },
+    // Total-level statement of how much of the component cost rests on supplied
+    // prices rather than the engine's own curves. Per-line badges alone let a
+    // reader take the BOARD TOTAL as engine-derived when most of its value came
+    // from a vision pass over a photograph.
+    priceProvenance: (() => {
+      const supplied = lines.filter(l => l.priceBasis === 'supplied');
+      const suppliedValue = supplied.reduce((s, l) => s + l.lineCost, 0);
+      const allValue = lines.reduce((s, l) => s + l.lineCost, 0);
+      const pctValue = allValue > 0 ? round((suppliedValue / allValue) * 100, 1) : 0;
+      return {
+        suppliedLines: supplied.length,
+        totalLines: lines.length,
+        suppliedValuePct: pctValue,
+        note: supplied.length === 0
+          ? 'Every component price came from the engine’s class/volume curves.'
+          : `${supplied.length} of ${lines.length} lines (${pctValue}% of component value) use a supplied unit price — a figure typed in or read from a board image, not computed by the engine. Verify those against a distributor quote before treating the board total as a should-cost.`,
+      };
+    })(),
     lines,
     breakdown: {
       components: { value: round(componentCost), pct: pct(componentCost) },
