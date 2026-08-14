@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown, Mountain, Gem, Cpu, Layers, Sun, Moon } from 'lucide-react';
+import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown, Mountain, Gem, Cpu, Layers, Sun, Moon, Undo2 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { exportForesightPdf } from '../services/foresight-report';
@@ -596,6 +596,30 @@ export default function ForesightPage() {
     }
   }
 
+  // The promote response has always told the user they can "demote any time",
+  // and DELETE /api/foresight/promoted/:id has always existed — but nothing
+  // called it, so the promise had no button behind it. Promotion writes into
+  // the live register, so being able to take it back is the whole point.
+  async function demoteFromRegister(candidateId: string, entryId: string) {
+    setPromoting(candidateId);
+    try {
+      const r = await fetch(`/api/foresight/promoted/${encodeURIComponent(entryId)}`, {
+        method: 'DELETE', headers: authHeaders,
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || 'Demotion failed');
+      setPromoted((prev) => {
+        const next = { ...prev };
+        delete next[candidateId];
+        return next;
+      });
+    } catch (e) {
+      setPromoted(prev => ({ ...prev, [candidateId]: `error:${e instanceof Error ? e.message : 'failed'}` }));
+    } finally {
+      setPromoting(null);
+    }
+  }
+
   async function predict(qOverride?: string) {
     const q = qOverride ?? query;
     if (!q.trim() && !commodity && !segment) { setError('Type a part, pick a commodity, or choose a segment lens.'); return; }
@@ -779,7 +803,14 @@ export default function ForesightPage() {
                       {promoted[c.id]?.startsWith('error:') ? (
                         <p className="text-red-400 text-[10px]">{promoted[c.id].slice(6)}</p>
                       ) : promoted[c.id] ? (
-                        <p className="text-emerald-300 text-[10px]">Promoted into the live register — it now appears in lanes with a PROMOTED badge. Re-run the prediction to see it.</p>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-emerald-300 text-[10px]">Promoted into the live register — it now appears in lanes with a PROMOTED badge. Re-run the prediction to see it.</p>
+                          <button onClick={() => demoteFromRegister(c.id, promoted[c.id])} disabled={promoting === c.id}
+                            className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg border border-white/15 bg-white/5 text-slate-300 hover:bg-white/10 text-[10px] transition-colors disabled:opacity-50"
+                            title="Remove this entry from the live register. The candidate stays in the research results; only the register entry is withdrawn.">
+                            {promoting === c.id ? <ButtonSpinner size={10} /> : <Undo2 size={10} />} Demote
+                          </button>
+                        </div>
                       ) : (
                         <button onClick={() => promoteCandidateToRegister(c)} disabled={promoting === c.id}
                           className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-violet-500/40 bg-violet-500/10 text-violet-200 hover:bg-violet-500/20 text-[11px] transition-colors disabled:opacity-50"

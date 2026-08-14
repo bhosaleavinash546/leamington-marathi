@@ -17,6 +17,7 @@ import { exportToExcel, exportToPowerPoint, exportToPdf, exportRfqPdf } from '..
 import { useAuth } from '../contexts/AuthContext';
 import BusinessCaseModal from '../components/BusinessCaseModal';
 import { generateCostReductionIdeas, sendChatMessage, loadFullResult } from '../services/claude-service';
+import { notableFlags } from '../services/idea-provenance.mjs';
 import { toast } from '../hooks/useToast';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
@@ -333,13 +334,33 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                     </div>
                   );
                 })()}
-                {idea.engineCheck && (
+                {idea.engineCheck ? (
                   <div
-                    title={`${idea.engineCheck.referenceCase} — ${idea.engineCheck.basis}${idea.rank ? `\nRank factors: ${idea.rank.basis}` : ''}`}
+                    title={`The percentage in this badge is the ENGINE's figure for ${idea.engineCheck.referenceCase}, not the saving claimed above — the two answer different questions.\n\n${idea.engineCheck.basis}${idea.rank ? `\n\nRank factors: ${idea.rank.basis}` : ''}`}
                     className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium ${idea.engineCheck.direction === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : 'bg-danger-500/10 text-danger-400 border-danger-500/25'}`}
                   >
                     <Gauge size={10} />
                     {idea.engineCheck.direction === 'confirmed' ? `Engine ✓ ${idea.engineCheck.savingPct > 0 ? '−' : ''}${Math.abs(idea.engineCheck.savingPct)}%` : 'Engine contradicts'}
+                  </div>
+                ) : (
+                  // Absence of a badge is not the same as a pass. Roughly half
+                  // of generated ideas are not expressible as a substitution the
+                  // engine can re-cost, and until this was shown they read as
+                  // unremarkable rather than unverified.
+                  <div
+                    title="The engine had no comparable basis to test this idea against — it is not expressible as a material, process or mass substitution. The saving above is AI-estimated; validate before commercial use."
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-slate-500/10 text-slate-400 border-slate-500/25"
+                  >
+                    <Gauge size={10} /> Not engine-checked
+                  </div>
+                )}
+                {/* The validator already caught these and nothing showed them. */}
+                {notableFlags(idea).length > 0 && (
+                  <div
+                    title={`The deterministic validator flagged this idea:\n${notableFlags(idea).map((f: string) => `• ${f}`).join('\n')}`}
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-amber-500/10 text-amber-400 border-amber-500/25"
+                  >
+                    <AlertTriangle size={10} /> {notableFlags(idea).length === 1 ? '1 validator flag' : `${notableFlags(idea).length} validator flags`}
                   </div>
                 )}
                 {idea.tasteMatch && (
@@ -451,7 +472,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
             </div>
           )}
 
-          {idea.engineCheck && (
+          {idea.engineCheck ? (
             <div className={`p-3 rounded-xl border ${idea.engineCheck.direction === 'confirmed' ? 'bg-emerald-500/5 border-emerald-500/15' : 'bg-danger-500/5 border-danger-500/15'}`}>
               <span className={`text-xs font-semibold uppercase tracking-wide ${idea.engineCheck.direction === 'confirmed' ? 'text-emerald-400' : 'text-danger-400'}`}>
                 Engine Cross-Check — {idea.engineCheck.direction}:
@@ -460,6 +481,23 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                 €{idea.engineCheck.baselineEur.toFixed(2)} → €{idea.engineCheck.proposedEur.toFixed(2)} ({idea.engineCheck.savingPct > 0 ? '−' : '+'}{Math.abs(idea.engineCheck.savingPct)}%) on {idea.engineCheck.referenceCase}
               </span>
               <p className="text-slate-500 text-xs mt-1">{idea.engineCheck.basis}</p>
+              <p className="text-slate-500 text-xs mt-1">
+                This is the engine&apos;s figure for its own reference case — it tests whether the
+                change moves cost in the claimed direction, not whether the saving quoted above is
+                the right size.
+              </p>
+            </div>
+          ) : (
+            <div className="p-3 rounded-xl border bg-slate-500/5 border-slate-500/15">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Engine Cross-Check — not evaluated:
+              </span>{' '}
+              <span className="text-slate-300 text-sm">
+                not expressible as a material, process or mass substitution the engine can re-cost.
+              </span>
+              <p className="text-slate-500 text-xs mt-1">
+                The saving above is AI-estimated. Validate before commercial use.
+              </p>
             </div>
           )}
 

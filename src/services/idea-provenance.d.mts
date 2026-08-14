@@ -19,6 +19,7 @@ export interface ProvenanceIdea {
     basis?: string;
   } | null;
   confidenceLevel?: string;
+  validationFlags?: string[];
   evidenceSources?: { title?: string; year?: string | number }[];
   evidenceUnverified?: boolean;
 }
@@ -31,4 +32,5 @@ export function engineVerdict(idea: ProvenanceIdea | null | undefined): EngineVe
 export function evidenceLine(idea: ProvenanceIdea | null | undefined, maxSources?: number): string;
 export function verificationCell(idea: ProvenanceIdea | null | undefined): string;
 export function needsValidation(idea: ProvenanceIdea | null | undefined): boolean;
+export function notableFlags(idea: ProvenanceIdea | null | undefined): string[];
 export function verificationTally(ideas: ProvenanceIdea[] | null | undefined): VerificationTally;

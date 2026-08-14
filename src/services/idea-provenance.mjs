@@ -113,6 +113,27 @@ export function needsValidation(idea) {
 }
 
 /**
+ * The validator's flags, filtered to the ones a reader needs.
+ *
+ * `validateIdeas` stamps `validationFlags` and nothing has ever rendered them —
+ * computed provenance, thrown away. But showing all of them would be noise:
+ * measured flag rate is ~61%, and most of that is structural normalisation
+ * (`defaulted-difficulty` and friends), which says the model returned a bad
+ * enum, not that the idea is doubtful.
+ *
+ * These are the flags that bear on whether the CLAIM can be trusted: a saving
+ * or payback outside plausible bands, a confidence level asserted without
+ * evidence, an OEM attribution nobody checked. Structural fix-ups stay in the
+ * data for anyone reading the API; they do not earn a badge.
+ */
+const TRUST_FLAG = /^(implausible-|verified-without-evidence|oem-claim-unverified|confidence-capped-no-search)/;
+
+export function notableFlags(idea) {
+  const flags = (idea && idea.validationFlags) || [];
+  return flags.filter(f => TRUST_FLAG.test(String(f)));
+}
+
+/**
  * Portfolio counts for a summary block: how much of this report is actually
  * verified. A reader who sees "3 of 14 engine-confirmed" calibrates correctly;
  * a reader shown only the total does not.

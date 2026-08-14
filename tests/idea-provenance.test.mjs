@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   AI_ESTIMATED_CAUTION, OUTBOUND_DISCLAIMER, evidenceIsVerified, engineVerdict,
-  evidenceLine, verificationCell, needsValidation, verificationTally,
+  evidenceLine, verificationCell, needsValidation, verificationTally, notableFlags,
 } from '../src/services/idea-provenance.mjs';
 
 const confirmed = {
@@ -128,5 +128,33 @@ describe('every exporter carries provenance', () => {
 
   it('the disclaimer names the confirmed label it refers to', () => {
     assert.match(OUTBOUND_DISCLAIMER, /ENGINE-CONFIRMED/);
+  });
+});
+
+// validationFlags were computed on every idea and rendered nowhere — provenance
+// the pipeline paid for and then discarded. Showing all of them is not the fix
+// either: measured flag rate is ~61%, mostly structural normalisation that says
+// the model returned a bad enum, not that the idea is doubtful.
+describe('validator flags worth showing', () => {
+  it('surfaces flags that bear on whether the claim can be trusted', () => {
+    const idea = { validationFlags: ['implausible-saving-pct(240%)', 'verified-without-evidence', 'oem-claim-unverified'] };
+    assert.deepEqual(notableFlags(idea), [
+      'implausible-saving-pct(240%)', 'verified-without-evidence', 'oem-claim-unverified',
+    ]);
+  });
+
+  it('drops structural normalisation, which is noise to a reader', () => {
+    const idea = { validationFlags: ['defaulted-difficulty', 'defaulted-system-level', 'thin-technical-description', 'missing-benchmark'] };
+    assert.deepEqual(notableFlags(idea), []);
+  });
+
+  it('keeps the trust flags out of a mixed list without losing them', () => {
+    const idea = { validationFlags: ['defaulted-confidence', 'implausible-payback(400mo)', 'missing-annual-value'] };
+    assert.deepEqual(notableFlags(idea), ['implausible-payback(400mo)']);
+  });
+
+  it('is safe on absent or rubbish input', () => {
+    assert.deepEqual(notableFlags(null), []);
+    assert.deepEqual(notableFlags({}), []);
   });
 });
