@@ -158,6 +158,31 @@ const AM:    RGB = [180, 83,  9];
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
+/**
+ * Wrap a jsPDF instance so EVERY string written through it is WinAnsi-safe.
+ *
+ * `winAnsiSafe` existed but was applied at 2 of ~110 text-writing sites, so
+ * anything outside those paths reached jsPDF unsanitised. jsPDF then switched
+ * those strings to UTF-16BE — and this document embeds NO font files and
+ * declares WinAnsiEncoding on all 14 standard fonts, so a UTF-16 string cannot
+ * render. Measured on real exports: the gear report's machine names
+ * ("CNC Gear Hobber - small (<=m4, <=D200)") and the sheet-metal material note
+ * ("CRC EUR 781/t -> GBP 0.67/kg mill") were mojibake in the rate tables.
+ *
+ * Patching the instance covers `doc.text` and, because jspdf-autotable renders
+ * cells through the same instance method, the tables as well.
+ */
+function hardenPdfText(doc: jsPDF): jsPDF {
+  const d = doc as unknown as { text: (...a: unknown[]) => unknown };
+  const orig = d.text.bind(doc);
+  const clean = (t: unknown): unknown =>
+    typeof t === 'string' ? winAnsiSafe(t)
+      : Array.isArray(t) ? t.map(x => (typeof x === 'string' ? winAnsiSafe(x) : x))
+      : t;
+  d.text = (...args: unknown[]) => orig(clean(args[0]), ...args.slice(1));
+  return doc;
+}
+
 function lastFinalY(doc: jsPDF): number {
   return (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
 }
@@ -1547,7 +1572,7 @@ export function printPDF(
   const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const timeStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }));
 
   // ── Footer (added last) ──────────────────────────────────────────────────
   const addFooters = () => {
@@ -1797,7 +1822,7 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
 
   const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }));
 
   let y = 0;
 

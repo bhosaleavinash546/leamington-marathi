@@ -54,3 +54,48 @@ describe('winAnsiSafe', () => {
     expect(disallowed).toBeNull();
   });
 });
+
+/** The characters WinAnsiEncoding can actually represent: Latin-1 minus the
+ *  C1 control band, plus the 27 typographic characters WinAnsi puts there. */
+const WINANSI = new Set<string>([
+  ...Array.from({ length: 0x80 }, (_, i) => String.fromCharCode(i)),
+  ...Array.from({ length: 0x60 }, (_, i) => String.fromCharCode(0xA0 + i)),
+  ...'€‚ƒ„…†‡ˆ‰Š‹ŒŽ\u2018\u2019\u201c\u201d•–—˜™š›œžŸ',
+]);
+
+describe('AUDIT: every string reaching jsPDF is sanitised, not just two of them', () => {
+  // Found by exporting all 18 commodities and inspecting the PDFs: `winAnsiSafe`
+  // existed but was applied at 2 of ~110 text-writing sites. Machine names and
+  // material source notes bypassed it, jsPDF switched them to UTF-16BE, and the
+  // document embeds NO font files (14 standard fonts, WinAnsiEncoding only) — so
+  // they could not render. Real examples pulled from the live exports:
+  const REAL_STRINGS_FROM_LIVE_EXPORTS = [
+    'CNC Gear Hobber — small (≤m4, ≤Ø200)',
+    'CRC €781/t → £0.67/kg mill + £0.19/kg stockhold',
+    'CNC Gear Shaper — small (≤m6, ≤Ø200)',
+  ];
+
+  for (const s of REAL_STRINGS_FROM_LIVE_EXPORTS) {
+    it(`sanitises: ${s.slice(0, 34)}…`, () => {
+      const out = winAnsiSafe(s);
+      // Nothing left that forces jsPDF out of WinAnsi. NOTE this is NOT a
+      // Latin-1 test: WinAnsi's 0x80-0x9F band carries em dash, curly quotes,
+      // bullet, ellipsis and euro, all of which encode fine and must survive.
+      for (const ch of out) {
+        expect(WINANSI.has(ch), `${ch} (U+${ch.codePointAt(0)!.toString(16)}) in "${out}"`)
+          .toBe(true);
+      }
+      // And the meaning survives — these are not blanked out.
+      expect(out.length).toBeGreaterThan(s.length * 0.7);
+    });
+  }
+
+  it('the characters that actually broke the reports are all mapped', () => {
+    expect(winAnsiSafe('≤')).toBe('<=');
+    expect(winAnsiSafe('≥')).toBe('>=');
+    expect(winAnsiSafe('→')).toBe('->');
+    // Ø and € ARE valid WinAnsi and must be preserved, not stripped.
+    expect(winAnsiSafe('Ø')).toBe('Ø');
+    expect(winAnsiSafe('€')).toBe('€');
+  });
+});
