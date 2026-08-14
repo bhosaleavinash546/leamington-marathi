@@ -2731,3 +2731,59 @@ judgement.
 Monte-Carlo P10–P90 band has 35.7% measured coverage against the 80% its label
 implies (the export now carries a caveat, the band itself is uncalibrated); and
 27 DFM rules cite named standards nobody has read first-hand.
+
+## 50. The cost engine has no machinability term, and it cannot be added yet
+
+**Context**: the August 2026 audit's held-out benchmark exposed three systematic
+misses — **Ti-6Al-4V machined −46%**, **CFRP/RTM −38%**, **CNC aluminium at high
+volume +46%** — against a −7.3% overall bias. The titanium miss has an obvious
+cause: `MATERIAL_PROCESS` carries `cycleBase` and `cyclePerKg` per PROCESS and
+nothing per material, so a titanium fitting is costed with an aluminium cycle.
+Ti-6Al-4V removes at roughly a quarter of 6061's rate — low thermal conductivity
+puts the heat in the tool, it work-hardens, and it needs rigid low-speed cuts.
+
+**What was tried**: a `MACHINABILITY` table keyed on material family, applied to
+`cyclePerKg` only — `cycleBase` is non-cut time (tool changes, rapids, probing)
+and does not care about the material. Two magnitudes were tested:
+
+| ratios | titanium | steel bracket | brass | calibrated MAPE | held-out MAPE |
+|---|---|---|---|---|---|
+| baseline (no term) | −46% ✗ | −2% ✓ | +29% ✓ | 8.3% | 20.9% |
+| pure-cutting (Fe 2.0, Ti 4.0) | — | **+95% ✗** | — | 13.8% | 19.4% |
+| whole-cycle (Fe 1.4, Ti 3.0) | **−22% ✓** | +42% ✗ | +39% ✗ | 10.5% | 19.9% |
+
+**Decision**: not shipped. Reverted.
+
+The term is real physics and its absence is a genuine modelling gap, but the
+evidence does not support any particular magnitude:
+
+  * It fixes titanium (−46% → −22%, inside tolerance) and **breaks steel and
+    brass**, which both over-cost by ~40%. One scalar per family cannot be
+    simultaneously too low for titanium and too high for steel — which says the
+    base `cyclePerKg` is itself absorbing an average machinability, and the
+    honest fix is to re-derive the base constants alongside the term, not to
+    bolt a multiplier onto constants fitted without one.
+  * On the honest test it is a wash: held-out hit-rate is unchanged at 11/14
+    (titanium came in, brass went out) for a 1pp MAPE gain on n=14. That is
+    inside the noise.
+  * The 16 calibrated reference prices are self-described as "ILLUSTRATIVE
+    anchors derived from public teardown/industry norms — NOT proprietary
+    supplier quotes". With anchors that soft, "my ratios are wrong" and "the
+    anchor is wrong" are indistinguishable, and picking whichever reading makes
+    the fixtures pass is precisely the over-fitting this audit was called to
+    find.
+
+**What it would take**: real quoted piece prices for the same geometry across
+aluminium, steel, brass and titanium — perhaps twenty parts — then re-derive
+`cycleBase` and `cyclePerKg` *with* the machinability term rather than bolting
+one on afterwards. The `calibration.mjs` quote-learning path already exists to
+absorb exactly this kind of data.
+
+**Consequences**:
+  * The two remaining held-out misses are separate problems, not machinability:
+    **CFRP/RTM −38%** is a process-model gap (RTM is cycle-dominated with resin,
+    consumables and tooling terms the metal model has no representation for),
+    and **high-volume CNC +46%** is a volume-scaling gap in setup/batch
+    amortisation, not a material one.
+  * `benchmark/cost-divergence.mjs` now watches the held-out/calibrated ratio
+    (2.51x today) so whoever does this work can see whether it is helping.
