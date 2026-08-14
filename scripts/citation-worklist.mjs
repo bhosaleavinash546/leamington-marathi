@@ -1,20 +1,24 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Citation-debt triage: WHICH DOCUMENT retires the most rules.
+// What actually needs doing about the rule catalogue's sources, in order.
 //
 //   node scripts/citation-worklist.mjs
 //
-// threshold-audit.mjs answers "how bad is it" (212 unaudited of 248, 6% read
-// first-hand). This answers the question that actually gets it fixed: if you
-// can only obtain three standards, which three, and what do they buy you.
+// threshold-audit.mjs reports two separate axes. This turns them into a work
+// list, and the ORDER matters because the three piles need different actions
+// and only one of them is real engineering debt:
 //
-// The debt is not spread evenly — it clusters onto a handful of documents,
-// because the catalogue was built family by family. Grouping by the cited
-// document turns 212 individual chores into a small number of sittings, each of
-// which is "read this one standard, then settle these N rules".
+//   1. UNREAD STANDARDS — the citation names a document and admits nobody read
+//      it. Genuine debt. Read the document, or demote the grade.
+//   2. REGISTER DRIFT — the catalogue records reading the primary document and
+//      the curation register never recorded it. Bookkeeping: backfill the
+//      register entry, do not re-read anything.
+//   3. NOT CURATOR-REVIEWED — no independent second look. An audit-trail gap,
+//      not a claim the threshold is unsourced.
 //
-// Rules are ordered inside each group by the exposure score threshold-audit
-// already computes, so the most load-bearing threshold in each document is the
-// first one to check.
+// The first version of this script conflated 2 with 3 and told the reader that
+// buying four standards would settle 22 rules. It would have settled almost
+// none: the documents had already been read and encoded, and what was missing
+// was register entries. Getting that wrong cost a real ask of a real customer.
 // ─────────────────────────────────────────────────────────────────────────────
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -23,61 +27,44 @@ import { dirname, join } from 'node:path';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const report = JSON.parse(execFileSync('node', [join(root, 'scripts', 'threshold-audit.mjs'), '--json'], { encoding: 'utf8' }));
 
-// Which standards body / document does a source string point at? Deliberately
-// coarse: the aim is "go and get this document", not a citation parser.
-const DOCS = [
-  [/ISO\s*8062[-\s]*4/i, 'ISO 8062-4 (castings — geometrical tolerances)'],
-  [/ISO\s*8062/i, 'ISO 8062 (other parts)'],
-  [/NADCA/i, 'NADCA product standards (P / S / F series)'],
-  [/SFSA/i, 'SFSA steel casting handbook + supplements'],
-  [/DIN\s*16742/i, 'DIN 16742 (plastics mouldings tolerances)'],
-  [/ISO\s*2768/i, 'ISO 2768 (general tolerances)'],
-  [/ISO\s*286|IT\s*grade/i, 'ISO 286 (IT grades)'],
-];
-const docOf = (src) => (DOCS.find(([re]) => re.test(src || ''))?.[1]) ?? null;
+const rows = report.worstFirst ?? [];
+const cit = report.byCitation ?? {};
+const total = report.scope?.rules ?? 0;
 
-// worstFirst carries the full rule records, already ordered by exposure.
-// standardsClaimedButNotRead is only a count, so the rules are taken from here.
-const unread = (report.worstFirst ?? []).filter(r => r.status === 'unaudited');
+console.log('\n  CITATION WORK LIST — three piles, three different actions\n  ' + '─'.repeat(74));
+console.log(`  ${total} rules · ${cit['read-first-hand'] ?? 0} cite a primary document read first-hand`);
+console.log(`  ${cit['stated-guidance'] ?? 0} are stated as industry consensus, which is an honest grade, not debt.\n`);
 
-const groups = new Map();
-for (const r of unread) {
-  const doc = docOf(r.source) ?? 'Un-attributed — no named document to fetch';
-  if (!groups.has(doc)) groups.set(doc, []);
-  groups.get(doc).push(r);
-}
-const ordered = [...groups.entries()]
-  .map(([doc, rules]) => ({ doc, rules: rules.sort((a, b) => b.exposure - a.exposure) }))
-  .sort((a, b) => b.rules.length - a.rules.length);
-
-console.log('\n  CITATION WORKLIST — one document at a time\n  ' + '─'.repeat(74));
-console.log(`  ${report.byStatus.unaudited} unaudited of ${report.scope.rules} rules · ${report.primaryReadPct}% read first-hand`);
-console.log(`  ${report.standardsClaimedButNotRead} of them cite a NAMED standard nobody has opened.`);
-console.log(`  Grouping the ${unread.length} HIGHEST-EXPOSURE unaudited rules — the ones whose`);
-console.log('  thresholds carry the most weight. Re-run after each sitting for the next batch.\n');
-
-let cum = 0;
-for (const { doc, rules } of ordered) {
-  cum += rules.length;
-  console.log(`  ${doc}`);
-  console.log(`    ${rules.length} rule(s) — cumulative ${cum}/${unread.length}`);
-  for (const r of rules.slice(0, 6)) {
-    console.log(`      ${r.id.padEnd(34)} exposure ${String(r.exposure).padStart(3)}`);
-  }
-  if (rules.length > 6) console.log(`      … and ${rules.length - 6} more`);
+// ── Pile 1: real debt ───────────────────────────────────────────────────────
+const unread = rows.filter(r => r.citation === 'named-not-read');
+console.log('  1. UNREAD STANDARDS — the only pile that needs a document');
+if (!unread.length && !(cit['named-not-read'] ?? 0)) {
+  console.log('     none.\n');
+} else {
+  console.log(`     ${cit['named-not-read'] ?? unread.length} rule(s). Read the cited document, or drop the grade to`);
+  console.log('     industry-consensus and say where the number really came from.');
+  for (const r of unread) console.log(`       ${r.id.padEnd(32)} exposure ${String(r.exposure).padStart(3)}`);
   console.log('');
 }
 
-const top3 = ordered.slice(0, 3).reduce((s, g) => s + g.rules.length, 0);
-console.log('  ' + '─'.repeat(74));
-const unattributed = groups.get('Un-attributed — no named document to fetch')?.length ?? 0;
-console.log(`  Top ${Math.min(3, ordered.length)} group(s) cover ${top3} of these ${unread.length} rules.`);
-if (unattributed > unread.length / 2) {
-  console.log(`\n  READ THIS FIRST: ${unattributed} of ${unread.length} cite NO named document at all.`);
-  console.log('  That is the harder debt. A mis-attributed threshold can be checked against');
-  console.log('  the standard; an un-attributed one has nothing to check against, and the');
-  console.log('  honest options are to source a citation or to drop the rule to a stated');
-  console.log('  engine-derived heuristic. Buying standards will not touch these.');
+// ── Pile 2: bookkeeping ─────────────────────────────────────────────────────
+const drift = report.registerBehindCatalogue ?? 0;
+console.log('  2. REGISTER DRIFT — bookkeeping, no reading required');
+console.log(`     ${drift} rule(s) cite a document read first-hand that the register never`);
+console.log('     recorded. Backfill docs/threshold-audit.json from the citation.\n');
+
+// ── Pile 3: audit trail ─────────────────────────────────────────────────────
+const unreviewed = rows.filter(r => r.status === 'not-reviewed');
+console.log('  3. NOT CURATOR-REVIEWED — an audit-trail gap, not unsourced numbers');
+console.log(`     ${report.byStatus?.['not-reviewed'] ?? 0} rule(s) have had no independent second look.`);
+if (unreviewed.length) {
+  console.log('     Highest-exposure first:');
+  for (const r of unreviewed.slice(0, 10)) {
+    console.log(`       ${r.id.padEnd(32)} ${String(r.citation).padEnd(16)} exposure ${String(r.exposure).padStart(3)}`);
+  }
 }
-console.log('\n  Mark each rule primary-read or contested as you go — the CI ratchet');
-console.log('  (--max-unaudited) then locks the gain in.\n');
+
+console.log('\n  ' + '─'.repeat(74));
+console.log('  Only pile 1 needs a standards document. Pile 2 is a text edit. Pile 3 is');
+console.log('  review effort, and the citation column tells you what each rule already');
+console.log('  rests on before you spend any of it.\n');

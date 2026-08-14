@@ -192,8 +192,9 @@ const DFA_QUESTIONS: { key: DfaQuestion; label: string; hint: string }[] = [
 // What a threshold actually rests on. 24 of the 26 rules are industry consensus:
 // widely published, mutually consistent, and never checked against a primary
 // standard or measured scrap data.
+// See dfm-report.ts — "not read first-hand" was false for 36 of 38 rules.
 const SOURCE_GRADE: Record<string, string> = {
-  'standard-named': 'Named standard, not read first-hand',
+  'standard-named': 'Named published standard',
   'industry-consensus': 'Industry consensus — no primary source audited',
   'engine-derived': "This tool's own cost model",
 };

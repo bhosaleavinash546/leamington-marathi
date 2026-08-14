@@ -60,10 +60,16 @@ jobs:
       - name: PCB engine v2 vs v1
         run: node benchmark/pcb-run.mjs
 
-      # The DFM catalogue's thresholds are only as good as their citations. This
-      # is a ratchet on the unaudited count — it may fall, never rise.
-      - name: DFM citation debt ratchet
-        run: node scripts/threshold-audit.mjs --max-unaudited 212
+      # Three separate ratchets, because the three numbers mean different things.
+      # The single --max-unaudited flag conflated citation quality with register
+      # coverage, and after the citation axis was added it silently gated on 3
+      # instead of 212 — loose enough to catch nothing.
+      - name: DFM citation + register ratchets
+        run: >
+          node scripts/threshold-audit.mjs --todo
+          --max-unread-standards 2
+          --max-register-drift 12
+          --max-unreviewed 209
 
       # OpenCascade wheel — needed by the DFM geometry gate below. Kept as its
       # own step so a wheel/index problem reads as an install failure rather than

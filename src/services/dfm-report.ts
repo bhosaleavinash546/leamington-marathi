@@ -300,8 +300,14 @@ const FAMILY_LABEL: Record<string, string> = {
   'sheet-metal': 'sheet metal / stamped',
 };
 
+// The grade names the KIND of source. Whether the document was actually opened
+// is a property of the individual rule's citation, not of the grade — and this
+// label used to assert "not read first-hand" for every standard-named rule,
+// which is false for 36 of the 38. It told customers the tool had not opened
+// standards its authors had read and encoded table by table. Understating your
+// own rigour is still misreporting.
 const SOURCE_GRADE: Record<string, string> = {
-  'standard-named': 'NAMED STANDARD, not read first-hand',
+  'standard-named': 'NAMED PUBLISHED STANDARD',
   'industry-consensus': 'INDUSTRY CONSENSUS, no primary source audited',
   'engine-derived': "THIS TOOL'S OWN COST MODEL",
   // A company standard outranks a published guideline AND is a stronger claim,

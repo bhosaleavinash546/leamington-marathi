@@ -37,11 +37,29 @@ const register = existsSync(REGISTER)
   ? (JSON.parse(readFileSync(REGISTER, 'utf-8')).thresholds || {})
   : {};
 
-// A rule absent from the register is UNAUDITED. Defaulting to anything else
+// A rule absent from the register is NOT-REVIEWED. Defaulting to anything else
 // would be the same fault as scoring an unevaluated rule as a pass.
-const statusOf = (id) => register[id]?.status || 'unaudited';
+const statusOf = (id) => register[id]?.status || 'not-reviewed';
 
-const STATUS_RANK = { contested: 0, unaudited: 1, 'search-corroborated': 2, 'primary-read': 3 };
+// WHAT THE CATALOGUE ITSELF CLAIMS, read from the rule's own source text.
+//
+// This is a different axis from the register and the two were being conflated —
+// including, in the August 2026 audit, by the auditor. The register answers
+// "has a curator independently re-verified this?"; absence there says nothing
+// about whether the threshold is sourced. This answers "what does the citation
+// actually say?", which is the engineering question. Reporting only the first
+// and calling it "unaudited citations" produced a finding that was wrong by an
+// order of magnitude.
+function citationOf(rule) {
+  const t = String(rule.source ?? '').replace(/\s+/g, ' ');
+  if (!t.trim()) return 'no-citation';
+  if (/not been read first-hand|has NOT been read|not read first-hand/i.test(t)) return 'named-not-read';
+  if (/READ FIRST-HAND|read first-hand/i.test(t)) return 'read-first-hand';
+  if (/NADCA|SFSA|ISO\s*8062|DIN\s*16742|ISO\s*2768|ISO\s*286\b|#402|ASTM|VDI|SAE/i.test(t)) return 'names-standard';
+  return 'stated-guidance';
+}
+
+const STATUS_RANK = { contested: 0, 'not-reviewed': 1, 'search-corroborated': 2, 'primary-read': 3 };
 
 /**
  * How much a wrong threshold here would cost.
@@ -77,6 +95,7 @@ const rows = DFM_RULES
     recommendation: register[r.id]?.recommendation || '',
     corroboration: register[r.id]?.corroboration || [],
     primaryRead: register[r.id]?.primaryDocumentRead === true,
+    citation: citationOf(r),
   }))
   .sort((a, b) => (STATUS_RANK[a.status] - STATUS_RANK[b.status]) || (b.exposure - a.exposure)
     || a.id.localeCompare(b.id));
@@ -86,7 +105,19 @@ const byGrade = rows.reduce((m, r) => { m[r.grade] = (m[r.grade] || 0) + 1; retu
 
 // The claim the report makes on its appendix page, checked against reality.
 const claimsStandard = rows.filter((r) => r.grade === 'standard-named');
-const standardsNotRead = claimsStandard.filter((r) => !r.primaryRead);
+// The rules whose OWN CITATION admits the document was not read. This used to
+// be `!r.primaryRead`, i.e. "absent from the register", which counted 27 rules
+// as unread standards when the catalogue records 36 of them as read first-hand.
+// That single wrong predicate produced the audit's most incorrect finding.
+const standardsNotRead = claimsStandard.filter((r) => r.citation === 'named-not-read');
+
+// The catalogue says it read the document; the register has not recorded it.
+// Neither side is wrong on its own — this is bookkeeping drift, and nothing
+// used to surface it.
+const registerBehindCatalogue = rows.filter(
+  (r) => r.citation === 'read-first-hand' && r.status !== 'primary-read',
+);
+const byCitation = rows.reduce((m, r) => { m[r.citation] = (m[r.citation] || 0) + 1; return m; }, {});
 
 const report = {
   catalogue: { rules: DFM_RULES.length, families: Object.keys(PROCESS_FAMILIES).length },
@@ -96,6 +127,8 @@ const report = {
   auditedPct: Math.round((100 * (rows.length - (byStatus.unaudited || 0))) / (rows.length || 1)),
   primaryReadPct: Math.round((100 * rows.filter((r) => r.primaryRead).length) / (rows.length || 1)),
   standardsClaimedButNotRead: standardsNotRead.length,
+  byCitation,
+  registerBehindCatalogue: registerBehindCatalogue.length,
   contested: rows.filter((r) => r.status === 'contested'),
   worstFirst: rows.slice(0, 25),
 };
@@ -111,8 +144,30 @@ if (AS_JSON) {
   for (const [k, v] of Object.entries(byStatus).sort((a, b) => STATUS_RANK[a[0]] - STATUS_RANK[b[0]])) {
     console.log(`    ${pad(k, 22)} ${String(v).padStart(4)}`);
   }
-  console.log(`\n  audited at all        ${String(report.auditedPct).padStart(3)}%`);
-  console.log(`  primary document read ${String(report.primaryReadPct).padStart(3)}%   <- the only number that retires the debt`);
+  // TWO SEPARATE AXES. Printing only the register's view invites the reader to
+  // conclude the thresholds are unsourced, which is a different and much more
+  // serious claim. The August 2026 audit drew exactly that conclusion.
+  console.log('\n  WHAT THE CITATIONS SAY  (the engineering position)');
+  const CIT_LABEL = {
+    'read-first-hand': 'primary document read first-hand',
+    'names-standard': 'names a standard, reading unclear',
+    'named-not-read': 'names a standard, NOT read — the real debt',
+    'stated-guidance': 'stated as industry consensus / guidance',
+    'no-citation': 'no source text at all',
+  };
+  for (const [k, label] of Object.entries(CIT_LABEL)) {
+    if (byCitation[k]) console.log(`    ${pad(label, 44)} ${String(byCitation[k]).padStart(4)}`);
+  }
+  console.log('\n  WHAT THE REGISTER SAYS  (the independent-review trail)');
+  console.log(`    ${pad('rules a curator has reviewed', 44)} ${String(rows.length - (byStatus['not-reviewed'] || 0)).padStart(4)}`);
+  console.log(`    ${pad('not yet reviewed', 44)} ${String(byStatus['not-reviewed'] || 0).padStart(4)}`);
+  console.log('\n  Not-reviewed is a GAP IN THE AUDIT TRAIL, not a claim that the');
+  console.log('  threshold is unsourced. Read the citation block above for that.');
+
+  if (registerBehindCatalogue.length) {
+    console.log(`\n  ${registerBehindCatalogue.length} rules cite a document read first-hand but the register has`);
+    console.log('  not recorded it. Bookkeeping drift — backfill rather than re-read.');
+  }
 
   if (standardsNotRead.length) {
     console.log(`\n  ${standardsNotRead.length} rules CLAIM A NAMED STANDARD that nobody has read first-hand.`);
@@ -143,28 +198,38 @@ if (AS_JSON) {
   console.log('\n  ─────────────────────────────────────────────────────────────────────────\n');
 }
 
-// ── Ratchet ─────────────────────────────────────────────────────────────────
-// `--max-unaudited N` exits 1 when the unaudited count exceeds N. Wired into CI
-// so the citation debt can only shrink: adding a rule with a fresh unread
-// citation now fails the build unless another is retired in the same change.
+// ── Ratchets ────────────────────────────────────────────────────────────────
+// Three separate gates, because the three numbers mean different things and a
+// single "--max-unaudited" conflated them. The original flag counted rules
+// absent from the register and called it citation debt; after the citation axis
+// was added it silently began reading a different field and gating on 3 instead
+// of 212 — loose enough to catch nothing. Named flags, one per axis.
 //
-// It is deliberately a ceiling on the COUNT rather than a demand for zero. The
-// debt is 212 rules across four standards documents nobody on the team has read
-// first-hand; the honest position is to stop it growing while it is worked down,
-// not to pretend it can be cleared in one pass.
-const maxUnaudited = process.argv.indexOf('--max-unaudited');
-if (maxUnaudited !== -1) {
-  const limit = parseInt(process.argv[maxUnaudited + 1], 10);
-  const n = report.counts?.unaudited ?? report.byStatus?.unaudited ?? null;
-  if (n == null) {
-    console.error('  ✗ threshold-audit: could not read the unaudited count — ratchet cannot be enforced.');
-    process.exit(1);
+//   --max-unread-standards N   rules whose citation admits the document was
+//                              not read. THE REAL DEBT. Today: 2.
+//   --max-register-drift N     rules the catalogue says were read first-hand
+//                              that the register has not recorded. Bookkeeping.
+//   --max-unreviewed N         rules no curator has reviewed. An audit-trail
+//                              gap, NOT a claim the threshold is unsourced.
+const gate = (flag, actual, label) => {
+  const i = process.argv.indexOf(flag);
+  if (i === -1) return false;
+  const limit = parseInt(process.argv[i + 1], 10);
+  if (!Number.isFinite(limit)) {
+    console.error(`  ✗ ${flag} needs a number.`);
+    return true;
   }
-  if (n > limit) {
-    console.error(`\n  ✗ FAIL: ${n} unaudited rules exceeds the allowed ${limit}.`);
-    console.error('    A new threshold was added citing a source nobody has read, or an audited one regressed.');
-    console.error('    Retire one before adding one, or read the primary document.\n');
-    process.exit(1);
+  if (actual > limit) {
+    console.error(`\n  ✗ FAIL: ${actual} ${label} exceeds the allowed ${limit}.`);
+    return true;
   }
-  console.log(`  ✓ citation debt ratchet: ${n} unaudited, within the allowed ${limit}\n`);
-}
+  console.log(`  ✓ ${label}: ${actual}, within the allowed ${limit}`);
+  return false;
+};
+
+const failed = [
+  gate('--max-unread-standards', standardsNotRead.length, 'rules citing an unread standard'),
+  gate('--max-register-drift', registerBehindCatalogue.length, 'rules read but not registered'),
+  gate('--max-unreviewed', byStatus['not-reviewed'] || 0, 'rules not yet curator-reviewed'),
+].some(Boolean);
+if (failed) { console.error(''); process.exit(1); }
