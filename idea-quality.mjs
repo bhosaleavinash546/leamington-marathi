@@ -183,11 +183,38 @@ export function parseAnnualValueMid(val) {
  * still sees it (with the contradiction visible) but never at the top.
  */
 export function rankIdeas(ideas) {
-  for (const idea of Array.isArray(ideas) ? ideas : []) {
+  const list = Array.isArray(ideas) ? ideas : [];
+
+  // The annual value is a free-text figure the MODEL wrote, and it is the base
+  // of the score — so without a bound, an idea that simply overstates itself
+  // outranks one the engine actually checked. Winsorise each claim against the
+  // batch: anything beyond CLAIM_CAP_X times the median stated value is pulled
+  // back to that ceiling. A genuinely larger prize still ranks higher; a
+  // runaway number no longer buys the top slot. The median is used rather than
+  // the mean precisely because it is the inflated outliers we are guarding
+  // against, and they would drag a mean up with them.
+  const CLAIM_CAP_X = 3;
+  const stated = list
+    .map(i => parseAnnualValueMid(i.costSavingPotential?.annualValue))
+    .filter(v => v > 0)
+    .sort((a, b) => a - b);
+  const median = stated.length
+    ? (stated.length % 2 ? stated[(stated.length - 1) / 2]
+      : (stated[stated.length / 2 - 1] + stated[stated.length / 2]) / 2)
+    : 0;
+  // A single stated value has no batch to be an outlier against.
+  const claimCap = stated.length > 2 && median > 0 ? median * CLAIM_CAP_X : Infinity;
+
+  for (const idea of list) {
     const csp = idea.costSavingPotential || {};
-    const annualMid = parseAnnualValueMid(csp.annualValue);
+    const claimed = parseAnnualValueMid(csp.annualValue);
+    const annualMid = Math.min(claimed, claimCap);
     const basis = [];
     if (!annualMid) basis.push('no annual value stated — ranked by quality only');
+    if (claimed > annualMid) {
+      const fmt = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : `${Math.round(n / 1e3)}K`);
+      basis.push(`claim ${fmt(claimed)} capped at ${CLAIM_CAP_X}x batch median (${fmt(annualMid)}) — unverified figure`);
+    }
 
     const payback = typeof csp.paybackMonths === 'number' ? csp.paybackMonths : null;
     // 0mo → ×2.0 · 12mo → ×1.0 · 36mo → ×0.5; unknown payback stays neutral.
@@ -198,9 +225,14 @@ export function rankIdeas(ideas) {
     const qualityFactor = 0.5 + quality / 200;                       // 0.5..1.0
     basis.push(`quality ${quality} ×${qualityFactor.toFixed(2)}`);
 
+    // Not being engine-checked has to cost something, or verification buys the
+    // idea nothing. It stays a light touch on purpose: only a minority of ideas
+    // are expressible as a substitution the engine can re-cost, so a heavy
+    // penalty would bury most of the output for being unrepresentable rather
+    // than for being wrong.
     const dir = idea.engineCheck?.direction;
-    const engineFactor = dir === 'confirmed' ? 1.2 : dir === 'contradicted' ? 0.35 : 1;
-    if (dir) basis.push(`engine ${dir} ×${engineFactor}`);
+    const engineFactor = dir === 'confirmed' ? 1.25 : dir === 'contradicted' ? 0.35 : 0.85;
+    basis.push(dir ? `engine ${dir} ×${engineFactor}` : `not engine-checked ×${engineFactor}`);
 
     const evidenceFactor = idea.evidenceUnverified === false ? 1.1 : idea.evidenceUnverified === true ? 0.9 : 1;
     if (idea.evidenceUnverified === false) basis.push('search-backed evidence ×1.1');

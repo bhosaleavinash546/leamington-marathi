@@ -302,8 +302,12 @@ export default function HomePage() {
               <p className="mt-4 text-[14px] text-slate-400">The trust architecture behind every BrainSpark figure</p>
             </div>
             <div className="text-center md:border-l border-white/10 md:pl-10">
-              <div className="text-[3.75rem] font-extrabold text-gold-400 leading-none tracking-[-0.03em]">2×</div>
-              <div className="mt-2 text-[14px] text-slate-400">more accurate than a mass-based estimate on held-out parts</div>
+              {/* Pinned to benchmark/{machining,stamping}-results.json by
+                  tests/accuracy-claim.test.mjs — 1.27x machining, 1.92x
+                  stamping. "2x" was the stamping figure alone, presented as if
+                  it were both. */}
+              <div className="text-[3.75rem] font-extrabold text-gold-400 leading-none tracking-[-0.03em]">1.3–1.9×</div>
+              <div className="mt-2 text-[14px] text-slate-400">more accurate than a mass-based estimate, on 12 held-out machined and stamped parts</div>
             </div>
           </div>
         </Reveal>

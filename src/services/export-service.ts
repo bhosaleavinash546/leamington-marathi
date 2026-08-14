@@ -3,6 +3,9 @@ import PptxGenJS from 'pptxgenjs';
 import jsPDF from 'jspdf';
 import { pdfSafe, deepPdfSafe } from './pdf-safe.mjs';
 import { LOGO_PNG } from './brainspark-logo-png';
+import {
+  OUTBOUND_DISCLAIMER, engineVerdict, evidenceLine, verificationCell, verificationTally,
+} from './idea-provenance.mjs';
 import { AnalysisResult, CostReductionIdea } from '../types';
 
 const DIFFICULTY_COLOR: Record<string, string> = {
@@ -30,6 +33,18 @@ export async function exportToExcel(result: AnalysisResult, systemName: string, 
     ['Strategic Items (Medium/High)', result.summary.strategicItems],
     ['Web Searches Performed', result.summary.searchesPerformed],
   ];
+  // How much of this workbook is actually verified. Without it a reader takes
+  // every row as equally solid; typically only a minority are engine-checked.
+  const tally = verificationTally(result.ideas);
+  summaryData.push(
+    [''],
+    ['VERIFICATION'],
+    ['Engine-confirmed', tally.confirmed],
+    ['Engine-contradicted', tally.contradicted],
+    ['Not engine-checked', tally.unchecked],
+    ['Evidence independently verified', tally.evidenceVerified],
+    ['', OUTBOUND_DISCLAIMER],
+  );
   sheets.push({ name: 'Summary', rows: summaryData, colWidths: [35, 50] });
 
   // --- Sheet 2: Ideas Detail ---
@@ -48,6 +63,10 @@ export async function exportToExcel(result: AnalysisResult, systemName: string, 
     'DFMA Principles',
     'Risk Notes',
     'Benchmark Reference',
+    // Provenance travels with the numbers. A saving the engine contradicted
+    // must not sit in a spreadsheet looking like one it confirmed.
+    'Engine Check',
+    'Confidence & Evidence',
   ];
 
   const rows = result.ideas.map((idea, i) => [
@@ -65,12 +84,14 @@ export async function exportToExcel(result: AnalysisResult, systemName: string, 
     idea.dfmaPrinciples.join('; '),
     idea.riskNotes,
     idea.benchmarkReference || '',
+    verificationCell(idea),
+    evidenceLine(idea),
   ]);
 
   sheets.push({
     name: 'Cost Reduction Ideas',
     rows: [headers, ...rows],
-    colWidths: [5, 35, 15, 60, 50, 30, 20, 25, 25, 12, 22, 40, 50, 30],
+    colWidths: [5, 35, 15, 60, 50, 30, 20, 25, 25, 12, 22, 40, 50, 30, 30, 55],
     // Colour the Difficulty column (0-based col 9; +1 row for the header)
     fills: rows.map((_, i) => ({
       row: i + 1, col: 9,
@@ -291,12 +312,20 @@ export async function exportToPowerPoint(
 
     // Right column: Metrics
     const rx = 7.7;
+    // The verification tile sits with the money tiles deliberately: a reader
+    // who takes "Annual Value" from this slide must see, in the same glance,
+    // whether an engine ever tested it.
+    const pv = engineVerdict(idea);
+    const TONE_HEX: Record<string, string> = {
+      confirmed: '16a34a', contradicted: 'dc2626', none: '64748b',
+    };
     const metrics2 = [
       { label: 'System Level', value: idea.systemLevel, color: '6366f1' },
       { label: 'Cost Saving Types', value: idea.costSavingTypes.join(', '), color: '0891b2' },
       { label: 'Saving Potential', value: idea.costSavingPotential.percentage || idea.costSavingPotential.qualitative.split('\n')[0], color: '16a34a' },
       { label: 'Annual Value', value: idea.costSavingPotential.annualValue || 'TBD', color: '9333ea' },
       { label: 'Time to Implement', value: idea.timeToImplement, color: 'ea580c' },
+      { label: 'Verification', value: verificationCell(idea), color: TONE_HEX[pv.tone] },
     ];
 
     metrics2.forEach((m, i) => {
@@ -795,33 +824,32 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
 
     // Verification & evidence — the provenance the platform stamps on every
     // idea belongs in the report (it IS the trust story).
-    const ec = idea.engineCheck;
-    const evid = idea.evidenceSources ?? [];
+    const verdict = engineVerdict(idea);
     if (y > BOTTOM - 30) continuation();
     setColor(doc, NAVY_RGB);
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text('Verification & Evidence', ML, y);
     y += 4;
-    const ecText = ec
-      ? `Engine cross-check (${ec.direction.toUpperCase()}): €${ec.baselineEur.toFixed(2)} → €${ec.proposedEur.toFixed(2)} (${ec.savingPct > 0 ? '−' : '+'}${Math.abs(ec.savingPct)}%) on ${ec.referenceCase}. ${ec.basis}`
-      : 'Engine cross-check: not expressible as a material/process/mass substitution — saving is AI-estimated, validate before commercial use.';
+    // Verdict and wording come from idea-provenance.mjs so all four exporters
+    // say the same thing; only the colour is chosen here.
     doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-    const ecLines = wrapText(doc, pdfSafe(ecText), CW - 4);
-    const ecFill: readonly [number, number, number] = ec ? (ec.direction === 'confirmed' ? [236, 253, 245] : [254, 242, 242]) : [241, 245, 249];
-    const ecCol: readonly [number, number, number] = ec ? (ec.direction === 'confirmed' ? [6, 95, 70] : [153, 27, 27]) : [71, 85, 105];
+    const ecLines = wrapText(doc, pdfSafe(`${verdict.label} — ${verdict.text}`), CW - 4);
+    const TONE_FILL: Record<string, readonly [number, number, number]> = {
+      confirmed: [236, 253, 245], contradicted: [254, 242, 242], none: [241, 245, 249],
+    };
+    const TONE_INK: Record<string, readonly [number, number, number]> = {
+      confirmed: [6, 95, 70], contradicted: [153, 27, 27], none: [71, 85, 105],
+    };
     const ecH = ecLines.length * LH + 4.5;
-    setFill(doc, ecFill);
+    setFill(doc, TONE_FILL[verdict.tone]);
     doc.roundedRect(ML, y, CW, ecH, 1.5, 1.5, 'F');
-    setColor(doc, ecCol);
+    setColor(doc, TONE_INK[verdict.tone]);
     doc.text(ecLines, ML + 2, y + 4.2, { lineHeightFactor: LHF });
     y += ecH + 3;
     setColor(doc, GRAY_RGB);
     doc.setFontSize(7.5);
-    const evidLine = evid.length
-      ? `Confidence: ${idea.confidenceLevel ?? 'estimated'}${idea.evidenceUnverified ? ' (evidence not independently verified)' : ''}  ·  Sources: ${evid.slice(0, 3).map(s => `${s.title}${s.year ? ` (${s.year})` : ''}`).join('; ')}`
-      : `Confidence: ${idea.confidenceLevel ?? 'estimated'} — no external evidence sources attached.`;
-    doc.text(wrapText(doc, fitText(doc, evidLine, CW * 2), CW), ML, y);
+    doc.text(wrapText(doc, fitText(doc, evidenceLine(idea), CW * 2), CW), ML, y);
   });
 
   // ── Final page: Implementation Roadmap ────────────────────────────────────
@@ -984,6 +1012,20 @@ export function exportRfqPdf(
     ry += 10;
   });
 
+  // Basis of estimate, stated once on the cover. A supplier who skims straight
+  // to the line items still meets it here, and the per-item BASIS OF ESTIMATE
+  // section repeats the verdict for the specific line they are quoting.
+  const rfqTally = verificationTally(approvedIdeas);
+  setColor(doc, [200, 210, 220]);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  const discLines = doc.splitTextToSize(
+    `${OUTBOUND_DISCLAIMER}  In this pack: ${rfqTally.confirmed} engine-confirmed, `
+    + `${rfqTally.contradicted} engine-contradicted, ${rfqTally.unchecked} not engine-checked.`,
+    CW,
+  );
+  doc.text(discLines, ML, ry + 6);
+
   setColor(doc, GRAY_RGB);
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
@@ -1080,6 +1122,10 @@ export function exportRfqPdf(
 
     rfqSection('TECHNICAL SPECIFICATION', idea.technicalDescription);
     rfqSection('MANUFACTURING & ASSEMBLY IMPACT', idea.manufacturingImpact);
+    // A supplier is being asked to quote against this line. They are entitled
+    // to know whether the saving behind it was ever tested by the cost engine
+    // or is an AI estimate — the distinction changes how they read the target.
+    rfqSection('BASIS OF ESTIMATE', `${engineVerdict(idea).text} ${evidenceLine(idea)}`);
 
     // RFQ Requirements
     rfqEnsure(50);

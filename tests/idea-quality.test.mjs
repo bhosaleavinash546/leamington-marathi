@@ -75,6 +75,48 @@ test('rankIdeas: engine-contradicted sinks, taste match boosts, basis is explain
   assert.match(ideas[3].rank.basis, /no annual value/);
 });
 
+// An idea's annual value is a free-text figure the MODEL wrote. It was also
+// the dominant, unbounded term in the ranking score, while engine confirmation
+// was a trailing ×1.2. So an idea that simply overstated itself outranked one
+// the engine had actually checked — the pipeline rewarded inflation. The claim
+// is now winsorised against the batch so a runaway number cannot buy the top
+// slot, and the cap is stated in the basis rather than applied silently.
+test('rankIdeas: an inflated self-reported claim cannot run away from an engine-confirmed idea', () => {
+  const solid = { costSavingPotential: { annualValue: '£400K', paybackMonths: 6 }, engineCheck: { direction: 'confirmed' } };
+  const ideas = [
+    mk('Engine-confirmed', 'x', solid),
+    mk('Peer A', 'x', { costSavingPotential: { annualValue: '£350K', paybackMonths: 6 } }),
+    mk('Peer B', 'x', { costSavingPotential: { annualValue: '£450K', paybackMonths: 6 } }),
+    mk('Peer C', 'x', { costSavingPotential: { annualValue: '£300K', paybackMonths: 6 } }),
+    // 25x the batch — unverified, unchecked, and previously the top result.
+    mk('Inflated claim', 'x', { costSavingPotential: { annualValue: '£10M', paybackMonths: 6 } }),
+  ];
+  rankIdeas(ideas);
+  const s = Object.fromEntries(ideas.map(i => [i.title, i.rank.score]));
+  assert.ok(
+    s['Inflated claim'] < s['Engine-confirmed'] * 3,
+    `a 25x unverified claim still ran away with it (inflated ${s['Inflated claim']} vs confirmed ${s['Engine-confirmed']})`,
+  );
+  const inflated = ideas.find(i => i.title === 'Inflated claim');
+  assert.match(inflated.rank.basis, /capped/, 'the cap must be visible, not silent');
+  assert.match(inflated.rank.basis, /10/, 'the basis must still report what was actually claimed');
+});
+
+test('rankIdeas: not being engine-checked costs something, but does not bury the idea', () => {
+  // Only ~15% of generated ideas are expressible as a check the engine can run,
+  // so a heavy penalty would suppress most of the output. It must cost a
+  // little and be stated — not dominate.
+  const ideas = [
+    mk('Checked', 'x', { costSavingPotential: { annualValue: '£400K' }, engineCheck: { direction: 'confirmed' } }),
+    mk('Unchecked', 'x', { costSavingPotential: { annualValue: '£400K' } }),
+  ];
+  rankIdeas(ideas);
+  const [c, u] = ideas.map(i => i.rank.score);
+  assert.ok(c > u, 'engine-confirmed must outrank an identical unchecked claim');
+  assert.ok(u > c * 0.5, 'but an unchecked idea must not be buried — most ideas are unchecked');
+  assert.match(ideas[1].rank.basis, /not engine-checked/);
+});
+
 test('similarityMatches: near-restatement flagged, distinct idea not, best-first and capped', () => {
   const corpus = [
     { id: 'a', title: 'Convert stamped steel bracket to aluminium HPDC', description: 'Replace the three-piece welded stamped steel bracket with a single aluminium high pressure die casting.' },
