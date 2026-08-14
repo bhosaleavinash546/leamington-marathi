@@ -42,6 +42,24 @@ const round = (x, dp = 2) => Number(Number(x).toFixed(dp));
  *  removal needs the function redistributed — the others are pure gain. */
 export const FUNCTION_RANKS = ['useful', 'harmful', 'excessive', 'insufficient'];
 
+/**
+ * Third-person function verb → bare infinitive.
+ *
+ * A function model is written the way TRIZ writes one — "bracket SUPPORTS
+ * sensor" — so the verb arrives conjugated. Two of the three rule questions
+ * need it after a modal ("can … support", "could … support"), and dropping the
+ * conjugated form straight in produced "Can sensor supports by itself?" in the
+ * UI and in exported reports. Irregular verbs are left alone rather than
+ * mangled: a slightly stiff question beats a wrong one.
+ */
+export function bareVerb(v) {
+  const s = String(v ?? '').trim();
+  if (/[^aeiou]ies$/i.test(s)) return `${s.slice(0, -3)}y`;      // carries → carry
+  if (/(ss|sh|ch|x|z|o)es$/i.test(s)) return s.slice(0, -2);     // presses → press, fixes → fix
+  if (/[^s]s$/i.test(s)) return s.slice(0, -1);                  // supports → support
+  return s;                                                      // already bare, or irregular
+}
+
 export const TRIMMING_RULES = {
   A: {
     id: 'A',
@@ -52,13 +70,13 @@ export const TRIMMING_RULES = {
   B: {
     id: 'B',
     name: 'The object does it itself',
-    question: (f) => `Can "${f.object}" ${f.function} by itself, without "${f.carrier}"?`,
+    question: (f) => `Can "${f.object}" ${bareVerb(f.function)} by itself, without "${f.carrier}"?`,
     rationale: 'Trims the carrier because the object can perform the function unaided — the carrier was only enabling it.',
   },
   C: {
     id: 'C',
     name: 'Something already there does it',
-    question: (f) => `Which other component — in the system or around it — could ${f.function} instead of "${f.carrier}"?`,
+    question: (f) => `Which other component — in the system or around it — could ${bareVerb(f.function)} instead of "${f.carrier}"?`,
     rationale: 'Trims the carrier because another existing component, in the system or supersystem, can perform the useful function.',
   },
 };

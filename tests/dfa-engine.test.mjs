@@ -204,3 +204,36 @@ test('a part that failed to measure is carried as skipped, not silently dropped'
   assert.equal(r.rows[3].skipped, true);
   assert.equal(r.totalParts, 3, 'a part that could not be measured must not be timed');
 });
+
+// An assumed density is not a measurement. It drives handling time and so the
+// assembly cost, and it used to reach the report indistinguishable from a mass
+// derived from a material the user actually stated.
+test('dfa: a substituted density is stamped, not silent', () => {
+  const decomposition = {
+    status: 'success',
+    distinctPartTypes: 1,
+    parts: [
+      { index: 0, name: 'housing', volumeMm3: 120000, maxDimMm: 90, minDimMm: 20, symmetry: 1 },
+      { index: 1, name: 'cover', volumeMm3: 40000, maxDimMm: 60, minDimMm: 10, symmetry: 2 },
+    ],
+  };
+  // No material given at all.
+  const assumed = analyseDfa(decomposition, {});
+  assert.equal(assumed.massAssumptions.assumedParts, 2);
+  assert.equal(assumed.massAssumptions.statedParts, 0);
+  assert.match(assumed.massAssumptions.note, /assumes steel/);
+  for (const r of assumed.rows) {
+    assert.equal(r.densityAssumed, true, `${r.name} must admit its mass was assumed`);
+    assert.match(r.massBasis, /no material was given/);
+  }
+
+  // Density supplied for one part only — the split must be reported honestly.
+  const mixed = analyseDfa(decomposition, { densityByIndex: { 0: 2.7 } });
+  assert.equal(mixed.massAssumptions.assumedParts, 1);
+  assert.equal(mixed.massAssumptions.statedParts, 1);
+  assert.equal(mixed.rows[0].densityAssumed, false);
+  assert.equal(mixed.rows[0].density, 2.7);
+  assert.match(mixed.rows[0].massBasis, /supplied density/);
+  // Aluminium is ~1/3 the density of steel, so the assumption was not harmless.
+  assert.ok(mixed.rows[0].massKg < assumed.rows[0].massKg / 2);
+});

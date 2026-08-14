@@ -134,7 +134,13 @@ export function analyseDfa(decomposition, opts = {}) {
     }
     const group = groupOf.get(p.index);
     const groupSize = group?.count ?? 1;
-    const density = opts.densityByIndex?.[p.index] ?? opts.density ?? DEFAULT_DENSITY;
+    // A part's mass drives its handling time, so the model needs a density even
+    // when the caller gave no material. Substituting steel is defensible; doing
+    // it silently is not — the assumption reached the report looking like a
+    // measurement. Stamp it so every downstream surface can say which it is.
+    const suppliedDensity = opts.densityByIndex?.[p.index] ?? opts.density ?? null;
+    const densityAssumed = suppliedDensity == null;
+    const density = suppliedDensity ?? DEFAULT_DENSITY;
     const massKg = (p.volumeMm3 / 1000) * density / 1000;   // mm³→cm³→g→kg
 
     const part = {
@@ -159,6 +165,11 @@ export function analyseDfa(decomposition, opts = {}) {
       name: p.name,
       groupSize,
       massKg: round2(massKg),
+      density,
+      densityAssumed,
+      massBasis: densityAssumed
+        ? `mass assumes steel at ${DEFAULT_DENSITY} g/cm³ — no material was given for this part`
+        : `mass from supplied density ${density} g/cm³`,
       maxDimMm: p.maxDimMm,
       minDimMm: p.minDimMm,
       symmetry: p.symmetry,
@@ -226,6 +237,17 @@ export function analyseDfa(decomposition, opts = {}) {
     consolidationCandidates: candidates,
     suspectedFasteners: scored.filter(r => r.fastener.isFastener)
       .map(r => ({ index: r.index, name: r.name, confidence: r.fastener.confidence })),
+    // Assumed mass propagates into handling time, and therefore into the
+    // assembly cost above. A reader is entitled to know how much of the total
+    // rests on a substituted density rather than a stated material.
+    massAssumptions: {
+      assumedParts: scored.filter(r => r.densityAssumed).length,
+      statedParts: scored.filter(r => !r.densityAssumed).length,
+      defaultDensity: DEFAULT_DENSITY,
+      note: scored.some(r => r.densityAssumed)
+        ? `${scored.filter(r => r.densityAssumed).length} of ${totalParts} parts have no stated material; their mass assumes steel at ${DEFAULT_DENSITY} g/cm³, which drives handling time and therefore the assembly cost.`
+        : 'Every part had a stated density — no mass was assumed.',
+    },
     rows,
     // The honesty block. A DFA index computed over unanswered parts would be a
     // number with nothing behind it, so it is withheld and the gap is named.

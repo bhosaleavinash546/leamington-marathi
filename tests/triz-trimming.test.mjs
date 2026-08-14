@@ -8,7 +8,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   trimmingCandidates, validateFunctionModel, functionModelFromFast,
-  trimmingUpside, TRIMMING_RULES, FUNCTION_RANKS,
+  trimmingUpside, TRIMMING_RULES, FUNCTION_RANKS, bareVerb,
 } from '../triz-trimming.mjs';
 import { functionCostMatrix } from '../innovation.mjs';
 
@@ -239,5 +239,40 @@ describe('triz trimming — determinism', () => {
     for (const r of Object.values(TRIMMING_RULES)) {
       assert.ok(r.name && r.rationale && typeof r.question === 'function');
     }
+  });
+});
+
+// The rule questions are read by an engineer and land in exported reports, so
+// the grammar is product quality, not polish. A function model stores the verb
+// conjugated ("bracket SUPPORTS sensor"), and rules B and C put it after a
+// modal — which produced "Can sensor supports by itself?" in the live UI.
+describe('rule questions read as English', () => {
+  it('de-conjugates the common third-person forms', () => {
+    assert.equal(bareVerb('supports'), 'support');
+    assert.equal(bareVerb('clamps'), 'clamp');
+    assert.equal(bareVerb('spaces'), 'space');
+    assert.equal(bareVerb('carries'), 'carry');
+    assert.equal(bareVerb('presses'), 'press');
+    assert.equal(bareVerb('fixes'), 'fix');
+    assert.equal(bareVerb('positions'), 'position');
+  });
+
+  it('leaves an already-bare verb alone rather than over-stripping it', () => {
+    assert.equal(bareVerb('support'), 'support');
+    assert.equal(bareVerb('hold'), 'hold');
+    assert.equal(bareVerb('seal'), 'seal');
+  });
+
+  it('is safe on empty and rubbish input', () => {
+    assert.equal(bareVerb(''), '');
+    assert.equal(bareVerb(null), '');
+  });
+
+  it('produces a readable question for rules B and C', () => {
+    const f = { carrier: 'steel bracket', function: 'supports', object: 'sensor' };
+    assert.equal(TRIMMING_RULES.B.question(f), 'Can "sensor" support by itself, without "steel bracket"?');
+    assert.match(TRIMMING_RULES.C.question(f), /could support instead of "steel bracket"/);
+    // The regression, stated explicitly.
+    assert.doesNotMatch(TRIMMING_RULES.B.question(f), /supports by itself/);
   });
 });

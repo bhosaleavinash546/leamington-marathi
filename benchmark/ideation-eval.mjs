@@ -112,19 +112,45 @@ try {
   const { token } = await su.json();
 
   const perPart = [];
+  // Visible to the outer catch so a crashed run still writes what it paid for.
+  globalThis.__evalPerPart = perPart;
   for (const g of GOLDEN) {
     const t0 = Date.now();
-    const r = await fetch(`${BASE}/api/analyze`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({
-        systemName: g.systemName, subassemblyName: g.subassemblyName, partName: g.partName,
-        enableSearch: false,
-        config: { apiKey: KEY, vehicleType: 'Premium SUV', annualVolume: 80000, plantRegion: 'germany', currency: 'EUR', programmeLengthYears: 5, ...(deep ? { deepMode: true } : {}) },
-      }),
-    });
-    if (!r.ok) { perPart.push({ part: g.partName, error: (await r.json()).error }); continue; }
-    const d = await r.json();
+    // A whole arm is ~30 minutes of PAID calls. An HTTP error response was
+    // already survivable, but a THROWN fetch error — a socket reset, a proxy
+    // hiccup — escaped to the outer handler and binned every part completed so
+    // far, writing no results at all. That is very likely why this harness had
+    // never produced a run: it could not survive one blip in half an hour.
+    // Retry the transient case, and on final failure record the part and carry
+    // on so the arm still yields the parts that did work.
+    let d = null, lastErr = null;
+    for (let attempt = 1; attempt <= 3 && d === null; attempt++) {
+      try {
+        const r = await fetch(`${BASE}/api/analyze`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            systemName: g.systemName, subassemblyName: g.subassemblyName, partName: g.partName,
+            enableSearch: false,
+            config: { apiKey: KEY, vehicleType: 'Premium SUV', annualVolume: 80000, plantRegion: 'germany', currency: 'EUR', programmeLengthYears: 5, ...(deep ? { deepMode: true } : {}) },
+          }),
+        });
+        // A 4xx is a real answer, not a blip — record it and stop retrying.
+        if (!r.ok) { lastErr = (await r.json().catch(() => ({}))).error ?? `HTTP ${r.status}`; break; }
+        d = await r.json();
+      } catch (e) {
+        lastErr = e.message;
+        if (attempt < 3) {
+          console.log(`  ${g.partName}: ${e.message} — retry ${attempt}/2 in ${attempt * 5}s`);
+          await new Promise(res => setTimeout(res, attempt * 5000));
+        }
+      }
+    }
+    if (d === null) {
+      console.log(`${g.partName}: FAILED — ${lastErr}`);
+      perPart.push({ part: g.partName, error: lastErr });
+      continue;
+    }
     const ideas = d.ideas || [];
     const v = d.validation || {};
     const div = batchDiversity(ideas);
@@ -233,5 +259,18 @@ ${fmt(setB)}`;
   cleanup(0);
 } catch (e) {
   console.error('ideation-eval failed:', e.message);
+  // Never bin paid work. Whatever parts completed are written under a
+  // -partial label so the run is still worth something and a re-run can be
+  // compared against it rather than starting from nothing.
+  try {
+    if (globalThis.__evalPerPart?.length) {
+      const p = resultsPath(`${label}-partial`);
+      writeFileSync(p, JSON.stringify({
+        label: `${label}-partial`, incomplete: true, failedAfter: globalThis.__evalPerPart.length,
+        reason: e.message, perPart: globalThis.__evalPerPart,
+      }, null, 2));
+      console.error(`Wrote ${globalThis.__evalPerPart.length} completed part(s) to ${p}`);
+    }
+  } catch { /* the original error is the one that matters */ }
   cleanup(1);
 }
