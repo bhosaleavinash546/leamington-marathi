@@ -17,6 +17,7 @@ import {
   rateValues,
 } from './sw-rate-library.js';
 import type { SWRateLibrary } from './sw-rate-library.js';
+import { mulberry32 } from './uncertainty.js';
 
 export type { SWRateLibrary, SWRateEntry, RateConfidence } from './sw-rate-library.js';
 export { DEFAULT_SW_RATE_LIBRARY } from './sw-rate-library.js';
@@ -991,10 +992,21 @@ function computeModuleCost(
  */
 const MC_CORRELATION = 0.55;
 
-function runMonteCarlo(prog: SWProgramInputs, s: SWSummary, iterations = 1000): SWMonteCarlo {
+/** Fixed seed for the programme Monte Carlo, so a band is reproducible.
+ *  Callers who genuinely want a different draw pass their own. */
+export const SW_MC_SEED = 20260814;
+
+function runMonteCarlo(
+  prog: SWProgramInputs, s: SWSummary, iterations = 1000, seed = SW_MC_SEED,
+): SWMonteCarlo {
+  // SEEDED. This used raw Math.random(), so the P50/P90 band differed on every
+  // run for identical inputs — measured at ~£4M of swing on P50 of a £494M
+  // programme. A confidence interval a customer cannot reproduce is not a
+  // confidence interval. Same generator the physical-parts bands use.
+  const rand = mulberry32(seed);
   // Triangular distribution sampler
   function tri(a: number, m: number, b: number): number {
-    const u = Math.random();
+    const u = rand();
     const Fc = (m - a) / (b - a);
     if (u < Fc) return a + Math.sqrt(u * (b - a) * (m - a));
     return b - Math.sqrt((1 - u) * (b - a) * (b - m));
@@ -1022,7 +1034,7 @@ function runMonteCarlo(prog: SWProgramInputs, s: SWSummary, iterations = 1000): 
   const totals: number[] = [];
   for (let i = 0; i < iterations; i++) {
     // One shared programme-wide percentile draw (0..1) reused across buckets.
-    const sharedQ = Math.random();
+    const sharedQ = rand();
     let total = 0;
     for (const [val, lo, mode, hi] of buckets) {
       // Map the shared quantile onto this bucket's triangular range.

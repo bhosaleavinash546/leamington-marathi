@@ -49,8 +49,15 @@ export function overallConfidence(result: PartCostResult): Confidence {
   return high >= 0.4 ? 'Medium' : 'Low';
 }
 
-/** Small, fast, seeded PRNG (mulberry32) → deterministic bands. */
-function mulberry32(seed: number): () => number {
+/**
+ * Small, fast, seeded PRNG (mulberry32) → deterministic bands.
+ *
+ * Exported because the software should-cost model had its own Monte Carlo built
+ * on raw `Math.random()`, so its P50/P90 band moved on every run for identical
+ * inputs — a confidence interval nobody could reproduce. One seeded generator
+ * for the whole tool rather than two conventions.
+ */
+export function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
   return () => {
     a |= 0; a = (a + 0x6D2B79F5) | 0;

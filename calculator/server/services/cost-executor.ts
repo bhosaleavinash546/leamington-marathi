@@ -6,7 +6,7 @@
  * for the `calculate_cost` Anthropic tool_use block.
  */
 
-import { computeUniversalStack } from '../../src/engine/core.js';
+import { computeUniversalStack, validateStackInput } from '../../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 
 import { computeMachiningDrivers }        from '../../src/engine/modules/machining.js';
@@ -128,6 +128,17 @@ function generateDfmOpportunities(
 
 // ─── Main executor ────────────────────────────────────────────────────────────
 
+
+/** The zeroed shape every failure path returns, so they cannot drift apart. */
+function emptyResult(partName: string, commodity: string): CostToolResult {
+  return {
+    success: false, partName, commodity,
+    breakdown: { rawMaterial: 0, process: 0, labour: 0, tooling: 0,
+                 packaging: 0, logistics: 0, overhead: 0, margin: 0 },
+    total: 0, factoryCost: 0, topDrivers: [], dfmOpportunities: [],
+  };
+}
+
 export function executeCalculateCost(input: CostToolInput): CostToolResult {
   const {
     commodity,
@@ -158,23 +169,51 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
     // Call the commodity-specific driver function
     const drivers = computeFn(params);
 
-    // Build the UniversalStackInput and run the cost stack
-    const result = computeUniversalStack(
-      {
-        partName,
-        rawMaterial:      drivers.rawMaterial,
-        operations:       drivers.operations,
-        tooling:          drivers.tooling,
-        packagingPerPart,
-        logisticsPerPart,
-        overheadPct,
-        marginPct,
-      },
-      DEFAULT_RATE_LIBRARY,
-    );
+    const stackInput = {
+      partName,
+      rawMaterial:      drivers.rawMaterial,
+      operations:       drivers.operations,
+      tooling:          drivers.tooling,
+      packagingPerPart,
+      logisticsPerPart,
+      overheadPct,
+      marginPct,
+    };
+
+    // VALIDATE BEFORE COSTING. This path is driven by an LLM choosing `params`,
+    // so a missing or malformed driver is a likely event, not a hypothetical.
+    // Without this, omitting ONE mandatory numeric field (e.g. machining's
+    // `programmingNRE`) propagated `undefined` through the arithmetic and the
+    // tool returned `success: true` with `total: NaN` — a confident non-answer,
+    // which is worse than an error because a caller will format and report it.
+    // `validateStackInput` already existed and gives field-level messages an
+    // agent can act on; it simply was never called here.
+    const validation = validateStackInput(stackInput, DEFAULT_RATE_LIBRARY);
+    if (!validation.valid) {
+      return {
+        ...emptyResult(partName, commodity),
+        error: `Invalid cost inputs for "${commodity}": `
+          + validation.errors.map(e => `${e.field}: ${e.message}`).join('; '),
+      };
+    }
+
+    const result = computeUniversalStack(stackInput, DEFAULT_RATE_LIBRARY);
 
     const bd = result.breakdown;
     const total = result.total;
+
+    // Belt and braces: a finite-number check on the way out. Validation covers
+    // the inputs it knows about; this catches anything that still produces a
+    // non-finite number so NaN can never leave this function as a success.
+    const nonFinite = Object.entries(bd).filter(([, v]) => !Number.isFinite(v)).map(([k]) => k);
+    if (nonFinite.length > 0 || !Number.isFinite(total)) {
+      return {
+        ...emptyResult(partName, commodity),
+        error: `Cost computation produced non-finite values for "${commodity}"`
+          + (nonFinite.length ? ` in: ${nonFinite.join(', ')}` : '')
+          + '. This means a required driver was missing or malformed.',
+      };
+    }
 
     // Build top 3 cost drivers sorted descending
     const buckets: Array<{ bucket: string; cost: number }> = [
