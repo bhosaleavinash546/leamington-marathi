@@ -1415,6 +1415,19 @@ export default function ResultsPage() {
                 <span className="text-danger-400 text-sm">{t.contradicted} engine-contradicted</span>
               )}
               <span className="text-slate-500 text-sm">{t.unchecked} not engine-checked</span>
+              {/* Corpus novelty, next to verification because they are the two
+                  things a reader needs to calibrate the set. It is NOT the same
+                  as the ideas differing from each other — a batch can be varied
+                  and still be all known levers. */}
+              {(() => {
+                const echoes = result.ideas.filter(i => i.priorArt).length;
+                if (!echoes) return null;
+                return (
+                  <span className="text-slate-500 text-sm" title="These closely match ideas already in the marketplace. Still valid — proven precedent is what the library is for — but they are not new thinking, and they now rank slightly below an equally valuable novel idea.">
+                    {t.total - echoes} of {t.total} new to the library
+                  </span>
+                );
+              })()}
               <span className="text-slate-500 text-xs ml-auto">
                 Ideas the engine cannot re-cost are AI-estimated — validate before commercial use.
               </span>

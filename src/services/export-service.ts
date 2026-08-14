@@ -6,6 +6,7 @@ import { LOGO_PNG } from './brainspark-logo-png';
 import {
   OUTBOUND_DISCLAIMER, engineVerdict, evidenceLine, verificationCell, verificationTally,
 } from './idea-provenance.mjs';
+import { parseMoney, colPositions, safeFilename } from './report-core.mjs';
 import { AnalysisResult, CostReductionIdea } from '../types';
 
 const DIFFICULTY_COLOR: Record<string, string> = {
@@ -442,18 +443,6 @@ function fitText(doc: jsPDF, text: string, maxWidth: number): string {
   return t.trimEnd() + '…';
 }
 
-/** Column x-positions from widths: x[i] = ML + sum(widths before i).
- *  (Replaces a reduce that mis-seeded the accumulator and scrambled every
- *  table's column origins — the root cause of text piling up at the left.) */
-function colPositions(widths: number[], ml: number): number[] {
-  return widths.map((_, i) => ml + widths.slice(0, i).reduce((a, b) => a + b, 0));
-}
-
-/** Download filenames must not contain filesystem-reserved characters —
- *  system names like "BEV / MHEV" otherwise produce broken downloads. */
-function safeFilename(name: string): string {
-  return name.replace(/[\\/:*?"<>|]/g, '-');
-}
 
 // ─── PDF Export ───────────────────────────────────────────────────────────────
 
@@ -609,14 +598,11 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
 
   newPage();
 
-  function parseVal(val?: string): number {
-    if (!val) return 0;
-    const c = val.toLowerCase().replace(/[€£$,\s%]/g, '');
-    const m = c.match(/([\d.]+)([mk]?)/);
-    if (!m) return 0;
-    const n = parseFloat(m[1]);
-    return n * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
-  }
+  // parseVal used to live here with its own regex, and it read the LOW END of
+  // a range where the server and the UI take the midpoint — so this page could
+  // ROI-rank the ideas differently from the screen the reader had just seen.
+  // One parser now, in report-core.mjs, with a test asserting the two agree.
+  const parseVal = parseMoney;
 
   setFill(doc, NAVY_RGB);
   doc.rect(0, 0, PW, 18, 'F');

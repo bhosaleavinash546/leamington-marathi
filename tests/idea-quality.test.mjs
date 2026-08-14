@@ -165,3 +165,38 @@ test('kb-pack.json: generated pack is present, complete, and shaped for the prom
   // The ids the CONTEXT_MAPs use must resolve in the pack (spot-check EDU).
   assert.ok(pack.domains.edu.some(c => c.id === 'stator-winding'), 'edu ids align with CONTEXT_MAP vocabulary');
 });
+
+// 83.1% of generated ideas carry a priorArt stamp — they are near-restatements
+// of something already in the marketplace corpus. The stamp was rendered as a
+// badge and counted in the eval, and read by NOTHING in the ranking, so a
+// restatement of a known lever ranked identically to a genuinely new idea at
+// the same claimed value. Batch diversity was the only novelty-ish signal being
+// acted on, and it measures a different thing: whether the ideas differ from
+// EACH OTHER, not whether any of them is new to the corpus.
+test('rankIdeas: a near-restatement does not outrank a novel idea of equal value', () => {
+  const value = { annualValue: '£400K', paybackMonths: 6 };
+  const ideas = [
+    mk('Novel idea', 'x', { costSavingPotential: value }),
+    mk('Known lever', 'x', { costSavingPotential: value, priorArt: { id: 'mk-1', title: 'Existing marketplace idea', score: 28 } }),
+    mk('Loose echo', 'x', { costSavingPotential: value, priorArt: { id: 'mk-2', title: 'Vaguely similar idea', score: 13 } }),
+  ];
+  rankIdeas(ideas);
+  const s = Object.fromEntries(ideas.map(i => [i.title, i.rank.score]));
+  assert.ok(s['Novel idea'] > s['Known lever'], 'a novel idea must outrank a restatement of equal value');
+  assert.ok(s['Loose echo'] > s['Known lever'], 'a closer match must cost more than a loose one');
+  assert.match(ideas[1].rank.basis, /prior art/i, 'the discount must be visible in the basis');
+  assert.match(ideas[1].rank.basis, /Existing marketplace idea/, 'and must name what it echoes');
+});
+
+test('rankIdeas: precedent is discounted, never buried — the marketplace exists for a reason', () => {
+  // A proven, already-catalogued lever is genuinely valuable; the failure mode
+  // to avoid is a novelty penalty so heavy that the tool stops surfacing what
+  // actually works.
+  const ideas = [
+    mk('Novel', 'x', { costSavingPotential: { annualValue: '£100K' } }),
+    mk('Proven precedent', 'x', { costSavingPotential: { annualValue: '£400K' }, priorArt: { id: 'p', title: 'Proven', score: 40 } }),
+  ];
+  rankIdeas(ideas);
+  const [novel, proven] = ideas.map(i => i.rank.score);
+  assert.ok(proven > novel, 'a 4x more valuable proven idea must still win');
+});

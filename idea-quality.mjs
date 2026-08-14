@@ -241,6 +241,29 @@ export function rankIdeas(ideas) {
     const tasteFactor = idea.tasteMatch ? 1.15 : 1;
     if (idea.tasteMatch) basis.push(`similar to previously approved "${idea.tasteMatch.title}" ×1.15`);
 
+    // Corpus novelty. `priorArt` was stamped on every near-restatement of an
+    // existing marketplace idea, rendered as a badge, counted in the eval — and
+    // read by nothing here, so a restatement of a known lever ranked exactly
+    // like a genuinely new idea of the same claimed value. Measured at 83% of
+    // generated ideas, that made the ranking effectively novelty-blind.
+    //
+    // Note this is NOT what batch diversity measures. Diversity asks whether
+    // the ideas differ from EACH OTHER; a batch can be perfectly diverse and
+    // still be nine restatements of nine known levers.
+    //
+    // The discount is deliberately gentle and scales with how close the match
+    // is. A proven, already-catalogued lever is genuinely valuable — surfacing
+    // what actually works is what the marketplace is FOR — so the goal is only
+    // to stop a restatement outranking a novel idea at equal value, never to
+    // bury precedent. A 4x more valuable proven idea still wins comfortably.
+    const paScore = idea.priorArt ? Number(idea.priorArt.score) : 0;
+    const noveltyFactor = idea.priorArt
+      ? Math.max(0.70, 1 - 0.30 * Math.min(1, (Number.isFinite(paScore) ? paScore : 12) / 30))
+      : 1;
+    if (idea.priorArt) {
+      basis.push(`prior art "${idea.priorArt.title}" ×${noveltyFactor.toFixed(2)}`);
+    }
+
     // Deep-mode Elo (bounded ×0.85–1.15, stamped by idea-deep.mjs) — soft-axis
     // panel judgement, never allowed to outweigh the engine factor.
     const eloF = typeof idea.eloFactor === 'number' ? Math.min(1.15, Math.max(0.85, idea.eloFactor)) : 1;
@@ -249,7 +272,7 @@ export function rankIdeas(ideas) {
     // Value-less ideas rank on their factors alone (base 1) so verified
     // high-quality ideas still beat broken ones instead of all tying at 0.
     const base = annualMid || 1;
-    const score = base * paybackFactor * qualityFactor * engineFactor * evidenceFactor * tasteFactor * eloF;
+    const score = base * paybackFactor * qualityFactor * engineFactor * evidenceFactor * tasteFactor * noveltyFactor * eloF;
     idea.rank = { score: Number(score.toFixed(1)), basis: basis.join(' · ') };
   }
   return ideas;

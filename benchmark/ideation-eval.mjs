@@ -193,6 +193,15 @@ try {
     contradictedRate: +((sum('contradicted') / Math.max(sum('engineChecked'), 1)) * 100).toFixed(1),
     evidenceRate: +((sum('withEvidence') / totalIdeas) * 100).toFixed(1),
     dupRate: +((sum('priorArtDup') / totalIdeas) * 100).toFixed(1),
+    // CORPUS novelty — the share of ideas that are NOT a near-restatement of
+    // something already in the marketplace. Deliberately reported next to
+    // diversityScore because the two are routinely confused and measure
+    // different things: diversity asks whether the ideas differ from EACH
+    // OTHER, and a perfectly diverse batch can still be nine restatements of
+    // nine known levers. Measured at 16.9% novel in the August 2026 audit,
+    // which is the number that was hiding behind a healthy-looking 87.7
+    // diversity score.
+    corpusNoveltyRate: +(((totalIdeas - sum('priorArtDup')) / totalIdeas) * 100).toFixed(1),
     tasteMatchRate: +((sum('tasteMatched') / totalIdeas) * 100).toFixed(1),
     ...(deep ? { deepMode: true, refinedTotal: sum('refined'), critiquedTotal: sum('critiqued') } : {}),
     ranAt: new Date().toISOString(),
