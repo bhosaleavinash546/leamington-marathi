@@ -2673,3 +2673,61 @@ nothing, and makes BrainSpark the default branch of its own repo.
     `data/backups`) is gitignored and exists only inside the container. It does
     not survive a reclaim, and moving repositories does not change that. Real
     persistence is a separate piece of work.
+
+## 49. Provenance is decided once, and an unverified claim is bounded
+
+**Context**: the August 2026 audit (`docs/AUDIT-2026-08.md`) found the house
+rule holding almost everywhere in the engines and failing at the two places
+where it is worth the most: the artefacts that leave the building, and the
+ranking that decides which ideas a user reads first.
+
+The Excel workbook, the PowerPoint deck and the **RFQ pack sent to suppliers**
+carried no engine cross-check, no confidence level and no evidence caveat.
+Only the on-screen PDF did. So an idea the engine had CONTRADICTED reached a
+supplier reading exactly as authoritative as one it had confirmed — and the
+first live eval measured **30.8% of engine-checked ideas as contradicted**, so
+this was not a hypothetical.
+
+**Decision**: `src/services/idea-provenance.mjs` — a pure, testable module that
+decides the verdict once. Every exporter consumes it; renderers choose colours
+only. Four exporters had re-implemented (and variously broken) the same
+judgement.
+
+**Consequences**:
+  * **`evidenceUnverified` has a non-obvious default and it is now honoured.**
+    The type says `false` = retrieved live, `true` *or* `undefined` =
+    model-asserted. Truthiness therefore reports the common unset case as
+    *verified* — the wrong way round. `evidenceIsVerified()` compares against
+    `false` explicitly. Absence of a stamp is not a stamp.
+  * **The ranking base is winsorised.** The score was `annualValue × factors`,
+    where `annualValue` is free text the MODEL wrote, unbounded, and engine
+    confirmation was a trailing ×1.2 — so an idea that overstated itself
+    outranked one the engine had checked. Claims are now capped at 3× the batch
+    median, with the cap printed in `rank.basis`.
+    - The **median**, not the mean: inflated outliers are exactly what is being
+      guarded against, and they would drag a mean up with them.
+    - Not-engine-checked costs ×0.85, deliberately light. Only about half of
+      generated ideas are expressible as a substitution the engine can re-cost,
+      so a heavy penalty would bury most of the output for being
+      *unrepresentable* rather than *wrong*.
+  * **`notableFlags()` filters the validator, it does not dump it.** Measured
+    flag rate is 60.7%, mostly structural normalisation (`defaulted-difficulty`
+    and friends) that says the model returned a bad enum. Only flags bearing on
+    trust — implausible saving or payback, confidence asserted without evidence,
+    unverified OEM attribution — earn a badge. The rest stay in the payload.
+  * **An absent engine check now renders as a badge**, not as nothing. Silence
+    read as a pass, and silence covered roughly half the output.
+  * **The homepage accuracy claim is pinned to the benchmark JSON by a test.**
+    "2× more accurate" was the stamping figure (1.92×) standing in for machining
+    (1.27×) as well. The repo's rule is "no asserted improvements"; a comment
+    does not fail CI, so `tests/accuracy-claim.test.mjs` does.
+  * A source-level test asserts all four exporters reference the module. Building
+    them needs jsPDF/exceljs/pptxgenjs and a browser, but the regression that
+    shipped was structural — an exporter never mentioning provenance at all —
+    and that is visible in the source.
+
+**Still open, recorded in the audit**: the held-out cost set runs 78.6% hit /
+20.9% MAPE against the CI-gated 100% / 8.3%, and nothing watches the gap; the
+Monte-Carlo P10–P90 band has 35.7% measured coverage against the 80% its label
+implies (the export now carries a caveat, the band itself is uncalibrated); and
+27 DFM rules cite named standards nobody has read first-hand.
