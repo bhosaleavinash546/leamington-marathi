@@ -17,7 +17,7 @@ import { exportToExcel, exportToPowerPoint, exportToPdf, exportRfqPdf } from '..
 import { useAuth } from '../contexts/AuthContext';
 import BusinessCaseModal from '../components/BusinessCaseModal';
 import { generateCostReductionIdeas, sendChatMessage, loadFullResult } from '../services/claude-service';
-import { notableFlags } from '../services/idea-provenance.mjs';
+import { notableFlags, verificationTally } from '../services/idea-provenance.mjs';
 import { toast } from '../hooks/useToast';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
@@ -1397,6 +1397,30 @@ export default function ResultsPage() {
             </div>
           ))}
         </div>
+
+        {/* How much of this page has actually been verified.
+            The per-idea badges say it one idea at a time; without the portfolio
+            figure a reader cannot calibrate the set as a whole, and measured
+            engine-check coverage is well under half. */}
+        {(() => {
+          const t = verificationTally(result.ideas);
+          if (!t.total) return null;
+          return (
+            <div className="mb-5 p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-wrap items-center gap-x-5 gap-y-2">
+              <Gauge size={18} className="text-slate-400 flex-shrink-0" />
+              <span className="text-slate-300 text-sm">
+                <strong className="text-white">{t.confirmed} of {t.total}</strong> ideas engine-verified
+              </span>
+              {t.contradicted > 0 && (
+                <span className="text-danger-400 text-sm">{t.contradicted} engine-contradicted</span>
+              )}
+              <span className="text-slate-500 text-sm">{t.unchecked} not engine-checked</span>
+              <span className="text-slate-500 text-xs ml-auto">
+                Ideas the engine cannot re-cost are AI-estimated — validate before commercial use.
+              </span>
+            </div>
+          );
+        })()}
 
         {/* Quick wins highlight */}
         {quickWins.length > 0 && (

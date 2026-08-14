@@ -44,6 +44,7 @@ const LegalPage = lazy(() => import('./pages/LegalPage'));
 const TrizStudioPage = lazy(() => import('./pages/TrizStudioPage'));
 const InnovationStudioPage = lazy(() => import('./pages/InnovationStudioPage'));
 const ForesightPage = lazy(() => import('./pages/ForesightPage'));
+const HarnessCostPage = lazy(() => import('./pages/HarnessCostPage'));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -63,6 +64,7 @@ function AnimatedRoutes() {
         <Route path="/trends" element={<ProtectedRoute><PageTransition><TrendsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/cad-to-cost" element={<ProtectedRoute><PageTransition><CadToCostPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dfm-studio" element={<ProtectedRoute><PageTransition><DfmStudioPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/harness-cost" element={<ProtectedRoute><PageTransition><HarnessCostPage /></PageTransition></ProtectedRoute>} />
         <Route path="/bom-analysis" element={<ProtectedRoute><PageTransition><BomAnalysisPage /></PageTransition></ProtectedRoute>} />
         <Route path="/should-cost" element={<ProtectedRoute><PageTransition><ShouldCostPage /></PageTransition></ProtectedRoute>} />
         <Route path="/pcb-bom-cost" element={<ProtectedRoute><PageTransition><PcbBomCostPage /></PageTransition></ProtectedRoute>} />

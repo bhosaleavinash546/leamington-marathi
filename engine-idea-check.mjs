@@ -17,7 +17,70 @@
 // math alone, never faked.
 // ─────────────────────────────────────────────────────────────────────────────
 import { computeShouldCost, computeRouteCost } from './costing-engine.mjs';
+import { computeHarnessCost } from './harness-cost.mjs';
 import { resolveMaterial, resolveRoute } from './material-process-resolve.mjs';
+
+/** Harness parameters an idea may propose changing, and their sane ranges. */
+const HARNESS_FIELDS = {
+  circuits:    [1, 2000],
+  avgLengthM:  [0.05, 60],
+  connectors:  [0, 400],
+  splices:     [0, 400],
+  sealedPct:   [0, 1],
+};
+
+/**
+ * Cross-check a harness idea by costing both sides through harness-cost.mjs.
+ *
+ * Returns the same engineCheck stamp shape the material/process path produces,
+ * so every downstream consumer — badges, exports, ranking — works unchanged.
+ * Returns null (never a fabricated stamp) when the request does not describe a
+ * real change or falls outside a modellable range.
+ */
+function checkHarness(req, { region, annualVolume, library }) {
+  const baseIn = req.baseline && typeof req.baseline === 'object' ? req.baseline : null;
+  const propIn = req.proposed && typeof req.proposed === 'object' ? req.proposed : null;
+  if (!baseIn || !propIn) return null;
+
+  const clean = (src, fallback = {}) => {
+    const out = { ...fallback };
+    for (const [k, [lo, hi]] of Object.entries(HARNESS_FIELDS)) {
+      const n = Number(src[k]);
+      if (Number.isFinite(n) && n >= lo && n <= hi) out[k] = n;
+    }
+    return out;
+  };
+  const base = clean(baseIn);
+  if (!Number.isFinite(base.circuits)) return null;         // circuits is the one required input
+  const prop = clean(propIn, base);                          // unstated fields are unchanged
+
+  // A "check" where nothing moved proves nothing.
+  if (HARNESS_FIELDS && Object.keys(HARNESS_FIELDS).every(k => base[k] === prop[k])) return null;
+
+  try {
+    const r = (input) => computeHarnessCost({ ...input, region, annualVolume }, library);
+    const b = r(base), p = r(prop);
+    // harness-cost.mjs returns `totalEur`; the parametric engine returns
+    // `totalShouldCost`. Read the harness field, not the other one.
+    const bt = Number(b?.totalEur), pt = Number(p?.totalEur);
+    if (!Number.isFinite(bt) || !Number.isFinite(pt) || bt <= 0) return null;
+    const savingPct = Number(((bt - pt) / bt * 100).toFixed(1));
+    const changed = Object.keys(HARNESS_FIELDS)
+      .filter(k => base[k] !== prop[k])
+      .map(k => `${k} ${base[k]} → ${prop[k]}`)
+      .join(', ');
+    return {
+      referenceCase: `wiring harness, ${changed}, ${(annualVolume / 1000).toFixed(0)}k/yr, ${region}`,
+      baselineEur: Number(bt.toFixed(2)),
+      proposedEur: Number(pt.toFixed(2)),
+      savingPct,
+      direction: savingPct > 0 ? 'confirmed' : 'contradicted',
+      basis: 'Deterministic wiring-harness cost model (copper, connectors, crimp/insertion/test labour) — validates the DIRECTION of the move, not this harness’s exact figure.',
+    };
+  } catch {
+    return null;   // out of modellable range — honestly unverifiable, never faked
+  }
+}
 
 const clampW = (w, fallback) => {
   const n = Number(w);
@@ -43,7 +106,28 @@ export function runEngineChecks(ideas, { region = 'Germany', annualVolume = 8000
   const summary = { checked: 0, confirmed: 0, contradicted: 0, unexpressible: 0 };
   for (const idea of ideas) {
     const req = idea.engineCheckRequest;
+    const harnessReq = idea.harnessCheckRequest;
     delete idea.engineCheckRequest;   // request is model-internal; the stamp is the product
+    delete idea.harnessCheckRequest;
+
+    // A wiring harness is not "a part with a process", so no material/process
+    // substitution resolves for it and every harness idea came back
+    // unexpressible — measured at 0 of 14 on the body harness, the worst
+    // coverage of any part class. harness-cost.mjs models the commodity
+    // properly (copper × circuits × connectors × labour-minutes) and was sitting
+    // in the repo with nothing calling it. This is that engine, wired in.
+    if (harnessReq && typeof harnessReq === 'object') {
+      const stamped = checkHarness(harnessReq, { region, annualVolume, library });
+      idea.engineCheck = stamped;
+      if (stamped) {
+        summary.checked++;
+        summary[stamped.direction === 'confirmed' ? 'confirmed' : 'contradicted']++;
+      } else {
+        summary.unexpressible++;
+      }
+      continue;
+    }
+
     if (!req || typeof req !== 'object') { idea.engineCheck = null; summary.unexpressible++; continue; }
     try {
       const wBase = clampW(req.referenceWeightKg, defaultWeightKg);
