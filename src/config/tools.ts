@@ -6,7 +6,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Zap, Lightbulb, Target, Sparkles, GitCompare, Calculator, Box, CircuitBoard,
   Layers, GitMerge, ClipboardList, Store, TrendingUp, HelpCircle, Link2, Database,
-  Telescope, ShieldCheck, Cable,
+  Telescope, ShieldCheck, Cable, KeyRound,
 } from 'lucide-react';
 
 export type ToolCategory = 'generate' | 'cost' | 'track' | 'learn';
@@ -53,6 +53,7 @@ export const TOOL_GROUPS: Array<{ id: ToolCategory; label: string; tools: Tool[]
 
 // Account/administration links (avatar menu + sidebar footer), not tools.
 export const SETTINGS_LINKS: Array<{ id: string; label: string; route: string; icon: LucideIcon }> = [
+  { id: 'api-key',      label: 'API Key',      route: '/settings/api-key',  icon: KeyRound },
   { id: 'integrations', label: 'Integrations', route: '/integrations',       icon: Link2 },
   { id: 'rate-library', label: 'Rate Library', route: '/admin/rate-library', icon: Database },
 ];

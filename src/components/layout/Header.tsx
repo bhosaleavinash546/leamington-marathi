@@ -13,6 +13,9 @@ const dropdownVariants = {
 };
 
 /** Lightweight tool jumper: type to filter the registry, Enter opens the top hit. */
+interface ContentHit { kind: 'idea' | 'project' | 'quote'; id: string; title: string; route: string }
+const HIT_LABEL: Record<ContentHit['kind'], string> = { idea: 'Idea', project: 'Analysis', quote: 'Quote' };
+
 function ToolSearch() {
   const navigate = useNavigate();
   const [q, setQ] = useState('');
@@ -25,7 +28,35 @@ function ToolSearch() {
     if (!s) return [];
     return TOOLS.filter(t =>
       t.label.toLowerCase().includes(s) || t.description.toLowerCase().includes(s)
-    ).slice(0, 6);
+    ).slice(0, 5);
+  }, [q]);
+
+  // The tool list above is a static filter over nav labels. The server has had
+  // a real BM25 index over the marketplace corpus plus the caller's own
+  // projects and quotes since it was written, at GET /api/search, and nothing
+  // ever called it — so searching for a PART you had costed found nothing.
+  const [content, setContent] = useState<ContentHit[]>([]);
+  useEffect(() => {
+    const s = q.trim();
+    if (s.length < 2) { setContent([]); return; }
+    const token = localStorage.getItem('brainspark_auth');
+    if (!token) { setContent([]); return; }
+    const ctl = new AbortController();
+    const t = setTimeout(async () => {
+      try {
+        const r = await fetch(`/api/search?q=${encodeURIComponent(s)}`, {
+          headers: { Authorization: `Bearer ${token}` }, signal: ctl.signal,
+        });
+        if (!r.ok) return;
+        const d = await r.json();
+        setContent([
+          ...(d.ideas || []).slice(0, 3).map((x: { id: string; title: string }) => ({ kind: 'idea' as const, id: x.id, title: x.title, route: '/marketplace' })),
+          ...(d.projects || []).slice(0, 2).map((x: { id: string; title: string }) => ({ kind: 'project' as const, id: x.id, title: x.title, route: `/results/${x.id}` })),
+          ...(d.quotes || []).slice(0, 2).map((x: { id: string; title: string }) => ({ kind: 'quote' as const, id: x.id, title: x.title, route: '/should-cost' })),
+        ]);
+      } catch { /* aborted or offline — the tool list still works */ }
+    }, 220);   // debounce: this hits the server on every keystroke otherwise
+    return () => { clearTimeout(t); ctl.abort(); };
   }, [q]);
 
   // ⌘K / Ctrl+K focuses the jumper from anywhere.
@@ -73,7 +104,7 @@ function ToolSearch() {
         <kbd className="text-[10px] text-slate-600 border border-white/12 rounded px-1 py-px shrink-0">⌘K</kbd>
       </div>
       <AnimatePresence>
-        {open && matches.length > 0 && (
+        {open && (matches.length > 0 || content.length > 0) && (
           <motion.div
             variants={dropdownVariants} initial="hidden" animate="visible" exit="exit"
             className="absolute top-full left-0 right-0 mt-1.5 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden z-50"
@@ -89,6 +120,24 @@ function ToolSearch() {
                 <span className="text-slate-500 text-xs truncate ml-auto">{t.description}</span>
               </button>
             ))}
+            {content.length > 0 && (
+              <>
+                <div className="px-3.5 pt-2 pb-1 text-[10px] uppercase tracking-wider text-slate-500 border-t border-white/8 mt-1">
+                  Your content
+                </div>
+                {content.map(h => (
+                  <button
+                    key={`${h.kind}-${h.id}`}
+                    onClick={() => go(h.route)}
+                    className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-left text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <Search size={13} className="text-slate-500 shrink-0" />
+                    <span className="truncate">{h.title}</span>
+                    <span className="text-slate-500 text-[10px] uppercase tracking-wide ml-auto shrink-0">{HIT_LABEL[h.kind]}</span>
+                  </button>
+                ))}
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
