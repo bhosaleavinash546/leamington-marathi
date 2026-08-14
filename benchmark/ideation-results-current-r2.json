@@ -1,0 +1,468 @@
+{
+  "label": "current-r2",
+  "summary": {
+    "parts": 6,
+    "failed": 0,
+    "meanIdeas": 13.8,
+    "diversityScore": 86.9,
+    "nearDupPairs": 0,
+    "mergedRate": 0,
+    "flagRate": 62.7,
+    "dropRate": 0,
+    "engineCheckRate": 22.9,
+    "contradictedRate": 21.1,
+    "evidenceRate": 100,
+    "dupRate": 85.5,
+    "corpusNoveltyRate": 14.5,
+    "tasteMatchRate": 0,
+    "ranAt": "2026-08-14T18:38:12.198Z"
+  },
+  "perPart": [
+    {
+      "part": "Front Knuckle / Upright",
+      "ideas": 14,
+      "flagged": 10,
+      "dropped": 0,
+      "merged": 0,
+      "diversityScore": 88.1,
+      "nearDupPairs": 0,
+      "engineChecked": 7,
+      "contradicted": 2,
+      "withEvidence": 14,
+      "priorArtDup": 12,
+      "tasteMatched": 0,
+      "refined": 0,
+      "critiqued": 0,
+      "seconds": 288,
+      "ideaDigest": [
+        {
+          "title": "Topology-optimised thin-wall HPDC knuckle removes inert mass",
+          "description": "Apply structural topology optimisation (Altair OptiStruct/Inspire) to an AlSi10MnMg HPDC front knuckle, driving material only along principal load paths from strut mount to steering arm, LCA ball-joint boss and caliper mount. Target minimum 3.5mm wall in loaded zones with ribbed webs replacing solid sections. The baseline as-cast aluminium knuckle typically carries 15-20% inert mass from casting-c"
+        },
+        {
+          "title": "Forged AA6082-T6 knuckle via flashless near-net forging",
+          "description": "Replace a GJS-450/GGG60 ductile-iron front upright with a closed-die, near-net AA6082-T6 aluminium forging using a flashless/precision-forge die set to minimise flash losses and post-forge machining. Aluminium forging delivers superior fatigue strength-to-weight versus casting, removing ~2.5-3.4kg/corner unsprung mass while enabling integral ball-joint and caliper-mount bosses. Precision forging w"
+        },
+        {
+          "title": "Bimetal HPDC upright with cast-in steel bearing sleeve",
+          "description": "Cast the aluminium knuckle around a pre-formed steel bearing-seat insert (bimetal HPDC), providing a hard 55-60HRC bore for the Gen3 hub-bearing while the surrounding structure remains lightweight aluminium. This deletes the separately pressed-in steel sleeve and its insertion/retention operation, and eliminates the risk of aluminium bore galling/fretting from the bearing OD under thermal cycling."
+        },
+        {
+          "title": "Gen3 flanged hub-bearing unit deletes press and snap rings",
+          "description": "Adopt a Gen3 flanged hub-bearing unit (HBU) that bolts directly onto the upright with 4 bolts, replacing a Gen1 press-fit bearing plus separate hub, two snap rings and the associated press/retention operations. The Gen3 unit arrives from the bearing Tier-1 (Schaeffler/SKF/NSK) as a sealed, pre-greased, pre-loaded module with integrated ABS encoder/tone ring, eliminating field re-greasing and set-p"
+        },
+        {
+          "title": "Integrate caliper, steering-arm and ABS bosses into casting",
+          "description": "Consolidate the separately-bolted caliper mount bracket, steering-arm attachment and ABS-sensor boss directly into the net-shape forged or HPDC aluminium knuckle. On many baseline designs these are discrete bolt-on brackets (steel caliper carrier, sensor clip) adding fasteners, tolerance stack-up and assembly steps. Casting/forging the caliper mounting ears, steering-arm eye and sensor boss as int"
+        },
+        {
+          "title": "Hollow-section HPDC knuckle via lost salt-core",
+          "description": "Introduce a hollow-section AlSi10MnMg HPDC front knuckle using a lost salt-core to hollow the strut-tower column and main structural spine, removing inert core mass that carries no load. The salt-core (compacted/sintered NaCl-based) is placed in the die, encapsulated by the shot, then dissolved out post-cast in a water wash, leaving hollow closed-sections with high bending/torsional stiffness-to-m"
+        },
+        {
+          "title": "Relax GD&T on non-functional knuckle faces and bores",
+          "description": "Conduct a tolerance-review workshop to relax GD&T on non-functional and secondary features of the knuckle that are currently machined to unnecessarily tight tolerances inherited from legacy drawings. Only the hub-bearing bore, caliper-mount faces, ball-joint taper and steering-arm interface truly require tight position/form control; many mounting-boss faces, drainage features, sensor-boss diameter"
+        },
+        {
+          "title": "Commonise LH/RH-symmetric knuckle across platform variants",
+          "description": "Redesign the knuckle to a single part number shared across left/right (where geometry permits a mirror-tooling common core) and across platform derivatives (ICE/MHEV/PHEV/BEV, and sister models on the same architecture). Many premium SUV programmes carry 4-6 knuckle part numbers for what could be 2 by designing common mounting patterns, common ball-joint and caliper interfaces, and absorbing minor"
+        },
+        {
+          "title": "Low-pressure permanent-mould cast for thick-section variant",
+          "description": "For performance/BEV variants requiring higher fatigue strength than standard HPDC can deliver in thick sections, evaluate low-pressure permanent-mould (LPPM) or gravity-cast AlSi7Mg (A356/A357) with T6 as a lower-tooling-cost alternative to forging while retaining T6 fatigue performance. LPPM fills the die under controlled low pressure (0.2-0.7 bar) from the melt below, producing dense, low-porosi"
+        },
+        {
+          "title": "High recycled-content secondary aluminium for HPDC knuckle",
+          "description": "Qualify a high recycled-content secondary aluminium alloy (e.g. certified 75-90% post-consumer/post-industrial AlSi10MnMg equivalents such as Rheinfelden Silafont-derived recycled grades or Novelis/Constellium closed-loop secondaries) for the HPDC knuckle. Secondary aluminium carries a 60-90% lower embodied energy and typically €150-400/t lower cost than primary-heavy melts, while modern impurity-"
+        },
+        {
+          "title": "Dual-source machining/casting to lower-cost EU region",
+          "description": "Shift the labour-intensive CNC machining and part of the casting supply from the Germany plant region (£38-47/hr) to a qualified lower-cost EU location — Czech/Slovak Tier-1 casting-plus-machining at £13-17/hr — while retaining logistics proximity and EU-origin content. The knuckle carries significant machining labour (multiple CNC operations, CMM inspection) where a 2.5-3x labour-rate differentia"
+        },
+        {
+          "title": "Net-shape as-cast/as-forged surfaces delete finish machining",
+          "description": "Push the casting/forging process capability to deliver net-shape or near-net functional surfaces that are currently finish-machined out of caution rather than necessity — spring/damper seats, non-mating boss faces, drainage and clearance surfaces. Modern vacuum HPDC and precision forging hold ±0.2-0.4mm and Ra 3.2-6.3µm as-processed, adequate for many non-sealing, non-precision-locating surfaces. "
+        },
+        {
+          "title": "AI generative design with additive prototyping accelerates optimisation",
+          "description": "Deploy AI-driven generative design (Autodesk Fusion generative, nTop implicit modelling, or Physics-ML surrogate solvers) to explore the full knuckle design space under the multi-axial road-load and brake-torque spectrum, then validate the winning geometry with metal additive (LPBF AlSi10Mg or binder-jet) prototypes before committing casting/forging tooling. Generative algorithms produce organic, "
+        },
+        {
+          "title": "Commonise fasteners and hub-bearing interface across corners",
+          "description": "Standardise the fastener set and the hub-bearing bolt interface across all four corners and across platform variants to a single fastener family and a common HBU bolt pattern/PCD. Premium programmes routinely accumulate 6-10 distinct fastener part numbers per corner (caliper bolts, HBU bolts, ball-joint pinch bolt, ABS-sensor screw) with variant-specific grades and lengths. Rationalising these to "
+        }
+      ]
+    },
+    {
+      "part": "Front Bumper Beam",
+      "ideas": 13,
+      "flagged": 9,
+      "dropped": 0,
+      "merged": 0,
+      "diversityScore": 84.2,
+      "nearDupPairs": 0,
+      "engineChecked": 1,
+      "contradicted": 1,
+      "withEvidence": 13,
+      "priorArtDup": 13,
+      "tasteMatched": 0,
+      "refined": 0,
+      "critiqued": 0,
+      "seconds": 256,
+      "ideaDigest": [
+        {
+          "title": "Roll-form closed octagon beam in 1500MPa martensitic steel",
+          "description": "Replace the baseline stamped/press-hardened B-section bumper beam (typically 2-piece, ~10 RSW welds, PHS 22MnB5 at 1.8–2.0mm) with a single roll-formed closed-section octagonal beam in 1500MPa martensitic steel (MS1500/MBW1500) at 1.5–1.6mm, sweep-bent to the fascia radius on a stretch-bender inline. The closed octagon delivers superior section modulus and bending stiffness per unit mass versus an"
+        },
+        {
+          "title": "Delete welded reinforcement insert via integral rolled flutes",
+          "description": "Many premium SUV bumper beams carry a separate stamped or roll-formed reinforcement insert (‘double-hat’ or slip-in tube) spot- or MIG-welded into the main beam to raise section modulus at the centre and tow-hook zone. Re-architect the beam so the required local stiffness is delivered by integral longitudinal flutes and a variable-height closed section roll-formed directly into the DP980/MS1500 pr"
+        },
+        {
+          "title": "Aluminium extrusion beam + symmetric L/R crash cans",
+          "description": "For the mass-sensitive premium SUV, replace the steel beam-and-can assembly with a 6xxx aluminium extrusion (6082-T6 or 6014) closed multi-cell profile for both the bumper beam and the crash cans. The multi-void extruded section gives excellent, tunable crush behaviour and axial stability, and is cut-to-length and CNC-machined for hook and can interfaces — no dies. Crash cans are designed L/R symm"
+        },
+        {
+          "title": "Integrate beam, absorbers and tow-hook into one HPDC casting",
+          "description": "Consolidate the front crash management system — bumper beam, energy absorbers, tow-hook mount and fascia carrier brackets — into a single high-pressure die-cast aluminium node (A380/AlSi10MnMg) replacing a 4–6 piece fabricated assembly. Following the ZEEKR X front CMS precedent, the casting integrates the beam central section and the two absorber/can interfaces with cast-in bosses for tow-hook thr"
+        },
+        {
+          "title": "Tailor-rolled blank for graded-gauge single beam",
+          "description": "Instead of uniform-gauge stock or a welded reinforcement, feed the roll-forming line with a tailor-rolled blank (TRB) whose thickness varies continuously along its length — thick at the centre and tow-hook zone where bending moment peaks, thinning toward the ends near the crash-can interface. TRB in DP800/DP980 lets a single blank deliver graded stiffness with zero weld seams (unlike a tailor-weld"
+        },
+        {
+          "title": "Commonise beam across SUV variants and sibling platform",
+          "description": "Rationalise the bumper-beam SKU landscape so one beam design serves multiple derivatives (standard SUV, coupé-SUV, and long-wheelbase) plus a sibling programme, using a single closed-section roll-formed beam with bracketed fascia adapters to absorb styling differences. Rather than a unique beam per fascia, the crash-relevant beam and its crash-can interface are frozen and shared, while cheap injec"
+        },
+        {
+          "title": "Replace RSW with adhesive + self-piercing rivets at can interface",
+          "description": "Where the beam is joined to crash cans or crush plates, replace multi-spot resistance spot welding (which is slow on high-strength/AHSS and requires tip dressing) and MIG welds with a rivet-bonding process: structural crash-durable epoxy adhesive plus self-piercing rivets (SPR) or flow-drill screws. Rivet bonding gives a continuous bond line that spreads crash load better than discrete spot nugget"
+        },
+        {
+          "title": "Relax non-functional tolerances and simplify GD&T scheme",
+          "description": "Audit the bumper-beam drawing for over-specified tolerances and finish requirements inherited from legacy practice. Many beam features — non-mating flange edges, cosmetic surfaces hidden behind the fascia, general profile straightness away from crash-can and sensor datums — carry tolerances tighter than function requires. Re-baseline the GD&T to a functional datum scheme referencing only the crash"
+        },
+        {
+          "title": "Bolted replaceable crush cans for insurance/repair cost cut",
+          "description": "Redesign the beam-to-can interface so crash cans are bolted (not welded) to the beam via a machined or formed flange, making the cans a serviceable, replaceable module after a low-speed impact. This is a design-for-repair lever that reduces total-cost-of-ownership and, critically, improves the RCAR/Danner low-speed insurance-crash rating, which lowers the vehicle's insurance group and is a marketa"
+        },
+        {
+          "title": "Nearshore beam supply with JIS sequencing to cut logistics",
+          "description": "Address the logistics coverage gap: bumper beams are bulky, low-density, and long, so freight and packaging are a material cost fraction, especially if the current beam ships from a distant stamping supplier. Re-source the roll-formed beam to a nearshore Tier-1 within short-radius of the German BIW plant and operate just-in-sequence (JIS) delivery in returnable steel racks matched to build order, "
+        },
+        {
+          "title": "Switch to EAF/recycled green steel for ELV and Scope-3 credit",
+          "description": "Specify the beam's AHSS/martensitic coil from an EAF (electric-arc-furnace) scrap-based or hydrogen-DRI ‘green steel’ route (e.g. SSAB Fossil-free, ArcelorMittal XCarb, Salzgitter SALCOS) at equal mechanical grade. This addresses the EU ELV 2025 25% recycled-content target and provides a declarable low-embodied-carbon material for the OEM's Scope-3 footprint, increasingly a purchasing and regulato"
+        },
+        {
+          "title": "Integrate pedestrian energy absorber into beam via GFRP overmould",
+          "description": "Emerging-tech lever: replace the separate EPP foam/plastic pedestrian energy-absorber block and its brackets, currently mounted ahead of the steel beam, by overmoulding a glass-fibre-reinforced (GFRP-SMC or long-fibre PA6-GF30) energy-management structure directly onto the roll-formed steel beam in a hybrid organic-sheet/insert-moulding process. The polymer ribbing tunes lower-leg and upper-leg pe"
+        },
+        {
+          "title": "Laser-notched crush initiators enable thinner beam gauge",
+          "description": "Introduce precisely laser-scored or laser-notched crush-initiation features into the crash-can and beam-end zones so that folding initiates at controlled loads, allowing the designer to down-gauge the beam and cans while maintaining the same energy-absorption and force-displacement curve required by NCAP 2026 MPDB. By engineering where and how the section buckles rather than relying on wall thickn"
+        }
+      ]
+    },
+    {
+      "part": "Cell Module Housing",
+      "ideas": 15,
+      "flagged": 8,
+      "dropped": 0,
+      "merged": 0,
+      "diversityScore": 85.7,
+      "nearDupPairs": 0,
+      "engineChecked": 2,
+      "contradicted": 0,
+      "withEvidence": 15,
+      "priorArtDup": 13,
+      "tasteMatched": 0,
+      "refined": 0,
+      "critiqued": 0,
+      "seconds": 289,
+      "ideaDigest": [
+        {
+          "title": "Integrate module end plates and side rails into single HPDC frame",
+          "description": "Baseline premium SUV module housings use extruded 6063-T6 side rails (2 profiles) welded/bolted to stamped end plates plus compression bands, yielding 5-7 discrete parts per module frame. Replace with a single Al HPDC frame (A380, 2,850 €/t) that integrates the two end plates, side compression rails and mounting bosses in one net-shape casting. HPDC in a 1,600-2,500t machine with vacuum assist ach"
+        },
+        {
+          "title": "Migrate to cell-to-pack, deleting module housing entirely",
+          "description": "Replace the module-based architecture with cell-to-pack (CTP): prismatic/large-format cells bonded directly into the pack tray, deleting the individual module frame, end plates, side rails and per-module busbar carriers. The module housing (extruded 6063 rails + steel/Al end plates + compression bands) at ~€15-22/module is eliminated; inter-module HV connectors are deleted via direct busbar routin"
+        },
+        {
+          "title": "Replace aluminium housing with glass-filled polyamide frame",
+          "description": "Where structural loads permit, substitute the metallic module housing (6063-T6 extrusion + end plates) with an injection-moulded PA6-GF30 (3.2 €/kg) or PA66-GF30 (3.9 €/kg) frame. Engineering polyamide with 30% glass provides tensile strength 180-200 MPa and inherent electrical isolation, deleting the separate dielectric barrier films currently placed between cells and metal frame. Moulded-in snap"
+        },
+        {
+          "title": "Ultrasonic-weld busbars replacing bolted tab interconnects",
+          "description": "Replace bolted busbar-to-tab interconnects (with torque-controlled M5/M6 fasteners, washers and dielectric isolators) with ultrasonic metal welding of aluminium busbars directly to cell tabs. Ultrasonic welding (Manz/Fronius/Schunk platforms) creates low-resistance solid-state joints at ~0.3-0.8s/joint, cutting interconnect cost 8-12% and removing torque-creep re-work over life. Al busbars at 2,40"
+        },
+        {
+          "title": "Structural adhesive bonding of module to tray deletes fasteners",
+          "description": "Replace the 20+ mechanical fasteners currently attaching each module housing to the pack tray with structural adhesive bonding (two-component epoxy/PU, e.g. Sika/Henkel battery-grade), which also provides thermal-interface and vibration damping functions. Adhesive bonding is vibration-optimised, distributes load, seals against ingress, and eliminates fastener bosses, threaded inserts, torque stati"
+        },
+        {
+          "title": "Reduce module SKUs from 6 to 2 via common section",
+          "description": "Rationalise the module family from 6 unique housing SKUs to 2 by adopting a common cross-section (shared height and width extrusion/casting profile) with only two lengths covering all pack capacities across the premium SUV range and derivatives. Per BMW iX platform practice, a common module height/width × two lengths covers all capacities, sharing tooling and concentrating volume on a single proce"
+        },
+        {
+          "title": "Replace inserted dielectric films with e-coat/anodise isolation",
+          "description": "Eliminate the discrete dielectric barrier films/sheets manually inserted between cells and the metallic module frame by using an integral dielectric surface treatment — hard anodising (25-50µm) or a functional powder/e-coat dielectric layer on the Al frame — providing >2kV isolation intrinsic to the part. This deletes a purchased film part and its labour-intensive insertion/alignment step per modu"
+        },
+        {
+          "title": "Relax non-functional tolerances to cut machining and scrap",
+          "description": "Apply a GD&T-driven tolerance review to the module housing, tightening only cell-locating, sealing and busbar-datum features while relaxing cosmetic and non-functional surfaces currently held to legacy ±0.1mm. Many extruded/cast housing features are over-specified from carry-over drawings. Widening non-critical tolerances (to ±0.3-0.5mm) removes secondary machining passes, allows as-cast/as-extrud"
+        },
+        {
+          "title": "Dual-source housing from Czech/Slovak Tier-1 to cut labour",
+          "description": "The module housing assembly is labour-intensive (extrusion cut, weld, surface-treat, film insertion, fastening) at German rates of €38-47/hr. Relocate or dual-source the housing subassembly to a qualified Central-European Tier-1 (Czech/Slovak at €13-17/hr) while keeping final pack integration in Germany for logistics and quality proximity. The ~60-70% labour-rate differential on the assembly conte"
+        },
+        {
+          "title": "Specify closed-loop recycled aluminium for housing extrusion/casting",
+          "description": "Switch the housing alloy feedstock to high-recycled-content aluminium (closed-loop post-industrial + post-consumer, e.g. 75%+ recycled 6xxx billet or secondary A380) to cut both material cost and embodied carbon. Recycled Al billet typically prices below prime, and the housing's mechanical duty (frame/carrier, not crash-critical if load-path is elsewhere) tolerates secondary alloy within spec. Thi"
+        },
+        {
+          "title": "Roll-formed DP780 steel frame replacing aluminium extrusion",
+          "description": "For pack architectures where structural crash load-path runs through the module frame, consider a roll-formed high-strength steel (DP780, 1,000 €/t) frame in place of 6063-T6 extrusion (Al at 2,700 €/t LME + conversion). DP780 offers 780 MPa tensile with excellent energy absorption; roll forming is a very low-cost, high-rate continuous process ideal for long constant-section rails, with tooling ch"
+        },
+        {
+          "title": "Delete inter-module HV connectors via direct busbar routing",
+          "description": "Eliminate discrete inter-module high-voltage connectors (each €2.5-4.3, plus mating labour and sealing) by routing continuous laser/ultrasonic-welded busbars directly between module cell-stacks, as in Tesla Model 3 and BYD Blade. In a conventional module architecture each module pair uses a plug/socket HV interconnect with seals, retainers and HVIL loops; direct busbar routing removes these connec"
+        },
+        {
+          "title": "Replace metal compression bands with structural foam-in-place",
+          "description": "Replace discrete steel/aluminium compression bands and spacer plates that manage cell-swelling with a foam-in-place structural PU/expanding foam (or compressible pad) system dispensed between cells and frame walls. The foam accommodates cell-swelling over life while maintaining defined compression, and simultaneously provides vibration isolation and thermal-runaway barrier function, consolidating "
+        },
+        {
+          "title": "Returnable dunnage and line-side sequencing for housing inbound",
+          "description": "Address the logistics coverage gap by converting inbound module-housing components (extrusions, end plates, busbar carriers) from single-use cardboard/expanded-foam packaging to a closed-loop returnable dunnage system with custom foam nests and stackable steel/plastic racks, combined with JIS (just-in-sequence) delivery to the German pack line. This cuts packaging spend, disposal cost and inbound "
+        },
+        {
+          "title": "Emerging: immersion cooling deletes housing cooling channels",
+          "description": "As an emerging-technology lever, adopt dielectric immersion cooling (single-phase, e.g. 3M/Shell/Castrol EV fluids) within a module-free or simplified-module architecture, deleting the machined/brazed cooling channels, cold-plate interfaces and gap-filler TIM currently integrated into or beneath the module housing. CATL CTP 3.0 demonstrates immersion cooling in a module-free pack. Immersion improv"
+        }
+      ]
+    },
+    {
+      "part": "Stator Assembly",
+      "ideas": 13,
+      "flagged": 9,
+      "dropped": 0,
+      "merged": 0,
+      "diversityScore": 88.3,
+      "nearDupPairs": 0,
+      "engineChecked": 1,
+      "contradicted": 1,
+      "withEvidence": 13,
+      "priorArtDup": 12,
+      "tasteMatched": 0,
+      "refined": 0,
+      "critiqued": 0,
+      "seconds": 261,
+      "ideaDigest": [
+        {
+          "title": "Hairpin winding with continuous-wave weave, 65% slot fill",
+          "description": "Replace the conventional random-wound round-wire or standard I-pin stator with an optimised continuous hairpin (X-pin/wave-wound) winding using 14.5 €/kg rectangular copper profile. Standard hairpin achieves ~62% slot fill vs 42% for round wire; a continuous-wave weave with reduced insulation build (thin PEEK/corona-resistant enamel) and tighter bend radii pushes slot fill to 64-66%. At identical "
+        },
+        {
+          "title": "Thinner 0.20mm high-grade Si-steel to cut iron losses",
+          "description": "Substitute the baseline 0.35mm (M330/M270-class) electrical steel laminations with 0.20mm high-silicon non-oriented steel (e.g. NO20, JNEX-Core equivalent) at ~3.4 €/kg base plus thin-gauge premium. Thinner gauge reduces eddy-current core losses ~25-35% at the high fundamental/switching frequencies typical of 800V SiC EDUs, allowing either a 3-5% active-stack shortening for equal efficiency or imp"
+        },
+        {
+          "title": "Segmented stator laminations to slash stamping scrap",
+          "description": "Replace full-ring stator laminations blanked from wide coil (which discards the inner disc and inter-part skeleton, yielding ~45-55% material utilisation) with segmented/toothed-pole laminations nested for ~85-92% strip utilisation. Segmented laminations are stamped as individual poles or arc segments and assembled into a ring, dramatically cutting Si-steel scrap (3.4 €/kg). For a ~14 kg laminatio"
+        },
+        {
+          "title": "Common OD stator family with variable stack length",
+          "description": "Adopt a scalable stator platform: fix the stator/rotor outer diameter and lamination cross-section, and vary only active stack length to cover the front and rear EDU power variants across the SUV range and sister platforms. One lamination die set, one winding pattern, one housing-interface geometry amortised across all variants. Per the KB (Audi PPE, Mercedes eATS 2.0, XPeng SEPA2.0 ~80% shared, F"
+        },
+        {
+          "title": "Backlack self-bonded lamination stack deletes welding",
+          "description": "Replace welded or interlock-cleated lamination stacking with backlack (self-bonding) laminations — an epoxy/phenolic adhesive pre-coated on the electrical steel that cures under heat/pressure to bond the full stack. This deletes the stack-welding station and its consumables, eliminates weld-induced inter-lamination shorts (which raise eddy losses ~2-4%), and improves stacking factor and NVH dampin"
+        },
+        {
+          "title": "Cast-in cooling jacket in HPDC housing deletes sleeve",
+          "description": "Integrate the stator water jacket directly into the AlSi10MnMg HPDC stator housing rather than using a separate pressed-in cooling sleeve with two O-ring joints. Cast helical/axial cooling channels in the housing wall, deleting the sleeve part, two elastomer seals, and the associated leak-test and press-fit assembly steps, while preserving cooling performance. Aligns with the validated 800V EDU in"
+        },
+        {
+          "title": "Extruded 6063 tube housing vs HPDC casting",
+          "description": "Produce the stator outer housing as an extruded 6063-T6 aluminium tube (2,700 €/t LME + extrusion premium) with CNC-machined internal cooling channels, replacing the HPDC cast housing whose cast-in channels demand leak-prone cores and impregnation. Extrusion gives near-net-shape constant cross-section at low tooling cost (a die, not a complex HPDC mould), superior material density (no porosity), a"
+        },
+        {
+          "title": "Right-size slot insulation and impregnation for 800V",
+          "description": "Review and relax over-specified slot-liner and impregnation build. Many stators carry conservative slot-liner thickness (Nomex/PET aramid) and full trickle/vacuum-pressure impregnation (VPI) with epoxy varnish sized for legacy 400V + margin. For an 800V SiC architecture the phase current halves, and with corona-resistant enamel on hairpins, the required insulation coordination can be met with a th"
+        },
+        {
+          "title": "Copper-clad aluminium option for weight-neutral copper cut",
+          "description": "Where the electromagnetic duty permits (lower-power front EDU variant), evaluate copper-clad aluminium (CCA) or aluminium hairpin conductors to cut the copper commodity exposure. Copper at 11,700 €/t vs aluminium at 2,700 €/t is a 4.3× cost gap per tonne; aluminium's ~60% conductivity means ~1.6× cross-section for equal resistance, but at ~30% of copper's density the winding is lighter and materia"
+        },
+        {
+          "title": "Regional copper wire hub + returnable coil packaging",
+          "description": "Restructure inbound logistics for enamelled/hairpin copper (13.2-14.5 €/kg) and Si-steel coil — the two heaviest, highest-value stator inputs — via a consolidated regional supplier hub feeding the German plant with milk-run, JIT sequencing and returnable/reusable coil packaging. At 80,000 units × ~24 kg combined Cu+steel = ~1,920 t/yr of dense, high-value freight, small logistics efficiencies scal"
+        },
+        {
+          "title": "Direct in-slot/end-turn oil cooling shrinks active mass",
+          "description": "Adopt direct conductor cooling — oil channels in hollow slot wedges or spray-cooled end-turns — to lift the stator's continuous thermal envelope, enabling a shorter active stack for the same rated power. Removing heat directly from the copper (rather than conducting through liner→lamination→jacket) can raise continuous current density 15-25%, letting the motor deliver rated torque from a smaller, "
+        },
+        {
+          "title": "Competitive dual-source tender + copper price-index hedging",
+          "description": "Restructure the commercial arrangement for the stator's dominant cost driver — copper (11,700 €/t LME, ~9-11 kg/stator ≈ €130-160 of copper per unit). Move from single-source enamelled/hairpin copper supply to a competitively dual-sourced arrangement with an LME-indexed price formula (pass-through of metal, fixed conversion/enamel premium), plus should-cost-modelled negotiation of the conversion m"
+        },
+        {
+          "title": "Laser enamel stripping replaces mechanical/chemical strip",
+          "description": "Replace mechanical/chemical enamel stripping of hairpin crown ends with laser ablation before laser welding. Laser ablation precisely removes the enamel and any oxide from the rectangular copper hairpin tips, producing clean, consistent weld-prep surfaces that raise weld quality and reduce weld defects/rework — a warranty and yield lever on the highest-risk stator operation (crown welds). Laser st"
+        }
+      ]
+    },
+    {
+      "part": "Front Seat Frame",
+      "ideas": 14,
+      "flagged": 6,
+      "dropped": 0,
+      "merged": 0,
+      "diversityScore": 86.9,
+      "nearDupPairs": 0,
+      "engineChecked": 3,
+      "contradicted": 0,
+      "withEvidence": 14,
+      "priorArtDup": 8,
+      "tasteMatched": 0,
+      "refined": 0,
+      "critiqued": 0,
+      "seconds": 577,
+      "ideaDigest": [
+        {
+          "title": "Aluminium extruded/HPDC hybrid frame replacing steel weldment",
+          "description": "Replace the current stamped-and-RSW-welded DP780/HSLA steel front seat back-and-cushion frame with a hybrid architecture: 6082-T6 extruded profiles for the primary side members and A356/A380 HPDC nodes at the recliner and pivot interfaces, MIG/CMT-welded or SPR-joined into a space-frame. This mirrors BMW M and Recaro performance seat practice and delivers 30-35% mass saving on a ~9-11 kg steel fra"
+        },
+        {
+          "title": "Laser-welded tailored-blank steel back-frame panel",
+          "description": "For programmes retaining steel, replace the multi-gauge, multi-piece stamped-and-welded seat-back frame with a laser-welded tailored blank (TWB) that places DP980 in high-load belt-anchorage/upper-load-path zones and cheaper HSLA S420 in low-stress areas, blanked as one part. This removes 3-5 discrete stampings and their spot welds, cuts material scrap via nested blank layout, and puts thickness o"
+        },
+        {
+          "title": "Magnesium AZ91D die-cast structural back-frame",
+          "description": "Replace the stamped-and-welded steel seat-back frame shell with a single magnesium AZ91D (or AM60B for higher ductility) high-pressure die-casting, integrating the head-restraint guide bosses, side-bolster mounts, recliner interface and wiring clips into one net-shape part. Magnesium ingot at 2,200 €/t and 1.8 g/cm³ density delivers ~1.8 kg saving per seat back vs steel (3.6 kg per front row), dir"
+        },
+        {
+          "title": "Common driver/passenger front seat structure module",
+          "description": "Architect the complete front seat structure — frame, recliner mechanism, rails, height-adjuster and tilt — as a single symmetric carry-over module shared between driver and passenger seats, varying only the switch-pack, trim and (optionally) memory-module content. Today driver and passenger frames are near-mirror uniques carrying separate part numbers, tooling and validation. A symmetric handed-ne"
+        },
+        {
+          "title": "Integrate recliner and height-adjuster into one mechanism",
+          "description": "Replace the separate discrete recliner mechanism, height-adjuster four-bar linkage and their independent brackets with a single integrated mechanism sub-module using a common gearset housing and shared mounting plate. Current premium seats stack a taumel/wobble recliner, a pumping height-adjuster and a tilt module as three separate bracketed assemblies, each with its own fasteners, bearings and in"
+        },
+        {
+          "title": "Replace weld-nuts/bolts with thread-forming screws and clinching",
+          "description": "Eliminate welded nuts, separate nuts-and-bolts and their associated tapping/weld operations across the frame by adopting flow-drill / thread-forming screws (e.g. EJOT FDS, Arnold Flowform) and mechanical clinching for non-load-critical joints. Thread-forming screws create their own thread in a single-sided operation, removing pierced-and-tapped holes, weld-nuts and loose-nut handling — a classic D"
+        },
+        {
+          "title": "Relax GD&T on non-safety-critical frame features",
+          "description": "Conduct a functional tolerance audit of the seat-frame drawing and relax over-specified GD&T on non-safety, non-interface features — trim-clip holes, cushion-pan flanges, wiring-bracket positions and cosmetic edges — while ring-fencing crash-critical anchorage and recliner interfaces at tight tolerance. Many legacy premium seat frames carry ±0.2-0.3 mm and Cpk 1.67 requirements uniformly, driving "
+        },
+        {
+          "title": "Dual-source frame from Czech/Slovak Tier-1 line",
+          "description": "Shift final frame welding/assembly (and optionally stamping) from the German plant to a qualified Czech or Slovak Tier-1 facility, exploiting the labour-rate delta (13-17 €/hr vs 38-47 €/hr) on a labour-intensive weld-and-assemble operation while keeping crash-critical validation and PPAP under OEM control. A seat frame carries 8-14 minutes of direct assembly/weld labour; at ~28 €/hr blended-rate "
+        },
+        {
+          "title": "Delete 4-way power lumbar on base/mid trim",
+          "description": "On base and mid trim levels, delete the 4-way power lumbar module — its motor(s), inflatable bladder assembly, pump, valve block, ECU channel and wiring — replacing it with a simple 2-way manual lumbar or no lumbar, reserving power lumbar for the premium spec where customers pay for it. This removes electromechanical content from the frame back-panel, simplifies the wiring harness (fewer circuits,"
+        },
+        {
+          "title": "PA6-LGF structural back-panel replacing steel shell",
+          "description": "Replace the stamped steel seat-back closing panel/shell (the non-primary-load cushion-carrier and rear cover structure) with an injection-moulded long-glass-fibre PA6-LGF40 or PP-LGF structural panel, integrating map-pocket ribs, harness clips, trim-attachment features and rear-cover geometry in one moulding. The primary crash load path stays in the metal frame side-members; the composite carries "
+        },
+        {
+          "title": "Thin-film chromate-free coating replacing full e-coat",
+          "description": "For steel frame variants, replace the full cathodic e-coat (KTL) corrosion system on the largely-enclosed, trim-covered seat frame with a lower-cost thin-film / chromate-free zinc-flake or autophoretic (autodeposition) coating tuned to the frame's actual corrosion exposure (interior, not underbody). Seat frames sit in a benign cabin environment yet often carry the same heavy KTL spec as exterior B"
+        },
+        {
+          "title": "Roll-formed seat rails replacing stamped/machined rails",
+          "description": "Convert the seat slide rails (upper and lower tracks) from stamped-and-machined or bent sections to precision roll-formed high-strength steel (DP780/HSLA S420) profiles. Roll forming produces long, constant-section rail profiles continuously with excellent straightness, tight cross-section tolerance and minimal scrap versus stamping, at high line speed — ideal for the high-volume, constant-section"
+        },
+        {
+          "title": "Returnable-rack knock-down frame logistics optimisation",
+          "description": "Redesign inbound frame logistics from bulky finished-seat-frame shipping to a nestable, returnable-dunnage knock-down flow: ship stamped/roll-formed frame components and mechanisms flat or nested in custom returnable racks to the sequencing/assembly plant, and assemble the frame in JIS sequence line-side, or negotiate optimised returnable-rack density for finished frames. Seat frames are voluminou"
+        },
+        {
+          "title": "Topology-optimised generative frame with AM-cast nodes",
+          "description": "Apply generative/topology optimisation to the seat-frame load paths and materialise the result via casting (Al HPDC or Mg) with additively-manufactured sand cores or AM-printed casting patterns for complex nodes — an emerging-technology lever. Software (Altair/nTopology) computes minimum-mass geometry that carries R17/R14 anchorage and comfort loads, removing material from low-stress regions that "
+        }
+      ]
+    },
+    {
+      "part": "Body Wiring Harness",
+      "ideas": 14,
+      "flagged": 10,
+      "dropped": 0,
+      "merged": 0,
+      "diversityScore": 87.9,
+      "nearDupPairs": 0,
+      "engineChecked": 5,
+      "contradicted": 0,
+      "withEvidence": 14,
+      "priorArtDup": 13,
+      "tasteMatched": 0,
+      "refined": 0,
+      "critiqued": 0,
+      "seconds": 273,
+      "ideaDigest": [
+        {
+          "title": "Flat flexible cable replacing round-wire trunk runs",
+          "description": "Replace the main body trunk branches (roof, floor, sill runs carrying multiplexed signal and low-current loads) with laminated flat flexible cable (FFC/FPC) using etched or die-cut copper conductors sandwiched in PET/PEN film. Target the ~30-40% of harness length that is trunk routing rather than break-out branches. The flat profile compresses routing height to <2mm, allowing adhesive-backed appli"
+        },
+        {
+          "title": "Zonal E/E topology deleting cross-car trunk runs",
+          "description": "Migrate body electrical from point-to-point/domain topology to a zonal architecture with 4-5 body zone controllers (front, rear, left, right, roof) fed by a redundant Ethernet/CAN-FD backbone and local power distribution. Loads and sensors connect to the nearest zone controller over short local branches (typically <600mm) rather than running cross-car to a central body control module. This deletes"
+        },
+        {
+          "title": "Aluminium conductor replacing copper on high-gauge runs",
+          "description": "Convert body harness branches above 2.5mm² carrying <20A (floor grounds, roof power feeds, door mains) from copper to aluminium alloy (EN AW-1350 or 8xxx conductor grade). At Cu 11,700 €/t vs Al 2,700 €/t, and Al being ~1/3 the density, the conductor cost per circuit falls sharply even after up-sizing one gauge to match ampacity. Termination is the key: use ultrasonic-welded Cu-Al transition termi"
+        },
+        {
+          "title": "PCB junction box integration eliminating manual splices",
+          "description": "Replace the discrete taped/ultrasonic splice clusters and conventional relay/fuse boxes with integrated PCB-based power distribution units (smart junction boxes) using printed copper planes, solid-state MOSFET load switches and PCB-mounted fuses/e-fuses. On a conventional harness there can be 20-45 manual splices per vehicle plus multiple fuse/relay carriers; consolidating these onto 2-3 PCB junct"
+        },
+        {
+          "title": "Wireless TPMS and sensor branch deletion",
+          "description": "Delete wired sensor runs by adopting direct-wireless sensors: RF-direct TPMS (already standard), wireless door/seat occupancy and BLE-based accessory nodes, plus wireless BMS on the traction pack removing the isoSPI/CAN slave-board harness (~30m/pack, ~€22/vehicle). GM Ultium wBMS (Hummer EV, 2022) is the first mass-production wireless BMS. For the body harness specifically, target low-bandwidth, "
+        },
+        {
+          "title": "Connector family consolidation across platforms",
+          "description": "Consolidate the proliferated connector portfolio (often 200+ unique part numbers across a body harness) to a rationalised family of standardised, multi-cavity sealed and unsealed connectors carried across the OEM's platforms — following VW MQB/PPE connector-family and Aptiv Metri-Pack 630 across GM. Each unique connector today needs its own tool, seal, CPA, terminal, applicator and validation; con"
+        },
+        {
+          "title": "Automated crimp and taping for harness build",
+          "description": "Transfer the manual formboard build toward automated modules: robotic crimp cells (Aptiv), automatic taping machines (Yazaki), programmable cut-strip-crimp lines and vision-guided routing verification. In a €38-47/hr German plant, harness assembly labour is the dominant conversion cost, and 30-40% of it is automatable on the higher-volume, repeatable sub-modules (trunk runs, door modules, standard"
+        },
+        {
+          "title": "Modular harness with standardised inter-module connectors",
+          "description": "Re-architect the body harness from one large monolithic build into discrete, separately-buildable and separately-orderable modules (front-end, main body, roof, doors×4, tailgate) joined at standardised inter-module connectors. This decouples option content: a customer-selected feature (panoramic roof, tow bar, premium audio) is delivered as a plug-in module rather than requiring a unique full-vehi"
+        },
+        {
+          "title": "Wire wall-gauge and over-spec relaxation via load audit",
+          "description": "Conduct a circuit-by-circuit ampacity and voltage-drop audit to right-size conductors and remove legacy over-specification. Many body circuits are carried over at conservative gauges (e.g. 0.75mm² where 0.5mm² or 0.35mm² suffices) and with thicker insulation walls than the application demands. Modern thin-wall (ISO 6722 Class B) and ultra-thin-wall insulation (PVC/XLPE) allows a full gauge-equival"
+        },
+        {
+          "title": "Nearshore harness build to Eastern Europe / North Africa",
+          "description": "Rebalance the labour-intensive manual harness build from the German plant (€38-47/hr) to a nearshore low-cost harness cluster — Eastern Europe (Czech/Slovak €13-17/hr, Romania, Serbia) or North Africa (Morocco/Tunisia) — which is where the majority of European premium harnesses are already built. Harness assembly remains ~40-50% manual labour even after automation, so moving that content to a €13-"
+        },
+        {
+          "title": "OTA update capability deleting dealer flash harness/tooling",
+          "description": "Leverage the zonal + backbone architecture to deliver software and firmware updates over-the-air, eliminating the diagnostic/flash cable interfaces, dedicated K-line/CAN service connectors and the dealer-side flashing tooling and labour associated with each update event. Beyond the vehicle harness, this removes recurring warranty and campaign cost: a software recall that today requires a dealer vi"
+        },
+        {
+          "title": "Power-line communication sharing power and data conductors",
+          "description": "Adopt power-line communication (PLC) / DC-BUS techniques so that data signals are modulated onto existing power conductors, deleting dedicated signal wires to distributed nodes such as ambient lighting, door modules and seat controls. Instead of running a power pair plus a signal pair to each smart node, a single power pair carries both — with an inexpensive PLC transceiver at each end. This is an"
+        },
+        {
+          "title": "Recycled/bio insulation and tape for ELV compliance",
+          "description": "Substitute virgin PVC/PP insulation, convolute tubing and harness tape with recycled-content and bio-based grades that meet LV112/ISO 6722 requirements, addressing the EU ELV 2025 revision's 25% recycled-content target and PCB-in-plastics ban while typically holding or slightly reducing material cost. Recycled PVC insulation, PCR-content convolute and PSA tapes are qualified by several harness sup"
+        },
+        {
+          "title": "Carry-over standardised door and roof harness modules",
+          "description": "Designate the door, tailgate and roof harness modules as platform carry-over parts shared unchanged across the OEM's SUV and adjacent segment vehicles, rather than bespoke per-model designs. These modules are relatively self-contained and their electrical content (window lift, mirror, speaker, ambient light, latch, closure) is highly common across models. Carrying them over amortises tooling, appl"
+        }
+      ]
+    }
+  ]
+}

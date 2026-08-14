@@ -84,14 +84,30 @@ for (const [m] of METRICS) {
   let verdict = '';
   if (a && b) {
     const gap = Math.abs(b.mean - a.mean);
-    // The widest within-arm spread we have actually observed. A between-arm gap
-    // has to clear it before it can be called anything but noise.
+    // The widest within-arm spread actually observed. With a handful of runs
+    // this is a FLOOR on the true noise, never an estimate of it — two runs
+    // landing on the same value do not make a metric noiseless, and an arm with
+    // one run has an unknown spread rather than a zero one. So a positive
+    // verdict needs repeats on BOTH sides and a gap that clears the floor with
+    // room to spare. Getting this wrong is how the harness reported a tripled
+    // engine-check rate that a re-run cut in half.
     const noise = Math.max(a.spread ?? 0, b.spread ?? 0);
-    if (a.n < 2 && b.n < 2) verdict = 'no repeats — cannot separate signal from noise';
-    else if (gap > noise) { verdict = `gap ${gap.toFixed(1)} > observed noise ${noise.toFixed(1)} — real`; anyConclusive = true; }
-    else verdict = `gap ${gap.toFixed(1)} within noise ${noise.toFixed(1)} — NOT shown`;
+    const MARGIN = 1.5;            // the gap must beat the floor by half again
+    const repeats = Math.min(a.n, b.n);
+    if (repeats < 2) {
+      verdict = `only ${repeats} run on one arm — spread unknown, cannot judge`;
+    } else if (noise === 0) {
+      verdict = `no spread observed in ${a.n}+${b.n} runs — too few to call`;
+    } else if (gap > noise * MARGIN) {
+      verdict = `gap ${gap.toFixed(1)} clears noise ${noise.toFixed(1)} by ${MARGIN}x — real`;
+      anyConclusive = true;
+    } else {
+      verdict = `gap ${gap.toFixed(1)} within noise ${noise.toFixed(1)} — NOT shown`;
+    }
   } else if (a && a.n > 1) {
-    verdict = `spread ${a.spread.toFixed(1)} across ${a.n} identical runs`;
+    verdict = a.spread > 0
+      ? `spread ${a.spread.toFixed(1)} across ${a.n} identical runs`
+      : `no spread across ${a.n} runs — too few to characterise`;
   }
   console.log(`  ${m.padEnd(20)} ${f(a?.mean)} ${aRange.padStart(15)} ${f(b?.mean)} ${bRange.padStart(15)}  ${verdict}`);
 }
