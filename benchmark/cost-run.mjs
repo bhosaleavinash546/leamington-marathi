@@ -4,6 +4,10 @@
 //   node benchmark/cost-run.mjs                     → prints a scored report, writes cost-results.json
 //   node benchmark/cost-run.mjs --min-hit 0.70      → exit 1 if hit-rate (within tol) < 70%
 //   node benchmark/cost-run.mjs --max-mape 0.25     → exit 1 if mean abs error > 25%
+//   node benchmark/cost-run.mjs --min-band-coverage 0.70  → exit 1 if the P10–P90
+//                                                    band contains fewer than 70%
+//                                                    of real prices (it is labelled
+//                                                    as an 80% interval)
 //
 // Runs each reference part through the PRODUCTION costing engine and scores the
 // deterministic total against a known piece-price, so cost "accuracy" becomes a
@@ -75,7 +79,7 @@ function main() {
   console.log(`  Hit-rate (within tol):   ${(r.hitRate * 100).toFixed(1)}%  (${r.hits}/${r.total})`);
   console.log(`  MAPE (mean abs error):   ${(r.mape * 100).toFixed(1)}%`);
   console.log(`  Bias (signed mean err):  ${r.bias >= 0 ? '+' : ''}${(r.bias * 100).toFixed(1)}%  ${r.bias < -0.05 ? '← engine reads LOW vs market' : r.bias > 0.05 ? '← engine reads HIGH vs market' : ''}`);
-  console.log(`  P10–P90 band coverage:   ${(r.bandCoverage * 100).toFixed(1)}%  (Monte-Carlo band rarely spans real price spread — expected low)\n`);
+  console.log(`  P10–P90 band coverage:   ${(r.bandCoverage * 100).toFixed(1)}%  ${r.bandCoverage >= 0.75 ? '(P10–P90 should contain ~80% of real prices)' : '← band is narrower than its label claims'}\n`);
 
   const resultsName = process.argv.includes('--fixtures') ? 'cost-results-holdout.json' : 'cost-results.json';
   writeFileSync(join(root, 'benchmark', resultsName), JSON.stringify({
@@ -97,6 +101,18 @@ function main() {
   if (maxMape !== -1) {
     const m = parseFloat(process.argv[maxMape + 1]);
     if (r.mape > m) { console.error(`  ✗ FAIL: MAPE ${(r.mape * 100).toFixed(1)}% > allowed ${(m * 100).toFixed(0)}%`); fail = true; }
+  }
+  // The P10–P90 band is published to customers as if it were an 80% interval,
+  // so it has to actually be one. Before MODEL_DISPERSION was measured from the
+  // held-out residuals this sat at 35.7% — a band that was right about a third
+  // of the time, printed beside every estimate.
+  const minCov = process.argv.indexOf('--min-band-coverage');
+  if (minCov !== -1) {
+    const m = parseFloat(process.argv[minCov + 1]);
+    if (r.bandCoverage < m) {
+      console.error(`  ✗ FAIL: P10–P90 band coverage ${(r.bandCoverage * 100).toFixed(1)}% < required ${(m * 100).toFixed(0)}% — the band is narrower than it claims to be`);
+      fail = true;
+    }
   }
   if (fail) { console.log(''); process.exit(1); }
   return r;

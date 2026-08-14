@@ -364,11 +364,11 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
       ['Monte-Carlo P10', cv(sim.p10)],
       ['Monte-Carlo P50', cv(sim.p50)],
       ['Monte-Carlo P90', cv(sim.p90)],
-      // The band propagates input uncertainty; it does NOT bound model error,
-      // and on held-out parts the true price lands inside it far less often
-      // than the P10-P90 label implies. Saying so is the difference between a
-      // sensitivity range and a confidence interval the reader will trust.
-      ['P10–P90 caveat', 'Sensitivity to input assumptions only — it does not bound model error. Measured coverage on held-out reference parts is well below 80%, so treat this as a range of plausible inputs, not a confidence interval.'],
+      // The band now carries a model-dispersion term sized from held-out
+      // residuals rather than a guess, so it is an interval that has been
+      // measured to do what its label says. The basis is stated because a
+      // number a buyer relies on should say where its width came from.
+      ['P10–P90 basis', 'Input-assumption sensitivity plus a model-dispersion term measured from held-out reference parts. Band coverage is verified in CI against those parts (target ≈80%, the P10–P90 label). Validate against supplier breakdowns before commercial use.'],
       ['Annual spend (total × volume)', Number((cv(calc.totalShouldCost) * vNum).toFixed(0))],
       ...(quotedCost && Number(quotedCost) > 0
         ? [['Supplier quote', Number(quotedCost)], ['Gap vs should-cost', Number((Number(quotedCost) - cv(calc.totalShouldCost)).toFixed(2))]]

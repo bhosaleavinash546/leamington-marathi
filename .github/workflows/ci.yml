@@ -39,6 +39,32 @@ jobs:
       - name: Cost benchmark (hit-rate ≥ 90%, MAPE ≤ 12%)
         run: node benchmark/cost-run.mjs --min-hit 0.90 --max-mape 0.12
 
+      # The set above is the one the engine was calibrated on, so on its own it
+      # cannot detect over-fitting. These two steps are what watch for it.
+      # Thresholds are ratchets: tighten them as the modelling improves, never
+      # loosen them to make a red build green.
+      - name: Cost benchmark — HELD-OUT set (authored after calibration freeze)
+        run: node benchmark/cost-run.mjs --fixtures benchmark/cost-fixtures-holdout.json --min-hit 0.70 --max-mape 0.25 --min-band-coverage 0.70
+
+      - name: Over-fit detector (held-out vs calibrated divergence)
+        run: node benchmark/cost-divergence.mjs --max-ratio 2.8
+
+      # Relative-improvement benchmarks. Each also carries an absolute ceiling so
+      # "better than the old model" cannot quietly mean "both are bad".
+      - name: Feature-based machining vs mass model
+        run: node benchmark/machining-run.mjs
+
+      - name: Feature-based stamping vs mass model
+        run: node benchmark/stamping-run.mjs
+
+      - name: PCB engine v2 vs v1
+        run: node benchmark/pcb-run.mjs
+
+      # The DFM catalogue's thresholds are only as good as their citations. This
+      # is a ratchet on the unaudited count — it may fall, never rise.
+      - name: DFM citation debt ratchet
+        run: node scripts/threshold-audit.mjs --max-unaudited 212
+
       # OpenCascade wheel — needed by the DFM geometry gate below. Kept as its
       # own step so a wheel/index problem reads as an install failure rather than
       # a mysterious benchmark skip.
@@ -50,6 +76,24 @@ jobs:
       # arithmetic — there is no modelling slack to spend here.
       - name: DFM geometry benchmark (analytic fixtures, must be 100%)
         run: node benchmark/dfm-run.mjs --min 1.0
+
+      # Renders the analysis, RFQ and Horizon PDFs under Node with a hostile
+      # fixture and scans for text drawn past a margin. Added to CI after it
+      # immediately caught a real overflow: provenance text built AFTER the
+      # deepPdfSafe pass carried → and −, which jsPDF has no WinAnsi metrics
+      # for, so splitTextToSize mis-measured the line and it ran off the page.
+      # The exporters are the least-tested code in the repo and they produce
+      # the customer-facing artefact.
+      - name: Export PDF layout QA (no text past a margin)
+        run: |
+          python3 -m pip install --quiet PyMuPDF
+          npx esbuild src/services/export-service.ts --bundle --format=esm --platform=node \
+            --external:jspdf --external:pptxgenjs --external:exceljs \
+            --outfile=scripts/pdf-qa/export-service.bundle.mjs
+          npx esbuild src/services/foresight-report.ts --bundle --format=esm --platform=node \
+            --external:jspdf --outfile=scripts/pdf-qa/foresight-report.bundle.mjs
+          sed -i 's/import jsPDF from "jspdf";/import { jsPDF } from "jspdf";/' scripts/pdf-qa/*.bundle.mjs
+          cd scripts/pdf-qa && node render.mjs && python3 scan.py *.pdf
 
       - name: Production build
         run: npx vite build

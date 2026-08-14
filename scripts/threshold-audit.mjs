@@ -142,3 +142,29 @@ if (AS_JSON) {
   }
   console.log('\n  ─────────────────────────────────────────────────────────────────────────\n');
 }
+
+// ── Ratchet ─────────────────────────────────────────────────────────────────
+// `--max-unaudited N` exits 1 when the unaudited count exceeds N. Wired into CI
+// so the citation debt can only shrink: adding a rule with a fresh unread
+// citation now fails the build unless another is retired in the same change.
+//
+// It is deliberately a ceiling on the COUNT rather than a demand for zero. The
+// debt is 212 rules across four standards documents nobody on the team has read
+// first-hand; the honest position is to stop it growing while it is worked down,
+// not to pretend it can be cleared in one pass.
+const maxUnaudited = process.argv.indexOf('--max-unaudited');
+if (maxUnaudited !== -1) {
+  const limit = parseInt(process.argv[maxUnaudited + 1], 10);
+  const n = report.counts?.unaudited ?? report.byStatus?.unaudited ?? null;
+  if (n == null) {
+    console.error('  ✗ threshold-audit: could not read the unaudited count — ratchet cannot be enforced.');
+    process.exit(1);
+  }
+  if (n > limit) {
+    console.error(`\n  ✗ FAIL: ${n} unaudited rules exceeds the allowed ${limit}.`);
+    console.error('    A new threshold was added citing a source nobody has read, or an audited one regressed.');
+    console.error('    Retire one before adding one, or read the primary document.\n');
+    process.exit(1);
+  }
+  console.log(`  ✓ citation debt ratchet: ${n} unaudited, within the allowed ${limit}\n`);
+}

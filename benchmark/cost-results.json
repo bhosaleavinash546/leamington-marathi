@@ -2,7 +2,7 @@
   "hitRate": 100,
   "mape": 8.3,
   "bias": -1.1,
-  "bandCoverage": 87.5,
+  "bandCoverage": 100,
   "hits": 16,
   "total": 16,
   "rows": [

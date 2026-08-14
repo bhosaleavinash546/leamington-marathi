@@ -29,10 +29,14 @@ describe('should-cost export', () => {
     assert.deepEqual(branded, [], `retired brand in customer-facing strings: ${branded.join(', ')}`);
   });
 
-  it('says what the P10–P90 band is, and is not', () => {
-    assert.match(src, /P10–P90 caveat/, 'the band ships with no explanation of what it covers');
-    assert.match(src, /does not bound model error/);
-    assert.match(src, /not a confidence interval/);
+  it('states where the P10–P90 band width came from', () => {
+    // The band ships to customers. It must say what sizes it — and the answer
+    // must stay true: the width is now measured from held-out residuals and
+    // gated in CI, so the old "well below 80%" caveat would itself be a false
+    // statement.
+    assert.match(src, /P10–P90 basis/, 'the band ships with no explanation of what it covers');
+    assert.match(src, /measured from held-out reference parts/);
+    assert.doesNotMatch(src, /well below 80%/, 'stale caveat: coverage is now gated at ~80%');
   });
 
   it('still converts currency at the display boundary rather than relabelling EUR', () => {

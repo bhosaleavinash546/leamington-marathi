@@ -1019,9 +1019,12 @@ export function exportRfqPdf(
   setColor(doc, [200, 210, 220]);
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
+  // Built after deepPdfSafe, so it sanitizes itself — see BASIS OF ESTIMATE.
   const discLines = doc.splitTextToSize(
-    `${OUTBOUND_DISCLAIMER}  In this pack: ${rfqTally.confirmed} engine-confirmed, `
-    + `${rfqTally.contradicted} engine-contradicted, ${rfqTally.unchecked} not engine-checked.`,
+    pdfSafe(
+      `${OUTBOUND_DISCLAIMER}  In this pack: ${rfqTally.confirmed} engine-confirmed, `
+      + `${rfqTally.contradicted} engine-contradicted, ${rfqTally.unchecked} not engine-checked.`,
+    ),
     CW,
   );
   doc.text(discLines, ML, ry + 6);
@@ -1125,7 +1128,13 @@ export function exportRfqPdf(
     // A supplier is being asked to quote against this line. They are entitled
     // to know whether the saving behind it was ever tested by the cost engine
     // or is an AI estimate — the distinction changes how they read the target.
-    rfqSection('BASIS OF ESTIMATE', `${engineVerdict(idea).text} ${evidenceLine(idea)}`);
+    //
+    // pdfSafe is required here even though the idea was deep-sanitized on entry:
+    // this string is BUILT after that pass and carries → and − from the
+    // provenance module. jsPDF has no WinAnsi metrics for those, so
+    // splitTextToSize mis-measures the line and the text runs off the page —
+    // caught by scripts/pdf-qa, which is now in CI for exactly this reason.
+    rfqSection('BASIS OF ESTIMATE', pdfSafe(`${engineVerdict(idea).text} ${evidenceLine(idea)}`));
 
     // RFQ Requirements
     rfqEnsure(50);
