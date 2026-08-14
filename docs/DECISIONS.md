@@ -2787,3 +2787,62 @@ absorb exactly this kind of data.
     amortisation, not a material one.
   * `benchmark/cost-divergence.mjs` now watches the held-out/calibrated ratio
     (2.51x today) so whoever does this work can see whether it is helping.
+
+## 51. Citation quality and register coverage are separate axes
+
+**Context**: `scripts/threshold-audit.mjs` reports how many rules appear in
+`docs/threshold-audit.json` — the curation register — and calls the remainder
+`unaudited`. The August 2026 audit read that output and reported it as the
+SOURCING position of the rule catalogue: "212 of 248 unaudited, 6% primary
+document read, 27 rules cite a named standard nobody has read first-hand."
+
+That was wrong. Reading the catalogue's own citations:
+
+| what the citation says | rules |
+|---|---|
+| primary document read first-hand | 38 |
+| names a standard, reading unclear | 5 |
+| names a standard and admits it was NOT read | **2** |
+| stated as industry consensus / guidance | 203 |
+| no source text at all | 0 |
+| **claims a stronger provenance than the citation supports** | **0** |
+
+Two rules under-claim — graded `industry-consensus` on text that records
+first-hand reading. The catalogue errs conservatively, which is the correct
+direction for a tool whose selling point is not overstating.
+
+**Decision**: the two axes are reported separately and can never again be
+printed as one number.
+
+  * **Citation quality** — what the rule's own source text supports. The
+    engineering position.
+  * **Register coverage** — whether a curator has independently re-reviewed it.
+    An audit-trail property.
+
+The script prints them under separate headings, and the register block states
+in terms that not-reviewed is a gap in the trail, not a claim the threshold is
+unsourced. It also surfaces the drift nothing was watching: 12 rules whose
+citation records first-hand reading that the register never recorded.
+
+**Consequences**:
+  * **A customer-facing label was wrong in the opposite direction.**
+    `SOURCE_GRADE` printed "NAMED STANDARD, not read first-hand" for every
+    standard-named rule, in both the DFM report and the Studio screen. False for
+    36 of 38. The tool was telling customers it had not opened standards its
+    authors had read and encoded table by table. Understating your own rigour is
+    still misreporting, and it is the corroboration that made the wrong finding
+    look right.
+  * **The single `--max-unaudited` ratchet is replaced by three named gates.**
+    It conflated the axes, and once the citation axis was added it silently
+    began reading a different field and gating on 3 instead of 212 — loose
+    enough to catch nothing. `--max-unread-standards`, `--max-register-drift`
+    and `--max-unreviewed`, each verified to fail when tightened.
+  * `tests/threshold-audit-axes.test.mjs` pins the invariant that actually
+    matters — no rule may claim a stronger provenance than its citation supports
+    — and asserts `dfm-rules.mjs` still imports all six standards modules, so
+    the catalogue cannot cite a standard the engine no longer consults.
+  * The remaining real debt is **2 rules**, both permanent-mould minimum
+    cored-hole rules taking a NADCA figure second-hand from a design guide, and
+    both saying so in their own text.
+  * Recorded as **F-32** in the audit register, and every other finding was
+    re-swept for the same signature — see `docs/AUDIT-SWEEP.md`. 30 of 31 hold.
