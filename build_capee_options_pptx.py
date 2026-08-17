@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
-CostVision -> JLR / CAPEE — two implementation options, as a decision paper for
-the Cost Engineering Director.
+CostVision -> JLR / CAPEE — two ways to do it. A decision deck for the JLR Cost
+Engineering Director and his management team.
 
-Option 1: CostVision becomes CAPEE's automatic CAD/drawing data-input front end.
-Option 2: CostVision deployed as-is, running on JLR's own rate data.
+WRITTEN FOR A NON-IT AUDIENCE. Plain English on the slides AND in the speaker
+notes. A technical word only appears where there is no honest simpler
+substitute, and it is explained in ordinary language the first time it is used.
+The speaker notes are written as the presenter would actually say them.
 
-House style is inherited verbatim from build_blueprint_pptx.py so this deck sits
-in the same pack as CostVision-Implementation-Blueprint.pptx.
+House style is inherited from build_blueprint_pptx.py so this deck sits in the
+same pack as CostVision-Implementation-Blueprint.pptx.
 
-EVERY figure in this deck is sourced. Where a number could not be derived from
-the codebase it is marked as an assumption to be confirmed, not stated as fact.
+Every figure is traced to the codebase. Where something could not be derived it
+is marked as an assumption, not stated as fact.
 
 Regenerate:  python3 build_capee_options_pptx.py
 Output:      CostVision-CAPEE-Implementation-Options.pptx
@@ -187,581 +189,832 @@ def footer(slide, txt):
          [[(txt, 8, MUTED, False)]])
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 1 — TITLE
-# ══════════════════════════════════════════════════════════════════════════════
+# ── Icons ────────────────────────────────────────────────────────────────────
+# 12 of the 16 icons in assets/workflow-deck/icons are WHITE artwork on a
+# transparent background — measured, average RGB 255,255,255. Dropped straight
+# onto a light card they are invisible. So a white icon always sits inside a
+# filled circle. check / times / warn / arrow are coloured and work bare.
+import os
+ICON_DIR = 'assets/workflow-deck/icons'
+_COLOURED_ICONS = {'check', 'times', 'warn', 'arrow'}
+
+
+def icon_badge(slide, name, cx, cy, d=Inches(0.62), fill=INDIGO, pad=0.26):
+    """Coloured circle with a white icon centred inside it."""
+    path = os.path.join(ICON_DIR, f'{name}.png')
+    if name not in _COLOURED_ICONS:
+        c = slide.shapes.add_shape(MSO_SHAPE.OVAL, cx, cy, d, d)
+        c.fill.solid(); c.fill.fore_color.rgb = fill
+        c.line.fill.background(); c.shadow.inherit = False
+    if os.path.exists(path):
+        inset = int(d * pad)
+        slide.shapes.add_picture(path, cx + inset, cy + inset, d - 2 * inset, d - 2 * inset)
+
+
+def step_circle(slide, n, cx, cy, d=Inches(0.5), fill=INDIGO, size=17):
+    c = slide.shapes.add_shape(MSO_SHAPE.OVAL, cx, cy, d, d)
+    c.fill.solid(); c.fill.fore_color.rgb = fill
+    c.line.fill.background(); c.shadow.inherit = False
+    tf = c.text_frame; tf.margin_left = tf.margin_right = 0
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
+    r = p.add_run(); r.text = str(n)
+    r.font.size = Pt(size); r.font.bold = True; r.font.name = 'Calibri'
+    r.font.color.rgb = ON_DARK
+
+
+def chevron(slide, x, y, w, h, label, sub, fill, text_col=ON_DARK):
+    """One block of a left-to-right process flow."""
+    shp = slide.shapes.add_shape(MSO_SHAPE.CHEVRON, x, y, w, h)
+    shp.fill.solid(); shp.fill.fore_color.rgb = fill
+    shp.line.fill.background(); shp.shadow.inherit = False
+    tf = shp.text_frame; tf.word_wrap = True
+    tf.margin_left = Inches(0.22); tf.margin_right = Inches(0.1)
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
+    r = p.add_run(); r.text = label
+    r.font.size = Pt(11); r.font.bold = True; r.font.color.rgb = text_col; r.font.name = 'Calibri'
+    if sub:
+        p2 = tf.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
+        r2 = p2.add_run(); r2.text = sub
+        r2.font.size = Pt(8.5); r2.font.color.rgb = text_col; r2.font.name = 'Calibri'
+    return shp
+
+
+def flow_step(slide, x, y, w, h, icon, title, sub, accent):
+    """Icon-topped step card used in the end-to-end summary slides."""
+    box(slide, x, y, w, h, fill=PANEL, line=LINE, round_=True)
+    box(slide, x, y, w, Inches(0.06), fill=accent)
+    icon_badge(slide, icon, x + (w - Inches(0.62)) / 2, y + Inches(0.18), fill=accent)
+    text(slide, x + Inches(0.08), y + Inches(0.92), w - Inches(0.16), Inches(0.34),
+         [[(title, 10.5, DARK, True)]], align=PP_ALIGN.CENTER)
+    text(slide, x + Inches(0.08), y + Inches(1.28), w - Inches(0.16), h - Inches(1.34),
+         [[(sub, 8.8, BODY, False)]], align=PP_ALIGN.CENTER, line_spacing=1.1)
+
+
+def arrow_between(slide, x, y, w=Inches(0.3)):
+    a = slide.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, x, y, w, Inches(0.22))
+    a.fill.solid(); a.fill.fore_color.rgb = RGBColor(0xB8, 0xC4, 0xD4)
+    a.line.fill.background(); a.shadow.inherit = False
+
+
+def lane(slide, x, y, w, h, label, colour, items, label_w=Inches(1.5)):
+    """Swim-lane: who does what."""
+    box(slide, x, y, w, h, fill=PANEL, line=LINE)
+    box(slide, x, y, label_w, h, fill=colour)
+    tf_box = box(slide, x, y, label_w, h, fill=None)
+    tf = tf_box.text_frame; tf.word_wrap = True
+    tf.margin_left = Inches(0.12); tf.margin_right = Inches(0.06)
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    p = tf.paragraphs[0]; p.alignment = PP_ALIGN.LEFT
+    r = p.add_run(); r.text = label
+    r.font.size = Pt(10.5); r.font.bold = True; r.font.color.rgb = ON_DARK; r.font.name = 'Calibri'
+    cw = (w - label_w) / len(items)
+    for i, it in enumerate(items):
+        cx = x + label_w + cw * i
+        if i:
+            box(slide, cx, y + Inches(0.06), Pt(0.75), h - Inches(0.12), fill=LINE)
+        text(slide, cx + Inches(0.12), y + Inches(0.13), cw - Inches(0.24), h - Inches(0.26),
+             [[(it, 9.2, BODY, False)]], line_spacing=1.12, anchor=MSO_ANCHOR.MIDDLE)
+
+# ══════════════════════════════════════════════════════════════ 1 · TITLE ════
 s = prs.slides.add_slide(BLANK)
 box(s, 0, 0, W, H, fill=NAVY)
 box(s, 0, 0, Inches(0.09), H, fill=INDIGO)
 logo(s, x=Inches(0.55), y=Inches(0.5), scale=1.15, on_dark=True)
-text(s, Inches(0.6), Inches(2.15), Inches(11.6), Inches(1.5),
-     [[('Bringing CostVision into JLR', 40, ON_DARK, True)]], font=TITLE_FONT)
-text(s, Inches(0.6), Inches(3.15), Inches(11.4), Inches(0.9),
-     [[('Two implementation options for CAPEE — architecture, effort, risk '
-        'and a recommendation', 17, HERO_SUB, False)]])
-box(s, Inches(0.6), Inches(4.15), Inches(3.3), Pt(2.5), fill=INDIGO)
-text(s, Inches(0.6), Inches(4.45), Inches(11.4), Inches(1.5),
-     [[('OPTION 1   CostVision as CAPEE\'s automatic CAD & drawing data-input front end',
-        13, ON_DARK, True)],
-      [('OPTION 2   CostVision deployed as-is, running on JLR rate data',
-        13, ON_DARK, True)]], space_after=8)
-text(s, Inches(0.6), Inches(6.35), Inches(11.6), Inches(0.6),
-     [[('Prepared for the JLR Cost Engineering Director  ·  August 2026  ·  '
-        'Every figure in this deck is traced to the codebase', 10, HERO_DIM, False)]])
-notes(s, 'A decision paper, not a sales deck. Two routes are presented with honest effort and '
-         'risk on both, and an explicit recommendation at slide 16. Every number is sourced from '
-         'a line-by-line audit of the CostVision codebase carried out in August 2026 — where a '
-         'figure could not be derived it is marked as an assumption rather than stated as fact.')
+text(s, Inches(0.6), Inches(2.05), Inches(11.6), Inches(1.4),
+     [[('Two ways to bring CostVision into JLR', 38, ON_DARK, True)]], font=TITLE_FONT)
+text(s, Inches(0.6), Inches(3.05), Inches(11.4), Inches(0.6),
+     [[('What each one involves, how long it takes, what it costs us in effort, '
+        'and which one we recommend', 16, HERO_SUB, False)]])
+box(s, Inches(0.6), Inches(3.95), Inches(3.3), Pt(2.5), fill=INDIGO)
+for i, (n, t_, sub) in enumerate([
+        ('1', 'Feed CAPEE automatically',
+         'CAPEE stays as it is. We give it the numbers, read from the CAD model and the drawing.'),
+        ('2', 'Use CostVision on our own rates',
+         'Install CostVision as it is. Put JLR material, machine, labour and energy rates into it.')]):
+    y = Inches(4.3) + Inches(0.95) * i
+    step_circle(s, n, Inches(0.62), y, d=Inches(0.55), fill=INDIGO)
+    text(s, Inches(1.4), y + Inches(0.02), Inches(10.8), Inches(0.3), [[(t_, 15, ON_DARK, True)]])
+    text(s, Inches(1.4), y + Inches(0.35), Inches(10.8), Inches(0.3), [[(sub, 11, HERO_SUB, False)]])
+text(s, Inches(0.6), Inches(6.5), Inches(11.6), Inches(0.4),
+     [[('Prepared for the JLR Cost Engineering team  ·  August 2026', 10, HERO_DIM, False)]])
+notes(s, "Good morning. We have been building a tool called CostVision for about four months. "
+         "The question in front of us is simple: how do we get the benefit of it into JLR. There "
+         "are two sensible ways to do that. I am going to walk through both, tell you honestly "
+         "what each one involves, and give you my recommendation at the end. I will keep the "
+         "technical language to a minimum — where I do have to use a term, I will explain it.")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 2 — EXECUTIVE SUMMARY
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('The decision in one slide', 'Executive summary')
-card(s, Inches(0.45), Inches(1.85), Inches(6.1), Inches(2.55), INDIGO,
-     'OPTION 1 — CostVision feeds CAPEE',
-     [('CAPEE stays the system of record and keeps its cost engine.',),
-      ('CostVision supplies the INPUTS automatically: an engineer uploads a STEP',),
-      ('file and a drawing instead of keying thirty fields by hand.',),
+# ═════════════════════════════════════════════════════ 2 · DECISION SUMMARY ══
+s = header('The decision, in one slide', 'Summary')
+card(s, Inches(0.45), Inches(1.8), Inches(6.1), Inches(2.5), INDIGO,
+     'OPTION 1 — Feed CAPEE automatically',
+     [('CAPEE stays exactly as it is and still does the costing.',),
+      ('Instead of typing thirty boxes, the engineer drops in the',),
+      ('3D model and the drawing, and the numbers appear.',),
       ('',),
-      ('Ports ~5,700 lines of extraction plus the guard layer.', DARK, True),
-      ('Effort: 12–20 weeks depending on CAPEE\'s technology stack.', DARK, True)])
-card(s, Inches(6.78), Inches(1.85), Inches(6.1), Inches(2.55), VIOLET,
-     'OPTION 2 — CostVision as-is on JLR data',
-     [('CostVision deployed unchanged inside JLR. Same engine, same reports.',),
-      ('JLR\'s materials, machine rates, labour, energy and regional factors',),
-      ('replace the supplied rate library.',),
+      ('Roughly 5 months of work.', DARK, True),
+      ('Most of the effort is ours, plus JLR IT.', DARK, True)])
+card(s, Inches(6.78), Inches(1.8), Inches(6.1), Inches(2.5), VIOLET,
+     'OPTION 2 — Use CostVision on our rates',
+     [('Install CostVision as it is. Nothing is rebuilt.',),
+      ('We load JLR material prices, machine rates, labour and',),
+      ('energy costs in place of the ones it ships with.',),
       ('',),
-      ('Zero engine change. The work is data onboarding and deployment.', DARK, True),
-      ('Effort: 8–12 weeks, dominated by rate collection — JLR-side.', DARK, True)])
-callout(s, Inches(0.45), Inches(4.6), Inches(12.43), Inches(1.05), GREENBG, GREEN,
-        'RECOMMENDATION — run Option 2 first, then Option 1',
-        'Option 2 proves the engine against JLR reality in a quarter and produces the validation '
-        'data that Option 1 depends on anyway. Option 1 without that evidence would industrialise '
-        'an extraction pipeline whose downstream accuracy nobody has yet measured. They are '
-        'sequential, not alternative.')
-callout(s, Inches(0.45), Inches(5.8), Inches(12.43), Inches(1.05), AMBERBG, AMBER,
-        'ONE PREREQUISITE APPLIES TO BOTH',
-        'CostVision has no validated accuracy today. Its accuracy harness reports "confidence: '
-        'high" over five rows labelled EXAMPLE - replace with real quote. Until 30-50 real JLR '
-        'quotes are loaded, neither option can be represented as quotable. This is JLR-side work '
-        'and is the single highest-value action available.')
-footer(s, 'Effort ranges are engineering estimates pending confirmation of CAPEE\'s technology stack.')
-notes(s, 'Lead with the recommendation and the prerequisite. If the Director reads only this slide '
-         'they should leave knowing: the two options are sequential rather than competing, and '
-         'neither is quotable until JLR supplies real quote data. Do not soften the accuracy point '
-         '— discovering it later in a steering group is far worse than hearing it now.')
+      ('Roughly 2 to 3 months.', DARK, True),
+      ('Most of the effort is JLR collecting the rate data.', DARK, True)])
+callout(s, Inches(0.45), Inches(4.5), Inches(12.43), Inches(1.0), GREENBG, GREEN,
+        'OUR RECOMMENDATION — do Option 2 first, then Option 1',
+        'These are not really a choice between two things. Option 2 is quicker, we can stop it at '
+        'any time if we do not like it, and it tells us whether the tool actually gets the right '
+        'answer on JLR parts. Option 1 needs that answer before it is worth doing.')
+callout(s, Inches(0.45), Inches(5.68), Inches(12.43), Inches(1.15), AMBERBG, AMBER,
+        'ONE THING TO BE CLEAR ABOUT, WHICHEVER WE CHOOSE',
+        'We have not yet checked the tool\'s answers against real JLR prices. Not once. Until we '
+        'take 30 to 50 parts we have actually bought and compare them, we cannot tell anyone how '
+        'accurate it is. That is a job for us, not for the software, and it is the single most '
+        'valuable thing we could do next.')
+notes(s, "If you only remember one slide, make it this one. Two options. Option 1 takes about five "
+         "months and keeps CAPEE as our costing system. Option 2 takes two to three months and puts "
+         "CostVision alongside it running on our numbers. My recommendation is that these are not "
+         "either-or — do the quick one first, because it answers the question the slow one depends "
+         "on. And the amber box: I want to say this before anyone else does. We have never checked "
+         "this tool against a real price we have paid. Until we do, I cannot tell you how accurate "
+         "it is, and I am not going to pretend otherwise.")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 3 — THE PROBLEM
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('What changes for a CAPEE user', 'The problem being solved')
-text(s, Inches(0.45), Inches(1.75), Inches(12.4), Inches(0.4),
-     [[('CAPEE requires cost inputs to be entered manually. Every field below is currently typed '
-        'by an engineer, per part.', 12, BODY, False)]])
-card(s, Inches(0.45), Inches(2.35), Inches(6.1), Inches(3.4), RED,
-     'TODAY — manual entry into CAPEE',
-     [('Part mass, stock mass, material utilisation',),
-      ('Wall / section thickness, envelope, projected area',),
-      ('Feature counts — holes, bosses, pockets, threads',),
-      ('Cycle times per operation, machine selection',),
-      ('Surface area for coating, masked feature count',),
-      ('Tolerance class, finish callouts, heat-treat route',),
+# ══════════════════════════════════════════════ 3 · WHAT CHANGES FOR A USER ══
+s = header('What changes for the person doing the costing', 'The problem')
+card(s, Inches(0.45), Inches(1.85), Inches(6.1), Inches(3.5), RED,
+     'TODAY — everything is typed in by hand',
+     [('Part weight, and the weight of the material we start with',),
+      ('Wall thickness, overall size',),
+      ('How many holes, pockets, bosses',),
+      ('How long each machine takes',),
+      ('Surface area for painting or plating',),
+      ('Tolerances, finish, heat treatment',),
       ('',),
-      ('Engineer-dependent. Slow. Not reproducible between',),
-      ('two estimators looking at the same part.', BODY, False)],
-     fill=REDBG)
-card(s, Inches(6.78), Inches(2.35), Inches(6.1), Inches(3.4), GREEN,
-     'WITH AUTOMATIC EXTRACTION',
-     [('Upload a STEP/IGES model and a drawing PDF.',),
+      ('It is slow, and two engineers looking at the same part',),
+      ('will not type the same numbers.', DARK, True)], fill=REDBG)
+card(s, Inches(6.78), Inches(1.85), Inches(6.1), Inches(3.5), GREEN,
+     'WITH COSTVISION — read straight off the model',
+     [('Drop in the 3D model and the drawing.',),
       ('',),
-      ('MEASURED from the solid — volume, bounding box, wetted', DARK, True),
-      ('area, wall thickness, B-rep face classification, hole /',),
-      ('boss / pocket feature tables, gear metrology.',),
+      ('MEASURED from the 3D model:', DARK, True),
+      ('volume, size, surface area, wall thickness, holes,',),
+      ('pockets, bosses, gear teeth.',),
       ('',),
-      ('READ from the drawing — tolerances, GD&T, finish and', DARK, True),
-      ('heat-treat callouts, salt-spray hours, masked features.',),
+      ('READ from the drawing:', DARK, True),
+      ('tolerances, surface finish, heat treatment, coating,',),
+      ('how many features are masked off.',),
       ('',),
-      ('Same part, same numbers, every time.', GREEN, True)],
-     fill=GREENBG)
-callout(s, Inches(0.45), Inches(5.95), Inches(12.43), Inches(0.85), PANEL2, INDIGO,
-        'The distinction that matters',
-        'Geometry is MEASURED by a deterministic kernel, not estimated by an AI. The AI reads '
-        'drawing notes and classifies; every number it produces is checked against the measured '
-        'solid before it can reach a cost. That guard layer is what makes automatic extraction '
-        'safe, and slide 5 covers why it must travel with the feature.')
-notes(s, 'The value case is reproducibility as much as speed. Two estimators keying the same part '
-         'today will produce two different answers; a measured geometry kernel produces one. That '
-         'is the argument that lands with a cost engineering audience — not the time saving.')
+      ('Same part, same numbers, every single time.', GREEN, True)], fill=GREENBG)
+callout(s, Inches(0.45), Inches(5.6), Inches(12.43), Inches(1.15), PANEL2, INDIGO,
+        'The important difference — measuring is not guessing',
+        'The 3D model is MEASURED by software, the same way a CMM measures a part. That is not the '
+        'AI guessing. The AI is only used to read the words on the drawing, and everything it reads '
+        'is checked against the measured model before it can affect a cost. Slide 6 explains those '
+        'checks, and why they have to come with us.')
+notes(s, "This is the case for doing anything at all. Today every one of those numbers on the left "
+         "is typed in by hand. It is slow, but the bigger problem is the second point — two of our "
+         "engineers costing the same part will not enter the same numbers, so we get two different "
+         "answers for the same part. On the right is what the tool does instead. And the blue box "
+         "matters: the 3D model is measured, not guessed. Software measures it exactly like a CMM "
+         "would. The AI only reads the writing on the drawing, and we check everything it reads.")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 4 — VERIFIED INVENTORY
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('What Option 1 actually moves', 'Verified inventory')
-text(s, Inches(0.45), Inches(1.72), Inches(12.4), Inches(0.35),
-     [[('Line counts measured directly from the repository. This is the scope of the port — not an '
-        'estimate.', 11.5, BODY, False)]])
-rows = [
-    ('cad-geometry-engine.py', 'Python + OCCT/CadQuery', '2,039', 'Measures the solid. Fully offline.'),
-    ('routes/cad.ts', 'TypeScript', '2,443', 'Prompts, drawing read, orchestration'),
-    ('geometry-bridge.ts', 'TypeScript', '340', 'Spawns the kernel, semaphore-capped'),
-    ('stl-parser.ts', 'TypeScript', '304', 'Pure-TS fast path for STL'),
-    ('cad-sanity.ts', 'TypeScript', '311', ('GUARD — cross-checks AI vs measured', DARK, True)),
-    ('cad-machining-guard.ts', 'TypeScript', '82', ('GUARD — caps near-net machining', DARK, True)),
-    ('cad-feature-accuracy.ts', 'TypeScript', '143', 'Feature-detection scoring'),
-    ('cost-input-rules/  (12 packs)', 'TypeScript', '7,037', ('GUARD — confirm-before-costing gate', DARK, True)),
-    ('dfm-geometry/  (10 files)', 'TypeScript', '1,930', 'Geometry-driven DFM findings'),
+# ════════════════════════════════ 4 · OPTION 1 — END TO END SUMMARY (KEY) ═══
+s = header('Option 1 — how it works, start to finish', 'Option 1 · full picture')
+text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
+     [[('What happens every time an engineer costs a part', 11.5, MUTED, True)]])
+steps = [
+    ('upload',  'Engineer uploads',   '3D model and drawing, from the CAPEE screen',  INDIGO),
+    ('ruler',   'Software measures',  'Size, weight, surface area, holes, pockets',    INDIGO),
+    ('clip',    'AI reads drawing',   'Tolerances, finish, coating, heat treatment',   VIOLET),
+    ('shield',  'Safety checks run',  'Anything the AI read is checked against the model', GREEN),
+    ('person',  'Engineer confirms',  'Only the few things a model cannot show',       AMBER),
+    ('calc',    'CAPEE costs it',     'CAPEE receives the numbers and does the maths', GREEN),
 ]
-table(s, Inches(0.45), Inches(2.2),
-      Inches(12.43), ['Component', 'Technology', 'LOC', 'Role'], rows,
-      [Inches(3.5), Inches(2.6), Inches(1.3), Inches(5.03)])
-callout(s, Inches(0.45), Inches(5.85), Inches(6.1), Inches(1.0), GREENBG, GREEN,
-        'Good news for portability',
-        'The geometry kernel imports only the Python standard library and OCCT. Zero network '
-        'calls. Its one sampling routine is seeded, so measurements are reproducible.')
-callout(s, Inches(6.78), Inches(5.85), Inches(6.1), Inches(1.0), AMBERBG, AMBER,
-        'One hard deployment constraint',
-        'OCCT ships as manylinux/glibc wheels. It cannot run on Alpine. CAPEE\'s host estate must '
-        'support glibc containers, or the kernel runs as a separate service.')
-footer(s, 'Source: wc -l on the repository at commit 680571c, August 2026.')
-notes(s, 'If challenged on scope, this is the slide to open. 5,662 lines of extraction plus 8,967 '
-         'lines of rules and DFM. The guard rows are highlighted deliberately — they are the ones '
-         'a project under time pressure will be tempted to drop, and slide 5 explains why that '
-         'would be a mistake.')
+sw, gap = Inches(1.87), Inches(0.19)
+x = Inches(0.45)
+for i, (ic, t_, sub, c_) in enumerate(steps):
+    flow_step(s, x, Inches(2.0), sw, Inches(2.05), ic, t_, sub, c_)
+    if i < len(steps) - 1:
+        arrow_between(s, x + sw + Inches(0.02), Inches(2.9), gap - Inches(0.04))
+    x += sw + gap
+text(s, Inches(0.45), Inches(4.25), Inches(12.4), Inches(0.3),
+     [[('How we build it — about 5 months', 11.5, MUTED, True)]])
+ph = [('Weeks 1-2', 'Agree the connection'), ('Weeks 3-6', 'Stand up measuring'),
+      ('Weeks 7-8', 'Hand over settings'), ('Weeks 9-11', 'Add safety checks'),
+      ('Weeks 12-16', 'Connect into CAPEE'), ('Weeks 17-19', 'Trial with one team')]
+cw = Inches(2.05)
+x = Inches(0.45)
+for i, (wk, lbl) in enumerate(ph):
+    chevron(s, x, Inches(4.58), cw, Inches(0.72), wk, lbl.replace('\n', ' '),
+            INDIGO if i < 5 else GREEN)
+    x += cw - Inches(0.04)
+lane(s, Inches(0.45), Inches(5.5), Inches(12.43), Inches(0.62), 'WE DO', INDIGO,
+     ['Package the measuring software', 'Write out every setting', 'Port the safety checks',
+      'Support the CAPEE connection'])
+lane(s, Inches(0.45), Inches(6.16), Inches(12.43), Inches(0.62), 'JLR DOES', VIOLET,
+     ['Tell us how CAPEE is built', 'Provide a server to run it on', 'Change CAPEE to accept the numbers',
+      'Give us one team for the trial'])
+callout(s, Inches(0.45), Inches(6.86), Inches(12.43), Inches(0.5), AMBERBG, AMBER,
+        'We cannot fix the timing yet',
+        'Until JLR tells us what CAPEE is built with, weeks 12 to 16 could be shorter or longer. '
+        'Slide 9 shows the three ways of connecting and what each would cost us.')
+notes(s, "This is the whole of Option 1 on one slide, so let me walk the top row first. The "
+         "engineer uploads the model and the drawing from inside CAPEE — same screen they use now. "
+         "Software measures the model. The AI reads the drawing. The safety checks then compare "
+         "what the AI read against what was measured, and anything that disagrees gets flagged "
+         "rather than quietly used. There are a few things no 3D model can tell you — heat "
+         "treatment, tolerance class — so the engineer confirms those. Then CAPEE gets the numbers "
+         "and does the costing exactly as it does today. Underneath is how we build it, roughly "
+         "five months, and who does what. The honest bit is the amber strip: I cannot firm up "
+         "weeks twelve to sixteen until IT tell us how CAPEE is put together.")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 5 — THE GUARD LAYER
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('The guard layer must travel with the feature', 'Non-negotiable')
-text(s, Inches(0.45), Inches(1.72), Inches(12.4), Inches(0.4),
-     [[('Automatic extraction uses an AI to read drawings and classify features. The AI never sets '
-        'a price — but it does set ', 12, BODY, False),
-       ('drivers', 12, DARK, True),
-       (', and arithmetic converts a wrong driver into a confident wrong cost.', 12, BODY, False)]])
-g = [('Measured-geometry clamp', INDIGO,
-      'Any AI weight is overwritten by volume x density from the solid. Geometry is ground truth; '
-      'the AI only interprets.'),
-     ('Sanity cross-check', INDIGO,
-      'AI numbers are tested against measured volume and mass. Contradictions are reported, not '
-      'silently resolved.'),
-     ('Near-net machining cap', INDIGO,
-      'Machining time on a cast or forged part is capped to a finish envelope, so a hallucinated '
-      'cycle cannot inflate the part.'),
-     ('Confirm-before-costing gate', VIOLET,
-      'Anything the model cannot derive from the solid — helix angle, tolerance class, heat-treat '
-      'route — is put to the engineer as an explicit decision. AI answers are tagged as AI, never '
-      'as engineer-confirmed, and are never pre-selected.')]
-y = Inches(2.4)
-for i, (t_, c_, b_) in enumerate(g):
-    h_ = Inches(1.0) if i < 3 else Inches(1.15)
-    card(s, Inches(0.45), y, Inches(12.43), h_, c_, t_, [(b_,)], title_size=12.5, body_size=10.5)
-    y += h_ + Inches(0.14)
-callout(s, Inches(0.45), Inches(6.2), Inches(12.43), Inches(0.72), REDBG, RED,
-        'Evidence this matters — found during the August 2026 audit',
-        'On the agent-driven path, which had no guard, one missing input field produced a reported '
-        'cost of NaN with a success flag. An OEE of 0.0001 — physically impossible — still returns '
-        'a confident figure. Both are fixed or logged; the lesson is that extraction without guards '
-        'is where the risk actually lives.')
-notes(s, 'This is the most important slide for a cost engineering audience. The instinct in a port '
-         'is to take the clever bit (geometry, AI) and leave the plumbing (guards). That inverts '
-         'the risk. The NaN example is real, from this codebase, found by running it rather than '
-         'reading it — use it if anyone argues the guards are optional.')
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 6 — OPTION 1 ARCHITECTURE
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('Option 1 — target architecture', 'Option 1')
-box(s, Inches(0.45), Inches(1.8), Inches(12.43), Inches(3.5), fill=PANEL, line=LINE, round_=True)
-text(s, Inches(0.7), Inches(2.0), Inches(11.9), Inches(0.3),
-     [[('JLR internal network', 11, MUTED, True)]])
-lane = [('Engineer', 'uploads STEP + drawing PDF', INDIGO, Inches(0.75)),
-        ('Extraction service', 'OCCT kernel + drawing read + guards', INDIGO, Inches(3.55)),
-        ('Decision gate', 'engineer confirms what the solid cannot tell', VIOLET, Inches(6.35)),
-        ('CAPEE', 'receives structured cost inputs, costs the part', GREEN, Inches(9.15))]
-for t_, sub_, c_, x_ in lane:
-    b = box(s, x_, Inches(2.45), Inches(2.55), Inches(1.35), fill=BG, line=LINE, round_=True)
-    box(s, x_, Inches(2.45), Inches(2.55), Inches(0.075), fill=c_)
-    text(s, x_ + Inches(0.16), Inches(2.65), Inches(2.25), Inches(0.3), [[(t_, 12.5, DARK, True)]])
-    text(s, x_ + Inches(0.16), Inches(3.0), Inches(2.25), Inches(0.75),
-         [[(sub_, 9.8, BODY, False)]], line_spacing=1.12)
-for x_ in (Inches(3.32), Inches(6.12), Inches(8.92)):
-    text(s, x_, Inches(2.95), Inches(0.3), Inches(0.3), [[('>', 17, MUTED, True)]])
-text(s, Inches(0.7), Inches(4.0), Inches(11.9), Inches(1.1),
-     [[('CAPEE remains the system of record. It keeps its own cost engine, its workflow and its '
-        'approvals. CostVision contributes the measurement, the drawing read and the guard layer '
-        '— nothing downstream of the cost inputs.', 11, BODY, False)]], line_spacing=1.2)
-text(s, Inches(0.7), Inches(4.62), Inches(11.9), Inches(0.5),
-     [[('The extraction service is deployed inside JLR. CAD files never leave the network — the '
-        'kernel is local and offline. Only derived summaries and drawing text reach an LLM, via '
-        'JLR\'s own gateway.', 11, DARK, True)]], line_spacing=1.2)
-callout(s, Inches(0.45), Inches(5.55), Inches(12.43), Inches(1.25), PANEL2, INDIGO,
-        'Why the decision gate sits between extraction and CAPEE',
-        'Some cost-bearing facts cannot be derived from a solid model at all — helix angle, ISO '
-        'quality class, heat-treat route, material grade. The gate puts these to the engineer '
-        'rather than letting a model guess, and records who answered. Without it, automatic '
-        'extraction quietly converts an unknown into an assumption, and CAPEE would have no way '
-        'of telling the two apart.')
-notes(s, 'The architecture answer to "is our CAD data safe": the geometry kernel is local and has '
-         'zero network calls — verified, not claimed. Only derived numbers and drawing text ever '
-         'reach a model, and that egress goes through JLR\'s own LLM gateway per the existing '
-         'secure-deployment plan.')
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 7 — OPTION 1 INTEGRATION PATTERNS
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('Three ways to integrate — the choice depends on CAPEE', 'Option 1 · decision point')
-text(s, Inches(0.45), Inches(1.72), Inches(12.4), Inches(0.35),
-     [[('CAPEE\'s technology stack has not yet been confirmed. All three patterns are costed so the '
-        'answer drops in without rework.', 11.5, BODY, False)]])
-rows = [
-    (('A — Embed', DARK, True), 'Node / JavaScript backend',
-     'TypeScript rules, guards and constants embedded as an npm package. Only the OCCT kernel runs as a sidecar.',
-     ('12–14 wks', GREEN, True), ('Lowest', GREEN, False)),
-    (('B — Sidecar service', DARK, True), 'Java, .NET or any non-JS stack',
-     'Whole extraction stack runs as a containerised service. CAPEE calls it over REST/mTLS. Constants ship as a versioned data pack.',
-     ('14–18 wks', AMBER, True), ('Medium', AMBER, False)),
-    (('C — File handoff', DARK, True), 'Desktop / Excel / Access estimator',
-     'Extraction produces a structured import file (JSON/XML/CSV) that CAPEE ingests. No live coupling.',
-     ('10–12 wks', GREEN, True), ('Low, but manual step', AMBER, False)),
-]
-table(s, Inches(0.45), Inches(2.2), Inches(12.43),
-      ['Pattern', 'Fits when CAPEE is…', 'How it works', 'Effort', 'Integration risk'], rows,
-      [Inches(1.85), Inches(2.5), Inches(5.28), Inches(1.4), Inches(1.4)],
-      row_h=Inches(0.82), size=10)
-callout(s, Inches(0.45), Inches(5.05), Inches(6.1), Inches(1.05), PANEL2, INDIGO,
-        'Recommended default: Pattern B',
-        'A sidecar service works whatever CAPEE turns out to be, keeps the Python kernel in a '
-        'supported environment, and lets CostVision be upgraded without redeploying CAPEE.')
-callout(s, Inches(6.78), Inches(5.05), Inches(6.1), Inches(1.05), AMBERBG, AMBER,
-        'What we need from JLR to close this',
-        'CAPEE backend language and framework; container platform and whether glibc images are '
-        'permitted; whether CAPEE can make outbound service calls, or must ingest files.')
-footer(s, 'Effort assumes one integration engineer plus part-time CostVision support; excludes JLR rate-data collection.')
-notes(s, 'Do not let the meeting stall on the unknown stack — present all three and ask for the '
-         'answer as an action. Pattern B is the safe default because it is stack-agnostic and '
-         'keeps the Python kernel where it is supported. Pattern A is cheapest but only if CAPEE '
-         'is Node.')
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 8 — WHAT PORTS AS-IS
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('What transfers literally, and what cannot', 'Option 1 · portability')
-card(s, Inches(0.45), Inches(1.85), Inches(6.1), Inches(2.5), GREEN,
-     'PORTS AS-IS — including the hardcoded values',
-     [('Geometry kernel — runs unchanged in any glibc container',),
-      ('Feature-detection thresholds and tolerances',),
-      ('Commodity prompt text, verbatim',),
-      ('Guard limits and sanity bands',),
-      ('Rules-pack logic and decision definitions',),
-      ('Gear metrology, surface-area and wall-thickness maths',),
-      ('The seeded sampling constant, so results reproduce',)],
-     fill=GREENBG)
-card(s, Inches(6.78), Inches(1.85), Inches(6.1), Inches(2.5), AMBER,
-     'NEEDS REWORK OR A DECISION',
-     [('TypeScript source — literal only if CAPEE is Node (Pattern A)',),
-      ('HTTP routes — replaced by CAPEE\'s own service contract',),
-      ('The browser UI — CAPEE has its own front end',),
-      ('LLM client — must point at JLR\'s gateway, not the public API',),
-      ('SQLite persistence — CAPEE\'s database takes over',),
-      ('Authentication — replaced by JLR SSO / service accounts',)],
-     fill=AMBERBG)
-callout(s, Inches(0.45), Inches(4.55), Inches(12.43), Inches(1.15), PANEL2, INDIGO,
-        'On "we want everything including the hardcode"',
-        'That is the right instinct and it is deliverable. The tuning constants — feature '
-        'thresholds, guard bands, deposit rates, shape factors, prompt text — will be extracted '
-        'into a single versioned parameter pack rather than left scattered through the source, so '
-        'CAPEE consumes one reviewable artefact and JLR can see and change every value. This is '
-        'a deliverable in its own right and is included in the effort figures.')
-callout(s, Inches(0.45), Inches(5.85), Inches(12.43), Inches(0.95), AMBERBG, AMBER,
-        'A caveat worth stating plainly',
-        'Those constants are engineering estimates, not JLR plant measurements. Porting them '
-        'literally gives CAPEE a working structure with representative numbers — the same '
-        'position CostVision is in today. They are a starting point to be replaced with JLR data, '
-        'not a body of validated fact.')
-notes(s, 'The user asked specifically for the hardcoded values to come across. That is honoured — '
-         'but with the caveat that those values are representative rather than measured. Better '
-         'they hear it here than discover it when a supplier challenges a number.')
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 9 — OPTION 1 PHASED PLAN
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('Option 1 — phased delivery', 'Option 1 · plan')
-rows = [
-    (('Phase 0', DARK, True), 'Discovery', '2 wks',
-     'Confirm CAPEE stack, hosting, security posture. Choose integration pattern. Agree the cost-input contract.'),
-    (('Phase 1', DARK, True), 'Extraction service', '4 wks',
-     'Containerise the OCCT kernel. Stand it up inside JLR. Prove measurement on 20 JLR parts against drawings.'),
-    (('Phase 2', DARK, True), 'Parameter pack', '2 wks',
-     'Extract every tuning constant into one versioned, reviewable artefact. JLR review and sign-off.'),
-    (('Phase 3', DARK, True), 'Guards + decision gate', '3 wks',
-     'Port the guard layer and confirm-before-costing gate. This is not optional — see slide 5.'),
-    (('Phase 4', DARK, True), 'CAPEE integration', '3–5 wks',
-     'Wire the contract into CAPEE. Drawing read via JLR LLM gateway. Round-trip a real part.'),
-    (('Phase 5', DARK, True), 'Pilot + tune', '3 wks',
-     'One commodity, one engineering team, 30+ parts. Measure extraction accuracy against known parts.'),
-]
-table(s, Inches(0.45), Inches(1.95), Inches(12.43),
-      ['', 'Phase', 'Duration', 'Content'], rows,
-      [Inches(1.1), Inches(2.3), Inches(1.25), Inches(7.78)], row_h=Inches(0.62), size=10)
-callout(s, Inches(0.45), Inches(5.9), Inches(6.1), Inches(0.95), PANEL2, INDIGO,
-        'Total: 17–21 weeks',
-        'Assumes one integration engineer plus part-time CostVision support, and that JLR '
-        'discovery in Phase 0 completes on time.')
-callout(s, Inches(6.78), Inches(5.9), Inches(6.1), Inches(0.95), AMBERBG, AMBER,
-        'Start with one commodity, not eighteen',
-        'Machining or sheet metal first — highest part count, best-understood geometry. Prove the '
-        'contract before widening.')
-notes(s, 'Phase 2 is the one people try to skip and the one the user explicitly asked for — the '
-         'parameter pack is what makes "including the hardcode" real and reviewable rather than a '
-         'code archaeology exercise for JLR developers later.')
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 10 — OPTION 2 ARCHITECTURE
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('Option 2 — CostVision as-is on JLR data', 'Option 2')
-text(s, Inches(0.45), Inches(1.72), Inches(12.4), Inches(0.35),
-     [[('No engine change. No code change. The rate library is replaced with JLR\'s own figures and '
-        'the platform is deployed inside the JLR network.', 11.5, BODY, False)]])
-card(s, Inches(0.45), Inches(2.25), Inches(4.0), Inches(2.55), GREEN,
-     'UNCHANGED',
-     [('All 18 commodity cost models',),
-      ('The 8-bucket deterministic engine',),
-      ('CAD and drawing extraction',),
-      ('Guards and decision gate',),
-      ('Reports — PDF, Excel, PPTX',),
-      ('DFM, sensitivity, negotiation',)],
-     fill=GREENBG)
-card(s, Inches(4.63), Inches(2.25), Inches(4.0), Inches(2.55), VIOLET,
-     'REPLACED WITH JLR DATA',
-     [('Material prices and scrap recovery',),
-      ('Machine rates — or their build-ups',),
-      ('Labour rates by grade and region',),
-      ('Energy tariffs, gas and electricity',),
-      ('Overhead, SG&A and margin policy',),
-      ('Regional factors for JLR\'s footprint',)])
-card(s, Inches(8.81), Inches(2.25), Inches(4.07), Inches(2.55), INDIGO,
-     'ADDED FOR ENTERPRISE USE',
-     [('JLR SSO in place of local auth',),
-      ('PostgreSQL in place of SQLite',),
-      ('LLM egress via JLR gateway',),
-      ('Rate versioning — see slide 14',),
-      ('Persisted costings for audit',),
-      ('Backup and DR to JLR standard',)])
-callout(s, Inches(0.45), Inches(5.0), Inches(12.43), Inches(0.95), PANEL2, INDIGO,
-        'The rate library is already designed to be replaced',
-        'Rates are an injected argument, never imported inside the engine — the cost function takes '
-        'the library as a parameter. An admin-gated company-library upload already exists. Swapping '
-        'JLR data in is configuration, not development.')
-callout(s, Inches(0.45), Inches(6.1), Inches(12.43), Inches(0.85), AMBERBG, AMBER,
-        'Where the real work is',
-        'Not the software. Collecting, validating and structuring JLR\'s rate data across '
-        'materials, machines, labour and energy is the critical path, and it is JLR-side effort.')
-notes(s, 'The engineering point that de-risks Option 2: the rate library is a parameter, not a '
-         'hard dependency. Verified — the cost function signature takes the library as an '
-         'argument, and the engine never imports rates internally. So JLR data goes in without '
-         'touching engine code.')
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 11 — OPTION 2 PLAN
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('Option 2 — phased delivery', 'Option 2 · plan')
-rows = [
-    (('Phase 0', DARK, True), 'Security review', '2 wks',
-     'IT-security sign-off using the existing verified data-flow inventory. Choose deployment option A or B.'),
-    (('Phase 1', DARK, True), 'Deploy', '2 wks',
-     'On-prem install, JLR SSO, PostgreSQL, LLM egress via JLR gateway. Deterministic core needs no external calls.'),
-    (('Phase 2', DARK, True), ('Rate onboarding — JLR-led', DARK, True), '4–6 wks',
-     'Materials, machine rates, labour, energy, regional factors. The critical path, and the real work.'),
-    (('Phase 3', DARK, True), 'Calibrate', '2 wks',
-     'Load 30–50 known JLR parts with actual prices. Measure MAPE. This is what makes the tool quotable.'),
-    (('Phase 4', DARK, True), 'Pilot', '2 wks',
-     'One commodity team, live parts, side-by-side against CAPEE. Compare and explain differences.'),
-]
-table(s, Inches(0.45), Inches(1.95), Inches(12.43),
-      ['', 'Phase', 'Duration', 'Content'], rows,
-      [Inches(1.1), Inches(2.5), Inches(1.25), Inches(7.58)], row_h=Inches(0.66), size=10)
-callout(s, Inches(0.45), Inches(5.35), Inches(6.1), Inches(1.0), GREENBG, GREEN,
-        'Total: 8–12 weeks',
-        'Software effort is small. The range is driven almost entirely by how quickly JLR can '
-        'assemble rate data and actual prices.')
-callout(s, Inches(6.78), Inches(5.35), Inches(6.1), Inches(1.0), PANEL2, INDIGO,
-        'Phase 3 is the one that matters',
-        'It converts CostVision from a structurally sound model into a calibrated one, and it '
-        'produces the evidence Option 1 would otherwise lack.')
-footer(s, 'Deployment guidance follows docs/CostVision-Secure-Deployment-CAPEE-Integration.md, already reviewed.')
-notes(s, 'Phase 3 is the strategic point of the whole programme. Whichever option JLR pursues, '
-         'calibration against real JLR actuals is what turns this from a promising model into '
-         'something a buyer can put in front of a supplier.')
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 12 — COMPARISON
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('Side by side', 'Comparison')
-rows = [
-    ('Time to first value', ('17–21 weeks', AMBER, False), ('8–12 weeks', GREEN, True)),
-    ('Engineering effort', ('High — port + integrate', AMBER, False), ('Low — deploy + configure', GREEN, True)),
-    ('JLR-side data effort', ('Moderate', GREEN, False), ('High — the critical path', AMBER, False)),
-    ('System of record', ('CAPEE, unchanged', GREEN, True), ('New tool alongside CAPEE', AMBER, False)),
-    ('Change to user workflow', ('Minimal — same CAPEE screens', GREEN, True), ('New tool to learn', AMBER, False)),
-    ('Gets the 8-bucket engine', ('No — CAPEE costs', AMBER, False), ('Yes', GREEN, True)),
-    ('Gets physics checks + provenance', ('Only if guards ported', AMBER, False), ('Yes', GREEN, True)),
-    ('Produces validation evidence', ('No', RED, False), ('Yes — Phase 3', GREEN, True)),
-    ('Dependency on CAPEE stack answer', ('Blocking', RED, True), ('None', GREEN, True)),
-    ('Reversibility if it disappoints', ('Low — embedded in CAPEE', AMBER, False), ('High — switch it off', GREEN, True)),
-]
-table(s, Inches(0.45), Inches(1.95), Inches(12.43),
-      ['Dimension', 'OPTION 1 — feed CAPEE', 'OPTION 2 — CostVision as-is'], rows,
-      [Inches(4.43), Inches(4.0), Inches(4.0)], row_h=Inches(0.42), size=10.5)
-callout(s, Inches(0.45), Inches(6.5), Inches(12.43), Inches(0.72), PANEL2, INDIGO,
-        'Read the last two rows together',
-        'Option 2 is reversible and produces evidence; Option 1 is neither, and depends on an '
-        'answer JLR has not yet given. That asymmetry is the whole basis of the recommendation.')
-notes(s, 'Steer the discussion to the bottom three rows. Validation evidence, stack dependency and '
-         'reversibility are the decision-relevant dimensions; the rest are largely symmetrical.')
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 13 — RECOMMENDATION
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('Recommendation', 'The answer')
-callout(s, Inches(0.45), Inches(1.85), Inches(12.43), Inches(1.15), GREENBG, GREEN,
-        'Run Option 2 first. Then Option 1, informed by what it teaches you.',
-        'These are not competing options — they are sequential. Option 2 proves the engine against '
-        'JLR reality inside a quarter, is reversible if it disappoints, and produces the calibration '
-        'evidence that Option 1 needs but cannot generate for itself.')
-card(s, Inches(0.45), Inches(3.2), Inches(4.0), Inches(2.35), GREEN,
-     'Quarter 1 — Option 2',
-     [('Deploy inside JLR. Load JLR rates.',),
-      ('Calibrate on 30–50 real parts.',),
+# ══════════════════════════════════════════ 5 · HOW NUMBERS COME OUT OF CAD ══
+s = header('How the numbers come out of the 3D model', 'Option 1 · detail')
+text(s, Inches(0.45), Inches(1.7), Inches(12.4), Inches(0.35),
+     [[('Two different jobs, done by two different things. This distinction is the whole basis of '
+        'trusting the output.', 11.5, BODY, False)]])
+card(s, Inches(0.45), Inches(2.25), Inches(6.1), Inches(2.9), INDIGO,
+     'MEASURED — by software, not AI',
+     [('Volume and weight',),
+      ('Overall size and wall thickness',),
+      ('Total surface area, for paint and plating',),
+      ('Every hole, pocket and boss, with its size',),
+      ('Flat faces that need machining',),
+      ('Gear teeth, module, face width',),
       ('',),
-      ('Outcome: a measured MAPE, and', DARK, True),
-      ('a defensible answer to "how', DARK, True),
-      ('accurate is it".', DARK, True)],
-     fill=GREENBG)
-card(s, Inches(4.63), Inches(3.2), Inches(4.0), Inches(2.35), INDIGO,
-     'Quarter 2 — decide',
-     [('Confirm CAPEE\'s stack.',),
-      ('Review calibration results.',),
+      ('Exact and repeatable. Run it a hundred times,', DARK, True),
+      ('you get the same answer a hundred times.', DARK, True)])
+card(s, Inches(6.78), Inches(2.25), Inches(6.1), Inches(2.9), VIOLET,
+     'READ — by AI, from the drawing',
+     [('Tolerances and GD&T callouts',),
+      ('Surface finish requirements',),
+      ('Coating or plating specification',),
+      ('Heat treatment notes',),
+      ('Salt spray hours',),
+      ('Which features are masked off',),
       ('',),
-      ('If accuracy holds, Option 1', DARK, True),
-      ('is a proven capability being', DARK, True),
-      ('industrialised — not a bet.', DARK, True)])
-card(s, Inches(8.81), Inches(3.2), Inches(4.07), Inches(2.35), VIOLET,
-     'Quarter 3 — Option 1',
-     [('Port extraction + guards into',),
-      ('CAPEE, one commodity first.',),
-      ('',),
-      ('CAPEE gains automatic input', DARK, True),
-      ('with the accuracy question', DARK, True),
-      ('already answered.', DARK, True)])
-callout(s, Inches(0.45), Inches(5.75), Inches(12.43), Inches(1.05), AMBERBG, AMBER,
-        'If JLR must choose only one',
-        'Choose Option 2. It is cheaper, faster, reversible, needs no answer about CAPEE\'s '
-        'internals, and delivers the full engine including the physics checks and provenance that '
-        'make an estimate defensible in front of a supplier. Option 1 delivers convenience; Option '
-        '2 delivers capability.')
-notes(s, 'Be direct here. The sequencing argument is genuinely the strongest one: Option 1 '
-         'industrialises an extraction pipeline whose downstream accuracy nobody has measured. '
-         'Doing Option 2 first is not a delay, it is the thing that makes Option 1 safe.')
+      ('Every one of these is then checked, and the', DARK, True),
+      ('engineer confirms anything that matters.', DARK, True)])
+callout(s, Inches(0.45), Inches(5.35), Inches(12.43), Inches(1.0), GREENBG, GREEN,
+        'The CAD file never leaves JLR',
+        'The measuring software runs on a JLR server and does not connect to the internet at all — '
+        'we checked this line by line. Only short pieces of text from the drawing go to the AI, and '
+        'that can be routed through JLR\'s own approved AI service. The 3D model itself stays inside '
+        'the building.')
+notes(s, "I want to separate two things that get lumped together as AI. On the left is measuring — "
+         "that is ordinary software doing geometry, the same maths a CMM uses. It is exact and it "
+         "repeats. On the right is reading the drawing, which is the AI, because reading a drawing "
+         "note is a language job. Everything on the right gets checked before it can move a cost. "
+         "And the green box is the one IT security will ask about: the CAD file never leaves JLR. "
+         "The measuring software has no internet connection at all — we verified that in the code. "
+         "Only a few lines of drawing text go to the AI, and that can go through JLR's own service.")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 14 — RISKS
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('Risks and prerequisites — stated plainly', 'Honest assessment')
+# ══════════════════════════════════════════════════════ 6 · SAFETY CHECKS ════
+s = header('The safety checks must come too', 'Option 1 · non-negotiable')
+text(s, Inches(0.45), Inches(1.7), Inches(12.4), Inches(0.35),
+     [[('The AI never sets a price. But it does supply numbers that go INTO a price — so a wrong '
+        'number becomes a wrong cost, confidently. These four checks stop that.', 11.5, BODY, False)]])
+checks = [
+    ('cube', 'The model wins over the AI', INDIGO,
+     'If the AI says the part weighs 2 kg and the model measures 1.4 kg, the measured figure is used. '
+     'Always. The AI does not get to overrule the geometry.'),
+    ('eye', 'Cross-check everything read', INDIGO,
+     'Numbers read off the drawing are compared against the measured model. Anything that disagrees '
+     'is reported to the engineer, not quietly resolved.'),
+    ('press', 'Sensible limits on machining', INDIGO,
+     'On a casting or forging, machining time is capped at what finishing that part could actually '
+     'take, so a bad estimate cannot inflate the cost.'),
+    ('person', 'Ask, do not guess', VIOLET,
+     'Things no 3D model can show — heat treatment, tolerance class, material grade — are put to the '
+     'engineer as a question. The AI\'s suggestion is labelled as a suggestion and never pre-ticked.'),
+]
+y = Inches(2.3)
+for ic, t_, c_, b_ in checks:
+    box(s, Inches(0.45), y, Inches(12.43), Inches(0.95), fill=PANEL, line=LINE, round_=True)
+    box(s, Inches(0.45), y, Inches(0.075), Inches(0.95), fill=c_)
+    icon_badge(s, ic, Inches(0.72), y + Inches(0.17), d=Inches(0.6), fill=c_)
+    text(s, Inches(1.55), y + Inches(0.15), Inches(11.1), Inches(0.28), [[(t_, 12.5, DARK, True)]])
+    text(s, Inches(1.55), y + Inches(0.46), Inches(11.1), Inches(0.42),
+         [[(b_, 10.2, BODY, False)]], line_spacing=1.12)
+    y += Inches(1.06)
+callout(s, Inches(0.45), Inches(6.6), Inches(12.43), Inches(0.72), REDBG, RED,
+        'Why I am making a point of this',
+        'When we audited our own tool in August we found a part of it with no safety checks. One '
+        'missing input produced a cost of "not a number" — and the software still reported success. '
+        'We fixed it. The lesson is that the checks are not the boring part to leave until last; '
+        'they are where the risk actually is.')
+notes(s, "The instinct on a project like this is to take the clever bit — the measuring and the AI "
+         "— and leave what looks like plumbing until later. I want to argue against that. These "
+         "four checks are what make the clever bit safe. The first one is the most important: if "
+         "the AI and the measured model disagree, the model wins, every time. The last one matters "
+         "for a different reason — where the tool genuinely cannot know something, it asks the "
+         "engineer rather than guessing, and it never pre-ticks its own suggestion. And the red "
+         "box is a real example from our own audit. We found a path with no checks, and it "
+         "returned a nonsense cost while reporting that everything was fine. We fixed it, but that "
+         "is exactly what happens when the checks are treated as optional.")
+
+# ═══════════════════════════════════════ 7 · WHAT THE DEVELOPERS ACTUALLY GET ═
+s = header('What we hand over, and what it is written in', 'Option 1 · the handover')
+text(s, Inches(0.45), Inches(1.7), Inches(12.4), Inches(0.35),
+     [[('Nothing here is unusual. Both languages are mainstream, widely used, and JLR IT will '
+        'already have people who know them.', 11.5, BODY, False)]])
 rows = [
-    (('No validated accuracy today', DARK, True), 'Both',
-     'The accuracy harness contains five placeholder rows, not real quotes. Nothing can be represented as quotable until JLR loads actuals.',
-     ('Critical', RED, True)),
-    (('No rate versioning', DARK, True), 'Option 2',
-     'Rates are a single-row overwrite with no history, and costings are not persisted. A cost cannot be reproduced or audited after the fact.',
-     ('High', RED, True)),
-    (('CAPEE stack unknown', DARK, True), 'Option 1',
-     'Blocks the integration-pattern choice and the firm effort figure. Needs a JLR answer before Phase 0 can close.',
-     ('High', AMBER, True)),
-    (('Rate data is representative', DARK, True), 'Both',
-     'Supplied constants are engineering estimates, not plant measurements. Replacing them is the point of Phase 2 / Phase 3.',
+    ('The measuring engine', ('Python', DARK, True), '2,000 lines',
+     'Opens the 3D model and measures it. No internet connection.'),
+    ('Reading the drawing', ('TypeScript', DARK, True), '2,400 lines',
+     'Sends the drawing to the AI and organises what comes back.'),
+    ('Safety checks', ('TypeScript', DARK, True), '540 lines',
+     'The four checks on the previous slide.'),
+    ('Question rules per part type', ('TypeScript', DARK, True), '7,000 lines',
+     'Decides what to ask the engineer for each kind of part.'),
+    ('Design-for-cost findings', ('TypeScript', DARK, True), '1,900 lines',
+     'Spots expensive features and says why they cost money.'),
+    ('The settings list', ('Plain list', DARK, True), 'one file',
+     'Every fixed number in one readable place — see the next slide.'),
+]
+table(s, Inches(0.45), Inches(2.25), Inches(12.43),
+      ['What it is', 'Language', 'Size', 'What it does'], rows,
+      [Inches(3.3), Inches(1.7), Inches(1.5), Inches(5.93)], row_h=Inches(0.52), size=10.5)
+callout(s, Inches(0.45), Inches(5.6), Inches(6.1), Inches(1.15), PANEL2, INDIGO,
+        'Python and TypeScript — in one line each',
+        'Python is the standard language for engineering and measurement work. TypeScript is one of '
+        'the most common languages for business software. Neither is exotic and neither locks JLR in.')
+callout(s, Inches(6.78), Inches(5.6), Inches(6.1), Inches(1.15), AMBERBG, AMBER,
+        'One thing IT must confirm',
+        'The measuring engine needs an ordinary Linux server, not the cut-down kind some teams use '
+        'for small programs. Worth checking early — it decides where it can be installed.')
+notes(s, "You asked what we would actually be handing over, so here it is. Six things. The "
+         "measuring engine is written in Python, which is the normal language for engineering and "
+         "measurement work. Everything else is TypeScript, which is one of the most common "
+         "languages for business software. Neither is unusual — IT will have people who know both, "
+         "and we are not locking JLR into anything odd. The last row is the settings list, which "
+         "is the next slide and is probably the part you care about most. The amber box is the one "
+         "practical constraint: the measuring engine needs a normal Linux server. Worth IT "
+         "confirming early because it decides where this can live.")
+
+# ════════════════════════════════════════ 8 · WHAT "HARDCODED VALUES" MEANS ══
+s = header('The fixed numbers inside the software', 'Option 1 · the settings list')
+text(s, Inches(0.45), Inches(1.7), Inches(12.4), Inches(0.35),
+     [[('You asked what the "hardcoded" values actually are. They are engineering judgements written '
+        'into the software. Real examples:', 11.5, BODY, False)]])
+rows = [
+    ('Smallest face we count as machined', ('400 mm²', DARK, True),
+     'Below this we treat it as an edge, not a face to machine'),
+    ('Smallest pocket we count', ('80 mm²', DARK, True),
+     'Stops tiny recesses being costed as pockets'),
+    ('Cost of a rejected plated part', ('4.5 x a good one', DARK, True),
+     'Strip it and re-plate it — a 3% reject is really a 13% cost adder'),
+    ('Zinc price for plating', ('USD 3.67 / kg', DARK, True),
+     'Market reference, August 2026. Moves monthly — meant to be updated'),
+    ('Shape allowance, pressing', ('1.15', DARK, True),
+     'Real parts have more surface than a flat plate — edges, flanges, bends'),
+    ('Shape allowance, casting / forging', ('1.25 / 1.10', DARK, True),
+     'Castings have ribs and bosses; forgings are simpler outside'),
+]
+table(s, Inches(0.45), Inches(2.25), Inches(12.43),
+      ['What it controls', 'The value', 'Why it is set that way'], rows,
+      [Inches(4.3), Inches(2.3), Inches(5.83)], row_h=Inches(0.5), size=10.5)
+callout(s, Inches(0.45), Inches(5.5), Inches(6.1), Inches(1.25), PANEL2, INDIGO,
+        'How we hand these over',
+        'Not buried in the code. Every one of these is pulled out into a single list JLR can read, '
+        'question and change without a developer. That list is a deliverable in its own right and '
+        'is in the plan as weeks 7 and 8.')
+callout(s, Inches(0.45), Inches(6.85), Inches(12.43), Inches(0.5), AMBERBG, AMBER,
+        'And the honest part',
+        'These are our engineering estimates. They are not measurements from a JLR plant. They are '
+        'a sensible starting point that JLR should replace with its own figures over time.')
+callout(s, Inches(6.78), Inches(5.5), Inches(6.1), Inches(1.25), GREENBG, GREEN,
+        'Why this matters to a cost engineer',
+        'These numbers are exactly the sort of thing you would argue about in a costing review — '
+        'and you should be able to. Putting them in one readable list means you can challenge any '
+        'of them without needing IT.')
+notes(s, "You asked specifically what we mean by hardcoded values, because it is a phrase that "
+         "means nothing on its own. This is what they are. Look at the third row — a rejected "
+         "plated part costs about four and a half times a good one, because you have to strip it "
+         "and do it again. That is why a three percent reject rate is really a thirteen percent "
+         "cost adder. That is an engineering judgement, and it is the sort of thing you would "
+         "challenge in a review. So we pull every one of these out into a single list you can read "
+         "and change without going near a developer. The amber strip is important though — these "
+         "are our estimates, not measurements from a JLR plant. They are a starting point.")
+
+# ════════════════════════════════════════════ 9 · THREE WAYS TO CONNECT ══════
+s = header('Three ways to connect it to CAPEE', 'Option 1 · a decision for IT')
+text(s, Inches(0.45), Inches(1.7), Inches(12.4), Inches(0.35),
+     [[('We do not yet know how CAPEE is built, so here are all three. The answer changes the '
+        'timing, not whether it works.', 11.5, BODY, False)]])
+rows = [
+    (('A · Put it inside CAPEE', DARK, True), 'If CAPEE is built in JavaScript',
+     'Our code drops straight in. Only the measuring engine sits separately.',
+     ('3 months', GREEN, True)),
+    (('B · Run it alongside', DARK, True), 'If CAPEE is Java, .NET or anything else',
+     'It runs as its own small program on a JLR server. CAPEE asks it for numbers over a secure link.',
+     ('3.5-4.5 months', AMBER, True)),
+    (('C · Pass a file', DARK, True), 'If CAPEE is a desktop or spreadsheet tool',
+     'It produces a file that CAPEE imports. Simplest, but somebody presses a button.',
+     ('2.5-3 months', GREEN, True)),
+]
+table(s, Inches(0.45), Inches(2.25), Inches(12.43),
+      ['Way of connecting', 'Use this when…', 'What it means in practice', 'Time'], rows,
+      [Inches(2.9), Inches(2.9), Inches(5.33), Inches(1.3)], row_h=Inches(0.85), size=10.3)
+callout(s, Inches(0.45), Inches(5.3), Inches(6.1), Inches(1.0), PANEL2, INDIGO,
+        'If we had to pick blind, pick B',
+        'Running it alongside works whatever CAPEE turns out to be, and it lets us improve '
+        'CostVision without touching CAPEE each time.')
+callout(s, Inches(6.78), Inches(5.3), Inches(6.1), Inches(1.0), AMBERBG, AMBER,
+        'What we need to ask IT',
+        'What is CAPEE written in? Can it call out to another program on the network? And can it '
+        'run on a normal Linux server?')
+notes(s, "I cannot give you one answer here yet because nobody has told us how CAPEE is actually "
+         "built. So rather than hold the whole thing up, here are all three ways, with the timing "
+         "for each. The good news is that all three work — it is a question of how long, not "
+         "whether. If you asked me to choose without knowing, I would choose B, running it "
+         "alongside, because that works whatever CAPEE is and it means we can improve our side "
+         "without disturbing CAPEE every time. The three questions in the amber box are what I "
+         "need from IT to firm this up.")
+
+# ════════════════════════════════════════════════ 10 · OPTION 1 STEP PLAN ════
+s = header('Option 1 — the plan, step by step', 'Option 1 · plan')
+plan1 = [
+    ('1', 'Weeks 1-2', 'Agree the connection', INDIGO,
+     'Find out how CAPEE is built, pick one of the three ways, agree exactly which numbers CAPEE wants.'),
+    ('2', 'Weeks 3-6', 'Stand up the measuring software', INDIGO,
+     'Install it on a JLR server. Measure 20 real JLR parts and check the answers against the drawings.'),
+    ('3', 'Weeks 7-8', 'Hand over the settings list', VIOLET,
+     'Pull every fixed number out into one readable list. JLR reviews it and signs it off.'),
+    ('4', 'Weeks 9-11', 'Add the safety checks', GREEN,
+     'Port the four checks and the questions the engineer confirms. Not optional.'),
+    ('5', 'Weeks 12-16', 'Connect into CAPEE', INDIGO,
+     'Wire it in. Route drawing reading through JLR\'s approved AI service. Cost a real part end to end.'),
+    ('6', 'Weeks 17-19', 'Trial with one team', GREEN,
+     'One part type, one team, 30 or more parts. Measure how good the measuring actually is.'),
+]
+y = Inches(1.95)
+for n, wk, t_, c_, b_ in plan1:
+    box(s, Inches(0.45), y, Inches(12.43), Inches(0.79), fill=PANEL, line=LINE, round_=True)
+    box(s, Inches(0.45), y, Inches(0.075), Inches(0.79), fill=c_)
+    step_circle(s, n, Inches(0.72), y + Inches(0.15), d=Inches(0.48), fill=c_)
+    text(s, Inches(1.42), y + Inches(0.13), Inches(1.5), Inches(0.26), [[(wk, 10, MUTED, True)]])
+    text(s, Inches(2.85), y + Inches(0.11), Inches(9.8), Inches(0.28), [[(t_, 12, DARK, True)]])
+    text(s, Inches(2.85), y + Inches(0.42), Inches(9.8), Inches(0.3), [[(b_, 9.8, BODY, False)]])
+    y += Inches(0.88)
+callout(s, Inches(0.45), Inches(6.42), Inches(6.1), Inches(0.82),
+        PANEL2, INDIGO, 'About 5 months in total',
+        'Assumes one developer from us plus JLR IT support, and that step 1 finishes on time.')
+callout(s, Inches(6.78), Inches(6.42), Inches(6.1), Inches(0.82),
+        AMBERBG, AMBER, 'Start with one part type, not all eighteen',
+        'Machined parts or pressings first — most parts, best understood shapes. Widen once it works.')
+notes(s, "Six steps, about five months. Two I want to draw out. Step three is the settings list — "
+         "that is the one you asked for, where every fixed number gets written out so you can read "
+         "and challenge it. Step four is the safety checks, and I have deliberately given it three "
+         "weeks of its own rather than tucking it into the connection work, because it is the bit "
+         "that would otherwise get squeezed. And the amber box: we start with one part type. "
+         "Machined parts or pressings, because that is where most of our volume is and the shapes "
+         "are best understood. We widen once it is proven.")
+
+# ═══════════════════════════════ 11 · OPTION 2 — END TO END SUMMARY (KEY) ════
+s = header('Option 2 — how it works, start to finish', 'Option 2 · full picture')
+text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
+     [[('What happens every time an engineer costs a part', 11.5, MUTED, True)]])
+steps2 = [
+    ('upload', 'Engineer opens CostVision', 'Signs in with their normal JLR login',      VIOLET),
+    ('cube',   'Uploads or types',          '3D model if there is one, or fills the form', VIOLET),
+    ('cog',    'Picks the part type',       'Machined, pressed, cast, forged, moulded…',   VIOLET),
+    ('coins',  'JLR rates are applied',     'Our own material, machine, labour, energy costs', GREEN),
+    ('calc',   'Cost is calculated',        'Eight cost buckets, every number traceable',  GREEN),
+    ('clip',   'Report comes out',          'PDF or Excel, ready for a supplier meeting',  GREEN),
+]
+sw, gap = Inches(1.87), Inches(0.19)
+x = Inches(0.45)
+for i, (ic, t_, sub, c_) in enumerate(steps2):
+    flow_step(s, x, Inches(2.0), sw, Inches(2.05), ic, t_, sub, c_)
+    if i < len(steps2) - 1:
+        arrow_between(s, x + sw + Inches(0.02), Inches(2.9), gap - Inches(0.04))
+    x += sw + gap
+text(s, Inches(0.45), Inches(4.25), Inches(12.4), Inches(0.3),
+     [[('How we set it up — about 2 to 3 months', 11.5, MUTED, True)]])
+ph2 = [('Weeks 1-2', 'IT security review'), ('Weeks 3-4', 'Install and connect logins'),
+       ('Weeks 5-10', 'Load JLR rates'), ('Weeks 11-12', 'Check accuracy'),
+       ('Weeks 13-14', 'Trial with one team')]
+cw = Inches(2.47)
+x = Inches(0.45)
+for i, (wk, lbl) in enumerate(ph2):
+    chevron(s, x, Inches(4.58), cw, Inches(0.72), wk, lbl, VIOLET if i < 3 else GREEN)
+    x += cw - Inches(0.04)
+lane(s, Inches(0.45), Inches(5.5), Inches(12.43), Inches(0.62), 'WE DO', INDIGO,
+     ['Install it on a JLR server', 'Connect JLR sign-on', 'Load the rates you give us',
+      'Run the accuracy check'])
+lane(s, Inches(0.45), Inches(6.16), Inches(12.43), Inches(0.62), 'JLR DOES', VIOLET,
+     ['Security sign-off', 'Provide a server', 'COLLECT THE RATE DATA — the long pole',
+      'Give us 30-50 parts with real prices'])
+callout(s, Inches(0.45), Inches(6.86), Inches(12.43), Inches(0.5), AMBERBG, AMBER,
+        'The software is the easy part',
+        'Weeks 5 to 10 are the whole job. Gathering our material prices, machine rates, labour and '
+        'energy costs is what decides whether this takes two months or four.')
+notes(s, "Same treatment for Option 2. Top row is what an engineer does — sign in with their normal "
+         "JLR login, put in a model or fill the form, pick the part type, and out comes a costed "
+         "answer with a report they can take to a supplier. Underneath is the setup, two to three "
+         "months. Now look at the two bands. Almost everything on the top band is us and it is "
+         "straightforward. The bottom band is JLR, and weeks five to ten is the real work — "
+         "collecting our own rates. I want to be honest that the software side of this is easy. "
+         "Whether it takes two months or four depends entirely on how quickly we can pull our "
+         "own numbers together.")
+
+# ══════════════════════════════════ 12 · OPTION 2 — WHAT CHANGES ═════════════
+s = header('What changes, and what does not', 'Option 2 · detail')
+card(s, Inches(0.45), Inches(1.9), Inches(4.0), Inches(2.7), GREEN,
+     'STAYS THE SAME',
+     [('All 18 part types',),
+      ('The costing maths',),
+      ('Reading 3D models and drawings',),
+      ('The safety checks',),
+      ('Reports — PDF, Excel, slides',),
+      ('Cost-saving suggestions',)], fill=GREENBG)
+card(s, Inches(4.63), Inches(1.9), Inches(4.0), Inches(2.7), VIOLET,
+     'WE REPLACE WITH JLR DATA',
+     [('Material prices',),
+      ('Machine rates per hour',),
+      ('Labour rates by grade',),
+      ('Electricity and gas prices',),
+      ('Overhead and margin policy',),
+      ('Rates for each country we buy from',)])
+card(s, Inches(8.81), Inches(1.9), Inches(4.07), Inches(2.7), INDIGO,
+     'WE ADD FOR JLR USE',
+     [('JLR single sign-on',),
+      ('A proper shared database',),
+      ('AI routed through JLR\'s service',),
+      ('A record of every rate change',),
+      ('Costings saved and auditable',),
+      ('Backups to JLR standard',)])
+callout(s, Inches(0.45), Inches(4.8), Inches(12.43), Inches(1.0), PANEL2, INDIGO,
+        'Swapping the rates is a setting, not a rebuild',
+        'The tool was built so the rate book is handed to it, rather than buried inside it. There '
+        'is already a screen for uploading a company rate book. Putting JLR numbers in does not '
+        'mean changing how it calculates anything.')
+callout(s, Inches(0.45), Inches(5.95), Inches(12.43), Inches(0.95), AMBERBG, AMBER,
+        'Two things it does not do well enough yet, and we should fix as part of this',
+        'It does not keep a history of rate changes, and it does not store finished costings. So '
+        'today you could not reproduce a cost you produced three months ago. For JLR use that '
+        'needs fixing, and it is in the plan.')
+notes(s, "Three columns. Left, everything that stays exactly as it is — all eighteen part types, "
+         "the maths, the reports. Middle, the numbers we swap for ours. Right, the things we add "
+         "to make it fit JLR properly — our logins, a proper database, our own AI service. The "
+         "blue box is the reassuring engineering point: the tool was designed so the rate book is "
+         "handed to it from outside, so putting our numbers in is a setting, not a rebuild. The "
+         "amber box is me being straight with you — there are two gaps. It does not keep a history "
+         "of rate changes and it does not save finished costings, so you could not reproduce a "
+         "cost from three months ago. For our use that has to be fixed, and I have put it in the plan.")
+
+# ═════════════════════════════════════════════════ 13 · OPTION 2 STEP PLAN ═══
+s = header('Option 2 — the plan, step by step', 'Option 2 · plan')
+plan2 = [
+    ('1', 'Weeks 1-2', 'IT security review', INDIGO,
+     'We already have the document showing where every piece of data goes. IT decides how the AI part is handled.'),
+    ('2', 'Weeks 3-4', 'Install and connect', INDIGO,
+     'Put it on a JLR server, connect JLR logins, move to a proper shared database.'),
+    ('3', 'Weeks 5-10', 'Load JLR rates — the long pole', VIOLET,
+     'Materials, machine rates, labour, energy, country factors. This is the real work and it is ours to do.'),
+    ('4', 'Weeks 11-12', 'Check it against real parts', GREEN,
+     'Take 30 to 50 parts we have actually bought and compare. This is what tells us how accurate it is.'),
+    ('5', 'Weeks 13-14', 'Trial with one team', GREEN,
+     'Real parts, side by side with CAPEE. Where they differ, understand why.'),
+]
+y = Inches(2.0)
+for n, wk, t_, c_, b_ in plan2:
+    box(s, Inches(0.45), y, Inches(12.43), Inches(0.86), fill=PANEL, line=LINE, round_=True)
+    box(s, Inches(0.45), y, Inches(0.075), Inches(0.86), fill=c_)
+    step_circle(s, n, Inches(0.72), y + Inches(0.18), d=Inches(0.5), fill=c_)
+    text(s, Inches(1.45), y + Inches(0.15), Inches(1.5), Inches(0.26), [[(wk, 10, MUTED, True)]])
+    text(s, Inches(2.9), y + Inches(0.13), Inches(9.75), Inches(0.28), [[(t_, 12.5, DARK, True)]])
+    text(s, Inches(2.9), y + Inches(0.46), Inches(9.75), Inches(0.32), [[(b_, 10, BODY, False)]])
+    y += Inches(0.96)
+callout(s, Inches(0.45), Inches(6.85), Inches(6.1), Inches(0.5), GREENBG, GREEN,
+        'About 2 to 3 months', 'Software work is small. The range is all about rate collection.')
+callout(s, Inches(6.78), Inches(6.85), Inches(6.1), Inches(0.5), PANEL2, INDIGO,
+        'Step 4 is the one that matters', 'It is what turns "promising" into "we know it is accurate".')
+notes(s, "Five steps. Step three is the one that determines the timeline — gathering our own rates. "
+         "That is our work, not software work, and I would rather flag it now than have it surprise "
+         "us in month two. Step four is the most valuable step in either option. Thirty to fifty "
+         "parts we have actually bought, compared against what the tool says. That is what lets me "
+         "stand here next quarter and tell you how accurate it is instead of saying we think it is "
+         "about right.")
+
+# ═════════════════════════════════════════════════════ 14 · SIDE BY SIDE ═════
+s = header('The two options side by side', 'Comparison')
+rows = [
+    ('How long', ('About 5 months', AMBER, False), ('2 to 3 months', GREEN, True)),
+    ('Who does most of the work', ('Us and JLR IT', AMBER, False), ('JLR, gathering rates', AMBER, False)),
+    ('Which system does the costing', ('CAPEE, unchanged', GREEN, True), ('CostVision, alongside CAPEE', AMBER, False)),
+    ('Does the engineer learn a new tool', ('No — same CAPEE screens', GREEN, True), ('Yes', AMBER, False)),
+    ('Do we get the full costing engine', ('No', AMBER, False), ('Yes', GREEN, True)),
+    ('Do we get the cost-saving suggestions', ('No', AMBER, False), ('Yes', GREEN, True)),
+    ('Does it tell us how accurate it is', ('No', RED, True), ('Yes — step 4', GREEN, True)),
+    ('Can we stop if we do not like it', ('Hard — it is inside CAPEE', RED, True), ('Easy — switch it off', GREEN, True)),
+    ('Does it depend on an unknown', ('Yes — how CAPEE is built', RED, True), ('No', GREEN, True)),
+]
+table(s, Inches(0.45), Inches(2.0), Inches(12.43),
+      ['', 'OPTION 1 — feed CAPEE', 'OPTION 2 — CostVision on our rates'], rows,
+      [Inches(4.43), Inches(4.0), Inches(4.0)], row_h=Inches(0.44), size=10.8)
+callout(s, Inches(0.45), Inches(6.35), Inches(12.43), Inches(0.85), PANEL2, INDIGO,
+        'Look at the bottom three rows together',
+        'Option 2 tells us whether the tool is accurate, we can stop it if we want to, and it does '
+        'not wait on anything. Option 1 is none of those three. That is the whole argument for '
+        'doing them in that order.')
+notes(s, "The top half is fairly even — each option wins some rows. I would steer you to the bottom "
+         "three. Option 2 tells us how accurate the tool is; Option 1 does not, because CAPEE does "
+         "the costing. Option 2 we can switch off on a Friday if it is not working; Option 1 is "
+         "wired into CAPEE and much harder to unwind. And Option 2 does not wait on anybody, "
+         "whereas Option 1 is stuck until IT tell us how CAPEE is built. Those three rows are the "
+         "reason for my recommendation on the next slide.")
+
+# ═══════════════════════════════════════════════════ 15 · RECOMMENDATION ═════
+s = header('What we recommend', 'The answer')
+callout(s, Inches(0.45), Inches(1.85), Inches(12.43), Inches(1.05), GREENBG, GREEN,
+        'Do Option 2 first. Then Option 1, using what we learn from it.',
+        'These are not really two competing choices. Option 2 is quicker, we can stop it at any '
+        'point, and it answers the one question Option 1 cannot answer for itself — is this tool '
+        'actually getting the right number on JLR parts.')
+q = [('Q1', 'Do Option 2', GREEN, 'coins',
+      'Install it. Load our rates. Check it against 30 to 50 parts we have really bought.',
+      'We end up knowing how accurate it is.'),
+     ('Q2', 'Decide', INDIGO, 'eye',
+      'Look at the accuracy results. Get the answer from IT on how CAPEE is built.',
+      'We choose with evidence instead of hope.'),
+     ('Q3', 'Do Option 1', VIOLET, 'cog',
+      'Feed CAPEE automatically, starting with one part type.',
+      'We are scaling something proven, not taking a bet.')]
+x = Inches(0.45)
+for tag, t_, c_, ic, b_, out in q:
+    box(s, x, Inches(3.15), Inches(4.07), Inches(2.5), fill=PANEL, line=LINE, round_=True)
+    box(s, x, Inches(3.15), Inches(4.07), Inches(0.06), fill=c_)
+    icon_badge(s, ic, x + Inches(0.28), Inches(3.35), d=Inches(0.6), fill=c_)
+    text(s, x + Inches(1.05), Inches(3.38), Inches(2.8), Inches(0.24), [[(tag, 10, MUTED, True)]])
+    text(s, x + Inches(1.05), Inches(3.62), Inches(2.8), Inches(0.3), [[(t_, 15, DARK, True)]])
+    text(s, x + Inches(0.28), Inches(4.15), Inches(3.5), Inches(0.9),
+         [[(b_, 10.5, BODY, False)]], line_spacing=1.15)
+    text(s, x + Inches(0.28), Inches(5.1), Inches(3.5), Inches(0.45),
+         [[(out, 10.5, c_, True)]], line_spacing=1.15)
+    x += Inches(4.18)
+callout(s, Inches(0.45), Inches(5.85), Inches(12.43), Inches(1.0), AMBERBG, AMBER,
+        'If we can only afford one, do Option 2',
+        'It is cheaper, faster, we can reverse it, it needs no answer from IT first, and it gives us '
+        'the full costing engine and the cost-saving suggestions. Option 1 saves typing. Option 2 '
+        'gives us a capability we do not have today.')
+notes(s, "My recommendation is that we stop thinking about this as either-or and do them in order. "
+         "This quarter, Option 2 — install it, load our rates, and critically, check it against "
+         "parts we have actually bought. Next quarter we look at those results with the answer from "
+         "IT and decide properly. Quarter after, Option 1, and by then we are scaling something we "
+         "know works rather than betting. If the money only stretches to one, do Option 2. Option 1 "
+         "saves our engineers typing, which is worth having. Option 2 gives us something we do not "
+         "have at all today.")
+
+# ══════════════════════════════════════════════ 16 · WHAT COULD GO WRONG ═════
+s = header('What could go wrong — said plainly', 'Being straight')
+rows = [
+    (('We do not know how accurate it is', DARK, True), 'Both',
+     'We have never compared it against a real price we paid. Fixed by step 4 of Option 2.',
+     ('Biggest', RED, True)),
+    (('It cannot reproduce an old costing', DARK, True), 'Option 2',
+     'No history of rate changes, no saved costings. Needs fixing before we rely on it for audit.',
+     ('Big', RED, True)),
+    (('We do not know how CAPEE is built', DARK, True), 'Option 1',
+     'Holds up the timing, not the feasibility. One answer from IT unblocks it.',
+     ('Big', AMBER, True)),
+    (('The built-in numbers are our estimates', DARK, True), 'Both',
+     'Sensible starting points, not JLR plant measurements. Replaced as we load our own data.',
      ('Medium', AMBER, True)),
-    (('OCCT needs glibc', DARK, True), 'Option 1',
-     'The geometry kernel cannot run on Alpine. Confirm JLR\'s container platform permits glibc images.',
+    (('Server type', DARK, True), 'Option 1',
+     'The measuring software needs an ordinary Linux server. Easy to confirm, awkward if missed.',
      ('Medium', AMBER, True)),
-    (('LLM egress governance', DARK, True), 'Both',
-     'Drawing reads send derived text to a model. Must route via JLR\'s gateway with zero-retention. CAD files themselves never leave.',
+    (('Drawing text goes to an AI', DARK, True), 'Both',
+     'Only short pieces of text, and it can go via JLR\'s own AI service. The CAD file never leaves.',
      ('Medium', AMBER, True)),
 ]
-table(s, Inches(0.45), Inches(1.95), Inches(12.43),
-      ['Risk', 'Applies to', 'Detail and mitigation', 'Severity'], rows,
-      [Inches(2.9), Inches(1.25), Inches(6.98), Inches(1.3)], row_h=Inches(0.72), size=9.8)
-callout(s, Inches(0.45), Inches(6.5), Inches(12.43), Inches(0.72), PANEL2, INDIGO,
-        'Why these are on a slide rather than in an appendix',
-        'A cost tool earns trust by declaring what it does not know. Every one of these is fixable, '
-        'and three of them are fixed by simply doing Option 2 Phase 3 first.')
-notes(s, 'Do not soften this slide. A Director who hears the weaknesses from us will trust the '
-         'strengths. The top two rows are the ones to dwell on — they are the difference between '
-         'a promising tool and a deployable one.')
+table(s, Inches(0.45), Inches(2.0), Inches(12.43),
+      ['What', 'Affects', 'What it means and what we do about it', 'How serious'], rows,
+      [Inches(3.3), Inches(1.15), Inches(6.68), Inches(1.3)], row_h=Inches(0.68), size=10)
+callout(s, Inches(0.45), Inches(6.35), Inches(12.43), Inches(0.85), PANEL2, INDIGO,
+        'Why I am showing you this rather than hiding it',
+        'A costing tool earns trust by being honest about what it does not know. Every one of these '
+        'is fixable, and the top two are both fixed by doing Option 2 first.')
+notes(s, "I would rather you hear these from me than find them later. The top one is the big one — "
+         "we have never checked this against a real price we paid, so I genuinely cannot tell you "
+         "today how accurate it is. The second is that it cannot currently reproduce a costing from "
+         "three months ago, which matters if we ever want to defend a number in an audit. Both of "
+         "those get fixed by doing Option 2. The rest are manageable. And notice the last row — the "
+         "CAD file never leaves JLR, only a few lines of drawing text, and even that can go through "
+         "our own AI service.")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 15 — ASKS
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('What we need from JLR to proceed', 'Next steps')
+# ═══════════════════════════════════════════ 17 · WHAT WE NEED FROM JLR ══════
+s = header('What we need to get going', 'Next steps')
 asks = [
-    ('1', 'CAPEE technology stack', INDIGO,
-     'Backend language and framework, container platform, whether glibc images are permitted, and '
-     'whether CAPEE can make outbound service calls. Unblocks the Option 1 pattern choice and firms the effort figure.'),
-    ('2', '30–50 real parts with actual paid prices', RED,
-     'Part, commodity, volume, region, and the price actually paid. This is the single highest-value '
-     'input available and it gates both options. Historic PO data is sufficient.'),
-    ('3', 'JLR rate data', VIOLET,
-     'Materials, machine rates or their build-ups, labour by grade, energy tariffs, overhead and '
-     'margin policy. Phase 2 of Option 2 and the thing that makes any number JLR-specific.'),
-    ('4', 'Security posture decision', GREEN,
-     'Fully air-gapped (deterministic engines only) or on-prem with private-cloud LLM. The existing '
-     'secure-deployment document sets out both; JLR IT-security chooses.'),
+    ('1', 'clip', '30 to 50 parts with the price we actually paid', RED,
+     'Part, what it is, how many a year, where it was made, and the real price. Old purchase records '
+     'are fine. This is the most valuable thing on the list and it unlocks both options.'),
+    ('2', 'coins', 'Our own rates', VIOLET,
+     'Material prices, machine rates per hour, labour by grade, electricity and gas. This is the '
+     'long pole on Option 2 and worth starting immediately.'),
+    ('3', 'cog', 'How CAPEE is built', INDIGO,
+     'What it is written in, whether it can call another program on the network, and what kind of '
+     'server it runs on. Three questions to IT. Unblocks Option 1.'),
+    ('4', 'shield', 'A decision on the AI part', GREEN,
+     'Either turn the AI reading off entirely and keep the measuring, or route it through JLR\'s own '
+     'approved AI service. IT security decides — we have the paperwork ready either way.'),
 ]
-y = Inches(1.9)
-for n, t_, c_, b_ in asks:
-    box(s, Inches(0.45), y, Inches(12.43), Inches(1.13), fill=PANEL, line=LINE, round_=True)
-    box(s, Inches(0.45), y, Inches(0.075), Inches(1.13), fill=c_)
-    nb = box(s, Inches(0.68), y + Inches(0.26), Inches(0.6), Inches(0.6), fill=c_, round_=True, radius=0.3)
-    tf = nb.text_frame; tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-    tf.margin_left = tf.margin_right = 0
-    p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
-    r = p.add_run(); r.text = n
-    r.font.size = Pt(19); r.font.bold = True; r.font.color.rgb = ON_DARK; r.font.name = 'Calibri'
-    text(s, Inches(1.48), y + Inches(0.17), Inches(11.2), Inches(0.3), [[(t_, 13, DARK, True)]])
-    text(s, Inches(1.48), y + Inches(0.52), Inches(11.2), Inches(0.55),
-         [[(b_, 10.5, BODY, False)]], line_spacing=1.14)
-    y += Inches(1.25)
-notes(s, 'Close on actions, not conclusions. Ask 2 is the one to press for — real paid prices. '
-         'Everything else can proceed in parallel, but without actuals neither option can be '
-         'signed off as accurate, and that is the question a Director will be asked.')
+y = Inches(1.95)
+for n, ic, t_, c_, b_ in asks:
+    box(s, Inches(0.45), y, Inches(12.43), Inches(1.2), fill=PANEL, line=LINE, round_=True)
+    box(s, Inches(0.45), y, Inches(0.075), Inches(1.2), fill=c_)
+    step_circle(s, n, Inches(0.72), y + Inches(0.15), d=Inches(0.5), fill=c_)
+    icon_badge(s, ic, Inches(1.42), y + Inches(0.15), d=Inches(0.5), fill=c_)
+    text(s, Inches(2.15), y + Inches(0.17), Inches(10.5), Inches(0.3), [[(t_, 13, DARK, True)]])
+    text(s, Inches(2.15), y + Inches(0.55), Inches(10.4), Inches(0.55),
+         [[(b_, 10.3, BODY, False)]], line_spacing=1.15)
+    y += Inches(1.3)
+callout(s, Inches(0.45), Inches(7.2) - Inches(0.62), Inches(12.43), Inches(0.55), GREENBG, GREEN,
+        'The one to push on is number 1',
+        'Everything else can run in parallel. Without real prices to compare against, neither option '
+        'can be signed off as accurate — and that is the question we will be asked.')
+notes(s, "Four asks. Number one is the one I will keep coming back to — thirty to fifty parts where "
+         "we know what we actually paid. Old purchase records are fine. Without that, I cannot tell "
+         "anyone how accurate this is, and that is the first question we will get. Number two is our "
+         "own rates, which is the long pole so worth starting now. Number three is three questions "
+         "to IT about CAPEE. Number four is a security decision — we can either turn the AI reading "
+         "off completely and keep all the measuring, or route it through JLR's own approved service. "
+         "Either works, and we have the paperwork ready for both.")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 16 — APPENDIX
-# ══════════════════════════════════════════════════════════════════════════════
-s = header('Evidence base', 'Appendix')
-text(s, Inches(0.45), Inches(1.72), Inches(12.4), Inches(0.35),
-     [[('Every claim in this deck traces to a verifiable fact in the codebase, established by audit '
-        'in August 2026 at commit 680571c.', 11.5, BODY, False)]])
+# ══════════════════════════════════════════════════════ 18 · TIMELINE ════════
+s = header('Both options on one timeline', 'Timeline')
+text(s, Inches(0.45), Inches(1.75), Inches(12.4), Inches(0.3),
+     [[('If we do them in the order we recommend', 11.5, MUTED, True)]])
+box(s, Inches(0.45), Inches(2.25), Inches(12.43), Inches(0.34), fill=NAVY)
+for i, q in enumerate(['QUARTER 1', 'QUARTER 2', 'QUARTER 3', 'QUARTER 4']):
+    text(s, Inches(0.45) + Inches(3.1) * i + Inches(0.15), Inches(2.32), Inches(2.9), Inches(0.24),
+         [[(q, 10, ON_DARK, True)]])
+bars = [('Option 2 — install, load rates, check accuracy', VIOLET, 0.0, 2.0, Inches(2.75)),
+        ('Trial with one team', GREEN, 1.75, 1.0, Inches(3.3)),
+        ('Decide, using the accuracy results', INDIGO, 2.6, 0.8, Inches(3.85)),
+        ('Option 1 — feed CAPEE, one part type', INDIGO, 3.2, 2.2, Inches(4.4)),
+        ('Widen to more part types', GREEN, 5.2, 1.6, Inches(4.95))]
+UNIT = Inches(1.55)
+for label, c_, start, dur, yy in bars:
+    x0 = Inches(0.45) + UNIT * start
+    wgt = UNIT * dur
+    b = box(s, x0, yy, wgt, Inches(0.42), fill=c_, round_=True, radius=0.2)
+    tf = b.text_frame; tf.word_wrap = True
+    tf.margin_left = Inches(0.12); tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    p = tf.paragraphs[0]
+    r = p.add_run(); r.text = label
+    r.font.size = Pt(9.5); r.font.bold = True; r.font.color.rgb = ON_DARK; r.font.name = 'Calibri'
+for i in range(1, 4):
+    box(s, Inches(0.45) + Inches(3.1) * i, Inches(2.59), Pt(1), Inches(2.9), fill=LINE)
+callout(s, Inches(0.45), Inches(5.65), Inches(6.1), Inches(1.05), GREENBG, GREEN,
+        'First real value: about month 3',
+        'A working tool on JLR rates, and for the first time a proper answer on how accurate it is.')
+callout(s, Inches(6.78), Inches(5.65), Inches(6.1), Inches(1.05), PANEL2, INDIGO,
+        'Automatic input into CAPEE: about month 9',
+        'Later than doing Option 1 on its own — but starting from proof rather than hope, and with '
+        'the settings already reviewed.')
+notes(s, "Both options on one line. Option 2 runs through the first quarter and a bit, we trial it, "
+         "and by about month three we have a working tool on our own rates and a real answer on "
+         "accuracy. We then decide, and Option 1 runs through the middle of the year. Yes, that "
+         "means automatic input into CAPEE lands around month nine rather than month five. But it "
+         "lands on top of something we have proved, with the settings already reviewed and signed "
+         "off, instead of us finding out in month five whether any of it was right.")
+
+# ═══════════════════════════════════════════════ 19 · WHERE FIGURES COME FROM ═
+s = header('Where these numbers come from', 'Appendix')
+text(s, Inches(0.45), Inches(1.7), Inches(12.4), Inches(0.35),
+     [[('Everything in this deck was checked against the software itself in August 2026, not '
+        'estimated from memory.', 11.5, BODY, False)]])
 rows = [
-    ('Cost engine is pure and deterministic', 'Five identical runs produced byte-identical output on both base and regional paths'),
-    ('All 18 commodities use the one engine', 'Connectivity matrix built from source: UI form to collect function to driver module to engine'),
-    ('Engine applies no hidden defaults', 'No fallback operators anywhere in the cost path; every field is mandatory and used as given'),
-    ('Geometry kernel is offline', 'Zero network imports; standard library plus OCCT only'),
-    ('Geometry kernel is deterministic', 'Its one sampling routine is explicitly seeded'),
-    ('CAD files never leave the server', 'Geometry extracted locally; only derived summaries reach an LLM'),
-    ('Rate library is injected, not imported', 'The cost function takes the library as a parameter'),
-    ('Three defects found and fixed', 'NaN reported as success; irreproducible confidence band; unrenderable report text'),
-    ('Test suite', '2,022 tests passing, including physics checks that fail the build'),
+    ('The costing maths gives the same answer every time', 'Ran the same part five times — identical to the last decimal'),
+    ('All 18 part types use the same costing engine', 'Traced every one through the software'),
+    ('The engine invents nothing when a value is missing', 'It has no hidden defaults — every figure must be supplied'),
+    ('The measuring software has no internet connection', 'Checked every line for outbound calls — there are none'),
+    ('The measuring software repeats exactly', 'Its one random step is fixed to a set value'),
+    ('The CAD file never leaves the server', 'Measuring is local; only drawing text goes to the AI'),
+    ('Rates are handed in, not built in', 'The costing function takes the rate book as an input'),
+    ('Three faults found and fixed in August', 'A wrong-number result, an unrepeatable range, unreadable report text'),
+    ('Automatic checks on the software', '2,022 automatic tests, all passing'),
 ]
-table(s, Inches(0.45), Inches(2.2), Inches(12.43), ['Claim', 'How it was verified'], rows,
-      [Inches(4.6), Inches(7.83)], row_h=Inches(0.44), size=10)
+table(s, Inches(0.45), Inches(2.25), Inches(12.43), ['What we say', 'How we checked it'], rows,
+      [Inches(5.6), Inches(6.83)], row_h=Inches(0.44), size=10.3)
 callout(s, Inches(0.45), Inches(6.5), Inches(12.43), Inches(0.72), PANEL2, INDIGO,
-        'Supporting documents',
-        'docs/CostVision-Secure-Deployment-CAPEE-Integration.md — security and data-flow inventory.  '
-        'FEASIBILITY.md — engine contract and integration readiness.  '
-        'CostVision 360 Review — full technical assessment including competitive position.')
-notes(s, 'Keep this slide for the technical audience or a follow-up with JLR IT. It is the answer '
-         'to "how do you know" for every claim made earlier in the deck.')
+        'Supporting documents, if anyone wants the detail',
+        'A security and data-flow review for IT.  A technical readiness report.  A full independent '
+        'review of the tool including how it compares with what is on the market.')
+notes(s, "Keep this one for anybody who wants to know how we know. Every claim I have made today "
+         "was checked against the software itself last month rather than assumed. A couple worth "
+         "pointing at: the costing gives the same answer every time, which sounds obvious but is "
+         "not true of every tool. And the fourth row — we checked every line of the measuring "
+         "software for internet connections and there are none, which is the answer to the first "
+         "question IT security will ask. We also found and fixed three faults during that review, "
+         "and I have listed them rather than quietly fixing them.")
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════════
 OUT = 'CostVision-CAPEE-Implementation-Options.pptx'
 prs.save(OUT)
 finalise(OUT)
