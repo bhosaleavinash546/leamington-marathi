@@ -73,6 +73,18 @@ def box(slide, x, y, w, h, fill=None, line=None, round_=False, radius=0.12):
     return shp
 
 
+def _h(v, minimum=Inches(0.12)):
+    """Clamp a derived height to a positive value.
+
+    Several helpers below size an inner text box as `h - <chrome>`. When a
+    caller passes a short card the result goes zero or negative, which is
+    invalid OOXML: PowerPoint refuses the file and offers to repair it, while
+    LibreOffice silently tolerates it. A text box does not clip its contents, so
+    clamping changes nothing visually.
+    """
+    return v if v > minimum else minimum
+
+
 _PICTO = re.compile('([\U0001F300-\U0001FAFF☀-⛿✀-✒✙-➿️]+)')
 EMOJI_FONT = 'Segoe UI Emoji'
 
@@ -150,7 +162,7 @@ def card(slide, x, y, w, h, accent, title, lines, title_size=13, body_size=10.5,
     if lines:
         runs = [[(ln[0], body_size, ln[1] if len(ln) > 1 else BODY,
                   ln[2] if len(ln) > 2 else False)] for ln in lines]
-        text(slide, x + Inches(0.22), y + Inches(0.48), w - Inches(0.4), h - Inches(0.6),
+        text(slide, x + Inches(0.22), y + Inches(0.48), w - Inches(0.4), _h(h - Inches(0.6)),
              runs, space_after=3, line_spacing=1.12)
 
 
@@ -182,7 +194,7 @@ def callout(slide, x, y, w, h, fill, accent, title, body, tsize=12, bsize=10.5):
     box(slide, x, y, Inches(0.075), h, fill=accent)
     text(slide, x + Inches(0.24), y + Inches(0.13), w - Inches(0.45), Inches(0.28),
          [[(title, tsize, accent, True)]])
-    text(slide, x + Inches(0.24), y + Inches(0.44), w - Inches(0.45), h - Inches(0.55),
+    text(slide, x + Inches(0.24), y + Inches(0.44), w - Inches(0.45), _h(h - Inches(0.55)),
          [[(body, bsize, BODY, False)]], space_after=3, line_spacing=1.14)
 
 
@@ -250,7 +262,7 @@ def flow_step(slide, x, y, w, h, icon, title, sub, accent):
     icon_badge(slide, icon, x + (w - Inches(0.62)) / 2, y + Inches(0.18), fill=accent)
     text(slide, x + Inches(0.08), y + Inches(0.92), w - Inches(0.16), Inches(0.34),
          [[(title, 10.5, DARK, True)]], align=PP_ALIGN.CENTER)
-    text(slide, x + Inches(0.08), y + Inches(1.28), w - Inches(0.16), h - Inches(1.34),
+    text(slide, x + Inches(0.08), y + Inches(1.28), w - Inches(0.16), _h(h - Inches(1.34)),
          [[(sub, 8.8, BODY, False)]], align=PP_ALIGN.CENTER, line_spacing=1.1)
 
 
@@ -1004,4 +1016,39 @@ notes(s, "Keep this for anyone who wants to know how we know. Every claim was ch
 OUT = 'CostVision-CAPEE-Implementation-Options.pptx'
 prs.save(OUT)
 finalise(OUT)
-print(f'{OUT}  —  {len(prs.slides._sldIdLst)} slides')
+
+
+def assert_powerpoint_can_open(path):
+    """Fail the build on the OOXML faults that make PowerPoint offer to repair.
+
+    LibreOffice opens files PowerPoint rejects, so converting to PDF proves
+    nothing about whether the deck will open on a colleague's laptop. A shape
+    with a zero or negative extent is the fault this build actually hit: a short
+    callout made an inner text box `h - chrome` wide, which went negative, and
+    PowerPoint refused the file while LibreOffice rendered it happily.
+    """
+    import zipfile, re
+    import xml.etree.ElementTree as ET
+    A = 'http://schemas.openxmlformats.org/drawingml/2006/main'
+    NS = 'http://schemas.openxmlformats.org/presentationml/2006/main'
+    z = zipfile.ZipFile(path)
+    faults = []
+    if z.testzip() is not None:
+        faults.append('zip archive is corrupt')
+    for n in sorted(x for x in z.namelist() if re.match(r'ppt/slides/slide\d+\.xml$', x)):
+        root = ET.fromstring(z.read(n))
+        for ext in root.iter('{%s}ext' % A):
+            cx, cy = int(ext.get('cx', '1')), int(ext.get('cy', '1'))
+            if cx <= 0 or cy <= 0:
+                faults.append(f'{n}: shape extent cx={cx} cy={cy}')
+        ids = [int(e.get('id')) for e in root.iter('{%s}cNvPr' % NS) if e.get('id')]
+        for d in sorted({i for i in ids if ids.count(i) > 1}):
+            faults.append(f'{n}: duplicate shape id {d}')
+    if faults:
+        raise SystemExit('DECK IS INVALID - PowerPoint would ask to repair it:\n  '
+                         + '\n  '.join(faults))
+    return len([x for x in z.namelist() if re.match(r'ppt/slides/slide\d+\.xml$', x)])
+
+
+n_slides = assert_powerpoint_can_open(OUT)
+print(f'{OUT}  -  {n_slides} slides, validated')
