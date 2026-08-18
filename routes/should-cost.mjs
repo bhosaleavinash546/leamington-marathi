@@ -29,6 +29,10 @@ export function registerShouldCostRoutes(app, { db, requireAuth, rateLimit, make
   // Store the material-line € at quote time so calibration can index-rebase old
   // quotes. Guarded ALTER: harmless if the column already exists.
   try { db.prepare('ALTER TABLE cost_quotes ADD COLUMN matEurAtQuote REAL').run(); } catch { /* column exists */ }
+  // Part 360: the supplier's own confirmed breakdown lines ride with the quote
+  // (JSON [{label, kind, amountEur}]). Calibration is untouched — it still fits
+  // on {modelled, actual, process} — but forensics can replay a stored quote.
+  try { db.prepare('ALTER TABLE cost_quotes ADD COLUMN breakdown TEXT').run(); } catch { /* column exists */ }
 // ─── SHOULD-COST ──────────────────────────────────────────────────────────────
 
 // Catalogue endpoint so the UI populates dropdowns from the engine (single source of truth)
@@ -125,10 +129,25 @@ app.post('/api/should-cost/quotes', requireAuth, rateLimit(120, 60 * 60 * 1000),
     }
   }
 
-  db.prepare(`INSERT INTO cost_quotes (id, userId, partName, material, process, weightKg, annualVolume, region, actualPriceEur, modelledEur, matEurAtQuote, createdAt)
-              VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+  // Part 360's confirmed breakdown lines ride along when supplied (`.loose()`
+  // schema passes them through). Amounts arrive in the quote currency and are
+  // stored in EUR alongside the total, on the same rate.
+  const KINDS = ['material', 'conversion', 'tooling', 'logistics', 'overhead', 'margin', 'other'];
+  const breakdownJson = Array.isArray(req.body.breakdown)
+    ? JSON.stringify(req.body.breakdown
+        .filter(l => l && Number.isFinite(Number(l.amount)))
+        .slice(0, 30)
+        .map(l => ({
+          label: String(l.label ?? '').slice(0, 120),
+          kind: KINDS.includes(l.kind) ? l.kind : 'other',
+          amountEur: Number((Number(l.amount) / rate).toFixed(4)),
+        })))
+    : null;
+
+  db.prepare(`INSERT INTO cost_quotes (id, userId, partName, material, process, weightKg, annualVolume, region, actualPriceEur, modelledEur, matEurAtQuote, breakdown, createdAt)
+              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
     crypto.randomUUID(), req.user.id, String(partName || '').slice(0, 200), matRes.key, procRes.key,
-    Number(weightKg), Number(annualVolume), region || 'Germany', actualPriceEur, modelledEur, matEurAtQuote, new Date().toISOString());
+    Number(weightKg), Number(annualVolume), region || 'Germany', actualPriceEur, modelledEur, matEurAtQuote, breakdownJson, new Date().toISOString());
   invalidateUserCal(req.user.id);   // refit on next estimate
 
   const cal = getUserCalibration(req.user.id);

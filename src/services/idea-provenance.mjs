@@ -126,7 +126,7 @@ export function needsValidation(idea) {
  * evidence, an OEM attribution nobody checked. Structural fix-ups stay in the
  * data for anyone reading the API; they do not earn a badge.
  */
-const TRUST_FLAG = /^(implausible-|verified-without-evidence|oem-claim-unverified|confidence-capped-no-search)/;
+const TRUST_FLAG = /^(implausible-|verified-without-evidence|oem-claim-unverified|confidence-capped-no-search|uncited-in-evidence-mode)/;
 
 export function notableFlags(idea) {
   const flags = (idea && idea.validationFlags) || [];

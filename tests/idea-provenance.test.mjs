@@ -157,4 +157,9 @@ describe('validator flags worth showing', () => {
     assert.deepEqual(notableFlags(null), []);
     assert.deepEqual(notableFlags({}), []);
   });
+
+  it('surfaces an uncited idea from Part 360 evidence mode as a trust flag', () => {
+    const idea = { validationFlags: ['uncited-in-evidence-mode', 'missing-benchmark'] };
+    assert.deepEqual(notableFlags(idea), ['uncited-in-evidence-mode']);
+  });
 });

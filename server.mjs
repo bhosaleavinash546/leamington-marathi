@@ -47,6 +47,7 @@ import { registerDfmRoutes } from './routes/dfm.mjs';
 import { registerHarnessRoutes } from './routes/harness.mjs';
 import { registerOrgRoutes, orgAccess } from './routes/orgs.mjs';
 import { registerTrizRoutes } from './routes/triz.mjs';
+import { registerPart360Routes } from './routes/part360.mjs';
 import { registerInnovationRoutes } from './routes/innovation.mjs';
 import { registerForesightRoutes } from './routes/foresight.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
@@ -99,7 +100,7 @@ app.use(cors({ origin: ALLOWED_ORIGINS }));
 const jsonBig = express.json({ limit: '12mb' });
 const jsonSmall = express.json({ limit: '1mb' });
 app.use((req, res, next) => {
-  const big = req.path === '/api/cad-analyze' || req.path === '/api/cad-step' || req.path === '/api/teardown-vision' || req.path === '/api/pcb-bom-cost' || req.path === '/api/pcb-bom-import' || req.path === '/api/cad-diff' || req.path === '/api/dfm/drawing-extract';
+  const big = req.path === '/api/cad-analyze' || req.path === '/api/cad-step' || req.path === '/api/teardown-vision' || req.path === '/api/pcb-bom-cost' || req.path === '/api/pcb-bom-import' || req.path === '/api/cad-diff' || req.path === '/api/dfm/drawing-extract' || req.path === '/api/part360/quote-extract' || req.path === '/api/part360/dossier';
   return (big ? jsonBig : jsonSmall)(req, res, next);
 });
 
@@ -2066,7 +2067,7 @@ function buildLensDirectives(lenses) {
   return `\nINNOVATION LENSES (apply in addition to normal levers):\n${picked.map(l => `- ${LENS_TEXT[l]}`).join('\n')}\n`;
 }
 
-function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch, cadGeometry) {
+function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch, cadGeometry, partEvidenceText = null) {
   const scope = partName ? `Part: **${partName}** (within ${subassemblyName}, System: ${systemName})` : `Subassembly: **${subassemblyName}** (System: ${systemName})`;
   // Optional innovation lenses: nudge the model to also apply structured
   // idea-generation methods, not just benchmark-copy. Compact per lens.
@@ -2193,9 +2194,17 @@ function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enab
   const regulatoryContext = getRegulatorContext(config);
   const kbDetail = IDEATION_LEGACY ? '' : kbDetailFor(domain, kbCompId, partName || subassemblyName || systemName);
 
+  // Part 360 evidence dossier: measured engine outputs rendered as numbered
+  // lines. Rendered right after the scope so it anchors the whole generation,
+  // and paired with a hard citation requirement — an idea grounded in nothing
+  // is exactly the generic restatement this block exists to prevent.
+  const evidenceBlock = partEvidenceText
+    ? `\n${partEvidenceText}\nEVERY idea must cite the [E#]/[W#] evidence lines that motivate it in its evidenceRefs field. An idea that cannot cite evidence should not be emitted.\n`
+    : '';
+
   return `Generate ALL expert-level cost reduction ideas available for:
 Vehicle: ${config.vehicleType} | ${scope}${config.additionalContext ? ` | Context: ${config.additionalContext}` : ''}
-${regionLine}${bodyStyleLine}${cadLine}${searchInstruction}
+${regionLine}${bodyStyleLine}${cadLine}${evidenceBlock}${searchInstruction}
 
 ${livePrices}
 ${curatedContext}
@@ -2205,7 +2214,7 @@ ${regulatoryContext}
 IMPORTANT: Use the actual volume (${volume.toLocaleString()} units/yr) and currency (${currency}) in all annual savings calculations.
 
 Each idea JSON object must have EXACTLY these fields:
-{"id":"slug","title":"≤12 words","technicalDescription":"180-220 words, specific grades/processes/benchmarks","manufacturingImpact":"90-130 words","costSavingTypes":["material|process|logistics|complexity|warranty|tooling|weight|commonisation"],"costSavingPotential":{"qualitative":"High/Medium/Low — reason","percentage":"e.g. 10-18%","annualValue":"e.g. ${currencySymbol}350K–${currencySymbol}650K at ${volume.toLocaleString()} units/yr","calculationBasis":"brief calc logic","paybackMonths":"estimated months to recover tooling/investment cost assuming typical annual volume (integer or null if not applicable)"},"implementationDifficulty":"Low|Medium|High","riskNotes":"70-90 words on NCAP/NVH/durability/regulatory risks + mitigations","dfmaPrinciples":["3-6 principles"],"systemLevel":"Assembly|Subassembly|Part","timeToImplement":"e.g. 6-12 months","benchmarkReference":"specific OEM/supplier example","searchDataUsed":true|false,"confidenceLevel":"verified|benchmarked|estimated|theoretical","regulatoryContext":"1 sentence on relevant regulatory driver or compliance benefit if applicable, else JSON null (not the string null)","evidenceSources":[{"type":"oem_press_release|teardown|patent|industry_report|supplier_data|web_search|regulatory","title":"short source name","year":2024,"confidence":"high|medium|low","url":"the result URL when the source came from web_search, else null"}],"engineCheckRequest":{"baselineMaterial":"catalogue-style name e.g. Steel (mild)","baselineProcess":"e.g. Stamping / Deep Drawing (chain ops with + if multi-op)","proposedMaterial":"...","proposedProcess":"...","referenceWeightKg":1.2,"proposedWeightKg":0.8} }
+{"id":"slug","title":"≤12 words","technicalDescription":"180-220 words, specific grades/processes/benchmarks","manufacturingImpact":"90-130 words","costSavingTypes":["material|process|logistics|complexity|warranty|tooling|weight|commonisation"],"costSavingPotential":{"qualitative":"High/Medium/Low — reason","percentage":"e.g. 10-18%","annualValue":"e.g. ${currencySymbol}350K–${currencySymbol}650K at ${volume.toLocaleString()} units/yr","calculationBasis":"brief calc logic","paybackMonths":"estimated months to recover tooling/investment cost assuming typical annual volume (integer or null if not applicable)"},"implementationDifficulty":"Low|Medium|High","riskNotes":"70-90 words on NCAP/NVH/durability/regulatory risks + mitigations","dfmaPrinciples":["3-6 principles"],"systemLevel":"Assembly|Subassembly|Part","timeToImplement":"e.g. 6-12 months","benchmarkReference":"specific OEM/supplier example","searchDataUsed":true|false,"confidenceLevel":"verified|benchmarked|estimated|theoretical","regulatoryContext":"1 sentence on relevant regulatory driver or compliance benefit if applicable, else JSON null (not the string null)","evidenceRefs":["E1","W2"] (ONLY when a MEASURED PART EVIDENCE block is present — the evidence line ids this idea addresses; omit otherwise),"evidenceSources":[{"type":"oem_press_release|teardown|patent|industry_report|supplier_data|web_search|regulatory","title":"short source name","year":2024,"confidence":"high|medium|low","url":"the result URL when the source came from web_search, else null"}],"engineCheckRequest":{"baselineMaterial":"catalogue-style name e.g. Steel (mild)","baselineProcess":"e.g. Stamping / Deep Drawing (chain ops with + if multi-op)","proposedMaterial":"...","proposedProcess":"...","referenceWeightKg":1.2,"proposedWeightKg":0.8} }
 
 CONFIDENCE GUIDE: Use 'verified' only when you can name a specific OEM production programme and year. Use 'benchmarked' for published teardown or industry study data — cite the study name. Use 'estimated' for cost-model derivations — state the model assumption. Use 'theoretical' for first-principles analysis only.
 EVIDENCE SOURCES: List 1-3 real evidence sources per idea (OEM teardowns, patents, press releases, industry reports). Be specific — name the OEM/supplier and year. When a source came from a web_search result, copy its exact url into the url field so the citation is verifiable; never invent URLs.
@@ -3037,6 +3046,18 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     }
   }
 
+  // Part 360 evidence dossier: engine-computed text in transit from the client,
+  // under the same sanitize-and-cap discipline as cadGeometry.dfmaFindings.
+  // Blocks are per-lens renderings from /api/part360/dossier.
+  let partEvidence = null;
+  if (req.body.partEvidence && typeof req.body.partEvidence === 'object' && Array.isArray(req.body.partEvidence.blocks)) {
+    const blocks = req.body.partEvidence.blocks
+      .filter(b => b && typeof b.text === 'string' && b.text.trim())
+      .slice(0, 6)
+      .map(b => ({ lensId: sanitize(String(b.lensId ?? 'all'), 24), text: sanitize(String(b.text), 20000) }));
+    if (blocks.length) partEvidence = { blocks };
+  }
+
   const useSSE = (req.headers['accept'] || '').includes('text/event-stream');
   if (useSSE) {
     res.setHeader('Content-Type', 'text/event-stream');
@@ -3057,7 +3078,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
   refreshPriceCache(searchApiKey).catch(() => {});
 
   // Check cache (only when search is disabled — search results are time-sensitive)
-  if (!enableSearch && !cadGeometry) {
+  if (!enableSearch && !cadGeometry && !partEvidence) {
     const cacheKey = buildCacheKey(config, sysName, subName, prtName, req.user.id);
     const cached = analysisCache(cacheKey);
     if (cached) {
@@ -3096,8 +3117,9 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     // Evidence is only "verified" if live retrieval actually returned data.
     // Otherwise every citation is model-asserted and must be labelled unverified.
     const searchExecuted = enableSearch && sources.some(s => Array.isArray(s.results) && s.results.length > 0);
+    const hasEvidence = !!partEvidence;
     // Critic pass: schema-validate, coerce enums, sanity-band numbers, drop broken ideas.
-    const { ideas: validated, summary: validationSummary } = validateIdeas(parsedIdeas, { searchExecuted });
+    const { ideas: validated, summary: validationSummary } = validateIdeas(parsedIdeas, { searchExecuted, hasEvidence });
     if (validated.length === 0) throw new Error('No valid ideas could be generated. Please retry.');
     if (validationSummary.dropped > 0 || validationSummary.flagged > 0) {
       console.warn(`[Validation] kept ${validationSummary.kept}/${validationSummary.total}, dropped ${validationSummary.dropped}, flagged ${validationSummary.flagged}, avgQuality ${validationSummary.avgQuality}`);
@@ -3184,7 +3206,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     autoSaveProject(req.user.id, projectId, sysName, subName, prtName, config, ideas, sources);
 
     // Cache when search was disabled (results are deterministic)
-    if (!enableSearch && !cadGeometry) {
+    if (!enableSearch && !cadGeometry && !partEvidence) {
       const cacheKey = buildCacheKey(config, sysName, subName, prtName, req.user.id);
       setAnalysisCache(cacheKey, ideas, sources);
     }
@@ -3198,6 +3220,42 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
   }
 
   try {
+    // ── Part 360 grounded mode: N parallel lens passes, ONE pipeline ─────────
+    // Each lens gets the base prompt plus its slice of the evidence dossier and
+    // a forced emit_ideas call — no web-search loop, because the dossier IS the
+    // evidence (marketplace retrieval context still rides along). All lens
+    // outputs merge into the same finishAnalysis every other idea takes:
+    // validate → dedupe → engine-check → prior-art → deep → rank.
+    if (partEvidence) {
+      const lensRuns = partEvidence.blocks.map(async (block) => {
+        const prompt = buildAnalysisPrompt(config, sysName, subName, prtName, false, cadGeometry, block.text) + retrievalCtx;
+        const params = {
+          model: 'claude-opus-4-8', max_tokens: 16000,
+          system: cachedSystem(CHIEF_ENGINEER_PROMPT),
+          messages: [{ role: 'user', content: prompt }],
+          tools: [emitIdeasTool], tool_choice: { type: 'tool', name: 'emit_ideas' },
+        };
+        let response;
+        try {
+          response = await client.messages.create(params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
+        } catch (e) {
+          // One failed lens must not sink the run — the merged set says which
+          // lens is missing rather than silently narrowing coverage.
+          emit({ type: 'progress', message: `Lens "${block.lensId}" failed (${safeLlmError(e)}) — continuing with the others.` });
+          return [];
+        }
+        const blk = response.content.find(b => b.type === 'tool_use' && b.name === 'emit_ideas');
+        const ideas = Array.isArray(blk?.input?.ideas) ? blk.input.ideas : [];
+        emit({ type: 'progress', message: `Lens "${block.lensId}": ${ideas.length} candidate ideas.` });
+        // Stamp the originating lens; validateIdea passes unknown fields through.
+        return ideas.map(i => (i && typeof i === 'object' ? { ...i, lensId: block.lensId } : i));
+      });
+      emit({ type: 'progress', message: `Generating through ${partEvidence.blocks.length} evidence lens${partEvidence.blocks.length > 1 ? 'es' : ''}…` });
+      const merged = (await Promise.all(lensRuns)).flat();
+      if (!merged.length) throw new Error('No lens produced ideas — check the evidence dossier and try again.');
+      return await finishAnalysis(merged);
+    }
+
     for (let i = 0; i < 8; i++) {
       if (Date.now() > deadline) throw new Error(`Analysis timed out after ${Math.round(ANALYZE_TIMEOUT_MS / 60000)} minutes. Please try again with web search disabled.`);
       const params = { model: 'claude-opus-4-8', max_tokens: 24000, system: cachedSystem(CHIEF_ENGINEER_PROMPT), messages };
@@ -3568,6 +3626,9 @@ registerOrgRoutes(app, { db, requireAuth, rateLimit });
 // TRIZ innovation studio: plain-English contradiction → inventive principles →
 // costed, engine-checked ideas.
 registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
+// Part 360: quote forensics, entitlement waterfall and the evidence dossier —
+// the fusion layer over every engine, calibrated to the caller's quote corpus.
+registerPart360Routes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, sanitize, shouldCostApi });
 // Innovation methods (Value Engineering, DFA, Design-to-Cost, SCAMPER,
 // Morphological, Effects & Trends, Circularity) — structured idea generation.
 registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });

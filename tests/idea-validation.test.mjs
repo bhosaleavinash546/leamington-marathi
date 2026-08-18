@@ -111,3 +111,31 @@ test('batch summary reports counts and average quality', () => {
   assert.equal(summary.dropped, 1);
   assert.ok(summary.avgQuality > 0 && summary.avgQuality <= 100);
 });
+
+test('evidenceRefs: keeps only [E#]/[W#] ids, dedupes, caps at 8', () => {
+  const v = validateIdea({ ...goodIdea, evidenceRefs: ['E1', 'W2', 'E1', 'bogus', 'E999999', 42, ' E3 ', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9', 'E10'] });
+  assert.ok(v.evidenceRefs.every(r => /^[EW]\d{1,3}$/.test(r)));
+  assert.ok(!v.evidenceRefs.includes('bogus'));
+  assert.equal(new Set(v.evidenceRefs).size, v.evidenceRefs.length);
+  assert.ok(v.evidenceRefs.length <= 8);
+  assert.ok(v.evidenceRefs.includes('E3'), 'whitespace-padded refs are trimmed, not dropped');
+});
+
+test('evidenceRefs: absent stays absent — no empty-array fabrication outside evidence mode', () => {
+  const v = validateIdea(goodIdea);
+  assert.equal(v.evidenceRefs, undefined);
+  assert.ok(!v.validationFlags.includes('uncited-in-evidence-mode'));
+});
+
+test('flags an uncited idea only when a dossier was actually supplied', () => {
+  const uncited = validateIdea(goodIdea, 0, { hasEvidence: true });
+  assert.ok(uncited.validationFlags.includes('uncited-in-evidence-mode'));
+  const cited = validateIdea({ ...goodIdea, evidenceRefs: ['W1', 'E4'] }, 0, { hasEvidence: true });
+  assert.ok(!cited.validationFlags.includes('uncited-in-evidence-mode'));
+  assert.deepEqual(cited.evidenceRefs, ['W1', 'E4']);
+  // refs that all fail the pattern are as good as no refs
+  const junk = validateIdea({ ...goodIdea, evidenceRefs: ['see dossier'] }, 0, { hasEvidence: true });
+  assert.ok(junk.validationFlags.includes('uncited-in-evidence-mode'));
+  // and the flag costs quality, so uncited ideas rank below cited peers
+  assert.ok(uncited.qualityScore < validateIdea(goodIdea, 0, { hasEvidence: false }).qualityScore);
+});

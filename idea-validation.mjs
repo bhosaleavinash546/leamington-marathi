@@ -135,6 +135,19 @@ export function validateIdea(raw, index = 0, ctx = {}) {
     idea.confidenceLevel = 'estimated';
   }
 
+  // ── Evidence refs (Part 360 dossier citations) ──────────────────────────
+  // Only [E7]/[W2]-style ids survive — free text here would let the model
+  // smuggle uncited prose past the citation demand. When a dossier was
+  // actually supplied (ctx.hasEvidence) an idea with no surviving ref is
+  // flagged: the prompt made citation mandatory, so its absence is a defect
+  // worth a visible badge, not a silent pass.
+  const refs = Array.isArray(raw.evidenceRefs)
+    ? [...new Set(raw.evidenceRefs.filter(r => typeof r === 'string' && /^[EW]\d{1,3}$/.test(r.trim())).map(r => r.trim()))].slice(0, 8)
+    : [];
+  if (refs.length > 0) idea.evidenceRefs = refs;
+  else delete idea.evidenceRefs;
+  if (ctx.hasEvidence === true && refs.length === 0) flags.push('uncited-in-evidence-mode');
+
   // regulatoryContext: string or null (never the literal string "null")
   const reg = raw.regulatoryContext;
   idea.regulatoryContext = (typeof reg === 'string' && reg.trim() && reg.trim() !== 'null') ? reg.trim() : null;
