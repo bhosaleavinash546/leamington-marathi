@@ -2846,3 +2846,49 @@ citation records first-hand reading that the register never recorded.
     both saying so in their own text.
   * Recorded as **F-32** in the audit register, and every other finding was
     re-swept for the same signature — see `docs/AUDIT-SWEEP.md`. 30 of 31 hold.
+
+## 52. Part 360 fans out through lenses but lands in the one pipeline
+
+**Date**: 2026-08-18
+**Status**: Accepted
+
+**Context**: Part 360 takes the four artefacts a cost engineer actually holds —
+3D model, 2D drawing, supplier quote with breakdown, stated process — and asks
+for a genuinely 360° review: is this the right process, region, specification,
+weight, and price? The temptation was a fifth ideation endpoint with its own
+idea schema (the repo already carries four endpoints across three schemas, a
+fragmentation the audit called out).
+
+**Decision**: Three commitments.
+
+1. **All numbers are computed server-side, twice-guarded.** The dossier
+   endpoint re-runs every engine (`should-cost`, `compareRoutes`,
+   `specRelaxationDeltas`, region sweep, `volumeSensitivity`, forensics,
+   waterfall) from raw inputs; engine figures never round-trip through the
+   client. The only client-transported engine artefacts are the DFM/geometry
+   subsets, under the same sanitize-and-cap discipline as
+   `cadGeometry.dfmaFindings`, and they feed maths, not claims.
+2. **The entitlement waterfall is a chain, not a list.** Each step's `fromEur`
+   is the previous step's `toEur`, deltas sum exactly from quote to
+   entitlement, and a step the engine cannot compute stays visible as
+   `skipped` with its reason — a silently dropped step reads as a smaller gap.
+   The artefact is labelled a DIRECTION INDICATOR with the held-out error band,
+   because an entitlement number without its uncertainty is a negotiation
+   grenade.
+3. **Generation fans out, but converges.** N parallel lens passes (each a
+   forced `emit_ideas` call over its dossier slice) merge into the single
+   existing `finishAnalysis` pipeline — validate → dedupe → engine-check →
+   prior-art → deep → rank. No new idea schema; `evidenceRefs` and `lensId`
+   ride as optional fields the validator normalises. An idea that cites no
+   [E#]/[W#] line when a dossier was supplied gets a visible trust flag
+   (`uncited-in-evidence-mode`), not a silent pass.
+
+**Consequences**:
+  * ResultsPage, exports, Pipeline promotion and business cases work on
+    Part 360 output unchanged, provenance stamps intact.
+  * The wiring contract is pinned at source level
+    (`tests/part360-wiring.test.mjs`) because the seams live in the server
+    monolith where they cannot be imported.
+  * Whether dossier grounding actually beats ungrounded generation is a
+    MEASURABLE claim (corpusNoveltyRate + citation rate vs the eval noise
+    floor) and deliberately not asserted here.
