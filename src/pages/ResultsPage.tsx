@@ -8,7 +8,7 @@ import {
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
   MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2, ClipboardList, X,
-  Square, Store, Layers, Gauge, ThumbsUp
+  Square, Store, Layers, Gauge, ThumbsUp, Orbit, FileSearch
 } from 'lucide-react';
 import TypingDots from '../components/ui/TypingDots';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
@@ -385,6 +385,22 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                     className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-violet-500/10 text-violet-300 border-violet-500/25"
                   >
                     <RefreshCw size={10} /> Refined
+                  </div>
+                )}
+                {idea.lensId && (
+                  <div
+                    title={`Part 360: generated through the "${idea.lensId}" evidence lens`}
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-teal-500/10 text-teal-400 border-teal-500/25"
+                  >
+                    <Orbit size={10} /> {idea.lensId}
+                  </div>
+                )}
+                {Array.isArray(idea.evidenceRefs) && idea.evidenceRefs.length > 0 && (
+                  <div
+                    title={`Cites measured evidence lines from the Part 360 dossier: ${idea.evidenceRefs.join(', ')} (E = engine measurement, W = waterfall step)`}
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-teal-500/10 text-teal-300 border-teal-500/25"
+                  >
+                    <FileSearch size={10} /> {idea.evidenceRefs.slice(0, 4).join(' ')}{idea.evidenceRefs.length > 4 ? ` +${idea.evidenceRefs.length - 4}` : ''}
                   </div>
                 )}
               </div>

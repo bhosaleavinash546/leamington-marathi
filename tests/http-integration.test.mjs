@@ -116,6 +116,36 @@ describe('http integration', () => {
     assert.ok(buf.length > 3000);
   });
 
+  it('negotiation pack with part360 data gains waterfall + forensics slides', async () => {
+    const base = { partName: 'IT Bracket', material: 'Steel (mild)', process: 'Stamping / Deep Drawing', weightKg: 1.2, annualVolume: 100000, region: 'Germany', currency: 'EUR', format: 'pptx' };
+    const plain = await fetch(`${BASE}/api/should-cost/export`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(base),
+    });
+    assert.equal(plain.status, 200);
+    const plainBuf = Buffer.from(await plain.arrayBuffer());
+    // Zip entry names are stored uncompressed, so slide names are greppable.
+    assert.ok(plainBuf.includes('ppt/slides/slide3.xml'), 'base deck has 3 slides');
+    assert.ok(!plainBuf.includes('ppt/slides/slide4.xml'), 'no part360 slides without part360 data');
+
+    const r = await fetch(`${BASE}/api/should-cost/export`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        ...base, quotedCost: 9.5,
+        part360: { quoteLines: [
+          { label: 'Steel coil', kind: 'material', amount: 3.1 },
+          { label: 'Press + weld', kind: 'conversion', amount: 4.2 },
+          { label: 'ECO surcharge', kind: 'other', amount: 0.4 },
+        ] },
+      }),
+    });
+    assert.equal(r.status, 200);
+    const buf = Buffer.from(await r.arrayBuffer());
+    assert.equal(buf.subarray(0, 2).toString(), 'PK');
+    assert.ok(buf.includes('ppt/slides/slide4.xml'), 'waterfall slide missing');
+    assert.ok(buf.includes('ppt/slides/slide5.xml'), 'forensics slide missing');
+  });
+
   it('cad tessellate guards: 401 unauthenticated, 422 proprietary format', async () => {
     const noAuth = await fetch(`${BASE}/api/cad/tessellate`, { method: 'POST' });
     assert.equal(noAuth.status, 401);

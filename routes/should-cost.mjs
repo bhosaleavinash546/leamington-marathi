@@ -14,6 +14,7 @@ import { applyLiveMaterialPrices } from '../material-commodity.mjs';
 import { computeCarbon } from '../carbon.mjs';
 import { targetGap } from '../innovation.mjs';
 import { runEngineChecks } from '../engine-idea-check.mjs';
+import { entitlementWaterfall, quoteForensics, KIND_TO_BUCKETS } from '../part360.mjs';
 
 export function registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, getCommodityPrices }) {
   // Active rate library with live commodity prices bridged into material €/kg, so
@@ -438,6 +439,35 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
 
     const safeName = String(partName || 'should-cost').replace(/[^\w.-]+/g, '_').slice(0, 60);
 
+    // Part 360 negotiation pack: waterfall + per-line forensics slides. The
+    // client sends only its CONFIRMED quote lines (user input, display
+    // currency) — every engine number below is recomputed server-side.
+    let p360 = null;
+    if (req.body.part360 && typeof req.body.part360 === 'object') {
+      const quoteEur = quotedCost && Number(quotedCost) > 0 ? Number(quotedCost) / rate : null;
+      const lines = (Array.isArray(req.body.part360.quoteLines) ? req.body.part360.quoteLines : [])
+        .filter(l => l && Number.isFinite(Number(l.amount)) && Number(l.amount) >= 0)
+        .slice(0, 30)
+        .map(l => ({
+          label: String(l.label || 'line').slice(0, 120),
+          kind: KIND_TO_BUCKETS[l.kind] ? l.kind : 'other',
+          amountEur: Number(l.amount) / rate,
+        }));
+      try {
+        // Pass the ORIGINAL process/route string — part360's engineCost
+        // re-resolves it the same way the estimate endpoint does, so routed
+        // parts stay routed instead of collapsing to their first op.
+        const wfInput = { material: matRes.key, process: String(req.body.route || process), weightKg: wNum, annualVolume: vNum, region, ...extraDriversX, quoteTotalEur: quoteEur };
+        const waterfall = entitlementWaterfall(wfInput, { library: lib, calibration: userCal });
+        const matBasis = priceBasis[matRes.key] ? { commodityLabel: priceBasis[matRes.key].commodityLabel, pricedAt } : null;
+        const forensics = lines.length ? quoteForensics(lines, calc, { annualVolume: vNum, materialPrice: matBasis }) : null;
+        p360 = { waterfall, forensics };
+      } catch (e) {
+        // The base pack must still export — the part360 slides are additive.
+        console.warn('[Should-Cost Export] part360 slides skipped:', e.message);
+      }
+    }
+
     // format=pptx → 3-slide negotiation deck (server-side pptxgenjs).
     if (String(req.query.format || req.body.format || '').toLowerCase() === 'pptx') {
       const PptxGenJS = (await import('pptxgenjs')).default;
@@ -476,6 +506,55 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
       for (const p of curve) rows3.push([{ text: p.volume.toLocaleString(), options: { color: 'DDE3EA' } }, { text: String(cv(p.unitCost)), options: { color: 'DDE3EA' } }]);
       s3.addTable(rows3, { x: 0.6, y: 1.2, w: 6.5, fontSize: 12, border: { type: 'solid', color: '1E3A5F', pt: 0.5 }, fill: { color: '0B1A2C' } });
       s3.addText(`Negotiation anchor: target P50 ${sym}${cv(sim.p50)}; anything above P90 ${sym}${cv(sim.p90)} is outside the modelled range.`, { x: 0.6, y: 6.5, w: 12, h: 0.5, fontSize: 13, color: GOLD });
+
+      // Part 360 slides: entitlement waterfall + per-line quote forensics.
+      if (p360?.waterfall) {
+        const wf = p360.waterfall;
+        const s4 = pptx.addSlide();
+        s4.background = { color: NAVY };
+        s4.addText('Cost Entitlement Waterfall', { x: 0.6, y: 0.4, w: 12, h: 0.6, fontSize: 22, bold: true, color: 'FFFFFF' });
+        const hdr = (t) => ({ text: t, options: { bold: true, color: 'FFFFFF' } });
+        const cell = (t, c = 'DDE3EA') => ({ text: String(t), options: { color: c } });
+        const rows4 = [[hdr('Step'), hdr('Premium'), hdr(`From (${currency})`), hdr(`To (${currency})`), hdr(`Delta (${currency})`), hdr('Basis')]];
+        for (const st of wf.steps) {
+          // Delta shown as displayed-from minus displayed-to, so the table's
+          // own arithmetic checks out to the penny after FX rounding.
+          const dShown = cv(st.fromEur) - cv(st.toEur);
+          rows4.push(st.skipped
+            ? [cell(st.id), cell(st.name), cell('—'), cell('—'), cell('—'), cell(`not evaluated: ${st.reason}`, SLATE)]
+            : [cell(st.id), cell(st.name), cell(cv(st.fromEur).toFixed(2)), cell(cv(st.toEur).toFixed(2)),
+               cell(`${dShown >= 0 ? '' : '−'}${Math.abs(dShown).toFixed(2)}`, st.deltaEur > 0 ? GOLD : 'DDE3EA'),
+               cell(String(st.basis).slice(0, 160))]);
+        }
+        s4.addTable(rows4, { x: 0.6, y: 1.15, w: 12.1, fontSize: 10, colW: [0.6, 1.9, 1.3, 1.3, 1.3, 5.7], border: { type: 'solid', color: '1E3A5F', pt: 0.5 }, fill: { color: '0B1A2C' } });
+        const headline = wf.quoteEur != null
+          ? `Quote ${sym}${cv(wf.quoteEur).toFixed(2)} → engine entitlement ${sym}${cv(wf.entitlementEur).toFixed(2)}  (gap ${sym}${cv(wf.totalGapEur).toFixed(2)})`
+          : `Engine entitlement ${sym}${cv(wf.entitlementEur).toFixed(2)} (no supplier quote supplied — commercial step not evaluated)`;
+        s4.addText(headline, { x: 0.6, y: 6.3, w: 12, h: 0.45, fontSize: 14, bold: true, color: GOLD });
+        s4.addText(String(wf.caution), { x: 0.6, y: 6.85, w: 12, h: 0.5, fontSize: 9, italic: true, color: SLATE });
+        if (currency !== 'EUR') s4.addText(`Basis sentences cite the engine's native EUR figures; table columns are converted to ${currency} at the stated FX rate.`, { x: 0.6, y: 7.15, w: 12, h: 0.3, fontSize: 8, italic: true, color: SLATE });
+      }
+      if (p360?.forensics?.rows?.length) {
+        const f = p360.forensics;
+        const s5 = pptx.addSlide();
+        s5.background = { color: NAVY };
+        s5.addText('Quote Forensics — line by line vs the engine', { x: 0.6, y: 0.4, w: 12, h: 0.6, fontSize: 22, bold: true, color: 'FFFFFF' });
+        const hdr = (t) => ({ text: t, options: { bold: true, color: 'FFFFFF' } });
+        const cell = (t, c = 'DDE3EA') => ({ text: String(t), options: { color: c } });
+        const VERDICT_COLOR = { 'above-model': GOLD, 'below-model': '7DD3A8', 'in-band': 'DDE3EA', unmapped: SLATE };
+        const rows5 = [[hdr('Supplier line'), hdr('Kind'), hdr(`Quoted (${currency})`), hdr(`Engine (${currency})`), hdr('Verdict'), hdr('Basis')]];
+        for (const r of f.rows) {
+          rows5.push([
+            cell(r.label), cell(r.kind), cell(cv(r.quoteEur).toFixed(2)),
+            cell(r.engineEur != null ? cv(r.engineEur).toFixed(2) : '—'),
+            cell(r.verdict, VERDICT_COLOR[r.verdict] || 'DDE3EA'),
+            cell(String(r.basis).slice(0, 150)),
+          ]);
+        }
+        s5.addTable(rows5, { x: 0.6, y: 1.15, w: 12.1, fontSize: 10, colW: [2.4, 1.0, 1.2, 1.2, 1.1, 5.2], border: { type: 'solid', color: '1E3A5F', pt: 0.5 }, fill: { color: '0B1A2C' } });
+        if (f.caveat) s5.addText(String(f.caveat), { x: 0.6, y: 6.85, w: 12, h: 0.5, fontSize: 9, italic: true, color: SLATE });
+        if (currency !== 'EUR') s5.addText(`Basis sentences cite the engine's native EUR figures; table columns are converted to ${currency} at the stated FX rate.`, { x: 0.6, y: 7.15, w: 12, h: 0.3, fontSize: 8, italic: true, color: SLATE });
+      }
 
       const pbuf = await pptx.write({ outputType: 'nodebuffer' });
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');

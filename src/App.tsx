@@ -47,6 +47,7 @@ const ForesightPage = lazy(() => import('./pages/ForesightPage'));
 const HarnessCostPage = lazy(() => import('./pages/HarnessCostPage'));
 const ApiKeySettingsPage = lazy(() => import('./pages/ApiKeySettingsPage'));
 const TeamPage = lazy(() => import('./pages/TeamPage'));
+const Part360Page = lazy(() => import('./pages/Part360Page'));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -75,6 +76,7 @@ function AnimatedRoutes() {
         <Route path="/integrations" element={<ProtectedRoute><PageTransition><IntegrationsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/marketplace" element={<ProtectedRoute><PageTransition><MarketplacePage /></PageTransition></ProtectedRoute>} />
         <Route path="/cad-diff" element={<ProtectedRoute><PageTransition><CadDiffPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/part-360" element={<ProtectedRoute><PageTransition><Part360Page /></PageTransition></ProtectedRoute>} />
         <Route path="/vave-tracker" element={<ProtectedRoute><PageTransition><VaveTrackerPage /></PageTransition></ProtectedRoute>} />
         <Route path="/pipeline" element={<ProtectedRoute><PageTransition><PipelinePage /></PageTransition></ProtectedRoute>} />
         <Route path="/server-settings" element={<ProtectedRoute><PageTransition><ServerSettingsPage /></PageTransition></ProtectedRoute>} />

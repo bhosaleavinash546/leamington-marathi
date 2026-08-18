@@ -3,7 +3,7 @@ import { AnalysisConfig, CostReductionIdea, SearchSource } from '../types';
 export type ChatHistory = { role: 'user' | 'assistant'; content: string }[];
 
 export interface ProgressEvent {
-  type: 'connecting' | 'searching' | 'search_done' | 'synthesizing' | 'complete' | 'error';
+  type: 'connecting' | 'searching' | 'search_done' | 'synthesizing' | 'progress' | 'complete' | 'error';
   message?: string;
   query?: string;
   purpose?: string;
@@ -81,7 +81,9 @@ export async function generateCostReductionIdeas(
   partName?: string,
   enableSearch = true,
   searchApiKey?: string,
-  onProgress?: (event: ProgressEvent) => void
+  onProgress?: (event: ProgressEvent) => void,
+  /** Part 360 grounded mode: per-lens evidence blocks from /api/part360/dossier. */
+  extra?: { partEvidence?: { blocks: Array<{ lensId: string; text: string }> } }
 ): Promise<AnalysisResponse> {
   const token = getAuthToken();
   const headers: Record<string, string> = {
@@ -101,6 +103,7 @@ export async function generateCostReductionIdeas(
       enableSearch,
       searchApiKey,
       cadGeometry: config.cadGeometry,
+      ...(extra?.partEvidence ? { partEvidence: extra.partEvidence } : {}),
     }),
   });
 
