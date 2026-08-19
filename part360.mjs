@@ -229,8 +229,23 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
         material, region, annualVolume, weightKg, library,
         chosenProcess: asSpec.calc?.resolvedProcess ?? process,
       });
-      const viable = (cmp.routes || []).filter(r =>
+      // A route only counts toward the ENTITLEMENT when its own rule family
+      // actually rates this geometry makeable: measured score ≥ 50 (the score
+      // scale's "watch" floor) resting on ≥ 40% rule coverage. `viable` alone
+      // is a family-compatibility claim — on the first live parts it let a
+      // score-0 roll-formed stub axle set the entitlement, and after the score
+      // floor a "100 at 16.7% coverage" (one evaluable rule) slipped through
+      // on a fuel tank. Neither is a number anyone could defend in a
+      // negotiation. A null score (nothing evaluated) fails the floor too:
+      // unmeasured is not a pass.
+      const W3_MIN_DFM_SCORE = 50;
+      const W3_MIN_COVERAGE_PCT = 40;
+      const candidates = (cmp.routes || []).filter(r =>
         r.viable && r.netShape && Number.isFinite(r.piecePriceEur) && !r.isChosen);
+      const viable = candidates.filter(r =>
+        Number.isFinite(r.score) && r.score >= W3_MIN_DFM_SCORE
+        && Number.isFinite(r.coveragePct) && r.coveragePct >= W3_MIN_COVERAGE_PCT);
+      const belowFloor = candidates.length - viable.length;
       let bestAlt = null;
       for (const r of viable) {
         try {
@@ -248,7 +263,7 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
         bestProcess = bestAlt.process;
       } else {
         push('Process premium', cursor, cursor,
-          'The stated process is already the best-fit among DFM-viable alternatives at this volume.');
+          `The stated process is already the best-fit among DFM-viable alternatives at this volume${belowFloor > 0 ? ` (${belowFloor} cheaper route${belowFloor === 1 ? '' : 's'} excluded: DFM score below ${W3_MIN_DFM_SCORE} or rule coverage below ${W3_MIN_COVERAGE_PCT}%, not defensible as an entitlement basis)` : ''}.`);
       }
     } catch (e) {
       push('Process premium', cursor, cursor, 'Route comparison failed.', { skipped: true, reason: e.message });

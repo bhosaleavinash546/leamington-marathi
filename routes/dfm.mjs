@@ -35,6 +35,12 @@ import { MATERIALS, REGIONS, computeShouldCost } from '../costing-engine.mjs';
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 
+// OCCT budget per part. 120 s covers every fixture and typical production
+// part; genuinely huge exports (a 31 MB full fuel tank measured ~real-world)
+// need more, so the cap is env-tunable — bounded at 10 min so a pathological
+// file cannot pin a worker forever.
+const GEO_TIMEOUT_MS = Math.min(Number(process.env.CV_DFM_GEO_TIMEOUT_MS) || 120_000, 600_000);
+
 const PROPRIETARY = ['x_t', 'x_b', 'xmt_txt', 'jt', 'prt', 'sldprt', 'catpart'];
 const BREP_FORMATS = ['stp', 'step', 'igs', 'iges'];
 const extOf = name => (name || '').toLowerCase().split('.').pop() ?? '';
@@ -534,7 +540,7 @@ export function registerDfmRoutes(app, {
       emit({ type: 'stage', stage: 'drawing-only', dimensions: drawingInputs.pmiDimensions.length });
     } else {
       geo = await analyzeGeometry(
-        req.file.buffer, req.file.originalname, 120_000,
+        req.file.buffer, req.file.originalname, GEO_TIMEOUT_MS,
         useSSE ? (ev) => { if (!clientGone) emit({ type: 'stage', ...ev }); } : null,
         pinnedDraw);
       if (geo.status !== 'success') {
@@ -1035,7 +1041,7 @@ export function registerDfmRoutes(app, {
       }
       let geo;
       try {
-        geo = await analyzeGeometry(f.buffer, f.originalname, 120_000);
+        geo = await analyzeGeometry(f.buffer, f.originalname, GEO_TIMEOUT_MS);
       } catch (e) {
         row.error = `Geometry engine failed: ${e.message}`;
         rows.push(row);

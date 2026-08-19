@@ -31,6 +31,22 @@ describe('evidence-mode prompt contract', () => {
   });
 });
 
+describe('entitlement waterfall discipline', () => {
+  it('the process step only accepts routes whose measured DFM score clears the floor', () => {
+    // Found on the first live parts: `viable` alone let a score-0 roll-formed
+    // stub axle set the entitlement. The floor is the score scale's "watch"
+    // boundary and a null score (nothing evaluated) must fail it too.
+    assert.match(part360, /const W3_MIN_DFM_SCORE = 50;/);
+    assert.match(part360, /Number\.isFinite\(r\.score\) && r\.score >= W3_MIN_DFM_SCORE/);
+    // ...and a score resting on one evaluable rule is no better: coverage
+    // gates too (a "100 at 16.7%" roll-formed fuel tank got through without it).
+    assert.match(part360, /const W3_MIN_COVERAGE_PCT = 40;/);
+    assert.match(part360, /r\.coveragePct >= W3_MIN_COVERAGE_PCT/);
+    // Excluded-but-cheaper routes are DISCLOSED, not silently dropped.
+    assert.match(part360, /excluded: DFM score below/);
+  });
+});
+
 describe('/api/analyze grounded-mode wiring', () => {
   it('sanitises partEvidence exactly once — in the analyze handler, not elsewhere', () => {
     const hits = server.match(/let partEvidence = null;/g) || [];
