@@ -41,9 +41,10 @@ function slugify(s) {
 export function parsePercent(v) {
   if (typeof v === 'number') return isFinite(v) ? v : null;
   const s = str(v);
-  // First number NOT immediately preceded by a currency symbol (£/$/€/¥) or digit/dot,
-  // so "¥40/unit (12%)" reads as 12, not 40 (¥ / CNY is a supported currency).
-  const re = /(?:^|[^£$€¥\d.])(-?\d+(?:\.\d+)?)/g;
+  // First number NOT immediately preceded by a currency symbol (£/$/€/¥),
+  // digit, dot, or comma — so "¥40/unit (12%)" reads as 12, not 40, and the
+  // tail of a thousands-grouped amount ("€82,920; 4-8%") reads as 4, not 920.
+  const re = /(?:^|[^£$€¥\d.,])(-?\d+(?:\.\d+)?)/g;
   const m = re.exec(s);
   return m ? parseFloat(m[1]) : null;
 }

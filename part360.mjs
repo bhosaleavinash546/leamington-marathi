@@ -181,6 +181,9 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
       fromEur: round2(fromEur), toEur: round2(toEur),
       deltaEur: round2(fromEur - toEur),
       basis, skipped: !!opts.skipped, reason: opts.reason ?? null,
+      // Carbon rides only where a step actually MEASURED it (the process
+      // switch, via compareRoutes) — absent elsewhere, never zero-filled.
+      ...(Number.isFinite(opts.co2DeltaKg) ? { co2DeltaKg: opts.co2DeltaKg, co2Basis: opts.co2Basis ?? null } : {}),
     });
   };
 
@@ -246,6 +249,8 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
         Number.isFinite(r.score) && r.score >= W3_MIN_DFM_SCORE
         && Number.isFinite(r.coveragePct) && r.coveragePct >= W3_MIN_COVERAGE_PCT);
       const belowFloor = candidates.length - viable.length;
+      // The chosen route's own carbon, for the delta a process switch buys.
+      const chosenCo2 = (cmp.routes || []).find(r => r.isChosen)?.kgCo2e ?? null;
       let bestAlt = null;
       for (const r of viable) {
         try {
@@ -253,12 +258,17 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
             { material, process: r.process, weightKg, annualVolume, region, toleranceClass: 'standard', surfaceFinish: 'standard', criticalCharacteristics: 0 },
             library, calibration,
           );
-          if (!bestAlt || c.totalEur < bestAlt.totalEur) bestAlt = { process: r.process, totalEur: c.totalEur, toolingEur: r.toolingEur, dfmScore: r.score, coveragePct: r.coveragePct };
+          if (!bestAlt || c.totalEur < bestAlt.totalEur) bestAlt = { process: r.process, totalEur: c.totalEur, toolingEur: r.toolingEur, dfmScore: r.score, coveragePct: r.coveragePct, kgCo2e: r.kgCo2e ?? null };
         } catch { /* a route the engine refuses at this spec is not an option */ }
       }
       if (bestAlt && bestAlt.totalEur < cursor) {
+        const co2Known = Number.isFinite(chosenCo2) && Number.isFinite(bestAlt.kgCo2e);
         push('Process premium', cursor, bestAlt.totalEur,
-          `Best DFM-viable net-shape alternative: ${bestAlt.process} (DFM score ${bestAlt.dfmScore ?? '—'} at ${bestAlt.coveragePct ?? '—'}% rule coverage; tooling €${round2(bestAlt.toolingEur) ?? '—'} up-front). A process change is a programme decision — the routes section carries the full comparison including tooling cheques.`);
+          `Best DFM-viable net-shape alternative: ${bestAlt.process} (DFM score ${bestAlt.dfmScore ?? '—'} at ${bestAlt.coveragePct ?? '—'}% rule coverage; tooling €${round2(bestAlt.toolingEur) ?? '—'} up-front). A process change is a programme decision — the routes section carries the full comparison including tooling cheques.`,
+          co2Known ? {
+            co2DeltaKg: Number((bestAlt.kgCo2e - chosenCo2).toFixed(3)),
+            co2Basis: `computeCarbon on both routes' engine input mass: ${bestAlt.process} ${bestAlt.kgCo2e} vs current ${chosenCo2} kg CO2e/part (cradle-to-gate material + process energy; not a full LCA).`,
+          } : {});
         cursor = bestAlt.totalEur;
         bestProcess = bestAlt.process;
       } else {
@@ -372,6 +382,9 @@ export function buildDossier({
 
   add('forensics', 'Quote forensics (line vs engine bucket)', forensics ? [
     ...(forensics.rows ?? []).map(r => `${r.verdict.toUpperCase()}: ${r.kind} "${r.label}" ${fmtEur(r.quoteEur)} vs engine ${fmtEur(r.engineEur)} — ${r.basis}`),
+    // The caller's OWN prior quotes for this material+process — their corpus,
+    // never a market claim (the route computes and labels these).
+    ...((forensics.history ?? []).map(h => `YOUR HISTORY: ${h}`)),
     forensics.caveat ?? null,
   ] : 'Forensics needs a confirmed quote breakdown.');
 
@@ -383,7 +396,7 @@ export function buildDossier({
         ref: s.id,
         text: s.skipped
           ? `${s.name}: SKIPPED — ${s.reason}`
-          : `${s.name}: ${fmtEur(s.fromEur)} → ${fmtEur(s.toEur)} (${s.deltaEur >= 0 ? 'releases' : 'adds'} ${fmtEur(Math.abs(s.deltaEur))}) — ${s.basis}`,
+          : `${s.name}: ${fmtEur(s.fromEur)} → ${fmtEur(s.toEur)} (${s.deltaEur >= 0 ? 'releases' : 'adds'} ${fmtEur(Math.abs(s.deltaEur))})${Number.isFinite(s.co2DeltaKg) ? ` [CO2e ${s.co2DeltaKg >= 0 ? '+' : ''}${s.co2DeltaKg} kg/part — ${s.co2Basis}]` : ''} — ${s.basis}`,
       })).concat([{ ref: `W${waterfall.steps.length + 1}`, text: `ENTITLEMENT ${fmtEur(waterfall.entitlementEur)}${waterfall.quoteEur != null ? ` vs quote ${fmtEur(waterfall.quoteEur)} — total addressable ${fmtEur(waterfall.totalGapEur)}` : ''}. ${waterfall.caution}` }]),
     });
   } else {

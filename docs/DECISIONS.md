@@ -2892,3 +2892,13 @@ fragmentation the audit called out).
   * Whether dossier grounding actually beats ungrounded generation is a
     MEASURABLE claim (corpusNoveltyRate + citation rate vs the eval noise
     floor) and deliberately not asserted here.
+
+### 52a. Rename: Part 360 → Prism (2026-08-19)
+
+The feature shipped for one day as "Part 360"; the user asked for a name with
+a story. **Prism** is that name because it is literal: the entitlement
+waterfall splits one quote into named premiums exactly the way a prism splits
+one beam into bands. UI surfaces, exports and docs say Prism; `/part-360`
+redirects to `/prism`. The BACKEND names stay (`part360.mjs`,
+`/api/part360/*`, the `part-360` tool id): API stability outranks cosmetic
+consistency, and the tests that pin those seams keep their meaning.

@@ -8,8 +8,9 @@ import {
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
   MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2, ClipboardList, X,
-  Square, Store, Layers, Gauge, ThumbsUp, Orbit, FileSearch
+  Square, Store, Layers, Gauge, ThumbsUp, FileSearch
 } from 'lucide-react';
+import PrismIcon from '../components/icons/PrismIcon';
 import TypingDots from '../components/ui/TypingDots';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource, IdeaAnnotation, AnnotationStatus, ChatMessage } from '../types';
@@ -389,15 +390,15 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                 )}
                 {idea.lensId && (
                   <div
-                    title={`Part 360: generated through the "${idea.lensId}" evidence lens`}
+                    title={`Prism: generated through the "${idea.lensId}" evidence lens`}
                     className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-teal-500/10 text-teal-400 border-teal-500/25"
                   >
-                    <Orbit size={10} /> {idea.lensId}
+                    <PrismIcon size={10} /> {idea.lensId}
                   </div>
                 )}
                 {Array.isArray(idea.evidenceRefs) && idea.evidenceRefs.length > 0 && (
                   <div
-                    title={`Cites measured evidence lines from the Part 360 dossier: ${idea.evidenceRefs.join(', ')} (E = engine measurement, W = waterfall step)`}
+                    title={`Cites measured evidence lines from the Prism dossier: ${idea.evidenceRefs.join(', ')} (E = engine measurement, W = waterfall step)`}
                     className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-teal-500/10 text-teal-300 border-teal-500/25"
                   >
                     <FileSearch size={10} /> {idea.evidenceRefs.slice(0, 4).join(' ')}{idea.evidenceRefs.length > 4 ? ` +${idea.evidenceRefs.length - 4}` : ''}
@@ -1202,7 +1203,12 @@ export default function ResultsPage() {
             }
             return updated;
           });
-        }
+        },
+        // Prism runs leave their measured dossier in the session so the chat
+        // answers waterfall/forensics questions from evidence, not memory.
+        // Guarded on the run's own stamp — a later non-Prism analysis in the
+        // same tab must not inherit a stale part's dossier.
+        (systemName === 'Prism' && sessionStorage.getItem('prismDossier')) || undefined
       );
     } catch (err) {
       setChatMessages(prev => {

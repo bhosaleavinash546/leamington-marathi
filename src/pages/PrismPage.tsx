@@ -1,4 +1,4 @@
-// Part 360 — one part interrogated from every angle, then ideas that close
+// Prism — one part in, the whole cost truth out: ideas that close
 // MEASURED gaps. Staged wizard: (1) part + files, (2) engine measurement,
 // (3) supplier quote + forensics, (4) evidence dossier → multi-lens grounded
 // generation through the standard /api/analyze pipeline → ResultsPage.
@@ -16,10 +16,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Orbit, Upload, FileText, Layers, ChevronRight, ChevronLeft,
+  Upload, FileText, Layers, ChevronRight, ChevronLeft,
   Loader2, CheckCircle2, AlertTriangle, Plus, Trash2, FileSearch, Sparkles,
   ShieldCheck, Gauge, Box, Ruler, Scale,
 } from 'lucide-react';
+import PrismIcon from '../components/icons/PrismIcon';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '../hooks/useToast';
 import { generateCostReductionIdeas, saveFullResult, ProgressEvent } from '../services/claude-service';
@@ -42,6 +43,8 @@ interface QuoteLine { label: string; kind: QuoteKind; amount: string; note?: str
 interface WaterfallStep {
   id: string; name: string; fromEur: number; toEur: number; deltaEur: number;
   basis: string; skipped?: boolean; reason?: string;
+  /** Present only when the step MEASURED a carbon change (process switch). */
+  co2DeltaKg?: number; co2Basis?: string | null;
 }
 interface Waterfall {
   steps: WaterfallStep[]; entitlementEur: number; quoteEur: number | null;
@@ -213,6 +216,11 @@ export default function Part360Page() {
   const typedMass = Number(weightKg);
   const massDiverges = cadMassKg != null && typedMass > 0
     && Math.abs(typedMass - cadMassKg) / cadMassKg > 0.25;
+  // Closed-solid heuristic: a hollow part (tank, housing) exported as a solid
+  // measures the ENCLOSED volume, not the shell — a live 31 MB fuel tank
+  // "measured" 83 kg this way. When the offer dwarfs the typed mass, the
+  // offer itself is suspect and says so; it never overwrites anything.
+  const massLooksSolid = cadMassKg != null && typedMass > 0 && cadMassKg > typedMass * 5;
 
   // ── Step 2: run every measurement the inputs allow ────────────────────────
   async function runMeasurements() {
@@ -395,9 +403,12 @@ export default function Part360Page() {
             bbox: bb ? `${bb.xMm}×${bb.yMm}×${bb.zMm} mm` : undefined,
             solidity: typeof g.fillRatio === 'number' ? g.fillRatio : undefined,
             charThicknessMm: g.wallThickness?.characteristicMm,
-            featureNote: Array.isArray(g.featureTable) && g.featureTable.length
-              ? g.featureTable.slice(0, 6).map((f: any) => `${f.count ?? 1}× ${f.kind}${f.diaMm ? ` ⌀${f.diaMm}` : ''}`).join(', ')
-              : undefined,
+            featureNote: [
+              Array.isArray(g.featureTable) && g.featureTable.length
+                ? g.featureTable.slice(0, 6).map((f: any) => `${f.count ?? 1}× ${f.kind}${f.diaMm ? ` ⌀${f.diaMm}` : ''}`).join(', ')
+                : null,
+              massLooksSolid ? 'CAUTION: model appears to be a closed solid — measured volume/mass unreliable for a hollow part' : null,
+            ].filter(Boolean).join('; ') || undefined,
           };
         })() : undefined,
         dfmSummary: best?.impact ? {
@@ -437,11 +448,11 @@ export default function Part360Page() {
         annualVolume: Number(annualVolume),
         plantRegion: REGION_TO_PLANT[region] ?? 'germany',
         currency: 'EUR',
-        additionalContext: `Part 360 review of "${partName || 'the part'}" (${material}, ${processName}, ${weightKg} kg, ${Number(annualVolume).toLocaleString()}/yr, ${region}).`,
+        additionalContext: `Prism review of "${partName || 'the part'}" (${material}, ${processName}, ${weightKg} kg, ${Number(annualVolume).toLocaleString()}/yr, ${region}).`,
         deepMode,
         apiKey,
       };
-      const sysName = 'Part 360';
+      const sysName = 'Prism';
       const subName = material;
       const { ideas, sources, resultId } = await generateCostReductionIdeas(
         config, sysName, subName, partName || 'Part', false, undefined,
@@ -464,6 +475,9 @@ export default function Part360Page() {
       sessionStorage.setItem('analysisResult', JSON.stringify(result));
       sessionStorage.setItem('analysisSystemName', sysName);
       sessionStorage.setItem('analysisSubName', subName);
+      // The measured dossier rides along so the Results chat can answer
+      // waterfall/forensics questions from evidence (negotiation briefing).
+      try { sessionStorage.setItem('prismDossier', dossier.promptBlock); } catch { /* quota — chat just loses grounding */ }
       saveFullResult(resultId, result, sysName, subName);
       navigate('/results');
     } catch (e) {
@@ -507,29 +521,33 @@ export default function Part360Page() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <motion.div variants={m.rise} className="flex items-start gap-4 min-w-0">
               <div className="relative shrink-0 w-14 h-14">
-                {/* The orbit: one satellite tracing the review's path around the
-                    part. Decorative, slow, and absent under reduced motion. */}
+                {/* The refraction: three bands sweep out of the mark once on
+                    arrival — the waterfall's story in half a second. Absent
+                    under reduced motion. */}
                 {!m.reduced && (
-                  <motion.span
-                    aria-hidden="true"
-                    className="absolute inset-[-5px]"
-                    animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 16, ease: 'linear' }}
-                  >
-                    <span className="absolute top-0 left-1/2 -ml-[2.5px] w-[5px] h-[5px] rounded-full bg-teal-300 shadow-[0_0_8px_2px_rgb(45_212_191/0.5)]" />
-                  </motion.span>
+                  <span aria-hidden="true" className="absolute inset-y-2 left-[58%] right-[-22px] overflow-visible">
+                    {[{ c: 'bg-gold-400/70', r: '-14deg', d: 0.15 }, { c: 'bg-teal-300/70', r: '0deg', d: 0.25 }, { c: 'bg-teal-500/60', r: '14deg', d: 0.35 }].map((b, bi) => (
+                      <motion.span
+                        key={bi}
+                        className={`absolute top-1/2 left-0 h-[2px] w-7 origin-left rounded-full ${b.c}`}
+                        style={{ rotate: b.r }}
+                        initial={{ scaleX: 0, opacity: 0 }}
+                        animate={{ scaleX: 1, opacity: [0, 1, 0.55] }}
+                        transition={{ duration: 0.7, delay: b.d, ease: [0.22, 1, 0.36, 1] }}
+                      />
+                    ))}
+                  </span>
                 )}
-                <span aria-hidden="true" className="absolute inset-[-5px] rounded-full border border-teal-500/20" />
                 <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-500/15 border border-teal-500/25">
-                  <Orbit size={28} className="text-teal-400" />
+                  <PrismIcon size={28} className="text-teal-400" />
                 </div>
               </div>
               <div className="min-w-0">
-                <h1 className="dfm-display text-3xl sm:text-4xl">Part 360</h1>
+                <h1 className="dfm-display text-3xl sm:text-4xl">Prism</h1>
                 <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-                  3D model + 2D drawing + supplier quote → every engine measures the part →
-                  an <span className="text-teal-300">entitlement waterfall</span> and line-by-line quote
-                  forensics → ideas that must cite the measured evidence.
+                  One part in, the whole cost truth out — every engine measures it, an{' '}
+                  <span className="text-teal-300">entitlement waterfall</span> splits the quote into
+                  named premiums, and every idea must cite the measured evidence.
                 </p>
               </div>
             </motion.div>
@@ -741,7 +759,11 @@ export default function Part360Page() {
                       Geometry-derived mass for <span className="text-white font-medium">{material}</span>:{' '}
                       <span className="text-white font-semibold dfm-num">{cadMassKg.toFixed(3)} kg</span>
                       <span className="text-slate-500"> (measured volume × catalogue density)</span>
-                      {massDiverges && (
+                      {massLooksSolid ? (
+                        <span className="block text-amber-400 mt-0.5">
+                          This is {'>'}5× your entered mass — the model is likely a CLOSED SOLID (enclosed volume, not shell material), so the measured figure is unreliable for a hollow part. Keep your own mass unless you know the model is truly solid.
+                        </span>
+                      ) : massDiverges && (
                         <span className="block text-amber-400 mt-0.5">
                           Your entered mass ({typedMass} kg) differs by more than 25% — a wrong mass skews every engine figure downstream.
                         </span>
@@ -925,6 +947,14 @@ export default function Part360Page() {
                       <div className={`dfm-num text-xs font-semibold text-right ${s.skipped ? 'text-slate-600' : s.deltaEur > 0 ? 'text-gold-400' : 'text-slate-400'}`}>
                         {s.skipped ? '—' : <>
                           {Math.abs(s.deltaEur) < 0.005 ? '' : s.deltaEur < 0 ? '+' : '−'}<TickNumber value={Math.abs(s.deltaEur)} decimals={2} prefix="€" delay={m.beat(i + 1)} />
+                          {Number.isFinite(s.co2DeltaKg) && (
+                            <span
+                              title={s.co2Basis ?? undefined}
+                              className={`block mt-0.5 text-[10px] font-medium ${(s.co2DeltaKg as number) <= 0 ? 'text-emerald-400/90' : 'text-amber-400/90'}`}
+                            >
+                              {(s.co2DeltaKg as number) > 0 ? '+' : ''}{s.co2DeltaKg} kgCO₂e
+                            </span>
+                          )}
                         </>}
                       </div>
                     </div>

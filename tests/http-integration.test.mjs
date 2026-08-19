@@ -116,6 +116,28 @@ describe('http integration', () => {
     assert.ok(buf.length > 3000);
   });
 
+  it('dossier forensics carries the caller\'s own quote history once a corpus exists', async () => {
+    const qbody = { partName: 'Hist Bracket', material: 'Steel (mild)', process: 'Stamping / Deep Drawing', weightKg: 1.2, annualVolume: 100000, region: 'Germany', currency: 'EUR' };
+    for (const price of [4.2, 4.9]) {
+      const r = await fetch(`${BASE}/api/should-cost/quotes`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ ...qbody, actualPrice: price, breakdown: [{ label: 'coil', kind: 'material', amount: price * 0.4 }, { label: 'press', kind: 'conversion', amount: price * 0.45 }] }),
+      });
+      assert.equal(r.status, 200, JSON.stringify(await r.json().catch(() => ({}))));
+    }
+    const d = await fetch(`${BASE}/api/part360/dossier`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ ...qbody, quote: { total: 5.5, currency: 'EUR', lines: [{ label: 'coil', kind: 'material', amount: 2.1 }] } }),
+    });
+    assert.equal(d.status, 200);
+    const doss = await d.json();
+    const forensicsSec = doss.dossier.sections.find(s2 => s2.id === 'forensics');
+    const text = forensicsSec.lines.map(l => l.text).join('\n');
+    assert.match(text, /YOUR HISTORY: your last 2 quotes .* ranged €4\.20–€4\.90/);
+    assert.match(text, /your own corpus, various parts\/volumes — context, not a benchmark/);
+    assert.match(text, /prior "material" lines ran/);
+  });
+
   it('negotiation pack with part360 data gains waterfall + forensics slides', async () => {
     const base = { partName: 'IT Bracket', material: 'Steel (mild)', process: 'Stamping / Deep Drawing', weightKg: 1.2, annualVolume: 100000, region: 'Germany', currency: 'EUR', format: 'pptx' };
     const plain = await fetch(`${BASE}/api/should-cost/export`, {

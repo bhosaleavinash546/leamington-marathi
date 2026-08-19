@@ -47,6 +47,14 @@ describe('entitlement waterfall discipline', () => {
   });
 });
 
+describe('waterfall carbon honesty', () => {
+  it('a step carries CO2 only when both routes were actually carbon-scored', () => {
+    assert.match(part360, /Number\.isFinite\(opts\.co2DeltaKg\) \? \{ co2DeltaKg/);
+    assert.match(part360, /const co2Known = Number\.isFinite\(chosenCo2\) && Number\.isFinite\(bestAlt\.kgCo2e\)/);
+    assert.match(part360, /not a full LCA/);
+  });
+});
+
 describe('/api/analyze grounded-mode wiring', () => {
   it('sanitises partEvidence exactly once — in the analyze handler, not elsewhere', () => {
     const hits = server.match(/let partEvidence = null;/g) || [];

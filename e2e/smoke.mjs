@@ -66,7 +66,7 @@ try {
   // `/innovate` joins the gate with the Innovation Studio's motion pass: the page
   // gained an ambient field, a cursor-tracked spotlight, an SVG divergence
   // diagram and a live region, and every one of those is a way to fail axe.
-  const PAGES = ['/', '/marketplace', '/analyze', '/should-cost', '/dfm-studio', '/innovate', '/part-360', '/legal/privacy'];
+  const PAGES = ['/', '/marketplace', '/analyze', '/should-cost', '/dfm-studio', '/innovate', '/prism', '/legal/privacy'];
   let axeFailures = 0;
 
   for (const route of PAGES) {

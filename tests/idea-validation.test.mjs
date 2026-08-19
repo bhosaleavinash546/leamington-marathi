@@ -27,6 +27,13 @@ test('parsePercent extracts leading number', () => {
   assert.equal(parsePercent('n/a'), null);
 });
 
+test('parsePercent does not read a percentage out of a thousands separator', () => {
+  // Live-run false flag: this exact string from a real knuckle idea was read
+  // as 920% (the tail of "82,920") and tripped the implausibility band.
+  assert.equal(parsePercent('tooling avoidance €82,920; 4-8% on bridge/launch volumes'), 4);
+  assert.equal(parsePercent('€1,250/part is 12% of spend'), 12);
+});
+
 test('a well-formed idea passes with no flags and high quality', () => {
   const v = validateIdea(goodIdea);
   assert.ok(v);

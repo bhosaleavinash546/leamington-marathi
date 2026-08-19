@@ -161,7 +161,9 @@ export async function sendChatMessage(
   history: ChatHistory,
   message: string,
   apiKey: string,
-  onChunk: (text: string) => void
+  onChunk: (text: string) => void,
+  /** Prism: measured dossier text so the Q&A answers from engine evidence. */
+  dossierContext?: string
 ): Promise<string> {
   const token = getAuthToken();
   const headers: Record<string, string> = {
@@ -173,7 +175,7 @@ export async function sendChatMessage(
   const response = await fetch('/api/chat', {
     method: 'POST',
     headers,
-    body: JSON.stringify({ apiKey, ideas, config, systemName, subassemblyName, history, message }),
+    body: JSON.stringify({ apiKey, ideas, config, systemName, subassemblyName, history, message, ...(dossierContext ? { dossierContext } : {}) }),
   });
 
   if (!response.ok) {

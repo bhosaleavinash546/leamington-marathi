@@ -114,9 +114,9 @@ export interface CostReductionIdea {
   mergedTitles?: string[];
   /** Server-computed explainable value ranking (annual value × payback × quality × engine check × evidence × taste). */
   rank?: { score: number; basis: string };
-  /** Part 360: [E#]/[W#] dossier evidence lines this idea cites (validator-filtered). */
+  /** Prism: [E#]/[W#] dossier evidence lines this idea cites (validator-filtered). */
   evidenceRefs?: string[];
-  /** Part 360: which evidence lens generated this idea (vave/process/material/spec/commercial/benchmark). */
+  /** Prism: which evidence lens generated this idea (vave/process/material/spec/commercial/benchmark). */
   lensId?: string;
   /** Deep-mode persona critiques (manufacturing / commercial / quality). */
   critiques?: { persona: string; personaName: string; verdict: 'strengthen' | 'challenge'; critique: string }[];

@@ -64,7 +64,40 @@ const QUOTE_SCHEMA = {
 };
 
 export function registerPart360Routes(app, deps) {
-  const { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, sanitize, shouldCostApi } = deps;
+  const { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, sanitize, shouldCostApi, db } = deps;
+
+  // The caller's OWN quote corpus, summarised per bucket for this
+  // material+process. Their data, labelled as such — never a market claim.
+  // Optional dep: without a db the dossier simply carries no history lines.
+  function quoteHistoryLines(userId, materialKey, processKey) {
+    if (!db) return [];
+    try {
+      const rows = db.prepare(
+        `SELECT actualPriceEur, breakdown, createdAt FROM cost_quotes
+         WHERE userId = ? AND material = ? AND process = ? ORDER BY createdAt DESC LIMIT 10`,
+      ).all(userId, materialKey, processKey);
+      if (!rows.length) return [];
+      const totals = rows.map(r => Number(r.actualPriceEur)).filter(Number.isFinite);
+      const lines = [];
+      if (totals.length >= 2) {
+        lines.push(`your last ${totals.length} quotes for ${materialKey} via ${processKey} ranged €${Math.min(...totals).toFixed(2)}–€${Math.max(...totals).toFixed(2)}/part (your own corpus, various parts/volumes — context, not a benchmark)`);
+      }
+      const byKind = new Map();
+      for (const r of rows) {
+        let bd; try { bd = JSON.parse(r.breakdown || 'null'); } catch { bd = null; }
+        for (const l of Array.isArray(bd) ? bd : []) {
+          if (!Number.isFinite(Number(l.amountEur))) continue;
+          if (!byKind.has(l.kind)) byKind.set(l.kind, []);
+          byKind.get(l.kind).push(Number(l.amountEur));
+        }
+      }
+      for (const [kind, vals] of byKind) {
+        if (vals.length < 2) continue;
+        lines.push(`your ${vals.length} prior "${kind}" lines ran €${Math.min(...vals).toFixed(2)}–€${Math.max(...vals).toFixed(2)}`);
+      }
+      return lines.slice(0, 5);
+    } catch { return []; }
+  }
 
   // ── Quote extraction: prefill only, never consumed unconfirmed ─────────────
   app.post('/api/part360/quote-extract', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
@@ -230,6 +263,11 @@ Rules:
       } catch { /* stays null */ }
 
       const forensics = quote?.lines?.length ? quoteForensics(quote.lines, asSpec, { annualVolume }) : null;
+      if (forensics) {
+        const matKey = resolveMaterial(material, library.MATERIALS)?.key;
+        const procKey = resolveRoute(processName, library.PROCESSES)?.keys?.[0];
+        forensics.history = matKey && procKey ? quoteHistoryLines(req.user.id, matKey, procKey) : [];
+      }
       const gap = quote ? allocateGap(quote.totalEur, asSpec) : null;
 
       // Client-supplied DFM subset, sanitized and size-capped (the dfmaFindings

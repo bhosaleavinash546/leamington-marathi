@@ -512,7 +512,7 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
         const wf = p360.waterfall;
         const s4 = pptx.addSlide();
         s4.background = { color: NAVY };
-        s4.addText('Cost Entitlement Waterfall', { x: 0.6, y: 0.4, w: 12, h: 0.6, fontSize: 22, bold: true, color: 'FFFFFF' });
+        s4.addText('Prism — Cost Entitlement Waterfall', { x: 0.6, y: 0.4, w: 12, h: 0.6, fontSize: 22, bold: true, color: 'FFFFFF' });
         const hdr = (t) => ({ text: t, options: { bold: true, color: 'FFFFFF' } });
         const cell = (t, c = 'DDE3EA') => ({ text: String(t), options: { color: c } });
         const rows4 = [[hdr('Step'), hdr('Premium'), hdr(`From (${currency})`), hdr(`To (${currency})`), hdr(`Delta (${currency})`), hdr('Basis')]];
@@ -538,7 +538,7 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
         const f = p360.forensics;
         const s5 = pptx.addSlide();
         s5.background = { color: NAVY };
-        s5.addText('Quote Forensics — line by line vs the engine', { x: 0.6, y: 0.4, w: 12, h: 0.6, fontSize: 22, bold: true, color: 'FFFFFF' });
+        s5.addText('Prism — Quote Forensics, line by line vs the engine', { x: 0.6, y: 0.4, w: 12, h: 0.6, fontSize: 22, bold: true, color: 'FFFFFF' });
         const hdr = (t) => ({ text: t, options: { bold: true, color: 'FFFFFF' } });
         const cell = (t, c = 'DDE3EA') => ({ text: String(t), options: { color: c } });
         const VERDICT_COLOR = { 'above-model': GOLD, 'below-model': '7DD3A8', 'in-band': 'DDE3EA', unmapped: SLATE };

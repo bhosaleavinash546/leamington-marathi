@@ -6,8 +6,9 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Zap, Lightbulb, Target, Sparkles, GitCompare, Calculator, Box, CircuitBoard,
   Layers, GitMerge, ClipboardList, Store, TrendingUp, HelpCircle, Link2, Database,
-  Telescope, ShieldCheck, Cable, KeyRound, Users, Orbit,
+  Telescope, ShieldCheck, Cable, KeyRound, Users,
 } from 'lucide-react';
+import PrismIcon from '../components/icons/PrismIcon';
 
 export type ToolCategory = 'generate' | 'cost' | 'track' | 'learn';
 
@@ -27,7 +28,7 @@ export const TOOLS: Tool[] = [
   { id: 'triz',        label: 'TRIZ Studio',       route: '/triz',         icon: Target,       category: 'generate', description: 'Resolve trade-offs with inventive principles' },
   { id: 'idea-studio', label: 'Idea Studio',       route: '/idea-studio',  icon: Sparkles,     category: 'generate', description: 'Ideas from a part photo or CAD file' },
   { id: 'cad-diff',    label: 'CAD Diff',          route: '/cad-diff',     icon: GitCompare,   category: 'generate', description: 'Cost ideas from design revisions' },
-  { id: 'part-360',    label: 'Part 360',          route: '/part-360',     icon: Orbit,        category: 'generate', description: 'CAD + drawing + quote → engine dossier → grounded ideas' },
+  { id: 'part-360',    label: 'Prism',             route: '/prism',        icon: PrismIcon,    category: 'generate', description: 'One part in, the whole cost truth out — entitlement waterfall, quote forensics, grounded ideas' },
   // ── Cost & analyze ──────────────────────────────────────────────────────
   { id: 'should-cost', label: 'Should-Cost',       route: '/should-cost',  icon: Calculator,   category: 'cost', description: 'Deterministic bottom-up piece price' },
   { id: 'cad-to-cost', label: 'CAD → Cost',        route: '/cad-to-cost',  icon: Box,          category: 'cost', description: 'Geometry-driven cost from a CAD file' },
