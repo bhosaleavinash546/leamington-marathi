@@ -203,6 +203,33 @@ describe('dossier', () => {
     assert.match(block, /not available:/);
   });
 
+  it('a stated part context becomes citable requirement lines in EVERY lens', () => {
+    const d = buildDossier({
+      part: { partName: 'Knuckle', ...BASE },
+      partContext: 'Connects wheel hub to suspension. Carries braking and cornering loads; safety-critical. Operating range -40 to 120 C.',
+    });
+    const ctx = d.sections.find(s => s.id === 'context');
+    assert.equal(ctx.present, true);
+    assert.ok(ctx.lines.length >= 3, 'sentences split into separately citable lines');
+    assert.ok(ctx.lines.every(l => /^E\d+$/.test(l.ref)));
+    // Every lens keeps the context in view — an alternative is judged against it.
+    for (const l of LENSES) assert.ok(l.sections.includes('context'), `${l.id} lens drops the stated function`);
+    const block = dossierToPromptBlock(d, 'material');
+    assert.match(block, /judged against|justified against/i);
+    assert.match(block, /DEFECT, not an idea/);
+    assert.match(block, /safety-critical/);
+  });
+
+  it('without a context, the dossier says function-fit is unverifiable — never silent', () => {
+    const d = buildDossier({ part: { partName: 'x', ...BASE } });
+    const ctx = d.sections.find(s => s.id === 'context');
+    assert.equal(ctx.present, false);
+    assert.match(ctx.reason, /has not stated what this part does/);
+    const block = dossierToPromptBlock(d);
+    assert.match(block, /No part function was stated/);
+    assert.match(block, /function-fit is unverified/);
+  });
+
   it('a lens slices the dossier but always keeps the waterfall', () => {
     const d = full();
     const spec = dossierToPromptBlock(d, 'spec');

@@ -126,6 +126,7 @@ Rules:
         maxTokens: 4000,
         toolName: 'emit_quote',
         toolDescription: 'Emit the supplier quote breakdown exactly as printed.',
+        schema: QUOTE_SCHEMA,
         messages: [{
           role: 'user',
           content: [
@@ -295,6 +296,12 @@ Rules:
 
       const dossier = buildDossier({
         part: { partName, material, process: processName, weightKg, annualVolume, region },
+        // The user's own statement of what the part is and does — the
+        // requirement every alternative is judged against. User text entering
+        // a prompt: sanitized and capped like everything else on that path.
+        partContext: typeof b.partContext === 'string' && b.partContext.trim()
+          ? sanitize(String(b.partContext), 1500)
+          : null,
         geometry,
         dfm,
         shouldCost: {

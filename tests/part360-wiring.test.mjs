@@ -47,6 +47,17 @@ describe('entitlement waterfall discipline', () => {
   });
 });
 
+describe('quote extraction contract', () => {
+  it('the vision call actually carries its schema', () => {
+    // Found live, pre-demo: QUOTE_SCHEMA was defined but never passed, so the
+    // API rejected every real extraction with "input_schema: Field required".
+    // No offline test can execute this call; the source pin stands guard.
+    const routes = readFileSync(new URL('../routes/part360.mjs', import.meta.url), 'utf8');
+    const call = routes.slice(routes.indexOf("toolName: 'emit_quote'"), routes.indexOf("toolName: 'emit_quote'") + 400);
+    assert.match(call, /schema: QUOTE_SCHEMA,/);
+  });
+});
+
 describe('waterfall carbon honesty', () => {
   it('a step carries CO2 only when both routes were actually carbon-scored', () => {
     assert.match(part360, /Number\.isFinite\(opts\.co2DeltaKg\) \? \{ co2DeltaKg/);

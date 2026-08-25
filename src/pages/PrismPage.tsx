@@ -151,6 +151,7 @@ export default function Part360Page() {
   // ── Step 1: part + files ───────────────────────────────────────────────────
   const [catalogue, setCatalogue] = useState<{ materials: string[]; processes: string[] } | null>(null);
   const [partName, setPartName] = useState('');
+  const [partContext, setPartContext] = useState('');
   const [material, setMaterial] = useState('');
   const [processName, setProcessName] = useState('');
   const [region, setRegion] = useState('Germany');
@@ -385,6 +386,7 @@ export default function Part360Page() {
       const body = {
         partName, material, process: processName, weightKg: Number(weightKg),
         annualVolume: Number(annualVolume), region,
+        partContext: partContext.trim() || undefined,
         drawing: (Number(tightestTolMm) > 0 || Number(roughnessRaUm) > 0) ? {
           tightestToleranceMm: Number(tightestTolMm) > 0 ? Number(tightestTolMm) : undefined,
           roughnessRaUm: Number(roughnessRaUm) > 0 ? Number(roughnessRaUm) : undefined,
@@ -448,7 +450,7 @@ export default function Part360Page() {
         annualVolume: Number(annualVolume),
         plantRegion: REGION_TO_PLANT[region] ?? 'germany',
         currency: 'EUR',
-        additionalContext: `Prism review of "${partName || 'the part'}" (${material}, ${processName}, ${weightKg} kg, ${Number(annualVolume).toLocaleString()}/yr, ${region}).`,
+        additionalContext: `Prism review of "${partName || 'the part'}" (${material}, ${processName}, ${weightKg} kg, ${Number(annualVolume).toLocaleString()}/yr, ${region}).${partContext.trim() ? ` Part function as stated by the user: ${partContext.trim().slice(0, 500)}` : ''}`,
         deepMode,
         apiKey,
       };
@@ -608,6 +610,20 @@ export default function Part360Page() {
                         {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
                       </select>
                     </div>
+                  </div>
+                  <div>
+                    <label className="dfm-label text-slate-500 block mb-1.5">About this part — what it is & what it does <span className="normal-case tracking-normal text-teal-400/80">(strongly recommended)</span></label>
+                    <textarea
+                      className="dfm-input min-h-[74px] resize-y"
+                      aria-label="About this part: function, loads, environment"
+                      maxLength={1500}
+                      value={partContext}
+                      onChange={e => setPartContext(e.target.value)}
+                      placeholder="e.g. Steering knuckle RH — connects wheel hub and brake caliper to the suspension; carries braking and cornering loads; bolted to strut and lower ball joint; safety-critical; -40 to 120 °C."
+                    />
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      This becomes the stated REQUIREMENT every idea is judged against — alternatives the function rules out are treated as defects. Without it, ideas say their function-fit is unverified.
+                    </p>
                   </div>
                   <p className="text-[11px] text-slate-500 flex items-start gap-1.5 pt-1">
                     <Scale size={11} className="mt-0.5 shrink-0" />
