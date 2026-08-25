@@ -2199,7 +2199,7 @@ function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enab
   // and paired with a hard citation requirement — an idea grounded in nothing
   // is exactly the generic restatement this block exists to prevent.
   const evidenceBlock = partEvidenceText
-    ? `\n${partEvidenceText}\nEVERY idea must cite the [E#]/[W#] evidence lines that motivate it in its evidenceRefs field. An idea that cannot cite evidence should not be emitted.\n`
+    ? `\n${partEvidenceText}\nEVERY idea must cite the [E#]/[W#] evidence lines that motivate it in its evidenceRefs field. An idea that cannot cite evidence should not be emitted. Emit AT MOST 8 ideas: depth over count — each one fully developed, technically specific, and complete. Never start an idea you cannot finish within the response.\n`
     : '';
 
   return `Generate ALL expert-level cost reduction ideas available for:
@@ -3230,7 +3230,11 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       const lensRuns = partEvidence.blocks.map(async (block) => {
         const prompt = buildAnalysisPrompt(config, sysName, subName, prtName, false, cadGeometry, block.text) + retrievalCtx;
         const params = {
-          model: 'claude-opus-4-8', max_tokens: 16000,
+          // 24k like the ordinary path: context-grounded ideas run long, and a
+          // forced tool call that hits max_tokens loses EVERY idea in the
+          // block (truncated JSON is unrecoverable) — found live when both
+          // hood-bracket lenses came back stop_reason=max_tokens and empty.
+          model: 'claude-opus-4-8', max_tokens: 24000,
           system: cachedSystem(CHIEF_ENGINEER_PROMPT),
           messages: [{ role: 'user', content: prompt }],
           tools: [emitIdeasTool], tool_choice: { type: 'tool', name: 'emit_ideas' },
@@ -3249,6 +3253,11 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
         }
         const blk = response.content.find(b => b.type === 'tool_use' && b.name === 'emit_ideas');
         const ideas = Array.isArray(blk?.input?.ideas) ? blk.input.ideas : [];
+        if (!ideas.length) {
+          // A successful call with no ideas is the undiagnosable case — say
+          // exactly what came back (block types + stop reason, never content).
+          console.warn(`[Prism] Lens "${block.lensId}" returned no ideas: stop_reason=${response.stop_reason}, blocks=[${response.content.map(b => b.type).join(',')}], inputKeys=${blk ? Object.keys(blk.input || {}).join('|') : 'no-tool-block'}`);
+        }
         emit({ type: 'progress', message: `Lens "${block.lensId}": ${ideas.length} candidate ideas.` });
         // Stamp the originating lens; validateIdea passes unknown fields through.
         return ideas.map(i => (i && typeof i === 'object' ? { ...i, lensId: block.lensId } : i));
