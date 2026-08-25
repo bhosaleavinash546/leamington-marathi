@@ -1085,7 +1085,10 @@ export default function ResultsPage() {
 
   const handlePdfExport = async () => {
     setExporting('pdf');
-    try { await Promise.resolve(exportToPdf(result, systemName, subName)); } finally { setExporting(null); }
+    // Prism runs append the evidence dossier as an appendix so every [E#]/[W#]
+    // citation in the ideas resolves inside the document itself.
+    const legend = systemName === 'Prism' ? sessionStorage.getItem('prismDossier') : null;
+    try { await Promise.resolve(exportToPdf(result, systemName, subName, legend)); } finally { setExporting(null); }
   };
 
   const handleRfqExport = () => {

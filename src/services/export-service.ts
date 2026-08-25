@@ -446,7 +446,7 @@ function fitText(doc: jsPDF, text: string, maxWidth: number): string {
 
 // ─── PDF Export ───────────────────────────────────────────────────────────────
 
-export function exportToPdf(result: AnalysisResult, systemName: string, subName: string): void {
+export function exportToPdf(result: AnalysisResult, systemName: string, subName: string, evidenceLegend?: string | null): void {
   // jsPDF's WinAnsi fonts garble any Unicode outside cp1252 (arrows etc. that
   // LLM text uses freely) — sanitize ALL report data once, up front.
   result = deepPdfSafe(result);
@@ -912,6 +912,54 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
     });
     ry += 4;
   });
+
+  // ── Appendix: the measured evidence dossier (Prism runs) ──────────────────
+  // Ideas cite [E#]/[W#] lines; a reader of the PDF must be able to RESOLVE
+  // them, or the citations are decoration. Renders only the evidence lines
+  // and section headers — the prompt preamble is for the model, not a reader.
+  if (evidenceLegend && evidenceLegend.trim()) {
+    const appendixPage = () => {
+      doc.addPage();
+      page++;
+      setFill(doc, [15, 23, 42]);
+      doc.rect(0, 0, PW, PH, 'F');
+      addPageNumber();
+    };
+    appendixPage();
+    let ey = 20;
+    setColor(doc, WHITE_RGB);
+    doc.setFontSize(15);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Appendix — Measured Evidence Dossier', ML, ey);
+    ey += 6;
+    setColor(doc, GRAY_RGB);
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Every [E#]/[W#] reference cited by the ideas resolves to one of these engine-computed lines.', ML, ey);
+    ey += 7;
+    const legendLines = pdfSafe(evidenceLegend).split('\n')
+      .map(l => l.trim())
+      .filter(l => l.startsWith('[E') || l.startsWith('[W') || l.startsWith('##') || l.startsWith('(not available:'));
+    for (const raw of legendLines) {
+      const isHeader = raw.startsWith('##');
+      const text = isHeader ? raw.replace(/^#+\s*/, '') : raw;
+      const wrapped = doc.splitTextToSize(text, CW - (isHeader ? 0 : 4)) as string[];
+      const need = wrapped.length * 3.6 + (isHeader ? 6 : 1.5);
+      if (ey + need > PH - 18) { appendixPage(); ey = 20; }
+      if (isHeader) {
+        ey += 3;
+        setColor(doc, GOLD_RGB);
+        doc.setFontSize(9.5);
+        doc.setFont('helvetica', 'bold');
+      } else {
+        setColor(doc, [203, 213, 225]);
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'normal');
+      }
+      doc.text(wrapped, ML + (isHeader ? 0 : 4), ey);
+      ey += wrapped.length * 3.6 + (isHeader ? 3 : 1.5);
+    }
+  }
 
   setColor(doc, GRAY_RGB);
   doc.setFontSize(8);
