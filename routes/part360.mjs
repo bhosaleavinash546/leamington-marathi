@@ -28,10 +28,19 @@ import { getFxRates, FX_FALLBACK, FX_CURRENCIES } from '../fx-rates.mjs';
 import { volumeSensitivity, REGIONS } from '../costing-engine.mjs';
 import { resolveMaterial, resolveRoute } from '../material-process-resolve.mjs';
 import { specRelaxationDeltas } from '../innovation.mjs';
+import crypto from 'crypto';
+import multer from 'multer';
 import {
   entitlementWaterfall, quoteForensics, buildDossier, dossierToPromptBlock,
-  inferSpecFromDrawing, allocateGap, LENSES,
+  inferSpecFromDrawing, allocateGap, LENSES, cadMassKg,
 } from '../part360.mjs';
+import { geoSignature, rankSimilarRuns, rankTeardowns } from '../prism-memory.mjs';
+import { familyOfMaterial, familyForSelection } from '../dfm-process-registry.mjs';
+import { analyzeGeometry } from '../cad-engine/cad-geometry-bridge.mjs';
+
+// Zero-touch batch: bounded so one request cannot pin the OCCT workers all day.
+const batchUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 12 } });
+const BATCH_GEO_TIMEOUT_MS = Math.min(Number(process.env.CV_DFM_GEO_TIMEOUT_MS) || 120_000, 600_000);
 
 const SMALL_MODEL = process.env.CV_SMALL_MODEL || 'claude-sonnet-5';
 
@@ -64,7 +73,7 @@ const QUOTE_SCHEMA = {
 };
 
 export function registerPart360Routes(app, deps) {
-  const { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, sanitize, shouldCostApi, db } = deps;
+  const { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, sanitize, shouldCostApi, db, jobsApi } = deps;
 
   // The caller's OWN quote corpus, summarised per bucket for this
   // material+process. Their data, labelled as such — never a market claim.
@@ -98,6 +107,111 @@ export function registerPart360Routes(app, deps) {
       return lines.slice(0, 5);
     } catch { return []; }
   }
+
+  // ── Prism memory: the org's own runs and teardown observations ─────────────
+  // Both tables are additive and guarded; without a db the dossier simply
+  // carries stated-absent memory sections.
+  try {
+    db?.exec(`CREATE TABLE IF NOT EXISTS prism_runs (
+      id TEXT PRIMARY KEY, userId TEXT NOT NULL, partName TEXT, material TEXT, process TEXT,
+      weightKg REAL, annualVolume INTEGER, region TEXT, signature TEXT,
+      engineTotalEur REAL, entitlementEur REAL, projectId TEXT, createdAt TEXT NOT NULL
+    )`);
+    db?.exec(`CREATE TABLE IF NOT EXISTS teardown_observations (
+      id TEXT PRIMARY KEY, userId TEXT NOT NULL, title TEXT NOT NULL, reference TEXT,
+      partName TEXT, material TEXT, process TEXT, joining TEXT, massKg REAL, notes TEXT, createdAt TEXT NOT NULL
+    )`);
+  } catch { /* memory is additive — a failed migration must not break the dossier */ }
+
+  /** Fleet lines: outcomes from THIS user's prior runs on similar geometry. */
+  function fleetLinesFor(userId, currentSig) {
+    if (!db || !currentSig) return null;
+    try {
+      const rows = db.prepare(
+        'SELECT * FROM prism_runs WHERE userId = ? AND signature IS NOT NULL ORDER BY createdAt DESC LIMIT 200',
+      ).all(userId).map(r => ({ ...r, signature: JSON.parse(r.signature) }));
+      const ranked = rankSimilarRuns(currentSig, rows);
+      if (!ranked.length) return null;
+      const lines = ["Outcomes from YOUR OWN prior Prism runs on similar geometry — this organisation's memory, not an external benchmark."];
+      for (const { run, similarity } of ranked) {
+        let line = `Similar part (${Math.round(similarity.score * 100)}% geometric match: ${similarity.basis}): "${run.partName}" — ${run.material} via ${run.process}, engine €${run.engineTotalEur}, entitlement €${run.entitlementEur} (run ${String(run.createdAt).slice(0, 10)}).`;
+        if (run.projectId) {
+          try {
+            const proj = db.prepare('SELECT ideas FROM projects WHERE id = ? AND userId = ?').get(run.projectId, userId);
+            if (proj) {
+              const ideas = JSON.parse(proj.ideas || '[]');
+              const confirmed = ideas.filter(i => i?.engineCheck?.direction === 'confirmed');
+              line += ` ${ideas.length} ideas generated${confirmed.length ? `; engine-confirmed best: "${confirmed[0].title}" (${confirmed[0].engineCheck.savingPct}%)` : ''}.`;
+            }
+            const actions = db.prepare(
+              'SELECT ideaTitle, stage, targetSaving, confirmedSaving FROM vave_actions WHERE projectId = ? AND userId = ? LIMIT 3',
+            ).all(run.projectId, userId);
+            for (const a of actions) {
+              line += ` Tracker: "${a.ideaTitle}" at stage ${a.stage}${a.confirmedSaving ? `, CONFIRMED saving ${a.confirmedSaving}` : a.targetSaving ? `, target ${a.targetSaving}` : ''}.`;
+            }
+          } catch { /* memory lines degrade, never throw */ }
+        }
+        lines.push(line);
+      }
+      return lines;
+    } catch { return null; }
+  }
+
+  /** Teardown lines: the user's own recorded observations, relevance-ranked. */
+  function teardownLinesFor(userId, ctx, library) {
+    if (!db) return null;
+    try {
+      const entries = db.prepare(
+        'SELECT * FROM teardown_observations WHERE userId = ? ORDER BY createdAt DESC LIMIT 300',
+      ).all(userId).map(e => {
+        const mk = resolveMaterial(String(e.material || ''), library?.MATERIALS)?.key ?? null;
+        const pk = resolveRoute(String(e.process || ''), library?.PROCESSES)?.keys?.[0] ?? null;
+        return {
+          ...e,
+          materialKey: mk,
+          materialFamily: mk ? familyOfMaterial(mk) ?? null : null,
+          processKey: pk,
+          processFamily: pk ? familyForSelection({ process: pk })?.family ?? null : null,
+        };
+      });
+      const ranked = rankTeardowns(entries, ctx);
+      if (!ranked.length) return null;
+      return ranked.map(({ entry }) =>
+        `YOUR TEARDOWN (user-recorded, externally unverified): "${entry.title}"${entry.reference ? ` [${entry.reference}]` : ''} — ${[entry.material, entry.process, entry.joining ? `joined by ${entry.joining}` : null, Number.isFinite(entry.massKg) ? `${entry.massKg} kg` : null].filter(Boolean).join(', ')}.${entry.notes ? ` Notes: ${String(entry.notes).slice(0, 200)}` : ''}`);
+    } catch { return null; }
+  }
+
+  // ── Teardown library CRUD (per-user, same scope as the quote corpus) ───────
+  app.get('/api/part360/teardowns', requireAuth, (req, res) => {
+    if (!db) return res.json({ teardowns: [] });
+    const rows = db.prepare('SELECT * FROM teardown_observations WHERE userId = ? ORDER BY createdAt DESC LIMIT 300').all(req.user.id);
+    res.json({ teardowns: rows });
+  });
+  app.post('/api/part360/teardowns', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res) => {
+    if (!db) return res.status(503).json({ error: 'Storage unavailable.' });
+    const b = req.body || {};
+    const title = sanitize(String(b.title || ''), 160);
+    if (!title.trim()) return res.status(400).json({ error: 'title is required — name what was torn down.' });
+    const row = {
+      id: crypto.randomUUID(), userId: req.user.id, title,
+      reference: sanitize(String(b.reference || ''), 160) || null,
+      partName: sanitize(String(b.partName || ''), 160) || null,
+      material: sanitize(String(b.material || ''), 120) || null,
+      process: sanitize(String(b.process || ''), 160) || null,
+      joining: sanitize(String(b.joining || ''), 120) || null,
+      massKg: Number.isFinite(Number(b.massKg)) && Number(b.massKg) > 0 ? Number(b.massKg) : null,
+      notes: sanitize(String(b.notes || ''), 1000) || null,
+      createdAt: new Date().toISOString(),
+    };
+    db.prepare(`INSERT INTO teardown_observations (id,userId,title,reference,partName,material,process,joining,massKg,notes,createdAt)
+                VALUES (@id,@userId,@title,@reference,@partName,@material,@process,@joining,@massKg,@notes,@createdAt)`).run(row);
+    res.status(201).json({ teardown: row });
+  });
+  app.delete('/api/part360/teardowns/:id', requireAuth, (req, res) => {
+    if (!db) return res.status(503).json({ error: 'Storage unavailable.' });
+    const r = db.prepare('DELETE FROM teardown_observations WHERE id = ? AND userId = ?').run(String(req.params.id), req.user.id);
+    res.json({ deleted: r.changes > 0 });
+  });
 
   // ── Quote extraction: prefill only, never consumed unconfirmed ─────────────
   app.post('/api/part360/quote-extract', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
@@ -294,6 +408,18 @@ Rules:
         featureNote: sanitize(String(b.geometrySummary.featureNote ?? ''), 200) || null,
       } : null;
 
+      // Memory: signature of THIS part, fleet outcomes, teardown observations.
+      const sig = geoSignature(b.geo && typeof b.geo === 'object' ? b.geo : null);
+      const fleet = fleetLinesFor(req.user.id, sig);
+      const tdCtx = {
+        materialKey: resolveMaterial(material, library.MATERIALS)?.key ?? null,
+        materialFamily: familyOfMaterial(resolveMaterial(material, library.MATERIALS)?.key) ?? null,
+        processKey: resolveRoute(processName, library.PROCESSES)?.keys?.[0] ?? null,
+        processFamily: familyForSelection({ process: resolveRoute(processName, library.PROCESSES)?.keys?.[0] })?.family ?? null,
+        partName,
+      };
+      const teardowns = teardownLinesFor(req.user.id, tdCtx, library);
+
       const dossier = buildDossier({
         part: { partName, material, process: processName, weightKg, annualVolume, region },
         // The user's own statement of what the part is and does — the
@@ -302,6 +428,8 @@ Rules:
         partContext: typeof b.partContext === 'string' && b.partContext.trim()
           ? sanitize(String(b.partContext), 1500)
           : null,
+        fleet,
+        teardowns,
         geometry,
         dfm,
         shouldCost: {
@@ -323,7 +451,23 @@ Rules:
         functionModel: b.functionModel && typeof b.functionModel === 'object' ? b.functionModel : null,
       });
 
+      // This run joins the fleet memory (best-effort — memory must never
+      // block the dossier). The id returns to the client so generation can
+      // link the resulting project back for outcome tracking.
+      let runId = null;
+      try {
+        if (db) {
+          runId = crypto.randomUUID();
+          db.prepare(`INSERT INTO prism_runs (id,userId,partName,material,process,weightKg,annualVolume,region,signature,engineTotalEur,entitlementEur,projectId,createdAt)
+                      VALUES (?,?,?,?,?,?,?,?,?,?,?,NULL,?)`)
+            .run(runId, req.user.id, partName, tdCtx.materialKey ?? material, tdCtx.processKey ?? processName,
+                 weightKg, annualVolume, region, sig ? JSON.stringify(sig) : null,
+                 Number(asSpec.totalShouldCost.toFixed(2)), waterfall.entitlementEur, new Date().toISOString());
+        }
+      } catch { runId = null; }
+
       res.json({
+        runId,
         dossier,
         promptBlock: dossierToPromptBlock(dossier),
         // Per-lens renderings, ready to pass straight to /api/analyze as
@@ -340,6 +484,71 @@ Rules:
     } catch (e) {
       res.status(400).json({ error: e.message || 'The dossier could not be computed.' });
     }
+  });
+
+  // ── Zero-touch batch triage ────────────────────────────────────────────────
+  // Drop up to 12 STEP files: each is measured, massed from its own geometry
+  // (volume × catalogue density), and run through the entitlement waterfall.
+  // The result is a triage table ranked by annual gap — deterministic engines
+  // only, no LLM anywhere. Runs as a background job (OCCT is minutes-long).
+  app.post('/api/part360/batch', requireAuth, rateLimit(10, 60 * 60 * 1000), batchUpload.array('cadFiles', 12), async (req, res) => {
+    if (!jobsApi) return res.status(503).json({ error: 'Background jobs unavailable in this deployment.' });
+    const files = req.files || [];
+    if (!files.length) return res.status(400).json({ error: 'No CAD files uploaded (field: cadFiles).' });
+    const material = String(req.body.material || '').slice(0, 120);
+    const processName = String(req.body.process || '').slice(0, 160);
+    const annualVolume = Number(req.body.annualVolume) > 0 ? Math.min(Number(req.body.annualVolume), 100_000_000) : 80_000;
+    const region = Object.hasOwn(REGIONS, req.body.region) ? req.body.region : 'Germany';
+    const { library } = shouldCostApi.liveLibrary();
+    if (!resolveMaterial(material, library?.MATERIALS) || !resolveRoute(processName, library?.PROCESSES)?.keys?.length) {
+      return res.status(400).json({ error: 'material and process must resolve against the catalogue.' });
+    }
+    const calibration = shouldCostApi.getUserCalibration(req.user.id);
+    const jobId = jobsApi.create(req.user.id, 'part360-batch');
+    res.status(202).json({ jobId, files: files.length });
+
+    (async () => {
+      const rows = [];
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        jobsApi.update(jobId, { status: 'running', progress: { done: i, total: files.length, current: f.originalname } });
+        try {
+          const geo = await analyzeGeometry(f.buffer, f.originalname, BATCH_GEO_TIMEOUT_MS);
+          if (geo.status !== 'success') throw new Error(geo.error || 'geometry failed');
+          const g = geo.geometry ?? geo;
+          const mass = cadMassKg(g, material);
+          if (mass == null) throw new Error(`no CAD-derived mass for ${material} — geometry carries no matching density`);
+          const wf = entitlementWaterfall(
+            { material, process: processName, weightKg: mass, annualVolume, region },
+            { geo: g, library, calibration },
+          );
+          const firstLive = wf.steps.find(st => !st.skipped);
+          const engineEur = firstLive ? firstLive.fromEur : null;
+          const gapEur = engineEur != null ? Number((engineEur - wf.entitlementEur).toFixed(2)) : null;
+          const top = wf.steps.filter(st => !st.skipped).sort((a, z) => z.deltaEur - a.deltaEur)[0];
+          rows.push({
+            file: f.originalname,
+            massKg: Number(mass.toFixed(3)),
+            massSource: 'CAD-derived (measured volume × catalogue density) — confirm before deep-dive',
+            engineEur, entitlementEur: wf.entitlementEur, gapEur,
+            gapPct: engineEur > 0 ? Number(((gapEur / engineEur) * 100).toFixed(1)) : null,
+            annualGapEur: gapEur != null ? Number((gapEur * annualVolume).toFixed(0)) : null,
+            topLever: top && top.deltaEur > 0 ? `${top.name}: €${top.deltaEur} — ${String(top.basis).slice(0, 140)}` : 'No lever above zero at this volume.',
+            co2DeltaKg: wf.steps.find(st => Number.isFinite(st.co2DeltaKg))?.co2DeltaKg ?? null,
+          });
+        } catch (e) {
+          rows.push({ file: f.originalname, error: String(e?.message || e).slice(0, 300) });
+        }
+      }
+      rows.sort((a, z) => (z.annualGapEur ?? -1) - (a.annualGapEur ?? -1));
+      jobsApi.update(jobId, {
+        status: 'done',
+        result: {
+          rows,
+          basis: `Deterministic triage: each part measured by OCCT, massed from its own geometry, and run through the entitlement waterfall at ${annualVolume.toLocaleString()}/yr in ${region}. Entitlement is a DIRECTION INDICATOR — the engine's held-out accuracy bounds every figure. Failed files say why.`,
+        },
+      });
+    })().catch(e => jobsApi.update(jobId, { status: 'error', error: String(e?.message || e).slice(0, 300) }));
   });
 
   // ── Function-model draft: cheap, editable, never consumed unconfirmed ──────

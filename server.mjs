@@ -3057,6 +3057,9 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       .map(b => ({ lensId: sanitize(String(b.lensId ?? 'all'), 24), text: sanitize(String(b.text), 20000) }));
     if (blocks.length) partEvidence = { blocks };
   }
+  // Prism memory back-link: the dossier run that produced this evidence, so
+  // the generated project (and later its tracker outcomes) join the fleet.
+  const prismRunId = typeof req.body.prismRunId === 'string' ? req.body.prismRunId.slice(0, 64) : null;
 
   const useSSE = (req.headers['accept'] || '').includes('text/event-stream');
   if (useSSE) {
@@ -3204,6 +3207,10 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     // Auto-save project to DB
     const projectId = crypto.randomUUID();
     autoSaveProject(req.user.id, projectId, sysName, subName, prtName, config, ideas, sources);
+    if (prismRunId && partEvidence) {
+      try { db.prepare('UPDATE prism_runs SET projectId = ? WHERE id = ? AND userId = ?').run(projectId, prismRunId, req.user.id); }
+      catch { /* fleet linking is best-effort */ }
+    }
 
     // Cache when search was disabled (results are deterministic)
     if (!enableSearch && !cadGeometry && !partEvidence) {
@@ -3651,7 +3658,7 @@ registerOrgRoutes(app, { db, requireAuth, rateLimit });
 registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
 // Part 360: quote forensics, entitlement waterfall and the evidence dossier —
 // the fusion layer over every engine, calibrated to the caller's quote corpus.
-registerPart360Routes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, sanitize, shouldCostApi, db });
+registerPart360Routes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, sanitize, shouldCostApi, db, jobsApi });
 // Innovation methods (Value Engineering, DFA, Design-to-Cost, SCAMPER,
 // Morphological, Effects & Trends, Circularity) — structured idea generation.
 registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });

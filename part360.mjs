@@ -75,6 +75,31 @@ export function inferSpecFromDrawing({ tightestToleranceMm = null, roughnessRaUm
   return { toleranceClass, surfaceFinish, basis: `${tolBasis}; ${finBasis}` };
 }
 
+// ── CAD-derived mass ─────────────────────────────────────────────────────────
+//
+// The DFM engines weigh the measured volume in six stock materials
+// (geometry.weights). Map a catalogue material name onto the right one so a
+// caller can OFFER the measured mass — a suggestion with a stated basis. No
+// match ⇒ null (absent is not a default). Mirrors the wizard's client-side
+// mapping; a divergence between the two is a bug, and the wiring test pins
+// both to the same six keys.
+export function weightsKeyForMaterial(material) {
+  const m = String(material || '').toLowerCase();
+  if (/alumin/.test(m)) return 'aluminiumKg';
+  if (/titanium/.test(m)) return 'titaniumKg';
+  if (/copper|brass|bronze/.test(m)) return 'copperKg';
+  if (/cast iron/.test(m)) return 'castIronKg';
+  if (/steel/.test(m)) return 'steelKg';
+  if (/plastic|abs\b|nylon|polyam|polyprop|polycarb|peek|pom/.test(m)) return 'plasticKg';
+  return null;
+}
+
+export function cadMassKg(geometry, material) {
+  const key = weightsKeyForMaterial(material);
+  const v = key ? geometry?.weights?.[key] : undefined;
+  return Number.isFinite(v) && v > 0 ? v : null;
+}
+
 // ── Quote forensics ──────────────────────────────────────────────────────────
 
 /** Which engine breakdown buckets answer for each supplier line kind. */
@@ -337,6 +362,7 @@ export function buildDossier({
   quote = null, forensics = null, waterfall = null,
   routes = null, regionSweep = null, volumeCurve = null,
   specSteps = null, functionModel = null,
+  fleet = null, teardowns = null,
 } = {}) {
   let e = 0;
   const ref = () => `E${++e}`;
@@ -348,6 +374,18 @@ export function buildDossier({
       sections.push({ id, title, present: false, reason: linesOrReason, lines: [] });
     }
   };
+
+  // ── The organisation's own memory ─────────────────────────────────────────
+  // Fleet lines are OUTCOMES from this org's prior Prism runs (never external
+  // benchmarks); teardown lines are the org's own recorded observations,
+  // externally unverified and labelled so. Both arrive pre-composed from the
+  // route, which owns the DB — the core only keeps the honesty contract.
+  add('fleet', "Fleet memory (this organisation's own prior runs)", Array.isArray(fleet) && fleet.length
+    ? fleet
+    : 'No sufficiently similar part in your run history — fleet memory starts with this run.');
+  add('teardown', 'Teardown observations (user-recorded, externally unverified)', Array.isArray(teardowns) && teardowns.length
+    ? teardowns
+    : 'No matching teardown observations recorded — add competitor teardowns to ground the benchmark lens in parts that exist.');
 
   // The user's own statement of WHAT the part is and does — the function
   // context every alternative must be judged against. Split on sentence-ish
@@ -447,12 +485,12 @@ export function buildDossier({
 // ── Lenses and the prompt block ──────────────────────────────────────────────
 
 export const LENSES = [
-  { id: 'vave', name: 'VA/VE function attack', sections: ['context', 'part', 'function', 'dfm', 'geometry', 'cost'], directive: 'Attack functions with poor value indices and parts/features that can be deleted, combined, or simplified. Trimming questions in the evidence are open engineering questions — answer them with specific design moves.' },
-  { id: 'process', name: 'Process shift', sections: ['context', 'part', 'routes', 'waterfall', 'dfm', 'volume'], directive: 'Close the PROCESS PREMIUM step of the waterfall. Use only the DFM-viable alternatives listed; spell out the full alternative route (forming + secondary ops + finishing), address their top findings and the up-front tooling cheque in the idea itself, and state why the route satisfies the stated part function.' },
-  { id: 'material', name: 'Material & mass', sections: ['context', 'part', 'geometry', 'cost', 'spec', 'dfm'], directive: 'Cut material cost: substitution to a cheaper compatible grade, buy-to-fly reduction, and mass-out moves the solidity/wall evidence supports. Name the SPECIFIC alternative grade (never a family), its decisive properties versus the stated part function, and why it survives the duty the context lines describe — a substitution the stated function rules out is a DEFECT, not an idea. Include an engineCheckRequest for every substitution or mass change.' },
+  { id: 'vave', name: 'VA/VE function attack', sections: ['context', 'part', 'function', 'dfm', 'geometry', 'cost', 'fleet', 'teardown'], directive: 'Attack functions with poor value indices and parts/features that can be deleted, combined, or simplified. Trimming questions in the evidence are open engineering questions — answer them with specific design moves.' },
+  { id: 'process', name: 'Process shift', sections: ['context', 'part', 'routes', 'waterfall', 'dfm', 'volume', 'fleet'], directive: 'Close the PROCESS PREMIUM step of the waterfall. Use only the DFM-viable alternatives listed; spell out the full alternative route (forming + secondary ops + finishing), address their top findings and the up-front tooling cheque in the idea itself, and state why the route satisfies the stated part function.' },
+  { id: 'material', name: 'Material & mass', sections: ['context', 'part', 'geometry', 'cost', 'spec', 'dfm', 'fleet', 'teardown'], directive: 'Cut material cost: substitution to a cheaper compatible grade, buy-to-fly reduction, and mass-out moves the solidity/wall evidence supports. Name the SPECIFIC alternative grade (never a family), its decisive properties versus the stated part function, and why it survives the duty the context lines describe — a substitution the stated function rules out is a DEFECT, not an idea. Include an engineCheckRequest for every substitution or mass change.' },
   { id: 'spec', name: 'Specification & tolerance', sections: ['context', 'part', 'spec', 'forensics', 'cost'], directive: 'Convert the CALCULATED relaxation steps into concrete drawing changes — name the callouts to relax and the functional justification required. Never propose relaxing a critical characteristic without saying what validates it.' },
   { id: 'commercial', name: 'Supplier & commercial', sections: ['context', 'part', 'forensics', 'waterfall', 'regions', 'volume', 'quote'], directive: 'Close the COMMERCIAL GAP and FOOTPRINT steps: negotiation arguments anchored on the forensics verdicts (quote lines above the model band), amortisation corrections, and resourcing options with their stated ex-works caveat.' },
-  { id: 'benchmark', name: 'Benchmark transfer', sections: ['context', 'part', 'cost', 'dfm', 'waterfall'], directive: 'Transfer PROVEN levers from the marketplace precedents in your context to THIS part\'s measured gaps. Say which precedent, and which evidence line it lands on.' },
+  { id: 'benchmark', name: 'Benchmark transfer', sections: ['context', 'part', 'cost', 'dfm', 'waterfall', 'fleet', 'teardown'], directive: 'Transfer PROVEN levers from the marketplace precedents in your context to THIS part\'s measured gaps. Say which precedent, and which evidence line it lands on.' },
 ];
 
 /**

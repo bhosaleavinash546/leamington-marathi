@@ -54,7 +54,19 @@ interface ForensicsRow {
   label: string; kind: string; quoteEur: number; engineEur: number | null;
   ratio: number | null; verdict: string; basis: string;
 }
+interface Teardown {
+  id: string; title: string; reference?: string | null; partName?: string | null;
+  material?: string | null; process?: string | null; joining?: string | null;
+  massKg?: number | null; notes?: string | null; createdAt: string;
+}
+interface BatchRow {
+  file: string; massKg?: number; massSource?: string; engineEur?: number | null;
+  entitlementEur?: number; gapEur?: number | null; gapPct?: number | null;
+  annualGapEur?: number | null; topLever?: string; co2DeltaKg?: number | null; error?: string;
+}
+
 interface DossierResponse {
+  runId?: string | null;
   dossier: { sections: Array<{ id: string; title: string; present: boolean; reason?: string; lines: Array<{ ref: string; text: string }> }>; evidenceCount: number; absent: string[] };
   promptBlock: string;
   lensBlocks: Array<{ lensId: string; name: string; text: string }>;
@@ -193,11 +205,32 @@ export default function Part360Page() {
   const [genLog, setGenLog] = useState<string[]>([]);
   const [error, setError] = useState('');
 
+  // ── Teardown library (the private evidence base) ──────────────────────────
+  const [teardowns, setTeardowns] = useState<Teardown[]>([]);
+  const [tdOpen, setTdOpen] = useState(false);
+  const [tdForm, setTdForm] = useState({ title: '', reference: '', partName: '', material: '', process: '', joining: '', massKg: '', notes: '' });
+  const [tdSaving, setTdSaving] = useState(false);
+
+  // ── Batch triage (zero-touch mode) ────────────────────────────────────────
+  const [batchMode, setBatchMode] = useState(false);
+  const [batchFiles, setBatchFiles] = useState<File[]>([]);
+  const [batchRunning, setBatchRunning] = useState(false);
+  const [batchRows, setBatchRows] = useState<BatchRow[] | null>(null);
+  const [batchBasis, setBatchBasis] = useState('');
+  const [batchProgress, setBatchProgress] = useState('');
+  const batchInputRef = useRef<HTMLInputElement>(null);
+
   // Each stage starts at its top — otherwise a mid-page scroll position from
   // the previous stage leaves the new panel's heading under the sticky rail.
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: m.reduced ? 'auto' : 'smooth' });
   }, [step]);   // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/part360/teardowns', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json()).then(d => setTeardowns(d.teardowns ?? [])).catch(() => {});
+  }, [token]);
 
   useEffect(() => {
     fetch('/api/should-cost/catalogue')
@@ -459,7 +492,7 @@ export default function Part360Page() {
       const { ideas, sources, resultId } = await generateCostReductionIdeas(
         config, sysName, subName, partName || 'Part', false, undefined,
         (ev: ProgressEvent) => { if (ev.message) setGenLog(prev => [...prev.slice(-14), ev.message as string]); },
-        { partEvidence: { blocks } },
+        { partEvidence: { blocks }, prismRunId: dossier.runId ?? undefined },
       );
       const result: AnalysisResult = {
         id: resultId,
@@ -487,6 +520,64 @@ export default function Part360Page() {
     } finally {
       setGenerating(false);
     }
+  }
+
+  async function saveTeardown() {
+    if (!tdForm.title.trim()) { toast('Give the teardown a title.', 'error'); return; }
+    setTdSaving(true);
+    try {
+      const r = await fetch('/api/part360/teardowns', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ ...tdForm, massKg: Number(tdForm.massKg) > 0 ? Number(tdForm.massKg) : undefined }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Could not save');
+      setTeardowns(prev => [d.teardown, ...prev]);
+      setTdForm({ title: '', reference: '', partName: '', material: '', process: '', joining: '', massKg: '', notes: '' });
+      toast('Teardown recorded — it now grounds matching Prism runs.', 'success');
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'Save failed', 'error');
+    } finally { setTdSaving(false); }
+  }
+
+  async function deleteTeardown(id: string) {
+    try {
+      await fetch(`/api/part360/teardowns/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      setTeardowns(prev => prev.filter(t => t.id !== id));
+    } catch { /* row stays; next load reconciles */ }
+  }
+
+  async function runBatch() {
+    if (!batchFiles.length) { toast('Add STEP files first.', 'error'); return; }
+    if (!material || !processName) { toast('Pick the shared material and process.', 'error'); return; }
+    setBatchRunning(true); setBatchRows(null); setBatchBasis(''); setBatchProgress('Uploading…');
+    try {
+      const fd = new FormData();
+      for (const f of batchFiles) fd.append('cadFiles', f);
+      fd.append('material', material);
+      fd.append('process', processName);
+      fd.append('annualVolume', String(Number(annualVolume) || 80000));
+      fd.append('region', region);
+      const r = await fetch('/api/part360/batch', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Batch failed to start');
+      for (;;) {
+        await new Promise(res => setTimeout(res, 2500));
+        const jr = await fetch(`/api/jobs/${d.jobId}`, { headers: { Authorization: `Bearer ${token}` } });
+        const job = await jr.json();
+        if (job.status === 'error') throw new Error(job.error || 'Batch job failed');
+        if (job.status === 'done') {
+          const result = typeof job.result === 'string' ? JSON.parse(job.result) : job.result;
+          setBatchRows(result.rows ?? []);
+          setBatchBasis(result.basis ?? '');
+          break;
+        }
+        const prog = typeof job.progress === 'string' ? JSON.parse(job.progress || '{}') : (job.progress || {});
+        setBatchProgress(prog.current ? `Measuring ${prog.current} (${(prog.done ?? 0) + 1}/${prog.total ?? batchFiles.length})…` : 'Measuring…');
+      }
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'Batch failed', 'error');
+    } finally { setBatchRunning(false); }
   }
 
   // ── The rail: every tick is a fact derived from real state ────────────────
@@ -554,6 +645,14 @@ export default function Part360Page() {
               </div>
             </motion.div>
             <motion.div variants={m.rise} className="flex items-center gap-2 text-[11px] text-slate-500">
+              <motion.button
+                {...m.press}
+                aria-pressed={batchMode}
+                onClick={() => setBatchMode(v => !v)}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border font-medium transition-colors ${batchMode ? 'border-gold-500/40 bg-gold-500/15 text-gold-300' : 'border-white/10 bg-white/[0.04] text-slate-400 hover:text-slate-200'}`}
+              >
+                <Layers size={11} /> Batch triage
+              </motion.button>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-teal-500/25 bg-teal-500/10 text-teal-300 font-medium">
                 <Gauge size={11} /> No AI in the numbers
               </span>
@@ -566,6 +665,106 @@ export default function Part360Page() {
           <StepRail steps={railSteps} activeId={activeRailId} onJump={jumpTo} />
         </div>
 
+        {batchMode ? (
+          <motion.div variants={m.panel} initial="hidden" animate="show" className="space-y-5">
+            <div className="dfm-panel dfm-spot p-5" onMouseMove={spot}>
+              <div className="flex items-center gap-2 mb-1">
+                <Layers size={15} className="text-gold-400" />
+                <h2 className="text-white font-semibold text-sm">Zero-touch batch triage</h2>
+              </div>
+              <p className="text-slate-400 text-xs mb-4 max-w-3xl">
+                Drop up to 12 STEP files sharing one material and process. Each is measured, massed from its own
+                geometry, and run through the entitlement waterfall — deterministic engines only. The table ranks
+                where the money is; deep-dive the winners in the wizard.
+              </p>
+              <div className="grid md:grid-cols-4 gap-3 mb-4">
+                <div>
+                  <label className="dfm-label text-slate-500 block mb-1.5">Material</label>
+                  <select className="dfm-select" aria-label="Batch material" value={material} onChange={e => setMaterial(e.target.value)}>
+                    {(catalogue?.materials ?? []).map(mt => <option key={mt} value={mt}>{mt}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="dfm-label text-slate-500 block mb-1.5">Process</label>
+                  <select className="dfm-select" aria-label="Batch process" value={processName} onChange={e => setProcessName(e.target.value)}>
+                    {(catalogue?.processes ?? []).map(pp => <option key={pp} value={pp}>{pp}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="dfm-label text-slate-500 block mb-1.5">Volume /yr</label>
+                  <input className="dfm-input" aria-label="Batch annual volume" type="number" min="1" value={annualVolume} onChange={e => setAnnualVolume(e.target.value)} />
+                </div>
+                <div>
+                  <label className="dfm-label text-slate-500 block mb-1.5">Region</label>
+                  <select className="dfm-select" aria-label="Batch region" value={region} onChange={e => setRegion(e.target.value)}>
+                    {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+              </div>
+              <input ref={batchInputRef} type="file" multiple accept=".step,.stp,.igs,.iges" className="hidden"
+                onChange={e => setBatchFiles(Array.from(e.target.files ?? []).slice(0, 12))} />
+              <div className="flex flex-wrap items-center gap-3">
+                <motion.button {...m.press} onClick={() => batchInputRef.current?.click()}
+                  className="dfm-lift bg-white/[0.06] hover:bg-white/10 text-white text-sm rounded-xl px-4 py-2 flex items-center gap-2 border border-white/10">
+                  <Upload size={14} /> {batchFiles.length ? `${batchFiles.length} file${batchFiles.length === 1 ? '' : 's'} selected` : 'Choose STEP files'}
+                </motion.button>
+                <motion.button {...m.press} onClick={runBatch} disabled={batchRunning || !batchFiles.length}
+                  className="dfm-cta text-navy-950 disabled:text-slate-400 font-semibold rounded-xl px-5 py-2.5 text-sm flex items-center gap-2">
+                  {batchRunning ? <Loader2 size={15} className="animate-spin" /> : <Gauge size={15} />}
+                  {batchRunning ? batchProgress || 'Measuring…' : 'Run triage'}
+                </motion.button>
+              </div>
+              {batchRunning && <div className="dfm-photon h-0.5 rounded-full bg-white/5 mt-4" aria-hidden="true" />}
+            </div>
+
+            {batchRows && (
+              <motion.div variants={m.panel} initial="hidden" animate="show" className="dfm-panel dfm-framed p-5">
+                <h2 className="text-white font-semibold text-sm mb-1">Triage — ranked by annual gap</h2>
+                <p className="text-slate-500 text-[11px] mb-4">{batchBasis}</p>
+                <motion.div variants={m.stagger()} initial="hidden" animate="show" className="space-y-2.5">
+                  {batchRows.map((row, i) => {
+                    const maxGap = Math.max(...batchRows.map(x => x.annualGapEur ?? 0), 1);
+                    return (
+                      <motion.div key={row.file} variants={m.slideIn}
+                        className={`rounded-xl border px-4 py-3 ${row.error ? 'border-amber-500/25 bg-amber-500/5' : 'border-white/[0.06] bg-white/[0.02]'}`}>
+                        {row.error ? (
+                          <div className="text-xs text-amber-300/90"><span className="text-white font-medium">{row.file}</span> — not measured: {row.error}</div>
+                        ) : (
+                          <>
+                            <div className="flex flex-wrap items-center gap-3">
+                              <span className="dfm-num text-[11px] text-teal-500/80 w-5">{i + 1}</span>
+                              <div className="min-w-[140px] flex-1">
+                                <div className="text-sm text-white">{row.file}</div>
+                                <div className="text-[10px] text-slate-500">{row.massKg} kg · {row.massSource}</div>
+                              </div>
+                              <div className="dfm-num text-xs text-slate-400 w-24 text-right">engine {eur(row.engineEur)}</div>
+                              <div className="dfm-num text-xs text-teal-300 w-24 text-right">entitle {eur(row.entitlementEur)}</div>
+                              <div className="w-36 hidden sm:block">
+                                <div className="dfm-bar">
+                                  <motion.span className="bg-gold-400/80" initial={{ width: 0 }}
+                                    animate={{ width: `${((row.annualGapEur ?? 0) / maxGap) * 100}%` }} transition={m.t(0.4, i * 0.06)} />
+                                </div>
+                              </div>
+                              <div className="dfm-num text-xs text-gold-400 font-semibold w-28 text-right">
+                                {row.annualGapEur != null ? `€${row.annualGapEur.toLocaleString()}/yr` : '—'}
+                              </div>
+                              <motion.button {...m.press}
+                                onClick={() => { setPartName(row.file.replace(/\.(step|stp|igs|iges)$/i, '')); setWeightKg(String(row.massKg ?? '')); setBatchMode(false); setStep(0); toast('Prefilled — re-attach the CAD file for the full deep-dive.', 'info'); }}
+                                className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-teal-500/30 bg-teal-500/10 text-teal-300 hover:bg-teal-500/20">
+                                Deep-dive
+                              </motion.button>
+                            </div>
+                            <div className="text-[11px] text-slate-500 mt-1.5 pl-8">{row.topLever}{Number.isFinite(row.co2DeltaKg) ? ` · CO₂e ${(row.co2DeltaKg as number) > 0 ? '+' : ''}${row.co2DeltaKg} kg/part on the switch` : ''}</div>
+                          </>
+                        )}
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              </motion.div>
+            )}
+          </motion.div>
+        ) : (
         <AnimatePresence mode="wait">
 
           {/* ── STEP 1: part & files ───────────────────────────────────────── */}
@@ -672,6 +871,55 @@ export default function Part360Page() {
                   Continue to measurement <ChevronRight size={16} />
                 </motion.button>
                 {!inputsValid && <p className="text-[11px] text-slate-500 mt-2 text-center">Material, process, mass and volume are required — they drive every engine.</p>}
+              </div>
+
+              <div className="lg:col-span-2 dfm-panel p-5">
+                <button onClick={() => setTdOpen(v => !v)} className="w-full flex items-center justify-between text-left" aria-expanded={tdOpen}>
+                  <span className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <FileSearch size={15} className="text-teal-400" />
+                    Teardown library
+                    <span className="dfm-num text-[11px] text-slate-500 font-normal">({teardowns.length} recorded — user-recorded observations, externally unverified)</span>
+                  </span>
+                  <ChevronRight size={14} className={`text-slate-500 transition-transform ${tdOpen ? 'rotate-90' : ''}`} />
+                </button>
+                <AnimatePresence>
+                {tdOpen && (
+                  <motion.div variants={m.rise} initial="hidden" animate="show" exit="exit" className="mt-4 space-y-4">
+                    <p className="text-[11px] text-slate-500 max-w-3xl">Record competitor parts you have physically torn down. Matching observations become cited evidence in every Prism run for the same material or process family — your organisation's own benchmark base.</p>
+                    <div className="grid md:grid-cols-4 gap-2">
+                      <input className="dfm-input" aria-label="Teardown title" placeholder="Title, e.g. Golf 8 hood bracket *" value={tdForm.title} onChange={e => setTdForm(f => ({ ...f, title: e.target.value }))} />
+                      <input className="dfm-input" aria-label="Teardown reference" placeholder="Reference (OEM, model, year)" value={tdForm.reference} onChange={e => setTdForm(f => ({ ...f, reference: e.target.value }))} />
+                      <input className="dfm-input" aria-label="Teardown part name" placeholder="Part name" value={tdForm.partName} onChange={e => setTdForm(f => ({ ...f, partName: e.target.value }))} />
+                      <input className="dfm-input" aria-label="Teardown mass in kilograms" type="number" min="0" step="0.001" placeholder="Mass kg" value={tdForm.massKg} onChange={e => setTdForm(f => ({ ...f, massKg: e.target.value }))} />
+                      <select className="dfm-select" aria-label="Teardown material" value={tdForm.material} onChange={e => setTdForm(f => ({ ...f, material: e.target.value }))}>
+                        <option value="">Material…</option>
+                        {(catalogue?.materials ?? []).map(mt => <option key={mt} value={mt}>{mt}</option>)}
+                      </select>
+                      <select className="dfm-select" aria-label="Teardown process" value={tdForm.process} onChange={e => setTdForm(f => ({ ...f, process: e.target.value }))}>
+                        <option value="">Process…</option>
+                        {(catalogue?.processes ?? []).map(pp => <option key={pp} value={pp}>{pp}</option>)}
+                      </select>
+                      <input className="dfm-input" aria-label="Teardown joining method" placeholder="Joining, e.g. clinching" value={tdForm.joining} onChange={e => setTdForm(f => ({ ...f, joining: e.target.value }))} />
+                      <motion.button {...m.press} onClick={saveTeardown} disabled={tdSaving}
+                        className="dfm-cta text-navy-950 disabled:text-slate-400 font-semibold rounded-xl px-4 py-2 text-sm flex items-center justify-center gap-2">
+                        {tdSaving ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />} Record
+                      </motion.button>
+                    </div>
+                    <input className="dfm-input" aria-label="Teardown notes" placeholder="Notes — what you observed (gauge, coating, part count…)" value={tdForm.notes} onChange={e => setTdForm(f => ({ ...f, notes: e.target.value }))} />
+                    {teardowns.length > 0 && (
+                      <div className="space-y-1.5 max-h-44 overflow-y-auto">
+                        {teardowns.map(t => (
+                          <div key={t.id} className="dfm-row-hover flex items-center gap-3 rounded-lg border border-white/[0.06] px-3 py-1.5 text-xs">
+                            <span className="text-white">{t.title}</span>
+                            <span className="text-slate-500 flex-1 truncate">{[t.reference, t.material, t.process, t.massKg ? `${t.massKg} kg` : null].filter(Boolean).join(' · ')}</span>
+                            <button aria-label={`Delete teardown ${t.title}`} onClick={() => deleteTeardown(t.id)} className="text-slate-600 hover:text-danger-400"><Trash2 size={12} /></button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+                </AnimatePresence>
               </div>
             </motion.div>
           )}
@@ -1084,6 +1332,28 @@ export default function Part360Page() {
                 </motion.div>
               ) : null}
 
+              {/* Fleet memory: the organisation's own prior runs on similar shapes */}
+              {(() => {
+                const fleetSec = dossier.dossier.sections.find(sec => sec.id === 'fleet');
+                if (!fleetSec?.present) return null;
+                return (
+                  <motion.div variants={m.panel} className="dfm-panel dfm-spot p-5" onMouseMove={spot}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Box size={15} className="text-teal-400" />
+                      <h2 className="text-white font-semibold text-sm">Fleet memory</h2>
+                    </div>
+                    <p className="text-slate-500 text-[11px] mb-3">Outcomes from your own prior Prism runs on similar geometry — organisational memory, not an external benchmark.</p>
+                    <div className="space-y-2">
+                      {fleetSec.lines.slice(1).map(l => (
+                        <div key={l.ref} className="text-xs text-slate-300 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
+                          <span className="dfm-num text-teal-500/80 mr-2">[{l.ref}]</span>{l.text}
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                );
+              })()}
+
               {/* Evidence + lenses + generate */}
               <motion.div variants={m.panel} className="dfm-panel dfm-spot p-5" onMouseMove={spot}>
                 <div className="flex items-center gap-2 mb-1">
@@ -1152,6 +1422,7 @@ export default function Part360Page() {
             </motion.div>
           )}
         </AnimatePresence>
+        )}
       </div>
     </div>
   );

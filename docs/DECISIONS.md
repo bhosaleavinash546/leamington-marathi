@@ -2902,3 +2902,40 @@ one beam into bands. UI surfaces, exports and docs say Prism; `/part-360`
 redirects to `/prism`. The BACKEND names stay (`part360.mjs`,
 `/api/part360/*`, the `part-360` tool id): API stability outranks cosmetic
 consistency, and the tests that pin those seams keep their meaning.
+
+## 53. Prism memory is the org's own outcomes, labelled as such
+
+**Date**: 2026-08-25
+**Status**: Accepted
+
+**Context**: The market research (aiSource, A2MAC1+BCG's Cost Measure
+Ideator, CoLab's knowledge graph) says the durable moats in this space are
+evidence bases and institutional memory. Prism's Tier-1 answer is three
+features that compound the customer's OWN data instead of borrowing
+authority.
+
+**Decision**:
+1. **Fleet memory** (`prism-memory.mjs` + `prism_runs`): every dossier run
+   leaves a compact geometry signature; similar prior runs surface as
+   evidence lines carrying an EXPLAINED similarity ("shape 0.94 · size
+   0.81 …", floor 0.75) plus the linked project's engine-confirmed ideas and
+   VAVE-tracker stages. The section header says these are the organisation's
+   own outcomes, never external benchmarks. Absent components of a signature
+   are excluded from the score, not treated as matches.
+2. **Teardown observations** (`teardown_observations`): user-recorded
+   competitor teardowns become citable evidence lines prefixed
+   "YOUR TEARDOWN (user-recorded, externally unverified)" — the A2MAC1
+   credibility mechanism on private data, with provenance instead of
+   borrowed authority. Relevance is deterministic (resolved material/process
+   key > family > name tokens).
+3. **Zero-touch batch triage** (`POST /api/part360/batch`): up to 12 STEP
+   files measured unattended, massed from their own geometry (volume ×
+   catalogue density, stated as CAD-derived), run through the entitlement
+   waterfall and ranked by annual gap. Deterministic engines only; failed
+   files carry their reason. Heavy integration test opt-in via CV_HEAVY_IT=1
+   so `npm test` stays fast.
+
+**Consequences**: generation's project autosave back-links to the run
+(`prismRunId`) so tracker outcomes accrue to the fleet; memory writes are
+best-effort and can never block a dossier; all sections keep the
+stated-absent discipline ("fleet memory starts with this run").

@@ -138,6 +138,108 @@ describe('http integration', () => {
     assert.match(text, /prior "material" lines ran/);
   });
 
+  it('fleet memory: the second run on similar geometry cites the first — the first states absence', async () => {
+    const GEO = {
+      boundingBox: { xMm: 40, yMm: 40, zMm: 20 }, volume: { cm3: 14.6 }, fillRatio: 0.46,
+      faces: { total: 9 }, wallThickness: { characteristicMm: 8 },
+      weights: { steelKg: 0.104, aluminiumKg: 0.039, castIronKg: 0.104, copperKg: 0.13, titaniumKg: 0.065, plasticKg: 0.015 },
+    };
+    const base = { partName: 'Fleet Plate A', material: 'Steel (mild)', process: 'Machining (CNC)', weightKg: 0.1, annualVolume: 60000, region: 'Germany', geo: GEO };
+    const r1 = await fetch(`${BASE}/api/part360/dossier`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(base),
+    });
+    assert.equal(r1.status, 200);
+    const d1 = await r1.json();
+    assert.ok(d1.runId, 'first run must join the memory and return its id');
+    const fleet1 = d1.dossier.sections.find(x => x.id === 'fleet');
+    assert.equal(fleet1.present, false);
+    assert.match(fleet1.reason, /fleet memory starts with this run/);
+
+    const r2 = await fetch(`${BASE}/api/part360/dossier`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ ...base, partName: 'Fleet Plate B', geo: { ...GEO, volume: { cm3: 15.1 } } }),
+    });
+    const d2 = await r2.json();
+    const fleet2 = d2.dossier.sections.find(x => x.id === 'fleet');
+    assert.equal(fleet2.present, true, 'similar prior run must surface');
+    const text2 = fleet2.lines.map(l => l.text).join('\n');
+    assert.match(text2, /YOUR OWN prior Prism runs/);
+    assert.match(text2, /"Fleet Plate A"/);
+    assert.match(text2, /% geometric match: shape .* size /);
+  });
+
+  it('teardown observations: CRUD + relevance-ranked citation in the dossier', async () => {
+    const mk = await fetch(`${BASE}/api/part360/teardowns`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ title: 'Golf 8 hood bracket', reference: 'VW Golf 8, 2023 teardown', partName: 'hood bracket', material: 'Steel DP600 (dual-phase)', process: 'Stamping / Deep Drawing', joining: 'clinching', massKg: 0.18, notes: 'Thinner gauge than ours; no e-coat on inner face.' }),
+    });
+    assert.equal(mk.status, 201);
+    const { teardown } = await mk.json();
+    assert.ok(teardown.id);
+
+    const list = await (await fetch(`${BASE}/api/part360/teardowns`, { headers: { Authorization: `Bearer ${token}` } })).json();
+    assert.ok(list.teardowns.some(t => t.id === teardown.id));
+
+    const d = await (await fetch(`${BASE}/api/part360/dossier`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ partName: 'Hood Bracket', material: 'Steel (mild)', process: 'Stamping / Deep Drawing', weightKg: 0.2, annualVolume: 60000, region: 'Germany' }),
+    })).json();
+    const td = d.dossier.sections.find(x => x.id === 'teardown');
+    assert.equal(td.present, true);
+    const text = td.lines.map(l => l.text).join('\n');
+    assert.match(text, /YOUR TEARDOWN \(user-recorded, externally unverified\)/);
+    assert.match(text, /Golf 8 hood bracket/);
+    assert.match(text, /clinching/);
+
+    const del = await fetch(`${BASE}/api/part360/teardowns/${teardown.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+    assert.equal((await del.json()).deleted, true);
+  });
+
+  it('batch triage validates its inputs before spending OCCT time', async () => {
+    const noFiles = await fetch(`${BASE}/api/part360/batch`, {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: new FormData(),
+    });
+    assert.equal(noFiles.status, 400);
+    const fd = new FormData();
+    fd.append('cadFiles', new Blob([Buffer.from('dummy')]), 'x.step');
+    fd.append('material', 'Unobtainium');
+    fd.append('process', 'Machining (CNC)');
+    const bad = await fetch(`${BASE}/api/part360/batch`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+    assert.equal(bad.status, 400);
+    assert.match((await bad.json()).error, /catalogue/);
+  });
+
+  // OCCT-heavy: two real fixtures through the full batch job. Minutes, not
+  // milliseconds — opt in with CV_HEAVY_IT=1 (CI nightly / manual verification).
+  it('batch triage measures, masses and ranks real STEP files', { skip: process.env.CV_HEAVY_IT !== '1' }, async () => {
+    const { readFileSync } = await import('node:fs');
+    const fd = new FormData();
+    for (const f of ['boss-plate.step', 'thin-plate.step']) {
+      fd.append('cadFiles', new Blob([readFileSync(join(ROOT, 'benchmark', 'dfm-fixtures', f))]), f);
+    }
+    fd.append('material', 'Aluminium 6061');
+    fd.append('process', 'Machining (CNC)');
+    fd.append('annualVolume', '50000');
+    fd.append('region', 'Germany');
+    const r = await fetch(`${BASE}/api/part360/batch`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+    assert.equal(r.status, 202);
+    const { jobId } = await r.json();
+    let job;
+    for (let i = 0; i < 240; i++) {
+      job = await (await fetch(`${BASE}/api/jobs/${jobId}`, { headers: { Authorization: `Bearer ${token}` } })).json();
+      if (job.status === 'done' || job.status === 'error') break;
+      await new Promise(res2 => setTimeout(res2, 2000));
+    }
+    assert.equal(job.status, 'done', JSON.stringify(job).slice(0, 300));
+    const { rows, basis } = typeof job.result === 'string' ? JSON.parse(job.result) : job.result;
+    assert.equal(rows.length, 2);
+    assert.ok(rows.every(x => !x.error), JSON.stringify(rows));
+    assert.ok(rows.every(x => x.massKg > 0 && /CAD-derived/.test(x.massSource)));
+    assert.ok(rows[0].annualGapEur >= rows[1].annualGapEur, 'ranked by annual gap');
+    assert.match(basis, /DIRECTION INDICATOR/);
+  });
+
   it('negotiation pack with part360 data gains waterfall + forensics slides', async () => {
     const base = { partName: 'IT Bracket', material: 'Steel (mild)', process: 'Stamping / Deep Drawing', weightKg: 1.2, annualVolume: 100000, region: 'Germany', currency: 'EUR', format: 'pptx' };
     const plain = await fetch(`${BASE}/api/should-cost/export`, {

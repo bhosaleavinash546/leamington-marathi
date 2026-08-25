@@ -83,7 +83,7 @@ export async function generateCostReductionIdeas(
   searchApiKey?: string,
   onProgress?: (event: ProgressEvent) => void,
   /** Part 360 grounded mode: per-lens evidence blocks from /api/part360/dossier. */
-  extra?: { partEvidence?: { blocks: Array<{ lensId: string; text: string }> } }
+  extra?: { partEvidence?: { blocks: Array<{ lensId: string; text: string }> }; prismRunId?: string }
 ): Promise<AnalysisResponse> {
   const token = getAuthToken();
   const headers: Record<string, string> = {
@@ -104,6 +104,7 @@ export async function generateCostReductionIdeas(
       searchApiKey,
       cadGeometry: config.cadGeometry,
       ...(extra?.partEvidence ? { partEvidence: extra.partEvidence } : {}),
+      ...(extra?.prismRunId ? { prismRunId: extra.prismRunId } : {}),
     }),
   });
 
