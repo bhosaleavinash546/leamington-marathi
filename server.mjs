@@ -3240,7 +3240,10 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
           response = await client.messages.create(params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
         } catch (e) {
           // One failed lens must not sink the run — the merged set says which
-          // lens is missing rather than silently narrowing coverage.
+          // lens is missing rather than silently narrowing coverage. Logged
+          // server-side too: a non-SSE caller never sees emits, and an
+          // all-lenses failure was undiagnosable from the 500 alone.
+          console.warn(`[Prism] Lens "${block.lensId}" failed:`, e?.status ?? '', e?.message ?? e);
           emit({ type: 'progress', message: `Lens "${block.lensId}" failed (${safeLlmError(e)}) — continuing with the others.` });
           return [];
         }
