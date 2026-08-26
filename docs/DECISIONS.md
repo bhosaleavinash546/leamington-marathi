@@ -3003,3 +3003,42 @@ both existed; nothing joined them.
 **Consequences**: a 200k/yr 800V EDU BOM rolls up to ~€487 ex-inverter with
 the rotor block at 62% and magnets alone 44% of the motor — the cost-share
 ordering that tells a director where to spend engineering time.
+
+## 56. The deep library: 411 ideas that fill measured gaps, seeded unverified
+
+**Date**: 2026-08-26
+**Status**: Accepted
+
+**Context**: A request to add 400 deeply technical marketplace ideas without
+duplicating the existing 1,632. An audit of the corpus first, because
+"generate 400 more" without measuring what is already there produces
+restatement:
+  * levels: 708 part, 267 system, **0 assembly, 0 subassembly**
+  * only 497 of 975 rich entries named a specific material grade
+  * Powertrain ICE/hybrid held 3 ideas; thermal 57, NVH 23, electrical 77
+    against Body 276 / Chassis 280 / EDU 349
+
+**Decision**:
+1. **Slots come from the gaps.** 30 (commodity × level) slots weighted to the
+   holes, two passes each, so the pack is 140 assembly / 173 subassembly /
+   98 part across 27 commodities — the levels the library never had.
+2. **De-duplication is mechanical, not promised.** Each slot receives up to 45
+   nearest existing titles plus everything generated earlier in the run as an
+   explicit do-not-duplicate list; every candidate is then checked by
+   normalised title and Jaccard token overlap (>= 0.6) against all 1,632
+   corpus titles and the run's own output. `tests/marketplace-deep-library.test.mjs`
+   re-runs that check over every pack in CI.
+3. **An enrichment pass raises what falls short.** 332 entries lacking a named
+   grade or a benchmark were rewritten to name exact grades, specs and process
+   parameters. Result: materialGrade filled on 77%, median technical
+   description 786 characters against the corpus's 644.
+4. **Benchmarks stayed honest, and that shows in the numbers.** Instructed
+   never to invent a programme, the generator produced mostly technology-level
+   references ("established practice in X, no specific programme") and named
+   an OEM only where confident. That reads as *worse* coverage than the
+   existing corpus's 786/975 OEM-named entries — but those were themselves
+   AI-asserted and never verified. Fewer confident claims is the improvement,
+   not the regression.
+5. **Seeded verified: 0, stars: 0, confidenceLevel estimated, evidenceSources
+   empty.** These are AI-generated and engine-uncheckable at library level;
+   the UI's provenance badges must label them as such. A test pins it.

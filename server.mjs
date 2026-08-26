@@ -663,6 +663,14 @@ seedMarketplaceIdeasFromFile('marketplace-suv-ideas.json', 'premium-SUV Chassis 
 seedMarketplaceIdeasFromFile('marketplace-bev-cooling-ideas.json', 'BEV 800V cooling ideas');
 // 50 premium-SUV driveline ideas (gearbox, transfer case, diffs, half/prop shafts).
 seedMarketplaceIdeasFromFile('marketplace-driveline-ideas.json', 'premium-SUV driveline ideas');
+// 411 deep assembly / subassembly / part ideas generated to fill the coverage
+// gaps a corpus audit measured: the library held 708 part-level and 267
+// system-level entries and ZERO assembly or subassembly ideas, ICE/hybrid had
+// three, and half the rich entries named no material grade. Every entry here
+// carries exact grades and process parameters, and every one is seeded
+// UNVERIFIED — AI-generated, no live retrieval, no engine check at library
+// level — so the UI's provenance badges label them honestly.
+seedMarketplaceIdeasFromFile('marketplace-deep-library-ideas.json', 'deep assembly/subassembly/part library');
 // 300 premium OFF-ROAD LUXURY part-level ideas across 20 commodities (800V battery/
 // EDU/inverter, cooling, BIW, body, chassis, driveline, interior/exterior).
 seedMarketplaceIdeasFromFile('marketplace-offroad-luxury-ideas.json', 'off-road luxury cost-reduction ideas');
