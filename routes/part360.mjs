@@ -32,11 +32,11 @@ import crypto from 'crypto';
 import multer from 'multer';
 import {
   entitlementWaterfall, quoteForensics, buildDossier, dossierToPromptBlock,
-  inferSpecFromDrawing, allocateGap, LENSES, cadMassKg,
+  inferSpecFromDrawing, allocateGap, LENSES, cadMassKg, inputAnomalies, counterOffer,
 } from '../part360.mjs';
 import { geoSignature, rankSimilarRuns, rankTeardowns } from '../prism-memory.mjs';
 import { familyOfMaterial, familyForSelection } from '../dfm-process-registry.mjs';
-import { analyzeGeometry } from '../cad-engine/cad-geometry-bridge.mjs';
+import { analyzeGeometry, decomposeAssembly } from '../cad-engine/cad-geometry-bridge.mjs';
 
 // Zero-touch batch: bounded so one request cannot pin the OCCT workers all day.
 const batchUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 12 } });
@@ -420,6 +420,13 @@ Rules:
       };
       const teardowns = teardownLinesFor(req.user.id, tdCtx, library);
 
+      // Pre-flight: deterministic input cautions — flagged, never silently fixed.
+      const anomalies = inputAnomalies({
+        weightKg, annualVolume, processKey: tdCtx.processKey,
+        quote, geo: b.geo && typeof b.geo === 'object' ? b.geo : null,
+        cadDerivedMassKg: b.geo ? cadMassKg(b.geo, material) : null,
+      });
+
       const dossier = buildDossier({
         part: { partName, material, process: processName, weightKg, annualVolume, region },
         // The user's own statement of what the part is and does — the
@@ -430,6 +437,7 @@ Rules:
           : null,
         fleet,
         teardowns,
+        anomalies,
         geometry,
         dfm,
         shouldCost: {
@@ -466,8 +474,12 @@ Rules:
         }
       } catch { runId = null; }
 
+      const counter = counterOffer(forensics, waterfall);
+
       res.json({
         runId,
+        anomalies,
+        counter,
         dossier,
         promptBlock: dossierToPromptBlock(dossier),
         // Per-lens renderings, ready to pass straight to /api/analyze as
@@ -516,6 +528,47 @@ Rules:
           const geo = await analyzeGeometry(f.buffer, f.originalname, BATCH_GEO_TIMEOUT_MS);
           if (geo.status !== 'success') throw new Error(geo.error || 'geometry failed');
           const g = geo.geometry ?? geo;
+
+          // An assembly STEP expands into its child solids — Prism for
+          // assemblies, v1: each child costed on bulk volume × density (the
+          // decomposition carries no wall/DFM measurements, so the child
+          // waterfall honestly skips the process step).
+          if (g.assemblyWarning) {
+            try {
+              const dec = await decomposeAssembly(f.buffer, f.originalname, BATCH_GEO_TIMEOUT_MS);
+              const children = dec?.parts ?? dec?.children ?? [];
+              const density = library?.MATERIALS?.[resolveMaterial(material, library.MATERIALS)?.key]?.density;
+              if (children.length > 1 && Number.isFinite(density)) {
+                for (const child of children) {
+                  const volMm3 = Number(child.volumeMm3);
+                  if (!Number.isFinite(volMm3) || volMm3 <= 0) {
+                    rows.push({ file: `${f.originalname} › ${child.name ?? 'solid'}`, error: 'child solid carries no measurable volume' });
+                    continue;
+                  }
+                  const childMass = (volMm3 / 1000) * density / 1000;
+                  const cwf = entitlementWaterfall(
+                    { material, process: processName, weightKg: childMass, annualVolume, region },
+                    { geo: null, library, calibration },
+                  );
+                  const cFirst = cwf.steps.find(st => !st.skipped);
+                  const cEngine = cFirst ? cFirst.fromEur : null;
+                  const cGap = cEngine != null ? Number((cEngine - cwf.entitlementEur).toFixed(2)) : null;
+                  rows.push({
+                    file: `${f.originalname} › ${child.name ?? 'solid'}`,
+                    massKg: Number(childMass.toFixed(3)),
+                    massSource: 'decomposed child: bulk volume × density — no wall/DFM measurement at child level, process step skipped',
+                    engineEur: cEngine, entitlementEur: cwf.entitlementEur, gapEur: cGap,
+                    gapPct: cEngine > 0 ? Number(((cGap / cEngine) * 100).toFixed(1)) : null,
+                    annualGapEur: cGap != null ? Number((cGap * annualVolume).toFixed(0)) : null,
+                    topLever: cwf.steps.filter(st => !st.skipped).sort((a, z) => z.deltaEur - a.deltaEur)[0]?.basis?.slice(0, 140) ?? '—',
+                    co2DeltaKg: null,
+                  });
+                }
+                continue;   // children replace the parent row
+              }
+            } catch { /* fall through: cost the assembly as one body, warning included below */ }
+          }
+
           const mass = cadMassKg(g, material);
           if (mass == null) throw new Error(`no CAD-derived mass for ${material} — geometry carries no matching density`);
           const wf = entitlementWaterfall(

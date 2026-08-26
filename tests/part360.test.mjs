@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import {
   entitlementWaterfall, quoteForensics, buildDossier, dossierToPromptBlock,
   inferSpecFromDrawing, allocateGap, LENSES, KIND_TO_BUCKETS,
+  inputAnomalies, counterOffer,
 } from '../part360.mjs';
 import { computeShouldCost } from '../costing-engine.mjs';
 
@@ -252,5 +253,56 @@ describe('gap allocation', () => {
   it('returns null rather than fabricating when inputs are missing', () => {
     assert.equal(allocateGap(NaN, calc), null);
     assert.equal(allocateGap(10, null), null);
+  });
+});
+
+describe('input pre-flight anomalies', () => {
+  it('flags quote arithmetic that does not add up, with the numbers', () => {
+    const a = inputAnomalies({ quote: { totalEur: 10, lines: [{ amountEur: 4 }, { amountEur: 4 }] } });
+    assert.equal(a.length, 1);
+    assert.equal(a[0].id, 'quote-sum-mismatch');
+    assert.match(a[0].message, /€8\.00.*€10\.00/);
+  });
+  it('questions volumes outside the process band — as a question, not a verdict', () => {
+    const low = inputAnomalies({ processKey: 'Stamping / Deep Drawing', annualVolume: 500 });
+    assert.equal(low[0].id, 'volume-low-for-process');
+    assert.match(low[0].message, /heuristic band/);
+    const ok = inputAnomalies({ processKey: 'Stamping / Deep Drawing', annualVolume: 100000 });
+    assert.equal(ok.length, 0);
+  });
+  it('rejects physically impossible densities in either direction', () => {
+    const heavy = inputAnomalies({ weightKg: 5, geo: { volume: { cm3: 100 } } });
+    assert.equal(heavy[0].id, 'mass-impossible-high');
+    const light = inputAnomalies({ weightKg: 0.01, geo: { volume: { cm3: 100 } } });
+    assert.equal(light[0].id, 'mass-impossible-low');
+    assert.match(light[0].message, /enclosed air/);
+  });
+  it('stays silent on clean inputs', () => {
+    assert.deepEqual(inputAnomalies({ weightKg: 0.79, annualVolume: 100000, processKey: 'Machining (CNC)', geo: { volume: { cm3: 100 } }, cadDerivedMassKg: 0.785 }), []);
+  });
+});
+
+describe('counter-offer builder', () => {
+  const forensics = { rows: [
+    { label: 'Billet', kind: 'material', quoteEur: 6, engineEur: 2, verdict: 'above-model', basis: 'x' },
+    { label: 'Machining', kind: 'conversion', quoteEur: 4, engineEur: 3.8, verdict: 'in-band', basis: 'y' },
+    { label: 'ECO', kind: 'other', quoteEur: 1, engineEur: null, verdict: 'unmapped', basis: 'z' },
+  ] };
+  it('anchors asks at engine + band, holds in-band lines, and never invents unmapped targets', () => {
+    const co = counterOffer(forensics, { steps: [{ name: 'Commercial gap', skipped: false, deltaEur: 3.5 }] });
+    const by = Object.fromEntries(co.rows.map(r => [r.kind, r]));
+    assert.equal(by.material.targetEur, Number((2 * 1.34).toFixed(2)));
+    assert.ok(by.material.askEur > 3);
+    assert.equal(by.conversion.askEur, 0);
+    assert.match(by.conversion.argument, /hold/i);
+    assert.equal(by.other.targetEur, null);
+    assert.match(by.other.argument, /break this line down/);
+    assert.match(co.caveat, /defensible edge/);
+    assert.match(co.caveat, /€3\.50/);
+    assert.match(co.caveat, /execution stays with the buyer/);
+  });
+  it('returns null rather than a sheet with nothing to say', () => {
+    assert.equal(counterOffer(null, null), null);
+    assert.equal(counterOffer({ rows: [] }, null), null);
   });
 });

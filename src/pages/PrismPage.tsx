@@ -65,8 +65,12 @@ interface BatchRow {
   annualGapEur?: number | null; topLever?: string; co2DeltaKg?: number | null; error?: string;
 }
 
+interface CounterRow { label: string; kind: string; quotedEur: number; targetEur: number | null; askEur: number | null; argument: string }
+
 interface DossierResponse {
   runId?: string | null;
+  anomalies?: Array<{ id: string; message: string }>;
+  counter?: { rows: CounterRow[]; totalAskEur: number; caveat: string } | null;
   dossier: { sections: Array<{ id: string; title: string; present: boolean; reason?: string; lines: Array<{ ref: string; text: string }> }>; evidenceCount: number; absent: string[] };
   promptBlock: string;
   lensBlocks: Array<{ lensId: string; name: string; text: string }>;
@@ -219,6 +223,15 @@ export default function Part360Page() {
   const [batchBasis, setBatchBasis] = useState('');
   const [batchProgress, setBatchProgress] = useState('');
   const batchInputRef = useRef<HTMLInputElement>(null);
+
+  // ── What-if cockpit (live engine re-runs on the dossier) ──────────────────
+  const [wiVolume, setWiVolume] = useState('');
+  const [wiRegion, setWiRegion] = useState('');
+  const [wiTol, setWiTol] = useState('standard');
+  const [wiFin, setWiFin] = useState('standard');
+  const [wiTotal, setWiTotal] = useState<number | null>(null);
+  const [wiBusy, setWiBusy] = useState(false);
+  const wiSeq = useRef(0);
 
   // Each stage starts at its top — otherwise a mid-page scroll position from
   // the previous stage leaves the new panel's heading under the sticky rail.
@@ -578,6 +591,43 @@ export default function Part360Page() {
     } catch (e) {
       toast(e instanceof Error ? e.message : 'Batch failed', 'error');
     } finally { setBatchRunning(false); }
+  }
+
+  // Live what-if: the EXISTING deterministic endpoint, debounced. Stale
+  // responses are dropped by sequence — the number shown always matches the
+  // controls shown.
+  useEffect(() => {
+    if (step !== 3 || !dossier) return;
+    const vol = Number(wiVolume) || Number(annualVolume);
+    const reg = wiRegion || region;
+    const seq = ++wiSeq.current;
+    setWiBusy(true);
+    const t = setTimeout(async () => {
+      try {
+        const r = await fetch('/api/should-cost', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ partName, material, process: processName, weightKg: Number(weightKg), annualVolume: vol, region: reg, currency: 'EUR', toleranceClass: wiTol, surfaceFinish: wiFin }),
+        });
+        const d = await r.json();
+        if (seq === wiSeq.current && r.ok) setWiTotal(Number(d.totalValue));
+      } catch { /* cockpit is read-only convenience */ }
+      finally { if (seq === wiSeq.current) setWiBusy(false); }
+    }, 350);
+    return () => clearTimeout(t);
+  }, [step, dossier, wiVolume, wiRegion, wiTol, wiFin]);   // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function copyCounterSheet() {
+    if (!dossier?.counter) return;
+    const co = dossier.counter;
+    const text = [
+      `Counter positions — ${partName || 'part'} (engine-anchored targets)`,
+      ...co.rows.map(r => `• ${r.label}: quoted €${r.quotedEur.toFixed(2)} → ${r.targetEur != null ? `target €${r.targetEur.toFixed(2)} (ask €${(r.askEur ?? 0).toFixed(2)})` : 'please break this line down'} — ${r.argument}`),
+      `Total per-line ask: €${co.totalAskEur.toFixed(2)}/part`,
+      co.caveat,
+    ].join('\n');
+    try { await navigator.clipboard.writeText(text); toast('Counter sheet copied — paste into your supplier email.', 'success'); }
+    catch { toast('Clipboard unavailable — select and copy from the table.', 'error'); }
   }
 
   // ── The rail: every tick is a fact derived from real state ────────────────
@@ -1155,6 +1205,22 @@ export default function Part360Page() {
           {step === 3 && dossier && wf && (
             <motion.div key="s3" variants={m.stagger()} initial="hidden" animate="show" exit="exit" className="space-y-5">
 
+              {/* Pre-flight cautions: flagged, never silently fixed */}
+              {dossier.anomalies && dossier.anomalies.length > 0 && (
+                <motion.div variants={m.panel} className="dfm-panel dfm-alert-once border-amber-500/30 p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle size={14} className="text-amber-400" />
+                    <h2 className="text-amber-300 font-semibold text-sm">Input cautions ({dossier.anomalies.length})</h2>
+                  </div>
+                  <div className="space-y-1.5">
+                    {dossier.anomalies.map(a => (
+                      <p key={a.id} className="text-xs text-amber-200/80 max-w-none">{a.message}</p>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-2">These cautions also ride into the evidence dossier — ideas see the suspicion in the same breath as the input.</p>
+                </motion.div>
+              )}
+
               {/* Waterfall — the bars ARE the engine numbers */}
               <motion.div variants={m.panel} className="dfm-panel dfm-framed dfm-spot p-5 relative overflow-hidden" onMouseMove={spot}>
                 <div className="dfm-scan" style={{ '--scan-h': '340px' } as React.CSSProperties} aria-hidden="true" />
@@ -1280,6 +1346,52 @@ export default function Part360Page() {
                 </details>
               </motion.div>
 
+              {/* What-if cockpit: live engine re-runs, deltas vs the dossier baseline */}
+              <motion.div variants={m.panel} className="dfm-panel dfm-spot p-5" onMouseMove={spot}>
+                <div className="flex flex-wrap items-end justify-between gap-4">
+                  <div className="flex flex-wrap items-end gap-3">
+                    <div>
+                      <div className="dfm-label text-slate-500 mb-1">What-if · Volume /yr</div>
+                      <select className="dfm-select" aria-label="What-if annual volume" value={wiVolume || String(annualVolume)} onChange={e => setWiVolume(e.target.value)}>
+                        {[...new Set([Number(annualVolume), 10000, 25000, 50000, 100000, 250000, 500000, 1000000])].sort((a, b) => a - b).map(v => (
+                          <option key={v} value={v}>{v.toLocaleString()}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <div className="dfm-label text-slate-500 mb-1">Region</div>
+                      <select className="dfm-select" aria-label="What-if region" value={wiRegion || region} onChange={e => setWiRegion(e.target.value)}>
+                        {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <div className="dfm-label text-slate-500 mb-1">Tolerance</div>
+                      <select className="dfm-select" aria-label="What-if tolerance class" value={wiTol} onChange={e => setWiTol(e.target.value)}>
+                        {['standard', 'tight', 'precision'].map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <div className="dfm-label text-slate-500 mb-1">Finish</div>
+                      <select className="dfm-select" aria-label="What-if surface finish" value={wiFin} onChange={e => setWiFin(e.target.value)}>
+                        {['standard', 'fine', 'polished'].map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="text-right min-w-[170px]">
+                    <div className="dfm-label text-slate-500 mb-1">Engine total at these settings</div>
+                    <div className="dfm-kpi-value text-white" style={{ fontSize: 26 }}>
+                      {wiBusy ? <Loader2 size={18} className="animate-spin inline text-slate-500" /> : wiTotal != null ? <TickNumber value={wiTotal} decimals={2} prefix="€" /> : '—'}
+                    </div>
+                    {wiTotal != null && !wiBusy && (
+                      <div className={`dfm-num text-xs mt-0.5 ${wiTotal <= dossier.engineTotalEur ? 'text-emerald-400' : 'text-amber-400'}`}>
+                        {wiTotal <= dossier.engineTotalEur ? '−' : '+'}€{Math.abs(wiTotal - dossier.engineTotalEur).toFixed(2)} vs dossier baseline
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-3">Live deterministic re-run of the as-specified engine total — same math as the dossier. The full waterfall (process &amp; quote steps) recomputes when you rebuild the dossier.</p>
+              </motion.div>
+
               {/* Forensics */}
               {dossier.forensics?.rows?.length ? (
                 <motion.div variants={m.panel} className="dfm-panel dfm-spot p-5" onMouseMove={spot}>
@@ -1329,6 +1441,37 @@ export default function Part360Page() {
                     })}
                   </motion.div>
                   {dossier.forensics.caveat && <p className="text-[11px] text-slate-500 mt-3">{dossier.forensics.caveat}</p>}
+                </motion.div>
+              ) : null}
+
+              {/* Counter positions: the forensics as a supplier-ready sheet */}
+              {dossier.counter?.rows?.length ? (
+                <motion.div variants={m.panel} className="dfm-panel dfm-spot p-5" onMouseMove={spot}>
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-2">
+                      <FileText size={15} className="text-gold-400" />
+                      <h2 className="text-white font-semibold text-sm">Counter positions</h2>
+                      <span className="dfm-num text-xs text-gold-400 font-semibold">total ask €{dossier.counter.totalAskEur.toFixed(2)}/part</span>
+                    </div>
+                    <motion.button {...m.press} onClick={copyCounterSheet}
+                      className="dfm-lift bg-white/[0.06] hover:bg-white/10 text-white text-xs rounded-lg px-3 py-1.5 border border-white/10">
+                      Copy as supplier sheet
+                    </motion.button>
+                  </div>
+                  <div className="space-y-2">
+                    {dossier.counter.rows.map((r, i) => (
+                      <div key={i} className="dfm-row-hover rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-2.5">
+                        <div className="flex flex-wrap items-center gap-3 text-xs">
+                          <span className="text-white min-w-[120px] flex-1">{r.label}</span>
+                          <span className="dfm-num text-slate-400 w-20 text-right">quoted €{r.quotedEur.toFixed(2)}</span>
+                          <span className={`dfm-num w-24 text-right ${r.targetEur != null ? 'text-teal-300' : 'text-slate-500 italic'}`}>{r.targetEur != null ? `target €${r.targetEur.toFixed(2)}` : 'clarify'}</span>
+                          <span className={`dfm-num w-20 text-right font-semibold ${r.askEur ? 'text-gold-400' : 'text-slate-600'}`}>{r.askEur ? `−€${r.askEur.toFixed(2)}` : '—'}</span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-1">{r.argument}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-3">{dossier.counter.caveat}</p>
                 </motion.div>
               ) : null}
 

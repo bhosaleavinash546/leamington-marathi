@@ -14,7 +14,7 @@ import { applyLiveMaterialPrices } from '../material-commodity.mjs';
 import { computeCarbon } from '../carbon.mjs';
 import { targetGap } from '../innovation.mjs';
 import { runEngineChecks } from '../engine-idea-check.mjs';
-import { entitlementWaterfall, quoteForensics, KIND_TO_BUCKETS } from '../part360.mjs';
+import { entitlementWaterfall, quoteForensics, counterOffer, KIND_TO_BUCKETS } from '../part360.mjs';
 
 export function registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, getCommodityPrices }) {
   // Active rate library with live commodity prices bridged into material €/kg, so
@@ -554,6 +554,29 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
         s5.addTable(rows5, { x: 0.6, y: 1.15, w: 12.1, fontSize: 10, colW: [2.4, 1.0, 1.2, 1.2, 1.1, 5.2], border: { type: 'solid', color: '1E3A5F', pt: 0.5 }, fill: { color: '0B1A2C' } });
         if (f.caveat) s5.addText(String(f.caveat), { x: 0.6, y: 6.85, w: 12, h: 0.5, fontSize: 9, italic: true, color: SLATE });
         if (currency !== 'EUR') s5.addText(`Basis sentences cite the engine's native EUR figures; table columns are converted to ${currency} at the stated FX rate.`, { x: 0.6, y: 7.15, w: 12, h: 0.3, fontSize: 8, italic: true, color: SLATE });
+      }
+
+      // Counter positions: the forensics verdicts as a supplier-ready sheet.
+      const co = p360?.forensics ? counterOffer(p360.forensics, p360.waterfall) : null;
+      if (co?.rows?.length) {
+        const s6 = pptx.addSlide();
+        s6.background = { color: NAVY };
+        s6.addText('Prism — Counter Positions', { x: 0.6, y: 0.4, w: 12, h: 0.6, fontSize: 22, bold: true, color: 'FFFFFF' });
+        const hdr = (t) => ({ text: t, options: { bold: true, color: 'FFFFFF' } });
+        const cell = (t, c = 'DDE3EA') => ({ text: String(t), options: { color: c } });
+        const rows6 = [[hdr('Line'), hdr(`Quoted (${currency})`), hdr(`Target (${currency})`), hdr(`Ask (${currency})`), hdr('Argument')]];
+        for (const r of co.rows) {
+          rows6.push([
+            cell(r.label),
+            cell(cv(r.quotedEur).toFixed(2)),
+            cell(r.targetEur != null ? cv(r.targetEur).toFixed(2) : 'clarify', r.targetEur != null ? 'DDE3EA' : SLATE),
+            cell(r.askEur ? cv(r.askEur).toFixed(2) : '—', r.askEur ? GOLD : 'DDE3EA'),
+            cell(String(r.argument).slice(0, 150)),
+          ]);
+        }
+        s6.addTable(rows6, { x: 0.6, y: 1.15, w: 12.1, fontSize: 10, colW: [2.4, 1.2, 1.2, 1.1, 6.2], border: { type: 'solid', color: '1E3A5F', pt: 0.5 }, fill: { color: '0B1A2C' } });
+        s6.addText(`Total per-line ask: ${sym}${cv(co.totalAskEur).toFixed(2)}/part`, { x: 0.6, y: 6.3, w: 12, h: 0.45, fontSize: 14, bold: true, color: GOLD });
+        s6.addText(String(co.caveat), { x: 0.6, y: 6.85, w: 12, h: 0.5, fontSize: 9, italic: true, color: SLATE });
       }
 
       const pbuf = await pptx.write({ outputType: 'nodebuffer' });

@@ -178,6 +178,102 @@ export function quoteForensics(lines, calc, { annualVolume = null, materialPrice
   };
 }
 
+// ── Input pre-flight: deterministic anomaly checks ───────────────────────────
+//
+// Suspicious inputs poison every engine figure downstream, so they are
+// checked BEFORE the dossier and stated as cautions — never silently fixed
+// (the Tset lesson: flag, don't guess). Every check is a stated heuristic
+// with its arithmetic in the message.
+export const PROCESS_VOLUME_BANDS = {
+  // Heuristic sanity bands (units/yr) — flags outside them are questions,
+  // not verdicts. Basis: typical automotive practice per process class.
+  'Sand Casting': [500, 2_000_000],
+  'Investment Casting': [100, 500_000],
+  'Machining (CNC)': [1, 2_000_000],
+  'Turning (CNC)': [1, 5_000_000],
+  'Forging (Hot)': [5_000, 5_000_000],
+  'Forging (Cold)': [50_000, 50_000_000],
+  'Stamping / Deep Drawing': [10_000, 50_000_000],
+  'Die Casting (Aluminium)': [10_000, 5_000_000],
+  'Injection Moulding': [10_000, 50_000_000],
+  'Lamination Stamping (Electrical Steel)': [100_000, 100_000_000],
+};
+
+export function inputAnomalies({ weightKg, annualVolume, processKey, quote, geo, cadDerivedMassKg } = {}) {
+  const out = [];
+  const mass = Number(weightKg);
+
+  // Quote arithmetic: lines that do not sum to the total are a data-entry or
+  // apportionment error a negotiation would trip over.
+  if (quote && Number.isFinite(quote.totalEur) && Array.isArray(quote.lines) && quote.lines.length >= 2) {
+    const sum = quote.lines.reduce((s2, l) => s2 + (Number(l.amountEur) || 0), 0);
+    const diff = sum - quote.totalEur;
+    if (Math.abs(diff) / quote.totalEur > 0.02) {
+      out.push({
+        id: 'quote-sum-mismatch',
+        message: `Quote lines sum to €${sum.toFixed(2)} but the stated total is €${quote.totalEur.toFixed(2)} (${diff > 0 ? '+' : ''}€${diff.toFixed(2)}). One of them is wrong, or a line is missing — the forensics judge the LINES, so reconcile before negotiating.`,
+      });
+    }
+  }
+
+  // Volume plausibility for the process class — a question, not a verdict.
+  const band = PROCESS_VOLUME_BANDS[processKey];
+  const vol = Number(annualVolume);
+  if (band && Number.isFinite(vol)) {
+    if (vol < band[0]) out.push({ id: 'volume-low-for-process', message: `${vol.toLocaleString()}/yr is unusually LOW for ${processKey} (heuristic band ${band[0].toLocaleString()}–${band[1].toLocaleString()}/yr) — tooling amortisation will dominate; check the volume, or whether this process is the right anchor.` });
+    else if (vol > band[1]) out.push({ id: 'volume-high-for-process', message: `${vol.toLocaleString()}/yr is unusually HIGH for ${processKey} (heuristic band ${band[0].toLocaleString()}–${band[1].toLocaleString()}/yr) — check the volume, or whether a higher-rate process is the real production route.` });
+  }
+
+  // Physically impossible mass against the measured volume: denser than any
+  // engineering metal, or lighter than any solid at half magnesium's density.
+  const volCm3 = Number(geo?.volume?.cm3);
+  if (Number.isFinite(volCm3) && volCm3 > 0 && Number.isFinite(mass) && mass > 0) {
+    const gPerCc = (mass * 1000) / volCm3;
+    if (gPerCc > 20) out.push({ id: 'mass-impossible-high', message: `Stated mass ${mass} kg over the measured ${volCm3.toFixed(1)} cm³ implies ${gPerCc.toFixed(1)} g/cm³ — denser than any engineering metal. The mass or the model is wrong.` });
+    else if (gPerCc < 0.8) out.push({ id: 'mass-impossible-low', message: `Stated mass ${mass} kg over the measured ${volCm3.toFixed(1)} cm³ implies ${gPerCc.toFixed(2)} g/cm³ — lighter than any solid engineering material. If the model is a closed solid of a hollow part, the MEASURED volume is the suspect (enclosed air), not your mass.` });
+  }
+
+  // Stated vs CAD-derived mass, when both exist (mirrors the wizard banner).
+  if (Number.isFinite(cadDerivedMassKg) && cadDerivedMassKg > 0 && Number.isFinite(mass) && mass > 0) {
+    const r = mass / cadDerivedMassKg;
+    if (r > 5 || r < 0.2) out.push({ id: 'mass-vs-cad', message: `Stated mass ${mass} kg is ${r > 1 ? (r).toFixed(1) + '× above' : (1 / r).toFixed(1) + '× below'} the CAD-derived ${cadDerivedMassKg.toFixed(3)} kg — one of them is not this part.` });
+  }
+  return out;
+}
+
+// ── Counter-offer builder ────────────────────────────────────────────────────
+//
+// The forensics verdicts already imply per-line positions; this turns them
+// into a supplier-ready counter sheet. The ask anchors at the engine bucket
+// plus the measured dispersion band — the DEFENSIBLE edge of the model, not
+// its centre — and lines the model cannot judge become clarification asks,
+// never invented targets. Execution stays human.
+export function counterOffer(forensics, waterfall) {
+  if (!forensics?.rows?.length) return null;
+  const band = MODEL_DISPERSION;
+  const rows = forensics.rows.map((r) => {
+    if (r.verdict === 'above-model') {
+      const targetEur = round2(r.engineEur * (1 + band));
+      return {
+        label: r.label, kind: r.kind, quotedEur: r.quoteEur, targetEur,
+        askEur: round2(r.quoteEur - targetEur),
+        argument: `Engine models this bucket at €${r.engineEur.toFixed(2)}; the target concedes the full +${Math.round(band * 100)}% measured model band. ${r.basis}`,
+      };
+    }
+    if (r.verdict === 'in-band' || r.verdict === 'below-model') {
+      return { label: r.label, kind: r.kind, quotedEur: r.quoteEur, targetEur: r.quoteEur, askEur: 0, argument: `Within the engine's band${r.verdict === 'below-model' ? ' (below model — no ask; check scope coverage instead)' : ''} — hold, spend negotiation capital elsewhere.` };
+    }
+    return { label: r.label, kind: r.kind, quotedEur: r.quoteEur, targetEur: null, askEur: null, argument: 'No engine counterpart — ask the supplier to break this line down before it can be judged.' };
+  });
+  const totalAskEur = round2(rows.reduce((s2, r) => s2 + (Number(r.askEur) || 0), 0));
+  const commercial = waterfall?.steps?.find(st => st.name === 'Commercial gap' && !st.skipped);
+  return {
+    rows,
+    totalAskEur,
+    caveat: `Per-line targets anchor at engine + ${Math.round(band * 100)}% band — the defensible edge, not the model centre.${commercial ? ` The overall commercial gap is €${commercial.deltaEur.toFixed(2)} (${commercial.deltaEur < totalAskEur ? 'less than' : 'more than'} the per-line asks — lines and total are different negotiations).` : ''} Directional until your calibration corpus grows; execution stays with the buyer.`,
+  };
+}
+
 // ── The entitlement waterfall ────────────────────────────────────────────────
 
 /**
@@ -362,7 +458,7 @@ export function buildDossier({
   quote = null, forensics = null, waterfall = null,
   routes = null, regionSweep = null, volumeCurve = null,
   specSteps = null, functionModel = null,
-  fleet = null, teardowns = null,
+  fleet = null, teardowns = null, anomalies = null,
 } = {}) {
   let e = 0;
   const ref = () => `E${++e}`;
@@ -399,6 +495,9 @@ export function buildDossier({
 
   add('part', 'Part under analysis', [
     `${part.partName ?? 'Unnamed part'} — ${part.material ?? '?'} via ${part.process ?? '?'}, ${Number(part.weightKg) || '?'} kg, ${Number(part.annualVolume)?.toLocaleString?.() ?? '?'}/yr, ${part.region ?? '?'}.`,
+    // Pre-flight cautions ride WITH the part identity: an idea built on a
+    // suspect input should see the suspicion in the same breath.
+    ...((Array.isArray(anomalies) ? anomalies : []).map(a => `INPUT CAUTION: ${a.message}`)),
   ]);
 
   add('geometry', '3D geometry (measured)', geometry ? [

@@ -138,6 +138,34 @@ describe('http integration', () => {
     assert.match(text, /prior "material" lines ran/);
   });
 
+  it('dossier pre-flight flags bad arithmetic and returns engine-anchored counter positions', async () => {
+    const d = await (await fetch(`${BASE}/api/part360/dossier`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        partName: 'Caution Bracket', material: 'Steel (mild)', process: 'Stamping / Deep Drawing',
+        weightKg: 1.2, annualVolume: 500,   // deliberately below the stamping band
+        region: 'Germany',
+        quote: { total: 10, currency: 'EUR', lines: [
+          { label: 'coil', kind: 'material', amount: 3 },
+          { label: 'press', kind: 'conversion', amount: 3 },   // sums to 6, total says 10
+        ] },
+      }),
+    })).json();
+    const ids = (d.anomalies ?? []).map(a => a.id);
+    assert.ok(ids.includes('quote-sum-mismatch'), JSON.stringify(d.anomalies));
+    assert.ok(ids.includes('volume-low-for-process'));
+    // Cautions ride into the evidence itself.
+    const partSec = d.dossier.sections.find(x => x.id === 'part');
+    assert.match(partSec.lines.map(l => l.text).join('\n'), /INPUT CAUTION/);
+    // Counter positions: anchored, held, or clarified — never invented.
+    assert.ok(d.counter && d.counter.rows.length === 2);
+    for (const r of d.counter.rows) {
+      assert.ok(r.targetEur === null || Number.isFinite(r.targetEur));
+      assert.ok(r.argument.length > 10);
+    }
+    assert.match(d.counter.caveat, /defensible edge/);
+  });
+
   it('fleet memory: the second run on similar geometry cites the first — the first states absence', async () => {
     const GEO = {
       boundingBox: { xMm: 40, yMm: 40, zMm: 20 }, volume: { cm3: 14.6 }, fillRatio: 0.46,
@@ -268,6 +296,7 @@ describe('http integration', () => {
     assert.equal(buf.subarray(0, 2).toString(), 'PK');
     assert.ok(buf.includes('ppt/slides/slide4.xml'), 'waterfall slide missing');
     assert.ok(buf.includes('ppt/slides/slide5.xml'), 'forensics slide missing');
+    assert.ok(buf.includes('ppt/slides/slide6.xml'), 'counter-positions slide missing');
   });
 
   it('cad tessellate guards: 401 unauthenticated, 422 proprietary format', async () => {

@@ -2939,3 +2939,29 @@ authority.
 (`prismRunId`) so tracker outcomes accrue to the fleet; memory writes are
 best-effort and can never block a dossier; all sections keep the
 stated-absent discipline ("fleet memory starts with this run").
+
+## 54. Tier 2: guardrails flag, counters anchor at the band's edge
+
+**Date**: 2026-08-25
+**Status**: Accepted
+
+Four capability-gap moves from the market research, each with its stated
+honesty rule:
+1. **Input pre-flight** (`inputAnomalies`): quote-line arithmetic, process
+   volume sanity bands (labelled heuristic questions, not verdicts),
+   physically impossible densities, stated-vs-CAD mass. Cautions are FLAGGED
+   and ride into the evidence dossier as "INPUT CAUTION" lines on the part
+   section — never silently fixed (the Tset lesson).
+2. **Counter-offer builder** (`counterOffer`): above-model lines target
+   engine + the full measured dispersion band — the DEFENSIBLE edge, not the
+   model centre; in-band lines are held ("spend capital elsewhere"); unmapped
+   lines become clarification asks, never invented targets. UI table with a
+   copy-as-supplier-sheet action; sixth slide in the negotiation pack.
+   Execution stays with the buyer by design.
+3. **What-if cockpit**: live volume/region/spec re-runs through the EXISTING
+   /api/should-cost endpoint (no new surface), sequence-guarded so the number
+   shown always matches the controls shown; labelled as-specified only — the
+   full waterfall recomputes on rebuild.
+4. **Assemblies in batch triage**: a STEP with an assembly warning decomposes
+   into child solids, each costed on bulk volume × density with the process
+   step honestly skipped ("no wall/DFM measurement at child level").
