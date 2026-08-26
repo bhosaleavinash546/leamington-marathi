@@ -1227,3 +1227,251 @@ export function exportRfqPdf(
   const filename = safeFilename(`BrainSpark_RFQ_${systemName}_${today.replace(/ /g, '_')}.pdf`);
   doc.save(filename);
 }
+
+// ─── Marketplace PDF exports ─────────────────────────────────────────────────
+//
+// Two scopes: one idea as a detail sheet, or the currently filtered selection
+// as a catalogue. The judgements (provenance wording, which sections exist,
+// how the cover describes the filter) live in marketplace-report.mjs where
+// tests pin them; this file only draws.
+
+import {
+  parseIdeaData, provenanceLabel, ideaSections, filterLine as mkFilterLine,
+  verifiedSplit, type MarketplaceIdeaRow, type FilterState,
+} from './marketplace-report.mjs';
+
+const today = () => new Date().toISOString().split('T')[0];
+
+/** Shared page geometry for the marketplace exports. */
+const MPW = 210, MPH = 297, MML = 14, MCW = MPW - MML - 14;
+
+function mpFooter(doc: jsPDF, label: string, page: number) {
+  doc.addImage(LOGO_PNG, 'PNG', MML, MPH - 10.2, 5.5, 5.5);
+  setColor(doc, GRAY_RGB);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`BrainSpark Marketplace  |  ${label}  |  Page ${page}`, MPW / 2, MPH - 6, { align: 'center' });
+}
+
+/** Header chips row: saving / difficulty / time / level. Returns next y. */
+function mpChips(doc: jsPDF, idea: MarketplaceIdeaRow, y: number): number {
+  const chips: Array<{ label: string; value: string; rgb: readonly [number, number, number] }> = [
+    { label: 'Annual saving (est.)', value: idea.annualSaving || '—', rgb: [34, 197, 94] },
+    { label: 'Difficulty', value: idea.difficulty || '—', rgb: diffRgb(idea.difficulty) },
+    { label: 'Time to implement', value: idea.timeToImplement || '—', rgb: [59, 130, 246] },
+    { label: 'Level', value: idea.level ? idea.level.charAt(0).toUpperCase() + idea.level.slice(1) : '—', rgb: [139, 92, 246] },
+  ];
+  const boxW = (MCW - 9) / 4;
+  chips.forEach((c, i) => {
+    const bx = MML + i * (boxW + 3);
+    setFill(doc, [30, 41, 59]);
+    doc.roundedRect(bx, y, boxW, 18, 2, 2, 'F');
+    setFill(doc, c.rgb);
+    doc.rect(bx, y, boxW, 1.2, 'F');
+    setColor(doc, c.rgb);
+    doc.setFontSize(9.5);
+    doc.setFont('helvetica', 'bold');
+    doc.text(fitText(doc, c.value, boxW - 4), bx + boxW / 2, y + 9, { align: 'center' });
+    setColor(doc, [148, 163, 184]);
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'normal');
+    doc.text(c.label, bx + boxW / 2, y + 14.5, { align: 'center' });
+  });
+  return y + 24;
+}
+
+/** Export ONE marketplace idea as a detail sheet. */
+export function exportMarketplaceIdeaPdf(ideaIn: MarketplaceIdeaRow): void {
+  const idea = deepPdfSafe(ideaIn) as MarketplaceIdeaRow;
+  const parsed = parseIdeaData(idea.ideaData ?? null);
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  let page = 1;
+
+  // Header band
+  setFill(doc, NAVY_RGB);
+  doc.rect(0, 0, MPW, 56, 'F');
+  setFill(doc, GOLD_RGB);
+  doc.rect(0, 56, MPW, 1.2, 'F');
+  doc.addImage(LOGO_PNG, 'PNG', MML, 8, 9, 9);
+  setColor(doc, GOLD_RGB);
+  doc.setFontSize(15);
+  doc.setFont('helvetica', 'bold');
+  doc.text('BrainSpark  ·  Marketplace Idea', MML + 12, 14.5);
+  setColor(doc, WHITE_RGB);
+  doc.setFontSize(13);
+  const titleLines = wrapText(doc, idea.title, MCW).slice(0, 3);
+  doc.text(titleLines, MML, 26);
+  setColor(doc, [148, 163, 184]);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${idea.system}${idea.costSavingType ? '  ·  ' + idea.costSavingType : ''}  ·  Exported ${today()}`, MML, 26 + titleLines.length * 6 + 3);
+
+  // Provenance — the honesty line, printed before any content.
+  const prov = pdfSafe(provenanceLabel(idea, parsed));
+  setColor(doc, idea.verified ? ([96, 165, 250] as const) : GOLD_RGB);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.text(wrapText(doc, prov, MCW), MML, 50);
+
+  mpFooter(doc, fitText(doc, idea.title, 90), page);
+  let cy = mpChips(doc, idea, 63);
+
+  const ensure = (need: number) => {
+    if (cy + need <= MPH - 16) return;
+    doc.addPage();
+    page++;
+    mpFooter(doc, fitText(doc, idea.title, 90), page);
+    cy = 18;
+  };
+
+  for (const [heading, text] of ideaSections(idea, parsed)) {
+    ensure(14);
+    setColor(doc, NAVY_RGB);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text(heading, MML, cy);
+    cy += 5;
+    setColor(doc, [50, 70, 90]);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    // Paragraph-flow the section, breaking pages mid-section when needed.
+    for (const para of text.split('\n')) {
+      const lines: string[] = wrapText(doc, para, MCW);
+      for (const line of lines) {
+        ensure(5);
+        doc.text(line, MML, cy);
+        cy += 4.6;
+      }
+      cy += 1;
+    }
+    cy += 4;
+  }
+
+  ensure(10);
+  setColor(doc, GRAY_RGB);
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'italic');
+  doc.text(wrapText(doc, pdfSafe(OUTBOUND_DISCLAIMER), MCW), MML, cy);
+
+  doc.save(safeFilename(`BrainSpark_Marketplace_${idea.title.slice(0, 60)}_${today()}.pdf`));
+}
+
+/** Export the CURRENT FILTERED selection as a catalogue PDF. The cover states
+ *  the filter, the count and the verified/unverified split — the export never
+ *  hides what produced it. */
+export function exportMarketplaceCataloguePdf(ideasIn: MarketplaceIdeaRow[], filters: FilterState): void {
+  const ideas = ideasIn.map(i => deepPdfSafe(i) as MarketplaceIdeaRow);
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const split = verifiedSplit(ideas);
+  const filterDesc = pdfSafe(mkFilterLine(filters));
+  let page = 1;
+
+  // ── Cover ──
+  setFill(doc, NAVY_RGB);
+  doc.rect(0, 0, MPW, 120, 'F');
+  setFill(doc, GOLD_RGB);
+  doc.rect(0, 120, MPW, 1.2, 'F');
+  doc.addImage(LOGO_PNG, 'PNG', MML, 20, 13, 13);
+  setColor(doc, GOLD_RGB);
+  doc.setFontSize(28);
+  doc.setFont('helvetica', 'bold');
+  doc.text('BrainSpark', MML + 16, 30);
+  setColor(doc, WHITE_RGB);
+  doc.setFontSize(18);
+  doc.text('Marketplace Idea Catalogue', MML, 46);
+  setColor(doc, [203, 213, 225]);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(wrapText(doc, `Selection: ${filterDesc}`, MCW), MML, 58);
+  doc.text(`Exported: ${today()}`, MML, 72);
+
+  const metrics = [
+    { label: 'Ideas in selection', value: String(split.total), rgb: [59, 130, 246] as const },
+    { label: 'Review-verified', value: String(split.verified), rgb: [34, 197, 94] as const },
+    { label: 'Unverified (AI/curated)', value: String(split.unverified), rgb: [245, 158, 11] as const },
+  ];
+  const boxW = (MCW - 6) / 3;
+  metrics.forEach((m, i) => {
+    const bx = MML + i * (boxW + 3);
+    setFill(doc, [30, 41, 59]);
+    doc.roundedRect(bx, 84, boxW, 22, 2, 2, 'F');
+    setFill(doc, m.rgb);
+    doc.rect(bx, 84, boxW, 1.5, 'F');
+    setColor(doc, m.rgb);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(m.value, bx + boxW / 2, 97, { align: 'center' });
+    setColor(doc, [148, 163, 184]);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text(m.label, bx + boxW / 2, 103, { align: 'center' });
+  });
+
+  setColor(doc, [50, 70, 90]);
+  doc.setFontSize(9);
+  doc.text(wrapText(doc,
+    'Unverified entries are AI-generated or curated library content: savings are estimates with their arithmetic ' +
+    'stated per idea, and no library entry has been engine-checked against a measured part. ' + OUTBOUND_DISCLAIMER,
+    MCW), MML, 132);
+  mpFooter(doc, filterDesc.slice(0, 60), page);
+
+  // ── Entries ──
+  let cy = 160;
+  const ensure = (need: number) => {
+    if (cy + need <= MPH - 16) return;
+    doc.addPage();
+    page++;
+    mpFooter(doc, filterDesc.slice(0, 60), page);
+    cy = 18;
+  };
+
+  ideas.forEach((idea, idx) => {
+    const parsed = parseIdeaData(idea.ideaData ?? null);
+    ensure(30);
+
+    // Entry header: number + title + provenance dot
+    setFill(doc, LIGHT_RGB);
+    doc.rect(MML, cy - 4, MCW, 6.5, 'F');
+    setColor(doc, NAVY_RGB);
+    doc.setFontSize(9.5);
+    doc.setFont('helvetica', 'bold');
+    doc.text(fitText(doc, `${idx + 1}.  ${idea.title}`, MCW - 24), MML + 1, cy);
+    setColor(doc, idea.verified ? ([34, 197, 94] as const) : GOLD_RGB);
+    doc.setFontSize(7);
+    doc.text(idea.verified ? 'VERIFIED' : 'UNVERIFIED', MML + MCW - 1, cy, { align: 'right' });
+    cy += 6;
+
+    setColor(doc, GRAY_RGB);
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.text(fitText(doc,
+      `${idea.system}  ·  ${idea.annualSaving || '—'}/yr (est.)  ·  ${idea.difficulty}  ·  ${idea.timeToImplement}` +
+      (idea.level ? `  ·  ${idea.level}` : ''), MCW), MML + 1, cy);
+    cy += 5;
+
+    const body = parsed?.technicalDescription || idea.description || '';
+    const bodyLines: string[] = wrapText(doc, body, MCW - 2).slice(0, 6);
+    setColor(doc, [50, 70, 90]);
+    doc.setFontSize(8);
+    for (const line of bodyLines) {
+      ensure(4.5);
+      doc.text(line, MML + 1, cy);
+      cy += 4.2;
+    }
+    const bm = parsed ? (parsed.benchmarkAnchor?.platform
+      ? `Benchmark: ${parsed.benchmarkAnchor.platform}`
+      : (parsed.benchmarkReference ? `Benchmark: ${String(parsed.benchmarkReference).split('.')[0]}` : null)) : null;
+    if (bm) {
+      ensure(4.5);
+      setColor(doc, [100, 60, 0]);
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica', 'bold');
+      doc.text(fitText(doc, bm, MCW - 2), MML + 1, cy);
+      doc.setFont('helvetica', 'normal');
+      cy += 4.2;
+    }
+    cy += 5;
+  });
+
+  doc.save(safeFilename(`BrainSpark_Marketplace_Catalogue_${split.total}ideas_${today()}.pdf`));
+}

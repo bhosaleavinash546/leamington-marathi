@@ -2,8 +2,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Store, Star, TrendingDown, Clock, ChevronDown, ChevronUp, CheckCircle,
-  Lightbulb, ThumbsUp, ChevronRight, GitMerge, Layers,
+  Lightbulb, ThumbsUp, ChevronRight, GitMerge, Layers, FileDown,
 } from 'lucide-react';
+import { exportMarketplaceIdeaPdf, exportMarketplaceCataloguePdf } from '../services/export-service';
 import BusinessCaseModal from '../components/BusinessCaseModal';
 import IdeaDetailPanel from '../components/IdeaDetailPanel';
 import { toast } from '../hooks/useToast';
@@ -702,6 +703,31 @@ export default function MarketplacePage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-3">
               <p className="text-slate-500 text-xs">{sorted.length.toLocaleString()} idea{sorted.length === 1 ? '' : 's'} match</p>
+              <button
+                onClick={() => {
+                  if (sorted.length === 0) return;
+                  try {
+                    exportMarketplaceCataloguePdf(sorted, {
+                      searchQ,
+                      commodity: COMMODITY_GROUPS.find(g => g.key === filterCommodity)?.label ?? filterCommodity,
+                      system: filterSystem,
+                      difficulty: filterDiff,
+                      level: filterLevel,
+                      powertrain: filterPowertrain,
+                      voltage: filterVoltage,
+                      theme: !!themeFilter,
+                      sortBy,
+                    });
+                    toast(`Exported ${sorted.length.toLocaleString()} ideas to PDF`, 'success');
+                  } catch { toast('PDF export failed', 'error'); }
+                }}
+                disabled={sorted.length === 0}
+                aria-label={`Export the ${sorted.length} filtered ideas to PDF`}
+                title="Export the current filtered selection as a PDF catalogue"
+                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs"
+              >
+                <FileDown size={12} /> Export PDF ({sorted.length.toLocaleString()})
+              </button>
               <label className="flex items-center gap-2 text-xs text-slate-400">
                 Sort
                 <select aria-label="Sort ideas" value={sortBy} onChange={e => { setSortBy(e.target.value as typeof sortBy); setVisibleCount(60); }}
@@ -850,6 +876,18 @@ export default function MarketplacePage() {
                       className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 transition-colors text-xs"
                     >
                       <Layers size={11} /> Add to Pipeline
+                    </button>
+                    <button
+                      onClick={e => {
+                        e.stopPropagation();
+                        try { exportMarketplaceIdeaPdf(idea); toast('Idea exported to PDF', 'success'); }
+                        catch { toast('PDF export failed', 'error'); }
+                      }}
+                      aria-label={`Export "${idea.title}" to PDF`}
+                      title="Export this idea as a PDF detail sheet"
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-sky-500/30 bg-sky-500/10 text-sky-300 hover:bg-sky-500/20 transition-colors text-xs"
+                    >
+                      <FileDown size={11} /> PDF
                     </button>
                   </div>
                 </motion.div>

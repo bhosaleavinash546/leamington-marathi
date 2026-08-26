@@ -3087,3 +3087,29 @@ figure not in this block unless you genuinely know it" rule.
    Management System, Pack Safety & Protection, Battery Pack Assembly,
    Battery Pack Structure) so the new entries join existing filters instead of
    forking new ones; the finer `focusArea` provenance lives in `ideaData`.
+
+## 58. Marketplace PDF export: the judgements live in a tested core
+
+**Date**: 2026-08-26
+
+**Context**: The marketplace held 2,243 ideas viewable only in the UI; users
+asked for PDF export. Two scopes shipped: a single-idea detail sheet, and the
+current filtered selection as a catalogue.
+
+**Decision**:
+1. **Renderer draws, core decides.** `src/services/marketplace-report.mjs`
+   (with `.d.mts`) owns everything that can be WRONG — provenance wording,
+   which sections an entry gets, the benchmark line, the filter description —
+   and `tests/marketplace-report.test.mjs` pins it. `export-service.ts` only
+   draws. Same pattern as report-core.mjs, for the same audit-born reason.
+2. **Provenance prints before content.** An idea with `verified=0` exports
+   under "UNVERIFIED — AI-generated…; savings estimated, not engine-checked";
+   even a verified idea's label says its savings remain estimates (review
+   approval is not engineering validation). A test pins that an unverified
+   idea can never carry a verified-sounding label.
+3. **Sections render only when the field exists** — legacy entries without
+   `ideaData` fall back to the flat description under a single honest heading;
+   no headings over empty space, no substituted defaults.
+4. **The catalogue cover names its own filter**: every active filter, the
+   count, and the verified/unverified split. An export that hides what
+   produced it is a lie with a page count on it.
