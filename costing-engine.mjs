@@ -45,6 +45,21 @@ export const MATERIALS = {
   // ── Families the audit flagged as uncostable (e-motors, busbars, seals,
   //    hoses, glazing, harnesses) ──
   'Copper (Cu-ETP)':          { density: 8.96, price: 9.20, scrapRecovery: 0.75, family: 'copper' },
+  // ── E-drive unit families (800V EDU: magnets, windings, thin-gauge cores) ──
+  //    Prices are ILLUSTRATIVE anchors like every other entry here, not
+  //    supplier quotes. NdFeB is the most volatile line in this table — the
+  //    rare-earth market moves in steps, and a magnet price is a contract
+  //    position, not a commodity read. Treat it as an order-of-magnitude
+  //    anchor and calibrate from your own quotes before quoting a magnet.
+  'Magnet (NdFeB, sintered, heavy-RE)': { density: 7.50, price: 62.0, scrapRecovery: 0.05, family: 'magnet' },
+  'Magnet (Ferrite, Y30BH)':  { density: 4.90, price: 3.80, scrapRecovery: 0.05, family: 'magnet' },
+  //    Enamelled winding wire carries a drawing + coating conversion premium
+  //    over Cu-ETP cathode; rectangular hairpin wire sits at the top of it.
+  'Copper (enamelled winding wire)': { density: 8.89, price: 12.40, scrapRecovery: 0.70, family: 'copper' },
+  //    Thin-gauge non-oriented steel for high-frequency 800V traction cores —
+  //    the gauge premium over M250-35A is the whole point of the grade.
+  'Electrical Steel (NO20, 0.20 mm)': { density: 7.60, price: 3.40, scrapRecovery: 0.20, family: 'electricalsteel' },
+  'Epoxy (impregnation resin)': { density: 1.15, price: 6.50, scrapRecovery: 0.00, family: 'plastic' },
   'Electrical Steel (M250-35A)': { density: 7.65, price: 1.45, scrapRecovery: 0.20, family: 'electricalsteel' },
   'EPDM Rubber':              { density: 1.20, price: 2.40, scrapRecovery: 0.00, family: 'elastomer' },
   'Glass (Soda-lime, automotive)': { density: 2.50, price: 0.85, scrapRecovery: 0.15, family: 'glass' },
@@ -568,6 +583,36 @@ export const PROCESSES = {
     setupHr: 1.5, batch: 8000, toolLife: 2_000_000,
     cycleBase: 2, cyclePerKg: 0.5, toolingBase: 25_000, toolingPerKg: 0,
     families: ['aluminium', 'copper'],
+  },
+  // ── E-drive conversion routes ─────────────────────────────────────────────
+  // Cycle times are per STATOR (or per rotor), not per kg of a generic part:
+  // a hairpin line forms/inserts/twists/welds a full slot set, so cycleBase
+  // carries the fixed handling and cyclePerKg scales with the copper mass.
+  'Hairpin Winding (form, insert, weld)': {
+    machineRate: 185, operators: 0.6, cavities: 1, utilisation: 0.75, scrapPct: 0.03,
+    setupHr: 2.5, batch: 5000, toolLife: 20000000,
+    cycleBase: 30, cyclePerKg: 12, toolingBase: 450000, toolingPerKg: 18000,
+    families: ['copper'],
+  },
+  'Coil Winding (needle/flyer, round wire)': {
+    machineRate: 120, operators: 0.5, cavities: 1, utilisation: 0.72, scrapPct: 0.025,
+    setupHr: 2, batch: 4000, toolLife: 15000000,
+    cycleBase: 40, cyclePerKg: 22, toolingBase: 180000, toolingPerKg: 9000,
+    families: ['copper'],
+  },
+  // Magnets are usually a bought part; this models the supplier's own route so
+  // a magnet line in a quote can be judged rather than accepted.
+  'Magnet Production (sinter, grind, coat)': {
+    machineRate: 95, operators: 0.5, cavities: 1, utilisation: 0.68, scrapPct: 0.08,
+    setupHr: 2, batch: 20000, toolLife: 8000000,
+    cycleBase: 8, cyclePerKg: 26, toolingBase: 60000, toolingPerKg: 4000,
+    families: ['magnet'],
+  },
+  'Vacuum Pressure Impregnation (VPI)': {
+    machineRate: 70, operators: 0.3, cavities: 4, utilisation: 0.65, scrapPct: 0.01,
+    setupHr: 1, batch: 2000, toolLife: 50000000,
+    cycleBase: 45, cyclePerKg: 6, toolingBase: 40000, toolingPerKg: 1500,
+    families: ['copper', 'electricalsteel', 'plastic'],
   },
   'Lamination Stamping (Electrical Steel)': {
     // High-speed progressive stamping + interlock stacking of motor laminations.

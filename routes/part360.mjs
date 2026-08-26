@@ -35,6 +35,11 @@ import {
   inferSpecFromDrawing, allocateGap, LENSES, cadMassKg, inputAnomalies, counterOffer,
 } from '../part360.mjs';
 import { geoSignature, rankSimilarRuns, rankTeardowns } from '../prism-memory.mjs';
+import {
+  suggestForName, rollUpBom, assemblyEvidence, numberSections,
+  assemblyPromptBlock, ASSEMBLY_LENSES,
+} from '../prism-assembly.mjs';
+import { computeShouldCost as engineShouldCost } from '../costing-engine.mjs';
 import { familyOfMaterial, familyForSelection } from '../dfm-process-registry.mjs';
 import { analyzeGeometry, decomposeAssembly } from '../cad-engine/cad-geometry-bridge.mjs';
 
@@ -602,6 +607,125 @@ Rules:
         },
       });
     })().catch(e => jobsApi.update(jobId, { status: 'error', error: String(e?.message || e).slice(0, 300) }));
+  });
+
+  // ── Assembly mode: product tree → suggested BOM ────────────────────────────
+  // Decomposition is the measurement; the MAPPING is a suggestion the engineer
+  // confirms. No cost is computed here — an unconfirmed BOM has no total.
+  app.post('/api/part360/assembly', requireAuth, rateLimit(20, 60 * 60 * 1000), batchUpload.single('cadFile'), async (req, res) => {
+    if (!jobsApi) return res.status(503).json({ error: 'Background jobs unavailable in this deployment.' });
+    if (!req.file) return res.status(400).json({ error: 'No CAD file uploaded (field: cadFile).' });
+    const { library } = shouldCostApi.liveLibrary();
+    const jobId = jobsApi.create(req.user.id, 'part360-assembly');
+    res.status(202).json({ jobId, file: req.file.originalname });
+
+    (async () => {
+      jobsApi.update(jobId, { status: 'running', progress: { note: `Decomposing ${req.file.originalname} — OCCT measures every child solid and its symmetry.` } });
+      const dec = await decomposeAssembly(req.file.buffer, req.file.originalname, BATCH_GEO_TIMEOUT_MS);
+      if (dec.status !== 'success') throw new Error(dec.error || 'decomposition failed');
+      const parts = Array.isArray(dec.parts) ? dec.parts : [];
+      const rows = parts.map((p, i) => {
+        const sug = suggestForName(p.name, { materials: library?.MATERIALS, processes: library?.PROCESSES });
+        const volMm3 = Number(p.volumeMm3);
+        const density = sug?.material ? library?.MATERIALS?.[sug.material]?.density : null;
+        return {
+          index: Number.isFinite(p.index) ? p.index : i,
+          name: p.name || `solid ${i + 1}`,
+          volumeMm3: Number.isFinite(volMm3) ? Number(volMm3.toFixed(1)) : null,
+          bboxMm: p.bboxMm ?? null,
+          qty: 1,
+          subassembly: sug?.subassembly ?? 'Unassigned',
+          material: sug?.material ?? null,
+          process: sug?.process ?? null,
+          boughtPart: sug?.boughtPart ?? false,
+          suggestedMassKg: (Number.isFinite(volMm3) && Number.isFinite(density))
+            ? Number(((volMm3 / 1000) * density / 1000).toFixed(4)) : null,
+          suggestionBasis: sug?.basis ?? 'No naming convention matched this solid — assign its material and process by hand, or mark it a bought part.',
+        };
+      });
+      const unmatched = rows.filter(r => !r.material && !r.boughtPart).length;
+      jobsApi.update(jobId, {
+        status: 'done',
+        result: {
+          assemblyName: req.file.originalname.replace(/\.(step|stp|igs|iges)$/i, ''),
+          rows,
+          basis: `${rows.length} child solids measured by OCCT. Material and process are SUGGESTIONS from CAD naming conventions, each with its basis — confirm or overrule every row before any cost is computed. ${unmatched} row${unmatched === 1 ? '' : 's'} matched no convention and must be assigned by hand.`,
+        },
+      });
+    })().catch(e => jobsApi.update(jobId, { status: 'error', error: String(e?.message || e).slice(0, 300) }));
+  });
+
+  // ── Assembly dossier: confirmed BOM → engine cost per row → roll-up ────────
+  app.post('/api/part360/assembly-dossier', requireAuth, rateLimit(60, 60 * 60 * 1000), (req, res) => {
+    const b = req.body || {};
+    const assemblyName = sanitize(String(b.assemblyName || 'Assembly'), 120);
+    const annualVolume = Number(b.annualVolume) > 0 ? Math.min(Number(b.annualVolume), 100_000_000) : 80_000;
+    const region = Object.hasOwn(REGIONS, b.region) ? b.region : 'Germany';
+    const inRows = Array.isArray(b.rows) ? b.rows.slice(0, 120) : [];
+    if (!inRows.length) return res.status(400).json({ error: 'rows is required — confirm the BOM before it can be costed.' });
+
+    const { library } = shouldCostApi.liveLibrary();
+    const calibration = shouldCostApi.getUserCalibration(req.user.id);
+
+    const costed = inRows.map((r) => {
+      const name = sanitize(String(r.name || 'part'), 120);
+      const subassembly = sanitize(String(r.subassembly || 'Unassigned'), 60);
+      const qty = Number.isFinite(Number(r.qty)) && Number(r.qty) > 0 ? Math.min(Number(r.qty), 10_000) : 1;
+      const base = { name, subassembly, qty };
+      // A bought part carries the user's own price, labelled as such.
+      if (Number.isFinite(Number(r.boughtPriceEur)) && Number(r.boughtPriceEur) >= 0) {
+        return { ...base, boughtPriceEur: Number(r.boughtPriceEur), massKg: Number(r.massKg) || null };
+      }
+      const material = String(r.material || '');
+      const processName = String(r.process || '');
+      const matRes = resolveMaterial(material, library?.MATERIALS);
+      const procRes = resolveRoute(processName, library?.PROCESSES);
+      if (!matRes || !procRes?.keys?.length) {
+        return { ...base, uncostedReason: `no catalogue material/process confirmed${material || processName ? ` ("${material || '?'}" / "${processName || '?'}" did not resolve)` : ''}` };
+      }
+      // Mass: stated, else derived from the measured volume and the CONFIRMED
+      // material's density — stated as derived either way.
+      let massKg = Number(r.massKg);
+      let massBasis = 'stated by the user';
+      if (!Number.isFinite(massKg) || massKg <= 0) {
+        const vol = Number(r.volumeMm3);
+        const density = library?.MATERIALS?.[matRes.key]?.density;
+        if (Number.isFinite(vol) && vol > 0 && Number.isFinite(density)) {
+          massKg = (vol / 1000) * density / 1000;
+          massBasis = `derived: measured ${(vol / 1000).toFixed(1)} cm³ × ${density} g/cm³`;
+        } else {
+          return { ...base, uncostedReason: 'no mass and no measured volume — nothing to cost' };
+        }
+      }
+      try {
+        const calc = engineShouldCost(
+          { material: matRes.key, process: procRes.keys[0], weightKg: massKg, annualVolume, region },
+          {}, calibration, library,
+        );
+        return { ...base, massKg: Number(massKg.toFixed(4)), costEur: Number(calc.totalShouldCost.toFixed(2)), material: matRes.key, process: procRes.keys[0], massBasis };
+      } catch (e) {
+        return { ...base, uncostedReason: `engine refused this combination: ${String(e.message).slice(0, 120)}` };
+      }
+    });
+
+    const rollUp = rollUpBom(costed);
+    if (!rollUp) return res.status(400).json({ error: 'No BOM row could be costed or carried.' });
+
+    const contextLines = typeof b.partContext === 'string' && b.partContext.trim()
+      ? sanitize(String(b.partContext), 2000).split(/(?<=[.;!?])\s+|\n+/).map(x => x.trim()).filter(Boolean).slice(0, 10)
+      : null;
+    const sections = numberSections(assemblyEvidence({ assemblyName, rollUp, bom: costed, contextLines }));
+
+    res.json({
+      assemblyName,
+      rollUp,
+      rows: costed,
+      dossier: { sections, evidenceCount: sections.reduce((n, s2) => n + s2.lines.length, 0) },
+      promptBlock: assemblyPromptBlock(sections),
+      lensBlocks: ASSEMBLY_LENSES.map(l => ({ lensId: l.id, name: l.name, level: l.level, text: assemblyPromptBlock(sections, l) })),
+      lenses: ASSEMBLY_LENSES.map(l => ({ id: l.id, name: l.name, level: l.level })),
+      basis: `Every costed row is a deterministic should-cost at ${annualVolume.toLocaleString()}/yr in ${region}, calibrated to your own quote corpus. Bought-part prices are yours, not the engine's. ${rollUp.caveat}`,
+    });
   });
 
   // ── Function-model draft: cheap, editable, never consumed unconfirmed ──────

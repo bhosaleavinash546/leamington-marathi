@@ -2965,3 +2965,41 @@ honesty rule:
 4. **Assemblies in batch triage**: a STEP with an assembly warning decomposes
    into child solids, each costed on bulk volume × density with the process
    step honestly skipped ("no wall/DFM measurement at child level").
+
+## 55. Prism assembles: a measured product tree, a CONFIRMED BOM, three levels
+
+**Date**: 2026-08-25
+**Status**: Accepted
+
+**Context**: Prism was single-part. An 800V EDU uploaded to the wizard was
+costed as one 40 kg body — confidently wrong, which is the failure mode this
+tool exists to refuse. The decomposition engine and the generation pipeline
+both existed; nothing joined them.
+
+**Decision**:
+1. **Suggestions stay suggestions.** `EDU_PART_HINTS` maps CAD product-tree
+   names to a subassembly, material and process — as DATA, each hint carrying
+   the token it matched and why. No cost is computed until the engineer
+   confirms every row. Geometry cannot tell you a solid is a rotor shaft;
+   naming conventions can suggest it and a human decides.
+2. **Bought parts are named, not mis-costed.** Bearings, resolvers, power
+   modules and fasteners are recognised and routed to a user-entered price;
+   the engine never should-costs them from geometry.
+3. **A roll-up discloses what it left out.** `rollUpBom` reports `costedPct`
+   and every uncosted row BY NAME, and its caveat says the total is a FLOOR.
+   A roll-up that silently omits a third of the BOM is a lie with a total on
+   it. Evidence at part level states which rows have no engine figure so an
+   idea touching them must call its saving unpriced.
+4. **Three levels, three lenses.** Assembly (architecture, part-count),
+   Subassembly (cost blocks), Part (line-by-line) each generate from their own
+   evidence slice, in cost-share order, and stamp the matching `systemLevel`.
+5. **The EDU catalogue is real or it is absent.** NdFeB and ferrite magnets,
+   enamelled winding wire, NO20 thin-gauge core steel and impregnation resin
+   joined MATERIALS; hairpin winding, coil winding, magnet production and VPI
+   joined PROCESSES — each with a carbon factor and each declared
+   geometrically unjudged in `NO_DFM_REASON` rather than borrowing a
+   neighbour's rules. Magnets join glass as an honest DFM dead end.
+
+**Consequences**: a 200k/yr 800V EDU BOM rolls up to ~€487 ex-inverter with
+the rotor block at 62% and magnets alone 44% of the motor — the cost-share
+ordering that tells a director where to spend engineering time.

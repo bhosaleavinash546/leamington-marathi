@@ -65,6 +65,25 @@ interface BatchRow {
   annualGapEur?: number | null; topLever?: string; co2DeltaKg?: number | null; error?: string;
 }
 
+interface BomRow {
+  index?: number; name: string; subassembly: string; material: string | null; process: string | null;
+  qty: number; volumeMm3?: number | null; massKg?: number | null; suggestedMassKg?: number | null;
+  boughtPart?: boolean; boughtPriceEur?: number | null; suggestionBasis?: string;
+  costEur?: number | null; massBasis?: string; uncostedReason?: string;
+}
+interface RollUp {
+  totalEur: number; totalMassKg: number; partCount: number; costedPct: number;
+  subassemblies: Array<{ subassembly: string; eur: number; massKg: number; parts: number; sharePct: number | null; rows: Array<{ name: string; unitEur: number; extEur: number; qty: number; source: string }> }>;
+  uncosted: Array<{ name: string; subassembly: string; qty: number; reason: string }>;
+  caveat: string;
+}
+interface AssemblyDossier {
+  assemblyName: string; rollUp: RollUp; rows: BomRow[];
+  dossier: { sections: Array<{ id: string; title: string; lines: Array<{ ref: string; text: string }> }>; evidenceCount: number };
+  lensBlocks: Array<{ lensId: string; name: string; level: string; text: string }>;
+  basis: string;
+}
+
 interface CounterRow { label: string; kind: string; quotedEur: number; targetEur: number | null; askEur: number | null; argument: string }
 
 interface DossierResponse {
@@ -223,6 +242,18 @@ export default function Part360Page() {
   const [batchBasis, setBatchBasis] = useState('');
   const [batchProgress, setBatchProgress] = useState('');
   const batchInputRef = useRef<HTMLInputElement>(null);
+
+  // ── Assembly mode: product tree → confirmed BOM → three-level generation ──
+  const [asmMode, setAsmMode] = useState(false);
+  const [asmName, setAsmName] = useState('');
+  const [asmContext, setAsmContext] = useState('');
+  const [asmRows, setAsmRows] = useState<BomRow[]>([]);
+  const [asmBusy, setAsmBusy] = useState('');
+  const [asmDossier, setAsmDossier] = useState<AssemblyDossier | null>(null);
+  const [asmLenses, setAsmLenses] = useState<Set<string>>(new Set(['assembly-architecture', 'subassembly-block', 'part-line']));
+  const [asmGenerating, setAsmGenerating] = useState(false);
+  const [asmGenLog, setAsmGenLog] = useState<string[]>([]);
+  const asmInputRef = useRef<HTMLInputElement>(null);
 
   // ── What-if cockpit (live engine re-runs on the dossier) ──────────────────
   const [wiVolume, setWiVolume] = useState('');
@@ -630,6 +661,96 @@ export default function Part360Page() {
     catch { toast('Clipboard unavailable — select and copy from the table.', 'error'); }
   }
 
+  async function decomposeAssemblyFile(f: File) {
+    setAsmBusy('Uploading…'); setAsmRows([]); setAsmDossier(null);
+    try {
+      const fd = new FormData();
+      fd.append('cadFile', f);
+      const r = await fetch('/api/part360/assembly', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Decomposition failed to start');
+      for (;;) {
+        await new Promise(res => setTimeout(res, 2500));
+        const job = await (await fetch(`/api/jobs/${d.jobId}`, { headers: { Authorization: `Bearer ${token}` } })).json();
+        if (job.status === 'error') throw new Error(job.error || 'Decomposition failed');
+        if (job.status === 'done') {
+          const result = typeof job.result === 'string' ? JSON.parse(job.result) : job.result;
+          setAsmRows(result.rows ?? []);
+          setAsmName(result.assemblyName ?? f.name);
+          toast(result.basis, 'info');
+          break;
+        }
+        const prog = typeof job.progress === 'string' ? JSON.parse(job.progress || '{}') : (job.progress || {});
+        setAsmBusy(prog.note || 'Decomposing…');
+      }
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'Decomposition failed', 'error');
+    } finally { setAsmBusy(''); }
+  }
+
+  async function costAssembly() {
+    if (!asmRows.length) return;
+    setAsmBusy('Costing the BOM…');
+    try {
+      const r = await fetch('/api/part360/assembly-dossier', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          assemblyName: asmName || 'Assembly', partContext: asmContext.trim() || undefined,
+          annualVolume: Number(annualVolume) || 80000, region,
+          rows: asmRows.map(r2 => ({
+            name: r2.name, subassembly: r2.subassembly, material: r2.material, process: r2.process,
+            qty: r2.qty, volumeMm3: r2.volumeMm3, massKg: r2.massKg ?? r2.suggestedMassKg,
+            boughtPriceEur: r2.boughtPart ? r2.boughtPriceEur : undefined,
+          })),
+        }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Costing failed');
+      setAsmDossier(d);
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'Costing failed', 'error');
+    } finally { setAsmBusy(''); }
+  }
+
+  async function generateAssembly() {
+    if (!asmDossier) return;
+    if (!apiKey) { toast('Add your Anthropic API key in Settings to generate ideas.', 'error'); return; }
+    const blocks = asmDossier.lensBlocks.filter(b => asmLenses.has(b.lensId)).map(b => ({ lensId: b.lensId, text: b.text }));
+    if (!blocks.length) { toast('Pick at least one level.', 'error'); return; }
+    setAsmGenerating(true); setAsmGenLog([]);
+    try {
+      const config: AnalysisConfig = {
+        systemId: 'part360', subassemblyId: 'part360', vehicleType: 'Platform-agnostic assembly',
+        annualVolume: Number(annualVolume) || 80000, plantRegion: REGION_TO_PLANT[region] ?? 'germany', currency: 'EUR',
+        additionalContext: `Prism ASSEMBLY review of "${asmName}" — engine-costed BOM total €${asmDossier.rollUp.totalEur} across ${asmDossier.rollUp.partCount} part instances.${asmContext.trim() ? ` Assembly function as stated by the user: ${asmContext.trim().slice(0, 600)}` : ''}`,
+        deepMode, apiKey,
+      };
+      const { ideas, sources, resultId } = await generateCostReductionIdeas(
+        config, 'Prism', asmName || 'Assembly', asmName || 'Assembly', false, undefined,
+        (ev: ProgressEvent) => { if (ev.message) setAsmGenLog(prev => [...prev.slice(-14), ev.message as string]); },
+        { partEvidence: { blocks } },
+      );
+      const result: AnalysisResult = {
+        id: resultId, config: { ...config, apiKey: '' }, ideas, sources: sources ?? [],
+        summary: {
+          totalIdeas: ideas.length,
+          quickWins: ideas.filter(i => i.implementationDifficulty === 'Low').length,
+          strategicItems: ideas.filter(i => i.implementationDifficulty === 'High').length,
+          searchesPerformed: 0,
+        },
+        generatedAt: new Date().toLocaleString(),
+      };
+      sessionStorage.setItem('analysisResult', JSON.stringify(result));
+      sessionStorage.setItem('analysisSystemName', 'Prism');
+      sessionStorage.setItem('analysisSubName', asmName || 'Assembly');
+      try { sessionStorage.setItem('prismDossier', asmDossier.lensBlocks[0]?.text ?? ''); } catch { /* quota */ }
+      saveFullResult(resultId, result, 'Prism', asmName || 'Assembly');
+      navigate('/results');
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'Generation failed', 'error');
+    } finally { setAsmGenerating(false); }
+  }
+
   // ── The rail: every tick is a fact derived from real state ────────────────
   const railSteps: RailStep[] = [
     { id: 's0', label: 'Part & files', hint: !inputsValid ? 'material, process, mass, volume' : undefined, done: inputsValid && step > 0 },
@@ -697,8 +818,16 @@ export default function Part360Page() {
             <motion.div variants={m.rise} className="flex items-center gap-2 text-[11px] text-slate-500">
               <motion.button
                 {...m.press}
+                aria-pressed={asmMode}
+                onClick={() => { setAsmMode(v => !v); setBatchMode(false); }}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border font-medium transition-colors ${asmMode ? 'border-teal-500/40 bg-teal-500/15 text-teal-300' : 'border-white/10 bg-white/[0.04] text-slate-400 hover:text-slate-200'}`}
+              >
+                <Box size={11} /> Assembly
+              </motion.button>
+              <motion.button
+                {...m.press}
                 aria-pressed={batchMode}
-                onClick={() => setBatchMode(v => !v)}
+                onClick={() => { setBatchMode(v => !v); setAsmMode(false); }}
                 className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border font-medium transition-colors ${batchMode ? 'border-gold-500/40 bg-gold-500/15 text-gold-300' : 'border-white/10 bg-white/[0.04] text-slate-400 hover:text-slate-200'}`}
               >
                 <Layers size={11} /> Batch triage
@@ -715,7 +844,150 @@ export default function Part360Page() {
           <StepRail steps={railSteps} activeId={activeRailId} onJump={jumpTo} />
         </div>
 
-        {batchMode ? (
+        {asmMode ? (
+          <motion.div variants={m.panel} initial="hidden" animate="show" className="space-y-5">
+            <div className="dfm-panel dfm-spot p-5" onMouseMove={spot}>
+              <div className="flex items-center gap-2 mb-1">
+                <Box size={15} className="text-teal-400" />
+                <h2 className="text-white font-semibold text-sm">Assembly mode — product tree to costed BOM</h2>
+              </div>
+              <p className="text-slate-400 text-xs mb-4 max-w-3xl">
+                Upload the assembly STEP. Every child solid is measured by OCCT and mapped to a suggested subassembly,
+                material and process from its CAD name — <span className="text-teal-300">suggestions you confirm</span>, never
+                facts. Then the BOM is costed, rolled up by cost share, and attacked at assembly, subassembly and part level.
+              </p>
+              <div className="grid md:grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label className="dfm-label text-slate-500 block mb-1.5">Assembly name</label>
+                  <input className="dfm-input" aria-label="Assembly name" value={asmName} onChange={e => setAsmName(e.target.value)} placeholder="e.g. 800V EDU — traction motor" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="dfm-label text-slate-500 block mb-1.5">Volume /yr</label>
+                    <input className="dfm-input" aria-label="Assembly annual volume" type="number" min="1" value={annualVolume} onChange={e => setAnnualVolume(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="dfm-label text-slate-500 block mb-1.5">Region</label>
+                    <select className="dfm-select" aria-label="Assembly region" value={region} onChange={e => setRegion(e.target.value)}>
+                      {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <label className="dfm-label text-slate-500 block mb-1.5">Assembly function, specification &amp; duty <span className="normal-case tracking-normal text-teal-400/80">(strongly recommended)</span></label>
+              <textarea className="dfm-input min-h-[70px] resize-y mb-3" aria-label="Assembly function and specification"
+                maxLength={2000} value={asmContext} onChange={e => setAsmContext(e.target.value)}
+                placeholder="e.g. 800V PSM traction EDU, 250 kW peak / 120 kW continuous, 16,000 rpm, oil-cooled rotor, D-segment BEV, ASIL-B, 15-year corrosion duty. Ideas are judged against this." />
+              <input ref={asmInputRef} type="file" accept=".step,.stp,.igs,.iges" className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) decomposeAssemblyFile(f); }} />
+              <div className="flex flex-wrap items-center gap-3">
+                <motion.button {...m.press} onClick={() => asmInputRef.current?.click()} disabled={!!asmBusy}
+                  className="dfm-lift bg-white/[0.06] hover:bg-white/10 disabled:opacity-50 text-white text-sm rounded-xl px-4 py-2 flex items-center gap-2 border border-white/10">
+                  <Upload size={14} /> {asmRows.length ? `${asmRows.length} solids decomposed — choose another` : 'Upload assembly STEP'}
+                </motion.button>
+                {asmRows.length > 0 && (
+                  <motion.button {...m.press} onClick={costAssembly} disabled={!!asmBusy}
+                    className="dfm-cta text-navy-950 disabled:text-slate-400 font-semibold rounded-xl px-5 py-2.5 text-sm flex items-center gap-2">
+                    {asmBusy ? <Loader2 size={15} className="animate-spin" /> : <Layers size={15} />} Cost the BOM
+                  </motion.button>
+                )}
+                {asmBusy && <span className="text-xs text-slate-400">{asmBusy}</span>}
+              </div>
+              {asmBusy && <div className="dfm-photon h-0.5 rounded-full bg-white/5 mt-4" aria-hidden="true" />}
+            </div>
+
+            {/* The BOM: every row confirmable */}
+            {asmRows.length > 0 && (
+              <motion.div variants={m.panel} initial="hidden" animate="show" className="dfm-panel p-5">
+                <h2 className="text-white font-semibold text-sm mb-1">Confirm the BOM ({asmRows.length} solids)</h2>
+                <p className="text-slate-500 text-[11px] mb-4">Hover any row for the basis of its suggestion. A row left unassigned is carried as not-costed with its reason — it never silently disappears from the total.</p>
+                <div className="space-y-1.5 max-h-[420px] overflow-y-auto">
+                  {asmRows.map((r, i) => (
+                    <div key={i} className="grid grid-cols-[1.4fr_0.8fr_1fr_1.1fr_54px_78px] gap-2 items-center" title={r.suggestionBasis}>
+                      <span className="text-xs text-white truncate">{r.name}</span>
+                      <input className="dfm-input !py-1.5 !text-[11px]" aria-label={`Row ${i + 1} subassembly`} value={r.subassembly}
+                        onChange={e => setAsmRows(p2 => p2.map((x, j) => j === i ? { ...x, subassembly: e.target.value } : x))} />
+                      <select className="dfm-select !py-1.5 !text-[11px]" aria-label={`Row ${i + 1} material`} value={r.material ?? ''}
+                        onChange={e => setAsmRows(p2 => p2.map((x, j) => j === i ? { ...x, material: e.target.value || null } : x))}>
+                        <option value="">{r.boughtPart ? 'bought part' : 'assign…'}</option>
+                        {(catalogue?.materials ?? []).map(mt => <option key={mt} value={mt}>{mt}</option>)}
+                      </select>
+                      <select className="dfm-select !py-1.5 !text-[11px]" aria-label={`Row ${i + 1} process`} value={r.process ?? ''}
+                        onChange={e => setAsmRows(p2 => p2.map((x, j) => j === i ? { ...x, process: e.target.value || null } : x))}>
+                        <option value="">{r.boughtPart ? '—' : 'assign…'}</option>
+                        {(catalogue?.processes ?? []).map(pp => <option key={pp} value={pp}>{pp}</option>)}
+                      </select>
+                      <input className="dfm-input !py-1.5 !text-[11px]" aria-label={`Row ${i + 1} quantity`} type="number" min="1" value={r.qty}
+                        onChange={e => setAsmRows(p2 => p2.map((x, j) => j === i ? { ...x, qty: Number(e.target.value) || 1 } : x))} />
+                      <input className="dfm-input !py-1.5 !text-[11px]" aria-label={`Row ${i + 1} bought price in euro`} type="number" min="0" step="0.01"
+                        placeholder={r.boughtPart ? '€ price' : (r.suggestedMassKg ? `${r.suggestedMassKg} kg` : '—')}
+                        value={r.boughtPriceEur ?? ''}
+                        onChange={e => setAsmRows(p2 => p2.map((x, j) => j === i ? { ...x, boughtPriceEur: e.target.value ? Number(e.target.value) : null, boughtPart: true } : x))} />
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Roll-up */}
+            {asmDossier && (
+              <motion.div variants={m.panel} initial="hidden" animate="show" className="dfm-panel dfm-framed p-5">
+                <div className="flex flex-wrap items-baseline justify-between gap-3 mb-1">
+                  <h2 className="text-white font-semibold text-sm">Assembly roll-up — {asmDossier.assemblyName}</h2>
+                  <div className="dfm-kpi-value text-teal-300" style={{ fontSize: 24 }}>
+                    <TickNumber value={asmDossier.rollUp.totalEur} decimals={2} prefix="€" />
+                  </div>
+                </div>
+                <p className="text-slate-500 text-[11px] mb-4">{asmDossier.rollUp.caveat}</p>
+                <motion.div variants={m.stagger()} initial="hidden" animate="show" className="space-y-2 mb-4">
+                  {asmDossier.rollUp.subassemblies.map((sb, i) => (
+                    <motion.div key={sb.subassembly} variants={m.slideIn} className="grid grid-cols-[130px_1fr_150px] items-center gap-3">
+                      <span className="text-xs text-slate-300 text-right">{sb.subassembly}</span>
+                      <div className="dfm-bar !h-[16px] rounded-md">
+                        <motion.span className={i === 0 ? 'bg-gradient-to-r from-gold-500/80 to-gold-400/80' : 'bg-gradient-to-r from-teal-500/60 to-teal-400/60'}
+                          initial={{ width: 0 }} animate={{ width: `${sb.sharePct ?? 0}%` }} transition={m.t(0.5, m.beat(i))} />
+                      </div>
+                      <span className="dfm-num text-xs text-right text-white">€{sb.eur} <span className="text-slate-500">({sb.sharePct}%)</span></span>
+                    </motion.div>
+                  ))}
+                </motion.div>
+                {asmDossier.rollUp.uncosted.length > 0 && (
+                  <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-2.5 mb-4">
+                    <div className="text-[11px] text-amber-300 font-semibold mb-1">Not costed — excluded from the total above</div>
+                    {asmDossier.rollUp.uncosted.map(u => (
+                      <p key={u.name} className="text-[11px] text-amber-200/80">{u.name} × {u.qty} — {u.reason}</p>
+                    ))}
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {asmDossier.lensBlocks.map(l => {
+                    const on = asmLenses.has(l.lensId);
+                    return (
+                      <motion.button key={l.lensId} {...m.press} aria-pressed={on}
+                        onClick={() => setAsmLenses(prev => { const n = new Set(prev); if (n.has(l.lensId)) n.delete(l.lensId); else n.add(l.lensId); return n; })}
+                        className={`px-3 py-1.5 rounded-full border text-xs font-medium ${on ? 'bg-teal-500/15 text-teal-300 border-teal-500/35' : 'bg-white/[0.04] text-slate-500 border-white/10'}`}>
+                        {l.name} <span className="text-[10px] opacity-70">· {l.level}</span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+                <p className="text-[11px] text-slate-500 mb-3">{asmDossier.dossier.evidenceCount} numbered evidence lines. Each level runs its own generation pass; every idea must cite the evidence and carries its systemLevel.</p>
+                {asmGenerating && asmGenLog.length > 0 && (
+                  <div className="mb-3 bg-navy-950/70 border border-white/[0.07] rounded-xl p-3 text-xs max-h-40 overflow-y-auto">
+                    {asmGenLog.map((line, i) => <LogLine key={`${i}-${line.slice(0, 20)}`} text={line} active={i === asmGenLog.length - 1} />)}
+                  </div>
+                )}
+                <div className="flex justify-end">
+                  <motion.button {...m.press} onClick={generateAssembly} disabled={asmGenerating || asmLenses.size === 0}
+                    className="dfm-cta text-navy-950 disabled:text-slate-400 font-semibold rounded-xl px-6 py-2.5 text-sm flex items-center gap-2">
+                    {asmGenerating ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
+                    {asmGenerating ? 'Generating across levels…' : `Generate at ${asmLenses.size} level${asmLenses.size === 1 ? '' : 's'}`}
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        ) : batchMode ? (
           <motion.div variants={m.panel} initial="hidden" animate="show" className="space-y-5">
             <div className="dfm-panel dfm-spot p-5" onMouseMove={spot}>
               <div className="flex items-center gap-2 mb-1">

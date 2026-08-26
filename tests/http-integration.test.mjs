@@ -224,6 +224,58 @@ describe('http integration', () => {
     assert.equal((await del.json()).deleted, true);
   });
 
+  it('assembly dossier costs a confirmed EDU BOM, rolls it up, and discloses what it could not cost', async () => {
+    const rows = [
+      { name: 'Stator lamination stack', subassembly: 'Stator', material: 'Electrical Steel (M250-35A)', process: 'Lamination Stamping (Electrical Steel)', volumeMm3: 1_570_000, qty: 1 },
+      { name: 'Hairpin winding set', subassembly: 'Windings', material: 'Copper (enamelled winding wire)', process: 'Hairpin Winding (form, insert, weld)', massKg: 4.5, qty: 1 },
+      { name: 'Rotor magnet segment', subassembly: 'Rotor', material: 'Magnet (NdFeB, sintered, heavy-RE)', process: 'Magnet Production (sinter, grind, coat)', massKg: 0.15, qty: 12 },
+      { name: 'Motor housing', subassembly: 'Housing', material: 'Aluminium A380 / ADC12 (die-cast)', process: 'Die Casting (Aluminium)', massKg: 6.2, qty: 1 },
+      { name: 'Bearing 6208', subassembly: 'Rotor', boughtPriceEur: 4.2, qty: 2 },
+      { name: 'Inverter power module', subassembly: 'Inverter', qty: 1 },
+    ];
+    const r = await fetch(`${BASE}/api/part360/assembly-dossier`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ assemblyName: '800V EDU', annualVolume: 200000, region: 'Germany',
+        partContext: '800V PSM traction EDU for a D-segment BEV. Peak 250 kW. Oil-cooled rotor.', rows }),
+    });
+    assert.equal(r.status, 200);
+    const d = await r.json();
+
+    // Every engine-costable row costed; the two without a route disclosed.
+    assert.ok(d.rollUp.totalEur > 0);
+    assert.equal(d.rollUp.uncosted.length, 1, JSON.stringify(d.rollUp.uncosted));
+    assert.equal(d.rollUp.uncosted[0].name, 'Inverter power module');
+    assert.match(d.rollUp.caveat, /floor, not the assembly's cost/);
+
+    // Mass derived from the measured volume where none was stated.
+    const stator = d.rows.find(x => x.name === 'Stator lamination stack');
+    assert.ok(stator.massKg > 10 && stator.massKg < 14, `derived stator mass ${stator.massKg}`);
+    assert.match(stator.massBasis, /derived: measured .* cm³ × 7.65 g\/cm³/);
+
+    // Shares sum, and the biggest block leads.
+    const sum = d.rollUp.subassemblies.reduce((a, x) => a + x.sharePct, 0);
+    assert.ok(Math.abs(sum - 100) < 0.5, `shares sum ${sum}`);
+
+    // Three levels of evidence, three lenses, each citable.
+    const ids = d.dossier.sections.map(x => x.id);
+    for (const need of ['assembly', 'subassembly', 'parts', 'uncosted', 'assembly-context']) {
+      assert.ok(ids.includes(need), `missing ${need}`);
+    }
+    assert.equal(d.lensBlocks.length, 3);
+    assert.deepEqual(d.lenses.map(l => l.level), ['Assembly', 'Subassembly', 'Part']);
+    assert.match(d.promptBlock, /COST-SHARE order/);
+    assert.match(d.promptBlock, /800V PSM traction EDU/);
+  });
+
+  it('assembly dossier refuses an unconfirmed BOM rather than inventing a total', async () => {
+    const r = await fetch(`${BASE}/api/part360/assembly-dossier`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ assemblyName: 'x', rows: [] }),
+    });
+    assert.equal(r.status, 400);
+    assert.match((await r.json()).error, /confirm the BOM/);
+  });
+
   it('batch triage validates its inputs before spending OCCT time', async () => {
     const noFiles = await fetch(`${BASE}/api/part360/batch`, {
       method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: new FormData(),

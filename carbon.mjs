@@ -38,6 +38,17 @@ export const MATERIAL_CO2E_PER_KG = {
   // figure for a copper busbar, a motor lamination, a seal or a window came back
   // "not estimated". Honest, but avoidable.
   'Copper (Cu-ETP)': 4.0,               // EU mix; primary ~4.5, secondary far lower
+  // ── E-drive grades ───────────────────────────────────────────────────────
+  // NdFeB is the widest-spread factor in this table: published cradle-to-gate
+  // figures for sintered heavy-rare-earth magnets run from ~20 to ~80 kg
+  // CO2e/kg depending on the ore body, separation route and grid. 35 is a
+  // mid-range indicative anchor and should be replaced by a supplier's own
+  // declaration before it is quoted anywhere externally.
+  'Magnet (NdFeB, sintered, heavy-RE)': 35.0,
+  'Magnet (Ferrite, Y30BH)': 2.2,       // iron oxide + strontium carbonate, sintered
+  'Copper (enamelled winding wire)': 4.6,  // Cu-ETP plus drawing and enamel cure
+  'Electrical Steel (NO20, 0.20 mm)': 3.2, // thinner gauge: more passes and anneals
+  'Epoxy (impregnation resin)': 6.0,
   'Electrical Steel (M250-35A)': 2.6,   // above mild steel: silicon alloying + anneal
   'EPDM Rubber': 3.0,
   'Glass (Soda-lime, automotive)': 1.2,

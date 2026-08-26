@@ -39,6 +39,7 @@ export const MATERIAL_FAMILIES = {
   elastomer: 'Elastomer',
   composite: 'Composite',
   electricalsteel: 'Electrical steel',
+  magnet: 'Permanent magnet',
   glass: 'Glass',
 };
 
@@ -49,6 +50,12 @@ export const MATERIAL_FAMILIES = {
  * the geometry, so no geometric rule applies to it and the reason is printed.
  */
 export const PROCESS_TO_DFM_FAMILY = {
+  // E-drive routes: priced and carbon-scored, geometrically unjudged — each
+  // states why in NO_DFM_REASON rather than borrowing a neighbour's rules.
+  'Hairpin Winding (form, insert, weld)': null,
+  'Coil Winding (needle/flyer, round wire)': null,
+  'Magnet Production (sinter, grind, coat)': null,
+  'Vacuum Pressure Impregnation (VPI)': null,
   // ── Shape-forming ────────────────────────────────────────────────────────
   'Machining (CNC)': 'machining',
   'Turning (CNC)': 'turning',
@@ -154,6 +161,14 @@ export const MAX_ENVELOPE_MM = {
 
 /** Why a non-shaping process carries no geometric DFM rules. Printed, not hidden. */
 export const NO_DFM_REASON = {
+  'Hairpin Winding (form, insert, weld)':
+    'Hairpin winding is judged on slot fill, bend radius against conductor cross-section, and weld-crown clearance — all properties of the CONDUCTOR and slot geometry, not of the solid body a STEP of the wound stator presents. The route is priced and carbon-scored; no geometric rule family claims it.',
+  'Coil Winding (needle/flyer, round wire)':
+    'Needle/flyer winding is judged on slot fill and needle access between teeth, which needs the slot cross-section and the winding scheme, not the solid alone. Priced, not geometrically judged.',
+  'Magnet Production (sinter, grind, coat)':
+    'Sintered-magnet manufacture is governed by press-direction anisotropy, grind stock and coating throw — magnet-specific rules this tool does not hold. The route is priced so a magnet line in a quote can be judged commercially; its geometry is not.',
+  'Vacuum Pressure Impregnation (VPI)':
+    'Impregnation does not shape the part. Resin penetration depends on the winding, the vacuum schedule and the resin, none of which is in the solid geometry.',
   'Tube Bending':
     'Tube bending is judged on bend radius against tube outside diameter and on wall thinning round the bend, and both need the part to be recognised AS a tube — a swept circular section with a centreline. That recogniser is not built, so this process is priced and carbon-scored but not judged. It is the only shaping process in this tool without a rule family, and it is named here rather than left to look like an oversight.',
   'Machining (secondary ops)':
@@ -200,6 +215,11 @@ export const NO_DFM_REASON = {
 // the shop-floor terms. `group` is the commodity heading the menu sorts under,
 // because 37 flat options is not a menu, it is a haystack.
 export const PROCESS_DISPLAY = {
+  // ── E-drive & electrical ─────────────────────────────────────────────────
+  'Hairpin Winding (form, insert, weld)': { label: 'Hairpin winding — form, insert, twist, laser-weld', group: 'E-drive & electrical', aliases: ['hairpin', 'bar winding', 'hair pin', 'i-pin', 'x-pin'] },
+  'Coil Winding (needle/flyer, round wire)': { label: 'Coil winding — needle / flyer, round wire', group: 'E-drive & electrical', aliases: ['needle winding', 'flyer winding', 'round wire winding', 'distributed winding'] },
+  'Magnet Production (sinter, grind, coat)': { label: 'Magnet production — press, sinter, grind, coat', group: 'E-drive & electrical', aliases: ['magnet', 'ndfeb', 'sintered magnet', 'ferrite magnet'] },
+  'Vacuum Pressure Impregnation (VPI)': { label: 'VPI — vacuum pressure impregnation', group: 'E-drive & electrical', aliases: ['vpi', 'impregnation', 'trickle', 'varnish', 'resin impregnation'] },
   // ── Casting ──────────────────────────────────────────────────────────────
   'Die Casting (Aluminium)': { label: 'HPDC — High-pressure die casting (Al / Mg)', group: 'Casting', aliases: ['hpdc', 'high pressure die casting', 'pressure die casting', 'druckguss', 'aluminium die casting'] },
   'Die Casting (Zinc)': { label: 'HPDC (Zinc) — Hot-chamber die casting', group: 'Casting', aliases: ['hpdc', 'zinc die casting', 'zamak', 'hot chamber'] },
@@ -268,6 +288,7 @@ export const PROCESS_DISPLAY = {
 export const PROCESS_GROUP_ORDER = [
   'Casting', 'Sheet metal & forming', 'Forging & bulk forming', 'Machining',
   'Polymer, rubber & composite', 'Powder & additive', 'Joining & finishing',
+  'E-drive & electrical',
 ];
 
 /** Display label for a process key, falling back to the key itself. */

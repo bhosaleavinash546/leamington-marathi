@@ -204,10 +204,12 @@ test('every material reaches at least one process that shapes it', () => {
       shaping.has(pn) && Array.isArray(spec.families) && spec.families.includes(MATERIALS[name].family));
     if (!usable.length) deadEnds.push(name);
   }
-  // Glass is the one honest exception: its only process, Glass Forming, is
-  // declared as carrying no geometric DFM rules because bend radius and stress
-  // limits need the forming schedule, not the solid.
-  assert.deepEqual(deadEnds, ['Glass (Soda-lime, automotive)'],
+  // Three honest exceptions, each with its process declared rule-free in
+  // NO_DFM_REASON: glass forming needs the forming schedule rather than the
+  // solid, and sintered-magnet manufacture is governed by press-direction
+  // anisotropy and grind stock — magnet rules this tool does not hold. They
+  // are priced and carbon-scored; they are not geometrically judged.
+  assert.deepEqual(deadEnds, ['Magnet (NdFeB, sintered, heavy-RE)', 'Magnet (Ferrite, Y30BH)', 'Glass (Soda-lime, automotive)'],
     `materials with no shaping process: ${deadEnds.join(', ')}`);
 });
 
