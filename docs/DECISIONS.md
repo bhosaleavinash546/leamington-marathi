@@ -3042,3 +3042,48 @@ restatement:
 5. **Seeded verified: 0, stars: 0, confidenceLevel estimated, evidenceSources
    empty.** These are AI-generated and engine-uncheckable at library level;
    the UI's provenance badges must label them as such. A test pins it.
+
+## 57. The 800V battery library: 200 ideas where the benchmark anchor is the contract
+
+**Date**: 2026-08-26
+
+**Context**: A commissioned deep-research request: 200 cost-reduction ideas for
+800V BEV battery systems at exactly 60 assembly / 80 subassembly / 60 part,
+each idea explicitly anchored to a real benchmark platform (BYD Blade/CTB,
+CATL Qilin, Tesla 4680, BMW Gen6, Zeekr Golden Battery, GM Ultium, Lucid,
+XPeng SEPA 2.0, Rivian, NIO, Taycan, Audi PPE, Mercedes EVA2), alongside a
+benchmarking report. The fast-moving platform facts were web-verified at
+generation time (Zeekr 001's move to ~900V/12C, NIO's discontinued 150 kWh
+semi-solid pack, GM's LFP→LMR pivot, BNEF Dec-2025 regional $/kWh) and baked
+into the generation prompts as a fact block with an explicit "never cite a
+figure not in this block unless you genuinely know it" rule.
+
+**Decision**:
+1. **The anchor is mandatory, structured, and pinned.** Every idea carries
+   `benchmarkAnchor {platform, borrowedFeature, difference}` — which platform
+   inspired it, what feature is borrowed, how the idea differs. The harness
+   rejects unanchored candidates mechanically, and
+   `tests/marketplace-battery-800v.test.mjs` pins 100% coverage plus the
+   rendered "Inspired by / benchmarked against:" stamp in `benchmarkReference`.
+   An idea with no benchmark lineage has no place in this pack.
+2. **Exact counts are pinned, not approximate.** 200 total, 60/80/60 by level —
+   `assert.equal`, not `>=` — because the commission specified them exactly.
+3. **Corpus-wide dedup found real duplicates and they were REPLACED, not
+   reworded.** The CI sweep (normalised title + Jaccard >= 0.6 against all
+   ~2,040 existing titles) caught two ideas that restated existing library
+   levers (cure-in-place TIM, aerogel-mica zoning). Both were replaced with
+   genuinely different ideas (spacer-bead bond-line control; closed-loop
+   regrind quota) rather than retitled — a rewording of an existing idea is a
+   failure, per the generation contract.
+4. **Provenance is honest about a mixed generation path.** 147 ideas came from
+   the API harness; the account's credit balance ran out mid-run and the
+   remaining 53 were authored directly to the same schema and bar, then passed
+   through the same mechanical dedup and depth audits. All 200 are seeded
+   `verified: 0, stars: 0, confidenceLevel: estimated, evidenceSources: []` —
+   AI-generated and engine-uncheckable at library level, whatever produced
+   them — and the test pins that honesty.
+5. **Systems map onto existing commodity labels** (Battery Pack, Battery
+   Cells, Battery Modules, Pack Thermal Management, HV Distribution, Battery
+   Management System, Pack Safety & Protection, Battery Pack Assembly,
+   Battery Pack Structure) so the new entries join existing filters instead of
+   forking new ones; the finer `focusArea` provenance lives in `ideaData`.

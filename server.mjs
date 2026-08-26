@@ -677,6 +677,13 @@ seedMarketplaceIdeasFromFile('marketplace-offroad-luxury-ideas.json', 'off-road 
 // 45 domain-expansion ideas: tolerance/GD&T relaxation, modern joining, E/E & software.
 seedMarketplaceIdeasFromFile('marketplace-domain-expansion-ideas.json', 'domain-expansion ideas (GD&T / joining / E-E)');
 seedMarketplaceIdeasFromFile('marketplace-missing-commodity-ideas.json', 'missing-commodity ideas (seats/glazing/HVAC/restraints/harness/paint)');
+// 200 benchmark-anchored 800V battery-system ideas (60 assembly / 80 subassembly /
+// 60 part) from the battery deep-research commission. Every entry carries a
+// mandatory benchmarkAnchor naming the real platform it borrows from (BYD Blade,
+// CATL Qilin, Tesla 4680, BMW Gen6, Zeekr Golden, GM Ultium, ...) and how it
+// differs; all are seeded UNVERIFIED with estimated savings — the tests pin the
+// 60/80/60 split, 100% anchor coverage, corpus-wide uniqueness and honesty.
+seedMarketplaceIdeasFromFile('marketplace-battery-800v-ideas.json', '800V battery benchmark-anchored ideas');
 
 // Provenance backfill must ALSO run after seeding: on a fresh DB the seed
 // inserts happen after the migration block above, so their origin is NULL here.
