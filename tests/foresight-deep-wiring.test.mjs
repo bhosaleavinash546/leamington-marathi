@@ -80,6 +80,13 @@ describe('the page surfaces the report and its honesty', () => {
   it('tells the user the run costs money before they start it', () => {
     assert.match(page, /Costs API credits/);
   });
+
+  it('reuses a Brave search key the user already saved elsewhere in the app', () => {
+    // Without a search provider a deep run finds nothing. Ignoring a key the
+    // user has already entered would mean an expensive run returning an empty
+    // report — the worst outcome available.
+    assert.match(page, /searchApiKey: localStorage\.getItem\('brainspark_brave_key'\)/);
+  });
 });
 
 describe('the exported PDF carries the deep report', () => {

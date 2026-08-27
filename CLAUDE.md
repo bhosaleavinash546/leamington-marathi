@@ -36,7 +36,7 @@ npm run eval:status        # measurement-debt report: which gates/evals have res
 npm run horizon:audit      # foresight-register curation inbox (evidence, China-frontier, freshness, precision)
 ```
 
-Operational notes live in `docs/OPERATIONS.md` (incl. automatic DB backups via `db-backup.mjs`, disable with `BRAINSPARK_BACKUPS=0`); architecture decisions in `docs/DECISIONS.md` — add an entry when making a choice that would surprise a newcomer.
+Research keys for Horizon deep research (Brave, PatentsView — how to get and install them) are in `docs/RESEARCH-KEYS.md`. Operational notes live in `docs/OPERATIONS.md` (incl. automatic DB backups via `db-backup.mjs`, disable with `BRAINSPARK_BACKUPS=0`); architecture decisions in `docs/DECISIONS.md` — add an entry when making a choice that would surprise a newcomer.
 
 Boot a throwaway server for manual endpoint testing (marketplace auto-seeds ~1,600 ideas on first boot):
 

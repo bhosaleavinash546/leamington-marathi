@@ -605,7 +605,16 @@ export default function ForesightPage() {
     try {
       const start = await fetch('/api/foresight/deep', {
         method: 'POST', headers: authHeaders,
-        body: JSON.stringify({ subject, depth: deepDepth, apiKey: localStorage.getItem('brainspark_api_key') || undefined }),
+        // Reuse the Brave key the user may already have saved on the Analyze
+        // page. Without a search provider the run finds nothing, so silently
+        // ignoring a key they have already given us is the worst outcome
+        // available: an expensive run that returns an empty report.
+        body: JSON.stringify({
+          subject,
+          depth: deepDepth,
+          apiKey: localStorage.getItem('brainspark_api_key') || undefined,
+          searchApiKey: localStorage.getItem('brainspark_brave_key') || undefined,
+        }),
       });
       const started = await start.json();
       if (!start.ok || !started.jobId) throw new Error(started.error || 'Could not start the research run.');
