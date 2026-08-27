@@ -3320,3 +3320,39 @@ passed a green test suite before the live run and was wrong anyway:
 The lesson is the one this codebase keeps relearning: a green suite proves the
 code does what its author imagined, and only a live run proves it does what the
 job needs.
+
+## 63. Deep research reaches the user: one research area, one report
+
+**Date**: 2026-08-27
+
+**Context**: The deep-research engine worked — five hard subjects proved it —
+and was wired into nothing. `grep` for `foresight-deep` across routes, pages
+and exports returned empty: the machine that produced the detailed report
+existed, and no user could get a report out of the product. Meanwhile Horizon
+already had two research-ish concepts on one page, so adding a third naively
+would have made the feature harder to understand, not easier.
+
+**Decision**:
+1. **A deep run is a JOB, not a request.** Minutes, not milliseconds, so POST
+   starts it and returns an id and GET polls. The progress trace is not
+   decoration: a five-minute run with no visible activity is indistinguishable
+   from a hang, and users kill it.
+2. **One research area on the page.** The curated lanes orient you in seconds;
+   below them sits a single "Deep research report" panel with one button and
+   one depth choice. Depth IS the cost control and is stated before the user
+   commits ("Costs API credits — the depth you pick is the cost").
+3. **The report leads with the disagreements.** On the page and in the PDF,
+   "where sources disagree — both figures shown, neither chosen" comes before
+   the findings, because it is the most valuable thing on the page and the
+   easiest to miss if buried. "What this research could not establish" is a
+   named section, not a footnote.
+4. **The ledger ships with the report.** Every source, its round, whether it was
+   opened, how many claims it contributed, and why it was skipped. A depth
+   claim is worth exactly what its audit trail is worth.
+5. **The PDF carries all of it.** Both theme exports pass the deep result — a
+   test asserts BOTH call sites, because one theme silently dropping the report
+   the user just paid for is the kind of bug nobody notices for months.
+6. **Refusal over guessing.** No API key ⇒ the endpoint refuses rather than
+   running something shallow. Verified live: with search unavailable the run
+   completed, produced NO report, and listed its three limitations instead of
+   inventing findings.

@@ -45,6 +45,16 @@ export interface ForesightReportResearched {
   note?: string;
   evidence?: { searches?: Array<{ title: string; url: string; source?: string }>; patents?: Array<{ title: string; url: string; assignee?: string }> };
 }
+export interface DeepReportData {
+  subject: string; depth: string;
+  claims: Array<{ id: string; statement: string; metric: string; value: string; subject: string; quote: string; sourceUrl: string; origin: string; origins: number; independent: boolean }>;
+  contradictions: Array<{ metric: string; subject: string; spreadPct: number; low: { value: string; origin: string }; high: { value: string; origin: string } }>;
+  ledger: Array<{ url: string; origin: string; round: number; read: boolean; claimsContributed: number; publishedYear: number | null; skippedBecause: string | null }>;
+  report: { summary: string; sections: Array<{ heading: string; findings: string }>; trajectory: string; couldNotEstablish: string } | null;
+  limitations: string[];
+  stats: { rounds: number; sourcesSeen: number; sourcesRead: number; claims: number; claimsWithFigures: number; independentClaims: number; distinctOrigins: number; contradictions: number };
+}
+
 export interface ForesightReportData {
   query: string; commodity: string | null; powertrain: string | null; count: number;
   exactCount?: number; relatedCount?: number;
@@ -53,6 +63,7 @@ export interface ForesightReportData {
   segment?: string | null;
   benchmarks?: ForesightReportBenchmark[];
   researched?: ForesightReportResearched | null;
+  deep?: DeepReportData | null;
   windows: Record<'H1' | 'H2' | 'H3', { label: string }>;
   horizons: Record<'H1' | 'H2' | 'H3', ForesightReportCard[]>;
   anchors: ForesightReportAnchor[];
@@ -710,6 +721,102 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
     wrapped(rs.note, 9.2, P.BODY);
     y += 2;
     wrapped('Nothing was synthesised to fill the gap. An empty research page is the correct output when the evidence is not there.', 8.6, P.MUT, CW, 4, 'italic');
+  }
+
+  // ═══ DEEP RESEARCH ═════════════════════════════════════════════════════════
+  // The detailed report the whole feature exists to produce. Ordered the way a
+  // reader needs it: what we found, where sources DISAGREE, what we could not
+  // establish, and then the ledger that lets them check the work.
+  const dp = result.deep;
+  if (dp) {
+    newPage();
+    sectionTitle('Deep research', `${dp.subject} — ${dp.depth} depth`);
+    mono(7.5); setColor(doc, P.MUT);
+    wrapped(`${dp.stats.rounds} research rounds · ${dp.stats.sourcesSeen} sources seen, ${dp.stats.sourcesRead} opened and read · ${dp.stats.distinctOrigins} distinct origins · `
+      + `${dp.stats.claims} claims (${dp.stats.claimsWithFigures} carrying figures, ${dp.stats.independentClaims} independently corroborated)`, 8, P.MUT);
+    y += 2;
+
+    if (dp.report?.summary) {
+      wrapped(dp.report.summary, 9.5, P.BODY);
+      y += 3;
+    }
+
+    // Disagreements FIRST — they are the most valuable thing on the page and the
+    // easiest for a reader to miss if they are buried under the findings.
+    if (dp.contradictions.length) {
+      ensure(20);
+      mono(7.5, true); setColor(doc, P.GOLD);
+      doc.text('WHERE SOURCES DISAGREE — BOTH FIGURES SHOWN, NEITHER CHOSEN', ML, y); y += 5;
+      for (const k of dp.contradictions) {
+        ensure(12);
+        sans(9, 'bold'); setColor(doc, P.INK);
+        doc.text(fitText(doc, `${k.metric} · ${k.subject}`, CW - 4), ML + 2, y); y += 4.4;
+        sans(8.6); setColor(doc, P.GOLD);
+        doc.text(fitText(doc, `${k.low.value}  (${k.low.origin})    vs    ${k.high.value}  (${k.high.origin})    — ${k.spreadPct}% apart`, CW - 6), ML + 4, y);
+        y += 6;
+      }
+      y += 2;
+    }
+
+    for (const sec of dp.report?.sections ?? []) {
+      ensure(18);
+      sans(10.5, 'bold'); setColor(doc, P.INK);
+      doc.text(fitText(doc, sec.heading, CW - 4), ML, y); y += 5;
+      wrapped(sec.findings, 9, P.BODY);
+      y += 2.5;
+    }
+
+    if (dp.report?.trajectory) {
+      ensure(16);
+      mono(7.5, true); setColor(doc, P.TEAL); doc.text('TRAJECTORY', ML, y); y += 4.5;
+      wrapped(dp.report.trajectory, 9, P.BODY);
+      y += 2.5;
+    }
+
+    if (dp.report?.couldNotEstablish) {
+      ensure(20);
+      mono(7.5, true); setColor(doc, P.GOLD); doc.text('WHAT THIS RESEARCH COULD NOT ESTABLISH', ML, y); y += 4.5;
+      wrapped(dp.report.couldNotEstablish, 9, P.BODY);
+      y += 3;
+    }
+
+    // ── Source ledger: the audit trail that makes the depth checkable ────────
+    if (dp.ledger.length) {
+      newPage();
+      sectionTitle('Source ledger', 'Every source, read or skipped');
+      mono(6.6, true); setColor(doc, P.DIM);
+      const lx = [ML, ML + 14, ML + 24, ML + 38, ML + 52];
+      ['STATUS', 'ROUND', 'CLAIMS', 'YEAR', 'SOURCE'].forEach((h, i) => doc.text(h, lx[i], y));
+      y += 1.5; setDraw(doc, P.RULE, 0.3); doc.line(ML, y, PW - MR, y); y += 3.6;
+      for (const [i, r] of dp.ledger.entries()) {
+        ensure(6);
+        if (i % 2 === 0) { setFill(doc, P.PANEL); doc.rect(ML - 1, y - 3, CW + 2, 4.6, 'F'); }
+        mono(6.8, true); setColor(doc, r.read ? P.TEAL : P.DIM);
+        doc.text(r.read ? 'READ' : 'skip', lx[0], y);
+        mono(6.8); setColor(doc, P.MUT);
+        doc.text(`r${r.round}`, lx[1], y);
+        doc.text(String(r.claimsContributed), lx[2], y);
+        doc.text(r.publishedYear ? String(r.publishedYear) : '—', lx[3], y);
+        sans(7.4); setColor(doc, P.BODY);
+        doc.text(fitText(doc, r.url.replace(/^https?:\/\//, ''), CW - 54), lx[4], y);
+        y += 4.6;
+        if (!r.read && r.skippedBecause) {
+          ensure(5);
+          mono(6.2); setColor(doc, P.DIM);
+          doc.text(fitText(doc, `        ${r.skippedBecause}`, CW - 10), lx[0], y);
+          y += 3.6;
+        }
+      }
+      y += 3;
+    }
+
+    if (dp.limitations.length) {
+      ensure(16);
+      mono(7.5, true); setColor(doc, P.GOLD); doc.text('LIMITATIONS OF THIS SEARCH', ML, y); y += 4.5;
+      for (const l of dp.limitations) { ensure(8); wrapped(`•  ${l}`, 8.4, P.MUT); }
+      y += 2;
+    }
+    footer();
   }
 
   // ═══ METHODOLOGY ═══════════════════════════════════════════════════════════

@@ -3679,7 +3679,7 @@ registerPart360Routes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthro
 registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
 // BrainSpark Horizon: deterministic technology foresight (register + S-curve/
 // Bass/Wright cores) with optional LLM narration on top.
-registerForesightRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, performSearch });
+registerForesightRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, performSearch, jobsApi });
 // PCB → BOM → Cost v2: multi-photo vision BOM, multi-region costing, sensitivity,
 // engine-verified insights.
 registerPcbRoutes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, safeLlmError, db });

@@ -21,6 +21,8 @@ import { searchPatents, patentVelocity, buildPatentQuery, providerStatus } from 
 import { BOM_TREE, ANALYZE_SYSTEMS } from '../src/data/vehicle-bom.mjs';
 import { messagesJson } from '../llm-json.mjs';
 import { shouldResearch, researchFutureTechnologies } from '../foresight-research.mjs';
+import { deepResearch, deepFindingsToCandidates, DEPTH_PRESETS } from '../foresight-deep.mjs';
+import { searchPatents as searchPatentsLive } from '../patent-search.mjs';
 import { initKnowledge, getCachedResearch, saveResearch, mergedRegister, promoteCandidate, demoteEntry, promotedEntries, candidateToEntry } from '../foresight-knowledge.mjs';
 
 const SMALL_MODEL = process.env.CV_SMALL_MODEL || 'claude-sonnet-5';
@@ -128,7 +130,7 @@ function snapshotCards(result) {
   }));
 }
 
-export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, performSearch }) {
+export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, performSearch, jobsApi }) {
   initKnowledge(db);
   db.exec(`CREATE TABLE IF NOT EXISTS foresight_ledger (
     id TEXT PRIMARY KEY,
@@ -282,6 +284,67 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
       researched,
       note: 'Positions come from the curated register (TRL, adoption, dated regulations); projections are Bass/Wright models, labelled as modelled. The AI layer narrates — it never invents a number.'
         + (researched?.candidates?.length ? ' Researched candidates are listed separately and are NOT curated positions.' : ''),
+    });
+  });
+
+  // ── Deep research: the multi-round path, run as a background job ──────────
+  //
+  // A deep run is minutes, not milliseconds, so it cannot answer inside a
+  // request. It becomes a job: POST starts it and returns an id, GET polls
+  // status and progress. The progress trace matters — a five-minute run with no
+  // visible activity is indistinguishable from a hang, and users kill it.
+  //
+  // Depth is the COST control, not decoration: quick ~1 round, standard ~2,
+  // deep ~4, each round costing search calls, page fetches and model calls. The
+  // UI shows the estimate before the user commits.
+  app.post('/api/foresight/deep', requireAuth, rateLimit(12, 60 * 60 * 1000), async (req, res) => {
+    const subject = sanitize(String(req.body?.subject || ''), 200).trim();
+    if (subject.length < 3) return res.status(400).json({ error: 'Give a part, assembly or technology to research.' });
+    const depth = ['quick', 'standard', 'deep'].includes(req.body?.depth) ? req.body.depth : 'standard';
+    const key = resolveApiKey(req);
+    if (!key) return res.status(400).json({ error: 'Deep research needs an Anthropic API key — add one in Settings. Nothing is guessed without it.' });
+    if (!jobsApi) return res.status(503).json({ error: 'Background jobs are unavailable in this deployment.' });
+
+    const jobId = jobsApi.create(req.user.id, 'foresight-deep');
+    const trace = [];
+    const push = (m) => {
+      trace.push({ at: new Date().toISOString(), message: String(m).slice(0, 160) });
+      try { jobsApi.update(jobId, { status: 'running', progress: JSON.stringify({ subject, depth, trace: trace.slice(-40) }) }); } catch { /* progress is best-effort */ }
+    };
+    push(`queued (${depth} depth)`);
+
+    // Fire and forget: the client polls. Failures are recorded on the job, never
+    // thrown into an unhandled rejection.
+    (async () => {
+      try {
+        const client = makeAnthropic(key, { userId: req.user?.id, route: '/api/foresight/deep' });
+        const out = await deepResearch(subject, {
+          performSearch,
+          fetchImpl: globalThis.fetch,
+          searchPatents: searchPatentsLive,
+          client, messagesJson, model: SMALL_MODEL, sanitize,
+          searchApiKey: typeof req.body?.searchApiKey === 'string' ? req.body.searchApiKey : (process.env.BRAVE_API_KEY || ''),
+          onProgress: push,
+        }, { depth, now: REGISTER_VINTAGE });
+        const candidates = deepFindingsToCandidates(out, { verifiedOn: new Date().toISOString().slice(0, 7) });
+        jobsApi.update(jobId, { status: 'done', result: JSON.stringify({ ...out, candidates }) });
+      } catch (e) {
+        jobsApi.update(jobId, { status: 'error', error: String(e?.message || e).slice(0, 400) });
+      }
+    })();
+
+    res.json({ jobId, depth, estimate: DEPTH_PRESETS[depth] });
+  });
+
+  app.get('/api/foresight/deep/:jobId', requireAuth, (req, res) => {
+    const job = jobsApi?.get(req.params.jobId, req.user.id);
+    if (!job) return res.status(404).json({ error: 'Unknown research job.' });
+    const parse = (v, dflt) => { try { return v ? JSON.parse(v) : dflt; } catch { return dflt; } };
+    res.json({
+      status: job.status,
+      progress: parse(job.progress, null),
+      result: job.status === 'done' ? parse(job.result, null) : null,
+      error: job.error || null,
     });
   });
 

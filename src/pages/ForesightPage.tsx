@@ -37,6 +37,38 @@ interface LandscapeCurrency {
   fresh: number; stale: number; undated: number; total: number;
   medianEvidenceYear: number | null; notFreshShare: number;
 }
+interface DeepClaim {
+  id: string; questionId: string; statement: string; metric: string; value: string; subject: string;
+  quote: string; confidence: string; sourceUrl: string; sourceTitle: string; origin: string;
+  origins: number; independent: boolean; fromPatentClaims?: boolean;
+}
+interface DeepContradiction {
+  metric: string; subject: string; spreadPct: number;
+  low: { value: string; sourceUrl: string; origin: string; quote: string };
+  high: { value: string; sourceUrl: string; origin: string; quote: string };
+}
+interface DeepLedgerRow {
+  url: string; title: string; origin: string; kind: string; round: number;
+  selectedBecause: string; read: boolean; chars: number; publishedYear: number | null;
+  claimsContributed: number; withFigures: number; skippedBecause: string | null;
+}
+interface DeepResult {
+  subject: string; depth: string;
+  questions: Array<{ id: string; question: string; why: string }>;
+  claims: DeepClaim[];
+  contradictions: DeepContradiction[];
+  ledger: DeepLedgerRow[];
+  patents?: { configured: boolean; read: number; note: string; patents: Array<{ number: string; title: string; assignee: string; date: string; url: string; parameterBasis: string }> };
+  report: { summary: string; sections: Array<{ questionId: string; heading: string; findings: string }>; trajectory: string; couldNotEstablish: string } | null;
+  limitations: string[];
+  candidates?: Array<{ name: string; promotionBasis: string; contested: boolean }>;
+  stats: {
+    questions: number; rounds: number; sourcesSeen: number; sourcesRead: number;
+    claims: number; claimsWithFigures: number; independentClaims: number;
+    distinctOrigins: number; contradictions: number; unanswered: string[];
+  };
+  note: string;
+}
 interface HorizonWindow { label: string; from: number; to: number | null; }
 interface ForesightResult {
   query: string; commodity: string | null; powertrain: string | null;
@@ -526,6 +558,14 @@ export default function ForesightPage() {
   const [error, setError] = useState('');
   const [result, setResult] = useState<ForesightResult | null>(null);
   const [panel, setPanel] = useState<PanelResult | null>(null);
+  // Deep research: one job, polled. Kept beside the landscape rather than on a
+  // separate screen, because it answers the SAME question in more depth — a
+  // second page would be a second concept for the reader to hold.
+  const [deep, setDeep] = useState<DeepResult | null>(null);
+  const [deepDepth, setDeepDepth] = useState<'standard' | 'deep'>('standard');
+  const [deepRunning, setDeepRunning] = useState(false);
+  const [deepTrace, setDeepTrace] = useState<string[]>([]);
+  const [deepError, setDeepError] = useState('');
   const [panelLoading, setPanelLoading] = useState(false);
   const [panelError, setPanelError] = useState('');
   const [ledger, setLedger] = useState<LedgerEntry[] | null>(null);
@@ -557,6 +597,34 @@ export default function ForesightPage() {
   }, [loading, reduced]);
 
   const authHeaders = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+
+  async function runDeepResearch() {
+    const subject = (query || commodity || segment || '').trim();
+    if (!subject || deepRunning) return;
+    setDeepRunning(true); setDeepError(''); setDeep(null); setDeepTrace([]);
+    try {
+      const start = await fetch('/api/foresight/deep', {
+        method: 'POST', headers: authHeaders,
+        body: JSON.stringify({ subject, depth: deepDepth, apiKey: localStorage.getItem('brainspark_api_key') || undefined }),
+      });
+      const started = await start.json();
+      if (!start.ok || !started.jobId) throw new Error(started.error || 'Could not start the research run.');
+      // Poll. The trace is the point: a multi-minute run with no visible
+      // activity is indistinguishable from a hang, and users kill it.
+      for (let i = 0; i < 600; i++) {
+        await new Promise(r => setTimeout(r, 2000));
+        const r = await fetch(`/api/foresight/deep/${started.jobId}`, { headers: authHeaders });
+        const j = await r.json();
+        if (j.progress?.trace) setDeepTrace(j.progress.trace.map((t: { message: string }) => t.message));
+        if (j.status === 'done' && j.result) { setDeep(j.result); break; }
+        if (j.status === 'error') throw new Error(j.error || 'The research run failed.');
+      }
+    } catch (e) {
+      setDeepError(e instanceof Error ? e.message : 'The research run failed.');
+    } finally {
+      setDeepRunning(false);
+    }
+  }
 
   async function convenePanel() {
     if (!result) return;
@@ -857,6 +925,127 @@ export default function ForesightPage() {
           </div>
         )}
 
+        {/* ── Deep research: ONE research area on this page ─────────────────
+            The landscape above orients you in seconds from curated positions.
+            This is the same question answered properly: many sources opened and
+            read, claims checked against the page they came from, disagreements
+            surfaced rather than resolved, and an auditable ledger of what was
+            looked at. Depth is the cost control and it is stated up front. */}
+        {result && result.count > 0 && (
+          <div className="max-w-4xl mx-auto mb-8">
+            <div className="rounded-2xl border border-teal-500/25 bg-teal-500/[0.05] p-4">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <Microscope size={15} className="text-teal-300" />
+                <h3 className="text-teal-200 font-semibold text-sm">Deep research report</h3>
+                {deep && <span className="text-[10px] uppercase tracking-wider text-teal-300/70 border border-teal-500/30 rounded px-1.5 py-0.5">{deep.depth} · {deep.stats.sourcesRead} sources read</span>}
+              </div>
+              {!deep && !deepRunning && (
+                <>
+                  <p className="text-slate-400 text-[11.5px] mb-3">
+                    The lanes above are curated positions. This opens and reads live sources for
+                    <span className="text-teal-200"> {query || commodity || segment || 'this subject'}</span>, extracts claims with verbatim quotes checked
+                    against the page, flags where sources disagree, and writes a cited report — including what it could <em>not</em> establish.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <label className="flex items-center gap-2 text-xs text-slate-400">
+                      Depth
+                      <select value={deepDepth} onChange={e => setDeepDepth(e.target.value as 'standard' | 'deep')} aria-label="Research depth"
+                        className="bg-navy-800 border border-white/15 rounded-lg px-2 py-1.5 text-slate-200 text-xs">
+                        <option value="standard">Standard — ~2 min, 2 rounds</option>
+                        <option value="deep">Deep — ~10 min, 4 rounds</option>
+                      </select>
+                    </label>
+                    <button onClick={runDeepResearch}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-teal-500/40 bg-teal-500/15 text-teal-200 hover:bg-teal-500/25 transition-colors text-xs font-medium">
+                      <Microscope size={12} /> Run deep research
+                    </button>
+                    <span className="text-slate-600 text-[10.5px]">Costs API credits — the depth you pick is the cost.</span>
+                  </div>
+                </>
+              )}
+              {deepRunning && (
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-teal-200 text-xs"><ButtonSpinner size={12} /> Researching — this takes minutes, not seconds.</div>
+                  <ul className="space-y-0.5 max-h-40 overflow-y-auto" aria-live="polite">
+                    {deepTrace.map((t, i) => (
+                      <li key={i} className={`text-[11px] font-mono ${i === deepTrace.length - 1 ? 'text-teal-300' : 'text-slate-600'}`}>· {t}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {deepError && <p className="text-red-400 text-xs mt-2">{deepError}</p>}
+
+              {deep && (
+                <div className="mt-1">
+                  <p className="text-slate-500 text-[10.5px] font-mono mb-3">
+                    {deep.stats.rounds} rounds · {deep.stats.sourcesSeen} sources seen, {deep.stats.sourcesRead} read · {deep.stats.distinctOrigins} distinct origins ·
+                    {' '}{deep.stats.claims} claims ({deep.stats.claimsWithFigures} with figures, {deep.stats.independentClaims} independently corroborated)
+                  </p>
+
+                  {deep.contradictions.length > 0 && (
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-3 mb-3">
+                      <h4 className="text-amber-200 text-xs font-semibold mb-1.5">Sources disagree — both figures shown, neither chosen</h4>
+                      {deep.contradictions.map((k, i) => (
+                        <p key={i} className="text-[11.5px] text-slate-300 mb-1">
+                          <span className="text-slate-400">{k.metric} · {k.subject}:</span>{' '}
+                          <span className="text-amber-200 font-mono">{k.low.value}</span> <span className="text-slate-500">({k.low.origin})</span>
+                          {' vs '}
+                          <span className="text-amber-200 font-mono">{k.high.value}</span> <span className="text-slate-500">({k.high.origin})</span>
+                          {' — '}{k.spreadPct}% apart
+                        </p>
+                      ))}
+                    </div>
+                  )}
+
+                  {deep.report && (
+                    <>
+                      <p className="text-slate-300 text-xs leading-relaxed mb-3">{deep.report.summary}</p>
+                      {deep.report.sections.map((sec, i) => (
+                        <div key={i} className="mb-3">
+                          <h4 className="text-slate-100 text-xs font-semibold mb-1">{sec.heading}</h4>
+                          <p className="text-slate-400 text-[11.5px] leading-relaxed">{sec.findings}</p>
+                        </div>
+                      ))}
+                      <div className="mb-3">
+                        <h4 className="text-teal-200 text-xs font-semibold mb-1">Trajectory</h4>
+                        <p className="text-slate-400 text-[11.5px] leading-relaxed">{deep.report.trajectory}</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-navy-900/60 p-3 mb-3">
+                        <h4 className="text-slate-200 text-xs font-semibold mb-1">What this research could not establish</h4>
+                        <p className="text-slate-400 text-[11.5px] leading-relaxed">{deep.report.couldNotEstablish}</p>
+                      </div>
+                    </>
+                  )}
+
+                  <details className="mb-2">
+                    <summary className="text-slate-400 text-[11px] cursor-pointer hover:text-teal-300">Source ledger — every source, read or skipped ({deep.ledger.length})</summary>
+                    <ul className="mt-2 space-y-1">
+                      {deep.ledger.map((r, i) => (
+                        <li key={i} className="text-[10.5px] font-mono flex flex-wrap gap-x-2">
+                          <span className={r.read ? 'text-emerald-400' : 'text-slate-600'}>{r.read ? 'READ' : 'skip'}</span>
+                          <span className="text-slate-500">r{r.round}</span>
+                          <span className="text-slate-400">{r.claimsContributed} claims</span>
+                          <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-teal-400/80 hover:text-teal-300 truncate max-w-[38ch]">{r.origin}</a>
+                          {!r.read && r.skippedBecause && <span className="text-slate-600">— {r.skippedBecause}</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+
+                  <details>
+                    <summary className="text-slate-400 text-[11px] cursor-pointer hover:text-teal-300">Limitations of this search ({deep.limitations.length})</summary>
+                    <ul className="mt-2 space-y-1">
+                      {deep.limitations.map((l, i) => <li key={i} className="text-[11px] text-slate-500">• {l}</li>)}
+                    </ul>
+                  </details>
+
+                  <p className="text-slate-600 text-[10.5px] mt-3">{deep.note}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Forward research — walled off from the curated lanes on purpose */}
 
         {result?.researched && (
@@ -1144,7 +1333,7 @@ export default function ForesightPage() {
               <div className="relative">
                 <button onClick={() => setExportOpen(o => !o)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 text-xs transition-colors">
-                  <FileDown size={13} /> Export report (PDF)
+                  <FileDown size={13} /> Export report (PDF){deep ? ' — incl. deep research' : ''}
                 </button>
                 <AnimatePresence>
                   {exportOpen && (
@@ -1156,14 +1345,14 @@ export default function ForesightPage() {
                       className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 w-56 rounded-xl border border-white/15 bg-[#0b1526]/95 backdrop-blur-md shadow-2xl shadow-black/50 p-2">
                       <p className="px-2 pt-1 pb-2 text-[10px] uppercase tracking-[0.18em] text-slate-400">Report theme</p>
                       <button
-                        onClick={() => { setExportOpen(false); if (result) exportForesightPdf(result, panel, 'light'); }}
+                        onClick={() => { setExportOpen(false); if (result) exportForesightPdf({ ...result, deep }, panel, 'light'); }}
                         className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left text-xs text-slate-200 hover:bg-gold-500/10 hover:text-gold-300 transition-colors">
                         <Sun size={14} className="text-gold-300 shrink-0" />
                         <span className="flex-1">Light <span className="text-slate-500">— Horizon on white</span></span>
                         <span className="text-[9px] uppercase tracking-wider text-gold-300/80 border border-gold-500/30 rounded px-1 py-0.5">default</span>
                       </button>
                       <button
-                        onClick={() => { setExportOpen(false); if (result) exportForesightPdf(result, panel, 'dark'); }}
+                        onClick={() => { setExportOpen(false); if (result) exportForesightPdf({ ...result, deep }, panel, 'dark'); }}
                         className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left text-xs text-slate-200 hover:bg-teal-500/10 hover:text-teal-300 transition-colors">
                         <Moon size={14} className="text-teal-300 shrink-0" />
                         <span className="flex-1">Dark <span className="text-slate-500">— deep-space observatory</span></span>
