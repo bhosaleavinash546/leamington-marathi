@@ -21,7 +21,8 @@
     "test:integration": "node --test tests/http-integration.test.mjs",
     "horizon:audit": "node scripts/horizon-audit.mjs",
     "horizon:coverage": "node scripts/horizon-coverage.mjs",
-    "thresholds:audit": "node scripts/threshold-audit.mjs"
+    "thresholds:audit": "node scripts/threshold-audit.mjs",
+    "horizon:live": "node scripts/horizon-live-research.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",

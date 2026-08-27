@@ -3167,3 +3167,53 @@ treating COVERAGE as if it were CURRENCY, and nothing on screen said otherwise.
    improvement.** One entry stopped borrowing freshness from a future year.
    A gate must move when the measurement gets more honest — never because
    someone wanted a green build.
+
+## 60. Horizon Phase 2: the research layer finally opens the page
+
+**Date**: 2026-08-27
+
+**Context**: Phase 0 found the forward-research layer had a ceiling no prompt
+could lift — it reasoned over SEARCH SNIPPETS, roughly 200 characters of blurb
+chosen by a search engine. You cannot get "0.15 mm at 960 MPa" or a €/unit out
+of a snippet, so the output was structurally condemned to be generic. The tool
+had never once opened a source.
+
+**Decision**:
+1. **`foresight-fetch.mjs` opens the page.** Dependency-injected `fetchImpl`
+   (the component-pricing / patent-search pattern) so the whole path tests
+   offline. Safety is part of the contract because these URLs come from
+   strangers: http(s) only, no private/loopback/link-local hosts, a byte cap
+   enforced WHILE STREAMING so a hostile response cannot exhaust memory before
+   the check runs, a per-request timeout, and content-type filtering. Every
+   failure returns `{ ok: false, error }` — a page that could not be read must
+   never reach the model looking like a page that said nothing.
+2. **Quote-or-drop.** Citing a URL only proves the model saw a link. Each
+   candidate must now supply a VERBATIM quote, and where we actually opened the
+   page, `quoteSupported()` checks the sentence is really printed there —
+   normalised for punctuation drift, requiring a substantial contiguous run.
+   Unsupported candidates die in code, not in the reader's judgement. The check
+   applies ONLY to pages we read: demanding a verbatim quote from a page nobody
+   opened would punish the model for our retrieval failure.
+3. **Recency dominates source ranking, and undated is not recent.** An undated
+   page scores below anything dated within the horizon. Assuming freshness is
+   precisely how 2016 content got presented as the frontier.
+4. **Honest failure when no provider is configured.** Without a search key the
+   helper falls back to an instant-answer API returning encyclopedia summaries;
+   the output now says so in `evidenceGaps` and in the UI instead of degrading
+   silently. The UI also states how many sources were opened versus seen as
+   snippets, per candidate and in aggregate.
+5. **Two bugs the first live run found, which no unit test would have.**
+   (a) Sources were never de-duplicated by URL, so one supplier page filled all
+   six read slots and a genuinely relevant 2025 paper was never opened.
+   (b) `positionCandidates()` rebuilt candidates into a fixed shape and silently
+   dropped `sourceQuote`, `sourceRead` and `quantitativeSpec` — the UI would
+   have shown every candidate as snippet-only with no quote. Both fixed and
+   pinned by tests. Live runs keep earning their place.
+6. **Proven with a real model; the internet half is proven by script.** This
+   container's network policy blocks outbound page fetches, so Phase 2 was
+   verified here with a live Anthropic model reading realistic pages injected at
+   the fetch boundary — which produced candidates carrying verified quotes and
+   hard figures ("0.15 mm at 960 MPa", "30% lower saturation flux density").
+   `npm run horizon:live "<subject>"` runs the same path against the real web
+   for anyone with outbound access and a search key, printing which pages were
+   opened and which quotes were checked.

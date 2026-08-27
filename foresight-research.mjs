@@ -22,6 +22,7 @@
 // `searchPatents` and the Anthropic client are injected so tests run offline.
 // ─────────────────────────────────────────────────────────────────────────────
 import { sCurvePhase, horizonFor, inflectionYears, projectAdoption, REGISTER_VINTAGE, landscapeCurrency } from './foresight.mjs';
+import { fetchArticles, quoteSupported } from './foresight-fetch.mjs';
 
 /**
  * Auto-trigger rule: when the curated register cannot answer a query WELL.
@@ -115,7 +116,40 @@ export function buildResearchPlan(query, { year = new Date().getFullYear() } = {
     { q: `${q} automotive predictive maintenance diagnostics warranty failure mode`, targets: 'lifecycle' },
     { q: `${q} software defined vehicle domain controller control software ${year}`, targets: 'orchestration' },
     { q: `${q} automotive efficiency range aerodynamic secondary benefit new use`, targets: 'function' },
+    // Phase 2: SOURCE-CLASS probes. The plan above asks good questions but aims
+    // them at the open web, which answers with trade commentary. These aim at
+    // the places that publish NUMBERS — technical papers, supplier engineering
+    // pages, standards work — because the Phase 0 review found the output was
+    // generic not because the model reasoned poorly but because it was never
+    // shown anything specific enough to reason from.
+    { q: `${q} SAE technical paper OR JSAE proceedings specification test results`, targets: 'substitution', sourceClass: 'paper' },
+    { q: `${q} supplier technical datasheet grade specification tolerance automotive`, targets: 'substitution', sourceClass: 'supplier' },
+    { q: `${q} automotive cost per unit teardown analysis price benchmark ${year}`, targets: 'substitution', sourceClass: 'cost' },
   ];
+}
+
+/**
+ * Which retrieved sources are worth the cost of opening?
+ *
+ * Recency dominates deliberately: this tool exists to answer "what is coming",
+ * and a 2016 page is the failure mode the whole Phase 0 review was about. A
+ * source that states no date is NOT assumed recent — it scores as unknown and
+ * sorts below anything dated within the horizon, because assuming freshness is
+ * precisely how stale content got presented as the frontier.
+ */
+export function rankSources(hits, { now = REGISTER_VINTAGE, take = 6 } = {}) {
+  const CLASS_WEIGHT = { paper: 3, supplier: 2.5, cost: 2, patent: 2 };
+  const scored = (hits ?? []).map((h, i) => {
+    const blob = `${h.title ?? ''} ${h.snippet ?? ''} ${h.url ?? ''}`;
+    const years = [...String(blob).matchAll(/(20[12]\d)/g)].map((m) => Number(m[1])).filter((y) => y <= now);
+    const newest = years.length ? Math.max(...years) : null;
+    // 4 points for this year, falling away by one per year, floor at 0.
+    const recency = newest === null ? 0.5 : Math.max(0, 4 - (now - newest));
+    const cls = CLASS_WEIGHT[h.sourceClass] ?? 1;
+    return { ...h, newestYear: newest, score: recency + cls, order: i };
+  });
+  scored.sort((a, b) => b.score - a.score || a.order - b.order);
+  return scored.slice(0, take);
 }
 
 export const CANDIDATE_SCHEMA = {
@@ -138,8 +172,10 @@ export const CANDIDATE_SCHEMA = {
           players: { type: 'array', items: { type: 'string' }, description: 'named suppliers/OEMs from the evidence' },
           whyItMatters: { type: 'string', description: '1 sentence for a cost engineer: what it does to cost or content' },
           sourceUrl: { type: 'string', description: 'exact url of the provided source supporting this candidate' },
+          sourceQuote: { type: 'string', description: 'VERBATIM sentence or clause copied from that source, 12-240 characters, which supports this candidate. Copy it exactly as printed — it is checked against the retrieved page in code and the candidate is DROPPED if it cannot be found. Never paraphrase, never compose.' },
+          quantitativeSpec: { type: 'string', description: 'the hard number this technology turns on (gauge, grade, C-rate, W/mK, €/unit, %) ONLY if it appears in the evidence — otherwise the exact string "no figure in sources". Never estimate a figure here.' },
         },
-        required: ['name', 'kind', 'whatItIs', 'replaces', 'trlEstimate', 'adoptionEstimatePct', 'ceilingEstimatePct', 'earliestProduction', 'players', 'whyItMatters', 'sourceUrl'],
+        required: ['name', 'kind', 'whatItIs', 'replaces', 'trlEstimate', 'adoptionEstimatePct', 'ceilingEstimatePct', 'earliestProduction', 'players', 'whyItMatters', 'sourceUrl', 'sourceQuote', 'quantitativeSpec'],
       },
     },
     landscapeNote: { type: 'string', description: '2-3 sentences on where this part is heading overall, grounded ONLY in the evidence' },
@@ -216,6 +252,14 @@ export function positionCandidates(candidates, { now = REGISTER_VINTAGE } = {}) 
       },
       researched: true,
       evidenceUnverified: true,
+      // Phase 2 provenance. These survive positioning deliberately: the quote
+      // is what quote-or-drop verified, and `sourceRead` is the difference
+      // between "we opened the page" and "a search engine showed us a blurb".
+      // The first live run lost all three here and the UI would have shown
+      // every candidate as snippet-only.
+      sourceQuote: str(c.sourceQuote, 240),
+      sourceRead: Boolean(c.sourceRead),
+      quantitativeSpec: str(c.quantitativeSpec, 200),
     };
   });
 }
@@ -227,7 +271,13 @@ export function positionCandidates(candidates, { now = REGISTER_VINTAGE } = {}) 
  * @param {object} deps - { performSearch, searchPatents, client, messagesJson, model, sanitize }
  */
 export async function researchFutureTechnologies(query, deps) {
-  const { performSearch, searchPatents, client, messagesJson, model, sanitize = (s) => s, searchApiKey = '', now = REGISTER_VINTAGE } = deps || {};
+  const {
+    performSearch, searchPatents, client, messagesJson, model, sanitize = (s) => s,
+    searchApiKey = '', now = REGISTER_VINTAGE,
+    // Phase 2 injection points. `fetchImpl` absent => snippet-only behaviour,
+    // stated in the output rather than silently degraded.
+    fetchImpl = null, readCount = 6, concurrency = 4, perSourceChars = 9000,
+  } = deps || {};
   const q = String(query || '').trim();
   if (q.length < 3) return { candidates: [], evidence: { searches: [], patents: [] }, landscapeNote: null, evidenceGaps: null, note: 'Nothing researched — give a part or technology name.' };
 
@@ -250,6 +300,45 @@ export async function researchFutureTechnologies(query, deps) {
       });
     }
   }
+  // The same page legitimately answers several probes. Without de-duplication
+  // it occupies several ranked slots, is fetched once but quoted many times in
+  // the evidence block, and crowds out genuinely different sources — caught on
+  // the first live run of this pipeline, where one supplier page filled all six
+  // read slots and a relevant 2025 paper was never opened.
+  const byUrl = new Map();
+  for (const r of searches) {
+    const seen = byUrl.get(r.url);
+    if (seen) { if (!seen.alsoFrom.includes(r.query)) seen.alsoFrom.push(r.query); continue; }
+    byUrl.set(r.url, { ...r, alsoFrom: [] });
+  }
+  const uniqueSearches = [...byUrl.values()];
+  searches.length = 0;
+  searches.push(...uniqueSearches);
+
+  // ── Phase 2: OPEN the best sources instead of reasoning over blurbs ────────
+  // Ranked by recency and source class, then fetched with bounded concurrency.
+  // Whatever fails to open keeps its snippet and is labelled as snippet-only —
+  // the model (and the reader) must be able to tell a page we READ from a
+  // search result we merely saw.
+  const ranked = rankSources(searches, { now, take: readCount });
+  const articles = fetchImpl && readCount > 0
+    ? await fetchArticles(ranked.map((r) => r.url), { fetchImpl, concurrency, maxChars: perSourceChars })
+    : [];
+  const readByUrl = new Map(articles.filter((a) => a?.ok).map((a) => [a.url, a]));
+  for (const r of searches) {
+    const a = readByUrl.get(r.url);
+    if (a) {
+      r.read = true;
+      r.chars = a.chars;
+      if (a.publishedYear) r.publishedYear = a.publishedYear;
+      if (a.title && !r.title) r.title = sanitize(str(a.title, 160), 160);
+    } else if (ranked.some((x) => x.url === r.url)) {
+      const failed = articles.find((a2) => a2?.url === r.url);
+      r.read = false;
+      if (failed?.error) r.readError = String(failed.error).slice(0, 120);
+    }
+  }
+
   const patentRes = searchPatents ? await searchPatents(q, '', { max: 4 }).catch(() => ({ patents: [] })) : { patents: [] };
   const patents = (patentRes?.patents || []).map((p) => ({
     ...p,
@@ -267,7 +356,15 @@ export async function researchFutureTechnologies(query, deps) {
   }
 
   const evidenceBlock = [
-    ...searches.map((r, i) => `[web ${i + 1}] ${r.title}\nurl: ${r.url}\n${r.snippet}`),
+    ...searches.map((r, i) => {
+      const a = readByUrl.get(r.url);
+      if (a) {
+        // A page we opened: give the model the article itself, and label it so
+        // it knows this is quotable source text rather than a search blurb.
+        return `[web ${i + 1}] ${r.title}${a.publishedYear ? ` (published ${a.publishedYear})` : ''}\nurl: ${r.url}\nFULL PAGE TEXT (quote from this verbatim):\n${a.text}`;
+      }
+      return `[web ${i + 1}] ${r.title}\nurl: ${r.url}\nSEARCH SNIPPET ONLY — not opened; do not quote as if from the page:\n${r.snippet}`;
+    }),
     ...patents.map((p, i) => `[patent ${i + 1}] ${p.title} (${p.assignee}, ${p.date})\nurl: ${p.url}\n${p.snippet}`),
   ].join('\n\n');
 
@@ -291,17 +388,54 @@ export async function researchFutureTechnologies(query, deps) {
     messages: [{ role: 'user', content: `Part / technology: "${q}"\n\nRetrieved evidence:\n${evidenceBlock}` }],
   });
 
-  // Cite-or-drop, enforced here rather than trusted from the model.
+  // ── Cite-or-drop, then QUOTE-or-drop (Phase 2) ────────────────────────────
+  // Citing a url only proves the model saw a link. Where we actually opened the
+  // page we can go further and check that the sentence it claims support from
+  // is really printed there — so a fluent-but-unsupported candidate dies in
+  // code rather than in the reader's judgement. The check applies ONLY to
+  // sources we read: demanding a verbatim quote from a page nobody opened would
+  // punish the model for our retrieval failure, not for its own invention.
   const allowed = new Set([...searches.map((r) => r.url), ...patents.map((p) => p.url)].filter(Boolean));
-  const cited = (raw?.candidates || []).filter((c) => allowed.has(safeUrl(c?.sourceUrl))).slice(0, 6);
-  const dropped = (raw?.candidates || []).length - cited.length;
+  const rejected = [];
+  const kept = [];
+  for (const c of (raw?.candidates || [])) {
+    const url = safeUrl(c?.sourceUrl);
+    if (!allowed.has(url)) { rejected.push({ name: str(c?.name, 80), why: 'cited a source that was not retrieved' }); continue; }
+    const article = readByUrl.get(url);
+    if (article && !quoteSupported(c?.sourceQuote, article.text)) {
+      rejected.push({ name: str(c?.name, 80), why: 'its supporting quote is not present in the page we read' });
+      continue;
+    }
+    kept.push({ ...c, sourceRead: Boolean(article), sourceQuote: str(c?.sourceQuote, 240) });
+    if (kept.length >= 6) break;
+  }
+  const dropped = (raw?.candidates || []).length - kept.length;
+
+  const readCounted = searches.filter((r) => r.read).length;
+  const provider = {
+    configured: Boolean(searchApiKey),
+    // Honest failure (Phase 0 finding HZ-7): with no provider key the search
+    // helper falls back to an instant-answer API that returns encyclopedia
+    // summaries, not technical sources. That is a coverage limitation the
+    // reader must be told about, not a silent degradation.
+    note: searchApiKey
+      ? null
+      : 'No web-search provider was configured, so retrieval fell back to an instant-answer service that returns encyclopedia summaries rather than technical sources. Coverage here is materially weaker than a configured search key would give.',
+  };
+  const readNote = fetchImpl
+    ? `${readCounted} of ${searches.length} sources were opened and read in full; the rest are search snippets only.`
+    : 'Sources were not opened — this run had no page-fetch capability, so every claim rests on search snippets.';
 
   return {
-    candidates: positionCandidates(cited, { now }),
+    candidates: positionCandidates(kept, { now }),
     landscapeNote: raw?.landscapeNote ? String(raw.landscapeNote).slice(0, 700) : null,
-    evidenceGaps: raw?.evidenceGaps ? String(raw.evidenceGaps).slice(0, 400) : null,
-    evidence: { searches, patents },
+    evidenceGaps: [
+      raw?.evidenceGaps ? String(raw.evidenceGaps).slice(0, 400) : null,
+      provider.note,
+    ].filter(Boolean).join(' ') || null,
+    evidence: { searches, patents, provider, readCount: readCounted, readNote },
     dropped,
-    note: 'AI-RESEARCHED, NOT CURATED. These candidates come from live retrieval plus grounded synthesis; their TRL and adoption are AI estimates, so every projection built on them is modelled on estimated inputs. Uncited claims were dropped in code. Review the sources before using any of this in a sourcing decision.',
+    rejected,
+    note: 'AI-RESEARCHED, NOT CURATED. These candidates come from live retrieval plus grounded synthesis; their TRL and adoption are AI estimates, so every projection built on them is modelled on estimated inputs. Claims citing no retrieved source, and claims whose supporting quote could not be found in a page we read, were dropped in code. Review the sources before using any of this in a sourcing decision.',
   };
 }

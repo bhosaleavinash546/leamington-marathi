@@ -57,12 +57,21 @@ interface ResearchedCandidate {
   earliestProduction: string; players: string[]; sourceUrl: string;
   trl: number; adoptionPct: number; phase: string; horizon: 'H1' | 'H2' | 'H3';
   projection: { basis: string; adoption: Record<string, number>; crossings?: { cross25: Crossing; cross50: Crossing; share25?: number; share50?: number; peakGrowth?: Crossing }; estimatedInputs?: boolean };
+  /** Phase 2 grounding: the verbatim sentence this rests on, whether we opened
+   *  the page it came from, and the hard number it turns on. */
+  sourceQuote?: string; sourceRead?: boolean; quantitativeSpec?: string;
 }
 interface ResearchedBlock {
   candidates: ResearchedCandidate[];
   fromCache?: boolean; cacheAgeDays?: number;
   landscapeNote?: string | null; evidenceGaps?: string | null; trigger?: string; note?: string;
-  evidence?: { searches?: Array<{ title: string; url: string; source?: string }>; patents?: Array<{ title: string; url: string; assignee?: string }> };
+  evidence?: {
+    searches?: Array<{ title: string; url: string; source?: string; read?: boolean; chars?: number; publishedYear?: number; readError?: string }>;
+    patents?: Array<{ title: string; url: string; assignee?: string }>;
+    provider?: { configured: boolean; note: string | null };
+    readCount?: number; readNote?: string;
+  };
+  rejected?: Array<{ name: string; why: string }>;
 }
 interface BenchmarkVehicle { vehicle: string; brand: string; year: number; powertrains: string[]; signature: string[]; watch: string; }
 interface Catalogue { commodities: string[]; powertrains: string[]; segments?: string[]; technologies: number; vintage: number; bom?: Record<string, Record<string, string[]>>; analyzeSystems?: Record<string, string[]>; }
@@ -846,6 +855,24 @@ export default function ForesightPage() {
                 TRL and adoption below are <span className="text-violet-300">AI estimates</span> — every projection built on them is
                 modelled on estimated inputs, not measured. Uncited claims were dropped in code.
               </p>
+              {/* Phase 2: how deep the retrieval actually went. "We read the page"
+                  and "a search engine showed us a blurb" are different evidence
+                  and the reader is entitled to know which they are looking at. */}
+              {result.researched.evidence?.readNote && (
+                <p className="text-[11px] mb-3">
+                  <span className="text-violet-300 font-mono uppercase tracking-wider text-[10px]">Retrieval depth</span>{' '}
+                  <span className="text-slate-400">{result.researched.evidence.readNote}</span>
+                  {result.researched.evidence.provider && !result.researched.evidence.provider.configured && (
+                    <span className="text-amber-300/80"> No web-search provider is configured, so coverage is materially weaker than it would be with a search key.</span>
+                  )}
+                </p>
+              )}
+              {(result.researched.rejected?.length ?? 0) > 0 && (
+                <p className="text-[11px] text-slate-500 mb-3">
+                  {result.researched.rejected!.length} claim{result.researched.rejected!.length === 1 ? '' : 's'} dropped in code:{' '}
+                  {result.researched.rejected!.map(r => r.why).filter((v, i, a) => a.indexOf(v) === i).join('; ')}.
+                </p>
+              )}
               {result.researched.landscapeNote && <p className="text-slate-300 text-xs mb-3">{result.researched.landscapeNote}</p>}
               {result.researched.candidates.length === 0 && (
                 <p className="text-slate-500 text-xs">{result.researched.note}</p>
@@ -856,6 +883,14 @@ export default function ForesightPage() {
                     <div className="flex items-start gap-2">
                       <h4 className="text-slate-100 text-sm font-semibold flex-1">{c.name}</h4>
                       <span className="text-[9px] uppercase tracking-wider text-violet-300 border border-violet-500/30 rounded px-1.5 py-0.5 shrink-0">AI-researched</span>
+                      {c.sourceRead !== undefined && (
+                        <span
+                          className={`text-[9px] uppercase tracking-wider rounded px-1.5 py-0.5 shrink-0 border ${c.sourceRead ? 'text-emerald-300 border-emerald-500/30' : 'text-slate-400 border-white/15'}`}
+                          title={c.sourceRead
+                            ? 'The source page was opened and read in full, and the quote below was checked against its text in code.'
+                            : 'Only a search snippet was available for this source — the page itself could not be opened, so the quote could not be verified against it.'}
+                        >{c.sourceRead ? 'page read' : 'snippet only'}</span>
+                      )}
                     </div>
                     <p className="text-slate-500 text-[10px] font-mono mt-1">
                       TRL ~{c.trl} (est) · {c.phase} · adoption ~{c.adoptionPct}% (est) · {c.horizon}
@@ -864,6 +899,14 @@ export default function ForesightPage() {
                     {c.replaces && <p className="text-slate-500 text-[11px] mt-1">Replaces: {c.replaces}</p>}
                     {c.whyItMatters && <p className="text-slate-400 text-[11px] mt-0.5">Cost relevance: {c.whyItMatters}</p>}
                     {c.earliestProduction && <p className="text-emerald-300/80 text-[11px] mt-0.5">Earliest production cited: {c.earliestProduction}</p>}
+                    {c.quantitativeSpec && c.quantitativeSpec !== 'no figure in sources' && (
+                      <p className="text-teal-300/90 text-[11px] mt-0.5 font-mono">Figure in evidence: {c.quantitativeSpec}</p>
+                    )}
+                    {c.sourceQuote && (
+                      <blockquote className="mt-1.5 pl-2.5 border-l-2 border-violet-500/40 text-slate-400 text-[11px] italic">
+                        “{c.sourceQuote}”
+                      </blockquote>
+                    )}
                     {c.players?.length > 0 && <p className="text-slate-500 text-[11px] mt-0.5">Players named: {c.players.join(', ')}</p>}
                     {c.projection?.crossings && (
                       <p className="text-violet-300/90 text-[11px] mt-1.5">

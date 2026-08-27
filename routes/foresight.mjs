@@ -220,6 +220,13 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
           performSearch, searchPatents, client, messagesJson, model: SMALL_MODEL, sanitize,
           searchApiKey: typeof req.body?.searchApiKey === 'string' ? req.body.searchApiKey : (process.env.BRAVE_API_KEY || ''),
           now: REGISTER_VINTAGE,
+          // Phase 2: actually OPEN the best sources. Injected rather than
+          // imported inside the module so tests keep running offline, and
+          // env-tunable because page fetching is the one step whose cost and
+          // latency a deployment may need to bound (0 disables it, and the
+          // output then says so rather than quietly reverting to snippets).
+          fetchImpl: globalThis.fetch,
+          readCount: Number(process.env.CV_FORESIGHT_READ_COUNT ?? 6),
         });
         saveResearch(db, researchSubject, out);
         researched = { ...out, trigger: trigger.reason };
