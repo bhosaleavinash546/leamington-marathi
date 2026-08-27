@@ -205,7 +205,14 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     const wantResearch = wantResearchRaw && !cached && researchAllowed();
     let researched = cached ? { ...cached, trigger: trigger.reason, fromCache: true } : null;
     if (!researched && wantResearch && !researchKey) {
-      researched = { candidates: [], evidence: { searches: [], patents: [] }, landscapeNote: null, evidenceGaps: null, trigger: trigger.reason, note: 'The register is thin for this query and forward research needs an Anthropic API key (Settings) — showing curated technologies only rather than guessing.' };
+      // The note must name the REAL reason. Phase 1 added a staleness trigger,
+      // and a landscape that is well covered but years out of date is not
+      // "thin" — telling the user it is would hide the very thing they need to
+      // know about the page they are reading.
+      const why = trigger.reason === 'stale-register-coverage'
+        ? 'Most of this landscape has not been recently confirmed, so forward research was called for'
+        : 'The register is thin for this query and forward research was called for';
+      researched = { candidates: [], evidence: { searches: [], patents: [] }, landscapeNote: null, evidenceGaps: null, trigger: trigger.reason, note: `${why}, but it needs an Anthropic API key (Settings) — showing curated technologies only rather than guessing.` };
     } else if (!researched && wantResearch && researchKey) {
       try {
         const client = makeAnthropic(researchKey, { userId: req.user?.id, route: '/api/foresight/predict:research' });

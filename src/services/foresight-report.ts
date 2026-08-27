@@ -24,6 +24,7 @@ export interface ForesightReportCard {
   phase: string; horizon: 'H1' | 'H2' | 'H3'; regPulled: boolean; momentum: number;
   confidence: string; regAnchorDetail: ForesightReportAnchor | null;
   related?: boolean; origin?: string; kind?: string;
+  currency?: { tier: 'fresh' | 'stale' | 'undated'; evidenceYear: number | null; verified: boolean; lastVerified: string | null; evidenceUrl: string | null; basis: string };
   detail?: { howItWorks?: string; origin?: string; benefits?: string[]; tradeoffs?: string[]; outlook?: string };
   projection: { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null; band25?: [number | null, number | null] | null; band50?: [number | null, number | null] | null; share25?: number; share50?: number; ceiling?: number; peakGrowth?: number | 'passed' | null } };
 }
@@ -46,6 +47,8 @@ export interface ForesightReportResearched {
 }
 export interface ForesightReportData {
   query: string; commodity: string | null; powertrain: string | null; count: number;
+  exactCount?: number;
+  currency?: { fresh: number; stale: number; undated: number; total: number; medianEvidenceYear: number | null; notFreshShare: number };
   segment?: string | null;
   benchmarks?: ForesightReportBenchmark[];
   researched?: ForesightReportResearched | null;
@@ -207,7 +210,11 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
 
   // ═══ COVER ═════════════════════════════════════════════════════════════════
   paintPage();
-  horizonArt(212, true);
+  // The cover's horizon art starts below the legend block. Phase 1 added the
+  // EVIDENCE AGE line and, when most of a landscape is unconfirmed, a two-line
+  // warning under it — so the vanishing point has to move down for those covers
+  // or the grid runs through the very sentence the reader most needs to read.
+  horizonArt(result.currency && result.currency.notFreshShare > 0.5 ? 236 : 224, true);
   // orbit + logo tile
   setDraw(doc, P.TEAL, 0.4); doc.circle(PW / 2, 48, 22);
   setDraw(doc, P.RULE, 0.3); doc.circle(PW / 2, 48, 28);
@@ -259,6 +266,31 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
   mono(7.5, true); setColor(doc, P.GOLD); doc.text('REG STATUS', ML, y);
   sans(9); setColor(doc, P.BODY);
   doc.text('teal IN FORCE  ·  gold ADOPTED  ·  grey PROPOSED  ·  red UNDER REVISION — only law can pull a lane', ML + 26, y);
+  y += 5;
+  mono(7.5, true); setColor(doc, P.GOLD); doc.text('CURRENCY', ML, y);
+  sans(9); setColor(doc, P.BODY);
+  doc.text('FRESH = evidence within 3 years  ·  STALE = older  ·  UNDATED = the entry cites no year at all', ML + 26, y);
+
+  // Evidence currency of the landscape as a whole. The most important sentence
+  // on the cover: a reader deciding how much to trust these pages needs to know
+  // how recently anything confirmed them (Phase 0 findings HZ-1/HZ-2).
+  if (result.currency && result.currency.total > 0) {
+    const cu = result.currency;
+    y += 7;
+    mono(7.5, true); setColor(doc, P.GOLD); doc.text('EVIDENCE AGE', ML, y);
+    sans(9); setColor(doc, P.BODY);
+    doc.text(fitText(doc, `${cu.fresh} fresh  ·  ${cu.stale} stale  ·  ${cu.undated} undated`
+      + (cu.medianEvidenceYear ? `  ·  median evidence ${cu.medianEvidenceYear}` : ''), CW - 28), ML + 26, y);
+    if (cu.notFreshShare > 0.5) {
+      y += 5;
+      sans(8.5); setColor(doc, P.GOLD);
+      const warn = doc.splitTextToSize(
+        'Most of this landscape has not been recently confirmed. Treat the positions below as a curated starting point, '
+        + 'not a current market read — the entries marked STALE or UNDATED are the ones to re-verify first.', CW - 26) as string[];
+      doc.text(warn, ML + 26, y);
+      y += (warn.length - 1) * 4;
+    }
+  }
   footer();
 
   // ═══ REGULATORY ANCHORS ════════════════════════════════════════════════════
@@ -438,6 +470,18 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
 
       mono(7); setColor(doc, P.MUT);
       doc.text(fitText(doc, `TRL ${c.trl}  ·  ${c.phase.toUpperCase()}  ·  ADOPTION ${c.adoptionPct}%  ·  ${c.horizon}${c.regPulled ? ' <-REG' : ''}  ·  ${c.costTrend.toUpperCase()}  ·  ${c.powertrains.join('/')}`, CW - 40), ML + 3, y);
+      // Evidence currency rides beside maturity, in its own colour, because a
+      // TRL 9 technology whose newest proof is 2017 is not the same claim as a
+      // TRL 9 technology confirmed this year — and the reader cannot tell from
+      // TRL alone (Phase 0 finding HZ-2).
+      if (c.currency) {
+        const curText = c.currency.tier === 'fresh'
+          ? (c.currency.verified ? `VERIFIED ${c.currency.lastVerified}` : `EVIDENCE ${c.currency.evidenceYear}`)
+          : c.currency.tier === 'stale' ? `STALE — EVIDENCE ${c.currency.evidenceYear}` : 'UNDATED EVIDENCE';
+        setColor(doc, c.currency.tier === 'fresh' ? P.TEAL : c.currency.tier === 'stale' ? P.GOLD : P.DIM);
+        doc.text(curText, PW - MR - 3, y, { align: 'right' });
+        setColor(doc, P.MUT);
+      }
       y += 4;
       // momentum bar
       setFill(doc, P.PANEL); doc.rect(ML + 3, y - 1.4, 60, 1.7, 'F');

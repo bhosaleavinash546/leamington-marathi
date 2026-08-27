@@ -22,13 +22,28 @@ interface TechCard {
   confidence: 'committed' | 'probable' | 'speculative';
   regAnchorDetail: RegAnchor | null; projection: Projection;
   related?: boolean; origin?: string; sourceUrl?: string; kind?: string;
+  currency?: Currency;
+}
+/** How current this entry's evidence is — three states, never two. */
+interface Currency {
+  tier: 'fresh' | 'stale' | 'undated';
+  evidenceYear: number | null;
+  verified: boolean;
+  lastVerified: string | null;
+  evidenceUrl: string | null;
+  basis: string;
+}
+interface LandscapeCurrency {
+  fresh: number; stale: number; undated: number; total: number;
+  medianEvidenceYear: number | null; notFreshShare: number;
 }
 interface HorizonWindow { label: string; from: number; to: number | null; }
 interface ForesightResult {
   query: string; commodity: string | null; powertrain: string | null;
   segment?: string | null;
   benchmarks?: BenchmarkVehicle[];
-  matchedByTerms: boolean; count: number;
+  matchedByTerms: boolean; count: number; exactCount?: number;
+  currency?: LandscapeCurrency;
   windows: { H1: HorizonWindow; H2: HorizonWindow; H3: HorizonWindow };
   horizons: { H1: TechCard[]; H2: TechCard[]; H3: TechCard[] };
   anchors: RegAnchor[];
@@ -96,6 +111,39 @@ const CONFIDENCE_STYLE: Record<TechCard['confidence'], string> = {
   probable: 'bg-teal-500/10 border-teal-500/30 text-teal-300',
   speculative: 'bg-white/5 border-white/15 text-slate-400',
 };
+/**
+ * Evidence currency, shown on every card.
+ *
+ * Phase 0 measured that the tool answered nine of nine commodity lenses from a
+ * static file whose evidence ran to 2019-2020 in places, and nothing on screen
+ * said so. This chip is the honesty half of the fix (the research trigger is
+ * the other half): the reader can see, per technology, how recently anything
+ * confirmed it — and `undated` is shown as its own state, because an entry that
+ * cites no year is not the same as one that cites an old one.
+ */
+function CurrencyChip({ currency }: { currency: Currency }) {
+  const style = currency.tier === 'fresh'
+    ? 'border-emerald-500/35 bg-emerald-500/10 text-emerald-300'
+    : currency.tier === 'stale'
+      ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+      : 'border-white/15 bg-white/5 text-slate-400';
+  const label = currency.tier === 'fresh'
+    ? (currency.verified ? `verified ${currency.lastVerified}` : `evidence ${currency.evidenceYear}`)
+    : currency.tier === 'stale'
+      ? `evidence ${currency.evidenceYear}`
+      : 'undated';
+  const title = currency.tier === 'fresh'
+    ? `Currency: ${currency.basis}.`
+    : currency.tier === 'stale'
+      ? `Currency: ${currency.basis} — older than ${new Date().getFullYear() - (currency.evidenceYear ?? 0)} years. It may still be true, but nothing here has confirmed it recently.`
+      : 'Currency: this entry cites no dated evidence at all. Absent is not the same as current.';
+  return (
+    <span className={`px-1.5 py-0.5 rounded-md border text-[9px] font-semibold uppercase tracking-wide ${style}`} title={title}>
+      {label}
+    </span>
+  );
+}
+
 const PHASE_LABEL: Record<string, string> = {
   research: 'Research', demonstration: 'Demonstration', takeoff: 'Take-off', growth: 'Growth', mainstream: 'Mainstream',
 };
@@ -282,6 +330,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
           {c.related && (
             <span className="px-1.5 py-0.5 rounded-md border border-white/15 bg-white/5 text-slate-400 text-[9px] font-semibold uppercase tracking-wide" title="Widened into this landscape from the same commodity — no direct term match on your query.">related</span>
           )}
+          {c.currency && <CurrencyChip currency={c.currency} />}
           <span className={`px-2 py-0.5 rounded-md border text-[10px] font-semibold uppercase tracking-wide ${CONFIDENCE_STYLE[c.confidence]} ${c.confidence === 'committed' ? 'hz-committed' : ''}`}>{c.confidence}</span>
         </span>
       </div>
@@ -747,6 +796,35 @@ export default function ForesightPage() {
             </div>
           )}
         </div>
+
+        {/* Landscape currency — how recently ANY of this was confirmed.
+            The single most important thing a reader can know about a foresight
+            page, and until Phase 1 the tool never said it. */}
+        {result?.currency && result.currency.total > 0 && (
+          <div className="max-w-4xl mx-auto mb-6">
+            <div className="rounded-2xl border border-white/10 bg-navy-900 px-4 py-3">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px]">
+                <span className="font-mono uppercase tracking-wider text-slate-500">Evidence currency</span>
+                <span className="text-emerald-300">{result.currency.fresh} fresh</span>
+                <span className="text-amber-300">{result.currency.stale} stale</span>
+                <span className="text-slate-400">{result.currency.undated} undated</span>
+                {result.currency.medianEvidenceYear && (
+                  <span className="text-slate-400">median evidence <span className="font-mono text-slate-300">{result.currency.medianEvidenceYear}</span></span>
+                )}
+                <span className="ml-auto flex-1 min-w-[120px] max-w-[220px] h-1.5 rounded-full bg-white/5 overflow-hidden" aria-hidden="true">
+                  <span className="block h-full bg-emerald-400/70" style={{ width: `${Math.round((result.currency.fresh / result.currency.total) * 100)}%` }} />
+                </span>
+              </div>
+              {result.currency.notFreshShare > 0.5 && (
+                <p className="mt-2 text-[11.5px] text-amber-200/80">
+                  Most of this landscape has not been confirmed recently — {result.currency.stale} entries cite evidence
+                  {result.currency.medianEvidenceYear ? ` around ${result.currency.medianEvidenceYear}` : ''} and {result.currency.undated} cite no year at all.
+                  {result?.researched ? ' Live research was triggered for exactly this reason; its findings sit below, separately.' : ' Live research would be triggered here with an API key configured.'}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Forward research — walled off from the curated lanes on purpose */}
 

@@ -269,9 +269,15 @@ test('self-audit regression gates: the register can only get healthier', () => {
   assert.ok(a.multiRegionPct >= 71, `multi-region coverage fell to ${a.multiRegionPct}%`);
   // Re-baselined when the frontier check went region-neutral (single-region-view
   // replaced no-china-frontier): the flag MEANS something different, so the old
-  // 129 number does not transfer. 119 is the measured value at that changeover —
-  // the register can only get healthier from here.
-  assert.ok(a.flaggedCount <= 119, `curation debt grew to ${a.flaggedCount}`);
+  // 129 number does not transfer. 119 was the measured value at that changeover.
+  //
+  // Re-baselined again at Phase 1 (Aug 2026) to 120, and the +1 is an
+  // IMPROVEMENT not a regression: staleness now shares one definition with the
+  // engine, and that definition refuses to read a FUTURE year as evidence. One
+  // entry had been borrowing freshness from a "2028" in its own note and is now
+  // correctly flagged. A gate must move when the measurement gets more honest —
+  // what it must never do is move because someone wanted a green build.
+  assert.ok(a.flaggedCount <= 120, `curation debt grew to ${a.flaggedCount}`);
   assert.ok((a.byFlag['no-evidence'] ?? 0) <= 23, 'evidence debt grew');
 });
 
@@ -560,15 +566,23 @@ test('foresightFor: deterministic — same inputs, same output', () => {
 import { shouldResearch, buildResearchPlan, positionCandidates, researchFutureTechnologies } from '../foresight-research.mjs';
 
 test('shouldResearch: fires exactly on the shapes users read as "not predicting"', () => {
-  const rich = { count: 9, horizons: { H1: [1, 2, 3, 4, 5, 6], H2: [1, 2], H3: [1] } };
+  // Cards are real shapes since Phase 1: the trigger now reads their evidence
+  // currency as well as their count, and a bare placeholder carries no evidence
+  // — which the engine correctly treats as "not confirmed", i.e. worth
+  // researching. Dated cards keep this test about COUNT, which is its subject.
+  const card = (n) => Array.from({ length: n }, (_, i) => ({ id: `c${i}`, firstProduction: '(2025)' }));
+  const rich = { count: 9, horizons: { H1: card(6), H2: card(2), H3: card(1) } };
   assert.equal(shouldResearch(rich).research, false);
   // Thin coverage.
-  assert.equal(shouldResearch({ count: 3, horizons: { H1: [1, 2, 3], H2: [], H3: [] } }).research, true);
+  assert.equal(shouldResearch({ count: 3, horizons: { H1: card(3), H2: [], H3: [] } }).research, true);
   // Plenty of cards but nothing in a future lane.
-  const noFuture = { count: 8, horizons: { H1: [1, 2, 3, 4, 5, 6, 7, 8], H2: [], H3: [] } };
+  const noFuture = { count: 8, horizons: { H1: card(8), H2: [], H3: [] } };
   assert.equal(shouldResearch(noFuture).research, true);
   assert.equal(shouldResearch(noFuture).reason, 'no-future-lane');
   assert.equal(shouldResearch({ count: 0, horizons: { H1: [], H2: [], H3: [] } }).reason, 'no-register-match');
+  // Phase 1: cards whose currency cannot be established default to researching,
+  // never to assuming they are current.
+  assert.equal(shouldResearch({ count: 9, horizons: { H1: [1, 2, 3, 4, 5, 6], H2: [1, 2], H3: [1] } }).reason, 'stale-register-coverage');
 });
 
 test('buildResearchPlan: queries target what is coming, not what exists', () => {

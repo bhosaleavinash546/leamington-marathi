@@ -21,17 +21,38 @@
 // Pure module: no Express, no DB, no direct network — `performSearch`,
 // `searchPatents` and the Anthropic client are injected so tests run offline.
 // ─────────────────────────────────────────────────────────────────────────────
-import { sCurvePhase, horizonFor, inflectionYears, projectAdoption, REGISTER_VINTAGE } from './foresight.mjs';
+import { sCurvePhase, horizonFor, inflectionYears, projectAdoption, REGISTER_VINTAGE, landscapeCurrency } from './foresight.mjs';
 
-/** Auto-trigger rule: when the curated register is too thin to answer a query. */
-export const RESEARCH_TRIGGER = { minCards: 6, minFutureCards: 1 };
+/**
+ * Auto-trigger rule: when the curated register cannot answer a query WELL.
+ *
+ * Phase 1 (2026) added the third condition, and it is the important one. The
+ * first two ask whether there are ENOUGH cards; the Phase 0 review measured
+ * what that misses: all nine commodity lenses passed the count tests and so
+ * never consulted the world, while their evidence ran to 2019-2020 in BIW,
+ * Exterior and Powertrain. Coverage was standing in for currency.
+ *
+ * `maxNotFreshShare` is the honest rule that fixes it: if MOST of what we are
+ * about to present is not recently-confirmed evidence, go and look. It counts
+ * `undated` cards alongside `stale` ones, because to a reader deciding whether
+ * to trust the page they mean the same thing — nothing here was checked lately.
+ *
+ * The threshold is a majority (>0.5) by argument, not by tuning: a landscape
+ * whose evidence is more than half unconfirmed should not be served as settled
+ * fact, and one that is mostly fresh does not need to pay for a search.
+ */
+export const RESEARCH_TRIGGER = { minCards: 6, minFutureCards: 1, maxNotFreshShare: 0.5 };
 
 /**
  * Should the forward-research pass run for this deterministic result?
  * Thin coverage OR a landscape with no future lane at all — the two shapes the
  * user experiences as "it isn't predicting anything".
  */
-export function shouldResearch(result, { minCards = RESEARCH_TRIGGER.minCards, minFutureCards = RESEARCH_TRIGGER.minFutureCards } = {}) {
+export function shouldResearch(result, {
+  minCards = RESEARCH_TRIGGER.minCards,
+  minFutureCards = RESEARCH_TRIGGER.minFutureCards,
+  maxNotFreshShare = RESEARCH_TRIGGER.maxNotFreshShare,
+} = {}) {
   if (!result) return { research: true, reason: 'no-result' };
   // Landscape-floor entries (`related: true`) widen the DISPLAY, but they are
   // commodity-generic — a query answered by 1 exact match + 13 related cards
@@ -43,6 +64,20 @@ export function shouldResearch(result, { minCards = RESEARCH_TRIGGER.minCards, m
   if ((result.count ?? 0) === 0) return { research: true, reason: 'no-register-match' };
   if (count < minCards) return { research: true, reason: 'thin-register-coverage' };
   if (future < minFutureCards) return { research: true, reason: 'no-future-lane' };
+  // Currency, not just coverage: judged on the EXACT cards, because landscape
+  // padding is not what the user asked about and must not vote on whether the
+  // answer to their actual question is current.
+  const exactCards = [...exact(lanes.H1), ...exact(lanes.H2), ...exact(lanes.H3)];
+  if (exactCards.length) {
+    const cur = landscapeCurrency(exactCards);
+    if (cur.notFreshShare > maxNotFreshShare) {
+      return {
+        research: true,
+        reason: 'stale-register-coverage',
+        currency: cur,
+      };
+    }
+  }
   return { research: false, reason: 'register-coverage-sufficient' };
 }
 

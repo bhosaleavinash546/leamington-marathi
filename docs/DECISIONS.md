@@ -3113,3 +3113,57 @@ current filtered selection as a catalogue.
 4. **The catalogue cover names its own filter**: every active filter, the
    count, and the verified/unverified split. An export that hides what
    produced it is a lie with a page count on it.
+
+## 59. Horizon Phase 1: currency is a property, not an assumption
+
+**Date**: 2026-08-27
+
+**Context**: The Phase 0 review drove ten subjects through the live predict
+endpoint. The deterministic engine made no errors across 290 cards — but all
+NINE commodity lenses answered entirely from the curated file without ever
+consulting the world, because `shouldResearch()` asked "are there enough
+cards?" and never "are they still true?". Meanwhile the file's median cited
+evidence ran to 2020 in BIW, 2019 in Exterior and Powertrain. The tool was
+treating COVERAGE as if it were CURRENCY, and nothing on screen said otherwise.
+
+**Decision**:
+1. **Currency is computed for every entry, in one place.** `evidenceYear`,
+   `currencyTier`, `currencyOf` and `landscapeCurrency` live in `foresight.mjs`
+   and `foresight-audit.mjs` now imports them instead of keeping its own copy —
+   a test asserts the two agree on the count, because a second private
+   definition of "stale" is how a product starts contradicting itself.
+2. **Three states, never two.** `fresh` / `stale` / `undated`. An entry that
+   cites no year is NOT fresh; absent evidence cannot borrow confidence from
+   silence. The UI, the PDF and the trigger all keep the distinction.
+3. **A future year is not evidence.** Self-check during the build caught an
+   unproduced LMR entry scoring `evidenceYear 2028` off its own note and
+   reading as fresher than a shipping technology. Years are only evidence once
+   they have happened; `lastVerified` is the one field trusted as written.
+4. **Research fires on staleness, not only thinness.**
+   `RESEARCH_TRIGGER.maxNotFreshShare = 0.5` with a new reason,
+   `stale-register-coverage`. The threshold is a stated majority argued from
+   the principle — a landscape whose evidence is more than half unconfirmed
+   should not be served as settled fact — not a number tuned to a pleasing
+   result. Measured effect: 7 of 9 commodity lenses now reach for live
+   research; Battery and EDU (median evidence 2025) correctly do not, so the
+   fix does not spend money where curation is already good. Currency is judged
+   on EXACT cards only: landscape padding answers a broader question than the
+   user asked and must not vote on whether their answer is current.
+5. **`lastVerified` / `evidenceUrl` are only ever set on a REAL re-check.**
+   Four entries were stamped from web research actually run this session
+   (semi-solid, LMR, 46xx, ultra-fast LFP) — and that verification improved the
+   content, which is the point: it surfaced that NIO's 150 kWh semi-solid pack
+   was series-built and then discontinued, a materially important fact the
+   entry had missed. The other 176 entries are deliberately left unstamped
+   rather than backfilled with today's date. A fabricated verification date
+   would be the exact dishonesty this feature exists to remove.
+6. **The ratchet is set at measured reality, not at an aspiration.**
+   `tests/foresight-currency.test.mjs` caps the register's not-fresh share at
+   72% — because the measured value is **71.1%** (52 fresh / 69 stale / 59
+   undated of 180). That number is uncomfortable and it is the debt this
+   feature exists to pay down; Phase 4 re-curation moves it. The gate may only
+   ever be lowered.
+7. **The debt gate moved from 119 to 120 flagged entries, and that is an
+   improvement.** One entry stopped borrowing freshness from a future year.
+   A gate must move when the measurement gets more honest — never because
+   someone wanted a green build.

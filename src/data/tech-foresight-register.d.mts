@@ -33,6 +33,26 @@ export interface ForesightTech {
   matchTerms: string[];
   segments?: Segment[];   // cross-cutting lens tags (off-road / luxury)
   ceiling?: number;       // honest saturation share of the applicable segment (default 90)
+  /** YYYY-MM of a REAL re-verification against a source. Deliberately absent on
+   *  entries nobody has re-checked — never backfilled with today's date. */
+  lastVerified?: string;
+  /** The source that verification stood on. Absent when unverified. */
+  evidenceUrl?: string;
+}
+
+/** How current an entry's evidence is — three states, never two. `undated`
+ *  means the entry cites no year at all, which is not the same as old. */
+export type CurrencyTier = 'fresh' | 'stale' | 'undated';
+
+export interface Currency {
+  tier: CurrencyTier;
+  /** Newest ALREADY-HAPPENED year the entry can cite; null when it dates nothing. */
+  evidenceYear: number | null;
+  /** True only when a human re-verified the entry (lastVerified present). */
+  verified: boolean;
+  lastVerified: string | null;
+  evidenceUrl: string | null;
+  basis: string;
 }
 
 export interface BenchmarkVehicle {

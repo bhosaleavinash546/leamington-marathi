@@ -316,6 +316,117 @@ const PROJECTION_YEARS = [3, 5, 8];
 // single card.
 const MIN_LANDSCAPE = 5;
 
+// ── Evidence currency (Phase 1, 2026) ────────────────────────────────────────
+// The Phase 0 review found the tool's real defect was not its maths but the AGE
+// of what it says. Nine of nine commodity lenses answered entirely from the
+// curated file without ever checking the world, because the research trigger
+// asked "are there ENOUGH cards?" and never "are they still TRUE?". Coverage
+// was being treated as currency.
+//
+// So currency becomes a first-class, computed property of every card, sharing
+// ONE definition with `foresight-audit.mjs` (the report-core lesson: a second
+// private copy of a judgement is how two parts of a product start disagreeing).
+//
+// Three honest states, never two:
+//   fresh    the newest evidence this entry can cite is within STALE_AFTER years
+//   stale    its newest evidence is older than that — it may still be true, but
+//            nothing here has confirmed it recently
+//   undated  it cites NO year at all. Absent is not fresh. An entry that never
+//            named a programme cannot borrow confidence from silence.
+//
+// `lastVerified` is set ONLY where an entry was genuinely re-checked against a
+// source. It is deliberately absent on most entries rather than backfilled with
+// today's date — a fabricated verification date would be the exact dishonesty
+// this feature exists to remove.
+
+/** An entry is stale once its newest citable evidence is this many years old. */
+export const STALE_AFTER = 3;
+
+const EVIDENCE_YEAR_RE = /(20[12]\d)/g;
+
+/**
+ * The newest year this entry can actually prove, from `lastVerified` first and
+ * otherwise from the years it cites in its own evidence and note.
+ * Returns null when the entry dates nothing — which is a distinct state from
+ * "old", and the callers must keep it distinct.
+ */
+export function evidenceYear(tech, { now = REGISTER_VINTAGE } = {}) {
+  let max = 0;
+  // Years scanned out of prose are only EVIDENCE if they have already happened.
+  // A note saying "commercial cells 2028" is an announcement, and letting it
+  // count would have made the least-proven entries look the most current --
+  // exactly backwards. Caught by a self-check during Phase 1: an unproduced
+  // LMR entry scored evidenceYear 2028 and read as fresher than a shipping one.
+  for (const text of [tech?.firstProduction, tech?.note]) {
+    for (const m of String(text ?? '').matchAll(EVIDENCE_YEAR_RE)) {
+      const y = Number(m[1]);
+      if (y <= now) max = Math.max(max, y);
+    }
+  }
+  // `lastVerified` is a deliberate act with a date, not prose — it is trusted
+  // as written (and a future date there would be a data error, not a claim).
+  for (const m of String(tech?.lastVerified ?? '').matchAll(EVIDENCE_YEAR_RE)) {
+    max = Math.max(max, Math.min(Number(m[1]), now));
+  }
+  return max || null;
+}
+
+/**
+ * 'fresh' | 'stale' | 'undated' for one entry. Undated is NOT stale and NOT
+ * fresh: it is the honest third outcome, and the UI shows it as its own state.
+ */
+export function currencyTier(tech, { now = REGISTER_VINTAGE } = {}) {
+  const year = evidenceYear(tech, { now });
+  if (year === null) return 'undated';
+  return year <= now - STALE_AFTER ? 'stale' : 'fresh';
+}
+
+/** Card-shaped currency stamp: the tier, the year behind it, and whether a
+ *  human actually re-verified this entry (as opposed to it merely citing a
+ *  recent programme). */
+export function currencyOf(tech, { now = REGISTER_VINTAGE } = {}) {
+  const year = evidenceYear(tech, { now });
+  return {
+    tier: currencyTier(tech, { now }),
+    evidenceYear: year,
+    verified: Boolean(tech?.lastVerified),
+    lastVerified: tech?.lastVerified ?? null,
+    evidenceUrl: tech?.evidenceUrl ?? null,
+    basis: tech?.lastVerified
+      ? `re-verified ${tech.lastVerified}`
+      : year === null
+        ? 'entry cites no dated evidence'
+        : `newest cited evidence ${year}`,
+  };
+}
+
+/**
+ * Currency of a whole landscape. `notFreshShare` counts stale AND undated
+ * against the total, because both mean the same thing to a reader deciding
+ * whether to trust the page: nothing here was recently confirmed.
+ */
+export function landscapeCurrency(cards, { now = REGISTER_VINTAGE } = {}) {
+  const list = (cards ?? []).filter(Boolean);
+  const counts = { fresh: 0, stale: 0, undated: 0 };
+  const years = [];
+  for (const c of list) {
+    const tier = c.currency?.tier ?? currencyTier(c, { now });
+    counts[tier] = (counts[tier] ?? 0) + 1;
+    const y = c.currency?.evidenceYear ?? evidenceYear(c, { now });
+    if (y !== null) years.push(y);
+  }
+  years.sort((a, b) => a - b);
+  const total = list.length;
+  return {
+    ...counts,
+    total,
+    medianEvidenceYear: years.length ? years[years.length >> 1] : null,
+    notFreshShare: total ? (counts.stale + counts.undated) / total : 0,
+  };
+}
+
+
+
 function techCard(tech, now, anchors) {
   const anchor = tech.regAnchor ? anchors.find((a) => a.id === tech.regAnchor) ?? null : null;
   // Only law that exists can pull a horizon: proposed / under-revision anchors
@@ -336,6 +447,7 @@ function techCard(tech, now, anchors) {
     phase: sCurvePhase(tech.trl, tech.adoptionPct),
     horizon,
     regPulled,
+    currency: currencyOf(tech, { now }),
     momentum: momentumScore(tech, { now, anchors }),
     confidence: confidenceTier(tech),
     regAnchorDetail: anchor,
@@ -429,9 +541,15 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
     matchedByTerms: matched.length > 0,
     powertrainHint: ptHint.length ? ptHint : null,
     count: cards.length,
+    exactCount: cards.filter((c) => !c.related).length,
     windows: horizonWindows(now),
     horizons,
     anchors: anchors.filter((a) => anchorIds.has(a.id)),
     vintage: now,
+    // How current this landscape actually is. Reported over the EXACT cards —
+    // landscape padding answers a broader question than the user asked, so it
+    // must not flatter (or damn) the currency of the answer they wanted. When a
+    // query resolved to nothing exact, the summary covers what IS shown.
+    currency: landscapeCurrency(cards.some((c) => !c.related) ? cards.filter((c) => !c.related) : cards, { now }),
   };
 }

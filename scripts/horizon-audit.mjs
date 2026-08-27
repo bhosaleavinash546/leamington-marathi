@@ -12,6 +12,8 @@ const FLAG_HELP = {
   'no-evidence': 'no firstProduction/regAnchor despite claimed maturity',
   'few-players': '<3 named players — a one-player trend is a press release',
   'no-china-frontier': 'no China-based player/programme referenced — was the global frontier checked?',
+  'single-region-view': 'named players/programmes all sit in ONE region — the frontier may be elsewhere',
+  'one-sided': 'benefits listed with no trade-offs — advocacy, not foresight',
   'stale-evidence': `newest cited year ≤ ${REGISTER_VINTAGE - 3} — refresh with a current programme`,
   'thin-matchterms': '<4 matchTerms — real part names may not reach this entry',
   'short-note': 'note too thin to brief a cost engineer',

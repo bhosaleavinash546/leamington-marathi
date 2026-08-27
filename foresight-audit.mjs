@@ -24,7 +24,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { FORESIGHT_REGISTER, REG_ANCHORS } from './src/data/tech-foresight-register.mjs';
 import { inferCommodityKey } from './src/data/commodity-classify.mjs';
-import { REGISTER_VINTAGE, resolveParts } from './foresight.mjs';
+import { REGISTER_VINTAGE, resolveParts, evidenceYear, currencyTier } from './foresight.mjs';
 
 // ── Regional frontier markers ────────────────────────────────────────────────
 // The 2026 lamination lesson was "you only looked West". The first fix asked
@@ -107,8 +107,12 @@ export function auditEntry(tech, { now = REGISTER_VINTAGE } = {}) {
   // blindness, whichever place it is.
   const regions = regionsNamed(tech);
   if (regions.length <= 1) flags.push('single-region-view');
-  const latest = maxYearIn(tech.firstProduction, tech.note);
-  if (latest !== null && latest <= now - 3) flags.push('stale-evidence');
+  // Currency shares ONE definition with the engine (foresight.mjs): a second
+  // private copy of "what counts as stale" is how the audit and the cards a
+  // user sees start disagreeing. `undated` is reported by the no-evidence flag
+  // above, not folded into staleness — absent is not old.
+  const latest = evidenceYear(tech);
+  if (currencyTier(tech, { now }) === 'stale') flags.push('stale-evidence');
   if ((tech.matchTerms?.length ?? 0) < 4) flags.push('thin-matchterms');
   if ((tech.note?.length ?? 0) < 90) flags.push('short-note');
   // Depth audit (2026): a one-paragraph note cannot brief a cost engineer, and
