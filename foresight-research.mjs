@@ -349,9 +349,19 @@ export async function researchFutureTechnologies(query, deps) {
   })).filter((p) => p.url);
 
   if (!searches.length && !patents.length) {
+    // "Nothing retrieved" means two very different things and the reader must be
+    // able to tell them apart: with NO key we never really searched, while WITH
+    // a key configured and still nothing back, the search itself is failing —
+    // blocked egress, an exhausted quota, or a rejected key. Reporting provider
+    // status here is what turns a dead end into a diagnosable one.
+    const configured = Boolean(searchApiKey);
     return {
-      candidates: [], evidence: { searches: [], patents: [] }, landscapeNote: null, evidenceGaps: null,
-      note: 'No live evidence could be retrieved (web search unavailable, patent API unconfigured) — nothing was synthesised. Research without sources would be invention.',
+      candidates: [], evidence: { searches: [], patents: [], provider: { configured, note: null }, readCount: 0, readNote: 'No sources were retrieved, so none were opened.' },
+      landscapeNote: null,
+      evidenceGaps: configured
+        ? 'A web-search provider IS configured, but it returned no results — check the key is valid, the quota is not exhausted, and that this deployment can reach the search host.'
+        : 'No web-search provider is configured, so no live sources could be retrieved at all.',
+      note: 'No live evidence could be retrieved — nothing was synthesised. Research without sources would be invention.',
     };
   }
 
