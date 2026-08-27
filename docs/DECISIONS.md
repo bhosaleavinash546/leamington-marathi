@@ -3230,17 +3230,25 @@ lamination query opened with SiC power stages and multi-speed transmissions,
 and its cover said "16 TECHNOLOGIES".
 
 **Decision**:
-1. **A landscape floor is a floor, not a flood.** Widening appended the WHOLE
-   commodity. It is now bounded and momentum-ranked, so the context that does
-   arrive is the context worth having. Measured: stator lamination 16 → 6 cards
-   (padding 81% → 50%), HV busbar 29 → 5 (86% → 20%).
-2. **The floor's condition is a landscape WITH A FUTURE, not a card count.**
-   The first cut capped on count alone and the coverage gate immediately caught
-   it: 276 of 291 BOM leaves still passed, 15 lost their future lane. Widening
-   now continues while the floor is unmet OR no future-lane card exists, and
-   only a future card can satisfy a missing future. The gate did its job — a
-   count cap would have shipped a subtler version of the defect it exists to
-   prevent.
+1. **CORRECTED SAME DAY — breadth was never the problem, and capping it was a
+   mistake.** The first cut of this phase bounded widening (stator lamination
+   16 → 6 cards, HV busbar 29 → 5) and the user rejected it immediately and
+   correctly: "I want all the technologies available." Two problems had been
+   conflated — that widened entries were MISLABELLED as answers, and how MANY
+   of them there were. Only the first was a defect, and points 3–5 below fix it
+   completely. Capping merely deleted technologies a cost engineer browsing a
+   commodity legitimately wants to see. Every applicable entry is offered
+   again; `tests/foresight-scope.test.mjs` now asserts the WHOLE applicable
+   commodity appears, so a future cap fails the build.
+   The lesson worth keeping: when a labelling defect and a volume complaint
+   arrive together, fix the labelling and leave the volume alone.
+2. **What survived the correction is ORDER, not truncation.** The landscape
+   arrives momentum-ranked, so the most consequential context reads first
+   instead of whatever the register happened to list first. (The intermediate
+   capped version also taught something worth recording: capping on card count
+   alone starved the future lane, and the coverage gate caught 15 of 291 BOM
+   leaves losing it — evidence that the floor's real condition is "a landscape
+   with a future in it", not a card count.)
 3. **The shape of the answer is stated, not implied.** `exactCount`,
    `relatedCount` and `answerShape` ('empty' / 'exact' / 'landscape-only' /
    'exact-plus-landscape') travel with every result. The page says "3
@@ -3252,7 +3260,7 @@ and its cover said "16 TECHNOLOGIES".
    "commodity landscape — not your part" — precedes the first widened card in
    each lane. Exact-before-related ordering within a lane is pinned by a test,
    because the divider depends on it holding.
-5. **The PDF cover counts the ANSWER.** The headline metric is MATCHING, with
+5. **The PDF cover counts the ANSWER** (while still showing every card). The headline metric is MATCHING, with
    a SCOPE line naming the landscape separately; prediction-board rows for
    widened entries are dimmed, marked with a leading ·, and explained in the
    legend. (The first render truncated the scope line mid-word — "marked

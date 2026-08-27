@@ -316,12 +316,6 @@ const PROJECTION_YEARS = [3, 5, 8];
 // single card.
 const MIN_LANDSCAPE = 5;
 
-// The most cards a widened landscape may reach in total (exact + related).
-// Phase 3: the floor exists so a specific part does not read as a single card;
-// it does not exist to turn one match into a commodity catalogue. Sized so a
-// reader still sees a landscape's shape across three lanes without the answer
-// being outnumbered five to one.
-const LANDSCAPE_CAP = 9;
 
 // ── Evidence currency (Phase 1, 2026) ────────────────────────────────────────
 // The Phase 0 review found the tool's real defect was not its maths but the AGE
@@ -529,12 +523,19 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
         .filter((t) => t.commodity === domain && !have.has(t.id) && (!segment || t.segments?.includes(segment)))
         .map((t) => ({ t, m: momentumScore(t, { now, anchors }), lane: laneOf(t) }))
         .sort((a, b) => b.m - a.m || a.t.id.localeCompare(b.t.id));
-      for (const { t, lane } of pool2) {
-        const needCards = matched.length < MIN_LANDSCAPE;
-        const needFuture = !hasFuture();
-        if (!needCards && !needFuture) break;                 // floor satisfied
-        if (matched.length >= LANDSCAPE_CAP && !needFuture) break;  // hard ceiling, unless the future lane is still empty
-        if (!needCards && needFuture && lane === 'H1') continue;    // only a future card can fix a missing future
+      // Breadth is NOT capped, and the 2026 correction is worth recording: a
+      // first cut of Phase 3 bounded this list, and it was wrong. Two problems
+      // had been conflated — that widened entries were MISLABELLED as answers,
+      // and how MANY of them there were. Only the first was a defect, and the
+      // labelling, separate counts, lane divider and cover split fix it
+      // completely. Capping merely deleted technologies a cost engineer
+      // browsing a commodity legitimately wants to see. Every applicable entry
+      // is offered; `related: true` and the counts say which is context.
+      //
+      // What survives from that cut is the ORDER: the landscape arrives
+      // momentum-ranked, so the most consequential context reads first instead
+      // of whatever the file happened to list first.
+      for (const { t } of pool2) {
         relatedIds.add(t.id);
         matched.push({ tech: t, score: 0 });
       }

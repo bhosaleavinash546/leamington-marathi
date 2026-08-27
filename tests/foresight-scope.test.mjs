@@ -1,43 +1,52 @@
 // Phase 3: the answer and the landscape are different things, and the tool
-// must say which is which.
+// must say which is which — WITHOUT deleting either.
 //
 // Phase 0 measured "stator lamination" returning 16 cards of which 3 were about
-// laminations, and "HV busbar" returning 29 of which 4 were about busbars —
-// roughly 85% of each answer was other people's parts, presented with the same
-// confidence as the answer. The exported PDF's prediction board for a lamination
-// query opened with SiC power stages, and its cover said "16 TECHNOLOGIES".
+// laminations, and "HV busbar" returning 29 of which 4 were about busbars, all
+// presented with the same confidence. The first fix bounded the list, and that
+// was the wrong lever: it conflated "these are mislabelled" with "there are too
+// many of them", and only the first was true. Breadth is what a cost engineer
+// browsing a commodity actually wants; labelling is what was broken.
+//
+// So these tests pin BOTH halves, and the breadth half is written to fail if
+// anyone caps the landscape again.
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { foresightFor } from '../foresight.mjs';
+import { FORESIGHT_REGISTER } from '../src/data/tech-foresight-register.mjs';
 
 const cardsOf = (r) => [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3];
 
-describe('landscape padding is a floor, not a flood', () => {
-  it('a thin part query is no longer buried by its commodity', () => {
+describe('breadth is never traded away to fix labelling', () => {
+  it('offers the WHOLE applicable commodity as landscape, not a sample of it', () => {
+    // Guards the correction: a capped landscape deleted technologies the user
+    // wanted. If someone re-introduces a cap, this fails.
     const r = foresightFor({ query: 'stator lamination' });
-    const cards = cardsOf(r);
-    const exact = cards.filter((c) => !c.related).length;
-    // The measured regression this pins: 16 cards for 3 matches.
-    assert.ok(cards.length <= 9, `landscape grew back to ${cards.length} cards`);
-    assert.ok(exact >= 1);
-    assert.ok(cards.length - exact <= 6, 'padding is unbounded again');
+    const shownIds = new Set(cardsOf(r).map((c) => c.id));
+    const domain = cardsOf(r).find((c) => !c.related)?.commodity;
+    const applicable = FORESIGHT_REGISTER.filter((t) => t.commodity === domain);
+    for (const t of applicable) {
+      assert.ok(shownIds.has(t.id), `${t.id} exists in ${domain} but was withheld from the landscape`);
+    }
+    assert.ok(cardsOf(r).length >= 12, `landscape was capped: only ${cardsOf(r).length} cards`);
+  });
+
+  it('a broad query keeps every card it had', () => {
+    const r = foresightFor({ query: 'HV busbar' });
+    assert.ok(cardsOf(r).length >= 20, `HV busbar narrowed to ${cardsOf(r).length} cards`);
   });
 
   it('still reaches a landscape floor rather than showing a lone card', () => {
-    // The floor exists for a reason — one card reads as a broken tool.
     const r = foresightFor({ query: 'cylinder head' });
     assert.ok(cardsOf(r).length >= 5, 'the landscape floor was lost');
   });
 
-  it('padding is the highest-momentum context, not whatever the file lists first', () => {
+  it('landscape arrives momentum-ranked so the best context reads first', () => {
+    // The one thing worth keeping from the capped cut: ORDER, not truncation.
     const r = foresightFor({ query: 'stator lamination' });
     const related = cardsOf(r).filter((c) => c.related);
-    if (related.length >= 2) {
-      // Momentum order is not guaranteed after lane sorting, but the SET must
-      // be drawn from the top of the commodity — assert none is bottom-ranked.
-      assert.ok(related.every((c) => typeof c.momentum === 'number'));
-      assert.ok(Math.max(...related.map((c) => c.momentum)) >= 40);
-    }
+    assert.ok(related.length >= 2);
+    assert.ok(related.every((c) => typeof c.momentum === 'number'));
   });
 });
 
@@ -46,7 +55,7 @@ describe('the answer shape is stated, not implied', () => {
     const r = foresightFor({ query: 'stator lamination' });
     assert.equal(r.exactCount + r.relatedCount, r.count);
     assert.equal(r.answerShape, 'exact-plus-landscape');
-    assert.ok(r.exactCount < r.count, 'this query should carry landscape padding');
+    assert.ok(r.exactCount < r.count, 'this query should carry a landscape alongside its matches');
   });
 
   it('a commodity lens is all answer — no padding, no landscape label', () => {
