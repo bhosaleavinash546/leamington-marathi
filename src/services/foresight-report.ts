@@ -47,7 +47,8 @@ export interface ForesightReportResearched {
 }
 export interface ForesightReportData {
   query: string; commodity: string | null; powertrain: string | null; count: number;
-  exactCount?: number;
+  exactCount?: number; relatedCount?: number;
+  answerShape?: 'empty' | 'exact' | 'landscape-only' | 'exact-plus-landscape';
   currency?: { fresh: number; stale: number; undated: number; total: number; medianEvidenceYear: number | null; notFreshShare: number };
   segment?: string | null;
   benchmarks?: ForesightReportBenchmark[];
@@ -236,7 +237,15 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
 
   // metric tiles (solid fills read well on both canvases)
   const metrics: Array<{ label: string; value: string; rgb: RGB }> = [
-    { label: 'TECHNOLOGIES', value: String(result.count), rgb: theme === 'dark' ? P.PANEL : P.INK },
+    // Phase 3: the headline counts the ANSWER, not the answer plus its padding.
+    // A cover reading "16 TECHNOLOGIES" when three matched the query overstated
+    // specificity on every exported report; the landscape gets its own line
+    // below rather than being folded into the number.
+    {
+      label: result.relatedCount ? 'MATCHING' : 'TECHNOLOGIES',
+      value: String(result.exactCount ?? result.count),
+      rgb: theme === 'dark' ? P.PANEL : P.INK,
+    },
     { label: result.windows.H1.label.toUpperCase(), value: String(result.horizons.H1.length), rgb: [180, 121, 10] },
     { label: result.windows.H2.label.toUpperCase(), value: String(result.horizons.H2.length), rgb: [15, 118, 110] },
     { label: result.windows.H3.label.toUpperCase(), value: String(result.horizons.H3.length), rgb: [91, 33, 182] },
@@ -267,6 +276,14 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
   sans(9); setColor(doc, P.BODY);
   doc.text('teal IN FORCE  ·  gold ADOPTED  ·  grey PROPOSED  ·  red UNDER REVISION — only law can pull a lane', ML + 26, y);
   y += 5;
+  if (result.relatedCount) {
+    mono(7.5, true); setColor(doc, P.GOLD); doc.text('SCOPE', ML, y);
+    sans(9); setColor(doc, P.BODY);
+    // Kept short enough to survive fitText at this column — the first render of
+    // this line truncated mid-word ("marked LANDS…"), which is worse than terse.
+    doc.text(fitText(doc, `${result.exactCount ?? 0} match this query directly · ${result.relatedCount} more are commodity landscape, marked ·`, CW - 28), ML + 26, y);
+    y += 5;
+  }
   mono(7.5, true); setColor(doc, P.GOLD); doc.text('CURRENCY', ML, y);
   sans(9); setColor(doc, P.BODY);
   doc.text('FRESH = evidence within 3 years  ·  STALE = older  ·  UNDATED = the entry cites no year at all', ML + 26, y);
@@ -373,9 +390,14 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       board.forEach((c, i) => {
         if (y > 272) { newPage(); header(); }
         if (i % 2 === 0) { setFill(doc, P.PANEL); doc.rect(ML - 1, y - 3, CW + 2, 4.6, 'F'); }
-        sans(7.8); setColor(doc, P.BODY);
-        doc.text(fitText(doc, c.name, 76), bx[0], y);
-        mono(6.8); setColor(doc, confColor(c.confidence));
+        // Phase 3: the board sorts by milestone year, which is right for its
+        // purpose — but that mixed the answer with the padding, so a lamination
+        // query's board opened with SiC power stages. The rows are no longer
+        // indistinguishable: landscape entries are dimmed and marked, and the
+        // legend says what the mark means.
+        sans(7.8); setColor(doc, c.related ? P.DIM : P.BODY);
+        doc.text(fitText(doc, (c.related ? '· ' : '') + c.name, 76), bx[0], y);
+        mono(6.8); setColor(doc, c.related ? P.DIM : confColor(c.confidence));
         doc.text(c.horizon, bx[1], y);
         mono(6.8); setColor(doc, P.MUT);
         doc.text(String(c.adoptionPct), bx[2], y);
@@ -389,6 +411,10 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       y += 1;
       ensure(6);
       doc.text('MILESTONES ARE SHARES OF EACH TECHNOLOGY’S MODELLED CEILING (BASS DIFFUSION) — MODELLED, NOT MEASURED', ML, y);
+      if (board.some((c) => c.related)) {
+        y += 3.4;
+        doc.text('ROWS MARKED · ARE THE SURROUNDING COMMODITY LANDSCAPE, NOT MATCHES FOR THIS QUERY', ML, y);
+      }
       y += 7;
       // A board that ends high on the page leaves dead white below — close the
       // page with the horizon grid so it reads as an instrument, not padding.

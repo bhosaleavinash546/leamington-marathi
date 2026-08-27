@@ -42,7 +42,8 @@ interface ForesightResult {
   query: string; commodity: string | null; powertrain: string | null;
   segment?: string | null;
   benchmarks?: BenchmarkVehicle[];
-  matchedByTerms: boolean; count: number; exactCount?: number;
+  matchedByTerms: boolean; count: number; exactCount?: number; relatedCount?: number;
+  answerShape?: 'empty' | 'exact' | 'landscape-only' | 'exact-plus-landscape';
   currency?: LandscapeCurrency;
   windows: { H1: HorizonWindow; H2: HorizonWindow; H3: HorizonWindow };
   horizons: { H1: TechCard[]; H2: TechCard[]; H3: TechCard[] };
@@ -806,6 +807,27 @@ export default function ForesightPage() {
           )}
         </div>
 
+        {/* Phase 3: what shape is this answer? Stated before anything else,
+            because "3 technologies match your part, plus 6 for context" and
+            "9 technologies match your part" are different answers and the tool
+            used to present both as nine. */}
+        {result?.answerShape === 'exact-plus-landscape' && (
+          <div className="max-w-4xl mx-auto mb-4">
+            <p className="text-center text-[11.5px] text-slate-400">
+              <span className="text-white font-semibold">{result.exactCount}</span> technolog{result.exactCount === 1 ? 'y' : 'ies'} match
+              {result.query ? <> “<span className="text-gold-300">{result.query}</span>”</> : ' your selection'} directly.
+              The other <span className="text-slate-300">{result.relatedCount}</span> are the surrounding commodity landscape, marked and separated below — useful context, but not about your part.
+            </p>
+          </div>
+        )}
+        {result?.answerShape === 'landscape-only' && (
+          <div className="max-w-4xl mx-auto mb-4">
+            <p className="text-center text-[11.5px] text-amber-200/80">
+              Nothing in the curated register matches {result.query ? <>“{result.query}”</> : 'this selection'} directly — everything below is the surrounding commodity landscape, not an answer about your part.
+            </p>
+          </div>
+        )}
+
         {/* Landscape currency — how recently ANY of this was confirmed.
             The single most important thing a reader can know about a foresight
             page, and until Phase 1 the tool never said it. */}
@@ -1240,17 +1262,34 @@ export default function ForesightPage() {
                 <div key={lane.key} className={`bg-navy-900/50 border border-white/5 rounded-2xl p-3 ${lane.key === 'H2' ? 'hz-lane-h2' : ''} ${lane.key === 'H3' ? 'hz-lane-h3' : ''}`}>
                   <div className="px-1 pb-2 mb-1 border-b border-white/5">
                     <h2 className="text-white font-bold text-sm"><DecodeText text={lane.title} /></h2>
-                    <p className="text-slate-500 text-xs">{result.windows[lane.key].label} · {result.horizons[lane.key].length} technologies</p>
+                    <p className="text-slate-500 text-xs">
+                      {result.windows[lane.key].label} · {result.horizons[lane.key].filter(c => !c.related).length} matching
+                      {result.horizons[lane.key].some(c => c.related) && (
+                        <span className="text-slate-600"> · {result.horizons[lane.key].filter(c => c.related).length} landscape</span>
+                      )}
+                    </p>
                   </div>
                   <div className="space-y-3 mt-2">
                     {result.horizons[lane.key].length === 0 && <p className="text-slate-600 text-xs px-1 py-2">Nothing in this window for this selection.</p>}
-                    {result.horizons[lane.key].map((c, i) => (
+                    {result.horizons[lane.key].map((c, i, arr) => (
                       <motion.div
                         key={c.id}
                         initial={reduced ? false : { opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
                         animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
                         transition={{ delay: reduced ? 0 : Math.min(i, 8) * 0.08, duration: 0.45, ease: 'easeOut' }}
                       >
+                        {/* Phase 3: the landscape starts HERE and says so. Before
+                            this, widened commodity entries sat in the same lane
+                            as the answer with only a small chip to tell them
+                            apart, so a query matching 3 technologies presented
+                            as a confident 16-card landscape. */}
+                        {c.related && !arr[i - 1]?.related && (
+                          <div className="flex items-center gap-2 pt-1 pb-2">
+                            <span className="h-px flex-1 bg-white/10" />
+                            <span className="text-[9px] uppercase tracking-wider text-slate-500 font-mono">commodity landscape — not your part</span>
+                            <span className="h-px flex-1 bg-white/10" />
+                          </div>
+                        )}
                         <TechCardView c={c} signal={signalFor(c.id)} critiques={critiquesFor(c.id)} />
                       </motion.div>
                     ))}

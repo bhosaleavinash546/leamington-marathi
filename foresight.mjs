@@ -316,6 +316,13 @@ const PROJECTION_YEARS = [3, 5, 8];
 // single card.
 const MIN_LANDSCAPE = 5;
 
+// The most cards a widened landscape may reach in total (exact + related).
+// Phase 3: the floor exists so a specific part does not read as a single card;
+// it does not exist to turn one match into a commodity catalogue. Sized so a
+// reader still sees a landscape's shape across three lanes without the answer
+// being outnumbered five to one.
+const LANDSCAPE_CAP = 9;
+
 // ── Evidence currency (Phase 1, 2026) ────────────────────────────────────────
 // The Phase 0 review found the tool's real defect was not its maths but the AGE
 // of what it says. Nine of nine commodity lenses answered entirely from the
@@ -494,11 +501,40 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
       // the same commodity net instead of replacing it: exact matches keep the
       // top of every lane (relevance ranks first), widened entries are stamped
       // `related: true` so the UI/report can label them honestly.
+      //
+      // Phase 3 (2026) bounded it. Widening was unbounded — it appended the
+      // WHOLE commodity — so "stator lamination" returned 16 cards of which 3
+      // were about laminations, and "HV busbar" returned 29 of which 4 were
+      // about busbars: roughly 85% of the answer was other people's parts,
+      // presented with the same confidence as the answer itself. A landscape
+      // FLOOR is a floor, not a flood. Widening now fills up to the floor and
+      // stops, taking the highest-momentum entries so the context that does
+      // arrive is the context worth having.
       const domain = inferCommodityKey(query) ?? matched[0].tech.commodity;
       const have = new Set(matched.map((m) => m.tech.id));
-      for (const t of register) {
-        if (t.commodity !== domain || have.has(t.id)) continue;
-        if (segment && !t.segments?.includes(segment)) continue;
+      // Widening stops when the floor's CONDITIONS are met, not at a raw count.
+      // The floor was never "at least five cards" — it is "a landscape with a
+      // future in it", which is why the coverage gate checks for a future lane.
+      // Capping on count alone starved that lane for parts with several weak
+      // near-term matches (caught by the coverage gate on the first run of this
+      // change: 276 of 291 BOM leaves still passed, 15 lost their future).
+      const laneOf = (t) => horizonFor(
+        t.trl, t.adoptionPct,
+        (() => { const a = t.regAnchor ? anchors.find((x) => x.id === t.regAnchor) : null; return a && (a.status === 'in-force' || a.status === 'adopted') ? a.year : null; })(),
+        now,
+        { decisionYear: inflectionYears(t.adoptionPct, { now, ceilingPct: t.ceiling ?? 90 }).cross25, ceilingPct: t.ceiling ?? 90 },
+      ).horizon;
+      const hasFuture = () => matched.some((m) => laneOf(m.tech) !== 'H1');
+      const pool2 = register
+        .filter((t) => t.commodity === domain && !have.has(t.id) && (!segment || t.segments?.includes(segment)))
+        .map((t) => ({ t, m: momentumScore(t, { now, anchors }), lane: laneOf(t) }))
+        .sort((a, b) => b.m - a.m || a.t.id.localeCompare(b.t.id));
+      for (const { t, lane } of pool2) {
+        const needCards = matched.length < MIN_LANDSCAPE;
+        const needFuture = !hasFuture();
+        if (!needCards && !needFuture) break;                 // floor satisfied
+        if (matched.length >= LANDSCAPE_CAP && !needFuture) break;  // hard ceiling, unless the future lane is still empty
+        if (!needCards && needFuture && lane === 'H1') continue;    // only a future card can fix a missing future
         relatedIds.add(t.id);
         matched.push({ tech: t, score: 0 });
       }
@@ -542,6 +578,18 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
     powertrainHint: ptHint.length ? ptHint : null,
     count: cards.length,
     exactCount: cards.filter((c) => !c.related).length,
+    relatedCount: cards.filter((c) => c.related).length,
+    // Phase 3: what SHAPE is this answer? A reader must be able to tell "three
+    // technologies match your part, plus six for context" from "nine
+    // technologies match your part" — the tool used to report both as nine.
+    answerShape: (() => {
+      const exact = cards.filter((c) => !c.related).length;
+      const related = cards.length - exact;
+      if (!cards.length) return 'empty';
+      if (!related) return 'exact';
+      if (!exact) return 'landscape-only';
+      return 'exact-plus-landscape';
+    })(),
     windows: horizonWindows(now),
     horizons,
     anchors: anchors.filter((a) => anchorIds.has(a.id)),

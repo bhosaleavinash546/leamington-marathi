@@ -3217,3 +3217,43 @@ had never once opened a source.
    `npm run horizon:live "<subject>"` runs the same path against the real web
    for anyone with outbound access and a search key, printing which pages were
    opened and which quotes were checked.
+
+## 61. Horizon Phase 3: the answer and the landscape are different things
+
+**Date**: 2026-08-27
+
+**Context**: Phase 0 measured "stator lamination" returning 16 cards of which
+3 were about laminations, and "HV busbar" returning 29 of which 4 were about
+busbars — roughly 85% of each answer was other people's parts, presented with
+the same confidence as the answer. The exported PDF's prediction board for a
+lamination query opened with SiC power stages and multi-speed transmissions,
+and its cover said "16 TECHNOLOGIES".
+
+**Decision**:
+1. **A landscape floor is a floor, not a flood.** Widening appended the WHOLE
+   commodity. It is now bounded and momentum-ranked, so the context that does
+   arrive is the context worth having. Measured: stator lamination 16 → 6 cards
+   (padding 81% → 50%), HV busbar 29 → 5 (86% → 20%).
+2. **The floor's condition is a landscape WITH A FUTURE, not a card count.**
+   The first cut capped on count alone and the coverage gate immediately caught
+   it: 276 of 291 BOM leaves still passed, 15 lost their future lane. Widening
+   now continues while the floor is unmet OR no future-lane card exists, and
+   only a future card can satisfy a missing future. The gate did its job — a
+   count cap would have shipped a subtler version of the defect it exists to
+   prevent.
+3. **The shape of the answer is stated, not implied.** `exactCount`,
+   `relatedCount` and `answerShape` ('empty' / 'exact' / 'landscape-only' /
+   'exact-plus-landscape') travel with every result. The page says "3
+   technologies match 'stator lamination' directly; the other 3 are the
+   surrounding commodity landscape", and a landscape-only answer says outright
+   that nothing matched the part.
+4. **Separation is structural, not a chip.** Lanes count "3 matching · 2
+   landscape" rather than "5 technologies", and a labelled divider —
+   "commodity landscape — not your part" — precedes the first widened card in
+   each lane. Exact-before-related ordering within a lane is pinned by a test,
+   because the divider depends on it holding.
+5. **The PDF cover counts the ANSWER.** The headline metric is MATCHING, with
+   a SCOPE line naming the landscape separately; prediction-board rows for
+   widened entries are dimmed, marked with a leading ·, and explained in the
+   legend. (The first render truncated the scope line mid-word — "marked
+   LANDS…" — and was shortened; terse beats truncated.)
