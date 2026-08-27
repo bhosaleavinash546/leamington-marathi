@@ -22,7 +22,8 @@
     "horizon:audit": "node scripts/horizon-audit.mjs",
     "horizon:coverage": "node scripts/horizon-coverage.mjs",
     "thresholds:audit": "node scripts/threshold-audit.mjs",
-    "horizon:live": "node scripts/horizon-live-research.mjs"
+    "horizon:live": "node scripts/horizon-live-research.mjs",
+    "horizon:deep": "node scripts/horizon-deep.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
