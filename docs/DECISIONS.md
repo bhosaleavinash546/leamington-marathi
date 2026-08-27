@@ -3265,3 +3265,58 @@ and its cover said "16 TECHNOLOGIES".
    widened entries are dimmed, marked with a leading ·, and explained in the
    legend. (The first render truncated the scope line mid-word — "marked
    LANDS…" — and was shortened; terse beats truncated.)
+
+## 62. Deep Research: the loop, and what five live runs cost to get right
+
+**Date**: 2026-08-27
+
+**Context**: The ask was PhD-level research — search widely, verify, then
+report. Horizon's Phase 2 path did one search plan, one read, one synthesis: a
+good briefing, not a literature review. With no access to paid engineering
+databases, patents had to carry the weight peer review normally would.
+
+**Decision**:
+1. **The loop is what makes it research.** scope → sweep → read → gap-detect →
+   repeat, bounded, stopping early when every question is answered.
+2. **Patents are a first-class evidence class** (`foresight-patents.mjs`):
+   claim-section isolation, deterministic parameter extraction, filing
+   profiles. Its own smoke test found that `%\b` can never match, so every
+   percentage in every document had been silently dropped.
+3. **Contradictions are surfaced, never resolved.** Detected in code, because a
+   model asked to synthesise will quietly pick one figure and the disagreement
+   disappears.
+4. **Corroboration counts distinct ORIGINS**, so twenty rewrites of one press
+   release are one source.
+5. **Nothing reaches the register without earning it**: a figure plus either two
+   independent origins or a patent claim, carrying `lastVerified`/`evidenceUrl`.
+
+**What the five live runs found that fixtures never would.** Every one of these
+passed a green test suite before the live run and was wrong anyway:
+
+- **Claim matching was defeated by paraphrase.** Comparison keyed on the
+  model's own `metric`/`subject` STRINGS. Three sources reporting one
+  measurement wrote "lamination thickness"/"Xiaomi V8s EVO",
+  "thickness"/"Xiaomi V8s EVO motor", "gauge"/"Xiaomi V8s EVO stack" — so
+  contradiction detection found nothing and every claim read as single-origin.
+  Both honesty mechanisms were doing nothing on real output. Matching now keys
+  on the UNIT in the value (which does not vary with phrasing) plus subject
+  token overlap.
+- **A generic unit is not a metric.** That fix then produced a FALSE
+  contradiction by comparing "5-8%" (loss reduction) with "99.2%" (peak
+  efficiency) because both were percentages of the same subject. Dimensionless
+  units now additionally require metric agreement.
+- **Relative spread is wrong for efficiency.** 99.2% vs 98.4% is 0.8%
+  relatively and slips under any tolerance, yet describes DOUBLE the losses.
+  Percentages above 90 are compared on their complement — with a 0.2pp floor,
+  or one decimal place of reporting precision becomes a "disagreement".
+- **A forced tool call can arrive EMPTY.** The scope step truncated on three of
+  five subjects at 2000 tokens, and an empty tool input reads downstream as
+  "the model had nothing to say" — the most misleading failure there is.
+  Budgets raised, one retry added, and the error message now names the cause.
+- **A schema is a request, not a guarantee.** Both `questions` and
+  `unanswered` came back as non-arrays on live runs, one of which killed a run
+  mid-loop. Both are normalised defensively now.
+
+The lesson is the one this codebase keeps relearning: a green suite proves the
+code does what its author imagined, and only a live run proves it does what the
+job needs.
