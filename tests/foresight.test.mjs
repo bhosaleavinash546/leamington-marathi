@@ -277,7 +277,8 @@ test('self-audit regression gates: the register can only get healthier', () => {
   // entry had been borrowing freshness from a "2028" in its own note and is now
   // correctly flagged. A gate must move when the measurement gets more honest —
   // what it must never do is move because someone wanted a green build.
-  assert.ok(a.flaggedCount <= 120, `curation debt grew to ${a.flaggedCount}`);
+  // Ratcheted 120 → 115 by the first worst-first re-curation pass (Aug 2026).
+  assert.ok(a.flaggedCount <= 115, `curation debt grew to ${a.flaggedCount}`);
   assert.ok((a.byFlag['no-evidence'] ?? 0) <= 23, 'evidence debt grew');
 });
 

@@ -117,13 +117,15 @@ describe('register currency gate (ratchet)', () => {
   // undated evidence may FALL but never rise past this ceiling. Lower it when
   // re-curation lands; never raise it to make a red build green.
   //
-  // The ceiling is set at the MEASURED reality of August 2026, not at an
-  // aspiration: 71.1% of the register (69 stale + 59 undated of 180) is not
-  // recently confirmed. That is uncomfortable and it is the point — the number
-  // is the debt this feature exists to pay down, and writing a flattering one
-  // here would hide exactly what Phase 0 was commissioned to find.
-  // Phase 4 (re-curation, worst-first) is what moves it.
-  const CEILING = 0.72;
+  // The ceiling is set at the MEASURED reality, never at an aspiration, and it
+  // RATCHETS DOWN as re-curation lands. History, so the direction is visible:
+  //   0.72  Phase 1 baseline — 71.1% not fresh (69 stale + 59 undated of 180)
+  //   0.68  after the first worst-first re-curation pass — 67.8% (64 + 58)
+  // Six entries were re-verified against live 2026 sources with dated
+  // programmes and evidence URLs, which moved BIW's median cited year from 2020
+  // to 2022 and Exterior's from 2019 to 2022. The number is still bad; it is
+  // supposed to be, until the remaining 122 entries are worked through.
+  const CEILING = 0.68;
 
   it('does not rot further than the ratchet allows', () => {
     const l = landscapeCurrency(FORESIGHT_REGISTER);

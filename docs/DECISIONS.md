@@ -3356,3 +3356,42 @@ would have made the feature harder to understand, not easier.
    running something shallow. Verified live: with search unavailable the run
    completed, produced NO report, and listed its three limitations instead of
    inventing findings.
+
+## 64. Register re-curation, pass 1: research the frontier, then ratchet
+
+**Date**: 2026-08-27
+
+**Context**: Phase 0 measured the register at 71.1% not-fresh, with BIW citing
+2020 evidence, Exterior and Powertrain 2019. That content is what a user sees
+FIRST on every Horizon query, before any research runs, so it sets the
+impression of the whole tool. Deep research was deliberately built before this
+pass — there was no point hand-curating a floor while the ceiling did not exist.
+
+**Decision**:
+1. **Worst-first, evidence-led.** Six entries were re-verified against live web
+   research: gigacasting, flush handles, camera mirrors, range extenders,
+   secondary-axle disconnect and green steel. Each carries a dated programme,
+   `lastVerified` and an `evidenceUrl` — never a backfilled date.
+2. **Research changed CONCLUSIONS, not just dates.** Three findings the stale
+   register had wrong, which is the argument for doing this at all:
+   - **Flush door handles are being regulated OUT, not adopted in.** China bans
+     fully hidden electronic handles — new type approvals from 1 Jan 2027, all
+     designs by Jan 2029, mechanical release mandatory inside and out. The entry
+     described a "draft regulation pushing compromises"; it is now law with
+     dates, and any programme selling into China must re-engineer the part.
+   - **Gigacasting is moving away from the monolith.** Gen-3 modular casting —
+     cast nodes plus extrusions and selective sheet — recovers the repairability
+     that was the technology's main counterforce.
+   - **Range extenders stopped being a curiosity.** Chinese EREV sales passed a
+     million a year and the category got its own standard (QC/T1086-2026).
+   Green steel's cost basis was also corrected: the entry quoted a flat
+   €100-300/t premium where current reporting gives 20-30% per tonne, which
+   moves with the baseline.
+3. **Gates ratchet down, never up.** Not-fresh ceiling 0.72 → **0.68**; curation
+   debt 120 → **115 flagged**. Both carry their history in the comment so the
+   direction of travel is visible in the file. BIW's median cited year moved
+   2020 → 2022, Exterior's 2019 → 2022.
+4. **What is deliberately NOT done.** 122 entries remain unverified and four
+   commodities (Driveline, BIW, Interior, Exterior) still have an empty H3
+   future lane. Neither was papered over: the numbers above are the honest state
+   after one pass, and the ratchets are what force the next one.
