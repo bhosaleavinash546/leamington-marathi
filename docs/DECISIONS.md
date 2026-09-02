@@ -3461,3 +3461,58 @@ retroactively, no sections existed yet): depth 32–80, median 64; arithmetic
 40 consistent / 16 mismatch / 7 unparsed; named grade 33 of 63; engine
 checked 16 of 63, 0 nulls with a reason. Those are the numbers a live run
 after this change has to beat.
+
+## 66. Prism live after-run: the measurement, and the four defects it found
+
+**Context (Sept 2026).** The depth pass (entry 65) was re-run live on the same
+four parts with the same evidence text and lens selection — the only evidence
+change being the new catalogue section on the material lens. Fixtures:
+`benchmark/prism-runs-after` (generation only) and
+`benchmark/prism-runs-after-repaired` (after the critique-and-repair pass
+under the hardened rules below); scores in `ideation-results-prism-after*.json`.
+
+**Measured, before → after (generation).** Depth median 68 → 96; quality-score
+spread 0 → 31; all five engineering sections 0 → 87%; engine-checked 25 → 42%
+(assembly-level EDU 0 → 5 of 24); contradicted-of-checked 56 → 31%; every null
+with a reason; named grade 52 → 69%; critiqued 0 → 71%. Arithmetic
+consistency flat at ~60% — the model's sums are loose one time in four in
+both arms; now each one is a badge and a rank penalty. Near-duplicate pairs
+17 → 25 and marketplace restatements 65 → 82% — worse, see (3).
+
+**Decisions forced by what the live run found.**
+
+1. **The repair stage had never worked.** Its tool schema was a bare object,
+   so the forced call returned `{}`; with a real schema the small model
+   returned the idea as a JSON string. `REFINE_SCHEMA` now spells out the
+   idea shape and string-encoded ideas are parsed. Unit tests with a fake
+   client had passed throughout — a fake that returns what you hope for
+   tests nothing about the model.
+2. **A repair must be checkable and distinct.** Once repairs landed, every
+   one came back without a resolvable engine request ("not contradicted"
+   meant "not looked at") and four hood repairs converged on one lever. Rules:
+   a repair of an engine-contradicted idea is rejected unless the engine can
+   price it; a repair within 0.45 similarity of any other idea is rejected;
+   rejections carry a reason in `summary.repairRejected`. Re-run: 11
+   attempted, 4 accepted (all engine-confirmed), 7 rejected honestly.
+   Contradicted-of-checked 31 → 22%.
+3. **Cross-lens restatements are merged at a lower bar.** Parallel lenses
+   return the same lever once each; `dedupeIdeas` now merges cross-lens
+   pairs at 0.45 (within-lens stays 0.6) and the deeper system level survives
+   a tie. Dry run on the after batch: 62 → 44 ideas.
+4. **The resolver learned the e-drive families.** "Electrical steel" had
+   resolved to Steel (mild); NdFeB, hairpin copper and impregnation resin to
+   nothing — 14 of 19 unchecked EDU ideas. Branches added ahead of the steel
+   branches; 8 of the 19 now resolve, the rest are multi-op routes.
+5. **Seven arithmetic-parser rules**, each pinned to the live string that
+   broke the rule before it (bucket lines are context; a percentage
+   multiplies money only when linked; €/kg needs a mass; a rising "€a → €b"
+   is context; "minus <money>" subtracts; per-unit figures by a saving word
+   beat bucket figures; no bare "×" apply). Lamination re-read: 11 → 6
+   mismatches, the remainder the model's.
+
+**Open.** The EDU panel calls failed silently on one pass (0 critiques);
+persona-call failures are swallowed and should be reported in the summary.
+The 60% engine-coverage gate is met on hood and knuckle, not on the
+lamination (stamping-process levers the engine cannot express). Engineer
+relevance is still unrated. The dedupe and repair rules have been measured
+offline on the after output, not yet on a fresh live batch.

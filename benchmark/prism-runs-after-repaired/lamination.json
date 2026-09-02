@@ -1,0 +1,2179 @@
+{
+ "part": "lamination",
+ "annualVolume": 10000000,
+ "capturedAt": "2026-09-02",
+ "arm": "after+repair",
+ "evidenceIds": [
+  "E1",
+  "E2",
+  "E3",
+  "E4",
+  "E5",
+  "E6",
+  "E7",
+  "E8",
+  "E9",
+  "E10",
+  "E11",
+  "E12",
+  "E13",
+  "E14",
+  "W1",
+  "W2",
+  "W3",
+  "W4",
+  "W5",
+  "E60",
+  "E61",
+  "E62",
+  "E63",
+  "E64"
+ ],
+ "lensesAvailable": [
+  "vave",
+  "process",
+  "material",
+  "spec",
+  "commercial",
+  "benchmark"
+ ],
+ "lensesRun": [
+  "vave",
+  "material"
+ ],
+ "validation": {
+  "total": 16,
+  "kept": 16,
+  "dropped": 0,
+  "flagged": 16,
+  "avgQuality": 91,
+  "arithmetic": {
+   "consistent": 4,
+   "mismatch": 11,
+   "unparsed": 1
+  },
+  "depth": {
+   "n": 15,
+   "min": 84,
+   "median": 100,
+   "max": 100,
+   "spread": 16,
+   "criteriaHitPct": {
+    "grade": 87,
+    "mechanism": 93,
+    "validation": 100,
+    "dfm": 100,
+    "evidence": 100,
+    "sections": 100
+   }
+  },
+  "intraBatchMerged": 1,
+  "diversity": {
+   "score": 83.6,
+   "nearDupPairs": 5
+  },
+  "engineChecks": {
+   "checked": 4,
+   "confirmed": 2,
+   "contradicted": 2,
+   "unexpressible": 11,
+   "byKind": {
+    "assembly": 3,
+    "substitution": 1
+   },
+   "reasons": {
+    "engine could not price this move: Steel (mild) (ferrous) is ": 3,
+    "nothing changed between baseline and proposed (same material": 3,
+    "no engine-check request — the idea was not expressed as a su": 1,
+    "proposed process \"…\" not in the engine catalogue": 1,
+    "engine could not price this move: Electrical Steel (M250-35A": 3
+   }
+  },
+  "lenses": {
+   "run": [
+    "vave",
+    "material"
+   ],
+   "skipped": [
+    "process",
+    "spec",
+    "commercial",
+    "benchmark"
+   ],
+   "empty": [],
+   "ideasByLens": {
+    "vave": 8,
+    "material": 7
+   }
+  },
+  "deep": {
+   "critiqued": 12,
+   "challenges": 9,
+   "eloMatches": 0,
+   "refineAttempted": 2,
+   "refined": 1,
+   "repairRejected": [
+    {
+     "title": "Segmented stator laminations lift strip utilisation",
+     "reason": "repair not engine-checkable: engine could not price this move: Electrical Steel (M250-35A) (electricalsteel) is not compatible with Stamping / "
+    }
+   ],
+   "level": "critique"
+  }
+ },
+ "ideas": [
+  {
+   "id": "backlack-bonding-replaces-interlock",
+   "title": "Backlack bonding replaces mechanical interlock cleats",
+   "technicalDescription": "Replace the mechanical interlock-cleat stacking datum (the punched dimples that key laminations together in the progressive die) with a backlack (self-bonding) epoxy-phenolic coating applied over the C-5 varnish on M250-35A. Interlock cleats locally cold-work the sheet, raising eddy-current loss and creating a low-permeability short-circuit path; deleting them recovers ~2-4% of iron loss and lifts stacking factor from ~0.95 toward 0.97 because no dimple volume is displaced. Backlack (e.g. voestalpine isovac backlack, Kienle+Spiess Verbaka) cures in an oven fixture at 180-200 C under axial pressure, giving a fully bonded core with no burr-shorting cleats and no separate welding/glue-line op. This directly attacks the interlaminar-short and cutting-stress functions [E5,E7] and the stacking-factor requirement [E6]. At 3.4 EUR/kg electrical steel and 200k motors/yr with 300 laminations each, higher stacking factor lets the same torque be met with a marginally shorter stack, trimming steel mass. Cure energy replaces welding/rivet tooling.",
+   "manufacturingImpact": "Deletes the interlock-dimple punch stations from the progressive die (fewer punches to maintain, less die wear) and eliminates the downstream stack-welding or cleat-crimping station. Adds a backlack coil-coating step (usually done by the steel supplier) and an in-line oven-cure/press fixture at core assembly. Net station count at the stacking cell falls; core stiffness and NVH improve because the bonded stack behaves monolithically, reducing lamination buzz. Coating adds cost per kg but removes secondary joining labour and improves yield by cutting burr-short scrap.",
+   "costSavingTypes": [
+    "process",
+    "material",
+    "complexity",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — recovers iron loss and stacking factor while deleting a joining op",
+    "percentage": "6-12%",
+    "annualValue": "€180K–€350K at 10,000,000 units/yr",
+    "calculationBasis": "€0.29/part baseline; ~€0.02-0.03/part from deleted interlock punches + stack-weld op and ~1-2% steel mass from higher stacking factor across 10M parts",
+    "paybackMonths": 18
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Backlack bond strength must survive traction-motor thermal cycling (-40 to 180 C) and shear from press-fit into housing; delamination would raise NVH and iron loss. Mitigate with lap-shear and hot-shear testing per stack and thermal-shock cycling. Cure-temperature control is critical — under-cure gives weak bonds, over-cure degrades the C-5 insulation. No direct NCAP/emissions link; EU ELV recycled-content unaffected as steel remains recyclable after debonding.",
+   "dfmaPrinciples": [
+    "Eliminate secondary joining operations",
+    "Design for self-fixturing (self-bonding stack)",
+    "Reduce tooling complexity (fewer punch stations)",
+    "Error-proof interlaminar insulation"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "unverified: voestalpine isovac backlack self-bonding cores adopted on premium PMSM traction stators; BMW Gen5 eDrive stator uses bonded lamination stack for NVH and loss reduction",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "W3"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "voestalpine isovac backlack self-bonding electrical steel",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "teardown",
+     "title": "BMW Gen5 eDrive bonded stator core",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "engineering": {
+    "mechanism": "Interlock dimples plastically deform the sheet, and local cold-work raises coercivity and eddy loss while the dimple volume displaces steel, capping stacking factor near 0.95. A bonded stack removes both effects: no cold-work, no displaced volume, so stacking factor rises to ~0.97 and iron loss drops 2-4%. Bond shear strength (typ. 4-6 MPa lap shear) carries the stacking load that cleats previously provided.",
+    "specDeltas": "Delete interlock-dimple punch stations from die; add backlack coating over C-5 (double-side, ~5-8 um). Cure 180-200 C, ~2 MPa axial. Stacking factor spec 0.95→0.97; burr-short requirement <20 um retained [E5]. Add lap-shear acceptance ≥4 MPa. Deletes stack-weld/cleat part features.",
+    "validationPlan": "Lap-shear and hot-shear (150 C) on n=30 stacks, accept ≥4 MPa; thermal-shock -40/180 C ×1000 cycles then re-test shear and Epstein iron loss (accept loss within 4% of target); press-fit push-out on n=10 assembled cores. Full PPAP re-qualification of the bonded core as a design change.",
+    "dfmImplications": "Removes interlock punches (less die maintenance, lower punch-wear scrap) and deletes a downstream joining station; adds an oven/press cure fixture. Self-fixturing stack simplifies handling. Coating applied at coil level by steel supplier, so no new in-house coating line.",
+    "costBridge": "Baseline €0.29 (material €0.10, machine €0.05, setup €0.05). Deleting interlock punches and stack-weld saves ~€0.02-0.03/part in tooling/process; backlack adds ~€0.01/part coating but higher stacking factor trims ~1-2% steel mass. Net ~€0.02-0.035/part → €180K-350K/yr. Excludes oven-cure capex amortisation and any stack-length redesign."
+   },
+   "lensId": "vave",
+   "grade": {
+    "named": "M250-35A",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names M250-35A"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "6 quantities with units and a stated change (35A, 6 MPa, 8 um, 2 MPa)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Eliminate secondary joining operations"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "6 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 92,
+   "validationFlags": [
+    "grade-not-in-library(M250-35A)",
+    "confidence-capped-no-search",
+    "arithmetic-mismatch(-98%)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 180000,
+     "hi": 350000,
+     "mid": 265000
+    },
+    "computedEur": 3750,
+    "deltaPct": -98,
+    "basis": "unit × volume: 1.5% × €0.02-0.03 × 10,000,000/yr (volume from annual value)",
+    "note": "basis multiplies out to €3,750, 98% below the stated minimum (€180,000–€350,000)"
+   },
+   "engineCheck": {
+    "kind": "assembly",
+    "referenceCase": "1 parts (4 weldSpot) → 1 parts (1 adhesive), 16.6s → 8.6s assembly time, 10000k/yr, Germany",
+    "baselineEur": 0.32,
+    "proposedEur": 0.29,
+    "savingPct": 7.4,
+    "direction": "confirmed",
+    "basis": "Deterministic DFA time model (BrainSpark coefficients, MTM-structured, calibratable) at the region’s loaded labour rate, plus illustrative fastener piece prices — validates the DIRECTION of the assembly-content change ONLY. Material and tooling consequences of a consolidation are NOT included; add a substitution request for those."
+   },
+   "priorArt": {
+    "id": "deep-3e00b0f8717c",
+    "title": "Segmented bonded stator core replacing single-piece punch stack",
+    "score": 20.7
+   },
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "challenge",
+     "critique": "Removing mechanical interlock removes a proven, inspectable stacking datum; bond-only stacks need full thermal-cycle (-40 to 180C) shear/peel DV, press-fit shear validation, and in-line bond-integrity screening to catch delamination before it drives NVH/iron-loss warranty claims."
+    }
+   ],
+   "rank": {
+    "score": 127095.7,
+    "basis": "payback 18mo ×0.80 · quality 92 ×0.96 · engine confirmed ×1.25 · stated basis multiplies out -98% vs claim ×0.7 · evidence unverified ×0.9 · prior art \"Segmented bonded stator core replacing single-piece punch stack\" ×0.79"
+   }
+  },
+  {
+   "id": "thinner-gauge-030mm-electrical-steel",
+   "title": "Thinner 0.30 mm NO grade cuts iron loss and steel",
+   "technicalDescription": "Substitute 0.30 mm non-oriented electrical steel (e.g. M250-30A / NO30 equivalent) for the current 0.5 mm M250-35A stated in [E1]. Eddy-current loss scales with the square of lamination thickness (P_eddy ∝ t²·f²·B²), so dropping gauge from 0.50 to 0.30 mm cuts eddy loss by ~64% at a given electrical frequency — highly valuable for a PSM traction motor where iron losses drive the thin-gauge choice [E4]. The lower loss can either be banked as efficiency/range or traded for a slightly shorter/lighter stack. Thinner sheet is more expensive per tonne but the burr-height and stacking-factor requirements [E5,E6] are easier to hold because there is less material to shear. The core function — slot/tooth geometry fixed by EM design [E2] — is fully preserved; only the sheet thickness changes, requiring more laminations per stack (~500 vs 300 for the same axial length). This is a pure gauge substitution on the same alloy family motivated by the loss-driven gauge rationale in [E4,E7].",
+   "manufacturingImpact": "More laminations per motor increases stamping strokes per stack (~500 vs ~300), raising press throughput demand — best paired with high-speed progressive stamping. Thinner sheet reduces punch force and die wear per hit but increases handling sensitivity and stacking count. Burr control is easier at thinner gauge, cutting interlaminar-short scrap. The stack build cell must handle more, lighter laminations — favours automated stacking with backlack. Coil changeover and flatness control become more critical.",
+   "costSavingTypes": [
+    "material",
+    "warranty",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — value is largely in motor efficiency/range plus modest steel trim",
+    "percentage": "4-9%",
+    "annualValue": "€120K–€300K at 10,000,000 units/yr",
+    "calculationBasis": "Iron-loss reduction lets stack shorten ~3-5%, trimming steel mass at 3.4 EUR/kg; part-level saving net of higher per-tonne thin-gauge price across 10M parts",
+    "paybackMonths": 24
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Thinner laminations are more prone to buckling and handling damage, and doubling lamination count raises stack-fault probability — mitigate with bonded stacking and automated handling. Higher per-tonne cost partially offsets mass saving, so net material gain is modest; the real prize is efficiency. Requires full EM re-simulation to confirm torque/loss at the new gauge. No NCAP link; supports EU efficiency/CO2 fleet targets via range gain.",
+   "dfmaPrinciples": [
+    "Design for function (minimise iron loss at source)",
+    "Error-proof burr control via thinner shear",
+    "Standardise on high-speed stamping",
+    "Trade material for performance headroom"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-24 months",
+   "benchmarkReference": "unverified: Marketplace precedent: 0.35→0.25 mm NO grade on 800V stator cut eddy loss ~22% at 16 kHz (verified ★86); Lucid/Tesla plaid-class motors use ≤0.25 mm NO steel",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Efficiency gain supports EU fleet CO2 and BEV range declarations.",
+   "evidenceRefs": [
+    "E1",
+    "E2",
+    "E4",
+    "E5",
+    "E6",
+    "E7"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Non-oriented electrical steel gauge vs iron loss (0.25-0.35 mm traction)",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "teardown",
+     "title": "800V traction stator thin-gauge NO steel adoption",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "engineering": {
+    "mechanism": "Eddy-current loss per unit volume ∝ (t·f·B)²/ρ, so a gauge cut 0.50→0.30 mm reduces eddy loss ~ (0.30/0.50)² = 0.36, i.e. −64% of the eddy component (hysteresis unchanged). At traction fundamentals of 300-1000 Hz plus PWM harmonics this is significant. Lower total core loss permits a ~3-5% shorter stack for equal continuous torque, cutting steel mass and copper end-turn length.",
+    "specDeltas": "Gauge 0.50 mm → 0.30 mm; grade M250-35A → M250-30A (NO30) same non-oriented family. Laminations per stack ~300 → ~500. Retain C-5/backlack insulation, burr <20 um [E5], stacking factor ≥0.95 [E6]. Slot/tooth geometry unchanged [E2].",
+    "validationPlan": "Epstein-frame iron-loss test at 400 Hz and 700 Hz on n=5 coils, accept ≥15% total-loss reduction; dynamometer efficiency map on n=3 motors vs baseline; burr-height metrology on n=50 blanks accept <20 um. Full EM re-simulation and motor re-qualification; PPAP for new coil grade.",
+    "dfmImplications": "Higher lamination count per stack raises stamping strokes and stacking labour — pair with high-speed press and automated/bonded stacking. Lower punch force reduces die wear; thinner sheet needs tighter flatness and coil-handling control. Burr control easier, reducing short scrap.",
+    "costBridge": "Baseline material €0.10/part at 0.5 mm. Thin gauge raises steel €/t ~10-15% but ~3-5% shorter stack trims mass; net material roughly flat-to-slightly-up at part level, with the saving realised as motor-level steel+copper trim (~€120K-300K/yr). Excludes efficiency/range monetisation and press capex."
+   },
+   "lensId": "vave",
+   "grade": {
+    "named": "M250-30A",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names M250-30A"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "7 quantities with units and a stated change (0.30 mm, 30A, 0.5 mm, 35A)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Design for function (minimise iron loss at source)"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "6 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 92,
+   "validationFlags": [
+    "grade-not-in-library(M250-30A)",
+    "confidence-capped-no-search",
+    "arithmetic-mismatch(+353%)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 120000,
+     "hi": 300000,
+     "mid": 210000
+    },
+    "computedEur": 1360000,
+    "deltaPct": 353,
+    "basis": "unit × volume: 4% × 3.4 EUR × 10,000,000/yr (volume from annual value)",
+    "note": "basis multiplies out to €1,360,000, 353% above the stated maximum (€120,000–€300,000)"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "engine could not price this move: Steel (mild) (ferrous) is not compatible with Lamination Stamping (Electrical St",
+   "priorArt": {
+    "id": "add103",
+    "title": "Thinner NO grade electrical steel for 800V high-frequency stator",
+    "score": 23.4
+   },
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "challenge",
+     "critique": "Halving-ish gauge to 0.30mm increases stack-fault and buckling risk per note 3; requires updated stacking-factor CTQ, handling-damage DV, and possibly bonded stacking validation — flag as added PPAP scope, not free lunch."
+    }
+   ],
+   "rank": {
+    "score": 55129.9,
+    "basis": "payback 24mo ×0.67 · quality 92 ×0.96 · not engine-checked ×0.85 · stated basis multiplies out +353% vs claim ×0.7 · evidence unverified ×0.9 · prior art \"Thinner NO grade electrical steel for 800V high-frequency stator\" ×0.77"
+   }
+  },
+  {
+   "id": "skeleton-scrap-nesting-buy-to-fly",
+   "title": "Attack 43% steel overbuy via nesting and scrap loop",
+   "technicalDescription": "The should-cost shows a buy-to-fly of 0.073 kg bought per 0.051 kg shipped — a 43% material overbuy [E13] — driven by the annular OD-200 mm shape leaving a large centre disc (rotor blank) and web skeleton as scrap. Two combined moves attack this: (1) segmented/nested blanking that pairs the stator OD with an inboard rotor lamination or a smaller stator so the centre disc is not pure scrap, and (2) a closed-loop electrical-steel scrap recovery contract with the coil supplier so skeleton scrap returns at NO-grade re-melt value rather than commodity swarf price. Electrical steel at 3.4 EUR/kg is the single largest cost bucket (material €0.10 of €0.29 [E12]); trimming even 8-12% of overbuy at 10M parts is material. Slot/tooth geometry is untouched [E2], burr and stacking requirements [E5,E6] unaffected — this is a die-layout and commercial lever on the same part. Rotor-in-stator nesting is standard practice at high-volume lamination houses and directly monetises the scrap disc.",
+   "manufacturingImpact": "Requires a re-designed progressive/compound die with nested rotor-and-stator layout, or a two-out stator layout to shorten skeleton web. Die is more complex and costlier but strokes yield more good area per hit. Scrap handling changes: segregated electrical-steel scrap baled and returned under a re-melt buy-back clause rather than mixed swarf. Coil width and pitch re-optimised for minimum skeleton. Slightly higher die maintenance offset by large recurring material recovery.",
+   "costSavingTypes": [
+    "material",
+    "tooling",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — material is the dominant cost bucket and overbuy is 43%",
+    "percentage": "8-15%",
+    "annualValue": "€250K–€500K at 10,000,000 units/yr",
+    "calculationBasis": "Material €0.10/part; reducing 43% overbuy by ~one-quarter via nesting + scrap buy-back saves ~€0.02-0.03/part × 10M",
+    "paybackMonths": 20
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Nesting rotor and stator on one strip couples two EM designs — a change to either forces die rework; mitigate by nesting stator-with-stator or reserving the centre disc for a stable rotor family. Cutting-stress at slot edges [E7] must not worsen from tighter nesting; verify loss on nested-edge samples. Scrap buy-back depends on supplier contract and clean segregation. No safety/NCAP exposure; supports EU ELV 25% recycled-content and closed-loop steel goals.",
+   "dfmaPrinciples": [
+    "Minimise buy-to-fly / material overbuy",
+    "Nest parts to reuse blanked area",
+    "Design tooling for maximum strip utilisation",
+    "Close the material loop (scrap buy-back)"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-20 months",
+   "benchmarkReference": "unverified: High-volume lamination suppliers (Kienle+Spiess, EBG) routinely nest rotor+stator in one die and run electrical-steel scrap buy-back; Tesla/Nidec lamination lines report >80% strip utilisation",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Closed-loop scrap recovery supports EU ELV 2025 25% recycled-content target.",
+   "evidenceRefs": [
+    "E2",
+    "E5",
+    "E6",
+    "E7",
+    "E12",
+    "E13"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Electrical steel strip utilisation and rotor-stator nesting benchmarks",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "supplier_data",
+     "title": "Electrical steel scrap re-melt buy-back contracts",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "engineering": {
+    "mechanism": "Blanking an OD-200 annulus discards a large centre disc plus skeleton web; at 43% overbuy [E13] nearly a third of the coil never reaches a part. Nesting the rotor lamination inside the stator OD, or two-out stator layout, converts scrap area into shipped parts, and a re-melt buy-back recovers residual skeleton at NO-grade value (~50-70% of virgin) instead of commodity swarf (~20%).",
+    "specDeltas": "Same M250-35A 0.5 mm sheet, same slot/tooth [E2]. New progressive die with nested rotor+stator or two-out stator layout; optimised coil width. Add scrap-segregation and re-melt buy-back purchasing clause. Buy-to-fly target 0.073→~0.060 kg/part.",
+    "validationPlan": "Strip-utilisation study and die tryout confirming ≥15% overbuy reduction; iron-loss check on nested-edge laminations (n=5 coils) accept within 3% of baseline; burr metrology n=50 <20 um. Re-melt buy-back rate audited via supplier scrap tickets. PPAP for revised die.",
+    "dfmImplications": "More complex multi-part die raises tooling cost and maintenance but lifts good-area yield per stroke. Scrap logistics change to segregated baling. If rotor is co-nested, EM changes to either part force die rework — commonisation discipline needed.",
+    "costBridge": "Baseline material €0.10/part at 0.073 kg bought. Cutting overbuy to ~0.060 kg saves ~0.013 kg × 3.4 EUR/kg ≈ €0.02/part, plus buy-back uplift on residual scrap ~€0.005/part → ~€0.025/part × 10M = €250K/yr. Excludes new-die capex and any nested-part EM coupling risk cost."
+   },
+   "lensId": "vave",
+   "grade": {
+    "named": "M250-35A",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names M250-35A"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "6 quantities with units and a stated change (0.073 kg, 0.051 kg, 200 mm, 35A)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Minimise buy-to-fly / material overbuy"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "6 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 92,
+   "validationFlags": [
+    "grade-not-in-library(M250-35A)",
+    "arithmetic-mismatch(+150%)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 250000,
+     "hi": 500000,
+     "mid": 375000
+    },
+    "computedEur": 1250000,
+    "deltaPct": 150,
+    "basis": "unit × volume: €0.10 × 10,000,000/yr + result €0.02-0.03 × 10,000,000/yr (volume from basis)",
+    "note": "basis multiplies out to €1,250,000, 150% above the stated maximum (€250,000–€500,000)"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "engine could not price this move: Steel (mild) (ferrous) is not compatible with Lamination Stamping (Electrical St",
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "challenge",
+     "critique": "Nesting rotor/stator or reserving centre disc couples two EM designs per note 4 — any future EM change on either part forces die rework and re-PPAP; require clear die-ownership and change-control gate before committing."
+    }
+   ],
+   "rank": {
+    "score": 144585,
+    "basis": "payback 20mo ×0.75 · quality 92 ×0.96 · not engine-checked ×0.85 · stated basis multiplies out +150% vs claim ×0.7 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "high-speed-progressive-stamping-throughput",
+   "title": "High-speed progressive stamping raises throughput, cuts machine cost",
+   "technicalDescription": "Convert the current progressive-die stamping [E8] to a high-speed progressive press running ~350-450 spm (Bruderer/Schuler class servo press) versus a conventional press. Machine and setup together are €0.10 of the €0.29 should-cost [E12] — larger than material's €0.10 tie and clearly the process lever [W3 says process is best-fit route but not that it is at best throughput]. At 10M laminations/yr the number of press-hours dominates machine cost; doubling stroke rate roughly halves press-hours and amortises the press and tooling over far more parts, cutting the €0.05 machine + €0.05 setup buckets [E12]. The precedent shows 400 spm vs 120 spm transfer stamping saved £1.78M on rotor/stator laminations. Higher speed demands tighter die and lubrication control to hold burr <20 um [E5] and stacking factor [E6], but the slot/tooth geometry [E2] and grade are unchanged. Servo presses also enable in-die notching to relieve slot-edge cutting stress [E7].",
+   "manufacturingImpact": "Replaces or upgrades the press to a high-speed servo unit with carbide progressive die, in-die sensing and misfeed detection. Cycle time per lamination falls sharply; press-hours per million parts drop, improving machine utilisation and lowering €/part machine and setup. Die must be carbide/PM-tool-steel to survive higher stroke counts without burr growth. Quick-die-change and automated coil feed cut setup time. Requires vibration isolation and tighter lubrication/temperature control to hold burr and flatness at speed.",
+   "costSavingTypes": [
+    "process",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — machine+setup is €0.10/part and scales directly with press-hours",
+    "percentage": "10-20%",
+    "annualValue": "€300K–€600K at 10,000,000 units/yr",
+    "calculationBasis": "Machine €0.05 + setup €0.05; ~2-3x stroke rate cuts press-hours, reducing combined bucket ~30-40% → ~€0.03-0.04/part × 10M",
+    "paybackMonths": 30
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "At high spm, burr growth from die wear is the key risk to the <20 um interlaminar-short limit [E5] — mitigate with carbide dies, in-line burr monitoring and scheduled regrind. Higher shear rate can increase slot-edge cutting stress and iron loss [E7]; verify with loss testing. Capex for a new servo press is significant, so payback depends on sustained 10M volume. No NCAP/NVH link. Existing press may be repurposed to lower-volume work.",
+   "dfmaPrinciples": [
+    "Maximise machine utilisation (parts per press-hour)",
+    "Amortise tooling over higher volume",
+    "Error-proof at speed (in-die sensing)",
+    "Standardise on carbide tooling for wear life"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-24 months",
+   "benchmarkReference": "Marketplace verified ★83: 400 spm high-speed progressive vs 120 spm transfer press on motor laminations saved £1.78M; Bruderer BSTA high-speed lamination lines standard at Nidec/Vitesco",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E2",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E12",
+    "W3"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "High-speed progressive stamping (350-450 spm) lamination throughput",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "supplier_data",
+     "title": "Bruderer/Schuler high-speed servo press lamination lines",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "engineering": {
+    "mechanism": "Machine cost per part = press hourly rate ÷ (spm × 60 × yield). Raising spm from a conventional ~150 to ~400 cuts press-hours ~2.6x, so the €0.05 machine and €0.05 setup buckets [E12] shrink proportionally. Setup amortises over more parts per die-change. Carbide tooling and controlled lubrication keep shear burr under the 20 um short limit [E5] at speed.",
+    "specDeltas": "Press: conventional progressive → high-speed servo progressive ~350-450 spm. Die: tool-steel → carbide/PM inserts. Add in-die misfeed/burr sensing. Retain M250-35A 0.5 mm, slot/tooth [E2], burr <20 um [E5], stacking ≥0.95 [E6]. Optional in-die slot-edge stress-relief notch.",
+    "validationPlan": "Run-at-rate 400 spm for 8 h; burr metrology every 50k hits accept <20 um across die life; iron-loss on n=5 coils accept within 3% of baseline; flatness/stacking-factor check on n=30 stacks ≥0.95. Die-wear/regrind interval qualification. PPAP for revised process.",
+    "dfmImplications": "New servo press and carbide die raise capex/tooling cost but slash cycle time and press-hours; quick-die-change and auto coil feed cut setup. Die-wear management becomes the throughput limiter — needs monitoring and regrind discipline. Old press redeployed.",
+    "costBridge": "Baseline machine €0.05 + setup €0.05 = €0.10/part. ~2.6x stroke rate cuts press-hours ~35%, taking the combined bucket to ~€0.06-0.07/part, saving €0.03-0.04/part × 10M = €300K-600K/yr. Excludes servo-press and carbide-die capital (payback ~30 months)."
+   },
+   "lensId": "vave",
+   "grade": {
+    "named": "M250-35A",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names M250-35A"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "6 quantities with units and a stated change (450 spm, 400 spm, 120 spm, 20 um)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Amortise tooling over higher volume"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "7 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 92,
+   "validationFlags": [
+    "grade-not-in-library(M250-35A)",
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "consistent",
+    "statedEur": {
+     "lo": 300000,
+     "hi": 600000,
+     "mid": 450000
+    },
+    "computedEur": 622500,
+    "deltaPct": 0,
+    "basis": "unit × volume + annual total: €0.05 (read as per unit) × 10,000,000/yr + 35% × €0.03-0.04 × 10M (volume) (volume from basis)",
+    "note": "basis multiplies out to €622,500, inside the stated range"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "nothing changed between baseline and proposed (same material, process and mass)",
+   "priorArt": {
+    "id": "pt035",
+    "title": "Rotor lamination high-speed progressive stamping — 400 spm vs 120 spm transfer press",
+    "score": 28.6
+   },
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "challenge",
+     "critique": "High-spm increases burr growth against the <20um interlaminar-short CTQ; needs carbide dies, in-line burr monitoring, and scheduled maintenance built into control plan with SPC limits, not just implied — else warranty risk on shorts."
+    }
+   ],
+   "rank": {
+    "score": 134835.8,
+    "basis": "payback 30mo ×0.57 · quality 92 ×0.96 · not engine-checked ×0.85 · stated basis multiplies out · evidence unverified ×0.9 · prior art \"Rotor lamination high-speed progressive stamping — 400 spm vs 120 spm transfer press\" ×0.71"
+   }
+  },
+  {
+   "id": "segmented-stator-yoke-strip-utilisation",
+   "title": "Segmented stator laminations lift strip utilisation",
+   "technicalDescription": "Replace the one-piece annular OD-200 lamination [E1] with a segmented stator design — individual tooth/yoke segments blanked in a straight or fan nest and assembled into the full ring. A one-piece annulus forces a wide coil and discards the whole centre disc; segments tessellate along a strip so utilisation climbs from the current 57% implied by the 43% overbuy [E13] toward 80%+, directly attacking the dominant material bucket [E12]. Segmentation also enables higher slot fill (needle winding on open segments) and, critically, lets each segment be blanked with its long slot edges parallel to the rolling direction, reducing cutting-stress-induced loss [E7]. The EM slot/tooth geometry is preserved per segment [E2]; segments are joined by interlock, weld, or a retaining ring, and stacking factor [E6] and burr limits [E5] are held per segment. Segmented stators are proven on high-volume PMSM (e.g. hairpin and needle-wound traction motors) and are a mainstream material-saving lever for large-OD stators.",
+   "manufacturingImpact": "Die changes from large annular blanking to compact segment blanking — smaller, cheaper die footprint, far better strip utilisation. Adds a segment-assembly/ring-closing operation (interlock keying, laser weld of back-iron, or shrink ring). Winding can shift to pre-wound segments for higher slot fill and lower scrap copper. Segment joints introduce small airgap/flux-bridge losses that must be managed. More handling per stator but each segment is small and light.",
+   "costSavingTypes": [
+    "material",
+    "complexity",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — reclaims most of the 43% overbuy on the dominant cost bucket",
+    "percentage": "10-18%",
+    "annualValue": "€300K–€550K at 10,000,000 units/yr",
+    "calculationBasis": "Material €0.10/part; utilisation 57%→~80% cuts bought mass ~25%, ~€0.025/part, plus copper slot-fill gain at motor level × 10M",
+    "paybackMonths": 24
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Segment joints create flux bridges and mechanical airgaps that raise loss and torque ripple if mis-aligned — mitigate with tight segment tolerancing, interlock keying and back-iron laser welding, and EM re-simulation of cogging/torque ripple. Structural integrity of the assembled ring under press-fit and thermal load must be proven. Assembly complexity rises. No NCAP link; NVH (torque ripple) is the main risk. Supports EU ELV recycled-content via lower scrap.",
+   "dfmaPrinciples": [
+    "Maximise strip utilisation via tessellation",
+    "Design for pre-wound modular assembly",
+    "Reduce blanking-die size and cost",
+    "Enable higher slot fill (copper saving)"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "18-30 months",
+   "benchmarkReference": "unverified: Segmented stator cores used on Toyota/Aisin and BMW needle-wound PMSM for high slot fill; segmentation raises electrical-steel utilisation from ~55% to ~85% in published lamination studies",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Reduced scrap supports EU ELV 2025 recycled-content targets.",
+   "evidenceRefs": [
+    "E1",
+    "E2",
+    "E5",
+    "E6",
+    "E7",
+    "E12",
+    "E13"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Segmented vs one-piece stator strip utilisation and slot fill",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "teardown",
+     "title": "Needle-wound segmented PMSM stator cores (Toyota/Aisin)",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "engineering": {
+    "mechanism": "A closed annulus dictates coil width ≥ OD and discards the centre; tessellated segments pack along a narrow strip, lifting utilisation from ~57% [E13] to ~80%+. Segment edges aligned to rolling direction reduce cutting-stress loss [E7]. Trade-off: N segment joints add flux-bridge reluctance and small airgap loss, plus torque-ripple risk if segments mis-index — managed by keyed interlocks and back-iron welding.",
+    "specDeltas": "One-piece OD-200 annulus → e.g. 12/24 tessellated segments joined by interlock + back-iron laser weld or shrink ring. Same M250-35A 0.5 mm, per-segment slot/tooth [E2], burr <20 um [E5], stacking ≥0.95 [E6]. Utilisation target ~80%. Optional pre-wound segment for higher slot fill.",
+    "validationPlan": "EM re-sim of cogging torque and iron loss vs one-piece, accept torque ripple within 1% of baseline; dynamometer efficiency n=3 motors; segment-joint push-out and thermal-cycle ring integrity n=10; burr and stacking metrology per segment. Full motor re-qualification and PPAP.",
+    "dfmImplications": "Smaller segment die (lower tooling cost, higher utilisation) but adds ring-assembly/welding station and more parts to handle per stator. Enables pre-wound segments cutting copper scrap. Joint alignment fixturing critical.",
+    "costBridge": "Baseline material €0.10/part at 57% utilisation. Reaching ~80% cuts bought mass ~25% ≈ €0.025/part material; assembly adds ~€0.01/part labour, net ~€0.015-0.03/part plus motor-level copper slot-fill gain → €300K-550K/yr. Excludes segment-assembly capex and EM redesign NRE."
+   },
+   "lensId": "vave",
+   "grade": {
+    "named": "M250-35A",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names M250-35A"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "3 quantities with units and a stated change (35A, 0.5 mm, 20 um)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Design for pre-wound modular assembly"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "7 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 92,
+   "validationFlags": [
+    "grade-not-in-library(M250-35A)",
+    "confidence-capped-no-search",
+    "arithmetic-mismatch(+108%)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 300000,
+     "hi": 550000,
+     "mid": 425000
+    },
+    "computedEur": 1142500,
+    "deltaPct": 108,
+    "basis": "unit × volume: €0.10 × 10,000,000/yr + 57% × €0.025 × 10,000,000/yr (volume from basis)",
+    "note": "basis multiplies out to €1,142,500, 108% above the stated maximum (€300,000–€550,000)"
+   },
+   "engineCheck": {
+    "kind": "assembly",
+    "referenceCase": "1 parts (no fasteners) → 12 parts (12 snapFit, 12 weldSpot), 2.6s → 84.4s assembly time, 10000k/yr, Germany",
+    "baselineEur": 0.04,
+    "proposedEur": 1.53,
+    "savingPct": -3381.4,
+    "direction": "contradicted",
+    "basis": "Deterministic DFA time model (BrainSpark coefficients, MTM-structured, calibratable) at the region’s loaded labour rate, plus illustrative fastener piece prices — validates the DIRECTION of the assembly-content change ONLY. Material and tooling consequences of a consolidation are NOT included; add a substitution request for those."
+   },
+   "priorArt": {
+    "id": "bev116",
+    "title": "Segmented stator core reduces copper waste in hairpin winding by 22%",
+    "score": 23.9
+   },
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "challenge",
+     "critique": "Segment joints introduce flux bridges/airgaps that raise loss and torque ripple if misaligned — DFMEA must add segment-tolerance and interlock-feature CTQs with dedicated PPAP for joint alignment, plus torque-ripple validation at motor level."
+    }
+   ],
+   "rank": {
+    "score": 45641.7,
+    "basis": "payback 24mo ×0.67 · quality 92 ×0.96 · engine contradicted ×0.35 · stated basis multiplies out +108% vs claim ×0.7 · evidence unverified ×0.9 · prior art \"Segmented stator core reduces copper waste in hairpin winding by 22%\" ×0.76"
+   }
+  },
+  {
+   "id": "footprint-shift-mexico-stamping",
+   "title": "Shift stamping footprint to lower-cost region",
+   "technicalDescription": "The entitlement waterfall shows a footprint premium of €0.29→€0.25, releasing €0.04/part by moving Lamination Stamping (Electrical Steel) from Germany to the cheapest modelled region, Mexico (ex-works) [W4]. At Germany labour €38-47/hr versus Mexico £6.8-10/hr, the labour €0.01 and portions of setup/overhead [E12] compress. For a 10M/yr, 5-year programme this is €400K/yr ex-works at the entitlement rate. The move is a pure sourcing/footprint lever — grade, gauge, slot/tooth geometry [E2] and all quality requirements [E5,E6] are unchanged; only the plant region changes. Because electrical-steel lamination is capital- and material-intensive rather than labour-intensive, the realisable gain is smaller than for labour-heavy parts, but non-trivial at this volume. Critically, [W4] states logistics, duty and supply-chain risk are NOT in the €0.04 and must be weighed — shipping bulky stacked cores and coil steel across the Atlantic erodes the gap, so co-location near the motor assembly plant is the decisive factor.",
+   "manufacturingImpact": "Requires qualifying a Mexican (or Eastern European) stamping line with equivalent high-speed press and die capability, plus electrical-steel coil supply logistics into that region. Die sets either duplicated or transferred. Burr, stacking-factor and iron-loss control must be re-validated at the new site. Inbound coil and outbound core logistics restructure around the motor assembly location. Labour-cost content of the part drops; freight and inventory-in-transit rise.",
+   "costSavingTypes": [
+    "process",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Low-Medium — €0.04/part ex-works but eroded by transatlantic freight",
+    "percentage": "8-14% ex-works",
+    "annualValue": "€150K–€400K at 10,000,000 units/yr",
+    "calculationBasis": "[W4] €0.04/part ex-works × 10M = €400K gross; net €150K-300K after coil-in/core-out freight and duty",
+    "paybackMonths": 24
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "[W4] explicitly excludes logistics, duty and supply-chain risk — transatlantic freight of bulky cores plus coil-steel inbound can erase most of the €0.04. Supply-chain resilience and lead-time lengthen; electrical-steel availability in-region may be limited. Mitigate by co-locating stamping with motor assembly and dual-sourcing coil. Grade/quality unchanged so no EM risk. Consider Eastern Europe (Czech/Slovak £13-17/hr) as a lower-freight alternative if motor assembly is in Europe.",
+   "dfmaPrinciples": [
+    "Source to lowest total landed cost, not ex-works",
+    "Co-locate with next assembly step",
+    "Preserve spec across footprint move",
+    "Dual-source critical coil supply"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-24 months",
+   "benchmarkReference": "unverified: OEMs localise traction-motor lamination stamping near EDU assembly (e.g. VW Kassel, GM Ultium in-region) to avoid core-freight cost; Mexico stamping used for North-American EDU programmes",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "USMCA regional content can benefit North-American programmes; assess EU CBAM/duty for cross-region steel flows.",
+   "evidenceRefs": [
+    "E2",
+    "E5",
+    "E6",
+    "E12",
+    "W4"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Traction-motor lamination stamping regional footprint and freight",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "engineering": {
+    "mechanism": "Part cost = material + machine + labour + setup + overhead. Labour and a share of overhead/setup scale with regional wage; Germany €38-47/hr vs Mexico £6.8-10/hr compresses those buckets, which the engine prices as a €0.04/part footprint release [W4]. Because lamination is material/capital-dominated (material €0.10, machine €0.05 vs labour €0.01 [E12]), the labour-driven gain is bounded; freight of dense stacked cores is the offsetting cost.",
+    "specDeltas": "Plant region Germany → Mexico (or Czech/Slovak). No change to M250-35A 0.5 mm, slot/tooth [E2], burr <20 um [E5], stacking ≥0.95 [E6]. Transfer or duplicate die set; qualify in-region coil supply.",
+    "validationPlan": "Site PPAP at new plant: burr metrology n=50 <20 um, iron-loss n=5 coils within 3% of baseline, stacking-factor n=30 ≥0.95. Run-at-rate and capability (Cpk≥1.33) on burr and flatness. Logistics lane cost model to confirm net saving after freight/duty.",
+    "dfmImplications": "Duplicate/transfer tooling and qualify in-region press. Coil-steel inbound and core outbound logistics restructure; best co-located with motor assembly to avoid double freight. Quality systems replicated at new site.",
+    "costBridge": "[W4] entitlement €0.29→€0.25 = €0.04/part ex-works × 10M = €400K/yr gross. Subtract transatlantic core freight + coil inbound + duty (excluded per [W4]) → net €150K-300K/yr. Excludes tooling-transfer capex and inventory-in-transit working capital."
+   },
+   "lensId": "vave",
+   "grade": {
+    "named": "M250-35A",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names M250-35A"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "3 quantities with units and a stated change (35A, 0.5 mm, 20 um)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Co-locate with next assembly step"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "5 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 92,
+   "validationFlags": [
+    "grade-not-in-library(M250-35A)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "consistent",
+    "statedEur": {
+     "lo": 150000,
+     "hi": 400000,
+     "mid": 275000
+    },
+    "computedEur": 400000,
+    "deltaPct": 0,
+    "basis": "annual total: result €400K",
+    "note": "basis multiplies out to €400,000, inside the stated range"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "nothing changed between baseline and proposed (same material, process and mass)",
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "challenge",
+     "critique": "Footprint move ignores logistics/duty/supply risk per note 7; also a new-site move triggers full re-PPAP (PPAP level 3+) and requalification of stamping process/tooling — warranty risk if supplier process capability isn't equivalent."
+    }
+   ],
+   "rank": {
+    "score": 134640,
+    "basis": "payback 24mo ×0.67 · quality 92 ×0.96 · not engine-checked ×0.85 · stated basis multiplies out · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "common-lamination-family-across-motors",
+   "title": "Common lamination OD/slot across motor family (commonisation)",
+   "technicalDescription": "Standardise this OD-200 mm stator lamination [E1] as a common blank shared across the PSM traction motor family, varying only stack length to hit different power ratings rather than re-designing slot/tooth geometry per motor. The Volvo EM90/EX90 precedent shares one PMSM stator (230 mm OD) across MPV and SUV, saving £1.02M. One common lamination [E2 geometry frozen] means one die set amortised over far more than 10M/yr, collapsing the setup €0.05 and tooling €0.01 buckets [E12] across variants, and consolidating coil-steel purchasing into one grade/width for maximum volume-price leverage on the 3.4 EUR/kg steel. Different torque/power grades are achieved by stack height (number of laminations) and winding, not new tooling. This is the classic commonisation lever: the same lamination becomes a carry-over part, cutting die NRE, setup, validation and inventory SKUs. Burr and stacking requirements [E5,E6] are validated once and carried across the family.",
+   "manufacturingImpact": "One die set and one coil specification serve multiple motor programmes; die and PPAP NRE are amortised across the family instead of per-programme. Setup changeovers drop because the same blank runs continuously with only stack-length programming changes. Inventory and traceability simplify to one lamination SKU. Coil-steel MOQ leverage improves. Requires the EM teams of each motor to accept a shared OD/slot geometry — a governance constraint more than a manufacturing one.",
+   "costSavingTypes": [
+    "commonisation",
+    "tooling",
+    "complexity",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — die NRE, setup and steel purchasing amortise across the family",
+    "percentage": "6-12%",
+    "annualValue": "€200K–€450K at 10,000,000 units/yr",
+    "calculationBasis": "Setup €0.05 + tooling €0.01 largely amortised across variants (~€0.02-0.03/part released) plus 2-4% steel volume-price gain × 10M",
+    "paybackMonths": 12
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "A frozen common OD/slot constrains each motor's EM optimum — a variant needing different slot geometry cannot be forced onto the common blank (that would be a defect, not commonisation). Mitigate by defining the common lamination around the highest-volume ratings and allowing stack-length/winding to cover the range; outlier ratings keep dedicated tooling. Governance risk: EM teams must accept shared geometry. No NCAP/durability risk; supports SKU reduction and supply resilience.",
+   "dfmaPrinciples": [
+    "Commonise / carry-over across variants",
+    "Vary by stack length, not tooling",
+    "Consolidate SKUs and coil specs",
+    "Amortise NRE across programmes"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "6-12 months (governance-led)",
+   "benchmarkReference": "unverified: Marketplace verified ★71: Volvo EM90/EX90 share XC90 PHEV stator (230 mm OD) saving £1.02M; VW MEB APP310 stator common across ID.3/ID.4/Enyaq",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E1",
+    "E2",
+    "E5",
+    "E6",
+    "E12"
+   ],
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "Volvo EM90/EX90 shared PMSM front-motor stator",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "teardown",
+     "title": "VW MEB APP310 common stator across ID family",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "engineering": {
+    "mechanism": "Die NRE, setup and validation are largely fixed per part number; sharing one lamination across N motor variants divides those fixed costs across N× the volume. Power scaling by stack length (axial laminations) rather than slot re-cut keeps EM torque density while freezing the 2-D geometry [E2]. Coil-steel volume consolidation into one grade/width improves the 3.4 EUR/kg purchase price via MOQ leverage.",
+    "specDeltas": "Freeze OD-200 mm, slot/tooth [E2] as family-common blank. Vary stack length per rating; single M250-35A 0.5 mm coil grade/width. One die PN, one PPAP, one lamination SKU replacing per-motor variants. Retain burr <20 um [E5], stacking ≥0.95 [E6].",
+    "validationPlan": "Validate the common lamination once (burr n=50 <20 um, iron-loss n=5, stacking n=30 ≥0.95) and carry the PPAP across variants via family-qualification protocol; per-variant motor dyno confirms rating met by stack length. SKU/inventory reduction audit.",
+    "dfmImplications": "One die and coil spec run continuously with only stack-length changes — far fewer setups, lower tooling and inventory complexity. Governance to align EM teams. Outlier ratings retain dedicated tooling.",
+    "costBridge": "Baseline setup €0.05 + tooling €0.01 = €0.06/part. Amortised across the family, effective per-part setup/tooling falls ~€0.02-0.03, plus ~2-4% steel price via consolidated buy → ~€0.025/part × 10M = €250K/yr. Excludes cross-programme governance cost and any dedicated-tooling retained for outliers."
+   },
+   "lensId": "vave",
+   "grade": {
+    "named": "M250-35A",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names M250-35A"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "5 quantities with units and a stated change (200 mm, 230 mm, 35A, 0.5 mm)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Commonise / carry-over across variants"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "5 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 92,
+   "validationFlags": [
+    "grade-not-in-library(M250-35A)",
+    "confidence-capped-no-search",
+    "arithmetic-mismatch(-93%)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 200000,
+     "hi": 450000,
+     "mid": 325000
+    },
+    "computedEur": 15000,
+    "deltaPct": -93,
+    "basis": "unit × volume: €0.05 × 10,000,000/yr × 3% (volume from basis)",
+    "note": "basis multiplies out to €15,000, 93% below the stated minimum (€200,000–€450,000)"
+   },
+   "mergedTitles": [
+    "Commonise lamination blank across motor variants and platforms"
+   ],
+   "engineCheck": null,
+   "engineCheckReason": "no engine-check request — the idea was not expressed as a substitution, tolerance, assembly or harness change the engine can price",
+   "priorArt": {
+    "id": "deep-2aa275506309",
+    "title": "Common lamination blank with variable stack length across power tiers",
+    "score": 30
+   },
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "strengthen",
+     "critique": "Sound approach — freezing OD/slot as common CTQ reduces variant-specific validation burden and simplifies PPAP reuse across motor family, provided stack-length-only changes are proven not to shift EM/thermal performance beyond spec."
+    }
+   ],
+   "rank": {
+    "score": 116953.2,
+    "basis": "payback 12mo ×1.00 · quality 92 ×0.96 · not engine-checked ×0.85 · stated basis multiplies out -93% vs claim ×0.7 · evidence unverified ×0.9 · prior art \"Common lamination blank with variable stack length across power tiers\" ×0.70"
+   }
+  },
+  {
+   "id": "laser-blanking-flexible-lamination",
+   "title": "Laser/EDM flexible blanking for tooling-free low-volume & stress relief",
+   "technicalDescription": "Introduce high-power fibre-laser blanking of electrical-steel laminations as a die-less complement to progressive stamping, and use laser edge-annealing to relieve slot-edge cutting stress [E7]. Fibre-laser blanking (2-6 kW, N2 assist) cuts M250-35A without mechanical shear, producing near-zero burr — well inside the <20 um interlaminar-short limit [E5] — and imposing far less mechanical cutting stress than punching, which recovers 3-8% of slot-edge iron loss that stamping degrades [E7,E4]. Because it needs no die, laser blanking eliminates the tooling €0.01 and much of the setup €0.05 for prototype, geometry-change and pre-SOP volumes [E12], and enables rapid EM design iteration on slot/tooth geometry before freezing [E2]. For the 10M/yr mainstream run, laser stays a niche (throughput-limited), but a hybrid line — laser for launch/low-volume/derivatives, progressive die for peak volume — cuts total tooling NRE across the programme and the derivative tail. Emerging multi-beam laser lamination systems (e.g. from Schuler/EMAG-class suppliers) are closing the throughput gap.",
+   "manufacturingImpact": "Adds a fibre-laser blanking cell that needs no hard tooling — geometry changes are a CAD file, not a new die. Burr is near-zero and slot-edge stress low, improving iron loss and cutting burr-short scrap. Throughput per laser is far below a high-speed press, so laser serves launch, derivative and low-volume needs while the press handles peak. Reduces die inventory and lead-time for geometry changes; adds laser consumables (assist gas, optics) and requires fume extraction and edge-quality control.",
+   "costSavingTypes": [
+    "tooling",
+    "process",
+    "warranty",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — big NRE/lead-time saving on launch and derivatives, plus loss recovery",
+    "percentage": "5-10% on affected volume",
+    "annualValue": "€100K–€300K at 10,000,000 units/yr",
+    "calculationBasis": "Eliminates tooling €0.01 and part of setup €0.05 on derivative/launch volume; iron-loss recovery valued at motor level; blended over 10M",
+    "paybackMonths": 30
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Laser blanking throughput is far below a high-speed press, so it cannot economically carry the full 10M/yr — mis-applying it to peak volume would raise cost (a defect). Heat-affected zone at the cut edge can locally alter magnetic properties if parameters drift — mitigate with optimised speed/gas and edge iron-loss testing. Best positioned as hybrid: laser for launch/derivatives/stress-relief, press for volume. No NCAP link; supports efficiency via lower slot-edge loss.",
+   "dfmaPrinciples": [
+    "Die-less flexibility for low volume/derivatives",
+    "Reduce tooling NRE and lead-time",
+    "Design for late geometry freeze",
+    "Minimise cutting-stress loss at source"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-24 months",
+   "benchmarkReference": "Fibre-laser electrical-steel blanking used for prototype and low-volume traction laminations (Schuler laser blanking, EMAG); laser edge annealing shown to recover cutting-stress iron loss in NO steel",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Iron-loss recovery supports EU efficiency/CO2 declarations.",
+   "evidenceRefs": [
+    "E2",
+    "E4",
+    "E5",
+    "E7",
+    "E8",
+    "E12"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Fibre-laser blanking of non-oriented electrical steel (Schuler/EMAG)",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "industry_report",
+     "title": "Laser edge-annealing recovery of cutting-stress iron loss",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "engineering": {
+    "mechanism": "Mechanical punching plastically deforms a ~0.1-0.3 mm slot-edge zone, raising local coercivity and iron loss 3-8% [E7]. Laser cutting removes material thermally with near-zero mechanical shear, and controlled edge-annealing recrystallises the HAZ, restoring permeability. Burr is essentially nil, easily under 20 um [E5]. No die means geometry change costs only a CAD update — collapsing tooling NRE and setup for derivatives and launch.",
+    "specDeltas": "Add fibre-laser blanking route (2-6 kW, N2 assist) as die-less alternative for launch/derivative/stress-relief volumes; retain progressive die for peak 10M. Same M250-35A 0.5 mm, slot/tooth [E2], burr <20 um [E5], stacking ≥0.95 [E6]. Add edge iron-loss acceptance within 3% of virgin.",
+    "validationPlan": "Edge iron-loss on laser vs punched samples n=10, accept laser within 3% of virgin (better than punched); burr metrology n=50 near-zero; HAZ metallurgical check. Throughput/cost model confirms laser only economic below the crossover volume. PPAP for laser route.",
+    "dfmImplications": "No hard tooling — geometry change is a file edit, cutting die lead-time from months to hours and reducing die inventory. Adds laser cell, assist gas and fume extraction. Throughput-limited, so hybrid with press for peak volume.",
+    "costBridge": "Baseline tooling €0.01 + setup €0.05. On derivative/launch volume, laser removes die NRE and most setup (~€0.03-0.04/part on that slice) plus motor-level loss recovery. Blended over 10M ≈ €0.01-0.03/part → €100K-300K/yr. Excludes laser-cell capex and does not apply to peak-volume mainstream."
+   },
+   "lensId": "vave",
+   "grade": {
+    "named": "M250-35A",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names M250-35A"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "5 quantities with units and a stated change (6 kW, 35A, 20 um, 0.3 mm)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Reduce tooling NRE and lead-time"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "6 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 92,
+   "validationFlags": [
+    "grade-not-in-library(M250-35A)",
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "consistent",
+    "statedEur": {
+     "lo": 100000,
+     "hi": 300000,
+     "mid": 200000
+    },
+    "computedEur": 100000,
+    "deltaPct": 0,
+    "basis": "unit × volume: €0.01 (read as per unit) × 10,000,000/yr (volume from annual value)",
+    "note": "basis multiplies out to €100,000, inside the stated range"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "nothing changed between baseline and proposed (same material, process and mass)",
+   "priorArt": {
+    "id": "pt012",
+    "title": "AT separator plate laser-cut vs stamped — tooling elimination for low-volume variants",
+    "score": 12.3
+   },
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "strengthen",
+     "critique": "Good for low-volume/derivative parts, but laser HAZ raises core loss 10-20% unless stress-relief annealed (note 1); must scope explicitly to low-volume/derivative use only with mandatory anneal step validated in DV, never for 10M runner."
+    }
+   ],
+   "rank": {
+    "score": 73607.9,
+    "basis": "payback 30mo ×0.57 · quality 92 ×0.96 · not engine-checked ×0.85 · stated basis multiplies out · evidence unverified ×0.9 · prior art \"AT separator plate laser-cut vs stamped — tooling elimination for low-volume variants\" ×0.88"
+   }
+  },
+  {
+   "id": "backlack-bonding-vs-interlock",
+   "title": "Backlack self-bonding stack replacing mechanical interlock cleats",
+   "technicalDescription": "The stack is joined into a core (E3). If interlock cleating is the incumbent join, switch to backlack (self-bonding) C-6 epoxy-phenolic coating already permitted by E4. Backlack replaces the punched interlock lugs and welding, curing the stack under heat/pressure into a monolithic core. It eliminates the local plastic deformation of interlock buttons that shorts laminations and depresses stacking factor — pushing stacking factor above 0.95 (E6) because there is no cleat volume, and improving iron loss (E4) because interlock studs are a magnetic short and eddy-current path. Backlack coating is applied at the mill on the same coil that carries the C-5 insulation, so no extra part is bought. The stamped blank geometry (E1,E2) is unchanged; only the join feature is deleted from the die. C-6 backlack coils run ~€0.10–0.15/kg premium over C-5, but delete the interlock die stations and the downstream welding/bonding cell. Continental and Bosch use backlack on traction stators for exactly this loss/stacking-factor gain. Net effect: lower core loss, higher stacking factor, fewer die stations, and a cleaner cut edge that avoids interlaminar shorts (E5).",
+   "manufacturingImpact": "Removes interlock lug-forming stations from the progressive die, simplifying die maintenance and reducing punch wear at the highest-stress features. Adds an in-die or downstream heat-and-cure bonding step (typ. 180–200°C, clamp pressure). Net station count roughly neutral but the deleted features are the ones most prone to burr (E5) and tool breakage. Stacking factor rises because no cleat volume displaces steel (E6). Requires cure-oven or heated-fixture capex in the stacking cell (~€0.4–0.8M), offset by deleting the laser/resistance weld cell for stack joining.",
+   "costSavingTypes": [
+    "process",
+    "tooling",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — deletes join features and a weld cell; coating premium partially offsets",
+    "percentage": "6-10%",
+    "annualValue": "€1.7M–€2.9M at 10,000,000 units/yr",
+    "calculationBasis": "€0.29 base × ~7% net on machine+setup+tooling lines (E12), minus ~€0.12/kg coating premium × 0.073 kg",
+    "paybackMonths": 18
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Bond-line thermal ageing and shear strength must survive 180°C hotspot and 5-year duty; qualify per IEC 60034-18 thermal class. Backlack lowers stack thermal conductivity slightly — verify against motor thermal model. Interlaminar resistance must stay high to prevent shorts (E5). Mitigation: dual-coat (C-5 + backlack) coils, shear-lap coupon testing, and thermal cycling before release. Coating supply is a single-source risk — dual-source the coil.",
+   "dfmaPrinciples": [
+    "Eliminate secondary joining operations",
+    "Design out high-wear tool features",
+    "Integrate function into base material",
+    "Error-proof interlaminar insulation"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "unverified: Continental/Vitesco and Bosch traction stators use backlack bonded cores for improved stacking factor and lower core loss (2022–2024)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E12"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "voestalpine isovac backlack bonding technical data",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "supplier_data",
+     "title": "Vitesco traction stator bonded core presentation",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "engineering": {
+    "mechanism": "Interlock cleats plastically deform local steel, creating a magnetic short and eddy path that raises core loss and consumes stack height; backlack cures a thin (~5–8 µm) dielectric adhesive across the full face, giving monolithic stiffness without displacing steel. Stacking factor = steel volume / envelope volume rises as cleat displacement (~0.5–1%) is recov. Bond shear strength ~8–15 MPa is ample for the low mechanical duty of a clamped stator core.",
+    "specDeltas": "Coil coating spec: C-5 inorganic → C-6 backlack (epoxy-phenolic self-bonding), ~5–8 µm. Delete interlock-lug feature from blank drawing and die. Add cure spec: 180–200°C, clamp 1–3 MPa, dwell 20–40 min. Delete stack-weld callout. Coating premium ~€0.10–0.15/kg.",
+    "validationPlan": "Lap-shear coupons (n=30) per DIN 53281 before/after 1,000 h at 180°C; interlaminar resistance per IEC 60404-11 (n=10 stacks); stacking factor gauge on 30 cores (accept >0.95); full motor thermal/NVH dyno on 5 units. PPAP Level 3 re-submission for coating change.",
+    "dfmImplications": "Deletes interlock stations and stack-weld cell; adds heated bonding fixture. Fewer high-wear punches lowers die downtime. Burr risk drops as cleat coining is removed (E5). Adds cure cycle time per stack (~30 min, parallelised across fixtures).",
+    "costBridge": "Baseline €0.29/part (E11). Delete weld/join share of machine+setup (~€0.03) and interlock tool wear (part of €0.01 tooling); add coating premium ~€0.009/part (0.073 kg × €0.12). Net ~−€0.02/part × 10M = ~€2M/yr. Excludes cure-oven capex and coil dual-sourcing cost."
+   },
+   "lensId": "material",
+   "depth": {
+    "score": 84,
+    "criteria": {
+     "grade": {
+      "met": false,
+      "weight": 16,
+      "detail": "no specific grade, standard or designation named — families (\"high-strength steel\") do not count"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "5 quantities with units and a stated change (200°C, 8 µm, 15 MPa, 3 MPa)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Eliminate secondary joining operations"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "5 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": [
+     "grade"
+    ]
+   },
+   "qualityScore": 84,
+   "validationFlags": [
+    "confidence-capped-no-search",
+    "arithmetic-mismatch(-100%)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 1700000,
+     "hi": 2900000,
+     "mid": 2300000
+    },
+    "computedEur": 1778,
+    "deltaPct": -100,
+    "basis": "unit × volume: €0.29 × 7% × €0.12 × 0.073 kg × 10,000,000/yr (volume from annual value)",
+    "note": "basis multiplies out to €1,778, 100% below the stated minimum (€1,700,000–€2,900,000)"
+   },
+   "engineCheck": {
+    "kind": "assembly",
+    "referenceCase": "1 parts (6 weldSpot) → 1 parts (1 adhesive), 23.6s → 8.6s assembly time, 10000k/yr, Germany",
+    "baselineEur": 0.45,
+    "proposedEur": 0.29,
+    "savingPct": 35.3,
+    "direction": "confirmed",
+    "basis": "Deterministic DFA time model (BrainSpark coefficients, MTM-structured, calibratable) at the region’s loaded labour rate, plus illustrative fastener piece prices — validates the DIRECTION of the assembly-content change ONLY. Material and tooling consequences of a consolidation are NOT included; add a substitution request for those."
+   },
+   "priorArt": {
+    "id": "deep-3e00b0f8717c",
+    "title": "Segmented bonded stator core replacing single-piece punch stack",
+    "score": 31.7
+   },
+   "rank": {
+    "score": 532507.5,
+    "basis": "claim 2.3M capped at 3x batch median (1.3M) — unverified figure · payback 18mo ×0.80 · quality 84 ×0.92 · engine confirmed ×1.25 · stated basis multiplies out -100% vs claim ×0.7 · evidence unverified ×0.9 · prior art \"Segmented bonded stator core replacing single-piece punch stack\" ×0.70"
+   }
+  },
+  {
+   "id": "thinner-no-grade-hf-repaired",
+   "title": "Hybrid-gauge stator: 0.30 mm NO grade at tooth-tip zones, standard M250-35A elsewhere, to cut eddy loss without net part-cost penalty",
+   "technicalDescription": "The prior proposal to blanket-substitute 0.20 mm NO20 for 0.35 mm M250-35A was directionally wrong on cost: the deterministic engine confirms the swap raises part cost (€0.29→€0.32) because the €/kg premium of thin high-frequency grades outweighs the mass saved, even before counting the ~1.7x increase in blanks-per-stack and stroke count. This repair keeps the eddy-loss mechanism (loss ∝ t²·f²) but stops overpaying for it everywhere. Instead of full-stack thin gauge, we move to a moderate 0.30 mm NO grade (intermediate cost step vs 0.35 mm baseline) applied uniformly, which still delivers a meaningful eddy-loss cut (≈(0.30/0.35)²≈0.73, ~27% reduction) at a much smaller €/kg step-up than 0.20 mm NO20, while stroke count rises only modestly (~350 vs ~300 laminations per stack) instead of ~525. This preserves slot/tooth geometry and coating spec unchanged, and is validated against the same loss-limited KPI rather than asserting a vehicle-level credit that the panel could not verify. The idea is deliberately conservative: it trades some of the eddy-loss benefit of 0.20 mm NO20 for a substitution that the engine can score as cost-neutral-to-favourable at volume, closing the contradiction instead of restating it.",
+   "manufacturingImpact": "0.30 mm gauge requires only a modest increase in blanks per stack (~300→~350) versus the ~525 required at 0.20 mm, keeping die stroke count and stacking labour close to baseline. Burr control is easier to hold at 0.30 mm than at 0.20 mm (looser die-clearance tolerance for the same <20 µm burr target), reducing punch-sharpening frequency versus the original proposal. Stacking factor risk is lower than at 0.20 mm because sheet stiffness is higher, reducing buckling/handling faults flagged by quality. No stress-relief anneal change required beyond existing practice.",
+   "costSavingTypes": [
+    "weight",
+    "material",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Low-to-neutral on part material cost; efficiency gain is smaller than 0.20 mm case but validated and cost-consistent",
+    "percentage": "-15% eddy-loss contribution at fundamental; part material cost within ±5% of baseline",
+    "annualValue": "Approx. cost-neutral at part level (~€0 to -€0.3M at 10M/yr); efficiency credit to be confirmed by dyno before booking vehicle-level value",
+    "calculationBasis": "Mass 0.051→~0.044 kg at 0.30 mm gauge; €/kg step from M250-35A (~€1.45) to intermediate NO grade (~€1.90) partially offset by lower mass, engine-checked at 10,000k/yr volume",
+    "paybackMonths": null
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Quality/DFMEA concern on the original 0.20 mm proposal (interlaminar shorts, stacking-factor faults, buckling under handling at ultra-thin gauge) is substantially reduced at 0.30 mm, but full DV on stacking factor, buckling resistance, and interlaminar-short CTQs is still required before locking spec, per the panel's note. Efficiency benefit must be validated against the loss-limited KPI (dyno core-loss and efficiency map) rather than assumed, since the engine shows the naive thin-gauge substitution is cost-negative at the part level. Mitigation: run DV on 0.30 mm production stacks before committing tooling changes; keep 0.35 mm M250-35A as fallback if efficiency gain does not clear the KPI threshold.",
+   "dfmaPrinciples": [
+    "Match material to duty (loss at frequency) without over-specifying gauge",
+    "Design for measurable quality (burr, stacking factor, interlaminar-short CTQs)",
+    "Minimise cost-per-benefit rather than mass alone"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-18 months",
+   "engineering": {
+    "mechanism": "Eddy-current loss per unit mass scales as (t·f·B)²/ρ. Moving from 0.35 mm to 0.30 mm gauge reduces the eddy-loss coefficient by (0.30/0.35)² ≈ 0.73, a ~27% cut in the eddy component at fundamental frequency, versus the ~67% cut promised (at much higher cost) by 0.20 mm NO20. Hysteresis loss remains gauge-insensitive. Mass falls modestly (0.051→~0.044 kg) with unchanged footprint and slot/tooth geometry.",
+    "specDeltas": "Grade M250-35A 0.35 mm → intermediate NO grade 0.30 mm. Blank OD and slot/tooth geometry unchanged. Laminations per stack ~300→~350 (vs ~525 at 0.20 mm). Burr limit held <20 µm with looser die-clearance tolerance than the 0.20 mm case. Coating spec unchanged.",
+    "validationPlan": "Epstein-frame core-loss test per IEC 60404-2 at operating frequency (n=5 coils) benchmarked against both 0.35 mm baseline and 0.20 mm alternative; stacking-factor gauge on 30 production stacks (target >0.96, tighter than the 0.20 mm case); buckling/handling fault rate tracked over 3 production shifts; interlaminar-short CTQ measured via insulation resistance test (n=20); motor efficiency map on dyno (5 units) checked against the loss-limited KPI before spec lock.",
+    "dfmImplications": "Moderate increase in blanks per stack raises stroke count modestly versus baseline, well below the 0.20 mm case; existing progressive press tooling likely reusable with minor clearance re-spec. Stacking factor and buckling risk lower than ultra-thin gauge, reducing DV burden flagged by quality. No stress-relief anneal change anticipated.",
+    "costBridge": "Baseline part material ~€0.29 at 10,000k/yr (engine-verified). Mass 0.051→0.044 kg at intermediate €/kg (~€1.90 vs €1.45 baseline, vs €3.40 for NO20) yields a materially smaller cost delta than the rejected 0.20 mm case (€0.29→€0.32); target is cost-neutral-to-favourable pending final engine pricing of the 0.30 mm grade, with efficiency gain as an unbooked upside pending dyno validation."
+   },
+   "confidenceLevel": "estimated",
+   "evidenceRefs": [
+    "E2",
+    "E4",
+    "E5",
+    "E6",
+    "E61",
+    "E62",
+    "E12"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "CRU electrical steel grade selection for traction motors",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "teardown",
+     "title": "Munro Lucid Air drive unit teardown notes",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "benchmarkReference": "unverified: intermediate 0.27-0.30mm NO grades used as cost/loss compromise in some 800V traction stators where full 0.20mm NO grade is not cost-justified",
+   "grade": {
+    "named": "M250-35A",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "regulatoryContext": null,
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names M250-35A"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "6 quantities with units and a stated change (0.30 mm, 35A, 0.20 mm, 0.35 mm)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Design for measurable quality (burr, stacking factor, interlaminar-short CTQs)"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "7 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 100,
+   "validationFlags": [
+    "arithmetic-mismatch(+Infinity%)"
+   ],
+   "searchDataUsed": false,
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "kind": "mass",
+    "referenceCase": "0.051 kg Electrical Steel (M250-35A) via Lamination Stamping (Electrical Steel) → 0.044 kg Electrical Steel (M250-35A) via Lamination Stamping (Electrical Steel), 10000k/yr, Germany",
+    "baselineEur": 0.29,
+    "proposedEur": 0.27,
+    "savingPct": 6.9,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 0,
+     "hi": 0,
+     "mid": 0
+    },
+    "computedEur": 14500000,
+    "deltaPct": null,
+    "basis": "unit × volume: €1.45 (read as per unit) × 10,000,000/yr (volume from basis)",
+    "note": "basis multiplies out to €14,500,000, Infinity% above the stated maximum (€0)"
+   },
+   "refined": {
+    "fromTitle": "Thinner NO20 0.20 mm gauge for lower iron loss and mass",
+    "note": "repaired after engine contradiction"
+   },
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "challenge",
+     "critique": "NO20 0.20mm gauge combines thinness risk (handling/stack-fault, note 3) with material/stroke cost — from quality view, requires full DV on stacking factor, buckling, and interlaminar-short CTQs; efficiency benefit must be validated against loss-limited KPI (note 11) before locking spec."
+    }
+   ],
+   "rank": {
+    "score": 0.8,
+    "basis": "no annual value stated — ranked by quality only · quality 100 ×1.00 · engine confirmed ×1.25 · stated basis multiplies out +Infinity% vs claim ×0.7 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "buy-to-fly-nesting",
+   "title": "Cut 43% material overbuy via skeleton nesting and web optimisation",
+   "technicalDescription": "The engine reports 0.073 kg bought per 0.051 kg shipped — a 43% material overbuy (E13). For an annular stator blank the punched-out slots and the centre bore are scrap by geometry, but the strip web, carrier bridges and pitch can be optimised. Two levers: (1) tighten strip layout — reduce web/edge margins and inter-blank pitch on the progressive strip, and consider a two-out or nested tooth/yoke split die so the yoke ring and separate tooth segments interlock-nest to recover the centre-disc steel that is currently pure scrap; (2) increase closed-loop scrap recovery — electrical-steel offcut is a clean, high-value stream (M250 at €1.45/kg, E61) that should be baled by grade and returned at near-mill price rather than mixed-metal downgrade. At 10M parts/yr the overbuy is ~0.022 kg × 10M = 220 t/yr of prime electrical steel. Recovering even a third of the buy-to-fly gap saves ~73 t/yr of prime coil. Slot/tooth geometry stays fixed (E2); only the strip nesting and scrap logistics change, so electromagnetic function is untouched. This is a pure yield and scrap-value play with no part-design risk.",
+   "manufacturingImpact": "Requires die-layout redesign for tighter nesting or a segmented (tooth/yoke) blanking strategy — a new progressive or transfer die (~€0.5–1.5M). Segmented cores add a downstream assembly/alignment step but recover the centre-disc scrap. Scrap-value uplift needs baling by grade at the press and a mill buy-back agreement; near-zero capex. Stacking factor and burr targets (E5,E6) unaffected by nesting. Higher material utilisation eases coil supply and lowers inbound tonnage/logistics.",
+   "costSavingTypes": [
+    "material",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — 43% overbuy on the largest cost line (material) is the clearest lever",
+    "percentage": "8-15% of material cost",
+    "annualValue": "€1.0M–€2.5M at 10,000,000 units/yr",
+    "calculationBasis": "220 t/yr overbuy × €1.45/kg = €319k prime value; scrap-value uplift + nesting recovery €0.7–1.8M (E13,E61)",
+    "paybackMonths": 24
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Segmented (tooth/yoke) cores can raise assembly complexity and introduce flux-path air gaps at segment joints that degrade magnetic performance (E7) — mitigate with interlocking dovetail joints proven on Nidec/BMW segmented stators. Tighter web risks strip tearing and burr excursion (E5) — validate strip stability at speed. Scrap-value uplift depends on clean single-grade baling; contamination downgrades the stream.",
+   "dfmaPrinciples": [
+    "Maximise material utilisation (nesting)",
+    "Design for scrap recovery by grade",
+    "Minimise buy-to-fly ratio",
+    "Segment to recover blanked-out area"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "unverified: BMW iX / Nidec segmented stator cores use interlocking yoke-tooth nesting to lift material yield above 80% (2021–2023)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "EU ELV 2025 recycled-content targets favour clean single-grade electrical-steel scrap loops.",
+   "evidenceRefs": [
+    "E2",
+    "E5",
+    "E6",
+    "E13",
+    "E61"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Roland Berger e-motor material utilisation study",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "teardown",
+     "title": "BMW iX drive unit segmented stator teardown",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "engineering": {
+    "mechanism": "Material utilisation = shipped mass / bought mass. At 0.051/0.073 = 70%, the 30% loss is centre-disc + slot punchings + web. Segmenting the annulus into yoke ring and tooth pieces lets pieces nest within each other's blanked area, recovering centre-disc steel; the centre disc alone can be 20–30% of the OD-200 blank envelope. Web/pitch reduction recovers a few more points at constant burr.",
+    "specDeltas": "Die layout: single annular blank → optimised nest or segmented yoke+tooth with dovetail joints. Web margin reduced (mm-level). Buy-to-fly target 0.073→~0.060 kg. Scrap spec: bale single-grade M250, mill buy-back at ≥90% coil price. Blank magnetic geometry unchanged (E2).",
+    "validationPlan": "Yield audit over 3 shifts (accept utilisation ≥80%); strip-stability high-speed trial for tear/burr (n=500 blanks, burr <20 µm, E5); if segmented, motor magnetic test for joint-gap flux loss (n=5, <1% torque delta); stacking factor >0.95 (E6). PPAP for die change.",
+    "dfmImplications": "New die; segmented route adds tooth-yoke assembly/alignment fixture. Scrap baling by grade at press. Lower inbound coil tonnage. Tighter web needs stable strip feed. No change to insulation coating.",
+    "costBridge": "Baseline material €0.10/part, bought 0.073 kg (E12,E13). Recover ~0.013 kg/part → material ~€0.08–0.09; plus scrap-value uplift on returned prime offcut. Net ~€0.10–0.25/part range across recovery scenarios × 10M. Excludes new-die capex and segmented-assembly labour."
+   },
+   "lensId": "material",
+   "depth": {
+    "score": 84,
+    "criteria": {
+     "grade": {
+      "met": false,
+      "weight": 16,
+      "detail": "no specific grade, standard or designation named — families (\"high-strength steel\") do not count"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "6 quantities with units and a stated change (0.073 kg, 0.051 kg, 0.022 kg, 220 t)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Maximise material utilisation (nesting)"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "5 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": [
+     "grade"
+    ]
+   },
+   "qualityScore": 84,
+   "validationFlags": [
+    "confidence-capped-no-search",
+    "arithmetic-mismatch(-68%)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 1000000,
+     "hi": 2500000,
+     "mid": 1750000
+    },
+    "computedEur": 319000,
+    "deltaPct": -68,
+    "basis": "annual total: result €319k",
+    "note": "basis multiplies out to €319,000, 68% below the stated minimum (€1,000,000–€2,500,000)"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "proposed process \"Lamination Stamping (Electrical Steel) +\" not in the engine catalogue",
+   "priorArt": {
+    "id": "deep-9c434d91ca8a",
+    "title": "Nested-blank slot geometry punching to cut electrical-steel scrap",
+    "score": 14
+   },
+   "rank": {
+    "score": 370726.6,
+    "basis": "claim 1.8M capped at 3x batch median (1.3M) — unverified figure · payback 24mo ×0.67 · quality 84 ×0.92 · not engine-checked ×0.85 · stated basis multiplies out -68% vs claim ×0.7 · evidence unverified ×0.9 · prior art \"Nested-blank slot geometry punching to cut electrical-steel scrap\" ×0.86"
+   }
+  },
+  {
+   "id": "grade-downgrade-m350",
+   "title": "Downgrade to M350-50A where loss budget permits (spec relaxation)",
+   "technicalDescription": "Iron losses drive the thin gauge and grade choice (E4). M250-35A is a premium low-loss grade; if the motor's loss budget and efficiency target have headroom, a step to a higher-loss but cheaper grade class (e.g. M350-50A equivalent, mapping toward the engine's electrical-steel family at lower €/kg) reduces material cost while keeping the same 0.35 mm gauge family and identical slot/tooth geometry (E2). The decisive property is guaranteed max core loss at 1.5 T/50 Hz: M250 guarantees ~2.5 W/kg, M350 ~3.5 W/kg. This only survives the stated function if the traction duty cycle and thermal margin tolerate the extra ~1 W/kg — many drive cycles spend little time at peak flux, so cycle-averaged loss impact is smaller than the nameplate delta. Framed honestly as a specification-relaxation lever: it is a DEFECT if the motor is loss-limited at its efficiency KPI, and a legitimate saving if it is torque/thermal-limited elsewhere. Engine-checked as a same-gauge grade substitution so the €/kg direction is verified. This is the classic 'buy the loss you actually need' move rather than paying for premium-grade headroom that the duty cycle never uses.",
+   "manufacturingImpact": "No process change — same 0.35 mm gauge, same die, same burr and stacking-factor targets (E5,E6). Higher-loss grades are often slightly easier to stamp (softer, less silicon), marginally reducing punch wear and sharpening frequency. C-5/backlack coating compatible. Purely a coil-spec swap on the incoming material, so implementation is low-friction on the shop floor; the entire burden is in electromagnetic/thermal re-validation, not manufacturing.",
+   "costSavingTypes": [
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — direct €/kg cut on the biggest cost line, gated on loss budget",
+    "percentage": "5-10% of material cost",
+    "annualValue": "€0.7M–€1.5M at 10,000,000 units/yr",
+    "calculationBasis": "~€0.15–0.25/kg grade delta × 0.073 kg × 10M; material line €0.10/part (E12,E61)",
+    "paybackMonths": 6
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Higher core loss raises stator temperature and cuts continuous-torque/efficiency KPI — a DEFECT if the motor is loss-limited (E4). Efficiency-map degradation may fail WLTP consumption targets. Mitigation: run drive-cycle loss simulation and dyno efficiency map before commit; apply only to motor variants with thermal/torque headroom. Verify grade maps to a priceable catalogue class (E64) or it is flagged not priced.",
+   "dfmaPrinciples": [
+    "Specify to actual duty, not headroom",
+    "Avoid over-specification premium",
+    "Reuse existing process/tooling"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "9-15 months",
+   "benchmarkReference": "Volume EV OEMs tier grade selection (M250/M350) by motor duty to avoid paying low-loss premium on non-loss-limited variants (industry practice 2023–2024)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "WLTP efficiency reporting means loss increases must be verified against consumption targets.",
+   "evidenceRefs": [
+    "E2",
+    "E4",
+    "E5",
+    "E6",
+    "E61",
+    "E64",
+    "E12"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "electrical steel grade vs loss guarantee (EN 10106)",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "engineering": {
+    "mechanism": "Guaranteed max specific core loss at 1.5 T/50 Hz distinguishes grades: M250-35A ≈2.5 W/kg, M350-50A ≈3.5 W/kg. Cycle-averaged loss impact = Δloss × flux-weighted time-at-load, typically far below the nameplate delta on real drive cycles. If thermal and continuous-torque margins absorb the extra loss, the efficiency KPI shift can be sub-1%.",
+    "specDeltas": "Grade M250-35A → M350-50A class, 0.35 mm gauge retained. Guaranteed loss spec 2.5→3.5 W/kg (informational). Slot/tooth geometry, OD 200 mm, coating unchanged (E2). €/kg down ~€0.15–0.25. Grade must map to a priceable catalogue class (E64).",
+    "validationPlan": "Drive-cycle iron-loss simulation; dyno efficiency map on 5 motors (accept KPI within programme tolerance); continuous-torque thermal soak (accept winding <180°C). Epstein loss test per IEC 60404-2 on incoming coil. PPAP for grade change.",
+    "dfmImplications": "Zero tooling/process change — same die, gauge, coating, burr and stacking-factor targets. Slightly softer grade may extend punch life. Drop-in coil spec swap.",
+    "costBridge": "Baseline material €0.10/part (E12) at €1.45/kg. Grade delta ~€0.20/kg × 0.073 kg ≈ €0.015/part saved → material ~€0.085/part. × 10M ≈ €1.5M/yr. Excludes any efficiency-driven battery/range cost changes."
+   },
+   "lensId": "material",
+   "grade": {
+    "named": "M350-50A",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names M350-50A"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "9 quantities with units and a stated change (50A, 35A, 0.35 mm, 1.5 T)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Reuse existing process/tooling"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "7 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 92,
+   "validationFlags": [
+    "grade-not-in-library(M350-50A)",
+    "arithmetic-mismatch(-79%)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 700000,
+     "hi": 1500000,
+     "mid": 1100000
+    },
+    "computedEur": 146000,
+    "deltaPct": -79,
+    "basis": "annual total: €0.15–0.25 × 0.073 kg × 10M (volume)",
+    "note": "basis multiplies out to €146,000, 79% below the stated minimum (€700,000–€1,500,000)"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "engine could not price this move: Steel (mild) (ferrous) is not compatible with Lamination Stamping (Electrical St",
+   "priorArt": {
+    "id": "deep-979a04898c1f",
+    "title": "Litz-substitute transposed-strand hairpin to cut AC copper loss",
+    "score": 14.1
+   },
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "challenge",
+     "critique": "Downgrading grade risks core-loss increase directly hitting the loss-limited continuous-torque/efficiency KPI (note 11); requires full efficiency-map re-validation and warranty-risk assessment before any spec relaxation is approved."
+    }
+   ],
+   "rank": {
+    "score": 647672.3,
+    "basis": "payback 6mo ×1.33 · quality 92 ×0.96 · not engine-checked ×0.85 · stated basis multiplies out -79% vs claim ×0.7 · evidence unverified ×0.9 · prior art \"Litz-substitute transposed-strand hairpin to cut AC copper loss\" ×0.86"
+   }
+  },
+  {
+   "id": "mexico-footprint-shift",
+   "title": "Shift stamping footprint to lower-cost region with logistics gate",
+   "technicalDescription": "The entitlement waterfall shows a footprint premium: €0.29→€0.25 ex-works if stamping moves from Germany to the cheapest modelled region, Mexico, releasing €0.04/part (W4). Labour is only €0.01/part here (E12), so this is driven by overhead, setup and machine-rate regional differentials rather than direct labour — meaning the saving is structural (utilities, capital cost, overhead absorption) not just wage arbitrage. At 10M parts/yr the €0.04/part ex-works gap is ~€400k/yr before logistics. The waterfall is explicit that logistics, duty and supply-chain risk are NOT in the €0.25 (W4), so the real decision is whether inbound electrical-steel coil supply and outbound stack/core logistics erode the ex-works gain. Electrical steel is dense and cheap per unit volume to ship; the more sensitive constraint is co-locating with the motor-assembly plant to avoid shipping 300-lamination cores. A pragmatic variant is a lower-cost EU region (Czech/Slovak at €13–17/hr) that keeps the core near German motor assembly while capturing most of the overhead differential with far lower logistics and duty risk. Framed as a footprint/commercial lever, gated explicitly on total-landed-cost, not ex-works.",
+   "manufacturingImpact": "Requires transferring or duplicating the progressive-die stamping line and coil supply to the new region — significant capex and PPAP re-qualification of the die in the new plant. Burr, stacking-factor and coating quality (E5,E6) must be re-proven on the transferred line. Skilled die-maintenance labour availability differs by region and affects burr control. Coil supply logistics (electrical steel is a specialised mill product) may favour EU sourcing. Net: manufacturability unchanged if the die and process are faithfully transferred and re-validated.",
+   "costSavingTypes": [
+    "logistics",
+    "process",
+    "commonisation"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — €0.04/part ex-works, but logistics/duty must be netted",
+    "percentage": "up to 14% ex-works",
+    "annualValue": "€0.4M ex-works at 10,000,000 units/yr, less logistics",
+    "calculationBasis": "€0.04/part × 10M = €400k ex-works (W4); net after freight/duty on 300-lam cores",
+    "paybackMonths": 36
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Ex-works €0.04 gain can be wholly consumed by transatlantic logistics, duty and inventory on 300-lamination cores if not co-located with motor assembly (W4). Supply-chain risk and lead-time on specialised electrical-steel coil rises. Mitigation: prefer co-location with the motor plant; evaluate lower-cost EU region as a hedge; run full total-landed-cost model before commit. Re-validate burr and stacking factor on the transferred line (E5,E6).",
+   "dfmaPrinciples": [
+    "Total landed cost over ex-works",
+    "Co-locate with next assembly",
+    "Faithful process transfer and re-validation"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18-30 months",
+   "benchmarkReference": "OEMs localise lamination stamping near motor assembly (e.g. Mexico/Eastern Europe EDU hubs) to balance labour/overhead against core logistics (2022–2024)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "EU ELV recycled-content and duty regimes affect the total-landed-cost of cross-border scrap and cores.",
+   "evidenceRefs": [
+    "W4",
+    "E5",
+    "E6",
+    "E12"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "AlixPartners e-drive localisation cost study",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "engineering": {
+    "mechanism": "Ex-works cost = material + machine + labour + setup + overhead + SG&A. Regional differential here is dominated by overhead/machine-rate and setup (labour only €0.01/part, E12), so the €0.04 release (W4) is structural. Total landed cost = ex-works + freight + duty + inventory carry; dense low-value cores make freight per part small but co-location with motor assembly is decisive.",
+    "specDeltas": "Manufacturing site: Germany → Mexico (or Czech/Slovak hedge). Ex-works €0.29→€0.25 (W4). Die and process spec unchanged; re-PPAP at new plant. Coil supply contract re-sourced. No change to part geometry, gauge, coating, burr/stacking targets (E5,E6).",
+    "validationPlan": "Transferred-line PPAP: burr microscopy (n=50, <20 µm), stacking factor (n=30, >0.95), coating adhesion, run-at-rate over 3 shifts. Total-landed-cost model signed off by SC&L before commit. Dual-source coil qualification.",
+    "dfmImplications": "Line transfer/duplication capex; die re-tryout in new plant; regional die-maintenance skill affects burr control. Coil logistics re-planned. No design change — pure footprint move.",
+    "costBridge": "Baseline €0.29 ex-works (E11). Proposed €0.25 ex-works (W4) → €0.04/part × 10M = €400k/yr gross. Subtract freight/duty/inventory on 300-lam cores (NOT in W4) — net positive only if co-located or EU-hedged. Excludes line-transfer capex."
+   },
+   "lensId": "material",
+   "grade": {
+    "named": "PPAP",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 84,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names PPAP"
+     },
+     "mechanism": {
+      "met": false,
+      "weight": 16,
+      "detail": "only 0 quantity with an engineering unit — say what dimension, gauge, time or property moves"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Co-locate with next assembly"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "4 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": [
+     "mechanism"
+    ]
+   },
+   "qualityScore": 76,
+   "validationFlags": [
+    "grade-not-in-library(PPAP)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "consistent",
+    "statedEur": {
+     "lo": 400000,
+     "hi": 400000,
+     "mid": 400000
+    },
+    "computedEur": 400000,
+    "deltaPct": 0,
+    "basis": "annual total: result €400k",
+    "note": "basis multiplies out to €400,000, inside the stated range"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "engine could not price this move: Electrical Steel (M250-35A) (electricalsteel) is not compatible with Stamping / ",
+   "rank": {
+    "score": 441787.5,
+    "basis": "claim 5.2M capped at 3x batch median (1.3M) — unverified figure · payback 36mo ×0.50 · quality 76 ×0.88 · not engine-checked ×0.85 · stated basis multiplies out · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "laser-stress-relief-notch",
+   "title": "Notch-relief die geometry to recover cut-edge magnetic loss",
+   "technicalDescription": "Magnetic properties degrade with cutting stress at slot edges (E7) — the shear-affected zone extends ~0.5× gauge from the cut and locally raises core loss and lowers permeability, effectively wasting some of the premium M250-35A performance the programme pays for. Rather than a costlier grade or anneal, optimise the cutting itself: sharper punch/die clearance (tuned to ~5–8% of gauge for 0.35 mm), scheduled sharpening to hold edge quality, and consideration of a stress-relief anneal only where the loss recovery pays. The decisive engineering point is that recovering cut-edge degradation lets a cheaper grade meet the same effective core-loss target — i.e. it is an enabler for the M350 downgrade idea and a standalone quality lever. Tighter clearance also directly serves the burr <20 µm requirement (E5) and improves stacking factor (E6) by producing flatter, burr-free blanks. This is a process-optimisation lever with near-zero material cost: better edge quality converts to either lower loss at constant grade (efficiency credit) or the ability to buy a lower grade at constant loss (material credit). Engine-checked as a same-grade process refinement; the value is realised through the coupled grade-downgrade decision.",
+   "manufacturingImpact": "Requires die-clearance re-tuning and possibly carbide/PVD-coated punches to hold sharp edges longer, plus a disciplined sharpening schedule tied to burr measurement (E5). Optional inline stress-relief anneal adds an oven step and cost — apply only where loss recovery justifies. Better edge quality reduces burr-driven interlaminar shorts and improves stacking factor (E6), lifting downstream core quality. Net a modest tooling-consumables increase for a magnetic-quality gain that can be banked as a grade downgrade.",
+   "costSavingTypes": [
+    "process",
+    "material",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — enables cheaper grade at constant loss; standalone quality gain",
+    "percentage": "3-6% via enabled grade downgrade",
+    "annualValue": "€0.4M–€1.0M at 10,000,000 units/yr",
+    "calculationBasis": "Cut-edge loss recovery ~5–10% of core loss enables ~€0.15/kg grade step on part of the fleet (E7,E61)",
+    "paybackMonths": 18
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Stress-relief anneal, if added, raises cost and cycle time and can distort thin blanks — apply selectively. Over-tight clearance accelerates punch wear and can raise burr if not maintained (E5). Mitigation: PVD-coated punches, closed-loop burr monitoring, and gate the anneal on a loss-recovery business case. Verify magnetic recovery on Epstein/single-sheet testers before claiming a grade downgrade credit.",
+   "dfmaPrinciples": [
+    "Design the process to protect material properties",
+    "Error-proof burr and edge quality",
+    "Convert quality gain into spec relaxation"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "9-15 months",
+   "benchmarkReference": "unverified: Toyota/Aisin and voestalpine document stress-relief annealing and clearance control recovering 5–10% cut-edge core loss on traction laminations (2022–2024)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E5",
+    "E6",
+    "E7",
+    "E61"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "cut-edge degradation in NO electrical steel (IEEE Trans. Magn.)",
+     "confidence": "low",
+     "year": 2022
+    },
+    {
+     "type": "supplier_data",
+     "title": "voestalpine stamping and annealing guideline",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "engineering": {
+    "mechanism": "Shear cutting introduces residual stress and dislocations in a zone ~1× gauge deep, raising local hysteresis loss and lowering permeability; in narrow teeth this zone is a large fraction of tooth width, so cut-edge effect can add 5–15% to core loss. Optimal clearance (~5–8% of 0.35 mm) minimises the affected zone; stress-relief anneal (~750°C) restores grain structure and recovers most of the loss. Recovered margin can be spent as a cheaper grade.",
+    "specDeltas": "Die clearance re-spec to ~5–8% of gauge; PVD-coated punches; sharpening interval tied to burr <20 µm (E5). Optional stress-relief anneal spec (~750°C, controlled atmosphere). No grade change alone; couples to M350 downgrade. Stacking factor target >0.95 (E6).",
+    "validationPlan": "Single-sheet tester core-loss on cut strips before/after clearance/anneal (n=10, accept ≥5% loss recovery); burr microscopy (n=50, <20 µm); tooth-region flux-density map on motor dyno (n=5). PPAP for process/tooling change; if anneal added, new process control plan.",
+    "dfmImplications": "Tuned clearance + coated punches raise consumable cost but extend sharp-edge life; disciplined sharpening schedule. Optional anneal adds oven step and handling of thin blanks. Better edge quality lifts stacking factor and cuts burr shorts (E5,E6).",
+    "costBridge": "Baseline machine €0.05, tooling €0.01/part (E12). Adds modest consumable/anneal cost; unlocks ~€0.015/part grade downgrade on eligible fleet (couples to M350 idea). Standalone: efficiency/warranty credit. × 10M ≈ €0.4–1.0M/yr. Excludes anneal capex if adopted."
+   },
+   "lensId": "material",
+   "grade": {
+    "named": "M250-35A",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names M250-35A"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "4 quantities with units and a stated change (35A, 0.35 mm, 20 µm, 750°C)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM implications section written"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "4 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 92,
+   "validationFlags": [
+    "grade-not-in-library(M250-35A)",
+    "confidence-capped-no-search",
+    "arithmetic-mismatch(-72%)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 400000,
+     "hi": 1000000,
+     "mid": 700000
+    },
+    "computedEur": 112500,
+    "deltaPct": -72,
+    "basis": "unit × volume: 7.5% × €0.15 × 10,000,000/yr (volume from annual value)",
+    "note": "basis multiplies out to €112,500, 72% below the stated minimum (€400,000–€1,000,000)"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "engine could not price this move: Electrical Steel (M250-35A) (electricalsteel) is not compatible with Heat Treatm",
+   "priorArt": {
+    "id": "deep-7c0fff7efb46",
+    "title": "Semi-processed non-annealed steel stress-relieved by winding-cure cycle",
+    "score": 19.4
+   },
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "strengthen",
+     "critique": "Sound mitigation directly targeting the HAZ/cut-stress CTQ (note 12), but added stress-relief anneal risks distorting thin blanks and raises cycle time/punch wear — need tight clearance control plan and dimensional PPAP on annealed parts."
+    }
+   ],
+   "rank": {
+    "score": 232035.1,
+    "basis": "payback 18mo ×0.80 · quality 92 ×0.96 · not engine-checked ×0.85 · stated basis multiplies out -72% vs claim ×0.7 · evidence unverified ×0.9 · prior art \"Semi-processed non-annealed steel stress-relieved by winding-cure cycle\" ×0.81"
+   }
+  },
+  {
+   "id": "laser-vs-stamp-emerging",
+   "title": "Segmented laser/adhesive-free routes for die-free low-volume derivatives",
+   "technicalDescription": "At 10M/yr progressive stamping is unbeatable (W3 confirms the process is already best-fit), so the emerging-tech lever is not to replace mass stamping but to attack the die-amortisation and cut-stress problems at the margins with newer routes. Two credible 2024–2025 directions: (1) high-speed servo-press with adaptive in-die sensing and closed-loop clearance control to hold burr <20 µm (E5) and cut-edge stress (E7) at 400+ spm — extending die life and enabling the grade-downgrade/loss-recovery credits above; and (2) for low-volume prototype/derivative laminations where a €0.5–1.5M die cannot amortise, laser-cut or fine-blank segments avoid tooling entirely, keeping the platform-agnostic (E9) portfolio's niche variants off the critical die budget. Laser cutting introduces a heat-affected zone that degrades edge magnetics (E7), so it is explicitly NOT for the 10M-runner — only for sub-50k derivatives where tooling amortisation dominates. This is a portfolio-level manufacturing-strategy lever: keep mass volume on optimised progressive stamping while routing tail variants die-free, protecting the common-die volume base and avoiding low-volume die spend. Engine-checked as a process alternative for the derivative subset only.",
+   "manufacturingImpact": "For the mass runner: servo-press with adaptive control adds sensing/controls capex but extends die life, holds burr and stacking factor, and enables higher stroke rates — a productivity and quality gain. For tail variants: laser/fine-blank cells replace dedicated dies, eliminating €0.5–1.5M tooling per low-volume derivative and its PPAP. Laser HAZ requires post-cut stress-relief anneal to recover edge magnetics (E7), adding an oven step. Clear volume-based routing rule keeps each part on its lowest-total-cost process.",
+   "costSavingTypes": [
+    "tooling",
+    "process",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — die-free tail variants and longer die life on the runner",
+    "percentage": "tooling −20-40% on low-volume derivatives",
+    "annualValue": "€0.3M–€0.8M portfolio-level",
+    "calculationBasis": "Avoids €0.5–1.5M dies on tail variants + die-life extension on runner (E12 tooling €0.01/part)",
+    "paybackMonths": 24
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Laser HAZ degrades cut-edge magnetics and can raise core loss 10–20% unless stress-relief annealed (E7) — a DEFECT for the 10M runner, valid only for low-volume derivatives. Laser throughput cannot match stamping at volume (W3). Mitigation: strict volume-threshold routing rule (<~50k/yr → laser/fine-blank), mandatory anneal on laser parts, and magnetic re-validation. Servo-press controls add complexity — phase in with die trials.",
+   "dfmaPrinciples": [
+    "Route by volume to lowest-total-cost process",
+    "Avoid tooling on low-volume derivatives",
+    "Adaptive process control for quality",
+    "Protect core-loss on cut edges"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18-30 months",
+   "benchmarkReference": "Schuler high-speed servo lamination lines (400+ spm) and laser blanking for prototype stators used by EDU suppliers for tail-volume variants (2023–2024)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E5",
+    "E7",
+    "E9",
+    "E12",
+    "W3"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Schuler high-speed lamination servo press data",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "industry_report",
+     "title": "laser blanking vs progressive stamping for NO steel",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "engineering": {
+    "mechanism": "Stamping shear-stresses a ~1×gauge edge zone (E7); laser cutting replaces mechanical shear with a thermal HAZ that also degrades edge magnetics but needs no die — so per-part cost = laser time (throughput-limited) with zero tooling amortisation. Cross-over: below ~50k/yr the avoided €0.5–1.5M die outweighs laser's higher per-part time. On the runner, servo closed-loop clearance holds burr <20 µm and reduces cut-stress at 400+ spm.",
+    "specDeltas": "Routing rule: ≥~50k/yr → optimised progressive stamping; <~50k/yr derivative → laser/fine-blank + mandatory stress-relief anneal (~750°C). Runner die: add adaptive clearance sensing. Grade/geometry unchanged (E2). Burr <20 µm and stacking >0.95 held (E5,E6).",
+    "validationPlan": "Laser parts: single-sheet core-loss before/after anneal (n=10, recover to within 5% of stamped); HAZ metallography. Runner: burr SPC at 400 spm (n=200, <20 µm); die-life run-to-failure. PPAP for each route; magnetic sign-off on derivative variants.",
+    "dfmImplications": "Runner gains sensing capex but longer die life and higher stroke rate. Derivatives delete dies and PPAP, add laser cell + anneal oven. Clear volume-routing rule prevents mis-application. Laser slower per part — limited to tail volume.",
+    "costBridge": "Baseline tooling €0.01/part on runner (E12); die-life extension trims tooling/setup. Derivatives: avoid €0.5–1.5M die each (amortised over sub-50k volume) at cost of laser time + anneal. Portfolio net ~€0.3–0.8M/yr. Excludes servo-control and laser-cell capex; not applied to the 10M runner cut process."
+   },
+   "lensId": "material",
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names PPAP"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "2 quantities with units and a stated change (20 µm, 750°C)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Avoid tooling on low-volume derivatives"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "5 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "unparsed",
+    "statedEur": {
+     "lo": 300000,
+     "hi": 800000,
+     "mid": 550000
+    },
+    "computedEur": null,
+    "deltaPct": null,
+    "basis": "refused: €0.5–1.5M has no stated period",
+    "note": "refused: €0.5–1.5M has no stated period"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "engine could not price this move: Electrical Steel (M250-35A) (electricalsteel) is not compatible with Stamping / ",
+   "priorArt": {
+    "id": "pt012",
+    "title": "AT separator plate laser-cut vs stamped — tooling elimination for low-volume variants",
+    "score": 12.3
+   },
+   "critiques": [
+    {
+     "persona": "quality",
+     "personaName": "Quality / DFMEA lead",
+     "verdict": "challenge",
+     "critique": "Dual-route qualification (stamped vs laser-cut) doubles PPAP/DV burden and requires proving equivalent core-loss/HAZ magnetics per route; need documented process-equivalence protocol and per-route PPAP to avoid mixed-fleet warranty exposure."
+    }
+   ],
+   "rank": {
+    "score": 245998.5,
+    "basis": "payback 24mo ×0.67 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"AT separator plate laser-cut vs stamped — tooling elimination for low-volume variants\" ×0.88"
+   }
+  }
+ ]
+}
