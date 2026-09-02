@@ -5,13 +5,20 @@ import { validateIdeas, validateIdea, parsePercent } from '../idea-validation.mj
 const goodIdea = {
   id: 'roll-formed-sill',
   title: 'Roll-formed sill replacing stamped assembly',
-  technicalDescription: 'Replace the four-piece stamped sill assembly with a single roll-formed CR340LA profile, eliminating 12 spot welds and two stamping dies while holding the same section modulus for side-impact load paths.',
+  technicalDescription: 'Replace the four-piece stamped sill assembly with a single roll-formed CR340LA profile at 1.4 mm instead of 1.6 mm, eliminating 12 spot welds and two stamping dies while holding the same 42 kN·m section modulus for side-impact load paths.',
   manufacturingImpact: 'Deletes two stamping dies and a weld cell; line labour drops 1.1 min/veh.',
   costSavingTypes: ['process', 'tooling'],
   costSavingPotential: { qualitative: 'High — part consolidation', percentage: '12-18%', annualValue: '€1.2M', calculationBasis: '€8/veh × 150k', paybackMonths: 14 },
   implementationDifficulty: 'Medium',
-  riskNotes: 'Validate side-pole intrusion vs stamped baseline.',
+  riskNotes: 'Validate side-pole intrusion vs stamped baseline with a full-vehicle CAE correlation and two physical sled tests.',
   dfmaPrinciples: ['Part consolidation', 'Eliminate welds'],
+  engineering: {
+    mechanism: 'A continuous roll-formed section carries the side-impact load without the weld-flange discontinuities that force the stamped design to 1.6 mm; the closed profile raises second moment of area by 18%.',
+    specDeltas: 'Gauge 1.6 → 1.4 mm; grade CR340LA per EN 10268; 12 spot welds and two die sets deleted; new roll-form tooling for the 4.2 m profile.',
+    validationPlan: 'CAE side-pole and IIHS small-overlap correlation, then two sled tests; PPAP on the roll-form supplier with Cpk ≥ 1.33 on the section height.',
+    dfmImplications: 'One part number replaces four; no weld fixture; roll-form radius limits set the minimum flange; end-trim by laser adds one station.',
+    costBridge: 'Material −€2.1/veh from gauge, conversion −€4.3 from deleted welds and dies amortised, logistics −€1.6 from one part; €8/veh net × 150k.',
+  },
   systemLevel: 'Part',
   timeToImplement: '12-18 months',
   benchmarkReference: 'Zeekr 001 rocker, 2023',
@@ -34,11 +41,54 @@ test('parsePercent does not read a percentage out of a thousands separator', () 
   assert.equal(parsePercent('€1,250/part is 12% of spend'), 12);
 });
 
-test('a well-formed idea passes with no flags and high quality', () => {
+test('a well-formed, deep idea passes with no flags and high quality', () => {
   const v = validateIdea(goodIdea);
   assert.ok(v);
   assert.deepEqual(v.validationFlags, []);
-  assert.ok(v.qualityScore >= 90);
+  assert.ok(v.qualityScore >= 90, `quality ${v.qualityScore}, missing ${v.depth.missing}`);
+  assert.equal(v.depth.score, 100);
+  assert.equal(v.grade.named, 'CR340LA');
+  assert.deepEqual(Object.keys(v.engineering), ['mechanism', 'specDeltas', 'validationPlan', 'dfmImplications', 'costBridge']);
+});
+
+test('qualityScore is technical DEPTH, not completeness — a complete but shallow idea scores low', () => {
+  // Every field filled, nothing checkable: no grade, no quantities, no
+  // validation activity, no DFM principle, no engineering sections.
+  const shallow = {
+    ...goodIdea, title: 'Use a cheaper steel', engineering: undefined,
+    technicalDescription: 'Move the sill to a cheaper steel grade so material cost falls while keeping the structure adequate for side impact, which should be acceptable for this application in most markets.',
+    riskNotes: 'Some risk to crash performance which needs consideration by the team.',
+    dfmaPrinciples: ['Cheaper'],
+  };
+  const v = validateIdea(shallow);
+  assert.deepEqual(v.validationFlags, [], 'completeness alone raises no flag');
+  assert.ok(v.qualityScore <= 20, `shallow idea scored ${v.qualityScore}`);
+  assert.ok(v.depth.missing.includes('grade') && v.depth.missing.includes('mechanism') && v.depth.missing.includes('sections'));
+});
+
+test('evidence refs must resolve to real dossier lines when the ids are known', () => {
+  const v = validateIdea({ ...goodIdea, evidenceRefs: ['E1', 'E77', 'W2'] }, 0, { hasEvidence: true, evidenceIds: ['E1', 'E2', 'W1', 'W2'] });
+  assert.deepEqual(v.evidenceRefs, ['E1', 'W2']);
+  assert.ok(v.validationFlags.some(f => f === 'unresolvable-evidence-ref(E77)'));
+  const none = validateIdea({ ...goodIdea, evidenceRefs: ['E77'] }, 0, { hasEvidence: true, evidenceIds: ['E1'] });
+  assert.equal(none.evidenceRefs, undefined);
+  assert.ok(none.validationFlags.includes('uncited-in-evidence-mode'));
+});
+
+test('a named grade is resolved against the engine catalogue when one is supplied', () => {
+  const materials = { 'Steel (high-strength)': { density: 7.85, price: 1.1, family: 'ferrous' }, 'Aluminium 6061': { density: 2.7, price: 2.85, family: 'aluminium' } };
+  const v = validateIdea(goodIdea, 0, { materials });
+  assert.equal(v.grade.named, 'CR340LA');
+  assert.equal(v.grade.catalogueKey, 'Steel (high-strength)');
+  assert.ok(!v.validationFlags.some(f => f.startsWith('grade-not-in-library')));
+  const exotic = validateIdea({
+    ...goodIdea, title: 'Switch to PEEK-CF30',
+    technicalDescription: goodIdea.technicalDescription.replace('CR340LA', 'PEEK-CF30'),
+    engineering: { ...goodIdea.engineering, specDeltas: goodIdea.engineering.specDeltas.replace('grade CR340LA per EN 10268', 'grade PEEK-CF30') },
+  }, 0, { materials });
+  assert.equal(exotic.grade.named, 'PEEK-CF30');
+  assert.equal(exotic.grade.catalogueKey, null);
+  assert.ok(exotic.validationFlags.includes('grade-not-in-library(PEEK-CF30)'));
 });
 
 test('drops entries that are not objects or carry no information', () => {

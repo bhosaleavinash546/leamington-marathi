@@ -74,6 +74,82 @@ if (compareIdx !== -1) {
   process.exit(0);
 }
 
+// ── Offline scoring of SAVED runs (no server, no tokens) ─────────────────────
+// `--score <dir> --label <label>` reads every *.json in <dir> — each a saved
+// /api/analyze response with { part, annualVolume, evidenceIds, lensesRun,
+// lensesAvailable, ideas } (benchmark/prism-runs/ holds the four live Prism
+// runs measured in the Sept-2026 review) — and re-scores the IDEAS with the
+// deterministic checks: depth rubric, arithmetic re-check, engine verdicts as
+// stamped, named-grade rate, engineering-section rate, lens coverage. This is
+// the before/after yardstick for pipeline changes that cost no tokens; it
+// measures what the checks reveal about existing output, NOT the effect of a
+// prompt change on generation — that still needs a live arm.
+const scoreIdx = process.argv.indexOf('--score');
+if (scoreIdx !== -1) {
+  const dir = process.argv[scoreIdx + 1];
+  if (!dir) { console.error('usage: --score <dir-of-saved-runs> [--label <label>]'); process.exit(1); }
+  const { readdirSync } = await import('node:fs');
+  const { scoreDepth, depthSummary, findGrade, ENGINEERING_SECTIONS } = await import('../idea-depth.mjs');
+  const { checkArithmetic } = await import('../idea-arith.mjs');
+  const label = arg('--label') || 'score';
+  const perPart = [];
+  for (const f of readdirSync(dir).filter(x => x.endsWith('.json')).sort()) {
+    const run = JSON.parse(readFileSync(join(dir, f), 'utf8'));
+    const ideas = Array.isArray(run.ideas) ? run.ideas : [];
+    if (!ideas.length) continue;
+    const ids = Array.isArray(run.evidenceIds) && run.evidenceIds.length ? new Set(run.evidenceIds) : null;
+    const scored = ideas.map(i => ({ ...i, depth: scoreDepth(i, { evidenceIds: ids ?? undefined }), arithmetic: checkArithmetic(i, { annualVolume: run.annualVolume }) }));
+    const div = batchDiversity(ideas);
+    const d = depthSummary(scored);
+    const arith = scored.reduce((m, i) => { m[i.arithmetic.status] = (m[i.arithmetic.status] || 0) + 1; return m; }, { consistent: 0, mismatch: 0, unparsed: 0 });
+    const engineChecked = ideas.filter(i => i.engineCheck).length;
+    const nullWithReason = ideas.filter(i => !i.engineCheck && typeof i.engineCheckReason === 'string').length;
+    const byKind = ideas.reduce((m, i) => { if (i.engineCheck) { const k = i.engineCheck.kind || 'substitution'; m[k] = (m[k] || 0) + 1; } return m; }, {});
+    const row = {
+      part: run.part || f.replace(/\.json$/, ''),
+      ideas: ideas.length,
+      diversityScore: div.diversityScore, nearDupPairs: div.nearDupPairs.length,
+      engineChecked, contradicted: ideas.filter(i => i.engineCheck?.direction === 'contradicted').length,
+      nullWithReason, engineByKind: byKind,
+      arithmetic: arith,
+      depthMin: d.min, depthMedian: d.median, depthMax: d.max, depthSpread: d.spread, criteriaHitPct: d.criteriaHitPct,
+      namedGrade: scored.filter(i => findGrade(`${i.title}\n${i.technicalDescription}\n${i.engineering?.specDeltas ?? ''}`)).length,
+      allSections: scored.filter(i => i.engineering && ENGINEERING_SECTIONS.every(k => String(i.engineering[k] || '').trim().length >= 40)).length,
+      qualityScoreSpread: (() => { const q = ideas.map(i => i.qualityScore).filter(n => typeof n === 'number'); return q.length ? Math.max(...q) - Math.min(...q) : null; })(),
+      lensesRun: run.lensesRun || [], lensesAvailable: run.lensesAvailable || [],
+      priorArtDup: ideas.filter(i => i.priorArt).length,
+      critiqued: ideas.filter(i => (i.critiques || []).length).length,
+    };
+    perPart.push(row);
+    console.log(`${row.part}: ${row.ideas} ideas · depth ${row.depthMin}–${row.depthMax} (median ${row.depthMedian}) · arithmetic ${arith.consistent}✓ ${arith.mismatch}✗ ${arith.unparsed}? · engine ${engineChecked} checked (${row.contradicted} contradicted, ${nullWithReason}/${ideas.length - engineChecked} nulls with reason) · grade ${row.namedGrade}/${row.ideas} · sections ${row.allSections}/${row.ideas} · lenses ${row.lensesRun.length}/${row.lensesAvailable.length || '?'}`);
+  }
+  const total = perPart.reduce((s, p) => s + p.ideas, 0) || 1;
+  const sum = (fn) => perPart.reduce((s, p) => s + fn(p), 0);
+  const pct = (n) => +((n / total) * 100).toFixed(1);
+  const summary = {
+    parts: perPart.length, ideas: total,
+    diversityScore: perPart.length ? +(sum(p => p.diversityScore) / perPart.length).toFixed(1) : 0,
+    nearDupPairs: sum(p => p.nearDupPairs),
+    engineCheckRate: pct(sum(p => p.engineChecked)),
+    contradictedRate: +((sum(p => p.contradicted) / Math.max(sum(p => p.engineChecked), 1)) * 100).toFixed(1),
+    nullReasonRate: +((sum(p => p.nullWithReason) / Math.max(total - sum(p => p.engineChecked), 1)) * 100).toFixed(1),
+    arithConsistentRate: pct(sum(p => p.arithmetic.consistent)),
+    arithMismatchRate: pct(sum(p => p.arithmetic.mismatch)),
+    arithParsedRate: pct(sum(p => p.arithmetic.consistent + p.arithmetic.mismatch)),
+    depthMedian: perPart.length ? +(sum(p => p.depthMedian) / perPart.length).toFixed(1) : 0,
+    depthSpread: perPart.length ? +(sum(p => p.depthSpread) / perPart.length).toFixed(1) : 0,
+    namedGradeRate: pct(sum(p => p.namedGrade)),
+    allSectionsRate: pct(sum(p => p.allSections)),
+    qualityScoreSpread: perPart.length ? +(sum(p => p.qualityScoreSpread ?? 0) / perPart.length).toFixed(1) : 0,
+    critiquedRate: pct(sum(p => p.critiqued)),
+    dupRate: pct(sum(p => p.priorArtDup)),
+    scoredAt: new Date().toISOString(), scoredFrom: dir,
+  };
+  writeFileSync(resultsPath(label), JSON.stringify({ label, offline: true, summary, perPart }, null, 2));
+  console.log(`\nSaved ${resultsPath(label)}\nSummary:`, JSON.stringify(summary, null, 2));
+  process.exit(0);
+}
+
 // ── Live run ─────────────────────────────────────────────────────────────────
 const KEY = process.env.ANTHROPIC_API_KEY;
 if (!KEY) {
@@ -169,6 +245,15 @@ try {
       tasteMatched: ideas.filter(i => i.tasteMatch).length,
       refined: v.deep?.refined ?? 0,
       critiqued: v.deep?.critiqued ?? 0,
+      // Depth and arithmetic as the pipeline stamped them (server-side, same
+      // rubric the offline --score mode uses) so live arms compare to the
+      // offline baseline on the same axes.
+      depthMedian: v.depth?.median ?? null,
+      depthSpread: v.depth?.spread ?? null,
+      arithConsistent: v.arithmetic?.consistent ?? 0,
+      arithMismatch: v.arithmetic?.mismatch ?? 0,
+      allSections: ideas.filter(i => i.engineering && ['mechanism', 'specDeltas', 'validationPlan', 'dfmImplications', 'costBridge'].every(k => String(i.engineering[k] || '').trim().length >= 40)).length,
+      nullWithReason: ideas.filter(i => !i.engineCheck && typeof i.engineCheckReason === 'string').length,
       seconds: Math.round((Date.now() - t0) / 1000),
       // Kept for the pairwise judge: title + description are what soft axes read.
       ideaDigest: ideas.map(i => ({ title: i.title, description: String(i.technicalDescription || '').slice(0, 400) })),

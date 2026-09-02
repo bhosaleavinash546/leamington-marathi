@@ -1,4 +1,4 @@
-import { AnalysisConfig, CostReductionIdea, SearchSource } from '../types';
+import { AnalysisConfig, AnalysisValidation, CostReductionIdea, SearchSource } from '../types';
 
 export type ChatHistory = { role: 'user' | 'assistant'; content: string }[];
 
@@ -17,6 +17,8 @@ export interface AnalysisResponse {
   ideas: CostReductionIdea[];
   sources: SearchSource[];
   resultId: string;
+  /** Server pipeline summary (lens coverage, engine/arithmetic/depth tallies). */
+  validation?: AnalysisValidation;
 }
 
 function getAuthToken(): string | null {
@@ -141,8 +143,9 @@ export async function generateCostReductionIdeas(
         const ideas = (data as unknown as { ideas: CostReductionIdea[]; projectId?: string }).ideas;
         const sources = (data as unknown as { sources: SearchSource[]; projectId?: string }).sources;
         const serverProjectId = (data as unknown as { projectId?: string }).projectId;
+        const validation = (data as unknown as { validation?: AnalysisValidation }).validation;
         const resultId = saveRecentAnalysis(systemName, subassemblyName, partName, ideas.length, serverProjectId || undefined);
-        return { ideas, sources, resultId };
+        return { ideas, sources, resultId, validation };
       }
       if (data.type === 'error') {
         throw new Error(data.message || 'Analysis failed');

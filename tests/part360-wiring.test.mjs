@@ -80,9 +80,19 @@ describe('/api/analyze grounded-mode wiring', () => {
     assert.equal(guards.length, 2, 'expected cache read + write guards to both cover partEvidence');
   });
 
-  it('the validator learns that a dossier was supplied', () => {
+  it('the validator learns that a dossier was supplied, and which line ids it has', () => {
     assert.match(server, /const hasEvidence = !!partEvidence;/);
-    assert.match(server, /validateIdeas\(parsedIdeas, \{ searchExecuted, hasEvidence \}\)/);
+    assert.match(server, /validateIdeas\(parsedIdeas, \{ searchExecuted, hasEvidence, evidenceIds, materials: catalogueMaterials \}\)/);
+    // The ids come from the evidence text the model was actually shown.
+    assert.match(server, /partEvidence\.blocks\.flatMap\(b => \[\.\.\.b\.text\.matchAll\(\/\^\\\[\(\[EW\]\\d\{1,3\}\)\\\]\/gm\)\]/);
+  });
+
+  it('every batch is arithmetic-checked and depth-summarised; Prism runs stamp lens coverage and default to the critique pass', () => {
+    assert.match(server, /validationSummary\.arithmetic = runArithmeticChecks\(validated/);
+    assert.match(server, /validationSummary\.depth = depthSummary\(validated\)/);
+    assert.match(server, /validationSummary\.lenses = \{/);
+    assert.match(server, /: partEvidence \? 'critique' : null;/, 'Prism runs default to the critique level');
+    assert.match(server, /config\.deepMode === 'off' \|\| config\.deepMode === false \? null/, 'the engineer can opt out');
   });
 
   it('every lens is a forced emit_ideas call and all lenses merge into finishAnalysis', () => {

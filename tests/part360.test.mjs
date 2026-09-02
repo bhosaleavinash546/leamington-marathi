@@ -306,3 +306,28 @@ describe('counter-offer builder', () => {
     assert.equal(counterOffer({ rows: [] }, null), null);
   });
 });
+
+// ── Grade dictionary in the dossier ──────────────────────────────────────────
+describe('dossier catalogue section', () => {
+  it('lists same-family grades the engine can price, citable, and says when absent', () => {
+    const materials = {
+      'Steel (mild)': { density: 7.85, price: 0.62, family: 'ferrous' },
+      'Steel DP600 (dual-phase)': { density: 7.85, price: 1.45, family: 'ferrous' },
+      'Aluminium 6061': { density: 2.7, price: 2.85, family: 'aluminium' },
+    };
+    const d = buildDossier({ part: { partName: 'Bracket', material: 'CR4 mild steel', process: 'Stamping', weightKg: 0.2, annualVolume: 60000, region: 'Germany' }, materials });
+    const cat = d.sections.find(s => s.id === 'catalogue');
+    assert.ok(cat && cat.present, 'catalogue section present when materials supplied');
+    const text = cat.lines.map(l => l.text).join('\n');
+    assert.match(text, /resolves to catalogue "Steel \(mild\)"/);
+    assert.match(text, /Steel DP600 \(dual-phase\): 7\.85 g\/cm³, €1\.45\/kg \(ferrous\)/);
+    assert.match(text, /Other families the engine can price: Aluminium 6061/);
+    assert.ok(cat.lines.every(l => /^E\d+$/.test(l.ref)), 'catalogue lines are citable E-refs');
+    // The material lens carries it; the process lens does not.
+    assert.match(dossierToPromptBlock(d, 'material'), /Engine catalogue grades/);
+    assert.ok(!/Engine catalogue grades/.test(dossierToPromptBlock(d, 'process')));
+    const none = buildDossier({ part: { material: 'Steel (mild)' } });
+    const abs = none.sections.find(s => s.id === 'catalogue');
+    assert.ok(abs && !abs.present && /not supplied/.test(abs.reason));
+  });
+});

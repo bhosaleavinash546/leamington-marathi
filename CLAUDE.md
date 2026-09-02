@@ -33,6 +33,7 @@ node benchmark/ideation-eval.mjs --compare baseline current  # offline metric de
 
 npm run kb:export          # REQUIRED after editing src/data/*-knowledge-base.ts (regenerates kb-pack.json)
 npm run eval:status        # measurement-debt report: which gates/evals have results, what is unmeasured
+node benchmark/ideation-eval.mjs --score benchmark/prism-runs --label <label>   # offline: re-score saved Prism runs (depth rubric, arithmetic, engine, grades, lenses) — no key needed
 npm run horizon:audit      # foresight-register curation inbox (evidence, China-frontier, freshness, precision)
 ```
 
@@ -76,5 +77,5 @@ React 18 + TS + Vite + Tailwind under `src/`. **`src/config/tools.ts` is the sin
 
 - **Benchmarks are gates, not scoreboards.** Fixtures are held-out; when a benchmark fails, fix physics/modelling with a defensible rationale — do not tune constants to the fixtures (this discipline is documented in the benchmark files themselves).
 - Deterministic cores get pure unit tests (see `tests/` — one file per module, `node:test`, in-memory sqlite where a DB is needed). LLM-dependent paths must stay testable via DI/fake clients.
-- Idea objects accumulate provenance stamps (`engineCheck`, `priorArt`, `tasteMatch`, `critiques`, `refined`, `rank`, `evidenceUnverified`) — preserve them through any pipeline change; the UI renders each as a visible badge, and boosts must never be silent.
+- Idea objects accumulate provenance stamps (`engineCheck` + `engineCheckReason` when null, `depth`, `arithmetic`, `grade`, `engineering`, `priorArt`, `tasteMatch`, `critiques`, `refined`, `rank`, `evidenceUnverified`) — preserve them through any pipeline change; the UI renders each as a visible badge, and boosts must never be silent. `qualityScore` is the technical-depth rubric (`idea-depth.mjs`), not completeness — see DECISIONS 65.
 - **The four director decks are tracked deliverables with their generators in `scripts/`** — `make-platform-deck.py`, `make-brief-deck.py`, `make-horizon-deck.cjs`, `make-dfm-deck.mjs`. Each runs on a clean checkout: screenshots, Lucide PNGs and rasterised icons are committed under `scripts/deck-assets/`, and no generator may take a build-time dependency on `sharp`/`react-icons` (see `make-deck-icons.mjs` for why). Regenerate a deck **only** when the deck is the task — never as a side effect of other work — and rebuild its `.zip` twin with it.

@@ -1,0 +1,725 @@
+{
+ "part": "knuckle",
+ "annualVolume": 60000,
+ "capturedAt": "2026-08",
+ "evidenceIds": [
+  "E1",
+  "E2",
+  "E3",
+  "E4",
+  "E5",
+  "E6",
+  "E7",
+  "E8",
+  "E9",
+  "E10",
+  "E11",
+  "E12",
+  "E13",
+  "E14",
+  "E15",
+  "E16",
+  "E17",
+  "E18",
+  "E19",
+  "E20",
+  "E21",
+  "E22",
+  "E23",
+  "E24",
+  "E25",
+  "E26",
+  "E27",
+  "E28",
+  "E29",
+  "W1",
+  "W2",
+  "W3",
+  "W4",
+  "W5",
+  "E30",
+  "E31",
+  "E32",
+  "E33",
+  "E34",
+  "E35",
+  "E36",
+  "E37",
+  "E38",
+  "E39",
+  "E40"
+ ],
+ "lensesAvailable": [
+  "vave",
+  "process",
+  "material",
+  "spec",
+  "commercial",
+  "benchmark"
+ ],
+ "lensesRun": [
+  "process"
+ ],
+ "validation": {
+  "total": 10,
+  "kept": 10,
+  "dropped": 0,
+  "flagged": 4,
+  "avgQuality": 100,
+  "intraBatchMerged": 0,
+  "diversity": {
+   "score": 82.2,
+   "nearDupPairs": 0
+  },
+  "engineChecks": {
+   "checked": 5,
+   "confirmed": 4,
+   "contradicted": 1,
+   "unexpressible": 5
+  }
+ },
+ "ideas": [
+  {
+   "id": "shell-mould-cast-gjs450",
+   "title": "Shell mould casting replacing sand casting for GJS-450 knuckle",
+   "technicalDescription": "Convert the GJS-450-10 ductile-iron knuckle from green-sand casting to shell (Croning) mould casting while retaining the identical alloy and geometry, so the safety-critical function [E1–E5] is fully preserved. Shell moulding uses a resin-coated silica sand cured against a heated metal pattern plate, giving a rigid thin shell that reproduces near-net-shape surfaces at CT7-8 dimensional class versus CT10-12 for green sand. For this 2.546 kg knuckle [E8] the finer surface (Ra 12-25 µm vs 25-50 µm) and tighter tolerance reduce the machining envelope on the caliper bosses and ball-joint taper, and the sharper, denser skin improves as-cast fatigue strength — directly relevant to full fatigue/impact validation [E4]. The engine's DFM-viable net-shape route is Shell Mould Casting at DFM score 60 / 60% rule coverage, releasing the €1.03 process premium [W3] and cutting CO2e 8.76→7.96 kg/part [W3]. Up-front pattern-plate and shell-tooling cheque is €82,920 [W3]. Ductile iron in shell moulds is a mature foundry route (crankshafts, differential carriers), so metallurgy and heat-treat (ferritic-pearlitic, 450 MPa UTS / 10% elongation) are unchanged.",
+   "manufacturingImpact": "Requires new heated metal pattern plates and a shell-moulding line or an outsourced shell foundry; the alloy, pouring and machining fixtures carry over. Reduced stock allowance on machined features shortens CNC cycle time and cutter wear on the bearing bore and taper. Better as-cast surface reduces shot-blast and dressing labour. Risk items are pattern venting for the thin knuckle web and gating to avoid shrinkage porosity at the ball-joint boss — resolvable with MAGMASOFT solidification simulation before pattern cut. Foundry PPAP with fresh fatigue coupons is mandatory given the safety-critical classification.",
+   "costSavingTypes": [
+    "process",
+    "weight",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — engine-modelled process premium release with modest machining and CO2 co-benefits",
+    "percentage": "12-14%",
+    "annualValue": "€60K at 60,000 units/yr",
+    "calculationBasis": "€1.03/part process premium [W3] × 60,000 = €61.8K/yr",
+    "paybackMonths": 17
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Safety-critical [E4] — shell-cast ductile iron must re-pass full fatigue and impact validation with new coupon data before release. Shrinkage porosity at the ball-joint boss is the main durability risk; mitigate with solidification simulation and riser optimisation. Shell resin (phenolic) fume handling needs foundry EHS controls. Tolerance improvement must not tighten machining datums beyond need. No NCAP/NVH exposure as geometry and mass are unchanged.",
+   "dfmaPrinciples": [
+    "Net-shape to cut machining",
+    "Process capability matched to tolerance",
+    "Design for as-cast surface",
+    "Minimise secondary operations"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "9-14 months",
+   "benchmarkReference": "Shell-moulded ductile iron widely used for crankshafts and differential carriers (e.g. Georg Fischer, Grede foundries) — CT7-8 net-shape ductile iron in series production",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Lower cradle-to-gate CO2 (7.96 vs 8.76 kg/part) supports EU ELV and OEM fleet carbon declaration goals.",
+   "evidenceRefs": [
+    "E4",
+    "E5",
+    "E8",
+    "W3"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Ductile iron shell moulding tolerance/surface benchmarks",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "process",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "2.546 kg Cast Iron (Ductile/GJS) via Sand Casting → Machining (CNC) → 2.5 kg Cast Iron (Ductile/GJS) via Shell Mould Casting → Machining (CNC), 60k/yr, Germany",
+    "baselineEur": 12.97,
+    "proposedEur": 11.76,
+    "savingPct": 9.3,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "priorArt": {
+    "id": "add151",
+    "title": "AA6082-T6 forged steering knuckle replacing GJS-450 cast iron",
+    "score": 22.6
+   },
+   "rank": {
+    "score": 43237.2,
+    "basis": "payback 17mo ×0.83 · quality 100 ×1.00 · engine confirmed ×1.25 · evidence unverified ×0.9 · prior art \"AA6082-T6 forged steering knuckle replacing GJS-450 cast iron\" ×0.77"
+   }
+  },
+  {
+   "id": "forged-6082-al-knuckle",
+   "title": "Closed-die forged AA6082-T6 aluminium knuckle",
+   "technicalDescription": "Replace the GJS-450-10 sand-cast iron knuckle with a closed-die forged AA6082-T6 aluminium upright, targeting the unsprung-mass premium the user explicitly values [E7]. Full route: billet AA6082 sheared to slug, induction pre-heat to ~470°C, multi-blow closed-die forging on a screw or hydraulic press, flash trim, T6 solution + artificial ageing (530°C solutionise, water quench, 175°C age) to ~310 MPa yield, then CNC of bearing bore, caliper bosses and ball-joint taper [E5]. Forged 6082-T6 has directional grain flow following the load path, giving fatigue performance that meets the full fatigue/impact validation [E4] while cutting mass ~55%: 2.546 kg [E8] iron to ~1.15 kg aluminium. This is a heavily validated conversion — Toyota RAV4 XA50 front knuckle and multiple BEV skateboard programmes use forged 6082-T6. The unsprung-mass reduction (~1.4 kg/corner) improves ride, steering response and range on electrified variants. Up-front forging die set is higher than the €82,920 shell cheque [W3] but amortises across the 5-year, 60,000/yr programme.",
+   "manufacturingImpact": "Requires forging dies (typically €150-250K for a knuckle), a forging press slot, trim tooling and a T6 heat-treat line — a full supplier re-source versus the current foundry. Machining envelope shrinks ~30% versus cast iron because forged near-net surfaces need less stock. Ball-joint taper may need a steel insert or hard-anodised bore depending on ball-joint spec. Corrosion protection differs from iron — needs conversion coat + KTL suited to salt/splash [E6]. Aluminium galvanic isolation at steel fastener interfaces required.",
+   "costSavingTypes": [
+    "weight",
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — 55% unsprung mass cut on a part where weight carries a premium [E7], strong verified precedent",
+    "percentage": "weight −55%; net cost neutral to +8% part but high vehicle value",
+    "annualValue": "€300K-€500K vehicle-level value at 60,000 units/yr",
+    "calculationBasis": "~1.4 kg/corner unsprung saving × range/ride value; per marketplace precedents saving £1-2.6M across programme",
+    "paybackMonths": 30
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Safety-critical [E4]: full re-validation of fatigue, corner impact and ball-joint pull-out required. Aluminium fretting/galvanic corrosion at steel interfaces in salt environment [E6] — mitigate with coatings and isolation washers. Ball-joint taper wear needs hardness solution. Higher part cost offset only if unsprung-mass value is credited at vehicle level. Forging porosity/fold defects require ultrasonic/eddy-current NDT on 100% of safety parts.",
+   "dfmaPrinciples": [
+    "Design for load-path grain flow",
+    "Lightweighting at unsprung mass",
+    "Reduce machining stock via near-net forging",
+    "Material substitution for function"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18-24 months",
+   "benchmarkReference": "unverified: Toyota RAV4 XA50 front knuckle hot-forged 6061-T6 (2.0 kg/corner saved); AA6082-T6 forged upright vs GJS-450 verified ★88",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Mass reduction supports fleet CO2/range targets and EU ELV recyclability (aluminium closed-loop).",
+   "evidenceRefs": [
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Toyota RAV4 XA50 forged aluminium knuckle",
+     "confidence": "low",
+     "year": 2019
+    },
+    {
+     "type": "industry_report",
+     "title": "AA6082-T6 forged upright vs GJS-450 conversion study",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "process",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "2.546 kg Cast Iron (Ductile/GJS) via Sand Casting → Machining (CNC) → 1.15 kg Aluminium 6061 via Forging (Hot) → Heat Treatment (batch) → Machining (CNC), 60k/yr, Germany",
+    "baselineEur": 12.97,
+    "proposedEur": 12.96,
+    "savingPct": 0.1,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "priorArt": {
+    "id": "add151",
+    "title": "AA6082-T6 forged steering knuckle replacing GJS-450 cast iron",
+    "score": 29.9
+   },
+   "rank": {
+    "score": 84495.5,
+    "basis": "claim 400K capped at 3x batch median (188K) — unverified figure · payback 30mo ×0.57 · quality 100 ×1.00 · engine confirmed ×1.25 · evidence unverified ×0.9 · prior art \"AA6082-T6 forged steering knuckle replacing GJS-450 cast iron\" ×0.70"
+   }
+  },
+  {
+   "id": "squeeze-cast-al-bimetal-knuckle",
+   "title": "Squeeze-cast A356 aluminium knuckle with cast-in steel bearing seat",
+   "technicalDescription": "Alternative lightweighting route: indirect squeeze-cast (liquid-forged) A356-T6 aluminium knuckle with a cast-in steel bearing-seat insert, deleting the machined iron bore in favour of a robust bimetal hub interface [E2][E5]. Route: place a pre-heated ductile-steel bearing sleeve in the die, inject A356 melt under 60-100 MPa squeeze pressure to eliminate gas/shrink porosity, T6 heat-treat, then CNC only the caliper bosses and ball-joint taper [E5]. Squeeze casting gives near-forging mechanical properties (fatigue > standard HPDC) at lower tooling and cycle cost than closed-die forging, suiting the 60,000/yr volume [E8]. The steel insert provides a 58 HRC bore for hub-bearing press-fit, removing the aluminium fretting concern at the most loaded interface while retaining ~50% mass saving (2.546→~1.3 kg) against the unsprung-mass premium [E7]. Operating −40 to +120°C [E6] is within A356-T6 capability; the bimetal thermal-expansion mismatch is managed by insert geometry and interference design. This directly transfers the verified bimetal-insert precedent one level into a squeeze-cast (rather than HPDC) matrix for higher fatigue margin on a safety part [E4].",
+   "manufacturingImpact": "Needs a squeeze-casting cell (vertical press + die), steel-insert pre-heat and placement automation, and T6 line. Insert-to-aluminium metallurgical/mechanical bond must be qualified. Machining reduced to caliper/taper only since the steel bore is near-net. Die life and insert-placement cycle time drive cost. Requires 100% NDT (X-ray/UT) for the safety classification. Foundry re-source versus current sand-cast supplier.",
+   "costSavingTypes": [
+    "weight",
+    "complexity",
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — ~50% mass cut plus deletion of separate bearing-sleeve op; robust interface",
+    "percentage": "weight −48%",
+    "annualValue": "€250K-€400K vehicle-level at 60,000 units/yr",
+    "calculationBasis": "1.25 kg/corner unsprung saving credited + bearing-sleeve op deletion; per bimetal precedent ~£833k programme",
+    "paybackMonths": 30
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Safety-critical [E4]: bimetal interface fatigue and insert bond require full validation including thermal-cycle −40/+120°C [E6]. Galvanic corrosion at aluminium/steel boundary in salt splash [E6] — sealed interface + coating. Squeeze-cast porosity control critical at ball-joint boss; 100% NDT. Differential thermal expansion could loosen bearing interference — verify across temp range. Higher process complexity than monolithic forging.",
+   "dfmaPrinciples": [
+    "Part-count reduction via cast-in insert",
+    "Function-specific bimetal material use",
+    "Near-net bore eliminates sleeve op",
+    "Lightweighting at unsprung mass"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18-24 months",
+   "benchmarkReference": "unverified: Bimetal HPDC aluminium upright with cast-in steel bearing seat verified ★78 (~£833k); squeeze-cast A356 chassis parts in Honda/Audi suspension",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Aluminium lightweighting supports EU fleet CO2; A356 closed-loop recyclability aids ELV 25% recycled-content target.",
+   "evidenceRefs": [
+    "E2",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Bimetal aluminium knuckle with cast-in steel bearing seat",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "lensId": "process",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "add195",
+    "title": "Aluminium knuckle with cast-in steel bearing seat bimetal",
+    "score": 30.2
+   },
+   "rank": {
+    "score": 57375,
+    "basis": "claim 325K capped at 3x batch median (188K) — unverified figure · payback 30mo ×0.57 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Aluminium knuckle with cast-in steel bearing seat bimetal\" ×0.70"
+   }
+  },
+  {
+   "id": "investment-cast-net-shape",
+   "title": "Investment casting for near-net taper and boss features",
+   "technicalDescription": "Where the ball-joint taper and caliper bosses drive machining cost [E5], an investment (lost-wax) cast GJS-equivalent or low-alloy steel knuckle can hold CT5-6 tolerance and Ra 6-12 µm as-cast, taking those complex features to near-net and slashing CNC content while keeping the current iron/steel metallurgy family and safety function [E1–E4]. Route: injection-moulded wax pattern, ceramic shell dip-and-stucco build, dewax, mould fire, pour ductile iron or low-alloy cast steel, knock-out, cut-off, heat-treat, minimal finish-machine only on the bearing bore. Investment casting reproduces the tapered ball-joint seat close to final, potentially eliminating a machining setup. It also enables slight wall-thinning and rib optimisation for ~8-12% mass trim on this 2.546 kg part [E8][E7] without a material change that would need a wholesale re-validation. This is a same-family process shift complementary to the engine's shell-mould route [W3] but with tighter tolerance for the taper geometry. Best applied if machining, not raw material, is the dominant cost.",
+   "manufacturingImpact": "Requires wax-pattern injection tooling and a ceramic-shell investment line (or outsourced investment foundry). Higher piece-part process cost than sand/shell but offset by machining deletion on taper/bosses. Cluster/tree design governs yield and cost at 60,000/yr. Best economics when several features become as-cast net. Machining collapses to a single bearing-bore setup. Requires PPAP and coupon fatigue re-test for the safety part.",
+   "costSavingTypes": [
+    "process",
+    "weight",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — machining-op deletion and modest mass trim, offset by higher casting cost",
+    "percentage": "machining −25 to −40%; mass −8 to −12%",
+    "annualValue": "€40K-€90K at 60,000 units/yr",
+    "calculationBasis": "Machining setup deletion €0.6-1.2/part + process premium capture; blended vs W3 €1.03",
+    "paybackMonths": 24
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Safety-critical [E4]: investment-cast fatigue must be validated; ceramic inclusions a defect risk at loaded fillets — control shell quality + 100% X-ray. Higher per-part cost than shell moulding means saving depends on machining share being large. Wall-thinning for mass must stay within stiffness/impact limits. Salt-splash corrosion [E6] handled by existing iron coating spec if metallurgy unchanged.",
+   "dfmaPrinciples": [
+    "Net-shape complex features",
+    "Consolidate machining setups",
+    "Design for as-cast tolerance",
+    "Selective wall/rib optimisation"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-16 months",
+   "benchmarkReference": "Investment-cast steel/ductile suspension links used by turbocharger and chassis suppliers (e.g. Doncasters, Signicast) at CT5-6 net-shape",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E4",
+    "E5",
+    "E7",
+    "E8",
+    "W3"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Investment casting tolerance/surface capability data",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "process",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "2.546 kg Cast Iron (Ductile/GJS) via Sand Casting → Machining (CNC) → 2.3 kg Cast Iron (Ductile/GJS) via Investment Casting → Machining (CNC), 60k/yr, Germany",
+    "baselineEur": 12.97,
+    "proposedEur": 36.22,
+    "savingPct": -179.3,
+    "direction": "contradicted",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "rank": {
+    "score": 13650,
+    "basis": "payback 24mo ×0.67 · quality 100 ×1.00 · engine contradicted ×0.35 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "machining-envelope-reduction",
+   "title": "Cut machining premium via reachable features and cutter access",
+   "technicalDescription": "Address the two unpriced DFM findings directly: a surface a standard cutter cannot reach [E10] and an internal corner radius forcing a small cutter [E11]. Redesign the as-cast geometry so all machined datums are accessible with standard tooling and open the internal corner radius to accept a standard-diameter end mill. On the current sand-cast knuckle [E5][E8], adding a cored access relief and increasing the internal fillet radius (e.g. from ~3 mm to ≥6 mm) lets a larger, stiffer cutter run at higher feed, cutting cycle time and tool-change frequency and removing the special-tool line item. Because the change is confined to non-load-path relief geometry and larger fillets — which actually reduce stress concentration — it is favourable, not adverse, to the fatigue/impact validation [E4] and preserves the hub/caliper/ball-joint interfaces [E2][E5]. This is a pure DFM machining-access fix requiring only a pattern revision, deliverable before any process re-source, and it stacks on top of a shell/investment move [W3].",
+   "manufacturingImpact": "Requires only a pattern/core-box modification, not a new process. Larger internal radius and access relief let standard cutters replace special long-reach/small-diameter tools, reducing tooling spend, cycle time and scrap from tool deflection. Increased fillet radius improves as-cast soundness. Change is low-tooling and can be validated with a CNC time study. Must confirm no clash with brake caliper or strut clearance envelope.",
+   "costSavingTypes": [
+    "process",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — removes special-tool premium and shortens cycle; low investment",
+    "percentage": "machining time −5 to −12%",
+    "annualValue": "€25K-€55K at 60,000 units/yr",
+    "calculationBasis": "€0.4-0.9/part cycle+tool saving × 60,000; addresses E10/E11 unpriced findings",
+    "paybackMonths": 6
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Safety-critical [E4]: any geometry change to a load-bearing region needs FEA confirmation, but larger fillets reduce stress concentration so risk is low and typically beneficial for fatigue. Verify caliper/strut/ball-joint clearance unaffected [E2]. Access relief must not create a thin-wall casting defect. No NCAP/NVH or corrosion exposure [E6].",
+   "dfmaPrinciples": [
+    "Design for tool access",
+    "Standard-tool machining",
+    "Generous fillets for stress and castability",
+    "Error-proof reachable datums"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "4-8 months",
+   "benchmarkReference": "unverified: Standard DFM practice at Tier-1 chassis foundries (Gestamp, Bharat Forge) — fillet-radius and access-relief optimisation to eliminate special cutters",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E4",
+    "E5",
+    "E10",
+    "E11",
+    "E8"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Chassis foundry DFM machining-access guidelines",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "lensId": "process",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "rank": {
+    "score": 40800,
+    "basis": "payback 6mo ×1.33 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "commonise-lh-rh-knuckle-family",
+   "title": "Commonise RH/LH and cross-platform knuckle to shared casting family",
+   "technicalDescription": "The RH knuckle [E8] is one of a matched RH/LH pair and likely shares 80%+ geometry with sibling C-segment SUV variants. Rationalise the pattern/tooling family: design a mirror-symmetric RH/LH pair from a single parametric master and share machining fixtures and CNC programmes across both hands and across platform derivatives, driving volume into a single foundry tool family and a single homologation set. At 60,000/yr per hand [E8], consolidating RH+LH and adjacent trims lifts effective annual volume, improving foundry piece-price and amortising the €82,920 shell-mould cheque [W3] faster. Commonising the ball-joint taper and caliper-boss interfaces [E2][E5] to a single validated design lets fatigue/impact evidence [E4] be reused rather than repeated per variant. Note the volume-sensitivity table shows piece price flat at €8.25 from 10k to 500k [E35–E40], indicating the current sand-cast tool is already amortised — so the commonisation value is in machining/fixture/validation and supplier volume leverage rather than casting-tool amortisation. This is a complexity-reduction lever independent of any process change.",
+   "manufacturingImpact": "One parametric CAD master generates both hands, cutting design and validation duplication. Shared CNC fixtures and programmes reduce line changeover and spares. Single supplier tool family improves negotiating position. Requires alignment across programme teams and possibly across two vehicle lines — organisational effort more than technical. Machining datums must be common so one fixture serves both hands via mirroring.",
+   "costSavingTypes": [
+    "commonisation",
+    "complexity",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — volume leverage and validation reuse across hands/variants",
+    "percentage": "3-6% blended unit cost",
+    "annualValue": "€30K-€70K at 60,000 units/yr",
+    "calculationBasis": "Volume-driven piece-price + fixture/validation amortisation across RH+LH+variants",
+    "paybackMonths": 12
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Safety-critical [E4]: shared design must satisfy the more onerous of the variants' load cases — size to worst case to avoid under-design. Interface commonisation [E2] must not compromise any single variant's brake/strut package. Cross-programme governance risk; requires early alignment. Flat volume-price table [E35–E40] means casting-tool amortisation is not the lever — set expectations on machining/commercial gains only.",
+   "dfmaPrinciples": [
+    "Parametric mirror commonisation",
+    "Interface standardisation",
+    "Validation reuse",
+    "Fixture/tooling family sharing"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "6-12 months",
+   "benchmarkReference": "unverified: VW MQB shared chassis-component families across A0/A platforms; common RH/LH knuckle masters standard at Gestamp/Benteler",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E2",
+    "E4",
+    "E5",
+    "E8",
+    "W3",
+    "E35",
+    "E40"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "VW MQB component commonisation strategy",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "lensId": "process",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "psuv027",
+    "title": "Skateboard-shared corner module across BEV SUV variants",
+    "score": 13.9
+   },
+   "rank": {
+    "score": 32933.3,
+    "basis": "payback 12mo ×1.00 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Skateboard-shared corner module across BEV SUV variants\" ×0.86"
+   }
+  },
+  {
+   "id": "resource-mexico-footprint",
+   "title": "Re-source shell-cast knuckle to lower-cost Mexico footprint",
+   "technicalDescription": "The footprint step shows Mexico as the cheapest modelled region for the shell-mould route, taking entitlement €7.22→€5.53 (releases €1.69) [W4]. For this GJS-450 knuckle [E8], re-source the casting + machining package to a qualified Mexican ductile-iron foundry (Nemak/Grupo Industrial Saltillo footprint) that already serves NAFTA OEM chassis. The part function [E1–E5] is location-independent; only supply-chain risk, logistics and duty change. Route unchanged: shell mould cast GJS-450-10, heat-treat, CNC bearing bore/bosses/taper [E5], KTL corrosion coat for salt/splash [E6]. The €1.69/part footprint delta at 60,000/yr is €101K/yr gross before logistics — but the entitlement explicitly excludes ocean freight, duty and supply-chain risk [W4][W5], which for a 2.546 kg safety part shipped Mexico→Germany can consume 30-60% of the gross. Net saving must be computed with landed cost and dual-sourcing risk buffer. Given Germany labour £38-47/hr versus Mexico £6.8-10/hr, the machining-labour content is the real driver — machining-heavy knuckles benefit most from the labour arbitrage.",
+   "manufacturingImpact": "Supplier transfer with full re-PPAP at the new foundry, including fatigue/impact re-validation for the safety classification. Machining-labour arbitrage (Germany £38-47 vs Mexico £6.8-10/hr) is the primary lever. Adds transatlantic logistics, inventory float and duty. Requires dual-source or safety-stock strategy to de-risk a single distant supplier on a safety part. Quality oversight and PPAP travel costs during launch.",
+   "costSavingTypes": [
+    "logistics",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — large gross footprint delta but heavily eroded by freight/duty/risk",
+    "percentage": "gross 20-23%; net 8-14% after landed cost",
+    "annualValue": "€40K-€90K net at 60,000 units/yr",
+    "calculationBasis": "€1.69/part × 60,000 = €101K gross [W4]; less 30-60% logistics/duty/risk",
+    "paybackMonths": 18
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Safety-critical [E4]: distant single-source raises supply-continuity risk — require dual-source or buffer stock. Freight/duty/currency erode the €1.69 gross [W4][W5]; validate with true landed cost. Quality escape harder to contain across an ocean; strong PPAP and SPC needed. Salt-corrosion coating spec [E6] must be replicated. Currency (EUR/MXN/USD) exposure over the 5-year programme.",
+   "dfmaPrinciples": [
+    "Labour-cost footprint optimisation",
+    "Landed-cost total decision",
+    "Dual-source risk mitigation",
+    "Process carry-over"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "Nemak/GIS Mexico ductile-iron chassis castings supplied to European and NAFTA OEMs; typical 8-14% net landed saving on machining-heavy parts",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E4",
+    "E5",
+    "E6",
+    "E8",
+    "W4",
+    "W5"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Mexican ductile-iron foundry chassis supply benchmarks",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "lensId": "process",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "rank": {
+    "score": 39780,
+    "basis": "payback 18mo ×0.80 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "commercial-gap-renegotiation",
+   "title": "Close commercial gap via should-cost renegotiation to engine model",
+   "technicalDescription": "The largest single lever is the commercial gap: supplier quote €10.58 versus engine should-cost €8.25 at the stated specification, releasing €2.33/part [W1]. This is not an engineering change — it is a fact-based renegotiation using the deterministic cost model as the negotiation anchor for this GJS-450 sand-cast knuckle [E5][E8]. Build a clean-sheet should-cost: raw ductile-iron melt (2.546 kg + gating yield loss), pouring/energy, heat-treat, machining minutes at the supplier's regional labour rate, KTL, scrap, SG&A and margin. Present the €8.25 model figure [W1] with line-item transparency. The engine flags that its held-out error band applies most to this commercial step and that it reads low (~21% MAPE) [W1][W5] — so treat €2.33 as a directional ceiling, not a guaranteed win, and set a realistic negotiated target of €1.20-1.80/part. The flat volume-price table [E35–E40] confirms tooling is amortised, strengthening the case that the premium is margin/overhead, not recoverable tooling. Pair with a multi-year price-down (LTA) and volume commitment across the 5-year programme.",
+   "manufacturingImpact": "No manufacturing change — zero engineering risk to the safety part. Requires procurement + cost-engineering to build a defensible should-cost teardown and to run a competitive re-quote or benchmark bid to create leverage. Deliverable within a normal sourcing cycle. Risk is purely commercial (supplier relationship), not technical.",
+   "costSavingTypes": [
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — largest waterfall step, no engineering risk, but bounded by model error",
+    "percentage": "11-22% of unit price",
+    "annualValue": "€72K-€140K at 60,000 units/yr",
+    "calculationBasis": "Negotiated €1.20-1.80/part of the €2.33 gap [W1] × 60,000",
+    "paybackMonths": 1
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Model error band applies most here and reads low [W1][W5] — €2.33 is directional, not a target; over-anchoring risks supplier pushback. On a safety-critical single-source part [E4], aggressive squeezing could jeopardise quality investment or supply continuity — pursue a fair should-cost with LTA rather than a one-off squeeze. Verify the supplier's actual regional labour and energy inputs before asserting the gap.",
+   "dfmaPrinciples": [
+    "Should-cost transparency",
+    "Fact-based negotiation",
+    "Long-term agreement leverage",
+    "Competitive tension"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "3-6 months",
+   "benchmarkReference": "unverified: Standard OEM linear-cost/should-cost renegotiation practice (e.g. aPriori/Tsetinis teardown models used at VW, BMW purchasing)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E5",
+    "E8",
+    "W1",
+    "W5",
+    "E35",
+    "E40"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Should-cost modelling in automotive purchasing",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "lensId": "process",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "rank": {
+    "score": 149704.6,
+    "basis": "payback 1mo ×1.85 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "topology-optimised-casting-lightweighting",
+   "title": "Topology-optimise iron casting to trim unsprung mass in-place",
+   "technicalDescription": "Without changing material or process, run topology + parametric optimisation on the GJS-450 casting to remove non-load-path mass, directly monetising the unsprung-mass premium [E7]. Using the validated load cases (braking, cornering, vertical [E3]) as constraints, an Altair OptiStruct / Tosca topology study identifies material that can be cored out or thinned while holding fatigue and impact margins [E4]. Typical iron-knuckle topology studies free 8-15% mass — on this 2.546 kg part [E8] that is ~0.25-0.38 kg/corner — realised via revised rib layout, cored pockets and optimised strut/ball-joint arm sections [E2]. The change is pattern-only on the existing sand-cast route [E5], so no new process gate is crossed; it stacks on top of any later shell/investment move [W3]. Because casting can form organic ribbing that machining cannot, iron retains a manufacturability advantage for topology-driven shapes. Larger cored fillets from the optimisation also help the machining-access findings [E10][E11]. Deliverable as an incremental pattern revision with re-run fatigue validation.",
+   "manufacturingImpact": "Requires a pattern/core-box revision and re-run of the FE fatigue/durability suite, but no new equipment or supplier. Cored pockets need core-box additions and venting; thinner walls require castability checks (fluidity, shrinkage) via MAGMASOFT. Reduced mass slightly cuts melt/material per part and may shorten machining on removed features. Full physical fatigue rig re-validation mandatory for the safety part before release.",
+   "costSavingTypes": [
+    "weight",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — modest mass and material cut, high value at unsprung location [E7], low process risk",
+    "percentage": "mass −8 to −15%; material −8 to −12%",
+    "annualValue": "€20K-€45K material + unsprung-mass vehicle value at 60,000 units/yr",
+    "calculationBasis": "~0.3 kg × iron cost + gating yield × 60,000; plus unsprung ride/range credit",
+    "paybackMonths": 10
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Safety-critical [E4]: mass removal must not erode fatigue or impact margins — constrain optimisation to validated load cases [E3] and physically rig-test the final shape. Thinner sections risk shrinkage porosity — verify castability. Corner-impact stiffness must be preserved for NCAP-relevant steering integrity. No corrosion or NVH change if geometry stays within package [E6].",
+   "dfmaPrinciples": [
+    "Topology optimisation",
+    "Load-path material only",
+    "Casting-enabled organic ribbing",
+    "Lightweighting at unsprung mass"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "8-12 months",
+   "benchmarkReference": "unverified: Altair-optimised cast-iron and aluminium knuckles across VW/Audi chassis (8-15% mass reduction typical in published OptiStruct case studies)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Unsprung-mass reduction supports fleet CO2/efficiency targets.",
+   "evidenceRefs": [
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E7",
+    "E8",
+    "E10",
+    "E11"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Altair topology optimisation of cast knuckles case study",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "lensId": "process",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "2.546 kg Cast Iron (Ductile/GJS) via Sand Casting → Machining (CNC) → 2.2 kg Cast Iron (Ductile/GJS) via Sand Casting → Machining (CNC), 60k/yr, Germany",
+    "baselineEur": 12.97,
+    "proposedEur": 12.01,
+    "savingPct": 7.4,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "priorArt": {
+    "id": "suv073",
+    "title": "Lamborghini Urus Performante PCCB + Al monobloc caliper — 16 kg total unsprung saving all 4 corners",
+    "score": 14.9
+   },
+   "rank": {
+    "score": 33943.3,
+    "basis": "payback 10mo ×1.09 · quality 100 ×1.00 · engine confirmed ×1.25 · evidence unverified ×0.9 · prior art \"Lamborghini Urus Performante PCCB + Al monobloc caliper — 16 kg total unsprung saving all 4 corners\" ×0.85"
+   }
+  },
+  {
+   "id": "austempered-ductile-iron-downgauge",
+   "title": "Switch to ADI to downgauge sections at equal strength",
+   "technicalDescription": "Emerging-material lever within the iron family: replace GJS-450-10 with Austempered Ductile Iron (ADI, e.g. EN-GJS-800-8 or 900-8) to exploit its ~2× yield strength and superior fatigue and wear resistance, enabling section downgauging for mass reduction [E7] while keeping the sand-cast + machine route [E5] essentially intact. Route: sand cast the ductile-iron base [E8], then austemper (austenitise ~900°C, quench into salt bath at 250-400°C, isothermal hold) to form ausferrite, then machine [E5]. ADI at ~800-900 MPa UTS lets ribs and arm sections thin by 10-20% at equal load capability for braking/cornering/vertical loads [E3], trimming ~0.3-0.5 kg on this 2.546 kg part [E8]. ADI's high fatigue strength and damping suit the safety-critical fatigue validation [E4], and its wear resistance benefits the ball-joint taper interface [E2][E5]. The added austemper heat-treat cost partially offsets the material/mass saving, so net value comes from the unsprung-mass credit [E7]. ADI is proven in crankshafts, control arms and knuckles (GM, Hyundai suspension parts).",
+   "manufacturingImpact": "Adds an austempering (salt-bath) heat-treat step — either in-house line or specialist heat-treater (e.g. Applied Process). Machinability of ADI is lower than GJS-450, so machine before austemper (machine-then-heat-treat sequence) to protect tool life; final grinding on the bore may be needed. Sand-casting tooling and pattern carry over. Downgauged sections require castability and fatigue re-validation. Section thinning must respect fluidity limits.",
+   "costSavingTypes": [
+    "weight",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — mass cut via downgauge, partly offset by austemper cost",
+    "percentage": "mass −12 to −20%",
+    "annualValue": "€30K-€60K at 60,000 units/yr incl. unsprung value",
+    "calculationBasis": "~0.4 kg × unsprung value + material saving less austemper cost ~€0.5-0.9/part",
+    "paybackMonths": 16
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Safety-critical [E4]: ADI fatigue and impact behaviour differ from GJS-450 — full re-validation with ADI coupons required; process-window control (austemper time/temp) is critical to avoid brittle or retained-austenite phases. Machine-before-heat-treat sequence must hold final tolerance post-transformation (dimensional growth ~0.3%). Downgauged walls risk casting defects. Corrosion coating [E6] unchanged. Heat-treat supply capacity must be secured.",
+   "dfmaPrinciples": [
+    "Higher-strength material enables downgauge",
+    "Machine-before-heat-treat sequencing",
+    "Lightweighting at unsprung mass",
+    "Same casting tooling carry-over"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "unverified: ADI (GJS-800/900) used in GM and Hyundai suspension knuckles and control arms; Applied Process ADI chassis-part case studies show 10-20% downgauge",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Mass reduction supports fleet CO2; ADI keeps iron closed-loop recyclability for ELV.",
+   "evidenceRefs": [
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E7",
+    "E8"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Austempered Ductile Iron in automotive chassis applications",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "process",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "2.546 kg Cast Iron (Ductile/GJS) via Sand Casting → Machining (CNC) → 2.1 kg Cast Iron (Ductile/GJS) via Sand Casting → Heat Treatment (batch) → Machining (CNC), 60k/yr, Germany",
+    "baselineEur": 12.97,
+    "proposedEur": 12.85,
+    "savingPct": 0.9,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "priorArt": {
+    "id": "add269",
+    "title": "DRL light-guide from machined PMMA to moulded PC light pipe",
+    "score": 14.5
+   },
+   "rank": {
+    "score": 37100.9,
+    "basis": "payback 16mo ×0.86 · quality 100 ×1.00 · engine confirmed ×1.25 · evidence unverified ×0.9 · prior art \"DRL light-guide from machined PMMA to moulded PC light pipe\" ×0.85"
+   }
+  }
+ ]
+}

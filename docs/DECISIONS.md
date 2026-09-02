@@ -3395,3 +3395,69 @@ pass — there was no point hand-curating a floor while the ceiling did not exis
    commodities (Driveline, BIW, Interior, Exterior) still have an empty H3
    future lane. Neither was papered over: the numbers above are the honest state
    after one pass, and the ratchets are what force the next one.
+
+## 65. Prism depth pass: the pipeline learns to tell a deep idea from a shallow one
+
+**Context (Sept 2026).** Four live Prism runs (hood bracket, steering knuckle,
+stator lamination, 800V EDU — 63 ideas, kept under `benchmark/prism-runs/`)
+were read closely. Every idea scored `qualityScore` 100, because the score
+counted filled fields. Engine verdicts existed for 0–53% of a batch and never
+for assembly-level ideas, because only a material/process substitution was
+expressible. No idea's annual value was ever recomputed from its own stated
+basis. The critique panel had never run on a Prism batch — it sat behind an
+off-by-default toggle. A two-lens run read like a full study.
+
+**Decisions.**
+
+1. **`qualityScore` is technical depth, not completeness** (`idea-depth.mjs`).
+   Five deterministic criteria — a specific grade or standard named, ≥2
+   quantities with units plus a stated change, a validation activity, a DFM
+   principle, evidence refs that RESOLVE to dossier lines — plus the five
+   engineering sections (mechanism, specDeltas, validationPlan,
+   dfmImplications, costBridge). 16+16+16+16+16+20. 100 is unreachable without
+   all six. Flags still cost 8 each. The rubric checks whether the INGREDIENTS
+   of a deep idea are present; whether they are right is the engine's, the
+   arithmetic check's and the panel's job.
+2. **Every stated annual value is recomputed from its stated basis**
+   (`idea-arith.mjs`). Three statuses and only three: consistent (±15%),
+   mismatch (signed delta against the nearest bound, a visible flag and a
+   ×0.85/×0.7 rank factor), unparsed (a limitation of the reader, never a
+   verdict). The parser's rules are listed in the file header; each exists
+   because a real basis string broke the rule before it. Programme, lifetime
+   and NRE totals are refused rather than multiplied by a volume.
+3. **Four kinds of engine check** (`engine-idea-check.mjs`): substitution/mass
+   (as before), tolerance (same part, relaxed drawing drivers), assembly
+   (part-count / joining through the DFA time model at the region's labour
+   rate plus illustrative fastener piece prices — labour and fastener content
+   ONLY, the basis says so), harness. **Every null now carries
+   `engineCheckReason`.** A blank never again reads as a pass.
+4. **Evidence refs must resolve.** The validator receives the dossier's real
+   line ids (parsed from the evidence text the model was shown); a well-formed
+   id for a line that does not exist is dropped and flagged.
+5. **Grades are a dictionary, not a vibe.** The dossier gains a citable
+   `catalogue` section (same-family grades the engine can price, with
+   density/€ anchors); the validator resolves any named designation against
+   the catalogue and flags `grade-not-in-library`. The resolver learned sheet
+   designations (CR340LA, HC420LA, DC04, S420MC, CP800, Usibor …) it used to
+   return null for.
+6. **Keep eight ideas per lens; demand the five engineering sections** (the
+   user's explicit choice over fewer ideas). The prompt states what will be
+   checked.
+7. **Critique pass by default on Prism runs.** `deepMode: 'critique'` runs a
+   four-persona panel (the fourth chair is a test & validation engineer who
+   asks what would PROVE the idea) plus one small-model repair; no tournament,
+   no Elo stamps, so ranking is untouched by soft judgement. `'full'` is the
+   old deep mode; `'off'` opts out. Ordinary (non-Prism) runs are unchanged.
+8. **Lens coverage is stamped** (`validation.lenses`: run / skipped / empty /
+   ideas per lens) and printed in the results header. Not selecting a lens is
+   a stated limitation of the batch, not an invisible one.
+9. **Offline eval.** `ideation-eval.mjs --score <dir>` re-scores saved runs on
+   the deterministic axes; `benchmark/ideation-results-prism-before.json` is
+   the yardstick. It measures what the checks reveal about existing output,
+   not the effect of a prompt change on generation — that needs a live arm.
+
+**What the before-score says about the 63 saved ideas** (depth rubric applied
+retroactively, no sections existed yet): depth 32–80, median 64; arithmetic
+40 consistent / 16 mismatch / 7 unparsed; named grade 33 of 63; engine
+checked 16 of 63, 0 nulls with a reason. Those are the numbers a live run
+after this change has to beat.

@@ -1,0 +1,1564 @@
+{
+ "part": "edu",
+ "annualVolume": 80000,
+ "capturedAt": "2026-08",
+ "evidenceIds": [
+  "E1",
+  "E2",
+  "E3",
+  "E4",
+  "E5",
+  "E6",
+  "E7",
+  "E8",
+  "E9",
+  "E10",
+  "E11",
+  "E12",
+  "E13",
+  "E14",
+  "E15",
+  "E16",
+  "E17",
+  "E18",
+  "E19",
+  "E20",
+  "E21",
+  "E22",
+  "E23",
+  "E24",
+  "E25",
+  "E26",
+  "E27",
+  "E28",
+  "E29",
+  "E30",
+  "E31",
+  "E32",
+  "E33",
+  "E34",
+  "E35",
+  "E36"
+ ],
+ "lensesAvailable": [
+  "assembly-architecture",
+  "subassembly-block",
+  "part-line"
+ ],
+ "lensesRun": [
+  "assembly-architecture",
+  "subassembly-block",
+  "part-line"
+ ],
+ "validation": {
+  "total": 24,
+  "kept": 24,
+  "dropped": 0,
+  "flagged": 16,
+  "avgQuality": 100,
+  "intraBatchMerged": 2,
+  "diversity": {
+   "score": 84.8,
+   "nearDupPairs": 9
+  },
+  "engineChecks": {
+   "checked": 0,
+   "confirmed": 0,
+   "contradicted": 0,
+   "unexpressible": 22
+  }
+ },
+ "ideas": [
+  {
+   "id": "grain-boundary-diffusion-dy-lean-magnets",
+   "title": "Grain-boundary-diffusion Dy-lean magnets cut heavy rare-earth 44% line",
+   "technicalDescription": "The 12× NdFeB N42 magnet segments at €214.68 are 44% of the whole motor (E9, E35). The dominant cost driver inside them is heavy rare-earth (Dy/Tb) added in bulk to hold coercivity at the 180°C rotor operating point. Replace bulk-alloyed N42SH-equivalent grade with a grain-boundary-diffusion (GBD) processed magnet: Dy/Tb is diffused only along grain boundaries from a surface source, delivering equivalent HcJ at roughly one-third the heavy-RE content. At Dy₂O₃ 275 €/kg and Tb₄O₇ 1,040 €/kg, cutting heavy-RE loading ~60-70% removes a disproportionate share of the €214.68. GBD is proven at production scale (Shin-Etsu, TDK, Proterial). This pairs naturally with the segmented-magnet cooling precedent — better cooling lowers the coercivity demand, letting GBD go leaner still. Requires re-validation of demag margin at 16,000 rpm / short-circuit fault and thermal soak, plus BH-curve re-characterisation for the FEA torque-ripple model (E33). Magnet geometry, V-slot and rotor lamination are unchanged, so tooling is carried over. Qualify dual-source to hedge rare-earth volatility (E35).",
+   "manufacturingImpact": "No change to rotor stamping, V-slot geometry or magnet insertion — GBD is a magnet-supplier process, so the EDU line is untouched. Incoming inspection adds a coercivity/demag audit per lot. Requires re-running rotor demagnetisation FEA and a short-circuit + high-temp soak validation campaign. Dual-sourcing GBD-capable suppliers (Shin-Etsu, TDK, Proterial, VAC) protects against single-source and rare-earth spikes. Magnet drawing revised for HcJ spec and diffusion process note; PPAP re-run on the rotor sub-assembly.",
+   "costSavingTypes": [
+    "material",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — attacks the single largest cost line via its most expensive constituent",
+    "percentage": "18-28% of magnet line",
+    "annualValue": "€7.7M–€12.0M at 200,000 units/yr",
+    "calculationBasis": "€214.68 magnet line × ~20% avg net magnet cost reduction from ~60% heavy-RE cut × 200,000 units",
+    "paybackMonths": 8
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Primary risk is irreversible demagnetisation under short-circuit fault or thermal soak if GBD coercivity margin is mis-specified — an ASIL-B torque-security concern (E32). Mitigate with worst-case fault FEA, over-temperature demag testing, and a coercivity floor in the incoming spec. Leaner heavy-RE can shift BH temperature coefficient, risking order-24 torque ripple drift (E33); re-characterise BH curve and re-tune skew. EU Battery/ELV recycled-content pressure favours lower-RE designs. Dual-source qualification de-risks rare-earth price volatility.",
+   "dfmaPrinciples": [
+    "Minimise high-cost material content",
+    "Design for material substitution without geometry change",
+    "Carry-over tooling",
+    "Design for supply-risk resilience"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "unverified: Toyota/Aisin & Nidec use GBD magnets to cut Dy ~50-60%; Shin-Etsu production GBD reduces heavy-RE ~60% at equal HcJ",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "EU Battery Regulation 2025 and ELV recycled-content targets favour reduced heavy-rare-earth designs.",
+   "evidenceRefs": [
+    "E3",
+    "E9",
+    "E15",
+    "E32",
+    "E33",
+    "E35"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Shin-Etsu grain boundary diffusion NdFeB heavy-RE reduction",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "teardown",
+     "title": "Toyota/Nidec traction motor Dy-reduction magnet analysis",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "lensId": "assembly-architecture",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "add107",
+    "title": "Ce-substituted NdFeB magnets to cut rare-earth content",
+    "score": 21.6
+   },
+   "rank": {
+    "score": 4426228.8,
+    "basis": "claim 9.8M capped at 3x batch median (6.2M) — unverified figure · payback 8mo ×1.20 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Ce-substituted NdFeB magnets to cut rare-earth content\" ×0.78"
+   }
+  },
+  {
+   "id": "reduce-magnet-segment-count-cooling-enabled",
+   "title": "Cut magnet segment count from 12 by improving rotor cooling",
+   "technicalDescription": "The rotor uses 12× magnet segments (E9) — segmentation exists purely to break the eddy-current path and limit magnet self-heating at 16,000 rpm with 2 kHz PWM harmonics (E29, E33). Each additional segmentation cut adds wire-EDM/slice cost, handling and adhesive-bonding interfaces per pole. If the oil-spray rotor cooling (E30) is upgraded to a rotor-shaft oil-fed sleeve/channel (transferring the validated rotor-sleeve cooling precedent), magnet operating temperature drops, allowing coarser segmentation — e.g. 12→8 or 12→6 segments per pole set — because the eddy-loss thermal ceiling is relaxed. Fewer cuts = fewer slicing operations, fewer bond lines, faster magnetise-and-insert. This is an architecture move at the rotor sub-assembly: it removes interfaces that exist only because two (many) magnet pieces exist. Combined with GBD magnets it compounds — cooler rotor + boundary-diffused coercivity lets both levers relax. Validation: re-run coupled electromagnetic-thermal FEA for eddy loss vs segment count, verify demag margin, and confirm bond-line shear at 16,000 rpm centrifugal load and 300,000 km fatigue (E32, E34).",
+   "manufacturingImpact": "Fewer wire-EDM/dicing passes per magnet blank cuts magnet-supplier machining time and adhesive metering per pole. Rotor magnetise-and-insert station handles fewer, larger segments — shorter cycle time and fewer pick-place moves. Requires the rotor oil-sleeve cooling feature (added machining/channel in shaft or rotor pack). Adhesive cure and dispensing recipe re-qualified for larger bond area. New coupled thermal-EM FEA sign-off and centrifugal spin test at 16,000 rpm plus over-speed.",
+   "costSavingTypes": [
+    "process",
+    "complexity",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — reduces per-segment machining and handling on the 44% magnet line",
+    "percentage": "6-12% of magnet line",
+    "annualValue": "€2.6M–€5.2M at 200,000 units/yr",
+    "calculationBasis": "€214.68 magnet line × ~9% avg from ~40% fewer segmentation cuts + faster insert × 200,000, net of rotor cooling feature cost",
+    "paybackMonths": 14
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Coarser segmentation raises eddy-current loss and local magnet temperature — if cooling under-delivers, demag risk breaches ASIL-B torque security (E32) and NVH/loss targets slip. Mitigate with coupled EM-thermal FEA, oil-flow CFD and instrumented rotor thermocouple validation. Larger bond lines must survive 16,000 rpm centrifugal + thermal-cycle fatigue over 300,000 km (E32, E34); qualify adhesive shear and add retention feature if margin is thin. Cooling-feature machining adds cost that must net positive.",
+   "dfmaPrinciples": [
+    "Eliminate interfaces that exist only because parts are split",
+    "Reduce operation count",
+    "Integrate cooling function into rotor architecture",
+    "Design for centrifugal-load robustness"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "18-24 months",
+   "benchmarkReference": "unverified: Rotor oil-sleeve cooling precedent (validated ★85); Lucid/Tesla plaid rotor cooling enabling reduced magnet segmentation",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E3",
+    "E9",
+    "E29",
+    "E30",
+    "E32",
+    "E33",
+    "E34"
+   ],
+   "evidenceSources": [
+    {
+     "type": "patent",
+     "title": "Rotor shaft oil-fed cooling sleeve for PMSM eddy-loss control",
+     "confidence": "low",
+     "year": 2022
+    },
+    {
+     "type": "teardown",
+     "title": "Lucid Air drive unit rotor cooling teardown",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "lensId": "assembly-architecture",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "cool047",
+    "title": "Rotor sleeve cooling channel replaces magnet eddy derating",
+    "score": 16.7
+   },
+   "rank": {
+    "score": 2294082,
+    "basis": "payback 14mo ×0.92 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Rotor sleeve cooling channel replaces magnet eddy derating\" ×0.83"
+   }
+  },
+  {
+   "id": "integrate-water-jacket-housing-hpdc",
+   "title": "Consolidate 3-part housing into single HPDC water-jacket casting",
+   "technicalDescription": "Housing is €47.67 / 9.8% across 3 part instances / 9.8 kg (E5, E11), with the water-jacket housing the €27.39 line (E11). A 3-piece housing implies a jacket shell, an end/cover interface and joining hardware — each bolted or sealed interface exists only because the parts are separate. Consolidate to a single high-pressure die-cast A380 (2,850 €/t) housing with a cast-in spiral water jacket produced by lost-core or cast-in tube, eliminating one machined interface, its O-ring/gasket groove and its fastener set. Target 3 instances → 1 casting plus one machined bearing-carrier cover. This deletes sealing surfaces (a warranty leak-path), joining labour at German rates (£38-47/hr), and stock-keeping of two part numbers. Machine only the bearing bores, stator-fit bore and coolant ports in one fixturing. Cast-in-jacket is standard practice (Bosch, ZF, Valeo eAxle housings). Validate: coolant pressure/burst test, thermal-cycle leak, stone-chip and salt-spray on the exterior (E32) — HPDC A380 needs cataphoretic/powder coat or Mg-free alloy plus sealing for corrosion.",
+   "manufacturingImpact": "Replaces multi-piece housing assembly (align, seal, bolt, leak-test each joint) with one HPDC casting cell plus a single CNC fixturing for bores and ports. Removes one gasket/O-ring, ~6-10 fasteners and one leak-test interface. HPDC tool is a significant new investment (multi-slide die + lost core or cast-in tube). Coolant passage moves from assembled channel to cast passage — one burst/leak test instead of several. Reduces part numbers and inbound logistics from 3 to ~2. Coating line unchanged if cataphoretic already present.",
+   "costSavingTypes": [
+    "complexity",
+    "process",
+    "tooling",
+    "warranty",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — attacks the 9.8% housing block via interface deletion and joining labour",
+    "percentage": "15-25% of housing block",
+    "annualValue": "€1.4M–€2.4M at 200,000 units/yr",
+    "calculationBasis": "€47.67 housing block × ~20% (deleted joining labour, sealing, one part number) × 200,000, net of amortised HPDC tool",
+    "paybackMonths": 22
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Cast-in water jacket risks porosity-driven coolant leak into the stator cavity — a durability failure over 15yr/300,000 km (E32). Mitigate with vacuum-assisted HPDC, X-ray/CT porosity gating and 100% burst-leak test. Exterior must survive salt-spray + stone-chip (E32): specify low-Cu A380 or apply cataphoretic + topcoat, avoid Cr6 per REACH. Single casting concentrates NVH transfer path — verify order-24 and 2 kHz radiated noise unchanged (E33) via modal/FRF test. Large die = high NRE; justify on 200,000×5-7yr volume.",
+   "dfmaPrinciples": [
+    "Part-count reduction via consolidation",
+    "Eliminate sealing interfaces",
+    "Integrate cooling channel into casting",
+    "Single-fixturing machining",
+    "Design for corrosion durability"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "18-30 months",
+   "benchmarkReference": "unverified: ZF/Bosch/Valeo eAxle single-HPDC housings with cast-in water jacket; Tesla drive-unit integrated housing",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "REACH/SVHC restricts Cr6 coatings — specify cataphoretic or Cr-free topcoat for the exterior corrosion requirement.",
+   "evidenceRefs": [
+    "E5",
+    "E11",
+    "E32",
+    "E33",
+    "E36"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Bosch eAxle integrated housing with cast-in cooling jacket",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "teardown",
+     "title": "Munro Tesla drive unit housing consolidation analysis",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "lensId": "assembly-architecture",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "pt022",
+    "title": "Electronic LSD (eLSD) integrated die-cast housing — actuator + oil bath in 1 casting",
+    "score": 12.8
+   },
+   "rank": {
+    "score": 894672,
+    "basis": "payback 22mo ×0.71 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Electronic LSD (eLSD) integrated die-cast housing — actuator + oil bath in 1 casting\" ×0.87"
+   }
+  },
+  {
+   "id": "integrate-busbar-into-hairpin-crown",
+   "title": "Weld phase busbars directly into hairpin crown, delete connection block",
+   "technicalDescription": "Power connection is €11.22 / 2.3% across 3 instances / 0.66 kg (E7, E13) — three phase busbars (E13) that exist as a separate sub-assembly only to bridge from the hairpin winding terminals (E4, E10) to the inverter interface. In a hairpin stator the phase-lead crown already presents copper terminals; a discrete busbar block adds a copper part, an insulation carrier, and two joint interfaces (busbar-to-hairpin and busbar-to-terminal). Integrate by forming the phase interconnect directly from the hairpin crown geometry and laser-welding a short integrated bus tab, deleting the standalone busbar carrier and one joint per phase. Copper is 11,700 €/t and Hairpin Cu profile 14.5 €/kg, so mass and joint count both fall. This is an interface-elimination move: the busbar exists because the winding and inverter are two parts — fold the interconnect into the winding crown so only the inverter terminal joint remains. Validate: laser-weld peel/pull strength, high-voltage isolation (800V, partial-discharge), thermal cycling of the joint, and vibration endurance to 300,000 km (E32). NVH unaffected (E33).",
+   "manufacturingImpact": "Removes the busbar carrier moulding, its assembly/clip station and one laser-weld/ultrasonic joint per phase. Hairpin crown forming tool revised to add integrated bus tabs. One weld interface per phase deleted (3 joints saved). Fewer part numbers into the stator line and less inbound logistics. Requires updated welding fixture and HV isolation test recipe. Insulation strategy shifts to conformal coating/paper on the crown rather than a moulded carrier.",
+   "costSavingTypes": [
+    "material",
+    "complexity",
+    "process",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — small block but high fraction removable via interface deletion",
+    "percentage": "25-40% of power-connection block",
+    "annualValue": "€560K–€900K at 200,000 units/yr",
+    "calculationBasis": "€11.22 block × ~30% (deleted carrier + 3 joints + copper mass) × 200,000",
+    "paybackMonths": 16
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Integrated bus tabs must hold 800V isolation and partial-discharge limits with tighter creepage/clearance than a moulded carrier provided — mitigate with conformal HV coating and PD test per lot. Weld-joint fatigue at the winding crown under thermal + vibration must survive 300,000 km (E32); qualify pull-strength and cyclic testing. ASIL-B torque path depends on phase continuity (E32) — 100% resistance/continuity test each joint. Loss of a discrete busbar reduces field-repair flexibility; acceptable at module-replace service model.",
+   "dfmaPrinciples": [
+    "Eliminate interface parts between winding and inverter",
+    "Reduce joint count",
+    "Integrate interconnect into existing crown geometry",
+    "Design for HV isolation without added carrier"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "unverified: BMW Gen5 & Hyundai E-GMP hairpin stators integrate phase interconnect into the weld crown, minimising discrete busbars",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E4",
+    "E7",
+    "E10",
+    "E13",
+    "E32",
+    "E33"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "BMW Gen5 hairpin stator interconnect analysis",
+     "confidence": "low",
+     "year": 2021
+    },
+    {
+     "type": "patent",
+     "title": "Integrated phase busbar formed from hairpin crown",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "assembly-architecture",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "bev113",
+    "title": "Hairpin winding stator replaces round-wire winding, improving slot fill from 42% to 75%",
+    "score": 13.5
+   },
+   "rank": {
+    "score": 414050.8,
+    "basis": "payback 16mo ×0.86 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Hairpin winding stator replaces round-wire winding, improving slot fill from 42% to 75%\" ×0.86"
+   }
+  },
+  {
+   "id": "replace-resolver-with-inductive-sensor",
+   "title": "Swap resolver for PCB inductive position sensor",
+   "technicalDescription": "Sensing is €9.5 / 2% (E8, E14), the resolver being the single line at bought-part €9.50 (E14). A wound resolver is a legacy component: copper windings, a laminated stator/rotor, precision air-gap alignment, and a dedicated RDC (resolver-to-digital converter) in the inverter. Replace with a printed-circuit inductive position sensor (e.g. Renesas/Microchip IPS, ZF/Melexis inductive rotor-position sensors) — a stamped/etched copper coil on a thin PCB target, no laminations, no windings, tolerant of air-gap and eccentricity, and directly digital so the RDC circuit deletes from the inverter (E27, unpriced). Bought-part cost of an inductive sensor is typically 30-50% below a resolver, and it removes a precision-alignment station. It is ASIL-B/D capable with dual-channel redundancy for torque security (E32). This is an architecture move at the sensing sub-assembly: it collapses the resolver + RDC into one PCB sensor and frees inverter PCB area (the deleted RDC is on the not-costed inverter row, so that portion is unpriced per E27). Validate accuracy vs order-24 ripple mapping (E33), EMC at 2 kHz PWM, and temperature drift to 180°C.",
+   "manufacturingImpact": "Deletes the resolver's precision air-gap alignment/calibration station and its wound component supply. Inductive sensor mounts as a flat PCB with relaxed positional tolerance, cutting assembly time and scrap from mis-alignment. Removes the RDC circuit from the inverter PCB (unpriced, E27), freeing board area and one supply part. Requires new sensor calibration routine, EMC re-validation against 2 kHz PWM, and firmware update to the motor controller for angle decoding. One bought-part number swapped, simpler inbound logistics.",
+   "costSavingTypes": [
+    "material",
+    "complexity",
+    "process",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — removes most of a 2% block plus unpriced inverter RDC deletion",
+    "percentage": "30-45% of sensing block",
+    "annualValue": "€570K–€850K at 200,000 units/yr",
+    "calculationBasis": "€9.5 sensing block × ~35% bought-part delta + alignment labour saved × 200,000; inverter RDC deletion unpriced per E27",
+    "paybackMonths": 10
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Position-sensing accuracy is safety-critical (ASIL-B torque security, E32) — inductive sensors must be qualified dual-channel with plausibility checks; validate accuracy across 0-16,000 rpm and 180°C. Angle error can excite order-24 torque ripple and 2 kHz whine (E33); characterise error harmonics and compensate in firmware. EMC susceptibility to PWM fields must be proven (shielded PCB, differential coils). Temperature drift and long-term stability over 300,000 km require accelerated-life testing. Supplier maturity is high (Renesas, Melexis, ZF).",
+   "dfmaPrinciples": [
+    "Replace precision-aligned assembly with tolerance-robust sensor",
+    "Collapse sensor + converter into one element",
+    "Reduce part count",
+    "Design for functional-safety redundancy"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "12-20 months",
+   "benchmarkReference": "unverified: Renesas/Melexis inductive position sensors in VW MEB & GM Ultium class inverters replacing resolvers; ZF inductive rotor position sensor",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "ISO 26262 ASIL-B torque-security compliance achievable via dual-channel inductive sensing.",
+   "evidenceRefs": [
+    "E8",
+    "E14",
+    "E27",
+    "E32",
+    "E33"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Renesas inductive position sensor for traction motors",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "industry_report",
+     "title": "Melexis/ZF inductive vs resolver cost-benefit study",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "assembly-architecture",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "add134",
+    "title": "Inductive position sensor replacing resolver on EDU",
+    "score": 36.2
+   },
+   "rank": {
+    "score": 414769.1,
+    "basis": "payback 10mo ×1.09 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Inductive position sensor replacing resolver on EDU\" ×0.70"
+   }
+  },
+  {
+   "id": "scalable-stator-stack-family-tooling-amortise",
+   "title": "Commonise one stator diameter, vary stack length across variants",
+   "technicalDescription": "Stator lamination stack is €30.63 / 6.3% / 12 kg (E6, E12) using Si Steel M270 (2,400 €/t, lam 3.4 €/kg). The dominant cost lever at 200,000/yr over 5-7 years (E36) is tooling amortisation and the per-variant NRE of separate lamination dies. Adopt a scalable-length family architecture: fix the stator/rotor outer diameter and slot geometry, and vary only stack length to cover the D-segment power spread (e.g. 200-300 kW variants) — exactly the Audi PPE / Mercedes eATS 2.0 / XPeng SEPA2.0 route where ~80% of parts are shared. One progressive lamination die, one winding-crown tool, one rotor stamping die serve all variants; stack count changes on the same tooling. This commonisation move spreads a single tool set across far higher cumulative volume, lowering amortised piece price on the lamination stack, hairpin winding tool and rotor die simultaneously. It also cuts spare-part and PPAP proliferation. Validate: electromagnetic scaling holds torque/ripple targets at each length (E33), and thermal derating maps re-computed per stack (E30). No new material or process — purely architecture and tooling strategy.",
+   "manufacturingImpact": "Single lamination progressive die, single hairpin former and single rotor die run all power variants by changing stack height only — massive tooling NRE avoidance versus per-variant dies. Line changeover between variants is a stack-count parameter, not a re-tool. Reduces active part numbers, PPAP submissions and spares inventory. Requires up-front architecture lock and a common outer-diameter decision across the programme's variant plan. Winding insertion parameterised by stack length. One coating/impregnation recipe scales across lengths.",
+   "costSavingTypes": [
+    "tooling",
+    "commonisation",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — amortises stator/rotor/winding tooling across the whole variant family",
+    "percentage": "10-18% of stator + amortised winding/rotor tooling",
+    "annualValue": "€2.0M–€4.0M/yr equivalent NRE + piece-price at 200,000 units/yr",
+    "calculationBasis": "Avoided per-variant die NRE (2-3 variants × ~€3-5M dies) amortised over 200,000×5-7yr + lower per-piece tool cost on €30.63 + €81.53 lines",
+    "paybackMonths": 18
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Fixing one diameter forces a compromise efficiency/NVH optimum across variants — a longer stack may shift order-24 ripple or 2 kHz whine at certain operating points (E33); mitigate with per-length skew and control-map tuning. Over-constraining diameter can leave the top variant thermally limited (E30); verify continuous-power derating at max stack. Programme risk if variant plan changes mid-cycle. Requires cross-programme governance to hold the common architecture; strong precedent (Audi PPE, Mercedes eATS 2.0) de-risks feasibility.",
+   "dfmaPrinciples": [
+    "Commonisation across variants",
+    "Tooling amortisation via shared architecture",
+    "Parameterise by single dimension (stack length)",
+    "Reduce part-number proliferation"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "24-36 months (architecture-set)",
+   "benchmarkReference": "unverified: Audi PPE, Mercedes eATS 2.0, XPeng SEPA2.0 — one diameter, varied stack length, ~80% shared parts",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E6",
+    "E10",
+    "E12",
+    "E30",
+    "E33",
+    "E36"
+   ],
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "Audi PPE scalable electric drive platform",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "oem_press_release",
+     "title": "Mercedes eATS 2.0 scalable motor family",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "assembly-architecture",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "luxpr033",
+    "title": "Li-Auto rear motor commonisation across L6/L7/L8/L9: 4 SKUs → 1 base unit",
+    "score": 21.5
+   },
+   "rank": {
+    "score": 1441260,
+    "basis": "payback 18mo ×0.80 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Li-Auto rear motor commonisation across L6/L7/L8/L9: 4 SKUs → 1 base unit\" ×0.79"
+   }
+  },
+  {
+   "id": "integrated-cast-rotor-endplates-balance",
+   "title": "Cast rotor end-plates with integral balancing bosses",
+   "technicalDescription": "The rotor block is €301.53 / 61.9% across 16 part instances (E3, E9, E15). Beyond magnets, the instance count implies discrete rotor end-plates, balance rings/weights, retaining rings and shaft interface parts — each adding a machined component and a stack-and-fix interface. Consolidate the non-magnet rotor hardware: replace separate steel end-plates + bolted balance rings with die-cast/forged aluminium end-plates that integrate the magnet-retention shoulder and pre-formed balancing bosses (material removed at balance, not weights added). This cuts part instances, deletes retaining-ring and balance-weight interfaces, and reduces rotor mass — directly benefiting inertia for launch response (E34). Lower rotating mass also eases the centrifugal load on magnet bond lines. Aluminium (2,700 €/t) end-plates replace heavier steel plus bolt-on weights. This is an architecture move within the 16-instance rotor: interfaces that exist only because retention and balancing are separate parts are folded into one cast plate. Validate: burst/over-speed at 16,000 rpm (E29), balance grade G2.5 achievable by material removal, magnet-retention under centrifugal + thermal cycling (E32), and rotor-dynamic critical speed unchanged for NVH (E33).",
+   "manufacturingImpact": "Replaces multiple machined end-plates, retaining rings and bolt-on balance weights with two cast/forged aluminium end-plates carrying integral retention shoulders and balance bosses. Balancing shifts from adding weights to milling material off the bosses — a faster, cleaner balance operation. Fewer rotor-stack part numbers and fewer fastening/staking steps. Requires new end-plate casting/forging tool and a spin-balance cell recipe change. Over-speed burst validation per lot sampling. Rotor stack press/retain sequence simplified.",
+   "costSavingTypes": [
+    "complexity",
+    "weight",
+    "process",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — attacks non-magnet rotor part count and inertia within the 61.9% block",
+    "percentage": "4-8% of non-magnet rotor content",
+    "annualValue": "€900K–€1.8M at 200,000 units/yr",
+    "calculationBasis": "~€87 non-magnet rotor content (€301.53−€214.68) × ~15% part-count/mass reduction × 200,000, net of end-plate tooling",
+    "paybackMonths": 20
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Rotor integrity is ASIL-B critical (E32): aluminium end-plates must retain magnets under 16,000 rpm centrifugal + thermal cycling — validate burst margin ≥1.3× over-speed and bond/retention fatigue to 300,000 km. Material-removal balancing must reliably reach G2.5 without weakening the plate. Changing rotor mass/stiffness shifts critical speeds and could alter order-24 ripple/NVH (E33) — re-run rotor-dynamic analysis. Aluminium-steel galvanic contact at shaft needs isolation/coating. New casting tool NRE must clear on volume.",
+   "dfmaPrinciples": [
+    "Consolidate retention + balancing into one part",
+    "Reduce rotating mass for inertia",
+    "Balance by material removal not addition",
+    "Design for over-speed integrity"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "18-28 months",
+   "benchmarkReference": "unverified: Tesla/Lucid rotor assemblies use integrated cast end-plates with milled balance features; BMW Gen5 rotor mass optimisation",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E3",
+    "E9",
+    "E15",
+    "E29",
+    "E32",
+    "E33",
+    "E34"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Lucid/Tesla rotor end-plate and balancing analysis",
+     "confidence": "low",
+     "year": 2022
+    },
+    {
+     "type": "patent",
+     "title": "Integrated rotor end-plate with balance bosses",
+     "confidence": "low",
+     "year": 2021
+    }
+   ],
+   "lensId": "assembly-architecture",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "add111",
+    "title": "Two-plane automated rotor balancing to cut rework scrap",
+    "score": 15.1
+   },
+   "rank": {
+    "score": 657603.6,
+    "basis": "payback 20mo ×0.75 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Two-plane automated rotor balancing to cut rework scrap\" ×0.85"
+   }
+  },
+  {
+   "id": "copper-halbach-lite-magnet-mass-reduction",
+   "title": "Optimise V-magnet geometry to cut magnet mass 8-12%",
+   "technicalDescription": "Magnets are 44% of the motor and the board-level supply risk (E9, E35). Beyond material grade, magnet *volume* is set by the V-shaped buried-magnet flux design (E31). Re-optimise the rotor magnetic circuit with modern topology tools: asymmetric/stepped V-slot geometry, flux-barrier tuning and a partial iron-bridge redesign to raise magnet utilisation, targeting equal 480 Nm / 250 kW (E29) at 8-12% less NdFeB mass. Techniques proven in production include tapered magnet pockets, delta/double-V layering and optimised bridge saturation to concentrate flux where it produces torque. Because magnets are the dominant line, an 8-12% volume cut yields large absolute saving even at N42 92 €/kg. This is a design/architecture lever on the rotor lamination and magnet blank sizing — it also lowers rotor inertia (E34) and reduces the demag-vulnerable magnet mass. It stacks with GBD-magnet and cooling ideas. Validate: torque-ripple order-24 must not rise from the revised barrier geometry (E33), demag margin at fault (E32), and manufacturability of thinner iron bridges under centrifugal load at 16,000 rpm (E29).",
+   "manufacturingImpact": "Rotor lamination progressive die revised for the new V-slot/barrier geometry; magnet blank size reduced (thinner or shorter segments) cutting sintered NdFeB volume purchased. No new process — same stamp, insert, bond, magnetise flow with re-sized parts. Requires extensive electromagnetic + structural FEA and prototype dyno correlation. Iron-bridge thinning must be checked for stamping burr and fatigue. Magnet supplier drawing and rotor die both change; one PPAP cycle on the rotor sub-assembly.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — direct volume cut on the single largest cost line",
+    "percentage": "8-12% of magnet line",
+    "annualValue": "€3.4M–€5.2M at 200,000 units/yr",
+    "calculationBasis": "€214.68 magnet line × ~10% mass reduction × 200,000 (NdFeB N42 at 92 €/kg)",
+    "paybackMonths": 12
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Reducing magnet volume erodes demag margin and can drop peak torque at high temperature — ASIL-B torque security (E32) requires validated worst-case fault + thermal demag testing. Revised flux barriers directly shape order-24 torque ripple and 2 kHz whine (E33), a top-three complaint driver — extensive NVH FEA and dyno correlation mandatory, with skew retuning. Thinner iron bridges raise centrifugal-stress risk at 16,000 rpm (E29); verify fatigue and stamping quality. Best combined with GBD magnets to preserve coercivity headroom.",
+   "dfmaPrinciples": [
+    "Minimise high-cost material volume",
+    "Optimise magnetic circuit utilisation",
+    "Reduce rotating inertia",
+    "Design for demag and NVH robustness"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "18-24 months",
+   "benchmarkReference": "unverified: Toyota bZ4X / Nissan/Renault double-V and tapered-magnet rotors cutting magnet mass at equal torque; BMW Gen5 magnet-lean rotor",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "EU Battery/ELV recycled-content and rare-earth supply-risk drivers favour reduced magnet mass.",
+   "evidenceRefs": [
+    "E3",
+    "E9",
+    "E29",
+    "E31",
+    "E32",
+    "E33",
+    "E34",
+    "E35"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Toyota/Nissan buried-magnet rotor topology analysis",
+     "confidence": "low",
+     "year": 2022
+    },
+    {
+     "type": "industry_report",
+     "title": "IPM rotor magnet-utilisation optimisation study",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "assembly-architecture",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "rank": {
+    "score": 3289500,
+    "basis": "payback 12mo ×1.00 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "grain-boundary-diffusion-dy-reduction",
+   "title": "Grain-boundary diffusion cuts heavy rare-earth in magnets",
+   "technicalDescription": "The magnet line is €214.68 (44% of the motor, E9/E16). Baseline V-buried magnets are almost certainly N42-class sintered NdFeB carrying blended (bulk) Dy/Tb for coercivity at the 16,000 rpm/high-temp duty. Switch the supplier route to grain-boundary diffusion (GBD) processing, where Dy/Tb is diffused only along grain boundaries of a low-heavy-RE base (e.g. N45UH via GBD) rather than alloyed through the bulk. GBD delivers equivalent Hcj (intrinsic coercivity) at 30-60% less Dy/Tb by mass. With Dy2O3 at €275/kg and Tb4O7 at €1,040/kg versus NdPr oxide at €79/kg, the heavy-RE fraction dominates magnet cost. A typical 150°C-rated traction magnet carries 1.5-3% Dy; halving that via GBD on the same N-grade base saves meaningful €/kg on 1.8 kg of magnet. The V-shape geometry and 12-segment count are unchanged, so rotor lamination pockets, adhesive and balancing are untouched. Requires re-qualification of BH curve at 180°C, demag pulse test, and IEC 60404 flux measurement per lot. Combine with the verified rotor-sleeve cooling lever to further lower the required operating Hcj, compounding the Dy reduction.",
+   "manufacturingImpact": "No change to rotor stack assembly, magnet insertion or adhesive process — the segment envelope and 12x count are preserved, so no rotor tooling change. Change is entirely at the magnet supplier: GBD is an added post-sinter diffusion + ageing step, already in volume production at Hitachi, Shin-Etsu and JL MAG. PPAP requires new magnetic characterisation (open-circuit flux, recoil permeability, knee-point at max operating temp) and a demagnetisation-withstand test after the worst-case short-circuit current pulse. Dual-source the GBD grade to manage rare-earth supply risk (E35).",
+   "costSavingTypes": [
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — attacks the single largest cost line via the most expensive element",
+    "percentage": "12-20% of magnet line",
+    "annualValue": "€5.1M–€8.6M at 200,000 units/yr",
+    "calculationBasis": "€214.68 magnet line × 12-20% reduction from ~50% Dy/Tb cut × 200,000 units",
+    "paybackMonths": 6
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Primary risk is thermal demagnetisation at the 180°C rotor hotspot and after an ASIL-B short-circuit event (E32). GBD magnets have a shallower Dy gradient, so surface Hcj is highest — advantageous for surface eddy losses but requires demag-pulse validation. NVH (order-24 ripple, E33) is unaffected as remanence and geometry are held. Mitigate with worst-case magnetic FEA plus physical demag pulse testing and lot-level flux screening. Supply concentration in China remains; dual-source and honour EU battery/critical-raw-material traceability.",
+   "dfmaPrinciples": [
+    "Minimise high-cost material content",
+    "Design to function not to margin",
+    "Standardise interfaces (envelope unchanged)",
+    "Error-proof via lot screening"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "9-14 months",
+   "benchmarkReference": "unverified: Toyota bipolar/GBD magnet development and JL MAG GBD traction grades (2023-2024) report 30-60% heavy-RE reduction at equal coercivity",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Supports EU Critical Raw Materials Act intent by cutting heavy-rare-earth dependency and improves battery/motor passport material declarations.",
+   "evidenceRefs": [
+    "E3",
+    "E9",
+    "E16",
+    "E35",
+    "E32"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Adamas Intelligence — grain boundary diffusion heavy-RE reduction",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "supplier_data",
+     "title": "JL MAG traction NdFeB GBD grade datasheet",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "lensId": "subassembly-block",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "add107",
+    "title": "Ce-substituted NdFeB magnets to cut rare-earth content",
+    "score": 32.2
+   },
+   "rank": {
+    "score": 4391100,
+    "basis": "claim 6.8M capped at 3x batch median (6.2M) — unverified figure · payback 6mo ×1.33 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Ce-substituted NdFeB magnets to cut rare-earth content\" ×0.70"
+   }
+  },
+  {
+   "id": "halbach-lite-magnet-mass-reduction",
+   "title": "Reduce magnet mass via optimised V-angle and flux-focusing",
+   "technicalDescription": "Magnets are 44% of motor cost and 1.8 kg (E9/E16). The single most direct lever on the €214.68 line is removing magnet mass while holding torque (480 Nm) and airgap flux density. Re-optimise the 8-pole V-buried geometry: increase the V-opening angle and add flux-barrier bridges to concentrate flux, and thin each segment (reduce radial thickness) rather than deleting segments. Modern topology optimisation (JMAG/Motor-CAD with genetic algorithms) routinely recovers 8-15% magnet mass at equal torque by improving PM utilisation factor and reducing flux leakage through the iron bridges. A 12% mass cut on 1.8 kg NdFeB at N42 blended cost is directly proportional to the €214.68 line. Because the rotor lamination pockets change, this requires a new rotor lamination die (progressive/Si-steel M270) — a real tooling consequence of ~€250-400k — but amortised over 200,000/yr × 7 yr it is trivial. Torque ripple must be co-optimised: asymmetric V-angle and pole-shaping (step-skew already assumed) let magnet reduction proceed without raising order-24 ripple. Also lowers rotor inertia, aiding launch response (E34).",
+   "manufacturingImpact": "New rotor lamination progressive die and revised magnet segment dimensions — the principal tooling and validation cost. Magnet supplier retools segment geometry (minor). Rotor stacking, gluing, and skew fixtures need re-setting but the process route is unchanged. Balancing tolerance may improve because less magnet mass at radius reduces unbalance sensitivity. Full electromagnetic + structural FEA re-validation (bridge stress at 16,000 rpm, E29) and a fresh NVH sign-off are required. Requires new rotor spin-burst and over-speed testing.",
+   "costSavingTypes": [
+    "material",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — proportional saving on the dominant cost line plus inertia benefit",
+    "percentage": "8-14% of magnet line",
+    "annualValue": "€3.4M–€6.0M at 200,000 units/yr",
+    "calculationBasis": "€214.68 × 8-14% magnet mass reduction × 200,000 units, less amortised die",
+    "paybackMonths": 9
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Thinner magnets and wider flux barriers raise iron-bridge mechanical stress at 16,000 rpm (E29) and can worsen order-24 torque ripple (E33) if not co-optimised. Reduced PM flux risks lower field-weakening margin at high speed. Mitigate with coupled EM-structural optimisation, spin-burst testing to 1.4× overspeed, and NVH bench verification before tooling release. ASIL-B torque security (E32) must be re-proven with the new flux map. Tooling is irreversible once cut — freeze design after multi-physics optimisation.",
+   "dfmaPrinciples": [
+    "Minimise material at radius",
+    "Multi-physics co-optimisation",
+    "Reduce rotating inertia",
+    "Design for function envelope"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "unverified: BMW Gen5 IPM and Nissan Leaf e+ V-magnet topology optimisation report 10-15% PM utilisation gains at equal torque",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E3",
+    "E9",
+    "E16",
+    "E22",
+    "E34"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Munro & Associates BMW iX drive unit rotor teardown",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "industry_report",
+     "title": "JMAG topology optimisation traction IPM case studies",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "lensId": "subassembly-block",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "add269",
+    "title": "DRL light-guide from machined PMMA to moulded PC light pipe",
+    "score": 12.3
+   },
+   "rank": {
+    "score": 3603718.3,
+    "basis": "payback 9mo ×1.14 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"DRL light-guide from machined PMMA to moulded PC light pipe\" ×0.88"
+   }
+  },
+  {
+   "id": "ferrite-assisted-pm-hybrid-rotor",
+   "title": "Ferrite-assisted synchronous rotor cuts NdFeB dependency",
+   "technicalDescription": "Rare-earth price volatility is a board-level supply risk (E35) and magnets are 44% of motor cost (E9). A structural hedge is a PM-assisted synchronous reluctance (PMa-SynRM) or hybrid rotor that replaces a portion of NdFeB with low-cost ferrite (Sr-ferrite ~€3-5/kg vs N42 €92/kg) placed in the reluctance flux barriers. The reluctance torque component carries base load; ferrite provides field to lift power factor and reduce controller current, with a small NdFeB fraction retained for the high-speed field-weakening region. This can remove 40-60% of NdFeB mass. Because ferrite has ~1/3 the remanence, the rotor diameter/stack must grow slightly or a multi-barrier lamination adopted, meaning a full new rotor lamination design and die (Si-steel M270, €300-450k). Torque ripple in SynRM/PMa topologies is inherently higher, so a multi-layer barrier design with rotor step-skew is mandatory to protect order-24 NVH (E33). This is a strategic decoupling from the Dy/Nd market more than a pure piece-price play, but at €92/kg NdFeB the material arbitrage is real even after the larger stack.",
+   "manufacturingImpact": "Requires a completely new rotor lamination geometry (multi-barrier), new progressive die, revised magnet inventory (ferrite blocks + reduced NdFeB), and new balancing/skew fixtures. Ferrite is brittle and inserted as pressed blocks — insertion and retention tooling differs from sintered NdFeB. Stator and windings may need rewind for the altered saliency ratio. Extensive EM, thermal and NVH re-validation and ASIL-B torque-security re-proof. Higher engineering NRE but structurally lower and more stable material cost across the 7-year programme.",
+   "costSavingTypes": [
+    "material",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — large material arbitrage offset by bigger stack and NVH engineering",
+    "percentage": "10-18% of rotor block",
+    "annualValue": "€6.0M–€10.8M at 200,000 units/yr",
+    "calculationBasis": "40-60% NdFeB substitution to ferrite on €214.68 line, net of larger lamination/copper, × 200,000",
+    "paybackMonths": 18
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "PMa-SynRM has intrinsically higher torque ripple and acoustic risk directly against NVH complaint driver (E33); ferrite risks demagnetisation at low temperature (opposite of NdFeB). Larger stack raises inertia, opposing launch-response goal (E34). Power factor and field-weakening at 16,000 rpm (E29) must be re-verified. Mitigate with multi-barrier skewed rotor, low-temp demag validation, and controller re-tune. ASIL-B (E32) requires full re-characterisation. Highest-risk, highest-strategic-value option.",
+   "dfmaPrinciples": [
+    "Material substitution for supply resilience",
+    "Exploit reluctance torque",
+    "Design for commodity-price stability",
+    "Multi-physics co-optimisation"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "24-30 months",
+   "benchmarkReference": "unverified: Toyota Prius-derived PMa-SynRM research and Mahle magnet-free/contactless motor programme (2023-2024) targeting rare-earth-free traction",
+   "searchDataUsed": false,
+   "confidenceLevel": "theoretical",
+   "regulatoryContext": "Directly reduces critical-raw-material exposure ahead of EU Critical Raw Materials Act supply-diversification pressure.",
+   "evidenceRefs": [
+    "E3",
+    "E9",
+    "E16",
+    "E35",
+    "E34",
+    "E33"
+   ],
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "Mahle rare-earth-free traction motor announcement",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "industry_report",
+     "title": "IEEE PMa-SynRM traction motor ferrite substitution review",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "lensId": "subassembly-block",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "pt034",
+    "title": "Wound rotor synchronous motor — eliminates rare earth permanent magnets entirely",
+    "score": 20.5
+   },
+   "rank": {
+    "score": 2992221,
+    "basis": "claim 8.4M capped at 3x batch median (6.2M) — unverified figure · payback 18mo ×0.80 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Wound rotor synchronous motor — eliminates rare earth permanent magnets entirely\" ×0.80"
+   }
+  },
+  {
+   "id": "hollow-rotor-shaft-flowform",
+   "title": "Flow-formed hollow rotor shaft cuts cost and inertia",
+   "technicalDescription": "The rotor shaft is €61.67 and 3.2 kg (E18), the second-largest single rotor line after magnets. If baseline is a machined-from-solid or forged 42CrMo4 shaft, switch to a flow-formed / rotary-swaged hollow shaft from a seamless tube blank. Flow-forming produces near-net-shape thin-wall hollow shafts with excellent concentricity and work-hardened surface, removing large volumes of turning stock and cutting cycle time and material buy-to-fly ratio dramatically. For an 800V oil-spray-cooled rotor (E30), a hollow shaft is doubly valuable because it becomes the oil-feed gallery for rotor/magnet cooling, directly synergistic with the verified rotor-sleeve cooling lever. Mass drops ~25-35% (0.8-1.1 kg off 3.2 kg), reducing rotor inertia for launch response (E34). Machining reduces to finish-turning of bearing journals and splining. Requires a flow-forming line or supplier (Leico/WF Maschinenbau process), new mandrels, and rotor-to-shaft interference-fit/weld re-validation at 16,000 rpm (E29). Torsional stiffness for ASIL-B torque transmission (E32) must be re-proven, but hollow shafts are standard in premium EDUs.",
+   "manufacturingImpact": "Move from bar-stock turning to tube-blank flow-forming + finish machining. New forming mandrels and tooling (~€150-300k) plus finish-turning fixtures. Balancing benefits from lower mass and improved concentricity. Rotor-stack-to-shaft joining (shrink-fit or laser weld) revalidated for the thinner wall. Oil gallery drilling deleted if the bore serves cooling. Reduced raw-material purchase and chip scrap improves plant material yield and cost per part.",
+   "costSavingTypes": [
+    "material",
+    "process",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — material and cycle-time saving on a €61.67 line plus inertia benefit",
+    "percentage": "18-28% of shaft line",
+    "annualValue": "€2.2M–€3.5M at 200,000 units/yr",
+    "calculationBasis": "€61.67 × 18-28% from mass and machining reduction × 200,000, net of tooling",
+    "paybackMonths": 10
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Thin-wall hollow shaft raises torsional and fatigue-stress concerns for ASIL-B torque security at 480 Nm/16,000 rpm (E29/E32); wall thickness must be sized for worst-case short-circuit torque. Bearing-journal roundness and shaft-critical-speed must stay clear of operating range to protect NVH (E33). Mitigate with fatigue testing, spin-burst to overspeed, and rotordynamic analysis. Oil-feed integration requires seal validation against the 15-year/300,000 km life (E32).",
+   "dfmaPrinciples": [
+    "Near-net-shape forming",
+    "Reduce buy-to-fly ratio",
+    "Function integration (shaft as oil gallery)",
+    "Reduce rotating inertia"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10-14 months",
+   "benchmarkReference": "unverified: Porsche Taycan and Audi e-tron GT hollow flow-formed rotor shafts with integrated oil cooling (2020-2022)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E3",
+    "E18",
+    "E30",
+    "E34",
+    "E29"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Porsche Taycan drive unit teardown — hollow oil-fed rotor shaft",
+     "confidence": "low",
+     "year": 2021
+    },
+    {
+     "type": "supplier_data",
+     "title": "WF Maschinenbau flow-forming e-motor shaft process",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "subassembly-block",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "mergedTitles": [
+    "Hollow net-shape rotor shaft cuts mass and machining"
+   ],
+   "engineCheck": null,
+   "priorArt": {
+    "id": "drv017",
+    "title": "Hollow lightweight half shafts for BEV high-torque axle",
+    "score": 21.5
+   },
+   "rank": {
+    "score": 1867086.8,
+    "basis": "payback 10mo ×1.09 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Hollow lightweight half shafts for BEV high-torque axle\" ×0.79"
+   }
+  },
+  {
+   "id": "thinner-gauge-lamination-and-scrap-loop",
+   "title": "Thinner high-Si laminations plus bonded stack, closed scrap loop",
+   "technicalDescription": "Stator lamination stack is €30.63 / 12 kg (E12/E19) and rotor lamination €16.78 / 6.5 kg (E22) — together ~€47 and 18.5 kg of Si steel at €3.4/kg. Two combined levers: (1) move from assumed 0.30-0.35 mm M270 to thinner 0.20-0.25 mm high-silicon grade (e.g. NO20/M235) to cut iron and eddy loss — this raises €/kg but the loss reduction lets the stack shorten slightly at equal output, and at 800V/SiC high-fundamental-frequency operation the efficiency gain is real; (2) capture and sell/re-melt the punching skeleton scrap under a closed-loop contract with the Si-steel mill, recovering value on the ~40-50% scrap fraction inherent to annular lamination blanking. On 200,000 units × 18.5 kg × 40% scrap = ~1,480 t/yr of prompt scrap; a toll/buy-back at even €1.5/kg over open-market recovers material cost. Also evaluate laser-cut or bonded (backlack self-bonding) stacks to eliminate welding/interlock burrs that raise iron loss and NVH. Backlack bonding lowers audible whine (E33) by damping inter-lamination movement.",
+   "manufacturingImpact": "Thinner gauge needs re-tuned progressive dies (tighter clearances, faster press) and possibly more strokes per stack — a die and press-parameter change, not a new process. Backlack self-bonding replaces interlock/weld with an in-die adhesive-cure step. The scrap-loop lever is purely commercial/logistics: install skeleton baling and a mill buy-back agreement. Higher press wear at thin gauge managed with carbide tooling. Iron-loss and NVH re-validation required for the gauge and bonding change.",
+   "costSavingTypes": [
+    "material",
+    "process",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — modest per-part but large aggregate scrap recovery",
+    "percentage": "8-15% of combined lamination lines",
+    "annualValue": "€1.2M–€2.4M at 200,000 units/yr",
+    "calculationBasis": "Scrap buy-back on ~1,480 t/yr prompt scrap + stack shortening; €47 combined lam × 8-15% × 200,000",
+    "paybackMonths": 12
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Thinner gauge increases blanking scrap-burr risk and press cycle count; backlack bonding must survive 180°C and 15-year/300,000 km life (E32). Bond-line failure would degrade stack stiffness and NVH (E33). Mitigate with adhesive thermal-ageing qualification and shear testing. Thinner laminations improve efficiency but reduce stack mechanical robustness — verify buckling and press-fit retention. Scrap buy-back price is market-linked and must be contractually floored to protect the saving.",
+   "dfmaPrinciples": [
+    "Reduce iron loss by design",
+    "Closed-loop material recovery",
+    "Eliminate secondary joining (backlack)",
+    "Damp NVH at source"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "9-15 months",
+   "benchmarkReference": "unverified: Tesla Model 3 rear-drive uses 0.25mm laminations; Toyota/Denso backlack-bonded stacks reduce iron loss and stator whine",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Closed-loop Si-steel recovery supports EU ELV 2025 recycled-content targets and improves motor carbon-footprint declaration.",
+   "evidenceRefs": [
+    "E6",
+    "E12",
+    "E19",
+    "E22",
+    "E33"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Munro Model 3 motor lamination gauge analysis",
+     "confidence": "low",
+     "year": 2020
+    },
+    {
+     "type": "supplier_data",
+     "title": "voestalpine isovac backlack self-bonding lamination data",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "lensId": "subassembly-block",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "add102",
+    "title": "Segmented stator core with bonded laminations vs interlocked",
+    "score": 14.9
+   },
+   "rank": {
+    "score": 1171827,
+    "basis": "payback 12mo ×1.00 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Segmented stator core with bonded laminations vs interlocked\" ×0.85"
+   }
+  },
+  {
+   "id": "continuous-hairpin-wave-winding",
+   "title": "Continuous wave-wound hairpins delete weld count and copper",
+   "technicalDescription": "Hairpin winding set is €81.53 / 4.5 kg (E10/E17), the largest single windings line and 17.7% of the motor. Conventional I-pin/X-pin construction inserts many discrete U-pins and laser-welds every crown pair — dozens of welds per stator, each a cost, quality and NVH risk. Move to a continuous wave-winding (formed from a small number of long pre-shaped conductors, e.g. Vitesco/Schaeffler continuous-hairpin or 'wave winding') that halves or better the number of laser welds and reduces end-turn copper (shorter, tighter end-turns). Fewer welds cut laser-weld station time and rework; shorter end-turns cut copper mass on 4.5 kg at Hairpin Cu Profile €14.5/kg. Continuous winding also improves slot-fill and thermal path, helping the water-jacket duty (E30). Requires new winding-forming tooling and insertion equipment (significant NRE, €1-2M line change) but at 200,000/yr × 7 yr amortises fast. Weld reduction directly reduces a top NVH/quality risk area and the 2 kHz PWM whine path via more consistent end-turn geometry (E33).",
+   "manufacturingImpact": "Replaces discrete hairpin insertion + full weld matrix with continuous-conductor forming, insertion and a reduced weld set. Major stator winding line retool: new forming mandrels, insertion heads, and fewer laser-weld positions. Reduces weld inspection burden and scrap. Copper purchase drops with shorter end-turns. Requires full electrical (partial-discharge at 800V), thermal and NVH re-validation and IATF PPAP of the new winding topology.",
+   "costSavingTypes": [
+    "process",
+    "material",
+    "complexity",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — attacks the dominant windings line via weld count and copper together",
+    "percentage": "10-16% of windings block",
+    "annualValue": "€1.7M–€2.8M at 200,000 units/yr",
+    "calculationBasis": "€81.53 × 10-16% from weld-labour + end-turn copper reduction × 200,000, net of line NRE",
+    "paybackMonths": 16
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "800V insulation and partial-discharge integrity must be preserved with the new forming/insulation-displacement geometry (E29). Fewer but longer conductors raise handling and insertion-damage risk to enamel — a warranty concern over 15-year life (E32). Slot-fill and current density changes affect thermal margin against the water jacket (E30). Mitigate with PD testing, thermal cycling, and hi-pot at each build. NVH must be re-confirmed for the altered end-turn stiffness (E33).",
+   "dfmaPrinciples": [
+    "Reduce joint count",
+    "Shorten conductor paths",
+    "Design for automated insertion",
+    "Error-proof electrical integrity"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "18-24 months",
+   "benchmarkReference": "unverified: Vitesco/Schaeffler continuous wave winding and BMW Gen5 hairpin reduced copper mass 18% vs distributed winding",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E4",
+    "E10",
+    "E17",
+    "E26",
+    "E33"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Schaeffler/Vitesco continuous wave winding technology brief",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "oem_press_release",
+     "title": "BMW Gen5 eDrive hairpin winding copper reduction",
+     "confidence": "low",
+     "year": 2021
+    }
+   ],
+   "lensId": "subassembly-block",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "luxpr026",
+    "title": "NIO ET9 W-Pin continuous-wave winding: 925V motor 4.3 kW/kg, 280 mm shorter",
+    "score": 15.7
+   },
+   "rank": {
+    "score": 1243726.1,
+    "basis": "payback 16mo ×0.86 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"NIO ET9 W-Pin continuous-wave winding: 925V motor 4.3 kW/kg, 280 mm shorter\" ×0.84"
+   }
+  },
+  {
+   "id": "aluminium-hpdc-integrated-housing",
+   "title": "Integrate housing and end covers into one aluminium HPDC",
+   "technicalDescription": "Housing block is €47.67 / 9.8 kg (E5/E11): water-jacket housing €27.39 (E20) plus two end covers DE/NDE at €10.14 each = €20.28 (E21) — three parts, three interfaces, two bolted/sealed joints. Consolidate into a high-pressure die-cast (HPDC) architecture using A380 alloy (€2,850/t) that casts the water jacket as an integral spiral channel and combines the housing with the DE (drive-end) structure, leaving only the NDE cover as a serviceable closure. This removes one cast part, one machined sealing face, one gasket/O-ring and the associated fasteners and leak-test interface. HPDC with a cast-in cooling channel (lost-core or drilled-and-plugged spiral) replaces a fabricated or lower-integration jacket. Part-count reduction is the core DFMA lever (n-in-1 principle from the KB). Wall optimisation and integral cast fins (synergy with the verified housing-fin gearbox-cooling lever) trim mass. Requires a new HPDC die (€600k-1.2M) and new machining fixtures, but consolidating 3 parts to 2 saves piece price, sealing, and assembly station time at 200,000/yr. Housing must still meet salt-spray/stone-chip durability (E32) via KTL/E-coat.",
+   "manufacturingImpact": "New multi-slide HPDC die with cast-in cooling channel and integral DE structure; new CNC fixtures for the combined part; deletion of one cast part, one sealing joint, its fasteners and one leak-test setup. Vacuum-assisted HPDC for pressure-tight water jacket. E-coat/KTL line unchanged. Reduces assembly stations and inventory SKUs. Casting porosity control critical for coolant integrity — vacuum die-casting and X-ray/pressure-decay QA required.",
+   "costSavingTypes": [
+    "complexity",
+    "process",
+    "tooling",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — part-count and joint elimination on a €47.67 block",
+    "percentage": "12-20% of housing block",
+    "annualValue": "€1.1M–€1.9M at 200,000 units/yr",
+    "calculationBasis": "3-to-2 part consolidation on €47.67 housing block × 12-20% × 200,000, net of die NRE",
+    "paybackMonths": 20
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Cast-in water jacket risks porosity-driven coolant leaks over 15-year/300,000 km with salt exposure (E32) — mitigate with vacuum HPDC, pressure-decay and helium-leak testing 100%. Bearing-bore concentricity across the integrated DE structure must hold NVH tolerances (E33) — precision line-boring after casting. Larger casting raises die-lock and scrap-rate risk; validate with process capability study. REACH-compliant Cr-free KTL required for salt-spray durability.",
+   "dfmaPrinciples": [
+    "Part-count reduction (n-in-1)",
+    "Function integration (cast-in cooling)",
+    "Eliminate sealing interfaces",
+    "Design for die-casting"
+   ],
+   "systemLevel": "Subassembly",
+   "timeToImplement": "16-22 months",
+   "benchmarkReference": "unverified: Tesla and BYD integrated die-cast EDU housings; Tesla gigacasting principle (171→2 parts) applied at housing scale",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Cr(VI)-free KTL coating chosen to comply with REACH/ELV hexavalent-chromium restriction while meeting salt-spray durability.",
+   "evidenceRefs": [
+    "E5",
+    "E11",
+    "E20",
+    "E21",
+    "E32"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Tesla Model Y drive unit integrated housing teardown",
+     "confidence": "low",
+     "year": 2022
+    },
+    {
+     "type": "industry_report",
+     "title": "HPDC integrated e-motor housing cost study",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "lensId": "subassembly-block",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "mergedTitles": [
+    "Integrate water-jacket housing and end cover in one HPDC"
+   ],
+   "engineCheck": null,
+   "priorArt": {
+    "id": "bev165",
+    "title": "HPDC gearbox housing in one-piece eliminates separate bearing carrier assembly",
+    "score": 15.1
+   },
+   "rank": {
+    "score": 730670.6,
+    "basis": "payback 20mo ×0.75 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"HPDC gearbox housing in one-piece eliminates separate bearing carrier assembly\" ×0.85"
+   }
+  },
+  {
+   "id": "resolver-to-inductive-eddy-sensor-commonisation",
+   "title": "Replace resolver with commonised inductive position sensor",
+   "technicalDescription": "The resolver is €9.50 (E14/E24) — small in share (2%) but a pure bought-part with a proven cheaper substitute and a strong commonisation angle. Replace the classical wound resolver + resolver-to-digital converter with a printed inductive (eddy-current) position sensor (e.g. Renesas/Melexis/ Microchip LX34070-class or Vitesco inductive) that uses a stamped-metal target and a PCB coil, delivering ASIL-B-capable absolute angle at lower piece cost and lower mass/height. Inductive sensors need no laminated core, are immune to the motor's stray magnetic field, and integrate onto the inverter/control PCB — deleting the separate RDC channel. The bigger prize is commonisation: specify one inductive sensor + target family across both front and rear EDUs and across the scalable motor-length family (KB lever 2/4), consolidating one part number and one supplier across the whole BEV platform. This is an unpriced-magnitude commonisation saving beyond the €9.50 piece delta, since it removes a variant and its validation. ASIL-B torque-security path (E32) is preserved with a certified inductive device.",
+   "manufacturingImpact": "Deletes wound resolver assembly and separate RDC; adds a stamped target ring on the rotor and a PCB coil integrated with control electronics. Simplifies harness (fewer dedicated sensor wires) and one connector. Requires ASIL-B functional-safety re-qualification of the position channel, EMC re-test at 800V/SiC switching, and angle-accuracy calibration. Commonising across front/rear and stack-length variants collapses several sensor SKUs to one, cutting inventory and PPAP count.",
+   "costSavingTypes": [
+    "complexity",
+    "commonisation",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — small piece saving but strong platform commonisation and BOM simplification",
+    "percentage": "25-40% of sensing line",
+    "annualValue": "€0.5M–€1.0M at 200,000 units/yr",
+    "calculationBasis": "€9.50 × 25-40% piece delta × 200,000 plus unpriced SKU/RDC deletion across front+rear variants",
+    "paybackMonths": 12
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Position-sensing is on the ASIL-B torque-security path (E32/E33); inductive angle accuracy under 800V PWM EMI and over 15-year life must equal the resolver — mitigate with ISO 26262 re-assessment, EMC qualification and dual-channel redundancy where required. Order-24 ripple control depends on accurate angle, so calibration must match resolver precision to protect NVH (E33). Sensor is a bought part so saving is partly supplier-negotiated; secure dual-source. Commonisation saving beyond piece price is unpriced in this BOM.",
+   "dfmaPrinciples": [
+    "Part commonisation across variants",
+    "Integrate sensor onto existing PCB",
+    "Eliminate separate signal converter",
+    "Reduce SKU/validation count"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "unverified: Vitesco and Bosch inductive rotor-position sensors replacing resolvers in 800V EDUs (2023-2024); Renesas inductive ASIL-B position sensing",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "ASIL-B functional-safety (ISO 26262) compliance for torque security maintained with a certified inductive position channel.",
+   "evidenceRefs": [
+    "E8",
+    "E14",
+    "E24",
+    "E32",
+    "E33"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Vitesco inductive rotor position sensor for 800V EDU",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "supplier_data",
+     "title": "Renesas/Microchip LX34070 inductive position sensor ASIL-B",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "subassembly-block",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "add134",
+    "title": "Inductive position sensor replacing resolver on EDU",
+    "score": 33.5
+   },
+   "rank": {
+    "score": 401625,
+    "basis": "payback 12mo ×1.00 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Inductive position sensor replacing resolver on EDU\" ×0.70"
+   }
+  },
+  {
+   "id": "grain-boundary-diffusion-magnets",
+   "title": "Grain-boundary-diffused NdFeB cuts heavy rare-earth loading",
+   "technicalDescription": "The 12× NdFeB magnet segments at €214.68 (44% of the motor, E9/E16) carry Dy/Tb dispersed through the bulk to hold coercivity at the 180°C rotor-cooled operating point. Switch from bulk-alloyed N42EH to grain-boundary-diffusion (GBD) processed N42UH/EH grade, where Dy₂O₃ (€275/kg) or Tb₄O₇ (€1,040/kg) is applied only to the grain boundaries by sputter/slurry diffusion. GBD delivers equivalent 20+ kOe intrinsic coercivity with 40-60% less heavy rare-earth by mass, because HRE concentrates where reverse-domain nucleation actually initiates. On a 1.8 kg magnet set with ~2-3% Dy/Tb baseline loading, cutting HRE by half removes roughly €12-18 of the segment price without touching remanence (Br) — so torque density, back-EMF and order-24 ripple (E33) are unchanged. Requires re-qualification of demagnetisation curve at 150/180°C, PWM ripple-loss eddy heating and 15-year/300,000 km thermal-ageing (E32). Segment count (12×) and V-shape geometry (E31) are carried over, so rotor lamination tooling is untouched. Combine with oil-spray rotor cooling headroom (E30) to run a lower HRE grade safely.",
+   "manufacturingImpact": "No change to segmentation, magnetising fixtures or rotor slot geometry — GBD is a magnet-supplier process step upstream of the OEM. Incoming inspection adds a coercivity-vs-temperature check and a per-lot HRE assay to guard against diffusion-depth drift. Adhesive bonding and corrosion coating (Ni-Cu-Ni / epoxy) of segments unchanged. Dual-sourcing GBD magnets (JL MAG, Shin-Etsu, Yantai Zhenghai) protects against the board-level rare-earth supply risk in E35. PPAP requires new demag and salt-spray data.",
+   "costSavingTypes": [
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — attacks the single largest cost line and the top supply risk",
+    "percentage": "6-9% of motor",
+    "annualValue": "€2.4M–€3.6M at 200,000 units/yr",
+    "calculationBasis": "€12-18 saved per 1.8 kg set × 200,000 units",
+    "paybackMonths": 6
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Under-diffused boundaries risk local demagnetisation at the 180°C peak, degrading torque security (ASIL-B, E32) and raising eddy losses that lift 2 kHz whine (E33). Mitigate with worst-case rotor thermal FEA, accelerated thermal-ageing to 300,000 km, and per-lot coercivity acceptance limits. GBD depth is section-thickness limited; validate on the thickest segment. Supply of Tb/Dy still China-concentrated — dual-source and hold strategic buffer.",
+   "dfmaPrinciples": [
+    "Minimise high-cost material where function does not require it",
+    "Design for material substitution without tooling change",
+    "Error-proof via incoming coercivity screening"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "unverified: Toyota/Aisin eAxle and Nissan Leaf motors use GBD magnets to cut Dy 40-50%; BMW Gen5 reduced HRE via GBD supply.",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Supports EU critical-raw-material resilience by cutting heavy-rare-earth dependence.",
+   "evidenceRefs": [
+    "E9",
+    "E16",
+    "E30",
+    "E32",
+    "E33",
+    "E35"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Adamas Intelligence — GBD magnet HRE reduction in traction motors",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "teardown",
+     "title": "Nissan Leaf / Toyota eAxle magnet analysis",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "part-line",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "add108",
+    "title": "Grain-boundary-diffused Dy to cut bulk heavy rare-earth",
+    "score": 19.4
+   },
+   "rank": {
+    "score": 2466360,
+    "basis": "payback 6mo ×1.33 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Grain-boundary-diffused Dy to cut bulk heavy rare-earth\" ×0.81"
+   }
+  },
+  {
+   "id": "ce-free-mn-al-magnet-substitution",
+   "title": "Partial Ce substitution in NdFeB lowers NdPr content",
+   "technicalDescription": "The magnet set is 44% of motor cost and rare-earth price is a board-level risk (E35). Beyond heavy-rare-earth reduction, substitute a portion of Nd/Pr with cerium (Ce), the cheapest and most abundant light rare earth, using a dual-alloy / dual-main-phase sintering route. NdPr oxide runs €79/kg (live sheet); Ce is a fraction of that and is a by-product surplus of the mining stream. A 10-20% Ce-for-NdPr substitution in a Ce-NdFeB dual-main-phase magnet holds Br within 3-5% and coercivity adequate for a buried-magnet rotor with oil-spray cooling headroom (E30/E31). On the 1.8 kg, €214.68 set (E16), a 15% NdPr substitution could remove €8-14/set. The V-shaped buried geometry (E31) is more tolerant of a small remanence drop than a surface-magnet design because reluctance torque contributes a share of the 480 Nm. Requires re-tuning magnet thickness or slight remanence compensation to hold back-EMF at 16,000 rpm, plus full demag and NVH re-validation to protect order-24 ripple (E33). Keeps 12× segmentation and existing magnetiser.",
+   "manufacturingImpact": "Ce-bearing dual-main-phase magnets are a supplier-side sintering change; OEM sees only a new material spec and PPAP. Incoming test adds Br/Hcj-vs-temperature acceptance and a Ce assay. No change to bonding, coating or rotor stacking. Because Ce grades are less corrosion-robust, confirm the Ni-Cu-Ni + epoxy coating passes salt-spray (E32). Provides a genuine second lever against rare-earth volatility independent of the HRE-reduction idea, improving negotiating leverage with magnet suppliers.",
+   "costSavingTypes": [
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — meaningful NdPr offset but bounded by remanence budget",
+    "percentage": "3-5% of motor",
+    "annualValue": "€1.6M–€2.8M at 200,000 units/yr",
+    "calculationBasis": "€8-14 per set × 200,000 units",
+    "paybackMonths": 9
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Ce lowers Br and Curie temperature, risking torque shortfall at high rotor temp and increased ripple that worsens NVH (E33) and torque security (E32). Mitigate by capping substitution at validated %, compensating thickness, and demag-testing at 180°C worst case. Corrosion susceptibility higher — extend salt-spray/humidity validation. Do not stack full Ce substitution with maximum HRE reduction; validate the combined coercivity margin.",
+   "dfmaPrinciples": [
+    "Substitute abundant low-cost material within functional limits",
+    "Exploit reluctance-torque tolerance of buried-magnet rotor",
+    "Design for supply-chain diversification"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "unverified: Chinese Ce-NdFeB dual-main-phase magnets (JL MAG, Ningbo) qualified in EV traction; BYD studying Ce-bearing grades.",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E9",
+    "E16",
+    "E30",
+    "E31",
+    "E32",
+    "E33",
+    "E35"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Ce-substituted dual-main-phase NdFeB magnet development",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "lensId": "part-line",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "bev127",
+    "title": "Dysprosium-free NdFeB magnet (NdFeB-Ce alloyed) reduces critical rare-earth cost 35%",
+    "score": 17.3
+   },
+   "rank": {
+    "score": 1590675.4,
+    "basis": "payback 9mo ×1.14 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Dysprosium-free NdFeB magnet (NdFeB-Ce alloyed) reduces critical rare-earth cost 35%\" ×0.83"
+   }
+  },
+  {
+   "id": "reduce-magnet-segment-count",
+   "title": "Optimise magnet segmentation from 12 to 8 segments",
+   "technicalDescription": "Segmentation of the buried magnets (12× per pole-set, E16) is done to suppress eddy-current losses in the magnet body driven by 2 kHz PWM ripple and slot-harmonic flux (E33). Each cut plane costs money: dicing, edge coating and handling of 12 tiny bricks. With an 800V SiC inverter the switching frequency can be raised and ripple current reduced, and with oil-spray rotor cooling (E30) the eddy heat is actively removed — both slacken the segmentation requirement. Re-run a coupled electromagnetic-thermal loss model to find the minimum axial+circumferential cut count that holds magnet eddy loss and hotspot temperature within limit; a move from 12 to 8 segments per set is realistic. Fewer, larger segments reduce coating surface area (less Ni-Cu-Ni per kg), dicing operations and assembly insertions, and modestly improve pack density. Magnet mass and grade unchanged, so Br/torque and order-24 ripple (E33) are preserved by design intent — only the eddy-loss margin is spent. Saving is a conversion-cost reduction (~€1.5-3/set) rather than raw material, so it is priced modestly.",
+   "manufacturingImpact": "Rotor slot geometry may need minor width adjustment (lamination tool insert change) to accept wider bricks — a bounded tooling touch. Fewer insertion and bonding operations per rotor cuts rotor-line cycle time and adhesive consumption. Coating line throughput improves (less surface area). Incoming magnet inspection simplified. Requires magnetiser fixture check for the new brick size.",
+   "costSavingTypes": [
+    "process",
+    "complexity",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Low-Medium — conversion cost only, material unchanged",
+    "percentage": "0.5-1.5% of motor",
+    "annualValue": "€300K–€600K at 200,000 units/yr",
+    "calculationBasis": "€1.5-3/set conversion saving × 200,000",
+    "paybackMonths": 14
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Under-segmentation raises magnet eddy loss and local temperature, risking irreversible demag at the 180°C peak (E32) and lifting the 2 kHz PWM whine that is a top-three NVH complaint (E33). Mitigate with validated coupled EM-thermal loss model, dyno hotspot thermocouple mapping, and worst-case fast-charge/off-road duty. Lamination tool insert change carries NRE and re-PPAP.",
+   "dfmaPrinciples": [
+    "Reduce operation count",
+    "Spend design margin freed by SiC/oil cooling",
+    "Minimise coated surface area"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10-14 months",
+   "benchmarkReference": "unverified: Tesla/BMW eddy-loss segmentation studies; oil-cooled rotors permit coarser segmentation than air-cooled equivalents.",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E16",
+    "E30",
+    "E32",
+    "E33"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Magnet eddy-loss segmentation vs cooling trade study",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "part-line",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "rank": {
+    "score": 317769.2,
+    "basis": "payback 14mo ×0.92 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "thinner-si-steel-lamination",
+   "title": "Thinner 0.20mm Si-steel lamination cuts iron loss and mass",
+   "technicalDescription": "The stator lamination stack (€30.63, 12 kg, E19) and rotor lamination stack (€16.78, 6.5 kg, E22) are priced on Si-steel at €3.4/kg. The stated concern is 2 kHz PWM whine and iron loss (E33). Move from a typical 0.27-0.35 mm non-oriented grade (e.g. M270-35A) to a thinner 0.20 mm high-silicon grade (e.g. 20JNEH1200 / NO20). Thinner laminations cut classical eddy-current iron loss (which scales with the square of sheet thickness), directly reducing the high-frequency loss that the SiC 800V inverter's fast switching excites (E29) and improving continuous-rating efficiency. Thinner sheet also allows a slightly shorter stack for the same flux, trimming mass on the rotor (inertia, E34). This is a grade substitution, not a geometry change: existing progressive-die lamination tooling accepts the thinner strip with feed and clearance re-set. The premium of 0.20 mm grade (~+15-25%/kg) is partially offset by shorter stack length and is justified where efficiency and NVH (E33) carry booked value. Blanking burr and stacking factor must be re-controlled; interlock/bond-varnish stacking re-validated.",
+   "manufacturingImpact": "Progressive stamping die runs thinner strip — die clearance, feed and de-stacking re-tuned; more laminations per stack means higher press stroke count and slightly longer stacking cycle. Backlack/bonding or self-clinch interlock re-qualified for the thinner sheet. Stacking factor drops slightly, requiring stack-height compensation. Higher-Si grade is more brittle — monitor blanking burr and tool wear. No new press; tooling refresh only.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Low-Medium — efficiency/NVH value, material near-neutral",
+    "percentage": "1-2% of motor (plus efficiency)",
+    "annualValue": "€400K–€900K at 200,000 units/yr",
+    "calculationBasis": "Shorter stack mass saving + efficiency-credit; net €2-4.5/motor across two stacks",
+    "paybackMonths": 18
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Thinner grade premium can erode material saving if stack cannot be shortened — validate flux density headroom first. More laminations raise stacking-process defect exposure. Brittleness risks blanking cracks lifting scrap. Mitigate with die-clearance DOE and stacking-factor control. NVH re-test mandatory to confirm 2 kHz whine actually falls (E33), not just shifts. Efficiency credit only real if booked in the vehicle energy model.",
+   "dfmaPrinciples": [
+    "Grade substitution within existing tooling",
+    "Reduce loss at source (thinner sheet)",
+    "Trim stack length for mass/inertia"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10-16 months",
+   "benchmarkReference": "unverified: Lucid Air and Tesla Plaid use 0.20mm-class NO steel for high-rpm efficiency; ArcelorMittal iCARe thin-gauge grades.",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E19",
+    "E22",
+    "E29",
+    "E33",
+    "E34"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "ArcelorMittal iCARe / JFE Super-Core thin NO steel datasheet",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "teardown",
+     "title": "Lucid Air motor lamination teardown",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "part-line",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "bev115",
+    "title": "0.2 mm silicon-steel lamination replaces 0.35 mm, reducing core losses 35% for highway efficiency",
+    "score": 13.1
+   },
+   "rank": {
+    "score": 345688.2,
+    "basis": "payback 18mo ×0.80 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"0.2 mm silicon-steel lamination replaces 0.35 mm, reducing core losses 35% for highway efficiency\" ×0.87"
+   }
+  },
+  {
+   "id": "resolver-to-inductive-sensor",
+   "title": "Replace resolver with printed inductive position sensor",
+   "technicalDescription": "The resolver (E24, €9.50, bought part, 2% of motor, E14) is a wound electromagnetic angle sensor supporting the ASIL-B torque-security requirement (E32) and feeding field-oriented control that governs order-24 torque ripple and PWM whine behaviour (E33). Replace it with a printed-PCB inductive position sensor (eddy-current coupling to a stamped conductive rotor target), which reaches ASIL-C/D functional-safety ratings, tolerates rotor oil-spray and high temperature (E30), and costs materially less because it is a flat multilayer PCB plus a stamped target versus a wound transformer. Inductive sensors also remove the resolver's sensitivity to axial/radial placement tolerance, improving angle accuracy which directly benefits torque-ripple control and NVH (E33). Because this is a bought-part swap, the saving is a purchase-price delta (roughly €3-5 vs €9.50) and is priced as such — the line is user-entered, not engine-costed, so the material/process saving is quantified from supplier catalogue not the engine. Integration requires new ASIL-B safety case sign-off, EMC re-qualification against the SiC PWM environment (E29), and controller software re-calibration of the angle observer.",
+   "manufacturingImpact": "Sensor becomes a thin PCB mounted at the NDE with a stamped steel target on the shaft end — simpler assembly, no fine-wire resolver winding, laser-trim not required. Supplier base broadens (Melexis, Renesas, Microsemi/Microchip inductive) improving commercial leverage over resolver duopoly. EMC shielding validated against 800V SiC switching. Software calibration and end-of-line angle-learn routine updated. No motor tooling impact.",
+   "costSavingTypes": [
+    "material",
+    "complexity",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Low absolute but high margin on a small line",
+    "percentage": "1-1.4% of motor",
+    "annualValue": "€600K–€1.0M at 200,000 units/yr",
+    "calculationBasis": "€3-5 purchase-price delta × 200,000 (bought-part, supplier-catalogue basis)",
+    "paybackMonths": 12
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Position sensing is ASIL-B safety-critical (E32); an angle fault corrupts torque control. Inductive sensors are EMC-sensitive near 800V SiC switching (E29) — validate immunity thoroughly. Any angle-accuracy regression would worsen torque ripple and NVH (E33). Mitigate with full functional-safety case, EMC bench + vehicle test, and back-to-back dyno NVH comparison versus resolver before release.",
+   "dfmaPrinciples": [
+    "Replace wound component with printed/stamped equivalent",
+    "Reduce placement-tolerance sensitivity",
+    "Broaden supplier base for commercial leverage"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "unverified: Tesla and GM Ultium moved from resolvers to inductive/eddy-current position sensors (Melexis MLX90513, Renesas IPS2200 class).",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Inductive sensors reach ISO 26262 ASIL-C/D, easing torque-security compliance.",
+   "evidenceRefs": [
+    "E14",
+    "E24",
+    "E29",
+    "E30",
+    "E32",
+    "E33"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Renesas IPS2200 / Melexis inductive position sensor for traction",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "teardown",
+     "title": "GM Ultium drive unit position-sensor teardown",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "part-line",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "add134",
+    "title": "Inductive position sensor replacing resolver on EDU",
+    "score": 33.5
+   },
+   "rank": {
+    "score": 428400,
+    "basis": "payback 12mo ×1.00 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Inductive position sensor replacing resolver on EDU\" ×0.70"
+   }
+  },
+  {
+   "id": "scalable-stator-family-commonisation",
+   "title": "Common stack diameter, varied length across EDU family",
+   "technicalDescription": "The stator lamination (E19), rotor lamination (E22), hairpin winding set (E17) and housing bore (E20) tooling are all diameter-driven. Adopt a scalable-length architecture: fix the lamination outer/inner diameter and the housing bore across the whole EDU family (front/rear axle variants, and any higher/lower-power derivative), and vary only the axial stack length to change torque/power. This lets the €301.53 rotor tooling, the €30.63 stator lamination die (E19) and the housing HPDC die (E20) amortise across every variant at the 200,000/yr × 7-year volume (E36) instead of per-variant tooling. The hairpin winding set (E17, €81.53) reuses the same slot geometry and hairpin bending fixtures, changing only conductor count/length per stack. Because the 8-pole V-magnet topology (E31) and 800V/SiC electrical design (E29) are held constant, the electromagnetic and NVH signature (E33) is characterised once and scaled, cutting validation cost per variant. Saving is tooling amortisation and NRE avoidance across the programme, not a per-part material reduction — so it is priced as amortised tooling/commonisation benefit, unpriced against the single-motor BOM.",
+   "manufacturingImpact": "One progressive lamination die, one hairpin bending/insertion set and one housing die serve all variants; only stack-height stops and conductor-cut length change between derivatives. Line changeover between variants becomes a parameter change, not a re-tool, lifting OEE. Winding VPI (E26) and balancing recipes parameterised by length. Enables single-line multi-variant flow. Requires up-front design discipline to freeze the shared diameter.",
+   "costSavingTypes": [
+    "commonisation",
+    "tooling",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — amortises the most expensive tooling across the family",
+    "percentage": "Programme-level; ~2-4% effective on motor NRE",
+    "annualValue": "€1.0M–€2.0M/yr amortised NRE avoidance (unpriced vs single BOM)",
+    "calculationBasis": "Avoided duplicate lamination/housing/winding tooling NRE spread across variants",
+    "paybackMonths": null
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Freezing a shared diameter can leave a derivative slightly non-optimal (small efficiency/NVH penalty at one end of the range, E33). Mitigate by choosing the diameter at the volume-weighted optimum and validating the NVH signature at each stack length. Long axial variants risk rotor-dynamics criticals near 16,000 rpm — check each length. Governance risk: variant teams must not re-open the frozen interface.",
+   "dfmaPrinciples": [
+    "Commonise the costly interface (diameter)",
+    "Vary one parameter (stack length) for range",
+    "Amortise tooling across variants",
+    "Characterise once, scale by design"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "Architecture decision now; 18-30 months to family rollout",
+   "benchmarkReference": "unverified: Mercedes eATS 2.0, Audi PPE and XPeng SEPA2.0 use one diameter with varied stack length; ~80% part sharing.",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E17",
+    "E19",
+    "E20",
+    "E22",
+    "E29",
+    "E31",
+    "E33",
+    "E36"
+   ],
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "Mercedes eATS 2.0 / Audi PPE scalable EDU family",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "part-line",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "add149",
+    "title": "Common EDU platform with module-count motor length scaling",
+    "score": 24.6
+   },
+   "rank": {
+    "score": 865215,
+    "basis": "quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Common EDU platform with module-count motor length scaling\" ×0.75"
+   }
+  }
+ ]
+}

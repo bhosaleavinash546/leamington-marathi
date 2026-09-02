@@ -1,0 +1,1080 @@
+{
+ "part": "hood",
+ "annualVolume": 60000,
+ "capturedAt": "2026-08",
+ "evidenceIds": [
+  "E1",
+  "E2",
+  "E3",
+  "E4",
+  "E5",
+  "E6",
+  "E7",
+  "E8",
+  "E9",
+  "E10",
+  "E11",
+  "E12",
+  "E13",
+  "E14",
+  "E15",
+  "E16",
+  "E17",
+  "W1",
+  "W2",
+  "W3",
+  "W4",
+  "W5",
+  "E18",
+  "E19",
+  "E20",
+  "E21",
+  "E22",
+  "E23",
+  "E24",
+  "E25",
+  "E26",
+  "E27",
+  "E28",
+  "E29"
+ ],
+ "lensesAvailable": [
+  "vave",
+  "process",
+  "material",
+  "spec",
+  "commercial",
+  "benchmark"
+ ],
+ "lensesRun": [
+  "vave",
+  "material"
+ ],
+ "validation": {
+  "total": 16,
+  "kept": 16,
+  "dropped": 0,
+  "flagged": 5,
+  "avgQuality": 100,
+  "intraBatchMerged": 1,
+  "diversity": {
+   "score": 81.7,
+   "nearDupPairs": 4
+  },
+  "engineChecks": {
+   "checked": 8,
+   "confirmed": 3,
+   "contradicted": 5,
+   "unexpressible": 7
+  }
+ },
+ "ideas": [
+  {
+   "id": "dp780-gauge-downgauge",
+   "title": "Downgauge to 0.6 mm DP780 AHSS, delete a doubler",
+   "technicalDescription": "Re-engineer the 0.75 mm CR mild-steel bracket into 0.6 mm DP780 dual-phase steel (Rm ≥ 780 MPa, Rp0.2 ≥ 450 MPa vs ~180 MPa for CR4 mild). The bracket is stiffness- and slam-fatigue-driven (E3, E7), not class-A (E6), so the higher yield strength lets you cut gauge ~20% while raising the elastic limit that governs 'no permanent set' after repeated hood slam. Bending stiffness scales with t³ so a section/rib compensation (deeper draw beads across the 17 bends, E4) recovers local stiffness lost to thinner gauge. DP780 at 1,000 €/t vs CRC 800 €/t is a small unit-price premium but the mass drops from 0.21 kg to ~0.155 kg, net material cost neutral-to-down. Crucially the higher-yield web resists the slam permanent-set failure mode directly, so a separately spot-welded local reinforcement (if present in the assembly) can be deleted. DP780 hot-dip or e-coat compatible (E4). Verify formability of the tightest of the 17 bends: DP780 min bend radius ~2.5t, so radii below ~1.5 mm need relief. Springback compensation on the transfer die addresses dimensional hold within 0.5 mm (E3).",
+   "manufacturingImpact": "Same progressive/transfer stamping line and e-coat route (E4) — no new process. Die faces need springback recompensation and higher press tonnage (+15–20%) for DP780 vs mild. Tighter bend radii on the 17 bends may need one extra forming station or radius relief. Wear tooling (nitrided/PVD-coated die steel) recommended for AHSS at 60k/yr over 5 yr. E-coat line unchanged. Spot-weld schedule re-tuned for DP780 (lower weldability window, wider electrode force). Net: existing plant, modest tooling revision.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — gauge/mass down plus possible doubler deletion, small alloy premium",
+    "percentage": "12-20%",
+    "annualValue": "€40K–€75K at 60,000 units/yr",
+    "calculationBasis": "Material €0.20/part × ~26% mass cut ≈ €0.05; doubler + weld deletion €0.30–0.60/part where present; €1.32 baseline (E14/E15)",
+    "paybackMonths": 8
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "DP780 springback risks the 0.5 mm hinge-alignment tolerance (E3) — mitigate with die compensation and first-article CMM. Reduced spot-weldability (E4) narrows the weld window; validate with peel/chisel tests and adjusted schedules. Thinner web could raise NVH/slam booming — confirm modal shift on rig. Fatigue under repeated slam (E3) must be re-validated at 0.6 mm; DP780's higher endurance limit is favourable. No crash regression expected as latch-path only (E7).",
+   "dfmaPrinciples": [
+    "Material substitution for strength-to-mass",
+    "Downgauging",
+    "Part-count reduction (delete doubler)",
+    "Design for existing process"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "6-9 months",
+   "benchmarkReference": "unverified: Renault Austral CMF-CD inner sill: 1.5 mm mild → 0.9 mm DP980 equivalent side-impact; Ford Bronco Raptor DP780 tunnel cross-member deletes welded doubler (−35% welds)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "EU ELV 2025 25% recycled-content target favours steel, which retains high recycled fraction and closed-loop recyclability.",
+   "evidenceRefs": [
+    "E3",
+    "E4",
+    "E6",
+    "E7",
+    "E8",
+    "E15"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Renault Austral inner sill DP980 downgauge (marketplace precedent)",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "industry_report",
+     "title": "WorldAutoSteel AHSS formability & bracket downgauge guidelines",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "vave",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "0.21 kg Steel (mild) via Stamping / Deep Drawing → 0.155 kg Steel (high-strength) via Stamping / Deep Drawing, 60k/yr, Germany",
+    "baselineEur": 1.32,
+    "proposedEur": 1.36,
+    "savingPct": -3,
+    "direction": "contradicted",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "priorArt": {
+    "id": "g072",
+    "title": "Ford Bronco Raptor DP780 floor tunnel cross-member — eliminates doubler reinforcement",
+    "score": 21.2
+   },
+   "rank": {
+    "score": 15637.9,
+    "basis": "claim 58K capped at 3x batch median (53K) — unverified figure · payback 8mo ×1.20 · quality 100 ×1.00 · engine contradicted ×0.35 · evidence unverified ×0.9 · prior art \"Ford Bronco Raptor DP780 floor tunnel cross-member — eliminates doubler reinforcement\" ×0.79"
+   }
+  },
+  {
+   "id": "nest-blank-yield",
+   "title": "Attack 61% material overbuy with tighter nesting and blank redesign",
+   "technicalDescription": "The engine reports buy-to-fly of 0.339 kg bought per 0.21 kg shipped — 61% overbuy (E16), meaning ~0.129 kg/part becomes skeleton scrap. On a 17-bend deep-drawn part (E4) much of this is web/flange trim and inter-blank webs. Two concrete moves: (1) re-nest the blank on the coil — rotate/interlock the developed flat pattern and reduce inter-part web to the die's minimum carrier width, and evaluate a two-out mirrored layout so a single stroke shares skeleton between a left/right pair; (2) redesign the blank outline to a developed near-net shape (remove the rectangular envelope habit), moving trim from post-form to progressive-die integrated pierce/trim so scrap is coil-optimised. Even a 61%→40% overbuy takes bought mass from 0.339 to ~0.294 kg, cutting material €0.20 by ~15% and reducing the CRC 800 €/t coil consumption. Because the part is not class-A (E6), cosmetic edge quality on trimmed flanges is a non-issue, giving freedom to place blanks tightly. Sell recovered clean single-grade CRC skeleton back as segregated scrap for a higher rebate than mixed.",
+   "manufacturingImpact": "Requires nesting software study (AutoForm/Logopress) and a die layout revision — potentially a two-out progressive tool if pairing L/R. Coil width may change, needing decoiler/feed re-set. Trim stations rebalanced. No new process or material; same e-coat. Scrap handling upgraded to segregate single-grade CRC skeleton for higher rebate. One-off die rework and PPAP re-run; ongoing coil-yield gain every stroke.",
+   "costSavingTypes": [
+    "material",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — direct coil-yield recovery, low technical risk",
+    "percentage": "8-15%",
+    "annualValue": "€15K–€30K at 60,000 units/yr",
+    "calculationBasis": "Material €0.20/part (E15); overbuy 61%→~40% recovers ~€0.03–0.05/part plus scrap-rebate uplift; ×60,000",
+    "paybackMonths": 10
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Tighter nesting can reduce carrier-strip stiffness causing feed misregistration — validate strip robustness on the transfer line. Blank-edge relocation must not remove material feeding the deepest of the 17 draws (E4), risking splits/thinning that compromise slam durability (E3). Two-out L/R tooling adds die complexity and single-point-of-failure risk. No NCAP/regulatory exposure as internal non-visible part (E6/E7). Confirm scrap segregation logistics.",
+   "dfmaPrinciples": [
+    "Material yield optimisation",
+    "Near-net blank design",
+    "Process integration (pierce/trim in die)",
+    "Waste segregation for value recovery"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "4-6 months",
+   "benchmarkReference": "unverified: Gestamp/Magna progressive-die nesting programmes routinely lift bracket coil yield 10–20% via two-out mirrored layouts on non-class-A parts",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E4",
+    "E6",
+    "E15",
+    "E16"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "AutoForm coil-yield optimisation case studies (stamped brackets)",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "lensId": "vave",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "g040",
+    "title": "BMW i3 CFRP interior trim — laser nesting optimisation cuts waste 24% to 14%",
+    "score": 12.9
+   },
+   "rank": {
+    "score": 16355,
+    "basis": "payback 10mo ×1.09 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"BMW i3 CFRP interior trim — laser nesting optimisation cuts waste 24% to 14%\" ×0.87"
+   }
+  },
+  {
+   "id": "bend-count-simplification",
+   "title": "Cut 17 bends to ~10 via VA/VE feature attack",
+   "technicalDescription": "Seventeen bends (E4) on a non-class-A slam bracket (E6) is a strong VA/VE signal that form features are carrying low value indices. Many bends on hinge reinforcements exist for legacy packaging, incremental stiffening ribs, or tab attachments that a single deeper draw bead or a repositioned weld flange could replace. Function attack: the part must (a) transfer hinge/slam load to the upper rail (E2), (b) resist permanent set (E3), and (c) hold alignment ±0.5 mm (E3). Map each of the 17 bends to one of these functions; bends serving none are candidates for deletion. Consolidate two shallow stiffening bends into one box-section swage that delivers equal or greater section modulus with fewer forming stations. Replace bent locating tabs with pierced pilot holes + a lanced dimple for weld location. Target ~10 bends. Fewer bends = fewer die stations, less springback stack-up (improving the ±0.5 mm hold, E3), lower forming energy, and reduced work-hardening/thinning that currently drives some of the material overbuy (E16). Tooling €0.66/part (E15) is the single largest cost element — station reduction directly attacks it.",
+   "manufacturingImpact": "Fewer forming stations shortens the progressive/transfer die, cutting die build and maintenance cost and press cycle time. Springback stack-up across fewer bends is easier to compensate, improving dimensional capability (E3). May allow a smaller press bed. Requires re-simulation (AutoForm) to confirm the consolidated swage meets stiffness and the deeper draws don't split. New tool or major die insert revision; PPAP re-run. Setup cost (€0.07/part, E15) and machine time also reduce.",
+   "costSavingTypes": [
+    "tooling",
+    "process",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — attacks the dominant tooling cost element and cycle time",
+    "percentage": "15-25%",
+    "annualValue": "€45K–€90K at 60,000 units/yr",
+    "calculationBasis": "Tooling €0.66 + setup €0.07 + machine €0.11 = €0.84/part (E15); ~30–40% station reduction on these ≈ €0.25–0.35/part × 60,000",
+    "paybackMonths": 14
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Feature deletion must be load-path validated — removing a stiffening bend could drop section modulus below the slam-fatigue and no-permanent-set requirement (E3). Consolidated box swage needs modal/stiffness sign-off vs baseline (E2). Deeper single draws risk thinning/splits — verify formability. Weld-location changes must keep spot-weld access to the rail (E4). No crash regression (latch path only, E7). Mitigate with CAE topology study and slam-cycle rig test to 30k cycles before release.",
+   "dfmaPrinciples": [
+    "Feature elimination (VA/VE)",
+    "Function-to-feature mapping",
+    "Reduce forming operations",
+    "Tolerance stack-up reduction",
+    "Section consolidation"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "8-12 months",
+   "benchmarkReference": "unverified: BMW/Audi bracket rationalisation programmes routinely consolidate stiffening bends into box swages, cutting die stations 30–40% on non-visible reinforcements",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E2",
+    "E3",
+    "E4",
+    "E6",
+    "E7",
+    "E15",
+    "E16"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "DFMA feature-attack methodology for stamped reinforcements (Boothroyd Dewhurst)",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "lensId": "vave",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "0.21 kg Steel (mild) via Stamping / Deep Drawing → 0.2 kg Steel (mild) via Stamping / Deep Drawing, 60k/yr, Germany",
+    "baselineEur": 1.32,
+    "proposedEur": 1.3,
+    "savingPct": 1.5,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "rank": {
+    "score": 54519.2,
+    "basis": "claim 68K capped at 3x batch median (53K) — unverified figure · payback 14mo ×0.92 · quality 100 ×1.00 · engine confirmed ×1.25 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "integrate-bracket-into-rail-reinf",
+   "title": "Integrate bracket into upper-rail reinforcement — delete a part",
+   "technicalDescription": "The bracket exists only to transfer hinge/slam loads INTO the upper rail (E2) and is spot-welded to it (E4). Architecturally, this is a candidate for part-count elimination: absorb the bracket's function into the upper-rail inner reinforcement panel as a formed local feature (embossed hinge boss + reinforcing rib pattern) rather than a discrete added part. The hinge mounting holes and slam load path become stamped features of the rail reinforcement, sized in DP780/DP980 locally via a partial patchwork (tailor-welded or spot-welded doubler only where the hinge bolt loads concentrate). This deletes one part number, its dedicated tooling (€0.66/part, E15 — the largest cost driver), its e-coat handling, its logistics, and the spot-weld operation joining it (E4). Because the part is not class-A (E6) and is stiffness/latch-path only (E7), integration doesn't compromise cosmetic or primary-crash requirements. The ±0.5 mm hinge-alignment hold (E3) actually improves when the hinge datum is stamped directly into the rail rather than stacked through a welded bracket's tolerance chain. This is the Tesla/Ford part-consolidation principle applied at the closure-frame level.",
+   "manufacturingImpact": "Eliminates a standalone stamping, its die, its e-coat pass, its spot-weld fixture and one BOM line. The upper-rail reinforcement tool grows in complexity (added embossments, local patch) and needs re-tuned draw/springback control. Assembly line loses one weld-and-load station. Requires body-shop geometry and welding fixture revision — a larger engineering effort than a part-only change, so best timed to a body refresh or new tool cut. Net structural mass roughly neutral; system part count −1.",
+   "costSavingTypes": [
+    "complexity",
+    "tooling",
+    "process",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — deletes an entire part, its tool and its assembly ops",
+    "percentage": "40-70% of part cost",
+    "annualValue": "€50K–€80K at 60,000 units/yr",
+    "calculationBasis": "Removes most of €1.32/part (E14) net of added rail-tool complexity; conservative €0.80–1.10/part net × 60,000",
+    "paybackMonths": 24
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Highest engineering risk: re-homologates the closure load path (E2) and the slam-fatigue/no-permanent-set requirement (E3) at the rail level; needs full CAE + rig sign-off. Local hinge-boss stamping in the rail reinforcement must reach the ±0.5 mm tolerance (E3) after body-shop stack-up. Requires body-in-white change control — realistically only at a platform/refresh gate. Spot-weld access and repairability of an integrated boss must be assured. No NCAP regression as latch path only (E7), but hood-slam durability is a warranty-sensitive customer-touch feature.",
+   "dfmaPrinciples": [
+    "Part-count reduction / integration",
+    "Eliminate joints (delete weld)",
+    "Datum simplification",
+    "Design for assembly",
+    "Function absorption"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "18-24 months",
+   "benchmarkReference": "unverified: Tesla Model Y underbody gigacasting (171→2 parts) principle; Ford Bronco Raptor tunnel cross-member deletes welded doubler by integrating reinforcement",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E2",
+    "E3",
+    "E4",
+    "E6",
+    "E7",
+    "E14",
+    "E15"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Tesla Model Y part-consolidation gigacasting teardown",
+     "confidence": "low",
+     "year": 2022
+    },
+    {
+     "type": "teardown",
+     "title": "Ford Bronco Raptor tunnel cross-member doubler deletion (marketplace precedent)",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "lensId": "vave",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "mergedTitles": [
+    "Integrate bracket into upper rail reinforcement — part elimination"
+   ],
+   "engineCheck": {
+    "referenceCase": "0.21 kg Steel (mild) via Stamping / Deep Drawing → Resistance Spot Welding → 0.05 kg Steel (high-strength) via Stamping / Deep Drawing, 60k/yr, Germany",
+    "baselineEur": 3.02,
+    "proposedEur": 1.11,
+    "savingPct": 63.2,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "priorArt": {
+    "id": "psuv187",
+    "title": "Rear gigacast integrates tow bracket and rear crash rails",
+    "score": 12
+   },
+   "rank": {
+    "score": 34650,
+    "basis": "claim 65K capped at 3x batch median (53K) — unverified figure · payback 24mo ×0.67 · quality 100 ×1.00 · engine confirmed ×1.25 · evidence unverified ×0.9 · prior art \"Rear gigacast integrates tow bracket and rear crash rails\" ×0.88"
+   }
+  },
+  {
+   "id": "commonise-lr-and-platform",
+   "title": "Commonise as symmetric L/R and carry over across platform",
+   "technicalDescription": "Hood hinge brackets are typically handed (left/right) with two mirror part numbers, two tools, two sets of PPAP and inventory. For a stiffness/slam bracket that is non-class-A (E6) and load-path-only (E7), a symmetric ambidextrous design — where the hinge and rail interface features are placed on a mirror-plane so one part serves both sides — collapses two part numbers into one. This doubles the tool's amortisation base (halving effective tooling €0.66/part, E15, the biggest cost element) and halves setup (€0.07/part) and inventory carrying. Extend the same design to carry-over across the OEM's C-segment SUV family and adjacent B/D-segment closures that share hood-slam load magnitudes: a single common hinge-reinforcement geometry qualified once and reused, amortising one tool over multiple programmes rather than 60,000/yr on one. Because the function is generic (transfer hinge/slam load into rail, hold ±0.5 mm — E2/E3), the interface can be standardised. Design the part around a common hinge bolt pattern and a family of rail-flange spacers to absorb the small architectural differences between vehicles, keeping the load-bearing core identical.",
+   "manufacturingImpact": "One tool instead of two (or N) — major tooling amortisation gain. Single PPAP, single supplier PO, one inventory SKU, simplified sequencing at body shop. A symmetric part needs a mirror-neutral feature layout that may add a locating feature or two, marginally more forming complexity, but eliminates a whole second die. Carry-over requires cross-programme release governance and a common interface spec. No new process or material; runs on existing stamping + e-coat line (E4).",
+   "costSavingTypes": [
+    "commonisation",
+    "tooling",
+    "complexity",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — tool and SKU count halved or better, strong amortisation",
+    "percentage": "20-35% of tooling+setup",
+    "annualValue": "€25K–€60K at 60,000 units/yr",
+    "calculationBasis": "Tooling €0.66 + setup €0.07 = €0.73/part (E15); L/R merge + platform reuse cuts effective amortised tool ~30–45% ≈ €0.22–0.33/part × 60,000",
+    "paybackMonths": 6
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "A symmetric design may be slightly heavier or carry redundant features to serve both hands — verify it still meets slam-fatigue/no-permanent-set (E3) on the more highly loaded side. Carry-over across platforms risks over-engineering for lighter programmes and under-engineering for heavier hood variants — bound by worst-case load envelope. Interface standardisation needs cross-programme sign-off, a governance not technical risk. No NCAP/regulatory exposure (non-class-A, latch path only — E6/E7). Mitigate with a design-for-family load study.",
+   "dfmaPrinciples": [
+    "Commonisation / carry-over",
+    "Handedness elimination (symmetry)",
+    "Standardised interfaces",
+    "Tool amortisation",
+    "SKU reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "6-10 months",
+   "benchmarkReference": "unverified: VW MQB and BMW CLAR platforms commonise closure hinge reinforcements across multiple models; symmetric ambidextrous brackets standard in Magna closure kits",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E2",
+    "E3",
+    "E6",
+    "E7",
+    "E15"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "VW MQB modular commonisation closure-hardware carry-over",
+     "confidence": "low",
+     "year": 2021
+    }
+   ],
+   "lensId": "vave",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "rank": {
+    "score": 43350,
+    "basis": "payback 6mo ×1.33 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "e-coat-spec-relaxation",
+   "title": "Right-size corrosion spec: swap standalone e-coat for lower-cost coating",
+   "technicalDescription": "The bracket is fully e-coated as a standalone part (E4), then sits in an under-hood splash-corrosion, 110 °C environment (E5), non-visible (E6). Standalone e-coat (KTL) on a small 0.21 kg bracket is disproportionately expensive per part (finishing €0.01 in-engine but real full-line KTL rack/dip cost is higher off-model). VA/VE the coating spec: (1) if the bracket is spot-welded to the rail before BIW e-coat, it can ride the body's cathodic e-coat pass and the dedicated part-level e-coat is redundant — delete it entirely. (2) Where it must be pre-coated (welded after BIW dip), substitute a zinc-rich pre-primed / GA (galvannealed) or electro-galvanised CRC coil (Z100/ZE) that delivers the required under-hood splash-corrosion life (E5) without a separate KTL pass — coating is applied at the mill on coil, not per-part. Because there is no class-A requirement (E6), cosmetic coating uniformity is irrelevant; only functional red-rust protection matters. Confirm 110 °C service (E5) — galvanneal and cathodic e-coat both tolerate this easily. REACH/ELV compliance: ensure Cr(VI)-free passivation. This removes a whole finishing operation or converts it to a coil-integrated coating with better cut-edge protection at the trimmed flanges.",
+   "manufacturingImpact": "Option 1 deletes a standalone e-coat/handling step — fewer racks, less WIP, no separate coating logistics. Option 2 moves corrosion protection upstream to pre-coated coil (galvannealed/EG), so stamping runs coated stock and post-coat is unnecessary; requires die adjustment for coated-strip galling and re-tuned weld schedules (zinc coatings affect spot-weld nugget). Both remove or simplify the finishing line for this part. Coil coating adds a small €/t premium but removes per-part coating labour and rework.",
+   "costSavingTypes": [
+    "process",
+    "logistics",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — removes or upstreams a finishing operation",
+    "percentage": "5-12%",
+    "annualValue": "€10K–€25K at 60,000 units/yr",
+    "calculationBasis": "Finishing €0.01 in-engine understates real KTL rack cost; deleting standalone coating + handling ≈ €0.10–0.25/part real; ×60,000",
+    "paybackMonths": 6
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Must guarantee under-hood splash + 110 °C corrosion durability (E5) — galvanneal/EG cut-edge and weld-zone protection needs salt-spray/CCT validation to programme corrosion spec. If riding BIW e-coat, ensure no faying-surface crevice corrosion at the spot-weld to the rail — apply weld-through sealer. Coated-coil stamping raises die wear and galling; mitigate with tool coatings and lubrication. REACH/ELV: use Cr(VI)-free, cadmium-free passivation. No NCAP impact (E6/E7).",
+   "dfmaPrinciples": [
+    "Spec right-sizing",
+    "Eliminate finishing operation",
+    "Upstream coating (coil-level)",
+    "Design to functional (not cosmetic) requirement"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "4-8 months",
+   "benchmarkReference": "unverified: Most OEM under-hood brackets ride BIW cathodic e-coat or use galvannealed coil (Z/ZE) rather than standalone KTL; PSA/Stellantis GA coil standard for non-visible closures",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "REACH/ELV 2025 restricts Cr(VI) and cadmium — Cr(VI)-free galvanneal/EG passivation ensures compliance while removing a coating step.",
+   "evidenceRefs": [
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E15"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Galvannealed vs standalone e-coat for under-hood brackets (corrosion study)",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "regulatory",
+     "title": "EU ELV 2025 revision Cr(VI)/Cd restrictions",
+     "confidence": "low",
+     "year": 2025
+    }
+   ],
+   "lensId": "vave",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "0.21 kg Steel (mild) via Stamping / Deep Drawing → E-coat (KTL) → 0.21 kg Steel (mild) via Stamping / Deep Drawing, 60k/yr, Germany",
+    "baselineEur": 1.41,
+    "proposedEur": 1.32,
+    "savingPct": 6.4,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "rank": {
+    "score": 26250,
+    "basis": "payback 6mo ×1.33 · quality 100 ×1.00 · engine confirmed ×1.25 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "dual-source-lcc-footprint",
+   "title": "Dual-source to lower-cost footprint with landed-cost discipline",
+   "technicalDescription": "The entitlement waterfall shows a footprint premium: the cheapest modelled region for this stamping is Mexico ex-works, releasing €0.10/part (W4), and the engine is uncalibrated with no quotes yet in-corpus (E17), meaning the current price may not be market-tested. As a simple non-visible slam bracket (E6/E7) with no exotic process, this part is an ideal candidate for competitive re-sourcing and dual-sourcing. Concrete levers: (1) RFQ to Czech/Slovak stampers (labour £13–17/hr vs German £38–47/hr) which are logistically close to a German plant — capturing most of the labour arbitrage without the transatlantic supply-chain risk that W4 explicitly excludes; (2) run a should-cost-anchored negotiation using the €1.22 entitlement as the direction indicator (W5), pressing the incumbent on the €0.14 SGA+profit and €0.06 commercial lines (E15); (3) qualify a second source to break single-supplier pricing power over the 5-year programme. Note W4's Mexico number excludes logistics/duty from a German plant — for a 0.21 kg part shipped to Germany, near-shore Czech/Slovak sourcing likely beats Mexico on landed cost despite a higher ex-works rate. Labour is only €0.03/part (E15) so the real prize is tooling amortisation and commercial margin, not labour.",
+   "manufacturingImpact": "No design or process change — pure commercial/sourcing action. Requires re-PPAP at the new source, tool transfer or a duplicate tool (capex), and logistics network setup. Near-shore Czech/Slovak sourcing keeps JIT feasibility to a German plant with 1–2 day transit vs weeks from Mexico. Dual-sourcing needs two qualified tools/lines, raising tooling capex but de-risking supply and enabling price competition across the 5-year run.",
+   "costSavingTypes": [
+    "logistics",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — labour arbitrage modest (€0.03/part) but commercial/margin leverage material given uncalibrated pricing",
+    "percentage": "8-15%",
+    "annualValue": "€10K–€30K at 60,000 units/yr",
+    "calculationBasis": "Footprint release €0.10/part (W4) + commercial/SGA pressure on €0.20/part (E15) via competitive RFQ; realistic €0.10–0.18/part × 60,000, net of logistics",
+    "paybackMonths": 12
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "W4's Mexico figure explicitly excludes logistics, duty and supply-chain risk (W4) — a naïve chase of ex-works price can lose the saving to freight and inventory for a light 0.21 kg part; use full landed-cost, favour near-shore. Tool transfer risks dimensional drift on the ±0.5 mm hinge tolerance (E3) — re-PPAP and CMM at new source. Second-source qualification adds lead time. No NCAP/regulatory exposure (E6/E7). Engine uncalibrated (E17) so treat €-figures as directional (W5).",
+   "dfmaPrinciples": [
+    "Should-cost negotiation",
+    "Dual-sourcing / supply de-risk",
+    "Landed-cost (not ex-works) discipline",
+    "Footprint optimisation"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "6-12 months",
+   "benchmarkReference": "unverified: German OEMs routinely near-shore non-visible stampings to Czech/Slovak Tier-1s (e.g. Gestamp Nitra, Kirchhoff Mosonszolnok) capturing labour arbitrage at JIT distance",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E6",
+    "E7",
+    "E15",
+    "E17",
+    "W4",
+    "W5"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Central European stamping labour-cost arbitrage for German OEMs",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "lensId": "vave",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "rank": {
+    "score": 15300,
+    "basis": "payback 12mo ×1.00 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "fineblank-net-shape-tooling",
+   "title": "Emerging: laser-cut + fold prototype route, fineblank for scale trim",
+   "technicalDescription": "Two emerging/alternative process levers attack the tooling €0.66/part (E15, the dominant cost) and the 61% overbuy (E16). (A) For early production, model-year changes, or the second-source ramp, laser blank-cutting + press-brake / robotic folding of the developed pattern eliminates hard-tool amortisation entirely — the Tesla battery cell-retainer principle of laser-cutting mild steel strip instead of a dedicated stamp. At 60,000/yr this is borderline vs progressive stamping, but for the launch phase and any late design changes it removes tool sunk cost and springback re-cutting risk, and laser trim achieves near-net blanks that slash the 61% overbuy (E16) to near zero. (B) For steady-state volume, fine-blanking the flat features and critical trimmed edges produces net-shape flanges with cut-face quality that eliminates secondary trim/deburr and tightens the ±0.5 mm tolerance chain (E3) — fineblanked edges are dimensionally superior. Because the part is non-class-A (E6) and stiffness-driven (E7), neither route compromises function. A hybrid — fineblank the planar load-bearing feature, form the bends conventionally — can combine net-shape yield with formed stiffness. Evaluate both against the progressive-stamping baseline with the uncalibrated engine (E17) as first data point.",
+   "manufacturingImpact": "Route A (laser+fold): removes hard tooling — huge capex avoidance for launch/low-rate/second-source; higher per-part cycle time and labour, so suits <30k/yr tranches and change-heavy phases. Near-net laser trim eliminates skeleton scrap (E16). Route B (fineblank): needs a fineblank press and dedicated tool but yields net-shape edges, removing deburr/secondary-trim ops and improving dimensional capability (E3). Both are proven, low-novelty-risk processes. Hybrid needs process split engineering. E-coat/weld routes unchanged (E4).",
+   "costSavingTypes": [
+    "tooling",
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — tooling avoidance in launch/low-rate phases and scrap elimination; volume-dependent",
+    "percentage": "10-20% (phase-dependent)",
+    "annualValue": "€20K–€45K at 60,000 units/yr",
+    "calculationBasis": "Laser route avoids share of tooling €0.66/part (E15) in launch/change tranches + kills 61% overbuy (E16) recovering ~€0.05/part material; fineblank removes deburr labour",
+    "paybackMonths": 18
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Laser+fold cycle time may not meet 60k/yr steady-state economically — best as launch/low-rate/second-source and change-management route, not full-volume replacement. Fineblank tool capex is high; payback needs the full 5-yr volume. Fineblanking suits planar features — the 17 bends (E4) still need conventional forming, so a hybrid split adds an operation. Validate laser-cut edge fatigue (HAZ) against slam durability (E3). No NCAP/regulatory risk (E6/E7). Engine uncalibrated (E17) — treat cost crossover point as directional.",
+   "dfmaPrinciples": [
+    "Net-shape processing",
+    "Hard-tool avoidance (low-rate)",
+    "Material yield (near-net trim)",
+    "Secondary-operation elimination",
+    "Process selection by volume tranche"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "9-15 months",
+   "benchmarkReference": "unverified: Tesla Model 3/Y battery cell retainer laser-cut mild steel vs stamped tool (marketplace precedent); Feintool fineblanked closure brackets net-shape edge for tighter tolerance",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E3",
+    "E4",
+    "E6",
+    "E7",
+    "E15",
+    "E16",
+    "E17"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Tesla battery cell-retainer laser-cut vs stamped (marketplace precedent)",
+     "confidence": "low",
+     "year": 2022
+    },
+    {
+     "type": "supplier_data",
+     "title": "Feintool fineblanking net-shape bracket tolerance study",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "vave",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "0.339 kg Steel (mild) via Stamping / Deep Drawing → 0.215 kg Steel (mild) via Laser Cutting + Bending → Stamping / Deep Drawing, 60k/yr, Germany",
+    "baselineEur": 1.52,
+    "proposedEur": 3.52,
+    "savingPct": -131.6,
+    "direction": "contradicted",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "rank": {
+    "score": 8190,
+    "basis": "payback 18mo ×0.80 · quality 100 ×1.00 · engine contradicted ×0.35 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "dp780-gauge-downgauge",
+   "title": "DP780 AHSS gauge reduction from 0.75mm mild to 0.55mm",
+   "technicalDescription": "Substitute the 0.75mm CR mild steel (Rp0.2 ≈ 180MPa) with 0.55mm DP780 dual-phase (Rp0.2 ≈ 480MPa, Rm ≈ 780MPa). The bracket is stiffness/slam-driven (E3, E7) and not class-A (E6), so surface appearance is irrelevant and the failure mode is permanent set under repeated slam. Yield strength scales roughly 2.6x, allowing ~27% gauge reduction while retaining anti-set margin; bending stiffness (t³) drops, so the 17 bends (E4) must be re-engineered with added flange returns/ribs to recover section modulus in the hinge load path. Slam is a low-cycle fatigue/set problem — DP780's higher yield delays plastic set, which is the governing requirement (E3). DP780 at 1,000 €/t vs CRC 800 €/t: the €/t premium is offset by 27% less mass. Mass drops from 0.21kg to ~0.153kg. Material cost (E15: €0.20) falls with net mass; the buy-to-fly 61% overbuy (E16) also shrinks proportionally. DP780 is fully spot-weldable (E4) and e-coat compatible (E4).",
+   "manufacturingImpact": "Existing progressive/transfer die must be re-cut for thinner stock and revised bend geometry to recover stiffness; springback compensation increases with DP780 so die tryout and CAE-based springback prediction are required. Spot-weld schedules re-qualified (higher strength, narrower weld window). No new press class needed — same tonnage envelope. 17 bends retained but some converted to stiffening beads. E-coat line unchanged. Coil sourcing shifts to AHSS supplier but DP780 is a mainstream grade with broad availability in Germany (Salzgitter, TKS).",
+   "costSavingTypes": [
+    "material",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — small absolute part but material + mass both fall",
+    "percentage": "12-20% of material line",
+    "annualValue": "€3K–€6K/yr at 60,000 units/yr",
+    "calculationBasis": "0.057kg mass-out × 60k × net €/kg delta (DP780 premium partly offsets); material €0.20→~€0.16",
+    "paybackMonths": 14
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Springback on 17 bends in higher-strength steel risks hinge alignment drift beyond 0.5mm (E3) — mitigate with die compensation and post-form gauging. Reduced t³ stiffness could raise NVH/slam resonance; recover with beads. DP780 formability lower — check for edge cracking at pierced holes. Weld-window narrowing risks cold welds; re-qualify RSW schedule. E-coat throw unaffected.",
+   "dfmaPrinciples": [
+    "Lightweighting via higher-strength material",
+    "Design for stiffness with geometry not gauge",
+    "Maintain weldability",
+    "Error-proof hinge datum"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "9-12 months",
+   "benchmarkReference": "unverified: Renault Austral CMF-CD inner sill: DP980 at 0.9mm replaced 1.5mm mild, equivalent structural performance (2022)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Supports EU ELV 2025 lightweighting and recycled-content compatible steel stream.",
+   "evidenceRefs": [
+    "E3",
+    "E4",
+    "E6",
+    "E7",
+    "E15",
+    "E16"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Renault Austral body structure teardown",
+     "confidence": "low",
+     "year": 2022
+    },
+    {
+     "type": "supplier_data",
+     "title": "CRC 800 €/t vs DP780 1,000 €/t live commodity board",
+     "confidence": "low",
+     "year": 2026
+    }
+   ],
+   "lensId": "material",
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "0.21 kg Steel (mild) via Stamping / Deep Drawing → 0.153 kg Steel (high-strength) via Stamping / Deep Drawing, 60k/yr, Germany",
+    "baselineEur": 1.32,
+    "proposedEur": 1.36,
+    "savingPct": -3,
+    "direction": "contradicted",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "priorArt": {
+    "id": "g072",
+    "title": "Ford Bronco Raptor DP780 floor tunnel cross-member — eliminates doubler reinforcement",
+    "score": 17.4
+   },
+   "rank": {
+    "score": 1080.8,
+    "basis": "payback 14mo ×0.92 · quality 100 ×1.00 · engine contradicted ×0.35 · evidence unverified ×0.9 · prior art \"Ford Bronco Raptor DP780 floor tunnel cross-member — eliminates doubler reinforcement\" ×0.83"
+   }
+  },
+  {
+   "id": "hsla-s420-substitution",
+   "title": "HSLA S420 as low-cost strength upgrade over mild CR",
+   "technicalDescription": "If DP780 forming risk is unacceptable on 17 tight bends (E4), the intermediate lever is HSLA S420 (microalloyed, Rp0.2 ≈ 420MPa, Rm ≈ 480MPa) at 830 €/t — only marginally above CRC 800 €/t but with 2.3x the yield of mild steel. Because slam resistance is a permanent-set (yield-governed) problem (E3), S420 lets the bracket hold hinge alignment with better anti-set margin at the SAME 0.75mm gauge, OR a modest downgauge to ~0.62mm. HSLA has far better formability than DP780 (higher n-value at these strengths, no martensite islands to crack at bend radii), so the 17 bends survive with minimal springback rework — decisive for a stiffness-driven bracket that is not class-A (E6). Spot-weldable and e-coat compatible (E4). This is the pragmatic 'first step' substitution: near-zero material €/t penalty, meaningful mass-out if downgauged, low forming risk. Buy-to-fly overbuy (E16, 61%) reduces with any downgauge.",
+   "manufacturingImpact": "Minimal die change if gauge held at 0.75mm — only a grade swap in the coil spec and re-tryout for the slightly higher springback. If downgauged to 0.62mm, die re-cut and springback compensation needed but far less severe than DP780. Spot-weld schedule re-qualified (modest). Same press, same e-coat line. HSLA S420 widely stocked in Germany — no supply risk. Lower scrap/crack rate than AHSS route.",
+   "costSavingTypes": [
+    "material",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Low-Medium — small part, but very low implementation risk",
+    "percentage": "6-15% of material line if downgauged",
+    "annualValue": "€2K–€4K/yr at 60,000 units/yr",
+    "calculationBasis": "0.75→0.62mm ≈ 17% mass-out × 60k, near-flat €/t; material €0.20→~€0.17",
+    "paybackMonths": 8
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "At held gauge, no mass benefit — value is only realised via downgauge, which reduces stiffness (t³) and risks slam resonance/set (E3); recover with beads. Springback slightly higher than mild — re-tryout. Edge quality at pierced holes better than DP but check hole expansion. Low regulatory/NCAP risk as bracket is only a hood-latch load path element (E7).",
+   "dfmaPrinciples": [
+    "Low-risk strength substitution",
+    "Downgauge via yield margin",
+    "Preserve formability on tight bends",
+    "Maintain weld/e-coat compatibility"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "6-9 months",
+   "benchmarkReference": "unverified: VW MQB uses HSLA S420 microalloyed grades broadly for non-class-A closure reinforcements (2020+)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E3",
+    "E4",
+    "E6",
+    "E16",
+    "E15"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "HSLA S420 830 €/t live commodity board",
+     "confidence": "low",
+     "year": 2026
+    },
+    {
+     "type": "industry_report",
+     "title": "VW MQB closure reinforcement grade survey",
+     "confidence": "low",
+     "year": 2020
+    }
+   ],
+   "lensId": "material",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "0.21 kg Steel (mild) via Stamping / Deep Drawing → 0.174 kg Steel (high-strength) via Stamping / Deep Drawing, 60k/yr, Germany",
+    "baselineEur": 1.32,
+    "proposedEur": 1.41,
+    "savingPct": -6.8,
+    "direction": "contradicted",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "priorArt": {
+    "id": "psuv048",
+    "title": "Roll-formed HSLA rear link replacing stamped fabrication",
+    "score": 13.7
+   },
+   "rank": {
+    "score": 978.6,
+    "basis": "payback 8mo ×1.20 · quality 100 ×1.00 · engine contradicted ×0.35 · evidence unverified ×0.9 · prior art \"Roll-formed HSLA rear link replacing stamped fabrication\" ×0.86"
+   }
+  },
+  {
+   "id": "blank-nest-buy-to-fly",
+   "title": "Blank nesting redesign to cut 61% material overbuy",
+   "technicalDescription": "The engine reports a buy-to-fly of 0.339kg bought per 0.21kg shipped — a 61% material overbuy (E16). For a stamped bracket this is dominated by blank skeleton/web scrap around the developed flat pattern of a 17-bend part (E4). Attack it three ways: (1) re-nest the developed blank on the coil with tighter part-to-part webs and shared-edge nesting (two mirrored brackets nested head-to-tail); (2) narrow coil width selection to match the developed pattern envelope, eliminating side-trim scrap; (3) convert to a progressive-die layout with carrier-strip optimisation and add-on scrap-chopper to enable a denser strip. Because the part is not class-A (E6) and only moderately loaded (E7), no cosmetic edge constraints limit nesting. Reducing overbuy from 61% toward a realistic 25–30% for a multi-bend part recovers material (E15: €0.20) and reduces coil purchase — the single largest controllable variable-cost lever here since tooling (€0.66) is fixed sunk. Every kg of skeleton scrap sells back only at scrap price (~10–15% of CRC), so gross recovery is nearly the full coil €/t.",
+   "manufacturingImpact": "Requires a new strip-layout study and possibly a re-cut progressive die or added stations for pilot/carrier optimisation. If a mirrored two-out nest is adopted, die complexity and press tonnage rise but per-part material falls sharply. Scrap handling (chopper, conveyor) added. Coil width change requires supplier re-slit spec. No change to bends, welds, e-coat. Nesting CAE (AutoForm/logopress) validates the developed pattern before die commitment.",
+   "costSavingTypes": [
+    "material",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — directly targets the 61% overbuy, the biggest variable lever",
+    "percentage": "20-35% of material line",
+    "annualValue": "€3K–€7K/yr at 60,000 units/yr",
+    "calculationBasis": "Cut overbuy 61%→28% ≈ 0.08kg bought/part saved × 60k × ~€0.80/kg CRC net of scrap credit",
+    "paybackMonths": 18
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Tighter webs risk blank distortion, burr, and feed instability; validate with die trials. Two-out mirrored nest raises tooling cost — payback depends on 5-yr programme (300k units) amortisation. Coil re-slit narrows supplier flexibility. No functional/NCAP risk since geometry and material unchanged (E7). Scrap-price volatility affects recovery value.",
+   "dfmaPrinciples": [
+    "Buy-to-fly reduction",
+    "Shared-edge/mirrored nesting",
+    "Coil-width to blank-envelope matching",
+    "Minimise skeleton scrap"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "6-10 months",
+   "benchmarkReference": "unverified: Gestamp closure-reinforcement nesting programmes routinely cut buy-to-fly from 60%+ to <30% via two-out layouts (industry standard)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Reduced scrap supports EU ELV 2025 material-efficiency intent.",
+   "evidenceRefs": [
+    "E4",
+    "E6",
+    "E7",
+    "E15",
+    "E16"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Gestamp stamping nesting efficiency benchmarks",
+     "confidence": "low",
+     "year": 2024
+    },
+    {
+     "type": "industry_report",
+     "title": "Steel CRC 800 €/t + scrap credit basis",
+     "confidence": "low",
+     "year": 2026
+    }
+   ],
+   "lensId": "material",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "g040",
+    "title": "BMW i3 CFRP interior trim — laser nesting optimisation cuts waste 24% to 14%",
+    "score": 12.9
+   },
+   "rank": {
+    "score": 2665.3,
+    "basis": "payback 18mo ×0.80 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"BMW i3 CFRP interior trim — laser nesting optimisation cuts waste 24% to 14%\" ×0.87"
+   }
+  },
+  {
+   "id": "mexico-footprint-shift",
+   "title": "Relocate stamping to lower-cost footprint with logistics offset",
+   "technicalDescription": "The entitlement waterfall (W4) shows the cheapest modelled region for Stamping/Deep Drawing is Mexico, releasing €0.10/part ex-works (€1.32→€1.22). Germany labour is €38–47/hr; Mexico €6.8–10/hr. For a low-value, tooling-heavy bracket the labour+overhead delta (E15: labour €0.03, overhead €0.04, setup €0.07) is modest per part, so the honest lever is transferring the die to an existing lower-cost stamping supplier that already produces for this OEM in a low-labour region — but the part's small size and low value means logistics/duty/inventory (explicitly NOT in W4) can easily erase the €0.10. The defensible move is to source from a Czech/Slovak stamping supplier (€13–17/hr) already inside the EU customs union and near the German assembly plant, capturing part of the labour delta WITHOUT trans-Atlantic freight, duty, or 6-week pipeline inventory on a slam-critical alignment part (E3). This is a commercial/footprint lever, not a design change.",
+   "manufacturingImpact": "Die transferred or duplicated at the receiving plant; requires PPAP re-run, weld/e-coat re-qualification at new site, and logistics setup. No product change. Small bracket ships densely (high parts/container), so freight per part is low intra-EU. Dual-sourcing risk during transfer managed with safety stock.",
+   "costSavingTypes": [
+    "logistics",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Low — €0.10/part ceiling, partly eaten by logistics",
+    "percentage": "5-8% of total should-cost",
+    "annualValue": "€3K–€6K/yr at 60,000 units/yr",
+    "calculationBasis": "€0.10/part ex-works (W4) × 60k, less realistic intra-EU freight; Czech route captures ~€0.06 net",
+    "paybackMonths": 24
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Trans-Atlantic (Mexico) route adds duty, 6-week pipeline and supply risk on a 0.5mm-alignment-critical part (E3) — intra-EU (Czech/Slovak) route preferred to avoid these. PPAP and re-qualification cost may exceed 1-yr saving — check against 5-yr programme. Tooling transfer risks die damage. No NCAP/regulatory change.",
+   "dfmaPrinciples": [
+    "Footprint cost optimisation",
+    "Total-landed-cost thinking",
+    "Supply-chain risk balancing",
+    "Carry-over tooling reuse"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "9-15 months",
+   "benchmarkReference": "German OEMs routinely dual-source low-value closure brackets from Czech/Slovak stampers (€13–17/hr) to capture labour delta without duty (2023)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E3",
+    "E15",
+    "W4"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Prism footprint waterfall W4 Mexico release",
+     "confidence": "low",
+     "year": 2026
+    }
+   ],
+   "lensId": "material",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "rank": {
+    "score": 2295,
+    "basis": "payback 24mo ×0.67 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "commonise-lr-brackets",
+   "title": "Commonise left/right and cross-platform bracket variants",
+   "technicalDescription": "A hood hinge reinforcement is typically handed (LH/RH) and often near-identical across platform derivatives. Because the part is not class-A (E6) and its function is purely load transfer into the rail (E2, E7), the geometric constraints are structural, not styling-driven — which makes commonisation far easier than for visible parts. Two moves: (1) design a single symmetric bracket usable on both LH and RH hinge positions via a mirror-tolerant 17-bend pattern (E4), halving the number of unique part numbers and dies; (2) carry the SAME bracket across the C-segment SUV's platform siblings (other closures/derivatives sharing the upper-rail interface). Consolidating part numbers spreads the €0.66 tooling (E15) — the dominant cost line — across 2–4x the volume, and cuts PPAP, inventory, and logistics SKUs. At 60,000/yr per programme, doubling effective volume roughly halves per-part tooling amortisation. This is a pure commonisation lever requiring no material or process change and thus no functional risk to the slam duty (E3).",
+   "manufacturingImpact": "One die replaces two (LH/RH) if symmetry achieved; die amortised over combined volume. Requires the hinge interface on both sides to accept a common part — packaging negotiation with rail and hinge teams. If cross-platform, part released against multiple BOMs; supplier runs longer batches, lowering setup (E15: €0.07) per part. No change to forming, welding, e-coat. Inventory and PPAP SKUs reduced.",
+   "costSavingTypes": [
+    "commonisation",
+    "tooling",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — tooling is the dominant cost line and it is halved",
+    "percentage": "25-45% of tooling line",
+    "annualValue": "€8K–€15K/yr at 60,000 units/yr (higher if cross-platform)",
+    "calculationBasis": "€0.66 tooling/part halved via 2x effective volume amortisation × 60k, plus setup and SKU reduction",
+    "paybackMonths": 6
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Symmetric design may compromise optimal hinge geometry on one side — validate slam alignment (E3) on both. Cross-platform carry-over locks the part against multiple programme timings; a change on one platform forces re-validation on all. Requires cross-programme governance. No NCAP/material risk. Risk of over-design if the common part must satisfy the worst-case load of all applications.",
+   "dfmaPrinciples": [
+    "Part-number commonisation",
+    "Symmetric/mirror-tolerant design",
+    "Cross-platform carry-over",
+    "Tooling amortisation over volume",
+    "SKU reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "6-12 months",
+   "benchmarkReference": "unverified: BMW UKL and VW MQB commonise non-class-A closure brackets across derivatives to spread tooling (2018+)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E2",
+    "E3",
+    "E4",
+    "E6",
+    "E7",
+    "E15"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "VW MQB modular commonisation strategy",
+     "confidence": "low",
+     "year": 2018
+    }
+   ],
+   "lensId": "material",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "priorArt": {
+    "id": "psuv049",
+    "title": "Commonised steering knuckle across front/rear via mirrored casting",
+    "score": 15.7
+   },
+   "rank": {
+    "score": 9888.4,
+    "basis": "payback 6mo ×1.33 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9 · prior art \"Commonised steering knuckle across front/rear via mirrored casting\" ×0.84"
+   }
+  },
+  {
+   "id": "roll-form-continuous",
+   "title": "Roll-forming for repetitive bend profile at 300k lifetime volume",
+   "technicalDescription": "The bracket has 17 bends (E4) and is not class-A (E6). If a meaningful subset of those bends form a constant cross-section along one axis, roll-forming can replace part of the deep-draw stamping route. Roll-forming produces long profiles with many bends at very low per-part material scrap and modest tooling relative to a multi-station progressive die — directly attacking both the €0.66 tooling line and the 61% buy-to-fly overbuy (E15, E16), since roll-forming has near-net edge utilisation with no skeleton web scrap. At 60,000/yr over 5 years (300,000 lifetime), the roll-form line's tooling amortises well. The developed part is then cut-to-length and secondary-formed for the non-constant hinge features. Roll-forming also work-hardens the section, raising anti-set resistance for slam duty (E3) at the same or lower gauge. Spot-weldable and e-coat compatible (E4). This is an emerging/underused process lever for multi-bend brackets that the deterministic engine excluded (W3 notes 14 routes excluded on DFM score) — worth a targeted DFM re-score.",
+   "manufacturingImpact": "Roll-form line (sequential roller stands) replaces the transfer/progressive die for the constant-section portion; a short secondary press operation adds the hinge-specific 3D features. Dramatically lower material scrap (no skeleton). Roller tooling cheaper to modify than a full progressive die. Cut-to-length and pierce integrated inline. E-coat and weld unchanged. Requires the part to have enough constant-section content to justify the line — geometry-dependent (no 3D model supplied, E8).",
+   "costSavingTypes": [
+    "process",
+    "material",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — strong if constant-section content is high",
+    "percentage": "15-30% of should-cost (material + tooling)",
+    "annualValue": "€5K–€12K/yr at 60,000 units/yr",
+    "calculationBasis": "Near-zero skeleton scrap cuts 61% overbuy (E16); roller tooling amortised over 300k lifetime vs €0.66 progressive die",
+    "paybackMonths": 20
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Only viable if the 17 bends include substantial constant-section geometry — unverified without a 3D model (E8); requires geometry review first. Roll-form end-flare and cut-off burr must be controlled near the hinge datum (0.5mm, E3). Secondary op adds a station. Work-hardening may reduce weld ductility — re-qualify RSW. Process-change gate per W3.",
+   "dfmaPrinciples": [
+    "Process substitution to near-net roll-forming",
+    "Eliminate skeleton scrap",
+    "Work-hardening for anti-set",
+    "Inline cut-to-length integration"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-18 months",
+   "benchmarkReference": "Roll-formed door-frame and closure reinforcements at Shape Corp / voestalpine achieve <10% scrap vs 40–60% stamping (2023)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Lower scrap supports EU ELV 2025 material-efficiency targets.",
+   "evidenceRefs": [
+    "E3",
+    "E4",
+    "E6",
+    "E8",
+    "E15",
+    "E16",
+    "W3"
+   ],
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Shape Corp roll-forming scrap-efficiency data",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "industry_report",
+     "title": "voestalpine roll-formed closure reinforcement study",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "lensId": "material",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": {
+    "referenceCase": "0.21 kg Steel (mild) via Stamping / Deep Drawing → 0.17 kg Steel (high-strength) via Roll Forming → Stamping / Deep Drawing, 60k/yr, Germany",
+    "baselineEur": 1.32,
+    "proposedEur": 2.23,
+    "savingPct": -68.9,
+    "direction": "contradicted",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "priorArt": {
+    "id": "g039",
+    "title": "Porsche Taycan battery floor lateral protection beams — laser + bend vs CNC billet",
+    "score": 12.9
+   },
+   "rank": {
+    "score": 1749.1,
+    "basis": "payback 20mo ×0.75 · quality 100 ×1.00 · engine contradicted ×0.35 · evidence unverified ×0.9 · prior art \"Porsche Taycan battery floor lateral protection beams — laser + bend vs CNC billet\" ×0.87"
+   }
+  },
+  {
+   "id": "topology-lightening-holes",
+   "title": "Topology-driven lightening holes and rib beads to mass-out",
+   "technicalDescription": "The design is stiffness-driven and not class-A (E6, E7), which is exactly the case where topology optimisation removes non-load-bearing material. Run a stiffness/slam-load topology study on the bracket to (1) punch lightening holes in low-stress regions between the hinge bolt pattern and the weld flange, and (2) add embossed stiffening beads that recover section modulus so gauge/mass can drop without losing anti-set performance (E3). Because slam is a set/stiffness problem, moving material to where the bending moment is highest and voiding it elsewhere is directly effective. Lightening holes also reduce blank area, improving buy-to-fly (E16) and cutting material (E15: €0.20). The 17 existing bends (E4) already provide some stiffening; topology tells us which are redundant and where beads replace bends, potentially reducing bend count (fewer die stations, lower tooling). Piercing holes in a progressive die is nearly free per part. This mass-out is achievable at constant material grade, so it stacks with the HSLA/DP substitution ideas rather than competing with them.",
+   "manufacturingImpact": "Progressive die gains pierce/emboss stations for holes and beads; net die complexity may fall if beads let you delete redundant bends. Blank area reduced → less coil consumed. Springback re-tuned for new bead pattern. No new equipment. Spot-weld flange preserved. E-coat drainage actually improves with lightening holes (relevant to E5 splash-corrosion environment — avoids water traps). CAE topology + slam-durability sign-off required before die commit.",
+   "costSavingTypes": [
+    "weight",
+    "material",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — mass-out plus possible bend/station reduction",
+    "percentage": "8-18% mass and material",
+    "annualValue": "€3K–€7K/yr at 60,000 units/yr",
+    "calculationBasis": "~10-15% mass-out (0.21→~0.18kg) × 60k × €0.80/kg, plus blank-area buy-to-fly gain (E16)",
+    "paybackMonths": 15
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Lightening holes near the hinge load path risk stress concentration and premature set under repeated slam (E3) — hole placement must be CAE-verified in low-stress zones only. Beads change resonance; check NVH. Reducing material could drop stiffness below the 0.5mm alignment threshold — validate. E-coat coverage at hole edges must be confirmed for the 110°C splash-corrosion duty (E5). No NCAP risk (E7).",
+   "dfmaPrinciples": [
+    "Topology optimisation",
+    "Lightening holes in low-stress zones",
+    "Beads for stiffness not gauge",
+    "Improve e-coat drainage",
+    "Reduce bend/station count"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "9-14 months",
+   "benchmarkReference": "unverified: Audi and JLR use topology-optimised beaded steel closure reinforcements to mass-out non-class-A brackets 10–15% (2021)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Lightweighting supports EU ELV 2025 and fleet CO2 compliance.",
+   "evidenceRefs": [
+    "E3",
+    "E5",
+    "E6",
+    "E7",
+    "E15",
+    "E16"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "JLR topology-optimised closure reinforcement practice",
+     "confidence": "low",
+     "year": 2021
+    }
+   ],
+   "lensId": "material",
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "engineCheck": null,
+   "rank": {
+    "score": 3400,
+    "basis": "payback 15mo ×0.89 · quality 100 ×1.00 · not engine-checked ×0.85 · evidence unverified ×0.9"
+   }
+  }
+ ]
+}

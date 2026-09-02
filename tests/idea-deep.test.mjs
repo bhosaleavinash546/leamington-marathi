@@ -127,7 +127,32 @@ test('runDeepPass: critiques stamped, elo bounded, contradicted idea repaired & 
   assert.ok(!repaired.engineCheck || repaired.engineCheck.direction !== 'contradicted', 'repair may not still be contradicted');
 });
 
+test('runDeepPass critique level: four-persona panel + small-model repair, NO tournament, no Elo stamps', async () => {
+  const ideas = [
+    mkIdea('Idea one'),
+    mkIdea('Idea two'),
+    mkIdea('Idea three', { engineCheck: { direction: 'contradicted', referenceCase: 'x', baselineEur: 10, proposedEur: 12, savingPct: -20, basis: 'b' } }),
+    mkIdea('Idea four'),
+  ];
+  const client = fakeClient();
+  const summary = await runDeepPass(client, ideas, {
+    partName: 'bracket', manufacturingContext: 'kb', commercialContext: 'precedents',
+    region: 'Germany', annualVolume: 80000, library: undefined, smallModel: 'small', searchExecuted: false,
+  }, { seed: 7, level: 'critique' });
+  assert.equal(summary.level, 'critique');
+  assert.equal(summary.eloMatches, 0, 'no tournament at the critique level');
+  assert.ok(!client.calls.includes('emit_verdict'), 'no judge calls were paid for');
+  assert.equal(client.calls.filter(c => c === 'emit_critiques').length, 4, 'four personas, including the test engineer');
+  for (const i of ideas) assert.equal(i.eloFactor, undefined, 'no Elo stamp without a tournament');
+  assert.ok(summary.critiqued >= 1);
+  assert.ok(summary.refined >= 1, 'the contradicted idea was still repaired');
+  const repaired = ideas.find(i => i.refined?.fromTitle === 'Idea three');
+  assert.ok(repaired);
+  // The fourth persona's critiques are stamped with its own id.
+  assert.ok(ideas.some(i => (i.critiques || []).some(c => c.persona === 'test')), 'test-engineer critiques stamped');
+});
+
 test('runDeepPass: no-ops on tiny batches', async () => {
   const summary = await runDeepPass(fakeClient(), [mkIdea('only')], { partName: 'x', smallModel: 's' });
-  assert.deepEqual(summary, { critiqued: 0, challenges: 0, eloMatches: 0, refineAttempted: 0, refined: 0 });
+  assert.deepEqual(summary, { critiqued: 0, challenges: 0, eloMatches: 0, refineAttempted: 0, refined: 0, level: 'full' });
 });

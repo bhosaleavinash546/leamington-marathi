@@ -459,6 +459,7 @@ export function buildDossier({
   routes = null, regionSweep = null, volumeCurve = null,
   specSteps = null, functionModel = null,
   fleet = null, teardowns = null, anomalies = null,
+  materials = null,
 } = {}) {
   let e = 0;
   const ref = () => `E${++e}`;
@@ -574,6 +575,31 @@ export function buildDossier({
     ...(functionModel.trimQuestions ?? []).slice(0, 5),
   ] : 'No function model confirmed — VAVE/trimming evidence unavailable (optional stage).');
 
+  // ── Engine catalogue grades (data, citable) ───────────────────────────────
+  // The material lens demands a SPECIFIC grade and half the live ideas still
+  // answered with a family. Listing what the engine can actually price — the
+  // same family first, then the nearest neighbours by price — gives the model
+  // names to use and the validator a dictionary to resolve them against. Every
+  // figure is the catalogue's illustrative anchor, never a quote.
+  const partMat = materials && part.material ? resolveMaterial(String(part.material), materials) : null;
+  if (materials && typeof materials === 'object' && Object.keys(materials).length) {
+    const fam = partMat ? materials[partMat.key]?.family : null;
+    const rows = Object.entries(materials)
+      .filter(([, m]) => m && Number.isFinite(Number(m.price)))
+      .map(([name, m]) => ({ name, family: m.family, density: Number(m.density), price: Number(m.price), same: fam ? m.family === fam : false }))
+      .sort((a, b) => (Number(b.same) - Number(a.same)) || a.price - b.price);
+    const sameFam = rows.filter(r => r.same).slice(0, 10);
+    const others = rows.filter(r => !r.same).slice(0, 8);
+    add('catalogue', 'Engine catalogue grades (what the cost engine can price — illustrative €/kg anchors, not quotes)', [
+      partMat ? `Stated material resolves to catalogue "${partMat.key}"${partMat.approx ? ' (nearest match)' : ''}${fam ? `, family ${fam}` : ''}.` : `Stated material "${part.material ?? '?'}" does not resolve to any catalogue entry — name a specific grade the engine knows.`,
+      ...sameFam.map(r => `${r.name}: ${r.density} g/cm³, €${r.price.toFixed(2)}/kg (${r.family})`),
+      ...(others.length ? [`Other families the engine can price: ${others.map(r => `${r.name} €${r.price.toFixed(2)}/kg`).join('; ')}.`] : []),
+      'Name grades from this list (or a designation that maps to one) so the engine check can re-price the substitution; a grade the engine cannot resolve is flagged, not priced.',
+    ]);
+  } else {
+    add('catalogue', 'Engine catalogue grades', 'Catalogue not supplied to the dossier — grade resolution unavailable.');
+  }
+
   return {
     sections,
     evidenceCount: e,
@@ -586,7 +612,7 @@ export function buildDossier({
 export const LENSES = [
   { id: 'vave', name: 'VA/VE function attack', sections: ['context', 'part', 'function', 'dfm', 'geometry', 'cost', 'fleet', 'teardown'], directive: 'Attack functions with poor value indices and parts/features that can be deleted, combined, or simplified. Trimming questions in the evidence are open engineering questions — answer them with specific design moves.' },
   { id: 'process', name: 'Process shift', sections: ['context', 'part', 'routes', 'waterfall', 'dfm', 'volume', 'fleet'], directive: 'Close the PROCESS PREMIUM step of the waterfall. Use only the DFM-viable alternatives listed; spell out the full alternative route (forming + secondary ops + finishing), address their top findings and the up-front tooling cheque in the idea itself, and state why the route satisfies the stated part function.' },
-  { id: 'material', name: 'Material & mass', sections: ['context', 'part', 'geometry', 'cost', 'spec', 'dfm', 'fleet', 'teardown'], directive: 'Cut material cost: substitution to a cheaper compatible grade, buy-to-fly reduction, and mass-out moves the solidity/wall evidence supports. Name the SPECIFIC alternative grade (never a family), its decisive properties versus the stated part function, and why it survives the duty the context lines describe — a substitution the stated function rules out is a DEFECT, not an idea. Include an engineCheckRequest for every substitution or mass change.' },
+  { id: 'material', name: 'Material & mass', sections: ['context', 'part', 'geometry', 'cost', 'spec', 'dfm', 'fleet', 'teardown', 'catalogue'], directive: 'Cut material cost: substitution to a cheaper compatible grade, buy-to-fly reduction, and mass-out moves the solidity/wall evidence supports. Name the SPECIFIC alternative grade (never a family), its decisive properties versus the stated part function, and why it survives the duty the context lines describe — a substitution the stated function rules out is a DEFECT, not an idea. Include an engineCheckRequest for every substitution or mass change.' },
   { id: 'spec', name: 'Specification & tolerance', sections: ['context', 'part', 'spec', 'forensics', 'cost'], directive: 'Convert the CALCULATED relaxation steps into concrete drawing changes — name the callouts to relax and the functional justification required. Never propose relaxing a critical characteristic without saying what validates it.' },
   { id: 'commercial', name: 'Supplier & commercial', sections: ['context', 'part', 'forensics', 'waterfall', 'regions', 'volume', 'quote'], directive: 'Close the COMMERCIAL GAP and FOOTPRINT steps: negotiation arguments anchored on the forensics verdicts (quote lines above the model band), amortisation corrections, and resourcing options with their stated ex-works caveat.' },
   { id: 'benchmark', name: 'Benchmark transfer', sections: ['context', 'part', 'cost', 'dfm', 'waterfall', 'fleet', 'teardown'], directive: 'Transfer PROVEN levers from the marketplace precedents in your context to THIS part\'s measured gaps. Say which precedent, and which evidence line it lands on.' },

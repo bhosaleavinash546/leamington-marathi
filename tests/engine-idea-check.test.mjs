@@ -121,3 +121,73 @@ describe('harness ideas are checkable', () => {
     assert.equal('harnessCheckRequest' in ideas[0], false);
   });
 });
+
+// ── Extended levers: tolerance, assembly, and a reason on every null ─────────
+// Measured on four live Prism runs, 47–100% of ideas were null because only a
+// material/process substitution was expressible. These pin the new kinds and
+// the rule that a null ALWAYS says why.
+describe('engine-idea-check: extended levers', () => {
+  it('prices a tolerance relaxation through the engine drawing drivers', () => {
+    const idea = mk({
+      kind: 'tolerance', material: 'Cast Iron (Ductile/GJS)', process: 'Sand Casting + Machining (CNC)', weightKg: 4.2,
+      baseline: { toleranceClass: 'precision', surfaceFinish: 'fine', criticalCharacteristics: 6 },
+      proposed: { toleranceClass: 'tight', surfaceFinish: 'standard', criticalCharacteristics: 3 },
+    });
+    const s = runEngineChecks([idea], { region: 'Germany', annualVolume: 60000 });
+    assert.equal(s.checked, 1);
+    assert.equal(idea.engineCheck.kind, 'tolerance');
+    assert.equal(idea.engineCheck.direction, 'confirmed');
+    assert.match(idea.engineCheck.referenceCase, /precision tol .* → tight tol/);
+    assert.equal(idea.engineCheckReason, undefined);
+    assert.deepEqual(s.byKind, { tolerance: 1 });
+  });
+
+  it('refuses a tolerance request where nothing changed, with the reason', () => {
+    const idea = mk({ kind: 'tolerance', material: 'Steel (mild)', process: 'Stamping / Deep Drawing', baseline: { toleranceClass: 'tight' }, proposed: { toleranceClass: 'tight' } });
+    runEngineChecks([idea]);
+    assert.equal(idea.engineCheck, null);
+    assert.match(idea.engineCheckReason, /nothing changed/);
+  });
+
+  it('prices a part-count / joining change through the DFA time model', () => {
+    const good = mk({ kind: 'assembly', baseline: { parts: 3, fasteners: { screw: 6 } }, proposed: { parts: 1, fasteners: {} } });
+    const bad = mk({ kind: 'assembly', baseline: { parts: 1, fasteners: {} }, proposed: { parts: 2, fasteners: { boltNut: 4 } } });
+    const s = runEngineChecks([good, bad], { region: 'Germany', annualVolume: 60000 });
+    assert.equal(s.checked, 2);
+    assert.equal(good.engineCheck.kind, 'assembly');
+    assert.equal(good.engineCheck.direction, 'confirmed');
+    assert.ok(good.engineCheck.baselineEur > good.engineCheck.proposedEur);
+    assert.match(good.engineCheck.referenceCase, /3 parts \(6 screw\) → 1 parts/);
+    assert.match(good.engineCheck.basis, /NOT included/, 'the basis must say material/tooling consequences are excluded');
+    assert.equal(bad.engineCheck.direction, 'contradicted');
+    // Labour rate is the region's: the same move is cheaper to do in Mexico, so it saves less there.
+    const mx = mk({ kind: 'assembly', baseline: { parts: 3, fasteners: { screw: 6 } }, proposed: { parts: 1, fasteners: {} } });
+    runEngineChecks([mx], { region: 'Mexico', annualVolume: 60000 });
+    assert.ok(mx.engineCheck.baselineEur < good.engineCheck.baselineEur);
+  });
+
+  it('every null carries a reason, and the summary tallies them', () => {
+    const none = { title: 'no request' };
+    const unknownMat = mk({ baselineMaterial: 'Unobtanium', baselineProcess: 'Stamping / Deep Drawing', proposedMaterial: 'Steel (mild)', proposedProcess: 'Stamping / Deep Drawing' });
+    const unchanged = mk({ baselineMaterial: 'Steel (mild)', baselineProcess: 'Stamping / Deep Drawing', proposedMaterial: 'Steel (mild)', proposedProcess: 'Stamping / Deep Drawing', referenceWeightKg: 1, proposedWeightKg: 1 });
+    const noParts = mk({ kind: 'assembly', baseline: {}, proposed: { parts: 1 } });
+    const s = runEngineChecks([none, unknownMat, unchanged, noParts]);
+    assert.equal(s.unexpressible, 4);
+    for (const i of [none, unknownMat, unchanged, noParts]) {
+      assert.equal(i.engineCheck, null);
+      assert.ok(typeof i.engineCheckReason === 'string' && i.engineCheckReason.length > 10, `reason missing on "${i.title}"`);
+    }
+    assert.match(none.engineCheckReason, /no engine-check request/);
+    assert.match(unknownMat.engineCheckReason, /"Unobtanium" not in the engine catalogue/);
+    assert.match(unchanged.engineCheckReason, /nothing changed/);
+    assert.match(noParts.engineCheckReason, /part count/);
+    assert.equal(Object.values(s.reasons).reduce((a, b) => a + b, 0), 4);
+  });
+
+  it('a mass-only change is stamped kind "mass"', () => {
+    const idea = mk({ baselineMaterial: 'Aluminium A356 (cast)', baselineProcess: 'Gravity Die Casting', proposedMaterial: 'Aluminium A356 (cast)', proposedProcess: 'Gravity Die Casting', referenceWeightKg: 2.0, proposedWeightKg: 1.6 });
+    runEngineChecks([idea]);
+    assert.equal(idea.engineCheck.kind, 'mass');
+    assert.equal(idea.engineCheck.direction, 'confirmed');
+  });
+});

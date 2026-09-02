@@ -9,7 +9,13 @@
  *   validateIdeas(rawIdeas) -> { ideas, summary }
  *
  * Pure & dependency-free so it can be unit-tested in isolation.
+ *
+ * qualityScore is the technical-DEPTH rubric (idea-depth.mjs) minus flag
+ * penalties. It used to be completeness-only and scored 100 on every one of
+ * 63 live ideas — see idea-depth.mjs for why that had to change.
  */
+import { scoreDepth, findGrade } from './idea-depth.mjs';
+import { resolveMaterial } from './material-process-resolve.mjs';
 
 const COST_SAVING_TYPES = new Set(['material', 'process', 'logistics', 'complexity', 'warranty', 'tooling', 'weight', 'commonisation']);
 const DIFFICULTIES = new Set(['Low', 'Medium', 'High']);
@@ -142,22 +148,54 @@ export function validateIdea(raw, index = 0, ctx = {}) {
   // actually supplied (ctx.hasEvidence) an idea with no surviving ref is
   // flagged: the prompt made citation mandatory, so its absence is a defect
   // worth a visible badge, not a silent pass.
-  const refs = Array.isArray(raw.evidenceRefs)
+  const shaped = Array.isArray(raw.evidenceRefs)
     ? [...new Set(raw.evidenceRefs.filter(r => typeof r === 'string' && /^[EW]\d{1,3}$/.test(r.trim())).map(r => r.trim()))].slice(0, 8)
     : [];
+  // When the dossier's line ids are known, a ref must RESOLVE to one of them.
+  // A well-formed id for a line that does not exist is a fabricated citation
+  // — dropped, and flagged so the badge says so.
+  const known = ctx.evidenceIds ? new Set(Array.isArray(ctx.evidenceIds) ? ctx.evidenceIds : [...ctx.evidenceIds]) : null;
+  const refs = known ? shaped.filter(r => known.has(r)) : shaped;
+  if (known && refs.length < shaped.length) flags.push(`unresolvable-evidence-ref(${shaped.filter(r => !known.has(r)).join(',')})`);
   if (refs.length > 0) idea.evidenceRefs = refs;
   else delete idea.evidenceRefs;
   if (ctx.hasEvidence === true && refs.length === 0) flags.push('uncited-in-evidence-mode');
+
+  // ── Engineering sections (depth over count) ─────────────────────────────
+  // Five named sections the prompt demands; kept as strings, capped, and
+  // absent when the model sent nothing usable — never a heading over air.
+  if (raw.engineering && typeof raw.engineering === 'object') {
+    const eng = {};
+    for (const k of ['mechanism', 'specDeltas', 'validationPlan', 'dfmImplications', 'costBridge']) {
+      const v = str(raw.engineering[k]).trim();
+      if (v) eng[k] = v.slice(0, 1200);
+    }
+    if (Object.keys(eng).length) idea.engineering = eng; else delete idea.engineering;
+  } else delete idea.engineering;
+
+  // ── Named grade resolved against the engine catalogue (when supplied) ────
+  // The material lens demands a specific grade; measured at 27–70% of ideas.
+  // Naming one is the rubric's business; whether the ENGINE knows it is
+  // recorded here so a grade the catalogue cannot price is visible.
+  const named = findGrade([idea.title, idea.technicalDescription, str(raw.materialGrade), raw.engineering?.specDeltas].map(s => str(s)).join('\n'));
+  if (named) {
+    const hit = ctx.materials ? resolveMaterial(named, ctx.materials) : null;
+    idea.grade = { named, catalogueKey: hit?.key ?? null, approx: hit ? hit.approx : null };
+    if (ctx.materials && !hit) flags.push(`grade-not-in-library(${named})`);
+  } else delete idea.grade;
 
   // regulatoryContext: string or null (never the literal string "null")
   const reg = raw.regulatoryContext;
   idea.regulatoryContext = (typeof reg === 'string' && reg.trim() && reg.trim() !== 'null') ? reg.trim() : null;
 
-  // ── Quality score (0-100): completeness minus flag penalties ─────────────
-  let score = 100;
+  // ── Quality score (0-100): technical depth minus flag penalties ──────────
+  // The depth rubric is the base (see idea-depth.mjs); completeness defects
+  // still cost 8 each so a deep idea with broken fields does not outrank a
+  // deep idea with clean ones. 100 needs every rubric criterion AND no flags.
+  if (idea.technicalDescription.length < 80) flags.push('thin-technical-description');
+  idea.depth = scoreDepth(idea, { evidenceIds: known ?? undefined });
+  let score = idea.depth.score;
   score -= flags.length * 8;
-  if (idea.technicalDescription.length < 80) { score -= 10; flags.push('thin-technical-description'); }
-  if (idea.evidenceSources.length === 0) score -= 8;
   idea.qualityScore = Math.max(0, Math.min(100, score));
   idea.validationFlags = flags;
 

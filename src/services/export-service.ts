@@ -533,6 +533,25 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
     doc.text(m.label, bx + boxW / 2, by + 19, { align: 'center' });
   });
 
+  // Coverage and review lines (Prism): which evidence lenses ran and which
+  // were not explored, and whether a critique pass reviewed the batch. A
+  // two-lens run must never read like a full study — on the cover, in words.
+  {
+    const v = result.validation;
+    const lines: string[] = [];
+    if (v?.lenses) {
+      const l = v.lenses;
+      const total = l.run.length + l.skipped.length;
+      lines.push(`LENS COVERAGE: ${l.run.length} of ${total || l.run.length} evidence lenses run (${l.run.join(', ') || 'none'})${l.skipped.length ? ` — not explored: ${l.skipped.join(', ')}` : ''}${l.empty.length ? ` — returned nothing: ${l.empty.join(', ')}` : ''}.`);
+    }
+    if (v?.deep) lines.push(`REVIEW: ${v.deep.level === 'full' ? 'deep mode' : 'critique pass'} — ${v.deep.critiqued} ideas critiqued, ${v.deep.challenges} challenges, ${v.deep.refined} repaired.`);
+    if (v?.engineChecks) lines.push(`ENGINE: ${v.engineChecks.checked} checked (${v.engineChecks.confirmed} confirmed, ${v.engineChecks.contradicted} contradicted), ${v.engineChecks.unexpressible} not expressible${v.arithmetic ? ` · ARITHMETIC: ${v.arithmetic.consistent} consistent, ${v.arithmetic.mismatch} mismatch, ${v.arithmetic.unparsed} unparsed` : ''}.`);
+    setColor(doc, [203, 213, 225]);
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    lines.slice(0, 3).forEach((t, i) => doc.text(fitText(doc, pdfSafe(t), CW), ML, 111 + i * 3.6));
+  }
+
   // Light section — summary table
   setColor(doc, NAVY_RGB);
   doc.setFontSize(13);
@@ -787,6 +806,30 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
 
     flowSection('Technical Description', idea.technicalDescription, LIGHT_RGB, [55, 65, 81]);
     flowSection('Manufacturing & Assembly Impact', idea.manufacturingImpact, [240, 253, 244], [55, 65, 81]);
+
+    // The engineering brief — the five sections the prompt demands, printed
+    // only where the model wrote them (no heading over empty space).
+    if (idea.engineering) {
+      const eng = idea.engineering;
+      const parts: Array<[keyof typeof eng, string]> = [
+        ['mechanism', 'Mechanism'], ['specDeltas', 'Spec deltas'], ['validationPlan', 'Validation plan'],
+        ['dfmImplications', 'DFM implications'], ['costBridge', 'Cost bridge'],
+      ];
+      for (const [k, label] of parts) {
+        if (eng[k]) flowSection(`Engineering brief — ${label}`, String(eng[k]), [236, 254, 255], [19, 78, 74]);
+      }
+    }
+    // The model's own sums, recomputed — unparsed says unparsed.
+    if (idea.arithmetic) {
+      const a = idea.arithmetic;
+      const tone: readonly [number, number, number] = a.status === 'consistent' ? [236, 253, 245] : a.status === 'mismatch' ? [254, 242, 242] : [241, 245, 249];
+      const ink: readonly [number, number, number] = a.status === 'consistent' ? [6, 95, 70] : a.status === 'mismatch' ? [153, 27, 27] : [71, 85, 105];
+      flowSection(`Arithmetic check — ${a.status.toUpperCase()}`, `${a.note}.${a.basis ? ` Read as: ${a.basis}.` : ''}`, tone, ink);
+    }
+    // Technical depth: the checkable ingredients that are missing, by name.
+    if (idea.depth && idea.depth.missing.length > 0) {
+      flowSection(`Technical depth ${idea.depth.score}/100 — missing`, idea.depth.missing.map(m => `${m}: ${idea.depth!.criteria[m]?.detail ?? ''}`).join('; '), [255, 251, 235], [120, 53, 15]);
+    }
 
     // DFMA principles (single line, width-fitted)
     if (idea.dfmaPrinciples.length > 0) {

@@ -234,6 +234,16 @@ export function rankIdeas(ideas) {
     const engineFactor = dir === 'confirmed' ? 1.25 : dir === 'contradicted' ? 0.35 : 0.85;
     basis.push(dir ? `engine ${dir} ×${engineFactor}` : `not engine-checked ×${engineFactor}`);
 
+    // The annual value is the BASE of this score, so a claim whose own stated
+    // basis does not multiply out to it must not keep the full base. The
+    // arithmetic check (idea-arith.mjs) recomputes the basis; a mismatch of
+    // up to 50% costs ×0.85, a larger one ×0.7. "unparsed" is not a verdict
+    // and is neutral.
+    const arith = idea.arithmetic;
+    const arithFactor = arith?.status === 'mismatch' ? (Math.abs(arith.deltaPct) <= 50 ? 0.85 : 0.7) : 1;
+    if (arith?.status === 'mismatch') basis.push(`stated basis multiplies out ${arith.deltaPct > 0 ? '+' : ''}${arith.deltaPct}% vs claim ×${arithFactor}`);
+    if (arith?.status === 'consistent') basis.push('stated basis multiplies out');
+
     const evidenceFactor = idea.evidenceUnverified === false ? 1.1 : idea.evidenceUnverified === true ? 0.9 : 1;
     if (idea.evidenceUnverified === false) basis.push('search-backed evidence ×1.1');
     if (idea.evidenceUnverified === true) basis.push('evidence unverified ×0.9');
@@ -272,7 +282,7 @@ export function rankIdeas(ideas) {
     // Value-less ideas rank on their factors alone (base 1) so verified
     // high-quality ideas still beat broken ones instead of all tying at 0.
     const base = annualMid || 1;
-    const score = base * paybackFactor * qualityFactor * engineFactor * evidenceFactor * tasteFactor * noveltyFactor * eloF;
+    const score = base * paybackFactor * qualityFactor * engineFactor * evidenceFactor * tasteFactor * noveltyFactor * eloF * arithFactor;
     idea.rank = { score: Number(score.toFixed(1)), basis: basis.join(' · ') };
   }
   return ideas;

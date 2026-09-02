@@ -51,10 +51,16 @@ export function evidenceIsVerified(idea) {
 export function engineVerdict(idea) {
   const ec = idea && idea.engineCheck;
   if (!ec) {
+    // The pipeline now stamps WHY (no request, grade not in catalogue, nothing
+    // changed …) — print that reason, and fall back to the generic wording
+    // only for results saved before the reason existed.
+    const why = idea && typeof idea.engineCheckReason === 'string' && idea.engineCheckReason.trim()
+      ? idea.engineCheckReason.trim().replace(/\.$/, '')
+      : 'not expressible as a substitution, tolerance, assembly or harness change the engine can price';
     return {
       label: 'NOT ENGINE-CHECKED',
       tone: 'none',
-      text: `Engine cross-check: not expressible as a material/process/mass substitution — ${AI_ESTIMATED_CAUTION}.`,
+      text: `Engine cross-check: ${why} — ${AI_ESTIMATED_CAUTION}.`,
     };
   }
   const dir = String(ec.direction ?? '').toLowerCase();

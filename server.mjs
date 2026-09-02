@@ -21,6 +21,10 @@ import nodemailer from 'nodemailer';
 import Database from 'better-sqlite3';
 import { validateIdeas } from './idea-validation.mjs';
 import { runEngineChecks } from './engine-idea-check.mjs';
+import { runArithmeticChecks } from './idea-arith.mjs';
+import { depthSummary } from './idea-depth.mjs';
+import { LENSES as PRISM_LENSES } from './part360.mjs';
+import { ASSEMBLY_LENSES } from './prism-assembly.mjs';
 import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from './fx-rates.mjs';
 import { computeShouldCost, simulateShouldCost } from './costing-engine.mjs';
 import { featuredMachiningCost } from './machining-feature-cost.mjs';
@@ -2214,7 +2218,7 @@ function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enab
   // and paired with a hard citation requirement — an idea grounded in nothing
   // is exactly the generic restatement this block exists to prevent.
   const evidenceBlock = partEvidenceText
-    ? `\n${partEvidenceText}\nEVERY idea must cite the [E#]/[W#] evidence lines that motivate it in its evidenceRefs field. An idea that cannot cite evidence should not be emitted. Emit AT MOST 8 ideas: depth over count — each one fully developed, technically specific, and complete. Never start an idea you cannot finish within the response.\n`
+    ? `\n${partEvidenceText}\nEVERY idea must cite the [E#]/[W#] evidence lines that motivate it in its evidenceRefs field — only ids that appear above; an id that does not exist is dropped and flagged. An idea that cannot cite evidence should not be emitted. Emit AT MOST 8 ideas: depth over count — each one fully developed, technically specific, and complete, with ALL FIVE engineering sections filled (mechanism, specDeltas, validationPlan, dfmImplications, costBridge). An idea is judged on what can be CHECKED: a specific grade or standard named, at least two quantities with units that change, a validation activity with an acceptance limit, a DFM principle, and resolvable evidence refs. Never start an idea you cannot finish within the response.\n`
     : '';
 
   return `Generate ALL expert-level cost reduction ideas available for:
@@ -2229,11 +2233,15 @@ ${regulatoryContext}
 IMPORTANT: Use the actual volume (${volume.toLocaleString()} units/yr) and currency (${currency}) in all annual savings calculations.
 
 Each idea JSON object must have EXACTLY these fields:
-{"id":"slug","title":"≤12 words","technicalDescription":"180-220 words, specific grades/processes/benchmarks","manufacturingImpact":"90-130 words","costSavingTypes":["material|process|logistics|complexity|warranty|tooling|weight|commonisation"],"costSavingPotential":{"qualitative":"High/Medium/Low — reason","percentage":"e.g. 10-18%","annualValue":"e.g. ${currencySymbol}350K–${currencySymbol}650K at ${volume.toLocaleString()} units/yr","calculationBasis":"brief calc logic","paybackMonths":"estimated months to recover tooling/investment cost assuming typical annual volume (integer or null if not applicable)"},"implementationDifficulty":"Low|Medium|High","riskNotes":"70-90 words on NCAP/NVH/durability/regulatory risks + mitigations","dfmaPrinciples":["3-6 principles"],"systemLevel":"Assembly|Subassembly|Part","timeToImplement":"e.g. 6-12 months","benchmarkReference":"specific OEM/supplier example","searchDataUsed":true|false,"confidenceLevel":"verified|benchmarked|estimated|theoretical","regulatoryContext":"1 sentence on relevant regulatory driver or compliance benefit if applicable, else JSON null (not the string null)","evidenceRefs":["E1","W2"] (ONLY when a MEASURED PART EVIDENCE block is present — the evidence line ids this idea addresses; omit otherwise),"evidenceSources":[{"type":"oem_press_release|teardown|patent|industry_report|supplier_data|web_search|regulatory","title":"short source name","year":2024,"confidence":"high|medium|low","url":"the result URL when the source came from web_search, else null"}],"engineCheckRequest":{"baselineMaterial":"catalogue-style name e.g. Steel (mild)","baselineProcess":"e.g. Stamping / Deep Drawing (chain ops with + if multi-op)","proposedMaterial":"...","proposedProcess":"...","referenceWeightKg":1.2,"proposedWeightKg":0.8} }
+{"id":"slug","title":"≤12 words","technicalDescription":"180-220 words, specific grades/processes/benchmarks","manufacturingImpact":"90-130 words","costSavingTypes":["material|process|logistics|complexity|warranty|tooling|weight|commonisation"],"costSavingPotential":{"qualitative":"High/Medium/Low — reason","percentage":"e.g. 10-18%","annualValue":"e.g. ${currencySymbol}350K–${currencySymbol}650K at ${volume.toLocaleString()} units/yr","calculationBasis":"brief calc logic","paybackMonths":"estimated months to recover tooling/investment cost assuming typical annual volume (integer or null if not applicable)"},"implementationDifficulty":"Low|Medium|High","riskNotes":"70-90 words on NCAP/NVH/durability/regulatory risks + mitigations","dfmaPrinciples":["3-6 principles"],"systemLevel":"Assembly|Subassembly|Part","timeToImplement":"e.g. 6-12 months","benchmarkReference":"specific OEM/supplier example","searchDataUsed":true|false,"confidenceLevel":"verified|benchmarked|estimated|theoretical","regulatoryContext":"1 sentence on relevant regulatory driver or compliance benefit if applicable, else JSON null (not the string null)","evidenceRefs":["E1","W2"] (ONLY when a MEASURED PART EVIDENCE block is present — the evidence line ids this idea addresses; omit otherwise),"evidenceSources":[{"type":"oem_press_release|teardown|patent|industry_report|supplier_data|web_search|regulatory","title":"short source name","year":2024,"confidence":"high|medium|low","url":"the result URL when the source came from web_search, else null"}],"engineering":{"mechanism":"60-100 words: the governing physics or process constraint — WHY the change works (stiffness ∝ t³, cycle time vs wall, yield vs permanent set, loss vs gauge …) with the numbers","specDeltas":"40-80 words: exact drawing/spec changes — grade (designation, not family), gauge/wall, tolerances, finish, part numbers deleted, tooling","validationPlan":"40-80 words: the tests that PROVE it — which test, sample size, acceptance limit, duration; PPAP/re-qualification implications","dfmImplications":"40-80 words: what the change does to manufacturability and assembly — part count, fixtures, cycle, tooling wear, secondary ops","costBridge":"40-80 words: baseline → proposed cost walk per part from the evidence figures, then × volume; name what is NOT included"},"engineCheckRequest":{"kind":"substitution|tolerance|assembly","baselineMaterial":"catalogue-style name e.g. Steel (mild)","baselineProcess":"e.g. Stamping / Deep Drawing (chain ops with + if multi-op)","proposedMaterial":"...","proposedProcess":"...","referenceWeightKg":1.2,"proposedWeightKg":0.8} }
 
 CONFIDENCE GUIDE: Use 'verified' only when you can name a specific OEM production programme and year. Use 'benchmarked' for published teardown or industry study data — cite the study name. Use 'estimated' for cost-model derivations — state the model assumption. Use 'theoretical' for first-principles analysis only.
 EVIDENCE SOURCES: List 1-3 real evidence sources per idea (OEM teardowns, patents, press releases, industry reports). Be specific — name the OEM/supplier and year. When a source came from a web_search result, copy its exact url into the url field so the citation is verifiable; never invent URLs.
-ENGINE CHECK (include on every idea where it applies): when an idea is a material substitution, process change, or mass reduction, include engineCheckRequest with the baseline and proposed material/process/mass so the deterministic costing engine can verify the direction of the saving on a reference part. Use plain descriptive names — they are fuzzy-matched to the engine catalogue. Omit the field for moves that are not expressible as a baseline→proposed comparison (commonisation, logistics, warranty). Always state the commodity price assumption used (e.g., 'based on aluminium at £1,989/t Q2 2025') in the evidenceSources array or technicalDescription when the saving depends on a commodity price.
+ENGINE CHECK (include on every idea where it applies — an idea without one is stamped "not engine-checked" with the reason): the deterministic costing engine can verify the DIRECTION of four kinds of move, selected by engineCheckRequest.kind:
+- "substitution" (default): material substitution, process/route change, or mass reduction — {"kind":"substitution","baselineMaterial","baselineProcess","proposedMaterial","proposedProcess","referenceWeightKg","proposedWeightKg"}. Plain descriptive names; they are fuzzy-matched to the engine catalogue.
+- "tolerance": relaxing drawing spec on the SAME part — {"kind":"tolerance","material","process","weightKg","baseline":{"toleranceClass":"precision|tight|standard","surfaceFinish":"polished|fine|standard","criticalCharacteristics":6},"proposed":{...the relaxed values...}}.
+- "assembly": part-count or joining change — {"kind":"assembly","baseline":{"parts":3,"fasteners":{"screw":6,"boltNut":0,"rivet":0,"snapFit":0,"weldSpot":0,"adhesive":0}},"proposed":{"parts":1,"fasteners":{}}}. Priced through the DFA time model at the region's labour rate plus fastener piece prices; material/tooling consequences of a consolidation are NOT included, so add a substitution request for those in the same idea when they matter.
+Omit the field only for moves genuinely not expressible as a baseline→proposed comparison (commonisation, logistics, warranty) and say so in the costBridge. Always state the commodity price assumption used (e.g., 'based on aluminium at £1,989/t Q2 2025') in the evidenceSources array or technicalDescription when the saving depends on a commodity price.
 HARNESS CHECK: a wiring harness is not a part with a process, so engineCheckRequest cannot express it and harness ideas were going unverified. For an idea about a wiring harness or its circuits, include instead harnessCheckRequest: {"baseline":{"circuits":180,"avgLengthM":1.8,"connectors":30,"splices":22,"sealedPct":0.3},"proposed":{...only the fields the idea changes...}} — a dedicated deterministic harness model (copper, connectors, crimp/insertion/test labour) will cost both sides. State only circuits plus whatever the idea actually changes; unstated fields are carried across unchanged. Omit the field entirely if the idea does not change any of those parameters.
 Use JSON null (not the string 'null') for any optional field that is not applicable.
 Each idea must address a genuinely different engineering mechanism. Do not generate variations of the same core idea with different titles. If two ideas share the same root cause and technical approach, merge them into one richer idea.${IDEATION_LEGACY ? '' : `
@@ -3136,9 +3144,25 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     // Otherwise every citation is model-asserted and must be labelled unverified.
     const searchExecuted = enableSearch && sources.some(s => Array.isArray(s.results) && s.results.length > 0);
     const hasEvidence = !!partEvidence;
-    // Critic pass: schema-validate, coerce enums, sanity-band numbers, drop broken ideas.
-    const { ideas: validated, summary: validationSummary } = validateIdeas(parsedIdeas, { searchExecuted, hasEvidence });
+    // The dossier's real line ids: a citation must RESOLVE to one of these.
+    // Parsed from the evidence text itself so the validator and the model
+    // see the same set (the blocks are the only thing the model was shown).
+    const evidenceIds = partEvidence
+      ? new Set(partEvidence.blocks.flatMap(b => [...b.text.matchAll(/^\[([EW]\d{1,3})\]/gm)].map(m => m[1])))
+      : undefined;
+    let catalogueMaterials;
+    try { catalogueMaterials = getActiveLibrary()?.MATERIALS; } catch { catalogueMaterials = undefined; }
+    // Critic pass: schema-validate, coerce enums, sanity-band numbers, resolve
+    // citations and grades, score technical depth, drop broken ideas.
+    const { ideas: validated, summary: validationSummary } = validateIdeas(parsedIdeas, { searchExecuted, hasEvidence, evidenceIds, materials: catalogueMaterials });
     if (validated.length === 0) throw new Error('No valid ideas could be generated. Please retry.');
+    // The model's own sums, recomputed: every stated annual value against its
+    // stated basis. A mismatch is a visible flag and a rank penalty; an
+    // unreadable basis is "unparsed", never a verdict.
+    try {
+      validationSummary.arithmetic = runArithmeticChecks(validated, { annualVolume: Number(config.annualVolume) || 80000 });
+      validationSummary.depth = depthSummary(validated);
+    } catch (e) { console.warn('[Arithmetic] skipped:', e?.message); }
     if (validationSummary.dropped > 0 || validationSummary.flagged > 0) {
       console.warn(`[Validation] kept ${validationSummary.kept}/${validationSummary.total}, dropped ${validationSummary.dropped}, flagged ${validationSummary.flagged}, avgQuality ${validationSummary.avgQuality}`);
     }
@@ -3185,13 +3209,42 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       }
     } catch { /* index unavailable — labelling is best-effort */ }
 
-    // Deep mode (opt-in, ~3-5× token cost, disclosed in the UI): critique
-    // panel → Elo tournament → one repair generation for engine-contradicted /
-    // majority-challenged ideas. Runs AFTER engine checks (refine selection
-    // needs the verdicts) and BEFORE ranking (Elo feeds the rank factor).
-    if (config.deepMode === true && !IDEATION_LEGACY) {
+    // Lens coverage stamp (Prism): which evidence lenses ran, which the
+    // dossier offered but the engineer did not select, and which ran and
+    // returned nothing. A two-lens run must never read like a full study —
+    // the header and the PDF cover print this line.
+    if (partEvidence) {
       try {
-        emit({ type: 'progress', message: 'Deep mode: starting critique panel + tournament…' });
+        const ran = [...new Set(partEvidence.blocks.map(b => b.lensId))];
+        const catalogue = ran.every(id => ASSEMBLY_LENSES.some(l => l.id === id)) ? ASSEMBLY_LENSES : PRISM_LENSES;
+        const available = catalogue.map(l => l.id);
+        const ideasByLens = {};
+        for (const id of ran) ideasByLens[id] = ideas.filter(i => i.lensId === id).length;
+        validationSummary.lenses = {
+          run: ran,
+          skipped: available.filter(id => !ran.includes(id)),
+          empty: ran.filter(id => !ideasByLens[id]),
+          ideasByLens,
+        };
+      } catch { /* coverage is a report line — never a failure */ }
+    }
+
+    // Deliberation. Two levels:
+    //   'critique' — persona panel + one small-model repair; DEFAULT for every
+    //                Prism (evidence-grounded) run, because measured on four
+    //                live runs the panel had never once been used.
+    //   'full'     — panel + Elo tournament + flagship repair; the explicit
+    //                deep-mode toggle (~3-5× tokens, disclosed in the UI).
+    // Runs AFTER engine checks (refine selection needs the verdicts) and
+    // BEFORE ranking (Elo feeds the rank factor). deepMode: 'off' opts out.
+    const deepLevel = IDEATION_LEGACY ? null
+      : config.deepMode === true || config.deepMode === 'full' ? 'full'
+      : config.deepMode === 'critique' ? 'critique'
+      : config.deepMode === 'off' || config.deepMode === false ? null
+      : partEvidence ? 'critique' : null;
+    if (deepLevel) {
+      try {
+        emit({ type: 'progress', message: deepLevel === 'full' ? 'Deep mode: starting critique panel + tournament…' : 'Critique pass: expert panel reviewing every idea…' });
         const domain = detectContextDomain(config, sysName, subName, prtName);
         const deep = await runDeepPass(client, ideas, {
           partName: prtName || subName || sysName,
@@ -3202,9 +3255,11 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
           library: getActiveLibrary(),
           smallModel: SMALL_MODEL,
           searchExecuted,
-        }, { emit });
+        }, { emit, level: deepLevel });
         validationSummary.deep = deep;
-        if (deep.eloMatches > 0) emit({ type: 'progress', message: `Deep mode complete: ${deep.critiqued} ideas critiqued, ${deep.eloMatches} tournament matches, ${deep.refined} repaired.` });
+        if (deep.critiqued > 0) emit({ type: 'progress', message: deepLevel === 'full'
+          ? `Deep mode complete: ${deep.critiqued} ideas critiqued, ${deep.eloMatches} tournament matches, ${deep.refined} repaired.`
+          : `Critique pass complete: ${deep.critiqued} ideas critiqued (${deep.challenges} challenges), ${deep.refined} repaired.` });
       } catch (e) { console.warn('[Deep] skipped:', e?.message); }
     }
 

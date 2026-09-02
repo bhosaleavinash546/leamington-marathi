@@ -67,6 +67,8 @@ export interface CostSavingPotential {
 
 /** Deterministic cost-engine cross-check stamped by the server (or null when the move is not engine-expressible). */
 export interface EngineCheck {
+  /** Which lever the engine priced: substitution | mass | tolerance | assembly | harness. */
+  kind?: string;
   referenceCase: string;
   baselineEur: number;
   proposedEur: number;
@@ -125,6 +127,29 @@ export interface CostReductionIdea {
   eloRating?: number;
   /** Set when deep mode repaired this idea after an engine contradiction or panel challenges. */
   refined?: { fromTitle: string; note: string };
+  /** Why engineCheck is null — always present when it is (no request, grade not in catalogue, nothing changed …). */
+  engineCheckReason?: string;
+  /** Technical-depth rubric: which of the six checkable ingredients of a deep idea are present. */
+  depth?: { score: number; criteria: Record<string, { met: boolean; weight: number; detail: string }>; missing: string[] };
+  /** Arithmetic re-check of the stated annual value against its own calculation basis. */
+  arithmetic?: { status: 'consistent' | 'mismatch' | 'unparsed'; statedEur: { lo: number; hi: number; mid: number } | null; computedEur: number | null; deltaPct: number | null; basis: string | null; note: string };
+  /** The five engineering sections the prompt demands (depth over count). Absent keys were not supplied. */
+  engineering?: { mechanism?: string; specDeltas?: string; validationPlan?: string; dfmImplications?: string; costBridge?: string };
+  /** A specific grade named in the idea, and whether the engine catalogue can resolve it. */
+  grade?: { named: string; catalogueKey: string | null; approx: boolean | null };
+}
+
+/** Server-side pipeline summary returned with every analysis (honest tallies, never inferred client-side). */
+export interface AnalysisValidation {
+  total?: number; kept?: number; dropped?: number; flagged?: number; avgQuality?: number;
+  intraBatchMerged?: number;
+  diversity?: { score: number; nearDupPairs: number };
+  engineChecks?: { checked: number; confirmed: number; contradicted: number; unexpressible: number; byKind?: Record<string, number>; reasons?: Record<string, number> };
+  arithmetic?: { consistent: number; mismatch: number; unparsed: number };
+  depth?: { n: number; min: number | null; median: number | null; max: number | null; spread: number | null; criteriaHitPct: Record<string, number> };
+  deep?: { critiqued: number; challenges: number; eloMatches: number; refineAttempted: number; refined: number; level?: string };
+  /** Prism lens coverage: which evidence lenses ran, which were available but not selected, which returned nothing. */
+  lenses?: { run: string[]; skipped: string[]; empty: string[]; ideasByLens: Record<string, number> };
 }
 
 export interface SearchResult {
@@ -157,7 +182,8 @@ export interface AnalysisConfig {
   cadGeometry?: Record<string, unknown>;
   trizLens?: boolean;   // deprecated — kept for back-compat
   lenses?: string[];    // innovation lenses to apply (method ids)
-  deepMode?: boolean;   // opt-in critique panel + Elo tournament + repair pass (~3-5× tokens)
+  /** Deliberation level. true/'full' = critique panel + Elo tournament + flagship repair (~3-5× tokens); 'critique' = panel + small-model repair (Prism default); 'off'/false = none. */
+  deepMode?: boolean | 'critique' | 'full' | 'off';
   apiKey: string;
 }
 
@@ -174,4 +200,6 @@ export interface AnalysisResult {
     searchesPerformed: number;
   };
   generatedAt: string;
+  /** Pipeline summary from the server (lens coverage, engine/arithmetic/depth tallies). Absent on legacy saved results. */
+  validation?: AnalysisValidation;
 }

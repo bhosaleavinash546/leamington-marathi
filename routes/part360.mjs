@@ -462,6 +462,9 @@ Rules:
         volumeCurve,
         specSteps,
         functionModel: b.functionModel && typeof b.functionModel === 'object' ? b.functionModel : null,
+        // The grade dictionary: what the engine can price, so the material
+        // lens names grades the validator can resolve.
+        materials: library?.MATERIALS ?? null,
       });
 
       // This run joins the fleet memory (best-effort — memory must never

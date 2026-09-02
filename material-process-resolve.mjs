@@ -42,6 +42,17 @@ export function resolveMaterial(typed, materials = MATERIALS) {
   else if (/titan|ti-?6al|ti6al|tc4|grade ?5 ti/.test(t)) key = has('titanium');
   else if (/zamak|zamac|\bzdc\b|\bzp\d|zinc alloy/.test(t)) key = has('zinc');
   else if (/brass|bronze|copper|cuzn|cusn|\bc\d{5}/.test(t)) key = has('brass') || has('copper');
+  // Sheet-steel DESIGNATIONS with no "steel" in them (CR340LA, HC420LA, DC04,
+  // DX51D, S420MC, HX340LAD, CP800, MS1200, TRIP690, QP980, Usibor 1500,
+  // Docol, X5CrNi18-10, 1.4301). The material lens asks for exactly these and
+  // the resolver used to return null for every one of them.
+  else if (/\b(?:cr|hc|hx|hr|cp|ms|trip|qp|ds|dx|dc|dd)\s?-?\d{2,4}(?:\s?[a-z]{1,3})?\b|\bs\d{3}\s?(?:mc|jr|j0|j2|k2|n|nl|ml)?\b|usibor|ductibor|docol|fortiform|strenx|domex|x\d{1,3}crni|\b1\.4\d{3}\b|\bsus\s?3\d{2}\b|\baisi\s?\d{3,4}\b|\bsae\s?1\d{3}\b/.test(t)) {
+    const stainless = /x\d{1,3}crni|\b1\.4\d{3}\b|\bsus\s?3\d{2}\b|\baisi\s?3\d{2}\b/.test(t);
+    const highStrength = /\b(?:cr|hc|hx|hr)\s?-?(?:[3-9]\d{2}|1\d{3})|\bcp\s?-?\d|\bms\s?-?\d|trip|\bqp\s?-?\d|\bs(?:[3-9]\d{2})\s?(?:mc)?|usibor|ductibor|docol|fortiform|strenx|domex|\b(?:la|y|x|lad)\b|la\b/.test(t);
+    key = stainless ? (has('stainless') || has('steel'))
+        : highStrength ? (has('high-strength') || has('steel'))
+        : (has('steel (mild') || has('mild') || has('steel'));
+  }
   else if (/steel|dp\d|hsla|22mnb5|boron|ss30|stainless|c45|s355|crmo|mncr|mnvs|nicr|nimo|42cr|34crni|c70|cf53|16mncr|20mncr/.test(t)) {
     key = (has('stainless') && /stainless|304|316/.test(t)) ? has('stainless')
         : (has('high-strength') && /hsla|dp|boron|22mnb5|advanced|crmo|nicr|nimo|42cr|34crni|mncr|mnvs|c70|cf53|high.?strength/.test(t)) ? has('high-strength')

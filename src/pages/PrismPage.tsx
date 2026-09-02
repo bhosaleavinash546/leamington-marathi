@@ -223,7 +223,10 @@ export default function Part360Page() {
   const [building, setBuilding] = useState(false);
   const [dossier, setDossier] = useState<DossierResponse | null>(null);
   const [selectedLenses, setSelectedLenses] = useState<Set<string>>(new Set(DEFAULT_LENSES));
-  const [deepMode, setDeepMode] = useState(false);
+  // Deliberation level. 'critique' (panel + small-model repair on every
+  // batch) is the default: measured on four live runs the panel had never
+  // once been used because it sat behind an off-by-default toggle.
+  const [deepMode, setDeepMode] = useState<'critique' | 'full' | 'off'>('critique');
   const [generating, setGenerating] = useState(false);
   const [genLog, setGenLog] = useState<string[]>([]);
   const [error, setError] = useState('');
@@ -533,7 +536,7 @@ export default function Part360Page() {
       };
       const sysName = 'Prism';
       const subName = material;
-      const { ideas, sources, resultId } = await generateCostReductionIdeas(
+      const { ideas, sources, resultId, validation } = await generateCostReductionIdeas(
         config, sysName, subName, partName || 'Part', false, undefined,
         (ev: ProgressEvent) => { if (ev.message) setGenLog(prev => [...prev.slice(-14), ev.message as string]); },
         { partEvidence: { blocks }, prismRunId: dossier.runId ?? undefined },
@@ -543,6 +546,7 @@ export default function Part360Page() {
         config: { ...config, apiKey: '' },
         ideas,
         sources: sources ?? [],
+        validation,
         summary: {
           totalIdeas: ideas.length,
           quickWins: ideas.filter(i => i.implementationDifficulty === 'Low').length,
@@ -725,13 +729,13 @@ export default function Part360Page() {
         additionalContext: `Prism ASSEMBLY review of "${asmName}" — engine-costed BOM total €${asmDossier.rollUp.totalEur} across ${asmDossier.rollUp.partCount} part instances.${asmContext.trim() ? ` Assembly function as stated by the user: ${asmContext.trim().slice(0, 600)}` : ''}`,
         deepMode, apiKey,
       };
-      const { ideas, sources, resultId } = await generateCostReductionIdeas(
+      const { ideas, sources, resultId, validation } = await generateCostReductionIdeas(
         config, 'Prism', asmName || 'Assembly', asmName || 'Assembly', false, undefined,
         (ev: ProgressEvent) => { if (ev.message) setAsmGenLog(prev => [...prev.slice(-14), ev.message as string]); },
         { partEvidence: { blocks } },
       );
       const result: AnalysisResult = {
-        id: resultId, config: { ...config, apiKey: '' }, ideas, sources: sources ?? [],
+        id: resultId, config: { ...config, apiKey: '' }, ideas, sources: sources ?? [], validation,
         summary: {
           totalIdeas: ideas.length,
           quickWins: ideas.filter(i => i.implementationDifficulty === 'Low').length,
@@ -1801,12 +1805,25 @@ export default function Part360Page() {
                     );
                   })}
                 </div>
-                <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer mb-3">
-                  <input type="checkbox" checked={deepMode} onChange={e => setDeepMode(e.target.checked)} className="accent-gold-500" />
-                  Deep mode — adversarial critique panel + tournament (~3–5× tokens)
-                </label>
+                <fieldset className="mb-3">
+                  <legend className="text-sm text-slate-300 mb-1.5">Review of every idea before ranking</legend>
+                  <div className="flex flex-wrap gap-2">
+                    {([
+                      ['critique', 'Critique pass', 'Four-persona expert panel + one repair, on the small model. Default.'],
+                      ['full', 'Deep mode', 'Panel + pairwise tournament + flagship repairs (~3–5× tokens).'],
+                      ['off', 'Off', 'Generate, validate, engine-check and rank only.'],
+                    ] as const).map(([v, label, hint]) => (
+                      <button
+                        key={v} type="button" onClick={() => setDeepMode(v)} title={hint} aria-pressed={deepMode === v}
+                        className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${deepMode === v ? 'bg-gold-500/15 border-gold-500/40 text-gold-300' : 'bg-white/5 border-white/10 text-slate-400 hover:border-white/25'}`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
                 <p className="text-[11px] text-slate-500 mb-4">
-                  Cost: {selectedLenses.size} generation call{selectedLenses.size === 1 ? '' : 's'}{deepMode ? ' + deep-mode passes' : ''} on your API key, typically 2–6 minutes.
+                  Cost: {selectedLenses.size} generation call{selectedLenses.size === 1 ? '' : 's'}{deepMode === 'full' ? ' + deep-mode passes' : deepMode === 'critique' ? ' + a small-model critique pass' : ''} on your API key, typically 2–6 minutes.
                 </p>
                 {generating && (
                   <div className="mb-4">

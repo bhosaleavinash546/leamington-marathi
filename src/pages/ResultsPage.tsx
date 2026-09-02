@@ -349,10 +349,28 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                   // engine can re-cost, and until this was shown they read as
                   // unremarkable rather than unverified.
                   <div
-                    title="The engine had no comparable basis to test this idea against — it is not expressible as a material, process or mass substitution. The saving above is AI-estimated; validate before commercial use."
+                    title={`${idea.engineCheckReason ? `Why: ${idea.engineCheckReason}.` : 'The engine had no comparable basis to test this idea against — it is not expressible as a substitution, tolerance, assembly or harness change.'} The saving above is AI-estimated; validate before commercial use.`}
                     className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-slate-500/10 text-slate-400 border-slate-500/25"
                   >
                     <Gauge size={10} /> Not engine-checked
+                  </div>
+                )}
+                {/* Technical depth: which checkable ingredients of a deep idea are present. */}
+                {idea.depth && typeof idea.depth.score === 'number' && (
+                  <div
+                    title={`Technical depth ${idea.depth.score}/100 — deterministic rubric.\n${Object.entries(idea.depth.criteria).map(([k, c]) => `${c.met ? '✓' : '✗'} ${k}: ${c.detail}`).join('\n')}`}
+                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium ${idea.depth.score >= 80 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : idea.depth.score >= 50 ? 'bg-amber-500/10 text-amber-400 border-amber-500/25' : 'bg-danger-500/10 text-danger-400 border-danger-500/25'}`}
+                  >
+                    <Layers size={10} /> Depth {idea.depth.score}
+                  </div>
+                )}
+                {/* The model's own sums, recomputed. */}
+                {idea.arithmetic && idea.arithmetic.status !== 'unparsed' && (
+                  <div
+                    title={`${idea.arithmetic.note}.\nRead as: ${idea.arithmetic.basis}`}
+                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium ${idea.arithmetic.status === 'consistent' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : 'bg-danger-500/10 text-danger-400 border-danger-500/25'}`}
+                  >
+                    <Calculator size={10} /> {idea.arithmetic.status === 'consistent' ? 'Sums check' : `Sums off ${idea.arithmetic.deltaPct! > 0 ? '+' : ''}${idea.arithmetic.deltaPct}%`}
                   </div>
                 )}
                 {/* The validator already caught these and nothing showed them. */}
@@ -510,11 +528,47 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                 Engine Cross-Check — not evaluated:
               </span>{' '}
               <span className="text-slate-300 text-sm">
-                not expressible as a material, process or mass substitution the engine can re-cost.
+                {idea.engineCheckReason ?? 'not expressible as a substitution, tolerance, assembly or harness change the engine can re-cost.'}
               </span>
               <p className="text-slate-500 text-xs mt-1">
                 The saving above is AI-estimated. Validate before commercial use.
               </p>
+            </div>
+          )}
+
+          {/* The model's own sums, recomputed from its stated basis. Unparsed is
+              shown as unparsed — it is a limitation of the reader, not a verdict. */}
+          {idea.arithmetic && (
+            <div className={`p-3 rounded-xl border ${idea.arithmetic.status === 'consistent' ? 'bg-emerald-500/5 border-emerald-500/15' : idea.arithmetic.status === 'mismatch' ? 'bg-danger-500/5 border-danger-500/15' : 'bg-slate-500/5 border-slate-500/15'}`}>
+              <span className={`text-xs font-semibold uppercase tracking-wide ${idea.arithmetic.status === 'consistent' ? 'text-emerald-400' : idea.arithmetic.status === 'mismatch' ? 'text-danger-400' : 'text-slate-400'}`}>
+                Arithmetic check — {idea.arithmetic.status}:
+              </span>{' '}
+              <span className="text-slate-300 text-sm">{idea.arithmetic.note}.</span>
+              {idea.arithmetic.basis && <p className="text-slate-500 text-xs mt-1">Read as: {idea.arithmetic.basis}</p>}
+            </div>
+          )}
+
+          {/* The five engineering sections — depth over count. Only sections
+              the model actually wrote get a heading. */}
+          {idea.engineering && Object.keys(idea.engineering).length > 0 && (
+            <div className="p-3 rounded-xl bg-teal-500/5 border border-teal-500/15">
+              <span className="text-teal-300 text-xs font-semibold uppercase tracking-wide block mb-2">Engineering brief</span>
+              <div className="space-y-2">
+                {([
+                  ['mechanism', 'Mechanism'], ['specDeltas', 'Spec deltas'], ['validationPlan', 'Validation plan'],
+                  ['dfmImplications', 'DFM implications'], ['costBridge', 'Cost bridge'],
+                ] as const).filter(([k]) => idea.engineering?.[k]).map(([k, label]) => (
+                  <div key={k} className="text-sm">
+                    <span className="text-slate-400 text-xs font-semibold uppercase tracking-wide">{label}: </span>
+                    <span className="text-slate-300">{idea.engineering![k]}</span>
+                  </div>
+                ))}
+              </div>
+              {idea.depth && idea.depth.missing.length > 0 && (
+                <p className="text-slate-500 text-xs mt-2">
+                  Depth rubric {idea.depth.score}/100 — missing: {idea.depth.missing.map(m => `${m} (${idea.depth!.criteria[m]?.detail})`).join('; ')}.
+                </p>
+              )}
             </div>
           )}
 
@@ -1422,6 +1476,34 @@ export default function ResultsPage() {
             </div>
           ))}
         </div>
+
+        {/* Lens coverage (Prism): a two-lens run must never read like a full
+            study. Which lenses ran, which the dossier offered but were not
+            selected, and which returned nothing. */}
+        {result.validation?.lenses && (() => {
+          const l = result.validation.lenses;
+          const total = l.run.length + l.skipped.length;
+          return (
+            <div className="mb-3 p-3 rounded-2xl bg-teal-500/5 border border-teal-500/15 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+              <PrismIcon size={16} className="text-teal-400 flex-shrink-0" />
+              <span className="text-slate-300">
+                <strong className="text-white">{l.run.length} of {total || l.run.length}</strong> evidence lens{total === 1 ? '' : 'es'} run
+                {l.run.length > 0 && <span className="text-slate-500"> ({l.run.map(id => `${id}: ${l.ideasByLens[id] ?? 0}`).join(', ')})</span>}
+              </span>
+              {l.skipped.length > 0 && (
+                <span className="text-amber-400" title="Lenses the dossier offered that were not selected — their levers were not explored in this batch.">
+                  not explored: {l.skipped.join(', ')}
+                </span>
+              )}
+              {l.empty.length > 0 && <span className="text-danger-400">returned nothing: {l.empty.join(', ')}</span>}
+              {result.validation.deep && (
+                <span className="text-slate-500 text-xs ml-auto">
+                  {result.validation.deep.level === 'full' ? 'Deep mode' : 'Critique pass'}: {result.validation.deep.critiqued} critiqued, {result.validation.deep.refined} repaired
+                </span>
+              )}
+            </div>
+          );
+        })()}
 
         {/* How much of this page has actually been verified.
             The per-idea badges say it one idea at a time; without the portfolio
