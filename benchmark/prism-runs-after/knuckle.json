@@ -1,0 +1,1304 @@
+{
+ "part": "knuckle",
+ "annualVolume": 60000,
+ "capturedAt": "2026-09-02",
+ "arm": "after",
+ "evidenceIds": [
+  "E1",
+  "E2",
+  "E3",
+  "E4",
+  "E5",
+  "E6",
+  "E7",
+  "E8",
+  "E9",
+  "E10",
+  "E11",
+  "E12",
+  "W1",
+  "W2",
+  "W3",
+  "W4",
+  "W5",
+  "E35",
+  "E36",
+  "E37",
+  "E38",
+  "E39",
+  "E40"
+ ],
+ "lensesAvailable": [
+  "vave",
+  "process",
+  "material",
+  "spec",
+  "commercial",
+  "benchmark"
+ ],
+ "lensesRun": [
+  "process"
+ ],
+ "validation": {
+  "total": 8,
+  "kept": 8,
+  "dropped": 0,
+  "flagged": 3,
+  "avgQuality": 93,
+  "arithmetic": {
+   "consistent": 4,
+   "mismatch": 2,
+   "unparsed": 2
+  },
+  "depth": {
+   "n": 8,
+   "min": 84,
+   "median": 100,
+   "max": 100,
+   "spread": 16,
+   "criteriaHitPct": {
+    "grade": 100,
+    "mechanism": 63,
+    "validation": 100,
+    "dfm": 100,
+    "evidence": 100,
+    "sections": 100
+   }
+  },
+  "intraBatchMerged": 0,
+  "diversity": {
+   "score": 82.9,
+   "nearDupPairs": 0
+  },
+  "engineChecks": {
+   "checked": 6,
+   "confirmed": 5,
+   "contradicted": 1,
+   "unexpressible": 2,
+   "byKind": {
+    "substitution": 4,
+    "tolerance": 1,
+    "assembly": 1
+   },
+   "reasons": {
+    "proposed process \"…\" not in the engine catalogue": 1,
+    "no engine-check request — the idea was not expressed as a su": 1
+   }
+  },
+  "lenses": {
+   "run": [
+    "process"
+   ],
+   "skipped": [
+    "vave",
+    "material",
+    "spec",
+    "commercial",
+    "benchmark"
+   ],
+   "empty": [],
+   "ideasByLens": {
+    "process": 8
+   }
+  },
+  "deep": {
+   "critiqued": 8,
+   "challenges": 8,
+   "eloMatches": 0,
+   "refineAttempted": 3,
+   "refined": 0,
+   "level": "critique"
+  }
+ },
+ "ideas": [
+  {
+   "id": "shell-mould-gjs450",
+   "title": "Shell mould casting replaces sand casting, same GJS-450-10",
+   "technicalDescription": "Move the RH steering knuckle from green-sand casting to shell mould (Croning) casting while retaining GJS-450-10 ductile iron per EN 1563. Shell moulding uses a resin-coated silica sand bonded on a heated pattern plate (230–280°C) to form a rigid 6–10mm shell, giving near-net-shape accuracy of CT7–CT8 vs CT10–CT12 for green sand. This is the deterministic engine's best DFM-viable net-shape alternative (DFM score 60, tooling €82,920 up-front), releasing €1.03/part of process premium (W3). The tighter as-cast tolerance shrinks the CNC machining envelope on the caliper bosses and ball-joint taper, directly attacking the two unpriced findings (E10, E11) where standard cutters cannot reach and small internal radii force slow tooling — a smoother, more consistent as-cast surface reduces stock removal. Net-shape improvement also trims cradle-to-gate CO2e from 8.76 to 7.96 kg/part (W3). Retaining GJS-450-10 means no re-homologation of the base material for the safety-critical fatigue/impact case (E4), only process re-PPAP.",
+   "manufacturingImpact": "Shell moulding needs a heated metal pattern plate (the €82,920 tooling), replacing loose sand patterns. Cycle is faster with better dimensional repeatability, cutting scrap and rework. As-cast surface finish improves to Ra 12–25µm from 25–50µm, reducing machining stock on bearing bore and caliper bosses (E5) by ~0.5–1mm per face. Fewer draft-related overmachining zones. Reduced flash and parting-line mismatch eases fixturing. The tighter shell dimensions ease the small-cutter internal-radius problem (E11) by keeping as-cast radii closer to nominal. Gating and feeding must be re-simulated for shrinkage-free feeding of the ball-joint taper boss section.",
+   "costSavingTypes": [
+    "process",
+    "material",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — engine-confirmed €1.03/part process premium plus machining stock reduction",
+    "percentage": "10-14%",
+    "annualValue": "€62K at 60,000 units/yr",
+    "calculationBasis": "€1.03/part process release (W3) × 60,000 = €61.8K/yr; excludes machining-time reduction upside",
+    "paybackMonths": 16
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Safety-critical knuckle (E4) requires full fatigue/impact re-PPAP even though material is unchanged. Shell-cast ductile iron can show different chill/nodularity in thin sections — verify nodularity ≥85% and pearlite/ferrite balance. Shell sand resin emissions need extraction. Tooling €82,920 is at risk if programme cancels early. Mitigation: retain GJS-450-10 grade to reuse existing material design allowables; run correlation fatigue coupon batch before full validation.",
+   "dfmaPrinciples": [
+    "Net-shape forming to minimise secondary machining",
+    "Design for consistent wall thickness / feeding",
+    "Reduce tolerance stack via rigid mould",
+    "Error-proof parting-line control",
+    "Minimise draft-driven overstock"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "9-14 months",
+   "benchmarkReference": "Shell-mould ductile iron chassis brackets — Georg Fischer / Gienanth foundry practice for automotive safety parts, CT7 as-cast accuracy vs CT11 green sand",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Lower cradle-to-gate CO2e (7.96 vs 8.76 kg/part) supports EU ELV/carbon-footprint reporting trends.",
+   "evidenceRefs": [
+    "E5",
+    "E8",
+    "E10",
+    "E11",
+    "W3"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Shell mould casting tolerance capability (CT7-8) for ductile iron chassis parts",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "supplier_data",
+     "title": "Georg Fischer automotive ductile-iron casting process guide",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "engineering": {
+    "mechanism": "Shell moulding forms a thin rigid resin-bonded shell on a heated pattern, holding CT7-8 vs green sand CT10-12. Dimensional variance shrinks ~2-3×, so machining allowance per face drops from ~2mm to ~1mm. Less thermal mass distortion and no mould-wall movement mean feeding is more controlled, reducing shrink porosity in the ball-joint taper boss — the fatigue-critical section (E3).",
+    "specDeltas": "Process: green sand → shell (Croning) casting. Material unchanged GJS-450-10 (EN 1563). As-cast tolerance CT10 → CT7. Surface Ra 25-50 → 12-25µm. Machining stock 2.0 → 1.0mm on bore/bosses. New heated pattern plate tooling €82,920. Part weight held ~2.546 kg.",
+    "validationPlan": "Full re-PPAP: 3× fatigue test rigs to axle load spectrum, min 300,000 cycles no crack; 30-sample dimensional capability Cpk≥1.33 on bearing bore; nodularity ≥85% and porosity per ASTM E446 L1 on sectioned samples; salt-spray corrosion carryover. Impact validation retained for safety class (E4).",
+    "dfmImplications": "Machining cycle drops with less stock removal on hard-to-reach faces (E10). Fewer cutter passes, longer tool life. Pattern is durable metal not loose wood/resin. Scrap-rate reduction. Secondary deburring reduced by cleaner parting line. No change to downstream fixturing datums.",
+    "costBridge": "Baseline engine spec €8.25/part → shell-mould route €7.22/part (W3), releasing €1.03. ×60,000 = €61.8K/yr. Excludes machining-time reduction and yield gains; excludes the €82,920 tooling amortisation (~€0.28/part over 5yr) and any logistics change."
+   },
+   "lensId": "process",
+   "grade": {
+    "named": "GJS-450-10",
+    "catalogueKey": "Cast Iron (Ductile/GJS)",
+    "approx": true
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names GJS-450-10"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "9 quantities with units and a stated change (280°C, 10mm, 7.96 kg, 25µm)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Net-shape forming to minimise secondary machining"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "5 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "consistent",
+    "statedEur": {
+     "lo": 62000,
+     "hi": 62000,
+     "mid": 62000
+    },
+    "computedEur": 61800,
+    "deltaPct": 0,
+    "basis": "annual total: result €61.8K",
+    "note": "basis multiplies out to €61,800, inside the stated range"
+   },
+   "engineCheck": {
+    "kind": "substitution",
+    "referenceCase": "2.546 kg Cast Iron (Ductile/GJS) via Sand Casting → Machining (CNC) → 2.546 kg Cast Iron (Ductile/GJS) via Shell Mould Casting → Machining (CNC), 60k/yr, Germany",
+    "baselineEur": 12.97,
+    "proposedEur": 11.88,
+    "savingPct": 8.4,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "critiques": [
+    {
+     "persona": "manufacturing",
+     "personaName": "Manufacturing engineer",
+     "verdict": "challenge",
+     "critique": "Shell moulding needs new tooling: metal match-plate/shell patterns plus heated pattern equipment - 12-16wk tooling lead time and capex for shell moulding machines/oven if plant only has green-sand. Verify foundry has Croning capability or this is a new supplier qualification, not a drop-in change."
+    },
+    {
+     "persona": "commercial",
+     "personaName": "Supplier-commercial manager",
+     "verdict": "strengthen",
+     "critique": "Shell moulding has a mature multi-source base (many EU/Asian ductile-iron foundries offer Croning); low switching cost since chemistry unchanged, only tooling amortised. Use as competitive lever against incumbent sand-cast supplier without new material qualification risk."
+    }
+   ],
+   "rank": {
+    "score": 59785.7,
+    "basis": "payback 16mo ×0.86 · quality 100 ×1.00 · engine confirmed ×1.25 · stated basis multiplies out · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "forged-6082-al-knuckle",
+   "title": "Closed-die forged AA6082-T6 aluminium knuckle",
+   "technicalDescription": "Replace the GJS-450-10 ductile-iron sand casting with a closed-die forged AA6082-T6 aluminium upright. Aluminium forging (billet → preform → blocker → finisher dies, then T6 solution + age) delivers a wrought grain flow aligned to the load paths from wheel bearing to strut and ball joint (E2, E3), giving fatigue strength that comfortably meets the safety-critical case (E4) at roughly one-third the density. On this 2.546 kg iron part, a forged-Al equivalent typically lands at ~1.4–1.6 kg, a ~1.0 kg/corner unsprung mass saving — explicitly worth extra money on this part (E7). Forging removes casting porosity risk entirely and, per the AA6082-T6 precedent, can cut the machining envelope ~30% because the forged surface is dense and near-net. Aluminium is compatible with the −40 to +120°C splash/salt environment (E6) with a chromate-free conversion coat plus e-coat to manage galvanic contact at the steel bearing and fasteners. This is the most proven chassis lever in the marketplace for exactly this part family.",
+   "manufacturingImpact": "Requires forging dies (blocker + finisher) and a press of 2,500–4,000t class, plus T6 heat-treat line and straightening. Higher up-front tooling than casting but far lower porosity scrap. Machining is on denser, more consistent stock — the caliper bosses and ball-joint taper (E5) clean up with less stock and better tool life, easing the standard-cutter reach and small-radius findings (E10, E11). Aluminium chips recycle at high value. Ball-joint taper may need a steel insert or press-fit sleeve for wear/creep. Corrosion protection line (conversion + e-coat) added versus bare iron.",
+   "costSavingTypes": [
+    "weight",
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — unsprung mass explicitly monetised (E7), 30% machining reduction, proven precedent",
+    "percentage": "weight −40%; net cost impact programme-dependent",
+    "annualValue": "€150K–€300K/yr blended (mass credit + machining) at 60,000 units/yr",
+    "calculationBasis": "~1.0 kg saved × mass-credit €3-6/kg + ~30% machining reduction; Al at €2,700/t vs iron ~€500/t offsets some material cost",
+    "paybackMonths": 24
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Safety-critical (E4): full new material homologation — fatigue, impact, ball-joint pull-out, corrosion. Galvanic corrosion at steel interfaces in salt environment (E6) — mitigate with conversion coat, e-coat, isolating sleeves. Aluminium creep at 120°C at ball-joint press-fit — use steel taper insert. Tooling and press capital high; payback needs the mass credit to be real in the vehicle business case. Mitigation: adopt validated 6082-T6 knuckle design allowables from precedent programmes.",
+   "dfmaPrinciples": [
+    "Align grain flow to load path",
+    "Design for near-net forging to cut machining",
+    "Material substitution for unsprung mass",
+    "Isolate dissimilar metals to error-proof corrosion",
+    "Consolidate wear features with inserts"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18-30 months",
+   "benchmarkReference": "unverified: Toyota RAV4 XA50 hot-forged 6061-T6 front knuckle (2.0 kg/corner saved); AA6082-T6 forged upright vs GJS-450 (2.1 kg/corner, −30% machining)",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Unsprung mass reduction supports fleet CO2/range; recyclable aluminium supports EU ELV recycled-content targets.",
+   "evidenceRefs": [
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E7",
+    "E8",
+    "E10",
+    "E11"
+   ],
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Toyota RAV4 XA50 forged 6061-T6 knuckle teardown",
+     "confidence": "low",
+     "year": 2019
+    },
+    {
+     "type": "industry_report",
+     "title": "AA6082-T6 forged upright vs GJS-450 casting case study",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "engineering": {
+    "mechanism": "Forged AA6082-T6 gives ~310 MPa yield with wrought grain flow along load paths; density 2.70 vs 7.1 g/cm³ for GJS-450. Section geometry is resized to match iron stiffness/fatigue while the ~2.6× density gap yields ~1.0 kg saved. Forging eliminates casting porosity, the dominant fatigue-crack initiator, so a lighter section meets the same 300k-cycle target (E3, E4).",
+    "specDeltas": "Material GJS-450-10 → AA6082-T6 (EN 573). Process sand casting → closed-die forging + T6 (solution 530°C/quench/age 175°C). Weight 2.546 → ~1.5 kg. Add steel taper insert at ball-joint bore. Add chromate-free conversion + e-coat. New forging dies + heat-treat.",
+    "validationPlan": "Full homologation: 3-axis fatigue rig ≥300k cycles no crack; kerb-strike impact; ball-joint pull-out ≥ spec; 720h neutral salt-spray with galvanic couple; T6 hardness HB 95-105 and Cpk≥1.33 on bore. New material PPAP + design allowables.",
+    "dfmImplications": "Part count same but adds insert. Machining envelope −30%, better tool life on dense stock, eases small-radius/reach findings (E10, E11). Adds heat-treat and corrosion-coat operations. High-value Al chip recovery. Straightening op post-T6.",
+    "costBridge": "Iron part machined baseline; forged-Al material cost higher (Al €2,700/t vs iron ~€500/t) but −30% machining and ~1.0 kg mass credit (€3-6/kg) net to a favourable vehicle-level business case worth ~€150-300K/yr. Excludes forging tooling capital and e-coat line."
+   },
+   "lensId": "process",
+   "grade": {
+    "named": "AA6082-T6",
+    "catalogueKey": null,
+    "approx": null
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names AA6082-T6"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "10 quantities with units and a stated change (2.546 kg, 1.6 kg, 1.0 kg, 120°C)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Design for near-net forging to cut machining"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "8 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 92,
+   "validationFlags": [
+    "grade-not-in-library(AA6082-T6)",
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "consistent",
+    "statedEur": {
+     "lo": 150000,
+     "hi": 300000,
+     "mid": 225000
+    },
+    "computedEur": 270000,
+    "deltaPct": 0,
+    "basis": "unit × volume: 1 kg × €3-6 × 60,000/yr (volume from run)",
+    "note": "basis multiplies out to €270,000, inside the stated range"
+   },
+   "engineCheck": {
+    "kind": "substitution",
+    "referenceCase": "2.546 kg Cast Iron (Ductile/GJS) via Sand Casting → Machining (CNC) → 1.5 kg Aluminium 6061 via Forging (Hot) → Heat Treatment (batch) → Machining (CNC), 60k/yr, Germany",
+    "baselineEur": 12.97,
+    "proposedEur": 15.5,
+    "savingPct": -19.5,
+    "direction": "contradicted",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "priorArt": {
+    "id": "add151",
+    "title": "AA6082-T6 forged steering knuckle replacing GJS-450 cast iron",
+    "score": 31.1
+   },
+   "critiques": [
+    {
+     "persona": "manufacturing",
+     "personaName": "Manufacturing engineer",
+     "verdict": "challenge",
+     "critique": "Closed-die forging is a completely different process route - new forge dies, press capacity, and machining fixtures; 20+wk tooling lead time and major capex vs incumbent casting line. Also changes machining strategy entirely (forged near-net vs cast bosses)."
+    },
+    {
+     "persona": "commercial",
+     "personaName": "Supplier-commercial manager",
+     "verdict": "challenge",
+     "critique": "Forged aluminium knuckles require a distinct forging supplier base (fewer qualified Al-forging houses vs iron foundries), high tooling/die cost and Al billet price volatility increases pass-through risk; switching cost from incumbent iron foundry is substantial."
+    }
+   ],
+   "rank": {
+    "score": 29635.2,
+    "basis": "claim 225K capped at 3x batch median (210K) — unverified figure · payback 24mo ×0.67 · quality 92 ×0.96 · engine contradicted ×0.35 · stated basis multiplies out · evidence unverified ×0.9 · prior art \"AA6082-T6 forged steering knuckle replacing GJS-450 cast iron\" ×0.70"
+   }
+  },
+  {
+   "id": "adi-austempered-knuckle",
+   "title": "Austempered ductile iron (ADI) thin-wall redesign",
+   "technicalDescription": "Retain a cast route but upgrade GJS-450-10 to austempered ductile iron (ADI, EN 1564 grade EN-GJS-800-8 or 900-8) via an austemper heat-treat (austenitise ~900°C, quench to salt bath 260–350°C, isothermal hold). ADI roughly doubles yield strength (500–600 MPa vs ~310 MPa) and improves fatigue endurance, allowing section thinning and rib optimisation to remove ~15–25% of casting mass while meeting the braking/cornering/vertical load case (E3) and safety validation (E4). On a 2.546 kg part that is ~0.4–0.6 kg unsprung saving — monetised on this part (E7) — without the galvanic and heat-treat-line complexity of switching to aluminium. The base casting can still move to shell mould (W3) for net shape; ADI adds one austemper heat-treat step. Corrosion behaviour is similar to grey/ductile iron so the existing coating suits the −40 to +120°C splash/salt environment (E6). This is a lower-risk mass and cost lever than aluminium because it keeps the iron foundry supply chain and datums.",
+   "manufacturingImpact": "Adds an austempering line (salt-bath or fluidised-bed) after casting — either in-house or toll heat-treat. Machining must be done in the as-cast (soft) state before austempering to keep tool life reasonable, then finish-grind critical bores post-treat if distortion occurs. Thinner walls need tighter foundry process control to avoid porosity in the ball-joint taper section. Rib redesign reduces material mass and pouring weight, improving yield. The higher strength lets the ball-joint taper and caliper bosses (E5) run smaller sections, easing the reach/radius findings (E10, E11) by opening cutter access.",
+   "costSavingTypes": [
+    "weight",
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — mass saving monetised (E7), keeps iron supply chain, modest heat-treat add",
+    "percentage": "mass −15-25%; net €10-20K/yr after heat-treat cost",
+    "annualValue": "€60K–€120K/yr blended at 60,000 units/yr",
+    "calculationBasis": "~0.5 kg × 60,000 material + mass credit, less ~€0.6-1.0/part austemper cost",
+    "paybackMonths": 18
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Safety-critical (E4): ADI fatigue allowables differ from as-cast GJS — full re-validation needed. Austemper distortion can shift the bearing-bore datum — control with post-treat grinding. Section thinning raises porosity sensitivity in the fatigue-critical taper (E3). Process window (bath temperature/time) is narrow; poor control gives mixed microstructure and scatter. Mitigation: DoE the austemper cycle, machine soft-then-treat, and coupon-correlate fatigue before release.",
+   "dfmaPrinciples": [
+    "Increase strength to enable section thinning",
+    "Machine soft, harden after",
+    "Design ribs for load-path efficiency",
+    "Retain existing supply chain/datums",
+    "Net-shape casting to feed heat-treat"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12-20 months",
+   "benchmarkReference": "ADI rear steering knuckle replacing forged steel (near-net casting removes forging/chip loss) — validated €1.6-2.6M marketplace precedent at 200,000/yr",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Lighter iron part supports fleet CO2; iron recyclability aligns with EU ELV recycled-content targets.",
+   "evidenceRefs": [
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E10",
+    "E11"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "ADI (EN-GJS-800-8) fatigue and section-thinning case data for chassis",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "industry_report",
+     "title": "ADI knuckle replacing forged steel — marketplace precedent",
+     "confidence": "low",
+     "year": 2022
+    }
+   ],
+   "engineering": {
+    "mechanism": "Austempering produces ausferrite (acicular ferrite + high-carbon austenite), lifting yield to 500-600 MPa (EN-GJS-800-8) from ~310 MPa. For a fatigue-limited section, allowable stress scales with endurance limit; ~1.8× strength permits ~15-25% wall/rib reduction at equal safety factor, cutting mass ~0.5 kg while holding the 300k-cycle target (E3, E4).",
+    "specDeltas": "Material GJS-450-10 → EN-GJS-800-8 (EN 1564). Add austemper: austenitise 900°C, salt-bath 300°C isothermal hold 1-2h. Wall/rib −15-25%. Weight 2.546 → ~2.0 kg. Optional shell-mould base casting. Post-treat grind bearing bore to hold Cpk.",
+    "validationPlan": "Fatigue rig ≥300k cycles no crack on thinned design (3 samples); microstructure ausferrite ≥90%, no martensite; hardness HB 260-320; bore dimensional Cpk≥1.33 post-grind; salt-spray carryover. Full re-PPAP for revised design allowables.",
+    "dfmImplications": "Adds austemper step and possible post-treat grinding. Machine in soft state for tool life. Thinner sections ease cutter access on bosses/radii (E10, E11). Foundry yield improves from lighter pour. Distortion control is the key new process risk.",
+    "costBridge": "Baseline machined iron; ADI adds ~€0.6-1.0/part heat-treat but removes ~0.5 kg material and delivers mass credit. Net blended €60-120K/yr. Excludes austemper line capital and post-treat grind investment."
+   },
+   "lensId": "process",
+   "grade": {
+    "named": "GJS-450-10",
+    "catalogueKey": "Cast Iron (Ductile/GJS)",
+    "approx": true
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names GJS-450-10"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "11 quantities with units and a stated change (900°C, 350°C, 600 MPa, 310 MPa)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Design ribs for load-path efficiency"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "8 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 100,
+   "validationFlags": [
+    "confidence-capped-no-search",
+    "arithmetic-mismatch(-20%)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 60000,
+     "hi": 120000,
+     "mid": 90000
+    },
+    "computedEur": 48000,
+    "deltaPct": -20,
+    "basis": "unit × volume: €0.6-1.0 × 60,000/yr (volume from basis)",
+    "note": "basis multiplies out to €48,000, 20% below the stated minimum (€60,000–€120,000)"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "proposed process \"Shell Mould Casting + Austempering + CNC\" not in the engine catalogue",
+   "priorArt": {
+    "id": "psuv056",
+    "title": "ICE heavy-duty cast-iron arm to ADI for weight and wear",
+    "score": 29.4
+   },
+   "critiques": [
+    {
+     "persona": "manufacturing",
+     "personaName": "Manufacturing engineer",
+     "verdict": "challenge",
+     "critique": "ADI requires precise isothermal salt-bath heat-treat control and machining after (harder material, tool wear up). Casting yield/porosity control tighter for thin-wall - expect higher scrap in transition and need trial castings/PPAP re-run. Machining cycle time and tool cost will rise on the harder A"
+    },
+    {
+     "persona": "commercial",
+     "personaName": "Supplier-commercial manager",
+     "verdict": "challenge",
+     "critique": "ADI foundries with proven austemper capability are a narrower pool (fewer qualified sources), raising quoting risk and potential single-source lock-in; also alloy content (Ni/Mo) adds raw-material index exposure vs plain GJS-450."
+    }
+   ],
+   "rank": {
+    "score": 33053.5,
+    "basis": "payback 18mo ×0.80 · quality 100 ×1.00 · not engine-checked ×0.85 · stated basis multiplies out -20% vs claim ×0.85 · evidence unverified ×0.9 · prior art \"ICE heavy-duty cast-iron arm to ADI for weight and wear\" ×0.71"
+   }
+  },
+  {
+   "id": "tolerance-relaxation-machining",
+   "title": "Relax non-functional machined tolerances and finishes",
+   "technicalDescription": "Audit the drawing and relax tolerance/finish on non-functional machined features while holding tight control only on the true interfaces — bearing bore, ball-joint taper and caliper mounting bosses (E5). The two unpriced findings are a surface a standard cutter cannot reach (E10) and an internal corner radius forcing a small cutter (E11); both are machining-driven cost, not casting cost. Where the feature carrying these findings is non-functional (e.g. a cosmetic pocket, a clearance face, a non-sealing boss), opening the radius from a small forced value to a standard cutter radius and relaxing surface finish from fine to standard lets a larger, faster standard cutter reach it, cutting cycle time and tool wear. The functional interfaces that carry braking/cornering loads (E3) and mate to the hub/caliper/strut (E2) keep their precision class and GD&T. Because the part stays GJS-450-10 sand cast at the same weight, there is no material re-homologation — only a machining-plan and drawing change, making this a low-cost, fast lever that directly closes the two honestly-unpriced findings (E12).",
+   "manufacturingImpact": "Reduces CNC cycle time by eliminating small-cutter passes and slow feed rates at forced radii (E11), and by allowing standard tooling to reach previously awkward faces (E10). Fewer specialised long-reach/small-diameter cutters in the crib lowers tooling spend and consumable cost. Standard finish reduces spring-pass and polishing operations. Fixturing unchanged. Requires a feature-by-feature functional classification so critical characteristics on the bore/taper/bosses (E5) are demonstrably untouched. Net: faster machining, lower tool wear, fewer tool changes on the safety-critical part without touching its structural performance.",
+   "costSavingTypes": [
+    "process",
+    "tooling",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — attacks the two unpriced findings directly at near-zero investment",
+    "percentage": "5-10% of machining cost",
+    "annualValue": "€30K–€70K/yr at 60,000 units/yr",
+    "calculationBasis": "Cycle-time and tool-life reduction on features driving E10/E11; €0.5-1.2/part machining saving × 60,000",
+    "paybackMonths": 3
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Safety-critical (E4): must prove the relaxed features are genuinely non-functional — a wrong classification could reduce fatigue life at a stress concentration (E3). Opening a radius on a load-carrying fillet would REDUCE strength, so only cosmetic/clearance features qualify. Mitigation: FEA stress-map to confirm each relaxed feature is below fatigue threshold; retain full GD&T on all load-path and interface features; engineering sign-off per characteristic before drawing release.",
+   "dfmaPrinciples": [
+    "Tolerance only what function needs",
+    "Design radii for standard cutter access",
+    "Reduce critical-characteristic count",
+    "Error-proof via functional classification",
+    "Minimise secondary finishing"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "3-6 months",
+   "benchmarkReference": "Standard OEM chassis-machining value-engineering practice — functional dimensioning reduces critical-characteristic count and small-tool passes on cast uprights",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E9",
+    "E10",
+    "E11",
+    "E12"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Functional dimensioning / GD&T optimisation on cast chassis uprights",
+     "confidence": "low",
+     "year": 2023
+    }
+   ],
+   "engineering": {
+    "mechanism": "Machining time at a forced small internal radius (E11) is dominated by low chip load and reduced feed of a small-diameter cutter (MRR ∝ cutter dia × depth × feed). Opening a non-functional radius to a standard 6-8mm cutter multiplies MRR several-fold and cuts tool deflection. Reaching a previously unreachable face (E10) with a standard tool removes special-tool passes entirely.",
+    "specDeltas": "On non-functional features only: internal radius small → ≥standard-cutter radius; surface finish fine → standard (Ra 3.2→6.3µm). Critical characteristics reduced on non-interface features. Bearing bore, ball-joint taper, caliper bosses (E5) tolerances unchanged. No material or weight change (2.546 kg).",
+    "validationPlan": "FEA fatigue stress-map confirming each relaxed feature <50% endurance limit; 30-piece dimensional capability on retained critical features Cpk≥1.33; sign-off matrix per characteristic. No new material PPAP — process/drawing revision PPAP only.",
+    "dfmImplications": "Removes small-cutter and long-reach passes, cutting cycle time and tool crib count. Fewer tool changes and consumables. Fixturing and datums unchanged. Reduced polishing/spring passes. All load-path GD&T retained.",
+    "costBridge": "Baseline machining includes slow small-cutter passes at E10/E11 features. Relaxing non-functional ones saves ~€0.5-1.2/part cycle+tooling. ×60,000 = €30-70K/yr. Excludes any casting change; assumes features confirmed non-functional."
+   },
+   "lensId": "process",
+   "grade": {
+    "named": "GJS-450-10",
+    "catalogueKey": "Cast Iron (Ductile/GJS)",
+    "approx": true
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names GJS-450-10"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "3 quantities with units and a stated change (8mm, 6.3µm, 2.546 kg)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Tolerance only what function needs"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "8 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "consistent",
+    "statedEur": {
+     "lo": 30000,
+     "hi": 70000,
+     "mid": 50000
+    },
+    "computedEur": 51000,
+    "deltaPct": 0,
+    "basis": "annual total: €0.5-1.2 × 60,000 (volume)",
+    "note": "basis multiplies out to €51,000, inside the stated range"
+   },
+   "engineCheck": {
+    "kind": "tolerance",
+    "referenceCase": "2.546 kg Cast Iron (Ductile/GJS) via Sand Casting → Machining (CNC): tight tol / fine finish / 8 CC → standard tol / standard finish / 5 CC, 60k/yr, Germany",
+    "baselineEur": 15.09,
+    "proposedEur": 13.48,
+    "savingPct": 10.7,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine re-run with the relaxed drawing drivers (tolerance cycle multiplier, finish multiplier, critical-characteristic inspection) — validates the DIRECTION, not this part’s exact figure. Whether the characteristic CAN be relaxed is an engineering judgement the engine does not make."
+   },
+   "priorArt": {
+    "id": "dxp001",
+    "title": "Relax non-functional tolerances on the steering knuckle machined faces",
+    "score": 27.9
+   },
+   "critiques": [
+    {
+     "persona": "manufacturing",
+     "personaName": "Manufacturing engineer",
+     "verdict": "strengthen",
+     "critique": "Sound, low-risk lever - relaxing non-critical tolerances cuts cycle time on finishing ops with no new tooling. Sharpen by re-running Cpk study on bearing bore/ball-joint taper/caliper boss to confirm no capability drift when other ops speed up on same fixture."
+    },
+    {
+     "persona": "commercial",
+     "personaName": "Supplier-commercial manager",
+     "verdict": "strengthen",
+     "critique": "Low switching cost—same supplier, same process, just drawing change—so savings can be captured via engineering change negotiation without re-sourcing; good near-term leverage point in next price review."
+    }
+   ],
+   "rank": {
+    "score": 64890,
+    "basis": "payback 3mo ×1.60 · quality 100 ×1.00 · engine confirmed ×1.25 · stated basis multiplies out · evidence unverified ×0.9 · prior art \"Relax non-functional tolerances on the steering knuckle machined faces\" ×0.72"
+   }
+  },
+  {
+   "id": "commonise-lh-rh-mirror",
+   "title": "Commonise LH/RH knuckle to single symmetric casting",
+   "technicalDescription": "The RH knuckle (E8) is one of a mirror pair; a matching LH exists on the same axle. Where the strut, hub-bearing and lower-ball-joint geometry permit, redesign to a single handed-neutral or symmetric casting that serves both sides, or at minimum share one pattern/heat-treat/machining programme across LH and RH via a mirrored feature set. Even if full symmetry is impossible because caliper mounting is handed, commonising the base casting blank and the bearing-bore/strut interface machining (E2, E5) across both sides doubles the effective volume through the same tooling and fixtures. At 60,000/yr per side, combining LH+RH lifts casting-pattern and machining-cell throughput to 120,000/yr, improving tooling amortisation and negotiating leverage — the volume-sensitivity table shows piece price is currently flat across volumes (E35–E40), signalling tooling is already well-amortised, so the gain here is fixture/programme commonality and purchasing scale rather than pure amortisation. Retaining GJS-450-10 keeps the safety validation (E4) on one material. This reduces part-number count, spare-part complexity and inventory, and halves machining-programme development for the corner.",
+   "manufacturingImpact": "One shared casting pattern family and one machining programme (mirrored) instead of two independent ones. Fixtures designed for symmetric datums serve both hands, halving fixture spend per programme. SPC and PPAP effort consolidated. Where caliper bosses are handed, a common blank with side-specific finish machining keeps most operations shared. Reduces changeover complexity and inventory of two distinct raw castings. Purchasing consolidates one iron blank spec at combined 120,000/yr volume for better piece pricing. Datum scheme must be validated identical both hands to reuse the same fixtures without error.",
+   "costSavingTypes": [
+    "commonisation",
+    "complexity",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — halves programme/fixture development, doubles purchasing volume",
+    "percentage": "3-7% blended corner cost",
+    "annualValue": "€40K–€90K/yr across the LH+RH pair",
+    "calculationBasis": "Shared fixtures/programme + combined 120,000/yr purchasing leverage on iron blank and machining rate",
+    "paybackMonths": 12
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Handedness of caliper mount and steering-arm may prevent true symmetry — forcing symmetry could compromise brake clearance or Ackermann. Safety-critical (E4): any geometry compromise must not reduce fatigue margin (E3). Mitigation: keep handed features as side-specific finish machining on a common blank rather than forcing a fully symmetric part; validate both hands independently. Common-part errors (fitting LH where RH belongs) need poka-yoke marking.",
+   "dfmaPrinciples": [
+    "Commonise across handed pairs",
+    "Share datums and fixtures",
+    "Reduce part-number count",
+    "Design common blank + side-specific finish",
+    "Poka-yoke to prevent mis-assembly"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "9-15 months",
+   "benchmarkReference": "unverified: VW MQB shared corner hardware across handed pairs; common blank + handed finish machining standard OEM practice for uprights",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E2",
+    "E4",
+    "E5",
+    "E8",
+    "E35",
+    "E36",
+    "E37",
+    "E38"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Common-blank handed machining for chassis uprights — DFMA practice",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "teardown",
+     "title": "VW MQB corner hardware commonisation",
+     "confidence": "low",
+     "year": 2021
+    }
+   ],
+   "engineering": {
+    "mechanism": "Not a physics change but an economics-of-scale lever: fixed programme/fixture cost is spread over 120,000 combined units vs 60,000. Piece price is flat across volume (E35-E40), confirming tooling is amortised, so the saving comes from shared fixtures (one set not two), consolidated PPAP, and combined purchasing scale on the iron blank and machining rate.",
+    "specDeltas": "Two part numbers → one common blank + handed finish-machining variants. Shared datum scheme both hands. Material GJS-450-10 retained. Handed caliper-boss machining as side-specific ops. Combined purchasing volume 120,000/yr.",
+    "validationPlan": "Validate both hands independently to full fatigue/impact (E4); confirm brake/tyre clearance and Ackermann unchanged; fixture repeatability GR&R on shared fixture both hands; PPAP consolidated. Poka-yoke marking verification.",
+    "dfmImplications": "Halves fixture and machining-programme count. Consolidated SPC/PPAP. One raw blank spec reduces inventory. Handed features retained as finish ops. Requires poka-yoke to prevent LH/RH mix-up.",
+    "costBridge": "Programme and fixture cost shared over LH+RH; purchasing at 120,000/yr improves blank and machining rate ~3-7%. Blended €40-90K/yr across the pair. Excludes any per-part material change; assumes handed features machineable from common blank."
+   },
+   "lensId": "process",
+   "grade": {
+    "named": "GJS-450-10",
+    "catalogueKey": "Cast Iron (Ductile/GJS)",
+    "approx": true
+   },
+   "depth": {
+    "score": 84,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names GJS-450-10"
+     },
+     "mechanism": {
+      "met": false,
+      "weight": 16,
+      "detail": "only 0 quantity with an engineering unit — say what dimension, gauge, time or property moves"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Commonise across handed pairs"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "8 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": [
+     "mechanism"
+    ]
+   },
+   "qualityScore": 84,
+   "validationFlags": [
+    "confidence-capped-no-search"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "unparsed",
+    "statedEur": {
+     "lo": 40000,
+     "hi": 90000,
+     "mid": 65000
+    },
+    "computedEur": null,
+    "deltaPct": null,
+    "basis": "refused: Shared fixtures/programme + combined 120,000/yr purchasing l",
+    "note": "refused: Shared fixtures/programme + combined 120,000/yr purchasing l"
+   },
+   "engineCheck": {
+    "kind": "assembly",
+    "referenceCase": "2 parts (no fasteners) → 1 parts (no fasteners), 5.3s → 2.6s assembly time, 60k/yr, Germany",
+    "baselineEur": 0.09,
+    "proposedEur": 0.04,
+    "savingPct": 50,
+    "direction": "confirmed",
+    "basis": "Deterministic DFA time model (BrainSpark coefficients, MTM-structured, calibratable) at the region’s loaded labour rate, plus illustrative fastener piece prices — validates the DIRECTION of the assembly-content change ONLY. Material and tooling consequences of a consolidation are NOT included; add a substitution request for those."
+   },
+   "priorArt": {
+    "id": "deep-929513f658bd",
+    "title": "Common corner module across left/right via handed-insert datum scheme",
+    "score": 32.1
+   },
+   "critiques": [
+    {
+     "persona": "manufacturing",
+     "personaName": "Manufacturing engineer",
+     "verdict": "strengthen",
+     "critique": "Symmetric/common casting is good for tooling amortisation but must verify strut and ball-joint mounting angles truly permit handing-neutral geometry without compromising kinematics; a single pattern with insert cores for LH/RH is a safer fallback - confirm feasibility before committing to full commo"
+    },
+    {
+     "persona": "commercial",
+     "personaName": "Supplier-commercial manager",
+     "verdict": "strengthen",
+     "critique": "Commonising LH/RH doubles volume per part number, giving strong leverage for tooling amortisation and unit-price negotiation with existing foundry; also enables single-supplier consolidation across both variants."
+    }
+   ],
+   "rank": {
+    "score": 47092.5,
+    "basis": "payback 12mo ×1.00 · quality 84 ×0.92 · engine confirmed ×1.25 · evidence unverified ×0.9 · prior art \"Common corner module across left/right via handed-insert datum scheme\" ×0.70"
+   }
+  },
+  {
+   "id": "commercial-gap-resourcing",
+   "title": "Close commercial gap via dual-source and open-book",
+   "technicalDescription": "The waterfall shows the single largest release is the commercial gap: supplier quote €10.58 vs engine model €8.25 at the stated specification, releasing €2.33/part (W1) — the biggest step in the entitlement (W5, total addressable €5.05). This premium above the cost model is negotiation territory, and the engine's held-out error band applies most to this step (W1). Because the part is a GJS-450-10 sand casting at a mature specification with no premium to remove (W2), the gap is not driven by over-specification but by commercial position. Lever: run a structured resourcing event — open-book should-cost teardown to the engine's €8.25 basis, dual-source qualification (a second EU foundry plus a validation-approved lower-cost-region foundry), and a multi-year price-down schedule over the 5-year programme. The flat volume-price table (E35–E40) confirms tooling is amortised, so piece price is dominated by conversion cost and margin, both addressable commercially without any engineering change or re-homologation of the safety-critical part (E4).",
+   "manufacturingImpact": "No physical change to the part, process or tooling — pure commercial and supply-chain action. Requires a should-cost model built from the engine basis (melt, mould, machining, yield, overhead, margin), a technical data package for re-quotation, and PPAP at any new source. Dual-sourcing improves supply resilience and provides competitive tension for the price-down schedule. Machining could be split from casting to a specialist to attack conversion cost. Must maintain identical GJS-450-10 spec and validation so no re-homologation is triggered, keeping the change purely commercial and low-risk to the programme.",
+   "costSavingTypes": [
+    "process",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High — largest single waterfall step, engineering-free",
+    "percentage": "15-22% of piece price",
+    "annualValue": "€70K–€140K/yr at 60,000 units/yr",
+    "calculationBasis": "€2.33/part commercial gap (W1) × 60,000 = €139.8K/yr theoretical ceiling; realistic 50-100% capture",
+    "paybackMonths": 2
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "The engine's ~21% MAPE reading-low (W5) means the true model cost may be higher than €8.25, so the full €2.33 may not be achievable — treat as direction, not target. Dual-sourcing a safety-critical part (E4) requires full PPAP at the new source; a poorly qualified source risks porosity/fatigue escapes. Mitigation: stage the price-down, hold current source as fallback during new-source validation, and audit new foundry nodularity/porosity capability before award.",
+   "dfmaPrinciples": [
+    "Should-cost to model basis",
+    "Dual-source for competitive tension",
+    "Separate conversion from margin",
+    "Multi-year price-down schedule",
+    "No spec change, no re-homologation"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "4-9 months",
+   "benchmarkReference": "Standard OEM chassis resourcing playbook — open-book should-cost + dual-source typically recovers 10-20% on mature cast commodities",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": null,
+   "evidenceRefs": [
+    "E4",
+    "E8",
+    "E35",
+    "E36",
+    "E37",
+    "E38",
+    "E39",
+    "E40"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Should-cost and dual-source resourcing on cast chassis commodities",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "engineering": {
+    "mechanism": "Not a physics lever — a commercial one. Piece price = conversion cost + material + margin. The engine models €8.25 conversion+material at spec; the €2.33 gap (W1) is margin/inefficiency above model. Competitive tension (dual-source) and open-book transparency compress margin toward the modelled basis. Flat volume pricing (E35-E40) confirms tooling is not the driver.",
+    "specDeltas": "No part change. Material GJS-450-10, sand cast, 2.546 kg all retained. Commercial: open-book cost model, second source qualified, 5-year price-down schedule. Optional casting/machining split sourcing.",
+    "validationPlan": "Full PPAP at any new source: fatigue, impact, nodularity ≥85%, porosity ASTM E446 L1, dimensional Cpk≥1.33. Incumbent held as fallback until new source signed off. No re-homologation of material design.",
+    "dfmImplications": "No manufacturability change at incumbent. New source must demonstrate equal casting/machining capability. Improves supply resilience. Optional conversion-cost attack by splitting machining to a specialist.",
+    "costBridge": "Quote €10.58 → model €8.25 releases €2.33/part (W1). ×60,000 = €139.8K/yr ceiling; realistic capture 50-100% given MAPE reading-low (W5). Excludes new-source PPAP cost and any logistics change from resourcing region."
+   },
+   "lensId": "process",
+   "grade": {
+    "named": "GJS-450-10",
+    "catalogueKey": "Cast Iron (Ductile/GJS)",
+    "approx": true
+   },
+   "depth": {
+    "score": 84,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names GJS-450-10"
+     },
+     "mechanism": {
+      "met": false,
+      "weight": 16,
+      "detail": "only 1 quantity with an engineering unit — say what dimension, gauge, time or property moves"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM implications section written"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "8 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": [
+     "mechanism"
+    ]
+   },
+   "qualityScore": 84,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "consistent",
+    "statedEur": {
+     "lo": 70000,
+     "hi": 140000,
+     "mid": 105000
+    },
+    "computedEur": 139800,
+    "deltaPct": 0,
+    "basis": "annual total: result €139.8K",
+    "note": "basis multiplies out to €139,800, inside the stated range"
+   },
+   "engineCheck": null,
+   "engineCheckReason": "no engine-check request — the idea was not expressed as a substitution, tolerance, assembly or harness change the engine can price",
+   "critiques": [
+    {
+     "persona": "manufacturing",
+     "personaName": "Manufacturing engineer",
+     "verdict": "strengthen",
+     "critique": "Not a process change - dual-sourcing adds second supplier qualification, PPAP, and tooling duplication lead time (8-12wk minimum); open-book negotiation has no manufacturing risk itself but assumes capacity at alternate source exists."
+    },
+    {
+     "persona": "commercial",
+     "personaName": "Supplier-commercial manager",
+     "verdict": "strengthen",
+     "critique": "Dual-sourcing plus open-book costing is the right lever to close a pure commercial gap; benchmark against second qualified ductile-iron foundry to test €8.25 model credibility before conceding to incumbent's raw-material surcharge claims."
+    }
+   ],
+   "rank": {
+    "score": 126684,
+    "basis": "payback 2mo ×1.71 · quality 84 ×0.92 · not engine-checked ×0.85 · stated basis multiplies out · evidence unverified ×0.9"
+   }
+  },
+  {
+   "id": "mim-topology-lightweight-ductile",
+   "title": "Topology-optimised ribbed casting to shed unpriced mass",
+   "technicalDescription": "Independent of material, apply topology optimisation and casting-simulation-driven redesign to the GJS-450-10 upright to remove material from low-stress regions while keeping the load paths from hub bearing to strut and lower ball joint fully stiff (E2, E3). Modern chassis uprights carry legacy mass in generous draft, oversized bosses and conservative webs; a load-path FEA under the braking/cornering/vertical spectrum (E3) typically identifies 8–15% removable mass on a mature iron knuckle without touching the safety-critical fatigue margin (E4). Combined with the shell-mould net-shape route (W3) that holds tighter as-cast walls, thinner optimised sections become castable with controlled porosity. Removing mass in the awkward internal-corner region that currently forces a small cutter (E11) or the surface a standard cutter cannot reach (E10) can also open those features up, giving a double benefit: lighter part (unsprung mass monetised, E7) and cheaper machining. On 2.546 kg, ~0.25–0.35 kg is credible, reducing both material and pour weight.",
+   "manufacturingImpact": "Requires FEA/topology iteration and casting-fill/solidification simulation to confirm the thinner, ribbed geometry fills and feeds without shrink porosity — critical in the ball-joint taper section (E3). New pattern reflects the optimised geometry (pairs naturally with the shell-mould tooling cheque, W3). Lower pour weight improves foundry yield and melt cost per part. Reshaping the geometry around the E10/E11 features can convert them into standard-cutter-accessible forms, cutting machining cycle. Requires re-validation because section stiffness changes, but material and process family are retained, limiting homologation to the redesigned part rather than a new material.",
+   "costSavingTypes": [
+    "weight",
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Medium — mass monetised (E7) plus pour-weight and machining gains",
+    "percentage": "mass −8-15%",
+    "annualValue": "€40K–€80K/yr at 60,000 units/yr",
+    "calculationBasis": "~0.3 kg × 60,000 material saving + mass credit + machining relief on E10/E11 features",
+    "paybackMonths": 14
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Safety-critical (E4): section thinning near stress raisers can cut fatigue life if optimisation targets are wrong; the ball-joint taper and strut interface (E2) must retain margin. Thinner walls raise porosity sensitivity. Mitigation: constrain topology to keep fatigue safety factor ≥ current, verify with rig fatigue ≥300k cycles on the optimised design, and use solidification simulation to guarantee feeding of thinned sections before pattern cut.",
+   "dfmaPrinciples": [
+    "Remove material from low-stress zones",
+    "Design for castability and feeding",
+    "Reshape features for standard-cutter access",
+    "Reduce pour weight to lift yield",
+    "Simulate before tooling"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10-16 months",
+   "benchmarkReference": "Topology-optimised cast iron uprights — Altair/OEM chassis optimisation studies typically shed 8-15% mass at equal fatigue on mature knuckles",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Lighter part and lower pour weight reduce cradle-to-gate CO2, aligning with EU ELV/carbon-footprint reporting.",
+   "evidenceRefs": [
+    "E2",
+    "E3",
+    "E4",
+    "E7",
+    "E8",
+    "E10",
+    "E11",
+    "W3"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Topology optimisation of cast steering knuckles at equal fatigue",
+     "confidence": "low",
+     "year": 2023
+    },
+    {
+     "type": "supplier_data",
+     "title": "Casting solidification simulation for thin-wall ductile iron chassis",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "engineering": {
+    "mechanism": "Under a fixed load case, stress concentrates on load paths while draft/web regions carry little. Topology optimisation redistributes material to keep stiffness (deflection ∝ 1/EI) and fatigue margin while deleting ~8-15% mass. Casting simulation ensures thinned sections still feed (no shrink porosity, the fatigue initiator). Reshaping the E10/E11 region opens cutter access, cutting machining time.",
+    "specDeltas": "Geometry: ribbed topology-optimised sections, generous draft/webs removed, features around E10/E11 reshaped for standard cutter. Material GJS-450-10 retained. Weight 2.546 → ~2.25 kg. New pattern (pairs with shell-mould tooling W3).",
+    "validationPlan": "Rig fatigue ≥300k cycles no crack on optimised design (3 samples); FEA fatigue SF ≥ baseline; solidification-sim porosity <ASTM E446 L1 in thinned sections; dimensional Cpk≥1.33. Re-PPAP for revised geometry, same material allowables.",
+    "dfmImplications": "New pattern; lower pour weight lifts yield and cuts melt cost. Reshaped features reduce small-cutter/long-reach passes (E10, E11). Requires solidification simulation sign-off before tooling. No new material.",
+    "costBridge": "Baseline 2.546 kg iron; ~0.3 kg less material + pour-weight yield gain + machining relief on E10/E11. Blended €40-80K/yr. Excludes new pattern cost (shared with shell-mould cheque) and FEA/simulation engineering."
+   },
+   "lensId": "process",
+   "grade": {
+    "named": "GJS-450-10",
+    "catalogueKey": "Cast Iron (Ductile/GJS)",
+    "approx": true
+   },
+   "depth": {
+    "score": 100,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names GJS-450-10"
+     },
+     "mechanism": {
+      "met": true,
+      "weight": 16,
+      "detail": "3 quantities with units and a stated change (2.546 kg, 0.35 kg, 2.25 kg)"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM principle: Design for castability and feeding"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "8 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": []
+   },
+   "qualityScore": 100,
+   "validationFlags": [],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "unparsed",
+    "statedEur": {
+     "lo": 40000,
+     "hi": 80000,
+     "mid": 60000
+    },
+    "computedEur": null,
+    "deltaPct": null,
+    "basis": null,
+    "note": "calculation basis has no readable saving figure"
+   },
+   "engineCheck": {
+    "kind": "substitution",
+    "referenceCase": "2.546 kg Cast Iron (Ductile/GJS) via Sand Casting → Machining (CNC) → 2.25 kg Cast Iron (Ductile/GJS) via Shell Mould Casting → Machining (CNC), 60k/yr, Germany",
+    "baselineEur": 12.97,
+    "proposedEur": 11.11,
+    "savingPct": 14.3,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "priorArt": {
+    "id": "psuv156",
+    "title": "Crush-can mounting bracket additive topology-optimised",
+    "score": 12
+   },
+   "critiques": [
+    {
+     "persona": "manufacturing",
+     "personaName": "Manufacturing engineer",
+     "verdict": "strengthen",
+     "critique": "Topology optimisation is casting-tooling neutral if done before pattern cut, but any change post-tooling means new pattern equipment and full PPAP/durability re-validation. Confirm this is pre-SOP or requires pattern rework and re-approval lead time."
+    },
+    {
+     "persona": "commercial",
+     "personaName": "Supplier-commercial manager",
+     "verdict": "challenge",
+     "critique": "Topology-optimised ribbed geometry may only be quotable by suppliers with matched simulation/casting capability, narrowing bidder pool and weakening competitive tension versus current multi-supplier sand-cast base."
+    }
+   ],
+   "rank": {
+    "score": 54830.8,
+    "basis": "payback 14mo ×0.92 · quality 100 ×1.00 · engine confirmed ×1.25 · evidence unverified ×0.9 · prior art \"Crush-can mounting bracket additive topology-optimised\" ×0.88"
+   }
+  },
+  {
+   "id": "lcr-footprint-shift",
+   "title": "Shift shell-mould casting to lower-cost region",
+   "technicalDescription": "The footprint step of the waterfall shows the cheapest modelled region for the shell-mould route is Mexico, taking the ex-works entitlement from €7.22 to €5.53 and releasing €1.69/part (W4) — this is second only to the commercial gap (W1). Germany labour at £38-47/hr is a significant share of the machining and finishing cost on this part. Lever: locate (or dual-source) the casting and CNC machining of the RH knuckle in a validated lower-cost region — Mexico per the model (W4), or a nearer-shore option such as Czech/Slovak (£13-17/hr) or a Turkish/Portuguese foundry to balance the logistics, duty and supply-chain risk that the model explicitly excludes (W4). Because the part is GJS-450-10 at standard specification (W2) with amortised tooling (flat volume table E35-E40), only PPAP at the new site is needed, not re-homologation. The decision must net the €1.69/part ex-works saving against freight of a 2.546 kg iron part, import duty and inventory/pipeline risk — a nearer-shore EU-low-cost site may capture much of the saving with far lower logistics penalty than Mexico.",
+   "manufacturingImpact": "Transfers casting and machining to a lower-labour-rate foundry/machining cell. No part change — same GJS-450-10, same pattern design transferred. Requires tooling relocation or new tooling at the target site, full PPAP, and logistics setup (packaging, freight lane, customs). Labour-intensive machining and finishing operations benefit most from the rate differential. Supply-chain risk (single distant source) must be managed, potentially by keeping a regional fallback. A 2.546 kg iron part has meaningful freight weight, so nearer-shore options reduce the logistics offset against the ex-works gain.",
+   "costSavingTypes": [
+    "logistics",
+    "process",
+    "commonisation"
+   ],
+   "costSavingPotential": {
+    "qualitative": "High ex-works, Medium net — €1.69/part before logistics/duty",
+    "percentage": "20-30% ex-works; net after freight/duty lower",
+    "annualValue": "€50K–€100K/yr net at 60,000 units/yr",
+    "calculationBasis": "€1.69/part ex-works (W4) × 60,000 = €101K ceiling; net after freight/duty on 2.546 kg part typically 50-70% capture",
+    "paybackMonths": 15
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Model excludes logistics, duty and supply-chain risk (W4) — for a heavy iron part these erode the ex-works gain; validate net landed cost. Safety-critical (E4): new-site PPAP must prove equal fatigue/porosity capability; distant single-source raises line-stop risk. Currency/geopolitical exposure. Mitigation: prefer nearer-shore EU-low-cost site to cut freight and duty, keep a regional fallback source during ramp, and audit foundry metallurgical capability before award.",
+   "dfmaPrinciples": [
+    "Locate labour-intensive ops in low-rate region",
+    "Net landed cost, not ex-works",
+    "Dual-source for resilience",
+    "Standard spec eases site transfer",
+    "Right-size logistics vs labour trade-off"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10-18 months",
+   "benchmarkReference": "OEM chassis-casting nearshoring to Czech/Turkish foundries — typical 15-25% conversion-cost saving on ductile-iron uprights vs German plant",
+   "searchDataUsed": false,
+   "confidenceLevel": "estimated",
+   "regulatoryContext": "Nearshore vs offshore choice affects transport CO2 relevant to EU carbon-footprint reporting.",
+   "evidenceRefs": [
+    "E4",
+    "E8",
+    "E35",
+    "E36",
+    "E37",
+    "E38",
+    "E39",
+    "E40"
+   ],
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Chassis casting nearshoring conversion-cost benchmarks",
+     "confidence": "low",
+     "year": 2024
+    }
+   ],
+   "engineering": {
+    "mechanism": "Not physics — labour-arbitrage on a machining/finishing-heavy part. Machining hours × (£40/hr Germany − £15/hr Czech / £8/hr Mexico) drives the ex-works €1.69/part release (W4). The saving is offset by freight of a 2.546 kg iron part and duty; net capture depends on distance, so nearer-shore trades a smaller rate gap for far lower logistics penalty.",
+    "specDeltas": "No part change: GJS-450-10, shell-mould or sand cast, 2.546 kg. Change of manufacturing site to lower-labour region. Tooling relocated or duplicated. New freight/packaging lane and customs setup.",
+    "validationPlan": "Full site-transfer PPAP: fatigue ≥300k cycles, nodularity ≥85%, porosity ASTM E446 L1, dimensional Cpk≥1.33 at new site. Run-at-rate capability. Regional fallback maintained through ramp.",
+    "dfmImplications": "Labour-heavy machining/finishing benefits from rate differential. Requires tooling move/duplication and new logistics. Supply resilience managed via fallback. Heavy iron part makes freight non-trivial.",
+    "costBridge": "Ex-works €7.22 → €5.53 releasing €1.69/part (W4). ×60,000 = €101K ceiling. Net after freight (2.546 kg × lane cost) and duty typically 50-70% → €50-100K/yr. Excludes tooling relocation capital and PPAP cost."
+   },
+   "lensId": "process",
+   "grade": {
+    "named": "GJS-450-10",
+    "catalogueKey": "Cast Iron (Ductile/GJS)",
+    "approx": true
+   },
+   "depth": {
+    "score": 84,
+    "criteria": {
+     "grade": {
+      "met": true,
+      "weight": 16,
+      "detail": "names GJS-450-10"
+     },
+     "mechanism": {
+      "met": false,
+      "weight": 16,
+      "detail": "only 1 quantity with an engineering unit — say what dimension, gauge, time or property moves"
+     },
+     "validation": {
+      "met": true,
+      "weight": 16,
+      "detail": "names a validation activity for the risk"
+     },
+     "dfm": {
+      "met": true,
+      "weight": 16,
+      "detail": "DFM implications section written"
+     },
+     "evidence": {
+      "met": true,
+      "weight": 16,
+      "detail": "8 evidence refs resolve to dossier lines"
+     },
+     "sections": {
+      "met": true,
+      "weight": 20,
+      "detail": "all five engineering sections substantive"
+     }
+    },
+    "missing": [
+     "mechanism"
+    ]
+   },
+   "qualityScore": 84,
+   "validationFlags": [
+    "arithmetic-mismatch(-19%)"
+   ],
+   "evidenceUnverified": true,
+   "arithmetic": {
+    "status": "mismatch",
+    "statedEur": {
+     "lo": 50000,
+     "hi": 100000,
+     "mid": 75000
+    },
+    "computedEur": 40400,
+    "deltaPct": -19,
+    "basis": "annual total: result €101K × (1 − 60%)",
+    "note": "basis multiplies out to €40,400, 19% below the stated minimum (€50,000–€100,000)"
+   },
+   "engineCheck": {
+    "kind": "substitution",
+    "referenceCase": "2.546 kg Cast Iron (Ductile/GJS) via Sand Casting → Machining (CNC) → 2.546 kg Cast Iron (Ductile/GJS) via Shell Mould Casting → Machining (CNC), 60k/yr, Germany",
+    "baselineEur": 12.97,
+    "proposedEur": 11.88,
+    "savingPct": 8.4,
+    "direction": "confirmed",
+    "basis": "Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure."
+   },
+   "critiques": [
+    {
+     "persona": "manufacturing",
+     "personaName": "Manufacturing engineer",
+     "verdict": "challenge",
+     "critique": "Relocating to Mexico requires full re-qualification: new pattern/tooling transfer, foundry trial pours, PPAP, and logistics for shipping castings - realistically 6-9 months transfer lead time, not a simple footprint switch; verify local shell-mould capability and metallurgy match exists there."
+    },
+    {
+     "persona": "commercial",
+     "personaName": "Supplier-commercial manager",
+     "verdict": "challenge",
+     "critique": "Mexico relocation assumes an equally capable shell-mould foundry base there; verify actual qualified supplier count and freight/duty pass-through, as landed cost may erode part of the €1.69 apparent saving."
+    }
+   ],
+   "rank": {
+    "score": 58650,
+    "basis": "payback 15mo ×0.89 · quality 84 ×0.92 · engine confirmed ×1.25 · stated basis multiplies out -19% vs claim ×0.85 · evidence unverified ×0.9"
+   }
+  }
+ ]
+}

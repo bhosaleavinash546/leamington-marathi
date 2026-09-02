@@ -200,3 +200,22 @@ test('rankIdeas: precedent is discounted, never buried — the marketplace exist
   const [novel, proven] = ideas.map(i => i.rank.score);
   assert.ok(proven > novel, 'a 4x more valuable proven idea must still win');
 });
+
+// ── Cross-lens restatements (Prism multi-lens / three-level assembly runs) ──
+test('dedupeIdeas merges the same lever restated by different lenses at a lower bar, keeping the deeper level on a tie', () => {
+  const a = mk('Grain-boundary-diffused Dy-lean NdFeB cuts heavy rare earth', 'Grain boundary diffusion of Dy/Tb into sintered NdFeB magnets cuts heavy rare-earth loading while holding coercivity at 150 C rotor temperature.', { lensId: 'assembly-architecture', systemLevel: 'Assembly', qualityScore: 84 });
+  const b = mk('Grain-boundary diffusion Dy-lean magnets cut heavy rare earth', 'Grain-boundary diffusion process applies Dy/Tb at the surface of sintered NdFeB magnets so heavy rare-earth loading drops while coercivity at temperature is retained.', { lensId: 'part-line', systemLevel: 'Part', qualityScore: 84 });
+  const c = mk('Flow-formed hollow rotor shaft', 'Flow-formed hollow shaft cuts mass and enables oil-through cooling of the rotor.', { lensId: 'subassembly-block', systemLevel: 'Subassembly', qualityScore: 80 });
+  const { ideas, merged } = dedupeIdeas([a, b, c]);
+  assert.equal(ideas.length, 2);
+  assert.equal(merged.length, 1);
+  assert.equal(ideas[0].systemLevel, 'Part', 'the part-level statement survives the tie');
+  assert.deepEqual(ideas[0].mergedTitles, [a.title]);
+  // Within ONE lens the ordinary threshold governs: raise it above this
+  // pair's similarity (0.64) and they stay apart, while the same pair across
+  // lenses still merges under the lower cross-lens bar.
+  const same = dedupeIdeas([{ ...a, lensId: 'part-line' }, { ...b, lensId: 'part-line' }], { threshold: 0.7 });
+  assert.equal(same.ideas.length, 2, 'within a lens the ordinary threshold stands');
+  const cross = dedupeIdeas([{ ...a }, { ...b }], { threshold: 0.7 });
+  assert.equal(cross.ideas.length, 1, 'across lenses the lower bar applies');
+});

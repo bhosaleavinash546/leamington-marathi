@@ -42,6 +42,18 @@ export function resolveMaterial(typed, materials = MATERIALS) {
   else if (/titan|ti-?6al|ti6al|tc4|grade ?5 ti/.test(t)) key = has('titanium');
   else if (/zamak|zamac|\bzdc\b|\bzp\d|zinc alloy/.test(t)) key = has('zinc');
   else if (/brass|bronze|copper|cuzn|cusn|\bc\d{5}/.test(t)) key = has('brass') || has('copper');
+  // E-drive families — tested BEFORE the steel branches because "electrical
+  // steel" contains "steel" and used to resolve to Steel (mild), and because
+  // NdFeB / hairpin copper / impregnation resin resolved to nothing at all
+  // (live EDU after-run, Sept 2026: 14 of 19 unpriced ideas failed here).
+  else if (/electrical steel|silicon steel|si-?steel|non-?oriented|\bNO\s?\d{2}\b|\bM\d{3}-\d{2}A\b|\b\d{2}(?:JN|JNE|JNH|CS|HXT|PN)\d{2,4}\b|lamination steel/i.test(t)) {
+    const thin = /\bNO\s?(?:1\d|2[0-5])\b|0\.(?:1\d|2[0-5])\s?mm|\bM1\d{2}-2\dA?\b|\b(?:15|20|25)(?:JN|JNE|JNH|CS|HXT|PN)/i.test(t);
+    key = (thin && has('no20')) || has('m250') || has('electrical steel');
+  }
+  else if (/ndfeb|nd-?fe-?b|neodym|\bn\d{2}(?:m|h|sh|uh|eh|ah)?\b.*magnet|magnet.*\bn\d{2}(?:m|h|sh|uh|eh|ah)?\b|rare[- ]earth magnet|sintered magnet/i.test(t)) key = has('ndfeb') || has('magnet');
+  else if (/ferrite|\by\d{2}[a-z]{1,2}\b/i.test(t)) key = has('ferrite') || has('magnet');
+  else if (/hairpin|winding wire|magnet wire|enamel|\bcu profile\b|bar wind|litz/i.test(t)) key = has('winding wire') || has('copper');
+  else if (/impregnat|\bvpi\b|potting|encapsulant|epoxy resin/i.test(t)) key = has('impregnation') || has('epoxy');
   // Sheet-steel DESIGNATIONS with no "steel" in them (CR340LA, HC420LA, DC04,
   // DX51D, S420MC, HX340LAD, CP800, MS1200, TRIP690, QP980, Usibor 1500,
   // Docol, X5CrNi18-10, 1.4301). The material lens asks for exactly these and

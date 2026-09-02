@@ -107,6 +107,36 @@ test('programme, lifetime and NRE totals are refused — never multiplied by a v
   assert.equal(parseBasis(''), null);
 });
 
+test('live after-run strings: bucket lines are context, unlinked percentages do not multiply, €/kg needs a mass, "minus" subtracts', () => {
+  // A bucket named before a figure is the cost being attacked; the saving is
+  // the per-unit figure by the saving word.
+  const a = checkArithmetic(idea('€250K–€500K at 10,000,000 units/yr', 'Material €0.10/part; reducing 43% overbuy by ~one-quarter via nesting + scrap buy-back saves ~€0.02-0.03/part × 10M'));
+  assert.equal(a.status, 'consistent');
+  assert.equal(a.computedEur, 250000);
+  // "…~€0.02-0.03/part … and ~1-2% steel mass" — the percentage is a second
+  // claim with no base, not a multiplier on the money figure.
+  const b = checkArithmetic(idea('€180K–€350K at 10,000,000 units/yr', '€0.29/part baseline; ~€0.02-0.03/part from deleted interlock punches + stack-weld op and ~1-2% steel mass from higher stacking factor across 10M parts'));
+  assert.equal(b.status, 'consistent');
+  assert.equal(b.computedEur, 250000);
+  // A €/kg price with no mass is not a per-part saving — refuse, do not guess.
+  const c = checkArithmetic(idea('€120K–€300K at 10,000,000 units/yr', 'Iron-loss reduction lets stack shorten ~3-5%, trimming steel mass at 3.4 EUR/kg; part-level saving net of higher per-tonne thin-gauge price across 10M'));
+  assert.equal(c.status, 'unparsed');
+  assert.match(c.note, /€\/kg price with no mass/);
+  // "minus €0.12/kg × 0.073 kg" subtracts from the term before it.
+  const d = checkArithmetic(idea('€1.7M–€2.9M at 10,000,000 units/yr', '€0.29 base × ~7% net on machine+setup+tooling lines (E12), minus ~€0.12/kg coating premium × 0.073 kg'));
+  assert.equal(d.status, 'mismatch');
+  assert.equal(d.computedEur, 115400);
+  // The released figure in brackets wins over the bucket build-up before it.
+  const e = checkArithmetic(idea('€200K–€450K at 10,000,000 units/yr', 'Setup €0.05 + tooling €0.01 largely amortised across variants (~€0.02-0.03/part released) plus 2-4% steel volume-price gain × 10M'));
+  assert.equal(e.status, 'consistent');
+  assert.equal(e.computedEur, 250000);
+  // A cost that goes UP is context; a programme-sized die figure is refused.
+  const f = checkArithmetic(idea('Net −€0.6M–€1.2M part cost', 'Mass 0.051→0.029 kg but €1.45→€3.40/kg; part material €0.10→~€0.14 (E12,E61,E62)'), { annualVolume: 1e7 });
+  assert.equal(f.status, 'unparsed');
+  const g = checkArithmetic(idea('€0.3M–€0.8M portfolio-level', 'Avoids €0.5–1.5M dies on tail variants + die-life extension on runner (E12 tooling €0.01/part)'), { annualVolume: 1e7 });
+  assert.equal(g.status, 'unparsed');
+});
+
 test('runArithmeticChecks stamps every idea, flags only mismatches, and counts honestly', () => {
   const ideas = [
     idea('€60K at 60,000 units/yr', '€1.03/part × 60,000 = €61.8K/yr'),

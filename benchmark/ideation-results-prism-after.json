@@ -1,0 +1,214 @@
+{
+  "label": "prism-after",
+  "offline": true,
+  "summary": {
+    "parts": 4,
+    "ideas": 62,
+    "diversityScore": 83.8,
+    "nearDupPairs": 25,
+    "engineCheckRate": 41.9,
+    "contradictedRate": 30.8,
+    "nullReasonRate": 100,
+    "arithConsistentRate": 59.7,
+    "arithMismatchRate": 25.8,
+    "arithParsedRate": 85.5,
+    "depthMedian": 96,
+    "depthSpread": 29,
+    "namedGradeRate": 69.4,
+    "allSectionsRate": 87.1,
+    "qualityScoreSpread": 31,
+    "critiquedRate": 71,
+    "dupRate": 82.3,
+    "scoredAt": "2026-09-02T08:18:23.662Z",
+    "scoredFrom": "benchmark/prism-runs-after"
+  },
+  "perPart": [
+    {
+      "part": "edu",
+      "ideas": 24,
+      "diversityScore": 86.5,
+      "nearDupPairs": 18,
+      "engineChecked": 5,
+      "contradicted": 1,
+      "nullWithReason": 19,
+      "engineByKind": {
+        "assembly": 5
+      },
+      "arithmetic": {
+        "consistent": 19,
+        "mismatch": 3,
+        "unparsed": 2
+      },
+      "depthMin": 48,
+      "depthMedian": 84,
+      "depthMax": 100,
+      "depthSpread": 52,
+      "criteriaHitPct": {
+        "grade": 63,
+        "mechanism": 92,
+        "validation": 100,
+        "dfm": 100,
+        "evidence": 100,
+        "sections": 67
+      },
+      "namedGrade": 15,
+      "allSections": 16,
+      "qualityScoreSpread": 52,
+      "lensesRun": [
+        "assembly-architecture",
+        "subassembly-block",
+        "part-line"
+      ],
+      "lensesAvailable": [
+        "assembly-architecture",
+        "subassembly-block",
+        "part-line"
+      ],
+      "priorArtDup": 23,
+      "critiqued": 12
+    },
+    {
+      "part": "hood",
+      "ideas": 15,
+      "diversityScore": 82.3,
+      "nearDupPairs": 2,
+      "engineChecked": 11,
+      "contradicted": 4,
+      "nullWithReason": 4,
+      "engineByKind": {
+        "substitution": 5,
+        "assembly": 3,
+        "tolerance": 2,
+        "mass": 1
+      },
+      "arithmetic": {
+        "consistent": 8,
+        "mismatch": 7,
+        "unparsed": 0
+      },
+      "depthMin": 68,
+      "depthMedian": 100,
+      "depthMax": 100,
+      "depthSpread": 32,
+      "criteriaHitPct": {
+        "grade": 60,
+        "mechanism": 80,
+        "validation": 100,
+        "dfm": 100,
+        "evidence": 100,
+        "sections": 100
+      },
+      "namedGrade": 8,
+      "allSections": 15,
+      "qualityScoreSpread": 32,
+      "lensesRun": [
+        "vave",
+        "material"
+      ],
+      "lensesAvailable": [
+        "vave",
+        "process",
+        "material",
+        "spec",
+        "commercial",
+        "benchmark"
+      ],
+      "priorArtDup": 11,
+      "critiqued": 12
+    },
+    {
+      "part": "knuckle",
+      "ideas": 8,
+      "diversityScore": 82.9,
+      "nearDupPairs": 0,
+      "engineChecked": 6,
+      "contradicted": 1,
+      "nullWithReason": 2,
+      "engineByKind": {
+        "substitution": 4,
+        "tolerance": 1,
+        "assembly": 1
+      },
+      "arithmetic": {
+        "consistent": 4,
+        "mismatch": 2,
+        "unparsed": 2
+      },
+      "depthMin": 84,
+      "depthMedian": 100,
+      "depthMax": 100,
+      "depthSpread": 16,
+      "criteriaHitPct": {
+        "grade": 100,
+        "mechanism": 63,
+        "validation": 100,
+        "dfm": 100,
+        "evidence": 100,
+        "sections": 100
+      },
+      "namedGrade": 8,
+      "allSections": 8,
+      "qualityScoreSpread": 16,
+      "lensesRun": [
+        "process"
+      ],
+      "lensesAvailable": [
+        "vave",
+        "process",
+        "material",
+        "spec",
+        "commercial",
+        "benchmark"
+      ],
+      "priorArtDup": 5,
+      "critiqued": 8
+    },
+    {
+      "part": "lamination",
+      "ideas": 15,
+      "diversityScore": 83.6,
+      "nearDupPairs": 5,
+      "engineChecked": 4,
+      "contradicted": 2,
+      "nullWithReason": 11,
+      "engineByKind": {
+        "assembly": 3,
+        "substitution": 1
+      },
+      "arithmetic": {
+        "consistent": 6,
+        "mismatch": 4,
+        "unparsed": 5
+      },
+      "depthMin": 84,
+      "depthMedian": 100,
+      "depthMax": 100,
+      "depthSpread": 16,
+      "criteriaHitPct": {
+        "grade": 87,
+        "mechanism": 93,
+        "validation": 100,
+        "dfm": 100,
+        "evidence": 100,
+        "sections": 100
+      },
+      "namedGrade": 12,
+      "allSections": 15,
+      "qualityScoreSpread": 24,
+      "lensesRun": [
+        "vave",
+        "material"
+      ],
+      "lensesAvailable": [
+        "vave",
+        "process",
+        "material",
+        "spec",
+        "commercial",
+        "benchmark"
+      ],
+      "priorArtDup": 12,
+      "critiqued": 12
+    }
+  ]
+}

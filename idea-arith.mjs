@@ -42,13 +42,23 @@ const VOLUME_RE = new RegExp(`(?<![€£$]\\s?)(\\d{1,3}(?:,\\d{3})+|\\d+(?:\\.\
 const VOLUME_BARE_RE = new RegExp(`[×x*]\\s?(?![€£$])(\\d{1,3}(?:,\\d{3})+|\\d+(?:\\.\\d+)?)\\s?([kKM])?\\s?${UNIT_WORDS}?\\b`);
 const PER_YEAR_RE = /\/\s?(?:yr|year|a)\b|per\s(?:year|annum|yr)|annual|p\.a\./i;
 const PER_UNIT_RE = /\/\s?(?:part|unit|pc|piece|lam|veh|set|motor|corner)|\bper\s(?:part|unit|piece|set|motor|vehicle|corner)/i;
-const CONTEXT_RE = /baseline|should-?cost|\bquote\b|\bcurrent\b|total part cost|\bpart cost\b|\bpiece price\b|\bunit price\b|\bblock\b|\bline\b|\bgap\b|\bcontent\b/i;
+// A cost BUCKET named before a figure ("Material €0.10/part", "Setup €0.05 +
+// tooling €0.01") is the cost being attacked, not the saving — unless the
+// clause also names a saving.
+const CONTEXT_RE = /baseline|should-?cost|\bquote\b|\bcurrent\b|total part cost|\bpart cost\b|\bpiece price\b|\bunit price\b|\bblock\b|\bline\b|\bgap\b|\bcontent\b|^\s*(?:material|machine|setup|tooling|labour|labor|overhead|logistics|finishing|conversion|scrap)\s+[€£$]/i;
 const SAVING_RE = /\bsav|release|delta|delet|captur|recover|avoid|premium|reduc|\bcut\b|halv|\bnet\b|\bdrop/i;
 const CONTEXT_LEAD_RE = /(?:most|share|portion|fraction|part|half|third)\s+of\s*~?$|of\s+the\s*~?$|\bon\s*~?$|\bof\s*~?$|\bvs\.?\s+\S*\s*$|\bversus\s+\S*\s*$/i;
 const REFUSE_RE = /programme|program\b|lifetime|\bover\s\d|per\s(?:programme|program)/i;
 const RESULT_RE = /(?:≈|=|\bgives\b|\byields\b|\bsaves?\b|\bsaving of\b|\bnets?\b|\bcaptures?\b)\s*~?\s*(?=[€£$]|\d+(?:\.\d+)?\s?(?:EUR|GBP|USD))/i;
 const REDUCE_RE = /\bless\b|\bminus\b|\bnet of\b|\bafter\b|\bdiscount/i;
 const APPLY_RE = /reduction|\bof (?:these|this|that|it)\b|\bon these\b|\bsaving\b|\bcapture\b/i;
+// A percentage multiplies a money figure only when the text LINKS them
+// ("20% of €47", "€214 × 20%", "7% net on €0.29"); "…~€0.025/part, plus 2%
+// gain" is two separate claims and the percentage has no base to act on.
+const linked = (c, pctIdx, moneyIdx) => {
+  const between = pctIdx < moneyIdx ? c.slice(pctIdx, moneyIdx) : c.slice(moneyIdx, pctIdx);
+  return between.length < 60 && /(?:\bof\b|\bon\b|×|\bx\b|\*|\bnet on\b|\bavg\b|\bfrom\b)/i.test(between.replace(/^\d+(?:\.\d+)?\s?(?:[-–]\s?\d+(?:\.\d+)?\s?)?%/, ''));
+};
 
 const scale = (s) => (!s ? 1 : /k/i.test(s) ? 1e3 : 1e6);
 const num = (s) => { const n = parseFloat(String(s).replace(/,/g, '')); return Number.isFinite(n) ? n : null; };
@@ -103,8 +113,11 @@ function chainToken(tok, chainHasPerKg) {
   const money = findMoney(t);
   const pct = pctOf(t);
   if (money.length) {
-    const v = money[0].value * (pct != null && money[0].index > (PCT_RE.exec(t)?.index ?? -1) ? pct / 100 : 1);
-    return { value: v, isVolume: false, label: pct != null && money[0].index > (PCT_RE.exec(t)?.index ?? -1) ? `${pct}% × ${money[0].raw}` : money[0].raw, big: money[0].value >= 1000 && !PER_YEAR_RE.test(t) };
+    const pi = PCT_RE.exec(t)?.index ?? -1;
+    const applyPct = pct != null && pi !== -1 && linked(t, pi, money[0].index);
+    const perKg = /^\s*\/\s?kg/.test(t.slice(money[0].index + money[0].raw.length));
+    const v = money[0].value * (applyPct ? pct / 100 : 1);
+    return { value: v, isVolume: false, perKg, label: applyPct ? `${pct}% × ${money[0].raw}` : money[0].raw, big: money[0].value >= 1000 && !PER_YEAR_RE.test(t) };
   }
   if (chainHasPerKg) {
     // "0.21→~0.18kg" is a mass DIFFERENCE, not a mass.
@@ -135,7 +148,7 @@ function clauseTerm(clause) {
 
   if (!money.length && pct != null) {
     if (REDUCE_RE.test(c)) return { reduce: pct / 100 };     // "less 30-60% logistics"
-    if (APPLY_RE.test(c) || /\bx\b|×/.test(c)) return { apply: pct / 100 };   // "25% reduction x 10M" — of the build-up before it
+    if (APPLY_RE.test(c)) return { apply: pct / 100 };   // "25% reduction x 10M" — of the build-up before it
     return null;
   }
 
@@ -144,6 +157,9 @@ function clauseTerm(clause) {
   if (arrow) {
     const a = parseMoneyRange(arrow[1]), b = parseMoneyRange(arrow[2]);
     if (a && b && a.mid > b.mid) return { value: a.mid - b.mid, perYear: perYear && a.mid >= 1000, how: `${arrow[1].trim()} → ${arrow[2].trim()}` };
+    // "€1.45 → €3.40/kg": a cost that goes UP is context for a net figure
+    // elsewhere, never a saving to multiply out.
+    if (a && b && a.mid <= b.mid) return null;
   }
 
   // Cost build-up: "€a + €b = €c/part" — context for the next clause.
@@ -165,30 +181,52 @@ function clauseTerm(clause) {
   const tokens = c.split(/\s*×\s*|\s[x*]\s/i).map(t => t.trim()).filter(Boolean);
   if (tokens.length >= 2 && money.length) {
     const chainHasPerKg = /\/\s?kg/i.test(c);
-    let product = 1, hasVolume = false, labels = [], usable = 0;
+    let product = 1, hasVolume = false, labels = [], usable = 0, sawMass = false;
     for (const tok of tokens) {
       const ct = chainToken(tok, chainHasPerKg);
       if (!ct) continue;
       if (ct.big) return { refused: `${ct.label} is not a per-unit figure` };
+      if (/\bkg\b/.test(ct.label)) sawMass = true;
       product *= ct.value; labels.push(ct.label); usable++;
       if (ct.isVolume) hasVolume = true;
     }
+    // A €/kg price with no mass to multiply it by is not a per-part figure.
+    if (chainHasPerKg && !sawMass) return { refused: 'a €/kg price with no mass stated' };
     if (usable >= 2) return { value: product * halved, perYear: hasVolume || (perYear && product >= 1000), how: labels.join(' × ') };
   }
 
-  // Percentage of a money figure: "20% of €47.67"
+  // Percentage of a money figure: "20% of €47.67" — only when the text links them.
   if (pct != null && money.length) {
+    const pi = PCT_RE.exec(c).index;
     const base = money.reduce((a, b) => (b.value > a.value ? b : a));
-    if (base.value >= 1000 && !perYear) return { refused: `${base.raw} has no stated period` };
-    return { value: base.value * pct / 100 * halved, perYear: base.value >= 1000, how: `${pct}% × ${base.raw}` };
+    if (linked(c, pi, base.index)) {
+      if (/^\s*\/\s?kg/.test(c.slice(base.index + base.raw.length))) return { refused: 'a €/kg price with no mass stated' };
+      if (base.value >= 1000 && !perYear) return { refused: `${base.raw} has no stated period` };
+      return { value: base.value * pct / 100 * halved, perYear: base.value >= 1000, how: `${pct}% × ${base.raw}` };
+    }
+    // Unlinked: fall through — the money figure stands on its own.
   }
 
-  // A lone money figure
+  // A lone money figure. When several are present, prefer the one carrying a
+  // per-unit marker AND a saving word nearby ("Setup €0.05 + tooling €0.01
+  // amortised … (~€0.02-0.03/part released)") over the first one seen.
   if (money.length) {
-    const m = money[0];
+    const scored = money.map(x => {
+      const after = c.slice(x.index + x.raw.length, x.index + x.raw.length + 24);
+      const around = c.slice(Math.max(0, x.index - 40), x.index + x.raw.length + 40);
+      return { x, perUnit: PER_UNIT_RE.test(after), saving: SAVING_RE.test(around) };
+    });
+    const bucketLead = (x) => /(?:material|machine|setup|tooling|labour|labor|overhead|logistics|finishing|conversion|scrap|coating)\s*(?:line|bucket)?\s*~?$/i.test(c.slice(Math.max(0, x.index - 16), x.index));
+    // "(E12 tooling €0.01/part)" is the bucket, not the saving — a per-unit
+    // figure led by a bucket word only counts when a saving word sits by it.
+    const usable = scored.filter(s => !(bucketLead(s.x) && !s.saving));
+    const best = usable.find(s => s.perUnit && s.saving) || usable.find(s => s.perUnit) || usable[0];
+    if (!best) return { context: scored[0].x.value };
+    const m = best.x;
+    if (/^\s*\/\s?kg/.test(c.slice(m.index + m.raw.length))) return { refused: 'a €/kg price with no mass stated' };
     const lead = c.slice(Math.max(0, m.index - 14), m.index);
     const perUnit = PER_UNIT_RE.test(c);
-    const isContext = CONTEXT_LEAD_RE.test(lead) || (CONTEXT_RE.test(c) && !SAVING_RE.test(c));
+    const isContext = CONTEXT_LEAD_RE.test(lead) || (CONTEXT_RE.test(c) && !(best.perUnit && best.saving) && !SAVING_RE.test(c));
     if (isContext) return { context: m.value };
     if (m.value >= 1000) return perYear ? { value: m.value * halved, perYear: true, how: m.raw } : { refused: `${m.raw} has no stated period` };
     return { value: m.value * halved, perYear: false, how: m.raw + (perUnit ? '' : ' (read as per unit)') };
@@ -207,11 +245,18 @@ export function parseBasis(basis, { annualVolume = null, annualValueText = '' } 
   if (volume == null) { volume = parseVolume(annualValueText); volumeSource = volume != null ? 'annual value' : null; }
   if (volume == null && Number(annualVolume) > 0) { volume = Number(annualVolume); volumeSource = 'run'; }
 
-  const clauses = b.split(/;|\bplus\b/i).map(s => s.trim()).filter(Boolean);
+  // "minus ~€0.12/kg coating premium × 0.073 kg" is a subtractive TERM (a
+  // money figure follows); "less 30-60% logistics" stays a percentage
+  // reduction of the running total. Mark the subtractive ones with a sign.
+  const marked = b.replace(/\b(?:minus|less)\s+(?=~?[€£$]|~?\d+(?:\.\d+)?\s?(?:EUR|GBP|USD))/gi, ';NEG ');
+  const clauses = marked.split(/;|\bplus\b/i).map(s => s.trim()).filter(Boolean);
   const terms = [], refused = [], reductions = [];
   let perPart = 0, perYear = 0, anyPerPart = false, anyPerYear = false, context = null, pendingApply = null;
-  for (const c of clauses) {
-    const t = clauseTerm(c);
+  for (const raw of clauses) {
+    const neg = /^NEG\s/.test(raw);
+    const c = neg ? raw.replace(/^NEG\s/, '') : raw;
+    const t0 = clauseTerm(c);
+    const t = t0 && neg && typeof t0.value === 'number' ? { ...t0, value: -t0.value, how: `− ${t0.how}` } : t0;
     if (!t) continue;
     if (t.refused) { refused.push(t.refused); continue; }
     if (t.reduce != null) { reductions.push(t.reduce); continue; }

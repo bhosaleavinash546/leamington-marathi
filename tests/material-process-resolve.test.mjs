@@ -103,3 +103,20 @@ test('EN AC-46000 die-cast alloy resolves to cast Al, not wrought 6061', () => {
   // genuine wrought grade unaffected
   assert.equal(resolveMaterial('6061')?.key, 'Aluminium 6061');
 });
+
+// ── E-drive families (live EDU after-run, Sept 2026: 14 of 19 unpriced ideas
+//    failed here — "electrical steel" resolved to Steel (mild), NdFeB to nothing)
+import { test as etest } from 'node:test';
+import eassert from 'node:assert/strict';
+etest('resolveMaterial knows electrical steel, magnets, winding wire and impregnation resin', () => {
+  eassert.equal(resolveMaterial('NdFeB N42UH sintered magnet (bulk Dy 2-3%)').key, 'Magnet (NdFeB, sintered, heavy-RE)');
+  eassert.equal(resolveMaterial('NdFeB magnet set, single-V IPM (1.8 kg)').key, 'Magnet (NdFeB, sintered, heavy-RE)');
+  eassert.equal(resolveMaterial('Y30BH ferrite magnet').key, 'Magnet (Ferrite, Y30BH)');
+  eassert.equal(resolveMaterial('Hairpin Cu profile (discrete I-pin)').key, 'Copper (enamelled winding wire)');
+  eassert.equal(resolveMaterial('VPI impregnation resin (unfilled epoxy)').key, 'Epoxy (impregnation resin)');
+  eassert.equal(resolveMaterial('M250-35A non-oriented electrical steel').key, 'Electrical Steel (M250-35A)');
+  eassert.equal(resolveMaterial('NO20 0.20 mm electrical steel').key, 'Electrical Steel (NO20, 0.20 mm)');
+  eassert.equal(resolveMaterial('20JNEH1200 silicon steel').key, 'Electrical Steel (NO20, 0.20 mm)');
+  eassert.equal(resolveMaterial('CR340LA').key, 'Steel (high-strength)');
+  eassert.equal(resolveMaterial('DC04 mild sheet').key, 'Steel (mild)');
+});

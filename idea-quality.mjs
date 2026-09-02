@@ -76,18 +76,30 @@ export function batchDiversity(ideas, { dupThreshold = 0.45 } = {}) {
  * survivor.mergedTitles. The prompt already tells the model to merge same-root
  * ideas; this is the deterministic enforcement of that instruction.
  */
-export function dedupeIdeas(ideas, { threshold = 0.6 } = {}) {
+export function dedupeIdeas(ideas, { threshold = 0.6, crossLensThreshold = 0.45 } = {}) {
   const arr = Array.isArray(ideas) ? [...ideas] : [];
   const vecs = arr.map(i => tfVector(ideaText(i)));
   const droppedIdx = new Set();
   const merged = [];
+  // Prism runs generate through several lenses (or, for assemblies, three
+  // system levels) in PARALLEL, so the same lever comes back once per lens
+  // with different wording — "GBD Dy-lean magnets" three times at three
+  // levels on the live EDU run, 18 near-duplicate pairs the 0.6 title-cosine
+  // could not see. Across lenses a lower bar applies; within one lens the
+  // model was already told to merge same-root ideas and 0.6 stands.
+  const LEVEL_RANK = { Part: 3, Subassembly: 2, Assembly: 1 };
   for (let i = 0; i < arr.length; i++) {
     if (droppedIdx.has(i)) continue;
     for (let j = i + 1; j < arr.length; j++) {
       if (droppedIdx.has(j)) continue;
       const s = cosine(vecs[i], vecs[j]);
-      if (s < threshold) continue;
-      const [keep, drop] = (arr[j].qualityScore || 0) > (arr[i].qualityScore || 0) ? [j, i] : [i, j];
+      const crossLens = arr[i].lensId && arr[j].lensId && arr[i].lensId !== arr[j].lensId;
+      if (s < (crossLens ? crossLensThreshold : threshold)) continue;
+      // Survivor: higher quality; on a tie the deeper system level (a
+      // part-level statement of the lever is the more actionable one).
+      const qi = arr[i].qualityScore || 0, qj = arr[j].qualityScore || 0;
+      const li = LEVEL_RANK[arr[i].systemLevel] || 0, lj = LEVEL_RANK[arr[j].systemLevel] || 0;
+      const [keep, drop] = qj > qi || (qj === qi && lj > li) ? [j, i] : [i, j];
       droppedIdx.add(drop);
       arr[keep].mergedTitles = [...(arr[keep].mergedTitles || []), arr[drop].title];
       merged.push({ kept: arr[keep].title, dropped: arr[drop].title, similarity: Number(s.toFixed(3)) });

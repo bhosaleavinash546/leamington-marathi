@@ -3255,6 +3255,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
           library: getActiveLibrary(),
           smallModel: SMALL_MODEL,
           searchExecuted,
+          evidenceIds,
         }, { emit, level: deepLevel });
         validationSummary.deep = deep;
         if (deep.critiqued > 0) emit({ type: 'progress', message: deepLevel === 'full'

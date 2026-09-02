@@ -118,12 +118,18 @@ test('runDeepPass: critiques stamped, elo bounded, contradicted idea repaired & 
     if (typeof i.eloFactor === 'number') assert.ok(i.eloFactor >= 0.85 && i.eloFactor <= 1.15);
   }
   // Two refine candidates: the engine-contradicted idea AND the idea the fake
-  // panel challenged from all three personas (majority-challenged).
+  // panel challenged from every persona (majority-challenged). The fake
+  // returns the SAME repaired text for both, so the second repair restates
+  // the first and must be rejected — a repair has to stay a distinct idea.
   assert.equal(summary.refineAttempted, 2);
-  assert.equal(summary.refined, 2, 'both candidates repaired');
-  const repaired = ideas.find(i => i.refined?.fromTitle === 'Idea three');
-  assert.ok(repaired, 'contradicted idea replaced in place');
-  assert.match(repaired.refined.note, /engine contradiction/);
+  assert.equal(summary.refined, 1, 'one candidate repaired, the duplicate repair rejected');
+  assert.equal(summary.repairRejected.length, 1);
+  assert.match(summary.repairRejected[0].reason, /restates/);
+  // The majority-challenged idea outranks the contradicted one in the refine
+  // queue (4 challenges vs priority 2), so IT is the one repaired in place.
+  const repaired = ideas.find(i => i.refined);
+  assert.ok(repaired, 'a candidate was replaced in place');
+  assert.match(repaired.refined.note, /engine contradiction|panel challenges/);
   assert.ok(!repaired.engineCheck || repaired.engineCheck.direction !== 'contradicted', 'repair may not still be contradicted');
 });
 
@@ -145,14 +151,76 @@ test('runDeepPass critique level: four-persona panel + small-model repair, NO to
   assert.equal(client.calls.filter(c => c === 'emit_critiques').length, 4, 'four personas, including the test engineer');
   for (const i of ideas) assert.equal(i.eloFactor, undefined, 'no Elo stamp without a tournament');
   assert.ok(summary.critiqued >= 1);
-  assert.ok(summary.refined >= 1, 'the contradicted idea was still repaired');
-  const repaired = ideas.find(i => i.refined?.fromTitle === 'Idea three');
-  assert.ok(repaired);
+  assert.ok(summary.refined >= 1, 'a candidate was still repaired');
+  assert.ok(ideas.some(i => i.refined));
   // The fourth persona's critiques are stamped with its own id.
   assert.ok(ideas.some(i => (i.critiques || []).some(c => c.persona === 'test')), 'test-engineer critiques stamped');
 });
 
+test('runDeepPass accepts a repaired idea returned as a JSON STRING (live small-model behaviour)', async () => {
+  // Sept 2026 live after-run: 9 repairs attempted, 0 landed — the model put
+  // the idea in the tool call as a JSON-encoded string and the validator
+  // dropped it. The bare `{type:'object'}` schema also produced `{}`.
+  const base = fakeClient();
+  const client = {
+    calls: base.calls,
+    messages: { create: async (params) => {
+      const r = await base.messages.create(params);
+      if (params.tools[0].name === 'emit_refined') {
+        const input = r.content[0].input;
+        return { content: [{ type: 'tool_use', name: 'emit_refined', input: { idea: JSON.stringify(input.idea) } }] };
+      }
+      return r;
+    } },
+  };
+  const ideas = [
+    mkIdea('Idea one'), mkIdea('Idea two'),
+    mkIdea('Idea three', { engineCheck: { direction: 'contradicted', referenceCase: 'x', baselineEur: 10, proposedEur: 12, savingPct: -20, basis: 'b' } }),
+    mkIdea('Idea four'),
+  ];
+  const summary = await runDeepPass(client, ideas, { partName: 'bracket', region: 'Germany', annualVolume: 80000, smallModel: 'small', searchExecuted: false }, { seed: 7, level: 'critique' });
+  assert.ok(summary.refined >= 1, `string-encoded repair must land (refined=${summary.refined})`);
+  assert.ok(ideas.some(i => i.refined));
+});
+
+test('REFINE_SCHEMA spells out the idea shape so a forced tool call cannot come back empty', async () => {
+  const { REFINE_SCHEMA } = await import('../idea-deep.mjs');
+  const props = REFINE_SCHEMA.properties.idea.properties;
+  for (const k of ['title', 'technicalDescription', 'costSavingPotential', 'engineering', 'engineCheckRequest']) assert.ok(props[k], `schema names ${k}`);
+  assert.ok(REFINE_SCHEMA.properties.idea.required.includes('engineering'));
+});
+
+test('a repair of an engine-contradicted idea must itself be engine-checkable, or the original stands', async () => {
+  // Live (Sept 2026): every repair came back with no resolvable engine
+  // request, so "not contradicted" meant "not looked at". That is dodging
+  // the verdict, and it is rejected with the reason.
+  const base = fakeClient();
+  const client = {
+    calls: base.calls,
+    messages: { create: async (params) => {
+      const r = await base.messages.create(params);
+      if (params.tools[0].name === 'emit_refined') {
+        const idea = { ...r.content[0].input.idea, title: 'Entirely different repaired lever with no request', technicalDescription: 'A different mechanism altogether: roll-form the bracket profile from coil and delete the progressive die, holding section modulus with a hem.' };
+        delete idea.engineCheckRequest;
+        return { content: [{ type: 'tool_use', name: 'emit_refined', input: { idea } }] };
+      }
+      return r;
+    } },
+  };
+  const ideas = [
+    mkIdea('Idea one'), mkIdea('Idea two'),
+    mkIdea('Idea three', { engineCheck: { direction: 'contradicted', referenceCase: 'x', baselineEur: 10, proposedEur: 12, savingPct: -20, basis: 'b' } }),
+    mkIdea('Idea four'),
+  ];
+  const summary = await runDeepPass(client, ideas, { partName: 'bracket', region: 'Germany', annualVolume: 80000, smallModel: 'small', searchExecuted: false }, { seed: 7, level: 'critique' });
+  const three = ideas.find(i => i.title === 'Idea three');
+  assert.ok(three && !three.refined, 'the contradicted original stands');
+  const rej = summary.repairRejected.find(r => r.title === 'Idea three');
+  assert.ok(rej, 'rejection recorded');
+  assert.match(rej.reason, /not engine-checkable/);
+});
+
 test('runDeepPass: no-ops on tiny batches', async () => {
   const summary = await runDeepPass(fakeClient(), [mkIdea('only')], { partName: 'x', smallModel: 's' });
-  assert.deepEqual(summary, { critiqued: 0, challenges: 0, eloMatches: 0, refineAttempted: 0, refined: 0, level: 'full' });
+  assert.deepEqual(summary, { critiqued: 0, challenges: 0, eloMatches: 0, refineAttempted: 0, refined: 0, repairRejected: [], level: 'full' });
 });
