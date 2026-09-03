@@ -304,48 +304,105 @@ def _classify_faces(faces):
     return counts, cyl_radii
 
 
-def _topology_signals(shape):
-    """Sealed-hollow-body vs open-drape topology signal.
+def _topology_report(shape):
+    """Is this a closed solid we can honestly measure? — plus the void signal.
 
-    voidCount = shells − solids: a solid enclosing a sealed cavity carries an
-    extra (inner) shell, so a blow-/rotational-moulded tank/bottle/duct scores
-    voidCount ≥ 1, while an injection-moulded / thermoformed open drape (bumper,
-    trim, cover) scores 0. freeEdgeCount (edges bounding only one face) confirms
-    an open sheet body. Cheap topology counts — no meshing.
+    Two things this used to get wrong, both found by measuring real parts:
+
+    * `freeEdgeCount` counted every edge with a single face ancestor. That
+      includes DEGENERATE edges (cone apexes, surface poles) and SEAM edges on
+      periodic surfaces, which are owned by one face by construction. A valid
+      closed casting reported 17 "free edges"; all 17 were degenerate.
+    * `openShell` was defined as `not enclosesSealedVoid`, i.e. "has no internal
+      cavity" — True on every plain solid and False on a genuinely open drape
+      with 25 real free edges.
+
+    Now: a free edge is one bounding exactly one face that is neither degenerate
+    nor a seam; `isClosedSolid` additionally requires BRepCheck validity, at
+    least one solid, and no free-boundary wires. `enclosesInternalVoid` keeps
+    the old `voidCount` meaning under an honest name (`enclosesSealedVoid` is
+    kept as an alias because the moulding rules read it).
     """
     from OCP.TopExp import TopExp_Explorer, TopExp
-    from OCP.TopAbs import TopAbs_SHELL, TopAbs_SOLID, TopAbs_EDGE, TopAbs_FACE
+    from OCP.TopAbs import TopAbs_SHELL, TopAbs_SOLID, TopAbs_EDGE, TopAbs_FACE, TopAbs_WIRE
     from OCP.TopTools import TopTools_IndexedDataMapOfShapeListOfShape
+    from OCP.TopoDS import TopoDS
+    from OCP.BRep import BRep_Tool
 
-    # Accept either a cadquery Shape wrapper or a raw TopoDS_Shape.
     raw = getattr(shape, "wrapped", shape)
 
-    def _count(kind):
-        e = TopExp_Explorer(raw, kind); n = 0
+    def _count(shp, kind):
+        e = TopExp_Explorer(shp, kind); n = 0
         while e.More():
             n += 1; e.Next()
         return n
 
-    solids = _count(TopAbs_SOLID)
-    shells = _count(TopAbs_SHELL)
+    solids = _count(raw, TopAbs_SOLID)
+    shells = _count(raw, TopAbs_SHELL)
     emap = TopTools_IndexedDataMapOfShapeListOfShape()
     TopExp.MapShapesAndAncestors_s(raw, TopAbs_EDGE, TopAbs_FACE, emap)
     total_e = emap.Extent()
-    free_e = sum(1 for i in range(1, total_e + 1) if emap.FindFromIndex(i).Extent() == 1)
-    # Each solid contributes one outer shell; extra shells are enclosed voids.
+    free_real = degenerate = seam = 0
+    for i in range(1, total_e + 1):
+        lst = emap.FindFromIndex(i)
+        if lst.Extent() != 1:
+            continue
+        e = TopoDS.Edge_s(emap.FindKey(i))
+        if BRep_Tool.Degenerated_s(e):
+            degenerate += 1
+            continue
+        try:
+            if BRep_Tool.IsClosed_s(e, TopoDS.Face_s(lst.First())):
+                seam += 1
+                continue
+        except Exception:
+            pass
+        free_real += 1
+
+    valid = None
+    try:
+        from OCP.BRepCheck import BRepCheck_Analyzer
+        valid = bool(BRepCheck_Analyzer(raw).IsValid())
+    except Exception:
+        valid = None
+
+    open_wires = closed_wires = 0
+    try:
+        from OCP.ShapeAnalysis import ShapeAnalysis_FreeBounds
+        fb = ShapeAnalysis_FreeBounds(raw, 1e-3, False, False)
+        ow, cw = fb.GetOpenWires(), fb.GetClosedWires()
+        open_wires = 0 if ow.IsNull() else _count(ow, TopAbs_WIRE)
+        closed_wires = 0 if cw.IsNull() else _count(cw, TopAbs_WIRE)
+    except Exception:
+        pass
+
     void_count = max(0, shells - max(1, solids))
     encloses_void = void_count >= 1
+    is_closed_solid = bool(solids >= 1 and free_real == 0 and open_wires == 0 and closed_wires == 0
+                           and valid is not False)
     return {
         "available": True,
+        "valid": valid,
         "solidCount": solids,
         "shellCount": shells,
         "voidCount": void_count,
-        "freeEdgeCount": free_e,
-        "freeEdgeRatio": round(free_e / max(1, total_e), 4),
-        # Sealed hollow body → blow/roto candidate. Open drape → injection/thermoform.
+        "freeEdgeCount": free_real,
+        "degenerateEdgeCount": degenerate,
+        "seamEdgeCount": seam,
+        "freeEdgeRatio": round(free_real / max(1, total_e), 4),
+        "freeBoundaryWires": open_wires + closed_wires,
+        "isClosedSolid": is_closed_solid,
+        "enclosesInternalVoid": bool(encloses_void),
+        # Kept under the old names: the moulding rules read the first, and
+        # `openShell` now means what it says.
         "enclosesSealedVoid": bool(encloses_void),
-        "openShell": bool(not encloses_void),
+        "openShell": not is_closed_solid,
     }
+
+
+def _topology_signals(shape):
+    """Back-compat alias — see `_topology_report`."""
+    return _topology_report(shape)
 
 
 def _classify_edges(edges):
@@ -1518,6 +1575,168 @@ def _safe_gear_metrics(wrapped):
         return None
 
 
+def _read_step_file_units(reader):
+    """Length unit names declared in the STEP header, e.g. ['millimetre'] or ['inch'].
+    OCCT converts to mm on read, so this is CONTEXT for the unit heuristic, not a
+    scale factor: the failure that matters is a file DECLARED in mm whose
+    numbers were authored at inch magnitudes."""
+    try:
+        from OCP.TColStd import TColStd_SequenceOfAsciiString
+        L = TColStd_SequenceOfAsciiString(); A = TColStd_SequenceOfAsciiString(); S = TColStd_SequenceOfAsciiString()
+        reader.FileUnits(L, A, S)
+        return [L.Value(i).ToCString() for i in range(1, L.Length() + 1)]
+    except Exception:
+        return []
+
+
+def _sew_open_shape(wrapped, tol_mm=1e-3):
+    """IGES and some STEP exports arrive as a bag of faces. Sew them and, where a
+    closed shell results, make a solid — so the volume we report is a volume.
+    Returns (shape, repaired_record)."""
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_Sewing, BRepBuilderAPI_MakeSolid
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopAbs import TopAbs_SOLID, TopAbs_SHELL
+    from OCP.TopoDS import TopoDS, TopoDS_Compound
+    from OCP.BRep import BRep_Builder
+    sew = BRepBuilderAPI_Sewing(tol_mm)
+    sew.Add(wrapped)
+    sew.Perform()
+    sewn = sew.SewedShape()
+    if sewn.IsNull():
+        return wrapped, {"sewn": False, "toleranceMm": tol_mm, "note": "sewing produced no shape"}
+    n_solid = 0
+    e = TopExp_Explorer(sewn, TopAbs_SOLID)
+    while e.More():
+        n_solid += 1; e.Next()
+    made = 0
+    if n_solid == 0:
+        b = BRep_Builder(); comp = TopoDS_Compound(); b.MakeCompound(comp)
+        e = TopExp_Explorer(sewn, TopAbs_SHELL)
+        while e.More():
+            sh = TopoDS.Shell_s(e.Current())
+            try:
+                if sh.Closed():
+                    ms = BRepBuilderAPI_MakeSolid(sh)
+                    if ms.IsDone():
+                        b.Add(comp, ms.Solid()); made += 1
+                        e.Next(); continue
+            except Exception:
+                pass
+            b.Add(comp, sh)
+            e.Next()
+        if made:
+            sewn = comp
+    return sewn, {"sewn": True, "toleranceMm": tol_mm, "solidsMade": made,
+                  "freeEdgesAfter": sew.NbFreeEdges(), "multipleEdgesAfter": sew.NbMultipleEdges()}
+
+
+class _quiet_stdout:
+    """OCCT's readers print coloured status lines ("Total number of loaded
+    entities", "**** ERR StepFile") straight to C-level stdout — the channel
+    the JSON result travels on. Redirect fd 1 to fd 2 for the duration of a
+    read so the chatter lands in stderr and the JSON stays parseable."""
+    def __enter__(self):
+        sys.stdout.flush()
+        self._saved = os.dup(1)
+        os.dup2(2, 1)
+        return self
+    def __exit__(self, *exc):
+        sys.stdout.flush()
+        os.dup2(self._saved, 1)
+        os.close(self._saved)
+        return False
+
+
+def _load_shape(filepath):
+    """The ONE loader both `analyze` and `tessellate_to_stl` use.
+
+    Returns (wrapped_shape, info) or raises. `info` carries the declared file
+    units, whether the shape was sewn, and the scale applied. CV_UNIT_SCALE
+    (e.g. 25.4 after the engineer confirms an inch model) is applied here so
+    every downstream number — measurement AND viewer mesh — agrees.
+    """
+    from OCP.IFSelect import IFSelect_RetDone
+    ext = os.path.splitext(filepath)[1].lower()
+    info = {"fileUnits": [], "repaired": None, "unitScale": 1.0, "format": ext.lstrip(".")}
+    if ext in (".step", ".stp"):
+        from OCP.STEPControl import STEPControl_Reader
+        reader = STEPControl_Reader()
+        with _quiet_stdout():
+            ok = reader.ReadFile(filepath) == IFSelect_RetDone
+            if ok:
+                info["fileUnits"] = _read_step_file_units(reader)
+                reader.TransferRoots()
+                wrapped = reader.OneShape()
+        if not ok:
+            raise RuntimeError("STEPControl_Reader failed")
+        # A STEP exported as surfaces (no SOLID entity) but whose shell is
+        # closed is repairable: sew and make the solid, and say so.
+        if wrapped is not None and not wrapped.IsNull():
+            from OCP.TopExp import TopExp_Explorer
+            from OCP.TopAbs import TopAbs_SOLID
+            if not TopExp_Explorer(wrapped, TopAbs_SOLID).More():
+                try:
+                    wrapped, info["repaired"] = _sew_open_shape(wrapped)
+                except Exception as se:
+                    info["repaired"] = {"sewn": False, "note": str(se)[:120]}
+    elif ext in (".iges", ".igs"):
+        from OCP.IGESControl import IGESControl_Reader
+        reader = IGESControl_Reader()
+        with _quiet_stdout():
+            ok = reader.ReadFile(filepath) == IFSelect_RetDone
+            if ok:
+                reader.TransferRoots()
+                wrapped = reader.OneShape()
+        if not ok:
+            raise RuntimeError("IGESControl_Reader failed")
+        # IGES is a surface format: sew, and make solids from closed shells.
+        if wrapped is not None and not wrapped.IsNull():
+            try:
+                wrapped, info["repaired"] = _sew_open_shape(wrapped)
+            except Exception as se:
+                info["repaired"] = {"sewn": False, "note": str(se)[:120]}
+    else:
+        raise RuntimeError(f"Unsupported format: {ext}")
+    if wrapped is None or wrapped.IsNull():
+        raise RuntimeError("No shape loaded")
+    scale = float(os.environ.get("CV_UNIT_SCALE", "1") or "1")
+    if scale > 0 and abs(scale - 1.0) > 1e-9:
+        from OCP.gp import gp_Trsf
+        from OCP.BRepBuilderAPI import BRepBuilderAPI_Transform
+        t = gp_Trsf(); t.SetScaleFactor(scale)
+        wrapped = BRepBuilderAPI_Transform(wrapped, t, True).Shape()
+        info["unitScale"] = scale
+    return wrapped, info
+
+
+def _unit_check(x_sz, y_sz, z_sz, cyl_radii, file_units, unit_scale):
+    """The inch-authored-as-mm failure. A file declared in millimetres whose
+    every bbox axis is under 25 mm AND whose cylindrical features are
+    sub-millimetre is, in practice, an inch model that nobody converted: the
+    same flange at 80 x 80 x 20 mm reads 3.15 x 3.15 x 0.79. Nothing here
+    scales anything — it proposes a factor and asks. Returns None when fine."""
+    if unit_scale and abs(unit_scale - 1.0) > 1e-9:
+        return None  # the engineer already answered
+    dims = [d for d in (x_sz, y_sz, z_sz) if d is not None]
+    if not dims:
+        return None
+    declared_inch = any("inch" in (u or "").lower() for u in (file_units or []))
+    small_box = max(dims) < 25.0
+    radii = [r for r in (cyl_radii or []) if r and r > 0]
+    tiny_features = bool(radii) and (sorted(radii)[len(radii) // 2] < 1.0)
+    if small_box and (tiny_features or not radii):
+        return {
+            "code": "units_unconfirmed",
+            "proposedFactor": 25.4,
+            "reason": (f"Bounding box {max(dims):.2f} mm on its largest axis"
+                       + (f", median cylindrical radius {sorted(radii)[len(radii)//2]:.2f} mm" if radii else "")
+                       + (" — file header declares inches" if declared_inch else " — file header declares millimetres")
+                       + ". These magnitudes are typical of an inch model saved with millimetre units."),
+            "declaredUnits": file_units or [],
+        }
+    return None
+
+
 def analyze(filepath: str) -> dict:
     try:
         from OCP.BRepGProp import BRepGProp
@@ -1530,30 +1749,12 @@ def analyze(filepath: str) -> dict:
 
     ext = os.path.splitext(filepath)[1].lower()
 
-    # ── Load file (pure OCP — no cadquery dependency) ─────────────────────────
-    shape = None
+    # ── Load file (shared loader: units, CV_UNIT_SCALE, IGES sewing) ─────────
     try:
-        if ext in (".step", ".stp"):
-            from OCP.STEPControl import STEPControl_Reader
-            reader = STEPControl_Reader()
-            if reader.ReadFile(filepath) != IFSelect_RetDone:
-                return {"status": "error", "error": "STEPControl_Reader failed"}
-            reader.TransferRoots()
-            shape = _ShapeShim(reader.OneShape())
-        elif ext in (".iges", ".igs"):
-            from OCP.IGESControl import IGESControl_Reader
-            reader = IGESControl_Reader()
-            if reader.ReadFile(filepath) != IFSelect_RetDone:
-                return {"status": "error", "error": "IGESControl_Reader failed"}
-            reader.TransferRoots()
-            shape = _ShapeShim(reader.OneShape())
-        else:
-            return {"status": "error", "error": f"Unsupported format: {ext}"}
+        raw_shape, load_info = _load_shape(filepath)
+        shape = _ShapeShim(raw_shape)
     except Exception as e:
-        return {"status": "error", "error": f"File load error: {e}"}
-
-    if shape is None or shape.wrapped.IsNull():
-        return {"status": "error", "error": "No shape loaded"}
+        return {"status": "error", "code": "unreadable", "error": f"File load error: {e}"}
 
     try:
         wrapped = shape.wrapped
@@ -1606,9 +1807,36 @@ def analyze(filepath: str) -> dict:
         # bumper apart from a fuel tank (the fuel-tank↔bumper failure mode).
         topology = None
         try:
-            topology = _topology_signals(shape)
+            topology = _topology_report(shape)
         except Exception as _te:  # never let topology break the pipeline
             topology = {"available": False, "note": str(_te)[:120]}
+
+        # ── Refuse before you estimate ────────────────────────────────────────
+        # An open surface model measured as if it were a solid gave a plausible
+        # wrong volume (50.2 cm³ against a true 63.9) with status "success". A
+        # number nobody can trust is worse than no number: refuse, say why, and
+        # let the route turn it into a decision or a clear error. Sheet-metal
+        # surface bodies can opt in with CV_ALLOW_OPEN_SHELL=1.
+        allow_open = os.environ.get("CV_ALLOW_OPEN_SHELL") == "1"
+        if topology.get("available") and not topology.get("isClosedSolid") and not allow_open:
+            return {
+                "status": "error", "code": "not_closed_solid",
+                "error": (f"Model is not a closed solid: {topology.get('solidCount', 0)} solid(s), "
+                          f"{topology.get('freeEdgeCount', 0)} free edge(s), "
+                          f"{topology.get('freeBoundaryWires', 0)} open boundary wire(s)"
+                          + ("" if topology.get("valid") is not False else ", BRepCheck reports the shape invalid")
+                          + ". Export a solid body (not surfaces) and upload again."),
+                "topology": topology,
+                "boundingBox": {"xMm": x_sz, "yMm": y_sz, "zMm": z_sz},
+                "measuredVolumeCm3": round(volume_mm3 / 1000, 3),
+                "load": load_info,
+            }
+        if volume_mm3 <= 1e-6:
+            return {"status": "error", "code": "zero_volume",
+                    "error": "Model has zero volume — nothing to cost.",
+                    "topology": topology, "boundingBox": {"xMm": x_sz, "yMm": y_sz, "zMm": z_sz},
+                    "load": load_info}
+        unit_check = _unit_check(x_sz, y_sz, z_sz, cyl_radii_all, load_info.get("fileUnits"), load_info.get("unitScale", 1.0))
 
         # ── Feature extraction — SINGLE SOURCE OF TRUTH: the B-rep feature table
         # (concavity classifier + axis dedupe + partial-arc filter). The old
@@ -1763,7 +1991,9 @@ def analyze(filepath: str) -> dict:
                 "investShellCostGBP": _estimate_invest_consumables(sa_mm2 / 100)[1],
             },
             "assemblyWarning": _detect_assembly(filepath),
-            "unitWarning": _validate_bbox(x_sz, y_sz, z_sz),
+            "unitWarning": (unit_check["reason"] if unit_check else _validate_bbox(x_sz, y_sz, z_sz)),
+            "unitCheck": unit_check,
+            "load": load_info,
             "detectedHardware": _try_detect_hardware(wrapped),
         }
 
@@ -1809,28 +2039,10 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
         return {"status": "error", "error": f"OCP not available: {e}"}
 
     ext = os.path.splitext(filepath)[1].lower()
-    wrapped = None
     try:
-        if ext in (".step", ".stp"):
-            from OCP.STEPControl import STEPControl_Reader
-            reader = STEPControl_Reader()
-            if reader.ReadFile(filepath) != IFSelect_RetDone:
-                return {"status": "error", "error": "STEPControl_Reader failed"}
-            reader.TransferRoots()
-            wrapped = reader.OneShape()
-        elif ext in (".iges", ".igs"):
-            from OCP.IGESControl import IGESControl_Reader
-            reader = IGESControl_Reader()
-            if reader.ReadFile(filepath) != IFSelect_RetDone:
-                return {"status": "error", "error": "IGESControl_Reader failed"}
-            reader.TransferRoots()
-            wrapped = reader.OneShape()
-        else:
-            return {"status": "error", "error": f"Unsupported format: {ext}"}
+        wrapped, load_info = _load_shape(filepath)
     except Exception as e:
-        return {"status": "error", "error": f"File load error: {e}"}
-    if wrapped is None or wrapped.IsNull():
-        return {"status": "error", "error": "No shape loaded"}
+        return {"status": "error", "code": "unreadable", "error": f"File load error: {e}"}
 
     try:
         import struct

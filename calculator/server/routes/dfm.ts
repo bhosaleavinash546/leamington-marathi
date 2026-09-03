@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { requireAuth } from '../middleware/auth-middleware.js';
 import type { Request, Response } from 'express';
 import { createAnthropic } from '../utils/ai-client.js';
 import { queueDFMJob, getDFMJob, requeueOrphans } from '../utils/dfm-job-runner.js';
@@ -92,7 +93,7 @@ Be specific, engineering-literate, and concise. Target 400–500 words. Do not r
 
 requeueOrphans();   // a restart must not strand a job in 'running' forever
 
-router.post('/jobs', (req: Request, res: Response) => {
+router.post('/jobs', requireAuth, (req: Request, res: Response) => {
   const { filePath, commodity, partName, materialFamily, process: proc } = req.body as {
     filePath?: string; commodity?: string; partName?: string;
     materialFamily?: string; process?: string;
@@ -114,14 +115,14 @@ router.post('/jobs', (req: Request, res: Response) => {
   });
 });
 
-router.get('/jobs/:id', (req: Request, res: Response) => {
+router.get('/jobs/:id', requireAuth, (req: Request, res: Response) => {
   const job = getDFMJob(req.params.id);
   if (!job) { res.status(404).json({ error: 'job not found' }); return; }
   const { result, ...meta } = job;
   res.json({ ...meta, findingCount: result?.findings.length ?? null });
 });
 
-router.get('/jobs/:id/report', (req: Request, res: Response) => {
+router.get('/jobs/:id/report', requireAuth, (req: Request, res: Response) => {
   const job = getDFMJob(req.params.id);
   if (!job) { res.status(404).json({ error: 'job not found' }); return; }
   if (job.status !== 'done') {

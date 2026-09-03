@@ -21,6 +21,8 @@ primary_region = "lhr"          # London — close to the UK-anchored rate libra
 [env]
   NODE_ENV = "production"
   PORT = "3002"
+  # fly's edge proxy fronts the app: read X-Forwarded-For so rate limits are per client, not per proxy
+  CV_TRUST_PROXY = "1"
 
 [http_service]
   internal_port = 3002

@@ -6,6 +6,8 @@ import { GEOMETRIC_DFM_COMMODITIES } from '../../src/engine/dfm-geometry/index.j
 import type { CommodityType } from '../../src/engine/types.js';
 import rateLimit from 'express-rate-limit';
 import { createAnthropic } from '../utils/ai-client.js';
+import { requireAuth } from '../middleware/auth-middleware.js';
+import { hashUpload, putUploadFile, getUploadFile, putGeometry, getGeometry, sweepUploadFiles } from '../utils/geometry-store.js';
 import type Anthropic from '@anthropic-ai/sdk';
 import { preprocessCADFile } from '../utils/preprocessor.js';
 import { analyzeGeometry, tessellateToSTL } from '../utils/geometry-bridge.js';
@@ -68,7 +70,16 @@ const isDeepReq = (req: { body?: Record<string, unknown> }): boolean =>
 // you push it much higher.
 const MAX_UPLOAD_MB = parseInt(process.env.CV_MAX_UPLOAD_MB ?? '250', 10) || 250;
 const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_UPLOAD_BYTES } });
+// Every limit stated, because the ones left to busboy's defaults bit us: its
+// default 1 MiB per text field contradicted the route's own acceptance of four
+// 800 000-char render views and an uncapped part photo, so a phone photo
+// failed the whole upload as "Field value too long".
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_UPLOAD_BYTES, fieldSize: 8 * 1024 * 1024, files: 2, fields: 40, parts: 60 },
+});
+const MAX_DRAWING_PDF_BYTES = 30 * 1024 * 1024;
+sweepUploadFiles();
 
 /**
  * Queue the background geometric DFM for an analysed part.
@@ -112,6 +123,8 @@ async function queueGeometricDFM(
 const tessellateLimiter = rateLimit({ windowMs: 10 * 60_000, max: 60, standardHeaders: true, legacyHeaders: false });
 const analyzeLimiter = rateLimit({ windowMs: 10 * 60_000, max: 40, standardHeaders: true, legacyHeaders: false });
 const parseStlLimiter = rateLimit({ windowMs: 10 * 60_000, max: 120, standardHeaders: true, legacyHeaders: false });
+// /reanalyze makes two paid model calls and had no limiter at all.
+const reanalyzeLimiter = rateLimit({ windowMs: 10 * 60_000, max: 40, standardHeaders: true, legacyHeaders: false });
 
 // ─── Specialist system prompts per commodity ─────────────────────────────────
 
@@ -391,7 +404,7 @@ function buildGeoSanityContext(
 }
 
 // POST /api/cad/analyze
-router.post('/analyze', analyzeLimiter, upload.fields([
+router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   { name: 'cadFile', maxCount: 1 },
   { name: 'drawingPdf', maxCount: 1 },
 ]), asyncRoute(async (req, res): Promise<void> => {
@@ -403,10 +416,39 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   const drawingUpload = filesMap?.drawingPdf?.[0] ?? null;
   const { originalname, size, buffer } = cadUpload;
   const ext = originalname.toLowerCase().split('.').pop() ?? '';
+  if (['x_t', 'x_b', 'xmt_txt', 'jt', 'prt', 'sldprt', 'catpart', 'ipt', 'par'].includes(ext)) {
+    res.status(415).json({
+      error: `.${ext} is a proprietary format that needs a licensed kernel. Export the part as STEP (.step/.stp) and upload that instead.`,
+    });
+    return;
+  }
   if (!['stp', 'step', 'igs', 'iges', 'stl'].includes(ext)) {
     res.status(400).json({ error: 'Unsupported format. Use STEP (.stp/.step), IGES (.igs/.iges), or STL (.stl)' });
     return;
   }
+  // The sniff used to run on /tessellate only — the route that spawns Python
+  // AND spends AI tokens checked the extension and nothing else.
+  const sniffed = sniffCadContent(ext, buffer);
+  if (sniffed) { res.status(415).json({ error: sniffed }); return; }
+  if (drawingUpload) {
+    if (drawingUpload.size > MAX_DRAWING_PDF_BYTES) {
+      res.status(413).json({ error: `Drawing PDF is ${(drawingUpload.size / 1048576).toFixed(0)} MB; the limit is 30 MB.` });
+      return;
+    }
+    if (drawingUpload.buffer.subarray(0, 5).toString('latin1') !== '%PDF-') {
+      res.status(415).json({ error: 'The drawing must be a PDF (file does not start with %PDF-).' });
+      return;
+    }
+  }
+  // Units are the one decision that changes the MEASUREMENT, so it has to be
+  // read before the geometry engine runs, not with the rest of the answers.
+  const earlyAnswers = parseDecisionAnswers(
+    typeof req.body?.decisionAnswers === 'string'
+      ? (() => { try { return JSON.parse(req.body.decisionAnswers) as unknown; } catch { return null; } })()
+      : req.body?.decisionAnswers);
+  const unitAnswer = earlyAnswers['units.confirm'];
+  const unitScale = unitAnswer === 'inch' ? 25.4 : 1;
+  const uploadHash = hashUpload(buffer);
 
   // NOTE: the API-key check used to sit here, above every line below it. That
   // meant a deterministic run could not happen at all — and, less obviously, a
@@ -507,20 +549,44 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   } else {
     // ── STEP/IGES path: OCCT via Python/CadQuery ─────────────────────────────
     console.log(`[CAD] Running OCCT geometry engine on ${originalname} (${(size / 1024).toFixed(0)} KB)…`);
-    geo = await analyzeGeometry(buffer, originalname, 120_000);
+    const stored = getGeometry(uploadHash, unitScale);
+    if (stored) {
+      geo = stored;
+      console.log(`[CAD] geometry cache HIT ${uploadHash.slice(0, 12)} @${unitScale}x`);
+    } else {
+      geo = await analyzeGeometry(buffer, originalname, 120_000,
+        unitScale !== 1 ? { CV_UNIT_SCALE: String(unitScale) } : {});
+    }
 
     if (geo.status === 'success') {
       geometrySource = 'occt';
+      if (!stored) { putGeometry(uploadHash, geo, unitScale); putUploadFile(uploadHash, buffer, originalname); }
       // The thin-shell wall correction now runs inside `analyzeGeometry`, at the
       // measurement boundary, so it cannot be missed by a caller. It used to be
       // here, which meant it applied to this route and nowhere else.
       console.log(`[CAD] OCCT success — V=${geo.volume!.cm3.toFixed(1)}cm³  SA=${geo.surfaceArea!.cm2.toFixed(0)}cm²  faces=${geo.faces!.total}`);
     } else {
-      console.warn(`[CAD] OCCT failed (${geo.error}) — falling back to text preprocessor`);
-      geometrySource = 'text_parsing';
-      geo = { status: 'error', error: geo.error };
+      // This used to fall back to a "text preprocessor" and return 200 with a
+      // costing built on nothing — and, in AI mode, a prompt that told the
+      // model to invent the volume from a fill factor. An open surface, a
+      // zero-volume body or an unreadable file is an error, and it says which.
+      console.warn(`[CAD] OCCT refused ${safeLogName(originalname)}: ${geo.code ?? 'unreadable'} — ${geo.error}`);
+      res.status(422).json({
+        error: clientSafeError(geo.error ?? 'Geometry engine could not measure this file'),
+        code: geo.code ?? 'unreadable',
+        geometry: {
+          topology: geo.topology ?? null,
+          boundingBox: geo.boundingBox ?? null,
+          measuredVolumeCm3: geo.measuredVolumeCm3 ?? null,
+        },
+      });
+      return;
     }
   }
+  // A confirmed "these are millimetres" clears the proposal; a confirmed inch
+  // re-measured above at 25.4x and the engine no longer flags it.
+  if (unitAnswer === 'mm' && geo.status === 'success' && geo.unitCheck) geo = { ...geo, unitCheck: null };
+  const unitsDecision = unitsDecisionFor(geo);
 
   // --- Phase 2: Build text-preprocessor summary for Claude (skip for STL — binary mesh, no text tokens) ---
   const content = ext === 'stl' ? '' : buffer.toString('utf-8');
@@ -761,7 +827,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
         error: `No deterministic rules exist for '${selectedCommodity}' yet. `
           + `Converted so far: ${DETERMINISTIC_COMMODITIES.join(', ')}.`
           + (modeExplicit ? '' : ' An API key would have let this fall back to the AI path.'),
-        decisions: commodityDecision ? [commodityDecision] : [],
+        decisions: [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecision ? [commodityDecision] : [])],
       });
       return;
     }
@@ -783,10 +849,12 @@ router.post('/analyze', analyzeLimiter, upload.fields([
         buildGeoSanityContext(geo, det.analysis)),
       ruleOverrides: det.applied,
       ruleFields: det.ruleFields,
-      decisions: [...(commodityDecision ? [commodityDecision] : []), ...det.result.decisions],
+      decisions: [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecision ? [commodityDecision] : []), ...det.result.decisions],
       mode: analysisMode,
       fromCache: false,
       geometrySource,
+      geometryHash: geometrySource === 'occt' ? uploadHash : null,
+      unitCheck: geo.status === 'success' ? (geo.unitCheck ?? null) : null,
       annualVolume,
       occtGeometry: geometrySource === 'occt' ? geo : null,
       stlGeometry,
@@ -897,10 +965,12 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     aiOriginal,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
-    decisions: pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0),
+    decisions: [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)],
     mode: analysisMode,
     fromCache: false,
     geometrySource,
+    geometryHash: geometrySource === 'occt' ? uploadHash : null,
+    unitCheck: geo.status === 'success' ? (geo.unitCheck ?? null) : null,
     annualVolume,
     occtGeometry: geo.status === 'success' ? geo : null,
     stlGeometry: stlGeometry
@@ -1704,6 +1774,32 @@ export function parseAnalysisMode(raw: unknown): AnalysisMode {
  * that is not a plain string is dropped rather than trusted — this map feeds
  * straight into the rules.
  */
+/**
+ * The engine proposes, the engineer confirms. When the magnitudes look like an
+ * inch model saved in millimetres (an 80 mm flange reading 3.15 mm), nothing
+ * is scaled silently: a BLOCKING decision asks, and the answer re-measures.
+ * Getting this wrong is a 25.4³ ≈ 16 387x error on volume and mass.
+ */
+export function unitsDecisionFor(geo: OCCTGeometry): Decision | null {
+  if (geo.status !== 'success' || !geo.unitCheck) return null;
+  const uc = geo.unitCheck;
+  const bb = geo.boundingBox;
+  const dims = bb ? `${bb.xMm} x ${bb.yMm} x ${bb.zMm} mm` : 'a few millimetres';
+  return {
+    id: 'units.confirm',
+    kind: 'units',
+    question: `Is this part really ${dims}, or was it modelled in inches?`,
+    why: uc.reason,
+    options: [
+      { value: 'inch', label: `Inches — scale by ${uc.proposedFactor}`, consequence: 'The model is re-measured at 25.4x; every volume, mass and dimension changes.', leaning: true },
+      { value: 'mm', label: 'Millimetres — the part really is this small', consequence: 'Measured values are used as they are.' },
+    ],
+    blockedFieldIds: [],
+    blockedRuleIds: [],
+    severity: 'blocking',
+  };
+}
+
 export function parseDecisionAnswers(raw: unknown): Record<string, unknown> {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
   const out: Record<string, unknown> = {};
@@ -2081,7 +2177,7 @@ router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), asyncRou
 
 // POST /api/cad/parse-stl — return raw STL geometry without AI analysis
 // Accepts: multipart/form-data with field "cadFile" (must be .stl)
-router.post('/parse-stl', parseStlLimiter, upload.single('cadFile'), asyncRoute(async (req, res): Promise<void> => {
+router.post('/parse-stl', requireAuth, parseStlLimiter, upload.single('cadFile'), asyncRoute(async (req, res): Promise<void> => {
   if (!req.file) { res.status(400).json({ error: 'No file uploaded' }); return; }
 
   const { originalname, size, buffer } = req.file;
@@ -2134,14 +2230,34 @@ router.post('/parse-stl', parseStlLimiter, upload.single('cadFile'), asyncRoute(
 }));
 
 // POST /api/cad/reanalyze — re-run AI analysis using pre-computed (cached) OCCT geometry; no STEP re-upload needed
-router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
-  const geo = req.body.occtGeometry as OCCTGeometry;
+router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, res): Promise<void> => {
   const filename = (req.body.filename as string) || 'cached_part.step';
-
-  if (!geo || typeof geo !== 'object') {
-    res.status(400).json({ error: 'occtGeometry is required in the JSON body' });
+  // The geometry is the server's, looked up by the hash /analyze returned. It
+  // used to be read from the body and treated as measured truth — the cache
+  // key, the clamp reference, all of it — which meant any caller could cost a
+  // part against numbers it made up.
+  const geometryHash = typeof req.body?.geometryHash === 'string' ? req.body.geometryHash.trim() : '';
+  const earlyAnswers = parseDecisionAnswers(req.body?.decisionAnswers);
+  const unitScale = earlyAnswers['units.confirm'] === 'inch' ? 25.4 : 1;
+  let geo: OCCTGeometry | null = geometryHash ? getGeometry(geometryHash, unitScale) : null;
+  if (!geo && geometryHash && unitScale !== 1) {
+    // Inch confirmed after the first measurement: re-measure from the kept upload.
+    const kept = getUploadFile(geometryHash);
+    if (kept) {
+      const re = await analyzeGeometry(kept.buffer, `part.${kept.ext}`, 120_000, { CV_UNIT_SCALE: String(unitScale) });
+      if (re.status === 'success') { putGeometry(geometryHash, re, unitScale); geo = re; }
+    }
+  }
+  if (!geo) {
+    res.status(400).json({
+      error: geometryHash
+        ? 'No measured geometry on this server for that geometryHash — upload the file again.'
+        : 'geometryHash is required (returned by /api/cad/analyze). Client-supplied geometry is not accepted.',
+    });
     return;
   }
+  if (earlyAnswers['units.confirm'] === 'mm' && geo.unitCheck) geo = { ...geo, unitCheck: null };
+  const unitsDecision = unitsDecisionFor(geo);
 
   const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
   const forcedMaterial  = typeof req.body?.material  === 'string' ? req.body.material.trim()  : '';
@@ -2317,7 +2433,8 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
         buildGeoSanityContext(geo, det.analysis)),
       ruleOverrides: det.applied,
       ruleFields: det.ruleFields,
-      decisions: det.result.decisions,
+      decisions: [...(unitsDecision ? [unitsDecision] : []), ...det.result.decisions],
+      geometryHash,
       mode: analysisMode,
       fromCache: false,
       geometrySource: 'occt' as const,
@@ -2414,7 +2531,8 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     aiOriginal,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
-    decisions: pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0),
+    decisions: [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)],
+    geometryHash,
     mode: analysisMode,
     fromCache: false,
     geometrySource: 'occt' as const,

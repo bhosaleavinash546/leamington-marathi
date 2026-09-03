@@ -6009,8 +6009,12 @@ function cadViewerHeaders(): Record<string, string> {
   // Read LIVE: the key field may be filled after the viewer mounts.
   const field = (document.getElementById('cad-api-key') as HTMLInputElement | null)?.value?.trim();
   const apiKey = field || sessionStorage.getItem('cad-api-key') || '';
-  return apiKey ? { 'x-api-key': apiKey } : {};
+  return { ...authHeader(), ...(apiKey ? { 'x-api-key': apiKey } : {}) };
 }
+
+/** The server's handle on the measured geometry of the current part. /reanalyze
+ *  looks the geometry up by this; it no longer accepts geometry from the client. */
+let cadGeometryHash: string | null = null;
 
 /** Snapshot → part-photo slot: same path as uploading a photo manually. */
 function attachCADSnapshotAsPhoto(dataUrl: string): void {
@@ -6309,7 +6313,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
         updateProgress(12, 'Tessellating geometry for rendered views…');
         const fd2 = new FormData();
         fd2.append('cadFile', cadFile);
-        const tessHeaders: HeadersInit = {};
+        const tessHeaders: Record<string, string> = { ...authHeader() };
         if (apiKey) tessHeaders['x-api-key'] = apiKey;
         const tr = await fetch('/api/cad/tessellate', { method: 'POST', headers: tessHeaders, body: fd2 });
         if (tr.ok) {
@@ -6355,7 +6359,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     const mode = selectedAnalysisMode();
     formData.append('mode', mode);
 
-    const headers: HeadersInit = {};
+    const headers: Record<string, string> = { ...authHeader() };
     if (apiKey) headers['x-api-key'] = apiKey;
 
     updateProgress(20, 'Running OCCT geometry engine…');
@@ -6396,6 +6400,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     updateProgress(100, data.geometrySource === 'occt' ? 'OCCT complete — precise geometry extracted' : 'Complete (text-parsed)');
     cadAnalysisResult = data.analysis!;
     cadOCCTGeometry = data.occtGeometry ?? null;
+    cadGeometryHash = (data as { geometryHash?: string | null }).geometryHash ?? null;
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
@@ -7035,11 +7040,15 @@ async function reanalyzeCAD(): Promise<void> {
   if (reanalyzeBtn) reanalyzeBtn.setAttribute('disabled', 'true');
 
   try {
-    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    const headers: Record<string, string> = { 'Content-Type': 'application/json', ...authHeader() };
     if (apiKey) headers['x-api-key'] = apiKey;
 
+    if (!cadGeometryHash) {
+      showToast('Re-analyse needs a part analysed on this server — upload the CAD file again.', 'error');
+      return;
+    }
     const body: Record<string, unknown> = {
-      occtGeometry: cadOCCTGeometry,
+      geometryHash: cadGeometryHash,
       filename: cadFile?.name ?? 'cached_part.step',
       annualVolume: annVol || '100000',
     };
@@ -10977,7 +10986,7 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     fd.append('mode', selectedAnalysisMode());
     if (cadPartPhotoBase64) { fd.append('partPhotoBase64', cadPartPhotoBase64); fd.append('partPhotoMime', cadPartPhotoMime); }
     const apiKey = sessionStorage.getItem('cad-api-key') ?? '';
-    const headers: HeadersInit = {};
+    const headers: Record<string, string> = { ...authHeader() };
     if (apiKey) headers['x-api-key'] = apiKey;
     const controller = new AbortController();
     const to = setTimeout(() => controller.abort(new DOMException('Timed out after 150 s', 'TimeoutError')), 150_000);
@@ -10987,6 +10996,7 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     if (!res.ok || !data.success || !data.analysis) throw new Error(data.error ?? `Server error ${res.status}`);
     cadAnalysisResult = data.analysis;
     cadOCCTGeometry = data.occtGeometry ?? null;
+    cadGeometryHash = (data as { geometryHash?: string | null }).geometryHash ?? null;
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
     _cadDecisions = data.decisions ?? [];
     _cadRuleFields = data.ruleFields ?? {};
@@ -17333,12 +17343,12 @@ async function pollGeometricDFM(jobId: string, tries = 60): Promise<void> {
     await new Promise(r => setTimeout(r, i < 5 ? 1000 : 3000));
     if (cadDfmJobId !== jobId) return;          // a newer upload superseded this
     try {
-      const st = await fetch(`/api/dfm/jobs/${jobId}`);
+      const st = await fetch(`/api/dfm/jobs/${jobId}`, { headers: authHeader() });
       if (!st.ok) return;
       const meta = await st.json() as { status?: string };
       if (meta.status === 'error') { console.warn('[dfm] job failed'); return; }
       if (meta.status !== 'done') continue;
-      const rep = await fetch(`/api/dfm/jobs/${jobId}/report`);
+      const rep = await fetch(`/api/dfm/jobs/${jobId}/report`, { headers: authHeader() });
       if (!rep.ok) return;
       cadGeometricDFM = await rep.json() as GeometricDFMMeta;
       console.log(`[dfm] geometric DFM ready: ${cadGeometricDFM.grouped?.length ?? 0} issue(s)`);

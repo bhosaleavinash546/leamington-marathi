@@ -70,10 +70,39 @@ export interface OCCTGeometry {
     freeEdgeRatio?: number;
     /** True → encloses a sealed cavity (blow/rotational-moulding candidate). */
     enclosesSealedVoid?: boolean;
-    /** True → thin open drape with no enclosed void (injection-moulding / thermoforming). */
+    /** True → NOT a closed solid (real free edges, open boundary wires, or no solid). */
     openShell?: boolean;
+    /** BRepCheck_Analyzer verdict; null when the check itself failed. */
+    valid?: boolean | null;
+    /** Single-face edges that are degenerate (cone apex, pole) — owned by one face by design, NOT free. */
+    degenerateEdgeCount?: number;
+    seamEdgeCount?: number;
+    /** Open + closed free-boundary wires from ShapeAnalysis_FreeBounds. */
+    freeBoundaryWires?: number;
+    /** ≥1 solid, zero real free edges, zero boundary wires, BRepCheck valid. The costing gate. */
+    isClosedSolid?: boolean;
+    /** Honest name for the old voidCount ≥ 1 signal (`enclosesSealedVoid` is kept as an alias). */
+    enclosesInternalVoid?: boolean;
     note?: string;
   } | null;
+  /** Machine-readable reason when status is 'error': unreadable | not_closed_solid | zero_volume | timeout. */
+  code?: 'unreadable' | 'not_closed_solid' | 'zero_volume' | 'timeout' | string;
+  /** Present when the magnitudes look like an inch model saved in mm. A proposal, never applied silently. */
+  unitCheck?: {
+    code: 'units_unconfirmed';
+    proposedFactor: number;
+    reason: string;
+    declaredUnits: string[];
+  } | null;
+  /** What the loader did: declared file units, sewing/solid repair, unit scale applied. */
+  load?: {
+    fileUnits: string[];
+    repaired: { sewn: boolean; toleranceMm?: number; solidsMade?: number; freeEdgesAfter?: number; note?: string } | null;
+    unitScale: number;
+    format: string;
+  };
+  /** On a not_closed_solid refusal: what the open shell would have measured, for the message only. */
+  measuredVolumeCm3?: number;
   wallThickness?: {
     minMm: number; maxMm: number; meanMm: number; stdDevMm: number;
     /** 95th-percentile ray-cast wall (mm) — the thickest section governs cooling/ejection. */

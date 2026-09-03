@@ -31,6 +31,11 @@ import db from './db.js';
 config(); // load .env
 
 const app = express();
+// Behind a reverse proxy (fly.io, nginx) every request arrives from the proxy's
+// address, so per-IP rate limits collapse into one shared budget unless Express
+// is told to read X-Forwarded-For. Opt-in via env: trusting the header on a box
+// that is NOT behind a proxy lets any client spoof its IP.
+if (process.env.CV_TRUST_PROXY) app.set('trust proxy', parseInt(process.env.CV_TRUST_PROXY, 10) || 1);
 const PORT = parseInt(process.env.PORT ?? '3002', 10);
 const IS_PROD = process.env.NODE_ENV === 'production';
 

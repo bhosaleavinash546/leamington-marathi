@@ -72,7 +72,9 @@ export interface Decision<V = string> {
     /** A container's nominal capacity — a void is not a solid, so it is not measured. */
     | 'capacity'
     /** The kernel could not measure something it normally does; type it in. */
-    | 'geometry_gap';
+    | 'geometry_gap'
+    /** The file's magnitudes look like inches saved as millimetres. Confirm before anything is scaled. */
+    | 'units';
   question: string;
   /** Why geometry cannot answer this. Shown to the engineer so the ask reads as
    *  a limit of physics rather than a limit of the software. */

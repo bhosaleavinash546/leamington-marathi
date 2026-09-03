@@ -197,7 +197,7 @@ function _runPython(tmpPath: string, timeoutMs: number,
 
     const timer = setTimeout(() => {
       child.kill('SIGKILL');
-      settle({ status: 'error', error: `Geometry engine timed out after ${timeoutMs / 1000}s` });
+      settle({ status: 'error', code: 'timeout', error: `Geometry engine timed out after ${timeoutMs / 1000}s` });
     }, timeoutMs);
 
     child.stdout.on('data', (d: Buffer) => {
@@ -220,14 +220,18 @@ function _runPython(tmpPath: string, timeoutMs: number,
       if (settled) return;
       const raw = stdout.trim();
       if (!raw) {
-        settle({ status: 'error', error: `No output from geometry engine. stderr: ${stderr.slice(0, 400)}` });
+        settle({ status: 'error', code: 'unreadable', error: `No output from geometry engine. stderr: ${stderr.slice(0, 400)}` });
         return;
       }
+      // The engine silences OCCT's stdout chatter during reads, but belt and
+      // braces: the result is the LAST line that is a JSON object.
+      const lines = raw.split('\n');
+      const jsonLine = [...lines].reverse().find(l => l.trimStart().startsWith('{')) ?? raw;
       try {
-        const parsed = JSON.parse(raw) as OCCTGeometry;
+        const parsed = JSON.parse(jsonLine) as OCCTGeometry;
         settle(parsed);
       } catch {
-        settle({ status: 'error', error: `JSON parse failed: ${raw.slice(0, 200)}` });
+        settle({ status: 'error', code: 'unreadable', error: `JSON parse failed: ${raw.slice(0, 200)}` });
       }
     });
   });
