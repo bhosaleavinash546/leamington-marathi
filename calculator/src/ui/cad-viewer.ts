@@ -39,7 +39,15 @@ export interface FaceMeta {
  * is the face a triangle came from. Index 0 and any face the mesher skipped are
  * null, which is why every read of `faces[...]` is guarded.
  */
-export interface TessMeta { triFace: number[] | Uint32Array; faces: (FaceMeta | null)[]; bodies: number | null; skippedFaces?: number }
+export interface TessMeta {
+  triFace: number[] | Uint32Array;
+  faces: (FaceMeta | null)[];
+  bodies: number | null;
+  skippedFaces?: number;
+  /** The kernel's closed-solid verdict, for the quality badge. */
+  topology?: { isClosedSolid?: boolean; freeEdgeCount?: number; solidCount?: number } | null;
+  bboxMm?: [number, number, number];
+}
 
 export interface MeasurementRecord {
   kind: 'dist' | 'circle' | 'angle' | 'point' | 'facedist';
@@ -266,7 +274,9 @@ function persistLoad(fileKey: string): Array<{ kind: MeasurementRecord['kind']; 
 }
 
 // Edge overlay: meshes above this go to the worker so the main thread never freezes.
-const EDGE_WORKER_THRESHOLD = 30_000;
+// Was 30 000: seven of eight real parts sat below it and ran EdgesGeometry on
+// the main thread for 74–280 ms — the freeze the worker exists to prevent.
+const EDGE_WORKER_THRESHOLD = 0;
 const EDGE_ANGLE_DEG = 24;
 
 // ── Toolbar icon set ──────────────────────────────────────────────────────────
@@ -321,7 +331,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let lowRes = false;
   const pixelRatio = () => {
     const dpr = window.devicePixelRatio || 1;
-    return lowRes ? Math.min(dpr, 1.25) : Math.min(dpr * 1.5, 2.5);
+    // Was min(dpr × 1.5, 2.5): on a 2× display that is 6.25× the fragments of a
+    // 1:1 canvas, on top of MSAA. Native DPR, capped at 2, is crisp enough.
+    return lowRes ? Math.min(dpr, 1.25) : Math.min(dpr, 2);
   };
 
   // ── DOM scaffold ──
@@ -349,10 +361,6 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       <div class="cv3d-features-panel" style="display:none">
         <div class="cv3d-measures-title">Features</div>
         <div class="cv3d-features-list"></div>
-      </div>
-      <div class="cv3d-bodies" style="display:none">
-        <div class="cv3d-measures-title">Bodies</div>
-        <div class="cv3d-bodies-list"></div>
       </div>
       <div class="cv3d-clip-panel" style="display:none">
         <span class="cv3d-clip-label">Section</span>
@@ -469,8 +477,6 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const measuresList = $('.cv3d-measures-list');
   const featuresBox = $('.cv3d-features-panel');
   const featuresList = $('.cv3d-features-list');
-  const bodiesBox = $('.cv3d-bodies');
-  const bodiesList = $('.cv3d-bodies-list');
   const treeBox = $('.cv3d-tree');
   const treeList = $('.cv3d-tree-list');
   const clipPanel = $('.cv3d-clip-panel');
@@ -545,6 +551,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let bboxHelper: InstanceType<typeof THREE.Box3Helper> | null = null;
   let bboxLabels: Sprite3[] = [];
   let highlight: Mesh3 | null = null;
+  /** Exact B-rep edges from the tessellation frame (single-body models use them directly). */
+  let serverEdges: Float32Array | null = null;
   /** Per-body highlight overlays, parented to the body mesh so explode/move/rotate carry them. */
   let highlightParts: Mesh3[] = [];
   let envelopeHelper: InstanceType<typeof THREE.Box3Helper> | null = null;
@@ -609,24 +617,34 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
   // ── edge overlay worker (shared, lazily created; falls back to sync) ──
   let edgeWorker: Worker | null | undefined; // undefined = untried, null = unavailable
+  // One listener, replies routed by job id. Each call used to attach its own
+  // listener and resolve on the FIRST message, so on a multi-body model every
+  // pending body received body 1's edges and later replies were dropped.
+  const edgeJobs = new Map<number, { resolve: (p: Float32Array) => void; fallback: Float32Array }>();
+  let edgeJobSeq = 0;
   function computeEdgesAsync(positions: Float32Array): Promise<Float32Array> {
     if (positions.length / 9 <= EDGE_WORKER_THRESHOLD) return Promise.resolve(computeEdgesSync(positions));
     if (edgeWorker === undefined) {
       try {
         edgeWorker = new Worker(new URL('./cad-edges-worker.ts', import.meta.url), { type: 'module' });
+        edgeWorker.addEventListener('message', (ev: MessageEvent<{ id?: number; positions?: Float32Array; error?: string }>) => {
+          const job = ev.data.id != null ? edgeJobs.get(ev.data.id) : undefined;
+          if (!job) return;
+          edgeJobs.delete(ev.data.id!);
+          job.resolve(ev.data.positions ?? computeEdgesSync(job.fallback));
+        });
+        edgeWorker.addEventListener('error', () => {
+          for (const [id, job] of edgeJobs) { edgeJobs.delete(id); job.resolve(computeEdgesSync(job.fallback)); }
+        });
       } catch { edgeWorker = null; }
     }
     if (!edgeWorker) return Promise.resolve(computeEdgesSync(positions));
     const worker = edgeWorker;
     return new Promise((resolve) => {
-      const onMsg = (ev: MessageEvent<{ positions?: Float32Array; error?: string }>) => {
-        worker.removeEventListener('message', onMsg);
-        if (ev.data.positions) resolve(ev.data.positions);
-        else resolve(computeEdgesSync(positions)); // worker failed — sync fallback
-      };
-      worker.addEventListener('message', onMsg);
+      const id = ++edgeJobSeq;
+      edgeJobs.set(id, { resolve, fallback: positions });
       const copy = positions.slice(); // keep the original for the mesh
-      worker.postMessage({ positions: copy, angleDeg: EDGE_ANGLE_DEG }, [copy.buffer]);
+      worker.postMessage({ id, positions: copy, angleDeg: EDGE_ANGLE_DEG }, [copy.buffer]);
     });
   }
   function computeEdgesSync(positions: Float32Array): Float32Array {
@@ -664,7 +682,16 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     return sp;
   }
   function scaleLabels(): void {
-    const all = [...bboxLabels, ...overlayGroup.children.filter(o => (o as { isSprite?: boolean }).isSprite)];
+    // Sprites are rescaled every frame; walk the two groups without building an array.
+    const scaleOne = (sp: Sprite3) => {
+      const d = camera.position.distanceTo(sp.position);
+      const h = d * 0.045 * (opts.compact ? 1.4 : 1);
+      const aspect = (sp as unknown as { __aspect?: number }).__aspect ?? 4;
+      sp.scale.set(h * aspect, h, 1);
+    };
+    for (const sp of bboxLabels) scaleOne(sp as Sprite3);
+    for (const o of overlayGroup.children) if ((o as { isSprite?: boolean }).isSprite) scaleOne(o as Sprite3);
+    const all: Sprite3[] = [];
     for (const sp of all) {
       const d = camera.position.distanceTo((sp as Sprite3).position);
       const h = d * 0.045 * (opts.compact ? 1.4 : 1);
@@ -739,7 +766,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   // ── views ──
   function setView(dir: [number, number, number]): void {
     const len = Math.hypot(...dir) || 1;
-    const d = partRadius * 2.6;
+    // Fit the bounding sphere into the NARROWER half-angle of the frustum: the
+    // vertical fov, or the horizontal one when the viewport is tall. A fixed
+    // 2.6 radii ignored aspect and overflowed wide parts in narrow hosts.
+    const vFov = (camera.fov * Math.PI) / 180;
+    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
+    const half = Math.min(vFov, hFov) / 2;
+    const d = Math.max(partRadius / Math.sin(half) * 1.08, partRadius * 1.2);
     camera.position.set((dir[0] / len) * d, (dir[1] / len) * d, (dir[2] / len) * d);
     controls.target.set(0, 0, 0);
     controls.update();
@@ -839,12 +872,20 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       const headerLen = dv.getUint32(0, true);
       const header = JSON.parse(new TextDecoder().decode(new Uint8Array(frame, 4, headerLen))) as {
         stlBytes: number; triFaceCount: number; faces: FaceMeta[]; bodies: number | null; skippedFaces: number;
+        edgeFloatCount?: number; topology?: unknown; bboxMm?: [number, number, number];
       };
       stlBuf = frame.slice(4 + headerLen, 4 + headerLen + header.stlBytes);
       const triOff = 4 + headerLen + header.stlBytes;
       const triFace = new Uint32Array(header.triFaceCount);
       for (let i = 0; i < header.triFaceCount; i++) triFace[i] = dv.getUint32(triOff + i * 4, true);
-      meta = { triFace, faces: header.faces, bodies: header.bodies, skippedFaces: header.skippedFaces };
+      // True B-rep edges follow (exact feature edges from the kernel — no
+      // client-side dihedral guess needed when they are present).
+      const edgeOff = triOff + header.triFaceCount * 4;
+      const nEdgeFloats = header.edgeFloatCount ?? 0;
+      serverEdges = nEdgeFloats > 0 && edgeOff + nEdgeFloats * 4 <= frame.byteLength
+        ? new Float32Array(frame.slice(edgeOff, edgeOff + nEdgeFloats * 4)) : null;
+      meta = { triFace, faces: header.faces, bodies: header.bodies, skippedFaces: header.skippedFaces,
+        topology: (header.topology ?? null) as TessMeta['topology'], bboxMm: header.bboxMm };
       faceList = meta.faces.filter((f): f is FaceMeta => f != null);
     } else {
       statusFile.textContent = 'Unsupported format (STEP/IGES/STL). Parasolid/JT need a licensed kernel — export STEP instead.';
@@ -922,7 +963,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         const nTris = counts[bi];
         const slice = masterPositions.subarray(triCursor * 9, (triCursor + nTris) * 9);
         const raw = new THREE.BufferGeometry();
-        raw.setAttribute('position', new THREE.BufferAttribute(slice.slice(), 3));
+        // A view onto the reordered master buffer, not a copy: one fewer full
+        // copy of the mesh in the heap per body (toCreasedNormals still emits
+        // its own position + normal buffers).
+        raw.setAttribute('position', new THREE.BufferAttribute(slice, 3));
         // Creased normals = smooth shading on curved faces, crisp normals at real
         // edges (the fix for the faceted "low-def" look). Preserves triangle order,
         // so the face-id/colour buffers stay aligned.
@@ -944,10 +988,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       }
     }
 
-    // edge overlays — off-thread for large bodies; results checked against seq
+    // edge overlays — exact kernel edges when the frame carried them and the
+    // model is one body (they are whole-model, so a multi-body explode would
+    // leave them behind); otherwise the worker, per body, replies by job id.
     bodyMeshes.forEach((mesh, bi) => {
       const pos = (mesh.geometry.getAttribute('position') as InstanceType<typeof THREE.BufferAttribute>).array as Float32Array;
-      void computeEdgesAsync(pos).then((edgePositions) => {
+      const exact = serverEdges && bodyMeshes.length === 1 ? Promise.resolve(serverEdges) : computeEdgesAsync(pos);
+      void exact.then((edgePositions) => {
         if (stale()) return;
         const eg = new THREE.BufferGeometry();
         eg.setAttribute('position', new THREE.BufferAttribute(edgePositions, 3));
@@ -970,7 +1017,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     updateFrustum();
 
     const bodies = meta?.bodies;
-    const topo = (meta as { topology?: { isClosedSolid?: boolean; freeEdgeCount?: number } | null } | null)?.topology ?? null;
+    const topo = meta?.topology ?? null;
     // The badge reads the kernel's verdict, not the old `openShell` flag that
     // said "open" on every plain solid.
     const bodyText = topo && topo.isClosedSolid === false
@@ -991,6 +1038,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
     const fcBtn = $<HTMLButtonElement>('[data-act="facecolors"]');
     fcBtn.disabled = !meta;
+    if (!meta && faceColorsOn) { faceColorsOn = false; fcBtn.classList.remove('active'); }
     fcBtn.title = meta ? 'Colour by machining surface type' : 'Face types need STEP/IGES (B-rep) — STL is mesh-only';
     const featBtn = $<HTMLButtonElement>('[data-act="features"]');
     const hasCyl = faceList.some(f => f.type === 'cylinder');
@@ -1014,7 +1062,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     movBtn.disabled = bodyMeshes.length < 1;
     // wall-thickness heatmap: enabled only when the sidecar carries per-face thickness
     const thkVals = faceList.map(f => f.thicknessMm).filter((v): v is number => typeof v === 'number' && v > 0);
-    thicknessRange = thkVals.length >= 2 ? { min: Math.min(...thkVals), max: Math.max(...thkVals) } : null;
+    thicknessRange = thkVals.length >= 2
+      ? thkVals.reduce((r, v) => ({ min: Math.min(r.min, v), max: Math.max(r.max, v) }), { min: Infinity, max: -Infinity })
+      : null;
     const thkBtn = $<HTMLButtonElement>('[data-act="thickness"]');
     thkBtn.disabled = !thicknessRange;
     thkBtn.title = thicknessRange ? 'Wall-thickness heatmap' : 'Wall thickness needs STEP/IGES (B-rep) — STL is mesh-only';
@@ -1030,7 +1080,6 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       const sl = clipPanel.querySelector(`input[data-clip-slider="${a}"]`) as HTMLInputElement | null; if (sl) sl.value = '0';
     });
 
-    buildBodiesPanel();
     buildFeaturesPanel();
     computeExplodeDirs();
     buildRotatePanel();
@@ -1084,10 +1133,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   // ── bodies panel (multi-solid files) ──
   // Kept hidden: the Model Tree's Bodies section now carries the same per-body
   // visibility checkboxes, so the floating top-right panel was redundant clutter.
-  function buildBodiesPanel(): void {
-    bodiesBox.style.display = 'none';
-    bodiesList.innerHTML = '';
-  }
+
 
   function setBodyVisible(i: number, vis: boolean): void {
     bodyVisible[i] = vis;
@@ -1136,8 +1182,6 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     treeList.querySelectorAll('input[data-tbody]').forEach(cb => cb.addEventListener('change', () => {
       const i = Number((cb as HTMLInputElement).dataset.tbody);
       setBodyVisible(i, (cb as HTMLInputElement).checked);
-      const b = bodiesList.querySelector(`input[data-body="${i}"]`) as HTMLInputElement | null;
-      if (b) b.checked = bodyVisible[i];
     }));
     treeList.querySelectorAll('[data-tfeat]').forEach(row => row.addEventListener('click', () => {
       const g = featureGroups[Number((row as HTMLElement).dataset.tfeat)];

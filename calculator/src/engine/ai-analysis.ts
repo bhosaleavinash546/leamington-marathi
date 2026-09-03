@@ -103,6 +103,8 @@ export interface OCCTGeometry {
   };
   /** On a not_closed_solid refusal: what the open shell would have measured, for the message only. */
   measuredVolumeCm3?: number;
+  /** 'exact' from the B-rep (default); 'mesh' when the volume was integrated over an STL. */
+  volumeConfidence?: 'exact' | 'mesh';
   wallThickness?: {
     minMm: number; maxMm: number; meanMm: number; stdDevMm: number;
     /** 95th-percentile ray-cast wall (mm) — the thickest section governs cooling/ejection. */
@@ -117,6 +119,13 @@ export interface OCCTGeometry {
     minPositiveDraftDeg: number | null;
     maxPositiveDraftDeg: number | null;
     analyzedFaceCount: number;
+    /** The three principal axes tried; the reported direction is the one with the fewest undercuts. */
+    pullDirectionSearch?: {
+      candidates: Array<{ drawDirectionXYZ: number[]; undercutFaceCount: number }>;
+      runnerUp: { drawDirectionXYZ: number[]; undercutFaceCount: number } | null;
+      /** Runner-up within 10% of the best — worth asking the engineer. */
+      ambiguous: boolean;
+    };
   } | null;
   setupAnalysis?: {
     estimatedSetupCount: number;

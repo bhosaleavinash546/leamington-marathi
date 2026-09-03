@@ -18,7 +18,6 @@ import type { STLGeometry } from '../services/stl-parser.js';
 import { createAnalysisCache } from '../utils/analysis-cache.js';
 import { runCADSanityChecks, type CADGeometryContext, type CADSanityWarning } from '../utils/cad-sanity.js';
 import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-machining-guard.js';
-import { normalizeFieldConfidences } from '../utils/cad-schema.js';
 import { familyFromFilename, proseFamily, promoteHighestConfidence, type MaterialSuggestion } from '../../src/engine/material-family.js';
 import { specForCommodity, DETERMINISTIC_COMMODITIES } from '../../src/engine/cost-input-rules/index.js';
 import { buildDeterministicAnalysis } from '../../src/engine/cost-input-rules/deterministic.js';
@@ -92,6 +91,21 @@ sweepUploadFiles();
  * queueing fails, or when the commodity is unsupported; a costing must never
  * fail because an optional background analysis could not start.
  */
+// Moved from cad-schema.ts, the only thing the live path ever used from it;
+// the JSON schema there was dead (the route uses prompt-guided JSON).
+/** Convert schema-shaped fieldConfidences (array of pairs) back to the Record the client reads. */
+function normalizeFieldConfidences(analysis: unknown): void {
+  const a = analysis as { costInputSuggestions?: { fieldConfidences?: unknown } };
+  const fc = a?.costInputSuggestions?.fieldConfidences;
+  if (Array.isArray(fc)) {
+    const map: Record<string, number> = {};
+    for (const e of fc as Array<{ fieldId?: string; confidence?: number }>) {
+      if (e && typeof e.fieldId === 'string' && typeof e.confidence === 'number') map[e.fieldId] = e.confidence;
+    }
+    a.costInputSuggestions!.fieldConfidences = map;
+  }
+}
+
 /** The casting / moulding route the rules (or the model) chose, for the DFM thresholds. */
 function decidedRoute(sugg: unknown): string {
   if (!sugg || typeof sugg !== 'object') return '';
@@ -588,15 +602,21 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
         // and found none". Absent means NOT MEASURED; the rules see the gap.
         features: undefined,
         featureTable: undefined,
+        // One number (2·V/S), and it is presented as one number. The old
+        // min = 0.5x / max = 2x / stdDev = 0.3x were fabricated statistics in
+        // the same fields the ray cast fills, and read as measured spread.
         wallThickness: {
-          minMm: stlGeometry.estimatedWallThicknessMm * 0.5,   // rough lower bound
+          minMm: stlGeometry.estimatedWallThicknessMm,
           meanMm: stlGeometry.estimatedWallThicknessMm,
-          maxMm: stlGeometry.estimatedWallThicknessMm * 2.0,   // rough upper bound
-          stdDevMm: stlGeometry.estimatedWallThicknessMm * 0.3,
+          maxMm: stlGeometry.estimatedWallThicknessMm,
+          stdDevMm: 0,
           method: 'stl_heuristic',
           uniformity: 'unknown',
           sampleCount: 0,
         },
+        // A mesh volume is exact only if the mesh is; a thin drape exported
+        // coarsely can be 10% light. The band widens on it (Sprint 6).
+        volumeConfidence: 'mesh',
         // Remaining optional fields not available from mesh-only data
         draftAnalysis: null,
         setupAnalysis: null,
@@ -2265,10 +2285,13 @@ router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), asyncRou
   // No base64 (+33%), no giant JSON string, no atob loop client-side.
   if (req.query.meta === 'bin') {
     const triFace = result.meta?.triFace ?? [];
+    const edgeLines = result.meta?.edgeLines ?? [];
     const header = Buffer.from(JSON.stringify({
       triangles: result.triangles,
       stlBytes: result.stl.length,
       triFaceCount: triFace.length,
+      // True B-rep edges (x0 y0 z0 x1 y1 z1 per segment) follow the triFace block.
+      edgeFloatCount: edgeLines.length,
       faces: result.meta?.faces ?? [],
       bodies: result.meta?.bodies ?? null,
       skippedFaces: result.meta?.skippedFaces ?? 0,
@@ -2278,8 +2301,9 @@ router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), asyncRou
     const lenBuf = Buffer.alloc(4);
     lenBuf.writeUInt32LE(header.length, 0);
     const triBuf = Buffer.from(Uint32Array.from(triFace).buffer);
+    const edgeBuf = Buffer.from(Float32Array.from(edgeLines).buffer);
     res.set('Content-Type', 'application/octet-stream');
-    res.send(Buffer.concat([lenBuf, header, result.stl, triBuf]));
+    res.send(Buffer.concat([lenBuf, header, result.stl, triBuf, edgeBuf]));
     return;
   }
   // ?meta=1 → JSON with base64 mesh + metadata (backward compatible).

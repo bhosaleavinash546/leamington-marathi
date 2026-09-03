@@ -319,6 +319,8 @@ export interface TessellationMeta {
   /** Closed-solid verdict for the viewer's quality badge (same report `analyze` uses). */
   topology?: { isClosedSolid?: boolean; solidCount?: number; freeEdgeCount?: number; valid?: boolean | null } | null;
   bboxMm?: [number, number, number];
+  /** True B-rep edge polylines, x0 y0 z0 x1 y1 z1 per segment — exact feature edges for the viewer. */
+  edgeLines?: number[];
 }
 
 /** Refuse to buffer pathological outputs into Node heap. */

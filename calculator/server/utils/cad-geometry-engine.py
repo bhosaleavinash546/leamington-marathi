@@ -628,6 +628,12 @@ def _compute_draft_analysis(faces, draw_dir=(0.0, 0.0, 1.0)) -> dict:
             # cos(angle) between face normal and draw direction
             cos_a = (nx*dx + ny*dy + nz*dz) / (n_mag * d_mag)
             cos_a = max(-1.0, min(1.0, cos_a))
+            # Draft is only DEFINED on wall-like faces. A top or bottom face is
+            # perpendicular to the draw and has no draft; this function used to
+            # classify it anyway, and a flat BOTTOM face (angle 180°) counted as
+            # an undercut on every part. Same gate as the per-face extractor.
+            if abs(cos_a) > 0.95:
+                continue
             angle_deg = math.degrees(math.acos(cos_a))
             # Draft angle = deviation from perpendicular (90°)
             draft = abs(90.0 - angle_deg)
@@ -1921,8 +1927,24 @@ def analyze(filepath: str) -> dict:
             wall_stats = None
 
         # ── Draft angle & undercut analysis ───────────────────────────────────
+        # The draw direction was hard-coded to +Z, so a part modelled lying
+        # down reported dozens of undercuts. Try the three principal axes,
+        # keep the one with the fewest undercuts, and report the runner-up so
+        # the engineer can override a near tie.
         try:
-            draft_info = _compute_draft_analysis(faces)
+            candidates = []
+            for axis in ((0.0, 0.0, 1.0), (0.0, 1.0, 0.0), (1.0, 0.0, 0.0)):
+                di = _compute_draft_analysis(faces, axis)
+                candidates.append(di)
+            candidates.sort(key=lambda d: (d["undercutFaceCount"], -d["adequateDraftFaceCount"]))
+            draft_info = dict(candidates[0])
+            runner = candidates[1] if len(candidates) > 1 else None
+            draft_info["pullDirectionSearch"] = {
+                "candidates": [{"drawDirectionXYZ": c["drawDirectionXYZ"], "undercutFaceCount": c["undercutFaceCount"]} for c in candidates],
+                "runnerUp": ({"drawDirectionXYZ": runner["drawDirectionXYZ"], "undercutFaceCount": runner["undercutFaceCount"]} if runner else None),
+                "ambiguous": bool(runner and candidates[0]["undercutFaceCount"] > 0
+                                  and abs(runner["undercutFaceCount"] - candidates[0]["undercutFaceCount"]) <= max(1, int(0.1 * candidates[0]["undercutFaceCount"]))),
+            }
         except Exception:
             draft_info = None
 
@@ -2095,7 +2117,7 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
         from OCP.BRepBndLib import BRepBndLib
         from OCP.IFSelect import IFSelect_RetDone
         from OCP.TopAbs import TopAbs_Orientation
-        from OCP.TopTools import TopTools_IndexedMapOfShape
+        from OCP.TopTools import TopTools_IndexedMapOfShape, TopTools_IndexedDataMapOfShapeListOfShape
     except ImportError as e:
         return {"status": "error", "error": f"OCP not available: {e}"}
 
@@ -2130,7 +2152,23 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
         # (was 0.5 rad ≈ 29°). Paired with creased vertex normals in the viewer,
         # this is the main smoothness win. Triangle count stays bounded by
         # CV_MAX_TRIANGLES; diag/500 keeps small detailed parts from exploding.
-        BRepMesh_IncrementalMesh(wrapped, diag / 500.0, False, 0.3, True)
+        # A thin B-spline drape (a bumper: fill ratio 0.003) meshed at diag/500
+        # and 0.3 rad came out 11.9% light by volume: on a 1.9 m part diag/500 is
+        # a 3.8 mm chord error against a 3 mm wall. Thin parts get diag/2000 and
+        # 0.1 rad (−3.2%, 210k triangles, 1.2 s on that bumper; finer buys 0.3%
+        # for 4x the triangles — the residual is sliver faces, not deflection).
+        # Chunky parts keep diag/500 + 0.3 rad — within ±0.35% on seven real ones.
+        linear, angular = diag / 500.0, 0.3
+        try:
+            _gp = GProp_GProps()
+            BRepGProp.VolumeProperties_s(wrapped, _gp)
+            _vol = abs(_gp.Mass())
+            _bbv = max(1e-9, (xmax - xmin) * (ymax - ymin) * (zmax - zmin))
+            if _vol / _bbv < 0.2:
+                linear, angular = max(0.25, diag / 2000.0), 0.1
+        except Exception:
+            pass
+        BRepMesh_IncrementalMesh(wrapped, linear, False, angular, True)
 
         max_tris = int(os.environ.get("CV_MAX_TRIANGLES", "5000000"))
 
@@ -2285,6 +2323,45 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
         # (the default rendered-views path never reads it; writing tens of MB of
         # triFace JSON on every request was wasted I/O). bodies is the HONEST
         # solid count: 0 means an unstitched surface model (volume unreliable).
+        # True B-rep edges for the viewer overlay: the polyline each edge's
+        # triangulation already carries. Exact feature edges, zero client cost,
+        # and cached with the mesh. Silhouettes stay a client matter.
+        edge_lines = []
+        if with_meta:
+            try:
+                from OCP.TopAbs import TopAbs_EDGE
+                from OCP.BRep import BRep_Tool as _BT
+                emap = TopTools_IndexedMapOfShape()
+                TopExp.MapShapes_s(wrapped, TopAbs_EDGE, emap)
+                fmap_of_edge = TopTools_IndexedDataMapOfShapeListOfShape()
+                TopExp.MapShapesAndAncestors_s(wrapped, TopAbs_EDGE, TopAbs_FACE, fmap_of_edge)
+                for ei in range(1, emap.Extent() + 1):
+                    edge = TopoDS.Edge_s(emap.FindKey(ei))
+                    if _BT.Degenerated_s(edge):
+                        continue
+                    anc = fmap_of_edge.FindFromKey(edge) if fmap_of_edge.Contains(edge) else None
+                    if anc is None or anc.Extent() == 0:
+                        continue
+                    face = TopoDS.Face_s(anc.First())
+                    loc = TopLoc_Location()
+                    tri = _BT.Triangulation_s(face, loc)
+                    if tri is None:
+                        continue
+                    poly = _BT.PolygonOnTriangulation_s(edge, tri, loc)
+                    if poly is None:
+                        continue
+                    trsf = loc.Transformation()
+                    nodes = poly.Nodes()
+                    pts = []
+                    for k in range(1, poly.NbNodes() + 1):
+                        pnt = tri.Node(nodes.Value(k)).Transformed(trsf)
+                        pts.append((pnt.X(), pnt.Y(), pnt.Z()))
+                    for a, b in zip(pts, pts[1:]):
+                        edge_lines.extend((a[0], a[1], a[2], b[0], b[1], b[2]))
+                    if len(edge_lines) > 6 * 2_000_000:
+                        break
+            except Exception:
+                edge_lines = []
         if with_meta:
             try:
                 topo = _topology_report(wrapped)
@@ -2294,7 +2371,8 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
                 json.dump({"triFace": tri_face_ids, "faces": faces_meta,
                            "bodies": bodies, "skippedFaces": skipped_faces,
                            "topology": topo,
-                           "bboxMm": [round(xmax - xmin, 2), round(ymax - ymin, 2), round(zmax - zmin, 2)]}, jf)
+                           "bboxMm": [round(xmax - xmin, 2), round(ymax - ymin, 2), round(zmax - zmin, 2)],
+                           "edgeLines": [round(v, 4) for v in edge_lines]}, jf)
 
         return {"status": "success", "triangles": len(tris), "stlBytes": os.path.getsize(out_path),
                 "faces": meshed_faces, "bodies": bodies, "skippedFaces": skipped_faces}

@@ -1336,3 +1336,22 @@ Fuel_tank                      8.16   163192       6      121     980      1107 
 ## Appendix B — Source audits
 
 Three read-only code audits were run for this review, one per layer (viewer front-end; server upload/measurement pipeline; rules engine, guardrails and AUTO pipeline). Every finding they produced that appears in this document was re-verified against the cited line before inclusion; findings that could not be verified were dropped. The audits' complete outputs are retained in the session transcript.
+
+---
+
+# Appendix C — Implementation status (2 September 2026)
+
+The plan in Stage 7 was executed on branch `claude/new-session-ts4byp` in six commits after the review (`98abbfb` … the Sprint 7–9 commit). Every claim below is pinned by a test in `calculator/tests/`; counts are from the full suite at each commit.
+
+| Sprint | Shipped | Test file | Deliberately not done |
+|---|---|---|---|
+| 1 | Topology report (degenerate/seam-filtered, BRepCheck, free bounds); refusal on non-closed solid / zero volume / unreadable; shared loader with STEP header units, IGES sewing, closed-shell repair, `CV_UNIT_SCALE`; `units.confirm` blocking decision; OCCT stdout silenced; auth on costing routes; `/reanalyze` limited and cache-only; sniff + PDF magic on `/analyze`; explicit multer limits; `CV_TRUST_PROXY`; geometry store by hash | `cad-geometry-refusals` (11), `geometry-store` (7) | — |
+| 2 | `runAllGuards` on all four route branches; gear coherence on the deterministic path from typed values; `assumeLeanings` only in AI mode; `costable`; STL features absent not zero; "Checks applied" in PDF and Excel; per-code acknowledgement replacing the single confirm; exports refuse when blocked | `cad-guard-parity` (9), PDF smoke | — |
+| 3 | Engine `--serve` mode with per-job env/alarm and a 4-shape LRU; warm worker pool (bounded queue, timeout/crash/recycle contracts, fake-worker tests); one-shot fallback with timeout propagated and the semaphore race fixed; mesh cache by hash; analysis cache keyed on hash; no DFM job for STL; timings | `geometry-pool` (5), mesh cache (2) | — |
+| 4–5 | Face ids from kernel → rows/directions → `Decided`/operations/cost lines; `GeometryFacts` adapter with mesh gaps; `machine.oversize` decision; viewer `onFaceSelect`/`onLoaded`, per-body highlights, guardrail banner, envelope box, cost heat-map; ViewerBus; row⇄face wiring; quality badge; one accept list + size pre-check via `/api/cad/limits` | `cad-face-ids` (9) | Upload progress bar and skeleton-first render (the fetch is not yet an XHR with progress) |
+| 6 | Provenance-aware Monte Carlo (drivers through the stack); geometry drivers in the tornado; idea levers re-costed with `savingBasis`; `restackFindingCosts`; DFM job fed decided material/route/region | `sprint6-honest-uncertainty` (11) | — |
+| 7 | Aggregate draft gated to wall faces (agrees with per-face); pull-direction search over three axes with runner-up; thin-drape deflection (bumper −11.9 % → −3.2 %); true B-rep edges in the sidecar and frame | `cad-engine-sprint7` (4) | **Single face table** (the ten traversals still run; a move-not-rewrite refactor of ~1,500 Python lines, deferred); slot/thread/chamfer/counterbore detection |
+| 8 | Edge worker for every part with job-id routing (race fixed); exact server edges used on single-body models; real fit (aspect/fov); `faceColorsOn` reset; spreads replaced; pixel ratio capped at native DPR ≤ 2; no per-frame allocation in labels; subarray views instead of one copy | (viewer math suite unchanged) | **BVH picking** (`three-mesh-bvh` is not a dependency and the proxy blocks installs); section capping; skeleton-first render |
+| 9 | `cad-schema.ts` deleted (its one live function folded into the route); dead bodies panel removed | — | **Splitting `routes/cad.ts` and the Python engine**, and **retiring `cost-input-rules/dfm.ts`** (it is the deterministic path's DFM source and is tested; retiring it needs the per-face feature set to be unconditional, which is the single-face-table work) |
+
+Open items carried forward, in the order they are worth doing: single face table (unblocks unconditional per-face features and the DFM unification), BVH picking once the dependency can be installed, upload progress, `cad.ts` split.
