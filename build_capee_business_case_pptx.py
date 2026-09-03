@@ -2,40 +2,43 @@
 """
 CostVision and CAPEE — the business case in four slides, for senior management.
 
-Four slides, in the order they are spoken:
-
-  1  What it costs us to cost a part today, with the arithmetic exposed and
-     JLR's four numbers left blank.
-  2  Option 1 — fill CAPEE's cost input automatically from the 3D model.
-  3  Option 2 — cost a whole basket in one unattended run.
-  4  The two side by side, and the decision we are asking for.
+  1  Our should-cost today: capable, but hands-on. What we do well, and where
+     the manual effort sits.
+  2  Option 1 — automate the data entry inside CAPEE. 3D model only, no AI, so
+     it needs no AI approval and can start now.
+  3  Option 2 — should-cost that runs by itself: bulk costing, an AI assistant
+     doing the setting up, and the answers we cannot get today.
+  4  What it is worth, with the arithmetic exposed, and the ask.
 
 RULES THIS FILE FOLLOWS.
 
-1. NO AI IN OPTION 1. AI is not approved at JLR today, so Option 1 reads the
-   3D model only. Drawing reading needs a language model and is out of scope
-   here — the tool's default setting is already "rules only, no AI call", and
-   that is the setting Option 1 describes. Nothing on slide 2 may depend on a
-   model. This is the constraint that shapes the whole option, and it makes it
-   safer, not weaker: with no model in the loop, the class of risk "the model
-   said something wrong" does not exist.
+1. NO AI IN OPTION 1. Option 1 reads the 3D model only. Drawing reading needs a
+   language model and is out of scope for it; the tool's default setting is
+   already "rules only, no AI call" and that is the setting slide 2 describes.
+   This is the point that lets Option 1 start under today's policy, and slide 2
+   says so on its face. Option 2 does use an AI assistant, and the approval to
+   use AI is listed as the first thing it needs — stated, not buried.
 
-2. NO INVENTED SAVING. Every benefit figure is left as an empty box for JLR to
-   fill, with the arithmetic printed next to it. We have never timed an
-   engineer costing a part in CAPEE and we have never compared a CostVision
-   cost against a price JLR paid. An estimate presented as a measurement is the
-   one thing that would sink this in front of senior management.
+2. THE AI SETS UP, IT NEVER PRICES. Slide 3 says this in plain words. The
+   assistant picks the process route and the machine and fills what the
+   geometry gives; the money is still worked out by `computeUniversalStack` on
+   the same rate library. If that ever stops being true the slide is wrong.
 
-3. NO DURATIONS. Nothing has been sized by JLR, so no weeks, months or
-   quarters appear.
+3. NO INVENTED SAVING. Every benefit figure on slide 4 is an empty box for JLR
+   to fill, with the arithmetic printed beside it. We have never timed an
+   engineer costing a part in CAPEE and never compared a CostVision cost with a
+   price JLR paid.
 
-4. ONLY WHAT IS IN THE SOFTWARE. Every count and timing was read off the
-   codebase or measured in September 2026 and re-checked at build time:
-   12 to 69 input boxes by part type; 165 costing rules across the twelve part
-   types that have them, 149 writing into a named field; 0.9 to 3.1 seconds to
-   measure a part; 40 parts in 31 seconds on two workers; the same part costing
-   identically on five consecutive runs; 328 materials, 178 machines, 42 labour
-   rates and 20 regions in the rate library; 2,079 tests across 156 files.
+4. NO MACHINE TIMINGS. An earlier draft put throughput seconds on the Option 2
+   slide. It answered a question nobody in that room was asking. Capability
+   belongs there; the timings live in the 21-slide pack.
+
+5. ONLY WHAT IS IN THE SOFTWARE, verified September 2026: 12 to 69 input boxes
+   by commodity; the quote teardown runs live (a machined part quoted 28% above
+   should-cost returned the gap by bucket, recovery levers and supplier
+   questions); the comparison table shows ten countries side by side out of
+   twenty in the rate library; calibration from actuals, scenario, sensitivity,
+   landed cost and the DFM savings levers are all wired through to the UI.
 
 Regenerate:  python3 build_capee_business_case_pptx.py
 Output:      CostVision-CAPEE-Business-Case.pptx
@@ -314,236 +317,232 @@ def lane(slide, x, y, w, h, label, colour, items, label_w=Inches(1.5)):
 
 
 def chip(slide, x, y, w, h, label, formula, accent):
-    """A named formula. The label says what it is, the line under it says how
-    it is worked out — so the room can check the arithmetic rather than take
-    a number on trust."""
+    """A named formula. The label says what it is, the line under it says how it
+    is worked out — so the room can check the working rather than trust a total."""
     box(slide, x, y, w, h, fill=PANEL, line=LINE, round_=True)
     box(slide, x, y, w, Inches(0.06), fill=accent)
-    text(slide, x + Inches(0.18), y + Inches(0.16), w - Inches(0.36), Inches(0.26),
-         [[(label, 11, DARK, True)]])
-    text(slide, x + Inches(0.18), y + Inches(0.45), w - Inches(0.36), Inches(0.3),
-         [[(formula, 14, accent, True)]])
+    text(slide, x + Inches(0.18), y + Inches(0.14), w - Inches(0.36), Inches(0.26),
+         [[(label, 10.8, DARK, True)]])
+    text(slide, x + Inches(0.18), y + Inches(0.42), w - Inches(0.36), Inches(0.3),
+         [[(formula, 13.5, accent, True)]])
+
+
+def band(slide, x, y, w, h, icon, title, body, accent, title_size=12.5, body_size=10.2):
+    """Full-width row: icon, heading, one line of plain explanation."""
+    box(slide, x, y, w, h, fill=PANEL, line=LINE, round_=True)
+    box(slide, x, y, Inches(0.075), h, fill=accent)
+    icon_badge(slide, icon, x + Inches(0.27), y + (h - Inches(0.6)) / 2, d=Inches(0.6), fill=accent)
+    text(slide, x + Inches(1.1), y + Inches(0.16), w - Inches(1.35), Inches(0.28),
+         [[(title, title_size, DARK, True)]])
+    text(slide, x + Inches(1.1), y + Inches(0.47), w - Inches(1.35), _h(h - Inches(0.55)),
+         [[(body, body_size, BODY, False)]], line_spacing=1.13)
 
 
 BLANKBOX = '________'
 
-# ══════════════════ 1 · WHAT IT COSTS US TO COST A PART TODAY ═══════════════
-s = header('What it costs us to cost a part today', 'The problem')
-text(s, Inches(0.45), Inches(1.68), Inches(12.4), Inches(0.3),
-     [[('Every part costed in CAPEE is typed in by hand. Here is that job, and here is what it is '
-        'worth in your own numbers.', 11.5, BODY, False)]])
-
-card(s, Inches(0.45), Inches(2.02), Inches(6.1), Inches(1.95), RED,
-     'HOW A PART GETS COSTED TODAY',
-     [('The engineer opens the 3D model, reads the drawing,',),
-      ('and types the numbers into CAPEE by hand.',),
-      ('',),
-      ('Boxes to fill, depending on the part type:', DARK, True),
-      ('machined 12 · casting 30 · moulding 39 · pressing 69',)], fill=REDBG)
-card(s, Inches(6.78), Inches(2.02), Inches(6.1), Inches(1.95), AMBER,
-     'WHY IT MATTERS TWICE',
-     [('It takes time, and the time scales with the number of',),
-      ('parts we want costed. That is the obvious cost.',),
-      ('',),
-      ('Two engineers costing the same part do not type the', DARK, True),
-      ('same numbers, so one part gets two answers.', DARK, True)], fill=AMBERBG)
-
-text(s, Inches(0.45), Inches(4.05), Inches(12.4), Inches(0.3),
-     [[('What it is worth: five numbers, four of them yours', 11.5, MUTED, True)]])
-rows = [
-    (('A', DARK, True), 'Minutes to cost one part in CAPEE today', (BLANKBOX, INDIGO, True),
-     'Time a handful of parts. One part type is enough to start'),
-    (('B', DARK, True), 'Of those, the minutes spent finding and typing the input values',
-     (BLANKBOX, INDIGO, True), 'The same exercise, timed separately'),
-    (('C', DARK, True), 'Parts costed through CAPEE in a year', (BLANKBOX, INDIGO, True),
-     "CAPEE's own records"),
-    (('D', DARK, True), 'Parts in a typical basket that never get costed individually',
-     (BLANKBOX, INDIGO, True), 'Programme data. This is what Option 2 goes after'),
-    (('E', DARK, True), 'Share of the input boxes the engine fills on its own',
-     (BLANKBOX, GREEN, True), 'We measure this in the pilot, per part type'),
+# ═══════════ 1 · OUR SHOULD-COST TODAY: CAPABLE, BUT HANDS-ON ═══════════════
+s = header('Our should-cost today: capable, but hands-on', 'Where we are')
+text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
+     [[('We already cost parts properly. The method is sound; the effort is manual — 12 to 69 '
+        'values typed in for every part.', 11.5, BODY, False)]])
+today = [
+    ('check', 'Trusted and thorough',
+     'A rigorous bottom-up method, applied across every commodity we buy.', GREEN),
+    ('person', 'Hands-on setup',
+     'Material, process and machine are chosen by a person, part by part.', AMBER),
+    ('clip', 'Manual data entry',
+     'Geometry and tolerances are read off the 3D model and the drawing, then typed in.', AMBER),
+    ('clock', 'Updated by hand',
+     'Rates and inputs are refreshed manually as the economics move.', AMBER),
 ]
-table(s, Inches(0.45), Inches(4.35), Inches(12.43),
-      ['', 'What it is', "JLR's number", 'Where it comes from'], rows,
-      [Inches(0.5), Inches(5.3), Inches(1.7), Inches(4.93)], row_h=Inches(0.31), size=10.2)
+y = Inches(2.06)
+for ic, t_, b_, c_ in today:
+    band(s, Inches(0.45), y, Inches(12.43), Inches(0.95), ic, t_, b_, c_)
+    y += Inches(1.02)
+callout(s, Inches(0.45), Inches(6.2), Inches(12.43), Inches(1.0), GREENBG, GREEN,
+        'The step forward: the same defensible should-cost, with the manual work automated',
+        'Nothing about the method changes. The judgement, the build-up and the numbers we would '
+        'defend to a supplier all stay as they are. What we are proposing to remove is the typing, '
+        'and then the limit on how many parts we can get through.')
+notes(s, "I want to start by saying what we do well, because the proposal is not a criticism of it. "
+         "We cost parts properly. The method is bottom-up, it covers every commodity, and it is the "
+         "number we would defend in front of a supplier. That is worth protecting and nothing I am "
+         "about to propose changes it. What I want to talk about is the effort. Every one of those "
+         "costings is set up by hand. A person chooses the material, the process and the machine. A "
+         "person opens the 3D model and the drawing, reads the geometry and the tolerances, and "
+         "types them in. Depending on the commodity that is somewhere between twelve and "
+         "sixty-nine values per part, and those counts come straight off our own input forms. And "
+         "when the economics move, somebody goes back in and updates the rates by hand. None of "
+         "that is wrong. It is just slow, and it is why we cost the parts we have time for rather "
+         "than the parts we would like to. The green strip is the whole idea in one line. Same "
+         "method, same defensible answer, with the manual work taken out of it.")
 
-cw, cg = Inches(4.06), Inches(0.125)
-chip(s, Inches(0.45), Inches(6.35), cw, Inches(0.82), 'Hours spent typing today', 'B × C ÷ 60', RED)
-chip(s, Inches(0.45) + cw + cg, Inches(6.35), cw, Inches(0.82), 'Hours freed a year', 'B × E × C ÷ 60', GREEN)
-chip(s, Inches(0.45) + 2 * (cw + cg), Inches(6.35), cw, Inches(0.82), 'Extra parts that time would cost', 'B × E × C ÷ A', INDIGO)
-notes(s, "I want to start with the job itself, because everything after this is about removing part "
-         "of it. Today an engineer opens the model, reads the drawing and types the numbers into "
-         "CAPEE. How many numbers depends on the part: twelve boxes for a machined part, "
-         "sixty-nine for a pressing. Those counts come straight off the CAPEE input forms. The "
-         "amber box on the right is the point I would not want to lose. The time is real, but the "
-         "second problem is worse. Two of our engineers costing the same part will not type the "
-         "same numbers, so we end up with two answers for one part and no way to say which one we "
-         "would defend to a supplier. Now the table. I have deliberately not put a saving on this "
-         "slide, because we have never timed this job and I am not going to stand here and invent "
-         "a number. Four of these five are yours and you can get them quickly. The fifth, E, is "
-         "what the pilot measures. Put your numbers in and the three boxes at the bottom fill "
-         "themselves in. That is a business case you own rather than one I have handed you.")
-
-# ═══════════════ 2 · OPTION 1 · FILL CAPEE FROM THE 3D MODEL ════════════════
-s = header('Option 1: fill CAPEE from the 3D model', 'Option 1 · the pilot')
-text(s, Inches(0.45), Inches(1.68), Inches(12.4), Inches(0.3),
+# ═══════════ 2 · OPTION 1 · AUTOMATE THE DATA ENTRY, INSIDE CAPEE ═══════════
+s = header('Option 1: automate the data entry, inside CAPEE', 'Option 1 · start now')
+text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
      [[('CAPEE keeps doing the costing. The engineer stops typing the input and starts checking it. '
-        'No AI anywhere in this option.', 11.5, BODY, False)]])
+        'Reads the 3D model only, so no AI is involved.', 11.5, BODY, False)]])
 steps = [
     ('upload', 'Attach the 3D model', 'STEP, IGES or STL, from the CAPEE screen', INDIGO),
-    ('ruler', 'The engine measures it', 'On a JLR server, with no internet connection', INDIGO),
-    ('cog', 'Rules fill the values', 'Fixed rules. Same part, same numbers, always', INDIGO),
-    ('person', 'The engineer confirms', 'Only what a solid model cannot show', AMBER),
+    ('ruler', 'The software measures it', 'On a JLR server, with no internet connection', INDIGO),
+    ('cog', 'The values fill in', 'Fixed rules. Same part, same numbers, always', INDIGO),
+    ('person', 'The engineer confirms', 'Only what a 3D model cannot show', AMBER),
     ('calc', 'CAPEE costs the part', 'Exactly as it does now. It just gets the numbers', GREEN),
 ]
 sw, gap = Inches(2.334), Inches(0.19)
 x = Inches(0.45)
 for i, (ic, t_, sub, c_) in enumerate(steps):
-    flow_step(s, x, Inches(2.0), sw, Inches(1.9), ic, t_, sub, c_)
+    flow_step(s, x, Inches(1.98), sw, Inches(1.9), ic, t_, sub, c_)
     if i < len(steps) - 1:
-        arrow_between(s, x + sw + Inches(0.02), Inches(2.84), gap - Inches(0.04))
+        arrow_between(s, x + sw + Inches(0.02), Inches(2.82), gap - Inches(0.04))
     x += sw + gap
 
-card(s, Inches(0.45), Inches(4.04), Inches(6.1), Inches(2.05), GREEN,
+card(s, Inches(0.45), Inches(4.02), Inches(6.1), Inches(2.05), GREEN,
      'WHAT THE 3D MODEL GIVES, WITH NOTHING TYPED',
-     [('Volume, weight, bounding box, surface area.',),
-      ('Wall thickness, holes, pockets, bosses, bend count,',),
+     [('Weight, volume, overall size, surface area.',),
+      ('Wall thickness, holes, pockets, bosses, bends,',),
       ('gear teeth, draft, machined face count.',),
       ('',),
-      ('165 costing rules turn those measurements into', DARK, True),
-      ('form values. 149 write into a named box.', DARK, True)], fill=GREENBG)
-card(s, Inches(6.78), Inches(4.04), Inches(6.1), Inches(2.05), AMBER,
-     'WHAT THE ENGINEER STILL SUPPLIES',
-     [('Material family. A solid model cannot tell steel from',),
-      ('aluminium, and the same shape differs threefold in',),
-      ('weight. It can come from the part master instead.',),
+      ('Fixed rules turn those measurements into the', DARK, True),
+      ('values the CAPEE form asks for.', DARK, True)], fill=GREENBG)
+card(s, Inches(6.78), Inches(4.02), Inches(6.1), Inches(2.05), AMBER,
+     'WHAT A PERSON STILL SUPPLIES',
+     [('Which material it is. A 3D model cannot tell steel',),
+      ('from aluminium, and the same shape weighs about',),
+      ('three times more in one than the other.',),
       ('',),
       ('Tolerance class, finish, heat treatment, coating.', DARK, True),
       ('The tool asks. It never guesses and never pre-ticks.', DARK, True)], fill=AMBERBG)
-callout(s, Inches(0.45), Inches(6.19), Inches(12.43), Inches(1.06), PANEL2, INDIGO,
-        'What it is built from, and what it does not use',
-        'The measuring engine is Python with the OpenCASCADE geometry kernel, the open engineering '
-        'kernel behind FreeCAD and many commercial CAD tools. The rules that turn measurements into '
-        'form values are ordinary code, not a model. There is no AI in this option and no outbound '
-        'connection: the 3D file is read on a JLR server and never leaves it.')
-notes(s, "This is the low-hanging fruit and it is deliberately narrow. CAPEE does not move. It "
-         "still does the costing, on the same screens, with the same maths. What changes is where "
-         "the input comes from. The engineer attaches the 3D model from inside CAPEE. The engine "
-         "measures it on a JLR server with no internet connection, and the rules turn those "
-         "measurements into the values the form wants. Then the engineer confirms the handful of "
-         "things a solid model genuinely cannot show, and CAPEE costs the part. I want to be "
-         "explicit about the second sentence in the blue box, because I know AI is not approved "
-         "here. There is no AI in this option. Reading a drawing would need a language model and I "
-         "have taken it out entirely. The tool already has a setting that runs on rules alone with "
-         "no model call, and that is the setting this describes. That is not a compromise, it is "
-         "safer: with no model in the loop, the whole class of risk where the model says something "
-         "wrong does not exist. What is left is measurement, arithmetic, and questions. The amber "
-         "card is the honest limit. Without the drawing, tolerance class, finish and heat treatment "
-         "still get answered by a person, and so does the material family unless it comes off the "
-         "part master. The tool asks for them rather than guessing.")
+callout(s, Inches(0.45), Inches(6.17), Inches(12.43), Inches(1.06), PANEL2, INDIGO,
+        'Why this one can start now',
+        'The 3D model is measured by ordinary engineering software, the same kind of geometry '
+        'engine that sits inside a CAD package, and the values are filled in by fixed rules. There '
+        'is no AI in this option, so it needs no AI approval. The file is read on a JLR server and '
+        'never leaves it, and CAPEE still does the costing on the same screens.')
+notes(s, "This is the smaller of the two and it is deliberately narrow. CAPEE does not move. It "
+         "still does the costing, on the same screens, with the same maths, and nobody has to learn "
+         "a new tool. The only thing that changes is where the input comes from. The engineer "
+         "attaches the 3D model from inside CAPEE. The software measures it on a JLR server with no "
+         "internet connection, and fixed rules turn those measurements into the values the form "
+         "wants. The engineer then confirms the handful of things a 3D model genuinely cannot show, "
+         "and CAPEE costs the part. The green card is what we get for free once the model is "
+         "attached: weight, size, surface area, wall thickness, the hole and pocket counts, and so "
+         "on. The amber card is the honest limit. The model cannot tell us what the part is made "
+         "of. Steel and aluminium look identical in a 3D file and the weight differs by about three "
+         "times, so somebody answers that, or it comes off the part master. Same for tolerance "
+         "class, finish and heat treatment. The tool asks rather than guessing. The point of the "
+         "blue strip is the one I would make to this room: there is no AI in this option at all, so "
+         "it does not wait on an AI decision. We could start it now.")
 
-# ════════════════ 3 · OPTION 2 · COST THE WHOLE BASKET ══════════════════════
-s = header('Option 2: cost the whole basket in one run', 'Option 2 · the capability')
-text(s, Inches(0.45), Inches(1.68), Inches(12.4), Inches(0.3),
-     [[('This is not a bigger version of Option 1. It is something we cannot do at all today.',
+# ═══════════ 3 · OPTION 2 · SHOULD-COST THAT RUNS BY ITSELF ═════════════════
+s = header('Option 2: should-cost that runs by itself', 'Option 2 · the capability')
+text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
+     [[('This is not Option 1 at a larger scale. It is three things we cannot do at all today.',
         11.5, BODY, False)]])
-card(s, Inches(0.45), Inches(2.02), Inches(6.1), Inches(1.8), RED,
-     'WHAT WE DO TODAY',
-     [('We cost the parts we have engineer-hours for.',),
-      ('',),
-      ('The rest of a basket gets sampled, estimated by',),
-      ('analogy, or taken from the last supplier quote.',)], fill=REDBG)
-card(s, Inches(6.78), Inches(2.02), Inches(6.1), Inches(1.8), GREEN,
-     'WHAT OPTION 2 DOES',
-     [('A list of parts and their 3D models goes in. Every',),
-      ('one is measured, costed and reported in one run.',),
-      ('',),
-      ('An engineer answers only what the geometry cannot',),
-      ('decide — once, applied to every part it affects.',)], fill=GREENBG)
-
-text(s, Inches(0.45), Inches(3.93), Inches(12.4), Inches(0.3),
-     [[('How long a run takes. The 40-part row was measured on real production parts; the rest '
-        'carries that rate forward', 11.5, MUTED, True)]])
-rows = [
-    ('One part, warm', ('0.9 to 3.1 seconds', DARK, True),
-     'Five real production parts, 0.6 MB to 3.0 MB. Bigger file, longer'),
-    ('40 parts', ('31 seconds', DARK, True),
-     'Measured. Two workers running in parallel, nothing reused from cache'),
-    ('500 parts', ('about 6.5 minutes', DARK, True),
-     'That measured rate carried forward. Roughly half of it on four workers'),
+caps = [
+    ('upload', 'Cost the whole basket, not a sample',
+     'A list of parts and their 3D models goes in. Every part is costed from its own geometry, '
+     'and a report comes out for each part and for the basket. Today we cost what we have hours '
+     'for and estimate the rest from a sample.', VIOLET),
+    ('cog', 'An assistant does the setting up',
+     'An AI assistant picks the process route and the machine, fills in what the geometry gives, '
+     'and comes back with one question instead of a hundred — answered once and applied to every '
+     'part it affects. It never sets a price: the money is worked out by the same fixed rules '
+     'as today.', VIOLET),
+    ('eye', 'Answers we cannot get today',
+     'Put a supplier quote next to our own build-up and see which part of it the gap is in, with '
+     'the questions to ask them. Savings ideas priced rather than just listed. Where a part should '
+     'be made, ten countries side by side. What happens if the metal price or the volume moves. '
+     'And the tool narrows its own range as we feed it prices we have actually paid.', INDIGO),
 ]
-table(s, Inches(0.45), Inches(4.23), Inches(12.43),
-      ['A run of', 'Measured', 'Basis'], rows,
-      [Inches(3.0), Inches(2.6), Inches(6.83)], row_h=Inches(0.32), size=10.2)
-lane(s, Inches(0.45), Inches(5.68), Inches(12.43), Inches(0.62), 'MUST BE BUILT', RED,
-     ['A history of rate changes', 'An automatic record of every costing',
-      'Region, volume and gear on the run', 'The safety checks on that route', 'The run itself'])
-callout(s, Inches(0.45), Inches(6.4), Inches(12.43), Inches(0.9), PANEL2, INDIGO,
-        'The costing itself needs no AI here either',
-        'The engine and the rules are the same ones Option 1 uses, and they make no model call. An '
-        'agent is one way to marshal a run; taking the part type and material family off the part '
-        'master is the other, and that is the route to take while AI is not approved. What does '
-        'not exist today is the run itself, and the five things above.')
-notes(s, "Option two is a different thing and I want to be clear it is not just Option one at "
-         "scale. Today we cost the parts we have hours for and the rest of a basket gets sampled or "
-         "estimated by analogy. Option two costs every part in the basket from its own geometry, in "
-         "one run, with an engineer answering only what the geometry cannot decide. The middle "
-         "table is measured, not estimated: forty real production parts took thirty-one seconds on "
-         "two workers this month, and the five-hundred-part row is that same rate carried forward. "
-         "The point of it is that the machine time is not the constraint. Getting the part list, "
-         "the CAD files and our own rate data together is the work. The red strip is the honest "
-         "part and I would rather you hear it from me. Five things do not exist today. None of them "
-         "is large. All of them are needed before a bulk run means anything three months later. And "
-         "the blue box answers the question I expect: no, this does not need AI either. The costing "
-         "engine and the rules make no model call. An agent is one way to drive a run, but taking "
-         "the part type and the material off the part master does the same job, and that is the "
-         "route I would take while AI is not approved.")
+y = Inches(2.04)
+for ic, t_, b_, c_ in caps:
+    band(s, Inches(0.45), y, Inches(12.43), Inches(1.28), ic, t_, b_, c_, body_size=10.0)
+    y += Inches(1.36)
+lane(s, Inches(0.45), Inches(6.16), Inches(12.43), Inches(0.62), 'FIRST WE NEED', RED,
+     ['Approval to use AI', 'Our own rate book', 'A history of rate changes',
+      'A record of every costing', 'The run itself built'])
+notes(s, "Option two is a different thing and I want to be clear it is not just Option one at a "
+         "bigger scale. Take the three rows in turn. The first is the one that changes what we can "
+         "promise the business. Today we cost the parts we have engineer-hours for, and the rest of "
+         "a basket gets estimated from a sample or taken from what the supplier last quoted. With "
+         "this, a list of parts and their models goes in and every single one gets costed from its "
+         "own geometry, with a report per part and per basket. The second row is where the AI sits, "
+         "and I want to be precise about what it does and does not do. It does the setting up: it "
+         "picks the process route and the machine, fills in what the geometry gives it, and comes "
+         "back to a person with one question rather than a hundred, which then gets applied across "
+         "every part that question affects. What it does not do is set a price. The money is still "
+         "worked out by the same fixed rules we use today, so the answer is still one we can "
+         "defend line by line. The third row is the part I would not want to lose. These are things "
+         "we cannot do at all at the moment. Put a supplier quote next to our own build-up and the "
+         "tool tells you which bucket the gap is in and what to ask them about it. On a machined "
+         "part quoted twenty-eight per cent above our cost it came back with the gap by bucket, "
+         "the recovery levers and the questions to put to the supplier. Savings ideas get a price "
+         "on them rather than sitting on a list. It compares ten countries side by side to show "
+         "where a part should be made. And as we feed it prices we have actually paid, it tightens "
+         "its own confidence range. The red strip is what has to be in place first, and the first "
+         "item on it is the AI approval. I have put it there deliberately rather than leaving it "
+         "for somebody to raise.")
 
-# ══════════════════ 4 · THE TWO TOGETHER, AND THE ASK ═══════════════════════
-s = header('The two options, and what we are asking for', 'The decision')
+# ═══════════ 4 · WHAT IT IS WORTH, AND WHAT WE ARE ASKING FOR ═══════════════
+s = header('What it is worth, and what we are asking for', 'The decision')
+card(s, Inches(0.45), Inches(1.7), Inches(6.1), Inches(1.24), INDIGO,
+     'OPTION 1 NEEDS',
+     [('A Linux server, and a way to pass numbers into CAPEE',),
+      ('30 to 50 parts where we know the price we paid',),
+      ('One part type and a small team for the trial',)])
+card(s, Inches(6.78), Inches(1.7), Inches(6.1), Inches(1.24), VIOLET,
+     'OPTION 2 NEEDS',
+     [('Everything above, plus approval to use AI',),
+      ('Our own rate book loaded, with a change history',),
+      ('A record of every costing, and the run itself built',)])
+
+text(s, Inches(0.45), Inches(3.08), Inches(12.4), Inches(0.3),
+     [[('What it is worth: five numbers, four of them yours', 11.5, MUTED, True)]])
 rows = [
-    ('What it changes', ('The engineer stops typing the input', DARK, True),
-     ('We can cost a whole basket, not a sample', DARK, True)),
-    ('Where the costing happens', ('CAPEE, same as now', GREEN, True),
-     ('CostVision engine, beside CAPEE', AMBER, False)),
-    ('Does it use AI', ('No. 3D model and fixed rules only', GREEN, True),
-     ('Not for the costing. The run can be driven off the part master', GREEN, True)),
-    ('Does anyone learn a new tool', ('No, the same CAPEE screens', GREEN, True),
-     ('A reviewer does, for the results', AMBER, False)),
-    ('What it needs from JLR', ('A Linux server, the CAPEE connection, parts with prices we paid', AMBER, False),
-     ('Our own rate book, plus the five items built', RED, False)),
-    ('Can we stop part way', ('Yes, CAPEE costs the same way either way', GREEN, True),
-     ('Yes, it runs alongside', GREEN, True)),
-    ('Is it audit-ready today', ('Yes, CAPEE keeps the record', GREEN, True),
-     ('No, until rate history and a costing record exist', RED, True)),
+    (('A', DARK, True), 'Minutes to cost one part today', (BLANKBOX, INDIGO, True),
+     'Time a handful of parts. One commodity is enough to start'),
+    (('B', DARK, True), 'Of those, the minutes spent reading the model and typing values in',
+     (BLANKBOX, INDIGO, True), 'The same exercise, timed separately'),
+    (('C', DARK, True), 'Parts we cost in a year', (BLANKBOX, INDIGO, True),
+     'Our own records'),
+    (('D', DARK, True), 'Parts in a typical basket we never cost individually',
+     (BLANKBOX, INDIGO, True), 'Programme data. This is the ground Option 2 covers'),
+    (('E', DARK, True), 'Share of those values the software fills on its own',
+     (BLANKBOX, GREEN, True), 'The trial measures this, per commodity'),
 ]
-table(s, Inches(0.45), Inches(1.78), Inches(12.43),
-      ['', 'OPTION 1 · input into CAPEE', 'OPTION 2 · bulk costing'], rows,
-      [Inches(3.5), Inches(4.46), Inches(4.47)], row_h=Inches(0.46), size=10.2)
-callout(s, Inches(0.45), Inches(5.46), Inches(12.43), Inches(0.86), GREENBG, GREEN,
-        'What we are asking for today: approve Option 1 as a pilot',
-        'One part type, 30 to 50 parts we have already bought, inside CAPEE, costing our own '
-        'engineering time. It gives us the two numbers nobody can state today: how close the tool '
-        'gets to a price we actually paid, and how much of the input it fills on its own. '
-        'Option 2 needs those numbers first.')
-callout(s, Inches(0.45), Inches(6.42), Inches(12.43), Inches(0.86), AMBERBG, AMBER,
-        'The one thing to know before you decide',
-        'CostVision has never been checked against a price JLR has actually paid. Not one part. '
-        'That is exactly what the pilot settles, and until it is done nobody can tell you how '
-        'accurate this is.')
-notes(s, "Both options on one page. Read down the left column first. Option one changes where "
-         "CAPEE's input comes from, uses no AI, needs nobody to learn anything, and can be stopped "
-         "at any point because CAPEE costs the same way whether we do this or not. Option two is a "
-         "bigger step and it buys us something different: every part in a basket costed from its "
-         "own geometry instead of a sample scaled up. The row I would point at is the third one, "
-         "because it is the question I expect first in this room. Option one uses no AI at all. "
-         "Option two does not need it for the costing either. The green strip is the ask, and it is "
-         "deliberately small. One part type, thirty to fifty parts we have already bought, our own "
-         "time. What we get out of it is the two numbers nobody in this company can state today: "
-         "how close the tool gets to a price we actually paid, and how much of the input it fills "
-         "on its own. Those are the numbers that make the Option two conversation possible, and "
-         "without them it is not a conversation worth having. The amber box is the reason I am "
-         "asking for a pilot rather than a rollout. We have never checked this against a real "
-         "price. I would rather say that now than be asked it later.")
+table(s, Inches(0.45), Inches(3.38), Inches(12.43),
+      ['', 'What it is', 'Our number', 'Where it comes from'], rows,
+      [Inches(0.5), Inches(5.3), Inches(1.7), Inches(4.93)], row_h=Inches(0.31), size=10.2)
+
+cw, cg = Inches(4.06), Inches(0.125)
+chip(s, Inches(0.45), Inches(5.4), cw, Inches(0.8), 'Hours spent typing today', 'B × C ÷ 60', RED)
+chip(s, Inches(0.45) + cw + cg, Inches(5.4), cw, Inches(0.8), 'Hours freed a year', 'B × E × C ÷ 60', GREEN)
+chip(s, Inches(0.45) + 2 * (cw + cg), Inches(5.4), cw, Inches(0.8), 'Extra parts that time would cost', 'B × E × C ÷ A', INDIGO)
+
+callout(s, Inches(0.45), Inches(6.36), Inches(12.43), Inches(0.9), GREENBG, GREEN,
+        'What we are asking for today: approve Option 1 as a trial, and start the AI approval for Option 2',
+        'One commodity, 30 to 50 parts we have already bought, inside CAPEE, using our own time. It '
+        'gives us the two numbers nobody can state today: how close the tool gets to a price we '
+        'actually paid, and how much of the input it fills on its own.')
+notes(s, "Last slide, and it is two things: what it is worth, and what I want from you. The two "
+         "cards at the top are what each option needs, and the difference between them is the "
+         "reason for doing them in this order. Option one needs a server, a way into CAPEE, and "
+         "some parts where we know what we paid. Option two needs all of that plus the AI "
+         "approval, our rate book, and a few things built around the engine. Now the table, and I "
+         "want to be straight about why it is empty. I have not put a saving on this slide, "
+         "because we have never timed how long this job actually takes us and we have never "
+         "compared this tool against a price we have paid. Any number I put there would be my "
+         "estimate dressed up as a measurement, and the first person to ask where it came from "
+         "would be right to. Four of these five are yours and you can get them in a week. The "
+         "fifth, E, is what the trial measures. Put your numbers in and the three boxes underneath "
+         "fill themselves in — hours we spend typing today, hours we would get back, and how many "
+         "more parts that time would cost. That is a case you own rather than one I have handed "
+         "you. And the ask is deliberately small. One commodity, thirty to fifty parts we have "
+         "already bought, our own time. What it buys is the two numbers that make the Option two "
+         "conversation possible. In parallel I would start the AI approval, because that is the "
+         "long pole on Option two and there is no reason to wait for the trial to finish before "
+         "beginning it.")
 
 
 # ───────────────────────────────────────────────────────────────────────────
@@ -586,4 +585,3 @@ def assert_powerpoint_can_open(path):
 
 n_slides = assert_powerpoint_can_open(OUT)
 print(f'{OUT}  -  {n_slides} slides, validated')
-
