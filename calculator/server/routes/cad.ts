@@ -92,6 +92,25 @@ sweepUploadFiles();
  * queueing fails, or when the commodity is unsupported; a costing must never
  * fail because an optional background analysis could not start.
  */
+/** The casting / moulding route the rules (or the model) chose, for the DFM thresholds. */
+function decidedRoute(sugg: unknown): string {
+  if (!sugg || typeof sugg !== 'object') return '';
+  for (const v of Object.values(sugg as Record<string, unknown>)) {
+    if (v && typeof v === 'object') {
+      const o = v as { subtype?: unknown; process?: unknown };
+      if (typeof o.subtype === 'string' && o.subtype) return o.subtype;
+      if (typeof o.process === 'string' && o.process) return o.process;
+    }
+  }
+  return '';
+}
+
+/** Region the costing is for (a 2-letter code or a name); '' when not sent. */
+function requestRegion(req: { body?: Record<string, unknown> }): string {
+  const r = req.body?.region;
+  return typeof r === 'string' && /^[A-Za-z ]{2,32}$/.test(r.trim()) ? r.trim() : '';
+}
+
 async function queueGeometricDFM(
   buffer: Buffer, filename: string, commodity: string,
   partName: string, materialFamily: string, process: string,
@@ -917,9 +936,17 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
         entityStats: preprocessed.entityStats,
       },
     };
+    // The job is fed what the RULES decided, not what the form happened to
+    // hold: the answered material family, the chosen casting/moulding route,
+    // and the region the costing was for. It used to get the form's forced
+    // values only and never a region, so a run where the rules chose sand was
+    // DFM-checked at the HPDC draft threshold and priced in UK rates.
     const detJobId = await queueGeometricDFM(
       buffer, originalname, selectedCommodity,
-      preprocessed.partName, forcedMaterial, forcedProcess, annualVolume);
+      preprocessed.partName,
+      forcedMaterial || String(decisionAnswers['material.family'] ?? ''),
+      forcedProcess || decidedRoute(det.result.suggestions),
+      annualVolume, requestRegion(req));
     // Cached WITH the job id, so re-analysing the same part returns the same
     // job rather than silently losing its findings on a cache hit.
     cadCache.set(cacheKey, { ...detPayload, dfmJobId: detJobId });
@@ -1058,7 +1085,10 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // "no pack exists" wastes a kernel run and a worker slot.
   const dfmJobId = await queueGeometricDFM(
     buffer, originalname, selectedCommodity,
-    preprocessed.partName, forcedMaterial, forcedProcess, annualVolume);
+    preprocessed.partName,
+    forcedMaterial || String(decisionAnswers['material.family'] ?? ''),
+    forcedProcess || decidedRoute((analysis as { costInputSuggestions?: Record<string, unknown> })?.costInputSuggestions),
+    annualVolume, requestRegion(req));
   cadCache.set(cacheKey, { ...payload, fromCache: true, dfmJobId });
 
   res.json({ ...payload, dfmJobId });

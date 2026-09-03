@@ -122,6 +122,9 @@ async function ensurePdfLibs(): Promise<void> {
   renderShouldCostSections = m3.renderShouldCostSections;
 }
 import { exportToExcelBlob } from '../export/excel.js';
+import { restackFindingCosts } from '../engine/dfm-geometry/index.js';
+import { currencySymbol } from '../engine/insights.js';
+import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
 import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
@@ -191,14 +194,49 @@ import { initMotionFX, motionInViewReveal, motionRevealRows } from './motion-fx.
  *  select and whether a person actually typed an annual volume — so the
  *  insights stop recommending the region we are already in or volume levers
  *  built on assumed volumes. */
-function uiSuggestionContext(): { region: string; volumeProvided: boolean; pkgLogisticsEstimated: boolean } {
+function uiSuggestionContext(): { region: string; volumeProvided: boolean; pkgLogisticsEstimated: boolean; library: RateLibrary } {
   const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
   const vol = (document.getElementById('annual-volume') as HTMLInputElement)?.value ?? '';
   // The CAD fill stamps data-prov="estimated" on packaging/logistics; a manual
   // edit clears it. Estimated lines are assumptions to confirm, not savings.
   const pkgEstimated = document.getElementById('packaging')?.getAttribute('data-prov') === 'estimated'
     || document.getElementById('logistics')?.getAttribute('data-prov') === 'estimated';
-  return { region, volumeProvided: vol.trim() !== '' && Number(vol) > 0, pkgLogisticsEstimated: pkgEstimated };
+  // The library goes in so every idea lever with a driver transform is
+  // re-costed through the real stack instead of quoting a percentage.
+  return { region, volumeProvided: vol.trim() !== '' && Number(vol) > 0, pkgLogisticsEstimated: pkgEstimated, library };
+}
+
+/**
+ * Where each cost driver of the CURRENT costing came from, for the Monte
+ * Carlo. A CAD costing's weight is the measured solid (exact); a rule-derived
+ * cycle time is a rule; a hand-typed one is the engineer; anything the mapper
+ * defaulted is a default. This is what makes the band honest: a measured part
+ * gets a narrower band than a typed one, and answering a decision moves it.
+ */
+function driverProvenance(input: UniversalStackInput): DriverProvenance {
+  const src = (fieldId: string): DriverSource | undefined => {
+    const f = _cadRuleFields[fieldId];
+    if (!f) return undefined;
+    if (f.source === 'geometry') return cadGeometrySource === 'stl_parser' ? 'geometry_mesh' : 'geometry_exact';
+    if (f.source === 'rule' || f.source === 'library' || f.source === 'advisor') return 'rule';
+    if (f.source === 'engineer') return 'engineer';
+    if (f.source === 'ai') return 'ai';
+    return undefined;
+  };
+  const cad = _pendingCostingSource === 'cad' && !!cadAnalysisResult;
+  const byPrefix = (suffix: string) => Object.keys(_cadRuleFields).find(k => k.endsWith(suffix));
+  const net = cad ? (src(byPrefix('-net-wt') ?? '') ?? (cadOCCTGeometry ? (cadGeometrySource === 'stl_parser' ? 'geometry_mesh' : 'geometry_exact') : undefined)) : undefined;
+  const util = cad ? src(byPrefix('-mat-util') ?? '') : undefined;
+  const tooling = cad ? src(byPrefix('-tooling') ?? byPrefix('-die-cost') ?? byPrefix('-mould-cost') ?? '') : undefined;
+  const cycle = input.operations.map(() => (cad ? (src(byPrefix('-cycle') ?? byPrefix('-cycle-time') ?? '') ?? 'rule') : 'engineer'));
+  return {
+    netWeightKg: net ?? 'engineer',
+    materialUtilization: util ?? 'engineer',
+    cycleTimeHr: cycle,
+    toolingCost: tooling ?? 'engineer',
+    packaging: document.getElementById('packaging')?.getAttribute('data-prov') === 'estimated' ? 'default' : 'engineer',
+    logistics: document.getElementById('logistics')?.getAttribute('data-prov') === 'estimated' ? 'default' : 'engineer',
+  };
 }
 
 
@@ -6392,6 +6430,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     if (commOvr) formData.append('commodity', commOvr);
     if (matOvr)  formData.append('material', matOvr);
     formData.append('annualVolume', annVol || '100000');
+    formData.append('region', (document.getElementById('mfg-region-selector') as HTMLSelectElement | null)?.value ?? 'UK');
     if (ovrWt)   formData.append('weightKg', ovrWt);
     if (ovrVol)  formData.append('volumeCm3', ovrVol);
     if (ovrLen)  formData.append('lengthMm', ovrLen);
@@ -15512,7 +15551,7 @@ function resultBand(result: PartCostResult, input: UniversalStackInput): {
   const hcal = computeCalibrationHierarchical(getCalibrationRecords(), seg);
   const u = hcal.applied
     ? computeCostUncertainty(result, input, { baseCvOverride: cvFromMape(hcal.calibratedMapePct) })
-    : computeCostUncertainty(result, input);
+    : computeCostUncertainty(result, input, { provenance: driverProvenance(input), library });
   const conf90 = computeConformalBand(getCalibrationRecords(), seg, 0.9);
   _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : String(u.overallConfidence) };
   return { u, hcalApplied: hcal.applied, mapePct: hcal.calibratedMapePct, n: hcal.n, conf90, region };
@@ -16338,7 +16377,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
         // #2+#4: when real accuracy data exists, it drives the Monte-Carlo width.
         const u = hcal.applied
           ? computeCostUncertainty(result, input, { baseCvOverride: cvFromMape(hcal.calibratedMapePct) })
-          : computeCostUncertainty(result, input);
+          : computeCostUncertainty(result, input, { provenance: driverProvenance(input), library });
         const bandColor = u.band === 'tight' ? 'var(--success)' : u.band === 'moderate' ? 'var(--warning)' : 'var(--danger)';
         // Empirical conformal band — a coverage-guaranteed range from logged actuals.
         const conf90 = computeConformalBand(getCalibrationRecords(), {
@@ -17432,6 +17471,7 @@ async function pollGeometricDFM(jobId: string, tries = 60): Promise<void> {
  * difference between "tooling is 18% of cost" and being shown the six faces
  * that cannot come out of the die.
  */
+function dfmMoneyUi(n: number): string { return `${currencySymbol(_displayCurrency)}${(n * _displayFxRate).toFixed(2)}`; }
 function renderGeometricDFMPanel(): void {
   const host = el<HTMLElement>('geometric-dfm-panel');
   if (!host) return;
@@ -17439,6 +17479,18 @@ function renderGeometricDFMPanel(): void {
   host.innerHTML = html;
   host.style.display = html ? '' : 'none';
   if (!html) return;
+  // With a costing on screen, show what each priced finding moves the WHOLE
+  // stack by (overhead and margin included), next to the job's naked line.
+  if (lastInput && cadGeometricDFM?.grouped?.length) {
+    try {
+      const re = restackFindingCosts(cadGeometricDFM.grouped, lastInput, library);
+      for (const r of re) {
+        const idx = cadGeometricDFM.grouped.findIndex(g => g.ruleId === r.ruleId);
+        const node = host.querySelector<HTMLElement>(`[data-dfm-idx="${idx}"] .dfm-geo-cost`);
+        if (node) { node.textContent = `${dfmMoneyUi(r.stackGBP)}/part`; node.title = `Δ piece price through the 8-bucket stack: ${r.basis}. Feature line alone: ${dfmMoneyUi(r.jobGBP)}`; }
+      }
+    } catch (err) { console.warn('[dfm] restack failed:', err instanceof Error ? err.message : String(err)); }
+  }
 
   host.querySelectorAll<HTMLElement>('[data-dfm-idx]').forEach(node => {
     const act = () => {

@@ -8,7 +8,7 @@ import { realMachiningStations, realMachiningOps, type SuggestionContext } from 
 import {
   optimiseMachiningRouting, costRoutingAsGiven, classifyOpName, standardBatchSize,
 } from './routing-optimiser.js';
-import { generateIdeaLevers, RX_INSPECT, RX_REWORK } from './idea-levers.js';
+import { generateIdeaLevers, recostLevers, RX_INSPECT, RX_REWORK } from './idea-levers.js';
 
 export type DFMSeverity = 'critical' | 'major' | 'minor' | 'opportunity';
 export type DFMCategory = 'geometry' | 'material' | 'process' | 'tolerance' | 'tooling' | 'assembly' | 'automation' | 'commercial';
@@ -55,6 +55,17 @@ export interface CostOptimisation {
   category?: LeverCategory;
   /** Who owns this lever (see SuggestionContext in insights.ts). */
   lever?: 'design' | 'supplier' | 'sourcing' | 'assumption' | 'verified';
+  /**
+   * `recosted` — the saving is Δtotal from running the 8-bucket stack with the
+   * lever's driver change applied, through the real rate library.
+   * `heuristic` — a bounded percentage from bucket shares; no driver transform
+   * exists for this lever (a commercial term, a study), and it says so.
+   */
+  savingBasis?: 'recosted' | 'heuristic';
+  /** For recosted levers: the £/part the stack actually moved by. */
+  savingGBP?: number;
+  /** For recosted levers: what was changed, in words. */
+  recostBasis?: string;
 }
 
 export interface DFMDFAResult {
@@ -989,6 +1000,10 @@ export function generateDFMDFA(
   costOptimisations.push(...generateIdeaLevers(result, input, commodity, ctx, {
     matPct, procPct, labPct, toolPct, oheadPct, mgnPct, opCount, avgOEE, matUtil,
   }));
+  // Re-cost, don't multiply: with the library in hand, every lever that
+  // carries a driver transform is run through the real stack and keeps only
+  // the saving the arithmetic actually shows.
+  if (ctx?.library) recostLevers(costOptimisations, result, input, ctx.library);
 
   // Biggest lever first; the backstops below always append at the end.
   costOptimisations.sort((a, b) => b.expectedSavingPct - a.expectedSavingPct);

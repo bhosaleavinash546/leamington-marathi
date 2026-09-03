@@ -40,7 +40,7 @@ export interface GeometricDFMMeta {
     worst: {
       detail: string; measured: { field: string; value: number; unit: string };
       /** The arithmetic behind the £ figure, printable end to end. */
-      costImpact?: { perPartGBP: number; basis: string; confidence: string };
+      costImpact?: { perPartGBP: number; basis: string; confidence: string; kind?: string };
     };
     range: { min: number; max: number; unit: string };
     threshold: { value: number; unit: string; comparator: string };

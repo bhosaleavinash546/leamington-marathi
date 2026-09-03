@@ -5,6 +5,7 @@
  * that name their faces and cite their sources out. Pure and synchronous, so
  * the background worker and a unit test call it identically.
  */
+import { computeUniversalStack } from '../core.js';
 import type { CommodityType } from '../types.js';
 import type { GeometricRule, GeometricFinding, PartContext, GeometricDFMResult } from './types.js';
 import { runGeometricRules } from './types.js';
@@ -274,4 +275,65 @@ export function highlightFaceIds(a: GeometricAnalysis): number[] {
   const seen = new Set<number>();
   for (const f of a.findings) for (const id of f.faceIds) seen.add(id);
   return [...seen];
+}
+
+
+/**
+ * Re-cost a priced finding through the whole 8-bucket stack.
+ *
+ * The job pricers give the cost of the FEATURE (minutes × rate) or the tooling
+ * delta ÷ volume — the naked line, without the overhead and margin the stack
+ * puts on top of it. With the costing's own input and library in hand (the
+ * browser has both), run the stack with and without the finding's effect and
+ * report Δtotal — the figure that actually moves the piece price.
+ *
+ *   feature_cost → the feature's minutes come off the operation that carries
+ *                  the most cycle time (drilling for holes)
+ *   tooling      → the tooling delta comes off `tooling.totalToolingCost`
+ *
+ * Findings the job did not price stay unpriced: nothing here invents a cost.
+ */
+/** The slice of a grouped finding the re-stack needs — the browser holds a projection, not the full type. */
+export interface RestackableFinding {
+  ruleId: string;
+  totalCostGBP?: number;
+  worst: { costImpact?: { kind?: string } };
+}
+
+export function restackFindingCosts(
+  grouped: readonly RestackableFinding[],
+  input: import('../types.js').UniversalStackInput,
+  library: import('../types.js').RateLibrary,
+): Array<{ ruleId: string; jobGBP: number; stackGBP: number; basis: string }> {
+  const base = computeUniversalStack(input, library).total;
+  const out: Array<{ ruleId: string; jobGBP: number; stackGBP: number; basis: string }> = [];
+  for (const g of grouped) {
+    const gbp = g.totalCostGBP ?? 0;
+    if (!(gbp > 0)) continue;
+    // Older payloads carry no kind: a moulding undercut is a tooling delta, everything else priced is a feature cost.
+    const kind = g.worst.costImpact?.kind ?? (/undercut|side-action|slide/.test(g.ruleId) ? 'tooling' : 'feature_cost');
+    let next: import('../types.js').UniversalStackInput | null = null;
+    let basis = '';
+    if (kind === 'tooling') {
+      const vol = input.tooling.amortizationVolume || input.annualVolume || 0;
+      const delta = gbp * (vol || 1);
+      next = { ...input, tooling: { ...input.tooling, totalToolingCost: Math.max(0, input.tooling.totalToolingCost - delta) } };
+      basis = `tooling NRE −£${delta.toFixed(0)} (the slide/insert delta) through the stack`;
+    } else if (kind === 'feature_cost') {
+      const ops = input.operations;
+      if (!ops.length) continue;
+      const k = ops.reduce((bi, o, i, a) => (o.cycleTimeHr > a[bi].cycleTimeHr ? i : bi), 0);
+      const rate = library.machines.find(m => m.id === ops[k].machineId)?.computedRatePerHr ?? 0;
+      const lab = library.labour.find(l => l.id === ops[k].labourId)?.fullyLoadedRatePerHr ?? 0;
+      const hr = (rate + lab) > 0 ? gbp / (rate + lab) : 0;
+      if (!(hr > 0)) continue;
+      next = { ...input, operations: ops.map((o, i) => i === k ? { ...o, cycleTimeHr: Math.max(0.0001, o.cycleTimeHr - hr), labourTimeHr: Math.max(0.0001, o.labourTimeHr - hr) } : o) };
+      basis = `${(hr * 60).toFixed(2)} min off ${ops[k].operationName} through the stack`;
+    } else continue;
+    try {
+      const t = computeUniversalStack(next, library).total;
+      out.push({ ruleId: g.ruleId, jobGBP: gbp, stackGBP: Math.round((base - t) * 10_000) / 10_000, basis });
+    } catch { /* a variant that cannot be costed is left at the job's figure */ }
+  }
+  return out;
 }

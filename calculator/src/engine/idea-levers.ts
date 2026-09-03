@@ -15,9 +15,121 @@
  * on an assumed (not entered) value, are gated the same way §11–§15 of the
  * report are — see SuggestionContext in insights.ts.
  */
-import type { PartCostResult, UniversalStackInput, CommodityType } from './types.js';
+import type { PartCostResult, UniversalStackInput, CommodityType, RateLibrary } from './types.js';
 import type { SuggestionContext } from './insights.js';
 import type { CostOptimisation } from './dfm-dfa.js';
+import { computeUniversalStack } from './core.js';
+
+/**
+ * What a lever DOES to the cost drivers, as a pure transform on the stack
+ * input. Only levers whose effect is a modelled driver get one — "attack the
+ * bottleneck" means a 20% cycle-time cut on the governing operation; a
+ * "payment-terms discount" is a commercial term the stack has no driver for,
+ * so it stays a stated percentage and is labelled as such.
+ */
+export type LeverTransform = (input: UniversalStackInput) => UniversalStackInput;
+
+const LEVER_TRANSFORMS: Record<string, (input: UniversalStackInput, result: PartCostResult) => { next: UniversalStackInput; basis: string } | null> = {
+  'Closed-Loop Regrind of Runners and Trim': (input) => {
+    const u = input.rawMaterial.materialUtilization;
+    const next = Math.min(0.95, u + 0.10);
+    if (next <= u) return null;
+    return { next: { ...input, rawMaterial: { ...input.rawMaterial, materialUtilization: next } }, basis: `material utilisation ${(u * 100).toFixed(0)}% → ${(next * 100).toFixed(0)}% (10-20% regrind blend)` };
+  },
+  'Scrap Revenue Recovery at Index Prices': (input) => {
+    // Credit the scrap fraction at 30% of prime: model as improved utilisation-equivalent.
+    const u = input.rawMaterial.materialUtilization;
+    const scrapFrac = 1 - u;
+    const next = Math.min(0.99, u + scrapFrac * 0.30);
+    if (next <= u) return null;
+    return { next: { ...input, rawMaterial: { ...input.rawMaterial, materialUtilization: next } }, basis: `${(scrapFrac * 100).toFixed(0)}% scrap credited at 30% of prime price (utilisation-equivalent ${(u * 100).toFixed(0)}% → ${(next * 100).toFixed(0)}%)` };
+  },
+  'Attack the Bottleneck': (input, result) => {
+    const ops = result.operationDetails ?? [];
+    if (!ops.length) return null;
+    const top = ops.reduce((a, b) => (b.processCost + b.labourCost > a.processCost + a.labourCost ? b : a));
+    const k = input.operations.findIndex(o => o.operationName === top.operationName);
+    if (k < 0) return null;
+    return { next: { ...input, operations: input.operations.map((o, i) => i === k ? { ...o, cycleTimeHr: o.cycleTimeHr * 0.8, labourTimeHr: o.labourTimeHr * 0.8 } : o) }, basis: `${top.operationName} cycle time −20%` };
+  },
+  'Multi-Cavity / Multi-Up Tooling': (input) => ({
+    next: { ...input,
+      operations: input.operations.map(o => ({ ...o, partsPerCycle: Math.max(2, (o.partsPerCycle ?? 1) * 2) })),
+      tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * 1.7 } },
+    basis: '2 cavities (parts per cycle ×2), tooling NRE ×1.7',
+  }),
+  'Multi-Cavity Tooling — Confirm the Annual Volume First': (input) => ({
+    next: { ...input,
+      operations: input.operations.map(o => ({ ...o, partsPerCycle: Math.max(2, (o.partsPerCycle ?? 1) * 2) })),
+      tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * 1.7 } },
+    basis: '2 cavities (parts per cycle ×2), tooling NRE ×1.7 — at the ASSUMED volume',
+  }),
+  'Unmanned / Lights-Out Running': (input) => ({
+    next: { ...input, operations: input.operations.map(o => ({ ...o, manning: Math.max(0.3, (o.manning ?? 1) * 0.6) })) },
+    basis: 'manning ×0.6 on every operation (a third shift unattended: 30-50% of attended labour passed through)',
+  }),
+  'Multi-Machine Manning': (input) => ({
+    next: { ...input, operations: input.operations.map(o => (o.manning ?? 0) >= 1 && o.cycleTimeHr > (o.labourTimeHr ?? 0) * 0.8 ? { ...o, manning: (o.manning ?? 1) / 2 } : o) },
+    basis: '1:2 manning on machine-paced operations',
+  }),
+  'Soft / Bridge Tooling for This Volume': (input) => ({
+    next: { ...input, tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * 0.6 } },
+    basis: 'tooling NRE ×0.6 (aluminium / soft tool)',
+  }),
+  'Tool-Life Extension Programme': (input) => ({
+    next: { ...input, tooling: { ...input.tooling, amortizationVolume: input.tooling.amortizationVolume * 1.25 } },
+    basis: 'amortisation volume ×1.25 (tool life extended a quarter)',
+  }),
+  'Returnable Packaging Loop': (input) => ({
+    next: { ...input, packagingPerPart: input.packagingPerPart * 0.5 }, basis: 'packaging per part ×0.5 (returnable loop)',
+  }),
+  'Packaging Cost — Confirm, Then Make It Returnable': (input) => ({
+    next: { ...input, packagingPerPart: input.packagingPerPart * 0.5 }, basis: 'packaging per part ×0.5 (returnable loop) — on the ESTIMATED figure',
+  }),
+  'Pack Density / Cube Utilisation Review': (input) => ({
+    next: { ...input, packagingPerPart: input.packagingPerPart * 0.8, logisticsPerPart: input.logisticsPerPart * 0.8 }, basis: 'packaging and logistics per part ×0.8 (20% denser pack)',
+  }),
+  'Freight Mode and Consolidation Review': (input) => ({
+    next: { ...input, logisticsPerPart: input.logisticsPerPart * 0.7 }, basis: 'logistics per part ×0.7 (consolidated FCL / sea)',
+  }),
+  'Lightweighting / Wall Optimisation': (input) => ({
+    next: { ...input, rawMaterial: { ...input.rawMaterial, netWeightKg: input.rawMaterial.netWeightKg * 0.9 } }, basis: 'net weight −10%',
+  }),
+  'Consumables Rationalisation (Cores, Patterns, Shell)': (input) => {
+    const c = input.rawMaterial.consumablesCostPerPart ?? 0;
+    if (!(c > 0)) return null;
+    return { next: { ...input, rawMaterial: { ...input.rawMaterial, consumablesCostPerPart: c * 0.8 } }, basis: 'consumables per part ×0.8' };
+  },
+};
+
+/**
+ * Run every lever that has a transform through the real stack. The saving
+ * becomes Δtotal / total; a lever whose re-cost shows no saving is removed —
+ * an idea that does not survive the arithmetic is not an idea. Levers with no
+ * transform keep their bounded percentage and are labelled `heuristic`.
+ */
+export function recostLevers(
+  levers: CostOptimisation[], result: PartCostResult, input: UniversalStackInput, library: RateLibrary,
+): void {
+  // Baseline from the SAME input the transforms start from, so Δ is the lever alone.
+  const base = computeUniversalStack(input, library).total;
+  for (let i = levers.length - 1; i >= 0; i--) {
+    const lever = levers[i];
+    const key = Object.keys(LEVER_TRANSFORMS).find(k => lever.title === k || lever.title.startsWith(k));
+    if (!key) { lever.savingBasis = 'heuristic'; continue; }
+    let t: { next: UniversalStackInput; basis: string } | null = null;
+    try { t = LEVER_TRANSFORMS[key](input, result); } catch { t = null; }
+    if (!t) { lever.savingBasis = 'heuristic'; continue; }
+    let next: number;
+    try { next = computeUniversalStack(t.next, library).total; } catch { lever.savingBasis = 'heuristic'; continue; }
+    const savingGBP = base - next;
+    if (!(savingGBP > 0.0005)) { levers.splice(i, 1); continue; }   // did not survive the arithmetic
+    lever.savingBasis = 'recosted';
+    lever.savingGBP = Math.round(savingGBP * 10_000) / 10_000;
+    lever.expectedSavingPct = Math.round((savingGBP / base) * 1000) / 10;
+    lever.recostBasis = `${t.basis} → £${next.toFixed(4)} vs £${base.toFixed(4)} through the rate library`;
+  }
+}
 
 /** Bucket shares and op stats already derived by generateDFMDFA — passed in so
  *  both layers read the identical numbers. */

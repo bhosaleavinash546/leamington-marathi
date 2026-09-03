@@ -245,6 +245,23 @@ export function runSensitivity(
     );
   }
 
+  // ── Geometry-derived drivers ─────────────────────────────────────────────
+  // The tornado used to carry rates and form fields only. Net weight comes
+  // off the measured solid, utilisation off the stock allowance, parts per
+  // cycle off cavitation — every one of them a driver worth a bar.
+  if (input.rawMaterial.directCost === undefined && input.rawMaterial.netWeightKg > 0) {
+    tryDriver('Net weight (measured geometry)', 'rawMaterial.netWeightKg', input.rawMaterial.netWeightKg, 'kg',
+      factor => ({ ...input, rawMaterial: { ...input.rawMaterial, netWeightKg: input.rawMaterial.netWeightKg * factor } }));
+    tryDriver('Material utilisation (stock allowance)', 'rawMaterial.materialUtilization', input.rawMaterial.materialUtilization, '',
+      factor => ({ ...input, rawMaterial: { ...input.rawMaterial, materialUtilization: Math.min(0.99, Math.max(0.05, input.rawMaterial.materialUtilization * factor)) } }));
+  }
+  input.operations.forEach((op, i) => {
+    if ((op.partsPerCycle ?? 1) > 1) {
+      tryDriver(`${op.operationName}: Parts per cycle (cavitation)`, `operations[${i}].partsPerCycle`, op.partsPerCycle, 'parts',
+        factor => ({ ...input, operations: input.operations.map((o, j) => j === i ? { ...o, partsPerCycle: Math.max(1, Math.round(o.partsPerCycle * factor)) } : o) }));
+    }
+  });
+
   // Sort by range descending (biggest impact at top — tornado chart)
   drivers.sort((a, b) => b.range - a.range);
 

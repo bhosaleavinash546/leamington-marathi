@@ -47,6 +47,13 @@ export interface SuggestionContext {
   volumeProvided?: boolean;
   /** packaging + logistics were tool-estimated from size/weight, not quoted. */
   pkgLogisticsEstimated?: boolean;
+  /**
+   * The rate library the part was costed with. When present, every idea lever
+   * that has a driver transform is RE-COSTED through `computeUniversalStack`
+   * and its saving is the measured delta; levers whose re-cost shows no
+   * saving are dropped rather than shown with a percentage.
+   */
+  library?: import('./types.js').RateLibrary;
 }
 
 // ─── Industry Benchmarks (aPriori-calibrated) ────────────────────────────────
