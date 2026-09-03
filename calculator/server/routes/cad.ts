@@ -15,7 +15,7 @@ import type { OCCTGeometry } from '../utils/geometry-bridge.js';
 import { parseSTL } from '../services/stl-parser.js';
 import type { STLGeometry } from '../services/stl-parser.js';
 import { createAnalysisCache } from '../utils/analysis-cache.js';
-import { runCADSanityChecks, type CADGeometryContext } from '../utils/cad-sanity.js';
+import { runCADSanityChecks, type CADGeometryContext, type CADSanityWarning } from '../utils/cad-sanity.js';
 import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-machining-guard.js';
 import { normalizeFieldConfidences } from '../utils/cad-schema.js';
 import { familyFromFilename, proseFamily, promoteHighestConfidence, type MaterialSuggestion } from '../../src/engine/material-family.js';
@@ -366,6 +366,43 @@ export function enforceGeometryCommodity(
 
 // Assemble the measured-geometry + selection context the cross-commodity
 // plausibility checks (cad-sanity §7-9) consume. Applies to every commodity.
+/**
+ * On the deterministic path there is no model reading a drawing, so the only
+ * "stated" gear figures are the ones the engineer typed. Present them the way
+ * the AI path presents the drawing read, so `gear_teeth_mismatch` can fire —
+ * it was structurally dead on this path: `buildGeoSanityContext` was called
+ * without a stated side and fell back to the value the rules had just
+ * overwritten with the measured count, so stated always equalled measured.
+ */
+export function statedFromAnswers(answers: Record<string, unknown>): Record<string, unknown> | null {
+  const z = Number(answers['gear.teethEntry']);
+  const m = Number(answers['gear.moduleEntry']);
+  if (!Number.isFinite(z) && !Number.isFinite(m)) return null;
+  return { gear: {
+    ...(Number.isFinite(z) && z > 0 ? { teeth: z, drawingTeeth: z } : {}),
+    ...(Number.isFinite(m) && m > 0 ? { normalModuleMm: m } : {}),
+  } };
+}
+
+/** Every guard, in one place, for every path. The near-net machining cap used
+ *  to run only on the AI path (after the deterministic branch had returned). */
+export function runAllGuards(
+  analysis: unknown, geo: OCCTGeometry, measuredVol: number | null,
+  stated: Record<string, unknown> | null,
+): CADSanityWarning[] {
+  const machining = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
+  return [...machining, ...runCADSanityChecks(
+    analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol, buildGeoSanityContext(geo, analysis, stated))];
+}
+
+/** A costing is `costable` when no blocking decision is open and no blocking
+ *  sanity code is unacknowledged. The browser gate is the same rule; carrying
+ *  it in the payload lets the exports refuse a number the UI would have blocked. */
+export function isCostable(decisions: Decision[], warnings: CADSanityWarning[], acknowledged: string[] = []): boolean {
+  const ack = new Set(acknowledged);
+  return !decisions.some(d => d.severity === 'blocking') && !warnings.some(w => w.blocking && !ack.has(w.code));
+}
+
 function buildGeoSanityContext(
   geo: OCCTGeometry,
   analysis: unknown,
@@ -449,6 +486,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   const unitAnswer = earlyAnswers['units.confirm'];
   const unitScale = unitAnswer === 'inch' ? 25.4 : 1;
   const uploadHash = hashUpload(buffer);
+  const acknowledged = parseAcknowledged(req.body?.acknowledged);
 
   // NOTE: the API-key check used to sit here, above every line below it. That
   // meant a deterministic run could not happen at all — and, less obviously, a
@@ -512,16 +550,11 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
           byType: {},
           sampleCircleRadiiMm: [],
         },
-        features: {
-          cylindricalFaceCount: 0,
-          cylindricalFaceRadiiMm: [],
-          estimatedHoleCount: 0,
-          holeRadiiMm: [],
-          bossShaftRadiiMm: [],
-          threadFeaturesDetected: false,
-          planarFaceCount: 0,
-          freeFormFaceCount: 0,
-        },
+        // A mesh has no B-rep, so it cannot count holes, bosses or planar
+        // faces. These used to be hard zeros, indistinguishable from "measured
+        // and found none". Absent means NOT MEASURED; the rules see the gap.
+        features: undefined,
+        featureTable: undefined,
         wallThickness: {
           minMm: stlGeometry.estimatedWallThicknessMm * 0.5,   // rough lower bound
           meanMm: stlGeometry.estimatedWallThicknessMm,
@@ -716,7 +749,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     // counted set of tip-circle teeth or an explicit gear name.
   } else if (analysisMode === 'deterministic') {
     const verdict = inferCommodity(ruleContextFor(
-      selectedCommodity, geo, originalname, userOverrides, decisionAnswers));
+      selectedCommodity, geo, originalname, userOverrides, decisionAnswers, 'deterministic'));
     if (verdict.commodity) {
       selectedCommodity = verdict.commodity;
       stage1Selection = { primary: verdict.commodity, conf: 0.9, alt: [] };
@@ -776,7 +809,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // --- Phase 4: Stage 2 — Specialist deep analysis (Sonnet) ---
   // The same rules the prompt was rendered from, run again here so their values
   // can be written over the model's reply. One spec, one context, two consumers.
-  const ruleCtx = ruleContextFor(selectedCommodity, geo, originalname, userOverrides, decisionAnswers);
+  const ruleCtx = ruleContextFor(selectedCommodity, geo, originalname, userOverrides, decisionAnswers, analysisMode);
   const ruleSpec = specForCommodity(selectedCommodity);
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
   let ruleFields: ReturnType<typeof toRuleFields> | null = null;
@@ -840,16 +873,18 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     // No model, no key, no network. Everything from here is arithmetic on the
     // measurement plus the rules, which is the whole point of the exercise.
     const det = buildDeterministicAnalysis(ruleSpec!, ruleCtx, geo.partName || originalname);
+    const detWarnings = runAllGuards(det.analysis, geo,
+      geo.status === 'success' ? (geo.volume?.cm3 ?? null) : (stlGeometry?.volume ?? null),
+      statedFromAnswers(decisionAnswers));
+    const detDecisions = [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecision ? [commodityDecision] : []), ...det.result.decisions];
     const detPayload = {
       success: true,
       analysis: det.analysis,
-      sanityWarnings: runCADSanityChecks(
-        det.analysis as unknown as Parameters<typeof runCADSanityChecks>[0],
-        geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null,
-        buildGeoSanityContext(geo, det.analysis)),
+      sanityWarnings: detWarnings,
+      costable: isCostable(detDecisions, detWarnings, acknowledged),
       ruleOverrides: det.applied,
       ruleFields: det.ruleFields,
-      decisions: [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecision ? [commodityDecision] : []), ...det.result.decisions],
+      decisions: detDecisions,
       mode: analysisMode,
       fromCache: false,
       geometrySource,
@@ -939,10 +974,10 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // volume.cm3 or the ground-truth volume check never fires on the STEP/IGES path.
   const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null);
   // Cap near-net (cast/forged) machining time before it drives the cost, then run sanity.
-  const machiningWarnings = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
-  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol, buildGeoSanityContext(geo, analysis, aiOriginal))];
+  const sanityWarnings = runAllGuards(analysis, geo, measuredVol, aiOriginal ?? statedFromAnswers(decisionAnswers));
   if (sanityWarnings.length) console.log(`[CAD] Sanity: ${sanityWarnings.length} warning(s): ${sanityWarnings.map(x => x.code).join(', ')}`);
 
+  const aiDecisions = [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)];
   const payload = {
     success: true,
     analysis,
@@ -965,11 +1000,13 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     aiOriginal,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
-    decisions: [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)],
+    decisions: aiDecisions,
+    costable: isCostable(aiDecisions, sanityWarnings, acknowledged),
     mode: analysisMode,
     fromCache: false,
     geometrySource,
     geometryHash: geometrySource === 'occt' ? uploadHash : null,
+    truncated: stlGeometry?.truncated ?? false,
     unitCheck: geo.status === 'success' ? (geo.unitCheck ?? null) : null,
     annualVolume,
     occtGeometry: geo.status === 'success' ? geo : null,
@@ -1800,6 +1837,14 @@ export function unitsDecisionFor(geo: OCCTGeometry): Decision | null {
   };
 }
 
+/** Sanity codes the engineer has explicitly accepted, one by one. */
+export function parseAcknowledged(raw: unknown): string[] {
+  let v: unknown = raw;
+  if (typeof v === 'string') { const str = v; try { v = JSON.parse(str) as unknown; } catch { v = str.split(','); } }
+  if (!Array.isArray(v)) return [];
+  return v.filter((x): x is string => typeof x === 'string' && /^[a-z0-9_]{1,64}$/.test(x)).slice(0, 50);
+}
+
 export function parseDecisionAnswers(raw: unknown): Record<string, unknown> {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
   const out: Record<string, unknown> = {};
@@ -1816,20 +1861,30 @@ export function ruleContextFor(
   filename: string,
   overrides: Pick<UserOverrides, 'annualVolume' | 'forcedCommodity' | 'forcedMaterial'>,
   answers: Record<string, unknown> = {},
+  /**
+   * Who answers the blocking questions. On the AI path nobody is at the screen,
+   * so the service flags resolve to their stated leanings (recorded in every
+   * basis). On the deterministic path an engineer IS present and the question
+   * must block — `assumeLeanings` used to be true on both, which the type's own
+   * contract forbids.
+   */
+  mode: 'ai' | 'deterministic' | 'both' = 'ai',
 ): RuleContext {
+  const meshOnly = (geo as { wallThickness?: { method?: string } }).wallThickness?.method === 'stl_heuristic';
   return {
     geo,
-    geometryQuality: geo.status === 'success' ? 'occt' : 'text',
+    geometryQuality: geo.status !== 'success' ? 'text' : meshOnly ? 'stl' : 'occt',
     commodity,
     // A non-empty forcedCommodity means the engineer picked it off the form,
     // which is the answer to the metal-or-plastic question the specs would
     // otherwise ask.
     commoditySource: overrides.forcedCommodity ? 'engineer' : 'inferred',
-    // Nobody is at the screen during an /analyze call. Assuming the service
+    // Nobody is at the screen during an AI /analyze call. Assuming the service
     // flags from their stated leanings, and saying so in every basis, beats
     // blocking every casting and forging line — which would leave the model
     // with no rules at all and nothing recorded about what it invented instead.
-    assumeLeanings: true,
+    // With an engineer present (deterministic), the question blocks instead.
+    assumeLeanings: mode === 'ai',
     annualVolume: overrides.annualVolume,
     filename,
     answers: { ...answersFromContext(overrides.forcedMaterial, filename), ...answers },
@@ -2238,6 +2293,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   // part against numbers it made up.
   const geometryHash = typeof req.body?.geometryHash === 'string' ? req.body.geometryHash.trim() : '';
   const earlyAnswers = parseDecisionAnswers(req.body?.decisionAnswers);
+  const acknowledged = parseAcknowledged(req.body?.acknowledged);
   const unitScale = earlyAnswers['units.confirm'] === 'inch' ? 25.4 : 1;
   let geo: OCCTGeometry | null = geometryHash ? getGeometry(geometryHash, unitScale) : null;
   if (!geo && geometryHash && unitScale !== 1) {
@@ -2379,7 +2435,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
 
   // The same rules the prompt was rendered from, run again here so their values
   // can be written over the model's reply. One spec, one context, two consumers.
-  const ruleCtx = ruleContextFor(selectedCommodity, geo, filename, userOverrides, decisionAnswers);
+  const ruleCtx = ruleContextFor(selectedCommodity, geo, filename, userOverrides, decisionAnswers, analysisMode);
   const ruleSpec = specForCommodity(selectedCommodity);
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
   let ruleFields: ReturnType<typeof toRuleFields> | null = null;
@@ -2424,16 +2480,16 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     // The route the client posts decision answers to. Re-running the rules with
     // them is the whole round-trip: no re-upload, no model, no key.
     const det = buildDeterministicAnalysis(ruleSpec!, ruleCtx, geo.partName || filename);
+    const detWarnings = runAllGuards(det.analysis, geo, geo.volume?.cm3 ?? null, statedFromAnswers(decisionAnswers));
+    const detDecisions = [...(unitsDecision ? [unitsDecision] : []), ...det.result.decisions];
     const detPayload = {
       success: true,
       analysis: det.analysis,
-      sanityWarnings: runCADSanityChecks(
-        det.analysis as unknown as Parameters<typeof runCADSanityChecks>[0],
-        geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null,
-        buildGeoSanityContext(geo, det.analysis)),
+      sanityWarnings: detWarnings,
+      costable: isCostable(detDecisions, detWarnings, acknowledged),
       ruleOverrides: det.applied,
       ruleFields: det.ruleFields,
-      decisions: [...(unitsDecision ? [unitsDecision] : []), ...det.result.decisions],
+      decisions: detDecisions,
       geometryHash,
       mode: analysisMode,
       fromCache: false,
@@ -2507,8 +2563,8 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     return;
   }
 
-  const machiningWarnings = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
-  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volume?.cm3 ?? null, buildGeoSanityContext(geo, analysis, aiOriginal))];
+  const sanityWarnings = runAllGuards(analysis, geo, geo.volume?.cm3 ?? null, aiOriginal ?? statedFromAnswers(decisionAnswers));
+  const reDecisions = [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)];
   const payload = {
     success: true,
     analysis,
@@ -2531,7 +2587,8 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     aiOriginal,
     // The AI path has open decisions too — it just answers them itself. Saying
     // which ones it answered is worth more than hiding that it did.
-    decisions: [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)],
+    decisions: reDecisions,
+    costable: isCostable(reDecisions, sanityWarnings, acknowledged),
     geometryHash,
     mode: analysisMode,
     fromCache: false,

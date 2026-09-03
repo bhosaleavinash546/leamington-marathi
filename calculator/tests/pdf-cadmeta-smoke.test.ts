@@ -73,6 +73,35 @@ describe('CAD-provenance report path renders (Stages 1 & 4)', () => {
     }
   });
 
+  it('renders the "Checks applied" block — costable and blocked — without throwing', () => {
+    const api = (jsPDF as unknown as { API: Record<string, unknown> }).API;
+    const origSave = api.save;
+    api.save = function (this: jsPDF) { return this; };
+    try {
+      const { input, result } = castingResult();
+      const checks: NonNullable<CADReportMeta['checks']> = {
+        costable: true, geometryQuality: 'occt',
+        sanity: [
+          { code: 'near_net_machining_capped', message: 'Machining time capped to the finish envelope (3.00 h → 0.20 h).', severity: 'warn' },
+          { code: 'weight_inconsistent_steel', message: 'AI mass 2.0 kg vs measured 1.57 kg (27% drift).', severity: 'warn', blocking: true, acknowledged: true },
+        ],
+        decisions: [
+          { id: 'material.family', question: 'Which material family?', severity: 'blocking', answer: 'aluminium' },
+          { id: 'casting.subtype', question: 'Casting route?', severity: 'advisory', answer: null },
+        ],
+        overrides: [
+          { field: 'netWeightKg', ruleId: 'casting.netWeight', from: 2.0, to: 1.57, basis: 'measured volume × 7850 kg/m³', contradicted: true },
+          { field: 'estimatedCycleTimeHr', ruleId: 'casting.cycle', from: undefined, to: 0.0161, basis: 'HPDC 800 t, 58 s cycle', contradicted: false },
+        ],
+      };
+      expect(() => printPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], { geometrySource: 'occt', checks })).not.toThrow();
+      const blocked = { ...checks, costable: false, sanity: [{ ...checks.sanity[1], acknowledged: false }], decisions: [{ ...checks.decisions[0], answer: null }] };
+      expect(() => printPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], { geometrySource: 'stl_parser', checks: blocked })).not.toThrow();
+    } finally {
+      api.save = origSave;
+    }
+  });
+
   it('renders unchanged for a non-CAD costing (empty cadMeta)', () => {
     const api = (jsPDF as unknown as { API: Record<string, unknown> }).API;
     const origSave = api.save;

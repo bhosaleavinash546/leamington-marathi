@@ -99,6 +99,24 @@ export interface CADReportMeta {
   photos?: ReportPhoto[];
   /** ISO 26262 context — printed for electronics commodities. */
   functionalSafety?: FunctionalSafetyMeta;
+  /**
+   * The checks that ran on the CAD costing and what the engineer did about
+   * them. No guardrail reached the report before this: a supplier reading it
+   * could not see that the weight had been clamped to the measured solid, that
+   * the machining hours had been capped, or that "pressure-tight: yes" was an
+   * answer rather than an assumption.
+   */
+  checks?: ChecksAppliedMeta | null;
+}
+
+export interface ChecksAppliedMeta {
+  /** false = a blocking decision is open or a blocking sanity code is unacknowledged. */
+  costable: boolean;
+  geometryQuality?: 'occt' | 'stl' | 'text' | null;
+  sanity: Array<{ code: string; message: string; severity: 'warn' | 'error'; blocking?: boolean; acknowledged?: boolean }>;
+  decisions: Array<{ id: string; question: string; severity: 'blocking' | 'advisory'; answer: string | null }>;
+  /** Rule-owned fields written over the model's value (or set where it said nothing). */
+  overrides: Array<{ field: string; ruleId: string; from: unknown; to: unknown; basis: string; contradicted: boolean }>;
 }
 
 /** One labelled source photo carried into the report. */
@@ -408,6 +426,65 @@ function renderSourcePhotographs(doc: jsPDF, y: number, photos: ReportPhoto[]): 
  * The limitations block is not optional garnish — it is what stops a short
  * finding list being read as a clean part.
  */
+/** "Checks applied" — every guardrail, decision and rule override on one page. */
+function renderChecksApplied(doc: jsPDF, y: number, ch: ChecksAppliedMeta | null | undefined): number {
+  if (!ch) return y;
+  y = chk(doc, y, 30);
+  doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+  doc.text('Checks Applied to This Costing', MG, y); y += 5;
+
+  const fmt = (v: unknown): string => v == null ? '—' : typeof v === 'number' ? (Number.isInteger(v) ? String(v) : v.toFixed(3)) : String(v).slice(0, 40);
+  const status = ch.costable
+    ? ['COSTABLE — no blocking decision is open and every blocking check has been acknowledged by name.']
+    : ['NOT COSTABLE — a blocking decision is open or a blocking check is unacknowledged. This figure must not be quoted.'];
+  const q = ch.geometryQuality === 'occt' ? 'Geometry: measured from the CAD solid (OCCT).'
+    : ch.geometryQuality === 'stl' ? 'Geometry: measured from a mesh (STL) — features not visible to the kernel were asked for, not assumed.'
+    : ch.geometryQuality === 'text' ? 'Geometry: NOT measured.' : '';
+  y = calloutBox(doc, y, ch.costable ? 'Status' : 'Status — BLOCKED', [...status, ...(q ? [q] : [])],
+    ch.costable ? GN : RD, ch.costable ? [237, 247, 237] : [252, 236, 236]);
+
+  if (ch.sanity.length) {
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG },
+      head: [['Check', 'Severity', 'Blocking', 'Acknowledged', 'Finding']],
+      body: ch.sanity.map(w => [w.code, w.severity, w.blocking ? 'yes' : 'no', w.blocking ? (w.acknowledged ? 'yes' : 'NO') : '—', w.message]),
+      styles: { fontSize: 6.5, cellPadding: 1.2 }, headStyles: { fillColor: NAVY, fontSize: 6.5 },
+      columnStyles: { 0: { cellWidth: 34 }, 1: { cellWidth: 14 }, 2: { cellWidth: 14 }, 3: { cellWidth: 20 } },
+    });
+    y = lastFinalY(doc) + 4;
+  } else {
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+    doc.text('No consistency check fired.', MG, y); y += 5;
+  }
+
+  if (ch.decisions.length) {
+    y = chk(doc, y, 20);
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG },
+      head: [['Decision', 'Severity', 'Answer']],
+      body: ch.decisions.map(d => [d.question, d.severity, d.answer ?? (d.severity === 'blocking' ? 'OPEN' : 'engine default')]),
+      styles: { fontSize: 6.5, cellPadding: 1.2 }, headStyles: { fillColor: NAVY, fontSize: 6.5 },
+      columnStyles: { 1: { cellWidth: 18 }, 2: { cellWidth: 40 } },
+    });
+    y = lastFinalY(doc) + 4;
+  }
+
+  if (ch.overrides.length) {
+    y = chk(doc, y, 20);
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+    doc.text('Rule-owned values (the geometry and rules decide these; a model value that disagreed was overwritten):', MG, y); y += 4;
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG },
+      head: [['Field', 'Rule', 'Model said', 'Used', 'Basis']],
+      body: ch.overrides.slice(0, 40).map(o => [o.field, o.ruleId, o.contradicted ? fmt(o.from) : (o.from == null ? '—' : fmt(o.from)), fmt(o.to), o.basis.slice(0, 110)]),
+      styles: { fontSize: 6, cellPadding: 1 }, headStyles: { fillColor: NAVY, fontSize: 6 },
+      columnStyles: { 0: { cellWidth: 34 }, 1: { cellWidth: 30 }, 2: { cellWidth: 20 }, 3: { cellWidth: 20 } },
+    });
+    y = lastFinalY(doc) + 6;
+  }
+  return y;
+}
+
 function renderGeometricDFM(
   doc: jsPDF, y: number, g: GeometricDFMMeta | null | undefined,
   money: (n: number) => string,
@@ -732,6 +809,7 @@ export function renderShouldCostSections(
   // Functional safety sits between the commercial parameters and the cost
   // detail: it is the context that explains why the verification operations in
   // section 4 cost what they do.
+  y = renderChecksApplied(doc, y, cadMeta.checks);
   y = renderGeometricDFM(doc, y, cadMeta.geometricDFM, c);
   y = renderFunctionalSafety(doc, y, result, commodityType, cadMeta.functionalSafety, c);
 

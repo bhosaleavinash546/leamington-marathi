@@ -1,3 +1,4 @@
+import type { ChecksAppliedMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
 import { breakdownPercentages } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
@@ -11,7 +12,9 @@ export async function exportToExcelBlob(
   input: UniversalStackInput,
   library: RateLibrary,
   currency = 'GBP',
-  fxRate = 1
+  fxRate = 1,
+  /** The guardrails, decisions and rule overrides behind a CAD costing (same block the PDF prints). */
+  checks: ChecksAppliedMeta | null = null,
 ): Promise<Blob> {
   // Canonical symbol map (all 16 currencies) — no partial copies to drift.
   const sym = currencySymbol(currency);
@@ -195,6 +198,24 @@ export async function exportToExcelBlob(
   }
 
   sheets.push({ name: '6-Traceability', rows: trRows, cols: [36, 12, 10, 55, 22, 12] });
+
+  // ── Sheet 7: Checks applied (CAD costings) ─────────────────────────────────
+  if (checks) {
+    const ck: unknown[][] = [
+      ['STATUS', checks.costable ? 'COSTABLE' : 'NOT COSTABLE — blocking decision open or blocking check unacknowledged'],
+      ['Geometry', checks.geometryQuality === 'occt' ? 'measured from CAD solid (OCCT)' : checks.geometryQuality === 'stl' ? 'measured from mesh (STL)' : checks.geometryQuality === 'text' ? 'NOT measured' : ''],
+      [],
+      ['CONSISTENCY CHECKS'], ['Code', 'Severity', 'Blocking', 'Acknowledged', 'Finding'],
+      ...checks.sanity.map(w => [w.code, w.severity, w.blocking ? 'yes' : 'no', w.blocking ? (w.acknowledged ? 'yes' : 'NO') : '', w.message]),
+      [],
+      ['DECISIONS'], ['Question', 'Severity', 'Answer'],
+      ...checks.decisions.map(d => [d.question, d.severity, d.answer ?? (d.severity === 'blocking' ? 'OPEN' : 'engine default')]),
+      [],
+      ['RULE-OWNED VALUES'], ['Field', 'Rule', 'Model said', 'Used', 'Basis'],
+      ...checks.overrides.map(o => [o.field, o.ruleId, o.from == null ? '' : String(o.from), o.to == null ? '' : String(o.to), o.basis]),
+    ];
+    sheets.push({ name: '7-Checks', rows: ck, cols: [40, 14, 12, 14, 80] });
+  }
 
   return workbookBlob(await buildWorkbook(sheets));
 }

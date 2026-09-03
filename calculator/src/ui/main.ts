@@ -253,7 +253,7 @@ let cadAnalysisResult: CADAnalysisResult | null = null;
 let cadDfmJobId: string | null = null;
 let cadGeometricDFM: GeometricDFMMeta | null = null;
 let cadOCCTGeometry: OCCTGeometry | null = null;
-let cadGeometrySource: 'occt' | 'text_parsing' = 'text_parsing';
+let cadGeometrySource: 'occt' | 'stl_parser' | 'text_parsing' = 'text_parsing';
 // Stage-3 user pins: when true the engineer has fixed the grade / process, so AI
 // re-analysis and sanity heuristics must NOT overwrite them. Mirrors pcbPinnedPrices.
 let _cadMaterialLocked = false;
@@ -287,10 +287,25 @@ let _cadDecisionAnswers: Record<string, string> = {};
 /** The rules-vs-AI comparison. Only mode='both' produces one; else null. */
 let _cadDiff: CADDiff | null = null;
 let cadSanityWarnings: Array<{ code: string; message: string; severity: 'warn' | 'error'; blocking?: boolean }> = [];
+/** Rule-owned fields the server wrote (with basis) — printed in the report's "Checks applied". */
+let _cadRuleOverrides: Array<{ field: string; ruleId: string; from: unknown; to: unknown; basis: string; contradicted: boolean }> = [];
+
 // Blocking sanity codes the engineer has explicitly acknowledged this session
 // (per part+code, so a new analysis re-asks). Audit gap 4: the bumper costed
 // with `process_geometry_implausible` on the record and nobody shown it.
 const _cadSanityAcks = new Set<string>();
+document.addEventListener('change', (ev) => {
+  const t = ev.target as HTMLInputElement | null;
+  const code = t?.getAttribute?.('data-ack-code');
+  if (!code) return;
+  if (t!.checked) _cadSanityAcks.add(code); else _cadSanityAcks.delete(code);
+  const label = t!.closest('label');
+  if (label) {
+    label.style.borderColor = t!.checked ? '#16a34a' : '#dc2626';
+    const txt = label.lastChild;
+    if (txt && txt.nodeType === Node.TEXT_NODE) txt.textContent = t!.checked ? ' acknowledged' : ' blocking — tick to accept this figure on the record';
+  }
+});
 let cadFromCache = false;
 // Provenance for the accuracy harness: 'cad' when the last applied inputs came
 // from a CAD analysis; consumed (and reset) by pushCostingRecord.
@@ -6403,6 +6418,8 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     cadGeometryHash = (data as { geometryHash?: string | null }).geometryHash ?? null;
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
+    _cadRuleOverrides = (() => { const ro = (data as { ruleOverrides?: unknown }).ruleOverrides;
+      return Array.isArray(ro) ? ro as typeof _cadRuleOverrides : ((ro as { applied?: typeof _cadRuleOverrides } | undefined)?.applied ?? []); })();
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     _cadDecisions = (data as { decisions?: CADDecision[] }).decisions ?? [];
     _cadRuleFields = (data as { ruleFields?: Record<string, CADRuleField> }).ruleFields ?? {};
@@ -6695,10 +6712,17 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
       } else if (matConf < 70 && !cadPartPhotoDataUrlPresent()) {
         asks.push(`&#128247; Material is only <strong>${matConf}% confident</strong> — geometry alone cannot identify the alloy or grade. Add a part photo above and re-analyse.`);
       }
+      // Blocking checks are acknowledged ONE BY ONE, here, by code. A single
+      // confirm dialog used to accept every blocking code at once, which is
+      // not an acknowledgement of anything in particular.
       const sanityHtml = cadSanityWarnings.map(sw => `
         <li style="margin:3px 0;line-height:1.45">
           <span style="font-weight:700;color:${sw.severity === 'error' ? '#dc2626' : '#d97706'}">${sw.severity === 'error' ? '&#10060;' : '&#9888;'}</span>
           ${escHtml(sw.message)}
+          ${sw.blocking ? `<label style="display:inline-flex;align-items:center;gap:5px;margin-left:8px;padding:1px 7px;border:1px solid ${_cadSanityAcks.has(sw.code) ? '#16a34a' : '#dc2626'};border-radius:10px;font-size:0.66rem;cursor:pointer;color:var(--text-primary)">
+            <input type="checkbox" data-ack-code="${escHtml(sw.code)}" ${_cadSanityAcks.has(sw.code) ? 'checked' : ''} style="margin:0"/>
+            ${_cadSanityAcks.has(sw.code) ? 'acknowledged' : 'blocking — tick to accept this figure on the record'}
+          </label>` : ''}
         </li>`).join('');
       if (!asks.length && !sanityHtml) return '';
       return `<div id="cad-guidance-panel" style="margin-bottom:12px;padding:11px 13px;background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.3);border-left:3px solid #d97706;border-radius:8px">
@@ -7055,6 +7079,7 @@ async function reanalyzeCAD(): Promise<void> {
     if (commOvr) body['commodity'] = commOvr;
     if (matOvr)  body['material']  = matOvr;
     if (procOvr) body['process']   = procOvr;
+    body['acknowledged'] = [..._cadSanityAcks];
     if (cadPartPhotoBase64) { body['partPhotoBase64'] = cadPartPhotoBase64; body['partPhotoMime'] = cadPartPhotoMime; }
     body['deepAnalysis'] = (document.getElementById('cad-deep-analysis') as HTMLInputElement | null)?.checked ?? false;
     // The answers the engineer just gave. The server re-runs the rules with them
@@ -7087,6 +7112,8 @@ async function reanalyzeCAD(): Promise<void> {
     _cadRuleFields = data.ruleFields ?? {};
     _cadDiff = (data as { diff?: CADDiff | null }).diff ?? null;
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
+    _cadRuleOverrides = (() => { const ro = (data as { ruleOverrides?: unknown }).ruleOverrides;
+      return Array.isArray(ro) ? ro as typeof _cadRuleOverrides : ((ro as { applied?: typeof _cadRuleOverrides } | undefined)?.applied ?? []); })();
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     const resolvedVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
     renderCADResults(cadAnalysisResult, false, resolvedVol);
@@ -14573,12 +14600,16 @@ function compute(): void {
   // a silent cost on a measured contradiction (audit gap 4).
   const blockingSanity = cadSanityWarnings.filter(w => w.blocking && !_cadSanityAcks.has(w.code));
   if (blockingSanity.length && _pendingCostingSource === 'cad') {
-    const w = blockingSanity[0];
-    const ok = window.confirm(
-      `Sanity check: ${w.message}\n\nThis contradiction affects the money if costed as-is. `
-      + 'Cost anyway?\n\n(OK = proceed with this figure on the record; Cancel = go back and fix the inputs.)');
-    if (!ok) return;
-    for (const bw of blockingSanity) _cadSanityAcks.add(bw.code);
+    errBox.style.display = '';
+    errBox.innerHTML = `<strong>${blockingSanity.length} consistency check${blockingSanity.length === 1 ? '' : 's'} must be acknowledged before this can be costed</strong>`
+      + `<ul style="margin:6px 0 0;padding-left:18px">${blockingSanity.map(w =>
+        `<li><code>${escHtml(w.code)}</code> — ${escHtml(w.message)}</li>`).join('')}</ul>`
+      + '<div style="margin-top:6px;font-size:0.72rem">Each one has its own tick-box in the CAD analysis panel. '
+      + 'Accepting a check puts that figure on the record, by code, in the report.</div>';
+    document.getElementById('validation-warnings')?.style.setProperty('display', 'none');
+    setValidationChip(blockingSanity.length);
+    document.getElementById('cad-guidance-panel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
   }
 
   const pending = openCADDecisions();
@@ -16767,7 +16798,8 @@ function renderCompareResult(comp: { baseline: { name: string; result: PartCostR
 
 async function downloadExcel(): Promise<void> {
   if (!lastResult || !lastInput) return;
-  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate);
+  { const why = exportBlockedReason(); if (why) { showToast(`Workbook not produced: ${why}`, 'error'); return; } }
+  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied());
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `should-cost-${lastResult.partName.replace(/\s+/g, '-')}.xlsx`;
@@ -17416,6 +17448,30 @@ function highlightViewerFaces(faceIds: number[]): boolean {
   return false;
 }
 
+/** What the report prints under "Checks applied": the same list the gate uses. */
+function buildChecksApplied(): CADReportMeta['checks'] {
+  if (!cadAnalysisResult) return null;
+  const openBlocking = openCADDecisions().length > 0;
+  const unacked = cadSanityWarnings.some(w => w.blocking && !_cadSanityAcks.has(w.code));
+  return {
+    costable: !openBlocking && !unacked,
+    geometryQuality: cadGeometrySource === 'occt' ? 'occt' : cadGeometrySource === 'stl_parser' ? 'stl' : cadGeometrySource ? 'text' : null,
+    sanity: cadSanityWarnings.map(w => ({ ...w, acknowledged: w.blocking ? _cadSanityAcks.has(w.code) : undefined })),
+    decisions: _cadDecisions.map(d => ({ id: d.id, question: d.question, severity: d.severity, answer: _cadDecisionAnswers[d.id] ?? null })),
+    overrides: _cadRuleOverrides,
+  };
+}
+
+/** Exports refuse a number the costing gate would have blocked. */
+function exportBlockedReason(): string | null {
+  if (!cadAnalysisResult || _pendingCostingSource !== 'cad') return null;
+  const open = openCADDecisions();
+  if (open.length) return `${open.length} blocking question${open.length === 1 ? '' : 's'} unanswered — ${open[0].question}`;
+  const unacked = cadSanityWarnings.filter(w => w.blocking && !_cadSanityAcks.has(w.code));
+  if (unacked.length) return `${unacked.length} blocking check${unacked.length === 1 ? '' : 's'} unacknowledged — ${unacked[0].code}`;
+  return null;
+}
+
 function buildCadReportMeta(): CADReportMeta {
   const universal: CADReportMeta = {
     annualVolume: lastInput?.annualVolume ?? null,
@@ -17454,6 +17510,7 @@ function buildCadReportMeta(): CADReportMeta {
 
   return {
     ...universal,
+    checks: buildChecksApplied(),
     geometrySource: cadGeometrySource,
     measuredVolumeCm3: volCm3,
     measuredWeightKg,
@@ -17467,6 +17524,7 @@ function buildCadReportMeta(): CADReportMeta {
 
 async function openPDF(): Promise<void> {
   if (!lastResult || !lastInput) return;
+  { const why = exportBlockedReason(); if (why) { showToast(`Report not produced: ${why}`, 'error'); return; } }
   await ensurePdfLibs();
   printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), buildCadReportMeta());
 }
