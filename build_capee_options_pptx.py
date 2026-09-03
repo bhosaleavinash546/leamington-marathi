@@ -351,7 +351,8 @@ callout(s, Inches(0.45), Inches(1.75), Inches(12.43), Inches(1.15), GREENBG, GRE
 rows = [
     (('What we want to do', DARK, True), 'Fill CAPEE\'s cost input from the 3D model and the drawing, for one part type'),
     (('What we need from JLR', DARK, True), '30 to 50 parts with the price we paid, our own rate data, three answers from IT, and a team for the trial'),
-    (('What it costs to try', DARK, True), 'Our own engineering time. No licence, no new tool for the business to learn, CAPEE unchanged'),
+    (('What it costs to try', DARK, True), 'Our own engineering time. No licence and no new tool to learn. CAPEE still does the '
+     'costing, but it has to be changed to take the numbers'),
     (('What we will know at the end', DARK, True), 'A measured accuracy figure against real JLR prices, and a measured time saving per part'),
     (('What we are NOT asking for', DARK, True), 'A decision on Option 2 today. It needs the accuracy answer first, and some work that has not been done'),
 ]
@@ -365,8 +366,9 @@ callout(s, Inches(0.45), Inches(6.15), Inches(12.43), Inches(0.95), AMBERBG, AMB
 notes(s, "This is the ask, so I will put it first. I want approval to run a proof of concept inside "
          "CAPEE, on one part type, using parts we have already bought. What we need from JLR is on "
          "the second row and I will come back to it at the end. What it costs is our own time. "
-         "There is no licence and the business does not have to learn a new tool, because CAPEE "
-         "does not change. The amber box is the honest bit and I would rather say it now than have "
+         "There is no licence and nobody has to learn a new tool. CAPEE still does the costing "
+         "on the same screens. It does have to be changed to take the numbers, and that sits on "
+         "JLR's side of the work on slide six. The amber box is the honest bit and I would rather say it now than have "
          "it come out in questions. We have never compared this tool against a price we actually "
          "paid. That is the whole point of the proof of concept.")
 
@@ -401,9 +403,10 @@ card(s, Inches(6.78), Inches(1.78), Inches(6.1), Inches(3.7), GREEN,
 callout(s, Inches(0.45), Inches(5.55), Inches(12.43), Inches(1.25), PANEL2, INDIGO,
         'Measuring and reading are two different jobs',
         'The 3D model is measured by software, in the way a CMM measures a part. That is not AI. '
-        'The AI only reads the words written on the drawing, and everything it reads is checked '
-        'against the measured model before it can move a cost. Slide 8 covers those checks. On the '
-        'deterministic setting the AI is switched off completely and the part still costs.')
+        'The AI reads the drawing and looks at pictures of the shape rendered from the model, and '
+        'everything it hands back is checked against the measurements before it can move a cost. '
+        'Slide 8 covers those checks. On the deterministic setting the AI is switched off '
+        'completely and the part still costs.')
 notes(s, "This is the problem we are trying to fix. Today an engineer opens the model, reads the "
          "drawing, and types the numbers in. How many numbers depends on the part. A machined part "
          "is twelve boxes. A pressing is sixty-nine. The time matters, but the second point matters "
@@ -414,7 +417,8 @@ notes(s, "This is the problem we are trying to fix. Today an engineer opens the 
          "write straight into a named box. One part uses its own type's rules, between nine "
          "and eighteen of them. The blue box is the "
          "distinction I want people to hold on to. Measuring the model is ordinary software doing "
-         "geometry. The AI only reads the writing on the drawing, and we check everything it reads.")
+         "geometry. The AI reads the drawing and looks at rendered pictures of the shape, and we "
+         "check everything it gives back against the measurements.")
 
 # ─────────────────────────────────── 4 · WHERE COSTVISION IS TODAY ──────────
 s = header('Where CostVision is today', 'Current status')
@@ -440,7 +444,7 @@ card(s, Inches(6.78), Inches(2.1), Inches(6.1), Inches(3.6), AMBER,
      'NOT THERE YET',
      [('Never compared against a price JLR has paid',),
       ('No history kept when someone changes a rate',),
-      ('Finished costings are not saved, so an old one cannot',),
+      ('No automatic record of a costing, so an old one cannot',),
       ('be reproduced',),
       ('No JLR sign-on; it has its own logins today',),
       ('Gear costs in the screens but the automated route',),
@@ -461,8 +465,9 @@ notes(s, "Before the options, this is honestly where the tool is. Left side is w
          "the engine. The maths repeats. It measures models with no internet connection, which is "
          "the first thing IT security will ask about. Right side is what is not done. The top one "
          "is the important one and I will keep coming back to it. Below that, it does not keep a "
-         "history when someone changes a rate and it does not save finished costings, so today you "
-         "could not reproduce a costing from three months ago. Those two matter a lot for Option "
+         "history when someone changes a rate, and it keeps no automatic record of a costing. "
+         "Somebody can save a scenario or make a share link, but nothing ties either to the rates "
+         "that produced it, so today you could not reproduce a costing from three months ago. Those two matter a lot for Option "
          "two and I will come back to them. The blue box is what has changed since I last showed "
          "you this. The headline is that it now refuses work it cannot do honestly.")
 
@@ -633,7 +638,9 @@ callout(s, Inches(0.45), Inches(6.6), Inches(12.43), Inches(0.82), REDBG, RED,
         'plausible but wrong weight. Both now stop the costing instead of producing a figure.')
 notes(s, "On a job like this the temptation is to take the measuring and the AI and leave what "
          "looks like plumbing until later. These four checks are what make the rest safe. The first "
-         "one is the one to remember. If the AI and the measured model disagree, the model wins. "
+         "one is the one to remember. If the AI claims a heavier part than the model measures, the "
+         "model wins. A disagreement the other way is flagged to the engineer, and a big gap stops "
+         "the costing. "
          "The last one matters for a different reason. Where the tool cannot know something it asks "
          "rather than guessing, and it never pre-ticks its own answer. The red box is from our own "
          "review. We found a route with no checks that gave back a nonsense figure while saying it "
@@ -650,8 +657,9 @@ rows = [
      'Below this we treat it as an edge, not a face to machine'),
     ('Smallest pocket counted', ('80 mm²', DARK, True),
      'Stops small recesses getting costed as pockets'),
-    ('Cost of a rejected plated part', ('4.5x a good one', DARK, True),
-     'You strip it and plate it again, so a 3% reject rate is nearer 13% on cost'),
+    ('Rework of a rejected plated part', ('USD 2.20 + 1.80 / m²', DARK, True),
+     'Strip-and-re-plate chemistry and effluent, on top of plating it again. The note on the '
+     'stage reads 4-5x a first-pass part'),
     ('Zinc price used for plating', ('USD 3.67 / kg', DARK, True),
      'Market reference, August 2026. Moves monthly and is meant to get updated'),
     ('Shape allowance, pressing', ('1.15', DARK, True),
@@ -671,9 +679,12 @@ callout(s, Inches(6.78), Inches(5.87), Inches(6.1), Inches(1.15), AMBERBG, AMBER
         'They are our engineering estimates. They are not measurements from a JLR plant. Treat them '
         'as a starting point and expect to replace them as real data comes in.')
 notes(s, "Hardcoded values is a phrase that means nothing on its own, so here are six real ones. "
-         "Look at the third row. A rejected plated part costs about four and a half times a good "
-         "one, because you strip it and start again. That is why a three percent reject rate is "
-         "closer to thirteen percent on cost. That is an engineering judgement and exactly the sort "
+         "Look at the third row. Stripping and re-plating a rejected part is costed as its own "
+         "stage, at two dollars twenty of chemistry and one dollar eighty of effluent per square "
+         "metre, charged on top of plating the part again. The note written against it says the "
+         "whole rework runs four to five times a first-pass part, which is why a three percent "
+         "reject rate is nearer twelve to fifteen percent on cost. That is an engineering "
+         "judgement and exactly the sort "
          "of thing you would challenge in a review, so it should not be buried in code. We pull "
          "every one of them into a single list you can read and change. The amber box is the "
          "caveat. These are our estimates, not measurements from one of our plants.")
@@ -757,7 +768,7 @@ notes(s, "This is what we would actually get out of the trial, and I want to be 
          "to step in. On our own eight test parts, once the material family was given, six went "
          "straight through and two stopped and asked. Given nothing at all, all eight stop and "
          "ask, because a solid model cannot tell steel from aluminium. In a bulk run that answer "
-         "comes off the part master rather than from a person. I need that figure on JLR parts. Third, the time saving, measured by doing the "
+         "would come off the part master rather than from a person. I need that figure on JLR parts. Third, the time saving, measured by doing the "
          "same parts both ways. Fourth, what it refused and whether it was right to. And the green "
          "strip is the reason to do it even if the answer disappoints us. Right now nobody can "
          "state an accuracy figure at all, and every conversation about this tool stops there.")
@@ -871,7 +882,7 @@ text(s, Inches(0.45), Inches(4.25), Inches(12.4), Inches(0.3),
         'forward', 11.5, MUTED, True)]])
 rows = [
     ('Measure one part, warm', ('0.9 to 3.1 seconds', DARK, True), 'Five real production parts, 0.6 MB to 3.0 MB. Bigger file, longer'),
-    ('Run the rules and cost it', ('5 milliseconds', DARK, True), 'Rules plus the eight-bucket engine. Not the slow part'),
+    ('Run the rules and cost it', ('under 1 millisecond', DARK, True), 'Rules 0.5 ms, eight-bucket engine 0.01 ms. Not the slow part'),
     ('40 parts', ('31 seconds', DARK, True), 'Measured. Two workers, nothing reused from cache'),
     ('100 parts', ('about 1.5 minutes', DARK, True), 'That measured rate, on two workers'),
     ('500 parts', ('about 6.5 minutes', DARK, True), 'Two workers. Roughly half that on four'),
@@ -887,7 +898,7 @@ callout(s, Inches(0.45), Inches(6.72), Inches(12.43), Inches(0.66), PANEL2, INDI
 notes(s, "Here is what a run actually does and what it costs in machine time. The forty-part row "
          "is measured, this month, on our own production parts. A part takes between one and three "
          "seconds to measure depending on how big the file is. Running the rules and costing it "
-         "takes five thousandths of a second, so the measuring is the whole of it. Forty parts took "
+         "takes half a thousandth of a second, so the measuring is the whole of it. Forty parts took "
          "thirty-one seconds on two workers with nothing reused, and the rows below that are that "
          "same rate carried forward, so five hundred parts is about six and a half minutes. The point of the blue strip at the bottom is that the "
          "computer is not the constraint here. Pulling together the part list, the CAD files and "
@@ -903,9 +914,10 @@ rows = [
      'Today the rate book is one row that gets overwritten. Change a rate and the old one is gone. '
      'A bulk run costed at rates nobody can recover is not defensible.',
      ('Must have', RED, True)),
-    (('Saved costings', DARK, True), 'Blocks audit',
-     'Finished costings are not stored anywhere. A five-hundred-part run would produce numbers with '
-     'nowhere to live and no way to reproduce them.',
+    (('An automatic record of every costing', DARK, True), 'Blocks audit',
+     'A costing is kept only if somebody saves a scenario or makes a share link, which expires. '
+     'Nothing is recorded automatically and nothing names the rates used, so a five-hundred-part '
+     'run could not be reproduced.',
      ('Must have', RED, True)),
     (('Region and volume on the automated route', DARK, True), 'Blocks correctness',
      'The automated route always uses the UK rate book and never gets told the annual volume. Both '
@@ -935,8 +947,9 @@ callout(s, Inches(0.45), Inches(6.74), Inches(12.43), Inches(0.66), GREENBG, GRE
 notes(s, "I would rather show you this list than have it come out later. Six things. The first two "
          "are the ones that would stop me signing off a bulk run for anything audited. The rate "
          "book today is a single row that gets overwritten, so change a rate and the old one is "
-         "gone. And finished costings are not saved at all. Together that means a five-hundred-part "
-         "run produces numbers you cannot reproduce next quarter. The third is smaller than it "
+         "gone. And a costing is only kept if somebody saves it by hand, with nothing recording "
+         "which rates produced it. Together that means a five-hundred-part run produces numbers "
+         "you cannot reproduce next quarter. The third is smaller than it "
          "sounds: region and volume already work in the screens, they are just not passed through "
          "to the automated route. Fourth, gear does not reach the automated route at all, so a "
          "basket with gears in it would quietly skip them. Fifth is the geometry safety checks. They "
@@ -982,10 +995,10 @@ plan2 = [
      'Materials, machine rates, labour, energy, country factors. This sets the pace and it is ours to do.'),
     ('2', 'Keep a history of rate changes', RED,
      'Every change stamped and kept, so a costing can name the rate book it used. Prerequisite for anything audited.'),
-    ('3', 'Save finished costings', RED,
-     'A stored record per part: inputs, rates, answers, result. Without this a bulk run cannot be reproduced.'),
+    ('3', 'Record every costing automatically', RED,
+     'Inputs, rates, answers and result stored per part. Saving one by hand is not a record a bulk run can rest on.'),
     ('4', 'Close the automated-route gaps', AMBER,
-     'Pass region and annual volume through, and register gear. Small work, and a basket is wrong without it.'),
+     'Pass region and annual volume through, register gear, and wire the geometry checks on. A basket is wrong without them.'),
     ('5', 'Build the run', INDIGO,
      'A list in, a job queue, one question answered once, a report out per part and per basket.'),
     ('6', 'Trial on a real basket', GREEN,
@@ -1008,24 +1021,26 @@ callout(s, Inches(6.78), Inches(6.6), Inches(6.1), Inches(0.84), GREENBG, GREEN,
         'Option 2.')
 notes(s, "Six steps for Option two. Step one is our own rate data and it is worth starting whatever "
          "we decide, because both options need it. Steps two and three are the prerequisites I "
-         "showed you two slides ago: a history of rate changes, and saved costings. They are not "
+         "showed you two slides ago: a history of rate changes, and an automatic record of every "
+         "costing. They are not "
          "part of the run itself, they are what makes a run mean anything three months later. Step "
-         "four is small but it is not optional, because a basket costed at UK rates when it should "
-         "have been Poland is just wrong. Step five is the actual new build. Step six is a trial on "
+         "four is a set of small things that are not optional: a basket costed at UK rates when it "
+         "should have been Poland is just wrong, and the geometry checks have to run on this route "
+         "too. Step five is the actual new build. Step six is a trial on "
          "a real basket, run beside how we cost today so we can compare.")
 
 # ────────────────────────────────────── 18 · THE TWO TOGETHER ───────────────
 s = header('The two options together', 'Comparison')
 rows = [
     ('What it gives us', ('The engineer stops typing', DARK, True), ('We can cost a whole basket', DARK, True)),
-    ('Which system does the costing', ('CAPEE, unchanged', GREEN, True), ('CostVision engine, beside CAPEE', AMBER, False)),
+    ('Which system does the costing', ('CAPEE, same as now', GREEN, True), ('CostVision engine, beside CAPEE', AMBER, False)),
     ('Does anyone learn a new tool', ('No, same CAPEE screens', GREEN, True), ('A reviewer does, for the results', AMBER, False)),
     ('How much software work', ('Moderate', AMBER, False), ('More: the run, plus two prerequisites', AMBER, False)),
     ('How much JLR data work', ('Parts with prices we paid', AMBER, False), ('Our full rate book', RED, False)),
     ('Does it tell us how accurate we are', ('Yes, that is the point of it', GREEN, True), ('It relies on that answer', AMBER, False)),
-    ('Can we stop part way', ('Yes, nothing in CAPEE has changed', GREEN, True), ('Yes, it runs alongside', GREEN, True)),
+    ('Can we stop part way', ('Yes, CAPEE costs the same way either way', GREEN, True), ('Yes, it runs alongside', GREEN, True)),
     ('Is it waiting on an unknown', ('Yes, how CAPEE is built', AMBER, False), ('Yes, the accuracy figure', AMBER, False)),
-    ('Is it audit-ready today', ('Yes, CAPEE keeps the record', GREEN, True), ('No, until rate history and saved costings exist', RED, True)),
+    ('Is it audit-ready today', ('Yes, CAPEE keeps the record', GREEN, True), ('No, until rate history and a costing record exist', RED, True)),
 ]
 table(s, Inches(0.45), Inches(1.9), Inches(12.43),
       ['', 'OPTION 1 · feed CAPEE', 'OPTION 2 · bulk costing'], rows,
@@ -1034,13 +1049,13 @@ callout(s, Inches(0.45), Inches(6.1), Inches(12.43), Inches(0.82), PANEL2, INDIG
         'Read the last two rows together',
         'Option 1 produces the accuracy figure that Option 2 leans on, and Option 1 is audit-ready '
         'today because CAPEE keeps the record. Option 2 is not, until the rate history and the '
-        'saved costings exist. That is the whole argument for this order.')
+        'costing record exist. That is the whole argument for this order.')
 footer(s, 'No durations shown. Nothing in either option has been sized by JLR.')
 notes(s, "The top half is fairly even and each option wins some rows. The two I would look at are "
          "the last two. Option one produces the accuracy figure that Option two leans on. And "
          "Option one is audit-ready today, because CAPEE keeps the record exactly as it does now, "
-         "whereas Option two is not audit-ready until we have built the rate history and the saved "
-         "costings. Those two rows are the whole argument for doing them in this order.")
+         "whereas Option two is not audit-ready until we have built the rate history and the "
+         "costing record. Those two rows are the whole argument for doing them in this order.")
 
 # ─────────────────────────────────────── 19 · RISKS ─────────────────────────
 s = header('Risks and open items', 'Risks')
@@ -1049,7 +1064,7 @@ rows = [
      'Never compared against a price JLR has paid. The Option 1 trial is what settles it.',
      ('High', RED, True)),
     (('Old costings cannot be reproduced', DARK, True), 'Option 2',
-     'No rate history and no saved costings. Has to be built before bulk is used for anything audited.',
+     'No rate history, and no automatic record of a costing. Both have to be built before bulk is used for anything audited.',
      ('High', RED, True)),
     (('We do not know how CAPEE is built', DARK, True), 'Option 1',
      'Holds up the choice of connection route. One answer from IT sorts it.',
@@ -1060,8 +1075,9 @@ rows = [
     (('The built-in numbers are our estimates', DARK, True), 'Both',
      'Starting points, not JLR plant measurements. They get replaced as real data comes in.',
      ('Medium', AMBER, True)),
-    (('Drawing text goes to an AI service', DARK, True), 'Both',
-     'Short extracts only, and it can go through a JLR service. The CAD file itself stays on the server.',
+    (('The drawing and rendered views go to an AI service', DARK, True), 'Both',
+     'The whole drawing PDF goes, plus up to four pictures of the shape rendered from the model. '
+     'The CAD file itself never leaves the server, and it can run through a JLR service.',
      ('Medium', AMBER, True)),
     (('Server type', DARK, True), 'Option 1',
      'The measuring engine needs a normal Linux server. Easy to confirm now, awkward if we miss it.',
@@ -1083,7 +1099,9 @@ notes(s, "Eight items. The top one is the one that would stop me putting this in
          "mystery. The third is waiting on IT. The fourth is small but I have put it up because a "
          "basket costed at the wrong region is wrong in a way nobody would notice. And the last "
          "row is worth saying plainly: the tool is still being worked on, so for any trial we pin a "
-         "version and stay on it. Note also that the CAD file itself never leaves the server.")
+         "version and stay on it. One clarification on the sixth row, because it always comes up: "
+         "what goes out is the drawing PDF and rendered pictures of the shape. The CAD file itself "
+         "never leaves the server, and the deterministic setting sends nothing at all.")
 
 # ─────────────────────────────── 20 · WHAT WE NEED TO START ─────────────────
 s = header('What we need to get going', 'Next steps')
@@ -1138,7 +1156,7 @@ rows = [
     ('12 to 69 boxes typed by hand today', 'Counted the input fields on the machining, casting, moulding and pressing forms'),
     ('The costing gives the same answer every run', 'Ran one part five times, identical to the last decimal'),
     ('Measuring makes no internet connection', 'Checked every line for outbound calls; there are none'),
-    ('CAD files stay on the server', 'Measuring happens locally; only drawing text goes to an AI service'),
+    ('CAD files stay on the server', 'Measured locally. The drawing PDF and rendered views go out; the CAD file never does'),
     ('0.9 to 3.1 seconds to measure a part', 'Five real production parts, 0.6 MB to 3.0 MB, this month'),
     ('40 parts in 31 seconds on two workers', 'Measured wall-clock, nothing reused from cache; larger rows carry that rate forward'),
     ('Six of eight sample parts costed straight through', 'With the material family given. Given nothing, all eight ask for it first'),
