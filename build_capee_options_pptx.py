@@ -372,11 +372,10 @@ notes(s, "This is the ask, so I will put it first. I want approval to run a proo
 
 # ──────────────────────────────────────── 3 · WHAT HAPPENS TODAY ────────────
 s = header('What costing a part looks like today', 'The problem')
-card(s, Inches(0.45), Inches(1.8), Inches(6.1), Inches(3.5), RED,
+card(s, Inches(0.45), Inches(1.78), Inches(6.1), Inches(3.7), RED,
      'TODAY, BY HAND',
      [('The engineer opens the part in CAD, reads the drawing,',),
       ('and types the numbers into CAPEE.',),
-      ('',),
       ('Boxes to fill, depending on the part type:', DARK, True),
       ('machined part 12 · casting 30 · moulding 39 · pressing 69',),
       ('',),
@@ -386,10 +385,9 @@ card(s, Inches(0.45), Inches(1.8), Inches(6.1), Inches(3.5), RED,
       ('',),
       ('Two engineers costing the same part will not type the', DARK, True),
       ('same numbers. So one part gets two answers.', DARK, True)], fill=REDBG)
-card(s, Inches(6.78), Inches(1.8), Inches(6.1), Inches(3.5), GREEN,
+card(s, Inches(6.78), Inches(1.78), Inches(6.1), Inches(3.7), GREEN,
      'WITH COSTVISION',
      [('The engineer hands over the 3D model and the drawing.',),
-      ('',),
       ('Measured off the model:', DARK, True),
       ('volume, size, surface area, wall thickness, holes,',),
       ('pockets, bosses, gear teeth, bend count.',),
@@ -398,9 +396,8 @@ card(s, Inches(6.78), Inches(1.8), Inches(6.1), Inches(3.5), GREEN,
       ('tolerances, surface finish, heat treatment, coating,',),
       ('masked features.',),
       ('',),
-      ('The tool works out 182 values and puts 139 of them', DARK, True),
-      ('straight into a named box. The same part gives the', DARK, True),
-      ('same numbers every time.', GREEN, True)], fill=GREENBG)
+      ('165 costing rules fill the form. 149 write straight', DARK, True),
+      ('into a named box. Same part, same numbers, always.', GREEN, True)], fill=GREENBG)
 callout(s, Inches(0.45), Inches(5.55), Inches(12.43), Inches(1.25), PANEL2, INDIGO,
         'Measuring and reading are two different jobs',
         'The 3D model is measured by software, in the way a CMM measures a part. That is not AI. '
@@ -412,8 +409,10 @@ notes(s, "This is the problem we are trying to fix. Today an engineer opens the 
          "is twelve boxes. A pressing is sixty-nine. The time matters, but the second point matters "
          "more. Two of our engineers costing the same part will not type the same numbers, so we "
          "end up with two answers for one part and no way to say which is right. On the right is "
-         "what the tool does instead. It works out a hundred and eighty-two values and a hundred "
-         "and thirty-nine of them go straight into a named box on the form. The blue box is the "
+         "what the tool does instead. A hundred and sixty-five costing rules turn the "
+         "measurements into the values the form needs, and a hundred and forty-nine of those "
+         "write straight into a named box. One part uses its own type's rules, between nine "
+         "and eighteen of them. The blue box is the "
          "distinction I want people to hold on to. Measuring the model is ordinary software doing "
          "geometry. The AI only reads the writing on the drawing, and we check everything it reads.")
 
@@ -429,9 +428,12 @@ card(s, Inches(0.45), Inches(2.1), Inches(6.1), Inches(3.6), GREEN,
       ('The costing gives the same answer every run',),
       ('Measures 3D models with no internet connection',),
       ('Reads drawings for tolerances, finish, heat treatment',),
+      ('(needs the AI service; the default setting runs without',),
+      ('it and still costs the part)',),
       ('Refuses geometry it cannot honestly measure',),
       ('Asks before it scales an inch model',),
-      ('Same safety checks on every route, printed in the report',),
+      ('Same safety checks on every CAD route, printed in the',),
+      ('report',),
       ('328 materials, 178 machines, 42 labour rates, 20 regions',),
       ('2,079 automatic tests across 156 files, all passing',)], fill=GREENBG)
 card(s, Inches(6.78), Inches(2.1), Inches(6.1), Inches(3.6), AMBER,
@@ -445,12 +447,14 @@ card(s, Inches(6.78), Inches(2.1), Inches(6.1), Inches(3.6), AMBER,
       ('cannot reach it',),
       ('The automated route cannot yet be told a region or an',),
       ('annual volume',),
+      ('The geometry safety checks run on the CAD route, not',),
+      ('yet on the automated one',),
       ('Still under active development',)], fill=AMBERBG)
 callout(s, Inches(0.45), Inches(5.9), Inches(12.43), Inches(1.0), PANEL2, INDIGO,
         'What changed since the last time I showed you this',
         'Six rounds of work in the last few weeks. The tool now refuses bad geometry instead of '
-        'costing it, asks about units, runs the same checks on every route and prints them in the '
-        'report, measures a file once instead of four times, and widens its own confidence range '
+        'costing it, asks about units, runs the same checks on every CAD route and prints them in '
+        'the report, measures a file once instead of four times, and widens its confidence range '
         'when a number was typed rather than measured.')
 notes(s, "Before the options, this is honestly where the tool is. Left side is working today and I "
          "checked every line of it against the software this week. Nineteen part types cost through "
@@ -473,28 +477,28 @@ steps = [
 sw, gap = Inches(2.9), Inches(0.3)
 x = Inches(0.6)
 for i, (ic, t_, sub, c_) in enumerate(steps):
-    flow_step(s, x, Inches(1.9), sw, Inches(1.85), ic, t_, sub, c_)
+    flow_step(s, x, Inches(1.82), sw, Inches(1.85), ic, t_, sub, c_)
     if i < len(steps) - 1:
-        arrow_between(s, x + sw + Inches(0.03), Inches(2.7), gap - Inches(0.06))
+        arrow_between(s, x + sw + Inches(0.03), Inches(2.62), gap - Inches(0.06))
     x += sw + gap
-card(s, Inches(0.45), Inches(4.0), Inches(6.1), Inches(2.05), INDIGO,
+card(s, Inches(0.45), Inches(3.86), Inches(6.1), Inches(2.3), INDIGO,
      'OPTION 1 · feed CAPEE automatically',
      [('CAPEE stays as it is and still does the costing.',),
       ('Instead of typing between twelve and seventy boxes,',),
       ('the engineer hands over the 3D model and the drawing',),
       ('and the boxes fill in.',),
       ('',),
-      ('Moves about 5,700 lines of measuring and reading', DARK, True),
-      ('code, plus the safety checks that go with it.', DARK, True)])
-card(s, Inches(6.78), Inches(4.0), Inches(6.1), Inches(2.05), VIOLET,
+      ('Moves five pieces of software, about 14,300 lines,', DARK, True),
+      ('with the safety checks. Slide 7 lists them.', DARK, True)])
+card(s, Inches(6.78), Inches(3.86), Inches(6.1), Inches(2.3), VIOLET,
      'OPTION 2 · cost in bulk, run by an agent',
      [('A list of parts goes in. Every one is measured, costed',),
       ('and reported without anyone sitting there.',),
       ('An engineer is asked only where the geometry',),
       ('genuinely cannot decide.',),
       ('',),
-      ('Same engine, same rates, same checks. The new work', DARK, True),
-      ('is the run itself and keeping a record of it.', DARK, True)])
+      ('Same engine and the same rates. The new work is the', DARK, True),
+      ('run, its record, and wiring the checks onto it.', DARK, True)])
 callout(s, Inches(0.45), Inches(6.2), Inches(12.43), Inches(0.82), GREENBG, GREEN,
         'Why this order',
         'Option 1 is the cheaper thing to try and it produces the accuracy number that Option 2 '
@@ -567,7 +571,7 @@ rows = [
     ('Safety checks', ('TypeScript', DARK, True), '536 lines',
      'The four checks on the next slide, in three files.'),
     ('Questions per part type', ('TypeScript', DARK, True), '8,509 lines',
-     'Works out 182 values and decides what the engineer gets asked.'),
+     '165 costing rules that fill the form and decide what the engineer gets asked.'),
     ('Design-for-cost findings', ('TypeScript', DARK, True), '1,992 lines',
      'Flags features that are expensive to make and says why.'),
     ('Settings list', ('Plain list', DARK, True), 'one file',
@@ -588,8 +592,8 @@ notes(s, "You asked last time what would actually get handed over. Six things, a
          "straight out of the software. The measuring engine is Python, which is the normal choice "
          "for measurement work. The rest is TypeScript, common in business software. Neither is odd "
          "and neither ties us to one supplier. The fourth row is the biggest piece and it is worth "
-         "a word: that is where the tool works out a hundred and eighty-two values and decides what "
-         "to ask the engineer for. The amber box is the one practical thing worth raising with IT "
+         "a word: that is the hundred and sixty-five costing rules that fill the form and decide "
+         "what to ask the engineer for. The amber box is the one practical thing worth raising with IT "
          "now, because it decides where this can live.")
 
 # ─────────────────────────────────── 8 · OPTION 1 · SAFETY CHECKS ───────────
@@ -601,7 +605,8 @@ text(s, Inches(0.45), Inches(1.7), Inches(12.4), Inches(0.35),
 checks = [
     ('cube', 'The measured model beats the AI', INDIGO,
      'If the AI reads 2 kg off the drawing and the model measures 1.4 kg, we use the measured '
-     'figure. The geometry wins.'),
+     'figure. A disagreement the other way is flagged to the engineer, and a gap of more than '
+     'half stops the costing until someone accepts it.'),
     ('eye', 'Everything read gets cross-checked', INDIGO,
      'Numbers taken off the drawing get compared against the measured model. Where they disagree, '
      'the engineer is told and has to accept it by name before the cost stands.'),
@@ -721,8 +726,9 @@ meas = [
      'confident is not.'),
     ('2', 'How often does the engineer have to step in?', INDIGO,
      'Count the values the engineer changed after the tool filled them, and the parts where the '
-     'tool stopped and asked. On our own eight sample parts, six costed straight through and two '
-     'needed an answer. We need that figure on JLR parts, not ours.'),
+     'tool stopped and asked. On our own eight parts, with the material family given, six costed '
+     'straight through and two stopped. Without it all eight stop, because a solid model cannot '
+     'tell steel from aluminium. We need that figure on JLR parts, not ours.'),
     ('3', 'How much time does it save?', VIOLET,
      'Time the same parts both ways: typed by hand into CAPEE, and filled by the tool with the '
      'engineer checking. The difference is the saving, measured rather than claimed.'),
@@ -732,13 +738,13 @@ meas = [
 ]
 y = Inches(2.3)
 for n, t_, c_, b_ in meas:
-    box(s, Inches(0.45), y, Inches(12.43), Inches(0.98), fill=PANEL, line=LINE, round_=True)
-    box(s, Inches(0.45), y, Inches(0.075), Inches(0.98), fill=c_)
+    box(s, Inches(0.45), y, Inches(12.43), Inches(1.02), fill=PANEL, line=LINE, round_=True)
+    box(s, Inches(0.45), y, Inches(0.075), Inches(1.02), fill=c_)
     step_circle(s, n, Inches(0.72), y + Inches(0.18), d=Inches(0.48), fill=c_)
     text(s, Inches(1.45), y + Inches(0.12), Inches(11.2), Inches(0.28), [[(t_, 12.2, DARK, True)]])
     text(s, Inches(1.45), y + Inches(0.43), Inches(11.2), Inches(0.48),
          [[(b_, 10.0, BODY, False)]], line_spacing=1.12)
-    y += Inches(1.06)
+    y += Inches(1.08)
 callout(s, Inches(0.45), Inches(6.6), Inches(12.43), Inches(0.84), GREENBG, GREEN,
         'Why it is worth doing even if the answer is disappointing',
         'A measured accuracy figure is worth having either way. Today nobody can state one, so '
@@ -748,8 +754,10 @@ notes(s, "This is what we would actually get out of the trial, and I want to be 
          "against what we paid, and report the error. The test I would use is whether the real "
          "error lands inside the range the tool predicted for itself. A tool that is wrong and says "
          "so is usable. One that is wrong and confident is not. Second, how often the engineer has "
-         "to step in. On our own eight test parts, six went straight through and two stopped and "
-         "asked. I need that figure on our parts. Third, the time saving, measured by doing the "
+         "to step in. On our own eight test parts, once the material family was given, six went "
+         "straight through and two stopped and asked. Given nothing at all, all eight stop and "
+         "ask, because a solid model cannot tell steel from aluminium. In a bulk run that answer "
+         "comes off the part master rather than from a person. I need that figure on JLR parts. Third, the time saving, measured by doing the "
          "same parts both ways. Fourth, what it refused and whether it was right to. And the green "
          "strip is the reason to do it even if the answer disappoints us. Right now nobody can "
          "state an accuracy figure at all, and every conversation about this tool stops there.")
@@ -795,7 +803,7 @@ notes(s, "Six steps in the order they have to happen. Two worth pulling out. Ste
 
 # ─────────────────────────────────────── 13 · OPTION 2 · WHAT IT IS ─────────
 s = header('Option 2: costing in bulk, run by an agent', 'Option 2')
-card(s, Inches(0.45), Inches(1.8), Inches(6.1), Inches(2.55), RED,
+card(s, Inches(0.45), Inches(1.72), Inches(6.1), Inches(2.75), RED,
      'WHAT WE DO TODAY',
      [('We cost the parts we have time to cost.',),
       ('',),
@@ -805,7 +813,7 @@ card(s, Inches(0.45), Inches(1.8), Inches(6.1), Inches(2.55), RED,
       ('',),
       ('Nobody costs all of it from the geometry, because', DARK, True),
       ('there are not enough engineer-hours to do it.', DARK, True)], fill=REDBG)
-card(s, Inches(6.78), Inches(1.8), Inches(6.1), Inches(2.55), GREEN,
+card(s, Inches(6.78), Inches(1.72), Inches(6.1), Inches(2.75), GREEN,
      'WHAT OPTION 2 DOES',
      [('A list of parts goes in. Every one is measured,',),
       ('costed and reported in one run, unattended.',),
@@ -813,14 +821,15 @@ card(s, Inches(6.78), Inches(1.8), Inches(6.1), Inches(2.55), GREEN,
       ('An engineer is asked only where the geometry',),
       ('genuinely cannot decide, and only once per question.',),
       ('',),
-      ('Same engine, same rates, same safety checks as a', DARK, True),
-      ('single part. Nothing about the maths changes.', DARK, True)], fill=GREENBG)
+      ('Same engine and the same rate book. The geometry', DARK, True),
+      ('checks have to be wired onto this route.', DARK, True)], fill=GREENBG)
 callout(s, Inches(0.45), Inches(4.55), Inches(12.43), Inches(1.1), PANEL2, INDIGO,
         'What the agent actually does, and what it does not',
         'The agent marshals the run. It picks the part type, answers what it can from the drawing, '
-        'and escalates what it cannot. Every number in the answer still comes from the same '
-        'deterministic engine, at the same rates, with the same checks. The agent never sets a '
-        'price. That rule does not bend for bulk.')
+        'and escalates what it cannot. Every number still comes from the same deterministic engine '
+        'at the same rates. The agent never sets a price, but it does choose the inputs, so the '
+        'geometry checks that run on the CAD route today have to be wired onto this route before a '
+        'run is left unattended.')
 callout(s, Inches(0.45), Inches(5.8), Inches(12.43), Inches(1.15), AMBERBG, AMBER,
         'Where this stands today',
         'The engine is already callable on its own, and there is already an agent that can cost a '
@@ -832,7 +841,9 @@ notes(s, "Option two is a different thing from Option one, and I want to be clea
          "sampled or estimated by analogy, because there are not enough engineer-hours. Option two "
          "costs the whole basket in one run. The blue box is important. The agent marshals the run "
          "but it never sets a price. Every number still comes out of the same engine at the same "
-         "rates with the same checks. And the amber box is the honest position. The engine already "
+         "rates. It does choose the inputs, though, so the geometry checks that run on the CAD "
+         "route today have to be wired onto this one, and that is on the list on slide fifteen. "
+         "The amber box is the honest position. The engine already "
          "works standalone and an agent already exists that can cost a part. What does not exist is "
          "the run itself.")
 
@@ -843,7 +854,7 @@ text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
 steps2 = [
     ('upload', 'A list goes in',      'Part numbers, CAD files, volumes, region',       VIOLET),
     ('ruler',  'Each one measured',   'Same engine as a single part, run in parallel',  VIOLET),
-    ('cog',    'Rules fill the form', '182 values worked out per part',                 VIOLET),
+    ('cog',    'Rules fill the form', 'The part type\u2019s own rules run',              VIOLET),
     ('person', 'Only gaps escalate',  'One question, answered once, applied to all',    AMBER),
     ('calc',   'Engine costs them',   'Eight buckets, every figure traceable',          GREEN),
     ('clip',   'One report out',      'Per part and per basket, with what was assumed', GREEN),
@@ -855,27 +866,30 @@ for i, (ic, t_, sub, c_) in enumerate(steps2):
     if i < len(steps2) - 1:
         arrow_between(s, x + sw + Inches(0.02), Inches(2.9), gap - Inches(0.04))
     x += sw + gap
-text(s, Inches(0.45), Inches(4.3), Inches(12.4), Inches(0.3),
-     [[('How long a run takes, measured on our own parts this month', 11.5, MUTED, True)]])
+text(s, Inches(0.45), Inches(4.25), Inches(12.4), Inches(0.3),
+     [[('How long a run takes. The 40-part row was measured this month; the rest carries that rate '
+        'forward', 11.5, MUTED, True)]])
 rows = [
-    ('Measure one part, warm', ('1.2 seconds', DARK, True), 'Average over eight real parts, 0.6 MB to 20 MB'),
-    ('Work out the 182 values and cost it', ('5 milliseconds', DARK, True), 'Rules plus the eight-bucket engine. Not the slow part'),
-    ('100 parts', ('1 minute', DARK, True), 'On two measuring workers, unattended'),
-    ('500 parts', ('5 minutes', DARK, True), 'On two workers. Two and a half on four'),
-    ('1,000 parts', ('10 minutes', DARK, True), 'On two workers. Five on four'),
+    ('Measure one part, warm', ('0.9 to 3.1 seconds', DARK, True), 'Five real production parts, 0.6 MB to 3.0 MB. Bigger file, longer'),
+    ('Run the rules and cost it', ('5 milliseconds', DARK, True), 'Rules plus the eight-bucket engine. Not the slow part'),
+    ('40 parts', ('31 seconds', DARK, True), 'Measured. Two workers, nothing reused from cache'),
+    ('100 parts', ('about 1.5 minutes', DARK, True), 'That measured rate, on two workers'),
+    ('500 parts', ('about 6.5 minutes', DARK, True), 'Two workers. Roughly half that on four'),
+    ('1,000 parts', ('about 13 minutes', DARK, True), 'Two workers. Roughly half that on four'),
 ]
-table(s, Inches(0.45), Inches(4.6), Inches(12.43),
+table(s, Inches(0.45), Inches(4.52), Inches(12.43),
       ['What', 'Measured', 'Basis'], rows,
-      [Inches(4.3), Inches(2.6), Inches(5.53)], row_h=Inches(0.32), size=10.2)
-callout(s, Inches(0.45), Inches(6.72), Inches(12.43), Inches(0.68), PANEL2, INDIGO,
+      [Inches(4.3), Inches(2.6), Inches(5.53)], row_h=Inches(0.30), size=10.2)
+callout(s, Inches(0.45), Inches(6.72), Inches(12.43), Inches(0.66), PANEL2, INDIGO,
         'The machine time is not the constraint',
         'Getting the part list, the CAD files and the rate data together is the work. The computer '
         'finishes in minutes.')
-notes(s, "Here is what a run actually does and what it costs in machine time. These timings are "
-         "measured, this month, on our own parts, not estimated. A part takes about one and a "
-         "quarter seconds to measure. Working out the hundred and eighty-two values takes five "
-         "thousandths of a second. Costing it takes less than one. So five hundred parts is about "
-         "five minutes on two workers. The point of the blue strip at the bottom is that the "
+notes(s, "Here is what a run actually does and what it costs in machine time. The forty-part row "
+         "is measured, this month, on our own production parts. A part takes between one and three "
+         "seconds to measure depending on how big the file is. Running the rules and costing it "
+         "takes five thousandths of a second, so the measuring is the whole of it. Forty parts took "
+         "thirty-one seconds on two workers with nothing reused, and the rows below that are that "
+         "same rate carried forward, so five hundred parts is about six and a half minutes. The point of the blue strip at the bottom is that the "
          "computer is not the constraint here. Pulling together the part list, the CAD files and "
          "our own rate data is the work. The machine finishes while you are getting a coffee.")
 
@@ -901,28 +915,34 @@ rows = [
      'Gear costs in the screens and has its own rules, but the automated route cannot reach it. '
      'A basket with gears in it would silently skip them.',
      ('Must have', AMBER, True)),
+    (('Geometry safety checks on the automated route', DARK, True), 'Blocks trust',
+     'The checks that compare what was read against what was measured run on the CAD route today. '
+     'The automated route validates the fields only. They must be wired on before a run is left '
+     'unattended.',
+     ('Must have', RED, True)),
     (('The run itself', DARK, True), 'The new work',
      'A list in, a job queue, a report out, and a way to answer one question once and apply it to '
      'every part it affects.',
      ('New build', INDIGO, True)),
 ]
-table(s, Inches(0.45), Inches(2.2), Inches(12.43),
+table(s, Inches(0.45), Inches(2.15), Inches(12.43),
       ['What is missing', 'Why it matters', 'Detail', 'Type'], rows,
-      [Inches(3.0), Inches(1.5), Inches(6.63), Inches(1.3)], row_h=Inches(0.78), size=9.8)
-callout(s, Inches(0.45), Inches(6.58), Inches(12.43), Inches(0.84), GREENBG, GREEN,
+      [Inches(3.0), Inches(1.5), Inches(6.63), Inches(1.3)], row_h=Inches(0.7), size=9.8)
+callout(s, Inches(0.45), Inches(6.74), Inches(12.43), Inches(0.66), GREENBG, GREEN,
         'The good news underneath all of that',
-        'The costing engine itself needs no change. We tested it on its own, outside the '
-        'application, and it produced the full eight-bucket answer with nothing adjusted. The work '
-        'above sits around the engine.')
-notes(s, "I would rather show you this list than have it come out later. Five things. The first two "
+        'The costing engine itself needs no change. We ran it on its own, outside the application, '
+        'and it produced the full eight-bucket answer with nothing adjusted.')
+notes(s, "I would rather show you this list than have it come out later. Six things. The first two "
          "are the ones that would stop me signing off a bulk run for anything audited. The rate "
          "book today is a single row that gets overwritten, so change a rate and the old one is "
          "gone. And finished costings are not saved at all. Together that means a five-hundred-part "
          "run produces numbers you cannot reproduce next quarter. The third is smaller than it "
          "sounds: region and volume already work in the screens, they are just not passed through "
          "to the automated route. Fourth, gear does not reach the automated route at all, so a "
-         "basket with gears in it would quietly skip them. Fifth is the run itself, which is the "
-         "actual new build. The green strip is the good news. The engine needs no change. We "
+         "basket with gears in it would quietly skip them. Fifth is the geometry safety checks. They "
+         "run on the CAD route today and the automated route only validates the fields, so they "
+         "have to be wired on before anyone leaves a run unattended. Sixth is the run itself, which "
+         "is the actual new build. The green strip is the good news. The engine needs no change. We "
          "checked that by running it on its own, outside the application.")
 
 # ───────────────────────────── 16 · OPTION 2 · WHAT IT CHANGES ──────────────
@@ -1114,14 +1134,14 @@ text(s, Inches(0.45), Inches(1.68), Inches(12.4), Inches(0.32),
         'checked again when these slides were built.', 11.5, BODY, False)]])
 rows = [
     ('19 part types cost through the engine', 'Traced each one from its screen through to the costing'),
-    ('182 values worked out, 139 land in a named box', 'Counted in the rules packs for the twelve part types that have them'),
+    ('165 costing rules, 149 write into a named box', 'Counted in the rule packs for the twelve part types that have them; 9 to 18 apply per part'),
     ('12 to 69 boxes typed by hand today', 'Counted the input fields on the machining, casting, moulding and pressing forms'),
     ('The costing gives the same answer every run', 'Ran one part five times, identical to the last decimal'),
     ('Measuring makes no internet connection', 'Checked every line for outbound calls; there are none'),
     ('CAD files stay on the server', 'Measuring happens locally; only drawing text goes to an AI service'),
-    ('1.2 seconds to measure a part', 'Average over eight real parts, 0.6 MB to 20 MB, this month'),
-    ('500 parts in about five minutes', 'That average, on two measuring workers, measured not estimated'),
-    ('Six of eight sample parts costed straight through', 'Two stopped and asked. Our own parts, not JLR parts'),
+    ('0.9 to 3.1 seconds to measure a part', 'Five real production parts, 0.6 MB to 3.0 MB, this month'),
+    ('40 parts in 31 seconds on two workers', 'Measured wall-clock, nothing reused from cache; larger rows carry that rate forward'),
+    ('Six of eight sample parts costed straight through', 'With the material family given. Given nothing, all eight ask for it first'),
     ('Line counts on slide 7', 'Counted directly in the source files'),
     ('Settings values on slide 9', 'Read off the software; each is a single defined value'),
     ('328 materials, 178 machines, 42 labour rates, 20 regions', 'Counted in the rate library; rates effective June and July 2026'),
