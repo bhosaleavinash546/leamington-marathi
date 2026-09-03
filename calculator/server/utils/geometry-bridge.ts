@@ -4,6 +4,7 @@ import { tmpdir } from 'os';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { randomBytes } from 'crypto';
+import { geometryPool, POOL_ENABLED, type GeometryJobResult } from './geometry-pool.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PYTHON_SCRIPT = join(__dirname, 'cad-geometry-engine.py');
@@ -46,8 +47,18 @@ const MAX_STDOUT_BYTES = parseInt(process.env.CV_MAX_STDOUT_BYTES ?? String(64 *
 // assemblies have room to mesh; env-tunable for bigger jobs.
 const DEFAULT_TESS_TIMEOUT_MS = parseInt(process.env.CV_TESS_TIMEOUT_MS ?? '300000', 10) || 300000;
 
+const MAX_PYTHON_QUEUE = parseInt(process.env.CV_GEOMETRY_QUEUE ?? '20', 10) || 20;
+
+/**
+ * One-shot spawn semaphore (the pool has its own). The old version released
+ * by decrementing and THEN resolving a waiter on a later microtask; a fresh
+ * caller arriving in between saw `active < MAX`, incremented, and so did the
+ * waiter — three OCP processes under a limit of two. The check and the
+ * increment now happen in the same tick, and the queue is bounded.
+ */
 async function acquirePython(): Promise<() => void> {
-  if (pythonActive >= MAX_CONCURRENT_PYTHON) {
+  while (pythonActive >= MAX_CONCURRENT_PYTHON) {
+    if (pythonQueue.length >= MAX_PYTHON_QUEUE) throw new Error(`geometry queue full (${MAX_PYTHON_QUEUE} waiting)`);
     await new Promise<void>((resolve) => pythonQueue.push(resolve));
   }
   pythonActive++;
@@ -59,6 +70,9 @@ async function acquirePython(): Promise<() => void> {
     pythonQueue.shift()?.();
   };
 }
+
+/** Exposed for tests: never more than MAX in flight. */
+export function _pythonActiveCount(): number { return pythonActive; }
 
 /**
  * The measured-geometry contract.
@@ -155,6 +169,27 @@ export async function analyzeGeometry(
 ): Promise<OCCTGeometry> {
   const tmpPath = join(tmpdir(), `cv-cad-${randomBytes(8).toString('hex')}.${safeExt(filename)}`);
 
+  // Warm pool first; one-shot spawn only when the pool cannot start (no OCP
+  // here, or CV_GEOMETRY_POOL=0). A pool job that fails for a reason of its
+  // own (timeout, crash) is NOT retried one-shot: the same input would only
+  // hang the same way, and a silent retry hides the fault.
+  if (POOL_ENABLED && !geometryPool().unavailable) {
+    await writeFile(tmpPath, buffer);
+    try {
+      const r = await geometryPool().run({ op: 'analyze', path: tmpPath, env: extraEnv }, timeoutMs);
+      if (r.code !== 'pool_unavailable') {
+        const geo = r as unknown as OCCTGeometry;
+        const wc = applyShellWallCorrection(geo);
+        if (wc) console.log(`[geometry] thin-shell wall corrected: ${wc.fromMm} mm → ${wc.toMm} mm (2·V/S)`);
+        const fc = applyShellWallCorrectionToFeatures(geo, wc?.toMm ?? null);
+        if (fc) console.log(`[geometry] per-face thickness: ${fc.dropped} of ${fc.total} readings discarded as ray artefacts`);
+        return geo;
+      }
+    } finally {
+      unlink(tmpPath).catch(() => {});
+    }
+  }
+
   const release = await acquirePython();
   try {
     await writeFile(tmpPath, buffer);
@@ -191,8 +226,11 @@ function _runPython(tmpPath: string, timeoutMs: number,
       if (!settled) { settled = true; resolve(result); }
     };
 
+    // The child derives its own alarm from CV_TESS_TIMEOUT_MS. Passing THIS
+    // call's timeout in means the clean error fires before our SIGKILL; it
+    // used to read the unmodified 300 s while we killed at 120 s.
     const child = spawn(PYTHON_BIN, [PYTHON_SCRIPT, tmpPath], {
-      env: { ...process.env, ...extraEnv },
+      env: { ...process.env, ...extraEnv, CV_TESS_TIMEOUT_MS: String(timeoutMs) },
     });
 
     const timer = setTimeout(() => {
@@ -293,6 +331,36 @@ export async function tessellateToSTL(
   const inPath = join(tmpdir(), `cv-tess-${id}.${safeExt(filename)}`);
   const outPath = join(tmpdir(), `cv-tess-${id}.stl`);
 
+  const readBack = async (result: { status: string; triangles?: number; error?: string }) => {
+    if (result.status !== 'success') return { status: 'error' as const, error: result.error ?? 'tessellation failed' };
+    const { readFile, stat } = await import('fs/promises');
+    const outStat = await stat(outPath);
+    if (outStat.size > MAX_STL_BYTES) {
+      return { status: 'error' as const, error: `Tessellated mesh is ${(outStat.size / 1048576).toFixed(0)} MB — over the ${(MAX_STL_BYTES / 1048576).toFixed(0)} MB limit.` };
+    }
+    const stl = await readFile(outPath);
+    let meta: TessellationMeta | null = null;
+    if (withMeta) {
+      try { meta = JSON.parse(await readFile(outPath + '.json', 'utf-8')) as TessellationMeta; }
+      catch { /* sidecar unreadable — viewer degrades to mesh-only */ }
+    }
+    return { status: 'success' as const, stl, triangles: result.triangles ?? 0, meta };
+  };
+
+  if (POOL_ENABLED && !geometryPool().unavailable) {
+    try {
+      await writeFile(inPath, buffer);
+      const r: GeometryJobResult = await geometryPool().run({ op: 'tessellate', path: inPath, out: outPath, withMeta }, timeoutMs);
+      if (r.code !== 'pool_unavailable') return await readBack(r as { status: string; triangles?: number; error?: string });
+    } catch (err) {
+      return { status: 'error', error: err instanceof Error ? err.message : String(err) };
+    } finally {
+      unlink(inPath).catch(() => {});
+      unlink(outPath).catch(() => {});
+      unlink(outPath + '.json').catch(() => {});
+    }
+  }
+
   const release = await acquirePython();
   try {
     await writeFile(inPath, buffer);
@@ -302,7 +370,7 @@ export async function tessellateToSTL(
       let stderr = '';
       let settled = false;
       const settle = (r: { status: string; triangles?: number; error?: string }) => { if (!settled) { settled = true; resolve(r); } };
-      const child = spawn(PYTHON_BIN, args, { env: { ...process.env } });
+      const child = spawn(PYTHON_BIN, args, { env: { ...process.env, CV_TESS_TIMEOUT_MS: String(timeoutMs) } });
       const timer = setTimeout(() => { child.kill('SIGKILL'); settle({ status: 'error', error: `Tessellation timed out after ${timeoutMs / 1000}s` }); }, timeoutMs);
       child.stdout.on('data', (d: Buffer) => {
         stdout += d.toString();
@@ -318,21 +386,7 @@ export async function tessellateToSTL(
       });
     });
 
-    if (result.status !== 'success') return { status: 'error', error: result.error ?? 'tessellation failed' };
-    const { readFile, stat } = await import('fs/promises');
-    const outStat = await stat(outPath);
-    if (outStat.size > MAX_STL_BYTES) {
-      return { status: 'error', error: `Tessellated mesh is ${(outStat.size / 1048576).toFixed(0)} MB — over the ${(MAX_STL_BYTES / 1048576).toFixed(0)} MB limit.` };
-    }
-    const stl = await readFile(outPath);
-    // face-metadata sidecar (per-triangle face ids + exact B-rep face data)
-    let meta: TessellationMeta | null = null;
-    if (withMeta) {
-      try {
-        meta = JSON.parse(await readFile(outPath + '.json', 'utf-8')) as TessellationMeta;
-      } catch { /* sidecar unreadable — viewer degrades to mesh-only */ }
-    }
-    return { status: 'success', stl, triangles: result.triangles ?? 0, meta };
+    return await readBack(result);
   } catch (err) {
     return { status: 'error', error: err instanceof Error ? err.message : String(err) };
   } finally {

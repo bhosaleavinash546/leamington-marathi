@@ -40,6 +40,12 @@ RUN npm run build
 EXPOSE 3002
 ENV NODE_ENV=production
 # Cap concurrent OCP processes to the memory budget (each costs a few hundred MB).
+# With the warm pool (CV_GEOMETRY_POOL=1, default) this is the number of
+# long-lived workers, each importing OCP once (2.9-4.0 s measured) and keeping
+# a small LRU of loaded shapes. CV_GEOMETRY_QUEUE bounds waiting jobs;
+# CV_POOL_MAX_JOBS recycles a worker after that many jobs.
 ENV CV_MAX_PYTHON_PROCS=2
+ENV CV_GEOMETRY_POOL=1
+ENV CV_GEOMETRY_QUEUE=20
 
 CMD ["npx", "tsx", "server/index.ts"]

@@ -1647,7 +1647,38 @@ class _quiet_stdout:
         return False
 
 
+_SHAPE_LRU = {}          # (sha256, unit_scale) -> (wrapped, info)
+_SHAPE_LRU_MAX = int(os.environ.get("CV_SHAPE_LRU", "4"))
+_SERVING = False
+
+
+def _file_sha256(path):
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def _load_shape(filepath):
+    """Serve-mode wrapper: reuse a loaded shape for the same bytes + scale."""
+    if not _SERVING:
+        return _load_shape_uncached(filepath)
+    scale = float(os.environ.get("CV_UNIT_SCALE", "1") or "1")
+    key = (_file_sha256(filepath), scale)
+    hit = _SHAPE_LRU.pop(key, None)
+    if hit is not None:
+        _SHAPE_LRU[key] = hit            # move to most-recent
+        return hit[0], dict(hit[1], cached=True)
+    wrapped, info = _load_shape_uncached(filepath)
+    _SHAPE_LRU[key] = (wrapped, info)
+    while len(_SHAPE_LRU) > _SHAPE_LRU_MAX:
+        _SHAPE_LRU.pop(next(iter(_SHAPE_LRU)))
+    return wrapped, info
+
+
+def _load_shape_uncached(filepath):
     """The ONE loader both `analyze` and `tessellate_to_stl` use.
 
     Returns (wrapped_shape, info) or raises. `info` carries the declared file
@@ -2234,7 +2265,73 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
     except Exception as e:
         return {"status": "error", "error": f"Tessellation error: {e}"}
 
+def serve():
+    """Warm worker: import OCP once (2.9-4.0 s measured), then answer jobs from
+    stdin as JSON lines. One job per line in, one result line out:
+
+        {"id": "...", "op": "analyze"|"tessellate", "path": "...", "out": "...",
+         "withMeta": true, "timeoutMs": 120000, "env": {"CV_UNIT_SCALE": "25.4"}}
+     -> {"id": "...", "result": {...}}
+
+    Per-job environment is applied and then restored, so a DFM pass with
+    CV_EXTRACT_FEATURES=1 cannot leak into the next costing. The per-job alarm
+    replaces the module-level one, and is set from the job's OWN timeout — the
+    parent passes the same figure, so the clean error now fires before the
+    parent's SIGKILL instead of after it.
+    """
+    global _SERVING
+    _SERVING = True
+    signal.alarm(0)
+    # Make absolutely sure nothing but our JSON reaches stdout.
+    real_stdout = sys.stdout
+    sys.stdout = sys.stderr
+    print(json.dumps({"ready": True, "pid": os.getpid()}), file=real_stdout, flush=True)
+    for line in sys.stdin:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            job = json.loads(line)
+        except Exception as e:
+            print(json.dumps({"id": None, "result": {"status": "error", "code": "bad_job", "error": str(e)}}), file=real_stdout, flush=True)
+            continue
+        jid = job.get("id")
+        saved = {}
+        for k, v in (job.get("env") or {}).items():
+            if not str(k).startswith("CV_"):
+                continue
+            saved[k] = os.environ.get(k)
+            os.environ[k] = str(v)
+        timeout_s = max(5, int(job.get("timeoutMs") or 300000) // 1000)
+        signal.alarm(timeout_s)
+        try:
+            op = job.get("op")
+            if op == "analyze":
+                result = analyze(job["path"])
+            elif op == "tessellate":
+                result = tessellate_to_stl(job["path"], job["out"], with_meta=bool(job.get("withMeta")))
+            elif op == "ping":
+                result = {"status": "success", "pong": True, "lru": len(_SHAPE_LRU)}
+            else:
+                result = {"status": "error", "code": "bad_job", "error": f"unknown op {op!r}"}
+        except TimeoutError:
+            result = {"status": "error", "code": "timeout", "error": f"Geometry job exceeded {timeout_s}s"}
+        except Exception as e:
+            result = {"status": "error", "code": "crashed", "error": str(e)[:300]}
+        finally:
+            signal.alarm(0)
+            for k, v in saved.items():
+                if v is None:
+                    os.environ.pop(k, None)
+                else:
+                    os.environ[k] = v
+        print(json.dumps({"id": jid, "result": result}), file=real_stdout, flush=True)
+
+
 if __name__ == "__main__":
+    if len(sys.argv) >= 2 and sys.argv[1] == "--serve":
+        serve()
+        sys.exit(0)
     if len(sys.argv) >= 4 and sys.argv[1] == "--stl":
         result = tessellate_to_stl(sys.argv[2], sys.argv[3], with_meta="--with-meta" in sys.argv[4:])
         print(json.dumps(result))

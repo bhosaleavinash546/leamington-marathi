@@ -100,3 +100,45 @@ export function sweepUploadFiles(): number {
   } catch { /* best effort */ }
   return n;
 }
+
+// ─── Mesh cache (viewer + vision renders) ─────────────────────────────────────
+// The tessellation of a file is a pure function of (bytes, unit scale). It used
+// to be computed once for the vision renders, again for the viewer's meta fetch,
+// and again on every remount. Keep it on disk under the hash, alongside the
+// sidecar, and serve both from here.
+
+export interface StoredMesh {
+  stl: Buffer;
+  triangles: number;
+  meta: unknown | null;
+}
+
+function meshBase(hash: string, unitScale: number): string {
+  return join(FILE_DIR, `${hash}.${unitScale}`);
+}
+
+export function putMesh(hash: string, unitScale: number, mesh: StoredMesh): void {
+  try {
+    ensureDir();
+    writeFileSync(meshBase(hash, unitScale) + '.mesh.stl', mesh.stl);
+    writeFileSync(meshBase(hash, unitScale) + '.mesh.json',
+      JSON.stringify({ triangles: mesh.triangles, meta: mesh.meta ?? null }));
+  } catch (err) {
+    console.warn('[geometry-store] could not persist mesh:', err instanceof Error ? err.message : String(err));
+  }
+}
+
+/** `withMeta` — the caller needs the face sidecar; a cached mesh without one is not a hit for it. */
+export function getMesh(hash: string, unitScale: number, withMeta: boolean): StoredMesh | null {
+  if (!/^[a-f0-9]{64}$/.test(hash)) return null;
+  try {
+    const base = meshBase(hash, unitScale);
+    if (!existsSync(base + '.mesh.stl') || !existsSync(base + '.mesh.json')) return null;
+    if (Date.now() - statSync(base + '.mesh.stl').mtimeMs > FILE_TTL_MS) return null;
+    const side = JSON.parse(readFileSync(base + '.mesh.json', 'utf-8')) as { triangles: number; meta: unknown | null };
+    if (withMeta && !side.meta) return null;
+    return { stl: readFileSync(base + '.mesh.stl'), triangles: side.triangles, meta: side.meta };
+  } catch {
+    return null;
+  }
+}

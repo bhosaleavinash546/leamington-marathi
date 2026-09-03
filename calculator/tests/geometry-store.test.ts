@@ -67,3 +67,25 @@ describe('geometry store', () => {
     expect(store.getUploadFile(h)?.buffer.equals(bytes)).toBe(true);
   });
 });
+
+describe('mesh cache', () => {
+  it('stores a tessellation under the hash + scale and serves it back, sidecar included', async () => {
+    const bytes = Buffer.from('ISO-10303-21; mesh me');
+    const h = store.hashUpload(bytes);
+    const stl = Buffer.alloc(84 + 50, 7);
+    store.putMesh(h, 1, { stl, triangles: 1, meta: { triFace: [3], faces: [null], bodies: 1, skippedFaces: 0 } });
+    const hit = store.getMesh(h, 1, true);
+    expect(hit?.triangles).toBe(1);
+    expect(hit?.stl.equals(stl)).toBe(true);
+    expect((hit?.meta as { bodies: number }).bodies).toBe(1);
+    expect(store.getMesh(h, 25.4, true)).toBeNull();          // a different scale is a different mesh
+  });
+
+  it('a mesh cached without a sidecar is not a hit for a caller that needs one', () => {
+    const bytes = Buffer.from('no sidecar');
+    const h = store.hashUpload(bytes);
+    store.putMesh(h, 1, { stl: Buffer.alloc(134), triangles: 1, meta: null });
+    expect(store.getMesh(h, 1, false)?.triangles).toBe(1);
+    expect(store.getMesh(h, 1, true)).toBeNull();
+  });
+});

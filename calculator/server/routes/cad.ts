@@ -7,10 +7,11 @@ import type { CommodityType } from '../../src/engine/types.js';
 import rateLimit from 'express-rate-limit';
 import { createAnthropic } from '../utils/ai-client.js';
 import { requireAuth } from '../middleware/auth-middleware.js';
-import { hashUpload, putUploadFile, getUploadFile, putGeometry, getGeometry, sweepUploadFiles } from '../utils/geometry-store.js';
+import { hashUpload, putUploadFile, getUploadFile, putGeometry, getGeometry, sweepUploadFiles, putMesh, getMesh } from '../utils/geometry-store.js';
 import type Anthropic from '@anthropic-ai/sdk';
 import { preprocessCADFile } from '../utils/preprocessor.js';
 import { analyzeGeometry, tessellateToSTL } from '../utils/geometry-bridge.js';
+import type { TessellationMeta } from '../utils/geometry-bridge.js';
 import type { OCCTGeometry } from '../utils/geometry-bridge.js';
 import { parseSTL } from '../services/stl-parser.js';
 import type { STLGeometry } from '../services/stl-parser.js';
@@ -97,6 +98,9 @@ async function queueGeometricDFM(
   annualVolume?: number, region?: string,
 ): Promise<string | null> {
   if (!GEOMETRIC_DFM_COMMODITIES.has(commodity as CommodityType)) return null;
+  // The kernel cannot read a mesh: every STL job burned a temp file, a queue
+  // slot and a spawn to produce "Unsupported format: .stl".
+  if (/\.stl$/i.test(filename)) return null;
   try {
     return await queueDFMJobFromBuffer(buffer, filename, {
       commodity: commodity as CommodityType,
@@ -497,6 +501,8 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   let geo: OCCTGeometry;
   let geometrySource: 'occt' | 'text_parsing' | 'stl_parser';
   let stlGeometry: STLGeometry | null = null;
+  const tRequest = Date.now();
+  let geometryMs = 0;
 
   if (ext === 'stl') {
     // ── STL fast-path: pure TypeScript parser, no external process ──────────
@@ -587,8 +593,10 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       geo = stored;
       console.log(`[CAD] geometry cache HIT ${uploadHash.slice(0, 12)} @${unitScale}x`);
     } else {
+      const tGeo = Date.now();
       geo = await analyzeGeometry(buffer, originalname, 120_000,
         unitScale !== 1 ? { CV_UNIT_SCALE: String(unitScale) } : {});
+      geometryMs = Date.now() - tGeo;
     }
 
     if (geo.status === 'success') {
@@ -680,7 +688,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   } catch { /* views are an enhancement — ignore malformed input */ }
 
   const cacheKey = cadCache.buildKey([
-    buffer,
+    Buffer.from(`${uploadHash}:${unitScale}`),
     Buffer.from(partPhotoBase64),
     ...(drawingUpload ? [drawingUpload.buffer] : []),
     ...renderViews.map(v => Buffer.from(v)),
@@ -890,6 +898,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       geometrySource,
       geometryHash: geometrySource === 'occt' ? uploadHash : null,
       unitCheck: geo.status === 'success' ? (geo.unitCheck ?? null) : null,
+      timings: { geometryMs, totalMs: Date.now() - tRequest, geometryCached: geometryMs === 0 && geometrySource === 'occt' },
       annualVolume,
       occtGeometry: geometrySource === 'occt' ? geo : null,
       stlGeometry,
@@ -1007,6 +1016,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     geometrySource,
     geometryHash: geometrySource === 'occt' ? uploadHash : null,
     truncated: stlGeometry?.truncated ?? false,
+    timings: { geometryMs, totalMs: Date.now() - tRequest, geometryCached: geometryMs === 0 && geometrySource === 'occt' },
     unitCheck: geo.status === 'success' ? (geo.unitCheck ?? null) : null,
     annualVolume,
     occtGeometry: geo.status === 'success' ? geo : null,
@@ -2189,12 +2199,28 @@ router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), asyncRou
   const sniff = sniffCadContent(ext, req.file.buffer);
   if (sniff) { res.status(422).json({ error: sniff }); return; }
   const wantMeta = req.query.meta === '1' || req.query.meta === 'bin';
-  const result = await tessellateToSTL(req.file.buffer, req.file.originalname, { withMeta: wantMeta });
+  // One tessellation per file. The vision renders, the viewer's meta fetch and
+  // every remount used to each spawn a kernel for the same bytes.
+  const tessHash = hashUpload(req.file.buffer);
+  const tessScale = typeof req.query.unitScale === 'string' && Number(req.query.unitScale) === 25.4 ? 25.4 : 1;
+  const t0 = Date.now();
+  let result: Awaited<ReturnType<typeof tessellateToSTL>>;
+  const cachedMesh = getMesh(tessHash, tessScale, wantMeta);
+  if (cachedMesh) {
+    result = { status: 'success', stl: cachedMesh.stl, triangles: cachedMesh.triangles, meta: (cachedMesh.meta ?? null) as TessellationMeta | null };
+    console.log(`[CAD] mesh cache HIT ${tessHash.slice(0, 12)} (${cachedMesh.triangles} tris)`);
+  } else {
+    // Always tessellate WITH meta: it costs one extra sidecar write and makes the
+    // next viewer fetch a hit instead of a second kernel run.
+    result = await tessellateToSTL(req.file.buffer, req.file.originalname, { withMeta: true });
+    if (result.status === 'success') putMesh(tessHash, tessScale, { stl: result.stl, triangles: result.triangles, meta: result.meta });
+  }
   if (result.status !== 'success') {
     res.status(422).json({ error: clientSafeError(result.error ?? 'tessellation failed') });
     return;
   }
-  console.log(`[CAD] Tessellated ${safeLogName(req.file.originalname)}: ${result.triangles} triangles, ${(result.stl.length / 1024).toFixed(0)} KB STL`);
+  res.set('X-Geometry-Ms', String(Date.now() - t0));
+  console.log(`[CAD] Tessellated ${safeLogName(req.file.originalname)}: ${result.triangles} triangles, ${(result.stl.length / 1024).toFixed(0)} KB STL (${Date.now() - t0} ms)`);
 
   // ?meta=bin → single binary frame (interactive viewer):
   //   [u32 headerLen][header JSON][raw STL bytes][triFace as u32 array]
