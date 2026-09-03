@@ -88,6 +88,9 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
           name: String((o as { name: unknown }).name),
           machineId: String((o as { machineId: unknown }).machineId),
           cycleTimeHr: num((o as { cycleTimeHr: unknown }).cycleTimeHr),
+          ...(Array.isArray((o as { faceIds?: unknown }).faceIds)
+            ? { faceIds: ((o as { faceIds: unknown[] }).faceIds).filter((x): x is number => typeof x === 'number') }
+            : {}),
         }))
       : [],
   },

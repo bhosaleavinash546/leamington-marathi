@@ -120,7 +120,7 @@ export interface OCCTGeometry {
   } | null;
   setupAnalysis?: {
     estimatedSetupCount: number;
-    principalDirections: Array<{ directionLabel: string; faceCount: number }>;
+    principalDirections: Array<{ directionLabel: string; faceCount: number; faceIds?: number[] }>;
   } | null;
   cncCycleTimeEstimate?: {
     setupTimeMins: number;
@@ -156,6 +156,8 @@ export interface OCCTGeometry {
     through: boolean | null;
     count: number;
     areaMm2?: number;
+    /** 1-based B-rep face ids (TopTools_IndexedMapOfShape order) — the same ids the viewer's triFace uses. */
+    faceIds?: number[];
   }>;
   /** Sheet-metal forming features — geometry-measured bend count for SM Fab. */
   sheetMetal?: { bendCount: number; totalBendLengthMm: number; thicknessMm: number };
@@ -256,6 +258,8 @@ export interface SuggestedOperation {
   oee: number;
   manning: number;
   labourEfficiency: number;
+  /** B-rep faces this operation's time comes from — lets the viewer show WHERE the money is. */
+  faceIds?: number[];
 }
 
 /** Per-field AI confidence score 0–1. Key = form field ID (e.g. "bm-wall", "imm-cav"). */

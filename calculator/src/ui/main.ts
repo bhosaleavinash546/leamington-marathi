@@ -299,6 +299,7 @@ document.addEventListener('change', (ev) => {
   const code = t?.getAttribute?.('data-ack-code');
   if (!code) return;
   if (t!.checked) _cadSanityAcks.add(code); else _cadSanityAcks.delete(code);
+  pushViewerState();
   const label = t!.closest('label');
   if (label) {
     label.style.borderColor = t!.checked ? '#16a34a' : '#dc2626';
@@ -6063,6 +6064,8 @@ async function _mountCADViewerNow(hostId: string, file: File, compact: boolean):
       onMeasurementsChange: hostId === 'cad-viewer-host'
         ? (m) => { cadViewerMeasurements = m; }
         : undefined,
+      onFaceSelect: (faceId) => onViewerFaceSelected(faceId),
+      onLoaded: (info) => setCadQualityBadge(info.isClosedSolid, info.freeEdgeCount),
     });
     if (hostId === 'cad-viewer-host') cadViewer = handle; else cadInlineViewer = handle;
     publishViewerHandle(handle);
@@ -6236,17 +6239,46 @@ function wireCADEvents(): void {
   el('cad-analyze-calc-btn')?.addEventListener('click', () => { void analyzeCAD(true); });
 }
 
+/** Closed-solid verdict next to the file name — the kernel's, not a guess. */
+function setCadQualityBadge(isClosedSolid: boolean | null, freeEdges: number | null): void {
+  let b = document.getElementById('cad-quality-badge');
+  const info = document.getElementById('cad-file-info');
+  if (!b && info) { b = document.createElement('span'); b.id = 'cad-quality-badge'; b.style.cssText = 'font-size:0.68rem;padding:1px 7px;border-radius:10px;margin-left:8px'; info.appendChild(b); }
+  if (!b) return;
+  if (isClosedSolid === true) { b.textContent = 'closed solid'; b.style.background = '#dcfce7'; b.style.color = '#166534'; }
+  else if (isClosedSolid === false) { b.textContent = `not a closed solid · ${freeEdges ?? '?'} free edge(s)`; b.style.background = '#fee2e2'; b.style.color = '#991b1b'; }
+  else { b.textContent = 'mesh (STL) — features not visible to the kernel'; b.style.background = '#fef3c7'; b.style.color = '#92400e'; }
+}
+
+/** One accept list for every CAD input, from the server when it answers, else the built-in default. */
+let cadLimits: { maxUploadMb: number; maxDrawingPdfMb: number; accept: string[] } = { maxUploadMb: 250, maxDrawingPdfMb: 30, accept: ['.step', '.stp', '.iges', '.igs', '.stl'] };
+void (async () => {
+  try {
+    const r = await fetch('/api/cad/limits');
+    if (r.ok) {
+      cadLimits = await r.json() as typeof cadLimits;
+      document.querySelectorAll<HTMLInputElement>('#cad-file-input, #cad-inline-input, #viewer-file-input').forEach(i => { i.accept = cadLimits.accept.join(','); });
+    }
+  } catch { /* offline: defaults stand */ }
+})();
+
 function setCADFile(f: File): void {
   const ext = f.name.toLowerCase().split('.').pop() ?? '';
   if (['x_t', 'x_b', 'xmt_txt', 'jt', 'prt', 'sldprt', 'catpart'].includes(ext)) {
     alert(`.${ext} is a proprietary CAD format that requires a licensed kernel (Parasolid/JT/native CAD).\n\nExport the part as STEP (.step/.stp) from your CAD tool — every major package supports it — and upload that instead.`);
     return;
   }
-  if (!['stp', 'step', 'igs', 'iges', 'stl'].includes(ext)) {
-    alert('Unsupported file format. Please use STEP (.stp/.step), IGES (.igs/.iges), or STL (.stl).');
+  if (!cadLimits.accept.includes('.' + ext)) {
+    alert(`Unsupported file format. Please use ${cadLimits.accept.join(', ')}.`);
+    return;
+  }
+  // Check the size HERE, before the whole file goes up and the server's 413 comes back.
+  if (f.size > cadLimits.maxUploadMb * 1048576) {
+    alert(`${f.name} is ${(f.size / 1048576).toFixed(0)} MB; the limit is ${cadLimits.maxUploadMb} MB.`);
     return;
   }
   cadFile = f;
+  setCadQualityBadge(null, null);
   // A new part starts with a clean slate — clear any pins from the previous file.
   _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
   _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadDiff = null;
@@ -6628,6 +6660,7 @@ function openCADDecisions(): CADDecision[] {
 function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVolume = 100000): void {
   const panel = el('cad-results');
   if (!panel) return;   // CAD results container not in the DOM for this view — avoid null.innerHTML crash
+  pushViewerState();
   const g = r.geometry;
 
   // Confidence badge helper — looks up AI-provided per-field confidence scores
@@ -10649,7 +10682,7 @@ function populateMachinedFeatures(prefix: string): void {
     <table class="data-table" style="font-size:0.72rem;font-variant-numeric:tabular-nums;width:100%">
       <thead><tr><th></th><th>Feature</th><th>Ø×depth / area</th><th>Qty</th><th>→ Operation</th></tr></thead>
       <tbody>
-        ${rows.map((r, i) => `<tr>
+        ${rows.map((r, i) => `<tr data-face-ids="${(r.faceIds ?? []).join(',')}" title="${r.faceIds?.length ? 'Click to show these faces in the 3D viewer' : ''}" style="${r.faceIds?.length ? 'cursor:pointer' : ''}">
           <td><input type="checkbox" class="${prefix}-mf-chk" data-idx="${i}" ${defaultInclude(r as FeatureRow, 'near_net') ? 'checked' : ''}/></td>
           <td>${icon(r.kind)}</td>
           <td>${dims(r as FeatureRow)}</td>
@@ -10968,7 +11001,7 @@ function inlineCADPanelHTML(): string {
       <summary style="cursor:pointer;padding:8px 12px;font-size:0.8rem;font-weight:600;color:var(--accent);user-select:none">📐 Upload CAD to auto-fill this form <span style="font-weight:400;color:var(--text-secondary)">— STEP / IGES → real weight, size &amp; inputs</span></summary>
       <div style="padding:2px 12px 12px">
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <input type="file" id="cad-inline-input" accept=".step,.stp,.iges,.igs,.brep,.stl,.obj" style="font-size:0.72rem"/>
+          <input type="file" id="cad-inline-input" accept=".step,.stp,.iges,.igs,.stl" style="font-size:0.72rem"/>
           <button class="btn btn-secondary btn-sm" id="cad-inline-btn" disabled style="font-size:0.72rem">Analyze &amp; Fill</button>
         </div>
         <div id="cad-inline-status" style="margin-top:6px;font-size:0.7rem;color:var(--text-secondary);line-height:1.45">Solid formats (STEP/IGES) give true volume &amp; weight; STL/OBJ meshes are approximate.</div>
@@ -14711,6 +14744,7 @@ function compute(): void {
 
     lastResult = result;
     lastInput = input;
+    pushViewerState();
     pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High', breakdown: result.breakdown, warnings: result.warnings, detail: buildPartDetail(result, input) });
     showResultsArea();
     renderBreakdown(result);
@@ -17428,8 +17462,66 @@ function renderGeometricDFMPanel(): void {
  * lazily at three different sites and the findings panel must not force it to
  * load. When no viewer is open the highlight call degrades to a log line.
  */
-function publishViewerHandle(h: { highlightFaces?: (ids: number[]) => void }): void {
-  (window as unknown as { __cadViewer?: unknown }).__cadViewer = h;
+/**
+ * The one place the rest of the app talks to whichever 3D viewer is open.
+ * It used to be `window.__cadViewer`, set on every mount and never cleared, so
+ * a DFM click could report "Highlighted N faces" into a disposed viewer.
+ */
+type ViewerLike = Pick<import('./cad-viewer.js').CADViewerHandle, 'highlightFaces' | 'setGuardrails' | 'showEnvelope' | 'setFaceCosts'> & { dispose(): void };
+const viewerBus = {
+  handle: null as ViewerLike | null,
+  publish(h: ViewerLike): void {
+    this.handle = h;
+    // Wrap dispose so the bus forgets a viewer the moment it goes.
+    const orig = h.dispose.bind(h);
+    h.dispose = () => { if (this.handle === h) this.handle = null; orig(); };
+    // A freshly mounted viewer should show the current state straight away.
+    pushViewerState();
+  },
+  get(): ViewerLike | null { return this.handle; },
+};
+function publishViewerHandle(h: ViewerLike): void { viewerBus.publish(h); }
+
+/** Guardrails, envelope and the cost heat-map, pushed to whatever viewer is open. */
+function pushViewerState(): void {
+  const v = viewerBus.get();
+  if (!v) return;
+  try {
+    v.setGuardrails(cadSanityWarnings.map(w => ({
+      code: w.code, message: w.message, blocking: !!w.blocking, acknowledged: _cadSanityAcks.has(w.code),
+      faceIds: guardrailFaceIds(w.code),
+    })));
+    const oversize = _cadDecisions.find(d => d.id === 'machine.oversize' && !_cadDecisionAnswers[d.id]);
+    const env = oversize ? /at (\d+(?:\.\d+)?) × (\d+(?:\.\d+)?) × (\d+(?:\.\d+)?) mm/.exec(oversize.why) : null;
+    v.showEnvelope(env ? [Number(env[1]), Number(env[2]), Number(env[3])] : null);
+    // After a costing, the money goes on the model: £ per face from the costed feature lines.
+    v.setFaceCosts(lastResult && _pendingCostingSource === 'cad' ? faceCostMap() : null);
+  } catch (err) {
+    console.warn('[viewer] state push failed:', err instanceof Error ? err.message : String(err));
+  }
+}
+
+/** Faces behind a sanity code, where the code is about specific faces. */
+function guardrailFaceIds(code: string): number[] | undefined {
+  const rows = (cadOCCTGeometry?.featureTable ?? []) as Array<{ kind: string; faceIds?: number[] }>;
+  if (/^gear_/.test(code)) return undefined;
+  if (code === 'near_net_machining_capped') return rows.flatMap(r => r.faceIds ?? []);
+  return undefined;
+}
+
+/** £ per B-rep face from the costed feature lines (minutes × rate), for the viewer's cost mode. */
+function faceCostMap(): Record<number, number> | null {
+  const meta = buildCadReportMeta();
+  const lines = meta.featureLines ?? [];
+  const rate = meta.featureMachineRatePerHr ?? 0;
+  if (!lines.length || !rate) return null;
+  const out: Record<number, number> = {};
+  for (const l of lines) {
+    if (!l.included || !l.faceIds?.length) continue;
+    const perFace = (l.totalMinutes / 60) * rate / l.faceIds.length;
+    for (const f of l.faceIds) out[f] = (out[f] ?? 0) + perFace;
+  }
+  return Object.keys(out).length ? out : null;
 }
 
 /**
@@ -17441,12 +17533,30 @@ function publishViewerHandle(h: { highlightFaces?: (ids: number[]) => void }): v
  * version logged to the console, which no engineer is reading.
  */
 function highlightViewerFaces(faceIds: number[]): boolean {
-  const v = (window as unknown as {
-    __cadViewer?: { highlightFaces?: (ids: number[]) => void };
-  }).__cadViewer;
-  if (v?.highlightFaces) { v.highlightFaces(faceIds); return true; }
+  const v = viewerBus.get();
+  if (v) { v.highlightFaces(faceIds); return true; }
   return false;
 }
+
+/** Face → cost rows: flash every feature-panel row that contains the clicked face. */
+function onViewerFaceSelected(faceId: number): void {
+  const rows = document.querySelectorAll<HTMLElement>('[data-face-ids]');
+  let first: HTMLElement | null = null;
+  rows.forEach(r => {
+    const ids = (r.dataset.faceIds ?? '').split(',').map(Number);
+    const hit = ids.includes(faceId);
+    r.style.outline = hit ? '2px solid #4f8ef7' : '';
+    r.style.outlineOffset = hit ? '-2px' : '';
+    if (hit && !first) first = r;
+  });
+  if (first) (first as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+document.addEventListener('click', (ev) => {
+  const row = (ev.target as HTMLElement | null)?.closest?.('[data-face-ids]') as HTMLElement | null;
+  if (!row || (ev.target as HTMLElement).tagName === 'INPUT') return;
+  const ids = (row.dataset.faceIds ?? '').split(',').map(Number).filter(n => Number.isFinite(n) && n > 0);
+  if (ids.length) highlightViewerFaces(ids);
+});
 
 /** What the report prints under "Checks applied": the same list the gate uses. */
 function buildChecksApplied(): CADReportMeta['checks'] {

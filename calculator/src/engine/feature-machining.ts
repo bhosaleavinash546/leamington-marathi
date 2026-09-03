@@ -56,6 +56,8 @@ export interface FeatureMachiningLine {
   volumeCm3: number;      // total metal in these features (for solid_billet)
   included: boolean;      // is it costed?
   autoIncluded: boolean;  // default decision (holes yes / bosses no)
+  /** B-rep faces behind this line — the viewer highlights them from the cost table. */
+  faceIds?: number[];
 }
 
 export interface FeatureMachiningResult {
@@ -169,6 +171,7 @@ export function computeFeatureMachining(
     const included = flags ? Boolean(flags[i]) : auto;
     const minutesEach = featureMinutesEach(row) * finish;
     return {
+      faceIds: row.faceIds,
       kind: row.kind,
       diaMm: row.diaMm,
       depthMm: row.depthMm,

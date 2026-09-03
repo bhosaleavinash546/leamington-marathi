@@ -42,6 +42,7 @@ import {
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { materialFacts, DENSITY_KG_PER_CM3 } from '../derive/material.js';
 import { bboxSortedMm, bboxVolumeCm3 } from '../derive/envelope.js';
+import { holeRows } from '../derive/facts.js';
 
 /**
  * Machinability factor — how much longer a metal takes to cut than aluminium.
@@ -151,6 +152,8 @@ export function cuttingHours(
     : { hours: Math.round(raw * 10_000) / 10_000, capped: false, rawHours: raw, ceilingHr };
 }
 
+export const MACHINE_ENVELOPE_DECISION_ID = 'machine.oversize';
+
 export interface OperationPlan {
   name: string;
   type: MachiningOpType;
@@ -159,6 +162,8 @@ export interface OperationPlan {
   partsPerCycle: number;
   /** Why this operation exists and where its time came from. */
   basis: string;
+  /** The B-rep faces this operation's time is spent on — what the viewer lights up for it. */
+  faceIds?: number[];
 }
 
 /**
@@ -237,6 +242,7 @@ export function machiningOperationPlan(
   const millingHr = cut.hours - drillHr;
 
   const { faces } = principalDirections(ctx);
+  const dirFaces = new Map((ctx.geo.setupAnalysis?.principalDirections ?? []).map(d => [d.directionLabel, d.faceIds ?? []]));
   const routing = machiningRouting(ctx, family);
   const machineId = routing.chosen.primaryMachineId;
   const type: MachiningOpType = routing.chosen.label === 'turned' ? 'turning'
@@ -254,6 +260,7 @@ export function machiningOperationPlan(
         partsPerCycle: 1,
         basis: `${f.faceCount} of ${totalFaces} faces approach from ${f.directionLabel} `
           + `→ ${(share * 100).toFixed(0)}% of ${fmt(millingHr, 3)} hr cutting`,
+        faceIds: dirFaces.get(f.directionLabel) ?? [],
       });
     }
   } else {
@@ -275,6 +282,7 @@ export function machiningOperationPlan(
       partsPerCycle: 1,
       basis: `${drill.holeCount} holes measured off the B-rep: ${drill.summary}`
         + (routing.chosen.drillMachineId === machineId ? ' — drilled in the same clamping' : ''),
+      faceIds: holeRows.flatMap(r => r.faceIds ?? []),
     });
   }
   return ops;
@@ -313,8 +321,36 @@ function advise(ctx: RuleContext): { advice: MachAdvice } | { blocked: RuleOutco
     };
   }
 
+  // A mesh cannot show holes. Ask, rather than costing "zero holes" as if measured.
+  const holes = holeRows(ctx);
+  if ('decision' in holes) return { blocked: ask(holes.decision) };
+
   const ops = machiningOperationPlan(ctx, mat.family!);
   const routing = machiningRouting(ctx, mat.family!);
+  // No machine in the class holds the part. That used to be a parenthetical in
+  // a detail string while the part was costed on the largest machine anyway.
+  // It is a decision: accept the largest machine on the record, or name one.
+  const oversizeAnswer = ctx.answers[MACHINE_ENVELOPE_DECISION_ID];
+  const namedMachine = typeof oversizeAnswer === 'string' && oversizeAnswer.startsWith('mach-') ? oversizeAnswer : null;
+  if (routing.chosen.oversize && oversizeAnswer !== 'accept_largest' && !namedMachine) {
+    const env = routing.chosen.envelopeMm;
+    const bb = bboxSortedMm(ctx);
+    return {
+      blocked: ask({
+        id: MACHINE_ENVELOPE_DECISION_ID, kind: 'machine_envelope',
+        question: `The part (${bb ? bb.map(d => d.toFixed(0)).join(' × ') : '?'} mm) does not fit any ${routing.chosen.label} machine in the library. Which machine costs it?`,
+        why: `The largest of the class is ${routing.chosen.primaryMachineId}`
+          + (env ? ` at ${env.join(' × ')} mm` : '') + '. Costing on a machine that cannot hold the part '
+          + 'states a cycle time for an operation the shop cannot perform.',
+        options: [
+          { value: 'accept_largest', label: `Cost on ${routing.chosen.primaryMachineId} anyway (largest of class)`, consequence: 'The rate of the largest machine is used; the report records that the part exceeds its envelope.' },
+          { value: 'enter', label: 'Use a specific machine id from the rate library', consequence: 'Its rate and envelope are used instead.' },
+        ],
+        entry: { kind: 'text', placeholder: 'mach-…' },
+        blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
+      }),
+    };
+  }
   return {
     advice: {
       family: mat.family!, massBasis: mat.basis, netKg, stock,
@@ -322,7 +358,7 @@ function advise(ctx: RuleContext): { advice: MachAdvice } | { blocked: RuleOutco
       ops,
       routing,
       setups: routing.chosen.setups,
-      machineId: routing.chosen.primaryMachineId,
+      machineId: namedMachine ?? routing.chosen.primaryMachineId,
     },
   };
 }

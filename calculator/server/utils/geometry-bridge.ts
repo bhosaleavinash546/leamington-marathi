@@ -316,6 +316,9 @@ export interface TessellationMeta {
   bodies: number;
   /** faces the mesher produced no triangulation for — the mesh has gaps there */
   skippedFaces: number;
+  /** Closed-solid verdict for the viewer's quality badge (same report `analyze` uses). */
+  topology?: { isClosedSolid?: boolean; solidCount?: number; freeEdgeCount?: number; valid?: boolean | null } | null;
+  bboxMm?: [number, number, number];
 }
 
 /** Refuse to buffer pathological outputs into Node heap. */

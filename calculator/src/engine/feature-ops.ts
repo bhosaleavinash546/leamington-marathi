@@ -15,6 +15,8 @@ export interface FeatureRow {
   count: number;
   /** Planar face / pocket-floor area (mm²) — present on 'face' | 'pocket' | 'slot'. */
   areaMm2?: number;
+  /** 1-based B-rep face ids this row was built from. */
+  faceIds?: number[];
 }
 
 /** Map a feature row to the machining operation it implies. */

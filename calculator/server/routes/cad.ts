@@ -444,6 +444,14 @@ function buildGeoSanityContext(
   };
 }
 
+// GET /api/cad/limits — what the client should check BEFORE uploading. The
+// drawing-PDF input pre-checked 30 MB; the CAD input uploaded the whole file
+// and then learned the cap from the 413. One list of extensions for every input.
+export const CAD_ACCEPT = ['.step', '.stp', '.iges', '.igs', '.stl'];
+router.get('/limits', (_req, res) => {
+  res.json({ maxUploadMb: MAX_UPLOAD_MB, maxDrawingPdfMb: MAX_DRAWING_PDF_BYTES / 1048576, accept: CAD_ACCEPT });
+});
+
 // POST /api/cad/analyze
 router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   { name: 'cadFile', maxCount: 1 },
@@ -2234,6 +2242,8 @@ router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), asyncRou
       faces: result.meta?.faces ?? [],
       bodies: result.meta?.bodies ?? null,
       skippedFaces: result.meta?.skippedFaces ?? 0,
+      topology: result.meta?.topology ?? null,
+      bboxMm: result.meta?.bboxMm ?? null,
     }), 'utf-8');
     const lenBuf = Buffer.alloc(4);
     lenBuf.writeUInt32LE(header.length, 0);

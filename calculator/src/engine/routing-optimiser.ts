@@ -83,6 +83,10 @@ export interface RoutingCandidate {
   /** machine cost per part incl. amortised setup, £ at UK library rates — for RANKING. */
   costPerPart: number;
   detail: string;
+  /** True when NO machine of the class holds the part and the largest was used. A decision, not a detail. */
+  oversize: boolean;
+  /** The primary machine's envelope (sorted mm) — so the viewer can draw the box the part does not fit. */
+  envelopeMm: readonly [number, number, number] | null;
 }
 
 export interface RoutingChoice {
@@ -172,6 +176,8 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
       primaryMachineId: primary.id,
       drillMachineId: drill?.id ?? primary.id,
       setups,
+      oversize: primary.oversize,
+      envelopeMm: MACHINE_CATALOGUE.find(m => m.id === primary.id)?.envelopeMm ?? null,
       costPerPart: Math.round(cost * 10_000) / 10_000,
       detail: `${detailPrefix}: ${primary.id} £${primary.ratePerHr.toFixed(0)}/hr`
         + (drill && drill.id !== primary.id ? ` + ${drill.id} £${drill.ratePerHr.toFixed(0)}/hr` : '')

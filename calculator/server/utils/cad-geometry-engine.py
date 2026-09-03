@@ -37,10 +37,15 @@ def _extract_feature_table(wrapped, extents):
     from OCP.GeomAbs import GeomAbs_SurfaceType
 
     feats = {}   # physical-feature ident -> summed arc span + attributes
-    exp = TopExp_Explorer(wrapped, TopAbs_FACE)
-    while exp.More():
-        face = TopoDS.Face_s(exp.Current())
-        exp.Next()
+    # Face ids: the 1-based TopTools_IndexedMapOfShape index — the SAME id the
+    # tessellation sidecar puts in `triFace`, so a costed feature can light up
+    # its faces in the viewer with no translation table in between.
+    from OCP.TopTools import TopTools_IndexedMapOfShape
+    from OCP.TopExp import TopExp
+    face_map = TopTools_IndexedMapOfShape()
+    TopExp.MapShapes_s(wrapped, TopAbs_FACE, face_map)
+    for map_idx in range(1, face_map.Extent() + 1):
+        face = TopoDS.Face_s(face_map.FindKey(map_idx))
         try:
             ad = BRepAdaptor_Surface(face)
             if ad.GetType() != GeomAbs_SurfaceType.GeomAbs_Cylinder:
@@ -66,9 +71,11 @@ def _extract_feature_table(wrapped, extents):
             f = feats.get(ident)
             if f is not None:
                 f["arc"] += arc          # halves of a boolean-split bore re-join here
+                f["faceIds"].append(map_idx)
             else:
                 feats[ident] = {"kind": 'hole' if hole else 'boss', "dia": round(r * 2, 2),
-                                "depth": round(depth, 1), "through": bool(through), "arc": arc}
+                                "depth": round(depth, 1), "through": bool(through), "arc": arc,
+                                "faceIds": [map_idx]}
         except Exception:
             continue
 
@@ -80,16 +87,22 @@ def _extract_feature_table(wrapped, extents):
         if f["arc"] < 5.2:
             continue
         key = (f["kind"], f["dia"], f["depth"], f["through"])
-        instances[key] = instances.get(key, 0) + 1
+        inst = instances.get(key)
+        if inst is None:
+            instances[key] = {"count": 1, "faceIds": list(f["faceIds"])}
+        else:
+            inst["count"] += 1
+            inst["faceIds"].extend(f["faceIds"])
 
     rows = []
-    for (kind, dia, depth, through), cnt in instances.items():
+    for (kind, dia, depth, through), inst in instances.items():
         rows.append({
             "kind": kind,
             "diaMm": dia,
             "depthMm": depth,
             "through": through if kind == "hole" else None,
-            "count": cnt,
+            "count": inst["count"],
+            "faceIds": sorted(inst["faceIds"]),
         })
     rows.sort(key=lambda r: (r["kind"], r["diaMm"], r["depthMm"]))
     return rows
@@ -127,12 +140,16 @@ def _extract_machining_features(wrapped, bbox):
     axis_ext = (xmax - xmin, ymax - ymin, zmax - zmin)
 
     faces_area = {}                       # rounded area -> count (facing candidates)
+    faces_ids = {}                        # rounded area -> [face ids]
     pockets = {}                          # (area, depth) -> count
+    pocket_ids = {}                       # (area, depth) -> [face ids]
     props = GProp_GProps()
-    exp = TopExp_Explorer(wrapped, TopAbs_FACE)
-    while exp.More():
-        face = TopoDS.Face_s(exp.Current())
-        exp.Next()
+    from OCP.TopTools import TopTools_IndexedMapOfShape
+    from OCP.TopExp import TopExp
+    face_map = TopTools_IndexedMapOfShape()
+    TopExp.MapShapes_s(wrapped, TopAbs_FACE, face_map)
+    for map_idx in range(1, face_map.Extent() + 1):
+        face = TopoDS.Face_s(face_map.FindKey(map_idx))
         try:
             ad = BRepAdaptor_Surface(face)
             if ad.GetType() != GeomAbs_SurfaceType.GeomAbs_Plane:
@@ -197,9 +214,11 @@ def _extract_machining_features(wrapped, bbox):
                             and (not all_circular) and (min_in_plane >= depth)
             # facing candidate: any substantial planar face (datum/mating surface)
             faces_area[round(area, 0)] = faces_area.get(round(area, 0), 0) + 1
+            faces_ids.setdefault(round(area, 0), []).append(map_idx)
             if is_pocket:
                 key = (round(area, 0), round(depth, 1))
                 pockets[key] = pockets.get(key, 0) + 1
+                pocket_ids.setdefault(key, []).append(map_idx)
         except Exception:
             continue
 
@@ -207,10 +226,12 @@ def _extract_machining_features(wrapped, bbox):
     # facing: keep the largest few distinct faces (datum/mating candidates)
     for area, count in sorted(faces_area.items(), reverse=True)[:8]:
         rows.append({"kind": "face", "diaMm": 0.0, "depthMm": 0.0,
-                     "through": None, "count": count, "areaMm2": area})
+                     "through": None, "count": count, "areaMm2": area,
+                     "faceIds": faces_ids.get(area, [])})
     for (area, depth), count in sorted(pockets.items(), reverse=True)[:8]:
         rows.append({"kind": "pocket", "diaMm": 0.0, "depthMm": depth,
-                     "through": None, "count": count, "areaMm2": area})
+                     "through": None, "count": count, "areaMm2": area,
+                     "faceIds": pocket_ids.get((area, depth), [])})
     return rows
 
 
@@ -646,12 +667,14 @@ def _compute_setup_count(faces, tol_deg: float = 22.0) -> dict:
 
     cos_tol = math.cos(math.radians(tol_deg))
     clusters: list[tuple[float, float, float, int]] = []   # (nx,ny,nz, count)
+    cluster_ids: list[list[int]] = []                      # face ids (1-based, IndexedMap order) per cluster
     AXES = [(1,0,0,"+X"),(-1,0,0,"-X"),(0,1,0,"+Y"),(0,-1,0,"-Y"),(0,0,1,"+Z"),(0,0,-1,"-Z")]
 
     cap = 600  # sample cap for large models
     sample_faces = faces[:cap]
 
-    for face in sample_faces:
+    for fi, face in enumerate(sample_faces):
+        face_id = fi + 1   # `faces` is the IndexedMap enumeration, so position + 1 == map index
         try:
             surf = BRep_Tool.Surface_s(face.wrapped)
             from OCP.GeomAdaptor import GeomAdaptor_Surface
@@ -670,29 +693,36 @@ def _compute_setup_count(faces, tol_deg: float = 22.0) -> dict:
             for i, (cx, cy, cz, cnt) in enumerate(clusters):
                 if abs(nx*cx + ny*cy + nz*cz) >= cos_tol:
                     clusters[i] = (cx, cy, cz, cnt + 1)
+                    cluster_ids[i].append(face_id)
                     matched = True
                     break
             if not matched:
                 clusters.append((nx, ny, nz, 1))
+                cluster_ids.append([face_id])
         except Exception:
             continue
 
     # Snap each cluster to nearest principal axis for label
     directions = []
-    for cx, cy, cz, cnt in sorted(clusters, key=lambda x: -x[3]):
+    order = sorted(range(len(clusters)), key=lambda i: -clusters[i][3])
+    for i in order:
+        cx, cy, cz, cnt = clusters[i]
         best_label, best_dot = "+Z", -1.0
         for ax, ay, az, label in AXES:
             d = abs(cx*ax + cy*ay + cz*az)
             if d > best_dot:
                 best_dot, best_label = d, label
-        directions.append({"directionLabel": best_label, "faceCount": cnt})
+        directions.append({"directionLabel": best_label, "faceCount": cnt, "faceIds": cluster_ids[i]})
 
-    # Deduplicate labels (keep highest count for each label)
+    # Deduplicate labels (merge face ids; keep the merged count)
     seen: dict[str, dict] = {}
     for d in directions:
         lbl = d["directionLabel"]
-        if lbl not in seen or d["faceCount"] > seen[lbl]["faceCount"]:
-            seen[lbl] = d
+        if lbl not in seen:
+            seen[lbl] = dict(d)
+        else:
+            seen[lbl]["faceCount"] += d["faceCount"]
+            seen[lbl]["faceIds"] = seen[lbl]["faceIds"] + d["faceIds"]
 
     unique_dirs = sorted(seen.values(), key=lambda x: -x["faceCount"])
 
@@ -2256,9 +2286,15 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
         # triFace JSON on every request was wasted I/O). bodies is the HONEST
         # solid count: 0 means an unstitched surface model (volume unreliable).
         if with_meta:
+            try:
+                topo = _topology_report(wrapped)
+            except Exception:
+                topo = None
             with open(out_path + ".json", "w") as jf:
                 json.dump({"triFace": tri_face_ids, "faces": faces_meta,
-                           "bodies": bodies, "skippedFaces": skipped_faces}, jf)
+                           "bodies": bodies, "skippedFaces": skipped_faces,
+                           "topology": topo,
+                           "bboxMm": [round(xmax - xmin, 2), round(ymax - ymin, 2), round(zmax - zmin, 2)]}, jf)
 
         return {"status": "success", "triangles": len(tris), "stlBytes": os.path.getsize(out_path),
                 "faces": meshed_faces, "bodies": bodies, "skippedFaces": skipped_faces}

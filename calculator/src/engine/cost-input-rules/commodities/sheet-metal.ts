@@ -29,6 +29,7 @@ import {
 } from '../../modules/sheet-metal-advisor.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { materialFacts } from '../derive/material.js';
+import { holeRows } from '../derive/facts.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import type { MaterialFamily } from '../../material-family.js';
 
@@ -109,11 +110,10 @@ export function gaugeMm(ctx: RuleContext): { mm: number; basis: string; confiden
   return read;
 }
 
-/** Hole count from the exact feature table. */
+/** Hole count from the exact feature table — or the engineer's figure on a mesh upload. */
 function holeCount(ctx: RuleContext): number {
-  return (ctx.geo.featureTable ?? [])
-    .filter(r => r.kind === 'hole')
-    .reduce((s, r) => s + (r.count ?? 0), 0);
+  const h = holeRows(ctx);
+  return 'decision' in h ? 0 : h.fact.value;
 }
 
 /** The advisor grades hole density as a binary — turret punching or not. */

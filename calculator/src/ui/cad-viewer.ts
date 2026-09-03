@@ -60,6 +60,28 @@ export interface CADViewerOptions {
   headers?: Record<string, string> | (() => Record<string, string>);
   /** Persist measurements per file (localStorage). Default true. */
   persist?: boolean;
+  /** A B-rep face was clicked in select mode — the reverse of highlightFaces. */
+  onFaceSelect?: (faceId: number, face: FaceMeta | null) => void;
+  /** The model finished loading; carries the kernel's quality verdict for the badge. */
+  onLoaded?: (info: LoadedInfo) => void;
+}
+
+export interface LoadedInfo {
+  fileName: string;
+  triangles: number;
+  bodies: number | null;
+  /** From the tessellation sidecar; null on STL (mesh only). */
+  isClosedSolid: boolean | null;
+  freeEdgeCount: number | null;
+  bboxMm: [number, number, number] | null;
+}
+
+export interface GuardrailBannerItem {
+  code: string;
+  message: string;
+  blocking: boolean;
+  acknowledged?: boolean;
+  faceIds?: number[];
 }
 
 export interface CADViewerHandle {
@@ -71,6 +93,12 @@ export interface CADViewerHandle {
    * finding's `faceIds` can be passed straight through. An empty array clears.
    */
   highlightFaces(faceIds: number[]): void;
+  /** Blocking guardrails across the top of the canvas, each with a "show me" when it has faces. */
+  setGuardrails(items: GuardrailBannerItem[]): void;
+  /** Draw (or clear) a machine envelope box around the part — the oversize decision made visible. */
+  showEnvelope(envelopeMm: [number, number, number] | null, label?: string): void;
+  /** £ per face for the cost heat-map colour mode; null clears it. */
+  setFaceCosts(costs: Record<number, number> | null): void;
   dispose(): void;
   el: HTMLElement;
 }
@@ -302,6 +330,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   root.innerHTML = `
     <div class="cv3d-viewport">
       <canvas class="cv3d-canvas"></canvas>
+      <div class="cv3d-banner" style="display:none"></div>
       <div class="cv3d-facechip" style="display:none"></div>
       <div class="cv3d-legend" style="display:none"></div>
       <div class="cv3d-tree" style="display:none">
@@ -434,6 +463,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const viewport = $('.cv3d-viewport');
   const faceChip = $('.cv3d-facechip');
   const legendEl = $('.cv3d-legend');
+  const bannerEl = $('.cv3d-banner');
+  bannerEl.style.cssText = 'position:absolute;left:8px;right:8px;top:8px;z-index:6;display:none;flex-direction:column;gap:4px;pointer-events:auto';
   const measuresBox = $('.cv3d-measures');
   const measuresList = $('.cv3d-measures-list');
   const featuresBox = $('.cv3d-features-panel');
@@ -514,6 +545,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let bboxHelper: InstanceType<typeof THREE.Box3Helper> | null = null;
   let bboxLabels: Sprite3[] = [];
   let highlight: Mesh3 | null = null;
+  /** Per-body highlight overlays, parented to the body mesh so explode/move/rotate carry them. */
+  let highlightParts: Mesh3[] = [];
+  let envelopeHelper: InstanceType<typeof THREE.Box3Helper> | null = null;
+  let envelopeLabel: InstanceType<typeof THREE.Sprite> | null = null;
+  let faceCosts: Record<number, number> | null = null;
+  let costOn = false;
+  let lastLoadedInfo: LoadedInfo | null = null;
   let meta: TessMeta | null = null;
   /**
    * `meta.faces` is indexed by face id and therefore sparse — index 0 and any
@@ -932,9 +970,21 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     updateFrustum();
 
     const bodies = meta?.bodies;
-    const bodyText = bodies == null ? (bodyMeshes.length === 1 ? '1 body' : `${bodyMeshes.length} bodies`)
+    const topo = (meta as { topology?: { isClosedSolid?: boolean; freeEdgeCount?: number } | null } | null)?.topology ?? null;
+    // The badge reads the kernel's verdict, not the old `openShell` flag that
+    // said "open" on every plain solid.
+    const bodyText = topo && topo.isClosedSolid === false
+      ? `⚠ not a closed solid (${topo.freeEdgeCount ?? '?'} free edge(s)) — costing refused`
+      : bodies == null ? (bodyMeshes.length === 1 ? '1 body' : `${bodyMeshes.length} bodies`)
       : bodies === 0 ? '⚠ surface model (no closed solid)'
-      : `${bodies} ${bodies === 1 ? 'body' : 'bodies'}`;
+      : `${bodies} ${bodies === 1 ? 'body' : 'bodies'}${topo?.isClosedSolid ? ' · closed solid' : ''}`;
+    lastLoadedInfo = {
+      fileName: file.name, triangles, bodies: bodies ?? null,
+      isClosedSolid: topo ? (topo.isClosedSolid ?? null) : null,
+      freeEdgeCount: topo ? (topo.freeEdgeCount ?? null) : null,
+      bboxMm: [partSpan.x, partSpan.y, partSpan.z],
+    };
+    try { opts.onLoaded?.(lastLoadedInfo); } catch { /* listener errors must not break the load */ }
     const skippedText = meta?.skippedFaces ? ` · ⚠ ${meta.skippedFaces} faces unmeshed` : '';
     statusFile.textContent = `${file.name} · ${triangles.toLocaleString()} triangles${meta ? ` · ${faceList.length} faces` : ''} · ${bodyText}${skippedText}`;
     statusDims.textContent = `X ${partSpan.x.toFixed(2)} · Y ${partSpan.y.toFixed(2)} · Z ${partSpan.z.toFixed(2)} mm`;
@@ -1352,6 +1402,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
   function clearHighlight(): void {
     if (highlight) { removeAndDispose(overlayGroup, highlight); highlight = null; }
+    for (const h of highlightParts) { h.parent?.remove(h); disposeObject(h); }
+    highlightParts = [];
     faceChip.style.display = 'none';
     invalidate();
   }
@@ -1497,18 +1549,30 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   function highlightFaces(faceIds: Set<number>): void {
     clearHighlight();
     if (!masterPositions || !triFaceAll) return;
-    const tris: number[] = [];
-    for (let t = 0; t < triFaceAll.length; t++) if (faceIds.has(triFaceAll[t])) tris.push(t);
-    if (!tris.length) return;
-    const hp = new Float32Array(tris.length * 9);
-    tris.forEach((t, i) => hp.set(masterPositions!.subarray(t * 9, t * 9 + 9), i * 9));
-    const hg = new THREE.BufferGeometry();
-    hg.setAttribute('position', new THREE.BufferAttribute(hp, 3));
-    hg.computeVertexNormals();
-    highlight = new THREE.Mesh(hg, new THREE.MeshBasicMaterial({ color: 0x4f8ef7, transparent: true, opacity: 0.55, depthTest: true, polygonOffset: true, polygonOffsetFactor: -2, side: THREE.DoubleSide }));
-    highlight.applyMatrix4(partGroup.matrixWorld);
-    overlayGroup.add(highlight);
+    // Group the matching triangles by body. Each overlay is built in the body's
+    // own (part-space) coordinates and added as a CHILD of the body mesh, so an
+    // exploded, moved or rotated body carries its highlight with it. The old
+    // single overlay floated where the body used to be.
+    const byBody = new Map<number, number[]>();
+    for (let bi = 0; bi < bodyMeshes.length; bi++) {
+      const off = bodyMeshes[bi].userData.triOffset as number;
+      const n = (bodyMeshes[bi].geometry.getAttribute('position') as InstanceType<typeof THREE.BufferAttribute>).count / 3;
+      for (let t = off; t < off + n; t++) {
+        if (faceIds.has(triFaceAll[t])) { let arr = byBody.get(bi); if (!arr) { arr = []; byBody.set(bi, arr); } arr.push(t); }
+      }
+    }
+    if (!byBody.size) return;
+    for (const [bi, tris] of byBody) {
+      const hp = new Float32Array(tris.length * 9);
+      tris.forEach((t, i) => hp.set(masterPositions!.subarray(t * 9, t * 9 + 9), i * 9));
+      const hg = new THREE.BufferGeometry();
+      hg.setAttribute('position', new THREE.BufferAttribute(hp, 3));
+      const h = new THREE.Mesh(hg, new THREE.MeshBasicMaterial({ color: 0x4f8ef7, transparent: true, opacity: 0.55, depthTest: true, polygonOffset: true, polygonOffsetFactor: -2, side: THREE.DoubleSide }));
+      bodyMeshes[bi].add(h);
+      highlightParts.push(h);
+    }
     applyClipping();
+    invalidate();
   }
 
   function selectFace(triGlobal: number): void {
@@ -1522,6 +1586,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const face = meta.faces[faceId];
     if (!face) return;
     highlightFaces(new Set([faceId]));
+    try { opts.onFaceSelect?.(faceId, face); } catch { /* listener errors must not break picking */ }
 
     let triCount = 0;
     for (let t = 0; t < triFaceAll.length; t++) if (triFaceAll[t] === faceId) triCount++;
@@ -1618,8 +1683,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
    *  shading are mutually exclusive. Rebuilds the colour buffer for the active
    *  mode (or strips it when neither is on). */
   function applyColorMode(): void {
-    const mode: 'none' | 'facetype' | 'draft' | 'thickness' | 'body' =
-      draftOn ? 'draft'
+    const costRange = (costOn && faceCosts && meta && triFaceAll) ? (() => {
+      const vals = Object.values(faceCosts!).filter(v => Number.isFinite(v) && v > 0);
+      return vals.length ? { min: 0, max: Math.max(...vals) } : null;
+    })() : null;
+    const mode: 'none' | 'facetype' | 'draft' | 'thickness' | 'body' | 'cost' =
+      costRange ? 'cost'
+      : draftOn ? 'draft'
       : (thicknessOn && meta && triFaceAll && thicknessRange) ? 'thickness'
       : (faceColorsOn && meta ? 'facetype' : (bodyColorsOn && bodyMeshes.length >= 2 ? 'body' : 'none'));
     const pull: [number, number, number] = draftAxis === 'x' ? [1, 0, 0] : draftAxis === 'y' ? [0, 1, 0] : [0, 0, 1];
@@ -1645,6 +1715,15 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           const f = meta.faces[triFaceAll[triOffset + t]];
           const col = FACE_COLORS[f?.type ?? 'other'] ?? FACE_COLORS.other;
           for (let v = 0; v < 3; v++) colors.set(col, t * 9 + v * 3);
+        }
+      } else if (mode === 'cost' && meta && triFaceAll && costRange) {
+        // £ per face → the same ramp as wall thickness: cold = cheap, hot = where the money is.
+        const triOffset = mesh.userData.triOffset as number;
+        const span = (costRange.max - costRange.min) || 1;
+        for (let t = 0; t < nTris; t++) {
+          const v = faceCosts![triFaceAll[triOffset + t]];
+          const col = v == null || !(v > 0) ? NO_THICKNESS_COLOR : thicknessColor((v - costRange.min) / span);
+          for (let v3 = 0; v3 < 3; v3++) colors.set(col, t * 9 + v3 * 3);
         }
       } else if (mode === 'thickness' && meta && triFaceAll && thicknessRange) {
         const triOffset = mesh.userData.triOffset as number;
@@ -1688,6 +1767,11 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     } else if (mode === 'body') {
       legendEl.innerHTML = bodyMeshes.map((_, i) =>
         `<span><i style="background:${rgbCss(bodyColorRGB(i))}"></i>Body ${i + 1}</span>`).join('');
+    } else if (mode === 'cost' && costRange) {
+      legendEl.innerHTML = `<span style="opacity:.75">Cost per face (machining minutes × rate)</span>` +
+        `<span><i style="background:${rgbCss(thicknessColor(0))}"></i>£0</span>` +
+        `<span><i style="background:${rgbCss(thicknessColor(1))}"></i>£${costRange.max.toFixed(2)}</span>` +
+        `<span><i style="background:${rgbCss(NO_THICKNESS_COLOR)}"></i>no cost attributed</span>`;
     }
     legendEl.style.display = mode === 'none' ? 'none' : '';
     invalidate();
@@ -2015,6 +2099,47 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       if (!faceIds?.length) { clearHighlight(); return; }
       highlightFaces(new Set(faceIds));
     },
+    setGuardrails(items: GuardrailBannerItem[]): void {
+      const show = items.filter(i => i.blocking && !i.acknowledged);
+      if (!show.length) { bannerEl.style.display = 'none'; bannerEl.innerHTML = ''; return; }
+      bannerEl.innerHTML = show.map((it, i) => `
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;background:rgba(220,38,38,.92);color:#fff;font:600 12px/1.3 system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.25)">
+          <span style="flex:1"><code style="opacity:.85">${it.code}</code> — ${it.message.replace(/</g, '&lt;')}</span>
+          ${it.faceIds?.length ? `<button type="button" data-banner-idx="${i}" style="border:1px solid rgba(255,255,255,.7);background:transparent;color:#fff;border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer">show me</button>` : ''}
+        </div>`).join('');
+      bannerEl.style.display = 'flex';
+      bannerEl.querySelectorAll<HTMLButtonElement>('[data-banner-idx]').forEach(b => {
+        b.onclick = () => { const it = show[Number(b.dataset.bannerIdx)]; if (it?.faceIds?.length) highlightFaces(new Set(it.faceIds)); };
+      });
+    },
+    showEnvelope(envelopeMm: [number, number, number] | null, label?: string): void {
+      if (envelopeHelper) { removeAndDispose(partGroup, envelopeHelper); envelopeHelper = null; }
+      if (envelopeLabel) { removeAndDispose(scene, envelopeLabel); envelopeLabel = null; }
+      if (!envelopeMm || !bodyMeshes.length) { invalidate(); return; }
+      // The envelope is a sorted triple; map it onto the part's axes in size
+      // order so the box is drawn the way the part would be loaded.
+      const bb = new THREE.Box3();
+      for (const m of bodyMeshes) bb.union(m.geometry.boundingBox!);
+      const span = [partSpan.x, partSpan.y, partSpan.z];
+      const axisOrder = [0, 1, 2].sort((a, b) => span[b] - span[a]);       // largest part axis first
+      const envSorted = [...envelopeMm].sort((a, b) => b - a);            // largest envelope dim first
+      const half = [0, 0, 0];
+      axisOrder.forEach((axis, i) => { half[axis] = envSorted[i] / 2; });
+      const c = bb.getCenter(new THREE.Vector3());
+      const box = new THREE.Box3(new THREE.Vector3(c.x - half[0], c.y - half[1], c.z - half[2]), new THREE.Vector3(c.x + half[0], c.y + half[1], c.z + half[2]));
+      envelopeHelper = new THREE.Box3Helper(box, new THREE.Color(0xdc2626));
+      partGroup.add(envelopeHelper);
+      partGroup.updateMatrixWorld(true);
+      envelopeLabel = makeLabel(label ?? `machine envelope ${envelopeMm.map(d => d.toFixed(0)).join(' × ')} mm`, true);
+      envelopeLabel.position.copy(new THREE.Vector3(c.x, box.max.y + partRadius * 0.1, box.max.z).applyMatrix4(partGroup.matrixWorld));
+      scene.add(envelopeLabel);
+      invalidate();
+    },
+    setFaceCosts(costs: Record<number, number> | null): void {
+      faceCosts = costs;
+      costOn = !!costs;
+      applyColorMode();
+    },
     el: root,
     dispose(): void {
       if (disposed) return;
@@ -2029,6 +2154,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       controls.dispose();
       if (viewHelper) { try { viewHelper.dispose(); } catch { /* already gone */ } viewHelper = null; }
       // free every GPU resource this instance created
+      for (const h of highlightParts) { h.parent?.remove(h); disposeObject(h); }
+      highlightParts = [];
       scene.traverse(disposeObject);
       renderer.dispose();
       try { renderer.forceContextLoss(); } catch { /* context may already be gone */ }

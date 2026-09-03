@@ -42,6 +42,8 @@ export interface Decided<T> {
   basis: string;
   /** Decision ids this value rests on, so answering one can invalidate it. */
   dependsOn?: string[];
+  /** B-rep faces (1-based IndexedMap ids) the value was derived from — the join key to the viewer. */
+  faceIds?: number[];
 }
 
 export interface DecisionOption<V = string> {
@@ -74,7 +76,9 @@ export interface Decision<V = string> {
     /** The kernel could not measure something it normally does; type it in. */
     | 'geometry_gap'
     /** The file's magnitudes look like inches saved as millimetres. Confirm before anything is scaled. */
-    | 'units';
+    | 'units'
+    /** No machine in the library holds the part; the engineer picks one or accepts the largest. */
+    | 'machine_envelope';
   question: string;
   /** Why geometry cannot answer this. Shown to the engineer so the ask reads as
    *  a limit of physics rather than a limit of the software. */
