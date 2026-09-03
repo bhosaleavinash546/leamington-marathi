@@ -343,39 +343,80 @@ BLANKBOX = '________'
 # ═══════════ 1 · OUR SHOULD-COST TODAY: CAPABLE, BUT HANDS-ON ═══════════════
 s = header('Our should-cost today: capable, but hands-on', 'Where we are')
 text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
-     [[('We already cost parts properly. The method is sound; the effort is manual — 12 to 69 '
-        'values typed in for every part.', 11.5, BODY, False)]])
-today = [
-    ('check', 'Trusted and thorough',
-     'A rigorous bottom-up method, applied across every commodity we buy.', GREEN),
-    ('person', 'Hands-on setup',
-     'Material, process and machine are chosen by a person, part by part.', AMBER),
-    ('clip', 'Manual data entry',
-     'Geometry and tolerances are read off the 3D model and the drawing, then typed in.', AMBER),
-    ('clock', 'Updated by hand',
-     'Rates and inputs are refreshed manually as the economics move.', AMBER),
+     [[('We already cost parts properly. On the left is that job as it runs today. On the right is '
+        'what it is worth, in our own numbers.', 11.5, BODY, False)]])
+
+card(s, Inches(0.45), Inches(1.96), Inches(6.1), Inches(4.5), AMBER,
+     'OUR SHOULD-COST TODAY · capable, but hands-on',
+     [('Trusted and thorough', GREEN, True),
+      ('A rigorous bottom-up method, across every commodity.',),
+      ('',),
+      ('Hands-on setup', DARK, True),
+      ('Material, process and machine chosen by a person,',),
+      ('part by part.',),
+      ('',),
+      ('Manual data entry', DARK, True),
+      ('Geometry and tolerances read off the 3D model and the',),
+      ('drawings, then typed in — 12 to 69 values per part.',),
+      ('',),
+      ('Updated by hand', DARK, True),
+      ('Rates and inputs refreshed manually as economics move.',)])
+
+text(s, Inches(6.78), Inches(1.98), Inches(6.1), Inches(0.3),
+     [[('What it is worth: five numbers, four of them ours', 11.5, MUTED, True)]])
+rows = [
+    (('A', DARK, True), 'Minutes to cost one part today', (BLANKBOX, INDIGO, True)),
+    (('B', DARK, True), 'Of those, minutes reading the model and typing', (BLANKBOX, INDIGO, True)),
+    (('C', DARK, True), 'Parts we cost in a year', (BLANKBOX, INDIGO, True)),
+    (('D', DARK, True), 'Parts in a basket we never cost individually', (BLANKBOX, INDIGO, True)),
+    (('E', DARK, True), 'Share of those values the software fills itself', (BLANKBOX, GREEN, True)),
 ]
-y = Inches(2.06)
-for ic, t_, b_, c_ in today:
-    band(s, Inches(0.45), y, Inches(12.43), Inches(0.95), ic, t_, b_, c_)
-    y += Inches(1.02)
-callout(s, Inches(0.45), Inches(6.2), Inches(12.43), Inches(1.0), GREENBG, GREEN,
+table(s, Inches(6.78), Inches(2.26), Inches(6.1),
+      ['', 'What it is', 'Our number'], rows,
+      [Inches(0.45), Inches(3.95), Inches(1.7)], row_h=Inches(0.34), size=9.8)
+
+chips = [('Hours spent typing today', 'B × C ÷ 60', RED),
+         ('Hours freed a year', 'B × E × C ÷ 60', GREEN),
+         ('Extra parts that time would cost', 'B × E × C ÷ A', INDIGO)]
+cy = Inches(4.6)
+for lbl, fml, col in chips:
+    box(s, Inches(6.78), cy, Inches(6.1), Inches(0.58), fill=PANEL, line=LINE, round_=True)
+    box(s, Inches(6.78), cy, Inches(0.075), Inches(0.58), fill=col)
+    text(s, Inches(7.02), cy + Inches(0.15), Inches(3.5), Inches(0.28),
+         [[(lbl, 10.5, DARK, True)]])
+    text(s, Inches(10.55), cy + Inches(0.13), Inches(2.2), Inches(0.3),
+         [[(fml, 12.5, col, True)]], align=PP_ALIGN.RIGHT)
+    cy += Inches(0.62)
+
+callout(s, Inches(0.45), Inches(6.56), Inches(12.43), Inches(0.82), GREENBG, GREEN,
         'The step forward: the same defensible should-cost, with the manual work automated',
         'Nothing about the method changes. The judgement, the build-up and the numbers we would '
         'defend to a supplier all stay as they are. What we are proposing to remove is the typing, '
         'and then the limit on how many parts we can get through.')
-notes(s, "I want to start by saying what we do well, because the proposal is not a criticism of it. "
-         "We cost parts properly. The method is bottom-up, it covers every commodity, and it is the "
-         "number we would defend in front of a supplier. That is worth protecting and nothing I am "
-         "about to propose changes it. What I want to talk about is the effort. Every one of those "
-         "costings is set up by hand. A person chooses the material, the process and the machine. A "
-         "person opens the 3D model and the drawing, reads the geometry and the tolerances, and "
-         "types them in. Depending on the commodity that is somewhere between twelve and "
-         "sixty-nine values per part, and those counts come straight off our own input forms. And "
-         "when the economics move, somebody goes back in and updates the rates by hand. None of "
-         "that is wrong. It is just slow, and it is why we cost the parts we have time for rather "
-         "than the parts we would like to. The green strip is the whole idea in one line. Same "
-         "method, same defensible answer, with the manual work taken out of it.")
+notes(s, "I want to start by saying what we do well, because none of this is a criticism of it. The "
+         "left-hand card is our should-cost as it runs today. The method is trusted and thorough: a "
+         "rigorous bottom-up build-up, applied across every commodity we buy, and it is the number "
+         "we would defend in front of a supplier. Nothing I am about to propose changes that. What "
+         "I want to talk about is the effort behind it. The setup is hands-on: a person chooses the "
+         "material, the process and the machine, part by part. The data entry is manual: somebody "
+         "opens the 3D model and the drawings, reads the geometry and the tolerances, and types "
+         "them in. And when the economics move, somebody goes back and updates the rates by hand. "
+         "The line at the bottom of that card is the size of it: between twelve and sixty-nine "
+         "values typed per part depending on the commodity, and those counts come straight off our "
+         "own input forms. None of that is wrong. It is just slow, and it is the reason we cost the "
+         "parts we have time for rather than the parts we would like to. Now the right-hand side, "
+         "and I want to be straight about why it is empty. I have not put a saving on this slide, "
+         "because we have never timed this job and we have never compared this tool against a price "
+         "we have actually paid. Any number I put there would be my estimate dressed up as a "
+         "measurement. Four of these five are ours and we can get them quickly: how long a part "
+         "takes, how much of that is reading and typing, how many parts we cost a year, and how "
+         "many in a basket we never cost at all. Time a handful of parts in one commodity and you "
+         "have the first two; the others are in our own records and the programme data. The fifth, "
+         "E, is what the trial measures. Put those numbers in and the three boxes underneath fill "
+         "themselves in: the hours we spend typing today, the hours we would get back, and how many "
+         "more parts that time would cost. That is a business case we own rather than one I have "
+         "handed you. And the green strip is the whole idea in one line: same method, same "
+         "defensible answer, with the manual work taken out of it.")
 
 # ═══════════ 2 · OPTION 1 · AUTOMATE THE DATA ENTRY, INSIDE CAPEE ═══════════
 s = header('Option 1: automate the data entry, inside CAPEE', 'Option 1 · start now')
