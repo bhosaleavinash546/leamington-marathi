@@ -552,72 +552,105 @@ notes(s, "This is the slide I would spend the most time on, because it is the pa
          "it can today.")
 
 # ═══════════ 4 · WHAT WE GET FROM EACH ═════════════════════════════════════
+def wide_card(slide, x, y, w, h, accent, title, col1, col2):
+    """One card with two columns of text inside it.
+
+    Option 2 has twice as much to say as Option 1, and giving it twice the
+    width says so before anyone reads a word.
+    """
+    box(slide, x, y, w, h, fill=PANEL, line=LINE, round_=True)
+    box(slide, x, y, Inches(0.075), h, fill=accent)
+    text(slide, x + Inches(0.22), y + Inches(0.14), w - Inches(0.4), Inches(0.3),
+         [[(title, 13, DARK, True)]])
+    cw = (w - Inches(0.62)) / 2
+    for i, lines in enumerate((col1, col2)):
+        runs = [[(ln[0], 10.5, ln[1] if len(ln) > 1 else BODY,
+                  ln[2] if len(ln) > 2 else False)] for ln in lines]
+        text(slide, x + Inches(0.22) + (cw + Inches(0.18)) * i, y + Inches(0.5),
+             cw, _h(h - Inches(0.6)), runs, space_after=3, line_spacing=1.12)
+
+
 s = header('What we get from each', 'The benefits')
 text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
      [[('Stated in kind, not in pounds. Slide 1 turns these into hours once we fill in our own four '
         'numbers.', 11.5, BODY, False)]])
 
-card(s, Inches(0.45), Inches(2.0), Inches(6.1), Inches(4.35), INDIGO,
-     'OPTION 1 · automatic input into CAPEE',
+card(s, Inches(0.45), Inches(1.98), Inches(3.95), Inches(4.6), INDIGO,
+     'OPTION 1 · input into CAPEE',
      [('Checking instead of typing', INDIGO, True),
-      ('The values come off the 3D model; the engineer confirms.',),
+      ('The values come off the 3D model.',),
       ('',),
       ('The same answer every time', INDIGO, True),
-      ('One method, applied identically, whoever costs the part.',),
+      ('One method, whoever costs the part.',),
       ('',),
-      ('More parts costed by the same team', INDIGO, True),
-      ('The time saved goes back into costing more of the basket.',),
+      ('More parts for the same team', INDIGO, True),
+      ('The time saved goes back into costing.',),
       ('',),
       ('Nothing new to learn', INDIGO, True),
-      ('CAPEE does not change. Same screens, same way of working.',),
+      ('CAPEE does not change.',),
       ('',),
       ('It can start now', INDIGO, True),
-      ('No AI involved, so it does not wait on an AI approval.',)])
+      ('No AI, so no approval to wait for.',)])
 
-card(s, Inches(6.78), Inches(2.0), Inches(6.1), Inches(4.35), VIOLET,
-     'OPTION 2 · CostVision end to end',
-     [('Every part costed, not a sample', VIOLET, True),
-      ('A whole basket priced from its own geometry, in one run.',),
-      ('',),
-      ('Days of work become one run', VIOLET, True),
-      ('Gathering the data is the job; the costing stops being it.',),
-      ('',),
-      ('A stronger position with suppliers', VIOLET, True),
-      ('The build-up, where their price differs, and what to ask.',),
-      ('',),
-      ('Work we cannot do at all today', VIOLET, True),
-      ('Electronics costed from a photo. RFQ packs costed and ranked.',),
-      ('',),
-      ('Design-to-cost becomes a decision', VIOLET, True),
-      ('Changes are priced and ranked, not just listed.',)])
+wide_card(s, Inches(4.63), Inches(1.98), Inches(8.25), Inches(4.6), VIOLET,
+          'OPTION 2 · CostVision end to end',
+          [('It runs on its own', VIOLET, True),
+           ('Parts go in, costed reports come out. A',),
+           ('person answers only what the model cannot show.',),
+           ('',),
+           ('The same method for everything we make', VIOLET, True),
+           ('Metal, plastic, rubber, composites,',),
+           ('electronics and assemblies.',),
+           ('',),
+           ('We can cost electronics', VIOLET, True),
+           ('A photo of a circuit board gives us the parts',),
+           ('list, the board spec and a price.',),
+           ('',),
+           ('Software costed too', VIOLET, True),
+           ('43 modules, from powertrain and driver',),
+           ('assistance through to cloud.',)],
+          [('Where a supplier price differs', VIOLET, True),
+           ('Their price next to our build-up, with the gap',),
+           ('shown in each part of the cost.',),
+           ('',),
+           ('And what to do about it', VIOLET, True),
+           ('What to go after, what to ask them, and what',),
+           ('it is worth over a year.',),
+           ('',),
+           ('A whole RFQ pack costed', VIOLET, True),
+           ('The line items are pulled out, priced and put',),
+           ('in order of money.',),
+           ('',),
+           ('Design changes with a price on them', VIOLET, True),
+           ('What makes the part expensive, and what',),
+           ('each change would save.',)])
 
-callout(s, Inches(0.45), Inches(6.45), Inches(12.43), Inches(0.9), GREENBG, GREEN,
+callout(s, Inches(0.45), Inches(6.62), Inches(12.43), Inches(0.83), GREENBG, GREEN,
         'The two build on each other',
         "Option 1's benefits arrive first and are kept when Option 2 lands. Option 2's rest on the "
-        'accuracy figure that Option 1 produces, which is the reason for doing them in this order '
-        'rather than choosing between them.')
-notes(s, "This is the answer to what we get for it, and I have written it in kind rather than in "
-         "pounds, for the reason I gave on the first slide: we have never timed this job and never "
-         "checked the tool against a price we paid, so a pound figure from me would be a guess. "
-         "Take the left column first. Option one turns the job from typing into checking, because "
-         "the values come off the model. It gives the same answer every time, so a part costed by "
-         "one engineer and a part costed by another are comparable, which matters when we put them "
-         "in front of a supplier. The time that gets freed does not disappear — it goes back into "
-         "costing more of the basket with the team we already have. Nobody learns a new tool, "
-         "because CAPEE does not change. And the last one is the practical point for this room: "
-         "there is no AI in Option one, so it does not wait on an AI approval. We can start it. "
-         "Now the right column, and these are different in kind rather than bigger. Every part in a "
-         "basket gets a proper cost instead of a sample scaled up. A basket that takes days of "
-         "engineer time becomes one run, and I want to be honest that the real work then becomes "
-         "gathering the part list, the models and our own rate data — the costing stops being the "
-         "bottleneck. We stop taking an estimate to a supplier and start taking the build-up, plus "
-         "where their price differs from ours and what to ask them about it. There is work we "
-         "simply cannot do today: costing electronics from a photograph of the board, and turning "
-         "an RFQ pack into costed, ranked lines. And design-to-cost stops being a list of "
-         "suggestions and becomes a decision, because each change has a number against it. The "
-         "green strip is the sequencing point. Option one's benefits arrive first and we keep them. "
-         "Option two's depend on the accuracy figure that Option one produces, which is why these "
-         "are an order rather than a choice.")
+        'accuracy figure that Option 1 produces, which is why these are an order and not a choice.')
+notes(s, "This is what we get for it, written in kind rather than in pounds, for the reason I gave "
+         "on the first slide: we have never timed this job and never checked the tool against a "
+         "price we paid, so a pound figure from me would be a guess. The left column is Option one, "
+         "and it is short on purpose. The job turns from typing into checking, because the values "
+         "come off the model. It gives the same answer every time, so parts costed by different "
+         "engineers are comparable. The time freed goes back into costing more parts with the team "
+         "we already have. Nobody learns a new tool. And it can start now, because there is no AI "
+         "in it to approve. The right column is wider because Option two genuinely has more in it. "
+         "It runs on its own — parts go in and costed reports come out, and a person answers only "
+         "what the model cannot show. It uses the same method for everything we make, so a plastic "
+         "clip and a machined bracket are built up the same way and can sit in the same report. It "
+         "costs electronics from a photograph of the board, which is work we largely cannot do "
+         "today. It costs software as well: forty-three modules, from powertrain and driver "
+         "assistance through to the cloud back end, which matters more every programme. Then the "
+         "second half of that column is the part I would put to purchasing. It shows where a "
+         "supplier's price differs from our own build-up and which part of the cost the gap sits "
+         "in. Then it tells us what to do about it: what to go after, what to ask them, and what it "
+         "is worth over a year. A whole RFQ pack can go in and come back priced and put in order of "
+         "money. And design changes come back with a price on them rather than as a list of "
+         "suggestions. The green strip is the sequencing point. Option one's benefits arrive first "
+         "and we keep them. Option two's depend on the accuracy figure Option one produces, which "
+         "is why these are an order rather than a choice.")
 
 
 # ═══════════ 5 · WHAT WE ARE ASKING FOR ════════════════════════════════════
