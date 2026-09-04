@@ -41,7 +41,7 @@ const BENTO = [
 const STEPS = [
   { n: '1', title: 'Select or upload', desc: 'Pick a vehicle system or drop a CAD model. Set volume, region and currency.' },
   { n: '2', title: 'Generate & cost', desc: 'AI proposes cost-down ideas while the engine prices each one from first principles.' },
-  { n: '3', title: 'Verify & decide', desc: 'Every figure is engine-stamped confirmed. Export to sourcing, track in the pipeline.' },
+  { n: '3', title: 'Verify & decide', desc: 'Each idea carries the engine\u2019s verdict \u2014 confirmed, contradicted, or why it could not be priced. Export to sourcing, track in the pipeline.' },
 ];
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
@@ -141,7 +141,7 @@ export default function HomePage() {
   const METRICS = [
     { num: '13', em: '+', cap: 'Vehicle systems covered' },
     { num: '16', em: '%', cap: 'Feature-based cost error (vs 35% mass)' },
-    { num: '100', em: '%', cap: 'Numbers engine-verified' },
+    { num: 'Every', em: '', cap: 'Idea says if the engine checked it' },
     { num: 'Min', em: 's', cap: 'To a costed idea, not weeks' },
   ];
 

@@ -37,6 +37,9 @@ export const FETCH_DEFAULTS = {
  *  safe answer is to decline. */
 const PRIVATE_HOST = /^(localhost|127\.|0\.|10\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|\[?::1\]?|\[?fc00:|\[?fe80:)/i;
 
+/** Redirect chain bound. Every hop is re-validated; this stops a loop. */
+export const MAX_REDIRECTS = 4;
+
 export function isFetchableUrl(u) {
   let url;
   try { url = new URL(String(u)); } catch { return { ok: false, reason: 'unparseable url' }; }
@@ -172,17 +175,38 @@ export async function fetchArticle(url, {
   if (!check.ok) return { url: String(url), ok: false, error: check.reason };
   if (typeof fetchImpl !== 'function') return { url: check.url, ok: false, error: 'no fetch implementation available' };
 
-  let res;
-  try {
-    res = await fetchImpl(check.url, {
-      redirect: 'follow',
-      signal: AbortSignal.timeout(timeoutMs),
-      headers: { 'User-Agent': 'BrainSpark-Horizon/1.0 (technology foresight research)', Accept: 'text/html,application/xhtml+xml' },
-    });
-  } catch (e) {
-    return { url: check.url, ok: false, error: `request failed: ${String(e?.message || e).slice(0, 120)}` };
+  // Follow redirects MANUALLY, re-checking each hop.
+  //
+  // With redirect:'follow' the guard above only ever saw the FIRST hostname, so
+  // a search result that 302'd to 169.254.169.254 or to localhost was fetched
+  // anyway (Sept 2026 review, R-5). isSafeWebhookUrl already worked this way;
+  // this path did not. Each Location is re-validated by the same rules, and the
+  // chain is bounded.
+  let res, current = check.url;
+  for (let hop = 0; ; hop++) {
+    try {
+      res = await fetchImpl(current, {
+        redirect: 'manual',
+        signal: AbortSignal.timeout(timeoutMs),
+        headers: { 'User-Agent': 'BrainSpark-Horizon/1.0 (technology foresight research)', Accept: 'text/html,application/xhtml+xml' },
+      });
+    } catch (e) {
+      return { url: current, ok: false, error: `request failed: ${String(e?.message || e).slice(0, 120)}` };
+    }
+    const status = Number(res?.status ?? 0);
+    if (status < 300 || status > 399) break;
+    if (hop >= MAX_REDIRECTS) return { url: current, ok: false, status, error: `too many redirects (${MAX_REDIRECTS})` };
+    const location = res.headers?.get?.('location');
+    if (!location) break;
+    let next;
+    try { next = new URL(location, current).toString(); } catch { return { url: current, ok: false, status, error: 'unparseable redirect target' }; }
+    const hopCheck = isFetchableUrl(next);
+    if (!hopCheck.ok) return { url: current, ok: false, status, error: `redirect to a blocked host: ${hopCheck.reason}` };
+    current = hopCheck.url;
   }
-  if (!res?.ok) return { url: check.url, ok: false, status: res?.status ?? 0, error: `http ${res?.status ?? 'error'}` };
+  if (!res?.ok) return { url: current, ok: false, status: res?.status ?? 0, error: `http ${res?.status ?? 'error'}` };
+  // Everything downstream reports the FINAL url, which is what was read.
+  check.url = current;
 
   const ctype = String(res.headers?.get?.('content-type') ?? '');
   if (ctype && !/text\/html|text\/plain|application\/xhtml/i.test(ctype)) {

@@ -8,8 +8,12 @@
 // Deliberately v1: no org-scoped data migration yet — this is the substrate.
 // ─────────────────────────────────────────────────────────────────────────────
 import crypto from 'crypto';
+import { addColumn } from '../db-migrate.mjs';
 
 export const ROLES = ['owner', 'admin', 'member', 'viewer'];
+
+/** An invite secret. 32 bytes base64url — the thing that actually grants the role. */
+export const newInviteToken = () => crypto.randomBytes(32).toString('base64url');
 
 /**
  * The org helpers, usable OUTSIDE the org routes.
@@ -41,6 +45,15 @@ export function orgAccess(db) {
     );
     CREATE INDEX IF NOT EXISTS idx_org_members_user ON org_members(userId);
   `);
+  // An invite is a SECRET, not an email address.
+  //
+  // Until Sept 2026 a pending row activated on bare email match the first time
+  // that address signed in — and signup marks an account verified without ever
+  // proving the address. So anyone who signed up as the invited email silently
+  // took the invited role, including admin, which gates company DFM standards.
+  // Claiming now requires the token the inviter shares out-of-band.
+  addColumn(db, 'org_members', 'inviteToken', 'TEXT');
+  addColumn(db, 'org_members', 'claimedAt', 'TEXT');
 
   /** Personal org on first touch — every user belongs somewhere from day one. */
   function ensurePersonalOrg(user) {
@@ -87,10 +100,23 @@ export function registerOrgRoutes(app, { db, requireAuth, rateLimit }) {
 
   const { ensurePersonalOrg } = access;
 
-  // Activate pending invites when a user shows up (call from any org endpoint).
-  function claimPendingInvites(user) {
-    db.prepare("UPDATE org_members SET userId = ?, status = 'active' WHERE email = ? AND status = 'pending'")
-      .run(user.id, user.email);
+  /**
+   * Claim ONE invite with its token. The email must also match, so a leaked
+   * token cannot be redeemed by a third party, but the token is what grants
+   * the role — an address alone proves nothing while signup does not verify it.
+   * Returns { ok, orgId, role } or { ok: false, reason }.
+   */
+  function claimInvite(user, token) {
+    const t = String(token || '').trim();
+    if (!t) return { ok: false, reason: 'An invite token is required.' };
+    const row = db.prepare("SELECT orgId, email, role FROM org_members WHERE inviteToken = ? AND status = 'pending'").get(t);
+    if (!row) return { ok: false, reason: 'That invite is not valid, or has already been used.' };
+    if (row.email !== String(user.email || '').toLowerCase()) {
+      return { ok: false, reason: 'That invite was issued to a different email address.' };
+    }
+    db.prepare("UPDATE org_members SET userId = ?, status = 'active', claimedAt = ?, inviteToken = NULL WHERE orgId = ? AND email = ?")
+      .run(user.id, new Date().toISOString(), row.orgId, row.email);
+    return { ok: true, orgId: row.orgId, role: row.role };
   }
 
   const roleIn = access.memberRole;
@@ -109,7 +135,6 @@ export function registerOrgRoutes(app, { db, requireAuth, rateLimit }) {
 
   // ── Endpoints ──
   app.get('/api/orgs', requireAuth, (req, res) => {
-    claimPendingInvites(req.user);
     ensurePersonalOrg(req.user);
     const rows = db.prepare(`
       SELECT o.id, o.name, m.role,
@@ -128,11 +153,27 @@ export function registerOrgRoutes(app, { db, requireAuth, rateLimit }) {
     const email = String(req.body?.email || '').trim().toLowerCase();
     const role = ROLES.includes(req.body?.role) && req.body.role !== 'owner' ? req.body.role : 'member';
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return res.status(400).json({ error: 'Valid email required.' });
+    const token = newInviteToken();
     try {
-      db.prepare("INSERT INTO org_members (orgId, email, role, status, invitedBy, createdAt) VALUES (?,?,?,'pending',?,?)")
-        .run(req.params.orgId, email, role, req.user.id, new Date().toISOString());
+      db.prepare("INSERT INTO org_members (orgId, email, role, status, invitedBy, createdAt, inviteToken) VALUES (?,?,?,'pending',?,?,?)")
+        .run(req.params.orgId, email, role, req.user.id, new Date().toISOString(), token);
     } catch { return res.status(409).json({ error: 'That email is already a member or invitee.' }); }
-    res.json({ ok: true, note: 'Invite recorded — it activates when that email signs up (email delivery of invites arrives with the billing milestone).' });
+    // The token is returned ONCE, to the inviter, to pass on out of band. It is
+    // the credential; the email address is only a check that it reached the
+    // intended person.
+    res.json({
+      ok: true,
+      inviteToken: token,
+      note: 'Invite created. Send this token to that person — they claim it after signing up. An invite cannot be claimed by email address alone.',
+    });
+  });
+
+  // Claim an invite. Rate-limited: the token is a secret, so guessing it must
+  // cost something even though 32 random bytes are not guessable in practice.
+  app.post('/api/orgs/invites/claim', requireAuth, rateLimit(20, 60 * 60 * 1000), (req, res) => {
+    const result = claimInvite(req.user, req.body?.token);
+    if (!result.ok) return res.status(400).json({ error: result.reason });
+    res.json(result);
   });
 
   app.patch('/api/orgs/:orgId/members/:email', requireAuth, requireOrgRole('owner'), (req, res) => {
@@ -145,5 +186,5 @@ export function registerOrgRoutes(app, { db, requireAuth, rateLimit }) {
     res.json({ ok: true });
   });
 
-  return { ensurePersonalOrg, requireOrgRole };
+  return { ensurePersonalOrg, requireOrgRole, claimInvite };
 }

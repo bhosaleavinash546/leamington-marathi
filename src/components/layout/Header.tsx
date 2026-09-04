@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { TOOLS, TOOL_GROUPS, SETTINGS_LINKS } from '../../config/tools';
+import { getAuthToken } from '../../services/auth';
 
 const dropdownVariants = {
   hidden: { opacity: 0, y: -6, scale: 0.97 },
@@ -39,7 +40,7 @@ function ToolSearch() {
   useEffect(() => {
     const s = q.trim();
     if (s.length < 2) { setContent([]); return; }
-    const token = localStorage.getItem('brainspark_auth');
+    const token = getAuthToken();
     if (!token) { setContent([]); return; }
     const ctl = new AbortController();
     const t = setTimeout(async () => {
@@ -51,7 +52,7 @@ function ToolSearch() {
         const d = await r.json();
         setContent([
           ...(d.ideas || []).slice(0, 3).map((x: { id: string; title: string }) => ({ kind: 'idea' as const, id: x.id, title: x.title, route: '/marketplace' })),
-          ...(d.projects || []).slice(0, 2).map((x: { id: string; title: string }) => ({ kind: 'project' as const, id: x.id, title: x.title, route: `/results/${x.id}` })),
+          ...(d.projects || []).slice(0, 2).map((x: { id: string; title: string }) => ({ kind: 'project' as const, id: x.id, title: x.title, route: `/results?id=${encodeURIComponent(x.id)}` })),
           ...(d.quotes || []).slice(0, 2).map((x: { id: string; title: string }) => ({ kind: 'quote' as const, id: x.id, title: x.title, route: '/should-cost' })),
         ]);
       } catch { /* aborted or offline — the tool list still works */ }

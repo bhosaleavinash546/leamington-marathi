@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link2, CheckCircle, AlertCircle, ExternalLink, Slack, Send, Construction, Clock, Database, Settings, GitBranch, Box } from 'lucide-react';
 import { toast } from '../hooks/useToast';
+import { getAuthToken } from '../services/auth';
 
 interface WebhookConfig {
   slackUrl: string;
@@ -48,7 +49,7 @@ export default function IntegrationsPage() {
     try {
       const r = await fetch('/api/webhooks/test', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${(() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return ''; } })()}` },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${(getAuthToken() ?? '')}` },
         body: JSON.stringify({ url, type }),
       });
       setTestStatus(s => ({ ...s, [type]: r.ok ? 'ok' : 'fail' }));
@@ -91,7 +92,7 @@ export default function IntegrationsPage() {
             <Link2 size={28} className="text-blue-400" />
           </div>
           <h1 className="text-4xl font-black text-white mb-3">Integrations</h1>
-          <p className="text-slate-400">Connect BrainSpark to your team's workflow tools. When ideas are approved, automatically notify your team.</p>
+          <p className="text-slate-400">Connect BrainSpark to your team's workflow tools. Configure a webhook and post to the channel from here; automatic posting on approval is not built yet.</p>
         </div>
 
         {/* ── Live Integrations ── */}
@@ -106,7 +107,7 @@ export default function IntegrationsPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-white font-semibold">Slack</h3>
-                <p className="text-slate-500 text-xs">Notify a channel when ideas are approved</p>
+                <p className="text-slate-500 text-xs">Post an idea to a channel with the test button</p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -158,11 +159,18 @@ export default function IntegrationsPage() {
             className="bg-navy-900 rounded-2xl border border-white/10 p-4 flex items-center justify-between">
             <div>
               <p className="text-white text-sm font-medium">Auto-notify on Approval</p>
-              <p className="text-slate-500 text-xs mt-0.5">Automatically trigger webhooks when you mark an idea as "Approved"</p>
+              <p className="text-slate-500 text-xs mt-0.5">
+                Preference saved on this device. Automatic posting on approval is not built yet —
+                use “Send test message” to post to the channel manually.
+              </p>
             </div>
             <button
+              type="button"
+              role="switch"
+              aria-checked={config.autoNotify}
+              aria-label="Auto-notify on approval (preference only — automatic posting is not implemented)"
               onClick={() => setConfig(c => ({ ...c, autoNotify: !c.autoNotify }))}
-              className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 ${config.autoNotify ? 'bg-blue-500' : 'bg-navy-700 border border-white/10'}`}
+              className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 ${config.autoNotify ? 'bg-blue-500' : 'bg-navy-700 border border-white/10'}`}
             >
               <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${config.autoNotify ? 'left-6' : 'left-1'}`} />
             </button>

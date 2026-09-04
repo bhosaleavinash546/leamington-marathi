@@ -4,9 +4,10 @@ import { motion } from 'framer-motion';
 import { GitCompare, Upload, X, Zap, ChevronRight, Gauge } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import CadViewer3D from '../components/CadViewer3D';
+import { getAuthToken } from '../services/auth';
 
 const is3dCad = (name: string) => /\.(step|stp|igs|iges|stl)$/i.test(name);
-const authToken = () => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token as string; } catch { return ''; } };
+const authToken = () => getAuthToken() ?? '';
 
 interface DeltaIdea {
   title: string;

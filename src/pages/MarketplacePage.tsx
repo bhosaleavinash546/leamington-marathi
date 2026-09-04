@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Store, Star, TrendingDown, Clock, ChevronDown, ChevronUp, CheckCircle,
-  Lightbulb, ThumbsUp, ChevronRight, GitMerge, Layers, FileDown,
+  Lightbulb, ThumbsUp, ChevronRight, GitMerge, Layers, FileDown, AlertTriangle
 } from 'lucide-react';
 import { exportMarketplaceIdeaPdf, exportMarketplaceCataloguePdf } from '../services/export-service';
 import BusinessCaseModal from '../components/BusinessCaseModal';
@@ -14,6 +14,7 @@ import {
   type CommodityColor, type CommodityGroup,
 } from '../data/commodity-taxonomy';
 import { classifyIdea, POWERTRAINS, VOLTAGES, type Powertrain, type Voltage } from '../data/idea-classify.mjs';
+import { getAuthToken, authHeader } from '../services/auth';
 
 interface MarketplaceIdea {
   id: string;
@@ -122,6 +123,7 @@ export default function MarketplacePage() {
   const [filterVoltage, setFilterVoltage] = useState<'All' | Voltage>('All');
   const [ideas, setIdeas] = useState<MarketplaceIdea[]>([]);
   const [loadingIdeas, setLoadingIdeas] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [showSubmit, setShowSubmit] = useState(false);
   const [submitForm, setSubmitForm] = useState({
     title: '', system: '', costSavingType: '', annualSaving: '',
@@ -144,14 +146,20 @@ export default function MarketplacePage() {
   }>({ approvedIdeas: [], totalApproved: 0, projectCount: 0 });
 
   useEffect(() => {
-    fetch('/api/marketplace')
-      .then(r => (r.ok ? r.json() : []))
-      .then(data => setIdeas(Array.isArray(data) ? data : []))
-      .catch(() => {})
+    // The corpus is authenticated (it is the idea library, not marketing).
+    // A failed load sets an error rather than an empty list — "no ideas match
+    // your filters" and "the library did not load" are different statements.
+    fetch('/api/marketplace', { headers: authHeader() })
+      .then(async r => {
+        if (!r.ok) throw new Error(r.status === 401 ? 'Sign in to browse the idea library.' : `Could not load the library (${r.status}).`);
+        return r.json();
+      })
+      .then(data => { setIdeas(Array.isArray(data) ? data : []); setLoadError(''); })
+      .catch(e => setLoadError(e instanceof Error ? e.message : 'Could not load the library.'))
       .finally(() => setLoadingIdeas(false));
 
     // Prefer server-side annotations (cross-device); fall back to localStorage.
-    const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+    const token = getAuthToken();
     const local = loadInsightsFromLocalStorage();
     setInsights(local);
     if (token) {
@@ -288,16 +296,13 @@ export default function MarketplacePage() {
     setSubmitting(true);
     setSubmitMsg('');
     try {
-      const token = (() => {
-        try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; }
-        catch { return ''; }
-      })();
+      const token = getAuthToken();
       const r = await fetch('/api/marketplace', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ ...submitForm, ...(confirmDuplicate ? { confirmDuplicate: true } : {}) }),
       });
-      const d = await r.json();
+      const d = await r.json().catch(() => ({}));
       // Duplicate warning: server found near-restatements of approved ideas —
       // show them and require an explicit "submit anyway".
       if (d.ok === false && Array.isArray(d.duplicateWarning)) {
@@ -305,6 +310,8 @@ export default function MarketplacePage() {
         setSubmitMsg('');
         return;
       }
+      // A rejected submission used to fall through to the success message.
+      if (!r.ok) { setSubmitMsg(`Submission failed: ${d.error || `server error ${r.status}`}`); return; }
       setDupWarning(null);
       setSubmitMsg(d.message || 'Submitted!');
       setSubmitForm({
@@ -410,7 +417,7 @@ export default function MarketplacePage() {
                 const next = !showCoverage;
                 setShowCoverage(next);
                 if (next && !coverage) {
-                  const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+                  const token = getAuthToken();
                   fetch('/api/idea-archive', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
                     .then(r => r.ok ? r.json() : null).then(d => { if (d) setCoverage(d); }).catch(() => {});
                 }
@@ -425,7 +432,7 @@ export default function MarketplacePage() {
                 setShowThemes(next);
                 if (!next) setThemeFilter(null);
                 if (next && !themes) {
-                  const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+                  const token = getAuthToken();
                   fetch('/api/marketplace/clusters', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
                     .then(r => r.ok ? r.json() : null).then(d => { if (d?.clusters) setThemes(d.clusters); }).catch(() => {});
                 }
@@ -642,7 +649,7 @@ export default function MarketplacePage() {
               className="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/30 resize-none"
             />
             {submitMsg && (
-              <p className={`text-sm ${submitMsg.includes('failed') ? 'text-red-400' : 'text-green-400'}`}>
+              <p className={`text-sm ${/^Submission failed/.test(submitMsg) ? 'text-red-400' : 'text-green-400'}`}>
                 {submitMsg}
               </p>
             )}
@@ -858,7 +865,7 @@ export default function MarketplacePage() {
                     <button
                       onClick={async e => {
                         e.stopPropagation();
-                        const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+                        const token = getAuthToken();
                         if (!token) { toast('Sign in to vote', 'error'); return; }
                         try {
                           const r = await fetch(`/api/marketplace/${idea.id}/vote`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
@@ -903,7 +910,15 @@ export default function MarketplacePage() {
               </button>
             )}
 
-            {filtered.length === 0 && (
+            {loadError && (
+              <div className="text-center py-16 text-danger-400" role="alert">
+                <AlertTriangle size={40} className="mx-auto mb-3 opacity-60" />
+                <p className="text-sm font-medium">{loadError}</p>
+                <p className="text-xs text-slate-500 mt-1">This is a load failure, not an empty library.</p>
+              </div>
+            )}
+
+            {!loadError && filtered.length === 0 && (
               <div className="text-center py-16 text-slate-500">
                 <Store size={40} className="mx-auto mb-3 opacity-30" />
                 <p className="text-sm">No ideas match your filters.</p>

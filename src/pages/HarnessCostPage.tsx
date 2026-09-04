@@ -7,6 +7,7 @@
 // harness is not "a part with a process" and nothing else could cost it.
 import { useState } from 'react';
 import { Cable, Loader2 } from 'lucide-react';
+import { getAuthToken } from '../services/auth';
 
 const REGIONS = ['Mexico', 'Czech Republic', 'India', 'China', 'Spain', 'Germany', 'UK', 'USA', 'Korea'];
 
@@ -37,7 +38,7 @@ export default function HarnessCostPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const token = localStorage.getItem('brainspark_auth');
+  const token = getAuthToken();
 
   async function compute() {
     setBusy(true); setError(''); setResult(null);

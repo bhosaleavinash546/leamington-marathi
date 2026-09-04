@@ -265,7 +265,10 @@ export default function VaveTrackerPage() {
     return { ...stage, count: stageActions.length, totalTarget, totalConfirmed };
   });
 
-  const totalConfirmed = funnelStats.find(s => s.key === 'Confirmed')?.totalTarget ?? 0;
+  // The CONFIRMED saving, not the target: the stage total is computed from
+  // a.confirmedSaving above and used to be discarded in favour of totalTarget,
+  // so a target was displayed under "Confirmed saving / In production".
+  const totalConfirmed = funnelStats.find(s => s.key === 'Confirmed')?.totalConfirmed ?? 0;
   const totalPipeline = funnelStats.reduce((s, f) => s + f.totalTarget, 0);
   const totalValidated = funnelStats.slice(4).reduce((s, f) => s + f.totalTarget, 0);
 

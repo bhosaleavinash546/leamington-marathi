@@ -13,7 +13,7 @@
 import multer from 'multer';
 import { tessellateToSTL, analyzeGeometry } from '../cad-engine/cad-geometry-bridge.mjs';
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 1, fields: 16, parts: 24 } });
 
 const PROPRIETARY = ['x_t', 'x_b', 'xmt_txt', 'jt', 'prt', 'sldprt', 'catpart'];
 const BREP_FORMATS = ['stp', 'step', 'igs', 'iges'];

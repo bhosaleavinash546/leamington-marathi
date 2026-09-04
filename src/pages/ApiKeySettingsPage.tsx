@@ -10,6 +10,7 @@
 // without the browser holding it.
 import { useEffect, useState } from 'react';
 import { KeyRound, Loader2, Check, Trash2, ShieldCheck } from 'lucide-react';
+import { getAuthToken } from '../services/auth';
 
 interface Status {
   configured: boolean;
@@ -25,7 +26,7 @@ export default function ApiKeySettingsPage() {
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
 
-  const token = localStorage.getItem('brainspark_auth');
+  const token = getAuthToken();
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
   const localKey = localStorage.getItem('brainspark_api_key') || '';
 

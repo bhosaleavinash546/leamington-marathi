@@ -33,7 +33,12 @@ import { analyseDfa } from '../dfa-engine.mjs';
 import { TIME_MODEL } from '../dfa-time-model.mjs';
 import { MATERIALS, REGIONS, computeShouldCost } from '../costing-engine.mjs';
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
+// A per-FILE cap is not a per-REQUEST cap: /api/dfm/batch takes up to
+// BATCH_MAX files, so 25 x 50 MB could be buffered in the heap from one
+// request (Sept 2026 review, R-7). Cap the count and the total, and give the
+// batch route its own smaller per-file budget.
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 1, fields: 24, parts: 32 } });
+const batchUploadDfm = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024, files: 25, fields: 24, parts: 60 } });
 
 // OCCT budget per part. 120 s covers every fixture and typical production
 // part; genuinely huge exports (a 31 MB full fuel tank measured ~real-world)
@@ -1017,7 +1022,7 @@ export function registerDfmRoutes(app, {
    * part that fails keeps its row with the reason — a batch table that silently
    * drops what it could not read reads as "these are your parts".
    */
-  app.post('/api/dfm/batch', requireAuth, limit, upload.array('cadFiles', BATCH_MAX), async (req, res) => {
+  app.post('/api/dfm/batch', requireAuth, limit, batchUploadDfm.array('cadFiles', BATCH_MAX), async (req, res) => {
     const files = Array.isArray(req.files) ? req.files : [];
     if (!files.length) return res.status(400).json({ error: 'No files uploaded' });
 

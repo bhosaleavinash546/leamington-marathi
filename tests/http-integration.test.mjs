@@ -77,15 +77,26 @@ describe('http integration', () => {
     }
   });
 
-  it('marketplace: seeded corpus served with working ETag/304', async () => {
-    const r1 = await fetch(`${BASE}/api/marketplace`);
+  it('marketplace: the corpus needs auth, and serves a working ETag/304', async () => {
+    // The corpus is the idea library, not marketing: it was readable by anyone
+    // with the URL until the Sept 2026 review (R-4).
+    const anon = await fetch(`${BASE}/api/marketplace`);
+    assert.equal(anon.status, 401, 'the corpus must not be public');
+
+    const auth = { Authorization: `Bearer ${token}` };
+    const r1 = await fetch(`${BASE}/api/marketplace`, { headers: auth });
     assert.equal(r1.status, 200);
     const ideas = await r1.json();
     assert.ok(ideas.length >= 1600, `expected full seeded corpus, got ${ideas.length}`);
     const etag = r1.headers.get('etag');
     assert.ok(etag);
-    const r2 = await fetch(`${BASE}/api/marketplace`, { headers: { 'If-None-Match': etag } });
+    const r2 = await fetch(`${BASE}/api/marketplace`, { headers: { ...auth, 'If-None-Match': etag } });
     assert.equal(r2.status, 304);
+
+    // The size stays public — it is a number on the landing page, not the data.
+    const count = await fetch(`${BASE}/api/marketplace/count`);
+    assert.equal(count.status, 200);
+    assert.ok((await count.json()).count >= 1600);
   });
 
   it('should-cost estimate is deterministic and engine-labelled', async () => {
@@ -470,12 +481,27 @@ describe('http integration', () => {
       body: JSON.stringify({ email: mateEmail, role: 'member' }),
     });
     assert.equal(inv.status, 200);
+    const { inviteToken } = await inv.json();
+    assert.ok(inviteToken, 'the invite returns the token that grants the role');
+
     const mate = await (await fetch(`${BASE}/api/auth/signup`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: mateEmail, password: 'Mate-pass-123', name: 'Mate' }),
     })).json();
-    // Invites activate when the org list is touched.
-    await fetch(`${BASE}/api/orgs`, { headers: { Authorization: `Bearer ${mate.token}` } });
+
+    // Signing up with the invited ADDRESS grants nothing — signup does not
+    // prove the address (Sept 2026 review, R-2).
+    const beforeClaim = await fetch(`${BASE}/api/dfm/rule-overrides?orgId=${orgId}`, {
+      headers: { Authorization: `Bearer ${mate.token}` },
+    });
+    assert.equal(beforeClaim.status, 403, 'the email alone must not grant the role');
+
+    // The token does.
+    const claim = await fetch(`${BASE}/api/orgs/invites/claim`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${mate.token}` },
+      body: JSON.stringify({ token: inviteToken }),
+    });
+    assert.equal(claim.status, 200);
 
     const seen = await (await fetch(`${BASE}/api/dfm/rule-overrides?orgId=${orgId}`, {
       headers: { Authorization: `Bearer ${mate.token}` },
@@ -511,15 +537,19 @@ describe('http integration', () => {
 
     // A VIEWER reads the standards and cannot move them.
     const viewerEmail = `viewer${process.pid}@example.com`;
-    await fetch(`${BASE}/api/orgs/${orgId}/invites`, {
+    const vInv = await fetch(`${BASE}/api/orgs/${orgId}/invites`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ email: viewerEmail, role: 'viewer' }),
     });
+    const { inviteToken: viewerToken } = await vInv.json();
     const viewer = await (await fetch(`${BASE}/api/auth/signup`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: viewerEmail, password: 'Viewer-pass-123', name: 'V' }),
     })).json();
-    await fetch(`${BASE}/api/orgs`, { headers: { Authorization: `Bearer ${viewer.token}` } });
+    await fetch(`${BASE}/api/orgs/invites/claim`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${viewer.token}` },
+      body: JSON.stringify({ token: viewerToken }),
+    });
 
     const canRead = await fetch(`${BASE}/api/dfm/rule-overrides?orgId=${orgId}`, {
       headers: { Authorization: `Bearer ${viewer.token}` },

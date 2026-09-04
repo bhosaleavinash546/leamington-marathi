@@ -15,6 +15,7 @@ import { generateCostReductionIdeas, saveFullResult, ProgressEvent } from '../se
 import { parseCadFile, CadGeometry, formatFileSize } from '../services/cad-parser';
 import CadViewer3D from '../components/CadViewer3D';
 import { AnalysisConfig, AnalysisResult, BodyStyle, PlantRegion, Currency } from '../types';
+import { getAuthToken } from '../services/auth';
 
 interface ProgressStep {
   id: string;
@@ -300,7 +301,7 @@ export default function AnalyzePage() {
             reader.readAsDataURL(teardownFile);
           });
           const mimeType = teardownFile.type || 'image/jpeg';
-          const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return ''; } })();
+          const authToken = (getAuthToken() ?? '');
           const visionResp = await fetch('/api/teardown-vision', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
@@ -737,7 +738,7 @@ export default function AnalyzePage() {
                   <div className="mt-4">
                     <CadViewer3D
                       file={cadFile}
-                      token={(() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return ''; } })()}
+                      token={(getAuthToken() ?? '')}
                     />
                   </div>
                 )}

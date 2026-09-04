@@ -26,7 +26,11 @@ export function registerMarketplaceRoutes(app, { db, requireAuth, rateLimit }) {
       return `${r.c}:${r.t}:${v.c}`;
     } catch { return String(Date.now()); }
   }
-  app.get('/api/marketplace', (req, res) => {
+  // Authenticated. This is ~2.5 MB of engineering payloads — the corpus the
+  // rest of the product calls the data moat — and it was readable by anyone
+  // with the URL (Sept 2026 review, R-4). /api/marketplace/count stays open:
+  // the landing page shows the size, which is a marketing number, not the data.
+  app.get('/api/marketplace', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res) => {
     try {
       const etag = `W/"mkt-${marketplaceStamp()}"`;
       if (req.headers['if-none-match'] === etag) return res.status(304).end();

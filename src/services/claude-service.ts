@@ -1,4 +1,5 @@
 import { AnalysisConfig, AnalysisValidation, CostReductionIdea, SearchSource } from '../types';
+import { getAuthToken } from './auth';
 
 export type ChatHistory = { role: 'user' | 'assistant'; content: string }[];
 
@@ -21,16 +22,6 @@ export interface AnalysisResponse {
   validation?: AnalysisValidation;
 }
 
-function getAuthToken(): string | null {
-  try {
-    const stored = localStorage.getItem('brainspark_auth');
-    if (stored) {
-      const { token } = JSON.parse(stored);
-      return token ?? null;
-    }
-  } catch {}
-  return null;
-}
 
 export function saveRecentAnalysis(
   systemName: string,

@@ -7,6 +7,7 @@
 // colleagues by email from the API". Half a feature is worse than none.
 import { useEffect, useState } from 'react';
 import { Users, Loader2, UserPlus, ShieldCheck } from 'lucide-react';
+import { getAuthToken } from '../services/auth';
 
 const ROLES = ['viewer', 'member', 'admin', 'owner'] as const;
 type Role = typeof ROLES[number];
@@ -24,7 +25,7 @@ export default function TeamPage() {
   const [error, setError] = useState('');
   const [note, setNote] = useState('');
 
-  const token = localStorage.getItem('brainspark_auth');
+  const token = getAuthToken();
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
   const me = orgs.find(o => o.id === orgId);
   const canInvite = me?.role === 'admin' || me?.role === 'owner';

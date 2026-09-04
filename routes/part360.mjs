@@ -44,7 +44,7 @@ import { familyOfMaterial, familyForSelection } from '../dfm-process-registry.mj
 import { analyzeGeometry, decomposeAssembly } from '../cad-engine/cad-geometry-bridge.mjs';
 
 // Zero-touch batch: bounded so one request cannot pin the OCCT workers all day.
-const batchUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 12 } });
+const batchUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024, files: 12, fields: 24, parts: 40 } });
 const BATCH_GEO_TIMEOUT_MS = Math.min(Number(process.env.CV_DFM_GEO_TIMEOUT_MS) || 120_000, 600_000);
 
 const SMALL_MODEL = process.env.CV_SMALL_MODEL || 'claude-sonnet-5';

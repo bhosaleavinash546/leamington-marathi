@@ -6,6 +6,7 @@ import { downloadXlsx } from '../services/xlsx-write';
 import { parseWorkbook, parseCsv } from '../services/safe-xlsx';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
+import { getAuthToken } from '../services/auth';
 
 interface BomRow {
   systemId: string;
@@ -116,7 +117,7 @@ export default function BomAnalysisPage() {
     if (!rows.length || !apiKey.trim()) return;
     setRunning(true);
     setError('');
-    const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+    const token = getAuthToken();
 
     // Resume: restore completed results and skip those rows.
     let batchResults: BomResult[] = [];

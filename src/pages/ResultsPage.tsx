@@ -22,6 +22,7 @@ import { notableFlags, verificationTally } from '../services/idea-provenance.mjs
 import { toast } from '../hooks/useToast';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
+import { getAuthToken } from '../services/auth';
 
 const DIFFICULTY_CONFIG: Record<Difficulty, { color: string; bg: string; border: string; icon: typeof CheckCircle }> = {
   Low:    { color: 'text-success-400', bg: 'bg-success-500/10',  border: 'border-success-500/30',  icon: CheckCircle },
@@ -987,6 +988,7 @@ function SourcesPanel({ sources }: { sources: SearchSource[] }) {
 export default function ResultsPage() {
   const navigate = useNavigate();
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [loadError, setLoadError] = useState('');
   const [systemName, setSystemName] = useState('');
   const [subName, setSubName] = useState('');
   const [filterDifficulty, setFilterDifficulty] = useState<Difficulty | 'All'>('All');
@@ -1024,6 +1026,23 @@ export default function ResultsPage() {
             navigate('/results', { replace: true });
             return;
           }
+          // Not on this device — it may still be a saved project on the server.
+          // The ⌘K search links here by project id, and before this the link
+          // fell through to the marketing home page.
+          const token = getAuthToken();
+          if (token) {
+            fetch(`/api/projects/${encodeURIComponent(savedId)}`, { headers: { Authorization: `Bearer ${token}` } })
+              .then(r => (r.ok ? r.json() : null))
+              .then((proj: (AnalysisResult & { systemName?: string; subassemblyName?: string }) | null) => {
+                if (!proj) { setLoadError('That analysis could not be found on this account.'); return; }
+                sessionStorage.setItem('analysisResult', JSON.stringify(proj));
+                sessionStorage.setItem('analysisSystemName', proj.systemName ?? '');
+                sessionStorage.setItem('analysisSubName', proj.subassemblyName ?? '');
+                navigate('/results', { replace: true });
+              })
+              .catch(() => setLoadError('Could not reach the server to open that analysis.'));
+            return;
+          }
         }
         navigate('/analyze');
         return;
@@ -1039,7 +1058,7 @@ export default function ResultsPage() {
         try {
           if (localAnnotationsRaw) setAnnotations(JSON.parse(localAnnotationsRaw));
         } catch {}
-        const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+        const authToken = getAuthToken();
         if (authToken) {
           // Only fall back to server annotations if local storage has none
           fetch(`/api/projects/${parsed.id}`, { headers: { Authorization: `Bearer ${authToken}` } })
@@ -1070,7 +1089,19 @@ export default function ResultsPage() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
-  if (!result) return null;
+  if (!result) {
+    // A failed open must say so rather than rendering a blank page.
+    if (!loadError) return null;
+    return (
+      <div className="min-h-screen bg-navy-950 flex flex-col items-center justify-center gap-3 px-6 text-center">
+        <AlertTriangle size={28} className="text-danger-400" />
+        <p className="text-slate-300 text-sm" role="alert">{loadError}</p>
+        <button onClick={() => navigate('/dashboard')} className="text-gold-400 hover:text-gold-300 text-sm underline underline-offset-2">
+          Back to dashboard
+        </button>
+      </div>
+    );
+  }
 
   function parseAnnualValue(val?: string): number {
     if (!val) return 0;
@@ -1160,7 +1191,7 @@ export default function ResultsPage() {
     setAnnotations(updated);
     if (result?.id) {
       try { localStorage.setItem(`brainspark_annotations_${result.id}`, JSON.stringify(updated)); } catch {}
-      const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+      const authToken = getAuthToken();
       if (authToken) {
         fetch(`/api/projects/${result.id}/annotations`, {
           method: 'PATCH',
@@ -1295,7 +1326,7 @@ export default function ResultsPage() {
   }
 
   async function handleBulkAddToMarketplace() {
-    const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+    const authToken = getAuthToken();
     if (!authToken) { toast('Sign in to add to Marketplace', 'error'); return; }
     const ideas = result!.ideas.filter(i => selectedIds.has(i.id));
     setBulkAdding('marketplace');
@@ -1325,7 +1356,7 @@ export default function ResultsPage() {
   }
 
   async function handleBulkAddToPipeline() {
-    const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+    const authToken = getAuthToken();
     if (!authToken) { toast('Sign in to add to Pipeline', 'error'); return; }
     const ideas = result!.ideas.filter(i => selectedIds.has(i.id));
     setBulkAdding('pipeline');
@@ -1364,7 +1395,7 @@ export default function ResultsPage() {
 
   async function handleShare() {
     if (!result?.id) return;
-    const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+    const token = getAuthToken();
     if (!token) { toast('Sign in to create share links', 'error'); return; }
     try {
       const r = await fetch(`/api/projects/${result.id}/share`, {

@@ -4,6 +4,7 @@
  * Images are passed through as base64 for Claude Vision.
  */
 import { analyzeFeatures, type FeatureMap, type ProcessGuess, type DfmaFinding } from './cad-features.mjs';
+import { getAuthToken } from './auth';
 
 export interface CadGeometry {
   fileName: string;
@@ -380,7 +381,7 @@ export async function parseCadFile(file: File): Promise<CadGeometry> {
   if (['step', 'stp'].includes(extension)) {
     try {
       const buffer = await file.arrayBuffer();
-      const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return ''; } })();
+      const token = (getAuthToken() ?? '');
       const authHeaders = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
       const resp = await fetch('/api/cad-step', {
         method: 'POST',
