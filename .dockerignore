@@ -1,0 +1,24 @@
+# Build inputs only. Everything here is either rebuilt in the image, irrelevant
+# to it, or must never be baked into a distributable artefact.
+node_modules
+dist
+data
+.git
+.github
+android
+ios
+*.log
+.env
+.env.*
+!.env.example
+
+# Test and dev surface — the image runs the app, CI runs the gates.
+e2e
+tests
+coverage
+playwright-report
+
+# Generated deliverables and their assets: large, regenerable, and not runtime.
+scripts/deck-assets
+*.pptx
+*.zip

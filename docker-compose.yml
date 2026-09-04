@@ -1,0 +1,38 @@
+# One service, one volume. server.mjs serves the API and the SPA from the same
+# origin, so there is nothing else to run — put TLS in front of it with your own
+# reverse proxy (Caddy, nginx, Traefik) or your host's managed load balancer.
+services:
+  brainspark:
+    build: .
+    image: brainspark:latest
+    restart: unless-stopped
+    ports:
+      # Bind to loopback so only the reverse proxy can reach it. Change to
+      # "3001:3001" only if this really is the public entry point.
+      - "127.0.0.1:3001:3001"
+    env_file: [.env]
+    environment:
+      NODE_ENV: production
+      DATA_DIR: /data
+      PORT: "3001"
+    volumes:
+      # THE database and its automatic backups. Without this line every redeploy
+      # starts from an empty DB and silently re-seeds the marketplace.
+      - brainspark-data:/data
+    # OCCT tessellation is memory-hungry: each of the CV_MAX_PYTHON_PROCS
+    # subprocesses holds a full mesh, and uploads are buffered in memory up to
+    # 50 MB. 4 GB is a working figure for a small team; raise both together.
+    mem_limit: 4g
+    cpus: 2.0
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 40s
+      retries: 3
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "5" }
+
+volumes:
+  brainspark-data:

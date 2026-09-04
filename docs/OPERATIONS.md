@@ -136,7 +136,7 @@ merely picking a default, the row says so.
 ## Known gaps (acceptable for pilot, must be planned before wider rollout)
 
 - **Error monitoring**: no Sentry/alerting — server errors only reach stdout logs. Nobody is paged when it breaks.
-- **Deployment**: no documented deploy target/process; runs wherever `node server.mjs` is started. No process supervisor guidance (systemd/pm2), no TLS termination doc.
+- ~~**Deployment**: no documented deploy target/process~~ — CLOSED 4 Sept 2026. `Dockerfile`, `docker-compose.yml`, `.env.example` and `docs/DEPLOYMENT.md` cover the full feature set including the OpenCascade geometry layer. `scripts/preflight.mjs` runs inside the deployed container and refuses to pass on a missing geometry layer, a weak or default secret, SMTP left unset (OTPs would print to the log), or a `DATA_DIR` that a redeploy would discard. `tests/deploy-image-completeness.test.mjs` checks the Dockerfile's COPY set against the real transitive import graph — it was written after the first draft omitted five runtime modules that live under `src/`.
 - **LLM spend**: no cost dashboard or per-user budget. `checkUsageQuota` bounds request counts, not tokens. A runaway Deep Mode habit is invisible until the invoice.
 - **Off-site backups**: backups live on the same disk as the database. A disk loss loses both. Copy `$DATA_DIR/backups/` elsewhere on a schedule.
 - **Single instance / single writer**: better-sqlite3, one process. Fine at pilot scale; horizontal scaling needs a DB migration.
