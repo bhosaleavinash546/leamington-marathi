@@ -153,8 +153,9 @@ def logo(slide, x=Inches(0.35), y=Inches(0.22), scale=1.0, on_dark=False):
     r.font.color.rgb = NAVY if on_dark else ON_DARK
     text(slide, x + Inches(0.52 * s), y - Inches(0.03 * s), Inches(2.6), Inches(0.32),
          [[('CostVision', 18 * s, ON_DARK if on_dark else BLUE, True)]])
-    text(slide, x + Inches(0.52 * s), y + Inches(0.24 * s), Inches(2.8), Inches(0.22),
-         [[('AI  COST  INTELLIGENCE', 7.5 * s, HERO_DIM if on_dark else MUTED, False)]])
+    # No 'AI COST INTELLIGENCE' strapline in this deck: slide 2's headline is that
+    # Option 1 involves no AI, and a strapline arguing the opposite in the corner of
+    # every slide is an own goal in front of an audience where AI is not yet approved.
 
 
 def notes(slide, txt):
@@ -379,15 +380,19 @@ table(s, Inches(6.78), Inches(2.26), Inches(6.1),
 chips = [('Hours spent typing today', 'B × C ÷ 60', RED),
          ('Hours freed a year', 'B × E × C ÷ 60', GREEN),
          ('Extra parts that time would cost', 'B × E × C ÷ A', INDIGO)]
-cy = Inches(4.6)
+cy = Inches(4.44)
 for lbl, fml, col in chips:
-    box(s, Inches(6.78), cy, Inches(6.1), Inches(0.58), fill=PANEL, line=LINE, round_=True)
-    box(s, Inches(6.78), cy, Inches(0.075), Inches(0.58), fill=col)
-    text(s, Inches(7.02), cy + Inches(0.15), Inches(3.5), Inches(0.28),
+    box(s, Inches(6.78), cy, Inches(6.1), Inches(0.52), fill=PANEL, line=LINE, round_=True)
+    box(s, Inches(6.78), cy, Inches(0.075), Inches(0.52), fill=col)
+    text(s, Inches(7.02), cy + Inches(0.12), Inches(3.5), Inches(0.28),
          [[(lbl, 10.5, DARK, True)]])
-    text(s, Inches(10.55), cy + Inches(0.13), Inches(2.2), Inches(0.3),
+    text(s, Inches(10.55), cy + Inches(0.10), Inches(2.2), Inches(0.3),
          [[(fml, 12.5, col, True)]], align=PP_ALIGN.RIGHT)
-    cy += Inches(0.62)
+    cy += Inches(0.56)
+# The assumption behind the middle row, said rather than left to be discovered.
+text(s, Inches(6.78), Inches(6.12), Inches(6.1), Inches(0.3),
+     [[('Assumes typing time falls in step with the values the software fills; the trial tests '
+        'that.', 8.5, MUTED, False)]], line_spacing=1.1)
 
 callout(s, Inches(0.45), Inches(6.56), Inches(12.43), Inches(0.82), GREENBG, GREEN,
         'The step forward: the same defensible should-cost, with the manual work automated',
@@ -490,12 +495,12 @@ def tile(slide, x, y, w, h, icon, title, body, accent):
 
 s = header('Option 2: what CostVision does', 'Option 2 · the capability')
 text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
-     [[('Six things we cannot do at all today. All of them exist in the tool now.',
-        11.5, BODY, False)]])
+     [[('What the tool does. Five of these work today, one part at a time — running them over a '
+        'whole basket is what Option 2 builds.', 11.5, BODY, False)]])
 tiles = [
     ('cog', 'Cost a whole basket, unattended',
-     'A list of parts and their 3D models goes in. Every part is costed and '
-     'reported without anyone sitting there.', VIOLET),
+     'A list of parts and their 3D models goes in. Every part costed and reported '
+     'with nobody sitting there. This is the one Option 2 builds.', AMBER),
     ('eye', 'A board photo becomes a costed BOM',
      'Take a picture of a circuit board. The tool works out what is on it, builds '
      'the bill of materials and the board spec, and costs it.', VIOLET),
@@ -523,11 +528,12 @@ callout(s, Inches(0.45), Inches(6.32), Inches(12.43), Inches(0.95), PANEL2, INDI
         'never sets a price. The money is worked out by the same fixed rules and the same rate book '
         'we use today, so every number can still be explained line by line.')
 notes(s, "This is the slide I would spend the most time on, because it is the part of the case that "
-         "is easy to under-sell. These are six things we cannot do at all at the moment, and every "
-         "one of them is in the tool today. Top left is the one people expect. A list of parts and "
+         "is easy to under-sell. Six things the tool does, and one distinction I want to make "
+         "before I go through them: five of these work today, one part at a time, in the tool as it "
+         "stands. The first one does not, and that is why it is the amber tile. A list of parts and "
          "their models goes in and every part comes back costed, with a report per part and per "
-         "basket, without anybody sitting there. Today we cost the parts we have hours for and "
-         "estimate the rest from a sample. Next to it is the one that usually gets a reaction in "
+         "basket, without anybody sitting there — that is what Option two builds, and today we cost "
+         "the parts we have hours for and estimate the rest from a sample. Next to it is the one that usually gets a reaction in "
          "the room. You take a photograph of a circuit board and the tool works out what is on it, "
          "builds the bill of materials, works out the board specification and costs it. That is a "
          "job that takes an electronics buyer a long time and most of us cannot do at all. Third "
@@ -614,64 +620,79 @@ notes(s, "This is the answer to what we get for it, and I have written it in kin
          "are an order rather than a choice.")
 
 
-# ═══════════ 5 · WHAT CHANGES, AND WHAT WE ARE ASKING FOR ══════════════════
-s = header('What changes, and what we are asking for', 'The decision')
-rows = [
-    ('How many parts get a proper cost', ('The ones we have hours for', RED, False),
-     ('All of them', GREEN, True)),
-    ('Turnaround on a basket', ('Days of engineer time', RED, False),
-     ('One run, once the data is together', GREEN, True)),
-    ('What we take to a supplier', ('Our estimate', AMBER, False),
-     ('The build-up, where their price differs, and what to ask', GREEN, True)),
-    ('Where the engineer spends the time', ('Typing values in', RED, False),
-     ('Answering what only a person can, and acting on what it finds', GREEN, True)),
-]
-table(s, Inches(0.45), Inches(1.75), Inches(12.43),
-      ['', 'Today', 'With Option 2'], rows,
-      [Inches(4.13), Inches(4.15), Inches(4.15)], row_h=Inches(0.46), size=10.4)
+# ═══════════ 5 · WHAT WE ARE ASKING FOR ════════════════════════════════════
+def strip(slide, x, y, w, h, label, body, accent):
+    """One short statement: bold label, then the sentence, on a single row."""
+    box(slide, x, y, w, h, fill=PANEL, line=LINE, round_=True)
+    box(slide, x, y, Inches(0.075), h, fill=accent)
+    text(slide, x + Inches(0.24), y + Inches(0.15), Inches(2.9), Inches(0.28),
+         [[(label, 10.8, accent, True)]])
+    text(slide, x + Inches(3.3), y + Inches(0.15), w - Inches(3.55), Inches(0.28),
+         [[(body, 10.2, BODY, False)]])
 
-card(s, Inches(0.45), Inches(4.04), Inches(6.1), Inches(1.3), INDIGO,
+
+s = header('What we are asking for', 'The decision')
+card(s, Inches(0.45), Inches(1.72), Inches(6.1), Inches(1.05), GREEN,
+     'OPTION 1 · a decision today',
+     [('Approve the trial. One commodity, 30 to 50 parts we have',),
+      ('already bought, inside CAPEE.',)])
+card(s, Inches(6.78), Inches(1.72), Inches(6.1), Inches(1.05), VIOLET,
+     'OPTION 2 · no decision today',
+     [('Start the AI approval in parallel, so it is not the thing',),
+      ('holding us up when the trial finishes.',)])
+
+card(s, Inches(0.45), Inches(2.89), Inches(6.1), Inches(1.32), INDIGO,
      'OPTION 1 NEEDS',
      [('A Linux server, and a way to pass numbers into CAPEE',),
       ('30 to 50 parts where we know the price we paid',),
-      ('One commodity and a small team for the trial',)])
-card(s, Inches(6.78), Inches(4.04), Inches(6.1), Inches(1.3), VIOLET,
+      ('An engineer from the commodity team for the trial',)])
+card(s, Inches(6.78), Inches(2.89), Inches(6.1), Inches(1.32), VIOLET,
      'OPTION 2 NEEDS',
      [('Everything above, plus approval to use AI',),
       ('Our own rate book loaded, with a change history',),
       ('A record of every costing, and the run itself built',)])
 
-callout(s, Inches(0.45), Inches(5.46), Inches(12.43), Inches(0.9), GREENBG, GREEN,
-        'What we are asking for today: approve Option 1 as a trial, and start the AI approval for Option 2',
-        'One commodity, 30 to 50 parts we have already bought, inside CAPEE, using our own time. It '
-        'gives us the two numbers nobody can state today: how close the tool gets to a price we '
-        'actually paid, and how much of the input it fills on its own.')
-callout(s, Inches(0.45), Inches(6.48), Inches(12.43), Inches(0.88), AMBERBG, AMBER,
-        'Two things to be straight about',
-        'Those six capabilities work today one part at a time. Making them run over a whole '
-        'basket unattended is real work, not a switch. And we have never checked the tool against '
-        'a price JLR has actually paid — which is exactly what the Option 1 trial settles.')
-notes(s, "Last slide, and it is two things: what changes for the business, and what I want from "
-         "you. Read the table down the right-hand column. Today we cost the parts we have hours "
-         "for; with this, every part in the basket gets a proper cost. Today a basket takes days of "
-         "engineer time; with this it is one run, once we have the data together — and I want to be "
-         "clear that gathering the part list, the models and our own rate data is the real work, "
-         "not the computing. The third row is the one I would put to the purchasing side: today we "
-         "take our estimate to a supplier, and with this we take the build-up, plus where their "
-         "price differs from it and what to ask them about it. And the last row is what it does for "
-         "the engineers. They stop typing values in and spend the time answering the questions only "
-         "a person can answer, and acting on what the tool finds. The two cards are what each "
-         "option needs, and the difference between them is the reason for doing them in this "
-         "order. Option one needs a server, a way into CAPEE, and some parts where we know what we "
-         "paid. Option two needs all of that plus the AI approval, our rate book, and a few things "
-         "built around the engine. The green strip is the ask and it is deliberately small: one "
-         "commodity, thirty to fifty parts we have already bought, our own time. In parallel I "
-         "would start the AI approval, because that is the long pole on Option two and there is no "
-         "reason to wait for the trial to finish before beginning it. The amber box is me being "
-         "straight with you twice. The six capabilities I showed you work today, but they "
-         "work one part at a time — making it run unattended over a basket is real work. And we "
-         "have still never checked this against a price we have actually paid. That is exactly what "
-         "the trial is for.")
+callout(s, Inches(0.45), Inches(4.33), Inches(12.43), Inches(0.9), GREENBG, GREEN,
+        'What the trial gives us',
+        'The two numbers nobody in this company can state today: how close the tool gets to a price '
+        'we actually paid, and how much of the input it fills on its own. Until we have them there '
+        'is no honest conversation to be had about Option 2.')
+
+strip(s, Inches(0.45), Inches(5.36), Inches(12.43), Inches(0.58),
+      'The rule that does not bend',
+      'The AI reads, sorts and sets up. It never sets a price — the money comes from the same '
+      'fixed rules we use today.', INDIGO)
+strip(s, Inches(0.45), Inches(5.98), Inches(12.43), Inches(0.58),
+      'If the trial disappoints',
+      'Never checked against a price JLR has paid. If the answer is poor we stop, having spent '
+      'only our own time.', AMBER)
+strip(s, Inches(0.45), Inches(6.60), Inches(12.43), Inches(0.58),
+      'Nobody has sized this yet',
+      'How long it takes waits on one answer from IT about how CAPEE is built. The sizing comes '
+      'back with it.', AMBER)
+notes(s, "So this is the decision, and I have split it into what I want today and what I do not. On "
+         "the left, Option one: approve the trial. One commodity, thirty to fifty parts we have "
+         "already bought, run inside CAPEE. On the right, Option two: I am not asking you to decide "
+         "it. What I am asking is that we start the AI approval alongside the trial, because that "
+         "is the long pole and there is no sense discovering at the end of the trial that we now "
+         "have to begin it. The two cards underneath are what each one needs. Option one needs a "
+         "server, a way to pass numbers into CAPEE, some parts where we know what we paid, and an "
+         "engineer from the commodity team for the trial. Option two needs all of that plus the AI "
+         "approval, our own rate book with a change history, and a few things built around the "
+         "engine. The green strip is what we get out of the trial and it is the reason to do it: "
+         "two numbers that nobody in this company can state today. How close the tool gets to a "
+         "price we actually paid, and how much of the input it fills on its own. Until we have "
+         "those, any conversation about Option two is people trading opinions. Then three short "
+         "things I want to say plainly rather than have asked. The first is the governance point "
+         "and it is the one I would repeat if you take nothing else away: the AI reads, sorts and "
+         "sets up, and it never sets a price. The money comes out of the same fixed rules and the "
+         "same rate book as today, so every number can be defended line by line exactly as it can "
+         "now. The second is the exit. We have never compared this against a price we have paid. If "
+         "the trial says the tool is not close enough, we stop, and what we will have spent is our "
+         "own engineering time — that is precisely why I am asking for a trial and not a rollout. "
+         "And the third is the honest answer to how long: nobody has sized it. It waits on one "
+         "answer from IT about how CAPEE is built, and the sizing comes back with that answer "
+         "rather than being invented now.")
 
 
 # ───────────────────────────────────────────────────────────────────────────
