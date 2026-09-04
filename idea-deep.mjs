@@ -208,6 +208,7 @@ export const REFINE_SCHEMA = {
           properties: { mechanism: { type: 'string' }, specDeltas: { type: 'string' }, validationPlan: { type: 'string' }, dfmImplications: { type: 'string' }, costBridge: { type: 'string' } },
         },
         savingModel: { type: 'object', additionalProperties: true, description: 'PREFERRED over annualValue/calculationBasis: {volume, terms:[{label,value,scope:"per-part"|"annual"|"of",of,sign:"saving"|"cost"}], excluded:[...]}. The annual figure is computed from the terms, so it cannot disagree with them.' },
+        engineCheckRequests: { type: 'array', items: { type: 'object', additionalProperties: true }, description: 'Up to 3 phrasings of the SAME move. The engine runs all and keeps the first that prices — a repair that failed only because a name did not resolve should offer a second naming rather than being rejected.' },
         engineCheckRequest: { type: 'object', additionalProperties: true, description: 'kind substitution|tolerance|assembly|footprint|commonisation|cycle with the same fields as the generation schema; omit only if the repaired move is not expressible' },
         harnessCheckRequest: { type: 'object', additionalProperties: true },
       },

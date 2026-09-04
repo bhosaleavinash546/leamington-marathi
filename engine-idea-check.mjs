@@ -358,6 +358,32 @@ function checkCycle(req, { region, annualVolume, library, defaultWeightKg }) {
  * is null, idea.engineCheckReason (string). Returns a summary
  * { checked, confirmed, contradicted, unexpressible, byKind, reasons }.
  */
+/** How many phrasings of one move the engine will try before giving up. */
+export const MAX_CHECK_CANDIDATES = 3;
+
+const describeKind = (req) => {
+  const k = typeof req?.kind === 'string' ? req.kind.toLowerCase() : 'substitution';
+  if (k === 'substitution' && (req.proposedMaterial || req.baselineMaterial)) {
+    return `substitution ${String(req.baselineMaterial ?? '?').slice(0, 28)} → ${String(req.proposedMaterial ?? req.baselineMaterial ?? '?').slice(0, 28)}`;
+  }
+  return k;
+};
+
+/** One candidate through the right checker. Never throws — a throw is a reason. */
+function runOneCheck(req, ctx) {
+  const kind = typeof req.kind === 'string' ? req.kind.toLowerCase() : 'substitution';
+  try {
+    if (kind === 'tolerance') return checkTolerance(req, ctx);
+    if (kind === 'assembly') return checkAssembly(req, ctx);
+    if (kind === 'footprint') return checkFootprint(req, ctx);
+    if (kind === 'commonisation' || kind === 'commonization') return checkCommonisation(req, ctx);
+    if (kind === 'cycle') return checkCycle(req, ctx);
+    return checkSubstitution(req, ctx);
+  } catch (e) {
+    return { reason: `engine could not price this move: ${String(e?.message || e).slice(0, 80)}` };
+  }
+}
+
 export const KINDS = Object.freeze(['substitution', 'mass', 'tolerance', 'assembly', 'footprint', 'commonisation', 'cycle', 'harness']);
 
 export function runEngineChecks(ideas, { region = 'Germany', annualVolume = 80000, library = undefined, defaultWeightKg = 1.0 } = {}) {
@@ -389,26 +415,61 @@ export function runEngineChecks(ideas, { region = 'Germany', annualVolume = 8000
 
   for (const idea of ideas) {
     if (!idea || typeof idea !== 'object') continue;
-    const req = idea.engineCheckRequest;
     const harnessReq = idea.harnessCheckRequest;
-    delete idea.engineCheckRequest;   // re-homed onto engineCheckInput by stamp()
+    // BEST-OF-N, ADJUDICATED BY THE ENGINE (Sept 2026 review, Tier 1).
+    //
+    // An idea may now offer SEVERAL ways of expressing the same move, and the
+    // engine picks. This is the one place in the pipeline where extra compute
+    // is genuinely worth spending, and the reason is asymmetry: generating a
+    // second candidate costs a few output tokens in a call already being made,
+    // while the verifier is local, deterministic and free. Test-time scaling
+    // only pays where something can actually adjudicate — everywhere else in
+    // this pipeline there is no ground truth to check against, and sampling
+    // more would just produce more confident output.
+    //
+    // Coverage was 43.5% on the live corpus, and reading the misses showed the
+    // commonest failure was a single request whose material or process name did
+    // not resolve. A second phrasing of the same physical move — "DP600" beside
+    // "Steel DP600 (dual-phase)", or a substitution beside a footprint framing —
+    // converts many of those without changing the idea at all.
+    //
+    // The candidates that did NOT price are kept on the stamp. An engineer
+    // reading "we also tried X and Y, and here is why they did not resolve"
+    // learns something about the catalogue; a silent winner teaches nothing.
+    const candidates = [
+      ...(Array.isArray(idea.engineCheckRequests) ? idea.engineCheckRequests : []),
+      ...(idea.engineCheckRequest && typeof idea.engineCheckRequest === 'object' ? [idea.engineCheckRequest] : []),
+    ].filter(r => r && typeof r === 'object').slice(0, MAX_CHECK_CANDIDATES);
+    delete idea.engineCheckRequest;    // re-homed onto engineCheckInput by stamp()
+    delete idea.engineCheckRequests;
     delete idea.harnessCheckRequest;
 
     if (harnessReq && typeof harnessReq === 'object') { stamp(idea, checkHarness(harnessReq, ctx), harnessReq); continue; }
-    if (!req || typeof req !== 'object') {
+    if (!candidates.length) {
       stamp(idea, { reason: `no engine-check request — the idea was not expressed as any of the ${KINDS.join(', ')} changes the engine can price` });
       continue;
     }
-    const kind = typeof req.kind === 'string' ? req.kind.toLowerCase() : 'substitution';
-    try {
-      if (kind === 'tolerance') stamp(idea, checkTolerance(req, ctx), req);
-      else if (kind === 'assembly') stamp(idea, checkAssembly(req, ctx), req);
-      else if (kind === 'footprint') stamp(idea, checkFootprint(req, ctx), req);
-      else if (kind === 'commonisation' || kind === 'commonization') stamp(idea, checkCommonisation(req, ctx), req);
-      else if (kind === 'cycle') stamp(idea, checkCycle(req, ctx), req);
-      else stamp(idea, checkSubstitution(req, ctx), req);
-    } catch (e) {
-      stamp(idea, { reason: `engine could not price this move: ${String(e?.message || e).slice(0, 80)}` }, req);
+
+    const tried = [];
+    let winner = null, winnerReq = null;
+    for (const req of candidates) {
+      const res = runOneCheck(req, ctx);
+      if (res.stamp && !winner) { winner = res; winnerReq = req; }
+      else tried.push({ kind: describeKind(req), reason: res.stamp ? 'not used — an earlier candidate already priced' : res.reason });
+    }
+    if (winner) {
+      stamp(idea, winner, winnerReq);
+      if (tried.length && idea.engineCheck) idea.engineCheck.alsoTried = tried;
+      if (candidates.length > 1) summary.multiCandidate = (summary.multiCandidate || 0) + 1;
+    } else {
+      // Every candidate failed. Report the FIRST reason as the verdict and the
+      // rest beside it — "none of the three ways we could express this priced"
+      // is a sharper statement about the catalogue than any single failure.
+      const first = runOneCheck(candidates[0], ctx);
+      stamp(idea, first, candidates[0]);
+      if (tried.length && idea.engineCheckReason) {
+        idea.engineCheckAlsoTried = tried;
+      }
     }
   }
   return summary;

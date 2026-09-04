@@ -11,7 +11,7 @@
 // and to omit the field, so the model dutifully omitted it five times.
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { runEngineChecks, KINDS } from '../engine-idea-check.mjs';
+import { runEngineChecks, KINDS, MAX_CHECK_CANDIDATES } from '../engine-idea-check.mjs';
 import { REGIONS, computeShouldCost } from '../costing-engine.mjs';
 
 const check = (req, opts = {}) => {
@@ -136,5 +136,91 @@ describe('the kind list is the one thing the null message quotes', () => {
       assert.match(idea.engineCheckReason, new RegExp(k), `the reason must name ${k} — a model told a move is inexpressible will not attempt it`);
     }
     assert.ok(KINDS.includes('footprint') && KINDS.includes('commonisation') && KINDS.includes('cycle'));
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BEST-OF-N, ADJUDICATED BY THE ENGINE (Tier 1).
+//
+// This is the one place in the pipeline where extra compute is worth spending,
+// and the reason is asymmetry: a second candidate costs a few output tokens in
+// a call already being made, while the verifier is local, deterministic and
+// free. Everywhere else there is no ground truth to adjudicate against, and
+// sampling more would only produce more confident output.
+//
+// Coverage sat at 43.5% and the commonest miss was a single request whose
+// material or process name did not resolve — a second phrasing of the same
+// physical move converts many of those without changing the idea at all.
+// ─────────────────────────────────────────────────────────────────────────────
+describe('best-of-N on the check request', () => {
+  const run = (idea, opts = {}) => {
+    const s = runEngineChecks([idea], { region: 'Germany', annualVolume: 200_000, ...opts });
+    return { idea, summary: s };
+  };
+
+  it('a second phrasing rescues a move the first phrasing could not name', () => {
+    const { idea } = run({
+      title: 'Down-gauge to dual-phase',
+      engineCheckRequests: [
+        { kind: 'substitution', baselineMaterial: 'bog standard steel sheet', baselineProcess: 'pressing', proposedMaterial: 'dual phase', proposedProcess: 'pressing' },
+        { kind: 'substitution', baselineMaterial: 'Steel (mild)', baselineProcess: 'Stamping / Deep Drawing', proposedMaterial: 'Steel DP600 (dual-phase)', proposedProcess: 'Stamping / Deep Drawing', referenceWeightKg: 1.2, proposedWeightKg: 0.9 },
+      ],
+    });
+    assert.ok(idea.engineCheck, idea.engineCheckReason);
+    assert.equal(idea.engineCheck.kind, 'substitution');
+  });
+
+  it('the candidates that did NOT price are kept, with their reasons', () => {
+    const { idea } = run({
+      title: 'x',
+      engineCheckRequests: [
+        { kind: 'substitution', baselineMaterial: 'dilithium', baselineProcess: 'replication' },
+        { kind: 'footprint', material: 'Steel (mild)', process: 'Stamping / Deep Drawing', weightKg: 1, proposedRegion: 'China' },
+      ],
+    });
+    assert.ok(idea.engineCheck, 'the second candidate priced');
+    assert.equal(idea.engineCheck.alsoTried.length, 1);
+    assert.match(idea.engineCheck.alsoTried[0].reason, /dilithium.*not in the engine catalogue/);
+  });
+
+  it('when EVERY candidate fails, the verdict is null and all the attempts are listed', () => {
+    // "none of the three ways we could express this priced" is a sharper
+    // statement about the catalogue than any single failure.
+    const { idea } = run({
+      title: 'y',
+      engineCheckRequests: [
+        { kind: 'substitution', baselineMaterial: 'unobtanium', baselineProcess: 'wishing' },
+        { kind: 'footprint', material: 'Steel (mild)', process: 'Stamping / Deep Drawing', weightKg: 1, proposedRegion: 'Atlantis' },
+      ],
+    });
+    assert.equal(idea.engineCheck, null);
+    assert.match(idea.engineCheckReason, /unobtanium/);
+    assert.equal(idea.engineCheckAlsoTried.length, 2);
+    assert.match(idea.engineCheckAlsoTried[1].reason, /Atlantis/);
+  });
+
+  it('the single-request shape still works exactly as before', () => {
+    const { idea } = run({ title: 'z', engineCheckRequest: { kind: 'footprint', material: 'Steel (mild)', process: 'Stamping / Deep Drawing', weightKg: 1, proposedRegion: 'China' } });
+    assert.ok(idea.engineCheck);
+    assert.equal(idea.engineCheck.kind, 'footprint');
+    assert.equal(idea.engineCheck.alsoTried, undefined, 'one candidate, nothing else tried');
+  });
+
+  it('caps the candidates so a runaway array cannot become a compute hole', () => {
+    const many = Array.from({ length: 20 }, () => ({ kind: 'substitution', baselineMaterial: 'nonsense', baselineProcess: 'nonsense' }));
+    const { idea } = run({ title: 'w', engineCheckRequests: many });
+    assert.equal(idea.engineCheck, null);
+    assert.ok(idea.engineCheckAlsoTried.length <= MAX_CHECK_CANDIDATES, `tried ${idea.engineCheckAlsoTried.length}, cap is ${MAX_CHECK_CANDIDATES}`);
+  });
+
+  it('counts how many ideas needed more than one phrasing', () => {
+    const { summary } = run({
+      title: 'v',
+      engineCheckRequests: [
+        { kind: 'substitution', baselineMaterial: 'nope', baselineProcess: 'nope' },
+        { kind: 'footprint', material: 'Steel (mild)', process: 'Stamping / Deep Drawing', weightKg: 1, proposedRegion: 'China' },
+      ],
+    });
+    assert.equal(summary.multiCandidate, 1);
   });
 });

@@ -75,6 +75,8 @@ export interface EngineCheck {
   savingPct: number;
   direction: 'confirmed' | 'contradicted';
   basis: string;
+  /** Other phrasings of the same move the engine ran, and why they did not price. */
+  alsoTried?: { kind: string; reason: string }[];
 }
 
 export interface EvidenceSource {
@@ -132,6 +134,8 @@ export interface CostReductionIdea {
   refined?: { fromTitle: string; note: string };
   /** Why engineCheck is null — always present when it is (no request, grade not in catalogue, nothing changed …). */
   engineCheckReason?: string;
+  /** Other phrasings of the same move the engine tried, and why they did not price. */
+  engineCheckAlsoTried?: { kind: string; reason: string }[];
   /** Technical-depth rubric: which of the six checkable ingredients of a deep idea are present. */
   depth?: { score: number; criteria: Record<string, { met: boolean; weight: number; detail: string }>; missing: string[] };
   /** Arithmetic re-check of the stated annual value against its own calculation basis. */

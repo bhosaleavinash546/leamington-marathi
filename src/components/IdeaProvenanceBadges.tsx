@@ -61,7 +61,7 @@ export default function IdeaProvenanceBadges({ idea, variant = 'full', className
 
       {ec ? (
         <Badge
-          title={`The percentage here is the ENGINE's figure for ${ec.referenceCase}, not the saving claimed above — the two answer different questions.\n\n${ec.basis}${idea.rank ? `\n\nRank factors: ${idea.rank.basis}` : ''}`}
+          title={`The percentage here is the ENGINE's figure for ${ec.referenceCase}, not the saving claimed above — the two answer different questions.\n\n${ec.basis}${ec.alsoTried?.length ? `\n\nThe engine also tried ${ec.alsoTried.length} other phrasing${ec.alsoTried.length === 1 ? '' : 's'} of this move:\n${ec.alsoTried.map(a => `• ${a.kind} — ${a.reason}`).join('\n')}` : ''}${idea.rank ? `\n\nRank factors: ${idea.rank.basis}` : ''}`}
           cls={ec.direction === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : 'bg-danger-500/10 text-danger-400 border-danger-500/25'}
         >
           <Gauge size={10} />
@@ -70,7 +70,7 @@ export default function IdeaProvenanceBadges({ idea, variant = 'full', className
       ) : (
         // Absence of a badge is not the same as a pass.
         <Badge
-          title={`${idea.engineCheckReason ? `Why: ${idea.engineCheckReason}.` : 'The engine had no comparable basis to test this idea against — it is not expressible as a substitution, tolerance, assembly or harness change.'} The saving is AI-estimated; validate before commercial use.`}
+          title={`${idea.engineCheckReason ? `Why: ${idea.engineCheckReason}.` : 'The engine had no comparable basis to test this idea against — it is not expressible as any change the engine can price.'}${idea.engineCheckAlsoTried?.length ? `\n\nEvery phrasing the engine tried failed:\n${idea.engineCheckAlsoTried.map(a => `• ${a.kind} — ${a.reason}`).join('\n')}` : ''} The saving is AI-estimated; validate before commercial use.`}
           cls="bg-slate-500/10 text-slate-400 border-slate-500/25"
         >
           <Gauge size={10} /> Not engine-checked

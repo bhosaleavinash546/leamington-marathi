@@ -166,6 +166,30 @@ predate the schema. The CI gate is now `--min-arith-sound` (computed OR
 reconciling), so the migration from prose cannot read as a regression while it
 is actually the fix.
 
+### Best-of-N on the check request
+
+Engine coverage sat at 43.5%, and reading the 35 misses showed the commonest
+failure was a single request whose material or process name did not resolve. An
+idea may now offer up to three phrasings of the SAME move in
+`engineCheckRequests`; the engine runs all of them and keeps the first that
+prices.
+
+This is the one place in the pipeline where extra test-time compute is worth
+spending, and the reason is asymmetry rather than enthusiasm: a second candidate
+costs a few output tokens in a call already being made, while the verifier is
+local, deterministic and free. The research is explicit that sampling more only
+helps where something can adjudicate — everywhere else in this pipeline there is
+no ground truth to check against, and more samples would only produce more
+confident output.
+
+The candidates that did NOT price are kept beside the verdict. An engineer
+reading "we also tried DP600 and it did not resolve" learns something about the
+catalogue; a silent winner teaches nothing. When every candidate fails, all the
+attempts are listed — "none of the three ways we could express this priced" is a
+sharper statement than any single failure.
+
+Capped at three, so a runaway array cannot become a compute hole.
+
 ## 6. What is genuinely strong (MEASURED, stated so the gaps stay in proportion)
 
 - **The dossier's honesty contract holds.** 16 evidence sections, and every one
