@@ -575,24 +575,27 @@ text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
      [[('Stated in kind, not in pounds. Slide 1 turns these into hours once we fill in our own four '
         'numbers.', 11.5, BODY, False)]])
 
-card(s, Inches(0.45), Inches(1.98), Inches(3.95), Inches(4.6), INDIGO,
+card(s, Inches(0.45), Inches(1.98), Inches(3.95), Inches(4.7), INDIGO,
      'OPTION 1 · input into CAPEE',
-     [('Checking instead of typing', INDIGO, True),
-      ('The values come off the 3D model.',),
-      ('',),
+     [('The typing goes', INDIGO, True),
+      ('Between 12 and 69 values per part.',),
+      ('Nothing to mistype', INDIGO, True),
+      ('And nothing to re-check afterwards.',),
       ('The same answer every time', INDIGO, True),
       ('One method, whoever costs the part.',),
-      ('',),
-      ('More parts for the same team', INDIGO, True),
-      ('The time saved goes back into costing.',),
-      ('',),
-      ('Nothing new to learn', INDIGO, True),
-      ('CAPEE does not change.',),
-      ('',),
+      ('A re-cost is nearly free', INDIGO, True),
+      ('New volume or rates, no re-reading.',),
+      ('The saving repeats on every part', INDIGO, True),
+      ('It grows with how many we cost.',),
+      ('What is left is the judgement', INDIGO, True),
+      ('Material, tolerance, finish, heat',),
+      ('treatment — the calls only we can make.',),
       ('It can start now', INDIGO, True),
-      ('No AI, so no approval to wait for.',)])
+      ('No AI, so no approval to wait for.',),
+      ('',),
+      ('Slide 1 turns this into hours.', INDIGO, True)])
 
-wide_card(s, Inches(4.63), Inches(1.98), Inches(8.25), Inches(4.6), VIOLET,
+wide_card(s, Inches(4.63), Inches(1.98), Inches(8.25), Inches(4.7), VIOLET,
           'OPTION 2 · CostVision end to end',
           [('It runs on its own', VIOLET, True),
            ('Parts go in, costed reports come out. A',),
@@ -625,18 +628,24 @@ wide_card(s, Inches(4.63), Inches(1.98), Inches(8.25), Inches(4.6), VIOLET,
            ('What makes the part expensive, and what',),
            ('each change would save.',)])
 
-callout(s, Inches(0.45), Inches(6.62), Inches(12.43), Inches(0.83), GREENBG, GREEN,
+callout(s, Inches(0.45), Inches(6.74), Inches(12.43), Inches(0.66), GREENBG, GREEN,
         'The two build on each other',
-        "Option 1's benefits arrive first and are kept when Option 2 lands. Option 2's rest on the "
-        'accuracy figure that Option 1 produces, which is why these are an order and not a choice.')
+        "Option 1's benefits arrive first and are kept when Option 2 lands; Option 2's rest on the "
+        'accuracy figure Option 1 produces.')
 notes(s, "This is what we get for it, written in kind rather than in pounds, for the reason I gave "
          "on the first slide: we have never timed this job and never checked the tool against a "
          "price we paid, so a pound figure from me would be a guess. The left column is Option one, "
-         "and it is short on purpose. The job turns from typing into checking, because the values "
-         "come off the model. It gives the same answer every time, so parts costed by different "
-         "engineers are comparable. The time freed goes back into costing more parts with the team "
-         "we already have. Nobody learns a new tool. And it can start now, because there is no AI "
-         "in it to approve. The right column is wider because Option two genuinely has more in it. "
+         "and it is all about the same thing: the time we spend putting numbers into CAPEE by hand. "
+         "The typing goes — between twelve and sixty-nine values a part, depending on the "
+         "commodity, now filled from the model. With nothing typed there is nothing to mistype, so "
+         "the checking of our own transcription goes with it. It gives the same answer every time, "
+         "so parts costed by different engineers are comparable. Re-costing becomes nearly free: a "
+         "new volume or a new set of rates does not mean reading the model again. And the saving is "
+         "not a one-off — it repeats on every part, so it grows with how many we cost. What is left "
+         "is the judgement: material, tolerance class, finish and heat treatment, the calls only we "
+         "can make. That column can start now, because there is no AI in it to approve. And the "
+         "last line points back at slide one: put our four numbers in and all of that becomes "
+         "hours. The right column is wider because Option two genuinely has more in it. "
          "It runs on its own — parts go in and costed reports come out, and a person answers only "
          "what the model cannot show. It uses the same method for everything we make, so a plastic "
          "clip and a machined bracket are built up the same way and can sit in the same report. It "
