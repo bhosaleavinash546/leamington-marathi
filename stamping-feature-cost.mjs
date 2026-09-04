@@ -18,6 +18,7 @@
 // geometry utilisation, thickness) are exactly what this expresses.
 // ─────────────────────────────────────────────────────────────────────────────
 import { MATERIALS, REGIONS } from './costing-engine.mjs';
+import { calibrationFactor, calibrationSource, isClamped } from './calibration.mjs';
 
 const round = (x, dp = 2) => Number(Number(x).toFixed(dp));
 
@@ -56,7 +57,7 @@ const TOL = { standard: 1.0, tight: 1.15, precision: 1.35 };
  * @param {number} [p.programYears=5]
  * @param {string} [p.toleranceClass='standard']
  */
-export function stampingFeatureCost(p, library = undefined) {
+export function stampingFeatureCost(p, library = undefined, calibration = null) {
   const MAT = library?.MATERIALS || MATERIALS;
   const REG = library?.REGIONS || REGIONS;
   const mat = MAT[p.material];
@@ -155,14 +156,29 @@ export function stampingFeatureCost(p, library = undefined) {
   const conversion = machine + labour + setup + secondary;
   const overhead = conversion * reg.overheadPct;
   const preCommercial = material + conversion + overhead + toolingPerPart;
-  const commercial = preCommercial * 0.03;
+  // Region library, not a hardcoded 3% — see the same change in
+  // machining-feature-cost.mjs (review R-34).
+  const commercialPct = Number(reg.commercialPct) > 0 ? Number(reg.commercialPct) : 0.05;
+  const commercial = preCommercial * commercialPct;
   const works = preCommercial + commercial;
   const sga = works * reg.sgaPct;
-  const total = works + sga;
+  const baseTotal = works + sga;
+
+  // Learned calibration on the parametric engine's contract (review R-30).
+  const proc = p.process || 'Stamping / Deep Drawing';
+  const region = p.region || 'Germany';
+  const annualVolume = Number(p.annualVolume) || 200000;
+  const cf = calibration ? calibrationFactor(calibration, proc, { region, annualVolume }) : 1;
+  const total = baseTotal * cf;
+  if (!Number.isFinite(total)) throw new Error('Feature stamping cost produced a non-finite total — check inputs and rate library.');
+  const sv = (x, dp = 2) => round(x * cf, dp);
 
   return {
     engine: 'feature-stamping-v1',
-    inputs: { material: p.material, region: p.region || 'Germany', annualVolume: Number(p.annualVolume) || 200000, bends, drawDepthMm, toleranceClass: p.toleranceClass || 'standard' },
+    inputs: { material: p.material, region, annualVolume, bends, drawDepthMm, toleranceClass: p.toleranceClass || 'standard' },
+    calibration: cf !== 1
+      ? { factor: round(cf, 3), applied: true, clamped: isClamped(cf), source: calibration ? calibrationSource(calibration, proc, { region, annualVolume }) : 'none' }
+      : { factor: 1, applied: false, clamped: false, source: calibration && Number(calibration.n) > 0 ? 'fitted-neutral' : 'none' },
     drivers: {
       thicknessMm: round(tMm, 2), partAreaCm2: round(partAreaCm2, 1), blankAreaCm2: round(blankAreaCm2, 1),
       materialUtilisationPct: round(util * 100, 0), blankMassKg: round(blankMassKg, 3), partMassKg: round(partMassKg, 3),
@@ -170,15 +186,15 @@ export function stampingFeatureCost(p, library = undefined) {
       dieCost: round(dieCost, 0), stations,
     },
     breakdown: {
-      material: { value: round(material) },
-      machine: { value: round(machine) },
-      labour: { value: round(labour) },
-      setup: { value: round(setup) },
-      secondary: { value: round(secondary) },
-      tooling: { value: round(toolingPerPart, 3) },
-      overhead: { value: round(overhead) },
-      commercial: { value: round(commercial) },
-      sgaProfit: { value: round(sga) },
+      material: { value: sv(material) },
+      machine: { value: sv(machine) },
+      labour: { value: sv(labour) },
+      setup: { value: sv(setup) },
+      secondary: { value: sv(secondary) },
+      tooling: { value: sv(toolingPerPart, 3) },
+      overhead: { value: sv(overhead) },
+      commercial: { value: sv(commercial) },
+      sgaProfit: { value: sv(sga) },
     },
     totalShouldCost: round(total),
   };

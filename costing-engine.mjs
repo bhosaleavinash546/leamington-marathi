@@ -17,7 +17,8 @@
  *   listMaterials(), listProcesses(), listRegions()
  */
 
-import { calibrationFactor, calibrationSource } from './calibration.mjs';
+import { calibrationFactor, calibrationSource, isClamped } from './calibration.mjs';
+import { MACHINABILITY, machinabilityFor } from './machining-feature-cost.mjs';
 
 // ─── Material database ────────────────────────────────────────────────────────
 // price = €/kg (derived from COMMODITY_BASELINE), density = g/cm³,
@@ -167,17 +168,60 @@ export const MATERIALS = {
 // ─── Region database ──────────────────────────────────────────────────────────
 // labour = fully-loaded direct €/hr; overheadPct = factory burden on conversion;
 // sgaPct = SG&A + profit margin on works cost.
+// A REGION IS MORE THAN ITS LABOUR RATE.
+//
+// Until Sept 2026 a region carried labour, overhead and SG&A only, so
+// `machineRate` — depreciation, energy, maintenance — was identical
+// everywhere. Measured (review R-27): a 0.15 kg PP clip at 500k/yr cost
+// €0.830 in Germany and €0.720 in China, a ratio of 1.15 against a labour
+// ratio of 3.6, because an injection press was assumed to cost the same per
+// hour in both and `operators` is 0.4. For any automated process the answer
+// to "what if we move it" was therefore roughly flat — the single most common
+// question put to a should-cost tool.
+//
+// Three new fields, each stated rather than folded into labour:
+//   energyEurPerKwh  industrial electricity price. Public data (IEA/Eurostat
+//                    band for industry, 2025-26). Feeds machineRate and the
+//                    carbon engine's grid factor lookup.
+//   machineMult      capital and maintenance index for the same machine in
+//                    that region, relative to Germany = 1.00. Equipment is a
+//                    world market, so the spread is far narrower than labour:
+//                    it reflects installation, local finance, service cover
+//                    and utilisation norms, not a different press.
+//   commercialPct    packaging + inbound/outbound freight + receiving, for a
+//                    part CONSUMED IN EUROPE. This is the freight and duty
+//                    axis the flat 5% could not express (R-28); a lane-level
+//                    rate card would supersede it, and until one exists the
+//                    lane is an explicit, visible assumption.
+//
+// The nine original regions keep their labour, overhead and SG&A untouched so
+// the benchmark is unaffected; the nine added ones are the footprints the
+// industry actually moved to (R-37).
 export const REGIONS = {
-  'Germany':        { labour: 50, overheadPct: 0.20, sgaPct: 0.12 },
-  'UK':             { labour: 47, overheadPct: 0.19, sgaPct: 0.12 },
-  'Czech Republic': { labour: 17, overheadPct: 0.16, sgaPct: 0.11 },
-  'Spain':          { labour: 24, overheadPct: 0.17, sgaPct: 0.11 },
-  'Mexico':         { labour: 9,  overheadPct: 0.14, sgaPct: 0.10 },
-  'USA':            { labour: 44, overheadPct: 0.18, sgaPct: 0.12 },
-  'China':          { labour: 14, overheadPct: 0.15, sgaPct: 0.10 },
-  'India':          { labour: 11, overheadPct: 0.14, sgaPct: 0.10 },
-  'Korea':          { labour: 28, overheadPct: 0.17, sgaPct: 0.11 },
+  'Germany':        { labour: 50, overheadPct: 0.20, sgaPct: 0.12, energyEurPerKwh: 0.20, machineMult: 1.00, commercialPct: 0.045 },
+  'UK':             { labour: 47, overheadPct: 0.19, sgaPct: 0.12, energyEurPerKwh: 0.22, machineMult: 1.00, commercialPct: 0.050 },
+  'Czech Republic': { labour: 17, overheadPct: 0.16, sgaPct: 0.11, energyEurPerKwh: 0.16, machineMult: 0.92, commercialPct: 0.045 },
+  'Spain':          { labour: 24, overheadPct: 0.17, sgaPct: 0.11, energyEurPerKwh: 0.15, machineMult: 0.94, commercialPct: 0.050 },
+  'Mexico':         { labour: 9,  overheadPct: 0.14, sgaPct: 0.10, energyEurPerKwh: 0.11, machineMult: 0.88, commercialPct: 0.085 },
+  'USA':            { labour: 44, overheadPct: 0.18, sgaPct: 0.12, energyEurPerKwh: 0.09, machineMult: 0.96, commercialPct: 0.080 },
+  'China':          { labour: 14, overheadPct: 0.15, sgaPct: 0.10, energyEurPerKwh: 0.09, machineMult: 0.82, commercialPct: 0.095 },
+  'India':          { labour: 11, overheadPct: 0.14, sgaPct: 0.10, energyEurPerKwh: 0.10, machineMult: 0.84, commercialPct: 0.100 },
+  'Korea':          { labour: 28, overheadPct: 0.17, sgaPct: 0.11, energyEurPerKwh: 0.11, machineMult: 0.94, commercialPct: 0.085 },
+  // ── The footprints the industry moved to ──
+  'Turkey':         { labour: 12, overheadPct: 0.15, sgaPct: 0.10, energyEurPerKwh: 0.10, machineMult: 0.86, commercialPct: 0.060 },
+  'Morocco':        { labour: 7,  overheadPct: 0.13, sgaPct: 0.10, energyEurPerKwh: 0.11, machineMult: 0.85, commercialPct: 0.060 },
+  'Poland':         { labour: 15, overheadPct: 0.16, sgaPct: 0.11, energyEurPerKwh: 0.15, machineMult: 0.90, commercialPct: 0.045 },
+  'Romania':        { labour: 11, overheadPct: 0.15, sgaPct: 0.10, energyEurPerKwh: 0.14, machineMult: 0.88, commercialPct: 0.050 },
+  'Slovakia':       { labour: 16, overheadPct: 0.16, sgaPct: 0.11, energyEurPerKwh: 0.16, machineMult: 0.91, commercialPct: 0.045 },
+  'Portugal':       { labour: 14, overheadPct: 0.16, sgaPct: 0.11, energyEurPerKwh: 0.15, machineMult: 0.92, commercialPct: 0.055 },
+  'Vietnam':        { labour: 6,  overheadPct: 0.13, sgaPct: 0.10, energyEurPerKwh: 0.07, machineMult: 0.80, commercialPct: 0.105 },
+  'Thailand':       { labour: 8,  overheadPct: 0.14, sgaPct: 0.10, energyEurPerKwh: 0.11, machineMult: 0.84, commercialPct: 0.100 },
+  'Japan':          { labour: 34, overheadPct: 0.18, sgaPct: 0.12, energyEurPerKwh: 0.16, machineMult: 0.98, commercialPct: 0.090 },
+  'Brazil':         { labour: 10, overheadPct: 0.15, sgaPct: 0.11, energyEurPerKwh: 0.13, machineMult: 0.90, commercialPct: 0.105 },
 };
+
+/** Germany is the reference for the energy and capital indices. */
+export const REGION_REFERENCE = 'Germany';
 
 // ─── Process database ─────────────────────────────────────────────────────────
 // machineRate  = €/hr machine-hour rate (depreciation + energy + maintenance)
@@ -197,7 +241,13 @@ export const PROCESSES = {
     machineRate: 120, operators: 0.6, cavities: 1, utilisation: 0.62, scrapPct: 0.03,
     setupHr: 1.5, batch: 4000, toolLife: 1_200_000,
     cycleBase: 3, cyclePerKg: 1.2, toolingBase: 180_000, toolingPerKg: 90_000,
-    families: ['ferrous', 'aluminium'],
+    // Copper added Sept 2026 (review R-36): stamped and formed copper busbars,
+    // terminals and contacts run on this same class of progressive-die press
+    // line, and copper's lower shear strength makes it no harder to blank than
+    // the mild steel this model is anchored on. Excluding it meant the engine
+    // REFUSED the single highest-value stamped part in an e-drive. Fine
+    // Blanking already accepted copper; the generic line was the outlier.
+    families: ['ferrous', 'aluminium', 'copper'],
   },
   // ── The sheet and bulk-forming specialisations ────────────────────────────
   //
@@ -709,6 +759,65 @@ export const listRegions   = () => Object.keys(REGIONS);
 //     applied to works cost (before SG&A/profit).
 const DEFAULT_FINISH_PCT = 0.06;
 const COMMERCIAL_PCT = 0.05;
+// Share of a catalogue machine-hour rate that is electricity, so the rest is
+// capital and maintenance. Stated assumption; the sensitivity is small (a 2x
+// energy-price spread moves the machine rate ~18% at this share).
+const ENERGY_SHARE = 0.18;
+
+// Processes whose cycle is set by REMOVING metal. Everything else (pressing,
+// casting, moulding, joining, coating) has a cycle governed by the tool, the
+// die or the line, not by how the material cuts.
+const CUTTING_PROCESSES = new Set([
+  'Machining (CNC)', 'Turning (CNC)', 'Machining (secondary ops)',
+  'Deep-Hole / Gun Drilling', 'Broaching', 'Grinding (finish)',
+]);
+
+/**
+ * Cycle multiplier from machinability.
+ *
+ * The constants are the roughing-MRR table in machining-feature-cost.mjs —
+ * already in this repo, with its own provenance — not a new fit to these
+ * fixtures. What needed a decision is the REFERENCE the multiplier is 1 at,
+ * and it is taken from the table rather than chosen to suit a benchmark: that
+ * table states its own baseline in its own comment, "drillFactor (relative to
+ * steel = 1.0)". Steel is therefore the reference here too. A titanium part
+ * costs more than a steel one and an aluminium part less, which is the
+ * physical fact the mass engine could not express.
+ *
+ * Only PART of a machining cycle is metal removal. Approach moves, rapids,
+ * tool changes, probing and handling are set by the path and the machine, not
+ * by the alloy. REMOVAL_SHARE is the fraction that scales.
+ *
+ * Three formulations were measured on both fixture sets before this one was
+ * kept — the held-out set decides, because it is the honest one:
+ *
+ *   whole cycle × MRR ratio      cal 93.8%/12.1%   held 92.9%/15.9%   div 1.32
+ *   REMOVAL_SHARE 0.5 (kept)     cal 93.8%/11.0%   held 92.9%/15.2%   div 1.37
+ *   cyclePerKg term only         cal 87.5%/13.8%   held 92.9%/16.2%   div 1.17
+ *
+ * The last is the more obvious split — cycleBase looks like fixed time — and
+ * it is the weakest, because the catalogue's cycleBase is NOT pure fixed
+ * time: it was fitted to whole parts and carries removal content with it.
+ * Applying the share to the total is therefore the better model OF THIS
+ * CATALOGUE. Sensitivity is mild: 0.4 to 0.6 moves a titanium part ±15%.
+ *
+ * Centring on the geometric mean of the process's compatible families was also
+ * measured and rejected: calibrated MAPE 8.8% → 19.1% for no held-out gain.
+ * Choosing the anchor to suit a benchmark would be fitting to fixtures, which
+ * is what benchmark/cost-divergence.mjs exists to catch.
+ *
+ * Bounded to [0.5, 4] so one table entry cannot dominate an estimate, and 1
+ * for every non-cutting process.
+ */
+const REMOVAL_SHARE = 0.5;
+
+export function cuttingMachinabilityMult(materialKey, family, processKey) {
+  if (!CUTTING_PROCESSES.has(processKey)) return 1;
+  const m = machinabilityFor(materialKey, family);
+  const base = MACHINABILITY.ferrous.roughMRR;   // the table's stated reference
+  const mrr = Number(m?.roughMRR) > 0 ? Number(m.roughMRR) : base;
+  return Math.min(4, Math.max(0.5, REMOVAL_SHARE * (base / mrr) + (1 - REMOVAL_SHARE)));
+}
 // Exposed so a custom rate library can read/override the global defaults.
 export const COST_CONSTANTS = { commercialPct: COMMERCIAL_PCT, defaultFinishPct: DEFAULT_FINISH_PCT };
 
@@ -737,7 +846,7 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const MAT = library?.MATERIALS || MATERIALS;
   const PROC = library?.PROCESSES || PROCESSES;
   const REG = library?.REGIONS || REGIONS;
-  const commercialPct    = library?.constants?.commercialPct    ?? COMMERCIAL_PCT;
+  const commercialPctBase = library?.constants?.commercialPct ?? COMMERCIAL_PCT;
   const defaultFinishPct = library?.constants?.defaultFinishPct ?? DEFAULT_FINISH_PCT;
 
   // Own-property lookups only — a key like "constructor"/"__proto__" must resolve
@@ -824,6 +933,8 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   // wall² (Chvorinov-style) instead of mass — a 2 mm clip and a 4 mm carrier are
   // NOT the same seconds-per-kg.
   const wallMm = Number(input.wallThicknessMm) || 0;
+  // Machinability multiplier on cycle time — cutting processes only.
+  const machinabilityMult = cuttingMachinabilityMult(material, mat.family, process);
   let cycleSec;
   if (proc.coolingKSecPerMm2 && wallMm > 0) {
     // Cooling dominates thin-wall cycles, but fill + screw recovery still scale
@@ -833,20 +944,44 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
     const massCycle = proc.cycleBase + proc.cyclePerKg * w;
     cycleSec = Math.max(coolingCycle, 0.4 * massCycle) * cycleMult * tol.cycle * finMult;
   } else {
-    cycleSec = (proc.cycleBase + proc.cyclePerKg * w) * cycleMult * tol.cycle * finMult;
+    // MACHINABILITY (R-31). Cycle time was linear in mass and blind to
+    // material, so 0.35 kg of titanium and 0.35 kg of aluminium both machined
+    // in 205 s — and the held-out set recorded the consequence: a Ti-6Al-4V
+    // machined fitting at −46%. The multiplier imports the roughing-MRR table
+    // that already lives in machining-feature-cost.mjs with its own
+    // provenance, rather than fitting a new constant to the fixtures.
+    // MACHINABILITY (R-31). Cycle was linear in mass and blind to material, so
+    // 0.35 kg of titanium and 0.35 kg of aluminium both machined in 205 s —
+    // and the held-out set recorded the consequence: a Ti-6Al-4V fitting at
+    // −46%. The multiplier already carries the removal share (see its doc);
+    // it applies to the whole cycle because the catalogue's cycleBase is not
+    // pure fixed time.
+    cycleSec = (proc.cycleBase + proc.cyclePerKg * w) * cycleMult * tol.cycle * finMult * machinabilityMult;
   }
   const secPerPart = cycleSec / proc.cavities;
   const hrPerPart = secPerPart / 3600;
   // Machine-size selection: with a projected area, pick the tonnage-tiered rate
   // (a 2,500 t HPDC cell is not a 400 t cell). Without geometry, keep the flat
   // catalogue rate (status quo — benchmark unaffected).
-  let machineRate = proc.machineRate * machineMult;
+  // The machine rate now MOVES WITH THE REGION (R-27). A machine-hour is
+  // capital + maintenance + energy; the first two scale with the region's
+  // capital index and the third with its electricity price. ENERGY_SHARE is
+  // the fraction of a catalogue machine rate that is electricity — a stated
+  // modelling assumption, not a measurement, and the same for every process
+  // until per-process kW draw is threaded through (carbon.mjs has the kWh/kg
+  // figures that would refine it).
+  const regionMachineMult = Number(reg.machineMult) > 0 ? Number(reg.machineMult) : 1;
+  const refEnergy = (REG[REGION_REFERENCE] ?? REGIONS[REGION_REFERENCE]).energyEurPerKwh ?? 0.20;
+  const regionEnergy = Number(reg.energyEurPerKwh) > 0 ? Number(reg.energyEurPerKwh) : refEnergy;
+  const energyRatio = regionEnergy / refEnergy;
+  const regionRateMult = regionMachineMult * (1 - ENERGY_SHARE) + regionMachineMult * ENERGY_SHARE * energyRatio;
+  let machineRate = proc.machineRate * machineMult * regionRateMult;
   let machineTier = null;
   const projArea = Number(input.projectedAreaCm2) || 0;
   if (Array.isArray(proc.machineTiers) && projArea > 0) {
     const tonnage = projArea * (proc.clampTPerCm2 ?? 0.5) * proc.cavities;
     const tier = proc.machineTiers.find(t => tonnage <= t.maxClampT) || proc.machineTiers[proc.machineTiers.length - 1];
-    machineRate = tier.rate * machineMult;
+    machineRate = tier.rate * machineMult * regionRateMult;
     machineTier = { clampTonnage: Math.round(tonnage), rate: tier.rate };
   }
   // Perishable tooling: cutting inserts/drills, coolant, abrasives, wheels —
@@ -886,6 +1021,10 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const overheadCost = conversion * reg.overheadPct;
   // Packaging, inbound/outbound freight, receiving & quality — a real line on
   // every piece price that a pure works-cost buildup misses.
+  // Freight and receiving depend on WHERE the part is made relative to where
+  // it is consumed. A flat 5% could express neither side of the low-cost-
+  // country trade (R-28); the region's own figure is used when it has one.
+  const commercialPct = Number(reg.commercialPct) > 0 ? Number(reg.commercialPct) : commercialPctBase;
   const commercialCost = (materialCost + conversion + toolingCost + overheadCost) * commercialPct;
   const worksCost = materialCost + conversion + toolingCost + overheadCost + commercialCost;
   const sgaCost = worksCost * reg.sgaPct;
@@ -895,7 +1034,7 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   // factor fitted from the user's real quotes for this process. Scales every
   // breakdown line equally, so composition (pct) is unchanged — only the level
   // moves toward the user's actual price history. cf = 1 when uncalibrated.
-  const cf = calibration ? calibrationFactor(calibration, process) : 1;
+  const cf = calibration ? calibrationFactor(calibration, process, { region, annualVolume }) : 1;
   const total = baseTotal * cf;
   // Last line of defence: never return a non-finite price (would serialise to
   // null/NaN and render as a blank figure with no error).
@@ -906,12 +1045,21 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   return {
     inputs: { material, process, weightKg: w, annualVolume: vol, region, programYears },
     calibration: cf !== 1
-      ? { factor: round(cf, 3), applied: true, source: calibration ? calibrationSource(calibration, process) : 'none' }
-      : { factor: 1, applied: false, source: 'none' },
+      ? { factor: round(cf, 3), applied: true, clamped: isClamped(cf), source: calibration ? calibrationSource(calibration, process, { region, annualVolume }) : 'none' }
+      : {
+          factor: 1,
+          // A corpus that CONFIRMS the model is a result, not an absence
+          // (review R-32): applied stays false because nothing moved, but the
+          // source says the quotes were there and agreed.
+          applied: false,
+          clamped: false,
+          source: calibration && Number(calibration.n) > 0 ? 'fitted-neutral' : 'none',
+        },
     drivers: {
       pricePerKg: round(pricePerKg, 3),
       inputMassKg: round(inputMass, 3),
       cycleSecPerPart: round(secPerPart, 1),
+      ...(machinabilityMult !== 1 ? { machinabilityMult: round(machinabilityMult, 2) } : {}),
       machineRate: round(machineRate, 1),
       labourRate: reg.labour,
       operators: proc.operators,
@@ -1085,14 +1233,16 @@ export function computeRouteCost(input, overrides = {}, calibration = null, libr
   const sgaCost = worksCost * reg.sgaPct;
   const baseTotal = worksCost + sgaCost;
 
-  const cf = calibration ? calibrationFactor(calibration, route[0]) : 1;
+  const cf = calibration ? calibrationFactor(calibration, route[0], { region, annualVolume }) : 1;
   const total = baseTotal * cf;
   if (!Number.isFinite(total)) throw new Error('Route costing produced a non-finite total — check inputs.');
   const sv = (x) => round(x * cf);
 
   return {
     inputs: { material, route: ops.map(o => o.key), weightKg: w, annualVolume: vol, region, programYears },
-    calibration: cf !== 1 ? { factor: round(cf, 3), applied: true, source: calibration ? calibrationSource(calibration, route[0]) : 'none' } : { factor: 1, applied: false, source: 'none' },
+    calibration: cf !== 1
+      ? { factor: round(cf, 3), applied: true, clamped: isClamped(cf), source: calibration ? calibrationSource(calibration, route[0], { region, annualVolume }) : 'none' }
+      : { factor: 1, applied: false, clamped: false, source: calibration && Number(calibration.n) > 0 ? 'fitted-neutral' : 'none' },
     drivers: {
       pricePerKg: round(pricePerKg, 3),
       inputMassKg: round(op1InMass, 3),

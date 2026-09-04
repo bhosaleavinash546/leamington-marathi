@@ -12,26 +12,26 @@
     {
       "id": "st-body-panel",
       "ref": 9.5,
-      "feature": 5.43,
-      "featErr": -0.428421052631579,
-      "mass": 4.9,
-      "massErr": -0.4842105263157894,
+      "feature": 5.51,
+      "featErr": -0.42000000000000004,
+      "mass": 4.88,
+      "massErr": -0.4863157894736842,
       "tol": 0.35
     },
     {
       "id": "st-hss-reinforcement",
       "ref": 2.6,
-      "feature": 2.28,
-      "featErr": -0.12307692307692318,
-      "mass": 1.74,
-      "massErr": -0.3307692307692308,
+      "feature": 2.32,
+      "featErr": -0.10769230769230778,
+      "mass": 1.7,
+      "massErr": -0.3461538461538462,
       "tol": 0.35
     },
     {
       "id": "st-al-heatshield",
       "ref": 2.2,
-      "feature": 1.8,
-      "featErr": -0.18181818181818185,
+      "feature": 1.83,
+      "featErr": -0.1681818181818182,
       "mass": 1.4,
       "massErr": -0.3636363636363637,
       "tol": 0.35
@@ -39,24 +39,24 @@
     {
       "id": "st-seat-panel",
       "ref": 3.4,
-      "feature": 2.87,
-      "featErr": -0.15588235294117642,
-      "mass": 2.19,
-      "massErr": -0.3558823529411765,
+      "feature": 2.92,
+      "featErr": -0.1411764705882353,
+      "mass": 2.16,
+      "massErr": -0.3647058823529411,
       "tol": 0.35
     },
     {
       "id": "st-small-clip",
       "ref": 0.11,
-      "feature": 0.23,
-      "featErr": 1.090909090909091,
-      "mass": 0.41,
-      "massErr": 2.727272727272727,
+      "feature": 0.24,
+      "featErr": 1.1818181818181819,
+      "mass": 0.37,
+      "massErr": 2.3636363636363638,
       "tol": 0.35
     }
   ],
-  "featureMape": 0.38884146297458994,
-  "massMape": 0.7475501021166656,
+  "featureMape": 0.39530165912518855,
+  "massMape": 0.6913296095029842,
   "featureHits": 3,
   "massHits": 2,
   "total": 6

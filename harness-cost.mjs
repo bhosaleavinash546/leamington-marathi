@@ -15,7 +15,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { REGIONS, MATERIALS } from './costing-engine.mjs';
 
-const CU_PRICE = () => MATERIALS['Copper (Cu-ETP)']?.price ?? 9.2;   // €/kg — follows the live-price bridge when active
+// Reads the LIVE library when one is passed. The arrow closed over the
+// module-level import, so `library` never reached it and conductor cost — the
+// dominant material line in a harness — was frozen at the catalogue value
+// while the comment promised it followed the live bridge (review R-33).
+const CU_PRICE = (library) => library?.MATERIALS?.['Copper (Cu-ETP)']?.price
+  ?? MATERIALS['Copper (Cu-ETP)']?.price
+  ?? 9.2;   // €/kg — follows the live-price bridge when active
 
 // Typical automotive conductor mix when only a circuit count is known.
 // (FLRY-B dominates; heavier sections carry power.)
@@ -57,7 +63,7 @@ export function computeHarnessCost(input, library = undefined) {
   const wireLenM = circuits * avgLen;
   // conductor kg = Σ share·length·area·ρ(Cu 8960 kg/m³)
   const cuKg = mix.reduce((s, g) => s + wireLenM * g.share * (g.mm2 * 1e-6) * 8960, 0);
-  const conductorEur = cuKg * CU_PRICE();
+  const conductorEur = cuKg * CU_PRICE(library);
   // insulation ≈ 45% of conductor mass for thin-wall PVC/XLPE at ~€2.1/kg
   const insulationEur = cuKg * 0.45 * 2.1;
   // connectors: unsealed ~€0.35, sealed ~€0.95 (incl. cavity seals); terminals 2/circuit @ €0.035
@@ -96,7 +102,7 @@ export function computeHarnessCost(input, library = undefined) {
     inputs: { circuits, avgLengthM: avgLen, connectors, splices, sealedPct, region, annualVolume: vol },
     drivers: {
       wireLengthM: round(wireLenM, 1), copperKg: round(cuKg, 3),
-      copperPricePerKg: CU_PRICE(), labourMinutes: round(minutes, 1), labourRate: reg.labour,
+      copperPricePerKg: CU_PRICE(library), labourMinutes: round(minutes, 1), labourRate: reg.labour,
     },
     breakdown: {
       conductor: round(conductorEur), insulation: round(insulationEur),

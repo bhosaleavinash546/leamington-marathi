@@ -71,15 +71,57 @@ export const EDU_PART_HINTS = [
 ];
 
 /**
- * First matching hint for a product-tree name, filtered to what the live
- * catalogue can actually resolve. A hint whose material or process is not in
- * the catalogue keeps its subassembly and states the gap rather than
- * suggesting a name the engine would reject.
+ * Pick the hint a compound part name is actually ABOUT.
+ *
+ * English compound nouns are head-final: a "shaft seal" is a seal, a "bearing
+ * cover" is a cover, a "rotor shaft" is a shaft. Until Sept 2026 (review R-36)
+ * this was array-order-first, so "shaft seal" matched the `shaft` hint and the
+ * wizard proposed a turned 42CrMo4 billet for a moulded elastomer lip seal —
+ * wrong material, wrong process, wrong subassembly, and wrong by ~40× on cost.
+ *
+ * The rule: among every hint that matches, take the one whose match ENDS
+ * latest in the name. Ties (two hints matching the same head) fall back to the
+ * longer match, then to catalogue order.
+ */
+function bestHintFor(n) {
+  let best = null;
+  for (const h of EDU_PART_HINTS) {
+    const m = h.re.exec(n);
+    if (!m) continue;
+    const end = m.index + m[0].length;
+    if (!best || end > best.end || (end === best.end && m[0].length > best.len)) {
+      best = { hint: h, end, len: m[0].length };
+    }
+  }
+  return best?.hint ?? null;
+}
+
+/**
+ * Family compatibility, computed from the CALLER'S catalogue so this module
+ * stays dependency-free and a custom rate library is judged by its own rules.
+ * Mirrors `computeShouldCost`: a non-array `families` disables nothing — it is
+ * treated as incompatible, because a process with no valid family list cannot
+ * vouch for any material.
+ */
+function familiesAllow(materials, processes, material, process) {
+  if (!materials || !processes) return true;   // nothing to check against
+  const mat = Object.prototype.hasOwnProperty.call(materials, material) ? materials[material] : null;
+  const proc = Object.prototype.hasOwnProperty.call(processes, process) ? processes[process] : null;
+  if (!mat || !proc) return false;
+  return Array.isArray(proc.families) && proc.families.includes(mat.family);
+}
+
+/**
+ * Best matching hint for a product-tree name, filtered to what the live
+ * catalogue can actually resolve AND actually price together. A hint whose
+ * material or process is missing — or whose PAIR the engine would refuse —
+ * keeps its subassembly and states the gap rather than suggesting something
+ * that throws the moment the engineer clicks "cost it".
  */
 export function suggestForName(name, { materials = null, processes = null } = {}) {
   const n = String(name || '');
   if (!n.trim()) return null;
-  const hit = EDU_PART_HINTS.find(h => h.re.test(n));
+  const hit = bestHintFor(n);
   if (!hit) return null;
   const out = {
     hintId: hit.id, subassembly: hit.subassembly, basis: hit.basis,
@@ -92,6 +134,17 @@ export function suggestForName(name, { materials = null, processes = null } = {}
   out.process = procOk ? hit.process : null;
   if (!matOk || !procOk) {
     out.basis += ` — but ${[!matOk ? `material "${hit.material}"` : null, !procOk ? `process "${hit.process}"` : null].filter(Boolean).join(' and ')} is not in this catalogue, so it must be chosen by hand`;
+    return out;
+  }
+  // Both exist, but do they go together? A suggestion the engine will throw on
+  // is worse than no suggestion: it looks confirmed until someone runs it.
+  if (!familiesAllow(materials, processes, hit.material, hit.process)) {
+    const fam = materials[hit.material]?.family ?? 'unknown';
+    const allowed = Array.isArray(processes[hit.process]?.families) ? processes[hit.process].families.join(' / ') : 'nothing';
+    out.incompatible = { material: hit.material, process: hit.process, family: fam, allowed };
+    out.material = null;
+    out.process = null;
+    out.basis += ` — but this catalogue's "${hit.process}" is modelled for ${allowed} only and ${hit.material} is ${fam}, so the pair must be chosen by hand`;
   }
   return out;
 }

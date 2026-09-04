@@ -15,6 +15,7 @@
  * Pure & dependency-free apart from the engine catalogues.
  */
 import { MATERIALS, PROCESSES } from './costing-engine.mjs';
+import { materialAlias, processAlias } from './material-aliases.mjs';
 
 const norm = (s) => String(s || '').trim().toLowerCase();
 
@@ -30,6 +31,12 @@ export function resolveMaterial(typed, materials = MATERIALS) {
   if (!t) return null;
   const ex = exact(typed, keys);
   if (ex) return { key: ex, approx: false };
+  // The COVERING map first (material-aliases.mjs). The ordered ladder below is
+  // complete for nothing: whichever branch fires first wins, so ADC12 came back
+  // as A356 and GFRP as carbon fibre. The alias table is keyed on catalogue
+  // entries and CI-asserted to reach every one of them.
+  const aliased = materialAlias(typed, materials);
+  if (aliased) return { key: aliased, approx: true };
   const has = (kw) => keys.find(k => k.toLowerCase().includes(kw));
   let key = null;
   // Ductile/nodular (GJS/GGG/SG) tested before grey: the grey alt "gg-?\d" matches
@@ -113,6 +120,11 @@ export function resolveProcess(typed, processes = PROCESSES) {
   if (!t) return null;
   const ex = exact(typed, keys);
   if (ex) return { key: ex, approx: false };
+  // Covering map first — see resolveMaterial. This is what stops "hot
+  // stamping" being priced on a cold press line and "laser welding" on a
+  // cutting table.
+  const aliased = processAlias(typed, processes);
+  if (aliased) return { key: aliased, approx: true };
   const has = (kw) => keys.find(k => k.toLowerCase().includes(kw));
   let key = null;
   // Forging & casting are tested BEFORE the sheet-metal branch: the words

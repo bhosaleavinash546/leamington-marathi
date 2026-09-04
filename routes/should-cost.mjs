@@ -88,7 +88,10 @@ function getUserCalibration(userId) {
     // captured during a commodity spike no longer permanently biases the fit).
     let actual = r.actualPriceEur;
     if (Number.isFinite(r.matEurAtQuote)) actual += (now.breakdown.material.value - r.matEurAtQuote);
-    if (actual > 0) pairs.push({ process: r.process, modelled: now.totalShouldCost, actual });
+    // region + annualVolume travel with the pair: fitCalibration keys its
+    // finest cells on process × region × volume band (review R-32), and a pair
+    // without them can only ever reach the process-level factor.
+    if (actual > 0) pairs.push({ process: r.process, modelled: now.totalShouldCost, actual, region: r.region, annualVolume: r.annualVolume });
   }
   const cal = fitCalibration(pairs);
   calCache.set(key, cal);

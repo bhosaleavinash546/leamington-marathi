@@ -17,7 +17,11 @@ test('falls back to the static table when the feed is unreachable', async () => 
     assert.deepEqual(fx.rates, FX_FALLBACK);
     assert.equal(fx.live, false);
     assert.equal(fx.source, 'static reference');
-    assert.equal(fx.stale, false);
+    // A fallback rate IS stale — that is what fallback means. This used to
+    // assert false, which is how a deployment that never reached the feed
+    // reported a fresh rate forever (Sept 2026 review, R-33).
+    assert.equal(fx.stale, true);
+    assert.ok(fx.date, 'the fallback table states its own vintage');
   } finally { globalThis.fetch = realFetch; __resetFxCacheForTest(); }
 });
 

@@ -12,8 +12,23 @@
  *   FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES  — supported currencies + symbols
  *   getFxRates() -> { rates, live, date, stale, source }
  */
-export const FX_FALLBACK = { EUR: 1, GBP: 0.85, USD: 1.08, CNY: 7.85 };
-export const FX_SYMBOLS = { EUR: '€', GBP: '£', USD: '$', CNY: '¥' };
+// Four currencies covered nine regions, so a quote could not be entered in the
+// native currency of Mexico, India, Korea or the Czech Republic — precisely the
+// lanes where teaching the engine a real quote is most valuable (Sept 2026
+// review, R-33). The list now covers every region in the cost engine.
+export const FX_FALLBACK = {
+  EUR: 1, GBP: 0.85, USD: 1.08, CNY: 7.85,
+  CZK: 25.2, MXN: 19.8, INR: 90.5, KRW: 1460, PLN: 4.30, RON: 4.97,
+  TRY: 38.5, MAD: 10.8, VND: 27400, THB: 38.9, JPY: 165, BRL: 5.95,
+};
+export const FX_SYMBOLS = {
+  EUR: '€', GBP: '£', USD: '$', CNY: '¥',
+  CZK: 'Kč', MXN: 'MX$', INR: '₹', KRW: '₩', PLN: 'zł', RON: 'lei',
+  TRY: '₺', MAD: 'DH', VND: '₫', THB: '฿', JPY: '¥', BRL: 'R$',
+};
+// The vintage of the fallback table, so "how old is this rate" has an answer
+// even when the feed has never been reached. Update both together.
+export const FX_FALLBACK_AS_OF = '2026-09-01';
 export const FX_CURRENCIES = Object.keys(FX_FALLBACK);   // the single supported-currency list
 const FX_TARGETS = FX_CURRENCIES.filter(c => c !== 'EUR');
 
@@ -28,11 +43,17 @@ let fxInflight = null;   // single shared refresh promise — dedups concurrent 
 
 // Annotate a cache snapshot with derived fields (never mutates the cache).
 function view(snapshot) {
-  const stale = snapshot.live && (Date.now() - snapshot.fetchedAt > FX_TTL_MS);
+  // A fallback rate is ALWAYS stale — that is what fallback means. The old
+  // expression short-circuited on `live`, so a deployment that had never
+  // reached the feed reported stale:false forever, which is the one case where
+  // the flag matters most (Sept 2026 review, R-33).
+  const stale = snapshot.live
+    ? (Date.now() - snapshot.fetchedAt > FX_TTL_MS)
+    : true;
   return {
     rates: snapshot.rates,
     live: snapshot.live,
-    date: snapshot.date,
+    date: snapshot.date ?? (snapshot.live ? null : FX_FALLBACK_AS_OF),
     stale,                                                   // live data older than the TTL (refreshes failing)
     source: snapshot.live ? 'ECB (frankfurter.app)' : 'static reference',
   };

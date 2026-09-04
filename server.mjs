@@ -952,6 +952,24 @@ async function sendOTPEmail(email, otp, type) {
 // can be reported rather than baked into three call sites.
 const DEFAULT_ANNUAL_VOLUME = 80_000;
 
+// FEATURE-ENGINE DISPERSION, derived from recorded residuals.
+//
+// The CAD-driven machining and stamping engines published ±22% and ±25% bands
+// while their own benchmark files recorded 34.5% and 38.9% MAPE, with single
+// fixtures at +100% and +109% (Sept 2026 review, R-29). That is precisely the
+// defect MODEL_DISPERSION was created to fix on the mass engine, on the
+// surface the product markets as MORE accurate.
+//
+// These are the mean absolute errors from benchmark/machining-results.json and
+// benchmark/stamping-results.json. Six fixtures each is a thin basis and the
+// note says so; tests/feature-dispersion.test.mjs re-derives both from those
+// files, so the numbers cannot drift from the data again.
+const FEATURE_DISPERSION = {
+  machining: 0.34,
+  stamping: 0.38,
+  basis: "Band from the recorded residuals of this engine's own benchmark (6 fixtures each; machining MAPE 34.5%, stamping 38.9%). A thin basis, stated rather than assumed — a direction indicator, not a quotable tolerance.",
+};
+
 const MONTHLY_TOKEN_QUOTA = Number(process.env.CV_MONTHLY_TOKEN_QUOTA ?? 3_000_000);
 function checkUsageQuota(req, res, next) {
   if (!MONTHLY_TOKEN_QUOTA || !req.user?.id) return next();
@@ -2676,7 +2694,7 @@ function sanitizeGeometry(g) {
 // Adapt CAD geometry (client parse or server OCCT) into the feature-based
 // machining model, then shape its output like a computeShouldCost result so the
 // cad-analyze route/frontend render it unchanged.
-function featureCostFromCad(g, matKey, region, annualVolume, config, lib) {
+function featureCostFromCad(g, matKey, region, annualVolume, config, lib, calibration = null) {
   const bb = g.boundingBox || {};
   const minDim = Math.min(Number(bb.x) || 1e9, Number(bb.y) || 1e9, Number(bb.z) || 1e9);
   // Holes: exact from an OCCT featureTable if present, else approximate from the
@@ -2698,13 +2716,15 @@ function featureCostFromCad(g, matKey, region, annualVolume, config, lib) {
   const batch = Math.max(50, Math.min(5000, Math.round(annualVolume / 250)));
   const feat = featuredMachiningCost({
     geometry, material: matKey, region, annualVolume, batch,
+    process: 'Machining (CNC)',
     toleranceClass: config.toleranceClass, surfaceFinish: config.surfaceFinish,
-  }, lib);
+  }, lib, calibration);
   const mat = (lib?.MATERIALS || {})[matKey] || {};
   const b = feat.breakdown;
   // Reshape to the computeShouldCost contract the route consumes.
   const calc = {
     engine: 'feature-machining',
+    calibration: feat.calibration,
     totalShouldCost: feat.totalShouldCost,
     breakdown: {
       material: { value: b.material.value },
@@ -2732,7 +2752,20 @@ function featureCostFromCad(g, matKey, region, annualVolume, config, lib) {
   };
   // Honest band: machining dispersion ≈ ±22% around the point estimate.
   const t = feat.totalShouldCost;
-  const sim = { p10: Number((t * 0.82).toFixed(2)), p50: t, p90: Number((t * 1.22).toFixed(2)), stdev: Number((t * 0.13).toFixed(2)) };
+  // The band is DERIVED from the recorded residuals of this engine's own
+  // benchmark (benchmark/machining-results.json), not asserted. It used to say
+  // ±22% while that file recorded a 34.5% MAPE with a single fixture at +100%
+  // (Sept 2026 review, R-29) — the same defect MODEL_DISPERSION was created to
+  // fix on the mass engine. FEATURE_DISPERSION carries the measured figure and
+  // tests/feature-dispersion.test.mjs re-derives it, so a comment cannot drift
+  // from the data again.
+  const sim = {
+    p10: Number((t * (1 - FEATURE_DISPERSION.machining)).toFixed(2)),
+    p50: t,
+    p90: Number((t * (1 + FEATURE_DISPERSION.machining)).toFixed(2)),
+    stdev: Number((t * FEATURE_DISPERSION.machining * 0.6).toFixed(2)),
+    dispersionBasis: FEATURE_DISPERSION.basis,
+  };
   return { calc, sim };
 }
 
@@ -2742,19 +2775,21 @@ function featureCostFromCad(g, matKey, region, annualVolume, config, lib) {
 // see benchmark/stamping-run.mjs. Bends/draw aren't reliably inferable from raw
 // geometry, so we assume a simple form (bends≈2, flat); the tonnage-tier, gauge
 // and geometry-nesting gains still apply. Falls back to mass on any gap.
-function stampingCostFromCad(g, matKey, region, annualVolume, config, lib) {
+function stampingCostFromCad(g, matKey, region, annualVolume, config, lib, calibration = null) {
   const geometry = geometryToStampingInput(g);
   if (!(Number(geometry.partVolumeCm3) > 0) || !(Number(geometry.boundingBoxMm?.x) > 0)) return null;
   const bends = Number.isFinite(Number(g.featureCounts?.bends)) ? Number(g.featureCounts.bends) : 2;
   const feat = stampingFeatureCost({
     geometry, material: matKey, region, annualVolume, bends,
+    process: 'Stamping / Deep Drawing',
     toleranceClass: config.toleranceClass,
-  }, lib);
+  }, lib, calibration);
   const mat = (lib?.MATERIALS || {})[matKey] || {};
   const b = feat.breakdown;
   const d = feat.drivers;
   const calc = {
     engine: 'feature-stamping',
+    calibration: feat.calibration,
     totalShouldCost: feat.totalShouldCost,
     breakdown: {
       material: { value: b.material.value },
@@ -2781,14 +2816,29 @@ function stampingCostFromCad(g, matKey, region, annualVolume, config, lib) {
       thicknessMm: d.thicknessMm,
     },
   };
-  // Honest band: stamping dispersion ≈ ±25% around the point estimate.
+  // Derived, not asserted — see the machining note above. The recorded
+  // stamping MAPE is 38.9% with a fixture at +109%, against a comment that
+  // claimed ±25%.
   const t = feat.totalShouldCost;
-  const sim = { p10: Number((t * 0.80).toFixed(2)), p50: t, p90: Number((t * 1.25).toFixed(2)), stdev: Number((t * 0.15).toFixed(2)) };
+  const sim = {
+    p10: Number((t * (1 - FEATURE_DISPERSION.stamping)).toFixed(2)),
+    p50: t,
+    p90: Number((t * (1 + FEATURE_DISPERSION.stamping)).toFixed(2)),
+    stdev: Number((t * FEATURE_DISPERSION.stamping * 0.6).toFixed(2)),
+    dispersionBasis: FEATURE_DISPERSION.basis,
+  };
   return { calc, sim };
 }
 
-function deterministicCadCost(g, config) {
+function deterministicCadCost(g, config, userId = null) {
   const lib = getActiveLibrary();
+  // The CAD path used to cost EVERY part uncalibrated (review R-30): a user
+  // whose quote corpus had moved the mass engine by 1.2x got that correction on
+  // the should-cost page and a silently different level the moment they
+  // attached geometry, with no `calibration` field to reveal the difference.
+  // Same corpus, same contract, on all three paths now.
+  let calibration = null;
+  if (userId) { try { calibration = shouldCostApi.getUserCalibration(userId); } catch { /* uncalibrated */ } }
   const matText = config.materialSpec || g.extractedMaterial;
   const procText = config.processSpec || g.processGuesses?.[0]?.process;
   const matRes = matText ? resolveMaterial(matText, lib.MATERIALS) : null;
@@ -2816,7 +2866,7 @@ function deterministicCadCost(g, config) {
   const hasGeometry = g.boundingBox && Number(g.estimatedVolume) > 0 && !g.isImage;
   if (isMachining && hasGeometry) {
     try {
-      const feat = featureCostFromCad(g, matRes.key, region, annualVolume, config, lib);
+      const feat = featureCostFromCad(g, matRes.key, region, annualVolume, config, lib, calibration);
       if (feat) return { calc: feat.calc, sim: feat.sim, input, matRes, procRes, weightKg, density, region, annualVolume, currency, fx, method: 'feature-machining' };
     } catch { /* fall through to the mass model */ }
   }
@@ -2824,13 +2874,13 @@ function deterministicCadCost(g, config) {
   // nesting yield instead of the flat-rate mass proxy (see benchmark/stamping-run.mjs).
   if (isStamping && hasGeometry) {
     try {
-      const feat = stampingCostFromCad(g, matRes.key, region, annualVolume, config, lib);
+      const feat = stampingCostFromCad(g, matRes.key, region, annualVolume, config, lib, calibration);
       if (feat) return { calc: feat.calc, sim: feat.sim, input, matRes, procRes, weightKg, density, region, annualVolume, currency, fx, method: 'feature-stamping' };
     } catch { /* fall through to the mass model */ }
   }
 
   let calc, sim;
-  try { calc = computeShouldCost(input, {}, null, lib); sim = simulateShouldCost(input, 2000, 12345, null, lib); }
+  try { calc = computeShouldCost(input, {}, calibration, lib); sim = simulateShouldCost(input, 2000, 12345, calibration, lib); }
   catch (e) { return { error: e.message, matRes, procRes }; }   // e.g. family mismatch — surface honestly
 
   return { calc, sim, input, matRes, procRes, weightKg, density, region, annualVolume, currency, fx, method: 'mass' };
@@ -2855,7 +2905,7 @@ app.post('/api/cad-analyze', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60
     const client = makeAnthropic(apiKey, { userId: req.user?.id, route: '/api/cad-analyze' });
 
     // ── Deterministic cost via the engine (numbers), LLM for narrative only ──
-    const det = deterministicCadCost(geometry, config);
+    const det = deterministicCadCost(geometry, config, req.user?.id ?? null);
     const fxRates = currency === 'EUR' ? FX_FALLBACK : (await getFxRates().catch(() => ({ rates: FX_FALLBACK }))).rates;
     const rate = fxRates[currency] ?? 1;
     const cv = (n) => Number((Number(n) * rate).toFixed(2));

@@ -55,28 +55,39 @@ test('"pressure"/"press"/"impression" no longer hijacked by the stamping branch'
   assert.equal(resolveProcess('forging press')?.key, 'Forging (Hot)');
   // …but genuine sheet-metal terms still reach Stamping.
   assert.equal(resolveProcess('stamping')?.key, 'Stamping / Deep Drawing');
-  assert.equal(resolveProcess('deep drawing')?.key, 'Stamping / Deep Drawing');
+  // "deep drawing" reaches the multi-stage draw model added later — a finer
+  // answer than the generic press line, and still not a forging or a casting.
+  assert.equal(resolveProcess('deep drawing')?.key, 'Deep Drawing (Multi-stage)');
   assert.equal(resolveProcess('progressive die')?.key, 'Stamping / Deep Drawing');
 });
 
-test('low-pressure die casting routes to the gravity/permanent-mould model, not HPDC', () => {
-  assert.equal(resolveProcess('low pressure die casting')?.key, 'Gravity Die Casting');
-  assert.equal(resolveProcess('LPDC')?.key, 'Gravity Die Casting');
+test('low-pressure die casting routes to its own model, not HPDC', () => {
+  // Originally the nearest available neighbour was Gravity Die Casting; the
+  // catalogue now carries the real LPDC process (different fill, different
+  // yield, different cycle), and the resolver reaches it.
+  assert.equal(resolveProcess('low pressure die casting')?.key, 'Low-Pressure Die Casting');
+  assert.equal(resolveProcess('LPDC')?.key, 'Low-Pressure Die Casting');
   // HPDC still resolves to the aluminium die-casting model.
   assert.equal(resolveProcess('high pressure diecasting')?.key, 'Die Casting (Aluminium)');
 });
 
-test('cold heading / forming / thread rolling resolve to cold forging (not null)', () => {
-  assert.equal(resolveProcess('cold heading')?.key, 'Forging (Cold)');
+test('cold heading / forming / thread rolling resolve to a cold-forming op (not null)', () => {
+  // The catalogue gained a dedicated header/upsetter line; the generic cold
+  // forge remains for everything that is not a headed part.
+  assert.equal(resolveProcess('cold heading')?.key, 'Cold Heading / Upsetting');
+  assert.equal(resolveProcess('thread rolling')?.key, 'Cold Heading / Upsetting');
   assert.equal(resolveProcess('cold headed fastener')?.key, 'Forging (Cold)');
   assert.equal(resolveProcess('cold forming')?.key, 'Forging (Cold)');
-  assert.equal(resolveProcess('thread rolling')?.key, 'Forging (Cold)');
   assert.equal(resolveProcess('cold forging')?.key, 'Forging (Cold)');
 });
 
-test('semi-solid magnesium routes to a family-compatible die-casting process', () => {
-  assert.equal(resolveProcess('thixomolding')?.key, 'Die Casting (Aluminium)');
-  assert.equal(resolveProcess('semi-solid casting')?.key, 'Die Casting (Aluminium)');
+test('semi-solid magnesium routes to a family-compatible semi-solid process', () => {
+  // Both spellings reach the real thixo/rheo model now, whose families cover
+  // aluminium AND magnesium — the compatibility point the original test made.
+  assert.equal(resolveProcess('thixomolding')?.key, 'Semi-Solid Casting (Thixo/Rheo)');
+  assert.equal(resolveProcess('thixomoulding')?.key, 'Semi-Solid Casting (Thixo/Rheo)');
+  assert.equal(resolveProcess('semi-solid casting')?.key, 'Semi-Solid Casting (Thixo/Rheo)');
+  assert.ok(PROCESSES['Semi-Solid Casting (Thixo/Rheo)'].families.includes('magnesium'));
 });
 
 test('GGG (ductile) grades no longer mis-grade as grey iron', () => {
@@ -89,17 +100,25 @@ test('GGG (ductile) grades no longer mis-grade as grey iron', () => {
   assert.equal(resolveMaterial('EN-GJL-250')?.key, 'Cast Iron (Grey)');
 });
 
-test('case-hardening / forging steels resolve to high-strength, not mild', () => {
-  assert.equal(resolveMaterial('16MnCr5')?.key, 'Steel (high-strength)');
-  assert.equal(resolveMaterial('20MnCr5')?.key, 'Steel (high-strength)');
-  assert.equal(resolveMaterial('42CrMo4')?.key, 'Steel (high-strength)');
-  assert.equal(resolveMaterial('34CrNiMo6')?.key, 'Steel (high-strength)');
+test('case-hardening / forging steels resolve to their own grades, never to mild', () => {
+  // The defect this guards is "resolves to Steel (mild)". The catalogue has
+  // since gained the actual grades, so each reaches itself.
+  assert.equal(resolveMaterial('16MnCr5')?.key, 'Steel 16MnCr5 (case-hardening)');
+  assert.equal(resolveMaterial('20MnCr5')?.key, 'Steel 16MnCr5 (case-hardening)');
+  assert.equal(resolveMaterial('42CrMo4')?.key, 'Steel 42CrMo4 / 4140');
+  assert.equal(resolveMaterial('34CrNiMo6')?.key, 'Steel 42CrMo4 / 4140');
+  for (const q of ['16MnCr5', '20MnCr5', '42CrMo4', '34CrNiMo6']) {
+    assert.notEqual(resolveMaterial(q)?.key, 'Steel (mild)', `${q} must never price as mild steel`);
+  }
 });
 
-test('EN AC-46000 die-cast alloy resolves to cast Al, not wrought 6061', () => {
-  assert.equal(resolveMaterial('EN AC-46000')?.key, 'Aluminium A356 (cast)');
-  assert.equal(resolveMaterial('A380')?.key, 'Aluminium A356 (cast)');
-  assert.equal(resolveMaterial('ADC12')?.key, 'Aluminium A356 (cast)');
+test('die-cast alloys resolve to their own cast grades, not to wrought 6061', () => {
+  // Originally all three collapsed onto A356 — the nearest cast entry. A356 is
+  // a gravity/permanent-mould alloy and these are HPDC alloys, so the collapse
+  // was itself a defect (review R-26); each now reaches its own grade.
+  assert.equal(resolveMaterial('EN AC-46000')?.key, 'Aluminium AlSi9Cu3 / EN AC-46000 (die-cast)');
+  assert.equal(resolveMaterial('A380')?.key, 'Aluminium A380 / ADC12 (die-cast)');
+  assert.equal(resolveMaterial('ADC12')?.key, 'Aluminium A380 / ADC12 (die-cast)');
   // genuine wrought grade unaffected
   assert.equal(resolveMaterial('6061')?.key, 'Aluminium 6061');
 });
@@ -116,6 +135,8 @@ etest('resolveMaterial knows electrical steel, magnets, winding wire and impregn
   eassert.equal(resolveMaterial('VPI impregnation resin (unfilled epoxy)').key, 'Epoxy (impregnation resin)');
   eassert.equal(resolveMaterial('M250-35A non-oriented electrical steel').key, 'Electrical Steel (M250-35A)');
   eassert.equal(resolveMaterial('NO20 0.20 mm electrical steel').key, 'Electrical Steel (NO20, 0.20 mm)');
+  // A grade designation beats a family name even when the family name is the
+  // longer string — see buildIndex in material-aliases.mjs.
   eassert.equal(resolveMaterial('20JNEH1200 silicon steel').key, 'Electrical Steel (NO20, 0.20 mm)');
   eassert.equal(resolveMaterial('CR340LA').key, 'Steel (high-strength)');
   eassert.equal(resolveMaterial('DC04 mild sheet').key, 'Steel (mild)');

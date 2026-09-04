@@ -173,20 +173,42 @@ export const PROCESS_KWH_PER_KG = {
 };
 
 // Grid intensity, g CO2e per kWh (Ember 2024/25 vintages, rounded).
+// Every region in the engine's REGIONS table needs an entry here — a region
+// present for costing but absent here does NOT silently price at zero carbon,
+// it comes back in `notEstimated` with `partial: true` (review R-27).
 export const GRID_G_CO2_PER_KWH = {
   'Germany': 350, 'UK': 210, 'Czech Republic': 400, 'Spain': 160, 'Mexico': 420,
   'USA': 370, 'China': 530, 'India': 630, 'Korea': 410,
+  // Added Sept 2026 alongside the ten new cost regions.
+  'Poland': 610,      // still coal-heavy, the dirtiest grid in the EU set
+  'Romania': 260,     // hydro + nuclear share
+  'Slovakia': 130,    // majority nuclear
+  'Portugal': 140,    // high wind/hydro
+  'Turkey': 440,
+  'Morocco': 610,     // coal-dominated despite large solar build-out
+  'Vietnam': 470,
+  'Thailand': 500,    // gas-dominated
+  'Japan': 470,
+  'Brazil': 110,      // hydro-dominated, the cleanest grid in the table
 };
+export const GRID_G_CO2_AS_OF = '2025';   // Ember data vintage for the table above
 
 // EU-CBAM: applies to imports INTO the EU. EU production regions carry EU ETS
 // costs through their rates already; the CBAM line prices the embedded carbon of
 // a non-EU source at the ETS reference so region comparisons are like-for-like.
-const EU_REGIONS = new Set(['Germany', 'Czech Republic', 'Spain']);
+const EU_REGIONS = new Set([
+  'Germany', 'Czech Republic', 'Spain',
+  'Poland', 'Romania', 'Slovakia', 'Portugal',   // EU-27: no CBAM line on intra-EU sourcing
+]);
 // CBAM covers specific goods categories (iron/steel, aluminium, cement,
 // fertilisers, hydrogen, electricity) — NOT plastics, zinc, magnesium, titanium
 // or copper parts. Showing a CBAM € on a PP moulding would be an overclaim.
 const CBAM_FAMILIES = new Set(['ferrous', 'castiron', 'aluminium']);
+// EU ETS reference price. This is a MARKET price and it moves — the figure below
+// is a dated snapshot, not a constant of nature. `carbonAsOf` is returned with
+// every CBAM estimate so a stale reference is visible rather than assumed current.
 export const ETS_EUR_PER_T_CO2E = 80;   // admin-tunable reference price
+export const ETS_PRICE_AS_OF = '2026-09-01';   // EUA front-month, rounded
 
 // Material name → family (mirrors the engine catalogue; kept local so this
 // module stays dependency-free for tests).
@@ -226,10 +248,28 @@ export function computeCarbon(input, drivers) {
   const materialKg = inputMass * matFactor;
 
   const ops = Array.isArray(input.route) && input.route.length ? input.route : [input.process];
-  const grid = (GRID_G_CO2_PER_KWH[input.region] ?? 400) / 1000;   // kg/kWh
+
+  // NO SILENT DEFAULTS (Sept 2026 review, R-35). An unmapped process used to
+  // take 0.4 kWh/kg and an unmapped region 400 g/kWh, so seven e-drive
+  // processes — magnet sintering and glass tempering among them, both far
+  // above that default — returned a fabricated energy figure on the newest
+  // family in the catalogue. This module already refuses to guess a MATERIAL
+  // factor and says so; process energy and grid intensity now follow the same
+  // rule. What could not be estimated is named, and the total says it is
+  // partial rather than pretending to be complete.
+  const notEstimated = [];
+  const gridG = GRID_G_CO2_PER_KWH[input.region];
+  const grid = Number.isFinite(gridG) ? gridG / 1000 : null;   // kg/kWh
+  if (grid === null) notEstimated.push(`grid carbon intensity for ${input.region} is not in the factor table`);
+
   let processKg = 0;
   for (const op of ops) {
-    const kwhPerKg = PROCESS_KWH_PER_KG[op] ?? 0.4;
+    const kwhPerKg = PROCESS_KWH_PER_KG[op];
+    if (!Number.isFinite(kwhPerKg)) {
+      notEstimated.push(`no measured energy intensity for ${op}`);
+      continue;
+    }
+    if (grid === null) continue;
     processKg += kwhPerKg * finished * grid;
   }
   const totalKg = materialKg + processKg;
@@ -239,9 +279,18 @@ export function computeCarbon(input, drivers) {
     materialKgCo2e: Number(materialKg.toFixed(2)),
     processKgCo2e: Number(processKg.toFixed(2)),
     totalKgCo2e: Number(totalKg.toFixed(2)),
+    // Present ONLY when something could not be estimated, so a complete
+    // result stays exactly as it was and a partial one cannot be read as
+    // complete.
+    ...(notEstimated.length ? { notEstimated, partial: true } : {}),
     cbam: importedToEU && cbamScope
-      ? { eur: Number((totalKg / 1000 * ETS_EUR_PER_T_CO2E).toFixed(3)), basis: `embedded CO2e × €${ETS_EUR_PER_T_CO2E}/t ETS reference — indicative, iron/steel & aluminium CBAM scope, assumes EU-destined import` }
+      ? {
+          eur: Number((totalKg / 1000 * ETS_EUR_PER_T_CO2E).toFixed(3)),
+          asOf: ETS_PRICE_AS_OF,
+          basis: `embedded CO2e × €${ETS_EUR_PER_T_CO2E}/t ETS reference (as of ${ETS_PRICE_AS_OF}) — indicative, iron/steel & aluminium CBAM scope, assumes EU-destined import`,
+        }
       : null,
+    gridAsOf: GRID_G_CO2_AS_OF,
     basis: 'Indicative industry-average factors (worldsteel/IAI/PlasticsEurope/Ember) — for option comparison, not regulatory reporting. Process energy uses finished mass, so upstream heavy-input ops (billet machining) are understated.',
   };
 }

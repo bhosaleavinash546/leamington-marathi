@@ -26,6 +26,8 @@
 // default mount/pins, and the price-volume curve (floorFrac = asymptotic fraction
 // of the 1k price at very high volume; k = discount elasticity — passives steep,
 // vendor-controlled silicon flat).
+import { FX_FALLBACK } from './fx-rates.mjs';
+
 export const COMPONENT_CLASSES = {
   resistor:        { unit: 0.004, mount: 'SMT', pins: 2,  label: 'Resistor',           floorFrac: 0.20, k: 0.50 },
   capacitor_mlcc:  { unit: 0.010, mount: 'SMT', pins: 2,  label: 'MLCC capacitor',     floorFrac: 0.20, k: 0.50 },
@@ -85,7 +87,13 @@ export const PCB_REGIONS = {
 export const PCB_REGION_KEYS = Object.keys(PCB_REGIONS);
 
 // Self-contained EUR basis rebased to the app's £ display currency.
-const GBP = 0.85;   // £ per € (matches FX_FALLBACK.GBP)
+//
+// This was a hardcoded 0.85 with a comment asking a human to keep it in step
+// with FX_FALLBACK.GBP, and nothing tested the two against each other (Sept
+// 2026 review, R-33). It now READS that table, so the duplicate cannot drift.
+// The rebasing still happens once at module load, so the figures are a
+// static-reference basis rather than a live rate — stated, not implied.
+const GBP = FX_FALLBACK.GBP;   // £ per €, from the one FX table
 for (const c of Object.values(COMPONENT_CLASSES)) c.unit = Number((c.unit * GBP).toFixed(4));
 
 // China-basis bare-board fab rate (£/cm²) by layer count, at ~1k volume.
