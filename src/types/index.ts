@@ -132,7 +132,7 @@ export interface CostReductionIdea {
   /** Technical-depth rubric: which of the six checkable ingredients of a deep idea are present. */
   depth?: { score: number; criteria: Record<string, { met: boolean; weight: number; detail: string }>; missing: string[] };
   /** Arithmetic re-check of the stated annual value against its own calculation basis. */
-  arithmetic?: { status: 'consistent' | 'mismatch' | 'unparsed'; statedEur: { lo: number; hi: number; mid: number } | null; computedEur: number | null; deltaPct: number | null; basis: string | null; note: string };
+  arithmetic?: { status: 'consistent' | 'mismatch' | 'partial' | 'unparsed'; statedEur: { lo: number; hi: number; mid: number } | null; computedEur: number | null; deltaPct: number | null; basis: string | null; note: string; unpricedTerms?: string[] };
   /** The five engineering sections the prompt demands (depth over count). Absent keys were not supplied. */
   engineering?: { mechanism?: string; specDeltas?: string; validationPlan?: string; dfmImplications?: string; costBridge?: string };
   /** A specific grade named in the idea, and whether the engine catalogue can resolve it. */
@@ -145,7 +145,7 @@ export interface AnalysisValidation {
   intraBatchMerged?: number;
   diversity?: { score: number; nearDupPairs: number };
   engineChecks?: { checked: number; confirmed: number; contradicted: number; unexpressible: number; byKind?: Record<string, number>; reasons?: Record<string, number> };
-  arithmetic?: { consistent: number; mismatch: number; unparsed: number };
+  arithmetic?: { consistent: number; mismatch: number; partial: number; unparsed: number };
   depth?: { n: number; min: number | null; median: number | null; max: number | null; spread: number | null; criteriaHitPct: Record<string, number> };
   deep?: { critiqued: number; challenges: number; eloMatches: number; refineAttempted: number; refined: number; level?: string };
   /** Prism lens coverage: which evidence lenses ran, which were available but not selected, which returned nothing. */

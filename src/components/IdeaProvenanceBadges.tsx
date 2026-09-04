@@ -95,12 +95,25 @@ export default function IdeaProvenanceBadges({ idea, variant = 'full', className
         </Badge>
       )}
 
+      {/* THREE outcomes, three colours. `partial` is amber, not red: the basis
+          names a term the checker could not price, so the computed figure is a
+          floor and the shortfall is the reader's gap rather than a proven error.
+          Showing it red was one of the reasons 7 of every 8 "sums off" badges
+          were wrong before the Sept 2026 false-positive review. */}
       {variant === 'full' && idea.arithmetic && idea.arithmetic.status !== 'unparsed' && (
         <Badge
           title={`${idea.arithmetic.note}.\nRead as: ${idea.arithmetic.basis}`}
-          cls={idea.arithmetic.status === 'consistent' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : 'bg-danger-500/10 text-danger-400 border-danger-500/25'}
+          cls={
+            idea.arithmetic.status === 'consistent' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
+              : idea.arithmetic.status === 'partial' ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
+                : 'bg-danger-500/10 text-danger-400 border-danger-500/25'
+          }
         >
-          <Calculator size={10} /> {idea.arithmetic.status === 'consistent' ? 'Sums check' : `Sums off ${idea.arithmetic.deltaPct! > 0 ? '+' : ''}${idea.arithmetic.deltaPct}%`}
+          <Calculator size={10} /> {
+            idea.arithmetic.status === 'consistent' ? 'Sums check'
+              : idea.arithmetic.status === 'partial' ? 'Sums are a floor'
+                : `Sums off ${idea.arithmetic.deltaPct! > 0 ? '+' : ''}${idea.arithmetic.deltaPct}%`
+          }
         </Badge>
       )}
 

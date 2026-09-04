@@ -9,6 +9,9 @@
 // This is deliberately a bounded, honest parser:
 //   consistent   the basis multiplies out to within the stated range (±15%)
 //   mismatch     it does not — deltaPct says by how much
+//   partial      the priced part falls SHORT, and the basis names terms this
+//                parser could not price; the computed figure is a floor, and
+//                the shortfall is the reader's gap, not the model's error
 //   unparsed     the basis could not be read — NOT a verdict, and shown as such
 //
 // How a basis is read (stated so a wrong reading is diagnosable):
@@ -49,8 +52,13 @@ const CONTEXT_RE = /baseline|should-?cost|\bquote\b|\bcurrent\b|total part cost|
 const SAVING_RE = /\bsav|release|delta|delet|captur|recover|avoid|premium|reduc|\bcut\b|halv|\bnet\b|\bdrop/i;
 const CONTEXT_LEAD_RE = /(?:most|share|portion|fraction|part|half|third)\s+of\s*~?$|of\s+the\s*~?$|\bon\s*~?$|\bof\s*~?$|\bvs\.?\s+\S*\s*$|\bversus\s+\S*\s*$/i;
 const REFUSE_RE = /programme|program\b|lifetime|\bover\s\d|per\s(?:programme|program)/i;
-const RESULT_RE = /(?:≈|=|\bgives\b|\byields\b|\bsaves?\b|\bsaving of\b|\bnets?\b|\bcaptures?\b)\s*~?\s*(?=[€£$]|\d+(?:\.\d+)?\s?(?:EUR|GBP|USD))/i;
+// "saving of" was listed but bare "saving" was not, so "…cuts tooling €/part to
+// ~€0.26–0.35, saving ~€0.30/part × 60,000" never reached the result rule and
+// the product chain multiplied the ratio "2.5x" instead. The marker must be
+// IMMEDIATELY followed by money, which is what keeps the broader word safe.
+const RESULT_RE = /(?:≈|=|\bgives\b|\byields\b|\bsaves?\b|\bsaving(?:\s+of)?\b|\bnets?\b|\bcaptures?\b)\s*~?\s*(?=[€£$]|\d+(?:\.\d+)?\s?(?:EUR|GBP|USD))/i;
 const REDUCE_RE = /\bless\b|\bminus\b|\bnet of\b|\bafter\b|\bdiscount/i;
+const CAPTURE_RE = /\bcapture(?:d|s|\srate)?\b|\bretained?\b|\brealis(?:ed|ation)\b|\byield(?:ed)?\s+to\b/i;
 const APPLY_RE = /reduction|\bof (?:these|this|that|it)\b|\bon these\b|\bsaving\b|\bcapture\b/i;
 // A percentage multiplies a money figure only when the text LINKS them
 // ("20% of €47", "€214 × 20%", "7% net on €0.29"); "…~€0.025/part, plus 2%
@@ -136,9 +144,20 @@ function chainToken(tok, chainHasPerKg) {
 
 // One term from one clause.
 //   { value, perYear, how } | { reduce } | { apply } | { context } | { refused } | null
+// A LABOUR RATE is not a multiplicand (Sept 2026 false-positive review).
+// "DFA labour saving on ~8 fasteners/1 gasket at £38-47/hr × 200,000" made the
+// parser multiply the hourly rate into the product chain and report
+// €81,039,000 against a stated €1.7M–€2.7M — a 2901% "mismatch" that was
+// entirely the reader's error. A rate is the price of an input, and the term it
+// belongs to (seconds of labour) is not in the basis text at all. Two such
+// clauses were among the worst mismatches on the corpus.
+const RATE_MONEY_RE = /(?:~?\s?[€£$]\s?\d[\d,.]*\s?(?:[-–—]\s?[€£$]?\s?\d[\d,.]*\s?)?)\/\s?(?:hr|h\b|hour|min|minute|sec|second|shift)/gi;
+
 function clauseTerm(clause) {
-  const c = clause.trim();
-  if (!c) return null;
+  const c0 = clause.trim();
+  // Blank the rate out rather than deleting it, so every later index stays put.
+  const c = c0.replace(RATE_MONEY_RE, (m) => ' '.repeat(m.length));
+  if (!c.trim()) return null;
   if (REFUSE_RE.test(c)) return { refused: c.slice(0, 60) };
   const money = findMoney(c);
   const pct = pctOf(c);
@@ -147,6 +166,12 @@ function clauseTerm(clause) {
   if (money.some(m => m.value >= 1000) && /\bNRE\b|capex|investment/i.test(c)) return { refused: `${money.find(m => m.value >= 1000).raw} is an investment, not an annual saving` };
 
   if (!money.length && pct != null) {
+    // A CAPTURE / RETENTION rate multiplies; it does not subtract. "€101K
+    // ceiling; net after freight/duty typically 50-70% capture" means keep
+    // 50-70%, and reading it as "lose 60%" put the total 19% under the stated
+    // range. REDUCE_RE fires on the "after" in the same clause, so capture has
+    // to be tested first.
+    if (CAPTURE_RE.test(c)) return { apply: pct / 100 };
     if (REDUCE_RE.test(c)) return { reduce: pct / 100 };     // "less 30-60% logistics"
     if (APPLY_RE.test(c)) return { apply: pct / 100 };   // "25% reduction x 10M" — of the build-up before it
     return null;
@@ -173,7 +198,18 @@ function clauseTerm(clause) {
       const big = r.value >= 1000;
       if (big && !perYear && parseVolume(c) == null) return { refused: `${r.raw} has no stated period` };
       // "… captures ~€0.06 net": a NET result supersedes the gross terms before it.
-      return { value: r.value * halved, perYear: big, how: `result ${r.raw}`, net: /\bnet\b/i.test(c.slice(rm.index)) };
+      //
+      // And a result clause that names the VOLUME ("net process/complexity
+      // saving ~€0.15–0.25/part × 60,000") is the model's own product, exactly
+      // as in the product-chain branch below — the figures before it are its
+      // working. Widening RESULT_RE to bare "saving" made this branch catch
+      // clauses the chain branch used to, so the flag has to travel here too or
+      // the fix for one shape re-breaks the other.
+      return {
+        value: r.value * halved, perYear: big, how: `result ${r.raw}`,
+        net: /\bnet\b/i.test(c.slice(rm.index)),
+        summary: parseVolume(c) != null || VOLUME_BARE_RE.test(c),
+      };
     }
   }
 
@@ -192,7 +228,7 @@ function clauseTerm(clause) {
     }
     // A €/kg price with no mass to multiply it by is not a per-part figure.
     if (chainHasPerKg && !sawMass) return { refused: 'a €/kg price with no mass stated' };
-    if (usable >= 2) return { value: product * halved, perYear: hasVolume || (perYear && product >= 1000), how: labels.join(' × ') };
+    if (usable >= 2) return { value: product * halved, perYear: hasVolume || (perYear && product >= 1000), how: labels.join(' × '), summary: hasVolume };
   }
 
   // Percentage of a money figure: "20% of €47.67" — only when the text links them.
@@ -250,15 +286,28 @@ export function parseBasis(basis, { annualVolume = null, annualValueText = '' } 
   // reduction of the running total. Mark the subtractive ones with a sign.
   const marked = b.replace(/\b(?:minus|less)\s+(?=~?[€£$]|~?\d+(?:\.\d+)?\s?(?:EUR|GBP|USD))/gi, ';NEG ');
   const clauses = marked.split(/;|\bplus\b/i).map(s => s.trim()).filter(Boolean);
-  const terms = [], refused = [], reductions = [];
+  const terms = [], refused = [], reductions = [], unpriced = [];
   let perPart = 0, perYear = 0, anyPerPart = false, anyPerYear = false, context = null, pendingApply = null;
   for (const raw of clauses) {
     const neg = /^NEG\s/.test(raw);
     const c = neg ? raw.replace(/^NEG\s/, '') : raw;
     const t0 = clauseTerm(c);
     const t = t0 && neg && typeof t0.value === 'number' ? { ...t0, value: -t0.value, how: `− ${t0.how}` } : t0;
-    if (!t) continue;
-    if (t.refused) { refused.push(t.refused); continue; }
+    if (!t) {
+      // A clause that NAMES a saving but carries no figure this parser can
+      // price ("plus cross-variant NRE avoidance", "plus copper slot-fill
+      // gain") means the computed total is a FLOOR, not the whole claim.
+      // Reporting it as a mismatch blamed the model for the parser's blind
+      // spot — see the asymmetric verdict in checkArithmetic.
+      if (SAVING_RE.test(c) || /\bgain\b|\buplift\b|\bbenefit\b|\bcredit\b/i.test(c)) unpriced.push(c.slice(0, 70));
+      continue;
+    }
+    // A REFUSED clause is an unpriced term too. "…= €319k prime value;
+    // scrap-value uplift + nesting recovery €0.7–1.8M" refuses the second
+    // clause for having no stated period, then reported the €319k floor as a
+    // 68% shortfall — blaming the model for a figure the parser declined to
+    // read. Refusal and non-parse are the same fact about the READER.
+    if (t.refused) { refused.push(t.refused); unpriced.push(c.slice(0, 70)); continue; }
     if (t.reduce != null) { reductions.push(t.reduce); continue; }
     if (t.context != null) {
       context = t.context;
@@ -267,6 +316,11 @@ export function parseBasis(basis, { annualVolume = null, annualValueText = '' } 
     }
     if (t.apply != null) {
       if (anyPerPart && perPart > 0) { perPart *= t.apply; terms.push({ clause: c.slice(0, 80), value: null, perYear: false, how: `× ${Math.round(t.apply * 100)}%` }); }
+      // A percentage can act on an ANNUAL running total too — "…× 60,000 =
+      // €101K ceiling; net after freight/duty typically 50-70% capture" has no
+      // per-part term at all, so the capture rate was parked in pendingApply and
+      // silently never applied, leaving the ceiling as the answer.
+      else if (anyPerYear && perYear > 0) { perYear *= t.apply; terms.push({ clause: c.slice(0, 80), value: null, perYear: true, how: `× ${Math.round(t.apply * 100)}%` }); }
       else if (context != null) { perPart += context * t.apply; anyPerPart = true; terms.push({ clause: c.slice(0, 80), value: context * t.apply, perYear: false, how: `${Math.round(t.apply * 100)}% × €${context}` }); }
       else pendingApply = t.apply;
       continue;
@@ -278,15 +332,42 @@ export function parseBasis(basis, { annualVolume = null, annualValueText = '' } 
       anyPerPart = !t.perYear; anyPerYear = !!t.perYear;
       continue;
     }
+    // THE WORKING IS NOT AN EXTRA TERM (Sept 2026 false-positive review).
+    //
+    // "Removes bracket cost €1.32 less the marginal cost of rail feature
+    // (~€0.35); ~€0.60–€0.90/part × 60,000" is ONE claim written twice: the
+    // components, then the model's own product. The parser added them and
+    // reported €124,200 against a stated €35K–€55K. Five of the sixteen
+    // mismatches on the live corpus were this shape, and on all five the
+    // explicit product was the correct reading.
+    //
+    // So a clause whose product chain names the VOLUME is the model's answer,
+    // and the volume-less per-part terms before it are its working.
+    //
+    // The limitation, stated because it is real: a basis that genuinely adds
+    // two separately-multiplied annual terms ("A × 60,000; plus B × 60,000")
+    // reads as supersession too, and would under-count. No such basis appeared
+    // in the corpus; tests/idea-arith.test.mjs pins the behaviour either way so
+    // it is visible rather than surprising.
+    if (t.summary && anyPerPart && !anyPerYear && terms.some(x => x.value != null && !x.perYear)) {
+      // Honour the term's OWN scope. The product-chain branch folds the volume
+      // into `value` and reports perYear; the result-marker branch returns the
+      // per-part figure and leaves the multiplication to us. Forcing perYear
+      // here turned "€0.20/part × 60,000" into a €0.20 annual total.
+      terms.splice(0, terms.length, { clause: c.slice(0, 80), value: t.value, perYear: !!t.perYear, how: `${t.how} (the model's own product — the per-part figures above are its working)` });
+      perPart = t.perYear ? 0 : t.value; perYear = t.perYear ? t.value : 0;
+      anyPerPart = !t.perYear; anyPerYear = !!t.perYear;
+      continue;
+    }
     terms.push({ clause: c.slice(0, 80), value: t.value, perYear: t.perYear, how: t.how });
     if (t.perYear) { perYear += t.value; anyPerYear = true; } else { perPart += t.value; anyPerPart = true; }
   }
-  if (!anyPerPart && !anyPerYear) return refused.length ? { computedEur: null, refused, terms, form: `refused: ${refused[0]}` } : null;
-  if (anyPerPart && volume == null) return { computedEur: null, refused, terms, form: 'unit saving without a volume' };
+  if (!anyPerPart && !anyPerYear) return refused.length ? { computedEur: null, refused, terms, unpriced, form: `refused: ${refused[0]}` } : null;
+  if (anyPerPart && volume == null) return { computedEur: null, refused, terms, unpriced, form: 'unit saving without a volume' };
   let computedEur = (anyPerPart ? perPart * volume : 0) + perYear;
   for (const r of reductions) computedEur *= (1 - r);
   const form = anyPerPart && anyPerYear ? 'unit × volume + annual total' : anyPerPart ? 'unit × volume' : 'annual total';
-  return { computedEur, volume, volumeSource, terms, refused, reductions, form };
+  return { computedEur, volume, volumeSource, terms, refused, reductions, unpriced, form };
 }
 
 /**
@@ -301,6 +382,12 @@ export function checkArithmetic(idea, { annualVolume = null } = {}) {
   const parsed = parseBasis(csp.calculationBasis, { annualVolume, annualValueText });
   const unparsed = (note) => ({ status: 'unparsed', statedEur: stated, computedEur: null, deltaPct: null, basis: parsed?.form ?? null, note });
   if (!stated) return unparsed('no annual value figure to check');
+  // A CLAIM OF COST-NEUTRALITY IS NOT A SAVING CLAIM. "Approx. cost-neutral at
+  // part level (~€0 to -€0.3M at 10M/yr)" parsed to lo = hi = 0, and dividing
+  // by it produced deltaPct: null with the literal words "Infinity% above the
+  // stated maximum" in a user-facing note. There is nothing here to check
+  // against, and saying so is the answer.
+  if (!(stated.hi > 0)) return unparsed('the stated value is not a positive saving range — nothing to multiply the basis against');
   if (!parsed) return unparsed('calculation basis has no readable saving figure');
   if (parsed.computedEur == null) return unparsed(parsed.form);
   const c = parsed.computedEur;
@@ -308,7 +395,21 @@ export function checkArithmetic(idea, { annualVolume = null } = {}) {
   let deltaPct = 0;
   if (c < lo) deltaPct = -Math.round((1 - c / stated.lo) * 100);
   else if (c > hi) deltaPct = Math.round((c / stated.hi - 1) * 100);
-  const status = deltaPct === 0 ? 'consistent' : 'mismatch';
+  // AN INCOMPLETE READING IS A FLOOR, NOT A VERDICT (Sept 2026).
+  //
+  // When the basis names a saving this parser could not price — "plus
+  // cross-variant NRE avoidance", "plus copper slot-fill gain" — the computed
+  // figure is a LOWER BOUND on the claim. Calling that a mismatch blames the
+  // model for the reader's blind spot, and three of the sixteen mismatches on
+  // the live corpus were exactly this.
+  //
+  // The asymmetry is the honest part: unpriced terms can only push a total UP,
+  // so a computed figure BELOW the stated range is explained by them and
+  // reported as `partial`. A computed figure ABOVE the range is not — no
+  // missing positive term explains an overshoot — so it stays a mismatch.
+  let status = deltaPct === 0 ? 'consistent' : 'mismatch';
+  const unpriced = parsed.unpriced ?? [];
+  if (status === 'mismatch' && deltaPct < 0 && unpriced.length) status = 'partial';
   const volTxt = parsed.volume != null ? `${parsed.volume.toLocaleString('en-GB')}/yr` : '';
   const how = parsed.terms
     .map(x => (x.value == null ? x.how : x.perYear ? x.how : `${x.how} × ${volTxt}`))
@@ -319,15 +420,18 @@ export function checkArithmetic(idea, { annualVolume = null } = {}) {
   return {
     status, statedEur: stated, computedEur: Math.round(c), deltaPct,
     basis: `${parsed.form}: ${how}${red}${vol}`,
+    ...(unpriced.length ? { unpricedTerms: unpriced } : {}),
     note: status === 'consistent'
       ? `basis multiplies out to ${fmt(c)}, inside the stated range`
-      : `basis multiplies out to ${fmt(c)}, ${Math.abs(deltaPct)}% ${deltaPct < 0 ? 'below the stated minimum' : 'above the stated maximum'} (${fmt(stated.lo)}${stated.hi !== stated.lo ? `–${fmt(stated.hi)}` : ''})`,
+      : status === 'partial'
+        ? `the priced part of the basis multiplies out to ${fmt(c)}, a FLOOR — ${unpriced.length} term${unpriced.length === 1 ? '' : 's'} named but not priced here (${unpriced.join('; ')}), which is enough to explain the ${Math.abs(deltaPct)}% gap to the stated ${fmt(stated.lo)}${stated.hi !== stated.lo ? `–${fmt(stated.hi)}` : ''}`
+        : `basis multiplies out to ${fmt(c)}, ${Math.abs(deltaPct)}% ${deltaPct < 0 ? 'below the stated minimum' : 'above the stated maximum'} (${fmt(stated.lo)}${stated.hi !== stated.lo ? `–${fmt(stated.hi)}` : ''})`,
   };
 }
 
 /** Mutates ideas: stamps idea.arithmetic and adds a validation flag on mismatch. Returns counts. */
 export function runArithmeticChecks(ideas, opts = {}) {
-  const summary = { consistent: 0, mismatch: 0, unparsed: 0 };
+  const summary = { consistent: 0, mismatch: 0, partial: 0, unparsed: 0 };
   for (const idea of Array.isArray(ideas) ? ideas : []) {
     if (!idea || typeof idea !== 'object') continue;
     const a = checkArithmetic(idea, opts);

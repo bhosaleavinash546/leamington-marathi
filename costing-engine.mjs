@@ -247,7 +247,14 @@ export const PROCESSES = {
     // the mild steel this model is anchored on. Excluding it meant the engine
     // REFUSED the single highest-value stamped part in an e-drive. Fine
     // Blanking already accepted copper; the generic line was the outlier.
-    families: ['ferrous', 'aluminium', 'copper'],
+    //
+    // electricalsteel added for the same reason: a non-oriented silicon steel
+    // sheet is blanked on a conventional press like any other sheet steel. The
+    // dedicated 'Lamination Stamping' entry models a HIGH-SPEED lamination line
+    // (interlock, stack, thin gauge); refusing the generic line meant a Prism
+    // idea comparing "generic press versus dedicated lamination line" could not
+    // be priced at all, which is precisely the comparison worth making.
+    families: ['ferrous', 'aluminium', 'copper', 'electricalsteel'],
   },
   // ── The sheet and bulk-forming specialisations ────────────────────────────
   //
@@ -341,7 +348,11 @@ export const PROCESSES = {
     machineRate: 85, operators: 0.8, cavities: 1, utilisation: 0.78, scrapPct: 0.03,
     setupHr: 0.5, batch: 500, toolLife: 5_000_000,
     cycleBase: 30, cyclePerKg: 12, toolingBase: 8_000, toolingPerKg: 0,
-    families: ['ferrous', 'aluminium'],
+    // electricalsteel added Sept 2026: die-less fibre-laser blanking of
+    // laminations is the standard prototype and low-volume route, and the
+    // tooling-free/high-cycle trade against a progressive die is exactly what a
+    // volume-sensitivity comparison is for.
+    families: ['ferrous', 'aluminium', 'electricalsteel'],
   },
   // Casting `utilisation` is metal yield = finished-mass / poured-mass; the values
   // reflect real gating/riser/biscuit/overflow overhead (HPDC 0.60, sand 0.55,
@@ -719,7 +730,12 @@ export const PROCESSES = {
   },
   'Heat Treatment (batch)': {
     conversionOnly: true, costPerKg: 0.32, utilisation: 1, scrapPct: 0.008,
-    families: ['ferrous', 'castiron', 'aluminium', 'titanium', 'copper'],
+    // electricalsteel added Sept 2026: stress-relief annealing after blanking is
+    // standard practice on lamination stacks — cutting work-hardens the slot
+    // edge and raises core loss, and the anneal is a merchant batch-furnace
+    // operation like any other. Its absence made a real, commonly-proposed
+    // lamination lever unpriceable.
+    families: ['ferrous', 'castiron', 'aluminium', 'titanium', 'copper', 'electricalsteel'],
     note: 'Normalise / Q&T / T6 in a batch furnace, merchant rate incl. energy',
   },
   'E-coat (KTL)': {

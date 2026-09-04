@@ -49,15 +49,25 @@ test('percentage of a per-unit figure, with product chains and mass × €/kg', 
 });
 
 test('a real mismatch is reported with a signed delta against the nearest bound', () => {
-  // The model's own basis gives €0.005/lam × 10M = €170K against a stated €700K–€1.4M.
-  const a = checkArithmetic(idea('€700K–€1.4M at 10,000,000 units/yr', 'Loss-limited stack shortening ~10% steel mass out: 0.005 kg x 3.4 EUR/kg x 10M plus efficiency/range credit'));
+  // Sept 2026: the two shortfall cases below moved from `mismatch` to `partial`,
+  // and that is the fix rather than a regression. Both bases END with a term
+  // this parser cannot price — "plus efficiency/range credit", "plus copper
+  // saving at motor level" — so the computed figure is a FLOOR and the gap to
+  // the stated range is the reader's blind spot, not a proven model error. See
+  // the `partial` tests below. A clean shortfall with nothing unpriced is still
+  // a mismatch, which is what the first case here now checks.
+  const a = checkArithmetic(idea('€700K–€1.4M at 10,000,000 units/yr', 'Loss-limited stack shortening ~10% steel mass out: 0.005 kg x 3.4 EUR/kg x 10M'));
   assert.equal(a.status, 'mismatch');
   assert.equal(a.computedEur, 170000);
   assert.equal(a.deltaPct, -76);
   assert.match(a.note, /below the stated minimum/);
-  // 3% of €0.10 × 10M = €30K against €250K–€500K.
+  // The SAME basis with an unpriced credit appended is a floor, not a verdict.
+  const aPartial = checkArithmetic(idea('€700K–€1.4M at 10,000,000 units/yr', 'Loss-limited stack shortening ~10% steel mass out: 0.005 kg x 3.4 EUR/kg x 10M plus efficiency/range credit'));
+  assert.equal(aPartial.status, 'partial');
+  assert.equal(aPartial.computedEur, 170000, 'the priced part is unchanged — only the verdict about it changes');
+  // 3% of €0.10 × 10M = €30K against €250K–€500K, with an unpriced motor-level term.
   const b = checkArithmetic(idea('€250K–€500K at 10,000,000 units/yr', '2-4% stack length reduction on €0.10 material [E12] plus copper saving at motor level; ×10M lam'));
-  assert.equal(b.status, 'mismatch');
+  assert.equal(b.status, 'partial');
   assert.equal(b.deltaPct, -88);
   // Above: 50% of €214.68 × 200k = €21.5M against €6.0M–€10.8M.
   const c = checkArithmetic(idea('€6.0M–€10.8M at 200,000 units/yr', '40-60% NdFeB substitution to ferrite on €214.68 line, net of larger lamination/copper, × 200,000'));
@@ -144,10 +154,156 @@ test('runArithmeticChecks stamps every idea, flags only mismatches, and counts h
     idea('€30K', 'fixture amortisation across variants'),
   ];
   const s = runArithmeticChecks(ideas, { annualVolume: 60000 });
-  assert.deepEqual(s, { consistent: 1, mismatch: 1, unparsed: 1 });
+  assert.deepEqual(s, { consistent: 1, mismatch: 1, partial: 0, unparsed: 1 });
   assert.equal(ideas[0].arithmetic.status, 'consistent');
   assert.equal(ideas[0].validationFlags, undefined);
   assert.ok(ideas[1].validationFlags.some(f => /^arithmetic-mismatch\(-\d+%\)$/.test(f)));
   assert.equal(ideas[2].arithmetic.status, 'unparsed');
   assert.equal(ideas[2].validationFlags, undefined, 'unparsed is not a defect');
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// THE FALSE-POSITIVE REVIEW (Sept 2026).
+//
+// The checker reported 16 of 62 live Prism ideas as arithmetic mismatches —
+// 25.8%. Reading all sixteen by hand found FOURTEEN were the reader's fault,
+// not the model's. That is worse than not checking: a badge that cries wolf on
+// seven cases out of eight teaches a reader to ignore it, and it was feeding
+// `validationFlags` that the ranker reads.
+//
+// Every test below carries the exact basis string that exposed its defect, so a
+// future change that reintroduces one fails here with the evidence attached.
+// After these fixes: 2 mismatches of 62 (3.2%), both verified by hand as real
+// overstatements of 5-10x and 15-25x.
+// ─────────────────────────────────────────────────────────────────────────────
+test('an HOURLY RATE is not a multiplicand', () => {
+  // Worst false positive on the corpus: £38-47/hr multiplied into the chain
+  // reported €81,039,000 against a stated €1.7M–€2.7M — a 2901% "error".
+  const a = checkArithmetic(idea(
+    '€1.7M–€2.7M at 200,000 units/yr',
+    '€47.67 block × ~20% + DFA labour saving on ~8 fasteners/1 gasket at £38-47/hr × 200,000',
+  ), { annualVolume: 200000 });
+  assert.equal(a.status, 'consistent', a.note);
+  assert.equal(a.computedEur, 1906800);
+  assert.doesNotMatch(a.basis, /38|47\/hr/, 'the rate must not appear in the working');
+
+  const b = checkArithmetic(idea(
+    '€0.35M–€0.6M at 200,000 units/yr',
+    '€11.22 × ~18% + DFA saving on 2 mounting ops at £42/hr × 200,000',
+  ), { annualVolume: 200000 });
+  assert.equal(b.status, 'consistent', b.note);
+
+  // …but a per-part figure that merely sits near a rate is still counted.
+  const c = checkArithmetic(idea('€60K at 60,000 units/yr', '€1.00/part saved at £45/hr line rate × 60,000'), { annualVolume: 60000 });
+  assert.equal(c.status, 'consistent', c.note);
+  assert.equal(c.computedEur, 60000);
+});
+
+test('the model\'s own product supersedes the working above it', () => {
+  // "Removes bracket cost €1.32 less …(~€0.35); ~€0.60–€0.90/part × 60,000" is
+  // one claim written twice. Adding both reported €124,200 against €35K–€55K.
+  const a = checkArithmetic(idea(
+    '€35K–€55K at 60,000 units/yr',
+    'Removes bracket cost €1.32 less the marginal cost of rail feature (~€0.35); ~€0.60–€0.90/part × 60,000',
+  ), { annualVolume: 60000 });
+  assert.equal(a.status, 'consistent', a.note);
+  assert.equal(a.computedEur, 45000);
+  assert.match(a.basis, /working/, 'the verdict must say the earlier figures were treated as working');
+
+  // Same shape reached through the result-marker branch ("saving ~€0.15–0.25/part × 60,000").
+  const b = checkArithmetic(idea(
+    '€8K–€15K at 60,000 units/yr',
+    'Removes e-coat (€0.01) + weld op + mass; PA6-GF30 part mass ~0.10 kg × €3.2 = €0.32 vs steel material+finish; net process/complexity saving ~€0.15–0.25/part × 60,000',
+  ), { annualVolume: 60000 });
+  assert.equal(b.status, 'consistent', b.note);
+  assert.equal(b.computedEur, 12000, 'the per-part summary must still be multiplied by the volume');
+
+  // A single-clause basis has no working to supersede — unchanged behaviour.
+  const c = checkArithmetic(idea('€60K at 60,000 units/yr', '€1.00/part × 60,000'), { annualVolume: 60000 });
+  assert.equal(c.status, 'consistent');
+  assert.equal(c.computedEur, 60000);
+});
+
+test('bare "saving €x" is a result marker, and "2.5x volume" is not a multiplicand', () => {
+  // RESULT_RE listed "saves" and "saving of" but not bare "saving", so the
+  // product chain multiplied the RATIO 2.5 and reported €45,750 vs €12K–€22K.
+  const a = checkArithmetic(idea(
+    '€12K–€22K at 60,000 units/yr',
+    'Tooling €0.66/part; commonising over ~2.5× volume cuts tooling €/part to ~€0.26–0.35, saving ~€0.30/part × 60,000',
+  ), { annualVolume: 60000 });
+  assert.equal(a.status, 'consistent', a.note);
+  assert.equal(a.computedEur, 18000);
+});
+
+test('a CAPTURE rate multiplies; it does not subtract', () => {
+  // "€101K ceiling; net after freight/duty typically 50-70% capture" means keep
+  // 50-70%. Reading it as a 60% loss put the total 19% under the stated range.
+  const a = checkArithmetic(idea(
+    '€50K–€100K/yr net at 60,000 units/yr',
+    '€1.69/part ex-works (W4) × 60,000 = €101K ceiling; net after freight/duty on 2.546 kg part typically 50-70% capture',
+  ), { annualVolume: 60000 });
+  assert.equal(a.status, 'consistent', a.note);
+  assert.ok(a.computedEur > 55000 && a.computedEur < 71000, `expected ~60% of €101K, got €${a.computedEur}`);
+
+  // A genuine reduction still reduces.
+  const b = checkArithmetic(idea('€40K at 60,000 units/yr', '€1.00/part × 60,000; less 30% logistics'), { annualVolume: 60000 });
+  assert.equal(b.computedEur, 42000);
+});
+
+test('an unpriced or refused term makes the total a FLOOR, and only downward', () => {
+  // Named but not priced → partial when short.
+  const a = checkArithmetic(idea(
+    '€2.5M–€4.0M at 200,000 units/yr',
+    '~€130/unit tooled-line content × ~5-7% scale/NRE benefit × 200,000, plus cross-variant NRE avoidance',
+  ), { annualVolume: 200000 });
+  assert.equal(a.status, 'partial', a.note);
+  assert.ok(Array.isArray(a.unpricedTerms) && a.unpricedTerms.length, 'the unpriced term must be named');
+  assert.match(a.note, /FLOOR/);
+
+  // A REFUSED clause is the same fact about the reader, so it counts too.
+  const b = checkArithmetic(idea(
+    '€1.0M–€2.5M at 10,000,000 units/yr',
+    '220 t/yr overbuy × €1.45/kg = €319k prime value; scrap-value uplift + nesting recovery €0.7–1.8M (E13,E61)',
+  ), { annualVolume: 10000000 });
+  assert.equal(b.status, 'partial', b.note);
+
+  // ASYMMETRY: an unpriced positive term cannot explain an OVERSHOOT, so a
+  // computed figure above the stated range stays a mismatch.
+  const c = checkArithmetic(idea(
+    '€10K at 60,000 units/yr',
+    '€5.00/part × 60,000, plus a warranty benefit we have not sized',
+  ), { annualVolume: 60000 });
+  assert.equal(c.status, 'mismatch', 'overshoot is never excused by a missing positive term');
+  assert.ok(c.deltaPct > 0);
+});
+
+test('a cost-neutral claim is unparsed, never a division by zero', () => {
+  // "Approx. cost-neutral at part level (~€0 to -€0.3M at 10M/yr)" produced
+  // deltaPct null with the literal words "Infinity% above the stated maximum".
+  const a = checkArithmetic(idea(
+    'Approx. cost-neutral at part level (~€0 to -€0.3M at 10M/yr); efficiency credit to be confirmed by dyno',
+    'Mass 0.051→~0.044 kg at 0.30 mm gauge; €/kg step from M250-35A (~€1.45) to intermediate NO grade (~€1.90)',
+  ), { annualVolume: 10000000 });
+  assert.equal(a.status, 'unparsed');
+  assert.equal(a.deltaPct, null);
+  assert.doesNotMatch(a.note, /Infinity|NaN/);
+});
+
+test('the genuine overstatements the corpus contained are STILL caught', () => {
+  // The whole point of removing false positives is that the true ones are
+  // believable. Both of these were verified by hand as real: the model stated
+  // 15-25x and 5-10x more than its own basis supports.
+  const backlack = checkArithmetic(idea(
+    '€1.7M–€2.9M at 10,000,000 units/yr',
+    '€0.29 base × ~7% net on machine+setup+tooling lines (E12), minus ~€0.12/kg coating premium × 0.073 kg',
+  ), { annualVolume: 10000000 });
+  assert.equal(backlack.status, 'mismatch', backlack.note);
+  assert.ok(backlack.deltaPct < -80);
+
+  const grade = checkArithmetic(idea(
+    '€0.7M–€1.5M at 10,000,000 units/yr',
+    '~€0.15–0.25/kg grade delta × 0.073 kg × 10M; material line €0.10/part (E12,E61)',
+  ), { annualVolume: 10000000 });
+  assert.equal(grade.status, 'mismatch', grade.note);
+  assert.ok(grade.deltaPct < -70);
 });

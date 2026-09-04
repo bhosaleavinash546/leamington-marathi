@@ -255,6 +255,11 @@ export function rankIdeas(ideas) {
     const arithFactor = arith?.status === 'mismatch' ? (Math.abs(arith.deltaPct) <= 50 ? 0.85 : 0.7) : 1;
     if (arith?.status === 'mismatch') basis.push(`stated basis multiplies out ${arith.deltaPct > 0 ? '+' : ''}${arith.deltaPct}% vs claim ×${arithFactor}`);
     if (arith?.status === 'consistent') basis.push('stated basis multiplies out');
+    // `partial` is NEUTRAL and must say so. It means the basis names a term the
+    // parser could not price, so the computed figure is a floor — the reader's
+    // gap, not the model's error. Silence here would leave a visible badge with
+    // no counterpart in the rank explanation.
+    if (arith?.status === 'partial') basis.push('stated basis is a floor — an unpriced term named ×1');
 
     const evidenceFactor = idea.evidenceUnverified === false ? 1.1 : idea.evidenceUnverified === true ? 0.9 : 1;
     if (idea.evidenceUnverified === false) basis.push('search-backed evidence ×1.1');

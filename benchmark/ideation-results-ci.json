@@ -9,9 +9,10 @@
     "engineCheckRate": 43.5,
     "contradictedRate": 22.2,
     "nullReasonRate": 100,
-    "arithConsistentRate": 59.7,
-    "arithMismatchRate": 25.8,
-    "arithParsedRate": 85.5,
+    "arithConsistentRate": 74.2,
+    "arithMismatchRate": 3.2,
+    "arithPartialRate": 6.5,
+    "arithParsedRate": 83.9,
     "depthMedian": 94,
     "depthSpread": 30,
     "namedGradeRate": 69.4,
@@ -19,7 +20,7 @@
     "qualityScoreSpread": 35,
     "critiquedRate": 51.6,
     "dupRate": 75.8,
-    "scoredAt": "2026-09-04T07:40:54.446Z",
+    "scoredAt": "2026-09-04T10:48:11.247Z",
     "scoredFrom": "benchmark/prism-runs-after-repaired"
   },
   "perPart": [
@@ -35,8 +36,9 @@
         "assembly": 5
       },
       "arithmetic": {
-        "consistent": 19,
-        "mismatch": 3,
+        "consistent": 21,
+        "mismatch": 0,
+        "partial": 1,
         "unparsed": 2
       },
       "depthMin": 48,
@@ -82,8 +84,9 @@
         "mass": 1
       },
       "arithmetic": {
-        "consistent": 8,
-        "mismatch": 7,
+        "consistent": 14,
+        "mismatch": 0,
+        "partial": 1,
         "unparsed": 0
       },
       "depthMin": 68,
@@ -130,8 +133,9 @@
         "tolerance": 1
       },
       "arithmetic": {
-        "consistent": 4,
-        "mismatch": 1,
+        "consistent": 5,
+        "mismatch": 0,
+        "partial": 0,
         "unparsed": 3
       },
       "depthMin": 80,
@@ -177,8 +181,9 @@
       },
       "arithmetic": {
         "consistent": 6,
-        "mismatch": 5,
-        "unparsed": 4
+        "mismatch": 2,
+        "partial": 2,
+        "unparsed": 5
       },
       "depthMin": 84,
       "depthMedian": 100,

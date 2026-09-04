@@ -19,6 +19,12 @@
 //                 {screw,boltNut,rivet,snapFit,weldSpot,adhesive}}, proposed:{…} }
 //                 priced through the DFA time model + fastener piece prices
 //   harness       (via harnessCheckRequest) wiring-harness parameters
+//   footprint     same part, different plant region — { material, process,
+//                 weightKg, baselineRegion, proposedRegion }
+//   commonisation N variants collapsed onto one part — { material, process,
+//                 weightKg, variants, baselineVolumePerVariant }
+//   cycle         throughput / machine-rate change on the same part —
+//                 { material, process, weightKg, cycleMult, machineMult }
 //
 // WHY THE EXTENSION. Measured on four live Prism runs, the substitution-only
 // check left 47–100% of ideas with engineCheck: null — every part-count,
@@ -26,6 +32,19 @@
 // assembly-level EDU run not one of 22 ideas could be checked. When the engine
 // COULD look it contradicted a third to a half of the ideas, so the unchecked
 // majority was hiding the same error rate unseen.
+//
+// WHY THE SECOND EXTENSION (Sept 2026). The four kinds above reached 43.5% of
+// ideas on the live Prism corpus. Reading the 35 that stayed null showed the
+// gap was not physics — it was QUESTION SHAPE. Five ideas proposed collapsing
+// variants onto a common part, two proposed moving the plant to another region
+// and one proposed a faster press. Every one of those is a single
+// computeShouldCost call away: volume, region and cycle are already first-class
+// engine inputs. The checker simply had no way to ASK those questions, so
+// eight genuinely priceable ideas were reported as unverifiable.
+//
+// The remaining nulls are honest: a bought-in resolver has no should-cost, and
+// a commercial-gap argument is priced by the waterfall's W1 step rather than by
+// re-running the engine on a design that has not changed.
 //
 // Ideas the engine still cannot price keep engineCheck: null — honestly
 // unverifiable by math alone, never faked — and now ALWAYS carry
@@ -210,15 +229,149 @@ function checkAssembly(req, { region, annualVolume }) {
   } };
 }
 
+// ── The three kinds added Sept 2026, all one engine call apart ──────────────
+//
+// Each asks the engine a question it could always answer but was never asked.
+// They share `sameSideOf`: resolve the part once, then cost it twice under
+// different conditions, so a difference can only come from the condition under
+// test and never from a resolution difference between the two sides.
+function sameSideOf(req, defaultWeightKg) {
+  const w = clampW(req.weightKg, defaultWeightKg);
+  const mat = resolveMaterial(String(req.material || ''), undefined);
+  if (!mat) return { reason: `material "${String(req.material || '').slice(0, 40) || '(none)'}" not in the engine catalogue` };
+  const route = resolveRoute(String(req.process || ''), undefined);
+  if (!route || route.keys.length === 0) return { reason: `process "${String(req.process || '').slice(0, 40) || '(none)'}" not in the engine catalogue` };
+  return { w, matKey: mat.key, routeKeys: route.keys };
+}
+
+function costAt(matKey, routeKeys, weightKg, annualVolume, region, library) {
+  const input = { material: matKey, weightKg, annualVolume, region };
+  return routeKeys.length > 1
+    ? computeRouteCost({ ...input, route: routeKeys }, {}, null, library).totalShouldCost
+    : computeShouldCost({ ...input, process: routeKeys[0] }, {}, null, library).totalShouldCost;
+}
+
+/**
+ * FOOTPRINT — the same part made in a different region.
+ *
+ * This was the single clearest miss: two live ideas proposed exactly the move
+ * the entitlement waterfall's W4 step computes, and the substitution check
+ * refused them with "nothing changed" because it compared material, process and
+ * mass and had no region axis at all. Region became a real axis in Sept 2026
+ * (labour, machine rate, energy, commercial), so the answer is now meaningful
+ * rather than a labour-rate ratio.
+ */
+function checkFootprint(req, { region, annualVolume, library, defaultWeightKg }) {
+  const side = sameSideOf(req, defaultWeightKg);
+  if (side.reason) return { reason: side.reason };
+  const from = typeof req.baselineRegion === 'string' && REGIONS[req.baselineRegion] ? req.baselineRegion : region;
+  const to = typeof req.proposedRegion === 'string' ? req.proposedRegion : null;
+  if (!to) return { reason: 'footprint check needs a proposedRegion' };
+  if (!REGIONS[to]) return { reason: `region "${String(to).slice(0, 40)}" is not in the engine's rate library` };
+  if (to === from) return { reason: 'nothing changed between baseline and proposed region' };
+  const baselineEur = costAt(side.matKey, side.routeKeys, side.w, annualVolume, from, library);
+  const proposedEur = costAt(side.matKey, side.routeKeys, side.w, annualVolume, to, library);
+  const savingPct = Number(((baselineEur - proposedEur) / baselineEur * 100).toFixed(1));
+  return { stamp: {
+    kind: 'footprint',
+    referenceCase: `${side.w} kg ${side.matKey} via ${side.routeKeys.join(' → ')}, ${(annualVolume / 1000).toFixed(0)}k/yr: ${from} → ${to}`,
+    baselineEur: Number(baselineEur.toFixed(2)), proposedEur: Number(proposedEur.toFixed(2)), savingPct,
+    direction: savingPct > 0 ? 'confirmed' : 'contradicted',
+    basis: 'Deterministic should-cost engine re-run against the proposed region\u2019s labour, machine, energy and commercial rates \u2014 EX-WORKS. Freight, duty, tariff, inventory and the launch cost of a resourcing are NOT in this figure, and on a low-value part they can exceed the whole saving.',
+  } };
+}
+
+/**
+ * COMMONISATION — N variants collapsed onto one part.
+ *
+ * Five of the ten unexpressible ideas on the live corpus were this: one common
+ * lamination diameter, one carrier across a length family, a symmetric LH/RH
+ * bracket. The lever is volume — each variant is made at V and the common part
+ * at N x V, so tooling amortises over N times as many parts and the batch/setup
+ * term falls. That is the volume axis, which the engine has always had.
+ *
+ * What it deliberately does NOT price: the mass or content penalty of designing
+ * one part to satisfy every variant's duty. A common part is usually the
+ * heaviest variant, and that trade is an engineering judgement, so the basis
+ * says so and the idea should carry a substitution request for the mass side.
+ */
+function checkCommonisation(req, { region, annualVolume, library, defaultWeightKg }) {
+  const side = sameSideOf(req, defaultWeightKg);
+  if (side.reason) return { reason: side.reason };
+  const variants = Number(req.variants);
+  if (!Number.isFinite(variants) || variants < 2 || variants > 50) {
+    return { reason: 'commonisation check needs a variant count of 2\u201350 — how many part numbers collapse into one' };
+  }
+  const per = clampW(req.baselineVolumePerVariant, 0) || Math.max(1, Math.round(annualVolume / variants));
+  const baseVol = Math.max(1, Math.round(per));
+  const commonVol = Math.min(1e8, baseVol * variants);
+  const baselineEur = costAt(side.matKey, side.routeKeys, side.w, baseVol, region, library);
+  const proposedEur = costAt(side.matKey, side.routeKeys, side.w, commonVol, region, library);
+  const savingPct = Number(((baselineEur - proposedEur) / baselineEur * 100).toFixed(1));
+  return { stamp: {
+    kind: 'commonisation',
+    referenceCase: `${side.w} kg ${side.matKey} via ${side.routeKeys.join(' \u2192 ')} in ${region}: ${variants} variants at ${(baseVol / 1000).toFixed(0)}k/yr each \u2192 one common part at ${(commonVol / 1000).toFixed(0)}k/yr`,
+    baselineEur: Number(baselineEur.toFixed(2)), proposedEur: Number(proposedEur.toFixed(2)), savingPct,
+    direction: savingPct > 0 ? 'confirmed' : 'contradicted',
+    basis: 'Deterministic should-cost engine at the per-variant volume versus the consolidated volume \u2014 the tooling-amortisation and setup effect of commonisation, per part. It does NOT price the content penalty of one part covering every variant\u2019s duty (a common part is usually the heaviest variant), nor the engineering and validation cost of the change.',
+  } };
+}
+
+/**
+ * CYCLE — a throughput or machine-rate change on the same part.
+ *
+ * A faster press, a higher-cavitation tool, an extra spindle: the part does not
+ * change, the rate does. computeShouldCost has always taken cycleMult and
+ * machineMult overrides; nothing could ask it to use them. Both multipliers are
+ * clamped, and a claim outside the clamp is refused rather than quietly capped,
+ * because "3x faster at the same machine rate" is a claim someone must defend.
+ */
+const CYCLE_MULT_MIN = 0.2, CYCLE_MULT_MAX = 5;
+function checkCycle(req, { region, annualVolume, library, defaultWeightKg }) {
+  const side = sameSideOf(req, defaultWeightKg);
+  if (side.reason) return { reason: side.reason };
+  const cycleMult = req.cycleMult === undefined ? 1 : Number(req.cycleMult);
+  const machineMult = req.machineMult === undefined ? 1 : Number(req.machineMult);
+  for (const [name, v] of [['cycleMult', cycleMult], ['machineMult', machineMult]]) {
+    if (!Number.isFinite(v) || v < CYCLE_MULT_MIN || v > CYCLE_MULT_MAX) {
+      return { reason: `${name} must be a number between ${CYCLE_MULT_MIN} and ${CYCLE_MULT_MAX} — a larger claim needs evidence the engine cannot supply` };
+    }
+  }
+  if (cycleMult === 1 && machineMult === 1) return { reason: 'nothing changed between baseline and proposed rate (both multipliers are 1)' };
+  if (side.routeKeys.length > 1) return { reason: 'rate changes are priced on a single operation — name the one process whose rate changes, not the whole route' };
+  const input = { material: side.matKey, process: side.routeKeys[0], weightKg: side.w, annualVolume, region };
+  const baselineEur = computeShouldCost(input, {}, null, library).totalShouldCost;
+  const proposedEur = computeShouldCost(input, { cycleMult, machineMult }, null, library).totalShouldCost;
+  const savingPct = Number(((baselineEur - proposedEur) / baselineEur * 100).toFixed(1));
+  const pctOf = (m) => `${m > 1 ? '+' : ''}${Math.round((m - 1) * 100)}%`;
+  return { stamp: {
+    kind: 'cycle',
+    referenceCase: `${side.w} kg ${side.matKey} via ${side.routeKeys[0]}, ${(annualVolume / 1000).toFixed(0)}k/yr, ${region}: cycle ${pctOf(cycleMult)}, machine rate ${pctOf(machineMult)}`,
+    baselineEur: Number(baselineEur.toFixed(2)), proposedEur: Number(proposedEur.toFixed(2)), savingPct,
+    direction: savingPct > 0 ? 'confirmed' : 'contradicted',
+    basis: 'Deterministic should-cost engine re-run with the stated cycle-time and machine-rate multipliers \u2014 it prices the CONSEQUENCE of the claimed rate, not the claim itself. Whether the line can actually run that fast on this part is an engineering judgement, and the capital cost of the faster asset is not in the machine-rate multiplier unless you put it there.',
+  } };
+}
+
 /**
  * Mutates each idea: sets idea.engineCheck (object or null) and, whenever it
  * is null, idea.engineCheckReason (string). Returns a summary
  * { checked, confirmed, contradicted, unexpressible, byKind, reasons }.
  */
+export const KINDS = Object.freeze(['substitution', 'mass', 'tolerance', 'assembly', 'footprint', 'commonisation', 'cycle', 'harness']);
+
 export function runEngineChecks(ideas, { region = 'Germany', annualVolume = 80000, library = undefined, defaultWeightKg = 1.0 } = {}) {
   const summary = { checked: 0, confirmed: 0, contradicted: 0, unexpressible: 0, byKind: {}, reasons: {} };
   const ctx = { region, annualVolume, library, defaultWeightKg };
-  const stamp = (idea, res) => {
+  // The REQUEST travels with the verdict (Sept 2026). It used to be deleted as
+  // "model-internal", which made a deterministic check the one thing in this
+  // pipeline that could not be re-derived: when the resolver improved, there was
+  // no way to ask the saved corpus whether the improvement helped, short of
+  // paying for a fresh live run. A check you cannot replay is a check you have
+  // to take on trust. It is kept on the stamp AND on the null, so a stated
+  // limitation can be re-tested against a later engine.
+  const stamp = (idea, res, req = null) => {
+    if (req) idea.engineCheckInput = req;
     if (res.stamp) {
       idea.engineCheck = res.stamp;
       delete idea.engineCheckReason;
@@ -238,21 +391,24 @@ export function runEngineChecks(ideas, { region = 'Germany', annualVolume = 8000
     if (!idea || typeof idea !== 'object') continue;
     const req = idea.engineCheckRequest;
     const harnessReq = idea.harnessCheckRequest;
-    delete idea.engineCheckRequest;   // request is model-internal; the stamp is the product
+    delete idea.engineCheckRequest;   // re-homed onto engineCheckInput by stamp()
     delete idea.harnessCheckRequest;
 
-    if (harnessReq && typeof harnessReq === 'object') { stamp(idea, checkHarness(harnessReq, ctx)); continue; }
+    if (harnessReq && typeof harnessReq === 'object') { stamp(idea, checkHarness(harnessReq, ctx), harnessReq); continue; }
     if (!req || typeof req !== 'object') {
-      stamp(idea, { reason: 'no engine-check request — the idea was not expressed as a substitution, tolerance, assembly or harness change the engine can price' });
+      stamp(idea, { reason: `no engine-check request — the idea was not expressed as any of the ${KINDS.join(', ')} changes the engine can price` });
       continue;
     }
     const kind = typeof req.kind === 'string' ? req.kind.toLowerCase() : 'substitution';
     try {
-      if (kind === 'tolerance') stamp(idea, checkTolerance(req, ctx));
-      else if (kind === 'assembly') stamp(idea, checkAssembly(req, ctx));
-      else stamp(idea, checkSubstitution(req, ctx));
+      if (kind === 'tolerance') stamp(idea, checkTolerance(req, ctx), req);
+      else if (kind === 'assembly') stamp(idea, checkAssembly(req, ctx), req);
+      else if (kind === 'footprint') stamp(idea, checkFootprint(req, ctx), req);
+      else if (kind === 'commonisation' || kind === 'commonization') stamp(idea, checkCommonisation(req, ctx), req);
+      else if (kind === 'cycle') stamp(idea, checkCycle(req, ctx), req);
+      else stamp(idea, checkSubstitution(req, ctx), req);
     } catch (e) {
-      stamp(idea, { reason: `engine could not price this move: ${String(e?.message || e).slice(0, 80)}` });
+      stamp(idea, { reason: `engine could not price this move: ${String(e?.message || e).slice(0, 80)}` }, req);
     }
   }
   return summary;

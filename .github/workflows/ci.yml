@@ -99,7 +99,8 @@ jobs:
           --min-engine-rate 43
           --min-null-reason 100
           --min-grade-rate 69
-          --max-arith-mismatch 26
+          --min-arith-consistent 74
+          --max-arith-mismatch 4
 
       # OpenCascade wheel — needed by the DFM geometry gate below. Kept as its
       # own step so a wheel/index problem reads as an install failure rather than
