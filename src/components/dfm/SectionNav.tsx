@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useDfmMotion } from './motion';
+import { useDfmMotion } from '../../lib/motion';
 
 export interface NavSection {
   id: string;
@@ -88,7 +88,7 @@ export default function SectionNav({ sections }: { sections: NavSection[] }) {
             <span className={`relative text-xs font-medium whitespace-nowrap ${on ? 'text-white' : 'text-slate-400 hover:text-slate-200'}`}>
               {s.label}
               {s.count !== null && s.count !== undefined && (
-                <span className={`ml-1.5 dfm-num ${s.alert ? 'text-red-400' : 'text-slate-600'}`}>{s.count}</span>
+                <span className={`ml-1.5 dfm-num ${s.alert ? 'text-red-400' : 'text-slate-500'}`}>{s.count}</span>
               )}
             </span>
           </button>

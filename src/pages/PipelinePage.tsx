@@ -18,6 +18,7 @@ import BusinessCaseModal, {
 } from '../components/BusinessCaseModal';
 import IdeaDetailPanel from '../components/IdeaDetailPanel';
 import type { CostReductionIdea } from '../types';
+import EmptyState from '../components/ui/EmptyState';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -153,7 +154,7 @@ function GateBadge({ gate }: { gate: string }) {
 
 function Avatar({ name, size = 'sm' }: { name: string; size?: 'sm' | 'xs' }) {
   const initials = getInitials(name);
-  const dim = size === 'xs' ? 'w-6 h-6 text-[10px]' : 'w-8 h-8 text-xs';
+  const dim = size === 'xs' ? 'w-6 h-6 text-2xs' : 'w-8 h-8 text-xs';
   return (
     <div
       className={`${dim} rounded-full bg-gold-500/20 border border-gold-500/30 text-gold-400 font-semibold flex items-center justify-center flex-shrink-0`}
@@ -223,7 +224,7 @@ function CommentsSection({
       </div>
       <div className="space-y-3 mb-3">
         {comments.length === 0 && (
-          <p className="text-slate-600 text-xs">No comments yet. Be the first.</p>
+          <p className="text-slate-500 text-xs">No comments yet. Be the first.</p>
         )}
         {comments.map((c) => (
           <div key={c.id} className="flex gap-2.5">
@@ -233,7 +234,7 @@ function CommentsSection({
                 <span className="text-slate-300 text-xs font-medium">
                   {c.userName}
                 </span>
-                <span className="text-slate-600 text-[10px]">
+                <span className="text-slate-500 text-2xs">
                   {timeAgo(c.createdAt)}
                 </span>
               </div>
@@ -516,7 +517,7 @@ export default function PipelinePage() {
             </button>
             <button
               onClick={() => setShowTitlePrompt(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold text-sm transition-all shadow-glow-gold"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold text-sm transition-ui shadow-glow-gold"
             >
               <Plus size={15} />
               Add Business Case
@@ -562,7 +563,7 @@ export default function PipelinePage() {
                       setShowTitlePrompt(false);
                       setShowAddModal(true);
                     }}
-                    className="px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-semibold text-sm transition-all shadow-glow-gold"
+                    className="px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-semibold text-sm transition-ui shadow-glow-gold"
                   >
                     Continue
                   </button>
@@ -622,11 +623,11 @@ export default function PipelinePage() {
                 }`}
               >
                 {gate}
-                <span className={active ? 'opacity-70' : 'text-slate-600'}>
+                <span className={active ? 'opacity-70' : 'text-slate-500'}>
                   {count}
                 </span>
                 {count > 0 && (
-                  <span className={`hidden sm:inline ${active ? 'opacity-60' : 'text-slate-600'}`}>
+                  <span className={`hidden sm:inline ${active ? 'opacity-60' : 'text-slate-500'}`}>
                     · {fmtMoney(total)}
                   </span>
                 )}
@@ -640,7 +641,8 @@ export default function PipelinePage() {
           <select
             value={filterVehicle}
             onChange={(e) => setFilterVehicle(e.target.value)}
-            className="bg-navy-900 border border-white/10 rounded-lg px-3 py-2 text-slate-400 text-xs focus:outline-none focus:border-gold-500/30"
+            aria-label="Filter by vehicle"
+            className="bg-navy-900 border border-white/10 rounded-lg px-3 py-2 min-h-[36px] text-slate-300 text-xs hover:border-white/20 focus:border-gold-500/40 transition-ui duration-micro ease-house"
           >
             <option value="All">All vehicles</option>
             {SUV_MODELS.map((m) => (
@@ -652,7 +654,8 @@ export default function PipelinePage() {
           <select
             value={filterOwner}
             onChange={(e) => setFilterOwner(e.target.value)}
-            className="bg-navy-900 border border-white/10 rounded-lg px-3 py-2 text-slate-400 text-xs focus:outline-none focus:border-gold-500/30"
+            aria-label="Filter by owner"
+            className="bg-navy-900 border border-white/10 rounded-lg px-3 py-2 min-h-[36px] text-slate-300 text-xs hover:border-white/20 focus:border-gold-500/40 transition-ui duration-micro ease-house"
           >
             <option value="All">All owners</option>
             {owners.map((o) => (
@@ -686,16 +689,14 @@ export default function PipelinePage() {
             <SkeletonCard />
           </div>
         ) : filteredCases.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-16 h-16 rounded-2xl bg-gold-500/10 border border-gold-500/20 flex items-center justify-center mx-auto mb-4">
-              <ClipboardList size={28} className="text-gold-400/50" />
-            </div>
-            <h3 className="text-white font-semibold mb-2">No ideas found</h3>
-            <p className="text-slate-500 text-sm max-w-xs mx-auto">
-              {cases.length === 0
-                ? 'Add your first business case to get started.'
-                : 'Try adjusting the filters.'}
-            </p>
+          <div className="py-6">
+            <EmptyState
+              icon={ClipboardList}
+              title={cases.length === 0 ? 'No business cases yet' : 'Nothing matches these filters'}
+              body={cases.length === 0
+                ? 'Approve an idea in any analysis and it lands here as a business case with its saving, owner and stage.'
+                : 'Try a different vehicle or owner, or clear the filters.'}
+            />
           </div>
         ) : (
           <div className="space-y-3">
@@ -714,7 +715,7 @@ export default function PipelinePage() {
                   layout
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`bg-navy-900 border rounded-2xl overflow-hidden transition-all shadow-card ${
+                  className={`bg-navy-900 border rounded-2xl overflow-hidden transition-ui shadow-card ${
                     isExpanded
                       ? 'border-gold-500/30 shadow-lg shadow-gold-500/5'
                       : 'border-white/10 hover:border-white/20'
@@ -770,11 +771,11 @@ export default function PipelinePage() {
                       )}
                       <span className="ml-auto text-gold-400 font-bold text-sm">
                         {fmtMoney(bc.totalAnnualSaving)}
-                        <span className="text-slate-600 text-xs font-normal ml-1">
+                        <span className="text-slate-500 text-xs font-normal ml-1">
                           /yr
                         </span>
                       </span>
-                      <span className="text-slate-600 text-xs">{bc.implementationYear}</span>
+                      <span className="text-slate-500 text-xs">{bc.implementationYear}</span>
                     </div>
                   </div>
 
@@ -831,7 +832,7 @@ export default function PipelinePage() {
                                 key={m.label}
                                 className="bg-navy-800 border border-white/8 rounded-xl p-2.5"
                               >
-                                <div className="text-slate-600 text-[10px] mb-0.5">
+                                <div className="text-slate-500 text-2xs mb-0.5">
                                   {m.label}
                                 </div>
                                 <div className="text-white text-sm font-semibold">
@@ -876,16 +877,16 @@ export default function PipelinePage() {
                                 <table className="w-full text-xs">
                                   <thead>
                                     <tr className="border-b border-white/8">
-                                      <th className="text-left px-3 py-2 text-slate-600 font-medium">
+                                      <th className="text-left px-3 py-2 text-slate-500 font-medium">
                                         Model
                                       </th>
-                                      <th className="text-right px-3 py-2 text-slate-600 font-medium">
+                                      <th className="text-right px-3 py-2 text-slate-500 font-medium">
                                         Volume
                                       </th>
-                                      <th className="text-right px-3 py-2 text-slate-600 font-medium">
+                                      <th className="text-right px-3 py-2 text-slate-500 font-medium">
                                         %
                                       </th>
-                                      <th className="text-right px-3 py-2 text-slate-600 font-medium">
+                                      <th className="text-right px-3 py-2 text-slate-500 font-medium">
                                         Vehicle Saving
                                       </th>
                                     </tr>
@@ -970,7 +971,7 @@ export default function PipelinePage() {
                           {/* Gate advancement (owner only) */}
                           {isOwner && (
                             <div className="flex items-center gap-2 mb-4">
-                              <span className="text-xs text-slate-600">Move gate:</span>
+                              <span className="text-xs text-slate-500">Move gate:</span>
                               {prevGate && (
                                 <motion.button
                                   whileTap={{ scale: 0.88 }}

@@ -300,7 +300,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
       animate={{ opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94], delay: Math.min(index * 0.04, 0.4) } }}
       exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.18 } }}
       whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(245,158,11,0.12)', transition: { type: 'spring', stiffness: 400, damping: 25 } }}
-      className={`bg-navy-900 border rounded-2xl overflow-hidden transition-all cursor-default shadow-card ${isSelected ? 'border-gold-500/50 shadow-glow-gold' : 'border-white/10 hover:border-gold-500/25'}`}
+      className={`bg-navy-900 border rounded-2xl overflow-hidden transition-ui cursor-default shadow-card ${isSelected ? 'border-gold-500/50 shadow-glow-gold' : 'border-white/10 hover:border-gold-500/25'}`}
     >
       <div className="p-5 pb-4">
         {/* Title row */}
@@ -309,7 +309,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
             {onToggleSelect && (
               <button
                 onClick={e => { e.stopPropagation(); onToggleSelect(idea.id); }}
-                className={`flex-shrink-0 self-center transition-colors ${isSelected ? 'text-gold-400' : 'text-slate-600 hover:text-slate-400'}`}
+                className={`flex-shrink-0 self-center transition-colors ${isSelected ? 'text-gold-400' : 'text-slate-500 hover:text-slate-400'}`}
                 aria-label={isSelected ? 'Deselect idea' : 'Select idea'}
               >
                 {isSelected ? <CheckSquare size={17} /> : <Square size={17} />}
@@ -522,7 +522,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                 <h4 className="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   <Link2 size={12} /> Evidence Sources
                   {unverified && (
-                    <span className="ml-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-medium normal-case tracking-normal" title="These sources are suggested by the AI from its training data, not retrieved or independently verified. Enable web search to corroborate.">
+                    <span className="ml-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-300 text-2xs font-medium normal-case tracking-normal" title="These sources are suggested by the AI from its training data, not retrieved or independently verified. Enable web search to corroborate.">
                       <AlertTriangle size={10} /> AI-suggested · unverified
                     </span>
                   )}
@@ -732,7 +732,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
               />
             </div>
             {annotation?.updatedAt && (
-              <p className="text-slate-600 text-xs">Last updated: {new Date(annotation.updatedAt).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}</p>
+              <p className="text-slate-500 text-xs">Last updated: {new Date(annotation.updatedAt).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}</p>
             )}
             <div className="pt-1">
               <button
@@ -777,7 +777,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                 <input type="range" min="0.5" max="2" step="0.05" value={volumeMul}
                   onChange={e => setVolumeMul(Number(e.target.value))}
                   className="w-full h-1.5 accent-amber-400 cursor-pointer" />
-                <div className="flex justify-between text-slate-600 text-xs mt-1"><span>0.5×</span><span>2.0×</span></div>
+                <div className="flex justify-between text-slate-500 text-xs mt-1"><span>0.5×</span><span>2.0×</span></div>
               </div>
               {isMat && (
                 <div>
@@ -788,7 +788,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                   <input type="range" min="-30" max="50" step="1" value={commodityDelta}
                     onChange={e => setCommodityDelta(Number(e.target.value))}
                     className="w-full h-1.5 accent-orange-400 cursor-pointer" />
-                  <div className="flex justify-between text-slate-600 text-xs mt-1"><span>-30%</span><span>+50%</span></div>
+                  <div className="flex justify-between text-slate-500 text-xs mt-1"><span>-30%</span><span>+50%</span></div>
                 </div>
               )}
               <div className="p-3 rounded-xl bg-white/5 flex items-center justify-between">
@@ -802,7 +802,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                   <div className={`font-bold text-lg ${adjSav > baseSav ? 'text-success-400' : adjSav < baseSav ? 'text-danger-400' : 'text-white'}`}>{fmtV(adjSav, sym)}/yr</div>
                 </div>
               </div>
-              {!isMat && <p className="text-slate-600 text-xs">Commodity slider is only active for material cost saving ideas.</p>}
+              {!isMat && <p className="text-slate-500 text-xs">Commodity slider is only active for material cost saving ideas.</p>}
             </div>
           )}
         </div>
@@ -875,7 +875,7 @@ function SourcesPanel({ sources }: { sources: SearchSource[] }) {
                         ) : (
                           <span className="text-slate-400 font-medium">{result.title?.slice(0, 55)}</span>
                         )}
-                        <span className="text-slate-600 flex-shrink-0">· {result.source}</span>
+                        <span className="text-slate-500 flex-shrink-0">· {result.source}</span>
                       </div>
                       <p className="text-slate-500 leading-relaxed line-clamp-2">{result.snippet}</p>
                     </div>
@@ -1350,7 +1350,7 @@ export default function ResultsPage() {
               {result.id && (
                 <button
                   onClick={handleShare}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-semibold text-sm transition-all hover:scale-105"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
                 >
                   <Share2 size={16} /> Share
                 </button>
@@ -1358,7 +1358,7 @@ export default function ResultsPage() {
               <button
                 onClick={handleExcelExport}
                 disabled={!!exporting}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold text-sm transition-all hover:scale-105"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
               >
                 <FileSpreadsheet size={16} />
                 {exporting === 'excel' ? 'Exporting...' : 'Excel'}
@@ -1366,7 +1366,7 @@ export default function ResultsPage() {
               <button
                 onClick={handlePptxExport}
                 disabled={!!exporting}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white font-semibold text-sm transition-all hover:scale-105"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
               >
                 <Presentation size={16} />
                 {exporting === 'pptx' ? 'Exporting...' : 'PowerPoint'}
@@ -1374,7 +1374,7 @@ export default function ResultsPage() {
               <button
                 onClick={handlePdfExport}
                 disabled={!!exporting}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-700 hover:bg-red-600 disabled:opacity-50 text-white font-semibold text-sm transition-all hover:scale-105"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-700 hover:bg-red-600 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
               >
                 <FileDown size={16} />
                 {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
@@ -1382,7 +1382,7 @@ export default function ResultsPage() {
               <button
                 onClick={handleRfqExport}
                 disabled={!!exporting}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-violet-700 hover:bg-violet-600 disabled:opacity-50 text-white font-semibold text-sm transition-all hover:scale-105"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-violet-700 hover:bg-violet-600 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
                 title="Export RFQ package for all Approved ideas"
               >
                 <ClipboardList size={16} />
@@ -1817,7 +1817,7 @@ export default function ResultsPage() {
                 <button
                   disabled={!refineFocus.trim() || refining}
                   onClick={handleRefine}
-                  className="flex items-center gap-2 px-6 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all"
+                  className="flex items-center gap-2 px-6 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm transition-ui"
                 >
                   {refining ? <><ButtonSpinner size={14} /> Generating…</> : <><Zap size={14} /> Generate More Ideas</>}
                 </button>

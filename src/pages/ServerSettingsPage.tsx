@@ -93,7 +93,7 @@ export default function ServerSettingsPage() {
           spellCheck={false}
           inputMode="url"
         />
-        <p className="mt-2 text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <p className="mt-2 text-xs" style={{ color: 'rgba(255,255,255,0.62)' }}>
           Enter the base URL of your self-hosted BrainSpark backend (no trailing slash).
         </p>
       </div>
@@ -133,7 +133,7 @@ export default function ServerSettingsPage() {
         <button
           onClick={handleClear}
           className="w-full py-2 rounded-xl text-sm transition-opacity"
-          style={{ color: 'rgba(255,255,255,0.4)' }}
+          style={{ color: 'rgba(255,255,255,0.62)' }}
         >
           Clear saved URL
         </button>
@@ -143,8 +143,8 @@ export default function ServerSettingsPage() {
         className="mt-8 rounded-2xl p-4"
         style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
       >
-        <p className="text-xs font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>How it works</p>
-        <ul className="text-xs space-y-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <p className="text-xs font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>How it works</p>
+        <ul className="text-xs space-y-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
           <li>• The app talks to your own BrainSpark server over the internet.</li>
           <li>• Make sure port 3001 (or your configured port) is accessible from this device.</li>
           <li>• Changes take effect after the app restarts.</li>

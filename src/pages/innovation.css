@@ -343,7 +343,7 @@
    tracking and weight is most of what separates a designed page from a
    decorated one. */
 .iv-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -427,7 +427,7 @@
    idea 3" — which a list of visually identical cards cannot give you. */
 .iv-index {
   font-variant-numeric: tabular-nums;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: rgba(148, 163, 184, 0.7);

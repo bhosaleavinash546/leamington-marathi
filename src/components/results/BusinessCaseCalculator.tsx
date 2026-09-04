@@ -60,7 +60,7 @@ function SliderInput({ label, icon: Icon, value, onChange, min, max, step = 1, u
         className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
         style={{ accentColor: '#f59e0b' }}
       />
-      {hint && <p className="text-slate-600 text-xs">{hint}</p>}
+      {hint && <p className="text-slate-500 text-xs">{hint}</p>}
     </div>
   );
 }
@@ -82,7 +82,7 @@ function NumberInput({ label, icon: Icon, value, onChange, unit = '£', hint }: 
           className="flex-1 bg-navy-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-mono focus:outline-none focus:border-gold-500/40 hover:border-white/20 transition-colors"
         />
       </div>
-      {hint && <p className="text-slate-600 text-xs">{hint}</p>}
+      {hint && <p className="text-slate-500 text-xs">{hint}</p>}
     </div>
   );
 }
@@ -90,7 +90,7 @@ function NumberInput({ label, icon: Icon, value, onChange, unit = '£', hint }: 
 interface KPICardProps { label: string; value: string; sub?: string; color?: string; icon: React.ElementType; positive?: boolean | null; }
 function KPICard({ label, value, sub, color = 'text-white', icon: Icon, positive }: KPICardProps) {
   return (
-    <div className="bg-navy-800 border border-white/10 rounded-xl p-4 hover:border-gold-500/20 transition-all">
+    <div className="bg-navy-800 border border-white/10 rounded-xl p-4 hover:border-gold-500/20 transition-ui">
       <div className="flex items-start justify-between mb-1">
         <Icon size={14} className="text-gold-400 mt-0.5" />
         {positive !== null && positive !== undefined && (
@@ -99,7 +99,7 @@ function KPICard({ label, value, sub, color = 'text-white', icon: Icon, positive
       </div>
       <p className={`text-xl font-black ${color} leading-tight`}>{value}</p>
       <p className="text-slate-500 text-xs mt-0.5">{label}</p>
-      {sub && <p className="text-slate-600 text-xs mt-0.5">{sub}</p>}
+      {sub && <p className="text-slate-500 text-xs mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -187,7 +187,7 @@ export default function BusinessCaseCalculator() {
   return (
     <div className="mb-8">
       <div
-        className="bg-navy-900 border border-white/10 rounded-2xl overflow-hidden hover:border-gold-500/20 transition-all"
+        className="bg-navy-900 border border-white/10 rounded-2xl overflow-hidden hover:border-gold-500/20 transition-ui"
       >
         {/* Header toggle */}
         <button

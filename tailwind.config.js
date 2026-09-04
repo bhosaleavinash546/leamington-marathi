@@ -48,9 +48,52 @@ export default {
           500: '#3b82f6',
           600: '#2563eb',
         },
+        cat: {
+          1: 'rgb(var(--cat-1) / <alpha-value>)',
+          2: 'rgb(var(--cat-2) / <alpha-value>)',
+          3: 'rgb(var(--cat-3) / <alpha-value>)',
+          4: 'rgb(var(--cat-4) / <alpha-value>)',
+          5: 'rgb(var(--cat-5) / <alpha-value>)',
+          6: 'rgb(var(--cat-6) / <alpha-value>)',
+          7: 'rgb(var(--cat-7) / <alpha-value>)',
+          8: 'rgb(var(--cat-8) / <alpha-value>)',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      // The type scale has a FLOOR: 11 px. text-2xs replaces every text-[9px],
+      // text-[10px] and text-[10.5px] the review found (121 in source, 10 px
+      // rendered on every page). Below 11 px a label stops being readable at
+      // arm's length on a laptop, which is where directors read this tool.
+      fontSize: {
+        '2xs': ['11px', { lineHeight: '16px' }],
+      },
+      // Categorical palette (see index.css --cat-*): bg-cat-3, text-cat-3/80 …
+      // Property-scoped replacement for transition-all: everything a hover or
+      // press legitimately changes, and nothing that triggers layout.
+      transitionProperty: {
+        ui: 'color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, outline-color',
+      },
+      // DEFAULT here means every `transition-colors` / `transition-ui` in the
+      // product runs on the house curve at the micro duration unless a call
+      // site says otherwise — one motion vocabulary without touching 500 files.
+      transitionTimingFunction: {
+        DEFAULT: 'var(--ease-out)',
+        house: 'var(--ease-out)',
+        move:  'var(--ease-move)',
+      },
+      transitionDuration: {
+        DEFAULT: 'var(--dur-micro)',
+        micro: 'var(--dur-micro)',
+        enter: 'var(--dur-enter)',
+        draw:  'var(--dur-draw)',
+      },
+      zIndex: {
+        nav: 'var(--z-nav)',
+        fab: 'var(--z-fab)',
+        popover: 'var(--z-popover)',
+        modal: 'var(--z-modal)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

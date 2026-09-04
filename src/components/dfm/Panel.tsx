@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
-import { useDfmMotion } from './motion';
+import { useDfmMotion } from '../../lib/motion';
 
 /**
  * The one surface this feature uses.

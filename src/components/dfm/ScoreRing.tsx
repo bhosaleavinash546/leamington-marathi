@@ -1,5 +1,5 @@
 import { useReducedMotion } from 'framer-motion';
-import { scoreTone, TONE_TEXT, TONE_LABEL } from './motion';
+import { scoreTone, TONE_TEXT, TONE_LABEL } from '../../lib/motion';
 
 /**
  * THE SCORE, AS A SWEPT GAUGE.
@@ -80,10 +80,10 @@ export default function ScoreRing({
             <>
               <span className={`dfm-num font-black leading-none ${TONE_TEXT[tone]}`}
                 style={{ fontSize: size * 0.30 }}>{Math.round(value)}</span>
-              <span className="dfm-label text-slate-600 mt-0.5" style={{ fontSize: 8 }}>/ 100</span>
+              <span className="dfm-label text-slate-500 mt-0.5" style={{ fontSize: 8 }}>/ 100</span>
             </>
           ) : (
-            <span className="text-slate-600 text-lg leading-none" aria-hidden="true">—</span>
+            <span className="text-slate-500 text-lg leading-none" aria-hidden="true">—</span>
           )}
         </div>
       </div>

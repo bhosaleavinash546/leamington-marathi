@@ -180,7 +180,7 @@ function CurrencyChip({ currency }: { currency: Currency }) {
       ? `Currency: ${currency.basis} — older than ${new Date().getFullYear() - (currency.evidenceYear ?? 0)} years. It may still be true, but nothing here has confirmed it recently.`
       : 'Currency: this entry cites no dated evidence at all. Absent is not the same as current.';
   return (
-    <span className={`px-1.5 py-0.5 rounded-md border text-[9px] font-semibold uppercase tracking-wide ${style}`} title={title}>
+    <span className={`px-1.5 py-0.5 rounded-md border text-2xs font-semibold uppercase tracking-wide ${style}`} title={title}>
       {label}
     </span>
   );
@@ -361,19 +361,19 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
         <h3 className="text-white font-semibold text-sm leading-snug">{c.name}</h3>
         <span className="flex shrink-0 items-center gap-1.5">
           {c.origin === 'promoted' && (
-            <span className="px-1.5 py-0.5 rounded-md border border-violet-500/40 bg-violet-500/10 text-violet-300 text-[9px] font-semibold uppercase tracking-wide" title={`Curator-promoted from AI research${c.sourceUrl ? ` — source: ${c.sourceUrl}` : ''}. Not yet part of the shipped curated register.`}>promoted</span>
+            <span className="px-1.5 py-0.5 rounded-md border border-violet-500/40 bg-violet-500/10 text-violet-300 text-2xs font-semibold uppercase tracking-wide" title={`Curator-promoted from AI research${c.sourceUrl ? ` — source: ${c.sourceUrl}` : ''}. Not yet part of the shipped curated register.`}>promoted</span>
           )}
           {c.kind && c.kind !== 'substitution' && (
-            <span className="px-1.5 py-0.5 rounded-md border border-teal-500/40 bg-teal-500/10 text-teal-300 text-[9px] font-semibold uppercase tracking-wide"
+            <span className="px-1.5 py-0.5 rounded-md border border-teal-500/40 bg-teal-500/10 text-teal-300 text-2xs font-semibold uppercase tracking-wide"
               title={c.kind === 'function' ? 'FUNCTION: existing hardware earns a new job and a new business case — it replaces no part.'
                 : c.kind === 'orchestration' ? 'ORCHESTRATION: a software layer coordinating actuators it replaces none of — differentiation moves from the part to the calibration.'
                 : 'LIFECYCLE: a service, warranty or monitoring model shift rather than a part swap.'}>{c.kind}</span>
           )}
           {c.related && (
-            <span className="px-1.5 py-0.5 rounded-md border border-white/15 bg-white/5 text-slate-400 text-[9px] font-semibold uppercase tracking-wide" title="Widened into this landscape from the same commodity — no direct term match on your query.">related</span>
+            <span className="px-1.5 py-0.5 rounded-md border border-white/15 bg-white/5 text-slate-400 text-2xs font-semibold uppercase tracking-wide" title="Widened into this landscape from the same commodity — no direct term match on your query.">related</span>
           )}
           {c.currency && <CurrencyChip currency={c.currency} />}
-          <span className={`px-2 py-0.5 rounded-md border text-[10px] font-semibold uppercase tracking-wide ${CONFIDENCE_STYLE[c.confidence]} ${c.confidence === 'committed' ? 'hz-committed' : ''}`}>{c.confidence}</span>
+          <span className={`px-2 py-0.5 rounded-md border text-2xs font-semibold uppercase tracking-wide ${CONFIDENCE_STYLE[c.confidence]} ${c.confidence === 'committed' ? 'hz-committed' : ''}`}>{c.confidence}</span>
         </span>
       </div>
       <div className="flex items-end justify-between gap-2 mb-2">
@@ -395,10 +395,10 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
             transition={{ duration: 0.9, delay: 0.25, ease: 'easeOut' }}
           />
         </div>
-        <span className="text-slate-500 text-[10px] w-14 text-right font-mono">momentum <TickNumber value={c.momentum} /></span>
+        <span className="text-slate-500 text-2xs w-14 text-right font-mono">momentum <TickNumber value={c.momentum} /></span>
       </div>
       <p className="text-slate-400 text-xs leading-relaxed mb-1.5">{c.note}</p>
-      <p className="text-slate-500 text-[11px] mb-1"><span className="text-slate-600">Replaces:</span> {c.replaces}</p>
+      <p className="text-slate-500 text-[11px] mb-1"><span className="text-slate-500">Replaces:</span> {c.replaces}</p>
       {c.firstProduction && <p className="text-emerald-300/80 text-[11px] mb-1 flex items-center gap-1"><Factory size={11} className="shrink-0" /> {c.firstProduction}</p>}
       {c.regAnchorDetail && (
         <p className="text-gold-300/90 text-[11px] mb-1 flex items-center gap-1">
@@ -406,12 +406,12 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
         </p>
       )}
       {signal && <p className="text-teal-300 text-[11px] mb-1 flex items-start gap-1.5"><span className="hz-ping-dot mt-1" /> <span>Watch: {signal}</span></p>}
-      <p className="text-slate-600 text-[11px]">{c.players.join(' · ')}</p>
+      <p className="text-slate-500 text-[11px]">{c.players.join(' · ')}</p>
       {critiques && critiques.length > 0 && (
         <div className="mt-1.5 space-y-1">
           {critiques.map((cr, i) => (
             <p key={i} className="text-[11px] leading-snug">
-              <span className={`inline-block px-1.5 py-px mr-1 rounded border text-[10px] ${STANCE_STYLE[cr.stance]}`}>{cr.persona}: {cr.stance}</span>
+              <span className={`inline-block px-1.5 py-px mr-1 rounded border text-2xs ${STANCE_STYLE[cr.stance]}`}>{cr.persona}: {cr.stance}</span>
               <span className="text-slate-400">{cr.note}</span>
             </p>
           ))}
@@ -438,11 +438,11 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
                 {evidence.velocity.map(v => (
                   <div key={v.year} className="flex flex-col items-center gap-0.5">
                     <div className="w-6 rounded-sm bg-teal-500/60" style={{ height: `${Math.max(3, (v.count / maxCount) * 34)}px` }} />
-                    <span className="text-slate-600 text-[9px]">{String(v.year).slice(2)}</span>
+                    <span className="text-slate-500 text-2xs">{String(v.year).slice(2)}</span>
                   </div>
                 ))}
                 {evidence.trend && (
-                  <span className={`ml-2 mb-2 px-1.5 py-0.5 rounded border text-[10px] ${evidence.trend === 'accelerating' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : evidence.trend === 'declining' ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' : 'bg-white/5 border-white/15 text-slate-400'}`}>
+                  <span className={`ml-2 mb-2 px-1.5 py-0.5 rounded border text-2xs ${evidence.trend === 'accelerating' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : evidence.trend === 'declining' ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' : 'bg-white/5 border-white/15 text-slate-400'}`}>
                     filings {evidence.trend}
                   </span>
                 )}
@@ -452,12 +452,12 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
                   {evidence.patents.map(p => (
                     <a key={p.number} href={p.url} target="_blank" rel="noreferrer" className="flex items-start gap-1 text-[11px] text-slate-400 hover:text-teal-300">
                       <ExternalLink size={10} className="shrink-0 mt-0.5" />
-                      <span>US{p.number} · {p.title.slice(0, 70)}{p.title.length > 70 ? '…' : ''} <span className="text-slate-600">({p.assignee}, {p.date.slice(0, 4)})</span></span>
+                      <span>US{p.number} · {p.title.slice(0, 70)}{p.title.length > 70 ? '…' : ''} <span className="text-slate-500">({p.assignee}, {p.date.slice(0, 4)})</span></span>
                     </a>
                   ))}
                 </div>
               )}
-              <p className="text-slate-600 text-[10px] mt-1.5">{evidence.note}</p>
+              <p className="text-slate-500 text-2xs mt-1.5">{evidence.note}</p>
             </>
           )}
           <button onClick={loadDeepDive} disabled={diveLoading} className="mt-2 flex items-center gap-1 text-teal-400 text-[11px] hover:text-teal-300 disabled:opacity-50">
@@ -467,7 +467,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
           {dive && !dive.research && <p className="text-slate-500 text-[11px] mt-1">{dive.note}</p>}
           {dive?.research && (
             <div className="mt-2 space-y-1.5">
-              <span className={`inline-block px-1.5 py-0.5 rounded border text-[10px] ${VERDICT_STYLE[dive.research.registerVerdict]}`}>evidence {dive.research.registerVerdict === 'supports' ? 'supports' : dive.research.registerVerdict === 'challenges' ? 'challenges' : 'is mixed on'} the register position</span>
+              <span className={`inline-block px-1.5 py-0.5 rounded border text-2xs ${VERDICT_STYLE[dive.research.registerVerdict]}`}>evidence {dive.research.registerVerdict === 'supports' ? 'supports' : dive.research.registerVerdict === 'challenges' ? 'challenges' : 'is mixed on'} the register position</span>
               {dive.research.developments.map((d, i) => (
                 <p key={i} className="text-slate-400 text-[11px] leading-relaxed">
                   {d.finding}{' '}
@@ -476,7 +476,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
               ))}
               <p className="text-slate-300 text-[11px]"><span className="text-slate-500">Sourcing:</span> {dive.research.sourcingImplication}</p>
               <p className="text-amber-300/80 text-[11px]"><span className="text-slate-500">Uncertainty:</span> {dive.research.risks}</p>
-              <p className="text-slate-600 text-[10px]">{dive.note}</p>
+              <p className="text-slate-500 text-2xs">{dive.note}</p>
             </div>
           )}
         </div>
@@ -489,7 +489,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
         <div className="mt-2 rounded-lg bg-navy-800/70 border border-white/5 p-3">
           <div className="flex items-center gap-2.5 mb-2">
             <BassSpark adoption={c.projection.adoption} />
-            <span className="text-slate-600 text-[10px] leading-tight">modelled adoption path<br />now → +8 years</span>
+            <span className="text-slate-500 text-2xs leading-tight">modelled adoption path<br />now → +8 years</span>
           </div>
           <table className="w-full text-[11px]">
             <thead>
@@ -529,7 +529,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
               )}
             </p>
           )}
-          <p className="text-slate-600 text-[10px] mt-1.5">{c.projection.basis}</p>
+          <p className="text-slate-500 text-2xs mt-1.5">{c.projection.basis}</p>
         </div>
         </motion.div>
       )}
@@ -866,7 +866,7 @@ export default function ForesightPage() {
           </div>
           {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
           <button onClick={() => predict()} disabled={loading}
-            className="w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold transition-all">
+            className="w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold transition-ui">
             {loading
               ? <><ButtonSpinner size={16} /> {reduced ? 'Computing the horizon…' : (
                   <AnimatePresence mode="wait" initial={false}>
@@ -946,7 +946,7 @@ export default function ForesightPage() {
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 <Microscope size={15} className="text-teal-300" />
                 <h3 className="text-teal-200 font-semibold text-sm">Deep research report</h3>
-                {deep && <span className="text-[10px] uppercase tracking-wider text-teal-300/70 border border-teal-500/30 rounded px-1.5 py-0.5">{deep.depth} · {deep.stats.sourcesRead} sources read</span>}
+                {deep && <span className="text-2xs uppercase tracking-wider text-teal-300/70 border border-teal-500/30 rounded px-1.5 py-0.5">{deep.depth} · {deep.stats.sourcesRead} sources read</span>}
               </div>
               {!deep && !deepRunning && (
                 <>
@@ -968,7 +968,7 @@ export default function ForesightPage() {
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-teal-500/40 bg-teal-500/15 text-teal-200 hover:bg-teal-500/25 transition-colors text-xs font-medium">
                       <Microscope size={12} /> Run deep research
                     </button>
-                    <span className="text-slate-600 text-[10.5px]">Costs API credits — the depth you pick is the cost.</span>
+                    <span className="text-slate-500 text-2xs">Costs API credits — the depth you pick is the cost.</span>
                   </div>
                 </>
               )}
@@ -977,7 +977,7 @@ export default function ForesightPage() {
                   <div className="flex items-center gap-2 mb-2 text-teal-200 text-xs"><ButtonSpinner size={12} /> Researching — this takes minutes, not seconds.</div>
                   <ul className="space-y-0.5 max-h-40 overflow-y-auto" aria-live="polite">
                     {deepTrace.map((t, i) => (
-                      <li key={i} className={`text-[11px] font-mono ${i === deepTrace.length - 1 ? 'text-teal-300' : 'text-slate-600'}`}>· {t}</li>
+                      <li key={i} className={`text-[11px] font-mono ${i === deepTrace.length - 1 ? 'text-teal-300' : 'text-slate-500'}`}>· {t}</li>
                     ))}
                   </ul>
                 </div>
@@ -986,7 +986,7 @@ export default function ForesightPage() {
 
               {deep && (
                 <div className="mt-1">
-                  <p className="text-slate-500 text-[10.5px] font-mono mb-3">
+                  <p className="text-slate-500 text-2xs font-mono mb-3">
                     {deep.stats.rounds} rounds · {deep.stats.sourcesSeen} sources seen, {deep.stats.sourcesRead} read · {deep.stats.distinctOrigins} distinct origins ·
                     {' '}{deep.stats.claims} claims ({deep.stats.claimsWithFigures} with figures, {deep.stats.independentClaims} independently corroborated)
                   </p>
@@ -1030,12 +1030,12 @@ export default function ForesightPage() {
                     <summary className="text-slate-400 text-[11px] cursor-pointer hover:text-teal-300">Source ledger — every source, read or skipped ({deep.ledger.length})</summary>
                     <ul className="mt-2 space-y-1">
                       {deep.ledger.map((r, i) => (
-                        <li key={i} className="text-[10.5px] font-mono flex flex-wrap gap-x-2">
-                          <span className={r.read ? 'text-emerald-400' : 'text-slate-600'}>{r.read ? 'READ' : 'skip'}</span>
+                        <li key={i} className="text-2xs font-mono flex flex-wrap gap-x-2">
+                          <span className={r.read ? 'text-emerald-400' : 'text-slate-500'}>{r.read ? 'READ' : 'skip'}</span>
                           <span className="text-slate-500">r{r.round}</span>
                           <span className="text-slate-400">{r.claimsContributed} claims</span>
                           <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-teal-400/80 hover:text-teal-300 truncate max-w-[38ch]">{r.origin}</a>
-                          {!r.read && r.skippedBecause && <span className="text-slate-600">— {r.skippedBecause}</span>}
+                          {!r.read && r.skippedBecause && <span className="text-slate-500">— {r.skippedBecause}</span>}
                         </li>
                       ))}
                     </ul>
@@ -1048,7 +1048,7 @@ export default function ForesightPage() {
                     </ul>
                   </details>
 
-                  <p className="text-slate-600 text-[10.5px] mt-3">{deep.note}</p>
+                  <p className="text-slate-500 text-2xs mt-3">{deep.note}</p>
                 </div>
               )}
             </div>
@@ -1064,10 +1064,10 @@ export default function ForesightPage() {
                 <Microscope size={15} className="text-violet-300" />
                 <h3 className="text-violet-200 font-semibold text-sm">Forward research — AI-researched, not curated</h3>
                 {result.researched.trigger && (
-                  <span className="text-[10px] uppercase tracking-wider text-violet-300/70 border border-violet-500/30 rounded px-1.5 py-0.5">{result.researched.trigger.replace(/-/g, ' ')}</span>
+                  <span className="text-2xs uppercase tracking-wider text-violet-300/70 border border-violet-500/30 rounded px-1.5 py-0.5">{result.researched.trigger.replace(/-/g, ' ')}</span>
                 )}
                 {result.researched.fromCache && (
-                  <span className="text-[10px] uppercase tracking-wider text-teal-300/70 border border-teal-500/30 rounded px-1.5 py-0.5" title="Served from the knowledge cache — this research question was already answered and cost nothing to reuse.">cached {result.researched.cacheAgeDays ?? 0}d ago</span>
+                  <span className="text-2xs uppercase tracking-wider text-teal-300/70 border border-teal-500/30 rounded px-1.5 py-0.5" title="Served from the knowledge cache — this research question was already answered and cost nothing to reuse.">cached {result.researched.cacheAgeDays ?? 0}d ago</span>
                 )}
               </div>
               <p className="text-slate-400 text-[11px] mb-3">
@@ -1080,7 +1080,7 @@ export default function ForesightPage() {
                   and the reader is entitled to know which they are looking at. */}
               {result.researched.evidence?.readNote && (
                 <p className="text-[11px] mb-3">
-                  <span className="text-violet-300 font-mono uppercase tracking-wider text-[10px]">Retrieval depth</span>{' '}
+                  <span className="text-violet-300 font-mono uppercase tracking-wider text-2xs">Retrieval depth</span>{' '}
                   <span className="text-slate-400">{result.researched.evidence.readNote}</span>
                   {result.researched.evidence.provider && !result.researched.evidence.provider.configured && (
                     <span className="text-amber-300/80"> No web-search provider is configured, so coverage is materially weaker than it would be with a search key.</span>
@@ -1102,17 +1102,17 @@ export default function ForesightPage() {
                   <div key={c.id} className="rounded-xl border border-white/10 bg-navy-900/60 p-3">
                     <div className="flex items-start gap-2">
                       <h4 className="text-slate-100 text-sm font-semibold flex-1">{c.name}</h4>
-                      <span className="text-[9px] uppercase tracking-wider text-violet-300 border border-violet-500/30 rounded px-1.5 py-0.5 shrink-0">AI-researched</span>
+                      <span className="text-2xs uppercase tracking-wider text-violet-300 border border-violet-500/30 rounded px-1.5 py-0.5 shrink-0">AI-researched</span>
                       {c.sourceRead !== undefined && (
                         <span
-                          className={`text-[9px] uppercase tracking-wider rounded px-1.5 py-0.5 shrink-0 border ${c.sourceRead ? 'text-emerald-300 border-emerald-500/30' : 'text-slate-400 border-white/15'}`}
+                          className={`text-2xs uppercase tracking-wider rounded px-1.5 py-0.5 shrink-0 border ${c.sourceRead ? 'text-emerald-300 border-emerald-500/30' : 'text-slate-400 border-white/15'}`}
                           title={c.sourceRead
                             ? 'The source page was opened and read in full, and the quote below was checked against its text in code.'
                             : 'Only a search snippet was available for this source — the page itself could not be opened, so the quote could not be verified against it.'}
                         >{c.sourceRead ? 'page read' : 'snippet only'}</span>
                       )}
                     </div>
-                    <p className="text-slate-500 text-[10px] font-mono mt-1">
+                    <p className="text-slate-500 text-2xs font-mono mt-1">
                       TRL ~{c.trl} (est) · {c.phase} · adoption ~{c.adoptionPct}% (est) · {c.horizon}
                     </p>
                     <p className="text-slate-300 text-xs mt-1.5">{c.whatItIs}</p>
@@ -1136,18 +1136,18 @@ export default function ForesightPage() {
                     )}
                     {c.sourceUrl && (
                       <a href={c.sourceUrl} target="_blank" rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-teal-300/80 hover:text-teal-300 text-[10px] mt-1.5 break-all">
+                        className="inline-flex items-center gap-1 text-teal-300/80 hover:text-teal-300 text-2xs mt-1.5 break-all">
                         <ExternalLink size={10} /> {c.sourceUrl}
                       </a>
                     )}
                     <div className="mt-2">
                       {promoted[c.id]?.startsWith('error:') ? (
-                        <p className="text-red-400 text-[10px]">{promoted[c.id].slice(6)}</p>
+                        <p className="text-red-400 text-2xs">{promoted[c.id].slice(6)}</p>
                       ) : promoted[c.id] ? (
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-emerald-300 text-[10px]">Promoted into the live register — it now appears in lanes with a PROMOTED badge. Re-run the prediction to see it.</p>
+                          <p className="text-emerald-300 text-2xs">Promoted into the live register — it now appears in lanes with a PROMOTED badge. Re-run the prediction to see it.</p>
                           <button onClick={() => demoteFromRegister(c.id, promoted[c.id])} disabled={promoting === c.id}
-                            className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg border border-white/15 bg-white/5 text-slate-300 hover:bg-white/10 text-[10px] transition-colors disabled:opacity-50"
+                            className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg border border-white/15 bg-white/5 text-slate-300 hover:bg-white/10 text-2xs transition-colors disabled:opacity-50"
                             title="Remove this entry from the live register. The candidate stays in the research results; only the register entry is withdrawn.">
                             {promoting === c.id ? <ButtonSpinner size={10} /> : <Undo2 size={10} />} Demote
                           </button>
@@ -1186,11 +1186,11 @@ export default function ForesightPage() {
                   {ledger.map(e => (
                     <div key={e.id} className="flex items-center gap-2 text-xs">
                       <span className="text-slate-300 flex-1 truncate">{e.query || e.commodity}{e.powertrain ? ` · ${e.powertrain}` : ''}</span>
-                      <span className="text-slate-600">{e.createdAt.slice(0, 10)} · {e.techCount} techs · v{e.vintage}</span>
+                      <span className="text-slate-500">{e.createdAt.slice(0, 10)} · {e.techCount} techs · v{e.vintage}</span>
                       <button onClick={() => openRevisit(e.id)} className="flex items-center gap-1 px-2 py-0.5 rounded border border-white/10 text-slate-400 hover:text-teal-300 hover:border-teal-500/30" title="Revisit: drift vs today's register">
                         <RotateCcw size={11} /> Revisit
                       </button>
-                      <button onClick={() => deleteEntry(e.id)} aria-label="Delete entry" className="p-1 text-slate-600 hover:text-red-400"><Trash2 size={12} /></button>
+                      <button onClick={() => deleteEntry(e.id)} aria-label="Delete entry" className="p-1 text-slate-500 hover:text-red-400"><Trash2 size={12} /></button>
                     </div>
                   ))}
                 </div>
@@ -1214,7 +1214,7 @@ export default function ForesightPage() {
                                 {d.horizonMoved && d.now ? `horizon ${d.then.horizon}→${d.now.horizon} ` : ''}
                                 {typeof d.projectionError === 'number' ? `· projected ${d.projectedForNow}% vs curated ${d.now?.adoptionPct}% (err ${d.projectionError}pt)` : ''}
                               </>
-                            : <span className="text-slate-600">unchanged</span>
+                            : <span className="text-slate-500">unchanged</span>
                         )}
                       </p>
                     ))}
@@ -1260,7 +1260,7 @@ export default function ForesightPage() {
                       </div>
                     </div>
                   ))}
-                  <p className="text-slate-600 text-[10px]">The exact systems & subassemblies from the Analyze tool — same taxonomy, now with a technology future behind every one (parity is CI-enforced).</p>
+                  <p className="text-slate-500 text-2xs">The exact systems & subassemblies from the Analyze tool — same taxonomy, now with a technology future behind every one (parity is CI-enforced).</p>
                 </div>
               )}
               {bomView === 'bom' && (<>
@@ -1289,7 +1289,7 @@ export default function ForesightPage() {
                   ))}
                 </div>
               )}
-              {!bomCommodity && <p className="text-slate-600 text-xs">Pick a commodity — every component chip runs a live prediction. Each of these is test-guaranteed to resolve to technologies.</p>}
+              {!bomCommodity && <p className="text-slate-500 text-xs">Pick a commodity — every component chip runs a live prediction. Each of these is test-guaranteed to resolve to technologies.</p>}
               </>)}
             </div>
           )}
@@ -1320,7 +1320,7 @@ export default function ForesightPage() {
                 ))}
                 <p className="text-slate-300 text-xs"><span className="text-slate-500">Outlook:</span> {partResearch.research.outlook}</p>
                 <p className="text-amber-300/80 text-xs"><span className="text-slate-500">Uncertainty:</span> {partResearch.research.risks}</p>
-                <p className="text-slate-600 text-[10px]">{partResearch.note}</p>
+                <p className="text-slate-500 text-2xs">{partResearch.note}</p>
               </>
             )}
           </div>
@@ -1352,13 +1352,13 @@ export default function ForesightPage() {
                       exit={{ opacity: 0, y: 6, scale: 0.96 }}
                       transition={{ duration: 0.16 }}
                       className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 w-56 rounded-xl border border-white/15 bg-[#0b1526]/95 backdrop-blur-md shadow-2xl shadow-black/50 p-2">
-                      <p className="px-2 pt-1 pb-2 text-[10px] uppercase tracking-[0.18em] text-slate-400">Report theme</p>
+                      <p className="px-2 pt-1 pb-2 text-2xs uppercase tracking-[0.18em] text-slate-400">Report theme</p>
                       <button
                         onClick={() => { setExportOpen(false); if (result) exportForesightPdf({ ...result, deep }, panel, 'light'); }}
                         className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left text-xs text-slate-200 hover:bg-gold-500/10 hover:text-gold-300 transition-colors">
                         <Sun size={14} className="text-gold-300 shrink-0" />
                         <span className="flex-1">Light <span className="text-slate-500">— Horizon on white</span></span>
-                        <span className="text-[9px] uppercase tracking-wider text-gold-300/80 border border-gold-500/30 rounded px-1 py-0.5">default</span>
+                        <span className="text-2xs uppercase tracking-wider text-gold-300/80 border border-gold-500/30 rounded px-1 py-0.5">default</span>
                       </button>
                       <button
                         onClick={() => { setExportOpen(false); if (result) exportForesightPdf({ ...result, deep }, panel, 'dark'); }}
@@ -1380,7 +1380,7 @@ export default function ForesightPage() {
                     {p.persona} · {p.critiques.length} views
                   </span>
                 ))}
-                <span className="text-slate-600 text-[11px] w-full text-center">{panel.note}</span>
+                <span className="text-slate-500 text-[11px] w-full text-center">{panel.note}</span>
               </div>
             )}
 
@@ -1404,7 +1404,7 @@ export default function ForesightPage() {
                     <div key={`${b.brand}-${b.vehicle}`} className="hz-card shrink-0 w-64 bg-navy-900 border border-white/10 rounded-2xl p-3.5">
                       <div className="flex items-baseline justify-between gap-2 mb-1">
                         <h3 className="text-white font-semibold text-sm leading-tight">{b.vehicle}</h3>
-                        <span className="text-slate-500 text-[10px] whitespace-nowrap">{b.year}</span>
+                        <span className="text-slate-500 text-2xs whitespace-nowrap">{b.year}</span>
                       </div>
                       <p className="text-slate-500 text-[11px] mb-1.5">{b.brand} · {b.powertrains.join('/')}</p>
                       <ul className="space-y-0.5 mb-1.5">
@@ -1428,8 +1428,8 @@ export default function ForesightPage() {
                       <div key={a.id} title={a.effect} className="relative flex flex-col items-center flex-1 min-w-[128px] px-2">
                         <span className={`relative w-2.5 h-2.5 rounded-full border border-gold-500/60 ${i === 0 ? 'bg-gold-400 hz-committed' : 'bg-gold-500/30'}`} />
                         <span className="text-gold-300 text-xs font-bold mt-1.5">{a.year}</span>
-                        <span className="text-slate-400 text-[10px] text-center leading-tight mt-0.5">{a.name}</span>
-                        <span className="text-slate-600 text-[9px] mt-0.5">{a.region}{a.status && ANCHOR_STATUS_LABEL[a.status] ? ` · ${ANCHOR_STATUS_LABEL[a.status]}` : ''}</span>
+                        <span className="text-slate-400 text-2xs text-center leading-tight mt-0.5">{a.name}</span>
+                        <span className="text-slate-500 text-2xs mt-0.5">{a.region}{a.status && ANCHOR_STATUS_LABEL[a.status] ? ` · ${ANCHOR_STATUS_LABEL[a.status]}` : ''}</span>
                       </div>
                     ))}
                   </div>
@@ -1439,18 +1439,18 @@ export default function ForesightPage() {
 
             {/* The time-road: certainty fades with distance into the future */}
             <div className="hidden lg:grid grid-cols-3 gap-4 -mb-3 px-2" aria-hidden="true">
-              <div className="flex items-center gap-2 text-[10px]">
+              <div className="flex items-center gap-2 text-2xs">
                 <span className="text-gold-400 font-bold whitespace-nowrap font-mono">{result.windows.H1.label}</span>
                 <div className="flex-1 h-[2px] rounded hz-rail-solid hz-rail-live" />
               </div>
-              <div className="flex items-center gap-2 text-[10px]">
+              <div className="flex items-center gap-2 text-2xs">
                 <span className="text-teal-400 font-bold whitespace-nowrap font-mono">{result.windows.H2.label}</span>
                 <div className="flex-1 h-[2px] rounded hz-rail-mid" />
               </div>
-              <div className="flex items-center gap-2 text-[10px]">
+              <div className="flex items-center gap-2 text-2xs">
                 <span className="text-slate-400 font-bold whitespace-nowrap">{result.windows.H3.label}</span>
                 <div className="flex-1 h-[2px] hz-rail-far" />
-                <span className="text-slate-600">future →</span>
+                <span className="text-slate-500">future →</span>
               </div>
             </div>
 
@@ -1463,12 +1463,12 @@ export default function ForesightPage() {
                     <p className="text-slate-500 text-xs">
                       {result.windows[lane.key].label} · {result.horizons[lane.key].filter(c => !c.related).length} matching
                       {result.horizons[lane.key].some(c => c.related) && (
-                        <span className="text-slate-600"> · {result.horizons[lane.key].filter(c => c.related).length} landscape</span>
+                        <span className="text-slate-500"> · {result.horizons[lane.key].filter(c => c.related).length} landscape</span>
                       )}
                     </p>
                   </div>
                   <div className="space-y-3 mt-2">
-                    {result.horizons[lane.key].length === 0 && <p className="text-slate-600 text-xs px-1 py-2">Nothing in this window for this selection.</p>}
+                    {result.horizons[lane.key].length === 0 && <p className="text-slate-500 text-xs px-1 py-2">Nothing in this window for this selection.</p>}
                     {result.horizons[lane.key].map((c, i, arr) => (
                       <motion.div
                         key={c.id}
@@ -1484,7 +1484,7 @@ export default function ForesightPage() {
                         {c.related && !arr[i - 1]?.related && (
                           <div className="flex items-center gap-2 pt-1 pb-2">
                             <span className="h-px flex-1 bg-white/10" />
-                            <span className="text-[9px] uppercase tracking-wider text-slate-500 font-mono">commodity landscape — not your part</span>
+                            <span className="text-2xs uppercase tracking-wider text-slate-500 font-mono">commodity landscape — not your part</span>
                             <span className="h-px flex-1 bg-white/10" />
                           </div>
                         )}
@@ -1496,12 +1496,12 @@ export default function ForesightPage() {
               ))}
             </div>
 
-            <p className="text-slate-600 text-xs text-center max-w-3xl mx-auto">{result.note}</p>
+            <p className="text-slate-500 text-xs text-center max-w-3xl mx-auto">{result.note}</p>
           </motion.div>
         )}
 
         {!result && !loading && (
-          <p className="text-center text-slate-600 text-xs mt-8">
+          <p className="text-center text-slate-500 text-xs mt-8">
             Curated register · automotive TRL 1–9 · Bass diffusion (p=0.03, q=0.38) · Wright's-law cost curves · dated regulatory anchors · committed / probable / speculative confidence tiers
           </p>
         )}

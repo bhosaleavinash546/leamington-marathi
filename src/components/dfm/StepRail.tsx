@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
-import { useDfmMotion } from './motion';
+import { useDfmMotion } from '../../lib/motion';
 
 export interface RailStep {
   id: string;
@@ -68,7 +68,7 @@ export default function StepRail({
                   active ? 'text-white' : s.done ? 'text-slate-300' : 'text-slate-500'
                 }`}>{s.label}</span>
                 {active && s.hint && (
-                  <span className="hidden sm:block text-[10px] text-gold-400/80 whitespace-nowrap">{s.hint}</span>
+                  <span className="hidden sm:block text-2xs text-gold-400/80 whitespace-nowrap">{s.hint}</span>
                 )}
               </span>
             </button>

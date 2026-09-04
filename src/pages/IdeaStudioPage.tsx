@@ -9,6 +9,7 @@ import { generateCostReductionIdeas } from '../services/claude-service';
 import { toast } from '../hooks/useToast';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { CURRENCIES, COST_COMPONENTS } from '../constants/costing';
+import PageHeader from '../components/ui/PageHeader';
 
 type Mode = 'cad' | 'image';
 
@@ -236,20 +237,18 @@ export default function IdeaStudioPage() {
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/25 mb-4">
-            <Wand2 size={28} className="text-gold-400" />
-          </div>
-          <h1 className="text-4xl font-black text-white mb-2">Idea Studio</h1>
-          <p className="text-slate-400 max-w-2xl mx-auto">Upload a part, describe its current condition, and get cost-reduction ideas grounded in your data — for maximum accuracy.</p>
-        </div>
+        <PageHeader
+          tool="idea-studio"
+          title="Idea Studio"
+          subtitle="Upload a part, describe its current condition, and get cost-reduction ideas grounded in your data."
+        />
 
         {/* Mode selector */}
         <div className="grid grid-cols-2 gap-3 mb-6 max-w-md mx-auto">
           {([['cad', Box, 'CAD → Idea', 'STL · STEP · DXF'], ['image', ImageIcon, 'Image → Idea', 'Photo · drawing']] as const).map(([m, Icon, label, sub]) => (
             <button key={m} onClick={() => { setMode(m); setFile(null); setGeometry(null); }}
-              className={`flex flex-col items-center gap-1.5 p-4 rounded-2xl border transition-all ${mode === m ? 'bg-gold-500/15 border-gold-500/40 text-gold-300' : 'bg-navy-900 border-white/10 text-slate-400 hover:border-white/25'}`}>
-              <Icon size={22} /><span className="font-semibold text-sm">{label}</span><span className="text-xs opacity-70">{sub}</span>
+              className={`flex flex-col items-center gap-1.5 p-4 rounded-2xl border transition-ui ${mode === m ? 'bg-gold-500/15 border-gold-500/40 text-gold-300' : 'bg-navy-900 border-white/10 text-slate-400 hover:border-white/25'}`}>
+              <Icon size={22} /><span className="font-semibold text-sm">{label}</span><span className="text-xs font-normal">{sub}</span>
             </button>
           ))}
         </div>
@@ -259,7 +258,7 @@ export default function IdeaStudioPage() {
           <div className="space-y-4">
             {!file ? (
               <div onDragOver={e => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop}
-                className={`rounded-2xl border-2 border-dashed p-10 text-center transition-all cursor-pointer ${dragOver ? 'border-gold-500/50 bg-gold-500/5' : 'border-white/15 hover:border-white/30 bg-navy-900'}`}
+                className={`rounded-2xl border-2 border-dashed p-10 text-center transition-ui cursor-pointer ${dragOver ? 'border-gold-500/50 bg-gold-500/5' : 'border-white/15 hover:border-white/30 bg-navy-900'}`}
                 onClick={() => document.getElementById('studio-file')?.click()}>
                 <input id="studio-file" type="file" accept={accept} className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) onFile(f); }} />
                 <Upload size={26} className="mx-auto text-slate-500 mb-3" />
@@ -330,7 +329,7 @@ export default function IdeaStudioPage() {
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                       <span className="text-white font-black text-sm leading-none">{baseline.total}</span>
-                      <span className="text-slate-500 text-[9px] mt-0.5 uppercase tracking-wide">/ unit</span>
+                      <span className="text-slate-500 text-2xs mt-0.5 uppercase tracking-wide">/ unit</span>
                     </div>
                   </div>
                   <div className="flex-1 space-y-1.5">
@@ -374,10 +373,10 @@ export default function IdeaStudioPage() {
 
             {error && <p className="text-red-400 text-sm" role="alert">{error}</p>}
             <button onClick={handleGenerate} disabled={generating}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold text-sm transition-all shadow-glow-gold">
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold text-sm transition-ui shadow-glow-gold">
               {generating ? <><ButtonSpinner size={16} /> {progressMsg || 'Generating…'}</> : <><Sparkles size={16} /> Generate Grounded Ideas</>}
             </button>
-            <p className="text-slate-600 text-[11px] text-center">Ideas are validated and open in Results, where you can push them to Pipeline or the Marketplace.</p>
+            <p className="text-slate-500 text-[11px] text-center">Ideas are validated and open in Results, where you can push them to Pipeline or the Marketplace.</p>
           </div>
         </div>
       </div>

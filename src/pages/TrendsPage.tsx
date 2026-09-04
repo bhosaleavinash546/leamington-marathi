@@ -173,7 +173,7 @@ export default function TrendsPage() {
               {EDU_TRENDS[key].map((trend) => (
                 <div key={trend.t} className={`bg-navy-800/50 border border-white/8 border-l-2 rounded-xl p-4 ${trend.status.includes('>800V') ? 'border-l-violet-500' : trend.status.startsWith('Mainstream') ? 'border-l-blue-500' : 'border-l-amber-500'}`}>
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
+                    <span className={`text-2xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
                     <span className="text-xs font-semibold text-success-400 bg-success-500/10 border border-success-500/20 rounded-full px-2 py-0.5 whitespace-nowrap">{trend.save}</span>
                   </div>
                   <p className="text-white text-sm font-semibold mb-2">{trend.t}</p>
@@ -202,7 +202,7 @@ export default function TrendsPage() {
               {(trends as { t: string; status: string; save: string; dir: string }[]).map((trend) => (
                 <div key={trend.t} className={`bg-navy-800/50 border border-white/8 border-l-2 rounded-xl p-4 ${trend.status === 'Next-Gen' ? 'border-l-violet-500' : trend.status.startsWith('Mainstream') ? 'border-l-blue-500' : trend.status.startsWith('Emerging') ? 'border-l-amber-500' : 'border-l-red-500'}`}>
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
+                    <span className={`text-2xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
                     <span className="text-xs font-semibold text-success-400 bg-success-500/10 border border-success-500/20 rounded-full px-2 py-0.5 whitespace-nowrap">{trend.save}</span>
                   </div>
                   <p className="text-white text-sm font-semibold mb-2">{trend.t}</p>
@@ -223,7 +223,7 @@ export default function TrendsPage() {
                   <div className="mb-3">
                     <span className="text-xs text-slate-500 font-mono uppercase tracking-widest">{comp.sub}</span>
                     <p className="text-white font-semibold mt-0.5">{comp.name}</p>
-                    <p className="text-slate-600 text-xs mt-0.5 leading-relaxed">Baseline: {comp.baseline}</p>
+                    <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">Baseline: {comp.baseline}</p>
                   </div>
                   <div className="space-y-3">
                     {comp.ideas.map((idea, i) => (
@@ -233,14 +233,14 @@ export default function TrendsPage() {
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-wrap items-center gap-2 mb-1">
                               <span className="text-white font-medium text-sm">{idea.t}</span>
-                              {idea.new ? <span className="text-[9px] font-bold text-violet-400 bg-violet-500/15 border border-violet-500/30 px-1.5 py-0.5 rounded-full">NEW</span> : null}
+                              {idea.new ? <span className="text-2xs font-bold text-violet-400 bg-violet-500/15 border border-violet-500/30 px-1.5 py-0.5 rounded-full">NEW</span> : null}
                             </div>
                             <div className="flex flex-wrap gap-2 mb-1.5">
-                              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getLevClass(idea.lev)}`}>{idea.lev}</span>
+                              <span className={`text-2xs font-semibold px-2 py-0.5 rounded-full border ${getLevClass(idea.lev)}`}>{idea.lev}</span>
                               <span className="text-xs font-semibold text-success-400 bg-success-500/10 border border-success-500/20 rounded-full px-2 py-0.5">{idea.save}</span>
                             </div>
                             <p className="text-slate-400 text-xs leading-relaxed mb-1">{idea.why}</p>
-                            {idea.bench && <p className="text-slate-600 text-xs">Benchmark: {idea.bench}</p>}
+                            {idea.bench && <p className="text-slate-500 text-xs">Benchmark: {idea.bench}</p>}
                             {idea.tr && <p className="text-amber-500/70 text-xs mt-0.5">Validation: {idea.tr}</p>}
                           </div>
                         </div>
@@ -271,7 +271,7 @@ export default function TrendsPage() {
               {trends.map((trend) => (
                 <div key={trend.id} className={`bg-navy-800/50 border border-white/8 border-l-2 rounded-xl p-4 ${trend.status === 'Next-Gen' ? 'border-l-violet-500' : trend.status === 'Mainstream' ? 'border-l-blue-500' : trend.status === 'Emerging' ? 'border-l-amber-500' : 'border-l-red-500'}`}>
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
+                    <span className={`text-2xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
                   </div>
                   <p className="text-white text-sm font-semibold mb-1.5">{trend.title}</p>
                   <p className="text-slate-400 text-xs leading-relaxed mb-2">{trend.description}</p>
@@ -300,10 +300,10 @@ export default function TrendsPage() {
                           <span className="text-white font-medium">{lever.action}</span>
                           <span className="text-success-400 font-semibold ml-2 text-xs">{lever.saving}</span>
                           {lever.conf && (
-                            <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded border font-medium ${CONF_COLORS[lever.conf] || ''}`}>{lever.conf}</span>
+                            <span className={`ml-2 text-2xs px-1.5 py-0.5 rounded border font-medium ${CONF_COLORS[lever.conf] || ''}`}>{lever.conf}</span>
                           )}
                           {lever.note && <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{lever.note}</p>}
-                          {lever.bench && <p className="text-slate-600 text-xs">Benchmark: {lever.bench}</p>}
+                          {lever.bench && <p className="text-slate-500 text-xs">Benchmark: {lever.bench}</p>}
                         </div>
                       </div>
                     ))}
@@ -330,7 +330,7 @@ export default function TrendsPage() {
             {trends.map((trend) => (
               <div key={trend.t} className={`bg-navy-800/50 border border-white/8 border-l-2 rounded-xl p-4 ${trend.status === 'Next-Gen' ? 'border-l-violet-500' : trend.status === 'Mainstream' ? 'border-l-blue-500' : trend.status === 'Emerging' ? 'border-l-amber-500' : 'border-l-red-500'}`}>
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
+                  <span className={`text-2xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
                   <span className="text-xs font-semibold text-success-400 bg-success-500/10 border border-success-500/20 rounded-full px-2 py-0.5 whitespace-nowrap">{trend.save}</span>
                 </div>
                 <p className="text-white text-sm font-semibold mb-2">{trend.t}</p>
@@ -360,10 +360,10 @@ export default function TrendsPage() {
                         <span className="text-white font-medium">{lever.t}</span>
                         <span className="text-success-400 font-semibold ml-2 text-xs">{lever.save}</span>
                         {lever.conf && (
-                          <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded border font-medium ${CONF_COLORS[lever.conf] || ''}`}>{lever.conf}</span>
+                          <span className={`ml-2 text-2xs px-1.5 py-0.5 rounded border font-medium ${CONF_COLORS[lever.conf] || ''}`}>{lever.conf}</span>
                         )}
                         <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{lever.note}</p>
-                        {lever.bench && <p className="text-slate-600 text-xs">Benchmark: {lever.bench}</p>}
+                        {lever.bench && <p className="text-slate-500 text-xs">Benchmark: {lever.bench}</p>}
                       </div>
                     </div>
                   ))}
@@ -386,7 +386,7 @@ export default function TrendsPage() {
         </div>
         <div className="flex gap-2 mb-6">
           {([{ id: 'edu', label: 'EDU / Unit Level', count: MFG_LEVERS.edu.items.length }, { id: 'sub', label: 'Sub-Assembly', count: MFG_LEVERS.sub.items.length }, { id: 'part', label: 'Part Level', count: MFG_LEVERS.part.items.length }] as const).map(({ id, label, count }) => (
-            <button key={id} onClick={() => setMfgLevel(id)} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${mfgLevel === id ? 'bg-gold-500/15 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:text-white hover:bg-white/5'}`}>
+            <button key={id} onClick={() => setMfgLevel(id)} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-ui border ${mfgLevel === id ? 'bg-gold-500/15 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:text-white hover:bg-white/5'}`}>
               {label} <span className="text-xs opacity-60">{count}</span>
             </button>
           ))}
@@ -399,7 +399,7 @@ export default function TrendsPage() {
                 <div key={i} className="bg-navy-800/50 border border-white/8 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2">
                   <div><p className="text-white text-sm font-semibold">{item.t}</p><p className="text-slate-400 text-xs mt-1">{item.note}</p></div>
                   <div className="flex sm:flex-col items-start sm:items-end gap-2">
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getLevClass(item.lev)}`}>{item.lev}</span>
+                    <span className={`text-2xs font-semibold px-2 py-0.5 rounded-full border ${getLevClass(item.lev)}`}>{item.lev}</span>
                     <span className="text-gold-400 text-xs font-semibold whitespace-nowrap">{item.save}</span>
                   </div>
                 </div>
@@ -428,7 +428,7 @@ export default function TrendsPage() {
                   <p className="text-slate-400 text-xs mt-1">{item.description}</p>
                 </div>
                 <div className="flex sm:flex-col items-start sm:items-end gap-2">
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getTrendStatusClass(item.status)}`}>{item.status}</span>
+                  <span className={`text-2xs font-semibold px-2 py-0.5 rounded-full border ${getTrendStatusClass(item.status)}`}>{item.status}</span>
                   <span className="text-gold-400 text-xs font-semibold whitespace-nowrap">{item.saving}</span>
                 </div>
               </div>
@@ -455,7 +455,7 @@ export default function TrendsPage() {
                   <p className="text-slate-400 text-xs mt-1">{item.description}</p>
                 </div>
                 <div className="flex sm:flex-col items-start sm:items-end gap-2">
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getTrendStatusClass(item.status)}`}>{item.status}</span>
+                  <span className={`text-2xs font-semibold px-2 py-0.5 rounded-full border ${getTrendStatusClass(item.status)}`}>{item.status}</span>
                   <span className="text-gold-400 text-xs font-semibold whitespace-nowrap">{item.saving}</span>
                 </div>
               </div>
@@ -483,7 +483,7 @@ export default function TrendsPage() {
                   <p className="text-slate-400 text-xs mt-1">{item.note}</p>
                 </div>
                 <div className="flex sm:flex-col items-start sm:items-end gap-2">
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getLevClass(item.lev)}`}>{item.lev}</span>
+                  <span className={`text-2xs font-semibold px-2 py-0.5 rounded-full border ${getLevClass(item.lev)}`}>{item.lev}</span>
                   <span className="text-gold-400 text-xs font-semibold whitespace-nowrap">{item.save}</span>
                 </div>
               </div>
@@ -510,7 +510,7 @@ export default function TrendsPage() {
                 <p className="text-slate-400 text-xs mt-1">{item.note}</p>
               </div>
               <div className="flex sm:flex-col items-start sm:items-end gap-2">
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getLevClass(item.process)}`}>{item.process}</span>
+                <span className={`text-2xs font-semibold px-2 py-0.5 rounded-full border ${getLevClass(item.process)}`}>{item.process}</span>
                 <span className="text-gold-400 text-xs font-semibold whitespace-nowrap">{item.save}</span>
               </div>
             </div>
@@ -581,7 +581,7 @@ export default function TrendsPage() {
               <button
                 key={id}
                 onClick={() => { setDomain(id); setTab('trends'); }}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border ${domain === id ? 'bg-gold-500/15 text-gold-400 border-gold-500/30 shadow-lg' : 'text-slate-400 border-white/10 hover:text-white hover:bg-white/5'}`}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-ui border ${domain === id ? 'bg-gold-500/15 text-gold-400 border-gold-500/30 shadow-lg' : 'text-slate-400 border-white/10 hover:text-white hover:bg-white/5'}`}
               >
                 <Icon size={15} className={domain === id ? 'text-gold-400' : color} />
                 {label}
@@ -628,8 +628,11 @@ export default function TrendsPage() {
                   const pct = itemData.share ?? itemData.pct ?? itemData.value ?? 0;
                   const displayName = itemData.name ?? itemData.label ?? '';
                   return (
-                    <div key={displayName} style={{ width: `${pct}%`, backgroundColor: item.color }} className="flex items-center justify-center text-white text-xs font-bold" title={`${displayName}: ~${pct}%`}>
-                      {pct >= 8 ? `${pct}%` : ''}
+                    <div key={displayName} style={{ width: `${pct}%`, backgroundColor: item.color }} className="flex items-center justify-center text-xs font-bold" title={`${displayName}: ~${pct}%`}>
+                      {/* Label on its own dark pill: the KB colours range from
+                          navy to pastel, and white text failed contrast on the
+                          light ones (3.2:1 measured). */}
+                      {pct >= 8 ? <span className="rounded-md bg-navy-950/70 px-1.5 py-0.5 text-white leading-none">{pct}%</span> : ''}
                     </div>
                   );
                 })}
@@ -656,7 +659,7 @@ export default function TrendsPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-1 py-1">
             {TABS.map(({ id, label, icon: Icon }) => (
-              <button key={id} onClick={() => setTab(id)} className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === id ? 'bg-gold-500/15 text-gold-400 border border-gold-500/30' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+              <button key={id} onClick={() => setTab(id)} className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-ui ${tab === id ? 'bg-gold-500/15 text-gold-400 border border-gold-500/30' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
                 <Icon size={15} />{label}
               </button>
             ))}
@@ -673,7 +676,7 @@ export default function TrendsPage() {
 
       {domain === 'edu' && tab === 'oem' && (
         <div className="max-w-7xl mx-auto px-4 pb-8">
-          <div className="mt-8 border-t border-white/8 pt-5 text-slate-600 text-xs">
+          <div className="mt-8 border-t border-white/8 pt-5 text-slate-500 text-xs">
             Indicative engineering estimates against stated baselines — a prioritisation aid, not supplier quotes.
             Source: EDU Cost Engineer — VAVE &amp; Manufacturing Ideation. Author: Avinash Bhosale, Senior Cost Improvement Engineer (Propulsion).
           </div>
@@ -733,7 +736,7 @@ export default function TrendsPage() {
             <div key={catKey} className="bg-navy-800/40 border border-white/8 rounded-xl overflow-hidden">
               <div className="px-5 py-3 border-b border-white/8 bg-white/2 flex items-center gap-2">
                 <span className="text-white font-semibold text-sm">{cat.label}</span>
-                <span className="text-slate-600 text-xs">({cat.items.length})</span>
+                <span className="text-slate-500 text-xs">({cat.items.length})</span>
               </div>
               <table className="w-full text-sm">
                 <thead>
@@ -759,7 +762,7 @@ export default function TrendsPage() {
                           <span className="text-slate-500 text-xs ml-1">{item.unit}</span>
                         </td>
                         <td className="px-4 py-3 text-center hidden md:table-cell">
-                          <span className={`inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full border ${tierMeta.cls}`}>
+                          <span className={`inline-flex items-center text-2xs font-semibold px-2 py-0.5 rounded-full border ${tierMeta.cls}`}>
                             {tierMeta.label}
                           </span>
                         </td>
@@ -775,7 +778,7 @@ export default function TrendsPage() {
           ))}
         </div>
 
-        <p className="text-slate-600 text-xs mt-4 leading-relaxed">
+        <p className="text-slate-500 text-xs mt-4 leading-relaxed">
           Sources: LME 3-month (base metals, cobalt, magnesium), Argus/MEPS NW-Europe (steel), SMM/Fastmarkets
           (rare earths &amp; battery materials), BloombergNEF (NMC/LFP packs), PlasticsEurope (polymers). USD quotes
           converted at EUR/USD 1.14 (ECB). Baseline as of 3 Jul 2026; the live feed auto-refreshes daily when a

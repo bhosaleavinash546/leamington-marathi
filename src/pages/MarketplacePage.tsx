@@ -15,6 +15,7 @@ import {
 } from '../data/commodity-taxonomy';
 import { classifyIdea, POWERTRAINS, VOLTAGES, type Powertrain, type Voltage } from '../data/idea-classify.mjs';
 import { getAuthToken, authHeader } from '../services/auth';
+import PageHeader from '../components/ui/PageHeader';
 
 interface MarketplaceIdea {
   id: string;
@@ -333,18 +334,16 @@ export default function MarketplacePage() {
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/25 mb-4">
-            <Store size={28} className="text-gold-400" />
-          </div>
-          <h1 className="text-4xl font-black text-white mb-3">Idea Marketplace</h1>
-          <p className="text-slate-400">
-            A curated library of OEM-benchmarked cost ideas, plus your team's own contributions — each labelled by origin, engine-checked where the move is expressible.
-          </p>
-          <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs">
-            <CheckCircle size={11} /> Curated = benchmark/teardown-sourced · Community = submitted &amp; reviewed here
-          </div>
-        </div>
+        <PageHeader
+          tool="marketplace"
+          title="Idea Marketplace"
+          subtitle="A curated library of OEM-benchmarked cost ideas, plus your team's own contributions — each labelled by origin, engine-checked where the move is expressible."
+          actions={
+            <span className="inline-flex items-center gap-2 min-h-[32px] px-3 rounded-full bg-info-500/10 border border-info-500/20 text-info-400 text-xs">
+              <CheckCircle size={11} aria-hidden="true" /> Curated = benchmark/teardown-sourced · Community = submitted &amp; reviewed here
+            </span>
+          }
+        />
 
         {/* Insights from Your Projects */}
         {insights.approvedIdeas.length === 0 ? (
@@ -400,7 +399,7 @@ export default function MarketplacePage() {
                 className={`inline-flex items-center justify-center min-w-[1.25rem] px-1 py-px rounded-full text-xs leading-none ${
                   filterCommodity === grp.key
                     ? 'bg-white/20 text-current'
-                    : 'bg-white/5 text-slate-600'
+                    : 'bg-white/5 text-slate-500'
                 }`}
               >
                 {commodityCounts[grp.key] ?? 0}
@@ -457,7 +456,7 @@ export default function MarketplacePage() {
                     title={t.totalSaving > 0 ? `~£${(t.totalSaving / 1e6).toFixed(1)}M combined annual saving` : undefined}
                     className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${active ? 'bg-gold-500/20 border-gold-500/40 text-gold-300' : 'bg-white/5 border-white/10 text-slate-400 hover:border-white/25 hover:text-white'}`}
                   >
-                    {t.label} <span className="text-slate-600">({t.count})</span>
+                    {t.label} <span className="text-slate-500">({t.count})</span>
                   </button>
                 );
               })}
@@ -678,7 +677,7 @@ export default function MarketplacePage() {
                 <button
                   onClick={() => handleSubmit(true)}
                   disabled={submitting}
-                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-all"
+                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-ui"
                 >
                   {submitting ? 'Submitting…' : 'Submit anyway — mine is different'}
                 </button>
@@ -686,7 +685,7 @@ export default function MarketplacePage() {
                 <button
                   onClick={() => handleSubmit()}
                   disabled={submitting || !submitForm.title || !submitForm.description}
-                  className="flex-1 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-all shadow-glow-gold"
+                  className="flex-1 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-ui shadow-glow-gold"
                 >
                   {submitting ? 'Submitting…' : 'Submit for Review'}
                 </button>
@@ -754,12 +753,12 @@ export default function MarketplacePage() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(i, 12) * 0.03 }}
-                  className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-gold-500/25 transition-all"
+                  className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-gold-500/25 transition-ui"
                 >
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                        <h3 className="text-white font-semibold text-base leading-tight">{idea.title}</h3>
+                        <h2 className="text-white font-semibold text-base leading-tight">{idea.title}</h2>
                         {/* "Verified" means REVIEW-APPROVED for the library, not
                             that the saving was measured. The PDF export has
                             always said so (marketplace-report.mjs); the badge
@@ -802,7 +801,7 @@ export default function MarketplacePage() {
                             <span className={`px-1.5 py-0.5 rounded text-xs border ${COLOR_BADGE[commodity.color]}`}>
                               {commodity.label}
                             </span>
-                            <ChevronRight size={10} className="text-slate-600 flex-shrink-0" />
+                            <ChevronRight size={10} className="text-slate-500 flex-shrink-0" />
                           </>
                         )}
                         <span className="text-gold-500 text-xs">{idea.system}</span>

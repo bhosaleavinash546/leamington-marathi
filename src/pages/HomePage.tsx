@@ -131,7 +131,7 @@ function ProductPanel() {
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}
         className="hidden lg:block absolute -right-4 -bottom-5 rounded-xl bg-navy-800 border border-white/10 px-3 py-2 shadow-xl shadow-black/50"
       >
-        <div className="text-[10px] uppercase tracking-wider text-slate-500">Confidence P10–P90</div>
+        <div className="text-2xs uppercase tracking-wider text-slate-500">Confidence P10–P90</div>
         <div className="text-emerald-400 font-bold text-sm">£38.4 – £47.1</div>
       </motion.div>
     </div>
@@ -189,10 +189,10 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
               className="mt-8 flex flex-col sm:flex-row gap-3.5"
             >
-              <Link to="/analyze" className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-all hover:scale-[1.03] shadow-xl shadow-gold-500/25">
+              <Link to="/analyze" className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-ui hover:-translate-y-0.5 shadow-xl shadow-gold-500/25">
                 Start a free analysis <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link to="/trends" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 border border-white/12 text-slate-200 hover:bg-white/10 font-semibold transition-all">
+              <Link to="/trends" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 border border-white/12 text-slate-200 hover:bg-white/10 font-semibold transition-ui">
                 <PlayCircle size={18} /> Watch 2-min demo
               </Link>
             </motion.div>
@@ -230,7 +230,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[200px]">
           {BENTO.map((t, i) => (
             <Reveal key={t.title} delay={i * 0.06} className={t.span ? 'md:col-span-2' : ''}>
-              <div className="h-full rounded-2xl bg-navy-900 border border-white/10 p-6 flex flex-col hover:border-gold-500/25 hover:-translate-y-0.5 transition-all">
+              <div className="h-full rounded-2xl bg-navy-900 border border-white/10 p-6 flex flex-col hover:border-gold-500/25 hover:-translate-y-0.5 transition-ui">
                 <div className="w-9 h-9 rounded-[10px] bg-gold-500/12 text-gold-400 flex items-center justify-center mb-3.5"><t.icon size={18} /></div>
                 <h3 className="text-white font-semibold text-[16.5px] tracking-[-0.01em] mb-1.5">{t.title}</h3>
                 <p className="text-slate-400 text-[13.5px] leading-relaxed">{t.desc}</p>
@@ -258,13 +258,13 @@ export default function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {AUTOMOTIVE_SYSTEMS.map((s, i) => (
               <Reveal key={s.id} delay={i * 0.02}>
-                <Link to={`/analyze?system=${s.id}`} className="group flex items-center gap-3 p-3.5 rounded-xl bg-navy-900 border border-white/10 hover:border-gold-500/30 hover:-translate-y-0.5 transition-all">
+                <Link to={`/analyze?system=${s.id}`} className="group flex items-center gap-3 p-3.5 rounded-xl bg-navy-900 border border-white/10 hover:border-gold-500/30 hover:-translate-y-0.5 transition-ui">
                   <span className={`w-9 h-9 rounded-lg bg-gradient-to-br ${s.color} flex items-center justify-center text-base shrink-0`}>{s.icon}</span>
                   <span className="min-w-0">
                     <span className="block text-white text-[13.5px] font-semibold leading-tight truncate">{s.name}</span>
                     <span className="block text-slate-500 text-[11.5px]">{s.subassemblies.length} subassemblies</span>
                   </span>
-                  <ChevronRight size={15} className="ml-auto text-slate-600 group-hover:text-gold-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                  <ChevronRight size={15} className="ml-auto text-slate-500 group-hover:text-gold-400 group-hover:translate-x-0.5 transition-ui shrink-0" />
                 </Link>
               </Reveal>
             ))}
@@ -366,10 +366,10 @@ export default function HomePage() {
             <h2 className="text-[2.4rem] font-semibold text-white tracking-[-0.02em]">Put whole-vehicle cost intelligence to work</h2>
             <p className="mt-3.5 text-lg text-slate-300">Run a live pilot on one part family this week{ideaCount ? ` — start from ${ideaCount.toLocaleString()} benchmarked ideas` : ''}.</p>
             <div className="mt-7 flex flex-col sm:flex-row gap-3.5 justify-center">
-              <Link to="/analyze" className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-all hover:scale-[1.03] shadow-xl shadow-gold-500/25">
+              <Link to="/analyze" className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-ui hover:-translate-y-0.5 shadow-xl shadow-gold-500/25">
                 Start a free analysis <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link to="/trends" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 border border-white/12 text-slate-200 hover:bg-white/10 font-semibold transition-all">
+              <Link to="/trends" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 border border-white/12 text-slate-200 hover:bg-white/10 font-semibold transition-ui">
                 <TrendingUp size={18} /> Explore trends
               </Link>
             </div>

@@ -136,7 +136,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
                 ))}
               </div>
             </div>
-          ) : <p className="text-slate-600 text-sm">No vehicle data yet.</p>}
+          ) : <p className="text-slate-500 text-sm">No vehicle data yet.</p>}
         </div>
       </div>
 
@@ -156,7 +156,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
                 <Bar dataKey="saving" fill="#f59e0b" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          ) : <p className="text-slate-600 text-sm">No commodity data yet.</p>}
+          ) : <p className="text-slate-500 text-sm">No commodity data yet.</p>}
         </div>
 
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1 shadow-card">
@@ -174,7 +174,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
                 <Bar dataKey="saving" fill="#60a5fa" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          ) : <p className="text-slate-600 text-sm">No timeline data yet.</p>}
+          ) : <p className="text-slate-500 text-sm">No timeline data yet.</p>}
         </div>
 
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1 shadow-card">
@@ -182,16 +182,16 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
           <div className="space-y-2">
             {kpi.topIdeas.slice(0, 6).map((idea, i) => (
               <div key={idea.id} className="flex items-center gap-2.5">
-                <span className="text-slate-600 text-xs w-4 flex-shrink-0">{i + 1}</span>
+                <span className="text-slate-500 text-xs w-4 flex-shrink-0">{i + 1}</span>
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${GATE_DOT[idea.gate] || 'bg-slate-500'}`} />
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-xs font-medium truncate">{idea.ideaTitle}</p>
-                  <p className="text-slate-600 text-xs">{idea.ideaNumber}</p>
+                  <p className="text-slate-500 text-xs">{idea.ideaNumber}</p>
                 </div>
                 <span className="text-gold-400 text-xs font-bold flex-shrink-0">{fmtM(idea.totalAnnualSaving)}</span>
               </div>
             ))}
-            {kpi.topIdeas.length === 0 && <p className="text-slate-600 text-sm">No ideas yet.</p>}
+            {kpi.topIdeas.length === 0 && <p className="text-slate-500 text-sm">No ideas yet.</p>}
           </div>
         </div>
       </div>
@@ -524,9 +524,9 @@ export default function DashboardPage() {
                       </div>
                       <div className="text-right shrink-0">
                         <div className="text-emerald-400 text-sm font-bold">{fmtM(idea.totalAnnualSaving)}/yr</div>
-                        <div className="text-slate-600 text-[10px]">estimated</div>
+                        <div className="text-slate-500 text-2xs">estimated</div>
                       </div>
-                      <ChevronRight size={15} className="text-slate-600 group-hover:text-gold-400 transition-colors shrink-0" />
+                      <ChevronRight size={15} className="text-slate-500 group-hover:text-gold-400 transition-colors shrink-0" />
                     </Link>
                   ))}
                 </div>
@@ -562,7 +562,7 @@ export default function DashboardPage() {
                       <button onClick={r.onOpen} className="block w-full text-left">
                         <p className="text-white text-[13.5px] font-semibold truncate">{r.title}</p>
                         <p className="text-slate-500 text-xs truncate mt-0.5">{r.sub}</p>
-                        <p className="text-slate-600 text-[11px] mt-2">{r.meta}</p>
+                        <p className="text-slate-500 text-[11px] mt-2">{r.meta}</p>
                       </button>
                       <div className="mt-2.5 pt-2.5 border-t border-white/6 flex items-center gap-3">
                         <button onClick={r.onOpen} className="text-gold-400 hover:text-gold-300 text-xs font-semibold">Open →</button>
@@ -614,17 +614,17 @@ export default function DashboardPage() {
                       <p className={`text-[13px] font-semibold ${doneSteps[s.id] ? 'text-slate-500 line-through' : 'text-white'}`}>{s.label}</p>
                       <p className="text-slate-500 text-xs truncate">{s.sub}</p>
                     </div>
-                    <ChevronRight size={14} className="ml-auto text-slate-600 group-hover:text-gold-400 transition-colors shrink-0" />
+                    <ChevronRight size={14} className="ml-auto text-slate-500 group-hover:text-gold-400 transition-colors shrink-0" />
                   </Link>
                 ))}
               </div>
               <div className="min-w-0 rounded-2xl bg-navy-900 border border-gold-500/20 p-5">
                 <ShieldCheck size={20} className="text-gold-400 mb-3" />
-                <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500 mb-2">Why teams use BrainSpark</div>
+                <div className="text-2xs font-semibold uppercase tracking-[0.06em] text-slate-500 mb-2">How it works</div>
                 <p className="text-[13px] text-slate-300 leading-relaxed">
-                  AI proposes cost-reduction ideas.<br />
-                  The deterministic engine verifies every number.<br />
-                  <span className="text-gold-300 font-semibold">You get savings you can defend.</span>
+                  The AI proposes and explains.<br />
+                  The deterministic engine computes every number.<br />
+                  <span className="text-gold-300 font-semibold">What it cannot verify, it says so.</span>
                 </p>
               </div>
             </motion.div>
@@ -635,7 +635,7 @@ export default function DashboardPage() {
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {TOOL_GROUPS.map(group => (
                   <div key={group.id}>
-                    <div className="pb-1.5 text-[10px] font-bold uppercase tracking-[0.09em] text-slate-600">{group.label}</div>
+                    <div className="pb-1.5 text-2xs font-bold uppercase tracking-[0.09em] text-slate-500">{group.label}</div>
                     <div className="space-y-2">
                       {group.tools.slice(0, 3).map(t => (
                         <Link

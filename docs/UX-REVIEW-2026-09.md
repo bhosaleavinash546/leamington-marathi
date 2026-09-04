@@ -1,0 +1,146 @@
+# UI, UX and motion review — 4 September 2026
+
+A review of the whole product surface — every page at desktop and mobile
+width, every hover, focus, loading, empty and error state, the motion
+vocabulary, the type scale, the icon set and the colour system — done the way
+a design lead would do it before a public launch: measure first, then judge.
+
+**Basis legend.** MEASURED = captured from the production build in Chromium
+(58 page captures: 29 routes × 2 viewports; axe-core on every one; computed
+style probes for hover, focus, font size, tap target and overlay geometry).
+CODE = counted in the source. JUDGED = a design opinion, stated as one.
+
+## 1. Where it stood (before)
+
+| Dimension | Score /10 | Evidence |
+|---|---|---|
+| Visual language | 5 | Three competing page-header patterns; 12 distinct `h1` sizes; 45 hex literals outside the token system; 16 one-off gradient hues for categories. CODE |
+| Motion | 6 | A genuinely good motion system exists (`components/dfm/motion.ts`: one curve, three durations, reduced-motion aware) — adopted by 2 of 36 pages. Elsewhere 14 durations, 7 easings, 76 `transition-all`, 17 bouncy `hover:scale`. CODE |
+| Interaction states | 7 | Hover changes on 58/58 probed controls; a global `:focus-visible` ring measured on every page. Disabled primary reads as broken (gold at 50%, no reason). MEASURED |
+| Accessibility | 5 | axe **critical** on 28/29 mobile pages (unnamed hamburger button) and 6 desktop pages (unlabelled selects and file inputs); **serious** contrast on 4 pages (2.68:1 to 3.78:1). MEASURED |
+| Typography | 4 | 10 px text rendered on **every** page (shell labels); 121 literal sub-11 px sizes in source; 36 distinct sizes. MEASURED + CODE |
+| Touch / density | 5 | 34–55 controls under 44 px per desktop page, 10–31 per mobile page, 217 on the mobile marketplace. MEASURED |
+| Layout & overlays | 4 | Chat FAB overlaps the mobile bottom nav by 33 px; onboarding popover collides with the FAB on desktop and covers 320×255 px of a 390 px phone. MEASURED |
+| States | 5 | Skeleton loading on 2 pages, spinner-only on 10; empty states are a bare `h3` + sentence and break heading order on 3 pages. CODE + MEASURED |
+| Information architecture | 8 | One nav registry drives sidebar, palette, mobile launcher and dashboard — the best structural decision in the front end. CODE |
+| Performance feel | 6 | 0 console errors, 0 page errors on 58 captures; marketplace renders 2,994 nodes / 18,075 px in one pass. MEASURED |
+| **Overall** | **5.5** | A strong engine with a front end that grew page by page. |
+
+## 2. Findings register
+
+Severity: S1 = a user hits it on the demo path or it blocks a task; S2 =
+visible to a professional audience; S3 = polish.
+
+| ID | Sev | Finding | Basis |
+|---|---|---|---|
+| U-1 | S1 | **Chat FAB sits on the mobile bottom nav.** FAB at `bottom-6` (24 px), nav is 57 px tall — the FAB covers 33 px of the third tab on every page. | MEASURED (fixed-element probe) |
+| U-2 | S1 | **Onboarding popover collides with the FAB** (popover right 16 / bottom 24, 320×255; FAB right 24 / bottom 24, 56×56 — the FAB lands on the popover's corner) and on a phone the popover hides the dashboard grid. | MEASURED |
+| U-3 | S1 | **Mobile menu button has no accessible name** — axe critical on 28 pages. A screen-reader user cannot open the navigation. | MEASURED |
+| U-4 | S1 | **Unlabelled form controls**: two `select`s on Pipeline, hidden file inputs on CAD Diff / BOM / Team — axe critical. | MEASURED |
+| U-5 | S2 | **Three page-header languages.** (a) Prism/DFM masthead — icon tile, display title, one-line promise, mode chips; (b) centred marketing hero with `text-4xl font-black` on 11 tool pages; (c) compact table header on 5 pages. Same product, three products. | CODE (12 `h1` variants) |
+| U-6 | S2 | **Motion is per-page, not per-product.** The house system is adopted by Prism and DFM only; `PageTransition` uses a fourth easing; CSS `hover:scale` and `animate-float` ignore reduced-motion (only framer-motion and the toast honour it). | CODE |
+| U-7 | S2 | **10 px text on every page.** Sidebar group labels, the ⌘K badge and palette hints are `text-[10px]`; Innovate renders 26 sub-11 px elements, Trends 32, Prism 18. | MEASURED |
+| U-8 | S2 | **Contrast failures**: Idea Studio caption 3.62:1, Trends category tiles 3.2:1 and 3.72:1 (white on a pastel gradient), Server settings 3.21:1, Mobile settings 2.68:1. `slate-600` is used as body text on navy. | MEASURED |
+| U-9 | S2 | **Small targets.** Chips at `py-1` are 26 px tall; mode toggles, filter pills and card actions are all under 44 px on touch. | MEASURED |
+| U-10 | S2 | **Marketing footer inside the app.** Author bio, "AI-Powered Idea Generation Platform" and a **Sign In** link render under every authenticated page. | CODE `Footer.tsx` |
+| U-11 | S2 | **Three accent systems** — gold (brand), teal (engines), then 16 one-off gradient hues for categories — plus a light theme implemented as 71 `!important` overrides. | CODE |
+| U-12 | S2 | **Loading / empty / error are not designed states.** Spinner-only on 10 pages; empty state = `h3` + sentence (breaks heading order on Pipeline, VAVE, Marketplace); `role="alert"` on 5 surfaces. | CODE + MEASURED |
+| U-13 | S2 | **Marketplace renders everything at once**: 2,994 nodes, 18,075 px tall, 243 sub-44 px targets. | MEASURED |
+| U-14 | S3 | Disabled primary = gold at 50 % with no reason shown; reads as broken rather than "not yet". | JUDGED, screenshot |
+| U-15 | S3 | Logo `alt="BrainSpark"` beside the word "BrainSpark" (axe minor, every page); onboarding popover outside any landmark (axe moderate ×4 per page). | MEASURED |
+| U-16 | S3 | No `Input` / `Select` / `Card` primitives — ~230 inputs styled inline, so a focus or radius change is a 230-place edit. | CODE |
+| U-17 | S3 | Icon sizes range 10–28 across 12 values; stroke width varies by page. | CODE |
+| U-18 | S3 | Analyze wizard step pills clip at 390 px. | Screenshot |
+
+**What is already right, and becomes the standard:** the Prism / DFM
+masthead and its motion language; the nav registry; the global keyboard focus
+ring; hover feedback on every control; lucide as the single icon family; RGB
+channel tokens so every utility follows the theme.
+
+## 3. Design direction — *an instrument, not a brochure*
+
+The people who use this tool argue about money in front of directors. The
+interface should feel like a measuring instrument: quiet ground, one accent
+for action, a second for measurement, motion that only ever explains state.
+
+1. **One shell, one masthead.** A `PageHeader` primitive carries the Prism
+   pattern to every page — icon tile, eyebrow (the tool group), display
+   title, one-line promise, an actions slot. Left-aligned, 28–36 px, never a
+   centred hero.
+2. **One motion system.** `src/lib/motion.ts` is the promoted house system;
+   its curve and durations are also exposed as CSS custom properties so
+   Tailwind transitions use the same numbers. `transition-all` is replaced by
+   named properties; `hover:scale` by a 1 px lift and a shadow; a global
+   reduced-motion rule collapses every CSS transition and animation.
+3. **One type scale, floor 11 px.** 11 / 12 / 13 / 14 / 16 / 18 / 22 / 28 / 36.
+   `text-2xs` is the 11 px token; 9, 10 and 10.5 px are retired.
+4. **Colour with jobs.** Gold = the user's action. Teal = the engine's
+   measurement. Eight categorical tokens (`--cat-1…8`) for domain colour so
+   category tiles stop inventing hues. `slate-600` is a border colour, never
+   text.
+5. **Targets and states.** 44 px on touch, 32 px on pointer with 8 px gaps.
+   Every control has hover, focus-visible, active, disabled-with-reason.
+   `Skeleton`, `EmptyState` and `ErrorState` primitives replace spinners and
+   bare headings.
+6. **A stacking order, written down.** `--z-nav 40 · --z-fab 45 · --z-popover 50 · --z-modal 60`.
+   The FAB clears the mobile nav; the onboarding card docks left on desktop and
+   becomes a dismissible sheet on mobile.
+7. **The shell ends where the app ends.** The footer becomes a one-line status
+   bar: version, help, privacy, terms. No bio, no marketing, no Sign In.
+
+## 4. Implementation
+
+**Wave 1 — shipped in this change.** U-1 to U-12, U-14, U-15, U-17 and the
+primitives from U-16: motion promotion with CSS tokens and a global
+reduced-motion rule; `PageHeader` and migration of every hero page; z-index
+scale and overlay fixes; accessible names on the menu button, selects and
+file inputs; contrast fixes; type floor at 11 px; `Button` press and
+disabled-with-reason; `Skeleton` / `EmptyState` / `ErrorState`; `Input`,
+`Select`, `Card`; footer to status bar; categorical tokens.
+
+**Wave 2 — next.** Adopt `Input`/`Select`/`Card` across every form (U-16);
+virtualise the marketplace list (U-13); light theme via token remap instead
+of `!important` (U-11); Analyze wizard step rail on mobile (U-18).
+
+**Wave 3 — the world-class layer.** Promote `TickNumber` and `ScoreRing` to
+every engine result so numbers are *measured* on screen everywhere, not only
+in DFM; a live stage list for the 2–6 minute generation run (Prism review
+P-7); command-palette previews; keyboard shortcuts on the results grid.
+
+## 5. Where it stands (after)
+
+The same 58 captures and probes, re-run on the rebuilt production bundle.
+
+| Measure | Before | After | Basis |
+|---|---|---|---|
+| axe critical / serious, mobile | critical on 28 of 28 pages | **0 on 28 of 28** | MEASURED |
+| axe critical / serious, desktop | critical on 6 pages, serious on 4 | **0** | MEASURED |
+| Smallest rendered font | 10 px on 56 of 56 captures | **11 px on 56 of 56** | MEASURED |
+| Sub-11 px elements per page | 6–32 | **0** | MEASURED |
+| Overlay collisions (FAB × tab bar, FAB × onboarding) | 2, on every page | **0** | MEASURED (fixed-element probe, screenshots) |
+| Controls under 44 px, desktop / mobile | 34–55 / 9–31 | 30–51 / 4–26 | MEASURED — desktop counts are against the touch floor; the pointer floor is 32 px |
+| `transition-all` / `hover:scale` / sub-11 px utilities in source | 76 / 17 / 121 | **0 / 0 / 0** | CODE, now gated |
+| Default transition | 150 ms, Tailwind's curve | **160 ms, house curve**; 0.01 ms under reduced motion | MEASURED (computed style) |
+| Page-header patterns | 3, 12 `h1` sizes | **1** (`PageHeader` on 12 pages + the two studios; 5 compact table pages remain) | CODE |
+| Motion system adoption | 2 of 36 pages | every CSS transition + `PageTransition` + 2 studios | CODE |
+| Console / page errors on 56 captures | 0 | 0 | MEASURED |
+| Unit / e2e | 1,248 / pass | **1,253** (design-system gate added) / pass, axe 0 serious or critical on 8 pages | MEASURED |
+
+| Dimension | Before | After | What moved it |
+|---|---|---|---|
+| Visual language | 5 | 7.5 | One masthead; categorical tokens exist; status-bar footer. Compact table pages not yet migrated. |
+| Motion | 6 | 8.5 | One curve everywhere by default; reduced motion honoured globally; press feedback on `Button`. |
+| Interaction states | 7 | 8 | `disabledReason`, 32/40/48 px button heights, chip minimums on the migrated headers. |
+| Accessibility | 5 | 8.5 | Zero axe critical/serious on 56 captures; named menu, selects, file inputs; landmarks on overlays. |
+| Typography | 4 | 8 | Floor at 11 px, measured on every page; still 36 sizes in source. |
+| Touch / density | 5 | 6 | Shell targets larger; the long tail is per-page chips (Wave 2). |
+| Layout & overlays | 4 | 9 | Stacking scale; no collisions; onboarding is a chip / pill. |
+| States | 5 | 7 | `Skeleton` / `EmptyState` / `ErrorState` exist and replace the three heading-order offenders; spinner pages remain. |
+| Information architecture | 8 | 8 | Unchanged; `PageHeader` now reads from it. |
+| Performance feel | 6 | 6 | Marketplace still renders in one pass (Wave 2). |
+| **Overall** | **5.5** | **7.7** | |
+
+What a 9 needs, in order: the form primitives adopted everywhere (one focus
+treatment, one radius, 44 px on touch), the marketplace virtualised, and the
+Wave 3 layer — measured numbers ticking in on every engine result, a live
+stage list for the generation run.

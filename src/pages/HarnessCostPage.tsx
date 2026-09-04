@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { Cable, Loader2 } from 'lucide-react';
 import { getAuthToken } from '../services/auth';
+import PageHeader from '../components/ui/PageHeader';
 
 const REGIONS = ['Mexico', 'Czech Republic', 'India', 'China', 'Spain', 'Germany', 'UK', 'USA', 'Korea'];
 
@@ -74,13 +75,11 @@ export default function HarnessCostPage() {
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-500/15 border border-teal-500/25 mb-4">
-            <Cable size={28} className="text-teal-400" />
-          </div>
-          <h1 className="text-4xl font-black text-white mb-3">Wiring Harness Cost</h1>
-          <p className="text-slate-400">Deterministic bottom-up piece price — <span className="text-teal-300">copper × circuits × connectors × assembly minutes</span>. No AI in the numbers.</p>
-        </div>
+        <PageHeader
+          tool="harness"
+          title="Wiring Harness Cost"
+          subtitle={<>Deterministic bottom-up piece price — <span className="text-teal-300">copper × circuits × connectors × assembly minutes</span>. No AI in the numbers.</>}
+        />
 
       <div className="grid lg:grid-cols-[340px_1fr] gap-6 mt-6">
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 space-y-4">

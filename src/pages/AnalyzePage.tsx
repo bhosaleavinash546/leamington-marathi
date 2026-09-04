@@ -16,6 +16,7 @@ import { parseCadFile, CadGeometry, formatFileSize } from '../services/cad-parse
 import CadViewer3D from '../components/CadViewer3D';
 import { AnalysisConfig, AnalysisResult, BodyStyle, PlantRegion, Currency } from '../types';
 import { getAuthToken } from '../services/auth';
+import PageHeader from '../components/ui/PageHeader';
 
 interface ProgressStep {
   id: string;
@@ -382,18 +383,21 @@ export default function AnalyzePage() {
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-black text-white mb-3">Cost Reduction Analysis</h1>
-          <p className="text-slate-400">Chief Engineer AI — 360° expertise with live internet intelligence</p>
-        </div>
+        <PageHeader
+          tool="analyze"
+          title="Cost Reduction Analysis"
+          subtitle="Pick a vehicle system, describe the part, and get engine-checked cost-reduction ideas with the arithmetic shown."
+        />
 
         {/* Step indicators */}
-        <div className="flex items-center justify-center mb-10 gap-0">
+        {/* On a phone the rail scrolls rather than clips (the review saw the
+            first and last steps cut off at 390 px). */}
+        <div className="flex items-center justify-start sm:justify-center mb-8 gap-0 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 [scrollbar-width:none]">
           {STEPS.map((s, i) => (
             <div key={s.label} className="flex items-center">
               <button
                 onClick={() => i < step && setStep(i)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-ui ${
                   i === step ? 'bg-gold-500 text-navy-950'
                   : i < step ? 'bg-success-500/20 text-success-400 cursor-pointer hover:bg-success-500/30'
                   : 'bg-white/5 text-slate-500'
@@ -454,7 +458,7 @@ export default function AnalyzePage() {
                 <button
                   disabled={!systemId}
                   onClick={() => setStep(1)}
-                  className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-bold transition-all shadow-glow-gold"
+                  className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-bold transition-ui shadow-glow-gold"
                 >
                   Continue →
                 </button>
@@ -611,7 +615,7 @@ export default function AnalyzePage() {
                       </div>
                     </div>
                   </div>
-                  <p className="text-slate-600 text-xs mt-1.5 flex items-center gap-1">
+                  <p className="text-slate-500 text-xs mt-1.5 flex items-center gap-1">
                     <TrendingUp size={10} /> These parameters drive AI cost calculations — volume affects annual savings, region sets labour rate benchmarks.
                   </p>
                 </div>
@@ -636,7 +640,7 @@ export default function AnalyzePage() {
                       {voiceActive ? <MicOff size={13} /> : <Mic size={13} />}
                     </button>
                   </div>
-                  <p className="text-slate-600 text-xs mt-1">The more context you provide, the more precise the AI's commercial quantification.</p>
+                  <p className="text-slate-500 text-xs mt-1">The more context you provide, the more precise the AI's commercial quantification.</p>
                 </div>
 
                 <div className="flex gap-3">
@@ -644,7 +648,7 @@ export default function AnalyzePage() {
                   <button
                     disabled={!subassemblyId}
                     onClick={() => setStep(2)}
-                    className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-bold transition-all shadow-glow-gold"
+                    className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-bold transition-ui shadow-glow-gold"
                   >Continue →</button>
                 </div>
               </div>
@@ -667,13 +671,13 @@ export default function AnalyzePage() {
 
                 <div
                   {...getRootProps()}
-                  className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all ${
+                  className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-ui ${
                     isDragActive ? 'border-gold-400 bg-gold-500/5'
                     : cadFile ? 'border-success-500 bg-success-500/5'
                     : 'border-white/20 hover:border-white/40 bg-white/3'
                   }`}
                 >
-                  <input {...getInputProps()} />
+                  <input {...getInputProps({ 'aria-label': 'Upload a CAD file' })} />
                   {cadFile ? (
                     <div className="space-y-3">
                       <div className="flex items-center justify-center gap-3">
@@ -726,7 +730,7 @@ export default function AnalyzePage() {
                       <Upload size={28} className="text-slate-500 mx-auto mb-3" />
                       <p className="text-slate-300 font-medium">{isDragActive ? 'Drop file here...' : 'Drag & drop CAD file'}</p>
                       <p className="text-slate-500 text-sm mt-1">STL · STEP · DXF · PNG · JPG — geometry auto-extracted</p>
-                      <p className="text-slate-600 text-xs mt-2">Click to browse · Skip to continue without CAD</p>
+                      <p className="text-slate-500 text-xs mt-2">Click to browse · Skip to continue without CAD</p>
                     </div>
                   )}
                 </div>
@@ -758,7 +762,7 @@ export default function AnalyzePage() {
                       <button onClick={() => setTeardownFile(null)} className="text-slate-500 hover:text-red-400 transition-colors"><X size={14} /></button>
                     </div>
                   ) : (
-                    <label className="flex items-center gap-3 p-3 rounded-lg border border-dashed border-purple-500/25 cursor-pointer hover:border-purple-500/40 hover:bg-purple-500/5 transition-all">
+                    <label className="flex items-center gap-3 p-3 rounded-lg border border-dashed border-purple-500/25 cursor-pointer hover:border-purple-500/40 hover:bg-purple-500/5 transition-ui">
                       <input type="file" accept="image/*" className="hidden" onChange={e => setTeardownFile(e.target.files?.[0] || null)} />
                       <Upload size={14} className="text-purple-400" />
                       <span className="text-slate-400 text-sm">Upload competitor part photo (JPG, PNG)</span>
@@ -784,7 +788,7 @@ export default function AnalyzePage() {
                       <button onClick={() => setDfmeaFile(null)} className="text-slate-500 hover:text-danger-400 transition-colors"><X size={14} /></button>
                     </div>
                   ) : (
-                    <label className="flex items-center gap-3 p-3 rounded-lg border border-dashed border-danger-500/25 cursor-pointer hover:border-danger-500/40 hover:bg-danger-500/5 transition-all">
+                    <label className="flex items-center gap-3 p-3 rounded-lg border border-dashed border-danger-500/25 cursor-pointer hover:border-danger-500/40 hover:bg-danger-500/5 transition-ui">
                       <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={async e => {
                       const file = e.target.files?.[0] || null;
                       setDfmeaFile(file);
@@ -829,7 +833,7 @@ export default function AnalyzePage() {
 
                 <div className="flex gap-3">
                   <button onClick={() => setStep(1)} className="flex-1 py-3 rounded-xl border border-white/15 text-slate-300 hover:text-white font-medium transition-colors">← Back</button>
-                  <button onClick={() => setStep(3)} className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold transition-all shadow-glow-gold">Continue →</button>
+                  <button onClick={() => setStep(3)} className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold transition-ui shadow-glow-gold">Continue →</button>
                 </div>
               </div>
             </motion.div>
@@ -888,7 +892,7 @@ export default function AnalyzePage() {
                       <p className="text-slate-400 text-xs">The AI will search the web for current material costs, OEM benchmarks, technology trends, and regulatory data before generating ideas.</p>
                       <div>
                         <label className="block text-xs font-medium text-slate-400 mb-1.5">
-                          Brave Search API Key <span className="text-slate-600">(optional — uses DuckDuckGo free if blank)</span>
+                          Brave Search API Key <span className="text-slate-500">(optional — uses DuckDuckGo free if blank)</span>
                         </label>
                         <input
                           type="password"
@@ -972,8 +976,8 @@ export default function AnalyzePage() {
                     </button>
                   </div>
                   <div className="flex items-center gap-1.5 mt-1.5">
-                    <Shield size={11} className="text-slate-600" />
-                    <p className="text-slate-600 text-xs">Key stored locally in your browser. Never sent anywhere except Anthropic's API.</p>
+                    <Shield size={11} className="text-slate-500" />
+                    <p className="text-slate-500 text-xs">Key stored locally in your browser. Never sent anywhere except Anthropic's API.</p>
                   </div>
                 </div>
 
@@ -997,7 +1001,7 @@ export default function AnalyzePage() {
                   <button
                     disabled={!apiKey.trim() || loading}
                     onClick={handleGenerate}
-                    className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-bold flex items-center justify-center gap-2 transition-all shadow-glow-gold"
+                    className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-bold flex items-center justify-center gap-2 transition-ui shadow-glow-gold"
                   >
                     {loading ? <><ButtonSpinner size={18} /> Analysing…</> : <><Zap size={18} /> Generate Ideas</>}
                   </button>
@@ -1009,7 +1013,7 @@ export default function AnalyzePage() {
                     <div className="flex items-center gap-2 mb-3">
                       <ButtonSpinner size={14} />
                       <span className="text-gold-400 font-medium text-sm">Analysis in progress…</span>
-                      <span className="text-slate-600 text-xs ml-auto">{enableSearch ? '30–60s' : '15–25s'}</span>
+                      <span className="text-slate-500 text-xs ml-auto">{enableSearch ? '30–60s' : '15–25s'}</span>
                     </div>
                     {progressSteps.length === 0 ? (
                       <div className="h-1 bg-white/5 rounded-full overflow-hidden">
@@ -1022,16 +1026,16 @@ export default function AnalyzePage() {
                             <span className={`flex-shrink-0 mt-0.5 ${
                               step.status === 'done'  ? 'text-success-400' :
                               step.status === 'active' ? 'text-gold-400' :
-                              step.status === 'error'  ? 'text-danger-400' : 'text-slate-600'
+                              step.status === 'error'  ? 'text-danger-400' : 'text-slate-500'
                             }`}>
                               {step.status === 'done' ? '✓' : step.status === 'active' ? '⟳' : step.status === 'error' ? '✕' : '○'}
                             </span>
                             <div className="flex-1 min-w-0">
-                              <span className={step.status === 'done' ? 'text-slate-400' : step.status === 'active' ? 'text-white' : 'text-slate-600'}>
+                              <span className={step.status === 'done' ? 'text-slate-400' : step.status === 'active' ? 'text-white' : 'text-slate-500'}>
                                 {step.label}
                               </span>
                               {step.detail && (
-                                <span className="text-slate-600 ml-1">({step.detail})</span>
+                                <span className="text-slate-500 ml-1">({step.detail})</span>
                               )}
                             </div>
                           </div>

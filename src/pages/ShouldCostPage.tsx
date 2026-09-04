@@ -6,6 +6,7 @@ import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { markOnboardingStep } from '../components/OnboardingChecklist';
 import { CURRENCIES, COST_COMPONENTS, FALLBACK_MATERIALS, FALLBACK_PROCESSES, FALLBACK_REGIONS } from '../constants/costing';
+import PageHeader from '../components/ui/PageHeader';
 
 interface CostComponent { value: number; pct: number; }
 interface ShouldCostResult {
@@ -265,17 +266,15 @@ export default function ShouldCostPage() {
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-500/15 border border-teal-500/25 mb-4">
-            <Calculator size={28} className="text-teal-400" />
-          </div>
-          <h1 className="text-4xl font-black text-white mb-3">Should-Cost Engine</h1>
-          <p className="text-slate-400">Deterministic bottom-up cost modelling — <span className="text-teal-300">rate × time + mass × price</span>, computed in-engine, not guessed.</p>
-          <div className="flex items-center justify-center gap-3 mt-3">
-            {libraryCustom && <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/25"><Database size={11} /> Using your company rate library</span>}
-            {isAdmin && <Link to="/admin/rate-library" className="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-full border border-white/10 text-slate-300 hover:bg-white/5"><Database size={11} /> Manage rate library</Link>}
-          </div>
-        </div>
+        <PageHeader
+          tool="should-cost"
+          title="Should-Cost Engine"
+          subtitle={<>Deterministic bottom-up cost modelling — <span className="text-teal-300">rate × time + mass × price</span>, computed in-engine, not guessed.</>}
+          actions={(libraryCustom || isAdmin) ? (<>
+            {libraryCustom && <span className="inline-flex items-center gap-1.5 min-h-[32px] text-2xs font-semibold px-3 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/25"><Database size={11} aria-hidden="true" /> Using your company rate library</span>}
+            {isAdmin && <Link to="/admin/rate-library" className="inline-flex items-center gap-1.5 min-h-[32px] text-2xs font-medium px-3 rounded-full border border-white/10 text-slate-300 hover:bg-white/5 hover:border-white/20 transition-ui duration-micro ease-house"><Database size={11} aria-hidden="true" /> Manage rate library</Link>}
+          </>) : undefined}
+        />
 
         <div className="grid lg:grid-cols-2 gap-6 mb-6">
           {/* Inputs */}
@@ -310,7 +309,7 @@ export default function ShouldCostPage() {
 
             {/* Process-chain routing: downstream operations after the primary op */}
             <div>
-              <label className="block text-xs text-slate-400 mb-1.5">Secondary operations <span className="text-slate-600">(finished-part routing — optional)</span></label>
+              <label className="block text-xs text-slate-400 mb-1.5">Secondary operations <span className="text-slate-500">(finished-part routing — optional)</span></label>
               <div className="flex flex-wrap gap-1.5">
                 {SECONDARY_OPS.filter(op => processes.includes(op)).map(op => {
                   const on = secondaryOps.includes(op);
@@ -390,10 +389,10 @@ export default function ShouldCostPage() {
             {error && <p className="text-red-400 text-sm" role="alert">{error}</p>}
 
             <button onClick={handleCalc} disabled={loading || !partName || !weightKg || !annualVolume}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white font-semibold text-sm transition-all hover:scale-[1.02]">
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5">
               {loading ? <><ButtonSpinner size={16} /> Calculating...</> : <><Calculator size={16} /> Calculate Should-Cost</>}
             </button>
-            <p className="text-slate-600 text-xs flex items-center gap-1.5"><ShieldCheck size={12} className="text-teal-500" /> Numbers are computed deterministically. An API key (optional) only adds an AI narrative.</p>
+            <p className="text-slate-500 text-xs flex items-center gap-1.5"><ShieldCheck size={12} className="text-teal-500" /> Numbers are computed deterministically. An API key (optional) only adds an AI narrative.</p>
           </div>
 
           {/* Result */}
@@ -414,7 +413,7 @@ export default function ShouldCostPage() {
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-white font-semibold flex items-center gap-2"><Calculator size={16} className="text-teal-400" /> Should-Cost Breakdown</h3>
-                  <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/25">
+                  <span className="flex items-center gap-1 text-2xs font-semibold px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/25">
                     <Cpu size={10} /> {result.engine === 'deterministic' ? 'Deterministic' : 'Deterministic + AI'}
                   </span>
                 </div>
@@ -426,14 +425,14 @@ export default function ShouldCostPage() {
                     <span className="text-teal-300 font-black text-2xl">{result.totalShouldCost}</span>
                   </div>
                   {result.fx && (
-                    <p className={`text-[10px] mt-1 ${result.fx.stale ? 'text-amber-400/80' : 'text-slate-500'}`}>
+                    <p className={`text-2xs mt-1 ${result.fx.stale ? 'text-amber-400/80' : 'text-slate-500'}`}>
                       Converted at 1 {result.fx.base} = {result.fx.rate} {result.currency}
                       {result.fx.asOf ? ` · ${result.fx.source}, ${result.fx.asOf}` : ` · ${result.fx.source}`}
                       {result.fx.stale && ' · rates may be outdated (live feed unreachable)'}
                     </p>
                   )}
                   {result.calibration?.applied && (
-                    <p className="text-[10px] mt-1 text-teal-300/90 flex items-center gap-1">
+                    <p className="text-2xs mt-1 text-teal-300/90 flex items-center gap-1">
                       <Sparkles size={10} /> Calibrated from {result.calibration.quotes} of your quote{result.calibration.quotes === 1 ? '' : 's'} (×{result.calibration.factor}){result.calibration.source === 'global' ? ' · cross-process (no direct quotes for this process yet)' : ''}
                     </p>
                   )}
@@ -448,7 +447,7 @@ export default function ShouldCostPage() {
                         <div className="absolute inset-y-0 bg-teal-500/30" style={{ left: '10%', right: '10%' }} />
                         <div className="absolute inset-y-0 w-0.5 bg-teal-300" style={{ left: `${pctPos(result.simulation.p50Value, result.simulation.p10Value, result.simulation.p90Value)}%` }} />
                       </div>
-                      <p className="text-slate-500 text-[10px] mt-1">Monte-Carlo (2,000 runs): commodity ±15%, machine ±10%, cycle ±12%, scrap ±2pp · σ {result.symbol || result.currency}{result.simulation.stdev}</p>
+                      <p className="text-slate-500 text-2xs mt-1">Monte-Carlo (2,000 runs): commodity ±15%, machine ±10%, cycle ±12%, scrap ±2pp · σ {result.symbol || result.currency}{result.simulation.stdev}</p>
                     </div>
                   )}
                 </div>
@@ -464,7 +463,7 @@ export default function ShouldCostPage() {
                       {teaching ? 'Learning…' : 'Teach'}
                     </button>
                   </div>
-                  {teachMsg && <p className="text-[10px] mt-1.5 text-teal-300/90">{teachMsg}</p>}
+                  {teachMsg && <p className="text-2xs mt-1.5 text-teal-300/90">{teachMsg}</p>}
                 </div>
 
                 {/* Component breakdown */}
@@ -478,7 +477,7 @@ export default function ShouldCostPage() {
                           <div className={`h-full ${m.bar}`} style={{ width: `${Math.max(1, c.pct)}%` }} />
                         </div>
                         <span className={`text-xs font-semibold w-20 text-right ${m.color}`}>{result.symbol || result.currency}{c.value.toFixed(2)}</span>
-                        <span className="text-[10px] text-slate-500 w-10 text-right">{c.pct}%</span>
+                        <span className="text-2xs text-slate-500 w-10 text-right">{c.pct}%</span>
                       </div>
                     );
                   })}
@@ -489,7 +488,7 @@ export default function ShouldCostPage() {
                     <div className="flex items-center justify-between gap-3 flex-wrap">
                       <div className="text-emerald-400 text-sm font-semibold">Gap vs Supplier Quote: {result.gapVsQuote}</div>
                       <button onClick={generateGapIdeas} disabled={gapLoading}
-                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold transition-all">
+                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold transition-ui">
                         {gapLoading ? 'Allocating gap & generating…' : 'Generate gap-closure ideas'}
                       </button>
                     </div>
@@ -539,7 +538,7 @@ export default function ShouldCostPage() {
                             {idea.riskNotes && <p className="text-amber-300/80 text-xs mt-1">Risk: {idea.riskNotes}</p>}
                           </div>
                         ))}
-                        <p className="text-slate-600 text-[11px]">{gapIdeas.note}</p>
+                        <p className="text-slate-500 text-[11px]">{gapIdeas.note}</p>
                       </>
                     )}
                   </div>
@@ -563,7 +562,7 @@ export default function ShouldCostPage() {
                         ));
                       })()}
                     </div>
-                    <p className="text-slate-600 text-[10px] mt-1">Tooling amortisation breakpoints — unit cost falls as fixed tooling spreads over volume.</p>
+                    <p className="text-slate-500 text-2xs mt-1">Tooling amortisation breakpoints — unit cost falls as fixed tooling spreads over volume.</p>
                   </div>
                 )}
                 <div>
@@ -613,7 +612,7 @@ export default function ShouldCostPage() {
                         CBAM ≈ €{result.carbon.cbam.eur}/part if EU-imported
                       </span>
                     )}
-                    <span className="text-slate-600 text-[10px]">{result.carbon.basis}</span>
+                    <span className="text-slate-500 text-2xs">{result.carbon.basis}</span>
                   </div>
                 )}
 
@@ -686,7 +685,7 @@ export default function ShouldCostPage() {
             )}
           </div>
         </div>
-        <p className="text-center text-slate-600 text-xs">Bottom-up parametric estimate from BrainSpark rate libraries. Validate against detailed supplier breakdowns before commercial use.</p>
+        <p className="text-center text-slate-500 text-xs">Bottom-up parametric estimate from BrainSpark rate libraries. Validate against detailed supplier breakdowns before commercial use.</p>
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ import { toast } from '../hooks/useToast';
 // swept gauge. Everything decorative sits behind prefers-reduced-motion in
 // dfm.css, matching the convention foresight.css and innovation.css set.
 import './dfm.css';
-import { useDfmMotion, scoreTone, TONE_TEXT, TONE_LABEL } from '../components/dfm/motion';
+import { useDfmMotion, scoreTone, TONE_TEXT, TONE_LABEL } from '../lib/motion';
 import Panel from '../components/dfm/Panel';
 import ScoreRing from '../components/dfm/ScoreRing';
 import TickNumber from '../components/dfm/TickNumber';
@@ -232,7 +232,7 @@ const SEV_STYLE: Record<string, string> = {
 export default function DfmStudioPage() {
   const { token } = useAuth();
   // The page's motion vocabulary, already resolved against the reader's
-  // reduced-motion preference — see components/dfm/motion.ts.
+  // reduced-motion preference — see src/lib/motion.ts.
   const m = useDfmMotion();
   // The pointer-tracked light on every panel — see useSpotlight().
   const spot = useSpotlight();
@@ -1343,7 +1343,7 @@ export default function DfmStudioPage() {
             <StepRail steps={railSteps} activeId={activeStep} onJump={scrollToStep} />
             {navSections.length > 1 && (
               <div className="flex items-center gap-2 min-w-0">
-                <span className="dfm-label text-slate-600 hidden lg:inline shrink-0">Report</span>
+                <span className="dfm-label text-slate-500 hidden lg:inline shrink-0">Report</span>
                 <SectionNav sections={navSections} />
               </div>
             )}
@@ -1575,7 +1575,7 @@ export default function DfmStudioPage() {
                                 </td>
                                 <td className="pr-3 py-1.5 text-slate-200 font-mono">{d.sourceText}</td>
                                 <td className="pr-3 py-1.5 text-slate-300 dfm-num">{d.nominalMm}</td>
-                                <td className="pr-3 py-1.5 text-slate-300 dfm-num">{d.bandMm ?? <span className="text-slate-600">— (general tol.)</span>}</td>
+                                <td className="pr-3 py-1.5 text-slate-300 dfm-num">{d.bandMm ?? <span className="text-slate-500">— (general tol.)</span>}</td>
                                 <td className="pr-3 py-1.5 text-slate-400">{d.type}</td>
                                 <td className="py-1.5">
                                   {check ? (
@@ -1591,7 +1591,7 @@ export default function DfmStudioPage() {
                                           : <><MinusCircle size={11} aria-hidden="true" /> not found in 3D</>}
                                       <span className="sr-only">{check.note}</span>
                                     </span>
-                                  ) : <span className="text-slate-600">—</span>}
+                                  ) : <span className="text-slate-500">—</span>}
                                 </td>
                               </motion.tr>
                             );
@@ -1606,7 +1606,7 @@ export default function DfmStudioPage() {
                           <span key={i} className="mr-3 font-mono">
                             {g.symbol} {g.toleranceMm ?? '?'}{g.datums.length ? ` | ${g.datums.join(' | ')}` : ''}
                             {g.symbol !== 'flatness' && (
-                              <span className="text-slate-600 font-sans"> (no deterministic rule consumes this yet — shown for the record)</span>
+                              <span className="text-slate-500 font-sans"> (no deterministic rule consumes this yet — shown for the record)</span>
                             )}
                           </span>
                         ))}
@@ -1750,7 +1750,7 @@ export default function DfmStudioPage() {
                 Drawing callouts <span className="normal-case font-normal">— optional; blank = rules abstain honestly</span>
               </p>
               <div className="grid sm:grid-cols-3 gap-3">
-                <label className={`text-xs ${drawingSupplies.tolerance ? 'text-slate-600' : 'text-slate-400'}`}>Tightest tolerance band (mm)
+                <label className={`text-xs ${drawingSupplies.tolerance ? 'text-slate-500' : 'text-slate-400'}`}>Tightest tolerance band (mm)
                   <input type="number" value={tightestTolMm} min={0} step={0.01}
                     placeholder={drawingSupplies.tolerance ? 'superseded by the uploaded drawing' : 'e.g. 0.5 for ±0.25'}
                     disabled={drawingSupplies.tolerance}
@@ -1910,7 +1910,7 @@ export default function DfmStudioPage() {
                  When it IS armed it carries the gold glow, so the one action
                  the page is built around is unmistakably the primary. */
               className="dfm-cta flex items-center gap-2 px-5 py-2.5 rounded-xl text-navy-950 font-semibold text-sm
-                         transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60
+                         transition-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60
                          disabled:text-slate-500 disabled:border disabled:border-white/15
                          disabled:cursor-not-allowed">
               {loading === 'dfm' ? <ButtonSpinner size={14} /> : <Ruler size={15} aria-hidden="true" />}
@@ -2186,14 +2186,14 @@ export default function DfmStudioPage() {
                     )}
                   </span>
                   <button type="button" onClick={clearFocus}
-                    className="shrink-0 text-[10px] uppercase tracking-wider text-slate-400
+                    className="shrink-0 text-2xs uppercase tracking-wider text-slate-400
                                hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold-500/60 rounded px-1">
-                    Clear <span className="text-slate-600">(Esc)</span>
+                    Clear <span className="text-slate-500">(Esc)</span>
                   </button>
                 </motion.div>
               )}
             </AnimatePresence>
-            <p className="text-slate-600 text-[11px] mt-2">
+            <p className="text-slate-500 text-[11px] mt-2">
               {result
                 ? 'Click any finding’s "Show on model" to isolate it here — or click a tinted face to jump back to the finding that tinted it. An undercut is occluded in both tool halves and buys a slide or a lifter; a zero-draft wall drags out but scuffs, and is fixable with a degree of taper.'
                 : 'Orbit, section and measure the part now. Run the analysis and the findings will be painted onto these faces.'}
@@ -2303,7 +2303,7 @@ export default function DfmStudioPage() {
                             transition={m.t(0.7, m.beat(3))} />
                         </div>
                       )}
-                      <p className="text-[11px] text-slate-600 mt-1.5">{k.sub}</p>
+                      <p className="text-[11px] text-slate-500 mt-1.5">{k.sub}</p>
                     </div>
                   ))}
                 </div>
@@ -2331,7 +2331,7 @@ export default function DfmStudioPage() {
                     ✗ <span className="font-mono">{r2.sourceText}</span> — the model's {r2.candidate?.kind} measures {r2.candidate?.valueMm} mm, {r2.candidate?.deltaMm} mm away. One of the two documents is wrong; this tool cannot say which.
                   </p>
                 ))}
-                <p className="text-slate-600 text-[10px] mt-2">{result.drawingCheck.basis}</p>
+                <p className="text-slate-500 text-2xs mt-2">{result.drawingCheck.basis}</p>
               </motion.div>
             )}
             {result.drawingApplied && result.drawingApplied.length > 0 && (
@@ -2468,7 +2468,7 @@ export default function DfmStudioPage() {
                 <ul className="mt-3 space-y-2">
                   {feats.knownLimits.map((l: string, i: number) => (
                     <li key={i} className="text-slate-400 text-xs flex gap-2">
-                      <span className="text-slate-600 shrink-0" aria-hidden="true">·</span>{l}
+                      <span className="text-slate-500 shrink-0" aria-hidden="true">·</span>{l}
                     </li>
                   ))}
                 </ul>
@@ -2482,7 +2482,7 @@ export default function DfmStudioPage() {
                 <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">
                   Recognised ribs
                 </p>
-                <p className="text-slate-600 text-[11px] mb-3">
+                <p className="text-slate-500 text-[11px] mb-3">
                   Thickness is measured at the base, where the guideline applies — drafted sides
                   are opened out by the draft term rather than reported at mid-height.
                   {wall.p50Mm
@@ -2590,7 +2590,7 @@ export default function DfmStudioPage() {
                     {/* One score scale for the whole page — see scoreTone(). */}
                     <span className={TONE_TEXT[scoreTone(r.score)]}>
                       Score {r.score == null ? 'not given' : `${r.score}/100`}
-                      {r.score != null && <span className="text-slate-600"> · {TONE_LABEL[scoreTone(r.score)]}</span>}
+                      {r.score != null && <span className="text-slate-500"> · {TONE_LABEL[scoreTone(r.score)]}</span>}
                     </span>
                     {/* Coverage always sits next to the score. A score without it
                         invites the reader to assume the whole catalogue ran. It
@@ -2649,7 +2649,7 @@ export default function DfmStudioPage() {
                             onClick={() => { focusFinding(f.id); setOpenFindings(prev => new Set(prev).add(f.id)); }}
                             {...m.press}
                             aria-pressed={focusedFinding === f.id}
-                            className={`px-2 py-0.5 rounded-md border text-[10px] font-semibold uppercase
+                            className={`px-2 py-0.5 rounded-md border text-2xs font-semibold uppercase
                                         tracking-wider focus:outline-none focus:ring-2 focus:ring-gold-500/60
                                         ${focusedFinding === f.id
                                           ? 'border-current bg-current/20'
@@ -2657,7 +2657,7 @@ export default function DfmStudioPage() {
                             {focusedFinding === f.id ? 'On model — clear' : 'Show on model'}
                           </motion.button>
                         )}
-                        <span className="text-[10px] font-bold uppercase tracking-wider">{f.severity}</span>
+                        <span className="text-2xs font-bold uppercase tracking-wider">{f.severity}</span>
                       </div>
                     </div>
                     {/* ALWAYS VISIBLE: the measurement and the guideline it
@@ -2716,21 +2716,21 @@ export default function DfmStudioPage() {
                             the number a director remembers. */}
                         {f.cost.caveat && (
                           <span className="block mt-1 text-amber-400/90 italic not-italic">
-                            <span className="font-semibold uppercase text-[10px] tracking-wider">Upper bound — </span>
+                            <span className="font-semibold uppercase text-2xs tracking-wider">Upper bound — </span>
                             {f.cost.caveat}
                           </span>
                         )}
                       </p>
                     ) : (
                       <p className="text-slate-500 text-xs">
-                        <span className="text-slate-600">Not priced:</span> {f.cost?.reason}
+                        <span className="text-slate-500">Not priced:</span> {f.cost?.reason}
                         {f.cost?.externalGuideline && <span className="block mt-1 text-amber-400/80 italic">{f.cost.externalGuideline}</span>}
                       </p>
                     )}
                     {/* The grade travels with the citation. "Source:" beside an
                         unaudited number claims an authority this tool has not
                         earned — the same failure it flags everywhere else. */}
-                    <p className="text-slate-600 text-[10px] mt-2">
+                    <p className="text-slate-500 text-2xs mt-2">
                       <span className="uppercase tracking-wider text-amber-500/70">
                         {SOURCE_GRADE[f.sourceStatus || 'industry-consensus']}
                       </span>
@@ -2971,15 +2971,15 @@ export default function DfmStudioPage() {
                         return (
                           <td key={q.key} className="pr-2 py-1">
                             <div className="flex items-center gap-0.5" role="group" aria-label={`${r.name}: ${q.hint}`}>
-                              <span className="text-slate-600 text-[10px] mr-1">{q.label}</span>
+                              <span className="text-slate-500 text-2xs mr-1">{q.label}</span>
                               {([['Y', true], ['N', false]] as const).map(([lbl, val]) => (
                                 <button key={lbl} type="button" onClick={() => answer(r.index, q.key, val)}
                                   aria-pressed={v === val} title={q.hint}
-                                  className={`px-1.5 py-0.5 rounded text-[10px] border transition-colors ${
+                                  className={`px-1.5 py-0.5 rounded text-2xs border transition-colors ${
                                     v === val
                                       ? (val ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300'
                                              : 'border-slate-500/50 bg-slate-500/15 text-slate-300')
-                                      : 'border-white/10 text-slate-600 hover:text-slate-300'}`}>
+                                      : 'border-white/10 text-slate-500 hover:text-slate-300'}`}>
                                   {lbl}
                                 </button>
                               ))}
@@ -2992,7 +2992,7 @@ export default function DfmStudioPage() {
                 </tbody>
               </table>
             </div>
-            <p className="text-slate-600 text-[11px] mt-3 italic">
+            <p className="text-slate-500 text-[11px] mt-3 italic">
               α+β is measured by rotating each solid and intersecting it with itself, not inferred from inertia.
               Times use the {dfa.dfa.timeModel?.version} model — {dfa.dfa.timeModel?.basis}
             </p>
@@ -3045,7 +3045,7 @@ function Metric({ label, value, hint }: { label: string; value: string; hint?: s
             decorative and the text itself is in the accessibility tree. */}
         {hint && (
           <>
-            <HelpCircle size={11} className="text-slate-600" aria-hidden="true" />
+            <HelpCircle size={11} className="text-slate-500" aria-hidden="true" />
             <span className="sr-only">{hint}</span>
           </>
         )}

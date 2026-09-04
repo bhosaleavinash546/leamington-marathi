@@ -53,7 +53,7 @@ export default function Sidebar() {
         {TOOL_GROUPS.map(group => (
           <div key={group.id} className="mt-4">
             {!collapsed && (
-              <div className="px-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-[0.09em] text-slate-600">
+              <div className="px-2.5 pb-1.5 text-2xs font-bold uppercase tracking-[0.09em] text-slate-500">
                 {group.label}
               </div>
             )}
@@ -92,7 +92,7 @@ export default function Sidebar() {
             </div>
             <div className="min-w-0">
               <p className="text-white text-xs font-semibold truncate">{user?.name}</p>
-              <p className="text-slate-600 text-[10.5px] truncate">{user?.email}</p>
+              <p className="text-slate-500 text-2xs truncate">{user?.email}</p>
             </div>
           </div>
         )}

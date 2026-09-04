@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import { Users, Loader2, UserPlus, ShieldCheck } from 'lucide-react';
 import { getAuthToken } from '../services/auth';
+import PageHeader from '../components/ui/PageHeader';
 
 const ROLES = ['viewer', 'member', 'admin', 'owner'] as const;
 type Role = typeof ROLES[number];
@@ -83,13 +84,13 @@ export default function TeamPage() {
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-500/15 border border-teal-500/25 mb-4">
-            <Users size={28} className="text-teal-400" />
-          </div>
-          <h1 className="text-4xl font-black text-white mb-3">Team</h1>
-          <p className="text-slate-400">Who can see this workspace, and what they can do in it.</p>
-        </div>
+        <PageHeader
+          icon={Users}
+          eyebrow="Settings"
+          tone="neutral"
+          title="Team"
+          subtitle="Who can see this workspace, and what they can do in it."
+        />
 
         {orgs.length === 0 ? (
           <div className="bg-navy-900 border border-white/10 rounded-2xl p-8 text-center text-slate-400 text-sm">
@@ -101,6 +102,7 @@ export default function TeamPage() {
             {orgs.length > 1 && (
               <select
                 value={orgId} onChange={e => setOrgId(e.target.value)}
+                aria-label="Workspace"
                 className="w-full bg-navy-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
               >
                 {orgs.map(o => <option key={o.id} value={o.id}>{o.name} — you are {o.role}</option>)}
@@ -120,13 +122,14 @@ export default function TeamPage() {
                   {/* A pending invite is not a member, and the list must not
                       let the two read the same. */}
                   {m.status !== 'active' && (
-                    <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold-500/10 text-gold-300 border border-gold-500/25">
+                    <span className="text-2xs uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold-500/10 text-gold-300 border border-gold-500/25">
                       {m.status}
                     </span>
                   )}
                   {canSetRole ? (
                     <select
                       value={m.role} onChange={e => changeRole(m.email, e.target.value as Role)}
+                      aria-label={`Role for ${m.email}`}
                       className="bg-navy-950 border border-white/10 rounded-lg px-2 py-1 text-slate-300 text-xs"
                     >
                       {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
@@ -151,6 +154,7 @@ export default function TeamPage() {
                   />
                   <select
                     value={role} onChange={e => setRole(e.target.value as Role)}
+                    aria-label="Role for the invited member"
                     className="bg-navy-950 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
                   >
                     {ROLES.filter(r => r !== 'owner').map(r => <option key={r} value={r}>{r}</option>)}

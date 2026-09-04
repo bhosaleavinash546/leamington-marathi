@@ -419,7 +419,7 @@ export default function InnovationStudioPage() {
                 <span className="block text-gold-300 font-semibold text-sm truncate">{method.name}</span>
                 <span className="block text-slate-400 text-xs truncate">{method.blurb}</span>
               </span>
-              <span className={`relative shrink-0 text-[10px] font-semibold uppercase tracking-wider ${TIER_TEXT[method.tier]}`}>{TIER_LABEL[method.tier]}</span>
+              <span className={`relative shrink-0 text-2xs font-semibold uppercase tracking-wider ${TIER_TEXT[method.tier]}`}>{TIER_LABEL[method.tier]}</span>
             </button>
           )}
 
@@ -435,7 +435,7 @@ export default function InnovationStudioPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`w-1.5 h-1.5 rounded-full ${TIER_DOT[tier]}`} aria-hidden="true" />
                   <span className={`text-[11px] font-semibold uppercase tracking-wider ${TIER_TEXT[tier]}`}>{TIER_LABEL[tier]}</span>
-                  <span className="text-slate-600 text-[11px]">{TIER_NOTE[tier]}</span>
+                  <span className="text-slate-500 text-[11px]">{TIER_NOTE[tier]}</span>
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3" role="group" aria-label={`${TIER_LABEL[tier]} methods`}>
                   {items.map(m => (
@@ -464,7 +464,7 @@ export default function InnovationStudioPage() {
           {methodId === 'triz' ? (
             <div className="text-center py-4">
               <p className="text-slate-300 text-sm mb-3">TRIZ works from a <span className="text-white">contradiction</span> ("lighter without losing stiffness"), so it has its own studio.</p>
-              <a href="/triz" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold text-sm transition-all">Open TRIZ Studio <ArrowRight size={16} /></a>
+              <a href="/triz" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold text-sm transition-ui">Open TRIZ Studio <ArrowRight size={16} /></a>
             </div>
           ) : (
             <>
@@ -548,7 +548,7 @@ export default function InnovationStudioPage() {
 
               {error && <p className="text-red-400 text-sm mt-4" role="alert">{error}</p>}
               <button onClick={generate} disabled={loading}
-                className="group relative w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-amber-400 hover:from-gold-400 hover:to-amber-300 disabled:opacity-50 disabled:cursor-not-allowed text-navy-950 font-semibold transition-all overflow-hidden">
+                className="group relative w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-amber-400 hover:from-gold-400 hover:to-amber-300 disabled:opacity-50 disabled:cursor-not-allowed text-navy-950 font-semibold transition-ui overflow-hidden">
                 {loading
                   ? <><ButtonSpinner size={16} /> Generating with {method.name}…</>
                   : <><Sparkles size={18} className="transition-transform group-hover:rotate-12" /> Generate Ideas · {method.name}</>}
@@ -574,7 +574,7 @@ export default function InnovationStudioPage() {
                 <span className="text-white font-semibold text-[13px] truncate">{result.method.name}</span>
                 {part && <><span className="text-slate-700" aria-hidden="true">/</span>
                   <span className="text-slate-400 text-[13px] truncate">{part}</span></>}
-                {system && <span className="text-slate-600 text-[11px] truncate hidden sm:inline">· {system}</span>}
+                {system && <span className="text-slate-500 text-[11px] truncate hidden sm:inline">· {system}</span>}
               </div>
               <div className="flex items-center gap-2 ml-auto">
                 <button onClick={() => exportReport('pdf')} disabled={exporting !== ''}
@@ -680,7 +680,7 @@ export default function InnovationStudioPage() {
                 )}
               </div>
 
-              <p className="text-slate-600 text-[11px] text-center pt-1">
+              <p className="text-slate-500 text-[11px] text-center pt-1">
                 Method structure is deterministic; every £ figure is engine-checked or labelled. Validate before commercial use.
               </p>
             </div>
@@ -726,7 +726,7 @@ function MethodCard({ m, selected, onSelect }: { m: Method; selected: boolean; o
         <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${TIER_DOT[m.tier]} ${selected ? 'iv-aperture' : ''}`} aria-hidden="true" />
       </span>
       <span className="relative block text-slate-400 text-xs leading-snug">{m.blurb}</span>
-      <span className="relative block text-slate-600 text-[10px] mt-1.5">{m.lenses.length} lenses</span>
+      <span className="relative block text-slate-500 text-2xs mt-1.5">{m.lenses.length} lenses</span>
     </button>
   );
 }
@@ -745,7 +745,7 @@ function MethodPreview({ method, result }: { method: Method; result: Result | nu
       <div className="grid md:grid-cols-[minmax(0,1fr)_auto] gap-5 items-center">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-2">
-            <span className={`text-[10px] font-semibold uppercase tracking-wider ${TIER_TEXT[method.tier]}`}>{TIER_LABEL[method.tier]}</span>
+            <span className={`text-2xs font-semibold uppercase tracking-wider ${TIER_TEXT[method.tier]}`}>{TIER_LABEL[method.tier]}</span>
             <span className="text-slate-700">·</span>
             <span className="text-white font-semibold text-sm">{method.name}</span>
           </div>
@@ -761,7 +761,7 @@ function MethodPreview({ method, result }: { method: Method; result: Result | nu
           </dl>
           <div className="flex flex-wrap gap-1.5 mt-3">
             {method.lenses.map(l => (
-              <span key={l} className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 text-slate-400 text-[10px]">{l}</span>
+              <span key={l} className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 text-slate-400 text-2xs">{l}</span>
             ))}
           </div>
         </div>
@@ -990,7 +990,7 @@ function AnalysisPanel({ methodId, analysis }: { methodId: string; analysis: unk
           <div className="space-y-1.5 mb-3">
             {reg.map((r, i) => (
               <div key={i} className="flex items-center justify-between text-xs gap-3">
-                <span className={`flex-1 truncate ${r.ctq ? 'text-slate-500' : 'text-slate-300'}`}>{r.name} <span className="text-slate-600">[{r.kind}]</span>{r.current ? ` — ${r.current}` : ''}</span>
+                <span className={`flex-1 truncate ${r.ctq ? 'text-slate-500' : 'text-slate-300'}`}>{r.name} <span className="text-slate-500">[{r.kind}]</span>{r.current ? ` — ${r.current}` : ''}</span>
                 {r.ctq
                   ? <span className="text-red-400/80 font-medium" title={r.ctqReason}>🔒 CTQ — locked</span>
                   : <span className="text-emerald-400">challengeable</span>}
@@ -1026,9 +1026,9 @@ function AnalysisPanel({ methodId, analysis }: { methodId: string; analysis: unk
                 <span className={`font-mono font-semibold ${r.significant ? 'text-red-400' : 'text-slate-500'}`}>{r.deltaPct > 0 ? '+' : ''}{r.deltaPct}%</span>
               )}
               {r.kind === 'categorical' && (
-                <span className={`font-medium ${r.significant ? 'text-amber-400' : 'text-slate-600'}`}>{r.significant ? 'differs' : 'same'}</span>
+                <span className={`font-medium ${r.significant ? 'text-amber-400' : 'text-slate-500'}`}>{r.significant ? 'differs' : 'same'}</span>
               )}
-              {(r.kind === 'subject-only' || r.kind === 'benchmark-only') && <span className="text-slate-600">{r.kind}</span>}
+              {(r.kind === 'subject-only' || r.kind === 'benchmark-only') && <span className="text-slate-500">{r.kind}</span>}
             </div>
           ))}
         </div>
@@ -1073,7 +1073,7 @@ function ValueRows({ rows }: { rows: ValueRow[] }) {
   const max = Math.max(1, ...rows.flatMap(r => [r.costPct, r.worthPct]));
   return (
     <div className="space-y-3">
-      <div className="hidden sm:grid grid-cols-[minmax(0,1fr)_160px_58px] gap-3 text-[10px] uppercase tracking-wider text-slate-600">
+      <div className="hidden sm:grid grid-cols-[minmax(0,1fr)_160px_58px] gap-3 text-2xs uppercase tracking-wider text-slate-500">
         <span>Function</span>
         <span className="flex items-center gap-3">
           <span className="flex items-center gap-1"><i className="w-2 h-1 rounded-full bg-red-400/70 inline-block" aria-hidden="true" />cost</span>
@@ -1085,7 +1085,7 @@ function ValueRows({ rows }: { rows: ValueRow[] }) {
         <div key={i} className="grid sm:grid-cols-[minmax(0,1fr)_160px_58px] gap-1 sm:gap-3 sm:items-center">
           <div className="min-w-0">
             <p className="text-slate-300 text-xs truncate">{r.name}</p>
-            <p className="text-slate-600 text-[10px] font-mono">cost {r.costPct}% · worth {r.worthPct}%</p>
+            <p className="text-slate-500 text-2xs font-mono">cost {r.costPct}% · worth {r.worthPct}%</p>
           </div>
           <div className="space-y-1" aria-hidden="true">
             <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">

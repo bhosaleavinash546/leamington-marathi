@@ -305,7 +305,7 @@ export default function AdminRateLibraryPage() {
                             <td className="py-1 text-slate-300 truncate max-w-[280px]">{r.name}{r.quote ? ' ·q' : ''}</td>
                             <td className="py-1 text-right text-slate-400 font-mono">€{r.current.toFixed(2)}</td>
                             <td className="py-1 text-right text-slate-200 font-mono">€{r.candidate.toFixed(2)}</td>
-                            <td className={`py-1 text-right font-mono font-semibold ${Math.abs(r.pct) >= 50 ? 'text-amber-300' : r.pct === 0 ? 'text-slate-600' : 'text-teal-300'}`}>{r.pct >= 0 ? '+' : ''}{r.pct}%</td>
+                            <td className={`py-1 text-right font-mono font-semibold ${Math.abs(r.pct) >= 50 ? 'text-amber-300' : r.pct === 0 ? 'text-slate-500' : 'text-teal-300'}`}>{r.pct >= 0 ? '+' : ''}{r.pct}%</td>
                           </tr>
                         ))}
                       </tbody>
@@ -322,7 +322,7 @@ export default function AdminRateLibraryPage() {
                         <tr key={i} className="border-b border-white/5 last:border-0">
                           <td className="py-1 pr-3 text-slate-500 whitespace-nowrap">{c.table} · {c.key}</td>
                           <td className="py-1 pr-3 text-slate-300 font-medium">{c.field}</td>
-                          <td className="py-1 text-right font-mono"><span className="text-danger-300/80">{c.from}</span> <span className="text-slate-600">→</span> <span className="text-teal-300">{c.to}</span></td>
+                          <td className="py-1 text-right font-mono"><span className="text-danger-300/80">{c.from}</span> <span className="text-slate-500">→</span> <span className="text-teal-300">{c.to}</span></td>
                         </tr>
                       ))}
                     </tbody></table>
@@ -347,7 +347,7 @@ export default function AdminRateLibraryPage() {
           </div>
         )}
 
-        <p className="text-slate-600 text-xs mb-8">Tip: leave a cell unchanged to keep the shipped default. Add a new row (new material/process/region name) to extend the catalogue — new rows must have every column filled. Percentages are fractions (0.15 = 15%).</p>
+        <p className="text-slate-500 text-xs mb-8">Tip: leave a cell unchanged to keep the shipped default. Add a new row (new material/process/region name) to extend the catalogue — new rows must have every column filled. Percentages are fractions (0.15 = 15%).</p>
 
         {/* Version history / audit trail */}
         {versions.length > 0 && (
@@ -362,10 +362,10 @@ export default function AdminRateLibraryPage() {
                   <div key={v.version} className={`rounded-xl border p-3 ${v.active ? 'bg-teal-500/8 border-teal-500/25' : 'border-white/8'}`}>
                     <div className="flex items-center gap-3 flex-wrap">
                       <span className="text-white font-mono text-sm font-semibold">v{v.version}</span>
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${v.action === 'upload' ? 'bg-blue-500/10 text-blue-300 border-blue-500/25' : v.action === 'rollback' ? 'bg-violet-500/10 text-violet-300 border-violet-500/25' : 'bg-slate-500/10 text-slate-300 border-slate-500/25'}`}>{v.action}</span>
-                      {v.active && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-500/30">Active</span>}
+                      <span className={`text-2xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${v.action === 'upload' ? 'bg-blue-500/10 text-blue-300 border-blue-500/25' : v.action === 'rollback' ? 'bg-violet-500/10 text-violet-300 border-violet-500/25' : 'bg-slate-500/10 text-slate-300 border-slate-500/25'}`}>{v.action}</span>
+                      {v.active && <span className="text-2xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-500/30">Active</span>}
                       <span className="text-slate-400 text-xs">{v.action === 'revert' ? 'built-in defaults' : `${total} override${total === 1 ? '' : 's'}`}</span>
-                      <span className="text-slate-600 text-xs flex-1 min-w-0 truncate">{v.note ? `“${v.note}” · ` : ''}{v.updatedBy || '—'} · {new Date(v.updatedAt).toLocaleString('en-GB')}</span>
+                      <span className="text-slate-500 text-xs flex-1 min-w-0 truncate">{v.note ? `“${v.note}” · ` : ''}{v.updatedBy || '—'} · {new Date(v.updatedAt).toLocaleString('en-GB')}</span>
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <button onClick={() => toggleDiff(v.version)} className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5"><GitCompare size={12} /> {diffs[v.version] ? 'Hide' : 'Changes'}</button>
                         {!v.active && <button onClick={() => rollback(v.version)} disabled={busy} className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg border border-teal-500/30 text-teal-300 hover:bg-teal-500/10 disabled:opacity-40"><RotateCcw size={12} /> Roll back</button>}
@@ -380,7 +380,7 @@ export default function AdminRateLibraryPage() {
                                 <tr key={i} className="border-b border-white/5 last:border-0">
                                   <td className="py-1 pr-3 text-slate-500 whitespace-nowrap">{c.table} · {c.key}</td>
                                   <td className="py-1 pr-3 text-slate-300 font-medium">{c.field}</td>
-                                  <td className="py-1 text-right font-mono"><span className="text-danger-300/80">{c.from}</span> <span className="text-slate-600">→</span> <span className="text-teal-300">{c.to}</span></td>
+                                  <td className="py-1 text-right font-mono"><span className="text-danger-300/80">{c.from}</span> <span className="text-slate-500">→</span> <span className="text-teal-300">{c.to}</span></td>
                                 </tr>
                               ))}
                             </tbody>

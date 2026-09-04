@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '../hooks/useToast';
+import EmptyState from '../components/ui/EmptyState';
 
 type VaveStage =
   | 'Identified'
@@ -197,7 +198,7 @@ function EditPanel({ action, onSave, onDelete, onClose }: EditPanelProps) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-all shadow-glow-gold"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-ui shadow-glow-gold"
         >
           <Save size={14} />
           {saving ? 'Saving…' : 'Save Changes'}
@@ -350,7 +351,7 @@ export default function VaveTrackerPage() {
             >
               <div className={`w-1.5 h-1.5 rounded-full ${filterStage === s.key ? s.dot : 'bg-slate-600'}`} />
               {s.label}
-              <span className={filterStage === s.key ? 'opacity-70' : 'text-slate-600'}>{s.count}</span>
+              <span className={filterStage === s.key ? 'opacity-70' : 'text-slate-500'}>{s.count}</span>
             </motion.button>
           ))}
         </div>
@@ -361,16 +362,14 @@ export default function VaveTrackerPage() {
             <div className="w-8 h-8 rounded-full border-2 border-gold-500/30 border-t-gold-400 animate-spin" />
           </div>
         ) : displayed.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-              <Target size={28} className="text-emerald-400/50" />
-            </div>
-            <h3 className="text-white font-semibold mb-2">No VAVE actions yet</h3>
-            <p className="text-slate-500 text-sm max-w-sm mx-auto">
-              {filterStage !== 'All'
-                ? `No actions in "${filterStage}" stage. Move ideas here from the pipeline.`
-                : 'Approve ideas in any analysis to add them here. Click "Track in VAVE" when marking an idea as Approved.'}
-            </p>
+          <div className="py-6">
+            <EmptyState
+              icon={Target}
+              title={filterStage !== 'All' ? `Nothing in the ${filterStage} stage` : 'No VAVE actions yet'}
+              body={filterStage !== 'All'
+                ? 'Move ideas into this stage from the pipeline, or pick another stage.'
+                : 'Approve ideas in any analysis to add them here — click "Track in VAVE" when marking an idea as Approved.'}
+            />
           </div>
         ) : (
           <div className="space-y-2">
@@ -384,7 +383,7 @@ export default function VaveTrackerPage() {
                   layout
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`bg-navy-900 border rounded-2xl p-4 cursor-pointer transition-all shadow-card ${
+                  className={`bg-navy-900 border rounded-2xl p-4 cursor-pointer transition-ui shadow-card ${
                     isSelected ? 'border-gold-500/40 shadow-lg shadow-gold-500/5' : 'border-white/10 hover:border-white/20'
                   }`}
                   onClick={() => setSelected(isSelected ? null : action)}
@@ -416,12 +415,12 @@ export default function VaveTrackerPage() {
                           {action.confirmedSaving ? (
                             <div className="text-right">
                               <div className="text-success-400 font-semibold text-sm">{action.confirmedSaving}</div>
-                              <div className="text-slate-600 text-xs">confirmed</div>
+                              <div className="text-slate-500 text-xs">confirmed</div>
                             </div>
                           ) : action.targetSaving ? (
                             <div className="text-right">
                               <div className="text-slate-300 font-semibold text-sm">{action.targetSaving}</div>
-                              <div className="text-slate-600 text-xs">target</div>
+                              <div className="text-slate-500 text-xs">target</div>
                             </div>
                           ) : null}
                           <StageTag stage={action.stage} />

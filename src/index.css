@@ -35,6 +35,35 @@
   --shadow-card-lg: 0 0 0 1px rgba(255,255,255,0.07), 0 8px 32px rgba(0,0,0,0.42);
   --shadow-modal:   0 0 0 1px rgba(255,255,255,0.08), 0 24px 64px rgba(0,0,0,0.62);
   --shadow-popover: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 24px rgba(0,0,0,0.46);
+
+  /* Motion — the same numbers as src/lib/motion.ts. One curve (decelerating,
+     no overshoot), three durations. Tailwind reads these as ease-house,
+     ease-move and duration-micro / enter / draw. */
+  --ease-out:  cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 160ms;
+  --dur-enter: 280ms;
+  --dur-draw:  500ms;
+
+  /* Stacking order, written down once. The mobile tab bar sits under the
+     chat button, which sits under any popover, which sits under a modal. */
+  --z-nav: 40;
+  --z-fab: 45;
+  --z-popover: 50;
+  --z-modal: 60;
+
+  /* Categorical palette — eight hues for DOMAIN colour (commodity groups,
+     cost buckets, trend tiles). Chosen for even perceived lightness so any of
+     them carries navy-950 text at ≥4.5:1; none of them is the brand gold or the
+     engine teal, so category colour never impersonates action or measurement. */
+  --cat-1: 125 211 252;  /* sky      */
+  --cat-2: 134 239 172;  /* green    */
+  --cat-3: 253 186 116;  /* orange   */
+  --cat-4: 216 180 254;  /* violet   */
+  --cat-5:  94 234 212;  /* teal     */
+  --cat-6: 253 164 175;  /* rose     */
+  --cat-7: 253 224  71;  /* yellow   */
+  --cat-8: 165 180 252;  /* indigo   */
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -310,4 +339,13 @@
 .toast-enter { animation: toast-in 0.25s ease-out; }
 @media (prefers-reduced-motion: reduce) {
   .toast-enter { animation: none; }
+  /* Every CSS transition and animation collapses to an instant change. framer-
+     motion already does this through <MotionConfig reducedMotion="user">; this
+     rule brings the Tailwind hover lifts, spinners and shimmer into line. */
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

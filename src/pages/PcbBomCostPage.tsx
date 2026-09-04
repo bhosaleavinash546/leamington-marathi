@@ -4,6 +4,7 @@ import { CircuitBoard, Upload, Cpu, Calculator, Download, Trash2, Plus, AlertTri
 import { useAuth } from '../contexts/AuthContext';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { parseBomFile } from '../services/bom-import';
+import PageHeader from '../components/ui/PageHeader';
 
 interface Line { refDes: string; type: string; label?: string; package: string; mount: 'SMT' | 'TH'; pins: number; qty: number; unitCost: number; lineCost?: number; unitCostOverride?: number; confidence?: string; markings?: string; partGuess?: string; aiPrice1k?: number | null; mpn?: string; liveSource?: string; liveMeta?: string }
 interface Board { widthMm: number; heightMm: number; layers: number; finish: string; areaCm2?: number }
@@ -349,13 +350,11 @@ export default function PcbBomCostPage() {
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="lg:hidden max-w-3xl mx-auto mb-4 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200/90 text-xs">This data-dense workspace is best used on a desktop screen.</div>
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-start gap-3 mb-8">
-          <div className="w-12 h-12 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center flex-shrink-0"><CircuitBoard size={22} className="text-teal-400" /></div>
-          <div>
-            <h1 className="text-2xl font-bold text-white">PCB Photos → BOM → Should-Cost</h1>
-            <p className="text-slate-400 text-sm max-w-2xl mt-1">Upload your engineering BOM (.xlsx/.csv/.pdf — exact part numbers, highest accuracy) or up to {MAX_PHOTOS} board photos (AI fuses views, reading silkscreen and IC markings). Live distributor pricing fills real part costs; a deterministic model then costs the board across the world's PCB manufacturing hubs, with sensitivity bands and engine-verified optimisation ideas.</p>
-          </div>
-        </div>
+        <PageHeader
+          tool="pcb-bom"
+          title="PCB → BOM → Should-Cost"
+          subtitle={<>Upload your engineering BOM (.xlsx/.csv/.pdf — exact part numbers, highest accuracy) or up to {MAX_PHOTOS} board photos. Live distributor pricing fills real part costs; a deterministic model then costs the board across the world's PCB manufacturing hubs, with sensitivity bands and engine-verified optimisation ideas.</>}
+        />
 
         <div className="grid lg:grid-cols-[minmax(0,1fr)_360px] gap-6">
           {/* Left column */}
@@ -515,7 +514,7 @@ export default function PcbBomCostPage() {
                             </div>
                           </td>
                           <td className="px-2 py-1 text-right text-slate-300 font-mono">{(((l.unitCostOverride ?? l.unitCost) * l.qty)).toFixed(2)}</td>
-                          <td className="px-1 py-1"><button onClick={() => delLine(i)} className="text-slate-600 hover:text-danger-400"><Trash2 size={13} /></button></td>
+                          <td className="px-1 py-1"><button onClick={() => delLine(i)} className="text-slate-500 hover:text-danger-400"><Trash2 size={13} /></button></td>
                         </tr>
                       ))}
                     </tbody>
@@ -543,7 +542,7 @@ export default function PcbBomCostPage() {
                     );
                   })}
                 </div>
-                <p className="text-[10.5px] text-slate-600 mt-2.5">Conversion rates scale with each hub; component prices are global. Tariffs/duties not included unless set in parameters.</p>
+                <p className="text-2xs text-slate-500 mt-2.5">Conversion rates scale with each hub; component prices are global. Tariffs/duties not included unless set in parameters.</p>
               </div>
             )}
 
@@ -554,7 +553,7 @@ export default function PcbBomCostPage() {
                 <div className="flex items-center gap-4 mb-4 text-center">
                   {[['P10', sensitivity.simulation.p10, 'text-emerald-300'], ['P50', sensitivity.simulation.p50, 'text-white'], ['P90', sensitivity.simulation.p90, 'text-amber-300']].map(([k, v, c]) => (
                     <div key={k as string} className="flex-1 rounded-xl bg-white/4 border border-white/8 py-2.5">
-                      <div className="text-[10px] uppercase tracking-wider text-slate-500">{k}</div>
+                      <div className="text-2xs uppercase tracking-wider text-slate-500">{k}</div>
                       <div className={`text-lg font-bold ${c}`}>£{(v as number).toFixed(2)}</div>
                     </div>
                   ))}
@@ -591,7 +590,7 @@ export default function PcbBomCostPage() {
                   if (items.length === 0) return null;
                   return (
                     <div key={bucket} className="mb-3 last:mb-0">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500 mb-1.5">{bucket === 'dfm' ? 'DFM' : bucket}</p>
+                      <p className="text-2xs font-bold uppercase tracking-[0.08em] text-slate-500 mb-1.5">{bucket === 'dfm' ? 'DFM' : bucket}</p>
                       <div className="space-y-2">
                         {items.map((idea, i) => {
                           const ec = idea.engineCheck;
@@ -599,12 +598,12 @@ export default function PcbBomCostPage() {
                             <div key={i} className="rounded-xl bg-white/4 border border-white/8 px-3 py-2.5">
                               <div className="flex items-start justify-between gap-3">
                                 <p className="text-white text-xs font-semibold">{idea.title}</p>
-                                {ec.direction === 'confirmed' && <span className="shrink-0 inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-300"><CheckCircle2 size={12} /> −£{Math.abs(ec.delta || 0).toFixed(2)}/board</span>}
-                                {ec.direction === 'contradicted' && <span className="shrink-0 inline-flex items-center gap-1 text-[10.5px] font-bold text-danger-300"><XCircle size={12} /> +£{Math.abs(ec.delta || 0).toFixed(2)} (engine disagrees)</span>}
-                                {ec.direction === 'unverified' && <span className="shrink-0 inline-flex items-center gap-1 text-[10.5px] text-slate-500"><HelpCircle size={12} /> qualitative</span>}
+                                {ec.direction === 'confirmed' && <span className="shrink-0 inline-flex items-center gap-1 text-2xs font-bold text-emerald-300"><CheckCircle2 size={12} /> −£{Math.abs(ec.delta || 0).toFixed(2)}/board</span>}
+                                {ec.direction === 'contradicted' && <span className="shrink-0 inline-flex items-center gap-1 text-2xs font-bold text-danger-300"><XCircle size={12} /> +£{Math.abs(ec.delta || 0).toFixed(2)} (engine disagrees)</span>}
+                                {ec.direction === 'unverified' && <span className="shrink-0 inline-flex items-center gap-1 text-2xs text-slate-500"><HelpCircle size={12} /> qualitative</span>}
                               </div>
                               <p className="text-slate-400 text-[11.5px] mt-1">{idea.detail}</p>
-                              {ec.basis && <p className="text-slate-600 text-[10px] mt-1">Engine check: {ec.basis}</p>}
+                              {ec.basis && <p className="text-slate-500 text-2xs mt-1">Engine check: {ec.basis}</p>}
                             </div>
                           );
                         })}
@@ -796,7 +795,7 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isSet(grp, k) ? 'bg-gold-400' : 'bg-slate-600'}`} title={isSet(grp, k) ? 'Your value' : 'Derived from the standard engine'} />
       <span className="flex-1">{label}</span>
       <input type="number" step={step} value={flatVal(grp, k, derived)} onChange={e => setFlat(grp, k, e.target.value)} className={bcls(isSet(grp, k))} />
-      <span className="w-10 text-slate-600">{unit}</span>
+      <span className="w-10 text-slate-500">{unit}</span>
     </label>
   );
 
@@ -811,8 +810,8 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
         {open && cbd && (
           <div className="flex items-center gap-2">
             {hasOv
-              ? <span className="text-[10.5px] font-bold text-gold-300 bg-gold-500/10 border border-gold-500/25 rounded-full px-2 py-0.5">custom drivers</span>
-              : <span className="text-[10.5px] font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-2 py-0.5" title={`Simple £${cbd.parity.simpleTotal} vs detailed £${cbd.parity.detailedTotal}`}>matches standard ±{Math.abs(cbd.parity.deltaPct)}%</span>}
+              ? <span className="text-2xs font-bold text-gold-300 bg-gold-500/10 border border-gold-500/25 rounded-full px-2 py-0.5">custom drivers</span>
+              : <span className="text-2xs font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-2 py-0.5" title={`Simple £${cbd.parity.simpleTotal} vs detailed £${cbd.parity.detailedTotal}`}>matches standard ±{Math.abs(cbd.parity.deltaPct)}%</span>}
             {hasOv && <button onClick={() => setOv({})} title="Reset every driver to its derived value" className="text-slate-500 hover:text-white"><RotateCcw size={13} /></button>}
             <button onClick={exportCbd} className="text-xs px-2.5 py-1 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5 flex items-center gap-1"><Download size={11} /> CBD sheet</button>
           </div>
@@ -836,7 +835,7 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
                   <tbody>
                     {cbd.lines.map((l, i) => (
                       <tr key={i} className="border-t border-white/5" title={l.basis}>
-                        <td className="px-2.5 py-1 text-slate-600 font-bold">{l.tier}</td>
+                        <td className="px-2.5 py-1 text-slate-500 font-bold">{l.tier}</td>
                         <td className="px-2 py-1 text-slate-300">{l.label}</td>
                         <td className="px-2 py-1 text-right font-mono text-slate-200">{l.value.toFixed(3)}</td>
                         <td className="px-2 py-1 text-right text-slate-500">{l.pct}%</td>
@@ -847,7 +846,7 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
                   </tbody>
                 </table>
               </div>
-              {busy && <p className="text-slate-600 text-[10.5px]">Recomputing…</p>}
+              {busy && <p className="text-slate-500 text-2xs">Recomputing…</p>}
 
               {/* Driver groups */}
               {drivers && (
@@ -867,17 +866,17 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
                       <div key={st.id} className="space-y-1">
                         <div className="flex items-center gap-2 text-[11.5px] text-slate-400">
                           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${(isSetN('stations', st.id, 'cycleSec') || isSetN('stations', st.id, 'mhr')) ? 'bg-gold-400' : 'bg-slate-600'}`} />
-                          <span className="flex-1">{st.label}{st.detail ? <span className="text-slate-600"> · {st.detail}</span> : null}</span>
+                          <span className="flex-1">{st.label}{st.detail ? <span className="text-slate-500"> · {st.detail}</span> : null}</span>
                           <input type="number" step={0.5} value={nestedVal('stations', st.id, 'cycleSec', st.cycleSec)} onChange={e => setNested('stations', st.id, 'cycleSec', e.target.value)} className={bcls(isSetN('stations', st.id, 'cycleSec'))} title="Cycle seconds per board" />
-                          <span className="text-slate-600">s</span>
+                          <span className="text-slate-500">s</span>
                           <input type="number" step={1} value={nestedVal('stations', st.id, 'mhr', st.mhr)} onChange={e => setNested('stations', st.id, 'mhr', e.target.value)} className={bcls(isSetN('stations', st.id, 'mhr'))} title="Fully-burdened machine-hour rate" />
-                          <span className="text-slate-600">£/hr</span>
-                          <button onClick={() => setMhrFor(m => m === st.id ? '' : st.id)} className="text-teal-400 hover:text-teal-300 text-[10.5px] font-semibold whitespace-nowrap">build-up</button>
+                          <span className="text-slate-500">£/hr</span>
+                          <button onClick={() => setMhrFor(m => m === st.id ? '' : st.id)} className="text-teal-400 hover:text-teal-300 text-2xs font-semibold whitespace-nowrap">build-up</button>
                         </div>
                         {mhrFor === st.id && (
                           <div className="ml-3.5 p-2.5 rounded-lg bg-white/4 border border-white/8 grid grid-cols-2 gap-2">
                             {([['investment', 'Line investment £'], ['deprYears', 'Depreciation yrs'], ['operators', 'Operators/line'], ['labourRate', 'Labour £/hr'], ['productiveHoursYr', 'Productive hrs/yr']] as const).map(([k, lbl]) => (
-                              <label key={k} className="text-[10.5px] text-slate-500">{lbl}
+                              <label key={k} className="text-2xs text-slate-500">{lbl}
                                 <input type="number" value={mhrIn[k]} onChange={e => setMhrIn(p => ({ ...p, [k]: e.target.value }))} className={`${inpS} border-white/10 w-full mt-0.5`} />
                               </label>
                             ))}
@@ -902,7 +901,7 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
                         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${(isSetN('nre', n.id, 'amount') || isSetN('nre', n.id, 'amortVolume')) ? 'bg-gold-400' : 'bg-slate-600'}`} />
                         <span className="flex-1">{n.label}</span>
                         <input type="number" step={100} value={nestedVal('nre', n.id, 'amount', n.amount)} onChange={e => setNested('nre', n.id, 'amount', e.target.value)} className={bcls(isSetN('nre', n.id, 'amount'))} title="One-time cost £" />
-                        <span className="text-slate-600">£ ÷</span>
+                        <span className="text-slate-500">£ ÷</span>
                         <input type="number" step={1000} value={nestedVal('nre', n.id, 'amortVolume', n.amortVolume)} onChange={e => setNested('nre', n.id, 'amortVolume', e.target.value)} className={bcls(isSetN('nre', n.id, 'amortVolume'))} title="Amortisation quantity (e.g. programme lifetime volume)" />
                       </div>
                     ))}
@@ -919,7 +918,7 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
                   </Grp>
                 </div>
               )}
-              <p className="text-[10.5px] text-slate-600">Slate dot = derived from the standard engine · gold dot = your value. Values you know beat any model default — that is the point of this mode.</p>
+              <p className="text-2xs text-slate-500">Slate dot = derived from the standard engine · gold dot = your value. Values you know beat any model default — that is the point of this mode.</p>
             </>
           )}
         </div>

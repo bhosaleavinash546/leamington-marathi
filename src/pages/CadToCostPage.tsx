@@ -157,7 +157,7 @@ function DfmaRing({ score }: { score: number }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-2xl font-black" style={{ color }}>{score}</span>
-        <span className="text-slate-500 text-[10px] font-semibold uppercase">/10</span>
+        <span className="text-slate-500 text-2xs font-semibold uppercase">/10</span>
       </div>
     </div>
   );
@@ -181,7 +181,7 @@ function CostBar({ breakdown, currency }: { breakdown: CostBreakdown; currency: 
           const pct = total > 0 ? (value / total) * 100 : 0;
           return (
             <div key={label} style={{ width: `${pct}%`, backgroundColor: color }}
-              className="flex items-center justify-center text-white text-xs font-bold transition-all"
+              className="flex items-center justify-center text-white text-xs font-bold transition-ui"
               title={`${label}: ${formatCost(value, currency)} (${pct.toFixed(0)}%)`}
             >
               {pct >= 14 ? `${pct.toFixed(0)}%` : ''}
@@ -359,7 +359,7 @@ export default function CadToCostPage() {
             onDragLeave={() => setDragOver(false)}
             onDrop={onDrop}
             onClick={() => fileRef.current?.click()}
-            className={`relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all ${
+            className={`relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-ui ${
               dragOver ? 'border-gold-500/60 bg-gold-500/5' : 'border-white/15 hover:border-gold-500/35 hover:bg-white/3'
             }`}
           >
@@ -482,7 +482,7 @@ export default function CadToCostPage() {
                     <p className="text-slate-400 text-xs mt-2">
                       <span className="text-slate-500">Likely process:</span>{' '}
                       {geometry.processGuesses.map((p, i) => (
-                        <span key={i} className="text-teal-300">{p.process}<span className="text-slate-600"> [{p.confidence}]</span>{i < geometry.processGuesses!.length - 1 ? ' › ' : ''}</span>
+                        <span key={i} className="text-teal-300">{p.process}<span className="text-slate-500"> [{p.confidence}]</span>{i < geometry.processGuesses!.length - 1 ? ' › ' : ''}</span>
                       ))}
                     </p>
                   )}
@@ -493,8 +493,8 @@ export default function CadToCostPage() {
                     <ul className="space-y-1.5">
                       {geometry.dfmaFindings.map((f, i) => (
                         <li key={i} className="flex items-start gap-2 text-xs">
-                          <span className={`mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold flex-shrink-0 ${f.severity === 'high' ? 'bg-red-500/15 text-red-300' : f.severity === 'medium' ? 'bg-amber-500/15 text-amber-300' : 'bg-slate-500/15 text-slate-400'}`}>{f.severity}</span>
-                          <span className="text-slate-300 leading-snug">{f.finding} <span className="text-slate-600">({f.metric})</span></span>
+                          <span className={`mt-0.5 px-1.5 py-0.5 rounded text-2xs font-bold flex-shrink-0 ${f.severity === 'high' ? 'bg-red-500/15 text-red-300' : f.severity === 'medium' ? 'bg-amber-500/15 text-amber-300' : 'bg-slate-500/15 text-slate-400'}`}>{f.severity}</span>
+                          <span className="text-slate-300 leading-snug">{f.finding} <span className="text-slate-500">({f.metric})</span></span>
                         </li>
                       ))}
                     </ul>
@@ -568,7 +568,7 @@ export default function CadToCostPage() {
             <button
               onClick={handleAnalyse}
               disabled={analysing || !apiKey.trim()}
-              className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 text-navy-950 font-bold text-sm transition-all hover:from-gold-400 hover:to-gold-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 text-navy-950 font-bold text-sm transition-ui hover:from-gold-400 hover:to-gold-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {analysing ? <><ButtonSpinner size={16} /> Analysing…</> : <><Target size={16} /> Analyse Cost & DFMA</>}
             </button>
@@ -662,7 +662,7 @@ export default function CadToCostPage() {
                         <div key={key} className="bg-white/5 rounded-xl p-3">
                           <p className="text-slate-500 text-xs capitalize mb-0.5">{key}</p>
                           <p className="text-white font-semibold">{formatCost(result.costBreakdown![key].value, result.costBreakdown![key].currency)}</p>
-                          <p className="text-slate-600 text-[10px] leading-tight mt-1">{result.costBreakdown![key].basis}</p>
+                          <p className="text-slate-500 text-2xs leading-tight mt-1">{result.costBreakdown![key].basis}</p>
                         </div>
                       ))}
                     </div>
@@ -677,7 +677,7 @@ export default function CadToCostPage() {
                 )}
 
                 {result.note && (
-                  <p className="text-slate-600 text-[11px] leading-relaxed mt-3">{result.note}</p>
+                  <p className="text-slate-500 text-[11px] leading-relaxed mt-3">{result.note}</p>
                 )}
               </div>
 
@@ -738,8 +738,8 @@ export default function CadToCostPage() {
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="w-6 h-6 rounded-md bg-gold-500/15 border border-gold-500/20 flex items-center justify-center text-gold-400 text-xs font-bold flex-shrink-0">{i + 1}</span>
                               <span className="text-white font-semibold text-sm">{rec.title}</span>
-                              <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${cat.bg} ${cat.color}`}>{cat.label}</span>
-                              <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${diff.bg} ${diff.color}`}>{rec.difficulty}</span>
+                              <span className={`text-2xs px-2 py-0.5 rounded-full border font-medium ${cat.bg} ${cat.color}`}>{cat.label}</span>
+                              <span className={`text-2xs px-2 py-0.5 rounded-full border font-medium ${diff.bg} ${diff.color}`}>{rec.difficulty}</span>
                             </div>
                             <div className="text-right flex-shrink-0">
                               <p className="text-green-400 font-bold text-sm whitespace-nowrap">{rec.saving}</p>
@@ -779,7 +779,7 @@ export default function CadToCostPage() {
         {/* Footer note */}
         <p className="text-slate-700 text-xs text-center pb-4">
           Cost estimates are directional — not supplier quotes. CAD geometry is processed client-side and not stored.
-          Designed &amp; Created by <strong className="text-slate-600">Avinash Bhosale</strong>
+          Designed &amp; Created by <strong className="text-slate-500">Avinash Bhosale</strong>
         </p>
       </div>
     </div>

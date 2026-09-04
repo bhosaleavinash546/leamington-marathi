@@ -3655,3 +3655,51 @@ it in is content work, tracked separately.
   the same mistake as the band that was fitted to its own fixtures.
 - Rate-library validation, in-CAD integration, SSO/PLM: platform-level scope,
   already named in the register.
+
+## 68. One design system for the whole front end, gated like a benchmark
+
+**Context.** The September 2026 UI/UX review (`docs/UX-REVIEW-2026-09.md`)
+measured the production build on 58 page captures and found a front end that
+had grown one page at a time: three page-header languages and twelve `h1`
+sizes; a genuinely good motion system (`components/dfm/motion.ts`) used by
+two of thirty-six pages while the rest carried fourteen durations and seven
+easings; 10 px text rendered on every page; the chat button sitting on the
+mobile tab bar; the onboarding card colliding with the chat button; an
+unnamed hamburger button that made the navigation invisible to a screen
+reader on 28 pages.
+
+**Decision.**
+
+- **The motion system is promoted, not rewritten.** `src/lib/motion.ts` is
+  the DFM/Prism module moved up one level, with the same curve and durations
+  mirrored as CSS custom properties and set as Tailwind's *default*
+  transition. That last choice is the important one: every `transition-colors`
+  in the product now runs on the house curve without touching the file, so
+  adoption is complete on day one rather than a migration that stalls at five
+  pages. `transition-all` is retired for a property-scoped `transition-ui`;
+  `hover:scale` for a one-pixel lift. A global reduced-motion rule collapses
+  every CSS transition and animation, matching what framer-motion already did
+  through `MotionConfig`.
+- **The Prism masthead becomes `PageHeader`,** reading icon and group from
+  the nav registry so the header can no longer disagree with the sidebar.
+  Twelve hero pages were migrated; the two studios already had the pattern.
+- **The type scale has a floor.** `text-2xs` (11 px) replaces every 9, 10 and
+  10.5 px utility and the four CSS declarations under it. Below 11 px a label
+  is decoration.
+- **The stacking order is written down** (`--z-nav 40 · --z-fab 45 ·
+  --z-popover 50 · --z-modal 60`) and the two overlays that collided now live
+  where they cannot: the chat button clears the tab bar by construction, and
+  the onboarding checklist is a header chip on desktop and a bottom-left pill
+  on phones — nothing fixed to the bottom-right corner but the chat button.
+- **The floor is a CI gate,** `tests/design-system.test.mjs`, in the same
+  spirit as the cost benchmarks: a page that ships `transition-all`, a
+  `hover:scale`, a `text-[10px]` or a raw `z-50` overlay fails with the file
+  named, instead of being found in the next review.
+- **The app footer is a status bar.** The marketing footer, with an author bio
+  and a Sign In link, stays for signed-out pages only.
+
+**What was deliberately not done.** Wave 2 in the review: adopting the new
+`Input`/`Select`/`Card` primitives across every form (the primitives exist and
+are documented; a 230-input migration is its own change), virtualising the
+marketplace list, and replacing the light theme's `!important` overrides with
+a token remap. Each is listed with its measurement so it can be tracked.

@@ -1,5 +1,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// THE MOTION LANGUAGE OF THE DFM / DFA STUDIO.
+// THE MOTION LANGUAGE OF BRAINSPARK.
+//
+// Written for the DFM / DFA Studio and Prism first, promoted to the whole
+// product in the September 2026 UX review (docs/UX-REVIEW-2026-09.md). The
+// same numbers are exposed to CSS as --ease-out / --dur-* in index.css and to
+// Tailwind as ease-out-house / duration-micro|enter|draw, so a CSS transition
+// and a framer-motion transition cannot disagree about how fast a card moves.
 //
 // This tool is read by cost engineers and their directors, and it argues about
 // money. So the motion has a job description, and decoration is not on it:
@@ -80,6 +86,11 @@ export interface DfmMotion {
  * into three different ideas of how fast a card should arrive.
  */
 export function useDfmMotion(): DfmMotion {
+  return useHouseMotion();
+}
+
+/** Product-wide name. `useDfmMotion` stays as an alias for the two studios. */
+export function useHouseMotion(): DfmMotion {
   const reduced = !!useReducedMotion();
 
   return useMemo(() => {

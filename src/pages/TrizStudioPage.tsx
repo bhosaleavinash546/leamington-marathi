@@ -6,6 +6,7 @@ import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import BusinessCaseModal from '../components/BusinessCaseModal';
 import { toast } from '../hooks/useToast';
+import PageHeader from '../components/ui/PageHeader';
 
 // The TRIZ Studio: type a trade-off in plain English, get inventive principles
 // and concrete, engine-checked cost-reduction ideas. Deliberately one input.
@@ -189,15 +190,11 @@ export default function TrizStudioPage() {
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gold-500/15 border border-gold-500/25 mb-4">
-            <Wand2 size={28} className="text-gold-400" />
-          </div>
-          <h1 className="text-4xl font-black text-white mb-3">TRIZ Innovation Studio</h1>
-          <p className="text-slate-400 max-w-2xl mx-auto">
-            Cost reduction is a game of trade-offs. Describe the one you want to <span className="text-white">break</span> — TRIZ maps it to the inventive principles that resolve it, then generates concrete, <span className="text-gold-400">engine-checked</span> ideas.
-          </p>
-        </div>
+        <PageHeader
+          tool="triz"
+          title="TRIZ Innovation Studio"
+          subtitle={<>Cost reduction is a game of trade-offs. Describe the one you want to <span className="text-white">break</span> — TRIZ maps it to the inventive principles that resolve it, then generates concrete, <span className="text-gold-400">engine-checked</span> ideas.</>}
+        />
 
         {/* Which tool. Three genuinely different instruments, not three
             wordings of one — so the blurb under the tabs changes with it. */}
@@ -232,7 +229,7 @@ export default function TrizStudioPage() {
             </div>
             {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
             <button onClick={separate} disabled={loading}
-              className="w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold transition-all">
+              className="w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold transition-ui">
               {loading ? <><ButtonSpinner size={16} /> Separating…</> : <><Sparkles size={18} /> Resolve by Separation</>}
             </button>
           </div>
@@ -276,7 +273,7 @@ export default function TrizStudioPage() {
               className="text-slate-500 text-xs mt-3 hover:text-slate-300">+ Add a row</button>
             {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
             <button onClick={trim} disabled={loading}
-              className="w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold transition-all">
+              className="w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold transition-ui">
               {loading ? <><ButtonSpinner size={16} /> Trimming…</> : <><Scissors size={18} /> Find What Can Go</>}
             </button>
           </div>
@@ -321,7 +318,7 @@ export default function TrizStudioPage() {
           {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
 
           <button onClick={resolve} disabled={loading}
-            className="w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold transition-all">
+            className="w-full mt-5 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold transition-ui">
             {loading ? <><ButtonSpinner size={16} /> Resolving contradiction…</> : <><Sparkles size={18} /> Generate Innovative Ideas</>}
           </button>
         </div>
@@ -335,11 +332,11 @@ export default function TrizStudioPage() {
               <p className="text-slate-500 text-xs uppercase tracking-wider mb-2">Contradiction (mapped to TRIZ parameters)</p>
               <div className="flex flex-wrap items-center gap-2 text-sm">
                 <span className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-300">▲ Improve: {result.contradiction.improving.name}</span>
-                <ArrowRight size={16} className="text-slate-600" />
+                <ArrowRight size={16} className="text-slate-500" />
                 <span className="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/25 text-red-300">▼ Without worsening: {result.contradiction.worsening.name}</span>
               </div>
               <p className="text-slate-400 text-sm mt-3 italic">{result.contradiction.restatement}</p>
-              <p className="text-slate-600 text-xs mt-1">Principles selected by {result.contradiction.basis}.</p>
+              <p className="text-slate-500 text-xs mt-1">Principles selected by {result.contradiction.basis}.</p>
             </div>
 
             {/* Recommended principles */}
@@ -381,7 +378,7 @@ export default function TrizStudioPage() {
               <div className="space-y-3 mt-3">
                 {result.ideas.map((idea, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.05 }}
-                    className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-gold-500/25 transition-all">
+                    className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-gold-500/25 transition-ui">
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="flex items-center gap-2">
                         {idea.triz && <span className="px-2 py-0.5 rounded-md bg-gold-500/10 border border-gold-500/20 text-gold-400 text-[11px] font-semibold">P{idea.triz.id} · {idea.triz.name}</span>}
@@ -415,7 +412,7 @@ export default function TrizStudioPage() {
                 ))}
               </div>
             </div>
-            <p className="text-slate-600 text-xs text-center">Principles are deterministic TRIZ theory; every £ figure is engine-checked or labelled. Validate against detailed studies before commercial use.</p>
+            <p className="text-slate-500 text-xs text-center">Principles are deterministic TRIZ theory; every £ figure is engine-checked or labelled. Validate against detailed studies before commercial use.</p>
           </motion.div>
         )}
 
@@ -450,7 +447,7 @@ export default function TrizStudioPage() {
                       <span className="text-white font-semibold text-sm">{s.name}</span>
                       {/* Published principle lists differ; the grade travels
                           with the recommendation rather than being implied. */}
-                      <span className="text-slate-600 text-[10px] uppercase tracking-wider">
+                      <span className="text-slate-500 text-2xs uppercase tracking-wider">
                         {s.sourceStatus === 'industry-consensus' ? 'industry consensus, lists vary by source' : s.sourceStatus}
                       </span>
                     </div>
@@ -459,7 +456,7 @@ export default function TrizStudioPage() {
                     <div className="flex flex-wrap gap-1.5 mb-2">
                       {s.principles.map((p: Principle) => (
                         <span key={p.id} title={p.hint}
-                          className="px-2 py-0.5 rounded-md bg-gold-500/10 border border-gold-500/20 text-gold-400 text-[10px]">
+                          className="px-2 py-0.5 rounded-md bg-gold-500/10 border border-gold-500/20 text-gold-400 text-2xs">
                           {p.id} {p.name}
                         </span>
                       ))}
@@ -500,7 +497,7 @@ export default function TrizStudioPage() {
                 </div>
               </div>
             )}
-            <p className="text-slate-600 text-xs text-center">{sepResult.note}</p>
+            <p className="text-slate-500 text-xs text-center">{sepResult.note}</p>
           </motion.div>
         )}
 
@@ -536,7 +533,7 @@ export default function TrizStudioPage() {
                       <span className="text-xs text-slate-400">
                         {c.costReleased != null
                           ? <span className="text-emerald-400">releases {c.costReleased}/part</span>
-                          : <span className="text-slate-600">cost not given</span>}
+                          : <span className="text-slate-500">cost not given</span>}
                         {' · '}
                         {c.questionsToAnswer === 0
                           ? <span className="text-emerald-400">no useful function — pure gain</span>
@@ -548,7 +545,7 @@ export default function TrizStudioPage() {
                       {c.functions.map((f: any, k: number) => (
                         <div key={k} className="text-xs">
                           <span className="text-slate-300">{f.function} → {f.object}</span>
-                          <span className="text-slate-600"> [{f.rank}]</span>
+                          <span className="text-slate-500"> [{f.rank}]</span>
                           {f.rules.map((r: any) => (
                             <p key={r.id} className="text-slate-500 mt-0.5 pl-3">
                               <span className="text-gold-500/80">[{r.id}]</span> {r.question}
@@ -574,7 +571,7 @@ export default function TrizStudioPage() {
                 );
               })}
             </div>
-            <p className="text-slate-600 text-xs text-center">{trimResult.note}</p>
+            <p className="text-slate-500 text-xs text-center">{trimResult.note}</p>
           </motion.div>
         )}
 
@@ -584,7 +581,7 @@ export default function TrizStudioPage() {
             its own header comment. Every recommendation already reports which
             of the two it used — the summary line should not contradict it. */}
         {!result && !sepResult && !trimResult && !loading && (
-          <p className="text-center text-slate-600 text-xs mt-8">40 classical inventive principles · 39 engineering parameters · 3 trimming rules · 4 separation strategies · engine-checked outputs</p>
+          <p className="text-center text-slate-500 text-xs mt-8">40 classical inventive principles · 39 engineering parameters · 3 trimming rules · 4 separation strategies · engine-checked outputs</p>
         )}
       </div>
     </div>

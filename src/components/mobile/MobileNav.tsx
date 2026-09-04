@@ -33,7 +33,7 @@ export default function MobileNav() {
             </div>
             {TOOL_GROUPS.map(group => (
               <div key={group.id} className="px-5 pb-3">
-                <div className="pt-2 pb-1.5 text-[10px] font-bold uppercase tracking-[0.09em] text-slate-500">{group.label}</div>
+                <div className="pt-2 pb-1.5 text-2xs font-bold uppercase tracking-[0.09em] text-slate-500">{group.label}</div>
                 <div className="grid grid-cols-2 gap-2">
                   {group.tools.map(t => (
                     <Link
@@ -54,7 +54,7 @@ export default function MobileNav() {
       )}
 
       <nav
-        className="fixed bottom-0 inset-x-0 z-50 pb-safe"
+        className="fixed bottom-0 inset-x-0 z-nav pb-safe"
         style={{ background: 'rgb(var(--navy-950))', borderTop: '1px solid rgba(255,255,255,0.08)' }}
       >
         <div className="flex items-stretch h-14">

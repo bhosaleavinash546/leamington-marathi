@@ -5,6 +5,7 @@ import { GitCompare, Upload, X, Zap, ChevronRight, Gauge } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import CadViewer3D from '../components/CadViewer3D';
 import { getAuthToken } from '../services/auth';
+import PageHeader from '../components/ui/PageHeader';
 
 const is3dCad = (name: string) => /\.(step|stp|igs|iges|stl)$/i.test(name);
 const authToken = () => getAuthToken() ?? '';
@@ -86,13 +87,11 @@ export default function CadDiffPage() {
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-cyan-500/15 border border-cyan-500/25 mb-4">
-            <GitCompare size={28} className="text-cyan-400" />
-          </div>
-          <h1 className="text-4xl font-black text-white mb-3">CAD Diff Analysis</h1>
-          <p className="text-slate-400"><span className="text-slate-300">Describe each revision in text for best results</span> — the AI reasons over the differences you describe and generates targeted cost-reduction ideas. (File uploads compare metadata only, not geometry.)</p>
-        </div>
+        <PageHeader
+          tool="cad-diff"
+          title="CAD Diff Analysis"
+          subtitle={<><span className="text-slate-200">Describe each revision in text for best results</span> — the AI reasons over the differences you describe and generates targeted cost-reduction ideas. File uploads compare metadata only, not geometry.</>}
+        />
 
         {/* Input mode toggle */}
         <div className="flex justify-center gap-2 mb-6">
@@ -124,12 +123,12 @@ export default function CadDiffPage() {
                     {is3dCad(file.name) && <CadViewer3D file={file} token={authToken()} />}
                   </div>
                 ) : (
-                  <div {...drop.getRootProps()} className={`flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-dashed cursor-pointer transition-all ${drop.isDragActive ? 'border-cyan-500/50 bg-cyan-500/5' : 'border-white/15 hover:border-white/30 hover:bg-white/3'}`}>
-                    <input {...drop.getInputProps()} />
+                  <div {...drop.getRootProps()} className={`flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-dashed cursor-pointer transition-ui ${drop.isDragActive ? 'border-cyan-500/50 bg-cyan-500/5' : 'border-white/15 hover:border-white/30 hover:bg-white/3'}`}>
+                    <input {...drop.getInputProps({ 'aria-label': 'Upload CAD revision files' })} />
                     <Upload size={20} className="text-slate-500" />
                     <div className="text-center">
                       <p className="text-slate-400 text-sm">Drop STEP, STL or DXF</p>
-                      <p className="text-slate-600 text-xs mt-1">or click to browse</p>
+                      <p className="text-slate-500 text-xs mt-1">or click to browse</p>
                     </div>
                   </div>
                 )}
@@ -155,7 +154,7 @@ export default function CadDiffPage() {
         {error && <p className="text-red-400 text-sm text-center mb-4">{error}</p>}
 
         <button onClick={handleCompare} disabled={loading || !canCompare}
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-semibold transition-all hover:scale-[1.01]">
+          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-semibold transition-ui hover:-translate-y-0.5">
           {loading
             ? <><ButtonSpinner size={16} /> Analysing delta…</>
             : <><GitCompare size={18} /> Compare Designs &amp; Generate Ideas</>}
@@ -168,7 +167,7 @@ export default function CadDiffPage() {
             </h2>
             {ideas.map((idea, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
-                className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-cyan-500/25 transition-all">
+                className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-cyan-500/25 transition-ui">
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <h3 className="text-white font-semibold">{idea.title}</h3>
                   <span className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold border ${
@@ -206,7 +205,7 @@ export default function CadDiffPage() {
         )}
 
         {!loading && ideas.length === 0 && (
-          <p className="text-center text-slate-600 text-xs mt-8">Enter both designs and click Compare — the AI reasons over your described differences and generates targeted cost-reduction ideas.</p>
+          <p className="text-center text-slate-500 text-xs mt-8">Enter both designs and click Compare — the AI reasons over your described differences and generates targeted cost-reduction ideas.</p>
         )}
       </div>
     </div>

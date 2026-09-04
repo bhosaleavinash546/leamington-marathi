@@ -7,6 +7,7 @@ import { parseWorkbook, parseCsv } from '../services/safe-xlsx';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
 import { getAuthToken } from '../services/auth';
+import PageHeader from '../components/ui/PageHeader';
 
 interface BomRow {
   systemId: string;
@@ -219,10 +220,11 @@ export default function BomAnalysisPage() {
   return (
     <div className="min-h-screen bg-navy-950 pt-24 pb-16 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-black text-white mb-2">BOM Batch Analysis</h1>
-          <p className="text-slate-400">Upload a Bill of Materials to analyse multiple parts in one run. Up to 100 parts per batch.</p>
-        </div>
+        <PageHeader
+          tool="bom-batch"
+          title="BOM Batch Analysis"
+          subtitle="Upload a Bill of Materials to analyse multiple parts in one run. Up to 100 parts per batch."
+        />
 
         <div className="grid lg:grid-cols-2 gap-6 mb-8">
           {/* Upload */}
@@ -234,10 +236,10 @@ export default function BomAnalysisPage() {
               </button>
             </div>
             <div {...getRootProps()} className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-gold-500/50 bg-gold-500/5' : 'border-white/15 hover:border-white/30'}`}>
-              <input {...getInputProps()} />
+              <input {...getInputProps({ 'aria-label': 'Upload a bill of materials' })} />
               <Upload size={32} className="mx-auto mb-3 text-slate-500" />
               <p className="text-slate-300 text-sm font-medium">{isDragActive ? 'Drop file here' : 'Drag & drop or click to upload'}</p>
-              <p className="text-slate-600 text-xs mt-1">Excel (.xlsx) or CSV — max 20 rows</p>
+              <p className="text-slate-500 text-xs mt-1">Excel (.xlsx) or CSV — max 20 rows</p>
             </div>
             {error && <p className="text-red-400 text-sm mt-3 flex items-center gap-1.5"><AlertCircle size={14} />{error}</p>}
           </div>
@@ -277,7 +279,7 @@ export default function BomAnalysisPage() {
             <button
               onClick={() => runBomAnalysis(false)}
               disabled={running || !apiKey.trim()}
-              className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-bold transition-all shadow-glow-gold"
+              className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-bold transition-ui shadow-glow-gold"
             >
               {running ? <><ButtonSpinner size={18} /> Analysing {rows.length} parts…</> : <><Zap size={18} /> Run BOM Analysis</>}
             </button>
@@ -296,7 +298,7 @@ export default function BomAnalysisPage() {
                   <span>{currentPart}</span><span>{progress}%</span>
                 </div>
                 <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-gold-500 to-amber-400 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+                  <div className="h-full bg-gradient-to-r from-gold-500 to-amber-400 rounded-full transition-ui duration-500" style={{ width: `${progress}%` }} />
                 </div>
                 <div className="mt-2 flex justify-center">
                   <button
@@ -339,11 +341,11 @@ export default function BomAnalysisPage() {
                       <div className="flex items-center gap-3 flex-shrink-0">
                         <div className="text-center">
                           <div className="text-gold-400 font-bold text-lg">{r.ideasCount}</div>
-                          <div className="text-slate-600 text-xs">ideas</div>
+                          <div className="text-slate-500 text-xs">ideas</div>
                         </div>
                         <div className="text-center">
                           <div className="text-green-400 font-bold text-lg">{r.quickWins}</div>
-                          <div className="text-slate-600 text-xs">QW</div>
+                          <div className="text-slate-500 text-xs">QW</div>
                         </div>
                         {r.ideasCount > 0 && <CheckCircle size={16} className="text-green-400" />}
                       </div>

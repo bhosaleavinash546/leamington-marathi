@@ -59,7 +59,7 @@ function OTPInput({ value, onChange, disabled }: { value: string; onChange: (v: 
           onKeyDown={e => handleKeyDown(i, e)}
           onPaste={handlePaste}
           onFocus={e => e.target.select()}
-          className={`w-11 h-14 text-center text-2xl font-bold rounded-xl border-2 transition-all outline-none
+          className={`w-11 h-14 text-center text-2xl font-bold rounded-xl border-2 transition-ui outline-none
             bg-navy-800 text-white
             ${digits[i] ? 'border-gold-500 shadow-[0_0_12px_rgba(245,158,11,0.25)]' : 'border-white/20'}
             focus:border-gold-400 focus:shadow-[0_0_16px_rgba(245,158,11,0.3)]
@@ -87,19 +87,19 @@ function PasswordStrength({ password }: { password: string }) {
     <div className="mt-2 space-y-2">
       <div className="flex gap-1">
         {[0, 1, 2, 3].map(i => (
-          <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i < score ? colors[score - 1] : 'bg-white/10'}`} />
+          <div key={i} className={`h-1 flex-1 rounded-full transition-ui ${i < score ? colors[score - 1] : 'bg-white/10'}`} />
         ))}
       </div>
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap gap-x-3 gap-y-1">
           {checks.map(c => (
-            <span key={c.label} className={`text-xs flex items-center gap-1 ${c.ok ? 'text-green-400' : 'text-slate-600'}`}>
+            <span key={c.label} className={`text-xs flex items-center gap-1 ${c.ok ? 'text-green-400' : 'text-slate-500'}`}>
               {c.ok ? <CheckCircle size={10} /> : <span className="w-2.5 h-2.5 rounded-full bg-white/15 inline-block" />}
               {c.label}
             </span>
           ))}
         </div>
-        <span className={`text-xs font-semibold ${colors[score - 1]?.replace('bg-', 'text-') || 'text-slate-600'}`}>{labels[score - 1] || ''}</span>
+        <span className={`text-xs font-semibold ${colors[score - 1]?.replace('bg-', 'text-') || 'text-slate-500'}`}>{labels[score - 1] || ''}</span>
       </div>
     </div>
   );
@@ -162,7 +162,7 @@ function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder,
           value={value}
           onChange={e => onChange(e.target.value)}
           placeholder={placeholder}
-          className={`w-full bg-navy-800 border rounded-xl pl-10 pr-${isPassword ? '12' : '4'} py-3 text-white placeholder-slate-600 focus:outline-none transition-all text-sm
+          className={`w-full bg-navy-800 border rounded-xl pl-10 pr-${isPassword ? '12' : '4'} py-3 text-white placeholder-slate-600 focus:outline-none transition-ui text-sm
             ${error ? 'border-red-500/60 focus:border-red-500' : 'border-white/15 focus:border-gold-500/60'}`}
         />
         {isPassword && (
@@ -218,7 +218,7 @@ function BrandPanel() {
         </div>
       </div>
 
-      <p className="text-slate-600 text-xs relative">
+      <p className="text-slate-500 text-xs relative">
         Designed &amp; Created by <span className="text-slate-500 font-semibold">Avinash Bhosale</span>
       </p>
     </div>
@@ -359,7 +359,7 @@ export default function AuthPage() {
                     <button type="button" onClick={() => { setScreen('forgot'); clearError(); setDevOtp(''); setOtp(''); }} className="text-gold-400 hover:text-gold-300 text-sm transition-colors">Forgot password?</button>
                   </div>
                   {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-glow-gold">
+                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-ui hover:-translate-y-0.5 shadow-glow-gold">
                     {loading ? <><ButtonSpinner size={18} /> Signing in…</> : <>Sign In <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -386,7 +386,7 @@ export default function AuthPage() {
                   </div>
                   <Field label="Confirm password" icon={Lock} type="password" value={confirmPassword} onChange={setConfirmPassword} placeholder="Repeat your password" autoComplete="new-password" disabled={loading} />
                   {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-glow-gold">
+                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-ui hover:-translate-y-0.5 shadow-glow-gold">
                     {loading ? <><ButtonSpinner size={18} /> Creating account…</> : <>Create Account <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -410,7 +410,7 @@ export default function AuthPage() {
                 <form onSubmit={handleForgotPassword} className="space-y-4">
                   <Field label="Email address" icon={Mail} type="email" value={email} onChange={setEmail} placeholder="you@company.com" autoComplete="email" disabled={loading} />
                   {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-glow-gold">
+                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-ui hover:-translate-y-0.5 shadow-glow-gold">
                     {loading ? <><ButtonSpinner size={18} /> Sending code…</> : <>Send Reset Code <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -442,7 +442,7 @@ export default function AuthPage() {
                   </div>
                   <Field label="Confirm new password" icon={Lock} type="password" value={confirmNewPassword} onChange={setConfirmNewPassword} placeholder="Repeat new password" autoComplete="new-password" disabled={loading} />
                   {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading || otp.length < 6} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-glow-gold">
+                  <button type="submit" disabled={loading || otp.length < 6} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-ui hover:-translate-y-0.5 shadow-glow-gold">
                     {loading ? <><ButtonSpinner size={18} /> Resetting…</> : <>Reset Password <CheckCircle size={18} /></>}
                   </button>
                   <ResendButton key={otpResendKey} email={email} type="reset" onResent={() => { setOtp(''); setOtpResendKey(k => k + 1); }} />
@@ -453,7 +453,7 @@ export default function AuthPage() {
         </div>
 
         <p className="mt-10 text-slate-700 text-xs text-center">
-          BrainSpark · Designed &amp; Created by <span className="text-slate-600 font-medium">Avinash Bhosale</span>
+          BrainSpark · Designed &amp; Created by <span className="text-slate-500 font-medium">Avinash Bhosale</span>
         </p>
       </div>
     </div>

@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ReactNode, Suspense } from 'react';
+import { DUR, EASE_OUT } from '../../lib/motion';
 
 // Lightweight fallback shown while a lazily-loaded route chunk is fetched. Kept
 // inside the transition so route code-splitting never flashes a blank screen.
@@ -11,13 +12,19 @@ function PageLoader() {
   );
 }
 
+/**
+ * Route entrance on the house curve (src/lib/motion.ts) — the same rise every
+ * card in the product makes, so a page arriving and a panel arriving read as
+ * one vocabulary. Under reduced motion it is a plain cross-fade.
+ */
 export default function PageTransition({ children }: { children: ReactNode }) {
+  const reduced = !!useReducedMotion();
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: reduced ? 0 : 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
-      transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
+      exit={{ opacity: 0, y: reduced ? 0 : -6 }}
+      transition={reduced ? { duration: 0.12 } : { duration: DUR.enter, ease: EASE_OUT as unknown as number[] }}
       style={{ minHeight: '100%' }}
     >
       <Suspense fallback={<PageLoader />}>{children}</Suspense>

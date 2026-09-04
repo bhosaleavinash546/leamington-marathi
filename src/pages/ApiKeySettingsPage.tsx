@@ -11,6 +11,7 @@
 import { useEffect, useState } from 'react';
 import { KeyRound, Loader2, Check, Trash2, ShieldCheck } from 'lucide-react';
 import { getAuthToken } from '../services/auth';
+import PageHeader from '../components/ui/PageHeader';
 
 interface Status {
   configured: boolean;
@@ -65,16 +66,13 @@ export default function ApiKeySettingsPage() {
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-500/15 border border-teal-500/25 mb-4">
-            <KeyRound size={28} className="text-teal-400" />
-          </div>
-          <h1 className="text-4xl font-black text-white mb-3">API Key</h1>
-          <p className="text-slate-400">
-            Stored encrypted against your account, so every tool works on every device
-            without re-entering it.
-          </p>
-        </div>
+        <PageHeader
+          icon={KeyRound}
+          eyebrow="Settings"
+          tone="neutral"
+          title="API Key"
+          subtitle="Stored encrypted against your account, so every tool works on every device without re-entering it."
+        />
 
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-6 space-y-5">
           {status && (

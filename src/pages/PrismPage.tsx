@@ -26,7 +26,7 @@ import { toast } from '../hooks/useToast';
 import { generateCostReductionIdeas, saveFullResult, ProgressEvent } from '../services/claude-service';
 import { AnalysisConfig, AnalysisResult, PlantRegion } from '../types';
 import { CURRENCIES, CURRENCY_SYMBOLS } from '../constants/costing';
-import { useDfmMotion } from '../components/dfm/motion';
+import { useDfmMotion } from '../lib/motion';
 import { useSpotlight } from '../components/dfm/useSpotlight';
 import StepRail, { RailStep } from '../components/dfm/StepRail';
 import TickNumber from '../components/dfm/TickNumber';
@@ -970,7 +970,7 @@ export default function Part360Page() {
                       <motion.button key={l.lensId} {...m.press} aria-pressed={on}
                         onClick={() => setAsmLenses(prev => { const n = new Set(prev); if (n.has(l.lensId)) n.delete(l.lensId); else n.add(l.lensId); return n; })}
                         className={`px-3 py-1.5 rounded-full border text-xs font-medium ${on ? 'bg-teal-500/15 text-teal-300 border-teal-500/35' : 'bg-white/[0.04] text-slate-500 border-white/10'}`}>
-                        {l.name} <span className="text-[10px] opacity-70">· {l.level}</span>
+                        {l.name} <span className="text-2xs opacity-70">· {l.level}</span>
                       </motion.button>
                     );
                   })}
@@ -1061,7 +1061,7 @@ export default function Part360Page() {
                               <span className="dfm-num text-[11px] text-teal-500/80 w-5">{i + 1}</span>
                               <div className="min-w-[140px] flex-1">
                                 <div className="text-sm text-white">{row.file}</div>
-                                <div className="text-[10px] text-slate-500">{row.massKg} kg · {row.massSource}</div>
+                                <div className="text-2xs text-slate-500">{row.massKg} kg · {row.massSource}</div>
                               </div>
                               <div className="dfm-num text-xs text-slate-400 w-24 text-right">engine {eur(row.engineEur)}</div>
                               <div className="dfm-num text-xs text-teal-300 w-24 text-right">entitle {eur(row.entitlementEur)}</div>
@@ -1186,7 +1186,7 @@ export default function Part360Page() {
                     </div>
                     <div className="text-[11px] text-slate-500 mt-1 pl-6">{drawingFile ? 'Tolerances and roughness prefill the costed specification — you confirm them.' : 'Without it, the spec defaults to standard and over-specification cannot be measured.'}</div>
                   </motion.button>
-                  <p className="text-[11px] text-slate-600">The supplier quote comes at step 3 — form entry with optional PDF assist.</p>
+                  <p className="text-[11px] text-slate-500">The supplier quote comes at step 3 — form entry with optional PDF assist.</p>
                 </div>
                 <motion.button
                   {...m.press}
@@ -1238,7 +1238,7 @@ export default function Part360Page() {
                           <div key={t.id} className="dfm-row-hover flex items-center gap-3 rounded-lg border border-white/[0.06] px-3 py-1.5 text-xs">
                             <span className="text-white">{t.title}</span>
                             <span className="text-slate-500 flex-1 truncate">{[t.reference, t.material, t.process, t.massKg ? `${t.massKg} kg` : null].filter(Boolean).join(' · ')}</span>
-                            <button aria-label={`Delete teardown ${t.title}`} onClick={() => deleteTeardown(t.id)} className="text-slate-600 hover:text-danger-400"><Trash2 size={12} /></button>
+                            <button aria-label={`Delete teardown ${t.title}`} onClick={() => deleteTeardown(t.id)} className="text-slate-500 hover:text-danger-400"><Trash2 size={12} /></button>
                           </div>
                         ))}
                       </div>
@@ -1322,14 +1322,14 @@ export default function Part360Page() {
 
                 <motion.div variants={m.rise} initial="hidden" animate="show" transition={m.t(undefined, m.beat(2))}
                   className="dfm-panel dfm-spot dfm-lift p-5" onMouseMove={spot}>
-                  <div className="dfm-label text-slate-500 mb-2">Costed specification <span className="normal-case tracking-normal text-slate-600">(drawing prefill — confirm)</span></div>
+                  <div className="dfm-label text-slate-500 mb-2">Costed specification <span className="normal-case tracking-normal text-slate-500">(drawing prefill — confirm)</span></div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="dfm-label text-slate-600 block mb-1">Tol. band (mm)</label>
+                      <label className="dfm-label text-slate-500 block mb-1">Tol. band (mm)</label>
                       <input className="dfm-input" aria-label="Tightest tolerance band in millimetres" type="number" step="0.01" min="0" value={tightestTolMm} onChange={e => setTightestTolMm(e.target.value)} placeholder="none read" />
                     </div>
                     <div>
-                      <label className="dfm-label text-slate-600 block mb-1">Finest Ra (µm)</label>
+                      <label className="dfm-label text-slate-500 block mb-1">Finest Ra (µm)</label>
                       <input className="dfm-input" aria-label="Finest surface roughness Ra in micrometres" type="number" step="0.1" min="0" value={roughnessRaUm} onChange={e => setRoughnessRaUm(e.target.value)} placeholder="none read" />
                     </div>
                   </div>
@@ -1439,7 +1439,7 @@ export default function Part360Page() {
                     <motion.button {...m.press} onClick={() => setQuoteLines(prev => [...prev, { label: '', kind: 'other', amount: '' }])}
                       className="text-teal-400 hover:text-teal-300 text-xs flex items-center gap-1"><Plus size={12} /> Add line</motion.button>
                   </div>
-                  {quoteLines.length === 0 && <p className="text-[11px] text-slate-600">No lines — forensics will be skipped and the dossier will say so.</p>}
+                  {quoteLines.length === 0 && <p className="text-[11px] text-slate-500">No lines — forensics will be skipped and the dossier will say so.</p>}
                   <motion.div variants={m.stagger()} initial="hidden" animate="show" className="space-y-2">
                     {quoteLines.map((l, i) => (
                       <motion.div key={i} variants={m.slideIn} className="grid grid-cols-[1fr_140px_110px_32px] gap-2 items-center">
@@ -1529,7 +1529,7 @@ export default function Part360Page() {
                       </div>
                       {s.skipped ? (
                         <div
-                          className="h-[18px] rounded-md border border-white/[0.06] text-[10px] text-slate-500 italic flex items-center px-2"
+                          className="h-[18px] rounded-md border border-white/[0.06] text-2xs text-slate-500 italic flex items-center px-2"
                           style={{ backgroundImage: 'repeating-linear-gradient(-45deg, rgb(255 255 255 / 0.025) 0 6px, transparent 6px 12px)' }}
                         >
                           not evaluated — {s.reason}
@@ -1550,13 +1550,13 @@ export default function Part360Page() {
                           />
                         </div>
                       )}
-                      <div className={`dfm-num text-xs font-semibold text-right ${s.skipped ? 'text-slate-600' : s.deltaEur > 0 ? 'text-gold-400' : 'text-slate-400'}`}>
+                      <div className={`dfm-num text-xs font-semibold text-right ${s.skipped ? 'text-slate-500' : s.deltaEur > 0 ? 'text-gold-400' : 'text-slate-400'}`}>
                         {s.skipped ? '—' : <>
                           {Math.abs(s.deltaEur) < 0.005 ? '' : s.deltaEur < 0 ? '+' : '−'}<TickNumber value={Math.abs(s.deltaEur)} decimals={2} prefix="€" delay={m.beat(i + 1)} />
                           {Number.isFinite(s.co2DeltaKg) && (
                             <span
                               title={s.co2Basis ?? undefined}
-                              className={`block mt-0.5 text-[10px] font-medium ${(s.co2DeltaKg as number) <= 0 ? 'text-emerald-400/90' : 'text-amber-400/90'}`}
+                              className={`block mt-0.5 text-2xs font-medium ${(s.co2DeltaKg as number) <= 0 ? 'text-emerald-400/90' : 'text-amber-400/90'}`}
                             >
                               {(s.co2DeltaKg as number) > 0 ? '+' : ''}{s.co2DeltaKg} kgCO₂e
                             </span>
@@ -1682,7 +1682,7 @@ export default function Part360Page() {
                         : r.verdict === 'in-band' ? 'text-slate-300' : 'text-slate-500';
                       const spine = r.verdict === 'above-model' ? 'text-gold-400'
                         : r.verdict === 'below-model' ? 'text-emerald-400'
-                        : r.verdict === 'in-band' ? 'text-teal-400' : 'text-slate-600';
+                        : r.verdict === 'in-band' ? 'text-teal-400' : 'text-slate-500';
                       // Ratio bar: 1.0 = engine parity at the midline; capped at 2×.
                       const ratio = r.ratio != null ? Math.min(2, Math.max(0, r.ratio)) : null;
                       return (
@@ -1691,7 +1691,7 @@ export default function Part360Page() {
                           <div className="flex flex-wrap items-center gap-3">
                             <div className="min-w-[160px] flex-1">
                               <div className="text-sm text-white">{r.label}</div>
-                              <div className="text-[10px] text-slate-500 uppercase tracking-wider">{r.kind}</div>
+                              <div className="text-2xs text-slate-500 uppercase tracking-wider">{r.kind}</div>
                             </div>
                             <div className="dfm-num text-xs text-slate-300 text-right w-20">{eur(r.quoteEur)}</div>
                             <div className="dfm-num text-xs text-slate-500 text-right w-20">{r.engineEur != null ? eur(r.engineEur) : '—'}</div>
@@ -1705,7 +1705,7 @@ export default function Part360Page() {
                                   />
                                   <span className="absolute left-1/2 top-[-2px] bottom-[-2px] w-px bg-white/30" aria-hidden="true" />
                                 </div>
-                              ) : <div className="text-[10px] text-slate-600 text-center">unmapped</div>}
+                              ) : <div className="text-2xs text-slate-500 text-center">unmapped</div>}
                             </div>
                             <span className={`px-2 py-0.5 rounded-md border text-[11px] font-medium whitespace-nowrap border-current/25 bg-current/10 ${tone}`}>
                               {r.verdict}
@@ -1741,7 +1741,7 @@ export default function Part360Page() {
                           <span className="text-white min-w-[120px] flex-1">{r.label}</span>
                           <span className="dfm-num text-slate-400 w-20 text-right">quoted €{r.quotedEur.toFixed(2)}</span>
                           <span className={`dfm-num w-24 text-right ${r.targetEur != null ? 'text-teal-300' : 'text-slate-500 italic'}`}>{r.targetEur != null ? `target €${r.targetEur.toFixed(2)}` : 'clarify'}</span>
-                          <span className={`dfm-num w-20 text-right font-semibold ${r.askEur ? 'text-gold-400' : 'text-slate-600'}`}>{r.askEur ? `−€${r.askEur.toFixed(2)}` : '—'}</span>
+                          <span className={`dfm-num w-20 text-right font-semibold ${r.askEur ? 'text-gold-400' : 'text-slate-500'}`}>{r.askEur ? `−€${r.askEur.toFixed(2)}` : '—'}</span>
                         </div>
                         <p className="text-[11px] text-slate-500 mt-1">{r.argument}</p>
                       </div>

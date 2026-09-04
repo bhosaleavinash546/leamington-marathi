@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link2, CheckCircle, AlertCircle, ExternalLink, Slack, Send, Construction, Clock, Database, Settings, GitBranch, Box } from 'lucide-react';
 import { toast } from '../hooks/useToast';
 import { getAuthToken } from '../services/auth';
+import PageHeader from '../components/ui/PageHeader';
 
 interface WebhookConfig {
   slackUrl: string;
@@ -87,13 +88,13 @@ export default function IntegrationsPage() {
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-500/15 border border-blue-500/25 mb-4">
-            <Link2 size={28} className="text-blue-400" />
-          </div>
-          <h1 className="text-4xl font-black text-white mb-3">Integrations</h1>
-          <p className="text-slate-400">Connect BrainSpark to your team's workflow tools. Configure a webhook and post to the channel from here; automatic posting on approval is not built yet.</p>
-        </div>
+        <PageHeader
+          icon={Link2}
+          eyebrow="Settings"
+          tone="neutral"
+          title="Integrations"
+          subtitle="Connect BrainSpark to your team's workflow tools. Configure a webhook and post to the channel from here; automatic posting on approval is not built yet."
+        />
 
         {/* ── Live Integrations ── */}
         <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-3 px-1">Live</h2>
@@ -123,7 +124,7 @@ export default function IntegrationsPage() {
                 <StatusIcon type="slack" /> Test
               </button>
             </div>
-            <p className="mt-2 text-slate-600 text-xs">Create a Slack incoming webhook from your Slack workspace settings → Integrations → Incoming Webhooks.</p>
+            <p className="mt-2 text-slate-500 text-xs">Create a Slack incoming webhook from your Slack workspace settings → Integrations → Incoming Webhooks.</p>
           </motion.div>
 
           {/* Microsoft Teams */}
@@ -151,7 +152,7 @@ export default function IntegrationsPage() {
                 <StatusIcon type="teams" /> Test
               </button>
             </div>
-            <p className="mt-2 text-slate-600 text-xs">Create a Teams incoming webhook via the connector settings on your channel. Copy the webhook URL here.</p>
+            <p className="mt-2 text-slate-500 text-xs">Create a Teams incoming webhook via the connector settings on your channel. Copy the webhook URL here.</p>
           </motion.div>
 
           {/* Auto-notify setting */}
@@ -172,11 +173,11 @@ export default function IntegrationsPage() {
               onClick={() => setConfig(c => ({ ...c, autoNotify: !c.autoNotify }))}
               className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 ${config.autoNotify ? 'bg-blue-500' : 'bg-navy-700 border border-white/10'}`}
             >
-              <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${config.autoNotify ? 'left-6' : 'left-1'}`} />
+              <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-ui ${config.autoNotify ? 'left-6' : 'left-1'}`} />
             </button>
           </motion.div>
 
-          <button onClick={save} className={`w-full py-3 rounded-xl font-semibold text-sm transition-all shadow-glow-gold ${saved ? 'bg-green-600 text-white' : 'bg-gold-500 hover:bg-gold-400 text-navy-950 hover:scale-[1.02]'}`}>
+          <button onClick={save} className={`w-full py-3 rounded-xl font-semibold text-sm transition-ui shadow-glow-gold ${saved ? 'bg-green-600 text-white' : 'bg-gold-500 hover:bg-gold-400 text-navy-950 hover:-translate-y-0.5'}`}>
             {saved ? '✓ Settings Saved' : 'Save Integration Settings'}
           </button>
         </div>
@@ -204,7 +205,7 @@ export default function IntegrationsPage() {
                 </div>
                 <p className="text-slate-500 text-xs">Auto-create Jira tasks for approved ideas</p>
               </div>
-              <button disabled className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 border border-white/8 text-slate-600 text-sm font-medium cursor-not-allowed select-none flex-shrink-0">
+              <button disabled className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 border border-white/8 text-slate-500 text-sm font-medium cursor-not-allowed select-none flex-shrink-0">
                 <Clock size={13} /> Coming Soon
               </button>
             </div>
@@ -224,7 +225,7 @@ export default function IntegrationsPage() {
                 </div>
                 <p className="text-slate-500 text-xs">Pull BOM data and push cost-reduction ideas directly into your PLM</p>
               </div>
-              <button disabled className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 border border-white/8 text-slate-600 text-sm font-medium cursor-not-allowed select-none flex-shrink-0">
+              <button disabled className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 border border-white/8 text-slate-500 text-sm font-medium cursor-not-allowed select-none flex-shrink-0">
                 <Clock size={13} /> Coming Soon
               </button>
             </div>
@@ -244,7 +245,7 @@ export default function IntegrationsPage() {
                 </div>
                 <p className="text-slate-500 text-xs">Sync cost estimates and approved savings back to SAP material masters</p>
               </div>
-              <button disabled className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 border border-white/8 text-slate-600 text-sm font-medium cursor-not-allowed select-none flex-shrink-0">
+              <button disabled className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 border border-white/8 text-slate-500 text-sm font-medium cursor-not-allowed select-none flex-shrink-0">
                 <Clock size={13} /> Coming Soon
               </button>
             </div>
@@ -264,7 +265,7 @@ export default function IntegrationsPage() {
                 </div>
                 <p className="text-slate-500 text-xs">Comment cost analysis results directly on pull requests for CAD file changes</p>
               </div>
-              <button disabled className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 border border-white/8 text-slate-600 text-sm font-medium cursor-not-allowed select-none flex-shrink-0">
+              <button disabled className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 border border-white/8 text-slate-500 text-sm font-medium cursor-not-allowed select-none flex-shrink-0">
                 <Clock size={13} /> Coming Soon
               </button>
             </div>
@@ -284,7 +285,7 @@ export default function IntegrationsPage() {
                 </div>
                 <p className="text-slate-500 text-xs">Analyse cost directly from your CAD tool without exporting files first</p>
               </div>
-              <button disabled className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 border border-white/8 text-slate-600 text-sm font-medium cursor-not-allowed select-none flex-shrink-0">
+              <button disabled className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 border border-white/8 text-slate-500 text-sm font-medium cursor-not-allowed select-none flex-shrink-0">
                 <Clock size={13} /> Coming Soon
               </button>
             </div>

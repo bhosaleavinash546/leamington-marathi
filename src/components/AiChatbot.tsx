@@ -97,9 +97,13 @@ export default function AiChatbot() {
       {/* Floating toggle button */}
       <motion.button
         onClick={() => setOpen(v => !v)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-gold-500 to-amber-600 shadow-lg shadow-amber-500/30 flex items-center justify-center text-navy-950 hover:scale-105 transition-transform"
+        // bottom = tab bar (3.5 rem) + safe area + 0.75 rem on phones; the review
+        // measured the old bottom-6 covering 33 px of the third tab on every page.
+        className="fixed right-5 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px)+0.75rem)] lg:bottom-6 lg:right-6 z-fab w-14 h-14 rounded-full bg-gradient-to-br from-gold-500 to-amber-600 shadow-lg shadow-amber-500/30 flex items-center justify-center text-navy-950 hover:-translate-y-0.5 transition-transform duration-micro ease-house"
         whileTap={{ scale: 0.95 }}
         title="BrainSpark Assistant"
+        aria-label={open ? 'Close BrainSpark assistant' : 'Open BrainSpark assistant'}
+        aria-expanded={open}
       >
         <AnimatePresence mode="wait" initial={false}>
           {open ? (
@@ -123,8 +127,10 @@ export default function AiChatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-            className="fixed bottom-24 right-6 z-50 w-[360px] max-h-[520px] flex flex-col rounded-2xl bg-navy-900 border border-white/10 shadow-2xl overflow-hidden"
-            style={{ maxHeight: 'calc(100vh - 120px)' }}
+            role="dialog"
+            aria-label="BrainSpark assistant"
+            className="fixed right-4 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px)+5rem)] lg:bottom-24 lg:right-6 z-popover w-[min(360px,calc(100vw-2rem))] max-h-[520px] flex flex-col rounded-2xl bg-navy-900 border border-white/10 shadow-2xl overflow-hidden"
+            style={{ maxHeight: 'calc(100vh - 160px)' }}
           >
             {/* Header */}
             <div className="flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-navy-800 to-navy-900 border-b border-white/8 flex-shrink-0">
@@ -194,7 +200,7 @@ export default function AiChatbot() {
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   className="px-4 pb-2 flex flex-col gap-1.5 flex-shrink-0"
                 >
-                  <p className="text-slate-600 text-xs mb-0.5">Quick questions</p>
+                  <p className="text-slate-500 text-xs mb-0.5">Quick questions</p>
                   {QUICK_QUESTIONS.map((q, i) => (
                     <motion.button
                       key={q}

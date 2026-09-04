@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, Sun, Moon, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { OnboardingHeaderChip } from '../OnboardingChecklist';
 import { useTheme } from '../../contexts/ThemeContext';
 import { TOOLS, TOOL_GROUPS, SETTINGS_LINKS } from '../../config/tools';
 import { getAuthToken } from '../../services/auth';
@@ -102,7 +103,7 @@ function ToolSearch() {
           className="flex-1 bg-transparent text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none min-w-0"
           aria-label="Jump to a tool"
         />
-        <kbd className="text-[10px] text-slate-600 border border-white/12 rounded px-1 py-px shrink-0">⌘K</kbd>
+        <kbd className="text-2xs text-slate-500 border border-white/12 rounded px-1 py-px shrink-0">⌘K</kbd>
       </div>
       <AnimatePresence>
         {open && (matches.length > 0 || content.length > 0) && (
@@ -123,7 +124,7 @@ function ToolSearch() {
             ))}
             {content.length > 0 && (
               <>
-                <div className="px-3.5 pt-2 pb-1 text-[10px] uppercase tracking-wider text-slate-500 border-t border-white/8 mt-1">
+                <div className="px-3.5 pt-2 pb-1 text-2xs uppercase tracking-wider text-slate-500 border-t border-white/8 mt-1">
                   Your content
                 </div>
                 {content.map(h => (
@@ -134,7 +135,7 @@ function ToolSearch() {
                   >
                     <Search size={13} className="text-slate-500 shrink-0" />
                     <span className="truncate">{h.title}</span>
-                    <span className="text-slate-500 text-[10px] uppercase tracking-wide ml-auto shrink-0">{HIT_LABEL[h.kind]}</span>
+                    <span className="text-slate-500 text-2xs uppercase tracking-wide ml-auto shrink-0">{HIT_LABEL[h.kind]}</span>
                   </button>
                 ))}
               </>
@@ -189,8 +190,9 @@ export default function Header() {
           <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2.5 group shrink-0">
             <img
               src="/brainspark-logo.svg"
-              alt="BrainSpark"
-              className="w-9 h-9 group-hover:scale-105 transition-transform"
+              alt=""
+              aria-hidden="true"
+              className="w-9 h-9 group-hover:-translate-y-0.5 transition-transform"
             />
             <div>
               <span className="text-white font-bold text-lg leading-none tracking-tight">Brain</span>
@@ -206,7 +208,7 @@ export default function Header() {
             <nav className="hidden md:flex items-center gap-1">
               {[{ path: '/', label: 'Home' }, { path: '/help', label: 'Help' }].map(({ path, label }) => (
                 <Link key={path} to={path}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive(path) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-ui ${isActive(path) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
                   {label}
                 </Link>
               ))}
@@ -215,10 +217,11 @@ export default function Header() {
 
           {/* Right side */}
           <div className="hidden md:flex items-center gap-3 shrink-0">
+            {isAuthenticated && <OnboardingHeaderChip />}
             <button
               onClick={toggleTheme}
               title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-              className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-gold-500/30 transition-all group"
+              className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-gold-500/30 transition-ui group"
             >
               {theme === 'dark'
                 ? <Sun size={15} className="text-slate-400 group-hover:text-gold-400 transition-colors" />
@@ -279,7 +282,7 @@ export default function Header() {
             ) : (
               <Link
                 to="/auth"
-                className="px-4 py-2 rounded-lg bg-gold-500 hover:bg-gold-400 text-navy-950 text-sm font-semibold transition-all hover:scale-105 shadow-lg shadow-gold-500/20"
+                className="px-4 py-2 rounded-lg bg-gold-500 hover:bg-gold-400 text-navy-950 text-sm font-semibold transition-ui hover:-translate-y-0.5 shadow-lg shadow-gold-500/20"
               >
                 Sign In
               </Link>
@@ -287,7 +290,13 @@ export default function Header() {
           </div>
 
           {/* Mobile menu button */}
-          <button className="md:hidden text-white p-2" onClick={() => setMenuOpen(!menuOpen)}>
+          <button
+            className="md:hidden text-white p-3 -mr-1 rounded-lg hover:bg-white/8 transition-ui duration-micro ease-house"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+          >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
@@ -297,6 +306,7 @@ export default function Header() {
       <AnimatePresence>
       {menuOpen && (
         <motion.div
+          id="mobile-menu"
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
@@ -316,7 +326,7 @@ export default function Header() {
               </Link>
               {TOOL_GROUPS.map(group => (
                 <div key={group.id}>
-                  <div className="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-[0.09em] text-slate-600">{group.label}</div>
+                  <div className="px-3 pt-3 pb-1 text-2xs font-bold uppercase tracking-[0.09em] text-slate-500">{group.label}</div>
                   {group.tools.map(t => (
                     <Link key={t.id} to={t.route} className="flex items-center gap-2.5 px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>
                       <t.icon size={14} className="text-slate-500" /> {t.label}

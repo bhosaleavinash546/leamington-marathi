@@ -414,7 +414,7 @@ export default function BusinessCaseModal({
             {[1, 2, 3].map((s) => (
               <div
                 key={s}
-                className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                className={`h-1 flex-1 rounded-full transition-ui duration-300 ${
                   s <= step ? 'bg-gold-500' : 'bg-white/10'
                 }`}
               />
@@ -424,7 +424,7 @@ export default function BusinessCaseModal({
             {['Vehicles', 'Cost Data', 'Review'].map((label, i) => (
               <span
                 key={label}
-                className={`text-xs ${i + 1 <= step ? 'text-gold-400' : 'text-slate-600'}`}
+                className={`text-xs ${i + 1 <= step ? 'text-gold-400' : 'text-slate-500'}`}
               >
                 {label}
               </span>
@@ -462,7 +462,7 @@ export default function BusinessCaseModal({
                         whileHover={{ scale: 1.06 }}
                         whileTap={{ scale: 0.92 }}
                         onClick={() => toggleModel(model)}
-                        className={`relative flex flex-col items-center justify-center p-3 rounded-xl border text-sm font-medium transition-all ${
+                        className={`relative flex flex-col items-center justify-center p-3 rounded-xl border text-sm font-medium transition-ui ${
                           active
                             ? 'bg-gold-500/15 border-gold-500/40 text-gold-400'
                             : 'bg-navy-800 border-white/10 text-slate-400 hover:border-white/20 hover:text-white'
@@ -780,7 +780,7 @@ export default function BusinessCaseModal({
                           whileHover={{ scale: 1.03 }}
                           whileTap={{ scale: 0.96 }}
                           onClick={() => setGate(g)}
-                          className={`text-left px-3 py-2.5 rounded-xl border transition-all ${
+                          className={`text-left px-3 py-2.5 rounded-xl border transition-ui ${
                             active
                               ? `${info.bg} ${info.border} ${info.color}`
                               : 'bg-navy-800 border-white/10 text-slate-500 hover:border-white/20'
@@ -828,7 +828,7 @@ export default function BusinessCaseModal({
               <button
                 onClick={goNext}
                 disabled={step === 1 && !step1Valid}
-                className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-semibold text-sm transition-all"
+                className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-semibold text-sm transition-ui"
               >
                 Continue
                 <ChevronRight size={15} />
@@ -837,7 +837,7 @@ export default function BusinessCaseModal({
               <button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="flex items-center gap-2 px-5 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-all"
+                className="flex items-center gap-2 px-5 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-ui"
               >
                 {submitting ? (
                   <>

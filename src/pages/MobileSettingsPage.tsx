@@ -43,9 +43,9 @@ export default function MobileSettingsPage() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white">{label}</p>
-              <p className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.4)' }}>{sub}</p>
+              <p className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.62)' }}>{sub}</p>
             </div>
-            <ChevronRight size={16} style={{ color: 'rgba(255,255,255,0.3)' }} />
+            <ChevronRight size={16} style={{ color: 'rgba(255,255,255,0.5)' }} />
           </button>
         ))}
       </div>
@@ -55,10 +55,10 @@ export default function MobileSettingsPage() {
         style={{ border: '1px solid rgba(255,255,255,0.08)' }}
       >
         <div className="flex items-center gap-3 px-5 py-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
-          <Info size={16} style={{ color: 'rgba(255,255,255,0.3)' }} />
+          <Info size={16} style={{ color: 'rgba(255,255,255,0.5)' }} />
           <div>
             <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>BrainSpark Mobile</p>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>v2.1.0</p>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>v2.1.0</p>
           </div>
         </div>
       </div>
