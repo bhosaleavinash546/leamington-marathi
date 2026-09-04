@@ -40,6 +40,8 @@ interface ShouldCostResult {
 }
 
 interface GapIdea {
+  /** Why engineCheck is null — the pipeline always states it. */
+  engineCheckReason?: string;
   bucket: string; bucketLabel: string; title: string; technicalDescription: string;
   costAngle: string; kind: string; riskNotes?: string;
   engineCheck?: { direction: 'confirmed' | 'contradicted'; savingPct: number; referenceCase: string; basis: string } | null;
@@ -518,10 +520,16 @@ export default function ShouldCostPage() {
                                 <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold">{idea.bucketLabel}</span>
                                 <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-400 text-[11px] capitalize">{idea.kind}</span>
                               </div>
-                              {idea.engineCheck && (
+                              {idea.engineCheck ? (
                                 <span title={`${idea.engineCheck.referenceCase} — ${idea.engineCheck.basis}`}
                                   className={`text-[11px] font-medium ${idea.engineCheck.direction === 'confirmed' ? 'text-emerald-400' : 'text-amber-400'}`}>
                                   Engine {idea.engineCheck.direction} ({idea.engineCheck.savingPct > 0 ? '−' : '+'}{Math.abs(idea.engineCheck.savingPct)}%)
+                                </span>
+                              ) : (
+                                // Absent is not a pass: say the engine did not look, and why.
+                                <span title={idea.engineCheckReason ? `Why: ${idea.engineCheckReason}` : 'Not expressible as a move the engine can re-cost. The figure is AI-estimated.'}
+                                  className="text-[11px] font-medium text-slate-400">
+                                  Not engine-checked
                                 </span>
                               )}
                             </div>

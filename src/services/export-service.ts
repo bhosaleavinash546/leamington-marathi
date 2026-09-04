@@ -102,7 +102,9 @@ export async function exportToExcel(result: AnalysisResult, systemName: string, 
   });
 
   // --- Sheet 3: Implementation Roadmap ---
-  const roadmapHeaders = ['Priority', 'Idea Title', 'Difficulty', 'Time to Implement', 'Cost Saving Type', 'Potential Saving', 'Owner / Dept', 'Status'];
+  // The sheet most likely to be forwarded carried savings with no provenance
+  // and two fabricated columns that looked like data (Sept 2026 review, R-21).
+  const roadmapHeaders = ['Priority', 'Idea Title', 'Difficulty', 'Time to Implement', 'Cost Saving Type', 'Potential Saving', 'Verification', 'Owner / Dept', 'Status'];
   const sorted = [...result.ideas].sort((a, b) => {
     const order = { Low: 0, Medium: 1, High: 2 };
     return order[a.implementationDifficulty] - order[b.implementationDifficulty];
@@ -114,14 +116,15 @@ export async function exportToExcel(result: AnalysisResult, systemName: string, 
     idea.timeToImplement,
     idea.costSavingTypes.join(', '),
     idea.costSavingPotential.percentage || idea.costSavingPotential.qualitative,
-    'Engineering / Procurement',
-    'To Be Assessed',
+    verificationCell(idea),
+    '',   // Owner: for the team to fill in — inventing one made it look assigned
+    '',   // Status: likewise
   ]);
 
   sheets.push({
     name: 'Implementation Roadmap',
     rows: [roadmapHeaders, ...roadmapRows],
-    colWidths: [8, 35, 12, 22, 28, 25, 28, 20],
+    colWidths: [8, 35, 12, 22, 28, 25, 34, 24, 18],
   });
 
   const filename = `BrainSpark_${systemName}_${subName}_${new Date().toISOString().split('T')[0]}.xlsx`;
@@ -243,8 +246,8 @@ export async function exportToPowerPoint(
 
     // Summary table headers
     const tableY = 2.5;
-    const colWidths = [0.5, 3.5, 1.5, 2.5, 2.5, 1.5];
-    const headers = ['No.', 'Idea Title', 'Level', 'Saving Type', 'Potential', 'Difficulty'];
+    const colWidths = [0.4, 2.9, 1.1, 1.9, 1.5, 1.7, 1.2];
+    const headers = ['No.', 'Idea Title', 'Level', 'Saving Type', 'Potential', 'Verification', 'Difficulty'];
     headers.forEach((h, i) => {
       const x = colWidths.slice(0, i).reduce((a, b) => a + b, 0.3);
       slide.addShape('rect', { x, y: tableY, w: colWidths[i], h: 0.35, fill: { color: NAVY } });
@@ -256,19 +259,22 @@ export async function exportToPowerPoint(
       const bg = idx % 2 === 0 ? 'f8fafc' : 'ffffff';
       const rowData = [
         String(idx + 1),
-        idea.title.length > 38 ? idea.title.slice(0, 35) + '…' : idea.title,
+        idea.title.length > 30 ? idea.title.slice(0, 27) + '…' : idea.title,
         idea.systemLevel,
         idea.costSavingTypes.slice(0, 2).join(', '),
         idea.costSavingPotential.percentage || idea.costSavingPotential.qualitative.split(' ')[0],
+        // The two most-read pages of the deck dropped the provenance the
+        // per-idea slides carry (R-22).
+        engineVerdict(idea).label.replace('ENGINE-', '').replace('NOT ENGINE-CHECKED', 'NOT CHECKED'),
         idea.implementationDifficulty,
       ];
       rowData.forEach((d, i) => {
         const x = colWidths.slice(0, i).reduce((a, b) => a + b, 0.3);
         const diffColor = idea.implementationDifficulty === 'Low' ? '22c55e' : idea.implementationDifficulty === 'Medium' ? 'f59e0b' : 'ef4444';
-        const cellColor = i === 5 ? (idea.implementationDifficulty === 'Low' ? 'dcfce7' : idea.implementationDifficulty === 'Medium' ? 'fef3c7' : 'fee2e2') : bg;
-        const textColor = i === 5 ? diffColor : DARK_GRAY;
+        const cellColor = i === 6 ? (idea.implementationDifficulty === 'Low' ? 'dcfce7' : idea.implementationDifficulty === 'Medium' ? 'fef3c7' : 'fee2e2') : bg;
+        const textColor = i === 6 ? diffColor : DARK_GRAY;
         slide.addShape('rect', { x, y: rowY, w: colWidths[i], h: 0.32, fill: { color: cellColor }, line: { color: 'e2e8f0', pt: 0.5 } });
-        slide.addText(d, { x, y: rowY, w: colWidths[i], h: 0.32, fontSize: 8, color: textColor, align: 'center', fontFace: 'Calibri', bold: i === 5 });
+        slide.addText(d, { x, y: rowY, w: colWidths[i], h: 0.32, fontSize: 7.5, color: textColor, align: 'center', fontFace: 'Calibri', bold: i === 6 });
       });
     });
   }
@@ -670,9 +676,9 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
     .sort((a, b) => b._roi - a._roi)
     .slice(0, 10);
 
-  const rCols = [6, 72, 22, 36, 26, 20];   // sums to CW=182
+  const rCols = [6, 62, 20, 32, 20, 42];   // sums to CW=182
   const rColX = colPositions(rCols, ML);
-  const rHeaders = ['#', 'Idea', 'Difficulty', 'Annual Value', 'Saving %', 'Timeline'];
+  const rHeaders = ['#', 'Idea', 'Difficulty', 'Annual Value', 'Saving %', 'Verification'];
   setFill(doc, NAVY_RGB);
   doc.rect(ML, 64, CW, 7, 'F');
   setColor(doc, WHITE_RGB);
@@ -696,7 +702,8 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
       idea.implementationDifficulty,
       fitText(doc, idea.costSavingPotential.annualValue || '—', rCols[3] - 2),
       fitText(doc, idea.costSavingPotential.percentage || '—', rCols[4] - 2),
-      fitText(doc, idea.timeToImplement, rCols[5] - 2),
+      // Provenance travels with the figure on the page most likely to be read.
+      fitText(doc, verificationCell(idea), rCols[5] - 2),
     ];
     rowD.forEach((d, i) => {
       if (i === 2) setColor(doc, diffRgb(idea.implementationDifficulty));
@@ -1479,9 +1486,11 @@ export function exportMarketplaceCataloguePdf(ideasIn: MarketplaceIdeaRow[], fil
     doc.setFontSize(9.5);
     doc.setFont('helvetica', 'bold');
     doc.text(fitText(doc, `${idx + 1}.  ${idea.title}`, MCW - 24), MML + 1, cy);
+    // The same honesty label the single-idea sheet uses (R-21): a bare
+    // "VERIFIED" over an estimated saving is the claim this repo refuses.
     setColor(doc, idea.verified ? ([34, 197, 94] as const) : GOLD_RGB);
-    doc.setFontSize(7);
-    doc.text(idea.verified ? 'VERIFIED' : 'UNVERIFIED', MML + MCW - 1, cy, { align: 'right' });
+    doc.setFontSize(6.5);
+    doc.text(fitText(doc, provenanceLabel(idea, parsed), MCW - 60), MML + MCW - 1, cy, { align: 'right' });
     cy += 6;
 
     setColor(doc, GRAY_RGB);

@@ -626,6 +626,13 @@ function calcBusinessMetrics(savingPerPart, vehicleDataArr, toolingCost, tvCost)
 // V8 on every boot) now live in marketplace-legacy-seed-ideas.json — same
 // rows, same 'approved' status, loaded once. Extraction verified: fresh-DB
 // count identical before/after (1,602).
+//
+// SEEDED UNVERIFIED. 618 of these 657 carried verified=1 with no verification
+// record behind it (Sept 2026 review, R-18): retrieval weighted them ×1.15 as
+// "proven precedents", the badge read Verified, and generation cited them as
+// such. Every later pack seeds unverified (DECISIONS 56); these predate that
+// rule and now follow it. `verified` means an idea a human reviewed and
+// approved — it is set by review, never by a seed file.
 const mktCount = db.prepare('SELECT COUNT(*) as c FROM marketplace_ideas').get();
 if (mktCount.c === 0) {
   try {
@@ -941,6 +948,10 @@ async function sendOTPEmail(email, otp, type) {
 // server's own key for every authenticated user (Sept 2026 review, R-8).
 // 3,000,000 output tokens/user/month is generous for the intended workload and
 // still bounds a runaway; set CV_MONTHLY_TOKEN_QUOTA=0 to disable deliberately.
+// The volume assumed when the caller supplies none. Named, so the assumption
+// can be reported rather than baked into three call sites.
+const DEFAULT_ANNUAL_VOLUME = 80_000;
+
 const MONTHLY_TOKEN_QUOTA = Number(process.env.CV_MONTHLY_TOKEN_QUOTA ?? 3_000_000);
 function checkUsageQuota(req, res, next) {
   if (!MONTHLY_TOKEN_QUOTA || !req.user?.id) return next();
@@ -2940,7 +2951,9 @@ app.post('/api/cad-analyze', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60
       inferredProcess: resolved ? resolved.process : sanitize(String(llm.inferredProcess || ''), 80),
       complexity: ['Low', 'Medium', 'High'].includes(llm.complexity) ? llm.complexity : 'Medium',
       massEstimateKg: drivers ? drivers.finishedMassKg : (num0(llm.massEstimateKg) || null),
-      dfmaScore: Math.max(1, Math.min(10, num0(llm.dfmaScore, 5))),
+      // A score the model did not give is null, not a middling 5 that renders
+      // as a measurement (review R-24) — the same rule massEstimateKg follows.
+      dfmaScore: Number.isFinite(Number(llm.dfmaScore)) ? Math.max(1, Math.min(10, Number(llm.dfmaScore))) : null,
       dfmaScoreRationale: sanitize(String(llm.dfmaScoreRationale || ''), 600),
       costBreakdown: costBreakdown || (llm.costBreakdown && typeof llm.costBreakdown === 'object' ? llm.costBreakdown : null),
       simulation,
@@ -3182,13 +3195,35 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     // citations and grades, score technical depth, drop broken ideas.
     const { ideas: validated, summary: validationSummary } = validateIdeas(parsedIdeas, { searchExecuted, hasEvidence, evidenceIds, materials: catalogueMaterials });
     if (validated.length === 0) throw new Error('No valid ideas could be generated. Please retry.');
+    // Stage failures are REPORTED, not swallowed. Until Sept 2026 (review
+    // R-23) a thrown engine check, arithmetic pass or critique panel produced
+    // exactly the payload a clean run with nothing to say produces, so the UI
+    // could not tell "checked and found nothing" from "never ran".
+    validationSummary.failures = [];
+    // ABSENT ≠ DEFAULT. annualVolume fed the arithmetic verdicts, every engine
+    // referenceCase and the annual-spend figures from an assumed 80,000 that
+    // the user never supplied and the payload never flagged (review R-24).
+    // One decision, recorded, so the client can say "assumed".
+    const statedVolume = Number(config.annualVolume) > 0 ? Number(config.annualVolume) : null;
+    const effectiveVolume = statedVolume ?? DEFAULT_ANNUAL_VOLUME;
+    validationSummary.assumptions = statedVolume ? [] : [{
+      field: 'annualVolume',
+      assumed: DEFAULT_ANNUAL_VOLUME,
+      note: `No annual volume was supplied, so every per-year figure and engine reference case below assumes ${DEFAULT_ANNUAL_VOLUME.toLocaleString('en-GB')} units/yr. Supply the real volume to re-cost.`,
+    }];
+    const stageFailed = (stage, e) => {
+      const reason = String(e?.message || e).slice(0, 200);
+      validationSummary.failures.push({ stage, reason });
+      console.warn(`[Pipeline] ${stage} failed:`, reason);
+      emit({ type: 'progress', message: `${stage} could not run: ${reason}` });
+    };
     // The model's own sums, recomputed: every stated annual value against its
     // stated basis. A mismatch is a visible flag and a rank penalty; an
     // unreadable basis is "unparsed", never a verdict.
     try {
-      validationSummary.arithmetic = runArithmeticChecks(validated, { annualVolume: Number(config.annualVolume) || 80000 });
+      validationSummary.arithmetic = runArithmeticChecks(validated, { annualVolume: effectiveVolume });
       validationSummary.depth = depthSummary(validated);
-    } catch (e) { console.warn('[Arithmetic] skipped:', e?.message); }
+    } catch (e) { stageFailed('Arithmetic check', e); }
     if (validationSummary.dropped > 0 || validationSummary.flagged > 0) {
       console.warn(`[Validation] kept ${validationSummary.kept}/${validationSummary.total}, dropped ${validationSummary.dropped}, flagged ${validationSummary.flagged}, avgQuality ${validationSummary.avgQuality}`);
     }
@@ -3215,13 +3250,13 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       const region = ({ germany: 'Germany', china: 'China', mexico: 'Mexico', usa: 'USA', india: 'India', easterneurope: 'Czech Republic' })[String(config.plantRegion || '').toLowerCase().replace(/[^a-z]/g, '')] || 'Germany';
       const ecSummary = runEngineChecks(ideas, {
         region,
-        annualVolume: Number(config.annualVolume) || 80000,
+        annualVolume: effectiveVolume,
         library: lib,
         defaultWeightKg: Number(cadGeometry?.estimatedMass) > 0 ? Number(cadGeometry.estimatedMass) : 1.0,
       });
       validationSummary.engineChecks = ecSummary;
       if (ecSummary.checked > 0) emit({ type: 'progress', message: `Engine-verified ${ecSummary.checked} idea${ecSummary.checked === 1 ? '' : 's'} (${ecSummary.confirmed} confirmed, ${ecSummary.contradicted} contradicted).` });
-    } catch (e) { console.warn('[EngineCheck] skipped:', e?.message); }
+    } catch (e) { stageFailed('Engine cross-check', e); }
 
     // Prior-art labelling: verify the "do NOT duplicate" instruction was obeyed
     // by actually querying the marketplace index against each generated title.
@@ -3277,7 +3312,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
           manufacturingContext: kbDetailFor(domain, null, prtName || subName || sysName),
           commercialContext: retrievalCtx,
           region: ({ germany: 'Germany', china: 'China', mexico: 'Mexico', usa: 'USA', india: 'India', easterneurope: 'Czech Republic' })[String(config.plantRegion || '').toLowerCase().replace(/[^a-z]/g, '')] || 'Germany',
-          annualVolume: Number(config.annualVolume) || 80000,
+          annualVolume: effectiveVolume,
           library: getActiveLibrary(),
           smallModel: SMALL_MODEL,
           searchExecuted,
@@ -3287,7 +3322,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
         if (deep.critiqued > 0) emit({ type: 'progress', message: deepLevel === 'full'
           ? `Deep mode complete: ${deep.critiqued} ideas critiqued, ${deep.eloMatches} tournament matches, ${deep.refined} repaired.`
           : `Critique pass complete: ${deep.critiqued} ideas critiqued (${deep.challenges} challenges), ${deep.refined} repaired.` });
-      } catch (e) { console.warn('[Deep] skipped:', e?.message); }
+      } catch (e) { stageFailed(deepLevel === 'full' ? 'Deep mode' : 'Critique pass', e); }
     }
 
     // Taste match + explainable ranking: ideas resembling previously

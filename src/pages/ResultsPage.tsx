@@ -23,6 +23,7 @@ import { toast } from '../hooks/useToast';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
 import { getAuthToken } from '../services/auth';
+import IdeaProvenanceBadges from '../components/IdeaProvenanceBadges';
 
 const DIFFICULTY_CONFIG: Record<Difficulty, { color: string; bg: string; border: string; icon: typeof CheckCircle }> = {
   Low:    { color: 'text-success-400', bg: 'bg-success-500/10',  border: 'border-success-500/30',  icon: CheckCircle },
@@ -326,103 +327,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                     <span className="text-blue-400 text-xs">Live web data</span>
                   </div>
                 )}
-                {idea.confidenceLevel && (() => {
-                  const conf = CONFIDENCE_CONFIG[idea.confidenceLevel];
-                  const ConfIcon = conf.icon;
-                  return (
-                    <div title={conf.title} className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium ${conf.bg} ${conf.color} ${conf.border}`}>
-                      <ConfIcon size={10} />
-                      {conf.label}
-                    </div>
-                  );
-                })()}
-                {idea.engineCheck ? (
-                  <div
-                    title={`The percentage in this badge is the ENGINE's figure for ${idea.engineCheck.referenceCase}, not the saving claimed above — the two answer different questions.\n\n${idea.engineCheck.basis}${idea.rank ? `\n\nRank factors: ${idea.rank.basis}` : ''}`}
-                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium ${idea.engineCheck.direction === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : 'bg-danger-500/10 text-danger-400 border-danger-500/25'}`}
-                  >
-                    <Gauge size={10} />
-                    {idea.engineCheck.direction === 'confirmed' ? `Engine ✓ ${idea.engineCheck.savingPct > 0 ? '−' : ''}${Math.abs(idea.engineCheck.savingPct)}%` : 'Engine contradicts'}
-                  </div>
-                ) : (
-                  // Absence of a badge is not the same as a pass. Roughly half
-                  // of generated ideas are not expressible as a substitution the
-                  // engine can re-cost, and until this was shown they read as
-                  // unremarkable rather than unverified.
-                  <div
-                    title={`${idea.engineCheckReason ? `Why: ${idea.engineCheckReason}.` : 'The engine had no comparable basis to test this idea against — it is not expressible as a substitution, tolerance, assembly or harness change.'} The saving above is AI-estimated; validate before commercial use.`}
-                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-slate-500/10 text-slate-400 border-slate-500/25"
-                  >
-                    <Gauge size={10} /> Not engine-checked
-                  </div>
-                )}
-                {/* Technical depth: which checkable ingredients of a deep idea are present. */}
-                {idea.depth && typeof idea.depth.score === 'number' && (
-                  <div
-                    title={`Technical depth ${idea.depth.score}/100 — deterministic rubric.\n${Object.entries(idea.depth.criteria).map(([k, c]) => `${c.met ? '✓' : '✗'} ${k}: ${c.detail}`).join('\n')}`}
-                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium ${idea.depth.score >= 80 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : idea.depth.score >= 50 ? 'bg-amber-500/10 text-amber-400 border-amber-500/25' : 'bg-danger-500/10 text-danger-400 border-danger-500/25'}`}
-                  >
-                    <Layers size={10} /> Depth {idea.depth.score}
-                  </div>
-                )}
-                {/* The model's own sums, recomputed. */}
-                {idea.arithmetic && idea.arithmetic.status !== 'unparsed' && (
-                  <div
-                    title={`${idea.arithmetic.note}.\nRead as: ${idea.arithmetic.basis}`}
-                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium ${idea.arithmetic.status === 'consistent' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : 'bg-danger-500/10 text-danger-400 border-danger-500/25'}`}
-                  >
-                    <Calculator size={10} /> {idea.arithmetic.status === 'consistent' ? 'Sums check' : `Sums off ${idea.arithmetic.deltaPct! > 0 ? '+' : ''}${idea.arithmetic.deltaPct}%`}
-                  </div>
-                )}
-                {/* The validator already caught these and nothing showed them. */}
-                {notableFlags(idea).length > 0 && (
-                  <div
-                    title={`The deterministic validator flagged this idea:\n${notableFlags(idea).map((f: string) => `• ${f}`).join('\n')}`}
-                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-amber-500/10 text-amber-400 border-amber-500/25"
-                  >
-                    <AlertTriangle size={10} /> {notableFlags(idea).length === 1 ? '1 validator flag' : `${notableFlags(idea).length} validator flags`}
-                  </div>
-                )}
-                {idea.tasteMatch && (
-                  <div
-                    title={`Ranked higher: similar to an idea you previously approved/confirmed — "${idea.tasteMatch.title}"`}
-                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-violet-500/10 text-violet-400 border-violet-500/25"
-                  >
-                    <ThumbsUp size={10} /> Similar to approved
-                  </div>
-                )}
-                {idea.priorArt && (
-                  <div
-                    title={`Close to an existing marketplace idea: "${idea.priorArt.title}" — check before duplicating effort`}
-                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-amber-500/10 text-amber-400 border-amber-500/25"
-                  >
-                    <Store size={10} /> Prior art
-                  </div>
-                )}
-                {idea.refined && (
-                  <div
-                    title={`Deep mode ${idea.refined.note} — original: "${idea.refined.fromTitle}"`}
-                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-violet-500/10 text-violet-300 border-violet-500/25"
-                  >
-                    <RefreshCw size={10} /> Refined
-                  </div>
-                )}
-                {idea.lensId && (
-                  <div
-                    title={`Prism: generated through the "${idea.lensId}" evidence lens`}
-                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-teal-500/10 text-teal-400 border-teal-500/25"
-                  >
-                    <PrismIcon size={10} /> {idea.lensId}
-                  </div>
-                )}
-                {Array.isArray(idea.evidenceRefs) && idea.evidenceRefs.length > 0 && (
-                  <div
-                    title={`Cites measured evidence lines from the Prism dossier: ${idea.evidenceRefs.join(', ')} (E = engine measurement, W = waterfall step)`}
-                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-teal-500/10 text-teal-300 border-teal-500/25"
-                  >
-                    <FileSearch size={10} /> {idea.evidenceRefs.slice(0, 4).join(' ')}{idea.evidenceRefs.length > 4 ? ` +${idea.evidenceRefs.length - 4}` : ''}
-                  </div>
-                )}
+                <IdeaProvenanceBadges idea={idea} />
               </div>
             </div>
           </div>

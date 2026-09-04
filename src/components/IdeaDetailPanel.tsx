@@ -4,6 +4,7 @@ import {
   FlaskConical,
 } from 'lucide-react';
 import type { CostReductionIdea, CostSavingType } from '../types';
+import IdeaProvenanceBadges from './IdeaProvenanceBadges';
 
 const TYPE_COLORS: Record<CostSavingType, string> = {
   material:      'bg-blue-500/15   text-blue-300   border-blue-500/25',
@@ -103,6 +104,11 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
           <div className="text-slate-300 font-medium text-sm">{idea.timeToImplement}</div>
         </div>
       </div>
+
+      {/* The same provenance the results page shows. Until Sept 2026 this
+          renderer showed none of it, so one idea read as verified here and
+          honestly caveated there. */}
+      <IdeaProvenanceBadges idea={idea} className="mb-3" />
 
       {/* Material grade */}
       {idea.materialGrade && (

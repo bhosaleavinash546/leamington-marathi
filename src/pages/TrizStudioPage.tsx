@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lightbulb, Sparkles, ArrowRight, CheckCircle, XCircle, Wand2, Cpu, Layers, FileDown, Table2, Scissors, SplitSquareHorizontal } from 'lucide-react';
+import { Lightbulb, Sparkles, ArrowRight, CheckCircle, XCircle, Wand2, Cpu, Layers, FileDown, Table2, Scissors, SplitSquareHorizontal, Gauge
+} from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import BusinessCaseModal from '../components/BusinessCaseModal';
@@ -12,6 +13,8 @@ import { toast } from '../hooks/useToast';
 interface Principle { id: number; name: string; hint: string; auto: string; }
 interface EngineCheck { direction: 'confirmed' | 'contradicted'; savingPct: number; baselineEur: number; proposedEur: number; referenceCase: string; }
 interface TrizIdea {
+  /** Why engineCheck is null — the pipeline always states it. */
+  engineCheckReason?: string;
   principleId: number; title: string; technicalDescription: string;
   costAngle: string; riskNotes?: string; triz: Principle | null; engineCheck?: EngineCheck | null;
 }
@@ -383,10 +386,16 @@ export default function TrizStudioPage() {
                       <div className="flex items-center gap-2">
                         {idea.triz && <span className="px-2 py-0.5 rounded-md bg-gold-500/10 border border-gold-500/20 text-gold-400 text-[11px] font-semibold">P{idea.triz.id} · {idea.triz.name}</span>}
                       </div>
-                      {idea.engineCheck && (
+                      {idea.engineCheck ? (
                         <span className={`flex items-center gap-1 text-xs font-medium ${idea.engineCheck.direction === 'confirmed' ? 'text-emerald-400' : 'text-amber-400'}`}>
                           {idea.engineCheck.direction === 'confirmed' ? <CheckCircle size={13} /> : <XCircle size={13} />}
                           Engine {idea.engineCheck.direction} ({idea.engineCheck.savingPct > 0 ? '−' : '+'}{Math.abs(idea.engineCheck.savingPct)}%)
+                        </span>
+                      ) : (
+                        // A silent gap reads as a pass — say the engine did not look.
+                        <span title={idea.engineCheckReason ? `Why: ${idea.engineCheckReason}` : 'Not expressible as a substitution, tolerance, assembly or harness change the engine can price. The saving is AI-estimated.'}
+                          className="flex items-center gap-1 text-xs font-medium text-slate-400">
+                          <Gauge size={13} /> Not engine-checked
                         </span>
                       )}
                     </div>
@@ -471,10 +480,15 @@ export default function TrizStudioPage() {
                     <div key={i} className="bg-navy-900 border border-white/10 rounded-2xl p-5">
                       <div className="flex items-start justify-between gap-3 mb-2">
                         <h3 className="text-white font-semibold">{idea.title}</h3>
-                        {idea.engineCheck && (
+                        {idea.engineCheck ? (
                           <span className={`flex items-center gap-1 text-xs font-medium shrink-0 ${idea.engineCheck.direction === 'confirmed' ? 'text-emerald-400' : 'text-amber-400'}`}>
                             {idea.engineCheck.direction === 'confirmed' ? <CheckCircle size={13} /> : <XCircle size={13} />}
                             Engine {idea.engineCheck.direction}
+                          </span>
+                        ) : (
+                          <span title={idea.engineCheckReason ? `Why: ${idea.engineCheckReason}` : 'The engine could not price this move; the saving is AI-estimated.'}
+                            className="flex items-center gap-1 text-xs font-medium shrink-0 text-slate-400">
+                            <Gauge size={13} /> Not engine-checked
                           </span>
                         )}
                       </div>

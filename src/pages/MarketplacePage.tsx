@@ -760,9 +760,24 @@ export default function MarketplacePage() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                         <h3 className="text-white font-semibold text-base leading-tight">{idea.title}</h3>
-                        {idea.verified && (
-                          <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs flex-shrink-0">
-                            <CheckCircle size={9} /> Verified
+                        {/* "Verified" means REVIEW-APPROVED for the library, not
+                            that the saving was measured. The PDF export has
+                            always said so (marketplace-report.mjs); the badge
+                            on screen did not, and it is the most-read label in
+                            the corpus (Sept 2026 review, R-18). */}
+                        {idea.verified ? (
+                          <span
+                            title="Review-approved for the library. The savings figure is still an estimate — open the idea for its engine verdict and evidence."
+                            className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs flex-shrink-0"
+                          >
+                            <CheckCircle size={9} /> Review-approved
+                          </span>
+                        ) : (
+                          <span
+                            title="Not review-approved. Savings are AI-estimated — open the idea for its engine verdict."
+                            className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-500/10 border border-slate-500/20 text-slate-400 text-xs flex-shrink-0"
+                          >
+                            Not engine-checked
                           </span>
                         )}
                         {idea.origin && (

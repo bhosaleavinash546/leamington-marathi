@@ -10,6 +10,8 @@ const is3dCad = (name: string) => /\.(step|stp|igs|iges|stl)$/i.test(name);
 const authToken = () => getAuthToken() ?? '';
 
 interface DeltaIdea {
+  /** Why engineCheck is null — the pipeline always states it. */
+  engineCheckReason?: string;
   title: string;
   delta: string;
   saving: string;
@@ -178,15 +180,24 @@ export default function CadDiffPage() {
                 <p className="text-cyan-400 text-xs mb-2 font-medium">Δ {idea.delta}</p>
                 <p className="text-slate-400 text-sm leading-relaxed mb-3">{idea.action}</p>
                 <div className="text-gold-400 text-sm font-semibold">{idea.saving}</div>
-                {idea.engineCheck && (
+                {idea.engineCheck ? (
                   <div
                     title={`${idea.engineCheck.referenceCase} — ${idea.engineCheck.basis}`}
                     className={`mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border text-xs font-medium ${idea.engineCheck.direction === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : 'bg-red-500/10 text-red-400 border-red-500/25'}`}
                   >
                     <Gauge size={11} />
+                    {/* "confirmed", not "verified": the check tests the DIRECTION
+                        of the move on a reference part, not this part's figure. */}
                     {idea.engineCheck.direction === 'confirmed'
-                      ? `Engine-verified: −${Math.abs(idea.engineCheck.savingPct)}% (€${idea.engineCheck.baselineEur.toFixed(2)} → €${idea.engineCheck.proposedEur.toFixed(2)})`
+                      ? `Engine-confirmed direction: −${Math.abs(idea.engineCheck.savingPct)}% (€${idea.engineCheck.baselineEur.toFixed(2)} → €${idea.engineCheck.proposedEur.toFixed(2)})`
                       : 'Engine contradicts this saving on a reference part'}
+                  </div>
+                ) : (
+                  <div
+                    title={idea.engineCheckReason ? `Why: ${idea.engineCheckReason}` : 'Not expressible as a move the engine can re-cost. The saving is AI-estimated — validate before commercial use.'}
+                    className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border text-xs font-medium bg-slate-500/10 text-slate-400 border-slate-500/25"
+                  >
+                    <Gauge size={11} /> Not engine-checked
                   </div>
                 )}
               </motion.div>

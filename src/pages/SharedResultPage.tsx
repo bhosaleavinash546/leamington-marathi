@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Globe, Zap, CheckCircle, TrendingDown, AlertCircle, Clock, Lock } from 'lucide-react';
 import { AnalysisResult } from '../types';
+import IdeaProvenanceBadges from '../components/IdeaProvenanceBadges';
 
 export default function SharedResultPage() {
   const { token } = useParams<{ token: string }>();
@@ -101,6 +102,11 @@ export default function SharedResultPage() {
                 }`}>{idea.implementationDifficulty}</span>
               </div>
               <p className="text-slate-400 text-sm leading-relaxed line-clamp-3 ml-11">{idea.technicalDescription}</p>
+              {/* This report leaves the building. It carried the savings and none
+                  of the verification until Sept 2026 (review R-20). */}
+              <div className="ml-11 mt-3">
+                <IdeaProvenanceBadges idea={idea} variant="compact" />
+              </div>
               <div className="ml-11 mt-3 flex flex-wrap gap-3 text-xs text-slate-500">
                 {idea.costSavingPotential.annualValue && <span className="text-gold-400">{idea.costSavingPotential.annualValue}/yr</span>}
                 {idea.costSavingPotential.percentage && <span className="text-green-400">{idea.costSavingPotential.percentage}</span>}
