@@ -154,7 +154,9 @@ test('runArithmeticChecks stamps every idea, flags only mismatches, and counts h
     idea('€30K', 'fixture amortisation across variants'),
   ];
   const s = runArithmeticChecks(ideas, { annualVolume: 60000 });
-  assert.deepEqual(s, { consistent: 1, mismatch: 1, partial: 0, unparsed: 1 });
+  const { corroboration, ...verdicts } = s;
+  assert.deepEqual(verdicts, { consistent: 1, mismatch: 1, partial: 0, unparsed: 1 });
+  assert.equal(corroboration.absent, 3, 'none of these fixtures carries a cost bridge');
   assert.equal(ideas[0].arithmetic.status, 'consistent');
   assert.equal(ideas[0].validationFlags, undefined);
   assert.ok(ideas[1].validationFlags.some(f => /^arithmetic-mismatch\(-\d+%\)$/.test(f)));
@@ -306,4 +308,59 @@ test('the genuine overstatements the corpus contained are STILL caught', () => {
   ), { annualVolume: 10000000 });
   assert.equal(grade.status, 'mismatch', grade.note);
   assert.ok(grade.deltaPct < -70);
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// THE SECOND OPINION (review P-3).
+//
+// Every idea states its saving arithmetic twice and nothing compared them. The
+// measurement that shaped the fix: across 69 ideas where both fields parse, the
+// bridge reads a median 0.30x the basis, clustered between 0.02x and 0.17x —
+// one parser reading a field it was not built for, not 64% of ideas
+// contradicting themselves. So agreement counts and disagreement does not.
+// ─────────────────────────────────────────────────────────────────────────────
+import { checkCorroboration } from '../idea-arith.mjs';
+
+const withBridge = (basis, annualValue, costBridge) => ({
+  costSavingPotential: { annualValue, calculationBasis: basis },
+  engineering: { costBridge },
+});
+
+test('two independent statements landing on the same figure is corroboration', () => {
+  const r = checkCorroboration(
+    withBridge('€1.00/part × 60,000', '€60K at 60,000 units/yr', 'Bracket €2.40 → €1.40, saving €1.00/part × 60,000'),
+    { annualVolume: 60000 },
+  );
+  assert.equal(r.status, 'corroborated');
+  assert.equal(r.bridgeEur, 60000);
+  assert.match(r.note, /agreeing with the calculation basis/);
+});
+
+test('a divergence is reported as NOT corroborated, never as a contradiction', () => {
+  const r = checkCorroboration(
+    withBridge('€1.00/part × 60,000', '€60K at 60,000 units/yr', 'Removes €0.05 of finishing per part'),
+    { annualVolume: 60000 },
+  );
+  assert.equal(r.status, 'not-corroborated');
+  assert.match(r.note, /NOT a contradiction/);
+  assert.match(r.note, /low bias/, 'the note must name the parser bias that makes the disagreement uninformative');
+});
+
+test('an unreadable or absent bridge is stated, and is not a finding about the idea', () => {
+  const none = checkCorroboration(withBridge('€1.00/part × 60,000', '€60K at 60,000 units/yr', undefined), { annualVolume: 60000 });
+  assert.equal(none.status, 'absent');
+  const prose = checkCorroboration(
+    withBridge('€1.00/part × 60,000', '€60K at 60,000 units/yr', 'Cheaper because the tooling is simpler and the line runs better.'),
+    { annualVolume: 60000 },
+  );
+  assert.equal(prose.status, 'unreadable');
+  assert.match(prose.note, /NOT a finding about the idea/);
+});
+
+test('corroboration rides on the arithmetic stamp and is counted separately', () => {
+  const ideas = [withBridge('€1.00/part × 60,000', '€60K at 60,000 units/yr', 'saving €1.00/part × 60,000')];
+  const s = runArithmeticChecks(ideas, { annualVolume: 60000 });
+  assert.equal(ideas[0].arithmetic.corroboration.status, 'corroborated');
+  assert.equal(s.corroboration.corroborated, 1);
+  assert.equal(ideas[0].arithmetic.status, 'consistent', 'the primary verdict is unchanged by the second opinion');
 });

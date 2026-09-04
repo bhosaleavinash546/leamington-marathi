@@ -150,6 +150,39 @@ export default function IdeaProvenanceBadges({ idea, variant = 'full', className
         </Badge>
       )}
 
+      {/* Corroboration is POSITIVE-ONLY by design. The idea states its saving
+          arithmetic twice; when the second statement independently lands on the
+          same number that is hard to do by accident and worth showing. When it
+          does not, the parser's known low bias on prose bridges means the
+          disagreement carries no information, so nothing is shown rather than
+          an accusation the measurement cannot support. */}
+      {variant === 'full' && idea.arithmetic?.corroboration?.status === 'corroborated' && (
+        <Badge
+          title={idea.arithmetic.corroboration.note}
+          cls="bg-emerald-500/10 text-emerald-400 border-emerald-500/25"
+        >
+          <ShieldCheck size={10} /> Bridge agrees
+        </Badge>
+      )}
+
+      {/* A benchmark claim says how it is grounded, in BOTH variants. An
+          attributable unbacked claim ("Vitesco did this in 2023") is the one a
+          reader is most likely to repeat in a meeting, so it is the one that
+          must never look settled. The gate behind this used to be an allow-list
+          of ~55 company names and 26 real-company claims walked past it. */}
+      {idea.benchmarkClaim && idea.benchmarkClaim !== 'retrieval-backed' && (
+        <Badge
+          title={idea.benchmarkClaim === 'attributable-unverified'
+            ? `This idea attributes a benchmark to a specific company, programme or year, and NOTHING in this run verified it. Treat it as a lead to check, not as a fact.\n\n${idea.benchmarkReference ?? ''}`
+            : `This idea cites general industry practice rather than a named source, and nothing verified it.\n\n${idea.benchmarkReference ?? ''}`}
+          cls={idea.benchmarkClaim === 'attributable-unverified'
+            ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
+            : 'bg-slate-500/10 text-slate-400 border-slate-500/25'}
+        >
+          <BookOpen size={10} /> {idea.benchmarkClaim === 'attributable-unverified' ? 'Named claim, unverified' : 'General practice'}
+        </Badge>
+      )}
+
       {Array.isArray(idea.evidenceRefs) && idea.evidenceRefs.length > 0 && (
         <Badge
           title={`Cites measured evidence lines from the Prism dossier: ${idea.evidenceRefs.join(', ')} (E = engine measurement, W = waterfall step)`}

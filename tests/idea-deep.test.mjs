@@ -224,3 +224,44 @@ test('runDeepPass: no-ops on tiny batches', async () => {
   const summary = await runDeepPass(fakeClient(), [mkIdea('only')], { partName: 'x', smallModel: 's' });
   assert.deepEqual(summary, { critiqued: 0, challenges: 0, eloMatches: 0, refineAttempted: 0, refined: 0, repairRejected: [], level: 'full' });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// A DETECTED RESTATEMENT IS A VERIFIED FAILURE (Sept 2026 review, P-2).
+//
+// 75.8% of live Prism ideas matched a marketplace entry, up from 65.1% as depth
+// rose. The prompt already said "do NOT restate these" and the index already
+// proved when that was ignored — but the two never met: the prompt shows six
+// precedents from a part-level query while the check searches the whole corpus
+// by idea title, so the entry an idea actually restated was usually never shown
+// to it. These tests pin the loop being closed.
+// ─────────────────────────────────────────────────────────────────────────────
+const dupBase = (over = {}) => ({
+  id: 'a', title: 'Switch bracket to DP600 at reduced gauge',
+  technicalDescription: 'x'.repeat(200), costSavingPotential: { annualValue: '€10K' },
+  engineering: { mechanism: 'y'.repeat(80) }, ...over,
+});
+
+{
+  const base = dupBase;
+  test('prior art: selects an idea that restates a corpus entry', () => {
+    const ideas = [
+      base({ id: 'clean' }),
+      base({ id: 'dup', priorArt: { id: 'm1', title: 'Down-gauge bracket using dual-phase steel', score: 19.2 } }),
+    ];
+    const picked = selectForRefine(ideas, { max: 4 });
+    assert.deepEqual(picked, [1], 'only the restatement earns the repair');
+  });
+
+  test('prior art: an engine contradiction still outranks a restatement', () => {
+    const ideas = [
+      base({ id: 'dup', priorArt: { id: 'm1', title: 'Known lever', score: 19 } }),
+      base({ id: 'contra', engineCheck: { direction: 'contradicted', kind: 'substitution' } }),
+    ];
+    const picked = selectForRefine(ideas, { max: 4 });
+    assert.equal(picked[0], 1, 'a verified cost contradiction is the more serious failure');
+  });
+
+  test('prior art: an idea with no prior-art stamp is not selected', () => {
+    assert.deepEqual(selectForRefine([base(), base()], { max: 4 }), []);
+  });
+}

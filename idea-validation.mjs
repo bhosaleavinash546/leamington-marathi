@@ -217,24 +217,93 @@ export function validateIdea(raw, index = 0, ctx = {}) {
     }
   }
 
-  // ── Named-OEM benchmark gating ───────────────────────────────────────────
-  // A specific "BMW/Toyota/NIO does X" claim is only presented as trusted when
-  // retrieval evidence backs it; otherwise it is explicitly tagged unverified
-  // and cannot carry benchmarked+ confidence. Soft claims without an OEM name
-  // are unaffected.
-  const OEM_RE = /\b(bmw|mercedes|audi|porsche|volkswagen|\bvw\b|volvo|toyota|lexus|ford|cadillac|gm\b|general motors|chevrolet|jeep|stellantis|renault|nissan|honda|mazda|subaru|tesla|nio|xpeng|li auto|byd|geely|zeekr|chery|great wall|hongqi|yangwang|aito|rivian|lucid|polestar|jaguar|land rover|hyundai|kia|skoda|seat|cupra|magna|bosch|zf\b|continental|denso|valeo|aptiv|forvia|faurecia|brembo|catl|panasonic|lg energy|samsung sdi|gestamp|benteler)\b/i;
-  if (idea.benchmarkReference && OEM_RE.test(idea.benchmarkReference)) {
-    const backed = idea.searchDataUsed === true || idea.evidenceSources.some(s => s.confidence === 'high');
-    if (!backed) {
+  // ── Benchmark gating ─────────────────────────────────────────────────────
+  //
+  // THE FAILURE DIRECTION IS THE WHOLE DESIGN (Sept 2026 review, P-1).
+  //
+  // This used to be an ALLOW-LIST of ~55 company names: a benchmark claim was
+  // tagged unverified only if it mentioned a marque the list happened to know.
+  // Measured on the live corpus, 26 references naming real companies walked
+  // straight past it — Vitesco, BorgWarner, Voestalpine, Sadef, Georg Fischer,
+  // Gienanth, Altair, Schuler, Nemak, Trumpf, Fraunhofer ILT, Nidec — and were
+  // presented to the reader with no tag at all. A list of every company on
+  // earth cannot be completed, and every name missing from it FAILED OPEN.
+  //
+  // So the rule is inverted. An unbacked benchmark is unverified, full stop —
+  // no detection required, no list to keep current, no gap to walk through.
+  //
+  // The one remaining list is of GENERIC words, used to decide whether the
+  // claim is also ATTRIBUTABLE (names a specific company, programme or year)
+  // and therefore worth a validator flag and a confidence cap on top of the
+  // tag. That list fails in the safe direction: a generic word missing from it
+  // makes a soft claim read as attributable — more caution, not less.
+  const backed = idea.searchDataUsed === true || idea.evidenceSources.some(s => s.confidence === 'high');
+  if (idea.benchmarkReference) {
+    if (backed) {
+      idea.benchmarkClaim = 'retrieval-backed';
+    } else {
       if (!/^unverified:/i.test(idea.benchmarkReference)) idea.benchmarkReference = `unverified: ${idea.benchmarkReference}`;
-      if (idea.confidenceLevel === 'verified' || idea.confidenceLevel === 'benchmarked') {
-        idea.confidenceLevel = 'estimated';
-        flags.push('oem-claim-unverified');
-      }
+      // A STAMP, NOT A PENALTY. Measured on the corpus, ~98% of benchmark
+      // references make an unbacked attributable claim — so a validator flag
+      // here would be a constant 8-point deduction applied to almost every
+      // idea, which discriminates nothing and quietly re-baselines the whole
+      // quality score. The confidence cap this used to apply is already done
+      // above, for every unbacked idea, for the same reason.
+      //
+      // What IS worth recording is which KIND of claim it is, so the reader
+      // and the UI can tell "Vitesco did this in 2023" apart from "standard
+      // industry practice". Both are unverified; only one is checkable.
+      idea.benchmarkClaim = isAttributableClaim(idea.benchmarkReference) ? 'attributable-unverified' : 'generic-unverified';
     }
   }
 
   return idea;
+}
+
+// Words that are capitalised in ordinary technical prose without naming
+// anybody — the generic half of the vocabulary. Deliberately SHORT: this list
+// only decides whether an already-tagged claim also earns a flag, and a word
+// missing from it produces MORE caution, never less. Contrast the allow-list
+// of company names this replaced, where every missing name failed open.
+const GENERIC_CAPS = new Set([
+  'OEM', 'OEMs', 'Tier', 'Tiers', 'EV', 'EVs', 'ICE', 'BEV', 'PHEV', 'HEV',
+  'DFM', 'DFA', 'DFMA', 'VAVE', 'VA', 'VE', 'NVH', 'NCAP', 'PPAP', 'APQP',
+  'BOM', 'CAD', 'CAE', 'CNC', 'HPDC', 'LPDC', 'MIM', 'VPI', 'RSW', 'SPR',
+  'European', 'Europe', 'German', 'Germany', 'Japanese', 'Japan', 'Chinese',
+  'China', 'Indian', 'India', 'American', 'US', 'USA', 'North', 'Eastern',
+  'Western', 'Central', 'Mexico', 'Czech', 'Slovak', 'Slovakia', 'Turkish',
+  'Turkey', 'Poland', 'Polish', 'Morocco', 'Vietnam', 'Thailand', 'Brazil',
+  'Standard', 'Typical', 'Common', 'Multiple', 'Several', 'Industry',
+  'Industrial', 'Automotive', 'Marketplace', 'General', 'Various', 'Global',
+  'Best', 'Class', 'The', 'A', 'An', 'This', 'These', 'Those', 'Same',
+  'Unverified', 'Approx', 'Reference', 'Benchmark', 'Practice', 'Programme',
+]);
+
+/**
+ * Does a benchmark claim ATTRIBUTE itself to somebody or something specific?
+ *
+ * A year, a slash-joined pair of capitalised names, or any capitalised token
+ * outside GENERIC_CAPS that is not the first word of a sentence. This does not
+ * decide whether the claim is tagged — every unbacked claim is tagged — only
+ * whether it is also flagged and confidence-capped.
+ */
+export function isAttributableClaim(text) {
+  const t = String(text || '').replace(/^unverified:\s*/i, '');
+  if (!t.trim()) return false;
+  if (/\b(?:19|20)\d{2}\b/.test(t)) return true;                       // a dated claim
+  if (/[A-Z][A-Za-z-]{1,}\s*\/\s*[A-Z][A-Za-z-]{1,}/.test(t)) return true;  // "Vitesco/BorgWarner"
+  // EVERY capitalised token, including the first word. Skipping the sentence
+  // opener looked tidy and was the same failure-open mistake in miniature:
+  // "Gestamp progressive-die nesting programmes…" and "Feintool fineblanked…"
+  // both name a company in position zero and both walked through. Position is
+  // not evidence of genericness; GENERIC_CAPS is, and it fails closed.
+  for (const word of t.split(/\s+/)) {
+    const w = word.replace(/^[^A-Za-z]+|[^A-Za-z0-9-]+$/g, '');
+    if (w.length < 2 || !/^[A-Z]/.test(w)) continue;
+    if (GENERIC_CAPS.has(w)) continue;
+    return true;
+  }
+  return false;
 }
 
 /**

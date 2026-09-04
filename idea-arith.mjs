@@ -375,6 +375,55 @@ export function parseBasis(basis, { annualVolume = null, annualValueText = '' } 
  *   { status, statedEur: {lo,hi,mid}|null, computedEur, deltaPct, basis, note }
  * deltaPct is signed against the NEAREST bound of the stated range (0 inside).
  */
+/** Ratio window inside which two independently-written statements count as agreeing. */
+export const CORROBORATION_TOLERANCE = 1.43;
+
+/**
+ * Does the idea's COST BRIDGE independently reach the same figure as its
+ * calculation basis?
+ *
+ * Every idea states its saving arithmetic twice — `calculationBasis` and
+ * `engineering.costBridge` — and until Sept 2026 (review P-3) nothing compared
+ * them. It is a genuinely useful second opinion, but it has to be read
+ * asymmetrically, and the reason is measured rather than assumed.
+ *
+ * Across 69 ideas where both fields parse, the bridge reading runs a median of
+ * 0.30x the basis reading, with a dense cluster between 0.02x and 0.17x. That
+ * is not 64% of ideas contradicting themselves; it is one parser reading a
+ * field it was not built for. The bridge is written as a per-part walk ending
+ * "then x volume" in words, so the volume is frequently absent from the text
+ * and the per-part figure is read as though it were the annual total.
+ *
+ * So: AGREEMENT is evidence and DISAGREEMENT is not. Two independently written
+ * statements landing on the same number is hard to do by accident, and worth
+ * saying. Two statements differing, when one of them is being read by a parser
+ * with a known systematic bias, is worth nothing — and reporting it as a defect
+ * would repeat exactly the false-positive failure this module was just fixed
+ * for. The permanent fix is to generate both from one structured saving model
+ * so they cannot disagree; this is the honest interim.
+ */
+export function checkCorroboration(idea, { annualVolume = null } = {}) {
+  const bridge = idea?.engineering?.costBridge;
+  if (!bridge || typeof bridge !== 'string' || !bridge.trim()) {
+    return { status: 'absent', note: 'the idea states no cost bridge to cross-check against' };
+  }
+  const csp = idea?.costSavingPotential || {};
+  const annualValueText = String(csp.annualValue ?? '');
+  const a = parseBasis(csp.calculationBasis, { annualVolume, annualValueText });
+  const b = parseBasis(bridge, { annualVolume, annualValueText });
+  if (!a?.computedEur || !b?.computedEur) {
+    return { status: 'unreadable', note: 'the cost bridge could not be read as arithmetic — no second opinion available, which is NOT a finding about the idea' };
+  }
+  const ratio = b.computedEur / a.computedEur;
+  const agrees = ratio >= 1 / CORROBORATION_TOLERANCE && ratio <= CORROBORATION_TOLERANCE;
+  const fmt = (n) => `€${Math.round(n).toLocaleString('en-GB')}`;
+  return agrees
+    ? { status: 'corroborated', bridgeEur: Math.round(b.computedEur), ratio: Number(ratio.toFixed(2)),
+        note: `the cost bridge independently multiplies out to ${fmt(b.computedEur)}, agreeing with the calculation basis` }
+    : { status: 'not-corroborated', bridgeEur: Math.round(b.computedEur), ratio: Number(ratio.toFixed(2)),
+        note: `the cost bridge reads as ${fmt(b.computedEur)} against the basis's ${fmt(a.computedEur)} — NOT a contradiction: this parser reads prose bridges with a known low bias (median 0.30x on the measured corpus), so the two simply do not corroborate` };
+}
+
 export function checkArithmetic(idea, { annualVolume = null } = {}) {
   const csp = idea?.costSavingPotential || {};
   const annualValueText = String(csp.annualValue ?? '');
@@ -431,12 +480,15 @@ export function checkArithmetic(idea, { annualVolume = null } = {}) {
 
 /** Mutates ideas: stamps idea.arithmetic and adds a validation flag on mismatch. Returns counts. */
 export function runArithmeticChecks(ideas, opts = {}) {
-  const summary = { consistent: 0, mismatch: 0, partial: 0, unparsed: 0 };
+  const summary = { consistent: 0, mismatch: 0, partial: 0, unparsed: 0, corroboration: { corroborated: 0, 'not-corroborated': 0, unreadable: 0, absent: 0 } };
   for (const idea of Array.isArray(ideas) ? ideas : []) {
     if (!idea || typeof idea !== 'object') continue;
     const a = checkArithmetic(idea, opts);
+    try { a.corroboration = checkCorroboration(idea, opts); } catch { /* second opinion is best-effort */ }
     idea.arithmetic = a;
     summary[a.status]++;
+    const cs = a.corroboration?.status;
+    if (cs) summary.corroboration[cs] = (summary.corroboration[cs] || 0) + 1;
     if (a.status === 'mismatch') {
       idea.validationFlags = [...new Set([...(idea.validationFlags || []), `arithmetic-mismatch(${a.deltaPct > 0 ? '+' : ''}${a.deltaPct}%)`])];
     }

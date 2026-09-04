@@ -109,8 +109,21 @@ export function selectForRefine(ideas, { max = 4 } = {}) {
     // the false-positive fixes seven of every eight mismatches were exactly that.
     // This selection is only safe because that rate is now 1 in 30.
     const arithBroken = idea.arithmetic?.status === 'mismatch';
-    if (contradicted || majorityChallenged || arithBroken) {
-      scored.push({ index: i, priority: (contradicted ? 2 : 0) + (arithBroken ? 2 : 0) + challenges });
+    // A DETECTED RESTATEMENT IS A VERIFIED FAILURE TOO (Sept 2026 review, P-2).
+    //
+    // 75.8% of live ideas match a marketplace entry, up from 65.1% as depth
+    // rose. The generation prompt already says "do NOT restate any of these",
+    // and the prior-art index already proves when that was ignored — but the
+    // two never met: the prompt shows six precedents drawn by a part-level
+    // query, while the duplicate check searches the whole corpus by idea title,
+    // so the entry an idea actually restated was usually never shown to it.
+    //
+    // Closing that loop costs one repair, on machinery that already exists, and
+    // hands the model the specific entry it restated rather than a general
+    // instruction it has already followed as well as it can.
+    const restated = !!idea.priorArt;
+    if (contradicted || majorityChallenged || arithBroken || restated) {
+      scored.push({ index: i, priority: (contradicted ? 2 : 0) + (arithBroken ? 2 : 0) + (restated ? 1 : 0) + challenges });
     }
   }
   return scored.sort((a, b) => b.priority - a.priority).slice(0, max).map(s => s.index);
@@ -306,6 +319,7 @@ export async function runDeepPass(client, ideas, ctx, { emit = () => {}, seed = 
       // The arithmetic re-check hands the model its OWN figure back. The fix is
       // almost always the stated annualValue, not the engineering — so say which
       // one is wrong rather than inviting a rewrite of a sound idea.
+      ...(original.priorArt ? [`ALREADY IN THE CORPUS: this idea restates an existing validated idea — "${String(original.priorArt.title || '').slice(0, 140)}". Do not reword it. Either take the mechanism ONE LEVEL DEEPER than the existing entry (a specific grade, a specific station, a specific spec the existing idea leaves general), or attack a different mechanism on this part entirely. A repair that still matches the same entry is rejected.`] : []),
       ...(original.arithmetic?.status === 'mismatch' ? [`ARITHMETIC MISMATCH: your calculationBasis "${String(original.costSavingPotential?.calculationBasis || '').slice(0, 200)}" multiplies out to €${Number(original.arithmetic.computedEur).toLocaleString('en-GB')}, but you stated ${original.costSavingPotential?.annualValue}. ${original.arithmetic.deltaPct > 0 ? 'The basis gives MORE than you claimed' : 'The basis gives LESS than you claimed'} by ${Math.abs(original.arithmetic.deltaPct)}%. Either correct the stated annual value to match the basis, or state the missing term in the basis and price it. Do NOT keep both numbers as they are, and do not change the engineering to justify the figure.`] : []),
       ...(original.critiques || []).filter(c => c.verdict === 'challenge').map(c => `${c.personaName}: ${c.critique}`),
     ].join('\n');
@@ -348,6 +362,18 @@ export async function runDeepPass(client, ideas, ctx, { emit = () => {}, seed = 
       // four copies. Reject any repair that restates another idea in the batch.
       const twin = ideas.find((other, k) => k !== idx && other && ideaSimilarity(refined, other) >= REPAIR_DISTINCT_MAX_SIM);
       if (twin) { summary.repairRejected.push({ title: original.title, reason: `repair restates "${twin.title}"` }); continue; }
+      // …and a repair for a CORPUS restatement must not still be one. The
+      // caller owns the index, so it passes a checker in; without one this
+      // simply does not run rather than guessing.
+      if (original.priorArt && typeof ctx.priorArtOf === 'function') {
+        let hit = null;
+        try { hit = ctx.priorArtOf(refined); } catch { hit = null; }
+        if (hit) {
+          summary.repairRejected.push({ title: original.title, reason: `repair still restates "${String(hit.title || '').slice(0, 80)}"` });
+          continue;
+        }
+        refined.priorArt = undefined;
+      }
       try { runArithmeticChecks([refined], { annualVolume: ctx.annualVolume }); } catch { /* stamp is best-effort */ }
       // A repair that is STILL arithmetically broken did not repair. Same rule
       // the engine contradiction already had: keep the original rather than
@@ -358,7 +384,8 @@ export async function runDeepPass(client, ideas, ctx, { emit = () => {}, seed = 
       }
       refined.refined = {
         fromTitle: original.title,
-        note: original.engineCheck?.direction === 'contradicted' ? 'repaired after engine contradiction'
+        note: original.priorArt ? `rewritten after matching an existing corpus idea ("${String(original.priorArt.title || '').slice(0, 70)}")`
+          : original.engineCheck?.direction === 'contradicted' ? 'repaired after engine contradiction'
           : original.arithmetic?.status === 'mismatch' ? `repaired after an arithmetic mismatch (${original.arithmetic.deltaPct > 0 ? '+' : ''}${original.arithmetic.deltaPct}% against its own basis)`
           : 'revised after panel challenges',
       };

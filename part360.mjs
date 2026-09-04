@@ -21,8 +21,10 @@
 // The LLM never contributes a number to anything in this file.
 //
 // HONESTY RULES SPECIFIC TO THIS FILE. The entitlement figure is a DIRECTION
-// INDICATOR, not a target — the basis string says so, because held-out engine
-// accuracy is ~21% MAPE reading ~7% low. Forensics verdicts use the engine's
+// INDICATOR, not a target — the basis string says so, and it composes the
+// accuracy figure from engine-accuracy.mjs rather than quoting one. This
+// comment used to name "~21% MAPE reading ~7% low" and the measured figure had
+// moved to 15.2% two engine improvements ago. Forensics verdicts use the engine's
 // own measured model dispersion as the band, and say that per-bucket spread is
 // wider still. A waterfall step the engine cannot compute is kept, skipped,
 // with its reason — a chain that silently drops a step reads as a smaller gap.
@@ -30,6 +32,7 @@
 import {
   computeShouldCost, computeRouteCost, volumeSensitivity, REGIONS, MODEL_DISPERSION,
 } from './costing-engine.mjs';
+import { accuracyClause } from './engine-accuracy.mjs';
 import { compareRoutes } from './dfm-routing.mjs';
 import { targetGap } from './innovation.mjs';
 import { resolveMaterial, resolveRoute } from './material-process-resolve.mjs';
@@ -437,7 +440,7 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
     quoteEur: quote,
     totalGapEur: quote != null ? round2(quote - cursor) : null,
     basis: 'Every step is a deterministic engine computation; steps chain exactly (each fromEur is the previous toEur), so the deltas sum from the quote to the entitlement with nothing hidden.',
-    caution: 'The entitlement is a DIRECTION INDICATOR, not a target: it assumes the function tolerates standard specification, a process change clears programme gates, and the engine\'s held-out accuracy (~21% MAPE, reading low) bounds every figure.',
+    caution: `The entitlement is a DIRECTION INDICATOR, not a target: it assumes the function tolerates standard specification, a process change clears programme gates, and ${accuracyClause()}.`,
   };
 }
 

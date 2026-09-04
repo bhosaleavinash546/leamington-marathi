@@ -27,6 +27,7 @@ import { LENSES as PRISM_LENSES } from './part360.mjs';
 import { ASSEMBLY_LENSES } from './prism-assembly.mjs';
 import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from './fx-rates.mjs';
 import { computeShouldCost, simulateShouldCost } from './costing-engine.mjs';
+import { featureAccuracyClause } from './engine-accuracy.mjs';
 import { featuredMachiningCost } from './machining-feature-cost.mjs';
 import { stampingFeatureCost, geometryToStampingInput } from './stamping-feature-cost.mjs';
 import { resolveMaterial, resolveProcess } from './material-process-resolve.mjs';
@@ -950,6 +951,9 @@ async function sendOTPEmail(email, otp, type) {
 // still bounds a runaway; set CV_MONTHLY_TOKEN_QUOTA=0 to disable deliberately.
 // The volume assumed when the caller supplies none. Named, so the assumption
 // can be reported rather than baked into three call sites.
+/** BM25 score at or above which a generated idea counts as restating a corpus idea. */
+const PRIOR_ART_MIN_SCORE = 12;
+
 const DEFAULT_ANNUAL_VOLUME = 80_000;
 
 // FEATURE-ENGINE DISPERSION, derived from recorded residuals.
@@ -967,7 +971,7 @@ const DEFAULT_ANNUAL_VOLUME = 80_000;
 const FEATURE_DISPERSION = {
   machining: 0.34,
   stamping: 0.38,
-  basis: "Band from the recorded residuals of this engine's own benchmark (6 fixtures each; machining MAPE 34.5%, stamping 38.9%). A thin basis, stated rather than assumed — a direction indicator, not a quotable tolerance.",
+  basis: `Band from the recorded residuals of this engine's own benchmark — ${featureAccuracyClause()}. A thin basis, stated rather than assumed, and composed from the recorded results rather than retyped: a direction indicator, not a quotable tolerance.`,
 };
 
 const MONTHLY_TOKEN_QUOTA = Number(process.env.CV_MONTHLY_TOKEN_QUOTA ?? 3_000_000);
@@ -3319,11 +3323,14 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
 
     // Prior-art labelling: verify the "do NOT duplicate" instruction was obeyed
     // by actually querying the marketplace index against each generated title.
+    // The threshold is named once because the deep pass re-checks a repair with
+    // it — a repair cleared by a looser rule than the one that condemned the
+    // original would be theatre.
     try {
       const idx = getIdeaIndex();
       for (const idea of ideas) {
         const hits = idx.search(`${idea.title} ${sysName}`, 1);
-        if (hits.length && hits[0].score >= 12) {
+        if (hits.length && hits[0].score >= PRIOR_ART_MIN_SCORE) {
           idea.priorArt = { id: hits[0].doc.id, title: hits[0].doc.title, score: Number(hits[0].score.toFixed(1)) };
         }
       }
@@ -3376,6 +3383,18 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
           smallModel: SMALL_MODEL,
           searchExecuted,
           evidenceIds,
+          // The corpus index, so a repair for a restatement can be checked
+          // against the same index that detected it. Same query and threshold
+          // as the prior-art labelling above — a repair judged by a different
+          // rule than the one that condemned it would prove nothing.
+          priorArtOf: (idea) => {
+            try {
+              const hits = getIdeaIndex().search(`${idea.title} ${sysName}`, 1);
+              return hits.length && hits[0].score >= PRIOR_ART_MIN_SCORE
+                ? { id: hits[0].doc.id, title: hits[0].doc.title, score: Number(hits[0].score.toFixed(1)) }
+                : null;
+            } catch { return null; }
+          },
         }, { emit, level: deepLevel });
         validationSummary.deep = deep;
         if (deep.critiqued > 0) emit({ type: 'progress', message: deepLevel === 'full'
