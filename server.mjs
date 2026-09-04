@@ -236,6 +236,14 @@ if (IS_PROD && (!process.env.JWT_SECRET || JWT_SECRET === 'autocost-ai-dev-secre
   console.error('FATAL: JWT_SECRET must be set to a strong, unique value in production.');
   process.exit(1);
 }
+// Same rule, same place. This check used to sit ~900 lines down, after the DB
+// was opened and the marketplace fully seeded — the go-live rehearsal watched
+// a misconfigured server seed 2,243 ideas and THEN die. Every fail-closed
+// production check belongs here, before any work is done.
+if (IS_PROD && !process.env.CREDENTIALS_SECRET) {
+  console.error('FATAL: CREDENTIALS_SECRET must be set in production (do not reuse JWT_SECRET).');
+  process.exit(1);
+}
 // Admin allowlist (also used by routes/rate-library.mjs). Public signup is blocked
 // for these addresses so an admin identity can't be self-registered.
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
@@ -1114,6 +1122,19 @@ app.post('/api/auth/forgot-password', rateLimit(5, 15 * 60 * 1000, { failClosed:
     } catch (err) { console.error('Email error:', err.message); }
   }
 
+  // In production with no mailer, the code went to the server log and the
+  // caller can never receive it. Telling them "an OTP has been sent" is a lie
+  // that strands a real user at the reset screen — in the go-live rehearsal it
+  // was the most likely way a presenter locks themselves out on stage. The
+  // message is the same whether or not the account exists, so it reveals
+  // nothing about enumeration; it only stops promising an email that will not
+  // arrive.
+  if (!transporter && IS_PROD) {
+    return res.status(503).json({
+      error: 'Password reset by email is not configured on this server. Ask your administrator to set EMAIL_USER and EMAIL_PASS, or to reset your password directly.',
+      mailerConfigured: false,
+    });
+  }
   res.json({
     message: devOtp
       ? 'No email configured — your reset code is shown below.'
@@ -1175,11 +1196,8 @@ app.post('/api/auth/signout', requireAuth, (req, res) => {
 // encrypted, and resolved server-side per request. Resolution order everywhere:
 // explicit request body key → stored credential → server env key.
 // One leaked secret must not both forge sessions AND decrypt stored API keys:
-// in production a dedicated CREDENTIALS_SECRET is mandatory.
-if (IS_PROD && !process.env.CREDENTIALS_SECRET) {
-  console.error('FATAL: CREDENTIALS_SECRET must be set in production (do not reuse JWT_SECRET).');
-  process.exit(1);
-}
+// in production a dedicated CREDENTIALS_SECRET is mandatory — enforced at boot,
+// beside the JWT_SECRET check, before the database is touched.
 const CRED_KEY = crypto.createHash('sha256').update(process.env.CREDENTIALS_SECRET || JWT_SECRET).digest();
 function encryptSecret(plain) {
   const iv = crypto.randomBytes(12);
@@ -1870,10 +1888,12 @@ const COMMODITY_BASELINE = {
   pu_foam_seat:       { label: 'PU Foam (seat grade)',      value: 2.4,   unit: '€/kg',  category: 'plastics',    tier: 'indicative', context: 'Seat cushion, safety foam' },
 };
 
+/** Vintage of the built-in baseline. Named so /api/prices can tell a baseline from a real refresh. */
+const PRICE_BASELINE_TS = Date.parse('2026-07-03T12:00:00Z');
 const priceCache = {
   // Vintage of the seed values above. A successful live refresh overrides this
   // with the real fetch time; loading newer DB-persisted prices does too.
-  lastRefresh: Date.parse('2026-07-03T12:00:00Z'),
+  lastRefresh: PRICE_BASELINE_TS,
   data: Object.fromEntries(
     Object.entries(COMMODITY_BASELINE).map(([k, v]) => [k, { ...v }])
   ),
@@ -3089,6 +3109,19 @@ app.get('/api/prices', async (req, res) => {
     nextRefresh: priceCache.lastRefresh ? new Date(priceCache.lastRefresh + PRICE_CACHE_TTL).toISOString() : null,
     cacheAgeMinutes: priceCache.lastRefresh ? Math.round((Date.now() - priceCache.lastRefresh) / 60000) : null,
     totalCommodities: Object.keys(priceCache.data).length,
+    // PROVENANCE, so no surface can call a baseline "live" (go-live rehearsal:
+    // the homepage showed a green "Live commodity prices" dot on figures that
+    // were a 63-day-old seed and had never once been updated from the web).
+    // `live` is true only if a web refresh has EVER succeeded — lastRefresh
+    // only advances on a real update, so it is the honest signal. `stale` is
+    // age beyond one refresh interval. Live refreshes need BRAVE_API_KEY;
+    // without it these figures are a dated reference set, and say so.
+    live: priceCache.lastRefresh !== PRICE_BASELINE_TS,
+    stale: !priceCache.lastRefresh || (Date.now() - priceCache.lastRefresh) > PRICE_CACHE_TTL,
+    asOf: priceCache.lastRefresh ? new Date(priceCache.lastRefresh).toISOString().slice(0, 10) : null,
+    basis: priceCache.lastRefresh === PRICE_BASELINE_TS
+      ? 'Reference prices from the built-in baseline. No live refresh has succeeded on this server — set BRAVE_API_KEY to enable daily web updates.'
+      : 'Updated from public web sources by the daily refresh; the built-in baseline fills any commodity the last refresh could not read.',
   });
 });
 

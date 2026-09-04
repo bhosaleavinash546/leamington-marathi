@@ -144,6 +144,24 @@ Then confirm the geometry path end to end, because it is the one that fails
 quietly: upload a real STEP file to DFM Studio and check that measured geometry
 comes back rather than an error.
 
+### Things that are honest by default — decide whether you want them that way
+
+- **Commodity prices.** Without `BRAVE_API_KEY` the daily web refresh never
+  updates anything, and the app runs on its built-in reference baseline. The
+  homepage then labels the strip **"Reference commodity prices · as of 3 Jul
+  26"** with a grey dot — it will not call them live. Set the key if you want
+  the green dot to mean something.
+- **Password reset.** Without SMTP, the reset endpoint returns a clear
+  503 — "not configured on this server" — instead of promising an email that
+  will not arrive.
+- **Fonts.** The built front end loads Inter from Google Fonts. Behind a
+  firewall that fails silently and the system sans takes over; layout holds.
+  Self-host the face if that matters on stage.
+- **The first administrator.** `ADMIN_EMAILS` blocks those addresses from
+  public signup. Only `ADMIN_EMAIL` + `ADMIN_PASSWORD` creates one, on an empty
+  database. Set all three for the first boot; the preflight refuses to pass on
+  a fresh database with the block and no seed.
+
 ---
 
 ## 5. Operating it

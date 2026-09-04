@@ -79,6 +79,16 @@ RUN python3 -m pip install --break-system-packages --no-cache-dir \
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/kb-pack.json ./kb-pack.json
+# Data files the server reads with fs at runtime — NOT visible to an import
+# scan. The staged-image rehearsal found this TWICE: first the marketplace was
+# empty (legacy seed missing, one ENOENT in the log, health green); then after
+# adding that one file it held 657 ideas instead of 2,243, because the other
+# nine seed packs are passed BY NAME to seedMarketplaceIdeasFromFile() and a
+# scan for readFileSync('…') never saw them. The glob catches every pack that
+# exists today and every one added later, and the completeness test now scans
+# for any .json string literal that resolves to a real file, requiring it to
+# find at least ten so it cannot pass vacuously.
+COPY marketplace-*.json ./
 
 # Application source. Engines, routes, cad-engine and scripts are all runtime
 # code — cad-engine/*.py is spawned per request and scripts/preflight.mjs is run

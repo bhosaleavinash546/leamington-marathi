@@ -9,18 +9,28 @@ import { AUTOMOTIVE_SYSTEMS } from '../data/automotive-catalog';
 
 // ─── Live commodity prices (real /api/prices data) ────────────────────────────
 interface LiveCommodity { key: string; label: string; value: number; unit: string; tier: string; }
+// `live` is the server's word for "a web refresh has succeeded at least once";
+// `stale` means older than one refresh interval. The strip labels itself from
+// these rather than assuming — the go-live rehearsal caught it showing a green
+// "Live" dot over a 63-day-old baseline that had never been refreshed.
 function useLivePrices() {
   const [items, setItems] = useState<LiveCommodity[]>([]);
   const [lastRefresh, setLastRefresh] = useState<string | null>(null);
+  const [live, setLive] = useState(false);
+  const [stale, setStale] = useState(true);
+  const [basis, setBasis] = useState<string>('');
   useEffect(() => {
     fetch('/api/prices').then(r => r.json()).then(data => {
       if (data.prices) {
         setItems(Object.entries(data.prices).map(([key, v]: [string, any]) => ({ key, ...v })));
         setLastRefresh(data.lastRefresh ?? null);
+        setLive(data.live === true);
+        setStale(data.stale !== false);
+        setBasis(typeof data.basis === 'string' ? data.basis : '');
       }
     }).catch(() => {});
   }, []);
-  return { items, lastRefresh };
+  return { items, lastRefresh, live, stale, basis };
 }
 
 // ─── Static content ───────────────────────────────────────────────────────────
@@ -130,7 +140,8 @@ function ProductPanel() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const { items: livePriceItems, lastRefresh } = useLivePrices();
+  const { items: livePriceItems, lastRefresh, live: pricesLive, stale: pricesStale, basis: pricesBasis } = useLivePrices();
+  const pricesFresh = pricesLive && !pricesStale;
   const [ideaCount, setIdeaCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -325,10 +336,13 @@ export default function HomePage() {
             <div className="rounded-2xl bg-navy-900 border border-white/10 px-5 py-4">
               <div className="flex items-center gap-2 mb-3">
                 <BarChart3 size={12} className="text-slate-500" />
-                <span className="text-[11px] uppercase tracking-wider font-semibold text-slate-500">Live commodity prices</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="text-[11px] uppercase tracking-wider font-semibold text-slate-500" title={pricesBasis || undefined}>
+                  {pricesFresh ? 'Live commodity prices' : 'Reference commodity prices'}
+                </span>
+                {/* Green means live AND fresh. Anything else is a dated reference set and looks like one. */}
+                <span className={`w-1.5 h-1.5 rounded-full ${pricesFresh ? 'bg-emerald-400' : 'bg-slate-500'}`} title={pricesFresh ? 'Refreshed from the web within the last day' : (pricesBasis || 'Not refreshed from the web')} />
                 <span className="flex-1" />
-                {lastRefresh && <span className="text-[11px] text-slate-500">Refreshed {new Date(lastRefresh).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' })}</span>}
+                {lastRefresh && <span className="text-[11px] text-slate-500">{pricesFresh ? 'Refreshed' : 'As of'} {new Date(lastRefresh).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' })}</span>}
               </div>
               <div className="flex flex-wrap gap-x-6 gap-y-2">
                 {livePriceItems.slice(0, 9).map(c => (

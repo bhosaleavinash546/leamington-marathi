@@ -132,6 +132,28 @@ os.remove(p)
       'This is a development affordance and an account-takeover hole the moment the app is reachable. Set EMAIL_USER and EMAIL_PASS.');
   } else pass('secrets', 'SMTP credentials', `configured (${process.env.EMAIL_USER})`);
 
+  // THE ADMIN-BOOTSTRAP TRAP. ADMIN_EMAILS blocks public signup for those
+  // addresses so an admin identity cannot be self-registered — correct. But
+  // the ONLY way an admin comes to exist is ADMIN_EMAIL + ADMIN_PASSWORD
+  // seeding one on an empty database. Set the first without the second on a
+  // fresh deployment and no administrator can ever be created: the address is
+  // blocked from signing up and nothing seeds it. The rate-library admin page
+  // is then unreachable by anyone, forever, with no error anywhere.
+  const adminList = (process.env.ADMIN_EMAILS || '').split(',').map(x => x.trim()).filter(Boolean);
+  if (adminList.length && !(process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD)) {
+    const dataDir = process.env.DATA_DIR || join(ROOT, 'data');
+    let hasDb = false;
+    try { hasDb = statSync(join(dataDir, 'brainspark.db')).size > 0; } catch { /* first boot */ }
+    (hasDb ? note : fail)('secrets', 'admin bootstrap',
+      `ADMIN_EMAILS names ${adminList.length} address${adminList.length === 1 ? '' : 'es'} but ADMIN_EMAIL/ADMIN_PASSWORD are unset — ${hasDb ? 'fine if an admin already exists in this database' : 'on this EMPTY database no admin can ever be created'}`,
+      'Those addresses are blocked from public signup, and only ADMIN_EMAIL + ADMIN_PASSWORD seeds one. Set both for the first boot, then remove them.');
+  } else if (adminList.length) pass('secrets', 'admin bootstrap', `${adminList.length} admin address(es), and a seed account is configured for first boot`);
+  else note('secrets', 'admin bootstrap', 'ADMIN_EMAILS unset — no administrator; the rate-library admin page will be unreachable');
+
+  if (!process.env.BRAVE_API_KEY) {
+    note('secrets', 'BRAVE_API_KEY', 'unset — commodity prices stay on the built-in reference baseline and the homepage labels them "Reference", never "Live"; Horizon research reports "no live search". Deliberate if so; a surprise otherwise.');
+  } else pass('secrets', 'BRAVE_API_KEY', 'set — daily commodity refresh and Horizon live search enabled');
+
   if (!process.env.ANTHROPIC_API_KEY) {
     note('secrets', 'ANTHROPIC_API_KEY',
       'unset — every LLM feature requires each user to add their own key in Settings. Deliberate for BYOK; a broken deployment otherwise.');
@@ -187,6 +209,13 @@ try {
   fail('content', 'built front end', 'dist/ is missing',
     'server.mjs serves the SPA from dist/ — without it users get an API with no interface. Run npm run build in the image.');
 }
+
+// ── Things the browser fetches from OUTSIDE this server. ───────────────────
+// Stated rather than tested: the container cannot see the user's network. The
+// only external runtime dependency the built front end has is Google Fonts;
+// behind a firewall it fails silently and Inter falls back to the system sans.
+// Layout holds. Self-host the face if the fallback is unacceptable on stage.
+note('content', 'external fonts', 'dist/index.html loads Inter from fonts.googleapis.com — a blocked network falls back to system-ui with no error');
 
 // ── Outbound reachability, only when asked to probe a live instance. ─────────
 const url = arg('--url');
