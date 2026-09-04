@@ -20,6 +20,7 @@ import { messagesJson } from './llm-json.mjs';
 import { validateIdeas } from './idea-validation.mjs';
 import { runEngineChecks } from './engine-idea-check.mjs';
 import { runArithmeticChecks } from './idea-arith.mjs';
+import { applySavingModel } from './saving-model.mjs';
 import { ideaSimilarity } from './idea-quality.mjs';
 
 /** A repair that lands within this similarity of ANY other idea in the batch is a restatement, not a repair. */
@@ -206,6 +207,7 @@ export const REFINE_SCHEMA = {
           type: 'object',
           properties: { mechanism: { type: 'string' }, specDeltas: { type: 'string' }, validationPlan: { type: 'string' }, dfmImplications: { type: 'string' }, costBridge: { type: 'string' } },
         },
+        savingModel: { type: 'object', additionalProperties: true, description: 'PREFERRED over annualValue/calculationBasis: {volume, terms:[{label,value,scope:"per-part"|"annual"|"of",of,sign:"saving"|"cost"}], excluded:[...]}. The annual figure is computed from the terms, so it cannot disagree with them.' },
         engineCheckRequest: { type: 'object', additionalProperties: true, description: 'kind substitution|tolerance|assembly|footprint|commonisation|cycle with the same fields as the generation schema; omit only if the repaired move is not expressible' },
         harnessCheckRequest: { type: 'object', additionalProperties: true },
       },
@@ -320,7 +322,7 @@ export async function runDeepPass(client, ideas, ctx, { emit = () => {}, seed = 
       // almost always the stated annualValue, not the engineering — so say which
       // one is wrong rather than inviting a rewrite of a sound idea.
       ...(original.priorArt ? [`ALREADY IN THE CORPUS: this idea restates an existing validated idea — "${String(original.priorArt.title || '').slice(0, 140)}". Do not reword it. Either take the mechanism ONE LEVEL DEEPER than the existing entry (a specific grade, a specific station, a specific spec the existing idea leaves general), or attack a different mechanism on this part entirely. A repair that still matches the same entry is rejected.`] : []),
-      ...(original.arithmetic?.status === 'mismatch' ? [`ARITHMETIC MISMATCH: your calculationBasis "${String(original.costSavingPotential?.calculationBasis || '').slice(0, 200)}" multiplies out to €${Number(original.arithmetic.computedEur).toLocaleString('en-GB')}, but you stated ${original.costSavingPotential?.annualValue}. ${original.arithmetic.deltaPct > 0 ? 'The basis gives MORE than you claimed' : 'The basis gives LESS than you claimed'} by ${Math.abs(original.arithmetic.deltaPct)}%. Either correct the stated annual value to match the basis, or state the missing term in the basis and price it. Do NOT keep both numbers as they are, and do not change the engineering to justify the figure.`] : []),
+      ...(original.arithmetic?.status === 'mismatch' ? [`Fix this by supplying a savingModel — state the TERMS and the total is computed from them, so the two cannot disagree. ARITHMETIC MISMATCH: your calculationBasis "${String(original.costSavingPotential?.calculationBasis || '').slice(0, 200)}" multiplies out to €${Number(original.arithmetic.computedEur).toLocaleString('en-GB')}, but you stated ${original.costSavingPotential?.annualValue}. ${original.arithmetic.deltaPct > 0 ? 'The basis gives MORE than you claimed' : 'The basis gives LESS than you claimed'} by ${Math.abs(original.arithmetic.deltaPct)}%. Either correct the stated annual value to match the basis, or state the missing term in the basis and price it. Do NOT keep both numbers as they are, and do not change the engineering to justify the figure.`] : []),
       ...(original.critiques || []).filter(c => c.verdict === 'challenge').map(c => `${c.personaName}: ${c.critique}`),
     ].join('\n');
     try {
@@ -373,6 +375,12 @@ export async function runDeepPass(client, ideas, ctx, { emit = () => {}, seed = 
           continue;
         }
         refined.priorArt = undefined;
+      }
+      // Apply a repaired idea's structured model BEFORE re-checking, or the
+      // repair would be judged on prose it was told not to write.
+      if (refined.savingModel) {
+        try { if (!applySavingModel(refined, { annualVolume: ctx.annualVolume }).ok) delete refined.savingModel; }
+        catch { delete refined.savingModel; }
       }
       try { runArithmeticChecks([refined], { annualVolume: ctx.annualVolume }); } catch { /* stamp is best-effort */ }
       // A repair that is STILL arithmetically broken did not repair. Same rule

@@ -135,7 +135,18 @@ export interface CostReductionIdea {
   /** Technical-depth rubric: which of the six checkable ingredients of a deep idea are present. */
   depth?: { score: number; criteria: Record<string, { met: boolean; weight: number; detail: string }>; missing: string[] };
   /** Arithmetic re-check of the stated annual value against its own calculation basis. */
-  arithmetic?: { status: 'consistent' | 'mismatch' | 'partial' | 'unparsed'; statedEur: { lo: number; hi: number; mid: number } | null; computedEur: number | null; deltaPct: number | null; basis: string | null; note: string; unpricedTerms?: string[];
+  /** Terms the idea stated, from which the annual figure was COMPUTED rather than asserted. */
+  savingModel?: {
+    volume?: number | null;
+    terms?: { label: string; value: number | null; scope: 'per-part' | 'annual' | 'of'; sign: 'saving' | 'cost'; of?: string | null }[];
+    excluded?: string[];
+    unpricedTerms?: string[];
+    computedAnnualEur?: number;
+    perPartEur?: number;
+    /** What the model itself wrote before the computed figure replaced it — the swap is never silent. */
+    modelStated?: string | null;
+  };
+  arithmetic?: { status: 'computed' | 'consistent' | 'mismatch' | 'partial' | 'unparsed'; statedEur: { lo: number; hi: number; mid: number } | null; computedEur: number | null; deltaPct: number | null; basis: string | null; note: string; unpricedTerms?: string[];
     /** Second opinion: does the idea's own cost bridge reach the same figure?
      *  Read asymmetrically — agreement is evidence, disagreement is not (the
      *  prose bridge parses with a known low bias). */
@@ -152,7 +163,8 @@ export interface AnalysisValidation {
   intraBatchMerged?: number;
   diversity?: { score: number; nearDupPairs: number };
   engineChecks?: { checked: number; confirmed: number; contradicted: number; unexpressible: number; byKind?: Record<string, number>; reasons?: Record<string, number> };
-  arithmetic?: { consistent: number; mismatch: number; partial: number; unparsed: number; corroboration?: Record<string, number> };
+  arithmetic?: { computed?: number; consistent: number; mismatch: number; partial: number; unparsed: number; corroboration?: Record<string, number> };
+  savingModel?: { applied: number; refused: number; reasons?: Record<string, number> };
   depth?: { n: number; min: number | null; median: number | null; max: number | null; spread: number | null; criteriaHitPct: Record<string, number> };
   deep?: { critiqued: number; challenges: number; eloMatches: number; refineAttempted: number; refined: number; level?: string };
   /** Prism lens coverage: which evidence lenses ran, which were available but not selected, which returned nothing. */

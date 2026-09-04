@@ -101,7 +101,7 @@ if (scoreIdx !== -1) {
     const scored = ideas.map(i => ({ ...i, depth: scoreDepth(i, { evidenceIds: ids ?? undefined }), arithmetic: checkArithmetic(i, { annualVolume: run.annualVolume }) }));
     const div = batchDiversity(ideas);
     const d = depthSummary(scored);
-    const arith = scored.reduce((m, i) => { m[i.arithmetic.status] = (m[i.arithmetic.status] || 0) + 1; return m; }, { consistent: 0, mismatch: 0, partial: 0, unparsed: 0 });
+    const arith = scored.reduce((m, i) => { m[i.arithmetic.status] = (m[i.arithmetic.status] || 0) + 1; return m; }, { computed: 0, consistent: 0, mismatch: 0, partial: 0, unparsed: 0 });
     const engineChecked = ideas.filter(i => i.engineCheck).length;
     const nullWithReason = ideas.filter(i => !i.engineCheck && typeof i.engineCheckReason === 'string').length;
     const byKind = ideas.reduce((m, i) => { if (i.engineCheck) { const k = i.engineCheck.kind || 'substitution'; m[k] = (m[k] || 0) + 1; } return m; }, {});
@@ -121,7 +121,7 @@ if (scoreIdx !== -1) {
       critiqued: ideas.filter(i => (i.critiques || []).length).length,
     };
     perPart.push(row);
-    console.log(`${row.part}: ${row.ideas} ideas · depth ${row.depthMin}–${row.depthMax} (median ${row.depthMedian}) · arithmetic ${arith.consistent}✓ ${arith.mismatch}✗ ${arith.partial}≥ ${arith.unparsed}? · engine ${engineChecked} checked (${row.contradicted} contradicted, ${nullWithReason}/${ideas.length - engineChecked} nulls with reason) · grade ${row.namedGrade}/${row.ideas} · sections ${row.allSections}/${row.ideas} · lenses ${row.lensesRun.length}/${row.lensesAvailable.length || '?'}`);
+    console.log(`${row.part}: ${row.ideas} ideas · depth ${row.depthMin}–${row.depthMax} (median ${row.depthMedian}) · arithmetic ${arith.computed}∑ ${arith.consistent}✓ ${arith.mismatch}✗ ${arith.partial}≥ ${arith.unparsed}? · engine ${engineChecked} checked (${row.contradicted} contradicted, ${nullWithReason}/${ideas.length - engineChecked} nulls with reason) · grade ${row.namedGrade}/${row.ideas} · sections ${row.allSections}/${row.ideas} · lenses ${row.lensesRun.length}/${row.lensesAvailable.length || '?'}`);
   }
   const total = perPart.reduce((s, p) => s + p.ideas, 0) || 1;
   const sum = (fn) => perPart.reduce((s, p) => s + fn(p), 0);
@@ -133,6 +133,11 @@ if (scoreIdx !== -1) {
     engineCheckRate: pct(sum(p => p.engineChecked)),
     contradictedRate: +((sum(p => p.contradicted) / Math.max(sum(p => p.engineChecked), 1)) * 100).toFixed(1),
     nullReasonRate: +((sum(p => p.nullWithReason) / Math.max(total - sum(p => p.engineChecked), 1)) * 100).toFixed(1),
+    // COMPUTED is the strongest state and gets its own axis: the figure was
+    // produced by arithmetic rather than asserted and re-read, so there was
+    // never a claim to check. The migration from `consistent` to `computed` is
+    // the number to watch.
+    arithComputedRate: pct(sum(p => p.arithmetic.computed || 0)),
     arithConsistentRate: pct(sum(p => p.arithmetic.consistent)),
     arithMismatchRate: pct(sum(p => p.arithmetic.mismatch)),
     // A FLOOR is not a failure. `partial` means the basis names a term the
@@ -140,6 +145,10 @@ if (scoreIdx !== -1) {
     // folded into either the good or the bad number.
     arithPartialRate: pct(sum(p => p.arithmetic.partial || 0)),
     arithParsedRate: pct(sum(p => p.arithmetic.consistent + p.arithmetic.mismatch + (p.arithmetic.partial || 0))),
+    // The one that matters end to end: a figure is TRUSTWORTHY when it was
+    // computed from stated terms, or when the prose it was written as
+    // reconciles with its own basis.
+    arithSoundRate: pct(sum(p => (p.arithmetic.computed || 0) + p.arithmetic.consistent)),
     depthMedian: perPart.length ? +(sum(p => p.depthMedian) / perPart.length).toFixed(1) : 0,
     depthSpread: perPart.length ? +(sum(p => p.depthSpread) / perPart.length).toFixed(1) : 0,
     namedGradeRate: pct(sum(p => p.namedGrade)),
@@ -175,6 +184,7 @@ if (scoreIdx !== -1) {
     ['--min-engine-rate', summary.engineCheckRate, 'ideas carrying an engine verdict (%)', 'min'],
     ['--min-null-reason', summary.nullReasonRate, 'un-checked ideas that state WHY (%)', 'min'],
     ['--min-grade-rate', summary.namedGradeRate, 'ideas naming a material/process grade (%)', 'min'],
+    ['--min-arith-sound', summary.arithSoundRate, 'ideas whose annual figure is computed or reconciles (%)', 'min'],
     ['--min-arith-consistent', summary.arithConsistentRate, 'ideas whose stated saving matches their own basis (%)', 'min'],
     ['--max-arith-mismatch', summary.arithMismatchRate, 'ideas whose arithmetic does not reconcile (%)', 'max'],
   ];

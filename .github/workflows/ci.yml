@@ -90,6 +90,10 @@ jobs:
       # checker, a lost engine stamp or a dropped engineering section. It does
       # NOT measure generation quality or its variance — that still needs a
       # live key and `--label current`.
+      #
+      # --min-arith-sound counts BOTH computed and reconciling figures, so the
+      # migration from prose to structured saving models cannot make the gate
+      # look like a regression while it is actually the fix.
       - name: Ideation checks on the frozen Prism corpus
         run: >
           node benchmark/ideation-eval.mjs
@@ -99,7 +103,7 @@ jobs:
           --min-engine-rate 43
           --min-null-reason 100
           --min-grade-rate 69
-          --min-arith-consistent 74
+          --min-arith-sound 74
           --max-arith-mismatch 4
 
       # OpenCascade wheel — needed by the DFM geometry gate below. Kept as its

@@ -7,6 +7,12 @@
 // wrong number with a confident basis line bought a top slot.
 //
 // This is deliberately a bounded, honest parser:
+//   computed     there was nothing to check: the idea carried a STRUCTURED
+//                saving model, so the figure was produced by arithmetic rather
+//                than asserted and re-read (see saving-model.mjs). This is the
+//                strongest state and the one the pipeline is moving toward —
+//                every verdict below exists only because a number arrived as
+//                prose.
 //   consistent   the basis multiplies out to within the stated range (±15%)
 //   mismatch     it does not — deltaPct says by how much
 //   partial      the priced part falls SHORT, and the basis names terms this
@@ -425,6 +431,28 @@ export function checkCorroboration(idea, { annualVolume = null } = {}) {
 }
 
 export function checkArithmetic(idea, { annualVolume = null } = {}) {
+  // A COMPUTED FIGURE NEEDS NO CHECKING — it was never asserted.
+  //
+  // When the idea carried a structured saving model, `applySavingModel` has
+  // already replaced the annual value and the basis with text rendered FROM the
+  // arithmetic. Re-parsing that text would be checking this module's own output
+  // against itself: a tautology that would report 100% consistency and mean
+  // nothing. The honest verdict is that no check was required.
+  const sm = idea?.savingModel;
+  if (sm && Number.isFinite(Number(sm.computedAnnualEur))) {
+    const eur = Number(sm.computedAnnualEur);
+    const unpriced = Array.isArray(sm.unpricedTerms) ? sm.unpricedTerms : [];
+    return {
+      status: 'computed',
+      statedEur: { lo: eur, hi: eur, mid: eur },
+      computedEur: Math.round(eur),
+      deltaPct: 0,
+      basis: idea?.costSavingPotential?.calculationBasis ?? null,
+      ...(unpriced.length ? { unpricedTerms: unpriced } : {}),
+      ...(Array.isArray(sm.excluded) && sm.excluded.length ? { excluded: sm.excluded } : {}),
+      note: `not asserted — computed from ${Array.isArray(sm.terms) ? sm.terms.length : 0} stated terms, so there is no gap between the claim and its basis${Array.isArray(sm.excluded) && sm.excluded.length ? `. Named as NOT included: ${sm.excluded.join('; ')}` : ''}`,
+    };
+  }
   const csp = idea?.costSavingPotential || {};
   const annualValueText = String(csp.annualValue ?? '');
   const stated = parseMoneyRange(annualValueText);
@@ -480,7 +508,7 @@ export function checkArithmetic(idea, { annualVolume = null } = {}) {
 
 /** Mutates ideas: stamps idea.arithmetic and adds a validation flag on mismatch. Returns counts. */
 export function runArithmeticChecks(ideas, opts = {}) {
-  const summary = { consistent: 0, mismatch: 0, partial: 0, unparsed: 0, corroboration: { corroborated: 0, 'not-corroborated': 0, unreadable: 0, absent: 0 } };
+  const summary = { computed: 0, consistent: 0, mismatch: 0, partial: 0, unparsed: 0, corroboration: { corroborated: 0, 'not-corroborated': 0, unreadable: 0, absent: 0 } };
   for (const idea of Array.isArray(ideas) ? ideas : []) {
     if (!idea || typeof idea !== 'object') continue;
     const a = checkArithmetic(idea, opts);

@@ -155,7 +155,8 @@ test('runArithmeticChecks stamps every idea, flags only mismatches, and counts h
   ];
   const s = runArithmeticChecks(ideas, { annualVolume: 60000 });
   const { corroboration, ...verdicts } = s;
-  assert.deepEqual(verdicts, { consistent: 1, mismatch: 1, partial: 0, unparsed: 1 });
+  assert.deepEqual(verdicts, { computed: 0, consistent: 1, mismatch: 1, partial: 0, unparsed: 1 },
+    'none of these fixtures carries a structured saving model, so none is `computed`');
   assert.equal(corroboration.absent, 3, 'none of these fixtures carries a cost bridge');
   assert.equal(ideas[0].arithmetic.status, 'consistent');
   assert.equal(ideas[0].validationFlags, undefined);

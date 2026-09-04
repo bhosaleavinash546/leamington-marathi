@@ -9,10 +9,12 @@
     "engineCheckRate": 43.5,
     "contradictedRate": 22.2,
     "nullReasonRate": 100,
+    "arithComputedRate": 0,
     "arithConsistentRate": 74.2,
     "arithMismatchRate": 3.2,
     "arithPartialRate": 6.5,
     "arithParsedRate": 83.9,
+    "arithSoundRate": 74.2,
     "depthMedian": 94,
     "depthSpread": 30,
     "namedGradeRate": 69.4,
@@ -20,7 +22,7 @@
     "qualityScoreSpread": 35,
     "critiquedRate": 51.6,
     "dupRate": 75.8,
-    "scoredAt": "2026-09-04T13:16:18.650Z",
+    "scoredAt": "2026-09-04T13:28:56.050Z",
     "scoredFrom": "benchmark/prism-runs-after-repaired"
   },
   "perPart": [
@@ -36,6 +38,7 @@
         "assembly": 5
       },
       "arithmetic": {
+        "computed": 0,
         "consistent": 21,
         "mismatch": 0,
         "partial": 1,
@@ -84,6 +87,7 @@
         "mass": 1
       },
       "arithmetic": {
+        "computed": 0,
         "consistent": 14,
         "mismatch": 0,
         "partial": 1,
@@ -133,6 +137,7 @@
         "tolerance": 1
       },
       "arithmetic": {
+        "computed": 0,
         "consistent": 5,
         "mismatch": 0,
         "partial": 0,
@@ -180,6 +185,7 @@
         "mass": 1
       },
       "arithmetic": {
+        "computed": 0,
         "consistent": 6,
         "mismatch": 2,
         "partial": 2,

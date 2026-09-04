@@ -129,7 +129,44 @@ direction of a substitution) and the arithmetic check covers one field.
 
 **Not yet fixed, and named so:** P-4 (16.1% unparsed), P-5 (paybackMonths), P-7 (blocking generation), P-8 (unclickable citations), P-9 (one band for four steps), P-10 (blind corpus), P-11 (no steer loop), P-12/P-14 (rubric saturation), P-13 (single-model panel).
 
-## 5. What is genuinely strong (MEASURED, stated so the gaps stay in proportion)
+## 5. Tier 1 — arithmetic by construction (4 Sept 2026)
+
+Three measured defects had one cause: the model PRODUCED the annual figure as
+prose and a parser RE-DERIVED it.
+
+| Symptom | Measured |
+|---|---|
+| P-4 — bases that could not be read at all | 16.1% of ideas, headline figure checked by nothing |
+| P-3 — the same arithmetic restated in the cost bridge | median ×0.30 apart, irreconcilable |
+| The parser's own error rate before repair | 14 of 16 reported mismatches were the reader's fault |
+
+`saving-model.mjs` removes the re-derivation. The model states the TERMS —
+`{label, value, scope: per-part|annual|of, sign: saving|cost}` plus a named
+`excluded` list — the module does the arithmetic, and the annual value and the
+basis the user reads are **rendered from the computed result**. The model's own
+wording is kept as `savingModel.modelStated`, so the substitution is visible
+rather than silent.
+
+A new strongest verdict, `computed`, records that there was nothing to check.
+`checkArithmetic` returns it without parsing: re-reading text this module just
+generated would be checking its own output against itself, reporting 100%
+consistency and meaning nothing.
+
+**What it deliberately does not claim.** Arithmetic faithfulness is not
+correctness. "Material saves €400/part" computes perfectly and is nonsense —
+testing the terms is the engine check's job, and the module says so.
+
+Degradation is honest in both directions: a refused model (no terms, no volume
+for a per-part figure, a percentage naming a term that does not exist) leaves
+the idea on the prose path untouched and records the reason; a term that cannot
+be priced is named in `unpricedTerms` rather than dropped.
+
+`arithComputedRate` reads 0 on the frozen corpus and must — those responses
+predate the schema. The CI gate is now `--min-arith-sound` (computed OR
+reconciling), so the migration from prose cannot read as a regression while it
+is actually the fix.
+
+## 6. What is genuinely strong (MEASURED, stated so the gaps stay in proportion)
 
 - **The dossier's honesty contract holds.** 16 evidence sections, and every one
   that cannot be built states its own absence with the reason. No section
