@@ -2,13 +2,14 @@
 """
 CostVision and CAPEE — the business case in four slides, for senior management.
 
-  1  Our should-cost today: capable, but hands-on. What we do well, and where
-     the manual effort sits.
+  1  Our should-cost today: capable, but hands-on. What we do well, where the
+     manual effort sits, and the value model with JLR's numbers left blank.
   2  Option 1 — automate the data entry inside CAPEE. 3D model only, no AI, so
      it needs no AI approval and can start now.
-  3  Option 2 — should-cost that runs by itself: bulk costing, an AI assistant
-     doing the setting up, and the answers we cannot get today.
-  4  What it is worth, with the arithmetic exposed, and the ask.
+  3  Option 2 — what CostVision does. Six capabilities, stated as what they add
+     rather than how they are built.
+  4  What we get from each. Benefits in kind, never in pounds.
+  5  What changes for the business, what each option needs, and the ask.
 
 RULES THIS FILE FOLLOWS.
 
@@ -544,7 +545,76 @@ notes(s, "This is the slide I would spend the most time on, because it is the pa
          "the same rate book we use now, so every number can be explained line by line, exactly as "
          "it can today.")
 
-# ═══════════ 4 · WHAT CHANGES, AND WHAT WE ARE ASKING FOR ══════════════════
+# ═══════════ 4 · WHAT WE GET FROM EACH ═════════════════════════════════════
+s = header('What we get from each', 'The benefits')
+text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
+     [[('Stated in kind, not in pounds. Slide 1 turns these into hours once we fill in our own four '
+        'numbers.', 11.5, BODY, False)]])
+
+card(s, Inches(0.45), Inches(2.0), Inches(6.1), Inches(4.35), INDIGO,
+     'OPTION 1 · automatic input into CAPEE',
+     [('Checking instead of typing', INDIGO, True),
+      ('The values come off the 3D model; the engineer confirms.',),
+      ('',),
+      ('The same answer every time', INDIGO, True),
+      ('One method, applied identically, whoever costs the part.',),
+      ('',),
+      ('More parts costed by the same team', INDIGO, True),
+      ('The time saved goes back into costing more of the basket.',),
+      ('',),
+      ('Nothing new to learn', INDIGO, True),
+      ('CAPEE does not change. Same screens, same way of working.',),
+      ('',),
+      ('It can start now', INDIGO, True),
+      ('No AI involved, so it does not wait on an AI approval.',)])
+
+card(s, Inches(6.78), Inches(2.0), Inches(6.1), Inches(4.35), VIOLET,
+     'OPTION 2 · CostVision end to end',
+     [('Every part costed, not a sample', VIOLET, True),
+      ('A whole basket priced from its own geometry, in one run.',),
+      ('',),
+      ('Days of work become one run', VIOLET, True),
+      ('Gathering the data is the job; the costing stops being it.',),
+      ('',),
+      ('A stronger position with suppliers', VIOLET, True),
+      ('The build-up, where their price differs, and what to ask.',),
+      ('',),
+      ('Work we cannot do at all today', VIOLET, True),
+      ('Electronics costed from a photo. RFQ packs costed and ranked.',),
+      ('',),
+      ('Design-to-cost becomes a decision', VIOLET, True),
+      ('Changes are priced and ranked, not just listed.',)])
+
+callout(s, Inches(0.45), Inches(6.45), Inches(12.43), Inches(0.9), GREENBG, GREEN,
+        'The two build on each other',
+        "Option 1's benefits arrive first and are kept when Option 2 lands. Option 2's rest on the "
+        'accuracy figure that Option 1 produces, which is the reason for doing them in this order '
+        'rather than choosing between them.')
+notes(s, "This is the answer to what we get for it, and I have written it in kind rather than in "
+         "pounds, for the reason I gave on the first slide: we have never timed this job and never "
+         "checked the tool against a price we paid, so a pound figure from me would be a guess. "
+         "Take the left column first. Option one turns the job from typing into checking, because "
+         "the values come off the model. It gives the same answer every time, so a part costed by "
+         "one engineer and a part costed by another are comparable, which matters when we put them "
+         "in front of a supplier. The time that gets freed does not disappear — it goes back into "
+         "costing more of the basket with the team we already have. Nobody learns a new tool, "
+         "because CAPEE does not change. And the last one is the practical point for this room: "
+         "there is no AI in Option one, so it does not wait on an AI approval. We can start it. "
+         "Now the right column, and these are different in kind rather than bigger. Every part in a "
+         "basket gets a proper cost instead of a sample scaled up. A basket that takes days of "
+         "engineer time becomes one run, and I want to be honest that the real work then becomes "
+         "gathering the part list, the models and our own rate data — the costing stops being the "
+         "bottleneck. We stop taking an estimate to a supplier and start taking the build-up, plus "
+         "where their price differs from ours and what to ask them about it. There is work we "
+         "simply cannot do today: costing electronics from a photograph of the board, and turning "
+         "an RFQ pack into costed, ranked lines. And design-to-cost stops being a list of "
+         "suggestions and becomes a decision, because each change has a number against it. The "
+         "green strip is the sequencing point. Option one's benefits arrive first and we keep them. "
+         "Option two's depend on the accuracy figure that Option one produces, which is why these "
+         "are an order rather than a choice.")
+
+
+# ═══════════ 5 · WHAT CHANGES, AND WHAT WE ARE ASKING FOR ══════════════════
 s = header('What changes, and what we are asking for', 'The decision')
 rows = [
     ('How many parts get a proper cost', ('The ones we have hours for', RED, False),
@@ -578,7 +648,7 @@ callout(s, Inches(0.45), Inches(5.46), Inches(12.43), Inches(0.9), GREENBG, GREE
         'actually paid, and how much of the input it fills on its own.')
 callout(s, Inches(0.45), Inches(6.48), Inches(12.43), Inches(0.88), AMBERBG, AMBER,
         'Two things to be straight about',
-        'Everything on the last slide works today one part at a time. Making it run over a whole '
+        'Those six capabilities work today one part at a time. Making them run over a whole '
         'basket unattended is real work, not a switch. And we have never checked the tool against '
         'a price JLR has actually paid — which is exactly what the Option 1 trial settles.')
 notes(s, "Last slide, and it is two things: what changes for the business, and what I want from "
@@ -598,8 +668,8 @@ notes(s, "Last slide, and it is two things: what changes for the business, and w
          "commodity, thirty to fifty parts we have already bought, our own time. In parallel I "
          "would start the AI approval, because that is the long pole on Option two and there is no "
          "reason to wait for the trial to finish before beginning it. The amber box is me being "
-         "straight with you twice. Everything I showed you on the last slide works today, but it "
-         "works one part at a time — making it run unattended over a basket is real work. And we "
+         "straight with you twice. The six capabilities I showed you work today, but they "
+         "work one part at a time — making it run unattended over a basket is real work. And we "
          "have still never checked this against a price we have actually paid. That is exactly what "
          "the trial is for.")
 
