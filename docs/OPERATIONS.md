@@ -41,6 +41,86 @@ needs no check and no rescue. See DECISIONS 48 for why nothing *inside* this rep
 the cloud-environment setup script that partially mitigates it from outside, and for the migration
 commands — ready to run by anyone whose GitHub access is not bound to this single repo.
 
+## Environment variables — the complete list
+
+Every `process.env.*` this codebase reads, with its default and what happens when it is absent.
+`tests/env-documented.test.mjs` fails when a new one is introduced without a row here, so this
+table cannot silently fall behind the code again (Sept 2026 review, R-43 — 20 of 32 were
+undocumented, two of them fatal in production).
+
+**Absent is a decision, not a blank.** Where an unset variable changes behaviour rather than
+merely picking a default, the row says so.
+
+### Required in production
+
+| Variable | Default | If unset |
+|---|---|---|
+| `JWT_SECRET` | `autocost-ai-dev-secret-2025` | **The server refuses to start when `NODE_ENV=production`.** Every issued token would be forgeable with a secret published in this repo. |
+| `ANTHROPIC_API_KEY` | — | Server-side key resolution fails; users must supply their own key in Settings. Every LLM-backed tool returns an honest "no API key configured" rather than degrading silently. |
+| `CREDENTIALS_SECRET` | falls back to `JWT_SECRET` | Stored per-user API keys are encrypted with the JWT secret, so rotating the JWT secret makes every stored key undecryptable. Set it separately in production. |
+| `DATA_DIR` | `./data` | The SQLite DB lands inside the checkout — lost on every container rebuild. |
+
+### Deployment
+
+| Variable | Default | Notes |
+|---|---|---|
+| `PORT` | `3001` | HTTP listen port. |
+| `NODE_ENV` | unset | `production` enables the JWT-secret refusal above and the production CORS policy. |
+| `ALLOWED_ORIGINS` | unset (permissive) | Comma-separated origin allow-list for CORS. |
+| `TRUST_PROXY` | `1` | Express `trust proxy` hop count. Wrong values make `req.ip` — and therefore rate limiting — read the proxy instead of the client. |
+| `LOG_LEVEL` | `info` | pino level. |
+| `BRAINSPARK_BACKUPS` | on | `0` disables the automatic SQLite backups described below. |
+
+### Accounts and email
+
+| Variable | Default | Notes |
+|---|---|---|
+| `EMAIL_USER` / `EMAIL_PASS` | unset | SMTP credentials. **When unset, OTPs are printed to the server log instead of emailed** — a development affordance that must not reach production. |
+| `SMTP_HOST` | `smtp.gmail.com` | |
+| `SMTP_PORT` | `587` | STARTTLS; `secure` is false at this port. |
+| `EMAIL_FROM_NAME` | `BrainSpark` | Display name on outbound mail. |
+| `ADMIN_EMAILS` | unset | Comma-separated; these accounts get the admin surfaces. |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | unset | Seeds a first admin account on an empty database. |
+
+### Model and cost control
+
+| Variable | Default | Notes |
+|---|---|---|
+| `CV_SMALL_MODEL` | `claude-sonnet-5` | The cheap model for critics, repairs and extraction. The flagship is a literal in the code, deliberately — see DECISIONS. |
+| `CV_THINKING_BUDGET` | `6000` | Extended-thinking token budget on the ideation call. |
+| `CV_MONTHLY_TOKEN_QUOTA` | `3000000` | Per-user monthly cap. Requests past it are refused with the tally, not silently truncated. |
+| `CV_ANALYZE_TIMEOUT_MS` | `600000` | Whole-pipeline ceiling for `/api/analyze`. |
+| `CV_ANALYZE_CALL_TIMEOUT_MS` | `420000` | Ceiling for a single model call inside that pipeline. |
+| `BRAINSPARK_IDEATION_MODE` | unset | `legacy` reverts every generation upgrade from this build — the A/B arm the ideation eval measures against. |
+| `CV_FORESIGHT_READ_COUNT` | `6` | Documents the Horizon deep-research loop fetches and reads per sweep. |
+
+### Geometry and upload limits
+
+| Variable | Default | Notes |
+|---|---|---|
+| `CV_MAX_CAD_WORKERS` | `2` | Concurrent CAD worker processes. |
+| `CV_MAX_PYTHON_PROCS` | `2` | Concurrent OCCT/python subprocesses. Raise only with the RAM to match — each holds a full tessellation. |
+| `CV_MAX_STL_BYTES` | `314572800` (300 MB) | Upload ceiling for mesh files. |
+| `CV_DFM_GEO_TIMEOUT_MS` | `120000` | Per-part DFM geometry timeout, hard-capped at 600000 in code. |
+| `CV_DFM_RATE_MAX` | `40` | DFM requests per 10-minute window. |
+| `CV_TESSELLATE_RATE_MAX` | `60` | Tessellation requests per 10-minute window. |
+
+### External data
+
+| Variable | Default | Notes |
+|---|---|---|
+| `FX_API_URL` | Frankfurter EUR base | FX source. When the fetch fails the dated fallback table is used and **every rate is reported stale** rather than presented as live. |
+| `BRAVE_API_KEY` | unset | Horizon web research. Unconfigured degrades to labelled "no live search", never to invented sources — see `docs/RESEARCH-KEYS.md`. |
+| `PATENTSVIEW_API_KEY` | unset | Patent search. Same degradation contract. |
+
+### Test and CI only
+
+| Variable | Default | Notes |
+|---|---|---|
+| `CV_HEAVY_IT` | unset | `1` enables the heavy integration tests that are skipped by default. |
+| `CHROMIUM_PATH` | `/opt/pw-browsers/chromium-1194/chrome-linux/chrome` | Browser binary for the e2e and PDF-QA runs. |
+| `CI` | set by the runner | Used to pick non-interactive behaviour. |
+
 ## Handled
 
 | Concern | State |

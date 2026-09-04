@@ -147,7 +147,47 @@ if (scoreIdx !== -1) {
   };
   writeFileSync(resultsPath(label), JSON.stringify({ label, offline: true, summary, perPart }, null, 2));
   console.log(`\nSaved ${resultsPath(label)}\nSummary:`, JSON.stringify(summary, null, 2));
-  process.exit(0);
+
+  // ── CI GATES on the frozen corpus (Sept 2026 review, R-41) ───────────────
+  //
+  // The LIVE arms of this eval cost tokens and cannot run on every push, which
+  // is why the whole ideation layer sat outside CI. This offline path does not:
+  // it re-scores a committed set of real /api/analyze responses with the
+  // deterministic checks, so it gates every part of the pipeline that is
+  // arithmetic rather than generation — the depth rubric, the arithmetic
+  // re-check, the engine-verdict stamps, the engineering-section requirement
+  // and the reason-on-every-null invariant.
+  //
+  // What it does NOT measure, and no offline gate can: whether a prompt change
+  // makes the MODEL generate better ideas, and the run-to-run variance of that.
+  // Those still need `--label current` against a live key. Do not read a green
+  // gate here as "generation is fine".
+  //
+  // Thresholds are set at the values the corpus measures today. They are floors
+  // and ceilings, not targets: tighten them when the pipeline improves.
+  const gates = [
+    ['--min-depth-median', summary.depthMedian, 'depth median', 'min'],
+    ['--min-sections', summary.allSectionsRate, 'ideas with every engineering section (%)', 'min'],
+    ['--min-engine-rate', summary.engineCheckRate, 'ideas carrying an engine verdict (%)', 'min'],
+    ['--min-null-reason', summary.nullReasonRate, 'un-checked ideas that state WHY (%)', 'min'],
+    ['--min-grade-rate', summary.namedGradeRate, 'ideas naming a material/process grade (%)', 'min'],
+    ['--max-arith-mismatch', summary.arithMismatchRate, 'ideas whose arithmetic does not reconcile (%)', 'max'],
+  ];
+  let gateFailed = false;
+  for (const [flag, actual, label_, dir] of gates) {
+    const gi = process.argv.indexOf(flag);
+    if (gi === -1) continue;
+    const limit = Number(process.argv[gi + 1]);
+    if (!Number.isFinite(limit)) { console.error(`  ✗ ${flag} needs a number.`); gateFailed = true; continue; }
+    const bad = dir === 'min' ? actual < limit : actual > limit;
+    if (bad) {
+      console.error(`  ✗ FAIL: ${label_} is ${actual}, ${dir === 'min' ? 'below the required' : 'above the allowed'} ${limit}`);
+      gateFailed = true;
+    } else {
+      console.log(`  ✓ ${label_}: ${actual} (${dir === 'min' ? '≥' : '≤'} ${limit})`);
+    }
+  }
+  process.exit(gateFailed ? 1 : 0);
 }
 
 // ── Live run ─────────────────────────────────────────────────────────────────

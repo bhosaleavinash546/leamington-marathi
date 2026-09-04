@@ -1,0 +1,7 @@
+{
+  "_comment": "Low-water marks for the DFM catalogue's citation debt. threshold-audit.mjs --ratchet fails when a number rises above its recorded best and rewrites this file when one improves, so the gate tightens permanently instead of permitting the status quo forever (review R-40). Raising a value here is a deliberate, reviewable commit.",
+  "unread-standards": 2,
+  "register-drift": 12,
+  "unreviewed": 209,
+  "updatedAt": "2026-09-04"
+}

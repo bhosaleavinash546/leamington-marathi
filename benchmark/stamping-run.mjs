@@ -42,8 +42,20 @@ console.log('  ' + '─'.repeat(74) + '\n');
 
 fs.writeFileSync(path.join(root, 'benchmark', 'stamping-results.json'), JSON.stringify({ rows, featureMape: mape('featErr'), massMape: mape('massErr'), featureHits: hit('featErr'), massHits: hit('massErr'), total: rows.length }, null, 2));
 
+// Relative gate, then an absolute ceiling — see the note in machining-run.mjs
+// (review R-39). Beating a bad model is not the same as being a good one.
 if (mape('featErr') >= mape('massErr')) {
   console.error(`  ✗ FAIL: feature-based MAPE (${(mape('featErr') * 100).toFixed(1)}%) did not beat mass model (${(mape('massErr') * 100).toFixed(1)}%)`);
   process.exit(1);
+}
+const i = process.argv.indexOf('--max-mape');
+if (i !== -1) {
+  const ceiling = Number(process.argv[i + 1]);
+  if (!Number.isFinite(ceiling)) { console.error('  ✗ --max-mape needs a number.'); process.exit(1); }
+  if (mape('featErr') > ceiling) {
+    console.error(`  ✗ FAIL: feature-based MAPE ${(mape('featErr') * 100).toFixed(1)}% exceeds the ceiling ${(ceiling * 100).toFixed(1)}%`);
+    process.exit(1);
+  }
+  console.log(`  ✓ Feature-based MAPE ${(mape('featErr') * 100).toFixed(1)}% within the ${(ceiling * 100).toFixed(1)}% ceiling.`);
 }
 console.log('  ✓ Feature-based model beats the mass model on this held-out set.\n');

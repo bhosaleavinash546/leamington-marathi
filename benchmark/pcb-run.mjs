@@ -74,6 +74,22 @@ if (mape('v2Err') >= mape('v1Err')) {
   process.exit(1);
 }
 
+// Absolute ceiling alongside the relative one (review R-39). This gate matters
+// more here than anywhere: the relative margin below is explicitly too small to
+// mean anything, so without a ceiling this benchmark asserts nothing at all.
+{
+  const i = process.argv.indexOf('--max-mape');
+  if (i !== -1) {
+    const ceiling = Number(process.argv[i + 1]);
+    if (!Number.isFinite(ceiling)) { console.error('  ✗ --max-mape needs a number.'); process.exit(1); }
+    if (mape('v2Err') > ceiling) {
+      console.error(`  ✗ FAIL: v2 MAPE ${(mape('v2Err') * 100).toFixed(1)}% exceeds the ceiling ${(ceiling * 100).toFixed(1)}%`);
+      process.exit(1);
+    }
+    console.log(`  ✓ v2 MAPE ${(mape('v2Err') * 100).toFixed(1)}% within the ${(ceiling * 100).toFixed(1)}% ceiling.`);
+  }
+}
+
 // Guard against reading too much into a very small margin.
 //
 // The audit measured v2 at 29.4% against v1's 30.5% — a 1.04x edge on FOUR

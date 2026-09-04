@@ -18,7 +18,7 @@
 // It is a MEASUREMENT, not a gate. There is no pass mark, because "how much of
 // the catalogue has been audited" has an answer rather than a target, and the
 // answer is the work list.
-import { readFileSync, existsSync } from 'node:fs';
+import fs, { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -211,17 +211,54 @@ if (AS_JSON) {
 //                              that the register has not recorded. Bookkeeping.
 //   --max-unreviewed N         rules no curator has reviewed. An audit-trail
 //                              gap, NOT a claim the threshold is unsourced.
+//
+// SELF-TIGHTENING (Sept 2026 review, R-40). All three ceilings were set to the
+// value they already had, which makes them regression gates and nothing more:
+// the debt could sit at 209 forever and CI would call it green every day. A
+// number that never has to improve is a scoreboard with an alarm on it.
+//
+// So the ceiling is now the LOW-WATER MARK, kept in benchmark/threshold-
+// ratchet.json and committed. Whenever the debt falls, the file records the
+// lower figure and that becomes the new ceiling — permanently, and visibly, in
+// the diff. Loosening it takes a deliberate commit that a reviewer can see,
+// rather than a flag nobody re-reads. The --max-* flags stay as an outer bound
+// so CI still names its own limit.
+const RATCHET_FILE = join(ROOT, 'benchmark', 'threshold-ratchet.json');
+const ratchetOn = process.argv.includes('--ratchet');
+let ratchet = {};
+if (ratchetOn) {
+  try { ratchet = JSON.parse(fs.readFileSync(RATCHET_FILE, 'utf8')); } catch { ratchet = {}; }
+}
+const tightened = [];
+
 const gate = (flag, actual, label) => {
   const i = process.argv.indexOf(flag);
-  if (i === -1) return false;
-  const limit = parseInt(process.argv[i + 1], 10);
-  if (!Number.isFinite(limit)) {
-    console.error(`  ✗ ${flag} needs a number.`);
+  const key = flag.replace(/^--max-/, '');
+  // The effective ceiling is the tighter of the flag and the recorded low-water
+  // mark, so neither can quietly widen the other.
+  let limit = Infinity;
+  let from = null;
+  if (i !== -1) {
+    limit = parseInt(process.argv[i + 1], 10);
+    from = 'flag';
+    if (!Number.isFinite(limit)) {
+      console.error(`  ✗ ${flag} needs a number.`);
+      return true;
+    }
+  }
+  if (ratchetOn && Number.isFinite(ratchet[key]) && ratchet[key] < limit) {
+    limit = ratchet[key];
+    from = 'ratchet';
+  }
+  if (!Number.isFinite(limit)) return false;   // neither a flag nor a record: nothing to gate on
+
+  if (actual > limit) {
+    console.error(`\n  ✗ FAIL: ${actual} ${label} exceeds the allowed ${limit}${from === 'ratchet' ? ' (low-water mark — this debt has been lower before)' : ''}.`);
     return true;
   }
-  if (actual > limit) {
-    console.error(`\n  ✗ FAIL: ${actual} ${label} exceeds the allowed ${limit}.`);
-    return true;
+  if (ratchetOn && actual < (Number.isFinite(ratchet[key]) ? ratchet[key] : Infinity)) {
+    tightened.push(`${label}: ${Number.isFinite(ratchet[key]) ? ratchet[key] : '—'} → ${actual}`);
+    ratchet[key] = actual;
   }
   console.log(`  ✓ ${label}: ${actual}, within the allowed ${limit}`);
   return false;
@@ -232,4 +269,12 @@ const failed = [
   gate('--max-register-drift', registerBehindCatalogue.length, 'rules read but not registered'),
   gate('--max-unreviewed', byStatus['not-reviewed'] || 0, 'rules not yet curator-reviewed'),
 ].some(Boolean);
+
+if (ratchetOn && tightened.length) {
+  ratchet.updatedAt = new Date().toISOString().slice(0, 10);
+  fs.writeFileSync(RATCHET_FILE, JSON.stringify(ratchet, null, 2) + '\n');
+  console.log(`\n  ⟲ Ratchet tightened — commit benchmark/threshold-ratchet.json:`);
+  for (const t of tightened) console.log(`      ${t}`);
+}
+
 if (failed) { console.error(''); process.exit(1); }

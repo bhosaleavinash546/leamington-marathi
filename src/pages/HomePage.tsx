@@ -303,10 +303,17 @@ export default function HomePage() {
             </div>
             <div className="text-center md:border-l border-white/10 md:pl-10">
               {/* Pinned to benchmark/{machining,stamping}-results.json by
-                  tests/accuracy-claim.test.mjs — 1.27x machining, 1.92x
+                  tests/accuracy-claim.test.mjs — 1.10x machining, 1.75x
                   stamping. "2x" was the stamping figure alone, presented as if
-                  it were both. */}
-              <div className="text-[3.75rem] font-extrabold text-gold-400 leading-none tracking-[-0.03em]">1.3–1.9×</div>
+                  it were both.
+
+                  Revised DOWN from 1.3-1.9x in Sept 2026, and the reason is not
+                  a regression: the region axis and material-aware cutting cycle
+                  made the MASS model better, so the feature model's relative
+                  advantage over it narrowed. The honest number is the smaller
+                  one — the test exists precisely so a copy figure cannot
+                  outlive the measurement that justified it. */}
+              <div className="text-[3.75rem] font-extrabold text-gold-400 leading-none tracking-[-0.03em]">1.1–1.7×</div>
               <div className="mt-2 text-[14px] text-slate-400">more accurate than a mass-based estimate, on 12 held-out machined and stamped parts</div>
             </div>
           </div>

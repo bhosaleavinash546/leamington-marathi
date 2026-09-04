@@ -51,25 +51,55 @@ jobs:
 
       # Relative-improvement benchmarks. Each also carries an absolute ceiling so
       # "better than the old model" cannot quietly mean "both are bad".
-      - name: Feature-based machining vs mass model
-        run: node benchmark/machining-run.mjs
+      #
+      # Until Sept 2026 that sentence was a comment and nothing else — the
+      # scripts gated on the relative margin alone (review R-39). The ceilings
+      # below are set AT the value each engine measures today, not above it, so
+      # they have no slack to spend: any regression fails on the next push.
+      # Lowering one as an engine improves is the intended maintenance.
+      - name: Feature-based machining vs mass model (MAPE ceiling 35%)
+        run: node benchmark/machining-run.mjs --max-mape 0.35
 
-      - name: Feature-based stamping vs mass model
-        run: node benchmark/stamping-run.mjs
+      - name: Feature-based stamping vs mass model (MAPE ceiling 40%)
+        run: node benchmark/stamping-run.mjs --max-mape 0.40
 
-      - name: PCB engine v2 vs v1
-        run: node benchmark/pcb-run.mjs
+      - name: PCB engine v2 vs v1 (MAPE ceiling 30%)
+        run: node benchmark/pcb-run.mjs --max-mape 0.30
 
       # Three separate ratchets, because the three numbers mean different things.
       # The single --max-unaudited flag conflated citation quality with register
       # coverage, and after the citation axis was added it silently gated on 3
       # instead of 212 — loose enough to catch nothing.
+      #
+      # --ratchet reads benchmark/threshold-ratchet.json, fails when a number
+      # rises above its recorded best, and rewrites the file when one improves.
+      # The --max-* flags are the outer bound; the recorded low-water mark is
+      # the one that actually tightens over time (review R-40 — a ceiling equal
+      # to today's value is a regression gate, not a ratchet).
       - name: DFM citation + register ratchets
         run: >
-          node scripts/threshold-audit.mjs --todo
+          node scripts/threshold-audit.mjs --todo --ratchet
           --max-unread-standards 2
           --max-register-drift 12
           --max-unreviewed 209
+
+      # The ideation pipeline's DETERMINISTIC half, gated on a frozen corpus of
+      # real /api/analyze responses (review R-41 — the whole LLM layer sat
+      # outside CI because the live arms cost tokens). This scores committed
+      # output: it catches a broken depth rubric, a regressed arithmetic
+      # checker, a lost engine stamp or a dropped engineering section. It does
+      # NOT measure generation quality or its variance — that still needs a
+      # live key and `--label current`.
+      - name: Ideation checks on the frozen Prism corpus
+        run: >
+          node benchmark/ideation-eval.mjs
+          --score benchmark/prism-runs-after-repaired --label ci
+          --min-depth-median 94
+          --min-sections 85
+          --min-engine-rate 43
+          --min-null-reason 100
+          --min-grade-rate 69
+          --max-arith-mismatch 26
 
       # OpenCascade wheel — needed by the DFM geometry gate below. Kept as its
       # own step so a wheel/index problem reads as an install failure rather than

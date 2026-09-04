@@ -49,9 +49,27 @@ console.log('  ' + '─'.repeat(72) + '\n');
 
 fs.writeFileSync(path.join(root, 'benchmark', 'machining-results.json'), JSON.stringify({ rows, featureMape: mape('featErr'), massMape: mape('massErr'), featureHits: hit('featErr'), massHits: hit('massErr'), total: rows.length }, null, 2));
 
-// Gate: the feature model must beat the mass model on MAPE (that's the whole point).
+// TWO gates, because "better than the old model" and "good enough to publish"
+// are different claims and only the first was ever checked (review R-39: ci.yml
+// asserted an absolute ceiling that existed in no script).
+//
+// 1. RELATIVE — the feature model must beat the mass model on MAPE. That is the
+//    whole reason it exists.
 if (mape('featErr') >= mape('massErr')) {
   console.error(`  ✗ FAIL: feature-based MAPE (${(mape('featErr') * 100).toFixed(1)}%) did not beat mass model (${(mape('massErr') * 100).toFixed(1)}%)`);
   process.exit(1);
+}
+// 2. ABSOLUTE — and it must stay within a stated error band, so "better" cannot
+//    quietly mean "both are bad". --max-mape is required in CI; run it without
+//    the flag locally to see the number without gating on it.
+const i = process.argv.indexOf('--max-mape');
+if (i !== -1) {
+  const ceiling = Number(process.argv[i + 1]);
+  if (!Number.isFinite(ceiling)) { console.error('  ✗ --max-mape needs a number.'); process.exit(1); }
+  if (mape('featErr') > ceiling) {
+    console.error(`  ✗ FAIL: feature-based MAPE ${(mape('featErr') * 100).toFixed(1)}% exceeds the ceiling ${(ceiling * 100).toFixed(1)}%`);
+    process.exit(1);
+  }
+  console.log(`  ✓ Feature-based MAPE ${(mape('featErr') * 100).toFixed(1)}% within the ${(ceiling * 100).toFixed(1)}% ceiling.`);
 }
 console.log(`  ✓ Feature-based model beats the mass model on this held-out set.\n`);

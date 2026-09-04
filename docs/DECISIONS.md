@@ -3516,3 +3516,142 @@ The 60% engine-coverage gate is met on hood and knuckle, not on the
 lamination (stamping-process levers the engine cannot express). Engineer
 relevance is still unrated. The dedupe and repair rules have been measured
 offline on the after output, not yet on a fresh live batch.
+
+## 67. The September 2026 review, implemented: four phases, and what each one cost
+
+The 360° review (`docs/REVIEW-2026-09.md`) registered 43 findings. This entry
+records the decisions taken while closing them, because several are the kind a
+newcomer would otherwise read as arbitrary.
+
+### Phase 1 — account integrity, broken surfaces, ingress
+
+OTPs came from `Math.random()`. That is not a weak secret, it is not a secret at
+all: V8's generator is seeded from a small state and a handful of observed
+outputs predicts the rest, so a password-reset code was guessable by anyone who
+had signed up. `crypto.randomInt` throughout.
+
+Rate limiting was keyed on `req.path`. Every parameterised route therefore had
+one bucket per *value* — `/api/projects/1`, `/api/projects/2` — so the limit
+counted a user's requests across as many buckets as they cared to invent. Keyed
+on `req.route.path` now, which is the pattern rather than the instance.
+
+Organisation invites were accepted on an email match alone. Any signed-in
+account could join any organisation by naming a member's address. Invites are
+now single-use tokens with an issuer, and the HTTP tests that asserted the old
+behaviour were rewritten to prove the new contract end to end — the tests were
+passing because they encoded the defect.
+
+### Phase 2 — one honesty layer
+
+Nine surfaces rendered provenance nine ways, and three of them dropped the
+engine verdict when space was tight. A badge that disappears under pressure is
+worse than no badge: the reader learns to trust the compact view. One shared
+`IdeaProvenanceBadges` component now renders both variants, and the engine
+verdict is present in both by construction.
+
+`/api/analyze` swallowed stage failures. A critic that threw, a dedupe that
+crashed — the pipeline continued and the response looked complete. Failures are
+collected and returned, because a partial result that says it is partial is
+usable and one that pretends otherwise is not.
+
+Undeclared defaults were the same defect in another costume: `annualVolume`
+silently became 80,000 when the caller omitted it. It still does — but the
+number, and the fact that it was assumed rather than supplied, now travel on the
+response as an `assumptions` entry.
+
+### Phase 3 — engine accuracy
+
+**The resolver was an ordered regex ladder, and order is not meaning.** "ADC12"
+matched an aluminium-cast branch and returned A356, a gravity/permanent-mould
+alloy priced 15% higher than the die-casting alloy actually named. "GFRP" fell
+through to the composite branch and was priced as carbon fibre: €4.50/kg costed
+at €28.00/kg. Both wrote their answer into `cost_quotes`, so the calibration
+corpus was learning from mislabelled rows. The fix is a covering map with a CI
+test that every catalogue entry is reachable and every alias lands on its own
+key — and a sort rule that puts grade designations ahead of family names, since
+"20JNEH1200 silicon steel" names a 0.20 mm grade and the family term is merely
+longer.
+
+**Region was a labour rate wearing a costume.** A 0.15 kg polypropylene clip
+cost €0.830 in Germany and €0.720 in China — 1.15× on a 3.6× labour gap — because
+`machineRate` was a global constant, energy did not exist as a term, and
+commercial was a flat 5% everywhere. Machines, energy and freight are now
+per-region. This is the change that most affects the footprint lens, which
+previously could not move a labour-light part.
+
+**Machinability reached the mass model.** The feature engine had a
+roughing-MRR table; the parametric engine cut titanium at the speed of steel.
+Three formulations were measured on both fixture sets — whole-cycle × ratio, a
+geometric-mean anchor, and a removal-share blend — and the removal-share form
+won. The rejected two are documented in the code, because the next person to
+look will have the same three ideas.
+
+**Calibration learned that volume is an axis.** The held-out set showed a
+machined aluminium fitting at 500k/yr reading +46% while low-volume machining
+read low — a real effect (tooling amortisation, line balance) that a
+process-only fit blends into nothing. Cells are keyed on process × region ×
+volume band, shrunk toward the process factor, four quotes minimum. Fixing this
+exposed that the fitter was never given region or volume in the first place: the
+cell layer would have been dead code.
+
+**Carbon stopped guessing.** An unmapped process took 0.4 kWh/kg and an unmapped
+region 400 g/kWh. Magnet sintering and glass tempering are both far above that
+default, so the newest family in the catalogue returned fabricated energy with
+no flag. What cannot be estimated is now named and the total says it is partial
+— the same rule the DFM engine has always followed.
+
+**Prism suggested pairs the engine refuses.** Hint matching was array-order
+first, so "shaft seal" matched `shaft` and the wizard proposed a turned 42CrMo4
+billet for a moulded elastomer lip seal. English compound nouns are head-final —
+a shaft seal is a seal — so the rule is now "the match that ends latest wins".
+And a suggestion whose material/process pair `computeShouldCost` would throw on
+is withheld with the reason rather than offered, because a suggestion that looks
+confirmed until someone clicks is worse than a blank field.
+
+### Phase 4 — gates that can fail
+
+Two comments were doing a gate's job. `ci.yml` said the feature benchmarks
+"each also carries an absolute ceiling"; no script had one, so an engine could
+regress arbitrarily as long as it stayed ahead of the model it replaced. The
+ceilings are now real and set AT today's measured value, not above it — there is
+no slack to spend, and lowering one as the engine improves is the intended
+maintenance.
+
+The three DFM ratchets were set to the values they already had. That makes them
+regression gates, which is useful, but the debt could sit at 209 forever and CI
+would call it green every morning. The ceiling is now the low-water mark, kept
+in `benchmark/threshold-ratchet.json`: when a number falls the file records it
+and that becomes the new ceiling, permanently and visibly in the diff.
+
+The whole ideation layer sat outside CI because its live arms cost tokens. Its
+DETERMINISTIC half does not: `--score` re-runs the depth rubric, the arithmetic
+re-check and the provenance invariants over a committed corpus of real
+`/api/analyze` responses. That is now gated. It does not measure whether a
+prompt change makes the model generate better ideas, and the CI step says so —
+a green run there is not a claim about generation.
+
+**Documentation is enforced or it is fiction.** 109 of 139 API paths and 20 of
+32 environment variables were undocumented, including the two whose absence is
+fatal in production. Both now have complete references AND a test that reads the
+source and fails when something new appears without a row. The API test also
+fails on a documented route that no longer exists, because a stale doc misleads
+more confidently than a missing one.
+
+**Knowledge carries its date.** No KB lever had one, so a 2019 benchmark and a
+2026 one read identically in a prompt. The pack now records when its source was
+last curated — from git, so it cannot be asserted wrongly — the prompt states it
+next to the levers, and the export reports what fraction of levers carry their
+own date and source. That fraction is 0%, and printing zero is the point: an
+undated corpus that admits it is safer than one that merely looks fresh. Filling
+it in is content work, tracked separately.
+
+### What was NOT done, and why
+
+- Per-lever citations across 357 levers and 180 register entries: content work,
+  not engineering, and inventing citations to satisfy a gate would be the worst
+  possible outcome. The measurement now exists so the work can be tracked.
+- Ideation variance: needs repeated live runs against a real key. No offline
+  proxy for it exists, and building one that looked like a measurement would be
+  the same mistake as the band that was fitted to its own fixtures.
+- Rate-library validation, in-CAD integration, SSO/PLM: platform-level scope,
+  already named in the register.
