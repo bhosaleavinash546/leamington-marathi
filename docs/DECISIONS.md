@@ -3742,3 +3742,35 @@ Tailwind compiles to a literal rgba and which no remap in the list matched.
 `!important` utility overrides alongside the new tokens. Replacing them with a
 pure token remap is Wave 2 in the review; the tokens added here are the half of
 it that closes the failures, and they are the foundation the rest lands on.
+
+## 70. The landing hero card is arithmetic, and it names no OEM
+
+Two changes to `HomePage.tsx`'s product card, both applications of the house
+rule to the one page that gets seen before anyone signs in.
+
+**The 12-month chart is derived, not drawn.** The reference design the card is
+modelled on carries a bar chart of savings over a year. Rather than pick twelve
+plausible-looking heights, the chart is computed: monthly saving = per-unit
+saving × (250,000 / 12), stacked from the month each idea goes live. `IDEAS`,
+`ANNUAL_VOLUME` and `monthlySavingK` are the whole model, the three per-unit
+figures are the ones already printed beneath the chart, and the volume is the
+one already printed on the card. The caption says "arithmetic, not forecast"
+because that is exactly what it is — no month of the year is invented, and
+January is empty because nothing has landed yet, not because data is missing.
+The three ideas below the chart carry the chart's colour swatches, so the list
+IS the legend and the two are one object.
+
+The card's headline figures (£42.18, the cost split, the P10–P90 band) are
+still illustrative constants. That debt is real and stated here rather than
+hidden: the honest fix is to derive them from `benchmark/cost-results.json`,
+which holds 16 measured reference parts.
+
+**The OEM name-drop is gone.** The hero carried "Benchmarked against BMW ·
+Mercedes-Benz · Audi · Porsche · Rivian · Lucid & more". No such benchmark
+exists, and even if the parts were sourced from those vehicles, printing the
+marks under the word "benchmarked" on a landing page reads as endorsement. It
+is replaced by the claim the repository can actually defend, pinned to the
+recorded gate: "Should-cost engine measured on 16 held-out reference parts —
+15 of 16 inside tolerance, 11% mean absolute error" (`benchmark/cost-results.json`:
+`hits` 15, `total` 16, `mape` 11). This is the same reasoning that removed the
+OEM logo wall from the section below it.

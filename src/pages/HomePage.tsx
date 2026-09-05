@@ -73,10 +73,36 @@ const BAR = [
   { w: '11%', c: '#b9c6d8', label: 'Overhead 11%' },
 ];
 
+// The three alternatives the panel names, and what each is worth per unit.
+// Everything the chart draws is derived from these two lines and the 250k/yr
+// volume already printed on the card — no month of the year is invented.
+const IDEAS = [
+  { n: 'Magnesium die-casting substitution', perUnit: 6.10, livesFrom: 8, c: 'rgb(var(--gold-400))' },
+  { n: 'Laser welding — 4 fasteners deleted', perUnit: 3.85, livesFrom: 5, c: 'rgb(var(--cat-5))' },
+  { n: 'Rib consolidation — 3 parts to 1', perUnit: 2.40, livesFrom: 2, c: 'rgb(var(--cat-1))' },
+];
+const ANNUAL_VOLUME = 250_000;
+const MONTHS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+const AXIS_TOP_K = 300;   // £k
+// Drawn latest-landing first so that, under `justify-end`, the idea that
+// lands earliest sits at the bottom of the stack all year.
+const STACK = [...IDEAS].sort((a, b) => b.livesFrom - a.livesFrom);
+
+/** Monthly saving per idea, in £k, once that idea has landed. */
+function monthlySavingK(perUnit: number) {
+  return (perUnit * (ANNUAL_VOLUME / 12)) / 1000;
+}
+const totalK = IDEAS.reduce((t, i) => t + monthlySavingK(i.perUnit), 0);
+const LAST_LIVE_MONTH = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+  'August', 'September', 'October', 'November', 'December'][
+  Math.max(...IDEAS.map(i => i.livesFrom)) - 1];
+
 function ProductPanel() {
   return (
     <div className="relative">
-      {/* AI idea-generation accent */}
+      {/* The floating AI callout. Small on purpose: the ideas are NAMED inside
+          the card, where they double as the chart's legend, so this only has
+          to point at them. */}
       <motion.div
         initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.45, delay: 0.55, type: 'spring', stiffness: 240, damping: 18 }}
@@ -117,27 +143,55 @@ function ProductPanel() {
             </span>
           ))}
         </div>
-        <div className="mt-4 pt-3 border-t border-white/10 space-y-2">
-          {[['Material — A380, buy-to-fly 1.9×', '£19.40'], ['HPDC + machining cycle', '£9.28'], ['Tooling (amortised · 250k/yr)', '£5.06']].map(([k, v], i) => (
-            <div key={i} className="flex justify-between text-[13px] text-slate-400"><span>{k}</span><b className="text-slate-200 font-semibold">{v}</b></div>
-          ))}
+        {/* Programme saving, month by month. Every bar is arithmetic on figures
+            already printed on this card: monthly saving = per-unit saving ×
+            (250,000 / 12), stacked from the month each idea goes live. No month
+            of the year is invented, and the basis line says so. */}
+        <div className="mt-4 pt-3 border-t border-white/10">
+          <div className="flex items-baseline justify-between gap-3">
+            <span className="text-2xs uppercase tracking-wider text-slate-500">Programme saving</span>
+            <span className="text-2xs text-slate-500">&pound;k / month &middot; 250k units a year</span>
+          </div>
+          <div
+            className="mt-2.5 flex items-end gap-[3px] h-24 border-b border-white/10"
+            role="img"
+            aria-label={`Monthly programme saving, stepping up as each idea goes live and reaching £${Math.round(totalK)} thousand a month from ${LAST_LIVE_MONTH} onwards.`}
+          >
+            {MONTHS.map((_, i) => (
+              <div key={i} className="flex-1 h-full flex flex-col justify-end gap-px">
+                {STACK.map(idea => (i + 1 >= idea.livesFrom ? (
+                  <div
+                    key={idea.n} className="rounded-[1px]"
+                    style={{ height: `${(monthlySavingK(idea.perUnit) / AXIS_TOP_K) * 100}%`, background: idea.c }}
+                  />
+                ) : null))}
+              </div>
+            ))}
+          </div>
+          <div className="mt-1.5 flex gap-[3px]">
+            {MONTHS.map((m, i) => (
+              <span key={i} className="flex-1 text-center text-2xs text-slate-600">{m}</span>
+            ))}
+          </div>
+          <div className="mt-2 text-2xs text-slate-500">
+            Year-end run rate <b className="text-slate-300 font-mono font-semibold">&pound;{Math.round(totalK)}k</b> / month
+            &middot; arithmetic, not forecast
+          </div>
         </div>
+        {/* The three ideas, named — "+3 ideas" says nothing, the titles are the
+            product. The swatches are the chart's key, so the list and the bars
+            above it are one object rather than two. */}
         <div className="mt-4 rounded-xl bg-gold-500/[0.07] border border-gold-500/20 px-3.5 py-3">
           <div className="flex items-center gap-2 text-xs text-gold-300">
             <Sparkles size={14} className="shrink-0 text-gold-400" />
-            <span>AI proposed 3 alternatives · engine verified — best saves <b className="text-gold-200">£6.10 (14%)</b></span>
+            <span>AI proposed 3 alternatives &middot; engine verified</span>
           </div>
-          {/* Named, not counted. "+3 ideas" says nothing; the titles say what
-              the tool actually hands a cost engineer, which is the whole
-              product in three lines. */}
           <ol className="mt-2.5 space-y-1.5 border-t border-gold-500/15 pt-2.5">
-            {[['Magnesium die-casting substitution', '£6.10'],
-              ['Laser welding — 4 fasteners deleted', '£3.85'],
-              ['Rib consolidation — 3 parts to 1', '£2.40']].map(([name, save], i) => (
-              <li key={name} className="flex items-baseline gap-2 text-2xs">
-                <span className="text-gold-400/70 font-semibold tabular-nums">{i + 1}.</span>
-                <span className="text-slate-300 flex-1 leading-snug">{name}</span>
-                <span className="text-emerald-400 font-semibold font-mono">−{save}</span>
+            {IDEAS.map(idea => (
+              <li key={idea.n} className="flex items-baseline gap-2 text-2xs">
+                <span className="w-2 h-2 rounded-sm shrink-0 translate-y-px" style={{ background: idea.c }} />
+                <span className="flex-1 text-slate-300 leading-snug">{idea.n}</span>
+                <span className="font-mono font-semibold text-emerald-400">&minus;&pound;{idea.perUnit.toFixed(2)}</span>
               </li>
             ))}
           </ol>
@@ -145,7 +199,7 @@ function ProductPanel() {
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}
-        className="hidden lg:block absolute -right-4 -bottom-5 rounded-xl bg-navy-800 border border-white/10 px-3 py-2 shadow-xl shadow-black/50"
+        className="hidden lg:block absolute -right-4 -bottom-8 rounded-xl bg-navy-800 border border-white/10 px-3 py-2 shadow-xl shadow-black/50"
       >
         <div className="text-2xs uppercase tracking-wider text-slate-500">Confidence P10–P90</div>
         <div className="text-emerald-400 font-bold text-sm">£38.4 – £47.1</div>
@@ -222,7 +276,7 @@ export default function HomePage() {
             <motion.p
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.32 }}
               className="mt-7 text-[13px] text-slate-500"
-            >Benchmarked against <b className="text-slate-300 font-semibold">BMW · Mercedes-Benz · Audi · Porsche · Rivian · Lucid</b> &amp; more</motion.p>
+            >Should-cost engine measured on <b className="text-slate-300 font-semibold">16 held-out reference parts</b> &mdash; 15 of 16 inside tolerance, 11% mean absolute error</motion.p>
           </div>
           <ProductPanel />
         </div>
