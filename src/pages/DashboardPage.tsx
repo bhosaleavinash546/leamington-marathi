@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { loadFullResult } from '../services/claude-service';
 import { toast } from '../hooks/useToast';
 import { TOOL_GROUPS } from '../config/tools';
@@ -57,6 +58,9 @@ function fmtM(n: number) {   // GBP — the app-wide display currency
 }
 
 function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
+  // Chart chrome must follow the theme: a white-alpha grid line and a
+  // hardcoded #0f1629 tooltip are invisible or wrong on a light page.
+  const { isDark } = useTheme();
   const gateData = ['G0', 'G1', 'G2', 'G3'].map((g) => ({
     name: g,
     saving: Math.round((kpi.gateSavings[g] || 0) / 1000),
@@ -96,11 +100,11 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
           <h3 className="text-white font-semibold text-sm mb-4">Gate-wise Savings (£k)</h3>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={gateData} margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(17,24,39,0.08)"} />
               <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip
-                contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
+                contentStyle={isDark ? { background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 } : { background: '#ffffff', border: '1px solid rgba(17,24,39,0.12)', borderRadius: 8, color: '#111827' }}
                 labelStyle={{ color: '#fff' }}
                 formatter={(v: any, _: any, entry: any) => [`${fmtM((Number(v) || 0) * 1000)} (${entry?.payload?.count ?? 0} ideas)`, 'Savings']}
               />
@@ -121,7 +125,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
                     {vehicleData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
+                    contentStyle={isDark ? { background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 } : { background: '#ffffff', border: '1px solid rgba(17,24,39,0.12)', borderRadius: 8, color: '#111827' }}
                     formatter={(v: any) => [`${fmtM((Number(v) || 0) * 1000)}`, 'Annual saving']}
                   />
                 </PieChart>
@@ -150,7 +154,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
                 <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} width={80} />
                 <Tooltip
-                  contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
+                  contentStyle={isDark ? { background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 } : { background: '#ffffff', border: '1px solid rgba(17,24,39,0.12)', borderRadius: 8, color: '#111827' }}
                   formatter={(v: any) => [fmtM((Number(v) || 0) * 1000), 'Saving']}
                 />
                 <Bar dataKey="saving" fill="#f59e0b" radius={[0, 4, 4, 0]} />
@@ -164,11 +168,11 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
           {yearData.length > 0 ? (
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={yearData} margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(17,24,39,0.08)"} />
                 <XAxis dataKey="year" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip
-                  contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
+                  contentStyle={isDark ? { background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 } : { background: '#ffffff', border: '1px solid rgba(17,24,39,0.12)', borderRadius: 8, color: '#111827' }}
                   formatter={(v: any) => [fmtM((Number(v) || 0) * 1000), 'Annual saving']}
                 />
                 <Bar dataKey="saving" fill="#60a5fa" radius={[4, 4, 0, 0]} />

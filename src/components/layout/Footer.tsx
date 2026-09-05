@@ -20,7 +20,7 @@ export default function Footer() {
 
 function StatusBar() {
   return (
-    <footer className="border-t border-white/8 bg-navy-950 mt-auto">
+    <footer className="border-t border-hairline bg-navy-950 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-10 flex items-center justify-between gap-4 text-2xs text-slate-500">
         <p className="truncate">
           <span className="text-slate-400">BrainSpark</span> v{APP_VERSION} · math for numbers, AI for judgement
@@ -84,7 +84,7 @@ function MarketingFooter() {
         </div>
         <div className="pt-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} BrainSpark — All rights reserved</p>
-          <p>Designed &amp; created by <span className="text-gold-500/80 font-medium">Avinash Bhosale</span></p>
+          <p>Designed &amp; created by <span className="text-gold-400 font-medium">Avinash Bhosale</span></p>
           <p>v{APP_VERSION}</p>
         </div>
       </div>

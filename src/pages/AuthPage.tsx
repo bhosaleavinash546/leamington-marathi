@@ -166,7 +166,13 @@ function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder,
             ${error ? 'border-red-500/60 focus:border-red-500' : 'border-white/15 focus:border-gold-500/60'}`}
         />
         {isPassword && (
-          <button type="button" onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors">
+          <button
+            type="button"
+            onClick={() => setShow(!show)}
+            aria-label={show ? 'Hide password' : 'Show password'}
+            aria-pressed={show}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white transition-colors"
+          >
             {show ? <EyeOff size={15} /> : <Eye size={15} />}
           </button>
         )}

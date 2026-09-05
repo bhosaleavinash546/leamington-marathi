@@ -971,7 +971,7 @@ export default function AnalyzePage() {
                       placeholder="sk-ant-api03-..."
                       className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-gold-500/50 font-mono text-sm pr-16"
                     />
-                    <button type="button" onClick={() => setShowApiKey(!showApiKey)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs transition-colors">
+                    <button type="button" onClick={() => setShowApiKey(!showApiKey)} aria-pressed={showApiKey} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs transition-colors">
                       {showApiKey ? 'Hide' : 'Show'}
                     </button>
                   </div>

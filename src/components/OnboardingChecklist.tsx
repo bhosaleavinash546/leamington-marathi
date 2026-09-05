@@ -62,10 +62,10 @@ function ChecklistCard({ state, doneCount, onCollapse, onDismiss, className = ''
           <span className="text-white text-sm font-semibold">Get started ({doneCount}/{STEPS.length})</span>
         </div>
         <div className="flex items-center gap-0.5 -mr-1.5 -mt-1.5">
-          <button type="button" aria-label="Collapse" onClick={onCollapse} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/8 transition-ui duration-micro ease-house">
+          <button type="button" aria-label="Collapse" onClick={onCollapse} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-tint-strong transition-ui duration-micro ease-house">
             <ChevronUp size={15} className="rotate-180" aria-hidden="true" />
           </button>
-          <button type="button" aria-label="Dismiss onboarding" onClick={onDismiss} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/8 transition-ui duration-micro ease-house">
+          <button type="button" aria-label="Dismiss onboarding" onClick={onDismiss} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-tint-strong transition-ui duration-micro ease-house">
             <X size={15} aria-hidden="true" />
           </button>
         </div>

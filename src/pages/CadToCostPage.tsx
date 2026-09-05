@@ -147,7 +147,7 @@ function DfmaRing({ score }: { score: number }) {
   return (
     <div className="relative flex items-center justify-center">
       <svg width={100} height={100}>
-        <circle cx={50} cy={50} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={8} />
+        <circle cx={50} cy={50} r={r} fill="none" stroke="var(--tint-strong)" strokeWidth={8} />
         <circle
           cx={50} cy={50} r={r} fill="none" stroke={color} strokeWidth={8}
           strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"

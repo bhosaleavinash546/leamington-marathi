@@ -790,13 +790,13 @@ function DivergenceFan({ lenses, converged }: { lenses: number; converged: numbe
           stroke="rgba(139,92,246,0.4)" strokeWidth="1.2" fill="none"
           style={{ animationDelay: `${240 + i * 60}ms` }} />
       ))}
-      <circle cx="20" cy={midY} r="5" fill="#0f172a" stroke="rgba(245,158,11,0.9)" strokeWidth="1.5" />
+      <circle cx="20" cy={midY} r="5" style={{ fill: 'rgb(var(--navy-900))' }} stroke="rgba(245,158,11,0.9)" strokeWidth="1.5" />
       {ys.map((y, i) => (
         <circle key={`n${i}`} className="iv-fan-node" cx="88" cy={y} r="3"
           fill="rgba(245,158,11,0.75)" style={{ animationDelay: `${200 + i * 60}ms` }} />
       ))}
       <circle cx="156" cy={midY} r={converged != null ? 8 : 5}
-        fill={converged != null ? 'rgba(139,92,246,0.22)' : '#0f172a'}
+        style={{ fill: converged != null ? 'rgba(139,92,246,0.22)' : 'rgb(var(--navy-900))' }}
         stroke="rgba(139,92,246,0.9)" strokeWidth="1.5" />
       {converged != null && (
         <text x="156" y={midY + 3.5} textAnchor="middle" fontSize="9" fontWeight="700" fill="#c4b5fd">{converged}</text>

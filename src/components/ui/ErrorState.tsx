@@ -19,7 +19,7 @@ export default function ErrorState({ title = 'Something went wrong', message, on
         <button
           type="button"
           onClick={onRetry}
-          className="shrink-0 rounded-lg border border-white/12 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-ui duration-micro ease-house hover:bg-white/8"
+          className="shrink-0 rounded-lg border border-hairline-strong px-3 py-1.5 text-xs font-semibold text-slate-200 transition-ui duration-micro ease-house hover:bg-tint-strong"
         >
           {retryLabel}
         </button>

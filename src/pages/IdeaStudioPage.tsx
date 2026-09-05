@@ -322,7 +322,7 @@ export default function IdeaStudioPage() {
                           {baseline.breakdown.map((e, i) => <Cell key={i} fill={e.color} />)}
                         </Pie>
                         <Tooltip
-                          contentStyle={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, fontSize: 12 }}
+                          contentStyle={{ background: 'rgb(var(--navy-800))', border: '1px solid var(--hairline-strong)', borderRadius: 8, fontSize: 12, color: 'rgb(var(--navy-300))' }}
                           itemStyle={{ color: '#e2e8f0' }} labelStyle={{ color: '#e2e8f0' }}
                           formatter={(v, n) => [`${baseline.symbol}${Number(v).toFixed(2)}`, n as string]} />
                       </PieChart>

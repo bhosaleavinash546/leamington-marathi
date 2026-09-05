@@ -26,9 +26,13 @@ import { useHouseMotion } from '../../lib/motion';
 export type HeaderTone = 'brand' | 'engine' | 'neutral';
 
 const TONE: Record<HeaderTone, { tile: string; icon: string; eyebrow: string }> = {
-  brand:   { tile: 'bg-gold-500/15 border-gold-500/25', icon: 'text-gold-400', eyebrow: 'text-gold-400/90' },
-  engine:  { tile: 'bg-teal-500/15 border-teal-500/25', icon: 'text-teal-400', eyebrow: 'text-teal-300/90' },
-  neutral: { tile: 'bg-white/[0.06] border-white/10',    icon: 'text-slate-300', eyebrow: 'text-slate-400' },
+  // Eyebrow colours carry NO alpha. `text-gold-400/90` and `text-teal-300/90`
+  // are classes of their own that the light theme's utility remap never sees,
+  // so they kept their dark-theme tint on a white page — measured at 3.92:1
+  // and 1.35:1. The solid tokens remap and pass AA in both themes.
+  brand:   { tile: 'bg-gold-500/15 border-gold-500/25', icon: 'text-gold-400', eyebrow: 'text-gold-400' },
+  engine:  { tile: 'bg-teal-500/15 border-teal-500/25', icon: 'text-teal-400', eyebrow: 'text-teal-300' },
+  neutral: { tile: 'bg-tint-strong border-hairline',    icon: 'text-slate-300', eyebrow: 'text-slate-400' },
 };
 
 export function toneForTool(t: Tool | undefined): HeaderTone {

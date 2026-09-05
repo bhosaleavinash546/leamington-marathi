@@ -89,6 +89,17 @@ export default {
         enter: 'var(--dur-enter)',
         draw:  'var(--dur-draw)',
       },
+      // Theme-flipping surfaces (see index.css): border-hairline,
+      // bg-tint, bg-tint-strong. Prefer these over white/N alphas — an alpha
+      // of white is a DARK-theme decision that a light page cannot undo.
+      borderColor: {
+        hairline: 'var(--hairline)',
+        'hairline-strong': 'var(--hairline-strong)',
+      },
+      backgroundColor: {
+        tint: 'var(--tint)',
+        'tint-strong': 'var(--tint-strong)',
+      },
       zIndex: {
         nav: 'var(--z-nav)',
         fab: 'var(--z-fab)',

@@ -103,7 +103,7 @@ function ToolSearch() {
           className="flex-1 bg-transparent text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none min-w-0"
           aria-label="Jump to a tool"
         />
-        <kbd className="text-2xs text-slate-500 border border-white/12 rounded px-1 py-px shrink-0">⌘K</kbd>
+        <kbd className="text-2xs text-slate-400 border border-hairline-strong rounded px-1 py-px shrink-0">⌘K</kbd>
       </div>
       <AnimatePresence>
         {open && (matches.length > 0 || content.length > 0) && (
@@ -291,7 +291,7 @@ export default function Header() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden text-white p-3 -mr-1 rounded-lg hover:bg-white/8 transition-ui duration-micro ease-house"
+            className="md:hidden text-white p-3 -mr-1 rounded-lg hover:bg-tint-strong transition-ui duration-micro ease-house"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}

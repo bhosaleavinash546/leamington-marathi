@@ -64,6 +64,22 @@
   --cat-6: 253 164 175;  /* rose     */
   --cat-7: 253 224  71;  /* yellow   */
   --cat-8: 165 180 252;  /* indigo   */
+
+  /* SURFACES THAT FLIP WITH THE THEME.
+     The light theme used to be a list of !important overrides keyed on each
+     Tailwind utility (.bg-white/5, .border-white/10 …), which meant any class
+     nobody had thought of — an arbitrary value, an unlisted step — silently
+     kept its DARK value on a white page. The September 2026 light-theme sweep
+     found exactly that: an invisible skeleton, borderless empty states, a
+     white-on-white tab bar. These four tokens are the replacement: a hairline,
+     a fill, and the two ends of the loading shimmer, each defined once per
+     theme. New components take these; they cannot be forgotten in one theme. */
+  --hairline:        rgba(255, 255, 255, 0.10);
+  --hairline-strong: rgba(255, 255, 255, 0.17);
+  --tint:            rgba(255, 255, 255, 0.04);
+  --tint-strong:     rgba(255, 255, 255, 0.08);
+  --shimmer-base:    rgba(255, 255, 255, 0.05);
+  --shimmer-hi:      rgba(255, 255, 255, 0.12);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -95,12 +111,20 @@
      it is 3.47:1 on white and 3.29:1 on the page, and axe caught all four
      uppercase kickers on the home page failing AA because of it. A comment
      claiming a ratio nobody measured is worse than no comment. */
-  --gold-300: 161 121  20;  /* #A17914 — 3.78:1 on the page: LARGE text and
-                               icons only, NOT small text                   */
-  --gold-400: 143 106  12;  /* #8F6A0C — 4.70:1 on the page, 4.96:1 on white:
-                               the small-text accent, passes AA             */
-  --gold-500: 150 111   9;  /* #966F09 — CTA bg, white text passes AA       */
-  --gold-600: 122  89   6;  /* hover / pressed                             */
+  /* Both text steps collapse to ONE brown in light, and it is chosen against
+     the WORST ground the accent actually sits on — a gold-500/15 chip, not the
+     page. Measured: on that chip #A17914 was 3.30:1 and #8F6A0C 4.09:1, and
+     axe caught both on real components (sidebar active item, mode tabs, KPI
+     chips). #866009 is 4.70:1 there, 5.39:1 on the page, 5.69:1 on a card.
+     Light-theme gold hierarchy is carried by weight and by the chip behind the
+     text, not by three browns nobody can tell apart. */
+  --gold-300: 122  89   6;  /* #7A5906 — 4.76:1 on the DARKEST gold chip     */
+  --gold-400: 122  89   6;  /* #7A5906 — the small-text accent               */
+  --gold-500: 138 102   8;  /* #8A6608 — CTA background: 4.99:1 under the
+                               light theme's own near-white ink. #966F09 was
+                               4.35:1 against it — the primary button itself
+                               failed AA and axe caught it on three pages.   */
+  --gold-600: 111  81   5;  /* #6F5105 — hover / pressed                     */
 
   /* Hero gradient stays dark — auth brand panel keeps its premium dark look */
   --gradient-hero: linear-gradient(135deg, #0a0f1e 0%, #1a2235 60%, #0c1629 100%);
@@ -110,6 +134,27 @@
   --shadow-card-lg: 0 2px 6px -1px rgba(17,24,39,0.06), 0 10px 24px -4px rgba(17,24,39,0.12);
   --shadow-modal:   0 8px 28px -6px rgba(17,24,39,0.16), 0 24px 56px -12px rgba(17,24,39,0.22);
   --shadow-popover: 0 4px 12px -2px rgba(17,24,39,0.10), 0 8px 24px -6px rgba(17,24,39,0.14);
+
+  /* Surfaces: the same four roles in dark ink rather than white. */
+  --hairline:        rgba(17, 24, 39, 0.13);
+  --hairline-strong: rgba(17, 24, 39, 0.20);
+  --tint:            rgba(17, 24, 39, 0.035);
+  --tint-strong:     rgba(17, 24, 39, 0.07);
+  --shimmer-base:    rgba(17, 24, 39, 0.05);
+  --shimmer-hi:      rgba(17, 24, 39, 0.12);
+
+  /* Categorical palette: the dark theme's pastels are for dark grounds and
+     carry near-black text. On a white page they need the depth to carry WHITE
+     text instead, so each hue drops to its ~700 step. Same eight roles, same
+     order, so a chart keeps its category-to-colour mapping across themes. */
+  --cat-1:  3 105 161;  /* sky    */
+  --cat-2:  4 120  87;  /* green  */
+  --cat-3: 194  65  12;  /* orange */
+  --cat-4: 109  40 217;  /* violet */
+  --cat-5:  15 118 110;  /* teal   */
+  --cat-6: 190  18  60;  /* rose   */
+  --cat-7: 161  98   7;  /* yellow */
+  --cat-8:  67  56 202;  /* indigo */
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -172,16 +217,24 @@
 [data-theme="light"] .text-slate-200 { color: #1e293b !important; }
 [data-theme="light"] .text-slate-300 { color: #334155 !important; }
 [data-theme="light"] .text-slate-400 { color: #475569 !important; }
-[data-theme="light"] .text-slate-500 { color: #64748b !important; }
+[data-theme="light"] .text-slate-500 { color: #59647a !important; }  /* was #64748b — 4.15:1 on the tinted ⌘K badge, axe flagged it */
 [data-theme="light"] .text-slate-600 { color: #6b7280 !important; }
-[data-theme="light"] .text-slate-700 { color: #9ca3af !important; }
+[data-theme="light"] .text-slate-700 { color: #667085 !important; }  /* was #9ca3af — 2.4:1 on the page; this is the dimmest step, not an invisible one */
+
+/* Hover variants of the same scale. Tailwind emits `.hover\:text-slate-200:hover`
+   as its own class, which the block above never touched — so on a light page a
+   hover handler that "brightens" text made it disappear instead. */
+[data-theme="light"] .hover\:text-slate-100:hover { color: #0f172a !important; }
+[data-theme="light"] .hover\:text-slate-200:hover { color: #1e293b !important; }
+[data-theme="light"] .hover\:text-slate-300:hover { color: #334155 !important; }
+[data-theme="light"] .hover\:text-slate-400:hover { color: #475569 !important; }
 
 /* Accent TEXT colours — the dark theme's pale -300/-400 tints are unreadable on
    light tinted chips/badges. Remap to AA-contrast ~700 shades (the chip BACKGROUNDS
    stay light, so these read cleanly). Scoped to light only; dark is untouched. */
 [data-theme="light"] .text-emerald-300, [data-theme="light"] .text-emerald-400,
 [data-theme="light"] .text-green-300,   [data-theme="light"] .text-green-400,
-[data-theme="light"] .text-success-300, [data-theme="light"] .text-success-400 { color: #047857 !important; }
+[data-theme="light"] .text-success-300, [data-theme="light"] .text-success-400 { color: #036045 !important; }  /* 4.33:1 on an emerald chip before */
 [data-theme="light"] .text-teal-300,    [data-theme="light"] .text-teal-400    { color: #0f766e !important; }
 [data-theme="light"] .text-lime-300,    [data-theme="light"] .text-lime-400    { color: #4d7c0f !important; }
 [data-theme="light"] .text-sky-300,     [data-theme="light"] .text-sky-400     { color: #0369a1 !important; }
@@ -194,12 +247,71 @@
 [data-theme="light"] .text-fuchsia-300, [data-theme="light"] .text-fuchsia-400 { color: #a21caf !important; }
 [data-theme="light"] .text-amber-300,   [data-theme="light"] .text-amber-400,
 [data-theme="light"] .text-yellow-300,  [data-theme="light"] .text-yellow-400,
-[data-theme="light"] .text-warning-300, [data-theme="light"] .text-warning-400 { color: #b45309 !important; }
-[data-theme="light"] .text-orange-300,  [data-theme="light"] .text-orange-400  { color: #c2410c !important; }
+[data-theme="light"] .text-warning-300, [data-theme="light"] .text-warning-400 { color: #9a4708 !important; }  /* #b45309 was 4.12:1 on an amber-tinted chip */
+[data-theme="light"] .text-orange-300,  [data-theme="light"] .text-orange-400  { color: #ac3809 !important; }  /* 4.20:1 on an orange chip before */
 [data-theme="light"] .text-red-300,     [data-theme="light"] .text-red-400,
 [data-theme="light"] .text-danger-300,  [data-theme="light"] .text-danger-400  { color: #b91c1c !important; }
 [data-theme="light"] .text-rose-300,    [data-theme="light"] .text-rose-400    { color: #be123c !important; }
 [data-theme="light"] .text-pink-300,    [data-theme="light"] .text-pink-400    { color: #be185d !important; }
+
+/* ── ACCENT TEXT WITH AN ALPHA (text-teal-300/90, text-amber-400/80 …) ───────
+   Tailwind's fixed palette compiles an opacity modifier to a LITERAL rgba, so
+   `text-teal-300/90` is a class of its own that the solid remaps above never
+   touched — it kept its dark-theme tint on a white page. The light sweep found
+   110 such call sites across 22 files, and axe measured one at 1.35:1. The
+   substring selector catches every alpha of a given step, including ones
+   written after today, so this cannot silently regress again.
+   (navy/gold need no such rule: they are rgb(var(--x) / <alpha-value>), so
+   their alpha variants already follow the theme.) ─────────────────────────── */
+[data-theme="light"] [class*="text-emerald-300/"],
+[data-theme="light"] [class*="text-emerald-400/"],
+[data-theme="light"] [class*="text-emerald-500/"],
+[data-theme="light"] [class*="text-green-300/"],
+[data-theme="light"] [class*="text-green-400/"],
+[data-theme="light"] [class*="text-success-300/"],
+[data-theme="light"] [class*="text-success-400/"],
+[data-theme="light"] [class*="text-success-500/"] { color: #036045 !important; }
+[data-theme="light"] [class*="text-teal-300/"],
+[data-theme="light"] [class*="text-teal-400/"],
+[data-theme="light"] [class*="text-teal-500/"] { color: #0f766e !important; }
+[data-theme="light"] [class*="text-lime-300/"],
+[data-theme="light"] [class*="text-lime-400/"] { color: #4d7c0f !important; }
+[data-theme="light"] [class*="text-sky-300/"],
+[data-theme="light"] [class*="text-sky-400/"] { color: #0369a1 !important; }
+[data-theme="light"] [class*="text-cyan-300/"],
+[data-theme="light"] [class*="text-cyan-400/"],
+[data-theme="light"] [class*="text-cyan-500/"] { color: #0e7490 !important; }
+[data-theme="light"] [class*="text-blue-300/"],
+[data-theme="light"] [class*="text-blue-400/"],
+[data-theme="light"] [class*="text-info-300/"],
+[data-theme="light"] [class*="text-info-400/"] { color: #1d4ed8 !important; }
+[data-theme="light"] [class*="text-indigo-300/"],
+[data-theme="light"] [class*="text-indigo-400/"] { color: #4338ca !important; }
+[data-theme="light"] [class*="text-violet-300/"],
+[data-theme="light"] [class*="text-violet-400/"] { color: #6d28d9 !important; }
+[data-theme="light"] [class*="text-purple-300/"],
+[data-theme="light"] [class*="text-purple-400/"],
+[data-theme="light"] [class*="text-purple-500/"] { color: #7e22ce !important; }
+[data-theme="light"] [class*="text-fuchsia-300/"],
+[data-theme="light"] [class*="text-fuchsia-400/"] { color: #a21caf !important; }
+[data-theme="light"] [class*="text-amber-200/"],
+[data-theme="light"] [class*="text-amber-300/"],
+[data-theme="light"] [class*="text-amber-400/"],
+[data-theme="light"] [class*="text-amber-500/"],
+[data-theme="light"] [class*="text-yellow-300/"],
+[data-theme="light"] [class*="text-yellow-400/"],
+[data-theme="light"] [class*="text-warning-300/"],
+[data-theme="light"] [class*="text-warning-400/"] { color: #9a4708 !important; }
+[data-theme="light"] [class*="text-orange-300/"],
+[data-theme="light"] [class*="text-orange-400/"] { color: #ac3809 !important; }
+[data-theme="light"] [class*="text-red-300/"],
+[data-theme="light"] [class*="text-red-400/"],
+[data-theme="light"] [class*="text-danger-300/"],
+[data-theme="light"] [class*="text-danger-400/"] { color: #b91c1c !important; }
+[data-theme="light"] [class*="text-rose-300/"],
+[data-theme="light"] [class*="text-rose-400/"] { color: #be123c !important; }
+[data-theme="light"] [class*="text-pink-300/"],
+[data-theme="light"] [class*="text-pink-400/"] { color: #be185d !important; }
 
 /* White opacity backgrounds → dark-ink at matching opacity */
 [data-theme="light"] .bg-white\/2 { background-color: rgb(var(--navy-300) / 0.02) !important; }
@@ -282,6 +394,25 @@
 [data-theme="light"] [data-theme="dark"] .text-blue-400, [data-theme="light"] [data-theme="dark"] .text-info-400 { color: #60a5fa !important; }
 [data-theme="light"] [data-theme="dark"] .text-amber-400, [data-theme="light"] [data-theme="dark"] .text-warning-400 { color: #fbbf24 !important; }
 [data-theme="light"] [data-theme="dark"] .text-red-400, [data-theme="light"] [data-theme="dark"] .text-danger-400 { color: #f87171 !important; }
+/* …and back to the dark tints inside an always-dark panel. */
+[data-theme="light"] [data-theme="dark"] [class*="text-emerald-300/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-emerald-400/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-green-400/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-success-400/"] { color: #34d399 !important; }
+[data-theme="light"] [data-theme="dark"] [class*="text-teal-300/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-teal-400/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-teal-500/"] { color: #2dd4bf !important; }
+[data-theme="light"] [data-theme="dark"] [class*="text-blue-400/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-info-400/"] { color: #60a5fa !important; }
+[data-theme="light"] [data-theme="dark"] [class*="text-amber-200/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-amber-300/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-amber-400/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-warning-400/"] { color: #fbbf24 !important; }
+[data-theme="light"] [data-theme="dark"] [class*="text-red-300/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-red-400/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-danger-300/"],
+[data-theme="light"] [data-theme="dark"] [class*="text-danger-400/"] { color: #f87171 !important; }
+
 /* white-opacity fills/borders re-derive from white (not dark ink) inside dark panels */
 [data-theme="light"] [data-theme="dark"] .bg-white\/2 { background-color: rgba(255,255,255,0.02) !important; }
 [data-theme="light"] [data-theme="dark"] .bg-white\/3 { background-color: rgba(255,255,255,0.03) !important; }

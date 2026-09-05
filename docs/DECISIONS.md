@@ -3703,3 +3703,42 @@ reader on 28 pages.
 are documented; a 230-input migration is its own change), virtualising the
 marketplace list, and replacing the light theme's `!important` overrides with
 a token remap. Each is listed with its measurement so it can be tracked.
+
+## 69. The light theme is tokens, not a list of utilities to remember
+
+**Context.** DECISIONS 68 shipped a design system measured entirely in the dark
+theme. Run against the light theme, the same 28 pages failed 27 — including the
+whole mobile tab bar rendering white-on-white, and the two settings pages
+staying dark under a light header.
+
+The cause is the light theme's shape. It was a set of `!important` overrides
+keyed on individual Tailwind utilities, so it only covered classes somebody had
+thought to list. Everything else kept its dark value on a white page: an
+inline `rgba(255,255,255,0.45)`, an arbitrary `bg-white/[0.02]`, and — the
+largest family — 110 accent classes carrying an opacity modifier, which
+Tailwind compiles to a literal rgba and which no remap in the list matched.
+
+**Decision.**
+
+- **Surfaces are tokens.** `--hairline`, `--hairline-strong`, `--tint`,
+  `--tint-strong` and the two shimmer stops are defined once per theme and used
+  as `border-hairline` / `bg-tint`. An alpha of white is a dark-theme decision;
+  a token is a decision in both.
+- **Alpha accents are remapped by substring**, `[class*="text-teal-300/"]`, one
+  rule per family instead of one per call site — so an alpha written next month
+  is covered without anyone remembering to add it.
+- **Accent colours are derived against the worst ground they sit on**, not
+  against the page. Gold read 4.70:1 on the page and 4.09:1 on the gold-tinted
+  chip where it is actually used; the chip is what decides. Both light gold text
+  steps collapse to one AA-safe brown, because three browns nobody can tell
+  apart is not a hierarchy — weight and the chip behind the text carry it.
+- **The gate scans inline styles by brace-matching, not by pattern.** The tab-bar
+  bug lived inside a ternary, which a rule anchored to `color:` never saw. The
+  scanner is exported and has a test asserting it catches that exact original
+  line, so the gate is verified against the bug it exists for rather than
+  assumed to work.
+
+**What was deliberately not done.** The light theme still carries ~80
+`!important` utility overrides alongside the new tokens. Replacing them with a
+pure token remap is Wave 2 in the review; the tokens added here are the half of
+it that closes the failures, and they are the foundation the rest lands on.

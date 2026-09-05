@@ -11,6 +11,14 @@ const tabs = [
   { to: '/mobile-settings', icon: Settings, label: 'Settings' },
 ];
 
+// Tab colours are CLASSES, not inline white alphas. The light-theme sweep
+// found this bar with `rgba(255,255,255,0.45)` labels on a background of
+// `--navy-950`, which the light theme remaps to #F7F9FB. Every inactive tab
+// was white-on-white: the whole bottom navigation vanished and only the gold
+// active tab survived. An alpha of white is a dark-theme decision.
+const TAB_ACTIVE = 'text-gold-400';
+const TAB_IDLE = 'text-slate-400';
+
 export default function MobileNav() {
   const location = useLocation();
   const [toolsOpen, setToolsOpen] = useState(false);
@@ -19,10 +27,10 @@ export default function MobileNav() {
     <>
       {/* Tool launcher sheet */}
       {toolsOpen && (
-        <div className="fixed inset-0 z-[60]" role="dialog" aria-label="All tools">
+        <div className="fixed inset-0 z-modal" role="dialog" aria-label="All tools">
           <div className="absolute inset-0 bg-black/60" onClick={() => setToolsOpen(false)} />
           <div
-            className="absolute bottom-0 inset-x-0 rounded-t-2xl border-t border-white/10 max-h-[75vh] overflow-y-auto pb-safe"
+            className="absolute bottom-0 inset-x-0 rounded-t-2xl border-t border-hairline max-h-[75vh] overflow-y-auto pb-safe"
             style={{ background: 'rgb(var(--navy-900))' }}
           >
             <div className="flex items-center justify-between px-5 pt-4 pb-2">
@@ -40,7 +48,7 @@ export default function MobileNav() {
                       key={t.id}
                       to={t.route}
                       onClick={() => setToolsOpen(false)}
-                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-white/8 bg-white/5 text-[13px] font-medium text-slate-200"
+                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-hairline bg-tint-strong text-[13px] font-medium text-slate-200 min-h-[44px]"
                     >
                       <t.icon size={15} style={{ color: 'rgb(var(--gold-400))' }} />
                       <span className="truncate">{t.label}</span>
@@ -55,7 +63,7 @@ export default function MobileNav() {
 
       <nav
         className="fixed bottom-0 inset-x-0 z-nav pb-safe"
-        style={{ background: 'rgb(var(--navy-950))', borderTop: '1px solid rgba(255,255,255,0.08)' }}
+        style={{ background: 'rgb(var(--navy-950))', borderTop: '1px solid var(--hairline)' }}
       >
         <div className="flex items-stretch h-14">
           {tabs.slice(0, 3).map(({ to, icon: Icon, label }) => {
@@ -64,8 +72,7 @@ export default function MobileNav() {
               <NavLink
                 key={to}
                 to={to}
-                className="flex-1 flex flex-col items-center justify-center gap-0.5 text-xs transition-colors"
-                style={{ color: active ? 'rgb(var(--gold-400))' : 'rgba(255,255,255,0.45)' }}
+                className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs transition-colors ${active ? TAB_ACTIVE : TAB_IDLE}`}
               >
                 <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
                 <span className="font-medium">{label}</span>
@@ -74,8 +81,7 @@ export default function MobileNav() {
           })}
           <button
             onClick={() => setToolsOpen(v => !v)}
-            className="flex-1 flex flex-col items-center justify-center gap-0.5 text-xs transition-colors"
-            style={{ color: toolsOpen ? 'rgb(var(--gold-400))' : 'rgba(255,255,255,0.45)' }}
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs transition-colors ${toolsOpen ? TAB_ACTIVE : TAB_IDLE}`}
           >
             <Wrench size={20} strokeWidth={toolsOpen ? 2.2 : 1.8} />
             <span className="font-medium">Tools</span>
@@ -86,8 +92,7 @@ export default function MobileNav() {
               <NavLink
                 key={to}
                 to={to}
-                className="flex-1 flex flex-col items-center justify-center gap-0.5 text-xs transition-colors"
-                style={{ color: active ? 'rgb(var(--gold-400))' : 'rgba(255,255,255,0.45)' }}
+                className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs transition-colors ${active ? TAB_ACTIVE : TAB_IDLE}`}
               >
                 <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
                 <span className="font-medium">{label}</span>

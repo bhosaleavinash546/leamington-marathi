@@ -8,9 +8,9 @@ import type { HTMLAttributes, ReactNode } from 'react';
 type Elevation = 'flat' | 'raised' | 'floating';
 
 const ELEVATION: Record<Elevation, string> = {
-  flat:     'bg-navy-900 border border-white/8',
-  raised:   'bg-navy-900 border border-white/10 shadow-card',
-  floating: 'bg-navy-800 border border-white/10 shadow-card-lg',
+  flat:     'bg-navy-900 border border-hairline',
+  raised:   'bg-navy-900 border border-hairline shadow-card',
+  floating: 'bg-navy-800 border border-hairline shadow-card-lg',
 };
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -27,7 +27,7 @@ export default function Card({ elevation = 'raised', interactive = false, paddin
     <div
       className={[
         'rounded-2xl', ELEVATION[elevation], PAD[padding],
-        interactive ? 'transition-ui duration-micro ease-house hover:-translate-y-0.5 hover:border-white/20 hover:shadow-card-lg cursor-pointer' : '',
+        interactive ? 'transition-ui duration-micro ease-house hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-card-lg cursor-pointer' : '',
         className,
       ].join(' ')}
       {...rest}

@@ -144,3 +144,57 @@ What a 9 needs, in order: the form primitives adopted everywhere (one focus
 treatment, one radius, 44 px on touch), the marketplace virtualised, and the
 Wave 3 layer — measured numbers ticking in on every engine result, a live
 stage list for the generation run.
+
+## 6. The light theme, measured separately
+
+Everything above was measured in the dark theme. The light theme was reviewed
+only as source in the first pass, which was not a review: run against the same
+28 pages it failed **27 of them**, and two of the failures made a surface
+unusable rather than merely ugly.
+
+**Why it failed.** The light theme is built as `!important` remaps keyed on
+individual Tailwind utilities (`.text-slate-400`, `.bg-white/5`). Anything the
+list does not name keeps its **dark** value on a white page. Three families of
+call site escaped it:
+
+| ID | Sev | Finding | Basis |
+|---|---|---|---|
+| L-1 | S1 | **The mobile tab bar was invisible.** Inline `rgba(255,255,255,0.45)` labels over a background of `--navy-950`, which light remaps to #F7F9FB. White on white: four of five tabs vanished, only the gold active tab survived. | MEASURED (computed style + screenshot) |
+| L-2 | S1 | **The two settings pages stayed dark** under a light header — hardcoded `#07111e` backgrounds — and their heading sat behind the fixed header on mobile web. | MEASURED |
+| L-3 | S2 | **110 accent classes carry an opacity modifier** (`text-teal-300/90`) across 22 files. Tailwind compiles those to a literal rgba, so they are classes of their own that the remap never saw. Measured as low as **1.35:1**. | MEASURED + CODE |
+| L-4 | S2 | **The gold accents failed on their own chips.** Light gold-400 was AA against the page but 4.09:1 on a gold-500/15 chip — which is where it is actually used. The primary button was worse: gold-500 under the theme's own near-white ink measured **4.35:1**. | MEASURED |
+| L-5 | S2 | **My own Wave 1 primitives** used `border-white/12`, `bg-white/[0.02]` and a white-alpha shimmer — none in the remap list. The loading skeleton was invisible on white and the empty state had no border. | MEASURED |
+| L-6 | S3 | `hover:text-slate-200` and friends were never remapped, so hover *lightened* text on a white page. Amber, emerald, orange and slate-700 sat between 2.4:1 and 4.4:1. | MEASURED |
+| L-7 | S3 | The password reveal button had no accessible name (both themes; the first sweep missed it because the dashboard rendered a different state). | MEASURED |
+
+**The fix is structural, not a longer list.** Six **surface tokens** —
+`--hairline`, `--hairline-strong`, `--tint`, `--tint-strong`, `--shimmer-base`,
+`--shimmer-hi` — are defined once per theme and exposed as `border-hairline`,
+`bg-tint`, `bg-tint-strong`. A component that takes these cannot be forgotten
+in one theme. The categorical palette gained its light half (each hue drops to
+its ~700 step, so a chart keeps its category-to-colour mapping and carries
+white text). The 110 alpha accents are covered by one substring rule per
+family, `[class*="text-teal-300/"]`, which catches every alpha written today or
+later. Gold and amber were re-derived against the **worst ground they actually
+sit on** rather than against the page.
+
+| Light-theme measure | Before | After |
+|---|---|---|
+| Pages with any contrast violation | 27 of 28 | **0 of 28** |
+| Contrast-failing nodes | 80 | **0** |
+| axe serious or critical | present | **0** |
+| Mobile tab-bar label contrast | 1.06:1 | 8.3:1 |
+| Dark-theme regression check | — | 0 serious or critical on 28 pages, 11 px floor held |
+
+Three gates now hold the line, all in `tests/design-system.test.mjs`: no
+hardcoded dark colour literal in an inline style (the scanner is brace-matched
+so it catches a literal inside a *ternary*, which is exactly how the tab bar
+was written, and it carries a regression test proving that); both themes must
+define every surface and categorical token; and every alpha accent step used in
+source must have a light remap.
+
+Two things stated rather than fixed: the light theme is still ~80 `!important`
+utility overrides plus these token rules, and collapsing that into a pure token
+remap remains Wave 2; and the "invisible text" probe reports two false
+positives per page on the avatar initials, whose background is a gradient the
+probe cannot read.

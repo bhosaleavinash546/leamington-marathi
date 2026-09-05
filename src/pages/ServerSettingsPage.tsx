@@ -1,8 +1,13 @@
+import { useIsNative } from '../hooks/useMobile';
 import { useState, useEffect } from 'react';
 import { Server, CheckCircle, XCircle, Wifi, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function ServerSettingsPage() {
+  // These are the native app's own screens, but they are also reachable on
+  // mobile WEB from the tab bar — where a fixed header sits above them and hid
+  // the page heading. No header in the native shell, so the padding follows it.
+  const native = useIsNative();
   const navigate = useNavigate();
   const [url, setUrl] = useState('');
   const [saved, setSaved] = useState('');
@@ -50,11 +55,11 @@ export default function ServerSettingsPage() {
   const dirty = url.trim().replace(/\/$/, '') !== saved;
 
   return (
-    <div className="min-h-screen pt-safe px-4 py-6" style={{ background: '#07111e' }}>
+    <div className={`min-h-screen px-4 pb-6 ${native ? 'pt-safe pt-6' : 'pt-24'}`} style={{ background: 'rgb(var(--navy-950))' }}>
       <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-sm mb-6"
-        style={{ color: 'rgba(255,255,255,0.6)' }}
+        
       >
         <ArrowLeft size={16} /> Back
       </button>
@@ -65,7 +70,7 @@ export default function ServerSettingsPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-white">Server Settings</h1>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          <p className="text-xs" >
             Connect to your BrainSpark server
           </p>
         </div>
@@ -73,9 +78,9 @@ export default function ServerSettingsPage() {
 
       <div
         className="rounded-2xl p-5 mb-5"
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+        style={{ background: 'var(--tint)', border: '1px solid var(--hairline)' }}
       >
-        <label className="block text-sm font-medium mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
+        <label className="block text-sm font-medium mb-2" >
           Server URL
         </label>
         <input
@@ -85,15 +90,15 @@ export default function ServerSettingsPage() {
           placeholder="https://your-server.com"
           className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none"
           style={{
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.12)',
+            background: 'var(--tint)',
+            border: '1px solid var(--hairline)',
           }}
           autoCapitalize="none"
           autoCorrect="off"
           spellCheck={false}
           inputMode="url"
         />
-        <p className="mt-2 text-xs" style={{ color: 'rgba(255,255,255,0.62)' }}>
+        <p className="mt-2 text-xs" >
           Enter the base URL of your self-hosted BrainSpark backend (no trailing slash).
         </p>
       </div>
@@ -114,7 +119,7 @@ export default function ServerSettingsPage() {
           onClick={handleTest}
           disabled={!url.trim() || status === 'testing'}
           className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-opacity disabled:opacity-40"
-          style={{ background: 'rgba(245,158,11,0.15)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.3)' }}
+          style={{ background: 'rgb(var(--gold-500) / 0.15)', color: 'rgb(var(--gold-400))', border: '1px solid rgb(var(--gold-500) / 0.3)' }}
         >
           <Wifi size={16} />
           {status === 'testing' ? 'Testing…' : 'Test Connection'}
@@ -123,7 +128,7 @@ export default function ServerSettingsPage() {
           onClick={handleSave}
           disabled={!dirty}
           className="flex-1 py-3 rounded-xl text-sm font-bold transition-opacity disabled:opacity-40"
-          style={{ background: '#f59e0b', color: '#07111e' }}
+          style={{ background: 'rgb(var(--gold-500))', color: 'rgb(var(--navy-950))' }}
         >
           Save
         </button>
@@ -133,7 +138,7 @@ export default function ServerSettingsPage() {
         <button
           onClick={handleClear}
           className="w-full py-2 rounded-xl text-sm transition-opacity"
-          style={{ color: 'rgba(255,255,255,0.62)' }}
+          
         >
           Clear saved URL
         </button>
@@ -141,10 +146,10 @@ export default function ServerSettingsPage() {
 
       <div
         className="mt-8 rounded-2xl p-4"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+        style={{ background: 'var(--tint)', border: '1px solid var(--hairline)' }}
       >
-        <p className="text-xs font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>How it works</p>
-        <ul className="text-xs space-y-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
+        <p className="text-xs font-semibold mb-2" >How it works</p>
+        <ul className="text-xs space-y-1" >
           <li>• The app talks to your own BrainSpark server over the internet.</li>
           <li>• Make sure port 3001 (or your configured port) is accessible from this device.</li>
           <li>• Changes take effect after the app restarts.</li>

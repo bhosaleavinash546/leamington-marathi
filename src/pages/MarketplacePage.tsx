@@ -572,7 +572,7 @@ export default function MarketplacePage() {
                 title={p === 'All' ? 'All powertrains' : `${p}-specific ideas`}
               >
                 {p === 'All' ? 'All' : p}
-                <span className="ml-1 opacity-90">{p === 'All' ? powertrainCounts.All : powertrainCounts[p]}</span>
+                <span className="ml-1 tabular-nums">{p === 'All' ? powertrainCounts.All : powertrainCounts[p]}</span>
               </button>
             ))}
           </div>
@@ -591,7 +591,7 @@ export default function MarketplacePage() {
                 title={v === 'All' ? 'All architectures' : `${v} architecture ideas`}
               >
                 {v === 'All' ? 'All' : v}
-                <span className="ml-1 opacity-90">{v === 'All' ? voltageCounts.All : voltageCounts[v]}</span>
+                <span className="ml-1 tabular-nums">{v === 'All' ? voltageCounts.All : voltageCounts[v]}</span>
               </button>
             ))}
           </div>

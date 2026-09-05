@@ -16,9 +16,9 @@ interface Props {
 
 export default function EmptyState({ icon: Icon, title, body, action, className = '' }: Props) {
   return (
-    <div className={`rounded-2xl border border-dashed border-white/12 bg-white/[0.02] px-6 py-12 text-center ${className}`}>
+    <div className={`rounded-2xl border border-dashed border-hairline-strong bg-tint px-6 py-12 text-center ${className}`}>
       {Icon && (
-        <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
+        <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-hairline bg-tint-strong">
           <Icon size={22} className="text-slate-400" aria-hidden="true" />
         </div>
       )}
