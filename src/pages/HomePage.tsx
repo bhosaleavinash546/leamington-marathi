@@ -4,9 +4,10 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import {
   ArrowRight, TrendingUp, PlayCircle, Cpu, Upload, BarChart3, ShieldCheck,
-  Lightbulb, CheckCircle2, ChevronRight, Layers, Sparkles, Gauge, LineChart,
+  Lightbulb, CheckCircle2, ChevronRight, Layers, Sparkles, Gauge, LineChart, BookOpen,
 } from 'lucide-react';
 import { AUTOMOTIVE_SYSTEMS } from '../data/automotive-catalog';
+import { STATIC_SITE, REPO_URL, DEPLOY_DOC_URL } from '../lib/site-mode';
 
 // ─── Live commodity prices (real /api/prices data) ────────────────────────────
 interface LiveCommodity { key: string; label: string; value: number; unit: string; tier: string; }
@@ -55,6 +56,31 @@ const STEPS = [
 ];
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
+
+/**
+ * The page's calls to action. In the app they route into the tool. On the
+ * public shop window (`STATIC_SITE`) there is no server behind them, so they
+ * become links to the source and the deployment guide instead — a button that
+ * silently does nothing is the one thing this product must never ship.
+ */
+function Cta({ to, external, className, children }: {
+  to: string; external?: boolean; className: string; children: React.ReactNode;
+}) {
+  if (external) {
+    return <a href={to} target="_blank" rel="noreferrer" className={className}>{children}</a>;
+  }
+  return <Link to={to} className={className}>{children}</Link>;
+}
+const PRIMARY_CTA = STATIC_SITE
+  ? { to: REPO_URL, external: true, label: 'View the source on GitHub' }
+  : { to: '/analyze', external: false, label: 'Generate Ideas Now' };
+const SECONDARY_HERO = STATIC_SITE
+  ? { to: DEPLOY_DOC_URL, external: true, label: 'How to run it' }
+  : { to: '/trends', external: false, label: 'Watch 2-min demo' };
+const SECONDARY_FOOT = STATIC_SITE
+  ? { to: DEPLOY_DOC_URL, external: true, label: 'Deployment guide' }
+  : { to: '/trends', external: false, label: 'Explore trends' };
+
 function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   return (
     <motion.div
@@ -265,12 +291,12 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
               className="mt-8 flex flex-col sm:flex-row gap-3.5"
             >
-              <Link to="/analyze" className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-ui hover:-translate-y-0.5 shadow-xl shadow-gold-500/25">
-                Generate Ideas Now <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link to="/trends" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 border border-white/12 text-slate-200 hover:bg-white/10 font-semibold transition-ui">
-                <PlayCircle size={18} /> Watch 2-min demo
-              </Link>
+              <Cta {...PRIMARY_CTA} className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-ui hover:-translate-y-0.5 shadow-xl shadow-gold-500/25">
+                {PRIMARY_CTA.label} <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </Cta>
+              <Cta {...SECONDARY_HERO} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 border border-white/12 text-slate-200 hover:bg-white/10 font-semibold transition-ui">
+                {STATIC_SITE ? <BookOpen size={18} /> : <PlayCircle size={18} />} {SECONDARY_HERO.label}
+              </Cta>
             </motion.div>
 
             <motion.p
@@ -334,6 +360,17 @@ export default function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {AUTOMOTIVE_SYSTEMS.map((s, i) => (
               <Reveal key={s.id} delay={i * 0.02}>
+                {/* On the shop window these lead nowhere, so they are cards,
+                    not links — no pointer, no chevron promising a click. */}
+                {STATIC_SITE ? (
+                  <div className="flex items-center gap-3 p-3.5 rounded-xl bg-navy-900 border border-white/10">
+                    <span className={`w-9 h-9 rounded-lg bg-gradient-to-br ${s.color} flex items-center justify-center text-base shrink-0`}>{s.icon}</span>
+                    <span className="min-w-0">
+                      <span className="block text-white text-[13px] font-semibold leading-tight truncate">{s.name}</span>
+                      <span className="block text-slate-500 text-2xs">{s.subassemblies.length} subassemblies</span>
+                    </span>
+                  </div>
+                ) : (
                 <Link to={`/analyze?system=${s.id}`} className="group flex items-center gap-3 p-3.5 rounded-xl bg-navy-900 border border-white/10 hover:border-gold-500/30 hover:-translate-y-0.5 transition-ui">
                   <span className={`w-9 h-9 rounded-lg bg-gradient-to-br ${s.color} flex items-center justify-center text-base shrink-0`}>{s.icon}</span>
                   <span className="min-w-0">
@@ -342,6 +379,7 @@ export default function HomePage() {
                   </span>
                   <ChevronRight size={15} className="ml-auto text-slate-500 group-hover:text-gold-400 group-hover:translate-x-0.5 transition-ui shrink-0" />
                 </Link>
+                )}
               </Reveal>
             ))}
           </div>
@@ -442,12 +480,12 @@ export default function HomePage() {
             <h2 className="text-xl md:text-[28px] font-semibold text-white tracking-[-0.02em]">Put whole-vehicle cost intelligence to work</h2>
             <p className="mt-3.5 text-lg text-slate-300">Run a live pilot on one part family this week{ideaCount ? ` — start from ${ideaCount.toLocaleString()} benchmarked ideas` : ''}.</p>
             <div className="mt-7 flex flex-col sm:flex-row gap-3.5 justify-center">
-              <Link to="/analyze" className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-ui hover:-translate-y-0.5 shadow-xl shadow-gold-500/25">
-                Generate Ideas Now <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link to="/trends" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 border border-white/12 text-slate-200 hover:bg-white/10 font-semibold transition-ui">
-                <TrendingUp size={18} /> Explore trends
-              </Link>
+              <Cta {...PRIMARY_CTA} className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-ui hover:-translate-y-0.5 shadow-xl shadow-gold-500/25">
+                {PRIMARY_CTA.label} <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </Cta>
+              <Cta {...SECONDARY_FOOT} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 border border-white/12 text-slate-200 hover:bg-white/10 font-semibold transition-ui">
+                {STATIC_SITE ? <BookOpen size={18} /> : <TrendingUp size={18} />} {SECONDARY_FOOT.label}
+              </Cta>
             </div>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-400">
               {['Whole-vehicle coverage', 'Engine-verified numbers', 'Excel · PPT · PDF export'].map(t => (

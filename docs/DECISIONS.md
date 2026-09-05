@@ -3774,3 +3774,37 @@ recorded gate: "Should-cost engine measured on 16 held-out reference parts —
 15 of 16 inside tolerance, 11% mean absolute error" (`benchmark/cost-results.json`:
 `hits` 15, `total` 16, `mape` 11). This is the same reasoning that removed the
 OEM logo wall from the section below it.
+
+## 71. GitHub Pages gets a shop window, never the app
+
+Asked to publish the tool on a GitHub domain. Pages serves static files, and
+BrainSpark is one Node process with a `better-sqlite3` volume and a spawned
+OpenCascade layer, so the app itself cannot go there. Measured rather than
+assumed: serving `dist/` from a plain static host, the landing page renders
+correctly (its two API calls already tolerate failure) and every other route
+paints a shell whose every action fails, with `/analyze` 404-ing outright since
+Pages has no SPA rewrite.
+
+Publishing that would be the worst option available — a page that looks like a
+working product and is not, on a product whose whole argument is that claims
+carry their evidence. So the Pages build ships the landing page **alone**, and
+says on the page, above the fold, that it is a design preview and why nothing
+is interactive.
+
+**The page is the real component, not a copy.** `site/StaticSite.tsx` imports
+`src/pages/HomePage`, so the shop window cannot drift away from the product.
+What changes is behaviour, through one build-time flag (`STATIC_SITE`,
+`src/lib/site-mode.ts`) that Vite folds to a constant so the losing branch is
+eliminated: the three calls to action become external links to the source and
+the deployment guide, and the vehicle-system tiles become cards — no pointer,
+no chevron promising a click that leads nowhere.
+
+**Two failures had to be made impossible rather than remembered.** Dropping
+`VITE_STATIC_SITE=1` from the build command would publish a page of dead
+buttons that looks identical in review; `tests/static-site.test.mjs` fails on
+it, verified by building both ways. And `url('/fonts/…')` in `index.css`
+resolves outside the Pages sub-path, which shows up as the system sans to a
+visitor and as nothing at all to a reviewer — `scripts/site-postbuild.mjs`
+checks every `@font-face` URL against the shipped files. That check caught a
+real regression during this work: turning `publicDir` off to prune a 1.9 MB
+unused image also stopped Vite rewriting the font URLs against `base`.

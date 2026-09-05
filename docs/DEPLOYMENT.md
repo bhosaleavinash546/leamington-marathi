@@ -205,3 +205,46 @@ have is the same defect this codebase gates against everywhere else.
   tests (`>=7.7,<7.9`); moving outside that range needs the DFM geometry
   benchmark re-run, because the fixtures are analytic and a kernel change can
   move measured values.
+
+---
+
+## 9. The public shop window on GitHub Pages
+
+There are two separate things called "publishing" here, and conflating them
+produces the worst possible outcome.
+
+**The tool cannot run on GitHub Pages.** Pages serves static files. BrainSpark
+is one Node process with a `better-sqlite3` database on a persistent volume and
+a spawned Python/OpenCascade layer — §1 rules out the whole stateless class for
+exactly this reason. A naive Pages deploy of `dist/` would render the app's
+interface and then fail every single action: sign-in, generation, upload,
+export. That is worse than not publishing, on a product whose one rule is that
+claims carry their evidence.
+
+**What Pages does host** is a shop window: the landing page alone, built from
+the real `HomePage` component, with the honest framing said on the page.
+
+```bash
+npm run build:site      # → dist-site/, ~0.8 MB
+```
+
+That script is `VITE_STATIC_SITE=1 vite build --config vite.site.config.ts`
+followed by `scripts/site-postbuild.mjs`. Three things make it safe:
+
+| | |
+|---|---|
+| **`STATIC_SITE`** (`src/lib/site-mode.ts`) | A build-time flag Vite folds to a constant, so the losing branch is eliminated. Under it every call to action becomes an external link to the source or this document, and the vehicle-system tiles become cards rather than links into `/analyze`. **No control on the published page does nothing when clicked.** |
+| **`scripts/site-postbuild.mjs`** | Writes `.nojekyll` (Jekyll silently drops underscore paths) and `404.html` (Pages has no SPA rewrite), prunes the assets this page does not use, then **verifies every `@font-face` URL resolves and every root-absolute URL carries the Pages base**. A missing woff2 is the failure that looks fine in review and shows up as the system sans to a visitor, so it fails the build instead. |
+| **`tests/static-site.test.mjs`** | Six gates, run in CI before the deploy. The sharpest one fails the build if `VITE_STATIC_SITE=1` was dropped from the command — the single mistake that would publish a page of dead buttons. Verified by building both ways. |
+
+`.github/workflows/pages.yml` builds and deploys on push to `main` (or
+`workflow_dispatch`), passing `SITE_BASE=/<repo>/`. **Pages must be set to
+"GitHub Actions" as its source** in Settings → Pages; the default,
+"Deploy from a branch", ignores this workflow.
+
+Measured on the built bundle, served from the real sub-path at 1440 and 390:
+IBM Plex Sans loads, 0 failed requests, 0 console errors, 0 axe serious/critical
+violations, no horizontal overflow, and 0 links pointing into the app.
+
+To host the shop window somewhere other than a `<repo>` sub-path, set
+`SITE_BASE` (for a root domain, `SITE_BASE=/`).

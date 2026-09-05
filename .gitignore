@@ -10,3 +10,4 @@ users.json
 # Python bytecode from the OCCT geometry engine
 __pycache__/
 *.pyc
+dist-site

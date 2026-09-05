@@ -31,11 +31,14 @@ node benchmark/ideation-eval.mjs --label baseline --legacy   # pre-upgrade arm (
 node benchmark/ideation-eval.mjs --label current [--deep]
 node benchmark/ideation-eval.mjs --compare baseline current  # offline metric deltas
 
+npm run build:site         # public shop window for GitHub Pages (landing page ONLY) → dist-site/
 npm run kb:export          # REQUIRED after editing src/data/*-knowledge-base.ts (regenerates kb-pack.json)
 npm run eval:status        # measurement-debt report: which gates/evals have results, what is unmeasured
 node benchmark/ideation-eval.mjs --score benchmark/prism-runs --label <label>   # offline: re-score saved Prism runs (depth rubric, arithmetic, engine, grades, lenses) — no key needed
 npm run horizon:audit      # foresight-register curation inbox (evidence, China-frontier, freshness, precision)
 ```
+
+**The tool cannot run on GitHub Pages** — it is one Node process with a SQLite volume and a spawned OpenCascade layer. `npm run build:site` publishes the landing page ALONE, built from the real `HomePage` behind the `STATIC_SITE` flag (`src/lib/site-mode.ts`) so every control becomes an external link rather than a dead button; `scripts/site-postbuild.mjs` verifies the fonts and base paths, and `tests/static-site.test.mjs` fails the build if the flag was dropped. See DEPLOYMENT §9.
 
 Research keys for Horizon deep research (Brave, PatentsView — how to get and install them) are in `docs/RESEARCH-KEYS.md`. Operational notes live in `docs/OPERATIONS.md` (incl. automatic DB backups via `db-backup.mjs`, disable with `BRAINSPARK_BACKUPS=0`); architecture decisions in `docs/DECISIONS.md` — add an entry when making a choice that would surprise a newcomer.
 

@@ -1,0 +1,59 @@
+# Publishes the public shop window — BrainSpark's landing page ALONE — to
+# GitHub Pages. The tool itself is a Node service with a SQLite database and an
+# OpenCascade CAD engine, so it cannot run here; see docs/DEPLOYMENT.md for the
+# real thing, and site/StaticSite.tsx for why this build exists at all.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'src/**'
+      - 'public/**'
+      - 'vite.site.config.ts'
+      - 'scripts/site-postbuild.mjs'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; never cancel one mid-flight and leave the site half-written.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      # The site build's own gate: it fails if a font, stylesheet or asset URL
+      # would not resolve under the Pages sub-path.
+      - run: npm run build:site
+        env:
+          SITE_BASE: /${{ github.event.repository.name }}/
+      # And the repo's gate, so the shop window cannot ship a page that breaks
+      # the design system or leaves a dead in-app link on it.
+      - run: node --test tests/design-system.test.mjs tests/static-site.test.mjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist-site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
