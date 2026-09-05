@@ -1,10 +1,12 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useId } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Eye, EyeOff, Mail, Lock, User, ArrowRight,
-  ArrowLeft, CheckCircle, AlertCircle, RefreshCw
+  ArrowLeft, CheckCircle, AlertCircle, RefreshCw,
+  Layers, ShieldCheck, Gauge,
 } from 'lucide-react';
+import { APP_VERSION } from '../version';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '../hooks/useToast';
@@ -143,27 +145,43 @@ function ResendButton({ email, type, onResent }: { email: string; type: string; 
 }
 
 // ─── Input field ──────────────────────────────────────────────────────────────
-function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder, error, ...rest }: {
+function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder, error, hint, ...rest }: {
   label: string; icon: typeof Mail; type?: string; value: string;
-  onChange: (v: string) => void; placeholder?: string; error?: string;
-  autoComplete?: string; disabled?: boolean;
+  onChange: (v: string) => void; placeholder?: string; error?: string; hint?: string;
+  autoComplete?: string; disabled?: boolean; autoFocus?: boolean;
 }) {
   const [show, setShow] = useState(false);
+  const id = useId();
   const isPassword = type === 'password';
+  const describedBy = error ? `${id}-err` : hint ? `${id}-hint` : undefined;
 
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-300 mb-1.5">{label}</label>
+      <label htmlFor={id} className="block text-[13px] font-medium text-slate-300 mb-1.5">{label}</label>
       <div className="relative">
-        <Icon size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+        <Icon size={15} aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
         <input
           {...rest}
+          id={id}
           type={isPassword ? (show ? 'text' : 'password') : type}
           value={value}
           onChange={e => onChange(e.target.value)}
           placeholder={placeholder}
-          className={`w-full bg-navy-800 border rounded-xl pl-10 pr-${isPassword ? '12' : '4'} py-3 text-white placeholder-slate-600 focus:outline-none transition-ui text-sm
-            ${error ? 'border-red-500/60 focus:border-red-500' : 'border-white/15 focus:border-gold-500/60'}`}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
+          // The right padding used to be built as `pr-${isPassword ? '12' : '4'}`.
+          // Tailwind's compiler only sees COMPLETE class names in the source, so
+          // that class was never generated and the password text ran under the
+          // reveal button. Both variants are written out.
+          className={[
+            'w-full min-h-[46px] rounded-xl bg-navy-800/80 border pl-10 text-[15px] text-white',
+            'placeholder:text-slate-500 transition-ui duration-micro ease-house',
+            isPassword ? 'pr-11' : 'pr-4',
+            error
+              ? 'border-danger-500/60 focus:border-danger-500'
+              : 'border-hairline-strong hover:border-white/25 focus:border-gold-500/70',
+            'disabled:opacity-60 disabled:cursor-not-allowed',
+          ].join(' ')}
         />
         {isPassword && (
           <button
@@ -171,63 +189,124 @@ function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder,
             onClick={() => setShow(!show)}
             aria-label={show ? 'Hide password' : 'Show password'}
             aria-pressed={show}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white transition-colors"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-tint-strong transition-ui duration-micro ease-house"
           >
             {show ? <EyeOff size={15} /> : <Eye size={15} />}
           </button>
         )}
       </div>
-      {error && <p className="mt-1 text-red-400 text-xs flex items-center gap-1"><AlertCircle size={11} />{error}</p>}
+      {error
+        ? <p id={`${id}-err`} className="mt-1.5 text-danger-400 text-xs flex items-center gap-1"><AlertCircle size={11} />{error}</p>
+        : hint ? <p id={`${id}-hint`} className="mt-1.5 text-slate-500 text-xs">{hint}</p> : null}
     </div>
   );
 }
 
-// ─── Left brand column ───────────────────────────────────────────────────────
+// ─── Brand / proof panel ─────────────────────────────────────────────────────
 //
-// ONE GROUND, NOT TWO PANELS.
+// WHY THIS IS BUILT THE WAY IT IS.
 //
-// This used to be a `bg-hero-gradient` panel (#0a0f1e → #1a2235 → #0c1629)
-// sitting next to a flat `bg-navy-950` form column, so the page had a visible
-// vertical seam down the middle and read as two screens stitched together.
-// Both sides now sit on the SAME navy-950 as the rest of the product, and the
-// left side gets its depth the way a photographer gets it — from two enormous,
-// almost-invisible light sources — rather than from being a different colour.
-// Nothing here draws an edge: no border, no divider, no panel.
-function BrandColumn() {
-  return (
-    <div className="hidden lg:flex lg:w-[56%] xl:w-[58%] flex-col px-12 xl:px-16 py-12 relative">
-      <div className="flex items-center gap-3 relative shrink-0">
-        <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-10 h-10" />
-        <span className="text-white font-black text-xl tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
-      </div>
+// The previous version put the marketing render in a rounded box beside the
+// form, under a row of six tag pills. Three things made that read as amateur,
+// and each is answered here:
+//
+//   1. THE IMAGE CARRIES ITS OWN WORDMARK — "BrainSpark · AI IDEA GENERATION
+//      TOOL" is baked into the pixels, in electric purple. Framed as a poster
+//      it put a second logo and a second colour system on a page that already
+//      has one of each. It is now a BACKDROP: cropped away from that wordmark,
+//      desaturated toward the brand, and sunk under a scrim heavy enough that
+//      it reads as depth and engineering texture rather than as a picture.
+//   2. THE SEAM. The scrim's final stop is exactly navy-950, the same ground
+//      the form sits on, so the two halves are one surface with no edge.
+//   3. TAG PILLS SAY NOTHING. Six pills reading "3D CAD viewer" is a list of
+//      nouns. They are replaced by three claims a cost engineer would actually
+//      test us on, each carrying the measured figure that backs it — which is
+//      also the product's own governing rule applied to its own front door.
+//
+// Every figure below is real and sourced: the ≤12% MAPE gate is
+// `benchmark:cost --max-mape 0.12` in package.json, the 86 DFM checks are the
+// `dfm-run.mjs --min 1.0` gate, and the four waterfall premiums are the steps
+// `part360.mjs` actually computes. Nothing here is a marketing number.
+const PROOF = [
+  {
+    icon: Layers,
+    title: 'The entitlement waterfall',
+    body: 'One supplier quote, decomposed into named premiums — commercial, specification, process, footprint. Steps the engine cannot compute are skipped and named.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Engine-verified, not asserted',
+    body: 'Every idea the AI proposes is re-priced by a deterministic engine. Ideas the engine contradicts stay on the page and say so.',
+  },
+  {
+    icon: Gauge,
+    title: 'Measured, with the error stated',
+    body: 'Should-cost holds within 12% MAPE against held-out reference parts, and 86 DFM geometry checks gate every release.',
+  },
+];
 
-      {/* Centred, so the brand block and the sign-in card share a baseline
-          instead of the brand side being pushed apart top-and-bottom. */}
-      <div className="relative max-w-xl flex-1 flex flex-col justify-center">
+function BrandPanel() {
+  return (
+    <div className="relative hidden lg:flex lg:w-[54%] xl:w-[56%] flex-col justify-end overflow-hidden">
+      {/* THE IMAGE OCCUPIES THE TOP, THE TYPE SITS AT THE BOTTOM.
+          Earlier attempts put the render behind the copy and neither setting
+          worked: strong enough to see meant the vehicle ran straight through
+          the proof text, weak enough to read meant it was grey noise. The
+          panel is only ~780 px wide and the copy uses most of it, so there is
+          no empty zone to hide an image in. Separating them vertically is the
+          fix — and it is the pattern premium sign-in pages use, because the
+          scrim gives the words a solid ground instead of a busy one. */}
+      <div aria-hidden="true" className="absolute inset-0">
         <img
-          src="/ev-diagram.png"
-          alt="BrainSpark EV cutaway diagram"
-          className="w-full rounded-2xl mb-8 opacity-95 shadow-2xl shadow-black/40 ring-1 ring-white/8"
+          src="/auth-hero.jpg"
+          alt=""
+          className="absolute inset-x-0 top-0 h-[62%] w-full object-cover object-[52%_38%]"
           draggable={false}
         />
-
-        <h2 className="text-[34px] xl:text-[40px] font-black text-white leading-[1.08] tracking-tight text-balance">
-          AI-powered cost<br />
-          <span className="text-gold-400">reduction intelligence</span>
-        </h2>
-        <p className="text-slate-400 text-[15px] leading-relaxed mt-4 max-w-lg">
-          A chief-engineer AI grounded by a deterministic should-cost engine.
-          Upload CAD, inspect it in 3D, and generate engineering ideas whose
-          savings are <span className="text-slate-200">engine-verified, not asserted</span>.
-        </p>
-
-        <div className="flex flex-wrap gap-2 mt-7">
-          {['3D CAD viewer', 'Innovation Studio · 8 methods', 'Deterministic should-cost', 'Engine-verified ideas', '2,200+ idea marketplace', 'Excel · PPT · PDF'].map(tag => (
-            <span key={tag} className="px-3 py-1.5 rounded-full bg-tint border border-hairline text-slate-300 text-2xs font-medium">{tag}</span>
-          ))}
-        </div>
+        {/* Solid navy from 52% down, so every word below sits on flat ground. */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgb(var(--navy-950))_52%,rgb(var(--navy-950)/0.86)_66%,rgb(var(--navy-950)/0.24)_100%)]" />
+        {/* Dissolve the right edge into the form side: no seam, one surface. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-navy-950" />
+        <div className="absolute -top-20 -left-16 w-[32rem] h-[32rem] rounded-full bg-gold-500/[0.07] blur-[110px]" />
       </div>
 
+      <div className="absolute top-12 left-12 xl:left-16 flex items-center gap-3 z-10">
+        <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-9 h-9" />
+        <span className="text-white font-black text-lg tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
+      </div>
+
+      <div className="relative px-12 xl:px-16 pb-12 max-w-[36rem]">
+        <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-gold-400 mb-4">
+          AI cost engineering · automotive
+        </p>
+        <h2 className="text-[38px] xl:text-[44px] font-black text-white leading-[1.06] tracking-[-0.02em] text-balance">
+          The AI proposes.<br />
+          <span className="text-gold-400">The engine prices.</span>
+        </h2>
+        <p className="text-slate-300 text-[15px] leading-relaxed mt-4 max-w-lg">
+          Math for numbers, AI for judgment. Every figure on screen is computed
+          by a deterministic engine — or the page tells you which one could not
+          compute it, and why.
+        </p>
+
+        <ul className="mt-7">
+          {PROOF.map(({ icon: Icon, title, body }) => (
+            <li key={title} className="flex gap-3.5 py-3.5 border-t border-hairline">
+              <span className="mt-px shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gold-500/25 bg-gold-500/10">
+                <Icon size={15} className="text-gold-400" aria-hidden="true" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-white text-[13px] font-semibold tracking-tight">{title}</span>
+                <span className="block text-slate-400 text-[12.5px] leading-relaxed mt-0.5">{body}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-7 text-slate-500 text-2xs">
+          Designed &amp; created by <span className="text-slate-400 font-medium">Avinash Bhosale</span>
+        </p>
+      </div>
     </div>
   );
 }
@@ -339,54 +418,50 @@ export default function AuthPage() {
   const slide = { initial: { opacity: 0, x: 24 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -24 }, transition: { duration: 0.25 } };
 
   return (
-    <div className="relative min-h-screen bg-navy-950 flex overflow-hidden">
-      {/* Atmosphere: two very large, very low-alpha light sources over the ONE
-          ground, plus a fine grid that fades out. This is what gives the page
-          depth now that both halves are the same colour — the same technique
-          the DFM studio uses (pages/dfm.css), so it belongs to the product
-          rather than being a one-off gradient. Decorative and inert. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-32 -left-24 w-[42rem] h-[42rem] rounded-full bg-gold-500/[0.07] blur-[120px]" />
-        <div className="absolute -bottom-40 left-[38%] w-[36rem] h-[36rem] rounded-full bg-teal-500/[0.05] blur-[120px]" />
-        <div
-          className="absolute inset-0 opacity-[0.35]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgb(var(--gold-500) / 0.03) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--gold-500) / 0.03) 1px, transparent 1px)',
-            backgroundSize: '88px 88px',
-            maskImage: 'radial-gradient(ellipse 70% 60% at 30% 0%, #000 10%, transparent 70%)',
-            WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 30% 0%, #000 10%, transparent 70%)',
-          }}
-        />
-      </div>
+    <div className="relative min-h-screen bg-navy-950 flex">
+      <BrandPanel />
 
-      <BrandColumn />
-
-      {/* Form side — no divider, no second background. The card is the only
-          edge on the page, so the eye lands on it. */}
-      <div className="relative flex-1 lg:w-[44%] xl:w-[42%] lg:flex-none flex flex-col justify-center items-center px-5 sm:px-8 py-10 min-h-screen">
-        <div className="lg:hidden flex items-center gap-2.5 mb-8">
-          <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-9 h-9" />
-          <span className="text-white font-black text-xl tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
+      {/* Form side. No card and no second background: with a rich panel on the
+          left, the form reads strongest sitting directly on the ground — the
+          way Stripe, Linear and Vercel do it. The only edges on this half are
+          the input borders, so the eye goes where you type. */}
+      <div className="relative flex-1 flex flex-col justify-center items-center px-5 sm:px-10 py-12 min-h-screen">
+        {/* Phones get the render as texture only — heavily sunk, top-weighted,
+            never competing with the form. */}
+        <div aria-hidden="true" className="lg:hidden absolute inset-0 overflow-hidden">
+          <img
+            src="/auth-hero.jpg"
+            alt=""
+            className="w-full h-[38%] object-cover object-[50%_30%]"
+            draggable={false}
+          />
+          {/* Solid by 30% of the viewport: a label baked into the render was
+              ghosting through behind the subtitle. */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgb(var(--navy-950)/0.62)_0%,rgb(var(--navy-950)/0.94)_22%,rgb(var(--navy-950))_32%)]" />
         </div>
 
-        <div className="w-full max-w-[26rem] rounded-2xl border border-hairline bg-white/[0.035] backdrop-blur-xl shadow-modal p-7 sm:p-9">
+        <div className="relative w-full max-w-[23rem]">
+          <div className="lg:hidden flex items-center gap-2.5 mb-9">
+            <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-9 h-9" />
+            <span className="text-white font-black text-lg tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
+          </div>
+
           <AnimatePresence mode="wait">
             {/* ── Sign In ─────────────────────────────────────────────────── */}
             {screen === 'signin' && (
               <motion.div key="signin" {...slide}>
                 <div className="mb-8">
-                  <h1 className="text-3xl font-black text-white mb-2">Welcome back</h1>
-                  <p className="text-slate-400">Sign in to your BrainSpark account</p>
+                  <h1 className="text-[26px] font-bold text-white tracking-[-0.02em] mb-1.5">Welcome back</h1>
+                  <p className="text-slate-400 text-sm">Sign in to your BrainSpark account</p>
                 </div>
                 <form onSubmit={handleSignIn} className="space-y-4">
-                  <Field label="Email address" icon={Mail} type="email" value={email} onChange={setEmail} placeholder="you@company.com" autoComplete="email" disabled={loading} />
+                  <Field label="Email address" icon={Mail} type="email" value={email} onChange={setEmail} placeholder="you@company.com" autoComplete="email" disabled={loading} autoFocus />
                   <Field label="Password" icon={Lock} type="password" value={password} onChange={setPassword} placeholder="Your password" autoComplete="current-password" disabled={loading} />
                   <div className="flex justify-end">
                     <button type="button" onClick={() => { setScreen('forgot'); clearError(); setDevOtp(''); setOtp(''); }} className="text-gold-400 hover:text-gold-300 text-sm transition-colors">Forgot password?</button>
                   </div>
-                  {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-ui hover:-translate-y-0.5 shadow-glow-gold">
+                  {error && <div role="alert" className="flex items-start gap-2.5 p-3 rounded-xl bg-danger-500/10 border border-danger-500/25 text-danger-300 text-[13px] leading-relaxed"><AlertCircle size={15} />{error}</div>}
+                  <button type="submit" disabled={loading} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-[15px] flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
                     {loading ? <><ButtonSpinner size={18} /> Signing in…</> : <>Sign In <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -401,8 +476,8 @@ export default function AuthPage() {
             {screen === 'signup' && (
               <motion.div key="signup" {...slide}>
                 <div className="mb-8">
-                  <h1 className="text-3xl font-black text-white mb-2">Create your account</h1>
-                  <p className="text-slate-400">Free access to the AI cost reduction engine</p>
+                  <h1 className="text-[26px] font-bold text-white tracking-[-0.02em] mb-1.5">Create your account</h1>
+                  <p className="text-slate-400 text-sm">Free access to the AI cost reduction engine</p>
                 </div>
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <Field label="Full name" icon={User} value={name} onChange={setName} placeholder="Avinash Bhosale" autoComplete="name" disabled={loading} />
@@ -412,8 +487,8 @@ export default function AuthPage() {
                     <PasswordStrength password={password} />
                   </div>
                   <Field label="Confirm password" icon={Lock} type="password" value={confirmPassword} onChange={setConfirmPassword} placeholder="Repeat your password" autoComplete="new-password" disabled={loading} />
-                  {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-ui hover:-translate-y-0.5 shadow-glow-gold">
+                  {error && <div role="alert" className="flex items-start gap-2.5 p-3 rounded-xl bg-danger-500/10 border border-danger-500/25 text-danger-300 text-[13px] leading-relaxed"><AlertCircle size={15} />{error}</div>}
+                  <button type="submit" disabled={loading} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-[15px] flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
                     {loading ? <><ButtonSpinner size={18} /> Creating account…</> : <>Create Account <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -431,13 +506,13 @@ export default function AuthPage() {
                   <ArrowLeft size={15} /> Back to sign in
                 </button>
                 <div className="mb-8">
-                  <h1 className="text-3xl font-black text-white mb-2">Reset password</h1>
-                  <p className="text-slate-400">Enter your email and we'll send you a reset code</p>
+                  <h1 className="text-[26px] font-bold text-white tracking-[-0.02em] mb-1.5">Reset password</h1>
+                  <p className="text-slate-400 text-sm">Enter your email and we'll send you a reset code</p>
                 </div>
                 <form onSubmit={handleForgotPassword} className="space-y-4">
                   <Field label="Email address" icon={Mail} type="email" value={email} onChange={setEmail} placeholder="you@company.com" autoComplete="email" disabled={loading} />
-                  {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-ui hover:-translate-y-0.5 shadow-glow-gold">
+                  {error && <div role="alert" className="flex items-start gap-2.5 p-3 rounded-xl bg-danger-500/10 border border-danger-500/25 text-danger-300 text-[13px] leading-relaxed"><AlertCircle size={15} />{error}</div>}
+                  <button type="submit" disabled={loading} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-[15px] flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
                     {loading ? <><ButtonSpinner size={18} /> Sending code…</> : <>Send Reset Code <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -451,7 +526,7 @@ export default function AuthPage() {
                   <ArrowLeft size={15} /> Back
                 </button>
                 <div className="mb-8 text-center">
-                  <h1 className="text-2xl font-black text-white mb-2">Enter reset code</h1>
+                  <h1 className="text-[22px] font-bold text-white tracking-[-0.02em] mb-1.5">Enter reset code</h1>
                   <p className="text-slate-400 text-sm">Code sent to <span className="text-white font-medium">{email}</span></p>
                 </div>
                 <form onSubmit={handleResetPassword} className="space-y-5">
@@ -468,8 +543,8 @@ export default function AuthPage() {
                     <PasswordStrength password={newPassword} />
                   </div>
                   <Field label="Confirm new password" icon={Lock} type="password" value={confirmNewPassword} onChange={setConfirmNewPassword} placeholder="Repeat new password" autoComplete="new-password" disabled={loading} />
-                  {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading || otp.length < 6} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-ui hover:-translate-y-0.5 shadow-glow-gold">
+                  {error && <div role="alert" className="flex items-start gap-2.5 p-3 rounded-xl bg-danger-500/10 border border-danger-500/25 text-danger-300 text-[13px] leading-relaxed"><AlertCircle size={15} />{error}</div>}
+                  <button type="submit" disabled={loading || otp.length < 6} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-[15px] flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
                     {loading ? <><ButtonSpinner size={18} /> Resetting…</> : <>Reset Password <CheckCircle size={18} /></>}
                   </button>
                   <ResendButton key={otpResendKey} email={email} type="reset" onResent={() => { setOtp(''); setOtpResendKey(k => k + 1); }} />
@@ -479,8 +554,8 @@ export default function AuthPage() {
           </AnimatePresence>
         </div>
 
-        <p className="mt-8 text-slate-500 text-2xs text-center">
-          BrainSpark · designed &amp; created by <span className="text-slate-400 font-medium">Avinash Bhosale</span>
+        <p className="relative mt-10 text-slate-500 text-2xs text-center">
+          Confidential internal tool · v{APP_VERSION}
         </p>
       </div>
     </div>

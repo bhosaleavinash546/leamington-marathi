@@ -248,3 +248,18 @@ the page was recomposed:
   panel with a single hairline border, so the eye lands on it; the brand block
   is centred against it rather than pushed apart top-and-bottom, and the
   duplicated author credit is down to one line.
+
+### Sign-in, rebuilt
+
+The dark-only pass fixed the theme but the page still did not look like a
+product's front door. Rebuilt against what was actually wrong:
+
+| Was | Why it read as amateur | Now |
+|---|---|---|
+| The marketing render in a rounded, ringed box | It carries its **own wordmark** — "BrainSpark · AI IDEA GENERATION TOOL" baked into the pixels, in electric purple. Framed as a poster it put a second logo and a second colour system on a page that already has one of each. | Prepared as an asset: cropped past the wordmark and past the callout that clipped behind the logo, graded toward the brand, **150 KB instead of 1.9 MB** on the one page every user must load first. |
+| Image behind the copy | Strong enough to see meant the vehicle ran through the proof text; weak enough to read meant grey noise. The panel is ~780 px and the copy uses most of it — there is no empty zone to hide an image in. | Separated vertically: the render occupies the top, the type sits at the bottom on a scrim that is **solid navy from 52% down**. |
+| Six tag pills — "3D CAD viewer", "Excel · PPT · PDF" | A list of nouns. It says nothing a competitor could not also print. | Three claims a cost engineer would test us on, each carrying the figure that backs it — the entitlement waterfall, engine-verified ideas, and the measured error. Every figure is sourced from a gate in this repo, not written for the page. |
+| A generic form | `font-black` headings, unannounced errors, and a password field whose right padding was built as `pr-${'{'}isPassword ? '12' : '4'{'}'}` — a class Tailwind never generates, so the text ran under the reveal button. | Form titles on the type scale, `role="alert"` on every error, labels tied to inputs, 46 px fields, one primary-button treatment, autofocus on the first field. |
+
+Measured: zero axe serious or critical at 1440 and 390 px across a stored
+light theme, a stored dark theme and no stored preference.
