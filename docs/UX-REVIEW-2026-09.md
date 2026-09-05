@@ -263,3 +263,12 @@ product's front door. Rebuilt against what was actually wrong:
 
 Measured: zero axe serious or critical at 1440 and 390 px across a stored
 light theme, a stored dark theme and no stored preference.
+
+**Hero copy, chosen with the owner.** The headline is a plain descriptor —
+*"The AI-assisted idea generation engine."* — not a slogan, because the reader
+is an internal cost engineer who already knows the domain and wants to know
+what the tool is. Under it, the eight product names from the nav registry and
+nothing else: no supporting sentence, no per-feature description. Names are set
+as a two-column list rather than pills (a pill implies something pressable, and
+none of these are) or a flowing line (its separators wrapped onto the start of
+the next line).

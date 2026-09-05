@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Eye, EyeOff, Mail, Lock, User, ArrowRight,
   ArrowLeft, CheckCircle, AlertCircle, RefreshCw,
-  Layers, ShieldCheck, Gauge,
 } from 'lucide-react';
 import { APP_VERSION } from '../version';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
@@ -202,47 +201,32 @@ function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder,
   );
 }
 
-// ─── Brand / proof panel ─────────────────────────────────────────────────────
+// ─── Brand panel ─────────────────────────────────────────────────────────────
 //
 // WHY THIS IS BUILT THE WAY IT IS.
 //
-// The previous version put the marketing render in a rounded box beside the
-// form, under a row of six tag pills. Three things made that read as amateur,
-// and each is answered here:
+// The render carries its OWN wordmark — "BrainSpark · AI IDEA GENERATION TOOL"
+// baked into the pixels, in electric purple — so framing it as a poster put a
+// second logo and a second colour system on a page that already has one of
+// each. It is now a prepared asset (public/auth-hero.jpg): cropped past that
+// wordmark and past the callout box that clipped behind the logo, graded
+// toward the brand, 150 KB rather than the source PNG's 1.9 MB on the one page
+// every user must load first.
 //
-//   1. THE IMAGE CARRIES ITS OWN WORDMARK — "BrainSpark · AI IDEA GENERATION
-//      TOOL" is baked into the pixels, in electric purple. Framed as a poster
-//      it put a second logo and a second colour system on a page that already
-//      has one of each. It is now a BACKDROP: cropped away from that wordmark,
-//      desaturated toward the brand, and sunk under a scrim heavy enough that
-//      it reads as depth and engineering texture rather than as a picture.
-//   2. THE SEAM. The scrim's final stop is exactly navy-950, the same ground
-//      the form sits on, so the two halves are one surface with no edge.
-//   3. TAG PILLS SAY NOTHING. Six pills reading "3D CAD viewer" is a list of
-//      nouns. They are replaced by three claims a cost engineer would actually
-//      test us on, each carrying the measured figure that backs it — which is
-//      also the product's own governing rule applied to its own front door.
+// Image and type are separated VERTICALLY. Putting the render behind the copy
+// could not work at any setting: strong enough to see meant the vehicle ran
+// through the text, weak enough to read meant grey noise. The panel is ~780 px
+// wide and the copy uses most of it, so there is no empty zone to hide an
+// image in. Render on top, type at the bottom on a scrim that is solid navy
+// from 52% down.
 //
-// Every figure below is real and sourced: the ≤12% MAPE gate is
-// `benchmark:cost --max-mape 0.12` in package.json, the 86 DFM checks are the
-// `dfm-run.mjs --min 1.0` gate, and the four waterfall premiums are the steps
-// `part360.mjs` actually computes. Nothing here is a marketing number.
-const PROOF = [
-  {
-    icon: Layers,
-    title: 'The entitlement waterfall',
-    body: 'One supplier quote, decomposed into named premiums — commercial, specification, process, footprint. Steps the engine cannot compute are skipped and named.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Engine-verified, not asserted',
-    body: 'Every idea the AI proposes is re-priced by a deterministic engine. Ideas the engine contradicts stay on the page and say so.',
-  },
-  {
-    icon: Gauge,
-    title: 'Measured, with the error stated',
-    body: 'Should-cost holds within 12% MAPE against held-out reference parts, and 86 DFM geometry checks gate every release.',
-  },
+// The feature list is NAMES ONLY, and they are the names from the nav registry
+// — what the user will click once they are inside. An earlier version carried
+// a sentence of description under each, which turned the panel into a brochure
+// and buried the sign-in form's importance.
+const FEATURES = [
+  'Prism', 'Should-Cost', 'DFM / DFA', 'CAD → Cost',
+  'PCB → BOM → Cost', 'Innovation Studio', 'Idea Marketplace', 'Horizon',
 ];
 
 function BrandPanel() {
@@ -275,30 +259,24 @@ function BrandPanel() {
         <span className="text-white font-black text-lg tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
       </div>
 
-      <div className="relative px-12 xl:px-16 pb-12 max-w-[36rem]">
+      <div className="relative px-12 xl:px-16 pb-12 max-w-[46rem]">
         <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-gold-400 mb-4">
           AI cost engineering · automotive
         </p>
-        <h2 className="text-[38px] xl:text-[44px] font-black text-white leading-[1.06] tracking-[-0.02em] text-balance">
-          The AI proposes.<br />
-          <span className="text-gold-400">The engine prices.</span>
+        <h2 className="text-[38px] xl:text-[43px] font-black text-white leading-[1.08] tracking-[-0.025em]">
+          The AI-assisted<br />
+          <span className="text-gold-400">idea generation engine.</span>
         </h2>
-        <p className="text-slate-300 text-[15px] leading-relaxed mt-4 max-w-lg">
-          Math for numbers, AI for judgment. Every figure on screen is computed
-          by a deterministic engine — or the page tells you which one could not
-          compute it, and why.
-        </p>
 
-        <ul className="mt-7">
-          {PROOF.map(({ icon: Icon, title, body }) => (
-            <li key={title} className="flex gap-3.5 py-3.5 border-t border-hairline">
-              <span className="mt-px shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gold-500/25 bg-gold-500/10">
-                <Icon size={15} className="text-gold-400" aria-hidden="true" />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-white text-[13px] font-semibold tracking-tight">{title}</span>
-                <span className="block text-slate-400 text-[12.5px] leading-relaxed mt-0.5">{body}</span>
-              </span>
+        {/* A two-column list, not pills and not a flowing sentence. Pills imply
+            something you can press and none of these can be; a flowing line
+            wrapped so that its separators landed at the start of a line. A
+            grid puts every marker in the same place on every row. */}
+        <ul className="grid grid-cols-2 gap-x-10 gap-y-2.5 mt-8 pt-7 border-t border-hairline">
+          {FEATURES.map(name => (
+            <li key={name} className="flex items-center gap-2.5">
+              <span aria-hidden="true" className="h-1 w-1 rounded-full bg-gold-400/80 shrink-0" />
+              <span className="text-slate-200 text-[13.5px] font-medium tracking-tight">{name}</span>
             </li>
           ))}
         </ul>
