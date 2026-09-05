@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(resolve(here, 'package.json'), 'utf-8'));
+const site = JSON.parse(readFileSync(resolve(here, 'site/site.config.json'), 'utf-8'));
 
 /**
  * The public shop-window build (`npm run build:site`) — the landing page only,
@@ -18,7 +19,7 @@ const pkg = JSON.parse(readFileSync(resolve(here, 'package.json'), 'utf-8'));
  * when hosting somewhere else.
  */
 export default defineConfig({
-  base: process.env.SITE_BASE ?? '/leamington-marathi/',
+  base: process.env.SITE_BASE ?? `/${site.repo}/`,
   root: resolve(here, 'site'),
   // publicDir stays ON: it is what makes Vite rewrite `url('/fonts/…')` in
   // index.css against `base`. With it off the font urls ship bare and 404 on

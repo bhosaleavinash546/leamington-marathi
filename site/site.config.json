@@ -1,0 +1,5 @@
+{
+  "repo": "brainspark",
+  "owner": "bhosaleavinash546",
+  "_why": "One place for the repo identity, because it appears in four: the Vite base, the postbuild's URL check, the static-site gate, and the shop window's own links. Spelling it four times is how they drift apart and the fonts 404 on a renamed repo."
+}

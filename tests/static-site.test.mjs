@@ -51,7 +51,7 @@ test('the static build declares itself through the build flag, not a copy of the
 
 test('the built bundle carries no in-app link and no absolute root URL', { skip: !built }, () => {
   const html = readFileSync(join(OUT, 'index.html'), 'utf-8');
-  const base = process.env.SITE_BASE ?? '/leamington-marathi/';
+  const base = process.env.SITE_BASE ?? `/${JSON.parse(readFileSync('site/site.config.json', 'utf-8')).repo}/`;
   for (const [, url] of html.matchAll(/(?:src|href)="(\/[^"]*)"/g)) {
     assert.ok(url.startsWith(base), `${url} sits outside the Pages base ${base}`);
   }

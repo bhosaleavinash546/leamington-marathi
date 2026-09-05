@@ -50,7 +50,7 @@ for (const u of new Set(fontUrls)) {
 // Pages serves from /<repo>/, so any root-absolute URL must carry that prefix.
 // Vite adds it when it rewrites against `base` — this catches the ones it did
 // not see (a hand-written href, an asset added later).
-const BASE = process.env.SITE_BASE ?? '/leamington-marathi/';
+const BASE = process.env.SITE_BASE ?? `/${JSON.parse(readFileSync('site/site.config.json', 'utf-8')).repo}/`;
 for (const [, url] of html.matchAll(/(?:src|href)="(\/[^"]*)"/g)) {
   if (!url.startsWith(BASE)) fail(`index.html points at ${url}, outside the Pages base ${BASE}`);
 }

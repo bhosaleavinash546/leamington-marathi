@@ -3808,3 +3808,12 @@ visitor and as nothing at all to a reviewer — `scripts/site-postbuild.mjs`
 checks every `@font-face` URL against the shipped files. That check caught a
 real regression during this work: turning `publicDir` off to prune a 1.9 MB
 unused image also stopped Vite rewriting the font URLs against `base`.
+
+**Where it may NOT be published.** BrainSpark lives on a branch of
+`leamington-marathi`, and that repo's `main` is a different, live website — a
+volunteer community site with `CNAME` = `leamingtonmarathi.com`, already served
+by Pages. Setting that repo's Pages source to "GitHub Actions" would replace
+what that domain serves; merging this branch to its `main` would replace the
+site's source. Neither is a thing to discover after the fact, so the repo
+identity is a checked-in fact (`site/site.config.json`) rather than a default in
+four scripts, and DEPLOYMENT §9 states the constraint next to the instructions.

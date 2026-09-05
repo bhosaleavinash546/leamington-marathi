@@ -9,6 +9,12 @@
  */
 export const STATIC_SITE = import.meta.env.VITE_STATIC_SITE === '1';
 
-/** Where a visitor to the shop window is actually sent. */
-export const REPO_URL = 'https://github.com/bhosaleavinash546/leamington-marathi';
+/**
+ * Where a visitor to the shop window is actually sent. The repo identity lives
+ * in site/site.config.json — it is also the Vite base, the postbuild's URL
+ * check and the deploy gate, and four hand-written copies is how they drift.
+ */
+import siteConfig from '../../site/site.config.json';
+
+export const REPO_URL = `https://github.com/${siteConfig.owner}/${siteConfig.repo}`;
 export const DEPLOY_DOC_URL = `${REPO_URL}/blob/main/docs/DEPLOYMENT.md`;

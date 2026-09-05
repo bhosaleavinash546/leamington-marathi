@@ -242,6 +242,16 @@ followed by `scripts/site-postbuild.mjs`. Three things make it safe:
 "GitHub Actions" as its source** in Settings → Pages; the default,
 "Deploy from a branch", ignores this workflow.
 
+**This must be BrainSpark's own repository.** BrainSpark was developed on a
+branch of `bhosaleavinash546/leamington-marathi`, whose `main` is an unrelated
+live website — the Leamington Marathi community site, already served by Pages
+with `CNAME` = `leamingtonmarathi.com`. Switching that repo's Pages source to
+"GitHub Actions", or merging this branch into its `main`, would take that site
+down and serve BrainSpark from a community group's domain. The repo identity
+lives in `site/site.config.json` (`owner` + `repo`); it drives the Vite base,
+the postbuild's URL check, the deploy gate and the shop window's own links, so
+a move is one file.
+
 Measured on the built bundle, served from the real sub-path at 1440 and 390:
 IBM Plex Sans loads, 0 failed requests, 0 console errors, 0 axe serious/critical
 violations, no horizontal overflow, and 0 links pointing into the app.

@@ -105,6 +105,16 @@ merely picking a default, the row says so.
 | `CV_DFM_RATE_MAX` | `40` | DFM requests per 10-minute window. |
 | `CV_TESSELLATE_RATE_MAX` | `60` | Tessellation requests per 10-minute window. |
 
+### Static shop-window build
+
+Build-time only — read by `vite.site.config.ts` and `scripts/site-postbuild.mjs`
+during `npm run build:site`, never by the running server.
+
+| Variable | Default | Notes |
+|---|---|---|
+| `SITE_BASE` | `/<repo>/` from `site/site.config.json` | URL prefix the GitHub Pages bundle is built for. **Unset is the normal case** — the default is derived from the repo name, which is what Pages serves a project site from. Set it to `/` to host the shop window at a domain root. Get it wrong and every asset URL points outside the site: the postbuild fails the build rather than shipping a page with no fonts. |
+| `VITE_STATIC_SITE` | unset | `1` selects the shop-window branch of the landing page — every call to action becomes an external link, because no backend is deployed alongside it. **Unset while running `build:site` publishes a page of dead buttons**, so `tests/static-site.test.mjs` fails the build if it is missing. See DEPLOYMENT §9. |
+
 ### External data
 
 | Variable | Default | Notes |
