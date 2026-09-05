@@ -67,8 +67,6 @@ const COLOR_LITERAL_ALLOWLIST = new Map([
   ['src/components/results/IdeasDashboard.tsx', 'branches on isDark'],
   ['src/components/results/BusinessCaseCalculator.tsx', 'branches on isDark'],
   ['src/pages/DashboardPage.tsx', 'branches on isDark'],
-  // Always-dark brand panel, opted out with data-theme="dark".
-  ['src/pages/AuthPage.tsx', 'always-dark brand panel'],
 ]);
 
 /**

@@ -182,51 +182,52 @@ function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder,
   );
 }
 
-// ─── Left branding panel ──────────────────────────────────────────────────────
-function BrandPanel() {
+// ─── Left brand column ───────────────────────────────────────────────────────
+//
+// ONE GROUND, NOT TWO PANELS.
+//
+// This used to be a `bg-hero-gradient` panel (#0a0f1e → #1a2235 → #0c1629)
+// sitting next to a flat `bg-navy-950` form column, so the page had a visible
+// vertical seam down the middle and read as two screens stitched together.
+// Both sides now sit on the SAME navy-950 as the rest of the product, and the
+// left side gets its depth the way a photographer gets it — from two enormous,
+// almost-invisible light sources — rather than from being a different colour.
+// Nothing here draws an edge: no border, no divider, no panel.
+function BrandColumn() {
   return (
-    <div data-theme="dark" className="hidden lg:flex lg:w-[60%] flex-col justify-between p-10 bg-hero-gradient relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-gold-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-0 w-60 h-60 bg-blue-500/5 rounded-full blur-3xl" />
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-gold-400/40 to-transparent" />
+    <div className="hidden lg:flex lg:w-[56%] xl:w-[58%] flex-col px-12 xl:px-16 py-12 relative">
+      <div className="flex items-center gap-3 relative shrink-0">
+        <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-10 h-10" />
+        <span className="text-white font-black text-xl tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
       </div>
 
-      <div className="flex items-center gap-3 relative">
-        <img src="/brainspark-logo.svg" alt="BrainSpark" className="w-10 h-10" />
-        <div>
-          <span className="text-white font-black text-xl">Brain</span>
-          <span className="text-gold-400 font-black text-xl">Spark</span>
-        </div>
-      </div>
-
-      <div className="relative">
+      {/* Centred, so the brand block and the sign-in card share a baseline
+          instead of the brand side being pushed apart top-and-bottom. */}
+      <div className="relative max-w-xl flex-1 flex flex-col justify-center">
         <img
           src="/ev-diagram.png"
           alt="BrainSpark EV cutaway diagram"
-          className="w-full rounded-xl mb-5 opacity-90"
+          className="w-full rounded-2xl mb-8 opacity-95 shadow-2xl shadow-black/40 ring-1 ring-white/8"
           draggable={false}
         />
 
-        <div className="space-y-4">
-          <h2 className="text-3xl font-black text-white leading-tight">
-            AI-Powered Cost<br />
-            <span className="text-gold-400">Reduction Intelligence</span>
-          </h2>
-          <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
-            Chief Engineer AI grounded by a deterministic should-cost engine — upload CAD, inspect it in 3D, and generate engineering ideas whose savings are engine-verified, not asserted.
-          </p>
-          <div className="flex flex-wrap gap-2 mt-4">
-            {['3D CAD Viewer', 'Innovation Studio · 8 Methods', 'Deterministic Should-Cost', 'Engine-Verified Ideas', '1,630+ Idea Marketplace', 'Excel · PPT · PDF'].map(tag => (
-              <span key={tag} className="px-2.5 py-1 rounded-full bg-white/8 border border-white/15 text-slate-400 text-xs">{tag}</span>
-            ))}
-          </div>
+        <h2 className="text-[34px] xl:text-[40px] font-black text-white leading-[1.08] tracking-tight text-balance">
+          AI-powered cost<br />
+          <span className="text-gold-400">reduction intelligence</span>
+        </h2>
+        <p className="text-slate-400 text-[15px] leading-relaxed mt-4 max-w-lg">
+          A chief-engineer AI grounded by a deterministic should-cost engine.
+          Upload CAD, inspect it in 3D, and generate engineering ideas whose
+          savings are <span className="text-slate-200">engine-verified, not asserted</span>.
+        </p>
+
+        <div className="flex flex-wrap gap-2 mt-7">
+          {['3D CAD viewer', 'Innovation Studio · 8 methods', 'Deterministic should-cost', 'Engine-verified ideas', '2,200+ idea marketplace', 'Excel · PPT · PDF'].map(tag => (
+            <span key={tag} className="px-3 py-1.5 rounded-full bg-tint border border-hairline text-slate-300 text-2xs font-medium">{tag}</span>
+          ))}
         </div>
       </div>
 
-      <p className="text-slate-500 text-xs relative">
-        Designed &amp; Created by <span className="text-slate-500 font-semibold">Avinash Bhosale</span>
-      </p>
     </div>
   );
 }
@@ -338,18 +339,38 @@ export default function AuthPage() {
   const slide = { initial: { opacity: 0, x: 24 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -24 }, transition: { duration: 0.25 } };
 
   return (
-    <div className="min-h-screen bg-navy-950 flex pt-16">
-      <BrandPanel />
+    <div className="relative min-h-screen bg-navy-950 flex overflow-hidden">
+      {/* Atmosphere: two very large, very low-alpha light sources over the ONE
+          ground, plus a fine grid that fades out. This is what gives the page
+          depth now that both halves are the same colour — the same technique
+          the DFM studio uses (pages/dfm.css), so it belongs to the product
+          rather than being a one-off gradient. Decorative and inert. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-32 -left-24 w-[42rem] h-[42rem] rounded-full bg-gold-500/[0.07] blur-[120px]" />
+        <div className="absolute -bottom-40 left-[38%] w-[36rem] h-[36rem] rounded-full bg-teal-500/[0.05] blur-[120px]" />
+        <div
+          className="absolute inset-0 opacity-[0.35]"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgb(var(--gold-500) / 0.03) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--gold-500) / 0.03) 1px, transparent 1px)',
+            backgroundSize: '88px 88px',
+            maskImage: 'radial-gradient(ellipse 70% 60% at 30% 0%, #000 10%, transparent 70%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 30% 0%, #000 10%, transparent 70%)',
+          }}
+        />
+      </div>
 
-      {/* Right — forms */}
-      <div className="flex-1 lg:w-[40%] lg:flex-none flex flex-col justify-center items-center px-6 py-12 min-h-[calc(100vh-4rem)]">
-        {/* Mobile logo */}
+      <BrandColumn />
+
+      {/* Form side — no divider, no second background. The card is the only
+          edge on the page, so the eye lands on it. */}
+      <div className="relative flex-1 lg:w-[44%] xl:w-[42%] lg:flex-none flex flex-col justify-center items-center px-5 sm:px-8 py-10 min-h-screen">
         <div className="lg:hidden flex items-center gap-2.5 mb-8">
-          <img src="/brainspark-logo.svg" alt="BrainSpark" className="w-9 h-9" />
-          <span className="text-white font-black text-xl">Brain<span className="text-gold-400">Spark</span></span>
+          <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-9 h-9" />
+          <span className="text-white font-black text-xl tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
         </div>
 
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-[26rem] rounded-2xl border border-hairline bg-white/[0.035] backdrop-blur-xl shadow-modal p-7 sm:p-9">
           <AnimatePresence mode="wait">
             {/* ── Sign In ─────────────────────────────────────────────────── */}
             {screen === 'signin' && (
@@ -458,8 +479,8 @@ export default function AuthPage() {
           </AnimatePresence>
         </div>
 
-        <p className="mt-10 text-slate-700 text-xs text-center">
-          BrainSpark · Designed &amp; Created by <span className="text-slate-500 font-medium">Avinash Bhosale</span>
+        <p className="mt-8 text-slate-500 text-2xs text-center">
+          BrainSpark · designed &amp; created by <span className="text-slate-400 font-medium">Avinash Bhosale</span>
         </p>
       </div>
     </div>

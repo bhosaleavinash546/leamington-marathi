@@ -101,19 +101,29 @@ function AnimatedRoutes() {
   );
 }
 
-// Routes that are ALWAYS dark, whatever the user's theme. Sign-in is a brand
-// moment on a dark hero panel, and half of it was following the light theme
-// while the panel stayed dark — a light header and form column bolted onto a
-// dark brand panel. data-theme="dark" here covers the header, the page and the
-// footer in one place; index.css re-asserts the dark tokens beneath it.
-const ALWAYS_DARK_ROUTES = ['/auth'];
+// Sign-in is a standalone brand moment, not a page inside the product shell.
+// It renders with NO application chrome — no header, sidebar, footer, tab bar,
+// chat button or onboarding — and always dark, whatever the user's theme.
+// Wrapping it in the app's furniture is what made it read as "a form on a
+// settings page": a header offering a Sign In button on the sign-in page, a
+// marketing footer with an author bio below the password field, and a light
+// header bolted onto a dark hero.
+const BARE_DARK_ROUTES = ['/auth'];
 
 function AppShell() {
   const native = useIsNative();
   const location = useLocation();
-  const forceDark = ALWAYS_DARK_ROUTES.includes(location.pathname);
+
+  if (BARE_DARK_ROUTES.includes(location.pathname)) {
+    return (
+      <div data-theme="dark" className="min-h-screen bg-navy-950">
+        <AnimatedRoutes />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col min-h-screen" {...(forceDark ? { 'data-theme': 'dark' } : {})}>
+    <div className="flex flex-col min-h-screen">
       {!native && <Header />}
       {/* Workspace row: grouped tool sidebar (desktop, authenticated app routes)
           beside the routed page. Sidebar renders null elsewhere, so marketing

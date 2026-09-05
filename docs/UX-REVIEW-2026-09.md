@@ -227,3 +227,24 @@ Two defects found on the way:
 Measured after: `/auth` renders identical dark under a stored light theme, a
 stored dark theme and no stored preference, at 1440 and 390 px, with **zero**
 axe serious or critical in all six combinations.
+
+Making it dark was not enough — it still read as a form on a settings page, so
+the page was recomposed:
+
+- **One ground, not two panels.** The brand side was a `bg-hero-gradient`
+  panel (#0a0f1e → #1a2235 → #0c1629) beside a flat `bg-navy-950` form column,
+  which put a visible vertical seam down the middle: two screens stitched
+  together. Both sides now sit on the **same navy-950** as the rest of the
+  product, and the left side takes its depth from two enormous, almost
+  invisible light sources and a fading grid — the technique `dfm.css` already
+  uses — rather than from being a different colour. Nothing on the page draws
+  an edge except the card.
+- **No application chrome.** Sign-in rendered inside the product shell: a
+  header offering a **Sign In** button on the sign-in page, a marketing footer
+  with an author bio under the password field, the tab bar and the chat button.
+  `BARE_DARK_ROUTES` in `App.tsx` renders `/auth` on its own — no header,
+  sidebar, footer, tab bar, chat button or onboarding.
+- **The card is the only object.** The form sits on a translucent, blurred
+  panel with a single hairline border, so the eye lands on it; the brand block
+  is centred against it rather than pushed apart top-and-bottom, and the
+  duplicated author credit is down to one line.
