@@ -198,3 +198,32 @@ utility overrides plus these token rules, and collapsing that into a pure token
 remap remains Wave 2; and the "invisible text" probe reports two false
 positives per page on the avatar initials, whose background is a gradient the
 probe cannot read.
+
+### Sign-in is dark-only
+
+Requested after the sweep, and it exposed two more defects rather than being a
+one-line change.
+
+The sign-in page was **half** themed: its brand panel opted out with
+`data-theme="dark"`, while the form column, the header above it and the footer
+below it followed the light theme — a light header bolted onto a dark hero.
+`ALWAYS_DARK_ROUTES` in `App.tsx` now marks the whole shell for `/auth`, so
+header, page and footer are one dark surface, and the theme toggle hides itself
+there rather than being a control that visibly does nothing.
+
+Two defects found on the way:
+
+- **The always-dark opt-out carried stale colours.** It still set slate-500 and
+  slate-600 to the values from before the dark-theme contrast fix, so any dark
+  panel on a light page rendered its muted text at **3.66:1** — the whole
+  footer under the sign-in form failed. It is now generated from the dark
+  theme's own values, and a gate compares the two so they cannot drift again.
+- **The opt-out did not restore the new surface tokens** added in the light
+  pass, so a dark panel would have taken dark-ink hairlines — invisible on its
+  own ground. A second gate asserts that everything the light theme redefines
+  is restored inside the opt-out.
+- The brand logo was clipped behind the fixed header; the page now clears it.
+
+Measured after: `/auth` renders identical dark under a stored light theme, a
+stored dark theme and no stored preference, at 1440 and 390 px, with **zero**
+axe serious or critical in all six combinations.

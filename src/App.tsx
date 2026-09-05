@@ -101,10 +101,19 @@ function AnimatedRoutes() {
   );
 }
 
+// Routes that are ALWAYS dark, whatever the user's theme. Sign-in is a brand
+// moment on a dark hero panel, and half of it was following the light theme
+// while the panel stayed dark — a light header and form column bolted onto a
+// dark brand panel. data-theme="dark" here covers the header, the page and the
+// footer in one place; index.css re-asserts the dark tokens beneath it.
+const ALWAYS_DARK_ROUTES = ['/auth'];
+
 function AppShell() {
   const native = useIsNative();
+  const location = useLocation();
+  const forceDark = ALWAYS_DARK_ROUTES.includes(location.pathname);
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen" {...(forceDark ? { 'data-theme': 'dark' } : {})}>
       {!native && <Header />}
       {/* Workspace row: grouped tool sidebar (desktop, authenticated app routes)
           beside the routed page. Sidebar renders null elsewhere, so marketing

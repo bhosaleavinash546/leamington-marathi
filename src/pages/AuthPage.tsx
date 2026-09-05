@@ -338,11 +338,11 @@ export default function AuthPage() {
   const slide = { initial: { opacity: 0, x: 24 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -24 }, transition: { duration: 0.25 } };
 
   return (
-    <div className="min-h-screen bg-navy-950 flex">
+    <div className="min-h-screen bg-navy-950 flex pt-16">
       <BrandPanel />
 
       {/* Right — forms */}
-      <div className="flex-1 lg:w-[40%] lg:flex-none flex flex-col justify-center items-center px-6 py-12 min-h-screen">
+      <div className="flex-1 lg:w-[40%] lg:flex-none flex flex-col justify-center items-center px-6 py-12 min-h-[calc(100vh-4rem)]">
         {/* Mobile logo */}
         <div className="lg:hidden flex items-center gap-2.5 mb-8">
           <img src="/brainspark-logo.svg" alt="BrainSpark" className="w-9 h-9" />

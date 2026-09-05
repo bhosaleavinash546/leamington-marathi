@@ -152,6 +152,8 @@ export default function Header() {
   const navigate = useNavigate();
   const { isAuthenticated, user, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  // Kept in step with App.tsx ALWAYS_DARK_ROUTES.
+  const alwaysDark = location.pathname === '/auth';
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -218,7 +220,9 @@ export default function Header() {
           {/* Right side */}
           <div className="hidden md:flex items-center gap-3 shrink-0">
             {isAuthenticated && <OnboardingHeaderChip />}
-            <button
+            {/* Sign-in is always dark (App.tsx ALWAYS_DARK_ROUTES), so the
+                toggle would be a control that visibly does nothing there. */}
+            {!alwaysDark && <button
               onClick={toggleTheme}
               title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
               className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-gold-500/30 transition-ui group"
@@ -226,7 +230,7 @@ export default function Header() {
               {theme === 'dark'
                 ? <Sun size={15} className="text-slate-400 group-hover:text-gold-400 transition-colors" />
                 : <Moon size={15} className="text-slate-500 group-hover:text-navy-950 transition-colors" />}
-            </button>
+            </button>}
 
             {isAuthenticated ? (
               <div className="relative" ref={userMenuRef}>
@@ -340,10 +344,10 @@ export default function Header() {
                     <s.icon size={14} className="text-slate-500" /> {s.label}
                   </Link>
                 ))}
-                <button onClick={() => { toggleTheme(); setMenuOpen(false); }} className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg">
+                {!alwaysDark && <button onClick={() => { toggleTheme(); setMenuOpen(false); }} className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg">
                   {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
                   {theme === 'dark' ? 'Light Theme' : 'Dark Theme'}
-                </button>
+                </button>}
                 <button onClick={handleSignOut} className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg">Sign Out</button>
               </div>
             </>

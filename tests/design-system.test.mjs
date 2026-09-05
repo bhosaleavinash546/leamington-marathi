@@ -145,3 +145,25 @@ test('accent text with an opacity modifier is remapped for light', () => {
   const missing = [...used].filter(step => !css.includes(`[class*="text-${step}/"]`));
   assert.deepEqual(missing, [], 'add a light-theme remap for these alpha accent steps in index.css');
 });
+
+test('the always-dark opt-out restores every token the light theme redefines', () => {
+  const css = readFileSync('src/index.css', 'utf8');
+  const block = (start, end) => css.slice(css.indexOf(start), css.indexOf(end, css.indexOf(start)));
+  const light = block('[data-theme="light"] {', '@layer base');
+  const optOut = block('[data-theme="light"] [data-theme="dark"] {', '}');
+  const declared = [...light.matchAll(/(--[a-z0-9-]+):/g)].map(m => m[1]);
+  // Shadows and the hero gradient are deliberately shared; everything that
+  // carries a light/dark COLOUR decision must be restored inside a dark panel.
+  const shared = new Set(['--shadow-card', '--shadow-card-lg', '--shadow-modal', '--shadow-popover', '--gradient-hero']);
+  const missing = declared.filter(t => !shared.has(t) && !optOut.includes(`${t}:`));
+  assert.deepEqual(missing, [], 'add these to the [data-theme="light"] [data-theme="dark"] block in index.css');
+});
+
+test('the always-dark opt-out uses the dark theme\'s CURRENT slate values, not stale ones', () => {
+  const css = readFileSync('src/index.css', 'utf8');
+  const base = Object.fromEntries([...css.matchAll(/^\.text-slate-(\d00) \{ color: (#[0-9a-f]{6}); \}/gm)].map(m => [m[1], m[2]]));
+  const optOut = Object.fromEntries([...css.matchAll(/\[data-theme="light"\] \[data-theme="dark"\] \.text-slate-(\d00) \{ color: (#[0-9a-f]{6})/g)].map(m => [m[1], m[2]]));
+  const drifted = Object.entries(optOut).filter(([step, colour]) => base[step] && base[step] !== colour)
+    .map(([step, colour]) => `slate-${step}: opt-out ${colour} vs dark ${base[step]}`);
+  assert.deepEqual(drifted, [], 'a dark panel on a light page must render exactly like the dark theme');
+});

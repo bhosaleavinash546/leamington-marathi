@@ -379,16 +379,32 @@
   --navy-600: 79 86 112; --navy-700: 36 47 69; --navy-800: 26 34 53;
   --navy-900: 17 24 39; --navy-950: 10 15 30;
   --gold-300: 245 217 138; --gold-400: 232 197 71; --gold-500: 212 168 58; --gold-600: 184 140 34;
+  /* Surfaces and category hues too, or a panel that opts out of the light
+     theme keeps dark-INK hairlines and tints — invisible on its dark ground.
+     Every token the light theme redefines has to be restored here. */
+  --hairline:        rgba(255, 255, 255, 0.10);
+  --hairline-strong: rgba(255, 255, 255, 0.17);
+  --tint:            rgba(255, 255, 255, 0.04);
+  --tint-strong:     rgba(255, 255, 255, 0.08);
+  --shimmer-base:    rgba(255, 255, 255, 0.05);
+  --shimmer-hi:      rgba(255, 255, 255, 0.12);
+  --cat-1: 125 211 252; --cat-2: 134 239 172; --cat-3: 253 186 116; --cat-4: 216 180 254;
+  --cat-5:  94 234 212; --cat-6: 253 164 175; --cat-7: 253 224  71; --cat-8: 165 180 252;
   color: #f1f5f9;
 }
 [data-theme="light"] [data-theme="dark"] .text-white,
 [data-theme="light"] [data-theme="dark"] .hover\:text-white:hover { color: #fff !important; }
+/* These MUST equal the dark theme's own values above. They did not: 500 and
+   600 still carried the pre-contrast-fix #5d6e84 / #51607a, so a dark panel on
+   a light page rendered its muted text at 3.66:1 — the whole footer under the
+   sign-in form failed. tests/design-system.test.mjs now compares the two. */
 [data-theme="light"] [data-theme="dark"] .text-slate-100 { color: #f8fafc !important; }
 [data-theme="light"] [data-theme="dark"] .text-slate-200 { color: #dde4ee !important; }
 [data-theme="light"] [data-theme="dark"] .text-slate-300 { color: #b8c6d8 !important; }
 [data-theme="light"] [data-theme="dark"] .text-slate-400 { color: #8898ae !important; }
-[data-theme="light"] [data-theme="dark"] .text-slate-500 { color: #5d6e84 !important; }
-[data-theme="light"] [data-theme="dark"] .text-slate-600 { color: #51607a !important; }
+[data-theme="light"] [data-theme="dark"] .text-slate-500 { color: #8496ab !important; }
+[data-theme="light"] [data-theme="dark"] .text-slate-600 { color: #7286a0 !important; }
+[data-theme="light"] [data-theme="dark"] .text-slate-700 { color: #6d7f95 !important; }
 /* accent text back to the dark-theme tints inside dark panels */
 [data-theme="light"] [data-theme="dark"] .text-emerald-400, [data-theme="light"] [data-theme="dark"] .text-green-400, [data-theme="light"] [data-theme="dark"] .text-success-400 { color: #34d399 !important; }
 [data-theme="light"] [data-theme="dark"] .text-blue-400, [data-theme="light"] [data-theme="dark"] .text-info-400 { color: #60a5fa !important; }
