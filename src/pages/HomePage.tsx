@@ -253,7 +253,7 @@ export default function HomePage() {
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.06 }}
-              className="mt-5 text-4xl md:text-5xl lg:text-[48px] font-semibold text-white leading-[1.07] tracking-[-0.022em] text-balance"
+              className="mt-5 text-2xl md:text-[32px] font-semibold text-white leading-[1.12] tracking-[-0.018em] text-balance"
             >Unlock <span className="text-gold-400">Breakthrough Ideas</span> with AI-Powered Precision and Intelligence.</motion.h1>
 
             <motion.p
@@ -286,7 +286,7 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 lg:px-8 py-24">
         <Reveal className="max-w-2xl mb-11">
           <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold-400"><span className="w-1.5 h-1.5 rounded-full bg-gold-400 ring-4 ring-gold-500/15" /> The platform</span>
-          <h2 className="mt-4 text-[32px] font-semibold text-white tracking-[-0.02em] leading-tight">One platform for whole-vehicle cost intelligence</h2>
+          <h2 className="mt-4 text-xl md:text-[28px] font-semibold text-white tracking-[-0.02em] leading-tight">One platform for whole-vehicle cost intelligence</h2>
           <p className="mt-3 text-lg text-slate-400">From a part name or a CAD file to a defensible, quote-ready number — across every system and commodity.</p>
         </Reveal>
 
@@ -328,7 +328,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-20">
           <Reveal className="text-center max-w-2xl mx-auto mb-10">
             <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold-400"><Layers size={13} /> Whole-vehicle coverage</span>
-            <h2 className="mt-4 text-[32px] font-semibold text-white tracking-[-0.02em]">Every system, one workflow</h2>
+            <h2 className="mt-4 text-xl md:text-[28px] font-semibold text-white tracking-[-0.02em]">Every system, one workflow</h2>
             <p className="mt-3 text-base text-slate-400">Pick any system for instant AI-powered cost-reduction analysis.</p>
           </Reveal>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -352,7 +352,7 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 lg:px-8 py-24">
         <Reveal className="text-center max-w-2xl mx-auto mb-12">
           <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold-400"><span className="w-1.5 h-1.5 rounded-full bg-gold-400 ring-4 ring-gold-500/15" /> How it works</span>
-          <h2 className="mt-4 text-[32px] font-semibold text-white tracking-[-0.02em]">From part to defensible saving in three steps</h2>
+          <h2 className="mt-4 text-xl md:text-[28px] font-semibold text-white tracking-[-0.02em]">From part to defensible saving in three steps</h2>
         </Reveal>
         <div className="grid md:grid-cols-3 gap-5">
           {STEPS.map((s, i) => (
@@ -439,7 +439,7 @@ export default function HomePage() {
         <div className="absolute inset-0 pointer-events-none"><div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gold-500/12 rounded-full blur-3xl" /></div>
         <div className="max-w-3xl mx-auto px-6 text-center py-20 relative">
           <Reveal>
-            <h2 className="text-4xl font-semibold text-white tracking-[-0.02em]">Put whole-vehicle cost intelligence to work</h2>
+            <h2 className="text-xl md:text-[28px] font-semibold text-white tracking-[-0.02em]">Put whole-vehicle cost intelligence to work</h2>
             <p className="mt-3.5 text-lg text-slate-300">Run a live pilot on one part family this week{ideaCount ? ` — start from ${ideaCount.toLocaleString()} benchmarked ideas` : ''}.</p>
             <div className="mt-7 flex flex-col sm:flex-row gap-3.5 justify-center">
               <Link to="/analyze" className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-ui hover:-translate-y-0.5 shadow-xl shadow-gold-500/25">
