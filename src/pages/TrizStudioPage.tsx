@@ -381,7 +381,7 @@ export default function TrizStudioPage() {
                     className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-gold-500/25 transition-ui">
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="flex items-center gap-2">
-                        {idea.triz && <span className="px-2 py-0.5 rounded-md bg-gold-500/10 border border-gold-500/20 text-gold-400 text-[11px] font-semibold">P{idea.triz.id} · {idea.triz.name}</span>}
+                        {idea.triz && <span className="px-2 py-0.5 rounded-md bg-gold-500/10 border border-gold-500/20 text-gold-400 text-2xs font-semibold">P{idea.triz.id} · {idea.triz.name}</span>}
                       </div>
                       {idea.engineCheck ? (
                         <span className={`flex items-center gap-1 text-xs font-medium ${idea.engineCheck.direction === 'confirmed' ? 'text-emerald-400' : 'text-amber-400'}`}>
@@ -557,11 +557,11 @@ export default function TrizStudioPage() {
                     {idea && (
                       <div className="border-t border-white/10 pt-3">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
-                          <span className={`px-2 py-0.5 rounded-md text-[11px] font-semibold ${idea.trimmable ? 'bg-emerald-500/10 border border-emerald-500/25 text-emerald-300' : 'bg-slate-500/10 border border-slate-500/25 text-slate-400'}`}>
+                          <span className={`px-2 py-0.5 rounded-md text-2xs font-semibold ${idea.trimmable ? 'bg-emerald-500/10 border border-emerald-500/25 text-emerald-300' : 'bg-slate-500/10 border border-slate-500/25 text-slate-400'}`}>
                             {idea.trimmable ? 'Trimmable' : 'Keep — nothing can take the function'}
                           </span>
-                          {idea.trimmingRule && <span className="text-slate-500 text-[11px]">{idea.trimmingRule}</span>}
-                          {idea.newCarrier && <span className="text-slate-400 text-[11px]">→ {idea.newCarrier}</span>}
+                          {idea.trimmingRule && <span className="text-slate-500 text-2xs">{idea.trimmingRule}</span>}
+                          {idea.newCarrier && <span className="text-slate-400 text-2xs">→ {idea.newCarrier}</span>}
                         </div>
                         <p className="text-slate-400 text-sm leading-relaxed">{idea.technicalDescription}</p>
                         {idea.riskNotes && <p className="text-amber-300/80 text-xs mt-1"><span className="text-slate-500">Risk:</span> {idea.riskNotes}</p>}
@@ -581,7 +581,7 @@ export default function TrizStudioPage() {
             its own header comment. Every recommendation already reports which
             of the two it used — the summary line should not contradict it. */}
         {!result && !sepResult && !trimResult && !loading && (
-          <p className="text-center text-slate-500 text-xs mt-8">40 classical inventive principles · 39 engineering parameters · 3 trimming rules · 4 separation strategies · engine-checked outputs</p>
+          <p className="text-center text-slate-500 text-xs mt-8 measure mx-auto">40 classical inventive principles · 39 engineering parameters · 3 trimming rules · 4 separation strategies · engine-checked outputs</p>
         )}
       </div>
     </div>

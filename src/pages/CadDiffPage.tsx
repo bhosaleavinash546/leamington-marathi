@@ -205,7 +205,7 @@ export default function CadDiffPage() {
         )}
 
         {!loading && ideas.length === 0 && (
-          <p className="text-center text-slate-500 text-xs mt-8">Enter both designs and click Compare — the AI reasons over your described differences and generates targeted cost-reduction ideas.</p>
+          <p className="text-center text-slate-500 text-xs mt-8 measure mx-auto">Enter both designs and click Compare — the AI reasons over your described differences and generates targeted cost-reduction ideas.</p>
         )}
       </div>
     </div>

@@ -343,7 +343,7 @@ export default function HelpPage() {
             <h2 className="text-white font-semibold flex items-center gap-2 mb-2">
               <Layers size={16} className="text-gold-400" /> How to Use the Innovation Tools — Step by Step
             </h2>
-            <p className="text-slate-500 text-xs mb-5">Simple, click-by-click guides for every idea-generation tool. Open Tools → Innovation Studio to try any of them, or switch them on as lenses on the Analyze page.</p>
+            <p className="text-slate-500 text-xs mb-5 measure">Simple, click-by-click guides for every idea-generation tool. Open Tools → Innovation Studio to try any of them, or switch them on as lenses on the Analyze page.</p>
             <div className="space-y-2.5">
               {HOW_TO_GUIDES.map(g => <HowToGuideCard key={g.id} guide={g} />)}
             </div>
@@ -490,10 +490,10 @@ export default function HelpPage() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-white font-bold text-lg">Avinash Bhosale</h3>
+                  <p className="text-white font-bold text-lg">Avinash Bhosale</p>
                   <span className="px-2 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/30 text-gold-400 text-xs font-medium">Tool Author</span>
                 </div>
-                <p className="text-slate-400 text-sm mb-4 leading-relaxed">
+                <p className="text-slate-400 text-sm mb-4 leading-relaxed measure">
                   Automotive Cost Engineer & AI Product Designer. Creator of BrainSpark — built to give cost engineers a superpower.
                   Reach out for feature requests, bug reports, or collaboration.
                 </p>

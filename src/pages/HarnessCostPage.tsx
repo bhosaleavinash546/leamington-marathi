@@ -121,17 +121,17 @@ export default function HarnessCostPage() {
               <div className="bg-navy-900 border border-white/10 rounded-2xl p-6">
                 <div className="flex flex-wrap items-end gap-6">
                   <div>
-                    <div className="text-slate-500 text-xs uppercase tracking-wide">Should-cost / harness</div>
+                    <div className="text-slate-500 text-xs uppercase tracking-wider">Should-cost / harness</div>
                     <div className="text-4xl font-bold text-white tabular-nums">€{total.toFixed(2)}</div>
                   </div>
                   <div>
-                    <div className="text-slate-500 text-xs uppercase tracking-wide">Range (±{result.band.pct}%)</div>
+                    <div className="text-slate-500 text-xs uppercase tracking-wider">Range (±{result.band.pct}%)</div>
                     <div className="text-lg text-slate-300 tabular-nums">
                       €{result.band.lowEur.toFixed(2)} – €{result.band.highEur.toFixed(2)}
                     </div>
                   </div>
                   <div className="ml-auto text-right">
-                    <div className="text-slate-500 text-xs uppercase tracking-wide">Copper / labour</div>
+                    <div className="text-slate-500 text-xs uppercase tracking-wider">Copper / labour</div>
                     <div className="text-sm text-slate-300 tabular-nums">
                       {result.drivers.copperKg} kg · {result.drivers.labourMinutes} min
                     </div>

@@ -866,7 +866,7 @@ export default function AnalyzePage() {
                     ['CAD File', cadFile?.name || 'None uploaded'],
                   ].map(([k, v]) => (
                     <div key={k}>
-                      <div className="text-slate-500 text-xs uppercase tracking-wide mb-0.5">{k}</div>
+                      <div className="text-slate-500 text-xs uppercase tracking-wider mb-0.5">{k}</div>
                       <div className="text-white font-medium truncate">{v}</div>
                     </div>
                   ))}

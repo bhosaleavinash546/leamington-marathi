@@ -435,7 +435,7 @@ export default function DashboardPage() {
 
         {/* ── Hybrid AI hero ─────────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
-          <h1 className="text-[22px] font-semibold text-white tracking-[-0.01em]">
+          <h1 className="text-2xl font-semibold text-white tracking-[-0.01em]">
             {greeting}, {firstName} <span className="text-slate-500 font-normal">— where shall we find savings today?</span>
           </h1>
 
@@ -446,7 +446,7 @@ export default function DashboardPage() {
                 value={ask}
                 onChange={e => setAsk(e.target.value)}
                 placeholder="Describe a part, a system, or a cost problem — then start the analysis…"
-                className="flex-1 bg-transparent text-[15px] text-white placeholder:text-slate-500 focus:outline-none min-w-0"
+                className="flex-1 bg-transparent text-base text-white placeholder:text-slate-500 focus:outline-none min-w-0"
                 aria-label="Start a cost analysis"
               />
               <button
@@ -480,8 +480,8 @@ export default function DashboardPage() {
               className="mt-8 grid grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-3.5"
             >
               <div className="col-span-2 lg:col-span-1 rounded-2xl bg-navy-900 border border-gold-500/20 p-5">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500">Committed savings</div>
-                <div className="text-[34px] font-bold text-white tracking-tight leading-tight mt-1">
+                <div className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Committed savings</div>
+                <div className="text-4xl font-bold text-white tracking-tight leading-tight mt-1">
                   {fmtM(committed)} <span className="text-sm font-medium text-slate-500">/yr</span>
                 </div>
                 <div className="text-xs text-slate-400 mt-1">
@@ -494,8 +494,8 @@ export default function DashboardPage() {
                 { label: 'Investigating', value: String(savingsPipeline.investigating || annotationStats.investigating), sub: 'ideas in review' },
               ].map(k => (
                 <div key={k.label} className="rounded-2xl bg-navy-900 border border-white/8 p-5">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500">{k.label}</div>
-                  <div className="text-[24px] font-bold text-white tracking-tight mt-1">{k.value}</div>
+                  <div className="text-2xs font-semibold uppercase tracking-wider text-slate-500">{k.label}</div>
+                  <div className="text-2xl font-bold text-white tracking-tight mt-1">{k.value}</div>
                   <div className="text-xs text-slate-500 mt-1">{k.sub}</div>
                 </div>
               ))}
@@ -505,7 +505,7 @@ export default function DashboardPage() {
             {topIdeas.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.14 }} className="mt-8">
                 <div className="flex items-baseline justify-between mb-3">
-                  <h2 className="text-white font-semibold text-[15px]">Next best actions — top savings in your pipeline</h2>
+                  <h2 className="text-white font-semibold text-base">Next best actions — top savings in your pipeline</h2>
                   <Link to="/pipeline" className="text-gold-400 hover:text-gold-300 text-xs font-semibold">View pipeline →</Link>
                 </div>
                 <div className="space-y-2.5">
@@ -519,7 +519,7 @@ export default function DashboardPage() {
                         <Lightbulb size={16} />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="text-white text-[13.5px] font-semibold truncate">{idea.ideaTitle}</p>
+                        <p className="text-white text-[13px] font-semibold truncate">{idea.ideaTitle}</p>
                         <p className="text-slate-500 text-xs mt-0.5">
                           {idea.commodityName || idea.ideaNumber}
                           <span className={`inline-block w-1.5 h-1.5 rounded-full mx-2 align-middle ${GATE_DOT[idea.gate] || 'bg-slate-500'}`} />
@@ -541,7 +541,7 @@ export default function DashboardPage() {
             {recents.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.2 }} className="mt-8">
                 <div className="flex items-baseline justify-between mb-3">
-                  <h2 className="text-white font-semibold text-[15px]">Recent analyses</h2>
+                  <h2 className="text-white font-semibold text-base">Recent analyses</h2>
                   {recentAnalyses.length > 0 && serverProjects.length === 0 && (
                     <button
                       onClick={() => { localStorage.removeItem('brainspark_recent_analyses'); setRecentAnalyses([]); }}
@@ -564,9 +564,9 @@ export default function DashboardPage() {
                   {recents.map(r => (
                     <div key={r.id} className="rounded-xl bg-navy-900 border border-white/8 hover:border-white/15 p-4 transition-colors group">
                       <button onClick={r.onOpen} className="block w-full text-left">
-                        <p className="text-white text-[13.5px] font-semibold truncate">{r.title}</p>
+                        <p className="text-white text-[13px] font-semibold truncate">{r.title}</p>
                         <p className="text-slate-500 text-xs truncate mt-0.5">{r.sub}</p>
-                        <p className="text-slate-500 text-[11px] mt-2">{r.meta}</p>
+                        <p className="text-slate-500 text-2xs mt-2">{r.meta}</p>
                       </button>
                       <div className="mt-2.5 pt-2.5 border-t border-white/6 flex items-center gap-3">
                         <button onClick={r.onOpen} className="text-gold-400 hover:text-gold-300 text-xs font-semibold">Open →</button>
@@ -608,12 +608,12 @@ export default function DashboardPage() {
               className="mt-8 grid lg:grid-cols-[1.35fr_1fr] gap-3.5"
             >
               <div className="min-w-0 rounded-2xl bg-navy-900 border border-white/8 p-5">
-                <h2 className="text-white font-semibold text-[15px] mb-2">Get set up</h2>
+                <h2 className="text-white font-semibold text-base mb-2">Get set up</h2>
                 {SETUP_STEPS.map((s, i) => (
                   <Link key={s.id} to={s.to} className="flex items-center gap-3 py-2.5 border-b border-white/6 last:border-0 group">
                     {doneSteps[s.id]
                       ? <span className="w-6 h-6 rounded-full bg-emerald-500 text-navy-950 flex items-center justify-center shrink-0"><CheckCircle size={13} /></span>
-                      : <span className="w-6 h-6 rounded-full border border-white/20 text-slate-500 flex items-center justify-center text-[11px] font-bold shrink-0">{i + 1}</span>}
+                      : <span className="w-6 h-6 rounded-full border border-white/20 text-slate-500 flex items-center justify-center text-2xs font-bold shrink-0">{i + 1}</span>}
                     <div className="min-w-0">
                       <p className={`text-[13px] font-semibold ${doneSteps[s.id] ? 'text-slate-500 line-through' : 'text-white'}`}>{s.label}</p>
                       <p className="text-slate-500 text-xs truncate">{s.sub}</p>
@@ -624,7 +624,7 @@ export default function DashboardPage() {
               </div>
               <div className="min-w-0 rounded-2xl bg-navy-900 border border-gold-500/20 p-5">
                 <ShieldCheck size={20} className="text-gold-400 mb-3" />
-                <div className="text-2xs font-semibold uppercase tracking-[0.06em] text-slate-500 mb-2">How it works</div>
+                <div className="text-2xs font-semibold uppercase tracking-wider text-slate-500 mb-2">How it works</div>
                 <p className="text-[13px] text-slate-300 leading-relaxed">
                   The AI proposes and explains.<br />
                   The deterministic engine computes every number.<br />
@@ -635,17 +635,17 @@ export default function DashboardPage() {
 
             {/* ── Toolkit explorer ──────────────────────────────────────── */}
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.16 }} className="mt-8">
-              <h2 className="text-white font-semibold text-[15px] mb-3">Explore the toolkit</h2>
+              <h2 className="text-white font-semibold text-base mb-3">Explore the toolkit</h2>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {TOOL_GROUPS.map(group => (
                   <div key={group.id}>
-                    <div className="pb-1.5 text-2xs font-bold uppercase tracking-[0.09em] text-slate-500">{group.label}</div>
+                    <div className="pb-1.5 text-2xs font-bold uppercase tracking-widest text-slate-500">{group.label}</div>
                     <div className="space-y-2">
                       {group.tools.slice(0, 3).map(t => (
                         <Link
                           key={t.id}
                           to={t.route}
-                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-navy-900 border border-white/8 hover:border-gold-500/25 text-[12.5px] font-medium text-slate-300 hover:text-white transition-colors"
+                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-navy-900 border border-white/8 hover:border-gold-500/25 text-xs font-medium text-slate-300 hover:text-white transition-colors"
                         >
                           <t.icon size={14} className="text-gold-400 shrink-0" />
                           <span className="truncate">{t.label}</span>

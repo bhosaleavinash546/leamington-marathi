@@ -41,7 +41,7 @@ export default function MobileNav() {
             </div>
             {TOOL_GROUPS.map(group => (
               <div key={group.id} className="px-5 pb-3">
-                <div className="pt-2 pb-1.5 text-2xs font-bold uppercase tracking-[0.09em] text-slate-500">{group.label}</div>
+                <div className="pt-2 pb-1.5 text-2xs font-bold uppercase tracking-widest text-slate-500">{group.label}</div>
                 <div className="grid grid-cols-2 gap-2">
                   {group.tools.map(t => (
                     <Link

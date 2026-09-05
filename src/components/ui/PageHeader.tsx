@@ -84,7 +84,7 @@ export default function PageHeader({ tool, icon, eyebrow, title, subtitle, tone,
             {title ?? t?.label}
           </h1>
           {subtitle && (
-            <p className="text-slate-400 text-sm sm:text-[15px] leading-relaxed mt-2 max-w-2xl">{subtitle}</p>
+            <p className="text-slate-400 text-sm sm:text-base leading-relaxed mt-2 measure">{subtitle}</p>
           )}
         </div>
       </motion.div>

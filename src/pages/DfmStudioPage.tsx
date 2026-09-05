@@ -1312,8 +1312,8 @@ export default function DfmStudioPage() {
               <ShieldCheck size={22} className="text-gold-400" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-[27px] font-bold text-white tracking-tight leading-tight">DFM / DFA Studio</h1>
-              <p className="text-[13px] text-slate-400 mt-0.5 max-w-2xl">
+              <h1 className="text-2xl sm:text-[28px] font-bold text-white tracking-tight leading-tight">DFM / DFA Studio</h1>
+              <p className="text-[13px] text-slate-400 mt-0.5 measure">
                 Manufacturability measured from your geometry and read off your drawing, judged against
                 cited standards, priced by deterministic engines.
               </p>
@@ -1415,7 +1415,7 @@ export default function DfmStudioPage() {
           style={{ overflow: 'hidden' }}
           className="dfm-panel dfm-spot dfm-framed p-6 mb-6 scroll-mt-32">
           <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-3">
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold-500 text-navy-950 text-[11px] font-bold">1</span>
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold-500 text-navy-950 text-2xs font-bold">1</span>
             The part
           </h2>
           {/* The drop target stays a div because dragging has no keyboard
@@ -1493,7 +1493,7 @@ export default function DfmStudioPage() {
                   <FileText size={14} className="text-sky-400" aria-hidden="true" />
                   2D drawing (optional) — PDF or image
                 </p>
-                <p className="text-slate-500 text-xs mt-0.5">
+                <p className="text-slate-500 text-xs mt-0.5 measure">
                   AI reads the dimensions, GD&amp;T and title block; every number is still judged by the
                   deterministic rules and labelled as drawing-read. Works with or without a 3D file —
                   with both, the two are cross-checked.
@@ -1536,7 +1536,7 @@ export default function DfmStudioPage() {
                 {showExtraction && (
                   <div className="mt-2 space-y-3">
                     {drawing.conversions.map((c, i) => (
-                      <p key={i} className="text-[11px] text-amber-300/90">{c}</p>
+                      <p key={i} className="text-2xs text-amber-300/90">{c}</p>
                     ))}
                     {drawing.titleBlock.material && (
                       <p className="text-xs text-slate-400">
@@ -1638,7 +1638,7 @@ export default function DfmStudioPage() {
           {(file || drawing) && (
             <div className="mt-5 border-t border-white/10 pt-4">
               <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-1">
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold-500 text-navy-950 text-[11px] font-bold">2</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gold-500 text-navy-950 text-2xs font-bold">2</span>
                 How is this part made?
               </h2>
               <p className="text-xs text-slate-400 mb-3">
@@ -1714,7 +1714,7 @@ export default function DfmStudioPage() {
                   Deliberately quieter. These scale figures or override a default
                   the engine would otherwise measure for itself; none of them
                   decides which rules run. */}
-              <p className="mt-4 mb-2 text-[11px] uppercase tracking-wide text-slate-500 font-medium">
+              <p className="mt-4 mb-2 text-2xs uppercase tracking-wider text-slate-500 font-medium">
                 Costing &amp; advanced
               </p>
               <div className="grid sm:grid-cols-3 gap-3">
@@ -1746,7 +1746,7 @@ export default function DfmStudioPage() {
                   never judge a default. Die castings are judged against the
                   NADCA #402 tables; the grade selects Standard vs Precision
                   tolerance columns, a die-cost decision the engineer owns. */}
-              <p className="mt-4 mb-2 text-[11px] uppercase tracking-wide text-slate-500 font-medium">
+              <p className="mt-4 mb-2 text-2xs uppercase tracking-wider text-slate-500 font-medium">
                 Drawing callouts <span className="normal-case font-normal">— optional; blank = rules abstain honestly</span>
               </p>
               <div className="grid sm:grid-cols-3 gap-3">
@@ -2044,7 +2044,7 @@ export default function DfmStudioPage() {
                   {stages.filter(s2 => s2.status !== 'start').map((s2, i) => (
                     <motion.li key={`${s2.stage}-${i}`} variants={m.slideIn}
                       initial="hidden" animate="show" exit="exit"
-                      className="relative flex items-center gap-2 text-[11px] pl-0">
+                      className="relative flex items-center gap-2 text-2xs pl-0">
                       {s2.status === 'skipped'
                         ? <MinusCircle size={13} className="text-amber-400 shrink-0 relative bg-navy-900 rounded-full dfm-tick-in" aria-hidden="true" />
                         : <CheckCircle2 size={13} className="text-emerald-400 shrink-0 relative bg-navy-900 rounded-full dfm-tick-in" aria-hidden="true" />}
@@ -2054,7 +2054,7 @@ export default function DfmStudioPage() {
                   ))}
                 </AnimatePresence>
                 {loading === 'dfm' && (
-                  <li className="relative flex items-center gap-2 text-[11px] text-gold-400">
+                  <li className="relative flex items-center gap-2 text-2xs text-gold-400">
                     <span className="shrink-0 relative bg-navy-900 rounded-full flex items-center justify-center" style={{ width: 13, height: 13 }}>
                       <ButtonSpinner size={11} />
                     </span>
@@ -2122,7 +2122,7 @@ export default function DfmStudioPage() {
                     ['none', 'None'],
                   ] as const).map(([k, label]) => (
                     <button key={k} type="button" onClick={() => setHighlight(k)} aria-pressed={highlight === k}
-                      className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${
+                      className={`px-2.5 py-1 rounded-lg text-2xs border transition-colors ${
                         highlight === k
                           ? 'border-gold-500/50 bg-gold-500/15 text-gold-300'
                           : 'border-white/10 text-slate-400 hover:text-slate-200'}`}>
@@ -2134,7 +2134,7 @@ export default function DfmStudioPage() {
                       would do nothing and imply the tool had found an assembly
                       where there is none. */}
                   {((dfa?.decomposition as any)?.solidCount ?? 0) > 1 && (
-                    <label className="flex items-center gap-2 text-[11px] text-slate-400">
+                    <label className="flex items-center gap-2 text-2xs text-slate-400">
                       Explode
                       <input type="range" min={0} max={100} value={explode * 100}
                         onChange={e => setExplode(Number(e.target.value) / 100)}
@@ -2144,7 +2144,7 @@ export default function DfmStudioPage() {
                   )}
                   <button type="button" onClick={() => setShowCallouts(v => !v)}
                     aria-pressed={showCallouts}
-                    className={`px-2.5 py-1 rounded-lg text-[11px] border transition-colors ${
+                    className={`px-2.5 py-1 rounded-lg text-2xs border transition-colors ${
                       showCallouts
                         ? 'border-gold-500/50 bg-gold-500/15 text-gold-300'
                         : 'border-white/10 text-slate-400 hover:text-slate-200'}`}>
@@ -2169,7 +2169,7 @@ export default function DfmStudioPage() {
                   transition={m.t(0.2)}
                   className="mt-2 flex items-center justify-between gap-3 rounded-lg border
                              border-gold-500/25 bg-gold-500/[0.07] px-3 py-1.5">
-                  <span className="text-[11px] text-slate-300 min-w-0 truncate">
+                  <span className="text-2xs text-slate-300 min-w-0 truncate">
                     Showing <span className="text-gold-300 font-semibold">{focusedTitle ?? 'one finding'}</span>
                     {focusedFaceCount
                       ? (focusedFaceTotal
@@ -2193,7 +2193,7 @@ export default function DfmStudioPage() {
                 </motion.div>
               )}
             </AnimatePresence>
-            <p className="text-slate-500 text-[11px] mt-2">
+            <p className="text-slate-500 text-2xs mt-2">
               {result
                 ? 'Click any finding’s "Show on model" to isolate it here — or click a tinted face to jump back to the finding that tinted it. An undercut is occluded in both tool halves and buys a slide or a lifter; a zero-draft wall drags out but scuffs, and is fixable with a degree of taper.'
                 : 'Orbit, section and measure the part now. Run the analysis and the findings will be painted onto these faces.'}
@@ -2232,7 +2232,7 @@ export default function DfmStudioPage() {
                   />
                   <div className="min-w-0 border-l border-white/10 pl-6">
                     <p className="dfm-label text-slate-500 mb-1">Part</p>
-                    <h2 className="dfm-display text-[26px] leading-none truncate max-w-[24rem]">
+                    <h2 className="dfm-display text-2xl leading-none truncate max-w-[24rem]">
                       {result.partName || file?.name}
                     </h2>
                     <p className="text-xs text-slate-500 mt-2 flex items-center gap-2 flex-wrap">
@@ -2303,7 +2303,7 @@ export default function DfmStudioPage() {
                             transition={m.t(0.7, m.beat(3))} />
                         </div>
                       )}
-                      <p className="text-[11px] text-slate-500 mt-1.5">{k.sub}</p>
+                      <p className="text-2xs text-slate-500 mt-1.5">{k.sub}</p>
                     </div>
                   ))}
                 </div>
@@ -2335,7 +2335,7 @@ export default function DfmStudioPage() {
               </motion.div>
             )}
             {result.drawingApplied && result.drawingApplied.length > 0 && (
-              <p className="text-[11px] text-sky-300/70 italic">
+              <p className="text-2xs text-sky-300/70 italic">
                 Supplied by the uploaded drawing (not typed): {result.drawingApplied.join(' · ')}. Each is judged deterministically and labelled as drawing-read on its finding.
               </p>
             )}
@@ -2381,7 +2381,7 @@ export default function DfmStudioPage() {
               {revisionDiff ? (
                 <div className="mt-3">
                   <p className="text-white text-sm font-semibold">{revisionDiff.headline}</p>
-                  <div className="flex flex-wrap gap-2 mt-2 text-[11px]">
+                  <div className="flex flex-wrap gap-2 mt-2 text-2xs">
                     <span className="px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-300">{revisionDiff.counts.closed} closed</span>
                     <span className="px-2 py-1 rounded-lg bg-red-500/15 text-red-300">{revisionDiff.counts.created} new</span>
                     <span className="px-2 py-1 rounded-lg bg-amber-500/15 text-amber-300">{revisionDiff.counts.persisting} still open</span>
@@ -2390,17 +2390,17 @@ export default function DfmStudioPage() {
                     )}
                   </div>
                   {revisionDiff.warnings.map((w, i) => (
-                    <p key={i} className="mt-2 text-[11px] text-amber-300/90 flex items-start gap-2">
+                    <p key={i} className="mt-2 text-2xs text-amber-300/90 flex items-start gap-2">
                       <AlertTriangle size={12} className="shrink-0 mt-0.5" aria-hidden="true" /><span>{w}</span>
                     </p>
                   ))}
-                  <p className="mt-2 text-slate-500 text-[11px]">
+                  <p className="mt-2 text-slate-500 text-2xs">
                     Both exports carry this comparison. A finding that stopped failing because the
                     measurement disappeared is listed as NOT FIXED, never as a win.
                   </p>
                 </div>
               ) : (
-                <p className="mt-2 text-slate-500 text-[11px]">
+                <p className="mt-2 text-slate-500 text-2xs">
                   {snapshots.length
                     ? 'Choose a saved revision to compare this analysis against.'
                     : 'Save this analysis, then compare the next revision of the same part against it.'}
@@ -2420,7 +2420,7 @@ export default function DfmStudioPage() {
                 <ul className="space-y-1.5">
                   {result.analysisLimits!.map((l, i) => (
                     <li key={i} className={`text-xs ${l.severity === 'blocking' ? 'text-amber-200' : 'text-amber-300/80'}`}>
-                      {l.severity === 'blocking' && <span className="font-bold uppercase mr-1.5">Blocking:</span>}
+                      {l.severity === 'blocking' && <span className="font-bold uppercase mr-1.5 tracking-wider">Blocking:</span>}
                       {l.message}
                     </li>
                   ))}
@@ -2482,7 +2482,7 @@ export default function DfmStudioPage() {
                 <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">
                   Recognised ribs
                 </p>
-                <p className="text-slate-500 text-[11px] mb-3">
+                <p className="text-slate-500 text-2xs mb-3">
                   Thickness is measured at the base, where the guideline applies — drafted sides
                   are opened out by the draft term rather than reported at mid-height.
                   {wall.p50Mm
@@ -2492,7 +2492,7 @@ export default function DfmStudioPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-slate-500 text-[11px] uppercase tracking-wider text-left">
+                      <tr className="text-slate-500 text-2xs uppercase tracking-wider text-left">
                         <th className="py-1 pr-3 font-medium">#</th>
                         <th className="py-1 pr-3 font-medium">Thickness</th>
                         <th className="py-1 pr-3 font-medium">Height</th>
@@ -2675,7 +2675,7 @@ export default function DfmStudioPage() {
                         two of these three reasons are facts about the
                         measurement rather than gaps in the tool. */}
                     {place && !place.located && (
-                      <p className="text-[11px] text-slate-500 pl-6 mt-1 italic">
+                      <p className="text-2xs text-slate-500 pl-6 mt-1 italic">
                         Not shown on the model: {place.reason}
                       </p>
                     )}
@@ -2684,7 +2684,7 @@ export default function DfmStudioPage() {
                         is tinted, and saying so is cheaper than letting the
                         reader wonder why the part did not change colour. */}
                     {place?.located && !place.faceIds.length && (
-                      <p className="text-[11px] text-slate-500 pl-6 mt-1 italic">
+                      <p className="text-2xs text-slate-500 pl-6 mt-1 italic">
                         Marked with a callout only — the engine measured this at a point, not on a face.
                       </p>
                     )}
@@ -2702,7 +2702,7 @@ export default function DfmStudioPage() {
                         the uploaded 2D drawing, or a typed declaration. Three
                         kinds of evidence a reader must never confuse. */}
                     {f.measuredBasis && (
-                      <p className="text-[11px] text-sky-300/80 italic mb-2">
+                      <p className="text-2xs text-sky-300/80 italic mb-2">
                         Evidence: {f.measuredBasis}
                       </p>
                     )}
@@ -2992,7 +2992,7 @@ export default function DfmStudioPage() {
                 </tbody>
               </table>
             </div>
-            <p className="text-slate-500 text-[11px] mt-3 italic">
+            <p className="text-slate-500 text-2xs mt-3 italic">
               α+β is measured by rotating each solid and intersecting it with itself, not inferred from inertia.
               Times use the {dfa.dfa.timeModel?.version} model — {dfa.dfa.timeModel?.basis}
             </p>
@@ -3023,7 +3023,7 @@ export default function DfmStudioPage() {
                     <p className="text-white text-xs font-semibold flex items-center gap-1.5 mb-1">
                       <Icon size={13} className="text-gold-400" aria-hidden="true" />{title}
                     </p>
-                    <p className="text-slate-500 text-[11px] leading-relaxed">{body}</p>
+                    <p className="text-slate-500 text-2xs leading-relaxed">{body}</p>
                   </div>
                 ))}
               </div>

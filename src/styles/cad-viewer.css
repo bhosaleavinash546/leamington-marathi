@@ -71,7 +71,7 @@
   max-width: 260px;
 }
 .cv3d-facechip { top: 10px; left: 10px; display: flex; flex-direction: column; gap: 2px; }
-.cv3d-facechip strong { font-size: 12.5px; }
+.cv3d-facechip strong { font-size: 12px; }
 .cv3d-facechip em { color: var(--muted); font-style: normal; }
 .cv3d-legend { bottom: 10px; left: 10px; display: flex; flex-direction: column; gap: 4px; }
 .cv3d-legend-row { display: flex; align-items: center; gap: 6px; }

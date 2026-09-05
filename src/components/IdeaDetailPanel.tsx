@@ -114,7 +114,7 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
       {idea.materialGrade && (
         <div className="flex items-center gap-2 p-2.5 rounded-xl bg-teal-500/5 border border-teal-500/15">
           <FlaskConical size={14} className="text-teal-400 flex-shrink-0" />
-          <span className="text-teal-400 text-xs font-semibold uppercase tracking-wide">Material Grade:</span>
+          <span className="text-teal-400 text-xs font-semibold uppercase tracking-wider">Material Grade:</span>
           <span className="text-slate-200 text-sm font-medium">{idea.materialGrade}</span>
         </div>
       )}
@@ -165,7 +165,7 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
           {/* Benchmark reference */}
           {idea.benchmarkReference && (
             <div className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/15">
-              <span className="text-blue-400 text-xs font-semibold uppercase tracking-wide">Industry Benchmark: </span>
+              <span className="text-blue-400 text-xs font-semibold uppercase tracking-wider">Industry Benchmark: </span>
               <span className="text-slate-300 text-sm">{idea.benchmarkReference}</span>
             </div>
           )}
@@ -175,7 +175,7 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
             <div className="p-3 rounded-xl bg-danger-500/5 border border-danger-500/15 flex items-start gap-2">
               <Scale size={14} className="text-danger-400 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="text-danger-400 text-xs font-semibold uppercase tracking-wide block mb-0.5">Regulatory Driver</span>
+                <span className="text-danger-400 text-xs font-semibold uppercase tracking-wider block mb-0.5">Regulatory Driver</span>
                 <span className="text-slate-300 text-sm">{idea.regulatoryContext}</span>
               </div>
             </div>

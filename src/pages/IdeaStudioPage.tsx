@@ -301,7 +301,7 @@ export default function IdeaStudioPage() {
                     <span className="text-teal-300 font-bold text-2xl">{baseline.total}</span>
                     <span className="text-slate-500 text-xs">P10–P90 {baseline.p10}–{baseline.p90} · material {baseline.matPct}%</span>
                   </div>
-                  {baselineNote && <p className="text-slate-500 text-[11px] mt-1.5">{baselineNote}</p>}
+                  {baselineNote && <p className="text-slate-500 text-2xs mt-1.5">{baselineNote}</p>}
                 </>
               ) : baselineNote ? (
                 <p className="text-amber-300/80 text-xs">{baselineNote}</p>
@@ -329,7 +329,7 @@ export default function IdeaStudioPage() {
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                       <span className="text-white font-bold text-sm leading-none">{baseline.total}</span>
-                      <span className="text-slate-500 text-2xs mt-0.5 uppercase tracking-wide">/ unit</span>
+                      <span className="text-slate-500 text-2xs mt-0.5 uppercase tracking-wider">/ unit</span>
                     </div>
                   </div>
                   <div className="flex-1 space-y-1.5">
@@ -376,7 +376,7 @@ export default function IdeaStudioPage() {
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold text-sm transition-ui shadow-glow-gold">
               {generating ? <><ButtonSpinner size={16} /> {progressMsg || 'Generating…'}</> : <><Sparkles size={16} /> Generate Grounded Ideas</>}
             </button>
-            <p className="text-slate-500 text-[11px] text-center">Ideas are validated and open in Results, where you can push them to Pipeline or the Marketplace.</p>
+            <p className="text-slate-500 text-2xs text-center">Ideas are validated and open in Results, where you can push them to Pipeline or the Marketplace.</p>
           </div>
         </div>
       </div>

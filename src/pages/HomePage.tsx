@@ -89,7 +89,7 @@ function ProductPanel() {
           <span className="absolute inset-0 rounded-full ring-8 ring-gold-400/10" />
           <Lightbulb size={26} strokeWidth={2} />
         </motion.div>
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-navy-950 bg-gold-400 px-2.5 py-1 rounded-full shadow-lg shadow-gold-500/30 whitespace-nowrap">
+        <span className="inline-flex items-center gap-1 text-2xs font-bold text-navy-950 bg-gold-400 px-2.5 py-1 rounded-full shadow-lg shadow-gold-500/30 whitespace-nowrap">
           <Sparkles size={11} /> +3 AI ideas
         </span>
       </motion.div>
@@ -102,7 +102,7 @@ function ProductPanel() {
           <div className="text-slate-300 text-[13px] font-semibold">Front subframe — HPDC Aluminium</div>
           <div className="flex items-center gap-2.5 mt-1">
             <div className="text-white text-3xl font-bold tracking-tight">£42.18 <span className="text-slate-500 text-sm font-medium">/ unit</span></div>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1.5 text-2xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Engine-verified
             </span>
           </div>
@@ -110,7 +110,7 @@ function ProductPanel() {
         <div className="flex h-3 rounded-md overflow-hidden border border-white/5 my-3">
           {BAR.map((b, i) => <div key={i} style={{ width: b.w, background: b.c }} />)}
         </div>
-        <div className="flex flex-wrap gap-x-3.5 gap-y-1.5 text-[11.5px] text-slate-400">
+        <div className="flex flex-wrap gap-x-3.5 gap-y-1.5 text-2xs text-slate-400">
           {BAR.map((b, i) => (
             <span key={i} className="inline-flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-sm" style={{ background: b.c }} />{b.label}
@@ -122,7 +122,7 @@ function ProductPanel() {
             <div key={i} className="flex justify-between text-[13px] text-slate-400"><span>{k}</span><b className="text-slate-200 font-semibold">{v}</b></div>
           ))}
         </div>
-        <div className="mt-4 flex items-center gap-2 text-[12.5px] text-gold-300 bg-gold-500/10 border border-gold-500/20 rounded-xl px-3 py-2.5">
+        <div className="mt-4 flex items-center gap-2 text-xs text-gold-300 bg-gold-500/10 border border-gold-500/20 rounded-xl px-3 py-2.5">
           <Sparkles size={14} className="shrink-0 text-gold-400" />
           <span>AI proposed 3 alternatives · engine verified — best saves <b className="text-gold-200">£6.10 (14%)</b></span>
         </div>
@@ -172,12 +172,12 @@ export default function HomePage() {
           <div>
             <motion.span
               initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 text-[12.5px] font-semibold uppercase tracking-[0.08em] text-gold-400"
+              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold-400"
             ><span className="w-1.5 h-1.5 rounded-full bg-gold-400 ring-4 ring-gold-500/15" /> AI-Powered Cost Engineering</motion.span>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.06 }}
-              className="mt-5 text-4xl md:text-5xl lg:text-[3.35rem] font-semibold text-white leading-[1.07] tracking-[-0.022em]"
+              className="mt-5 text-4xl md:text-5xl lg:text-[50px] font-semibold text-white leading-[1.07] tracking-[-0.022em]"
             >Take cost out of any vehicle part — with numbers you can <span className="text-gold-400">defend</span>.</motion.h1>
 
             <motion.p
@@ -209,22 +209,22 @@ export default function HomePage() {
       {/* ── OEM trust strip ──────────────────────────────────────────────── */}
       <div className="border-b border-white/10 bg-navy-900">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-6 flex flex-wrap items-center justify-center gap-x-9 gap-y-3">
-          <span className="text-[12px] uppercase tracking-[0.06em] font-semibold text-slate-500">Benchmarked against world-class OEMs</span>
+          <span className="text-xs uppercase tracking-wider font-semibold text-slate-500">Benchmarked against world-class OEMs</span>
           {/* No opacity modifier. `text-slate-400/70` emits raw Tailwind slate
               at 70% and so bypasses the tuned .text-slate-400 override in
               index.css entirely — 4.02:1 on navy-900, below AA, and the only
               serious axe violation in the whole app. The bare class is
               theme-remapped and measures 6.04:1 dark / 7.58:1 light. */}
-          {OEMS.map(o => <span key={o} className="text-[16px] font-bold text-slate-400 tracking-tight">{o}</span>)}
+          {OEMS.map(o => <span key={o} className="text-base font-bold text-slate-400 tracking-tight">{o}</span>)}
         </div>
       </div>
 
       {/* ── BENTO features ───────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 lg:px-8 py-24">
         <Reveal className="max-w-2xl mb-11">
-          <span className="inline-flex items-center gap-2 text-[12.5px] font-semibold uppercase tracking-[0.08em] text-gold-400"><span className="w-1.5 h-1.5 rounded-full bg-gold-400 ring-4 ring-gold-500/15" /> The platform</span>
-          <h2 className="mt-4 text-[2.1rem] font-semibold text-white tracking-[-0.02em] leading-tight">One platform for whole-vehicle cost intelligence</h2>
-          <p className="mt-3 text-[17px] text-slate-400">From a part name or a CAD file to a defensible, quote-ready number — across every system and commodity.</p>
+          <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold-400"><span className="w-1.5 h-1.5 rounded-full bg-gold-400 ring-4 ring-gold-500/15" /> The platform</span>
+          <h2 className="mt-4 text-[32px] font-semibold text-white tracking-[-0.02em] leading-tight">One platform for whole-vehicle cost intelligence</h2>
+          <p className="mt-3 text-lg text-slate-400">From a part name or a CAD file to a defensible, quote-ready number — across every system and commodity.</p>
         </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[200px]">
@@ -232,15 +232,15 @@ export default function HomePage() {
             <Reveal key={t.title} delay={i * 0.06} className={t.span ? 'md:col-span-2' : ''}>
               <div className="h-full rounded-2xl bg-navy-900 border border-white/10 p-6 flex flex-col hover:border-gold-500/25 hover:-translate-y-0.5 transition-ui">
                 <div className="w-9 h-9 rounded-[10px] bg-gold-500/12 text-gold-400 flex items-center justify-center mb-3.5"><t.icon size={18} /></div>
-                <h3 className="text-white font-semibold text-[16.5px] tracking-[-0.01em] mb-1.5">{t.title}</h3>
-                <p className="text-slate-400 text-[13.5px] leading-relaxed">{t.desc}</p>
+                <h3 className="text-white font-semibold text-base tracking-[-0.01em] mb-1.5">{t.title}</h3>
+                <p className="text-slate-400 text-[13px] leading-relaxed measure">{t.desc}</p>
                 {t.bars && (
                   <div className="mt-auto flex items-end gap-1.5 h-14">
                     {t.bars.map((h, j) => <div key={j} style={{ height: `${h}%` }} className="flex-1 rounded-t bg-gradient-to-b from-gold-400 to-gold-600/70" />)}
                   </div>
                 )}
-                {t.cad && <div className="mt-auto h-16 rounded-[10px] border border-dashed border-white/12 bg-white/[0.02] flex items-center justify-center text-slate-500 text-[12px]">STEP · STL · DXF · PDF → cost</div>}
-                {t.chips && <div className="mt-auto flex flex-wrap gap-1.5">{t.chips.map(c => <span key={c} className="text-[11.5px] font-semibold text-slate-300 bg-white/5 border border-white/10 px-2.5 py-1 rounded-md">{c}</span>)}</div>}
+                {t.cad && <div className="mt-auto h-16 rounded-[10px] border border-dashed border-white/12 bg-white/[0.02] flex items-center justify-center text-slate-500 text-xs">STEP · STL · DXF · PDF → cost</div>}
+                {t.chips && <div className="mt-auto flex flex-wrap gap-1.5">{t.chips.map(c => <span key={c} className="text-2xs font-semibold text-slate-300 bg-white/5 border border-white/10 px-2.5 py-1 rounded-md">{c}</span>)}</div>}
               </div>
             </Reveal>
           ))}
@@ -251,9 +251,9 @@ export default function HomePage() {
       <section className="border-y border-white/10 bg-navy-900/40">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-20">
           <Reveal className="text-center max-w-2xl mx-auto mb-10">
-            <span className="inline-flex items-center gap-2 text-[12.5px] font-semibold uppercase tracking-[0.08em] text-gold-400"><Layers size={13} /> Whole-vehicle coverage</span>
-            <h2 className="mt-4 text-[2rem] font-semibold text-white tracking-[-0.02em]">Every system, one workflow</h2>
-            <p className="mt-3 text-[16px] text-slate-400">Pick any system for instant AI-powered cost-reduction analysis.</p>
+            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold-400"><Layers size={13} /> Whole-vehicle coverage</span>
+            <h2 className="mt-4 text-[32px] font-semibold text-white tracking-[-0.02em]">Every system, one workflow</h2>
+            <p className="mt-3 text-base text-slate-400">Pick any system for instant AI-powered cost-reduction analysis.</p>
           </Reveal>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {AUTOMOTIVE_SYSTEMS.map((s, i) => (
@@ -261,8 +261,8 @@ export default function HomePage() {
                 <Link to={`/analyze?system=${s.id}`} className="group flex items-center gap-3 p-3.5 rounded-xl bg-navy-900 border border-white/10 hover:border-gold-500/30 hover:-translate-y-0.5 transition-ui">
                   <span className={`w-9 h-9 rounded-lg bg-gradient-to-br ${s.color} flex items-center justify-center text-base shrink-0`}>{s.icon}</span>
                   <span className="min-w-0">
-                    <span className="block text-white text-[13.5px] font-semibold leading-tight truncate">{s.name}</span>
-                    <span className="block text-slate-500 text-[11.5px]">{s.subassemblies.length} subassemblies</span>
+                    <span className="block text-white text-[13px] font-semibold leading-tight truncate">{s.name}</span>
+                    <span className="block text-slate-500 text-2xs">{s.subassemblies.length} subassemblies</span>
                   </span>
                   <ChevronRight size={15} className="ml-auto text-slate-500 group-hover:text-gold-400 group-hover:translate-x-0.5 transition-ui shrink-0" />
                 </Link>
@@ -275,16 +275,16 @@ export default function HomePage() {
       {/* ── How it works ─────────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 lg:px-8 py-24">
         <Reveal className="text-center max-w-2xl mx-auto mb-12">
-          <span className="inline-flex items-center gap-2 text-[12.5px] font-semibold uppercase tracking-[0.08em] text-gold-400"><span className="w-1.5 h-1.5 rounded-full bg-gold-400 ring-4 ring-gold-500/15" /> How it works</span>
-          <h2 className="mt-4 text-[2.1rem] font-semibold text-white tracking-[-0.02em]">From part to defensible saving in three steps</h2>
+          <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold-400"><span className="w-1.5 h-1.5 rounded-full bg-gold-400 ring-4 ring-gold-500/15" /> How it works</span>
+          <h2 className="mt-4 text-[32px] font-semibold text-white tracking-[-0.02em]">From part to defensible saving in three steps</h2>
         </Reveal>
         <div className="grid md:grid-cols-3 gap-5">
           {STEPS.map((s, i) => (
             <Reveal key={s.n} delay={i * 0.1}>
               <div className="h-full p-6 rounded-2xl bg-navy-900 border border-white/10">
                 <div className="w-9 h-9 rounded-[10px] bg-gold-500 text-navy-950 font-bold flex items-center justify-center mb-4">{s.n}</div>
-                <h3 className="text-white font-semibold text-[16.5px] mb-1.5">{s.title}</h3>
-                <p className="text-slate-400 text-[14px] leading-relaxed">{s.desc}</p>
+                <h3 className="text-white font-semibold text-base mb-1.5">{s.title}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed measure">{s.desc}</p>
               </div>
             </Reveal>
           ))}
@@ -296,8 +296,8 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {METRICS.map((m, i) => (
             <Reveal key={m.cap} delay={i * 0.06}>
-              <div className="text-[2.75rem] font-bold text-white tracking-[-0.03em] leading-none">{m.num}<em className="not-italic text-gold-400">{m.em}</em></div>
-              <div className="mt-2 text-[13.5px] text-slate-400">{m.cap}</div>
+              <div className="text-[44px] font-bold text-white tracking-[-0.03em] leading-none">{m.num}<em className="not-italic text-gold-400">{m.em}</em></div>
+              <div className="mt-2 text-[13px] text-slate-400">{m.cap}</div>
             </Reveal>
           ))}
         </div>
@@ -309,8 +309,8 @@ export default function HomePage() {
           <div className="rounded-2xl bg-navy-900 border border-white/10 p-10 grid md:grid-cols-[1.3fr_1fr] gap-10 items-center">
             <div>
               <ShieldCheck size={26} className="text-gold-400 mb-4" />
-              <p className="text-[22px] font-semibold text-white leading-snug tracking-[-0.01em]">"AI proposes, the deterministic engine verifies — so a saving we show a supplier is a number our engineers can <span className="text-gold-400">reproduce and defend</span>."</p>
-              <p className="mt-4 text-[14px] text-slate-400">The trust architecture behind every BrainSpark figure</p>
+              <p className="text-2xl font-semibold text-white leading-snug tracking-[-0.01em]">"AI proposes, the deterministic engine verifies — so a saving we show a supplier is a number our engineers can <span className="text-gold-400">reproduce and defend</span>."</p>
+              <p className="mt-4 text-sm text-slate-400">The trust architecture behind every BrainSpark figure</p>
             </div>
             <div className="text-center md:border-l border-white/10 md:pl-10">
               {/* Pinned to benchmark/{machining,stamping}-results.json by
@@ -324,8 +324,8 @@ export default function HomePage() {
                   advantage over it narrowed. The honest number is the smaller
                   one — the test exists precisely so a copy figure cannot
                   outlive the measurement that justified it. */}
-              <div className="text-[3.75rem] font-bold text-gold-400 leading-none tracking-[-0.03em]">1.1–1.7×</div>
-              <div className="mt-2 text-[14px] text-slate-400">more accurate than a mass-based estimate, on 12 held-out machined and stamped parts</div>
+              <div className="text-[60px] font-bold text-gold-400 leading-none tracking-[-0.03em]">1.1–1.7×</div>
+              <div className="mt-2 text-sm text-slate-400">more accurate than a mass-based estimate, on 12 held-out machined and stamped parts</div>
             </div>
           </div>
         </Reveal>
@@ -336,17 +336,17 @@ export default function HomePage() {
             <div className="rounded-2xl bg-navy-900 border border-white/10 px-5 py-4">
               <div className="flex items-center gap-2 mb-3">
                 <BarChart3 size={12} className="text-slate-500" />
-                <span className="text-[11px] uppercase tracking-wider font-semibold text-slate-500" title={pricesBasis || undefined}>
+                <span className="text-2xs uppercase tracking-wider font-semibold text-slate-500" title={pricesBasis || undefined}>
                   {pricesFresh ? 'Live commodity prices' : 'Reference commodity prices'}
                 </span>
                 {/* Green means live AND fresh. Anything else is a dated reference set and looks like one. */}
                 <span className={`w-1.5 h-1.5 rounded-full ${pricesFresh ? 'bg-emerald-400' : 'bg-slate-500'}`} title={pricesFresh ? 'Refreshed from the web within the last day' : (pricesBasis || 'Not refreshed from the web')} />
                 <span className="flex-1" />
-                {lastRefresh && <span className="text-[11px] text-slate-500">{pricesFresh ? 'Refreshed' : 'As of'} {new Date(lastRefresh).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' })}</span>}
+                {lastRefresh && <span className="text-2xs text-slate-500">{pricesFresh ? 'Refreshed' : 'As of'} {new Date(lastRefresh).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' })}</span>}
               </div>
               <div className="flex flex-wrap gap-x-6 gap-y-2">
                 {livePriceItems.slice(0, 9).map(c => (
-                  <span key={c.key} className="inline-flex items-center gap-1.5 text-[12.5px]">
+                  <span key={c.key} className="inline-flex items-center gap-1.5 text-xs">
                     <span className="text-slate-400">{c.label}</span>
                     <span className="text-white font-mono font-semibold">{c.value.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
                     <span className="text-slate-500">{c.unit}</span>
@@ -363,7 +363,7 @@ export default function HomePage() {
         <div className="absolute inset-0 pointer-events-none"><div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gold-500/12 rounded-full blur-3xl" /></div>
         <div className="max-w-3xl mx-auto px-6 text-center py-20 relative">
           <Reveal>
-            <h2 className="text-[2.4rem] font-semibold text-white tracking-[-0.02em]">Put whole-vehicle cost intelligence to work</h2>
+            <h2 className="text-4xl font-semibold text-white tracking-[-0.02em]">Put whole-vehicle cost intelligence to work</h2>
             <p className="mt-3.5 text-lg text-slate-300">Run a live pilot on one part family this week{ideaCount ? ` — start from ${ideaCount.toLocaleString()} benchmarked ideas` : ''}.</p>
             <div className="mt-7 flex flex-col sm:flex-row gap-3.5 justify-center">
               <Link to="/analyze" className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-ui hover:-translate-y-0.5 shadow-xl shadow-gold-500/25">
@@ -373,7 +373,7 @@ export default function HomePage() {
                 <TrendingUp size={18} /> Explore trends
               </Link>
             </div>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12.5px] text-slate-400">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-400">
               {['Whole-vehicle coverage', 'Engine-verified numbers', 'Excel · PPT · PDF export'].map(t => (
                 <span key={t} className="inline-flex items-center gap-1.5"><CheckCircle2 size={13} className="text-emerald-400" /> {t}</span>
               ))}

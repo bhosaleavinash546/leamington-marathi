@@ -272,3 +272,37 @@ nothing else: no supporting sentence, no per-feature description. Names are set
 as a two-column list rather than pills (a pill implies something pressable, and
 none of these are) or a flowing line (its separators wrapped onto the start of
 the next line).
+
+## 7. Typography inside the tool
+
+The auth page got a typeface; the tool's interior had never had a typographic
+pass. Measured the same way — computed styles on every text leaf of all 28
+pages, plus a source inventory and a font-feature inspection of the Plex files.
+
+| ID | Finding | Before | After |
+|---|---|---|---|
+| T-1 | **Reading measure unconstrained.** Only 19 of 546 paragraphs carried any `max-width`, so running text ran to 192ch. Past ~90 the eye loses its place on the return sweep. | 14 paragraphs at 96–192ch | **0**; a `.measure` utility (68ch) on 15 sites |
+| T-2 | **The size scale was not a scale**: named steps plus 24 arbitrary px and 6 rem values, including 11.5/12.5/13.5/16.5/33.6/38.4/53.6 px. | 24 distinct rendered sizes | **15**, every one an integer step |
+| T-3 | **Heading hierarchy inverted.** A person's name marked up as `h3` at 18 px above a 16 px `h2`; two peer panels given different levels. | 2 inversions | **1** — and the remaining one is not a defect, see below |
+| T-4 | **The type-floor gate had a hole.** It listed 9/10/10.5 px as strings, so `text-[8px]` passed — two of them, on the PCB LIVE/AI price badges. | 2 latent violations | **0**; the gate now tests the number |
+| T-5 | **Uppercase tracking**: seven different values, two labels with none. | 7 values | **2**, each with a stated job |
+| T-6 | **Figures**: a fully numeric should-cost table set in sans while the PCB table used mono. | inconsistent | one rule, written down |
+
+Four new gates hold this: the scale is a set (`.tsx` may never spell out a size
+Tailwind names; `.css` may use any step, having no tokens), the type floor is
+numeric, and uppercase labels must carry tracking from the sanctioned pair.
+Total design-system gates: **15**.
+
+**Two findings that did not survive contact with the evidence**, recorded
+because the review is worth less if it only lists what confirmed:
+
+- **Money columns were never misaligned.** I expected proportional digits to
+  be breaking them. Measured: IBM Plex Sans digits are equal-width by default —
+  spread of 0 px across all ten, and four £-strings of equal length render at
+  identical widths. `tabular-nums` is also a no-op here, because the subset
+  carries no `tnum` feature; the 23 existing uses cost nothing and do nothing.
+- **The `/integrations` "inversion" is a deliberate eyebrow.** A 12 px
+  uppercase group label above 16 px item titles is a recognised pattern — the
+  label names the group, the titles name the items. Left as it is.
+- I also reported "21 uppercase labels with no tracking". The true number is
+  **2**; the 21 came from comparing an occurrence count with a line count.

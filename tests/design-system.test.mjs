@@ -28,9 +28,101 @@ test('no hover:scale bounces: the house hover is a 1 px lift (hover:-translate-y
   assert.deepEqual(offenders(/hover:scale-/), []);
 });
 
-test('type floor is 11 px: no text-[9px|10px|10.5px] utilities and no CSS font-size under 11 px', () => {
-  assert.deepEqual(offenders(/text-\[(9|10|10\.5)px\]/), []);
-  assert.deepEqual(offenders(/font-size:\s*(?:[0-9]|10|10\.5)px\b/, f => f.endsWith('.css')), []);
+/**
+ * Every literal type size in the source, as a NUMBER.
+ *
+ * The first version of this gate enumerated the sizes it had seen — 9, 10 and
+ * 10.5 px — as alternatives in a regex. That is a list of yesterday's
+ * offenders, not a floor: `text-[8px]` passed it, and two of them were sitting
+ * on the PCB page's LIVE and AI price badges the whole time. They never showed
+ * in the runtime sweep either, because they only render when a live
+ * distributor price comes back. A rule that only catches the examples it was
+ * written from is not a rule.
+ */
+export function literalFontSizes(src) {
+  const found = [];
+  for (const m of src.matchAll(/text-\[(\d+(?:\.\d+)?)px\]/g)) found.push({ px: parseFloat(m[1]), raw: m[0] });
+  for (const m of src.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)) found.push({ px: parseFloat(m[1]), raw: m[0] });
+  // rem literals resolve against the 16 px root
+  for (const m of src.matchAll(/text-\[(\d+(?:\.\d+)?)rem\]/g)) found.push({ px: parseFloat(m[1]) * 16, raw: m[0] });
+  return found;
+}
+
+const TYPE_FLOOR_PX = 11;
+
+test(`type floor is ${TYPE_FLOOR_PX} px, tested as a number rather than a list of known offenders`, () => {
+  const bad = [];
+  for (const f of files) {
+    for (const { px, raw } of literalFontSizes(readFileSync(f, 'utf8'))) {
+      if (px < TYPE_FLOOR_PX) bad.push(`${f}: ${raw} (${px}px)`);
+    }
+  }
+  assert.deepEqual(bad, [], `nothing may render below ${TYPE_FLOOR_PX}px; use text-2xs`);
+});
+
+test('the type-floor scanner catches the size its first version missed', () => {
+  assert.equal(literalFontSizes('<span className="text-[8px]">LIVE</span>').length, 1);
+  assert.equal(literalFontSizes('<span className="text-[8px]">LIVE</span>')[0].px, 8);
+  assert.equal(literalFontSizes('.x { font-size: 9px; }')[0].px, 9);
+  assert.equal(literalFontSizes('text-[0.5rem]')[0].px, 8, 'rem literals resolve against the 16px root');
+  assert.deepEqual(literalFontSizes('<span className="text-2xs">ok</span>'), [], 'the token is not a literal');
+});
+
+/**
+ * THE TYPE SCALE, as a set rather than a habit.
+ *
+ * Before this, 24 distinct sizes rendered across the product: the named
+ * Tailwind steps plus 24 arbitrary px values and 6 rem values, including
+ * 11.5, 12.5, 13.5, 16.5, 33.6, 38.4 and 53.6 px — half-pixel and
+ * rem-derived sizes nobody chose, and three body sizes within 2 px of each
+ * other doing the same job. A literal that equals a named step is also a
+ * second vocabulary for one size, so those became tokens.
+ *
+ * What remains as a literal is only what Tailwind has no name for: 13 px (the
+ * dense-UI step used by the sidebar, the tab bar and the DFM labels) and the
+ * display sizes the marketing and sign-in pages need.
+ */
+/** Sizes Tailwind names, and therefore sizes a .tsx file must NOT spell out. */
+const NAMED_STEPS_PX = new Set([11, 12, 14, 16, 18, 20, 24, 30, 36]);
+/** Steps with no token: the dense-UI 13, and the display sizes. */
+const EXTRA_STEPS_PX = new Set([13, 28, 32, 40, 44, 48, 50, 60]);
+/** A .css file has no tokens to reach for, so px there may be any step. */
+const SCALE_PX = new Set([...NAMED_STEPS_PX, ...EXTRA_STEPS_PX]);
+
+test('every literal type size is a member of the scale', () => {
+  const off = [];
+  for (const f of files) {
+    for (const { px, raw } of literalFontSizes(readFileSync(f, 'utf8'))) {
+      if (!SCALE_PX.has(px)) off.push(`${f}: ${raw} (${px}px)`);
+    }
+  }
+  assert.deepEqual(off, [], 'use a step from the scale, or add one deliberately');
+});
+
+test('a .tsx file never spells out a size Tailwind already names', () => {
+  const dupes = [];
+  for (const f of files.filter(f => f.endsWith('.tsx'))) {
+    for (const { px, raw } of literalFontSizes(readFileSync(f, 'utf8'))) {
+      if (NAMED_STEPS_PX.has(px)) dupes.push(`${f}: ${raw} — use the token instead`);
+    }
+  }
+  assert.deepEqual(dupes, [], 'one size, one vocabulary');
+});
+
+test('every uppercase label carries tracking, from a set of two', () => {
+  // Uppercase without letterspacing reads cramped; seven different values
+  // reads as seven different decisions. Two, each with a job: `wider` for
+  // labels at 12px and up, `widest` for the smallest eyebrows.
+  const ALLOWED = new Set(['tracking-wider', 'tracking-widest']);
+  const bad = [];
+  for (const f of files.filter(f => f.endsWith('.tsx'))) {
+    for (const m of readFileSync(f, 'utf8').matchAll(/className="([^"]*\buppercase\b[^"]*)"/g)) {
+      const found = m[1].match(/tracking-\[?[\w.-]+\]?/g) || [];
+      if (!found.length) bad.push(`${f}: uppercase with no tracking — ${m[1].slice(0, 50)}`);
+      for (const t of found) if (!ALLOWED.has(t)) bad.push(`${f}: ${t} — use tracking-wider or tracking-widest`);
+    }
+  }
+  assert.deepEqual(bad, []);
 });
 
 test('fixed overlays use the stacking scale (z-nav / z-fab / z-popover / z-modal), not raw z-50', () => {

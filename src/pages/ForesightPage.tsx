@@ -361,23 +361,23 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
         <h3 className="text-white font-semibold text-sm leading-snug">{c.name}</h3>
         <span className="flex shrink-0 items-center gap-1.5">
           {c.origin === 'promoted' && (
-            <span className="px-1.5 py-0.5 rounded-md border border-violet-500/40 bg-violet-500/10 text-violet-300 text-2xs font-semibold uppercase tracking-wide" title={`Curator-promoted from AI research${c.sourceUrl ? ` — source: ${c.sourceUrl}` : ''}. Not yet part of the shipped curated register.`}>promoted</span>
+            <span className="px-1.5 py-0.5 rounded-md border border-violet-500/40 bg-violet-500/10 text-violet-300 text-2xs font-semibold uppercase tracking-wider" title={`Curator-promoted from AI research${c.sourceUrl ? ` — source: ${c.sourceUrl}` : ''}. Not yet part of the shipped curated register.`}>promoted</span>
           )}
           {c.kind && c.kind !== 'substitution' && (
-            <span className="px-1.5 py-0.5 rounded-md border border-teal-500/40 bg-teal-500/10 text-teal-300 text-2xs font-semibold uppercase tracking-wide"
+            <span className="px-1.5 py-0.5 rounded-md border border-teal-500/40 bg-teal-500/10 text-teal-300 text-2xs font-semibold uppercase tracking-wider"
               title={c.kind === 'function' ? 'FUNCTION: existing hardware earns a new job and a new business case — it replaces no part.'
                 : c.kind === 'orchestration' ? 'ORCHESTRATION: a software layer coordinating actuators it replaces none of — differentiation moves from the part to the calibration.'
                 : 'LIFECYCLE: a service, warranty or monitoring model shift rather than a part swap.'}>{c.kind}</span>
           )}
           {c.related && (
-            <span className="px-1.5 py-0.5 rounded-md border border-white/15 bg-white/5 text-slate-400 text-2xs font-semibold uppercase tracking-wide" title="Widened into this landscape from the same commodity — no direct term match on your query.">related</span>
+            <span className="px-1.5 py-0.5 rounded-md border border-white/15 bg-white/5 text-slate-400 text-2xs font-semibold uppercase tracking-wider" title="Widened into this landscape from the same commodity — no direct term match on your query.">related</span>
           )}
           {c.currency && <CurrencyChip currency={c.currency} />}
           <span className={`px-2 py-0.5 rounded-md border text-2xs font-semibold uppercase tracking-wide ${CONFIDENCE_STYLE[c.confidence]} ${c.confidence === 'committed' ? 'hz-committed' : ''}`}>{c.confidence}</span>
         </span>
       </div>
       <div className="flex items-end justify-between gap-2 mb-2">
-        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px]">
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-2xs">
           <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300 font-mono hz-num">TRL {c.trl}</span>
           <span className="text-slate-400">{PHASE_LABEL[c.phase] ?? c.phase}</span>
           <span className={TREND_LABEL[c.costTrend]?.cls ?? 'text-slate-400'}>{TREND_LABEL[c.costTrend]?.text}</span>
@@ -398,19 +398,19 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
         <span className="text-slate-500 text-2xs w-14 text-right font-mono">momentum <TickNumber value={c.momentum} /></span>
       </div>
       <p className="text-slate-400 text-xs leading-relaxed mb-1.5">{c.note}</p>
-      <p className="text-slate-500 text-[11px] mb-1"><span className="text-slate-500">Replaces:</span> {c.replaces}</p>
-      {c.firstProduction && <p className="text-emerald-300/80 text-[11px] mb-1 flex items-center gap-1"><Factory size={11} className="shrink-0" /> {c.firstProduction}</p>}
+      <p className="text-slate-500 text-2xs mb-1"><span className="text-slate-500">Replaces:</span> {c.replaces}</p>
+      {c.firstProduction && <p className="text-emerald-300/80 text-2xs mb-1 flex items-center gap-1"><Factory size={11} className="shrink-0" /> {c.firstProduction}</p>}
       {c.regAnchorDetail && (
-        <p className="text-gold-300/90 text-[11px] mb-1 flex items-center gap-1">
+        <p className="text-gold-300/90 text-2xs mb-1 flex items-center gap-1">
           <Landmark size={11} className="shrink-0" /> {c.regAnchorDetail.name} ({c.regAnchorDetail.year}){c.regPulled ? ' — pulls this forward' : ''}
         </p>
       )}
-      {signal && <p className="text-teal-300 text-[11px] mb-1 flex items-start gap-1.5"><span className="hz-ping-dot mt-1" /> <span>Watch: {signal}</span></p>}
-      <p className="text-slate-500 text-[11px]">{c.players.join(' · ')}</p>
+      {signal && <p className="text-teal-300 text-2xs mb-1 flex items-start gap-1.5"><span className="hz-ping-dot mt-1" /> <span>Watch: {signal}</span></p>}
+      <p className="text-slate-500 text-2xs">{c.players.join(' · ')}</p>
       {critiques && critiques.length > 0 && (
         <div className="mt-1.5 space-y-1">
           {critiques.map((cr, i) => (
-            <p key={i} className="text-[11px] leading-snug">
+            <p key={i} className="text-2xs leading-snug">
               <span className={`inline-block px-1.5 py-px mr-1 rounded border text-2xs ${STANCE_STYLE[cr.stance]}`}>{cr.persona}: {cr.stance}</span>
               <span className="text-slate-400">{cr.note}</span>
             </p>
@@ -419,10 +419,10 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
       )}
 
       <div className="mt-2 flex flex-wrap items-center gap-3">
-        <button onClick={() => setOpen(o => !o)} className="flex items-center gap-1 text-slate-500 text-[11px] hover:text-slate-300">
+        <button onClick={() => setOpen(o => !o)} className="flex items-center gap-1 text-slate-500 text-2xs hover:text-slate-300">
           {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />} {open ? 'Hide' : 'Show'} modelled projection
         </button>
-        <button onClick={loadEvidence} disabled={evLoading} className="flex items-center gap-1 text-slate-500 text-[11px] hover:text-slate-300 disabled:opacity-50">
+        <button onClick={loadEvidence} disabled={evLoading} className="flex items-center gap-1 text-slate-500 text-2xs hover:text-slate-300 disabled:opacity-50">
           {evLoading ? <ButtonSpinner size={10} /> : <FileSearch size={12} />} {evidence ? 'Hide' : 'Patent'} evidence
         </button>
       </div>
@@ -431,7 +431,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
       {evidence && (
         <motion.div key="evidence" initial={reduced ? false : { height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: 'easeOut' }} className="overflow-hidden">
         <div className="mt-2 rounded-lg bg-navy-800/70 border border-white/5 p-3">
-          {!evidence.configured && <p className="text-slate-500 text-[11px]">{evidence.note}</p>}
+          {!evidence.configured && <p className="text-slate-500 text-2xs">{evidence.note}</p>}
           {evidence.configured && (
             <>
               <div className="flex items-end gap-1.5 mb-1" title="US patent filings per year matching this technology">
@@ -450,7 +450,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
               {evidence.patents.length > 0 && (
                 <div className="space-y-1 mt-2">
                   {evidence.patents.map(p => (
-                    <a key={p.number} href={p.url} target="_blank" rel="noreferrer" className="flex items-start gap-1 text-[11px] text-slate-400 hover:text-teal-300">
+                    <a key={p.number} href={p.url} target="_blank" rel="noreferrer" className="flex items-start gap-1 text-2xs text-slate-400 hover:text-teal-300">
                       <ExternalLink size={10} className="shrink-0 mt-0.5" />
                       <span>US{p.number} · {p.title.slice(0, 70)}{p.title.length > 70 ? '…' : ''} <span className="text-slate-500">({p.assignee}, {p.date.slice(0, 4)})</span></span>
                     </a>
@@ -460,22 +460,22 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
               <p className="text-slate-500 text-2xs mt-1.5">{evidence.note}</p>
             </>
           )}
-          <button onClick={loadDeepDive} disabled={diveLoading} className="mt-2 flex items-center gap-1 text-teal-400 text-[11px] hover:text-teal-300 disabled:opacity-50">
+          <button onClick={loadDeepDive} disabled={diveLoading} className="mt-2 flex items-center gap-1 text-teal-400 text-2xs hover:text-teal-300 disabled:opacity-50">
             {diveLoading ? <ButtonSpinner size={10} /> : <Microscope size={12} />} Deep research (AI, cited sources)
           </button>
-          {diveError && <p className="text-red-400 text-[11px] mt-1">{diveError}</p>}
-          {dive && !dive.research && <p className="text-slate-500 text-[11px] mt-1">{dive.note}</p>}
+          {diveError && <p className="text-red-400 text-2xs mt-1">{diveError}</p>}
+          {dive && !dive.research && <p className="text-slate-500 text-2xs mt-1">{dive.note}</p>}
           {dive?.research && (
             <div className="mt-2 space-y-1.5">
               <span className={`inline-block px-1.5 py-0.5 rounded border text-2xs ${VERDICT_STYLE[dive.research.registerVerdict]}`}>evidence {dive.research.registerVerdict === 'supports' ? 'supports' : dive.research.registerVerdict === 'challenges' ? 'challenges' : 'is mixed on'} the register position</span>
               {dive.research.developments.map((d, i) => (
-                <p key={i} className="text-slate-400 text-[11px] leading-relaxed">
+                <p key={i} className="text-slate-400 text-2xs leading-relaxed">
                   {d.finding}{' '}
                   <a href={d.url} target="_blank" rel="noreferrer" className="text-teal-400 hover:text-teal-300">[{d.sourceTitle.slice(0, 40)}]</a>
                 </p>
               ))}
-              <p className="text-slate-300 text-[11px]"><span className="text-slate-500">Sourcing:</span> {dive.research.sourcingImplication}</p>
-              <p className="text-amber-300/80 text-[11px]"><span className="text-slate-500">Uncertainty:</span> {dive.research.risks}</p>
+              <p className="text-slate-300 text-2xs"><span className="text-slate-500">Sourcing:</span> {dive.research.sourcingImplication}</p>
+              <p className="text-amber-300/80 text-2xs"><span className="text-slate-500">Uncertainty:</span> {dive.research.risks}</p>
               <p className="text-slate-500 text-2xs">{dive.note}</p>
             </div>
           )}
@@ -491,7 +491,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
             <BassSpark adoption={c.projection.adoption} />
             <span className="text-slate-500 text-2xs leading-tight">modelled adoption path<br />now → +8 years</span>
           </div>
-          <table className="w-full text-[11px]">
+          <table className="w-full text-2xs">
             <thead>
               <tr className="text-slate-500">
                 <th className="text-left font-medium pb-1"> </th>
@@ -519,7 +519,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
             </tbody>
           </table>
           {c.projection.crossings && (
-            <p className="text-teal-300/90 text-[11px] mt-2">
+            <p className="text-teal-300/90 text-2xs mt-2">
               Modelled to reach <span className="font-semibold">{c.projection.crossings.share25 ?? 25}% share</span> {crossingLabel(c.projection.crossings.cross25, c.projection.crossings.band25)} · <span className="font-semibold">{c.projection.crossings.share50 ?? 50}%</span> {crossingLabel(c.projection.crossings.cross50, c.projection.crossings.band50)}
               {c.projection.crossings.peakGrowth !== undefined && (
                 <> · <span className="text-gold-300/90">peak growth {crossingLabel(c.projection.crossings.peakGrowth)}</span></>
@@ -890,7 +890,7 @@ export default function ForesightPage() {
             used to present both as nine. */}
         {result?.answerShape === 'exact-plus-landscape' && (
           <div className="max-w-4xl mx-auto mb-4">
-            <p className="text-center text-[11.5px] text-slate-400">
+            <p className="text-center text-2xs text-slate-400">
               <span className="text-white font-semibold">{result.exactCount}</span> technolog{result.exactCount === 1 ? 'y' : 'ies'} match
               {result.query ? <> “<span className="text-gold-300">{result.query}</span>”</> : ' your selection'} directly.
               The other <span className="text-slate-300">{result.relatedCount}</span> are the surrounding commodity landscape, marked and separated below — useful context, but not about your part.
@@ -899,7 +899,7 @@ export default function ForesightPage() {
         )}
         {result?.answerShape === 'landscape-only' && (
           <div className="max-w-4xl mx-auto mb-4">
-            <p className="text-center text-[11.5px] text-amber-200/80">
+            <p className="text-center text-2xs text-amber-200/80">
               Nothing in the curated register matches {result.query ? <>“{result.query}”</> : 'this selection'} directly — everything below is the surrounding commodity landscape, not an answer about your part.
             </p>
           </div>
@@ -911,7 +911,7 @@ export default function ForesightPage() {
         {result?.currency && result.currency.total > 0 && (
           <div className="max-w-4xl mx-auto mb-6">
             <div className="rounded-2xl border border-white/10 bg-navy-900 px-4 py-3">
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px]">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-2xs">
                 <span className="font-mono uppercase tracking-wider text-slate-500">Evidence currency</span>
                 <span className="text-emerald-300">{result.currency.fresh} fresh</span>
                 <span className="text-amber-300">{result.currency.stale} stale</span>
@@ -924,7 +924,7 @@ export default function ForesightPage() {
                 </span>
               </div>
               {result.currency.notFreshShare > 0.5 && (
-                <p className="mt-2 text-[11.5px] text-amber-200/80">
+                <p className="mt-2 text-2xs text-amber-200/80">
                   Most of this landscape has not been confirmed recently — {result.currency.stale} entries cite evidence
                   {result.currency.medianEvidenceYear ? ` around ${result.currency.medianEvidenceYear}` : ''} and {result.currency.undated} cite no year at all.
                   {result?.researched ? ' Live research was triggered for exactly this reason; its findings sit below, separately.' : ' Live research would be triggered here with an API key configured.'}
@@ -950,7 +950,7 @@ export default function ForesightPage() {
               </div>
               {!deep && !deepRunning && (
                 <>
-                  <p className="text-slate-400 text-[11.5px] mb-3">
+                  <p className="text-slate-400 text-2xs mb-3">
                     The lanes above are curated positions. This opens and reads live sources for
                     <span className="text-teal-200"> {query || commodity || segment || 'this subject'}</span>, extracts claims with verbatim quotes checked
                     against the page, flags where sources disagree, and writes a cited report — including what it could <em>not</em> establish.
@@ -977,7 +977,7 @@ export default function ForesightPage() {
                   <div className="flex items-center gap-2 mb-2 text-teal-200 text-xs"><ButtonSpinner size={12} /> Researching — this takes minutes, not seconds.</div>
                   <ul className="space-y-0.5 max-h-40 overflow-y-auto" aria-live="polite">
                     {deepTrace.map((t, i) => (
-                      <li key={i} className={`text-[11px] font-mono ${i === deepTrace.length - 1 ? 'text-teal-300' : 'text-slate-500'}`}>· {t}</li>
+                      <li key={i} className={`text-2xs font-mono ${i === deepTrace.length - 1 ? 'text-teal-300' : 'text-slate-500'}`}>· {t}</li>
                     ))}
                   </ul>
                 </div>
@@ -995,7 +995,7 @@ export default function ForesightPage() {
                     <div className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-3 mb-3">
                       <h4 className="text-amber-200 text-xs font-semibold mb-1.5">Sources disagree — both figures shown, neither chosen</h4>
                       {deep.contradictions.map((k, i) => (
-                        <p key={i} className="text-[11.5px] text-slate-300 mb-1">
+                        <p key={i} className="text-2xs text-slate-300 mb-1">
                           <span className="text-slate-400">{k.metric} · {k.subject}:</span>{' '}
                           <span className="text-amber-200 font-mono">{k.low.value}</span> <span className="text-slate-500">({k.low.origin})</span>
                           {' vs '}
@@ -1012,22 +1012,22 @@ export default function ForesightPage() {
                       {deep.report.sections.map((sec, i) => (
                         <div key={i} className="mb-3">
                           <h4 className="text-slate-100 text-xs font-semibold mb-1">{sec.heading}</h4>
-                          <p className="text-slate-400 text-[11.5px] leading-relaxed">{sec.findings}</p>
+                          <p className="text-slate-400 text-2xs leading-relaxed">{sec.findings}</p>
                         </div>
                       ))}
                       <div className="mb-3">
                         <h4 className="text-teal-200 text-xs font-semibold mb-1">Trajectory</h4>
-                        <p className="text-slate-400 text-[11.5px] leading-relaxed">{deep.report.trajectory}</p>
+                        <p className="text-slate-400 text-2xs leading-relaxed">{deep.report.trajectory}</p>
                       </div>
                       <div className="rounded-xl border border-white/10 bg-navy-900/60 p-3 mb-3">
                         <h4 className="text-slate-200 text-xs font-semibold mb-1">What this research could not establish</h4>
-                        <p className="text-slate-400 text-[11.5px] leading-relaxed">{deep.report.couldNotEstablish}</p>
+                        <p className="text-slate-400 text-2xs leading-relaxed">{deep.report.couldNotEstablish}</p>
                       </div>
                     </>
                   )}
 
                   <details className="mb-2">
-                    <summary className="text-slate-400 text-[11px] cursor-pointer hover:text-teal-300">Source ledger — every source, read or skipped ({deep.ledger.length})</summary>
+                    <summary className="text-slate-400 text-2xs cursor-pointer hover:text-teal-300">Source ledger — every source, read or skipped ({deep.ledger.length})</summary>
                     <ul className="mt-2 space-y-1">
                       {deep.ledger.map((r, i) => (
                         <li key={i} className="text-2xs font-mono flex flex-wrap gap-x-2">
@@ -1042,9 +1042,9 @@ export default function ForesightPage() {
                   </details>
 
                   <details>
-                    <summary className="text-slate-400 text-[11px] cursor-pointer hover:text-teal-300">Limitations of this search ({deep.limitations.length})</summary>
+                    <summary className="text-slate-400 text-2xs cursor-pointer hover:text-teal-300">Limitations of this search ({deep.limitations.length})</summary>
                     <ul className="mt-2 space-y-1">
-                      {deep.limitations.map((l, i) => <li key={i} className="text-[11px] text-slate-500">• {l}</li>)}
+                      {deep.limitations.map((l, i) => <li key={i} className="text-2xs text-slate-500">• {l}</li>)}
                     </ul>
                   </details>
 
@@ -1070,7 +1070,7 @@ export default function ForesightPage() {
                   <span className="text-2xs uppercase tracking-wider text-teal-300/70 border border-teal-500/30 rounded px-1.5 py-0.5" title="Served from the knowledge cache — this research question was already answered and cost nothing to reuse.">cached {result.researched.cacheAgeDays ?? 0}d ago</span>
                 )}
               </div>
-              <p className="text-slate-400 text-[11px] mb-3">
+              <p className="text-slate-400 text-2xs mb-3">
                 The curated register was thin for this query, so the tool searched live sources for what is coming.
                 TRL and adoption below are <span className="text-violet-300">AI estimates</span> — every projection built on them is
                 modelled on estimated inputs, not measured. Uncited claims were dropped in code.
@@ -1079,7 +1079,7 @@ export default function ForesightPage() {
                   and "a search engine showed us a blurb" are different evidence
                   and the reader is entitled to know which they are looking at. */}
               {result.researched.evidence?.readNote && (
-                <p className="text-[11px] mb-3">
+                <p className="text-2xs mb-3">
                   <span className="text-violet-300 font-mono uppercase tracking-wider text-2xs">Retrieval depth</span>{' '}
                   <span className="text-slate-400">{result.researched.evidence.readNote}</span>
                   {result.researched.evidence.provider && !result.researched.evidence.provider.configured && (
@@ -1088,7 +1088,7 @@ export default function ForesightPage() {
                 </p>
               )}
               {(result.researched.rejected?.length ?? 0) > 0 && (
-                <p className="text-[11px] text-slate-500 mb-3">
+                <p className="text-2xs text-slate-500 mb-3">
                   {result.researched.rejected!.length} claim{result.researched.rejected!.length === 1 ? '' : 's'} dropped in code:{' '}
                   {result.researched.rejected!.map(r => r.why).filter((v, i, a) => a.indexOf(v) === i).join('; ')}.
                 </p>
@@ -1116,20 +1116,20 @@ export default function ForesightPage() {
                       TRL ~{c.trl} (est) · {c.phase} · adoption ~{c.adoptionPct}% (est) · {c.horizon}
                     </p>
                     <p className="text-slate-300 text-xs mt-1.5">{c.whatItIs}</p>
-                    {c.replaces && <p className="text-slate-500 text-[11px] mt-1">Replaces: {c.replaces}</p>}
-                    {c.whyItMatters && <p className="text-slate-400 text-[11px] mt-0.5">Cost relevance: {c.whyItMatters}</p>}
-                    {c.earliestProduction && <p className="text-emerald-300/80 text-[11px] mt-0.5">Earliest production cited: {c.earliestProduction}</p>}
+                    {c.replaces && <p className="text-slate-500 text-2xs mt-1">Replaces: {c.replaces}</p>}
+                    {c.whyItMatters && <p className="text-slate-400 text-2xs mt-0.5">Cost relevance: {c.whyItMatters}</p>}
+                    {c.earliestProduction && <p className="text-emerald-300/80 text-2xs mt-0.5">Earliest production cited: {c.earliestProduction}</p>}
                     {c.quantitativeSpec && c.quantitativeSpec !== 'no figure in sources' && (
-                      <p className="text-teal-300/90 text-[11px] mt-0.5 font-mono">Figure in evidence: {c.quantitativeSpec}</p>
+                      <p className="text-teal-300/90 text-2xs mt-0.5 font-mono">Figure in evidence: {c.quantitativeSpec}</p>
                     )}
                     {c.sourceQuote && (
-                      <blockquote className="mt-1.5 pl-2.5 border-l-2 border-violet-500/40 text-slate-400 text-[11px] italic">
+                      <blockquote className="mt-1.5 pl-2.5 border-l-2 border-violet-500/40 text-slate-400 text-2xs italic">
                         “{c.sourceQuote}”
                       </blockquote>
                     )}
-                    {c.players?.length > 0 && <p className="text-slate-500 text-[11px] mt-0.5">Players named: {c.players.join(', ')}</p>}
+                    {c.players?.length > 0 && <p className="text-slate-500 text-2xs mt-0.5">Players named: {c.players.join(', ')}</p>}
                     {c.projection?.crossings && (
-                      <p className="text-violet-300/90 text-[11px] mt-1.5">
+                      <p className="text-violet-300/90 text-2xs mt-1.5">
                         Modelled on estimates: {c.projection.crossings.share25 ?? 25}% share {crossingLabel(c.projection.crossings.cross25)} · {c.projection.crossings.share50 ?? 50}% {crossingLabel(c.projection.crossings.cross50)}
                         {c.projection.crossings.peakGrowth !== undefined && <> · peak growth {crossingLabel(c.projection.crossings.peakGrowth)}</>}
                       </p>
@@ -1154,7 +1154,7 @@ export default function ForesightPage() {
                         </div>
                       ) : (
                         <button onClick={() => promoteCandidateToRegister(c)} disabled={promoting === c.id}
-                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-violet-500/40 bg-violet-500/10 text-violet-200 hover:bg-violet-500/20 text-[11px] transition-colors disabled:opacity-50"
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-violet-500/40 bg-violet-500/10 text-violet-200 hover:bg-violet-500/20 text-2xs transition-colors disabled:opacity-50"
                           title="Curator action: after reviewing the source, admit this candidate into the live register. It keeps a PROMOTED provenance badge and can be demoted any time.">
                           {promoting === c.id ? <ButtonSpinner size={11} /> : <BookMarked size={11} />} Promote to register
                         </button>
@@ -1164,7 +1164,7 @@ export default function ForesightPage() {
                 ))}
               </div>
               {result.researched.evidenceGaps && (
-                <p className="text-slate-500 text-[11px] mt-3">
+                <p className="text-slate-500 text-2xs mt-3">
                   <span className="text-slate-400">What the evidence did not establish:</span> {result.researched.evidenceGaps}
                 </p>
               )}
@@ -1201,10 +1201,10 @@ export default function ForesightPage() {
                     Revisit: {revisit.query || revisit.commodity} — snapshot {revisit.createdAt.slice(0, 10)} (register v{revisit.thenVintage}) vs today (v{revisit.nowVintage})
                   </p>
                   {revisit.score && <p className="text-teal-300 text-xs mb-1">Projection score: mean abs error {revisit.score.meanAbsProjectionError} adoption pts over {revisit.score.scored} technologies (lower is better).</p>}
-                  <p className="text-slate-500 text-[11px] mb-2">{revisit.note}</p>
+                  <p className="text-slate-500 text-2xs mb-2">{revisit.note}</p>
                   <div className="space-y-1">
                     {revisit.drift.map(d => (
-                      <p key={d.id} className="text-[11px] text-slate-400">
+                      <p key={d.id} className="text-2xs text-slate-400">
                         <span className="text-slate-300">{d.name}</span>{' — '}
                         {d.removed ? <span className="text-amber-300">removed from register</span> : (
                           (d.trlDelta || d.adoptionDelta || d.horizonMoved || (d.momentumDelta ?? 0) !== 0)
@@ -1218,7 +1218,7 @@ export default function ForesightPage() {
                         )}
                       </p>
                     ))}
-                    {revisit.addedTechIds.length > 0 && <p className="text-[11px] text-teal-300">New in register since snapshot: {revisit.addedTechIds.join(', ')}</p>}
+                    {revisit.addedTechIds.length > 0 && <p className="text-2xs text-teal-300">New in register since snapshot: {revisit.addedTechIds.join(', ')}</p>}
                   </div>
                 </div>
               )}
@@ -1253,7 +1253,7 @@ export default function ForesightPage() {
                       <div className="flex flex-wrap gap-1.5">
                         {subs.map(sub => (
                           <button key={sub} onClick={() => bomPick(sub)}
-                            className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300 text-[11px] hover:border-teal-500/40 hover:text-teal-300 transition-colors">
+                            className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300 text-2xs hover:border-teal-500/40 hover:text-teal-300 transition-colors">
                             {sub}
                           </button>
                         ))}
@@ -1280,7 +1280,7 @@ export default function ForesightPage() {
                       <div className="flex flex-wrap gap-1.5">
                         {parts.map(p => (
                           <button key={p} onClick={() => bomPick(p)}
-                            className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300 text-[11px] hover:border-teal-500/40 hover:text-teal-300 transition-colors">
+                            className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300 text-2xs hover:border-teal-500/40 hover:text-teal-300 transition-colors">
                             {p}
                           </button>
                         ))}
@@ -1352,7 +1352,7 @@ export default function ForesightPage() {
                       exit={{ opacity: 0, y: 6, scale: 0.96 }}
                       transition={{ duration: 0.16 }}
                       className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 w-56 rounded-xl border border-white/15 bg-[#0b1526]/95 backdrop-blur-md shadow-2xl shadow-black/50 p-2">
-                      <p className="px-2 pt-1 pb-2 text-2xs uppercase tracking-[0.18em] text-slate-400">Report theme</p>
+                      <p className="px-2 pt-1 pb-2 text-2xs uppercase tracking-widest text-slate-400">Report theme</p>
                       <button
                         onClick={() => { setExportOpen(false); if (result) exportForesightPdf({ ...result, deep }, panel, 'light'); }}
                         className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left text-xs text-slate-200 hover:bg-gold-500/10 hover:text-gold-300 transition-colors">
@@ -1380,7 +1380,7 @@ export default function ForesightPage() {
                     {p.persona} · {p.critiques.length} views
                   </span>
                 ))}
-                <span className="text-slate-500 text-[11px] w-full text-center">{panel.note}</span>
+                <span className="text-slate-500 text-2xs w-full text-center">{panel.note}</span>
               </div>
             )}
 
@@ -1406,11 +1406,11 @@ export default function ForesightPage() {
                         <h3 className="text-white font-semibold text-sm leading-tight">{b.vehicle}</h3>
                         <span className="text-slate-500 text-2xs whitespace-nowrap">{b.year}</span>
                       </div>
-                      <p className="text-slate-500 text-[11px] mb-1.5">{b.brand} · {b.powertrains.join('/')}</p>
+                      <p className="text-slate-500 text-2xs mb-1.5">{b.brand} · {b.powertrains.join('/')}</p>
                       <ul className="space-y-0.5 mb-1.5">
-                        {b.signature.map((s, i) => <li key={i} className="text-slate-400 text-[11px] leading-snug">• {s}</li>)}
+                        {b.signature.map((s, i) => <li key={i} className="text-slate-400 text-2xs leading-snug">• {s}</li>)}
                       </ul>
-                      <p className="text-teal-300/90 text-[11px] leading-snug"><span className="hz-ping-dot mr-1 align-middle" style={{ width: 5, height: 5 }} />Watch: {b.watch}</p>
+                      <p className="text-teal-300/90 text-2xs leading-snug"><span className="hz-ping-dot mr-1 align-middle" style={{ width: 5, height: 5 }} />Watch: {b.watch}</p>
                     </div>
                   ))}
                 </div>
@@ -1501,7 +1501,7 @@ export default function ForesightPage() {
         )}
 
         {!result && !loading && (
-          <p className="text-center text-slate-500 text-xs mt-8">
+          <p className="text-center text-slate-500 text-xs mt-8 measure mx-auto">
             Curated register · automotive TRL 1–9 · Bass diffusion (p=0.03, q=0.38) · Wright's-law cost curves · dated regulatory anchors · committed / probable / speculative confidence tiers
           </p>
         )}

@@ -361,7 +361,7 @@ export default function MarketplacePage() {
           >
             <div className="flex items-center gap-2 mb-3">
               <ThumbsUp size={15} className="text-gold-400" />
-              <h2 className="text-white font-semibold text-sm">Insights from Your Projects</h2>
+              <h2 className="text-white font-semibold text-base">Insights from Your Projects</h2>
               <span className="ml-auto flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/25 text-gold-400 text-xs font-medium">
                 {insights.totalApproved} approved idea{insights.totalApproved !== 1 ? 's' : ''} across{' '}
                 {insights.projectCount} project{insights.projectCount !== 1 ? 's' : ''}
@@ -616,7 +616,7 @@ export default function MarketplacePage() {
             initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
             className="bg-navy-900 rounded-2xl border border-gold-500/20 p-5 mb-6 space-y-3"
           >
-            <h3 className="text-white font-semibold">Share a Proven Idea</h3>
+            <h2 className="text-white font-semibold text-base">Share a Proven Idea</h2>
             <p className="text-slate-400 text-xs">
               Submit a cost reduction idea your team has proven in production. It will be reviewed before appearing publicly. All details are anonymised.
             </p>
@@ -859,7 +859,7 @@ export default function MarketplacePage() {
                         </button>
                       </>
                     ) : (
-                      <p className="text-slate-400 text-sm leading-relaxed mb-4">{idea.description}</p>
+                      <p className="text-slate-400 text-sm leading-relaxed mb-4 measure">{idea.description}</p>
                     );
                   })()}
 

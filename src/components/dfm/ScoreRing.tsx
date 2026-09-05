@@ -90,7 +90,7 @@ export default function ScoreRing({
       <div className="min-w-0">
         <p className="dfm-label text-slate-500">{label}</p>
         <p className={`text-sm font-semibold ${TONE_TEXT[tone]}`}>{TONE_LABEL[tone]}</p>
-        {sublabel && <p className="text-[11px] text-slate-500 mt-0.5">{sublabel}</p>}
+        {sublabel && <p className="text-2xs text-slate-500 mt-0.5">{sublabel}</p>}
       </div>
     </div>
   );

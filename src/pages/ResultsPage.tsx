@@ -408,7 +408,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
 
           {idea.benchmarkReference && (
             <div className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/15">
-              <span className="text-blue-400 text-xs font-semibold uppercase tracking-wide">Industry Benchmark: </span>
+              <span className="text-blue-400 text-xs font-semibold uppercase tracking-wider">Industry Benchmark: </span>
               <span className="text-slate-300 text-sm">{idea.benchmarkReference}</span>
             </div>
           )}
@@ -430,7 +430,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
             </div>
           ) : (
             <div className="p-3 rounded-xl border bg-slate-500/5 border-slate-500/15">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Engine Cross-Check — not evaluated:
               </span>{' '}
               <span className="text-slate-300 text-sm">
@@ -458,14 +458,14 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
               the model actually wrote get a heading. */}
           {idea.engineering && Object.keys(idea.engineering).length > 0 && (
             <div className="p-3 rounded-xl bg-teal-500/5 border border-teal-500/15">
-              <span className="text-teal-300 text-xs font-semibold uppercase tracking-wide block mb-2">Engineering brief</span>
+              <span className="text-teal-300 text-xs font-semibold uppercase tracking-wider block mb-2">Engineering brief</span>
               <div className="space-y-2">
                 {([
                   ['mechanism', 'Mechanism'], ['specDeltas', 'Spec deltas'], ['validationPlan', 'Validation plan'],
                   ['dfmImplications', 'DFM implications'], ['costBridge', 'Cost bridge'],
                 ] as const).filter(([k]) => idea.engineering?.[k]).map(([k, label]) => (
                   <div key={k} className="text-sm">
-                    <span className="text-slate-400 text-xs font-semibold uppercase tracking-wide">{label}: </span>
+                    <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider">{label}: </span>
                     <span className="text-slate-300">{idea.engineering![k]}</span>
                   </div>
                 ))}
@@ -480,14 +480,14 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
 
           {(idea.mergedTitles?.length ?? 0) > 0 && (
             <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-slate-400 text-xs font-semibold uppercase tracking-wide">Merged near-duplicates: </span>
+              <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Merged near-duplicates: </span>
               <span className="text-slate-400 text-sm">{idea.mergedTitles!.join(' · ')}</span>
             </div>
           )}
 
           {(idea.critiques?.length ?? 0) > 0 && (
             <div className="p-3 rounded-xl bg-violet-500/5 border border-violet-500/15">
-              <span className="text-violet-300 text-xs font-semibold uppercase tracking-wide block mb-2">
+              <span className="text-violet-300 text-xs font-semibold uppercase tracking-wider block mb-2">
                 Expert panel review{typeof idea.eloRating === 'number' ? ` · tournament rating ${idea.eloRating}` : ''}
               </span>
               <div className="space-y-1.5">
@@ -507,7 +507,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
             <div className="p-3 rounded-xl bg-danger-500/5 border border-danger-500/15 flex items-start gap-2">
               <Scale size={14} className="text-danger-400 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="text-danger-400 text-xs font-semibold uppercase tracking-wide block mb-0.5">Regulatory Driver</span>
+                <span className="text-danger-400 text-xs font-semibold uppercase tracking-wider block mb-0.5">Regulatory Driver</span>
                 <span className="text-slate-300 text-sm">{idea.regulatoryContext}</span>
               </div>
             </div>
@@ -542,7 +542,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                   })}
                 </div>
                 {unverified && (
-                  <p className="text-slate-500 text-[11px] mt-2">Citations are AI-proposed from training data. Turn on web search when generating to retrieve and corroborate sources.</p>
+                  <p className="text-slate-500 text-2xs mt-2">Citations are AI-proposed from training data. Turn on web search when generating to retrieve and corroborate sources.</p>
                 )}
               </div>
             );
@@ -583,7 +583,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
               <>
                 {patentData && patentData.patents.length > 0 && (
                   <div className="mb-3 space-y-1.5">
-                    <p className="text-emerald-400 text-[11px] font-semibold uppercase tracking-wide">Retrieved patents (PatentsView, US corpus)</p>
+                    <p className="text-emerald-400 text-2xs font-semibold uppercase tracking-wider">Retrieved patents (PatentsView, US corpus)</p>
                     {patentData.patents.map(p => (
                       <a key={p.number} href={p.url} target="_blank" rel="noopener noreferrer"
                         className="block p-2 rounded-lg bg-white/5 border border-white/10 hover:border-violet-500/30 transition-colors">
@@ -1689,7 +1689,7 @@ export default function ResultsPage() {
               {/* Message history */}
               {chatMessages.length === 0 ? (
                 <div className="p-5">
-                  <p className="text-slate-500 text-xs mb-3 uppercase tracking-wide font-medium">Suggested questions</p>
+                  <p className="text-slate-500 text-xs mb-3 uppercase tracking-wider font-medium">Suggested questions</p>
                   <div className="flex flex-wrap gap-2">
                     {getChatSuggestions().map(s => (
                       <button

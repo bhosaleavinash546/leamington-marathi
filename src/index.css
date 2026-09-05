@@ -566,6 +566,17 @@
 @layer utilities {
   .text-balance { text-wrap: balance; }
 
+  /* READING MEASURE.
+     The September 2026 typography review measured 14 paragraphs rendering
+     between 96 and 192 characters per line, because only 19 of 546 carried
+     any max-width. Comfortable running text is 60-75 characters; past about
+     90 the eye loses its place on the return sweep, which is exactly the
+     failure mode for a tool people read standing at a screen in a review.
+     `ch` is the width of a "0" in the current font and size, so this tracks
+     the type rather than guessing a pixel value. */
+  .measure { max-width: 68ch; }
+  .measure-tight { max-width: 56ch; }
+
   .pt-safe  { padding-top:    env(safe-area-inset-top); }
   .pb-safe  { padding-bottom: env(safe-area-inset-bottom); }
   .pl-safe  { padding-left:   env(safe-area-inset-left); }

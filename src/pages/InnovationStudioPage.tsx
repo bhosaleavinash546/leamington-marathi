@@ -355,7 +355,7 @@ export default function InnovationStudioPage() {
               <span className="iv-mark inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-gold-500/20 to-violet-500/10 border border-gold-500/25 shrink-0">
                 <Wand2 size={17} className="text-gold-400" />
               </span>
-              <h1 className="iv-title text-[26px] sm:text-[30px] font-bold tracking-tight leading-none">Innovation Studio</h1>
+              <h1 className="iv-title text-2xl sm:text-3xl font-bold tracking-tight leading-none">Innovation Studio</h1>
             </div>
             <p className="text-slate-400 text-[13px] mt-2 max-w-2xl leading-relaxed">
               Structured idea generation. Each method gives the AI a proven thinking framework —
@@ -434,8 +434,8 @@ export default function InnovationStudioPage() {
               <div key={tier}>
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`w-1.5 h-1.5 rounded-full ${TIER_DOT[tier]}`} aria-hidden="true" />
-                  <span className={`text-[11px] font-semibold uppercase tracking-wider ${TIER_TEXT[tier]}`}>{TIER_LABEL[tier]}</span>
-                  <span className="text-slate-500 text-[11px]">{TIER_NOTE[tier]}</span>
+                  <span className={`text-2xs font-semibold uppercase tracking-wider ${TIER_TEXT[tier]}`}>{TIER_LABEL[tier]}</span>
+                  <span className="text-slate-500 text-2xs">{TIER_NOTE[tier]}</span>
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3" role="group" aria-label={`${TIER_LABEL[tier]} methods`}>
                   {items.map(m => (
@@ -574,17 +574,17 @@ export default function InnovationStudioPage() {
                 <span className="text-white font-semibold text-[13px] truncate">{result.method.name}</span>
                 {part && <><span className="text-slate-700" aria-hidden="true">/</span>
                   <span className="text-slate-400 text-[13px] truncate">{part}</span></>}
-                {system && <span className="text-slate-500 text-[11px] truncate hidden sm:inline">· {system}</span>}
+                {system && <span className="text-slate-500 text-2xs truncate hidden sm:inline">· {system}</span>}
               </div>
               <div className="flex items-center gap-2 ml-auto">
                 <button onClick={() => exportReport('pdf')} disabled={exporting !== ''}
                   title="Branded PDF report: method analysis, every idea in full, and each engine-check verdict."
-                  className="iv-focus flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-slate-300 hover:text-gold-300 hover:border-gold-500/30 text-[11px] font-medium transition-colors disabled:opacity-50">
+                  className="iv-focus flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-slate-300 hover:text-gold-300 hover:border-gold-500/30 text-2xs font-medium transition-colors disabled:opacity-50">
                   {exporting === 'pdf' ? <ButtonSpinner size={12} /> : <FileDown size={12} aria-hidden="true" />} PDF
                 </button>
                 <button onClick={() => exportReport('xlsx')} disabled={exporting !== ''}
                   title="Formatted Excel workbook: summary, filterable idea table, and one sheet per analysis table."
-                  className="iv-focus flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-slate-300 hover:text-emerald-300 hover:border-emerald-500/30 text-[11px] font-medium transition-colors disabled:opacity-50">
+                  className="iv-focus flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] text-slate-300 hover:text-emerald-300 hover:border-emerald-500/30 text-2xs font-medium transition-colors disabled:opacity-50">
                   {exporting === 'xlsx' ? <ButtonSpinner size={12} /> : <Table2 size={12} aria-hidden="true" />} Excel
                 </button>
               </div>
@@ -610,7 +610,7 @@ export default function InnovationStudioPage() {
               {/* Named, not hidden: an idea the engine could not price is not an
                   idea it approved, and the difference must not need arithmetic. */}
               {kpis.unchecked > 0 && (
-                <p className="text-slate-500 text-[11px] -mt-3">
+                <p className="text-slate-500 text-2xs -mt-3">
                   <span className="iv-num text-slate-400 font-semibold">{kpis.unchecked}</span> of {kpis.ideas} could
                   not be engine-checked — no modelled cost driver connects them to a price. They are shown, not scored.
                 </p>
@@ -680,7 +680,7 @@ export default function InnovationStudioPage() {
                 )}
               </div>
 
-              <p className="text-slate-500 text-[11px] text-center pt-1">
+              <p className="text-slate-500 text-2xs text-center pt-1">
                 Method structure is deterministic; every £ figure is engine-checked or labelled. Validate before commercial use.
               </p>
             </div>
@@ -820,7 +820,7 @@ function SynthesisRail({ method }: { method: Method }) {
         role="status" aria-live="polite">
         <div className="flex items-center justify-between gap-3 mb-3">
           <p className="text-white text-sm font-semibold">Running {method.name} across {method.lenses.length} lenses…</p>
-          <span className="text-slate-500 text-[11px]">no progress figure — the endpoint reports none</span>
+          <span className="text-slate-500 text-2xs">no progress figure — the endpoint reports none</span>
         </div>
         <div className="iv-rail mb-4" aria-hidden="true" />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -828,7 +828,7 @@ function SynthesisRail({ method }: { method: Method }) {
             <div key={s.id} className="iv-stage iv-stage-live flex items-center gap-2">
               <span className="iv-stage-dot shrink-0" aria-hidden="true" />
               <s.icon size={13} className="text-gold-400/80 shrink-0" aria-hidden="true" />
-              <span className="text-slate-300 text-[11px] leading-tight">{s.label}</span>
+              <span className="text-slate-300 text-2xs leading-tight">{s.label}</span>
             </div>
           ))}
         </div>
@@ -876,14 +876,14 @@ function IdeaRow({ idea, n, order, onPipeline }: { idea: Idea; n: number; order:
               {idea.lens && (
                 <span className="iv-label text-gold-500/80 block mb-1">{idea.lens}</span>
               )}
-              <h3 className="text-white font-semibold text-[15px] leading-snug">{idea.title}</h3>
+              <h3 className="text-white font-semibold text-base leading-snug">{idea.title}</h3>
             </div>
             {v
               ? (
                 <span className={`flex items-center gap-2 shrink-0 ${v.direction === 'confirmed' ? 'text-emerald-400' : 'text-amber-400'}`}>
                   <VerdictRing pct={v.savingPct} confirmed={v.direction === 'confirmed'} />
                   <span className="text-right leading-tight">
-                    <span className="iv-num block font-bold text-[15px]">
+                    <span className="iv-num block font-bold text-base">
                       {v.savingPct > 0 ? '−' : '+'}{Math.abs(v.savingPct)}%
                     </span>
                     <span className="iv-label block mt-0.5 opacity-80">{v.direction}</span>
@@ -892,7 +892,7 @@ function IdeaRow({ idea, n, order, onPipeline }: { idea: Idea; n: number; order:
               )
               : (
                 <span className="shrink-0 text-right leading-tight text-slate-500">
-                  <span className="iv-num block font-bold text-[15px]">—</span>
+                  <span className="iv-num block font-bold text-base">—</span>
                   <span className="iv-label block mt-0.5">not checked</span>
                 </span>
               )}
@@ -903,19 +903,19 @@ function IdeaRow({ idea, n, order, onPipeline }: { idea: Idea; n: number; order:
           <div className="iv-idea-fields mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-2">
             <div>
               <span className="iv-label block mb-0.5">Cost angle</span>
-              <p className="text-teal-300/90 text-[12px] leading-relaxed">{idea.costAngle}</p>
+              <p className="text-teal-300/90 text-xs leading-relaxed">{idea.costAngle}</p>
             </div>
             {idea.riskNotes && (
               <div>
                 <span className="iv-label block mb-0.5">Risk</span>
-                <p className="text-amber-300/80 text-[12px] leading-relaxed">{idea.riskNotes}</p>
+                <p className="text-amber-300/80 text-xs leading-relaxed">{idea.riskNotes}</p>
               </div>
             )}
           </div>
 
           <div className="flex justify-end mt-3">
             <button onClick={onPipeline}
-              className="iv-focus flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-violet-500/25 bg-violet-500/[0.08] text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-colors text-[11px] font-medium">
+              className="iv-focus flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-violet-500/25 bg-violet-500/[0.08] text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-colors text-2xs font-medium">
               <Layers size={11} aria-hidden="true" /> Add to Pipeline
             </button>
           </div>

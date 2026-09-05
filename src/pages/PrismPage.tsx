@@ -819,7 +819,7 @@ export default function Part360Page() {
                 </p>
               </div>
             </motion.div>
-            <motion.div variants={m.rise} className="flex items-center gap-2 text-[11px] text-slate-500">
+            <motion.div variants={m.rise} className="flex items-center gap-2 text-2xs text-slate-500">
               <motion.button
                 {...m.press}
                 aria-pressed={asmMode}
@@ -904,26 +904,26 @@ export default function Part360Page() {
             {asmRows.length > 0 && (
               <motion.div variants={m.panel} initial="hidden" animate="show" className="dfm-panel p-5">
                 <h2 className="text-white font-semibold text-sm mb-1">Confirm the BOM ({asmRows.length} solids)</h2>
-                <p className="text-slate-500 text-[11px] mb-4">Hover any row for the basis of its suggestion. A row left unassigned is carried as not-costed with its reason — it never silently disappears from the total.</p>
+                <p className="text-slate-500 text-2xs mb-4">Hover any row for the basis of its suggestion. A row left unassigned is carried as not-costed with its reason — it never silently disappears from the total.</p>
                 <div className="space-y-1.5 max-h-[420px] overflow-y-auto">
                   {asmRows.map((r, i) => (
                     <div key={i} className="grid grid-cols-[1.4fr_0.8fr_1fr_1.1fr_54px_78px] gap-2 items-center" title={r.suggestionBasis}>
                       <span className="text-xs text-white truncate">{r.name}</span>
-                      <input className="dfm-input !py-1.5 !text-[11px]" aria-label={`Row ${i + 1} subassembly`} value={r.subassembly}
+                      <input className="dfm-input !py-1.5 !text-2xs" aria-label={`Row ${i + 1} subassembly`} value={r.subassembly}
                         onChange={e => setAsmRows(p2 => p2.map((x, j) => j === i ? { ...x, subassembly: e.target.value } : x))} />
-                      <select className="dfm-select !py-1.5 !text-[11px]" aria-label={`Row ${i + 1} material`} value={r.material ?? ''}
+                      <select className="dfm-select !py-1.5 !text-2xs" aria-label={`Row ${i + 1} material`} value={r.material ?? ''}
                         onChange={e => setAsmRows(p2 => p2.map((x, j) => j === i ? { ...x, material: e.target.value || null } : x))}>
                         <option value="">{r.boughtPart ? 'bought part' : 'assign…'}</option>
                         {(catalogue?.materials ?? []).map(mt => <option key={mt} value={mt}>{mt}</option>)}
                       </select>
-                      <select className="dfm-select !py-1.5 !text-[11px]" aria-label={`Row ${i + 1} process`} value={r.process ?? ''}
+                      <select className="dfm-select !py-1.5 !text-2xs" aria-label={`Row ${i + 1} process`} value={r.process ?? ''}
                         onChange={e => setAsmRows(p2 => p2.map((x, j) => j === i ? { ...x, process: e.target.value || null } : x))}>
                         <option value="">{r.boughtPart ? '—' : 'assign…'}</option>
                         {(catalogue?.processes ?? []).map(pp => <option key={pp} value={pp}>{pp}</option>)}
                       </select>
-                      <input className="dfm-input !py-1.5 !text-[11px]" aria-label={`Row ${i + 1} quantity`} type="number" min="1" value={r.qty}
+                      <input className="dfm-input !py-1.5 !text-2xs" aria-label={`Row ${i + 1} quantity`} type="number" min="1" value={r.qty}
                         onChange={e => setAsmRows(p2 => p2.map((x, j) => j === i ? { ...x, qty: Number(e.target.value) || 1 } : x))} />
-                      <input className="dfm-input !py-1.5 !text-[11px]" aria-label={`Row ${i + 1} bought price in euro`} type="number" min="0" step="0.01"
+                      <input className="dfm-input !py-1.5 !text-2xs" aria-label={`Row ${i + 1} bought price in euro`} type="number" min="0" step="0.01"
                         placeholder={r.boughtPart ? '€ price' : (r.suggestedMassKg ? `${r.suggestedMassKg} kg` : '—')}
                         value={r.boughtPriceEur ?? ''}
                         onChange={e => setAsmRows(p2 => p2.map((x, j) => j === i ? { ...x, boughtPriceEur: e.target.value ? Number(e.target.value) : null, boughtPart: true } : x))} />
@@ -942,7 +942,7 @@ export default function Part360Page() {
                     <TickNumber value={asmDossier.rollUp.totalEur} decimals={2} prefix="€" />
                   </div>
                 </div>
-                <p className="text-slate-500 text-[11px] mb-4">{asmDossier.rollUp.caveat}</p>
+                <p className="text-slate-500 text-2xs mb-4">{asmDossier.rollUp.caveat}</p>
                 <motion.div variants={m.stagger()} initial="hidden" animate="show" className="space-y-2 mb-4">
                   {asmDossier.rollUp.subassemblies.map((sb, i) => (
                     <motion.div key={sb.subassembly} variants={m.slideIn} className="grid grid-cols-[130px_1fr_150px] items-center gap-3">
@@ -957,9 +957,9 @@ export default function Part360Page() {
                 </motion.div>
                 {asmDossier.rollUp.uncosted.length > 0 && (
                   <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-2.5 mb-4">
-                    <div className="text-[11px] text-amber-300 font-semibold mb-1">Not costed — excluded from the total above</div>
+                    <div className="text-2xs text-amber-300 font-semibold mb-1">Not costed — excluded from the total above</div>
                     {asmDossier.rollUp.uncosted.map(u => (
-                      <p key={u.name} className="text-[11px] text-amber-200/80">{u.name} × {u.qty} — {u.reason}</p>
+                      <p key={u.name} className="text-2xs text-amber-200/80">{u.name} × {u.qty} — {u.reason}</p>
                     ))}
                   </div>
                 )}
@@ -975,7 +975,7 @@ export default function Part360Page() {
                     );
                   })}
                 </div>
-                <p className="text-[11px] text-slate-500 mb-3">{asmDossier.dossier.evidenceCount} numbered evidence lines. Each level runs its own generation pass; every idea must cite the evidence and carries its systemLevel.</p>
+                <p className="text-2xs text-slate-500 mb-3">{asmDossier.dossier.evidenceCount} numbered evidence lines. Each level runs its own generation pass; every idea must cite the evidence and carries its systemLevel.</p>
                 {asmGenerating && asmGenLog.length > 0 && (
                   <div className="mb-3 bg-navy-950/70 border border-white/[0.07] rounded-xl p-3 text-xs max-h-40 overflow-y-auto">
                     {asmGenLog.map((line, i) => <LogLine key={`${i}-${line.slice(0, 20)}`} text={line} active={i === asmGenLog.length - 1} />)}
@@ -1046,7 +1046,7 @@ export default function Part360Page() {
             {batchRows && (
               <motion.div variants={m.panel} initial="hidden" animate="show" className="dfm-panel dfm-framed p-5">
                 <h2 className="text-white font-semibold text-sm mb-1">Triage — ranked by annual gap</h2>
-                <p className="text-slate-500 text-[11px] mb-4">{batchBasis}</p>
+                <p className="text-slate-500 text-2xs mb-4">{batchBasis}</p>
                 <motion.div variants={m.stagger()} initial="hidden" animate="show" className="space-y-2.5">
                   {batchRows.map((row, i) => {
                     const maxGap = Math.max(...batchRows.map(x => x.annualGapEur ?? 0), 1);
@@ -1058,7 +1058,7 @@ export default function Part360Page() {
                         ) : (
                           <>
                             <div className="flex flex-wrap items-center gap-3">
-                              <span className="dfm-num text-[11px] text-teal-500/80 w-5">{i + 1}</span>
+                              <span className="dfm-num text-2xs text-teal-500/80 w-5">{i + 1}</span>
                               <div className="min-w-[140px] flex-1">
                                 <div className="text-sm text-white">{row.file}</div>
                                 <div className="text-2xs text-slate-500">{row.massKg} kg · {row.massSource}</div>
@@ -1080,7 +1080,7 @@ export default function Part360Page() {
                                 Deep-dive
                               </motion.button>
                             </div>
-                            <div className="text-[11px] text-slate-500 mt-1.5 pl-8">{row.topLever}{Number.isFinite(row.co2DeltaKg) ? ` · CO₂e ${(row.co2DeltaKg as number) > 0 ? '+' : ''}${row.co2DeltaKg} kg/part on the switch` : ''}</div>
+                            <div className="text-2xs text-slate-500 mt-1.5 pl-8">{row.topLever}{Number.isFinite(row.co2DeltaKg) ? ` · CO₂e ${(row.co2DeltaKg as number) > 0 ? '+' : ''}${row.co2DeltaKg} kg/part on the switch` : ''}</div>
                           </>
                         )}
                       </motion.div>
@@ -1146,11 +1146,11 @@ export default function Part360Page() {
                       onChange={e => setPartContext(e.target.value)}
                       placeholder="e.g. Steering knuckle RH — connects wheel hub and brake caliper to the suspension; carries braking and cornering loads; bolted to strut and lower ball joint; safety-critical; -40 to 120 °C."
                     />
-                    <p className="text-[11px] text-slate-500 mt-1">
+                    <p className="text-2xs text-slate-500 mt-1">
                       This becomes the stated REQUIREMENT every idea is judged against — alternatives the function rules out are treated as defects. Without it, ideas say their function-fit is unverified.
                     </p>
                   </div>
-                  <p className="text-[11px] text-slate-500 flex items-start gap-1.5 pt-1">
+                  <p className="text-2xs text-slate-500 flex items-start gap-1.5 pt-1">
                     <Scale size={11} className="mt-0.5 shrink-0" />
                     Unsure of the mass? Enter an estimate — after the 3D model is measured, the wizard offers the geometry-derived mass to correct it.
                   </p>
@@ -1162,7 +1162,7 @@ export default function Part360Page() {
                   <Upload size={15} className="text-teal-400" />
                   <h2 className="text-white font-semibold text-sm">Files</h2>
                 </div>
-                <p className="text-[11px] text-slate-500 mb-4">Each one unlocks more of the 360° — absence is stated, never guessed.</p>
+                <p className="text-2xs text-slate-500 mb-4">Each one unlocks more of the 360° — absence is stated, never guessed.</p>
                 <div className="space-y-3 flex-1">
                   <input ref={cadInputRef} type="file" accept=".step,.stp,.stl,.igs,.iges" className="hidden"
                     onChange={e => { setCadFile(e.target.files?.[0] ?? null); setDfmResult(null); setDfmFailed(false); }} />
@@ -1173,7 +1173,7 @@ export default function Part360Page() {
                       {cadFile ? cadFile.name : '3D model (STEP / STL) — optional'}
                       {cadFile && <CheckCircle2 size={13} className="text-teal-400 ml-auto dfm-tick-in" />}
                     </div>
-                    <div className="text-[11px] text-slate-500 mt-1 pl-6">{cadFile ? 'Will be measured by the DFM engines and priced down every viable process route.' : 'Without it, the waterfall’s process step is honestly skipped ("geometry absent").'}</div>
+                    <div className="text-2xs text-slate-500 mt-1 pl-6">{cadFile ? 'Will be measured by the DFM engines and priced down every viable process route.' : 'Without it, the waterfall’s process step is honestly skipped ("geometry absent").'}</div>
                   </motion.button>
                   <input ref={drawingInputRef} type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" className="hidden"
                     onChange={e => { setDrawingFile(e.target.files?.[0] ?? null); setDrawingRead(null); }} />
@@ -1184,9 +1184,9 @@ export default function Part360Page() {
                       {drawingFile ? drawingFile.name : '2D drawing (PDF / image) — optional'}
                       {drawingFile && <CheckCircle2 size={13} className="text-teal-400 ml-auto dfm-tick-in" />}
                     </div>
-                    <div className="text-[11px] text-slate-500 mt-1 pl-6">{drawingFile ? 'Tolerances and roughness prefill the costed specification — you confirm them.' : 'Without it, the spec defaults to standard and over-specification cannot be measured.'}</div>
+                    <div className="text-2xs text-slate-500 mt-1 pl-6">{drawingFile ? 'Tolerances and roughness prefill the costed specification — you confirm them.' : 'Without it, the spec defaults to standard and over-specification cannot be measured.'}</div>
                   </motion.button>
-                  <p className="text-[11px] text-slate-500">The supplier quote comes at step 3 — form entry with optional PDF assist.</p>
+                  <p className="text-2xs text-slate-500">The supplier quote comes at step 3 — form entry with optional PDF assist.</p>
                 </div>
                 <motion.button
                   {...m.press}
@@ -1196,7 +1196,7 @@ export default function Part360Page() {
                 >
                   Continue to measurement <ChevronRight size={16} />
                 </motion.button>
-                {!inputsValid && <p className="text-[11px] text-slate-500 mt-2 text-center">Material, process, mass and volume are required — they drive every engine.</p>}
+                {!inputsValid && <p className="text-2xs text-slate-500 mt-2 text-center">Material, process, mass and volume are required — they drive every engine.</p>}
               </div>
 
               <div className="lg:col-span-2 dfm-panel p-5">
@@ -1204,14 +1204,14 @@ export default function Part360Page() {
                   <span className="flex items-center gap-2 text-sm font-semibold text-white">
                     <FileSearch size={15} className="text-teal-400" />
                     Teardown library
-                    <span className="dfm-num text-[11px] text-slate-500 font-normal">({teardowns.length} recorded — user-recorded observations, externally unverified)</span>
+                    <span className="dfm-num text-2xs text-slate-500 font-normal">({teardowns.length} recorded — user-recorded observations, externally unverified)</span>
                   </span>
                   <ChevronRight size={14} className={`text-slate-500 transition-transform ${tdOpen ? 'rotate-90' : ''}`} />
                 </button>
                 <AnimatePresence>
                 {tdOpen && (
                   <motion.div variants={m.rise} initial="hidden" animate="show" exit="exit" className="mt-4 space-y-4">
-                    <p className="text-[11px] text-slate-500 max-w-3xl">Record competitor parts you have physically torn down. Matching observations become cited evidence in every Prism run for the same material or process family — your organisation's own benchmark base.</p>
+                    <p className="text-2xs text-slate-500 max-w-3xl">Record competitor parts you have physically torn down. Matching observations become cited evidence in every Prism run for the same material or process family — your organisation's own benchmark base.</p>
                     <div className="grid md:grid-cols-4 gap-2">
                       <input className="dfm-input" aria-label="Teardown title" placeholder="Title, e.g. Golf 8 hood bracket *" value={tdForm.title} onChange={e => setTdForm(f => ({ ...f, title: e.target.value }))} />
                       <input className="dfm-input" aria-label="Teardown reference" placeholder="Reference (OEM, model, year)" value={tdForm.reference} onChange={e => setTdForm(f => ({ ...f, reference: e.target.value }))} />
@@ -1297,7 +1297,7 @@ export default function Part360Page() {
                       <div className="dfm-kpi-value text-white">
                         <TickNumber value={shouldCost.totalValue} decimals={2} prefix={shouldCost.symbol} delay={m.beat(1)} />
                       </div>
-                      <div className="text-[11px] text-slate-500 mt-2">{material} · {processName} · {region}</div>
+                      <div className="text-2xs text-slate-500 mt-2">{material} · {processName} · {region}</div>
                     </>
                   ) : (
                     <div className="text-sm text-slate-500 mt-1">Run measurement first.</div>
@@ -1333,7 +1333,7 @@ export default function Part360Page() {
                       <input className="dfm-input" aria-label="Finest surface roughness Ra in micrometres" type="number" step="0.1" min="0" value={roughnessRaUm} onChange={e => setRoughnessRaUm(e.target.value)} placeholder="none read" />
                     </div>
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-2">
+                  <div className="text-2xs text-slate-500 mt-2">
                     {drawingRead ? `Read ${drawingRead.toleranced} toleranced of ${drawingRead.dims} dimensions.` : 'Blank = standard spec assumed, and the dossier says so.'}
                   </div>
                 </motion.div>
@@ -1439,7 +1439,7 @@ export default function Part360Page() {
                     <motion.button {...m.press} onClick={() => setQuoteLines(prev => [...prev, { label: '', kind: 'other', amount: '' }])}
                       className="text-teal-400 hover:text-teal-300 text-xs flex items-center gap-1"><Plus size={12} /> Add line</motion.button>
                   </div>
-                  {quoteLines.length === 0 && <p className="text-[11px] text-slate-500">No lines — forensics will be skipped and the dossier will say so.</p>}
+                  {quoteLines.length === 0 && <p className="text-2xs text-slate-500">No lines — forensics will be skipped and the dossier will say so.</p>}
                   <motion.div variants={m.stagger()} initial="hidden" animate="show" className="space-y-2">
                     {quoteLines.map((l, i) => (
                       <motion.div key={i} variants={m.slideIn} className="grid grid-cols-[1fr_140px_110px_32px] gap-2 items-center">
@@ -1493,7 +1493,7 @@ export default function Part360Page() {
                       <p key={a.id} className="text-xs text-amber-200/80 max-w-none">{a.message}</p>
                     ))}
                   </div>
-                  <p className="text-[11px] text-slate-500 mt-2">These cautions also ride into the evidence dossier — ideas see the suspicion in the same breath as the input.</p>
+                  <p className="text-2xs text-slate-500 mt-2">These cautions also ride into the evidence dossier — ideas see the suspicion in the same breath as the input.</p>
                 </motion.div>
               )}
 
@@ -1504,7 +1504,7 @@ export default function Part360Page() {
                   <Layers size={15} className="text-gold-400" />
                   <h2 className="text-white font-semibold text-sm">Cost entitlement waterfall</h2>
                 </div>
-                <p className="text-slate-500 text-[11px] mb-5 max-w-3xl">{wf.caution}</p>
+                <p className="text-slate-500 text-2xs mb-5 max-w-3xl">{wf.caution}</p>
 
                 <div className="space-y-2.5 mb-5" role="img" aria-label="Waterfall of engine-computed cost premiums from quote to entitlement">
                   {wf.quoteEur != null && (
@@ -1594,7 +1594,7 @@ export default function Part360Page() {
                   <div className="mt-3 overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="text-slate-500 text-[11px] border-b border-white/10">
+                        <tr className="text-slate-500 text-2xs border-b border-white/10">
                           <th className="text-left py-2 pr-3 font-medium">Step</th>
                           <th className="text-right py-2 pr-3 font-medium">From</th>
                           <th className="text-right py-2 pr-3 font-medium">To</th>
@@ -1665,7 +1665,7 @@ export default function Part360Page() {
                     )}
                   </div>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-3">Live deterministic re-run of the as-specified engine total — same math as the dossier. The full waterfall (process &amp; quote steps) recomputes when you rebuild the dossier.</p>
+                <p className="text-2xs text-slate-500 mt-3">Live deterministic re-run of the as-specified engine total — same math as the dossier. The full waterfall (process &amp; quote steps) recomputes when you rebuild the dossier.</p>
               </motion.div>
 
               {/* Forensics */}
@@ -1707,16 +1707,16 @@ export default function Part360Page() {
                                 </div>
                               ) : <div className="text-2xs text-slate-500 text-center">unmapped</div>}
                             </div>
-                            <span className={`px-2 py-0.5 rounded-md border text-[11px] font-medium whitespace-nowrap border-current/25 bg-current/10 ${tone}`}>
+                            <span className={`px-2 py-0.5 rounded-md border text-2xs font-medium whitespace-nowrap border-current/25 bg-current/10 ${tone}`}>
                               {r.verdict}
                             </span>
                           </div>
-                          <div className="text-[11px] text-slate-500 mt-1.5">{r.basis}</div>
+                          <div className="text-2xs text-slate-500 mt-1.5">{r.basis}</div>
                         </motion.div>
                       );
                     })}
                   </motion.div>
-                  {dossier.forensics.caveat && <p className="text-[11px] text-slate-500 mt-3">{dossier.forensics.caveat}</p>}
+                  {dossier.forensics.caveat && <p className="text-2xs text-slate-500 mt-3">{dossier.forensics.caveat}</p>}
                 </motion.div>
               ) : null}
 
@@ -1743,11 +1743,11 @@ export default function Part360Page() {
                           <span className={`dfm-num w-24 text-right ${r.targetEur != null ? 'text-teal-300' : 'text-slate-500 italic'}`}>{r.targetEur != null ? `target €${r.targetEur.toFixed(2)}` : 'clarify'}</span>
                           <span className={`dfm-num w-20 text-right font-semibold ${r.askEur ? 'text-gold-400' : 'text-slate-500'}`}>{r.askEur ? `−€${r.askEur.toFixed(2)}` : '—'}</span>
                         </div>
-                        <p className="text-[11px] text-slate-500 mt-1">{r.argument}</p>
+                        <p className="text-2xs text-slate-500 mt-1">{r.argument}</p>
                       </div>
                     ))}
                   </div>
-                  <p className="text-[11px] text-slate-500 mt-3">{dossier.counter.caveat}</p>
+                  <p className="text-2xs text-slate-500 mt-3">{dossier.counter.caveat}</p>
                 </motion.div>
               ) : null}
 
@@ -1761,7 +1761,7 @@ export default function Part360Page() {
                       <Box size={15} className="text-teal-400" />
                       <h2 className="text-white font-semibold text-sm">Fleet memory</h2>
                     </div>
-                    <p className="text-slate-500 text-[11px] mb-3">Outcomes from your own prior Prism runs on similar geometry — organisational memory, not an external benchmark.</p>
+                    <p className="text-slate-500 text-2xs mb-3">Outcomes from your own prior Prism runs on similar geometry — organisational memory, not an external benchmark.</p>
                     <div className="space-y-2">
                       {fleetSec.lines.slice(1).map(l => (
                         <div key={l.ref} className="text-xs text-slate-300 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
@@ -1822,7 +1822,7 @@ export default function Part360Page() {
                     ))}
                   </div>
                 </fieldset>
-                <p className="text-[11px] text-slate-500 mb-4">
+                <p className="text-2xs text-slate-500 mb-4">
                   Cost: {selectedLenses.size} generation call{selectedLenses.size === 1 ? '' : 's'}{deepMode === 'full' ? ' + deep-mode passes' : deepMode === 'critique' ? ' + a small-model critique pass' : ''} on your API key, typically 2–6 minutes.
                 </p>
                 {generating && (

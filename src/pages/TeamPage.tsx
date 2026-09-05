@@ -122,7 +122,7 @@ export default function TeamPage() {
                   {/* A pending invite is not a member, and the list must not
                       let the two read the same. */}
                   {m.status !== 'active' && (
-                    <span className="text-2xs uppercase tracking-wide px-2 py-0.5 rounded-full bg-gold-500/10 text-gold-300 border border-gold-500/25">
+                    <span className="text-2xs uppercase tracking-wider px-2 py-0.5 rounded-full bg-gold-500/10 text-gold-300 border border-gold-500/25">
                       {m.status}
                     </span>
                   )}

@@ -219,7 +219,7 @@ function CommentsSection({
 
   return (
     <div className="mt-4">
-      <div className="text-xs text-slate-500 font-medium mb-2 uppercase tracking-wide">
+      <div className="text-xs text-slate-500 font-medium mb-2 uppercase tracking-wider">
         Comments ({comments.length})
       </div>
       <div className="space-y-3 mb-3">
@@ -870,7 +870,7 @@ export default function PipelinePage() {
                           {/* Per-vehicle breakdown */}
                           {bc.vehicleData.length > 0 && (
                             <div className="mb-4">
-                              <div className="text-xs text-slate-500 font-medium mb-2 uppercase tracking-wide">
+                              <div className="text-xs text-slate-500 font-medium mb-2 uppercase tracking-wider">
                                 Vehicle Breakdown
                               </div>
                               <div className="bg-navy-800 rounded-xl border border-white/8 overflow-hidden">
@@ -926,7 +926,7 @@ export default function PipelinePage() {
                           {/* Stage-gate scorecard (soft-gating checklists) */}
                           {Object.keys(gateCriteria).length > 0 && (
                             <div className="mb-4 p-3 rounded-xl bg-white/5 border border-white/10">
-                              <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">Stage-gate scorecard</p>
+                              <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Stage-gate scorecard</p>
                               <div className="grid sm:grid-cols-3 gap-3">
                                 {(['G1', 'G2', 'G3'] as const).map(g => {
                                   const items = scorecardItems(bc, g);
@@ -936,11 +936,11 @@ export default function PipelinePage() {
                                     <div key={g} className={`p-2.5 rounded-lg border ${isPast && done < items.length ? 'border-amber-500/25 bg-amber-500/5' : 'border-white/10'}`}>
                                       <div className="flex items-center justify-between mb-1.5">
                                         <span className="text-xs font-semibold text-slate-300">{g} criteria</span>
-                                        <span className={`text-[11px] font-mono ${done === items.length ? 'text-emerald-400' : 'text-slate-500'}`}>{done}/{items.length}</span>
+                                        <span className={`text-2xs font-mono ${done === items.length ? 'text-emerald-400' : 'text-slate-500'}`}>{done}/{items.length}</span>
                                       </div>
                                       <div className="space-y-1">
                                         {items.map(item => (
-                                          <label key={item.id} className={`flex items-start gap-1.5 text-[11px] leading-snug ${isOwner ? 'cursor-pointer' : 'cursor-default'} ${item.done ? 'text-slate-500 line-through' : 'text-slate-400'}`}>
+                                          <label key={item.id} className={`flex items-start gap-1.5 text-2xs leading-snug ${isOwner ? 'cursor-pointer' : 'cursor-default'} ${item.done ? 'text-slate-500 line-through' : 'text-slate-400'}`}>
                                             <input
                                               type="checkbox"
                                               checked={item.done}
@@ -962,7 +962,7 @@ export default function PipelinePage() {
                           {gateWarning?.caseId === bc.id && (
                             <div className="mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25">
                               <p className="text-amber-400 text-xs font-semibold mb-1">Gate moved with open scorecard items:</p>
-                              <ul className="text-slate-400 text-[11px] space-y-0.5">
+                              <ul className="text-slate-400 text-2xs space-y-0.5">
                                 {gateWarning.items.map((w, i) => <li key={i}>• {w}</li>)}
                               </ul>
                             </div>

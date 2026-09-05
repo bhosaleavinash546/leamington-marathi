@@ -367,8 +367,8 @@ export default function AdminRateLibraryPage() {
                       <span className="text-slate-400 text-xs">{v.action === 'revert' ? 'built-in defaults' : `${total} override${total === 1 ? '' : 's'}`}</span>
                       <span className="text-slate-500 text-xs flex-1 min-w-0 truncate">{v.note ? `“${v.note}” · ` : ''}{v.updatedBy || '—'} · {new Date(v.updatedAt).toLocaleString('en-GB')}</span>
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <button onClick={() => toggleDiff(v.version)} className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5"><GitCompare size={12} /> {diffs[v.version] ? 'Hide' : 'Changes'}</button>
-                        {!v.active && <button onClick={() => rollback(v.version)} disabled={busy} className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg border border-teal-500/30 text-teal-300 hover:bg-teal-500/10 disabled:opacity-40"><RotateCcw size={12} /> Roll back</button>}
+                        <button onClick={() => toggleDiff(v.version)} className="flex items-center gap-1 text-2xs px-2 py-1 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5"><GitCompare size={12} /> {diffs[v.version] ? 'Hide' : 'Changes'}</button>
+                        {!v.active && <button onClick={() => rollback(v.version)} disabled={busy} className="flex items-center gap-1 text-2xs px-2 py-1 rounded-lg border border-teal-500/30 text-teal-300 hover:bg-teal-500/10 disabled:opacity-40"><RotateCcw size={12} /> Roll back</button>}
                       </div>
                     </div>
                     {diffs[v.version] && (

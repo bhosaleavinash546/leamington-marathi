@@ -148,7 +148,7 @@ export default function ApiKeySettingsPage() {
             {error && <span className="text-danger-400 text-sm">{error}</span>}
           </div>
 
-          <p className="text-slate-500 text-xs leading-relaxed border-t border-white/10 pt-4">
+          <p className="text-slate-500 text-xs leading-relaxed border-t border-white/10 pt-4 measure">
             The key is encrypted before storage and only its last four characters are ever
             read back — this page cannot show you the key again, and neither can the server.
             Requests you make from a tool that carries its own key still use that one; this is

@@ -173,7 +173,7 @@ function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder,
           // that class was never generated and the password text ran under the
           // reveal button. Both variants are written out.
           className={[
-            'w-full min-h-[46px] rounded-xl bg-navy-800/80 border pl-10 text-[15px] text-white',
+            'w-full min-h-[46px] rounded-xl bg-navy-800/80 border pl-10 text-base text-white',
             'placeholder:text-slate-500 transition-ui duration-micro ease-house',
             isPassword ? 'pr-11' : 'pr-4',
             error
@@ -286,7 +286,7 @@ function BrandPanel() {
           {FEATURES.map(name => (
             <li key={name} className="flex items-center gap-3.5">
               <span aria-hidden="true" className="h-2 w-2 rounded-full bg-gold-400/80 shrink-0" />
-              <span className="text-slate-200 text-[24px] font-medium tracking-tight">{name}</span>
+              <span className="text-slate-200 text-2xl font-medium tracking-tight">{name}</span>
             </li>
           ))}
         </ul>
@@ -439,7 +439,7 @@ export default function AuthPage() {
             {screen === 'signin' && (
               <motion.div key="signin" {...slide}>
                 <div className="mb-8">
-                  <h1 className="text-[26px] font-bold text-white tracking-[-0.02em] mb-1.5">Welcome back</h1>
+                  <h1 className="text-2xl font-bold text-white tracking-[-0.02em] mb-1.5">Welcome back</h1>
                   <p className="text-slate-400 text-sm">Sign in to your BrainSpark account</p>
                 </div>
                 <form onSubmit={handleSignIn} className="space-y-4">
@@ -449,7 +449,7 @@ export default function AuthPage() {
                     <button type="button" onClick={() => { setScreen('forgot'); clearError(); setDevOtp(''); setOtp(''); }} className="text-gold-400 hover:text-gold-300 text-sm transition-colors">Forgot password?</button>
                   </div>
                   {error && <div role="alert" className="flex items-start gap-2.5 p-3 rounded-xl bg-danger-500/10 border border-danger-500/25 text-danger-300 text-[13px] leading-relaxed"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-[15px] flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
+                  <button type="submit" disabled={loading} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-base flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
                     {loading ? <><ButtonSpinner size={18} /> Signing in…</> : <>Sign In <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -464,7 +464,7 @@ export default function AuthPage() {
             {screen === 'signup' && (
               <motion.div key="signup" {...slide}>
                 <div className="mb-8">
-                  <h1 className="text-[26px] font-bold text-white tracking-[-0.02em] mb-1.5">Create your account</h1>
+                  <h1 className="text-2xl font-bold text-white tracking-[-0.02em] mb-1.5">Create your account</h1>
                   <p className="text-slate-400 text-sm">Free access to the AI cost reduction engine</p>
                 </div>
                 <form onSubmit={handleSignUp} className="space-y-4">
@@ -476,7 +476,7 @@ export default function AuthPage() {
                   </div>
                   <Field label="Confirm password" icon={Lock} type="password" value={confirmPassword} onChange={setConfirmPassword} placeholder="Repeat your password" autoComplete="new-password" disabled={loading} />
                   {error && <div role="alert" className="flex items-start gap-2.5 p-3 rounded-xl bg-danger-500/10 border border-danger-500/25 text-danger-300 text-[13px] leading-relaxed"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-[15px] flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
+                  <button type="submit" disabled={loading} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-base flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
                     {loading ? <><ButtonSpinner size={18} /> Creating account…</> : <>Create Account <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -494,13 +494,13 @@ export default function AuthPage() {
                   <ArrowLeft size={15} /> Back to sign in
                 </button>
                 <div className="mb-8">
-                  <h1 className="text-[26px] font-bold text-white tracking-[-0.02em] mb-1.5">Reset password</h1>
+                  <h1 className="text-2xl font-bold text-white tracking-[-0.02em] mb-1.5">Reset password</h1>
                   <p className="text-slate-400 text-sm">Enter your email and we'll send you a reset code</p>
                 </div>
                 <form onSubmit={handleForgotPassword} className="space-y-4">
                   <Field label="Email address" icon={Mail} type="email" value={email} onChange={setEmail} placeholder="you@company.com" autoComplete="email" disabled={loading} />
                   {error && <div role="alert" className="flex items-start gap-2.5 p-3 rounded-xl bg-danger-500/10 border border-danger-500/25 text-danger-300 text-[13px] leading-relaxed"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-[15px] flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
+                  <button type="submit" disabled={loading} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-base flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
                     {loading ? <><ButtonSpinner size={18} /> Sending code…</> : <>Send Reset Code <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -514,7 +514,7 @@ export default function AuthPage() {
                   <ArrowLeft size={15} /> Back
                 </button>
                 <div className="mb-8 text-center">
-                  <h1 className="text-[22px] font-bold text-white tracking-[-0.02em] mb-1.5">Enter reset code</h1>
+                  <h1 className="text-2xl font-bold text-white tracking-[-0.02em] mb-1.5">Enter reset code</h1>
                   <p className="text-slate-400 text-sm">Code sent to <span className="text-white font-medium">{email}</span></p>
                 </div>
                 <form onSubmit={handleResetPassword} className="space-y-5">
@@ -532,7 +532,7 @@ export default function AuthPage() {
                   </div>
                   <Field label="Confirm new password" icon={Lock} type="password" value={confirmNewPassword} onChange={setConfirmNewPassword} placeholder="Repeat new password" autoComplete="new-password" disabled={loading} />
                   {error && <div role="alert" className="flex items-start gap-2.5 p-3 rounded-xl bg-danger-500/10 border border-danger-500/25 text-danger-300 text-[13px] leading-relaxed"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading || otp.length < 6} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-[15px] flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
+                  <button type="submit" disabled={loading || otp.length < 6} className="w-full min-h-[48px] rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-60 disabled:hover:translate-y-0 text-navy-950 font-semibold text-base flex items-center justify-center gap-2 transition-ui duration-micro ease-house hover:-translate-y-0.5 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 active:translate-y-px">
                     {loading ? <><ButtonSpinner size={18} /> Resetting…</> : <>Reset Password <CheckCircle size={18} /></>}
                   </button>
                   <ResendButton key={otpResendKey} email={email} type="reset" onResent={() => { setOtp(''); setOtpResendKey(k => k + 1); }} />

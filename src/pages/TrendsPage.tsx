@@ -528,7 +528,7 @@ export default function TrendsPage() {
           {OEM_MOVES.map(oem => (
             <div key={oem.brand} className="bg-navy-800/50 border border-white/8 border-l-2 border-l-gold-500 rounded-xl p-4">
               <p className="text-white font-bold text-base">{oem.brand}</p>
-              <p className="text-gold-500/80 text-xs font-mono uppercase tracking-wide mt-0.5 mb-3">{oem.model}</p>
+              <p className="text-gold-500/80 text-xs font-mono uppercase tracking-wider mt-0.5 mb-3">{oem.model}</p>
               <ul className="space-y-2">{oem.moves.map((move, i) => (<li key={i} className="flex items-start gap-2 text-slate-400 text-xs leading-relaxed"><ChevronRight size={12} className="text-gold-500 flex-shrink-0 mt-0.5" />{move}</li>))}</ul>
             </div>
           ))}
@@ -561,7 +561,7 @@ export default function TrendsPage() {
           {benchmarks.map(oem => (
             <div key={oem.oem} className="bg-navy-800/50 border border-white/8 border-l-2 border-l-indigo-500 rounded-xl p-4">
               <p className="text-white font-bold text-base">{oem.oem}</p>
-              <p className="text-indigo-400/80 text-xs font-mono uppercase tracking-wide mt-0.5 mb-3">{oem.model}</p>
+              <p className="text-indigo-400/80 text-xs font-mono uppercase tracking-wider mt-0.5 mb-3">{oem.model}</p>
               <ul className="space-y-2">{oem.moves.map((move, i) => (<li key={i} className="flex items-start gap-2 text-slate-400 text-xs leading-relaxed"><ChevronRight size={12} className="text-indigo-400 flex-shrink-0 mt-0.5" />{move}</li>))}</ul>
             </div>
           ))}
@@ -600,7 +600,7 @@ export default function TrendsPage() {
               <h1 className="text-3xl font-bold text-white mb-2">
                 {domainMeta.label} Trends &amp; Levers
               </h1>
-              <p className="text-slate-400 text-sm max-w-2xl">
+              <p className="text-slate-400 text-sm measure">
                 Industry trends, validated VAVE levers and manufacturing cost-reduction opportunities for the {domainMeta.label} domain.
               </p>
             </div>

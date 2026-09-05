@@ -157,7 +157,7 @@ function DfmaRing({ score }: { score: number }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-2xl font-bold" style={{ color }}>{score}</span>
-        <span className="text-slate-500 text-2xs font-semibold uppercase">/10</span>
+        <span className="text-slate-500 text-2xs font-semibold uppercase tracking-wider">/10</span>
       </div>
     </div>
   );
@@ -615,7 +615,7 @@ export default function CadToCostPage() {
                       <p className="text-slate-500 text-xs mb-1">Unit Cost</p>
                       <p className="text-3xl font-bold text-gold-400">{formatCost(result.costBreakdown.totalUnit.value, result.costBreakdown.totalUnit.currency)}</p>
                       {result.simulation && (
-                        <p className="text-slate-500 text-[11px] mt-0.5">P10–P90: {formatCost(result.simulation.p10, result.simulation.currency)} – {formatCost(result.simulation.p90, result.simulation.currency)}</p>
+                        <p className="text-slate-500 text-2xs mt-0.5">P10–P90: {formatCost(result.simulation.p10, result.simulation.currency)} – {formatCost(result.simulation.p90, result.simulation.currency)}</p>
                       )}
                       {result.annualSpend && (
                         <p className="text-slate-500 text-xs mt-1">Annual: {formatCost(result.annualSpend.value, result.annualSpend.currency)}</p>
@@ -628,7 +628,7 @@ export default function CadToCostPage() {
                     <div className="text-right max-w-[16rem]">
                       <p className="text-slate-500 text-xs mb-1">Unit Cost</p>
                       <p className="text-lg font-bold text-slate-400">Not costed</p>
-                      <p className="text-amber-400/80 text-[11px] mt-1 leading-tight">Set a material &amp; process to get a firm figure.</p>
+                      <p className="text-amber-400/80 text-2xs mt-1 leading-tight">Set a material &amp; process to get a firm figure.</p>
                     </div>
                   )}
                 </div>
@@ -636,16 +636,16 @@ export default function CadToCostPage() {
                 {/* Provenance badge */}
                 <div className="flex flex-wrap items-center gap-2 mb-4 -mt-1">
                   {result.engine === 'deterministic' ? (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-500/10 border border-green-500/20 text-green-300 text-[11px] font-medium">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-500/10 border border-green-500/20 text-green-300 text-2xs font-medium">
                       <Shield size={12} /> {result.costMethod === 'feature-machining' ? 'Feature-based machining engine' : 'Engine-computed (rate library + FX)'}
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] font-medium">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-2xs font-medium">
                       <AlertTriangle size={12} /> Un-grounded AI estimate
                     </span>
                   )}
                   {result.resolved && (result.resolved.approxMaterial || result.resolved.approxProcess) && (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 text-[11px]">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 text-2xs">
                       <Info size={12} /> Approx. match: {result.resolved.material} / {result.resolved.process}
                     </span>
                   )}
@@ -677,7 +677,7 @@ export default function CadToCostPage() {
                 )}
 
                 {result.note && (
-                  <p className="text-slate-500 text-[11px] leading-relaxed mt-3">{result.note}</p>
+                  <p className="text-slate-500 text-2xs leading-relaxed mt-3">{result.note}</p>
                 )}
               </div>
 

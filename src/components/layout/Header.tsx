@@ -135,7 +135,7 @@ function ToolSearch() {
                   >
                     <Search size={13} className="text-slate-500 shrink-0" />
                     <span className="truncate">{h.title}</span>
-                    <span className="text-slate-500 text-2xs uppercase tracking-wide ml-auto shrink-0">{HIT_LABEL[h.kind]}</span>
+                    <span className="text-slate-500 text-2xs uppercase tracking-wider ml-auto shrink-0">{HIT_LABEL[h.kind]}</span>
                   </button>
                 ))}
               </>
@@ -326,7 +326,7 @@ export default function Header() {
               </Link>
               {TOOL_GROUPS.map(group => (
                 <div key={group.id}>
-                  <div className="px-3 pt-3 pb-1 text-2xs font-bold uppercase tracking-[0.09em] text-slate-500">{group.label}</div>
+                  <div className="px-3 pt-3 pb-1 text-2xs font-bold uppercase tracking-widest text-slate-500">{group.label}</div>
                   {group.tools.map(t => (
                     <Link key={t.id} to={t.route} className="flex items-center gap-2.5 px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>
                       <t.icon size={14} className="text-slate-500" /> {t.label}

@@ -160,7 +160,7 @@ export default function IntegrationsPage() {
             className="bg-navy-900 rounded-2xl border border-white/10 p-4 flex items-center justify-between">
             <div>
               <p className="text-white text-sm font-medium">Auto-notify on Approval</p>
-              <p className="text-slate-500 text-xs mt-0.5">
+              <p className="text-slate-500 text-xs mt-0.5 measure">
                 Preference saved on this device. Automatic posting on approval is not built yet —
                 use “Send test message” to post to the channel manually.
               </p>

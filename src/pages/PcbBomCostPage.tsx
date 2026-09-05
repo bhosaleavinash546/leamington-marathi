@@ -406,7 +406,7 @@ export default function PcbBomCostPage() {
                       </div>
                     ))}
                     {photos.length < MAX_PHOTOS && (
-                      <button onClick={() => fileRef.current?.click()} className="h-24 w-20 rounded-lg border border-dashed border-white/15 text-slate-500 hover:border-white/30 flex flex-col items-center justify-center gap-1 text-[11px]"><Plus size={14} /> Add</button>
+                      <button onClick={() => fileRef.current?.click()} className="h-24 w-20 rounded-lg border border-dashed border-white/15 text-slate-500 hover:border-white/30 flex flex-col items-center justify-center gap-1 text-2xs"><Plus size={14} /> Add</button>
                     )}
                   </div>
                 )}
@@ -432,7 +432,7 @@ export default function PcbBomCostPage() {
             {error && <div className="flex items-start gap-2 text-sm text-danger-300 bg-danger-500/10 border border-danger-500/25 rounded-xl px-4 py-3"><AlertTriangle size={15} className="mt-0.5 flex-shrink-0" /> {error}</div>}
 
             {cost && (importedCount > 0 || pricingNote) && (
-              <div className="flex items-start gap-2 text-[11px] text-emerald-300/90 bg-emerald-500/8 border border-emerald-500/25 rounded-xl px-3 py-2.5">
+              <div className="flex items-start gap-2 text-2xs text-emerald-300/90 bg-emerald-500/8 border border-emerald-500/25 rounded-xl px-3 py-2.5">
                 <CheckCircle2 size={13} className="mt-0.5 flex-shrink-0" />
                 <span>
                   {importedCount > 0 && <><b className="text-emerald-300">{importedCount} BOM lines imported</b> — exact part numbers, highest-accuracy path. </>}
@@ -443,7 +443,7 @@ export default function PcbBomCostPage() {
             )}
 
             {cost && (coverage || assumptions) && (
-              <div className="flex items-start gap-2 text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/25 rounded-xl px-3 py-2.5">
+              <div className="flex items-start gap-2 text-2xs text-amber-300/80 bg-amber-500/8 border border-amber-500/25 rounded-xl px-3 py-2.5">
                 <Info size={13} className="mt-0.5 flex-shrink-0" />
                 <span>
                   {coverage?.viewsSeen?.length ? <><b className="text-amber-300">Views:</b> {coverage.viewsSeen.join(', ')}. </> : null}
@@ -509,8 +509,8 @@ export default function PcbBomCostPage() {
                             <div className="relative">
                               <input type="number" step="0.001" value={l.unitCostOverride ?? l.unitCost} onChange={e => updateLine(i, { unitCostOverride: e.target.value === '' ? undefined : Number(e.target.value), aiPrice1k: null, liveSource: undefined, liveMeta: undefined })} className={`${inp} w-16 text-right ${l.liveSource ? 'border-emerald-500/50 text-emerald-200' : l.aiPrice1k ? 'border-amber-500/40 text-amber-200' : ''}`} />
                               {l.liveSource
-                                ? <span title={l.liveMeta || `Live distributor price (${l.liveSource})`} className="absolute -top-1.5 -right-1 text-[8px] font-bold text-emerald-400 bg-navy-900 px-0.5 rounded">LIVE</span>
-                                : l.aiPrice1k ? <span title={`AI-estimated from markings (~£${l.aiPrice1k} @1k). Edit to correct.`} className="absolute -top-1.5 -right-1 text-[8px] font-bold text-amber-400 bg-navy-900 px-0.5 rounded">AI</span> : null}
+                                ? <span title={l.liveMeta || `Live distributor price (${l.liveSource})`} className="absolute -top-2 -right-1 text-2xs font-bold leading-none text-emerald-400 bg-navy-900 border border-emerald-500/40 px-1 py-px rounded">LIVE</span>
+                                : l.aiPrice1k ? <span title={`AI-estimated from markings (~£${l.aiPrice1k} @1k). Edit to correct.`} className="absolute -top-2 -right-1 text-2xs font-bold leading-none text-amber-400 bg-navy-900 border border-amber-500/40 px-1 py-px rounded">AI</span> : null}
                             </div>
                           </td>
                           <td className="px-2 py-1 text-right text-slate-300 font-mono">{(((l.unitCostOverride ?? l.unitCost) * l.qty)).toFixed(2)}</td>
@@ -558,13 +558,13 @@ export default function PcbBomCostPage() {
                     </div>
                   ))}
                 </div>
-                <p className="text-[11px] text-slate-500 mb-2">What moves the price most (each a real engine run):</p>
+                <p className="text-2xs text-slate-500 mb-2">What moves the price most (each a real engine run):</p>
                 <div className="space-y-1">
                   {sensitivity.tornado.scenarios.slice(0, 8).map((s, i) => {
                     const maxAbs = Math.abs(sensitivity.tornado.scenarios[0].delta) || 1;
                     const w = Math.max(3, Math.round((Math.abs(s.delta) / maxAbs) * 100));
                     return (
-                      <div key={i} className="flex items-center gap-2 text-[11px]">
+                      <div key={i} className="flex items-center gap-2 text-2xs">
                         <span className="w-44 truncate text-slate-400">{s.label}</span>
                         <div className="flex-1 h-3 rounded bg-white/5 overflow-hidden"><div className={`h-full ${s.delta < 0 ? 'bg-emerald-500/60' : 'bg-danger-500/50'}`} style={{ width: `${w}%` }} /></div>
                         <span className={`w-16 text-right font-mono ${s.delta < 0 ? 'text-emerald-300' : 'text-danger-300'}`}>{s.delta > 0 ? '+' : ''}{s.delta.toFixed(2)}</span>
@@ -590,7 +590,7 @@ export default function PcbBomCostPage() {
                   if (items.length === 0) return null;
                   return (
                     <div key={bucket} className="mb-3 last:mb-0">
-                      <p className="text-2xs font-bold uppercase tracking-[0.08em] text-slate-500 mb-1.5">{bucket === 'dfm' ? 'DFM' : bucket}</p>
+                      <p className="text-2xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">{bucket === 'dfm' ? 'DFM' : bucket}</p>
                       <div className="space-y-2">
                         {items.map((idea, i) => {
                           const ec = idea.engineCheck;
@@ -602,7 +602,7 @@ export default function PcbBomCostPage() {
                                 {ec.direction === 'contradicted' && <span className="shrink-0 inline-flex items-center gap-1 text-2xs font-bold text-danger-300"><XCircle size={12} /> +£{Math.abs(ec.delta || 0).toFixed(2)} (engine disagrees)</span>}
                                 {ec.direction === 'unverified' && <span className="shrink-0 inline-flex items-center gap-1 text-2xs text-slate-500"><HelpCircle size={12} /> qualitative</span>}
                               </div>
-                              <p className="text-slate-400 text-[11.5px] mt-1">{idea.detail}</p>
+                              <p className="text-slate-400 text-2xs mt-1">{idea.detail}</p>
                               {ec.basis && <p className="text-slate-500 text-2xs mt-1">Engine check: {ec.basis}</p>}
                             </div>
                           );
@@ -644,7 +644,7 @@ export default function PcbBomCostPage() {
                   <span className="text-slate-400 text-xs uppercase tracking-wider">Unit cost · {cost.regionLabel}</span>
                   <span className="text-teal-300 font-bold text-2xl">£{cost.total.toFixed(2)}</span>
                 </div>
-                {sensitivity && <p className="text-right text-[11px] text-slate-500 mb-2">P10 £{sensitivity.simulation.p10.toFixed(2)} – P90 £{sensitivity.simulation.p90.toFixed(2)}</p>}
+                {sensitivity && <p className="text-right text-2xs text-slate-500 mb-2">P10 £{sensitivity.simulation.p10.toFixed(2)} – P90 £{sensitivity.simulation.p90.toFixed(2)}</p>}
                 <div className="space-y-1.5">
                   {Object.entries(cost.breakdown).map(([k, v]) => (
                     <div key={k} className="flex items-center gap-2 text-xs">
@@ -654,16 +654,16 @@ export default function PcbBomCostPage() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-3 pt-3 border-t border-white/10 text-[11px] text-slate-500 space-y-0.5">
+                <div className="mt-3 pt-3 border-t border-white/10 text-2xs text-slate-500 space-y-0.5">
                   <p>{cost.stats.totalPlacements} SMT placements · {cost.stats.thLeads} TH leads · {cost.board.areaCm2} cm² · {cost.board.layers}-layer {cost.board.finish}</p>
                   <p>@ {cost.volume.toLocaleString()} boards/yr · test: {cost.params.testStrategy} · {cost.params.autoGrade ? 'AEC-Q grade' : 'commercial grade'}</p>
                 </div>
-                {dirty && <p className="text-amber-300/80 text-[11px] mt-2">Edits pending — re-cost to update the totals before exporting.</p>}
+                {dirty && <p className="text-amber-300/80 text-2xs mt-2">Edits pending — re-cost to update the totals before exporting.</p>}
                 <button onClick={exportXlsx} disabled={dirty} title={dirty ? 'Re-cost first' : ''} className="w-full mt-3 py-2 rounded-lg bg-teal-600/80 hover:bg-teal-500 disabled:opacity-40 text-white text-sm font-medium flex items-center justify-center gap-2"><Download size={14} /> Export .xlsx</button>
               </div>
             )}
 
-            <div className="flex items-start gap-2 text-[11px] text-slate-500 bg-navy-900/60 border border-white/8 rounded-xl px-3 py-2.5">
+            <div className="flex items-start gap-2 text-2xs text-slate-500 bg-navy-900/60 border border-white/8 rounded-xl px-3 py-2.5">
               <Info size={13} className="mt-0.5 flex-shrink-0" />
               <span>Engineering estimate from research-based rate priors and class-average component prices shaped by per-class volume curves. Green "LIVE" prices are real distributor price-breaks (DigiKey/Octopart); amber "AI" prices are vision estimates — edit either where you know better. Use the P10–P90 band, not a single point. Not a supplier quote.</span>
             </div>
@@ -791,7 +791,7 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
     </div>
   );
   const F = ({ grp, k, label, unit, derived, step = 0.1 }: { grp: string; k: string; label: string; unit: string; derived: number; step?: number }) => (
-    <label className="flex items-center gap-2 text-[11.5px] text-slate-400">
+    <label className="flex items-center gap-2 text-2xs text-slate-400">
       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isSet(grp, k) ? 'bg-gold-400' : 'bg-slate-600'}`} title={isSet(grp, k) ? 'Your value' : 'Derived from the standard engine'} />
       <span className="flex-1">{label}</span>
       <input type="number" step={step} value={flatVal(grp, k, derived)} onChange={e => setFlat(grp, k, e.target.value)} className={bcls(isSet(grp, k))} />
@@ -827,7 +827,7 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
             <>
               {/* CBD waterfall */}
               <div className="rounded-xl border border-white/8 overflow-hidden">
-                <table className="w-full text-[11.5px]">
+                <table className="w-full text-2xs">
                   <thead><tr className="text-slate-500 text-left bg-white/3">
                     <th className="px-2.5 py-1.5 font-medium w-8">Tier</th><th className="px-2 py-1.5 font-medium">Cost line</th>
                     <th className="px-2 py-1.5 font-medium text-right">£/board</th><th className="px-2 py-1.5 font-medium text-right w-12">%</th>
@@ -864,7 +864,7 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
                   <Grp id="stn" title="Stations — cycle time & machine-hour rates">
                     {drivers.stations.map(st => (
                       <div key={st.id} className="space-y-1">
-                        <div className="flex items-center gap-2 text-[11.5px] text-slate-400">
+                        <div className="flex items-center gap-2 text-2xs text-slate-400">
                           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${(isSetN('stations', st.id, 'cycleSec') || isSetN('stations', st.id, 'mhr')) ? 'bg-gold-400' : 'bg-slate-600'}`} />
                           <span className="flex-1">{st.label}{st.detail ? <span className="text-slate-500"> · {st.detail}</span> : null}</span>
                           <input type="number" step={0.5} value={nestedVal('stations', st.id, 'cycleSec', st.cycleSec)} onChange={e => setNested('stations', st.id, 'cycleSec', e.target.value)} className={bcls(isSetN('stations', st.id, 'cycleSec'))} title="Cycle seconds per board" />
@@ -880,7 +880,7 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
                                 <input type="number" value={mhrIn[k]} onChange={e => setMhrIn(p => ({ ...p, [k]: e.target.value }))} className={`${inpS} border-white/10 w-full mt-0.5`} />
                               </label>
                             ))}
-                            <button onClick={() => void applyMhr(st.id)} className="col-span-2 text-[11px] py-1.5 rounded-lg bg-teal-600/80 hover:bg-teal-500 text-white font-medium">Compute & apply MHR</button>
+                            <button onClick={() => void applyMhr(st.id)} className="col-span-2 text-2xs py-1.5 rounded-lg bg-teal-600/80 hover:bg-teal-500 text-white font-medium">Compute & apply MHR</button>
                           </div>
                         )}
                       </div>
@@ -897,7 +897,7 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
                   </Grp>
                   <Grp id="nre" title="NRE & tooling amortisation">
                     {drivers.nre.map(n => (
-                      <div key={n.id} className="flex items-center gap-2 text-[11.5px] text-slate-400">
+                      <div key={n.id} className="flex items-center gap-2 text-2xs text-slate-400">
                         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${(isSetN('nre', n.id, 'amount') || isSetN('nre', n.id, 'amortVolume')) ? 'bg-gold-400' : 'bg-slate-600'}`} />
                         <span className="flex-1">{n.label}</span>
                         <input type="number" step={100} value={nestedVal('nre', n.id, 'amount', n.amount)} onChange={e => setNested('nre', n.id, 'amount', e.target.value)} className={bcls(isSetN('nre', n.id, 'amount'))} title="One-time cost £" />

@@ -316,7 +316,7 @@ export default function ShouldCostPage() {
                   return (
                     <button key={op} type="button"
                       onClick={() => setSecondaryOps(s => on ? s.filter(x => x !== op) : [...s, op])}
-                      className={`px-2.5 py-1 rounded-lg border text-[11px] transition ${on ? 'bg-teal-500/20 border-teal-500/40 text-teal-200' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/8'}`}>
+                      className={`px-2.5 py-1 rounded-lg border text-2xs transition ${on ? 'bg-teal-500/20 border-teal-500/40 text-teal-200' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/8'}`}>
                       {on ? '✓ ' : '+ '}{op.replace(' (secondary ops)', '').replace(' (batch)', '').replace(' (KTL)', '')}
                     </button>
                   );
@@ -412,7 +412,7 @@ export default function ShouldCostPage() {
             {result && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-white font-semibold flex items-center gap-2"><Calculator size={16} className="text-teal-400" /> Should-Cost Breakdown</h3>
+                  <h2 className="text-white font-semibold flex items-center gap-2"><Calculator size={16} className="text-teal-400" /> Should-Cost Breakdown</h2>
                   <span className="flex items-center gap-1 text-2xs font-semibold px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/25">
                     <Cpu size={10} /> {result.engine === 'deterministic' ? 'Deterministic' : 'Deterministic + AI'}
                   </span>
@@ -438,7 +438,7 @@ export default function ShouldCostPage() {
                   )}
                   {result.simulation && (
                     <div className="mt-3">
-                      <div className="flex justify-between text-[11px] text-slate-400 mb-1">
+                      <div className="flex justify-between text-2xs text-slate-400 mb-1">
                         <span>P10 {result.simulation.p10}</span>
                         <span className="text-slate-300 font-semibold">P50 {result.simulation.p50}</span>
                         <span>P90 {result.simulation.p90}</span>
@@ -454,7 +454,7 @@ export default function ShouldCostPage() {
 
                 {/* Teach: feed a real quote so the engine learns this user's prices */}
                 <div className="p-3 rounded-xl bg-navy-800/60 border border-white/10">
-                  <p className="text-[11px] text-slate-400 mb-2">Know the real quoted price? Teach the engine — it learns your supplier reality and calibrates future estimates.</p>
+                  <p className="text-2xs text-slate-400 mb-2">Know the real quoted price? Teach the engine — it learns your supplier reality and calibrates future estimates.</p>
                   <div className="flex items-center gap-2">
                     <input type="number" value={teachPrice} onChange={e => setTeachPrice(e.target.value)} placeholder={`Actual ${currency}/unit`}
                       className="flex-1 bg-navy-900 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-teal-500/40" />
@@ -507,7 +507,7 @@ export default function ShouldCostPage() {
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                           {gapIdeas.buckets.filter(b => b.target >= 0.05).map(b => (
-                            <span key={b.name} className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-300 text-[11px]">
+                            <span key={b.name} className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-300 text-2xs">
                               {b.name}: {result.symbol || '£'}{b.target.toFixed(2)}
                             </span>
                           ))}
@@ -516,18 +516,18 @@ export default function ShouldCostPage() {
                           <div key={i} className="p-4 rounded-xl bg-navy-800/60 border border-white/10">
                             <div className="flex items-start justify-between gap-3 mb-1.5 flex-wrap">
                               <div className="flex items-center gap-2">
-                                <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold">{idea.bucketLabel}</span>
-                                <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-400 text-[11px] capitalize">{idea.kind}</span>
+                                <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-2xs font-semibold">{idea.bucketLabel}</span>
+                                <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-400 text-2xs capitalize">{idea.kind}</span>
                               </div>
                               {idea.engineCheck ? (
                                 <span title={`${idea.engineCheck.referenceCase} — ${idea.engineCheck.basis}`}
-                                  className={`text-[11px] font-medium ${idea.engineCheck.direction === 'confirmed' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                                  className={`text-2xs font-medium ${idea.engineCheck.direction === 'confirmed' ? 'text-emerald-400' : 'text-amber-400'}`}>
                                   Engine {idea.engineCheck.direction} ({idea.engineCheck.savingPct > 0 ? '−' : '+'}{Math.abs(idea.engineCheck.savingPct)}%)
                                 </span>
                               ) : (
                                 // Absent is not a pass: say the engine did not look, and why.
                                 <span title={idea.engineCheckReason ? `Why: ${idea.engineCheckReason}` : 'Not expressible as a move the engine can re-cost. The figure is AI-estimated.'}
-                                  className="text-[11px] font-medium text-slate-400">
+                                  className="text-2xs font-medium text-slate-400">
                                   Not engine-checked
                                 </span>
                               )}
@@ -538,7 +538,7 @@ export default function ShouldCostPage() {
                             {idea.riskNotes && <p className="text-amber-300/80 text-xs mt-1">Risk: {idea.riskNotes}</p>}
                           </div>
                         ))}
-                        <p className="text-slate-500 text-[11px]">{gapIdeas.note}</p>
+                        <p className="text-slate-500 text-2xs">{gapIdeas.note}</p>
                       </>
                     )}
                   </div>
@@ -553,11 +553,11 @@ export default function ShouldCostPage() {
                         const max = Math.max(...result.volumeCurve!.map(p => p.unitCost));
                         return result.volumeCurve!.map(p => (
                           <div key={p.volume} className="flex items-center gap-3">
-                            <span className="text-[11px] text-slate-500 w-16 text-right tabular-nums">{p.volume.toLocaleString()}</span>
+                            <span className="text-2xs text-slate-500 w-16 text-right tabular-nums">{p.volume.toLocaleString()}</span>
                             <div className="flex-1 h-3.5 rounded bg-navy-800 overflow-hidden">
                               <div className="h-full bg-teal-500/70" style={{ width: `${max > 0 ? (p.unitCost / max) * 100 : 0}%` }} />
                             </div>
-                            <span className="text-[11px] text-teal-300 font-semibold w-20 text-right tabular-nums">{p.unitCostLabel}</span>
+                            <span className="text-2xs text-teal-300 font-semibold w-20 text-right tabular-nums">{p.unitCostLabel}</span>
                           </div>
                         ));
                       })()}
@@ -589,10 +589,14 @@ export default function ShouldCostPage() {
                           {result.route.lines.map((l, i) => (
                             <tr key={i} className="border-t border-white/5 text-slate-300">
                               <td className="px-3 py-1.5">{l.op}</td>
-                              <td className="px-3 py-1.5 text-right">{result.symbol || '£'}{l.conversion.toFixed(2)}</td>
-                              <td className="px-3 py-1.5 text-right">{result.symbol || '£'}{l.tooling.toFixed(2)}</td>
-                              <td className="px-3 py-1.5 text-right">{l.scrapPct}%</td>
-                              <td className="px-3 py-1.5 text-right">{l.outMassKg}</td>
+                              {/* Figures that stack in a column take the mono
+                                  face, as they do in the PCB table: it is the
+                                  sans's own sibling, so the row still reads as
+                                  one design. */}
+                              <td className="px-3 py-1.5 text-right font-mono">{result.symbol || '£'}{l.conversion.toFixed(2)}</td>
+                              <td className="px-3 py-1.5 text-right font-mono">{result.symbol || '£'}{l.tooling.toFixed(2)}</td>
+                              <td className="px-3 py-1.5 text-right font-mono">{l.scrapPct}%</td>
+                              <td className="px-3 py-1.5 text-right font-mono">{l.outMassKg}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -604,11 +608,11 @@ export default function ShouldCostPage() {
                 {/* CO2e + CBAM (indicative) */}
                 {result.carbon && (
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px]">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-2xs">
                       🌍 {result.carbon.totalKgCo2e} kg CO2e/part (material {result.carbon.materialKgCo2e} + process {result.carbon.processKgCo2e})
                     </span>
                     {result.carbon.cbam && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px]">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-2xs">
                         CBAM ≈ €{result.carbon.cbam.eur}/part if EU-imported
                       </span>
                     )}
@@ -664,7 +668,7 @@ export default function ShouldCostPage() {
                   {cdError && <p className="text-red-400 text-xs mt-2">{cdError}</p>}
                   {costDown && (
                     <div className="mt-3 space-y-2">
-                      <p className="text-slate-500 text-[11px]">{costDown.note}</p>
+                      <p className="text-slate-500 text-2xs">{costDown.note}</p>
                       {costDown.alternatives.length === 0 ? (
                         <p className="text-slate-400 text-xs">No cheaper compatible alternative was found for this part — the current design is close to cost-optimal in the modelled space.</p>
                       ) : costDown.alternatives.map((a, i) => (
@@ -673,9 +677,9 @@ export default function ShouldCostPage() {
                             <div className="text-white text-sm font-medium">{a.material} · {a.process} · {a.region}</div>
                             <div className="text-emerald-400 text-sm font-bold whitespace-nowrap">−{costDown.symbol || '£'}{a.saving.toFixed(2)} ({a.savingPct}%)</div>
                           </div>
-                          <div className="text-slate-500 text-[11px] mt-0.5">Engine should-cost {costDown.symbol || '£'}{a.total.toFixed(2)}/unit vs {costDown.symbol || '£'}{costDown.baseline.totalShouldCost.toFixed(2)} baseline</div>
+                          <div className="text-slate-500 text-2xs mt-0.5">Engine should-cost {costDown.symbol || '£'}{a.total.toFixed(2)}/unit vs {costDown.symbol || '£'}{costDown.baseline.totalShouldCost.toFixed(2)} baseline</div>
                           {a.rationale && <p className="text-slate-300 text-xs mt-1.5">{a.rationale}</p>}
-                          {a.risk && <p className="text-amber-300/80 text-[11px] mt-1">Risk: {a.risk}</p>}
+                          {a.risk && <p className="text-amber-300/80 text-2xs mt-1">Risk: {a.risk}</p>}
                         </div>
                       ))}
                     </div>
@@ -685,7 +689,7 @@ export default function ShouldCostPage() {
             )}
           </div>
         </div>
-        <p className="text-center text-slate-500 text-xs">Bottom-up parametric estimate from BrainSpark rate libraries. Validate against detailed supplier breakdowns before commercial use.</p>
+        <p className="text-center text-slate-500 text-xs measure mx-auto">Bottom-up parametric estimate from BrainSpark rate libraries. Validate against detailed supplier breakdowns before commercial use.</p>
       </div>
     </div>
   );
