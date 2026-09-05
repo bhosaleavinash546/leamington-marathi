@@ -266,9 +266,14 @@ function BrandPanel() {
       <div aria-hidden="true" className="h-[38%] shrink-0" />
 
       {/* The words centre themselves in what is left, so the block sits in the
-          panel rather than being pushed against its bottom edge. */}
+          panel rather than being pushed against its bottom edge.
+
+          The 60 px step is at 1366 px, NOT at Tailwind's xl (1280). Measured:
+          at 1280 the panel gives the headline 589 px and "idea generation
+          engine." needs more than that at 60 px, so it broke to three lines
+          and the block stopped balancing. 50 px fits two lines there. */}
       <div className="relative flex-1 flex flex-col justify-center px-12 xl:px-16">
-        <h2 className="text-[44px] xl:text-[52px] font-bold text-white leading-[1.04] tracking-[-0.03em]">
+        <h2 className="text-[50px] min-[1366px]:text-[60px] font-bold text-white leading-[1.02] tracking-[-0.032em]">
           The AI-assisted<br />
           <span className="text-gold-400">idea generation engine.</span>
         </h2>
