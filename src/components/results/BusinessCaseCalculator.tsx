@@ -97,7 +97,7 @@ function KPICard({ label, value, sub, color = 'text-white', icon: Icon, positive
           positive ? <TrendingUp size={12} className="text-green-400" /> : <TrendingDown size={12} className="text-red-400" />
         )}
       </div>
-      <p className={`text-xl font-black ${color} leading-tight`}>{value}</p>
+      <p className={`text-xl font-bold ${color} leading-tight`}>{value}</p>
       <p className="text-slate-500 text-xs mt-0.5">{label}</p>
       {sub && <p className="text-slate-500 text-xs mt-0.5">{sub}</p>}
     </div>

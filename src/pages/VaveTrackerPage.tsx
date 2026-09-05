@@ -287,7 +287,7 @@ export default function VaveTrackerPage() {
                 <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
                   <Target size={18} className="text-emerald-400" />
                 </div>
-                <h1 className="text-2xl font-black text-white">VAVE Tracker</h1>
+                <h1 className="text-2xl font-bold text-white">VAVE Tracker</h1>
               </div>
               <p className="text-slate-400 text-sm ml-11">Track approved cost-reduction ideas from identification to confirmed saving.</p>
             </div>

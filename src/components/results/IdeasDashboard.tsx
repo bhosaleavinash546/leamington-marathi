@@ -220,7 +220,7 @@ export default function IdeasDashboard({ ideas }: Props) {
                 { label: 'Tooling & Weight', value: ideas.filter(i => i.costSavingTypes.some(t => t === 'tooling' || t === 'weight')).length, color: 'text-teal-400' },
               ].map(({ label, value, color }) => (
                 <div key={label} className="p-3 rounded-xl bg-white/5 border border-white/5">
-                  <p className={`text-2xl font-black ${color}`}>{value}</p>
+                  <p className={`text-2xl font-bold ${color}`}>{value}</p>
                   <p className="text-slate-500 text-xs leading-tight mt-0.5">{label}</p>
                 </div>
               ))}

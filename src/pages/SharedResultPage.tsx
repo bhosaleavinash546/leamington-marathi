@@ -60,7 +60,7 @@ export default function SharedResultPage() {
         </div>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-black text-white">{systemName || result.config.vehicleType}</h1>
+          <h1 className="text-3xl font-bold text-white">{systemName || result.config.vehicleType}</h1>
           <p className="text-slate-400 mt-1">{result.generatedAt}</p>
         </div>
 
@@ -76,7 +76,7 @@ export default function SharedResultPage() {
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3`}>
                 <stat.icon size={20} className="text-white" />
               </div>
-              <div className="text-3xl font-black text-white">{stat.value}</div>
+              <div className="text-3xl font-bold text-white">{stat.value}</div>
               <div className="text-slate-500 text-sm mt-0.5">{stat.label}</div>
             </div>
           ))}

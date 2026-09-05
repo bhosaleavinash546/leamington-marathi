@@ -80,7 +80,7 @@ export default function PageHeader({ tool, icon, eyebrow, title, subtitle, tone,
           {eyebrowText && (
             <p className={`text-2xs font-semibold uppercase tracking-[0.12em] mb-1 ${tn.eyebrow}`}>{eyebrowText}</p>
           )}
-          <h1 className="text-[28px] sm:text-4xl font-black text-white tracking-tight leading-[1.1]">
+          <h1 className="text-[28px] sm:text-4xl font-bold text-white tracking-tight leading-[1.1]">
             {title ?? t?.label}
           </h1>
           {subtitle && (

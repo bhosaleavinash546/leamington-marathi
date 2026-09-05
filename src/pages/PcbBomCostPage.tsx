@@ -642,7 +642,7 @@ export default function PcbBomCostPage() {
               <div className="bg-teal-500/8 border border-teal-500/25 rounded-2xl p-4">
                 <div className="flex items-baseline justify-between mb-1">
                   <span className="text-slate-400 text-xs uppercase tracking-wider">Unit cost · {cost.regionLabel}</span>
-                  <span className="text-teal-300 font-black text-2xl">£{cost.total.toFixed(2)}</span>
+                  <span className="text-teal-300 font-bold text-2xl">£{cost.total.toFixed(2)}</span>
                 </div>
                 {sensitivity && <p className="text-right text-[11px] text-slate-500 mb-2">P10 £{sensitivity.simulation.p10.toFixed(2)} – P90 £{sensitivity.simulation.p90.toFixed(2)}</p>}
                 <div className="space-y-1.5">

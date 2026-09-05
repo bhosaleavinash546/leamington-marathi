@@ -355,7 +355,7 @@ export default function InnovationStudioPage() {
               <span className="iv-mark inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-gold-500/20 to-violet-500/10 border border-gold-500/25 shrink-0">
                 <Wand2 size={17} className="text-gold-400" />
               </span>
-              <h1 className="iv-title text-[26px] sm:text-[30px] font-black tracking-tight leading-none">Innovation Studio</h1>
+              <h1 className="iv-title text-[26px] sm:text-[30px] font-bold tracking-tight leading-none">Innovation Studio</h1>
             </div>
             <p className="text-slate-400 text-[13px] mt-2 max-w-2xl leading-relaxed">
               Structured idea generation. Each method gives the AI a proven thinking framework —

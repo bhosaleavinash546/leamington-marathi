@@ -78,7 +78,7 @@ export default function ScoreRing({
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           {has ? (
             <>
-              <span className={`dfm-num font-black leading-none ${TONE_TEXT[tone]}`}
+              <span className={`dfm-num font-bold leading-none ${TONE_TEXT[tone]}`}
                 style={{ fontSize: size * 0.30 }}>{Math.round(value)}</span>
               <span className="dfm-label text-slate-500 mt-0.5" style={{ fontSize: 8 }}>/ 100</span>
             </>

@@ -225,8 +225,8 @@ function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder,
 // a sentence of description under each, which turned the panel into a brochure
 // and buried the sign-in form's importance.
 const FEATURES = [
-  'Prism', 'Should-Cost', 'DFM / DFA', 'CAD → Cost',
-  'PCB → BOM → Cost', 'Innovation Studio', 'Idea Marketplace', 'Horizon',
+  'Prism', 'DFM / DFA', 'CAD → Cost', 'PCB → BOM → Cost',
+  'Innovation Studio', 'Idea Marketplace', 'Horizon', 'Should-Cost',
 ];
 
 function BrandPanel() {
@@ -256,14 +256,11 @@ function BrandPanel() {
 
       <div className="absolute top-12 left-12 xl:left-16 flex items-center gap-3 z-10">
         <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-9 h-9" />
-        <span className="text-white font-black text-lg tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
+        <span className="text-white font-bold text-lg tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
       </div>
 
       <div className="relative px-12 xl:px-16 pb-12 max-w-[46rem]">
-        <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-gold-400 mb-4">
-          AI cost engineering · automotive
-        </p>
-        <h2 className="text-[38px] xl:text-[43px] font-black text-white leading-[1.08] tracking-[-0.025em]">
+        <h2 className="text-[38px] xl:text-[43px] font-bold text-white leading-[1.08] tracking-[-0.025em]">
           The AI-assisted<br />
           <span className="text-gold-400">idea generation engine.</span>
         </h2>
@@ -421,7 +418,7 @@ export default function AuthPage() {
         <div className="relative w-full max-w-[23rem]">
           <div className="lg:hidden flex items-center gap-2.5 mb-9">
             <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-9 h-9" />
-            <span className="text-white font-black text-lg tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
+            <span className="text-white font-bold text-lg tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
           </div>
 
           <AnimatePresence mode="wait">
@@ -511,7 +508,7 @@ export default function AuthPage() {
                   {devOtp && (
                     <div className="p-4 rounded-xl bg-amber-500/15 border-2 border-amber-500/40 text-center">
                       <p className="text-amber-400 text-xs font-semibold uppercase tracking-wider mb-2">📧 No email configured — your reset code is:</p>
-                      <p className="text-amber-300 font-black text-3xl tracking-[0.3em]">{devOtp}</p>
+                      <p className="text-amber-300 font-bold text-3xl tracking-[0.3em]">{devOtp}</p>
                       <p className="text-amber-600 text-xs mt-2">It has been auto-filled below.</p>
                     </div>
                   )}

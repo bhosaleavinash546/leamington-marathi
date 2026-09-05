@@ -809,7 +809,7 @@ export default function ForesightPage() {
             <span className="hz-orbit-outer" aria-hidden="true"><span className="hz-orbit-sat2" /></span>
             <Telescope size={46} className="text-gold-400" />
           </div>
-          <h1 className="relative text-4xl font-black mb-3"><span className="hz-title">BrainSpark Horizon</span></h1>
+          <h1 className="relative text-4xl font-bold mb-3"><span className="hz-title">BrainSpark Horizon</span></h1>
           <p className="relative text-slate-400 max-w-2xl mx-auto">
             Which technologies will reshape this part — and when? A curated register of {catalogue ? <TickNumber value={catalogue.technologies} duration={1200} /> : '60+'} technologies with automotive TRL, adoption and dated regulations, positioned by <span className="text-white">deterministic S-curve, Bass-diffusion and Wright's-law models</span>. The AI narrates; it never invents a number.
           </p>

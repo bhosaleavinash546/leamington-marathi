@@ -122,7 +122,7 @@ export default function HarnessCostPage() {
                 <div className="flex flex-wrap items-end gap-6">
                   <div>
                     <div className="text-slate-500 text-xs uppercase tracking-wide">Should-cost / harness</div>
-                    <div className="text-4xl font-black text-white tabular-nums">€{total.toFixed(2)}</div>
+                    <div className="text-4xl font-bold text-white tabular-nums">€{total.toFixed(2)}</div>
                   </div>
                   <div>
                     <div className="text-slate-500 text-xs uppercase tracking-wide">Range (±{result.band.pct}%)</div>

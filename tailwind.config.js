@@ -60,7 +60,12 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        // Self-hosted; see the @font-face block at the top of src/index.css.
+        sans: ['IBM Plex Sans', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        // 82 call sites use font-mono for engine figures. Before this they
+        // rendered in the OS default mono and looked different on every
+        // machine; Plex Mono is the sans's own sibling.
+        mono: ['IBM Plex Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       // The type scale has a FLOOR: 11 px. text-2xs replaces every text-[9px],
       // text-[10px] and text-[10.5px] the review found (121 in source, 10 px

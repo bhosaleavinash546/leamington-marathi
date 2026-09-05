@@ -1343,7 +1343,7 @@ export default function ResultsPage() {
                   </span>
                 )}
               </div>
-              <h1 className="text-3xl font-black text-white">{systemName}</h1>
+              <h1 className="text-3xl font-bold text-white">{systemName}</h1>
               <p className="text-slate-400 mt-1">{subName} — {result.generatedAt}</p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -1407,7 +1407,7 @@ export default function ResultsPage() {
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3`}>
                 <stat.icon size={20} className="text-white" />
               </div>
-              <div className="text-3xl font-black text-white"><CountUp to={stat.value} /></div>
+              <div className="text-3xl font-bold text-white"><CountUp to={stat.value} /></div>
               <div className="text-slate-500 text-sm mt-0.5">{stat.label}</div>
             </div>
           ))}

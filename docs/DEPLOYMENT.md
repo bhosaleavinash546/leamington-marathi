@@ -154,9 +154,9 @@ comes back rather than an error.
 - **Password reset.** Without SMTP, the reset endpoint returns a clear
   503 — "not configured on this server" — instead of promising an email that
   will not arrive.
-- **Fonts.** The built front end loads Inter from Google Fonts. Behind a
-  firewall that fails silently and the system sans takes over; layout holds.
-  Self-host the face if that matters on stage.
+- **Fonts.** Self-hosted. IBM Plex Sans and IBM Plex Mono ship inside the
+  image (`public/fonts`, 388 KB), so there is no third-party request on first
+  paint and nothing for a corporate firewall to block.
 - **The first administrator.** `ADMIN_EMAILS` blocks those addresses from
   public signup. Only `ADMIN_EMAIL` + `ADMIN_PASSWORD` creates one, on an empty
   database. Set all three for the first boot; the preflight refuses to pass on

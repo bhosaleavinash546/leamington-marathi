@@ -16,7 +16,7 @@ export default function LegalPage() {
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center gap-3 mb-2">
           {isPrivacy ? <ShieldCheck size={22} className="text-gold-400" /> : <FileText size={22} className="text-gold-400" />}
-          <h1 className="text-3xl font-black text-white">{isPrivacy ? 'Privacy Policy' : 'Terms of Use'}</h1>
+          <h1 className="text-3xl font-bold text-white">{isPrivacy ? 'Privacy Policy' : 'Terms of Use'}</h1>
         </div>
         <p className="text-slate-500 text-sm mb-8">BrainSpark v{APP_VERSION} · Last updated 15 July 2026</p>
 

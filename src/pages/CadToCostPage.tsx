@@ -156,7 +156,7 @@ function DfmaRing({ score }: { score: number }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-black" style={{ color }}>{score}</span>
+        <span className="text-2xl font-bold" style={{ color }}>{score}</span>
         <span className="text-slate-500 text-2xs font-semibold uppercase">/10</span>
       </div>
     </div>
@@ -613,7 +613,7 @@ export default function CadToCostPage() {
                   {result.costBreakdown ? (
                     <div className="text-right">
                       <p className="text-slate-500 text-xs mb-1">Unit Cost</p>
-                      <p className="text-3xl font-black text-gold-400">{formatCost(result.costBreakdown.totalUnit.value, result.costBreakdown.totalUnit.currency)}</p>
+                      <p className="text-3xl font-bold text-gold-400">{formatCost(result.costBreakdown.totalUnit.value, result.costBreakdown.totalUnit.currency)}</p>
                       {result.simulation && (
                         <p className="text-slate-500 text-[11px] mt-0.5">P10–P90: {formatCost(result.simulation.p10, result.simulation.currency)} – {formatCost(result.simulation.p90, result.simulation.currency)}</p>
                       )}

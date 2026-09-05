@@ -7,12 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>BrainSpark — AI Idea Generation Tool</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Typefaces are self-hosted (see src/index.css). These two faces carry
+         the first paint, so they are preloaded; the rest load on demand. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/plex-sans-400-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/plex-sans-600-latin.woff2" crossorigin />
     <script src="/theme-init.js"></script>
   </head>
   <body>

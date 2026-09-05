@@ -298,7 +298,7 @@ export default function IdeaStudioPage() {
               {baseline ? (
                 <>
                   <div className="flex items-baseline gap-4">
-                    <span className="text-teal-300 font-black text-2xl">{baseline.total}</span>
+                    <span className="text-teal-300 font-bold text-2xl">{baseline.total}</span>
                     <span className="text-slate-500 text-xs">P10–P90 {baseline.p10}–{baseline.p90} · material {baseline.matPct}%</span>
                   </div>
                   {baselineNote && <p className="text-slate-500 text-[11px] mt-1.5">{baselineNote}</p>}
@@ -328,7 +328,7 @@ export default function IdeaStudioPage() {
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                      <span className="text-white font-black text-sm leading-none">{baseline.total}</span>
+                      <span className="text-white font-bold text-sm leading-none">{baseline.total}</span>
                       <span className="text-slate-500 text-2xs mt-0.5 uppercase tracking-wide">/ unit</span>
                     </div>
                   </div>

@@ -501,7 +501,7 @@ export default function PipelinePage() {
               <div className="w-9 h-9 rounded-xl bg-gold-500/15 border border-gold-500/25 flex items-center justify-center">
                 <ClipboardList size={18} className="text-gold-400" />
               </div>
-              <h1 className="text-2xl font-black text-white">Idea Pipeline</h1>
+              <h1 className="text-2xl font-bold text-white">Idea Pipeline</h1>
             </div>
             <p className="text-slate-400 text-sm ml-11">
               All team ideas tracked through G0 → G3 implementation gates

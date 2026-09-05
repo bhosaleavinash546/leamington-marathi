@@ -422,7 +422,7 @@ export default function ShouldCostPage() {
                 <div className="p-4 rounded-xl bg-teal-500/10 border border-teal-500/25">
                   <div className="flex items-baseline justify-between">
                     <span className="text-slate-400 text-xs uppercase tracking-wider">Total Should-Cost / unit</span>
-                    <span className="text-teal-300 font-black text-2xl">{result.totalShouldCost}</span>
+                    <span className="text-teal-300 font-bold text-2xl">{result.totalShouldCost}</span>
                   </div>
                   {result.fx && (
                     <p className={`text-2xs mt-1 ${result.fx.stale ? 'text-amber-400/80' : 'text-slate-500'}`}>

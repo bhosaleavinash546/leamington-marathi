@@ -324,7 +324,7 @@ export default function HomePage() {
                   advantage over it narrowed. The honest number is the smaller
                   one — the test exists precisely so a copy figure cannot
                   outlive the measurement that justified it. */}
-              <div className="text-[3.75rem] font-extrabold text-gold-400 leading-none tracking-[-0.03em]">1.1–1.7×</div>
+              <div className="text-[3.75rem] font-bold text-gold-400 leading-none tracking-[-0.03em]">1.1–1.7×</div>
               <div className="mt-2 text-[14px] text-slate-400">more accurate than a mass-based estimate, on 12 held-out machined and stamped parts</div>
             </div>
           </div>

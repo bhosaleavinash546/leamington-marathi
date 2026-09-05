@@ -1312,7 +1312,7 @@ export default function DfmStudioPage() {
               <ShieldCheck size={22} className="text-gold-400" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-[27px] font-black text-white tracking-tight leading-tight">DFM / DFA Studio</h1>
+              <h1 className="text-2xl sm:text-[27px] font-bold text-white tracking-tight leading-tight">DFM / DFA Studio</h1>
               <p className="text-[13px] text-slate-400 mt-0.5 max-w-2xl">
                 Manufacturability measured from your geometry and read off your drawing, judged against
                 cited standards, priced by deterministic engines.

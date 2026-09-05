@@ -408,7 +408,7 @@
 /* KPI figure: a big tabular number over a small label. */
 .iv-kpi-value {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;

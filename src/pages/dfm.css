@@ -143,13 +143,13 @@
 .dfm-num { font-variant-numeric: tabular-nums; }
 .dfm-kpi-value {
   font-size: 30px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 .dfm-display {
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.03em;
   /* The one place a gradient is allowed on text: the part name, which is the
      subject of the whole report. */
