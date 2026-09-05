@@ -231,24 +231,27 @@ const FEATURES = [
 
 function BrandPanel() {
   return (
-    <div className="relative hidden lg:flex lg:w-[54%] xl:w-[56%] flex-col justify-end overflow-hidden">
-      {/* THE IMAGE OCCUPIES THE TOP, THE TYPE SITS AT THE BOTTOM.
+    <div className="relative hidden lg:flex lg:w-[54%] xl:w-[56%] flex-col overflow-hidden">
+      {/* THE IMAGE OCCUPIES THE TOP, THE TYPE SITS ON SOLID GROUND BELOW IT.
           Earlier attempts put the render behind the copy and neither setting
           worked: strong enough to see meant the vehicle ran straight through
-          the proof text, weak enough to read meant it was grey noise. The
-          panel is only ~780 px wide and the copy uses most of it, so there is
-          no empty zone to hide an image in. Separating them vertically is the
-          fix — and it is the pattern premium sign-in pages use, because the
-          scrim gives the words a solid ground instead of a busy one. */}
+          the text, weak enough to read meant grey noise. The panel is ~800 px
+          wide and the copy uses most of it, so there is no empty zone to hide
+          an image in. Separating them vertically is the fix.
+
+          The two numbers below are TIED TO EACH OTHER: the scrim goes solid
+          38% from the top, and the type block starts at exactly 38%. That is
+          what lets the headline be this large and still sit on flat navy —
+          and it is why an earlier version had a dead band between the image
+          and the words, with everything crammed against the bottom edge. */}
       <div aria-hidden="true" className="absolute inset-0">
         <img
           src="/auth-hero.jpg"
           alt=""
-          className="absolute inset-x-0 top-0 h-[62%] w-full object-cover object-[52%_38%]"
+          className="absolute inset-x-0 top-0 h-[54%] w-full object-cover object-[52%_36%]"
           draggable={false}
         />
-        {/* Solid navy from 52% down, so every word below sits on flat ground. */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgb(var(--navy-950))_52%,rgb(var(--navy-950)/0.86)_66%,rgb(var(--navy-950)/0.24)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgb(var(--navy-950))_62%,rgb(var(--navy-950)/0.85)_73%,rgb(var(--navy-950)/0.22)_100%)]" />
         {/* Dissolve the right edge into the form side: no seam, one surface. */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-navy-950" />
         <div className="absolute -top-20 -left-16 w-[32rem] h-[32rem] rounded-full bg-gold-500/[0.07] blur-[110px]" />
@@ -259,8 +262,13 @@ function BrandPanel() {
         <span className="text-white font-bold text-lg tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
       </div>
 
-      <div className="relative px-12 xl:px-16 pb-12 max-w-[46rem]">
-        <h2 className="text-[38px] xl:text-[43px] font-bold text-white leading-[1.08] tracking-[-0.025em]">
+      {/* The image's half of the panel. */}
+      <div aria-hidden="true" className="h-[38%] shrink-0" />
+
+      {/* The words centre themselves in what is left, so the block sits in the
+          panel rather than being pushed against its bottom edge. */}
+      <div className="relative flex-1 flex flex-col justify-center px-12 xl:px-16">
+        <h2 className="text-[44px] xl:text-[52px] font-bold text-white leading-[1.04] tracking-[-0.03em]">
           The AI-assisted<br />
           <span className="text-gold-400">idea generation engine.</span>
         </h2>
@@ -269,19 +277,19 @@ function BrandPanel() {
             something you can press and none of these can be; a flowing line
             wrapped so that its separators landed at the start of a line. A
             grid puts every marker in the same place on every row. */}
-        <ul className="grid grid-cols-2 gap-x-10 gap-y-2.5 mt-8 pt-7 border-t border-hairline">
+        <ul className="grid grid-cols-2 gap-x-12 gap-y-4 mt-10 pt-9 border-t border-hairline">
           {FEATURES.map(name => (
-            <li key={name} className="flex items-center gap-2.5">
-              <span aria-hidden="true" className="h-1 w-1 rounded-full bg-gold-400/80 shrink-0" />
-              <span className="text-slate-200 text-[13.5px] font-medium tracking-tight">{name}</span>
+            <li key={name} className="flex items-center gap-3">
+              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-gold-400/80 shrink-0" />
+              <span className="text-slate-200 text-[16px] font-medium tracking-tight">{name}</span>
             </li>
           ))}
         </ul>
-
-        <p className="mt-7 text-slate-500 text-2xs">
-          Designed &amp; created by <span className="text-slate-400 font-medium">Avinash Bhosale</span>
-        </p>
       </div>
+
+      <p className="relative px-12 xl:px-16 pb-12 text-slate-500 text-2xs">
+        Designed &amp; created by <span className="text-slate-400 font-medium">Avinash Bhosale</span>
+      </p>
     </div>
   );
 }
