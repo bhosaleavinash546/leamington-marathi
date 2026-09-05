@@ -257,9 +257,9 @@ function BrandPanel() {
         <div className="absolute -top-20 -left-16 w-[32rem] h-[32rem] rounded-full bg-gold-500/[0.07] blur-[110px]" />
       </div>
 
-      <div className="absolute top-11 left-12 xl:left-16 flex items-center gap-3.5 z-10">
-        <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-12 h-12" />
-        <span className="text-white font-bold text-[24px] tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
+      <div className="absolute top-10 left-12 xl:left-16 flex items-center gap-4 z-10">
+        <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-24 h-24" />
+        <span className="text-white font-bold text-[48px] tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
       </div>
 
       {/* The image's half of the panel. */}
@@ -425,8 +425,8 @@ export default function AuthPage() {
 
         <div className="relative w-full max-w-[23rem]">
           <div className="lg:hidden flex items-center gap-3 mb-9">
-            <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-11 h-11" />
-            <span className="text-white font-bold text-[22px] tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
+            <img src="/brainspark-logo.svg" alt="" aria-hidden="true" className="w-[88px] h-[88px] shrink-0" />
+            <span className="text-white font-bold text-[40px] sm:text-[44px] tracking-tight">Brain<span className="text-gold-400">Spark</span></span>
           </div>
 
           <AnimatePresence mode="wait">
