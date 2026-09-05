@@ -225,8 +225,8 @@ function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder,
 // a sentence of description under each, which turned the panel into a brochure
 // and buried the sign-in form's importance.
 const FEATURES = [
-  'Prism', 'DFM / DFA', 'CAD → Cost', 'PCB → BOM → Cost',
-  'Innovation Studio', 'Idea Marketplace', 'Horizon', 'Should-Cost',
+  'Prism', 'Innovation Studio', 'DFM / DFA', 'CAD → Cost',
+  'PCB → BOM → Cost', 'Idea Marketplace', 'Horizon', 'Should-Cost',
 ];
 
 function BrandPanel() {
@@ -282,11 +282,11 @@ function BrandPanel() {
             something you can press and none of these can be; a flowing line
             wrapped so that its separators landed at the start of a line. A
             grid puts every marker in the same place on every row. */}
-        <ul className="grid grid-cols-2 gap-x-12 gap-y-4 mt-10 pt-9 border-t border-hairline">
+        <ul className="grid grid-cols-2 gap-x-12 gap-y-5 mt-10 pt-9 border-t border-hairline">
           {FEATURES.map(name => (
-            <li key={name} className="flex items-center gap-3">
-              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-gold-400/80 shrink-0" />
-              <span className="text-slate-200 text-[16px] font-medium tracking-tight">{name}</span>
+            <li key={name} className="flex items-center gap-3.5">
+              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-gold-400/80 shrink-0" />
+              <span className="text-slate-200 text-[24px] font-medium tracking-tight">{name}</span>
             </li>
           ))}
         </ul>
