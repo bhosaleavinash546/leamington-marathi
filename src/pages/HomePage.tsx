@@ -122,9 +122,25 @@ function ProductPanel() {
             <div key={i} className="flex justify-between text-[13px] text-slate-400"><span>{k}</span><b className="text-slate-200 font-semibold">{v}</b></div>
           ))}
         </div>
-        <div className="mt-4 flex items-center gap-2 text-xs text-gold-300 bg-gold-500/10 border border-gold-500/20 rounded-xl px-3 py-2.5">
-          <Sparkles size={14} className="shrink-0 text-gold-400" />
-          <span>AI proposed 3 alternatives · engine verified — best saves <b className="text-gold-200">£6.10 (14%)</b></span>
+        <div className="mt-4 rounded-xl bg-gold-500/[0.07] border border-gold-500/20 px-3.5 py-3">
+          <div className="flex items-center gap-2 text-xs text-gold-300">
+            <Sparkles size={14} className="shrink-0 text-gold-400" />
+            <span>AI proposed 3 alternatives · engine verified — best saves <b className="text-gold-200">£6.10 (14%)</b></span>
+          </div>
+          {/* Named, not counted. "+3 ideas" says nothing; the titles say what
+              the tool actually hands a cost engineer, which is the whole
+              product in three lines. */}
+          <ol className="mt-2.5 space-y-1.5 border-t border-gold-500/15 pt-2.5">
+            {[['Magnesium die-casting substitution', '£6.10'],
+              ['Laser welding — 4 fasteners deleted', '£3.85'],
+              ['Rib consolidation — 3 parts to 1', '£2.40']].map(([name, save], i) => (
+              <li key={name} className="flex items-baseline gap-2 text-2xs">
+                <span className="text-gold-400/70 font-semibold tabular-nums">{i + 1}.</span>
+                <span className="text-slate-300 flex-1 leading-snug">{name}</span>
+                <span className="text-emerald-400 font-semibold font-mono">−{save}</span>
+              </li>
+            ))}
+          </ol>
         </div>
       </motion.div>
       <motion.div
@@ -174,7 +190,7 @@ export default function HomePage() {
             <rect width="100%" height="100%" fill="url(#g)" />
           </svg>
         </div>
-        <div className="max-w-6xl mx-auto px-6 lg:px-8 pt-28 pb-24 relative grid lg:grid-cols-2 gap-14 items-center">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 pt-28 pb-24 relative grid lg:grid-cols-[1.12fr_0.88fr] gap-14 items-center">
           <div>
             <motion.span
               initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
@@ -183,7 +199,7 @@ export default function HomePage() {
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.06 }}
-              className="mt-5 text-4xl md:text-5xl lg:text-[50px] font-semibold text-white leading-[1.07] tracking-[-0.022em] text-balance"
+              className="mt-5 text-4xl md:text-5xl lg:text-[48px] font-semibold text-white leading-[1.07] tracking-[-0.022em] text-balance"
             >Unlock <span className="text-gold-400">Breakthrough Ideas</span> with AI-Powered Precision and Intelligence.</motion.h1>
 
             <motion.p
