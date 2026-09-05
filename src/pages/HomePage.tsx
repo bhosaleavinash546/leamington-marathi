@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import QuoteRotator from '../components/QuoteRotator';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import {
@@ -34,7 +35,6 @@ function useLivePrices() {
 }
 
 // ─── Static content ───────────────────────────────────────────────────────────
-const OEMS = ['BMW', 'Mercedes-Benz', 'Audi', 'Porsche', 'Tesla', 'Rivian', 'Lucid'];
 
 const BENTO = [
   {
@@ -156,11 +156,17 @@ export default function HomePage() {
     { num: 'Min', em: 's', cap: 'To a costed idea, not weeks' },
   ];
 
+  // Dark, whatever the viewer's theme — the landing page fronts a dark product
+  // and every surface below is styled for a dark ground. It used to force LIGHT
+  // tokens on this root with two dark sections punched into it, which is what
+  // put a white band directly under the hero. index.css restores the dark
+  // tokens beneath a data-theme="dark" island, and a gate keeps that block
+  // complete.
   return (
-    <div data-theme="light" className="min-h-screen bg-navy-950">
+    <div data-theme="dark" className="min-h-screen bg-navy-950">
 
       {/* ── HERO (dark band) ─────────────────────────────────────────────── */}
-      <section data-theme="dark" className="relative bg-hero-gradient overflow-hidden border-b border-white/10">
+      <section className="relative bg-hero-gradient overflow-hidden border-b border-hairline">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-24 right-[12%] w-[520px] h-[520px] bg-gold-500/5 rounded-full blur-3xl" />
           <svg className="absolute inset-0 w-full h-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
@@ -206,18 +212,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── OEM trust strip ──────────────────────────────────────────────── */}
-      <div className="border-b border-white/10 bg-navy-900">
-        <div className="max-w-6xl mx-auto px-6 lg:px-8 py-6 flex flex-wrap items-center justify-center gap-x-9 gap-y-3">
-          <span className="text-xs uppercase tracking-wider font-semibold text-slate-500">Benchmarked against world-class OEMs</span>
-          {/* No opacity modifier. `text-slate-400/70` emits raw Tailwind slate
-              at 70% and so bypasses the tuned .text-slate-400 override in
-              index.css entirely — 4.02:1 on navy-900, below AA, and the only
-              serious axe violation in the whole app. The bare class is
-              theme-remapped and measures 6.04:1 dark / 7.58:1 light. */}
-          {OEMS.map(o => <span key={o} className="text-base font-bold text-slate-400 tracking-tight">{o}</span>)}
-        </div>
-      </div>
+      {/* ── Quotations ───────────────────────────────────────────────────
+          Replaces an OEM logo strip. Those companies are not customers, and a
+          "trusted by" wall of their marks would have claimed a relationship
+          that does not exist — on a product whose whole argument is that
+          claims carry their evidence. The line under the hero still says
+          "benchmarked against", which is true of the corpus. */}
+      <QuoteRotator />
 
       {/* ── BENTO features ───────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 lg:px-8 py-24">
@@ -235,8 +236,21 @@ export default function HomePage() {
                 <h3 className="text-white font-semibold text-base tracking-[-0.01em] mb-1.5">{t.title}</h3>
                 <p className="text-slate-400 text-[13px] leading-relaxed measure">{t.desc}</p>
                 {t.bars && (
-                  <div className="mt-auto flex items-end gap-1.5 h-14">
-                    {t.bars.map((h, j) => <div key={j} style={{ height: `${h}%` }} className="flex-1 rounded-t bg-gradient-to-b from-gold-400 to-gold-600/70" />)}
+                  <div className="mt-auto flex items-end gap-2 h-14" aria-hidden="true">
+                    {/* A chart, not a gold slab. Nine full-width bars in solid
+                        brand gold read as one block; narrow bars with air
+                        between them, quiet except for the tallest, read as a
+                        distribution — which is what a cost band is. */}
+                    {t.bars.map((h, j) => {
+                      const peak = h === Math.max(...(t.bars as number[]));
+                      return (
+                        <div
+                          key={j}
+                          style={{ height: `${h}%` }}
+                          className={`flex-1 max-w-[14px] rounded-t transition-ui duration-micro ease-house ${peak ? 'bg-gold-400' : 'bg-gold-500/35'}`}
+                        />
+                      );
+                    })}
                   </div>
                 )}
                 {t.cad && <div className="mt-auto h-16 rounded-[10px] border border-dashed border-white/12 bg-white/[0.02] flex items-center justify-center text-slate-500 text-xs">STEP · STL · DXF · PDF → cost</div>}
@@ -359,7 +373,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA band (dark) ──────────────────────────────────────────────── */}
-      <section data-theme="dark" className="relative bg-hero-gradient overflow-hidden">
+      <section className="relative bg-hero-gradient overflow-hidden">
         <div className="absolute inset-0 pointer-events-none"><div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gold-500/12 rounded-full blur-3xl" /></div>
         <div className="max-w-3xl mx-auto px-6 text-center py-20 relative">
           <Reveal>
