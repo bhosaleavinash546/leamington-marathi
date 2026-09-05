@@ -183,8 +183,8 @@ export default function HomePage() {
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.06 }}
-              className="mt-5 text-4xl md:text-5xl lg:text-[50px] font-semibold text-white leading-[1.07] tracking-[-0.022em]"
-            >Take cost out of any vehicle part — with numbers you can <span className="text-gold-400">defend</span>.</motion.h1>
+              className="mt-5 text-4xl md:text-5xl lg:text-[50px] font-semibold text-white leading-[1.07] tracking-[-0.022em] text-balance"
+            >Unlock <span className="text-gold-400">Breakthrough Ideas</span> with AI-Powered Precision and Intelligence.</motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.14 }}
@@ -196,7 +196,7 @@ export default function HomePage() {
               className="mt-8 flex flex-col sm:flex-row gap-3.5"
             >
               <Link to="/analyze" className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-ui hover:-translate-y-0.5 shadow-xl shadow-gold-500/25">
-                Start a free analysis <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                Generate Ideas Now <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link to="/trends" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 border border-white/12 text-slate-200 hover:bg-white/10 font-semibold transition-ui">
                 <PlayCircle size={18} /> Watch 2-min demo
@@ -211,14 +211,6 @@ export default function HomePage() {
           <ProductPanel />
         </div>
       </section>
-
-      {/* ── Quotations ───────────────────────────────────────────────────
-          Replaces an OEM logo strip. Those companies are not customers, and a
-          "trusted by" wall of their marks would have claimed a relationship
-          that does not exist — on a product whose whole argument is that
-          claims carry their evidence. The line under the hero still says
-          "benchmarked against", which is true of the corpus. */}
-      <QuoteRotator />
 
       {/* ── BENTO features ───────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 lg:px-8 py-24">
@@ -381,7 +373,7 @@ export default function HomePage() {
             <p className="mt-3.5 text-lg text-slate-300">Run a live pilot on one part family this week{ideaCount ? ` — start from ${ideaCount.toLocaleString()} benchmarked ideas` : ''}.</p>
             <div className="mt-7 flex flex-col sm:flex-row gap-3.5 justify-center">
               <Link to="/analyze" className="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold transition-ui hover:-translate-y-0.5 shadow-xl shadow-gold-500/25">
-                Start a free analysis <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                Generate Ideas Now <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link to="/trends" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 border border-white/12 text-slate-200 hover:bg-white/10 font-semibold transition-ui">
                 <TrendingUp size={18} /> Explore trends
@@ -395,6 +387,14 @@ export default function HomePage() {
           </Reveal>
         </div>
       </section>
+
+      {/* ── Quotations, closing the page ──────────────────────────────────
+          This slot used to hold an OEM logo strip. Those companies are not
+          customers, and a wall of their marks would have claimed a
+          relationship that does not exist — on a product whose whole argument
+          is that claims carry their evidence. The line under the hero still
+          says "benchmarked against", which is true of the corpus. */}
+      <QuoteRotator />
     </div>
   );
 }
