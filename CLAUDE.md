@@ -11,6 +11,7 @@ BrainSpark: AI cost-engineering platform for automotive (idea generation, should
 ## Commands
 
 ```bash
+./start-macos.command      # macOS one-click: checks Node, installs, builds, boots, opens the browser
 npm run dev                # server.mjs (:3001) + Vite (:5173) together
 npm run build              # tsc && vite build  (run npx tsc --noEmit for typecheck only)
 npm test                   # full suite, node --test (280+ tests, no network/keys needed)

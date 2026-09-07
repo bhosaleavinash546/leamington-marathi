@@ -42,6 +42,34 @@ Express (server.mjs + routes/*) ── better-sqlite3 (data/brainspark.db)
 
 ## Getting started
 
+### On a Mac — one click
+
+```bash
+git clone https://github.com/bhosaleavinash546/brainspark.git
+cd brainspark
+```
+
+Then **double-click `start-macos.command`** in Finder. It checks Node, generates
+its own secrets, installs, builds, boots the server and opens the browser. First
+run takes a few minutes (better-sqlite3 compiles); every run after that is
+seconds. Ctrl-C, or closing the window, stops it.
+
+It reports what this machine *cannot* do rather than starting half-working:
+no Node, no Anthropic key, no OpenCascade — each is named, with the fix.
+
+Two things worth knowing:
+
+- **If you downloaded a ZIP instead of cloning**, macOS quarantines the file and
+  double-clicking says "unidentified developer". Right-click → **Open** once, or
+  run `xattr -d com.apple.quarantine start-macos.command`. A `git clone` is not
+  quarantined and just works.
+- It runs in development mode on purpose. Production mode requires SMTP
+  credentials, and without them sign-in codes would print to a log; here they
+  print to the Terminal window in front of you, which on your own Mac is the
+  right trade. **Do not expose this to a network** — see `docs/DEPLOYMENT.md`.
+
+### Any platform, by hand
+
 ```bash
 npm install
 npm run dev            # Vite frontend :5173 + proxy to API :3001

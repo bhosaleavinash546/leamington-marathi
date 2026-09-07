@@ -11,3 +11,5 @@ users.json
 __pycache__/
 *.pyc
 dist-site
+.brainspark-local.env
+/data/
