@@ -6,6 +6,7 @@ import path from 'path';
 import type { Request, Response, NextFunction } from 'express';
 import { config } from 'dotenv';
 import { hasUsableServerKey } from './utils/api-key.js';
+import { isOriginAllowed } from './utils/cors-policy.js';
 import cadRouter from './routes/cad.js';
 import syncRouter from './routes/sync.js';
 import agentRouter from './routes/agent.js';
@@ -55,16 +56,18 @@ app.use(helmet({
 // Request logging — combined in prod (Apache format with IPs), dev in concise format
 app.use(morgan(IS_PROD ? 'combined' : 'dev'));
 
-// CORS — in dev allow all localhost origins; in prod restrict to ALLOWED_ORIGINS
+// CORS — in dev allow all localhost origins; in prod, same-origin plus ALLOWED_ORIGINS
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:5174,http://localhost:4174').split(',');
-app.use(cors({
-  origin: (origin, cb) => {
-    if (!origin) return cb(null, true); // same-origin / non-browser calls
-    if (!IS_PROD) return cb(null, true); // dev: allow everything on localhost
-    if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
-    cb(new Error('Not allowed by CORS'));
-  },
-  credentials: true,
+
+app.use(cors((req: Request, done: (err: Error | null, opts?: cors.CorsOptions) => void) => {
+  const allowed = isOriginAllowed({
+    origin: req.headers.origin,
+    host: req.headers.host,
+    isProd: IS_PROD,
+    allowed: ALLOWED_ORIGINS,
+  });
+  done(allowed ? null : new Error('Not allowed by CORS'),
+       { origin: allowed, credentials: true });
 }));
 
 app.use(express.json({ limit: '10mb' })); // increased for base64 photo payloads
