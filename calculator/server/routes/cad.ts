@@ -23,7 +23,7 @@ import { specForCommodity, DETERMINISTIC_COMMODITIES } from '../../src/engine/co
 import { buildDeterministicAnalysis } from '../../src/engine/cost-input-rules/deterministic.js';
 import { diffAnalyses } from '../../src/engine/cost-input-rules/diff.js';
 import type { CADAnalysisResult } from '../../src/engine/ai-analysis.js';
-import { inferCommodity } from '../../src/engine/cost-input-rules/derive/commodity.js';
+import { inferCommodity, looksLikeGear } from '../../src/engine/cost-input-rules/derive/commodity.js';
 import { familyFromMaterialId } from '../../src/engine/cost-input-rules/derive/material.js';
 import { systemForFibreId } from '../../src/engine/cost-input-rules/derive/laminate.js';
 import { renderCommodityRulesPrompt, runCostInputRules } from '../../src/engine/cost-input-rules/engine.js';
@@ -784,15 +784,15 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // gear-named part or one whose tip-circle metrology says "gear" routes to
   // the gear commodity directly — never absorbed by machining (audit gap 6),
   // and no longer dead-ended in a hand-off either.
-  const gearNamed = /\bgears?\b|\bpinion\b|_gear|gear_/i.test(originalname);
+  // One predicate, shared with `inferCommodity`. It used to be an inline copy
+  // here and absent there, so this path costed a gear the bulk path refused.
+  const gearVerdict = looksLikeGear(geo.status === 'success' ? geo : {}, originalname);
   const gearMeasured = geo.status === 'success' && geo.gear?.likelyGear === true;
-  const gearRouted = !forcedCommodity && (gearNamed || gearMeasured);
+  const gearRouted = !forcedCommodity && gearVerdict.gear;
   if (gearRouted) {
     selectedCommodity = 'gear';
     stage1Selection = { primary: 'gear', conf: gearMeasured ? 0.95 : 0.85, alt: [] };
-    console.log(`[CAD] Gear routing: ${gearMeasured
-      ? `B-rep metrology counted ${geo.status === 'success' ? geo.gear?.teeth : '?'} tip-circle teeth`
-      : 'filename names a gear'} → gear commodity`);
+    console.log(`[CAD] Gear routing: ${gearVerdict.basis} → gear commodity`);
   }
 
   if (forcedCommodity) {

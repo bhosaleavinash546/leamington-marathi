@@ -12,7 +12,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-b56d3bf199b01046",
+      "partName": "cv-cad-2d49d89a2f523884",
       "boundingBox": {
         "xMm": 132.62,
         "yMm": 120.03,
@@ -733,7 +733,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f0c7d1bb41d8958c",
+      "partName": "cv-cad-77154583d4be9e52",
       "boundingBox": {
         "xMm": 276.78,
         "yMm": 223.15,
@@ -1753,7 +1753,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-34f9eb1b3af91082",
+      "partName": "cv-cad-4fc17230938e7f21",
       "boundingBox": {
         "xMm": 58.23,
         "yMm": 274.48,
@@ -2512,7 +2512,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-90f06bd59ea5899d",
+      "partName": "cv-cad-4a1390c43f116d8d",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -3352,7 +3352,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-cbb5f8c12c79d9b2",
+      "partName": "cv-cad-f2d0fbe9d2835c90",
       "boundingBox": {
         "xMm": 116.49,
         "yMm": 236.81,
@@ -4291,17 +4291,16 @@
   {
     "part": "test-gear-m3-z38.step",
     "sha256": "9a73f0a268c4189b",
-    "note": "Module 3, 38 teeth, counted off the tip circle. Commodity stated: the bulk path has no gear branch in inferCommodity, unlike the browser path.",
+    "note": "Module 3, 38 teeth counted off the tip circle — routed by metrology, not by a stated commodity. ISO class 8, case-hardening steel.",
     "answers": {
       "material.family": "steel",
       "gear.helix": "spur",
       "gear.qualityClass": "8",
       "gear.materialClass": "case_hardening_steel"
     },
-    "commodity": "gear",
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-27f87ac18a2f59d8",
+      "partName": "cv-cad-13150e575093f7a6",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,

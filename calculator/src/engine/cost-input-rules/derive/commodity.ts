@@ -31,6 +31,34 @@ import { hollowVerdict } from './hollow.js';
 
 export const COMMODITY_DECISION_ID = 'commodity.route';
 
+/** A filename that names a gear: `ring_gear.step`, `PINION-12.stp`. */
+const GEAR_NAME = /\bgears?\b|\bpinion\b|_gear|gear_/i;
+
+/**
+ * Is this a gear? The one rule, for every caller.
+ *
+ * `cad.ts` routes a gear to the gear commodity before Stage 1 — counted
+ * tip-circle teeth are not something a classifier can improve on — and it did
+ * that with its own inline copy of this test. `inferCommodity` had no gear
+ * branch at all, so the deterministic bulk path could not reach the gear
+ * commodity and could not be answered into it either: `ROUTES` has no gear
+ * entry, so `commodity.route=gear` was silently ignored and the question came
+ * straight back. The browser costed a gear the bulk run refused. Sharing the
+ * predicate is what stops the two paths disagreeing again.
+ */
+export function looksLikeGear(
+  geo: { gear?: { likelyGear?: boolean; teeth?: number } | null }, filename?: string,
+): { gear: boolean; basis: string } {
+  if (geo.gear?.likelyGear === true) {
+    const z = geo.gear.teeth;
+    return { gear: true, basis: `tip-circle metrology counted ${z ?? 'the'} teeth` };
+  }
+  if (filename && GEAR_NAME.test(filename)) {
+    return { gear: true, basis: 'the filename names a gear' };
+  }
+  return { gear: false, basis: '' };
+}
+
 /**
  * How far the mean wall may exceed the reported gauge and still read as sheet.
  *
@@ -100,6 +128,13 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
         ['machining', 'casting', 'sheet_metal', 'injection_moulding']),
     };
   }
+
+  // Teeth first. A gear is not a rung on the fill ladder — a spur gear sits at
+  // 62% fill, indistinguishable there from a forging or a machined blank — and
+  // the tooth count is measured, not inferred, so nothing downstream improves
+  // on it.
+  const gear = looksLikeGear(g as { gear?: { likelyGear?: boolean; teeth?: number } }, ctx.filename);
+  if (gear.gear) return { commodity: 'gear', basis: gear.basis };
 
   const fill = g.fillRatio;
   const wall = g.wallThickness?.meanMm ?? null;

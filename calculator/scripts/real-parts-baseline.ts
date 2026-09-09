@@ -83,18 +83,13 @@ export const ANSWERS: Record<string, {
     answers: { 'material.family': 'aluminium', 'commodity.route': 'machining' },
   },
   'test-gear-m3-z38.step': {
-    // The commodity is STATED here, not inferred, and that is itself a finding.
-    // `cad.ts` routes a gear straight to the gear commodity on counted tip-circle
-    // teeth or a gear-shaped filename, before `inferCommodity` is consulted.
-    // `inferCommodity` has no gear branch and `ROUTES` has no gear entry, so the
-    // bulk path cannot reach the gear commodity on its own and cannot be
-    // answered into it either — it asks `commodity.route` and no option fits.
-    // The browser costs this part; the bulk run refuses it. Stating the
-    // commodity is what a CSV's commodity column does, and it lets the gear
-    // rules be covered here while the routing gap stays visible above.
-    note: 'Module 3, 38 teeth, counted off the tip circle. Commodity stated: the bulk '
-        + 'path has no gear branch in inferCommodity, unlike the browser path.',
-    commodity: 'gear',
+    // No commodity stated: `looksLikeGear` routes this off the counted teeth.
+    // It used to need stating, because the gear test lived inline in cad.ts and
+    // `inferCommodity` had no gear branch — the browser costed this part and the
+    // bulk run refused it. The two now share one predicate, and this entry is
+    // what proves the bulk path reaches the gear commodity on its own.
+    note: 'Module 3, 38 teeth counted off the tip circle — routed by metrology, '
+        + 'not by a stated commodity. ISO class 8, case-hardening steel.',
     answers: { 'material.family': 'steel', 'gear.helix': 'spur',
                'gear.qualityClass': '8', 'gear.materialClass': 'case_hardening_steel' },
   },
