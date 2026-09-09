@@ -21,6 +21,7 @@ import { parseRateLibraryWorkbook } from '../server/utils/rate-library-xlsx.js';
 import { analyzeGeometry } from '../server/utils/geometry-bridge.js';
 import { RULE_ENGINE_VERSION } from '../src/engine/cost-input-rules/types.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import { fingerprintRateLibrary } from '../src/engine/rate-library-merge.js';
 
 const DIR = join(__dirname, 'fixtures', 'cad-parts');
 const STEPS = existsSync(DIR) ? readdirSync(DIR).filter(f => f.endsWith('.step')).sort() : [];
@@ -431,5 +432,58 @@ describe('bulk run — gear (needs OCP)', () => {
     );
     expect(rec.parts[0].code).toBe('sanity_blocked');
     expect(rec.parts[0].total).toBeUndefined();
+  }, 180_000);
+});
+
+/**
+ * A run has to name the book it costed on, or it cannot be reproduced.
+ *
+ * `rateLibraryVersion` is the library's own author-supplied string — every
+ * uploaded sheet is stamped `company-upload` — so two different books share it
+ * and a report cannot say which produced its numbers. The fingerprint can.
+ */
+describe('bulk run — naming the rate book it costed on', () => {
+  it('records a fingerprint that identifies the exact book', async () => {
+    const rec = await runBulkCosting([
+      { partNumber: 'P', file: someStep, commodity: 'machining', region: 'Poland' },
+    ]);
+    expect(rec.engine.rateLibraryFingerprint).toBe(fingerprintRateLibrary(DEFAULT_RATE_LIBRARY));
+    expect(rec.engine.rateLibraryFingerprint).toMatch(/^[0-9a-f]{16}$/);
+  });
+
+  it('gives a different fingerprint for a different book', async () => {
+    const dearer = {
+      ...DEFAULT_RATE_LIBRARY,
+      materials: DEFAULT_RATE_LIBRARY.materials.map(m => ({ ...m, pricePerKg: m.pricePerKg * 2 })),
+    };
+    const a = await runBulkCosting([{ partNumber: 'P', file: someStep, region: 'Poland' }]);
+    const b = await runBulkCosting([{ partNumber: 'P', file: someStep, region: 'Poland' }],
+                                   { rateLibrary: dearer });
+    expect(b.engine.rateLibraryFingerprint).not.toBe(a.engine.rateLibraryFingerprint);
+    expect(b.engine.rateLibrarySource).toBe('supplied');
+  });
+
+  it('reproduces an earlier cost exactly when re-run on the recorded book', async () => {
+    if (!kernelAvailable) return;
+    const parts: BulkPartInput[] = [
+      { partNumber: 'P1', file: someStep, commodity: 'machining', material: 'aluminium' },
+    ];
+    // "Last quarter" — cost, and keep the book the run named.
+    const then = await runBulkCosting(parts);
+    const bookThen = DEFAULT_RATE_LIBRARY;
+    expect(then.engine.rateLibraryFingerprint).toBe(fingerprintRateLibrary(bookThen));
+
+    // Rates move on.
+    const now = await runBulkCosting(parts, {
+      rateLibrary: { ...DEFAULT_RATE_LIBRARY,
+        materials: DEFAULT_RATE_LIBRARY.materials.map(m => ({ ...m, pricePerKg: m.pricePerKg * 3 })) },
+    });
+    expect(now.parts[0].total).not.toBe(then.parts[0].total);
+
+    // Re-run on the book the first run recorded: the same numbers, to the penny.
+    const redo = await runBulkCosting(parts, { rateLibrary: bookThen });
+    expect(redo.parts[0].total).toBe(then.parts[0].total);
+    expect(redo.parts[0].breakdown).toEqual(then.parts[0].breakdown);
+    expect(redo.engine.rateLibraryFingerprint).toBe(then.engine.rateLibraryFingerprint);
   }, 180_000);
 });

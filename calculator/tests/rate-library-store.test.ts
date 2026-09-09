@@ -3,7 +3,9 @@ import Database from 'better-sqlite3';
 import {
   getCompanyLibrary, setCompanyLibrary, clearCompanyLibrary,
   getRateSource, setRateSource, getOverrides, setOverride, deleteOverride, clearOverrides,
+  recordRateLibraryVersion, listRateLibraryVersions, getRateLibraryVersion,
 } from '../server/data/rate-library-store.js';
+import { fingerprintRateLibrary } from '../src/engine/rate-library-merge.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 
 let db: Database.Database;
@@ -14,6 +16,10 @@ beforeEach(() => {
     CREATE TABLE rate_library (id TEXT PRIMARY KEY, data TEXT NOT NULL, updated_at TEXT NOT NULL, updated_by TEXT NOT NULL DEFAULT '');
     CREATE TABLE rate_overrides (id TEXT PRIMARY KEY, tbl TEXT NOT NULL, row_id TEXT NOT NULL, field TEXT NOT NULL, value REAL NOT NULL, updated_at TEXT NOT NULL, updated_by TEXT NOT NULL DEFAULT '');
     CREATE TABLE app_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+    CREATE TABLE rate_library_versions (
+      id TEXT NOT NULL, library_id TEXT NOT NULL, version_no INTEGER NOT NULL, data TEXT NOT NULL,
+      created_at TEXT NOT NULL, created_by TEXT NOT NULL DEFAULT '', note TEXT NOT NULL DEFAULT '',
+      PRIMARY KEY (library_id, id));
   `);
 });
 
@@ -72,5 +78,77 @@ describe('rate-library store — overrides', () => {
     expect(getOverrides(db)).toHaveLength(2);
     clearOverrides(db);
     expect(getOverrides(db)).toHaveLength(0);
+  });
+});
+
+/**
+ * Rate history — the thing that makes a costing reproducible.
+ *
+ * The library was one row, overwritten in place: change a rate and the book
+ * that produced last quarter's numbers was gone, so a bulk run could be
+ * explained but never re-derived. That is what blocked using the output for
+ * anything audited.
+ */
+describe('rate-library store — history', () => {
+  const withRate = (price: number) => ({
+    ...DEFAULT_RATE_LIBRARY,
+    materials: DEFAULT_RATE_LIBRARY.materials.map((m, i) => (i === 0 ? { ...m, pricePerKg: price } : m)),
+  });
+
+  it('keeps the old book when a new one is stored', () => {
+    setCompanyLibrary(db, withRate(1), '2026-01-01', 'a@x');
+    setCompanyLibrary(db, withRate(2), '2026-02-01', 'a@x');
+    const versions = listRateLibraryVersions(db, 'company');
+    expect(versions).toHaveLength(2);
+    expect(versions[0].versionNo).toBe(2);          // newest first
+    expect(versions[1].versionNo).toBe(1);
+  });
+
+  it('takes a stored book back by its fingerprint', () => {
+    const v1 = setCompanyLibrary(db, withRate(1), '2026-01-01', 'a@x');
+    setCompanyLibrary(db, withRate(2), '2026-02-01', 'a@x');
+    const recovered = getRateLibraryVersion(db, v1.id);
+    expect(recovered?.materials[0].pricePerKg).toBe(1);   // the OLD price, not the current one
+  });
+
+  it('does not churn the history when the same sheet is re-stored', () => {
+    const a = setCompanyLibrary(db, withRate(1), '2026-01-01', 'a@x');
+    const b = setCompanyLibrary(db, withRate(1), '2026-03-01', 'b@x');
+    expect(b.id).toBe(a.id);
+    expect(b.versionNo).toBe(a.versionNo);
+    expect(listRateLibraryVersions(db, 'company')).toHaveLength(1);
+  });
+
+  it('lets the same content live under two library ids', () => {
+    // An uploaded sheet with no cell overrides IS the resolved active book, so
+    // the same fingerprint legitimately appears twice. A bare primary key on
+    // the fingerprint made the second insert throw.
+    setCompanyLibrary(db, withRate(1), '2026-01-01', 'a@x');
+    expect(() => recordRateLibraryVersion(db, 'active', withRate(1), '2026-01-01', 'a@x', 'resolved'))
+      .not.toThrow();
+    expect(listRateLibraryVersions(db, 'active')).toHaveLength(1);
+    expect(listRateLibraryVersions(db, 'company')).toHaveLength(1);
+  });
+});
+
+describe('rate-library fingerprint', () => {
+  it('is the same for the same rates however the object was built', () => {
+    const a = { ...DEFAULT_RATE_LIBRARY };
+    const b = JSON.parse(JSON.stringify(DEFAULT_RATE_LIBRARY));
+    expect(fingerprintRateLibrary(b)).toBe(fingerprintRateLibrary(a));
+  });
+
+  it('ignores lastModified, which is a timestamp and not a rate', () => {
+    // The upload route stamps it with `now`; including it would make the same
+    // sheet fingerprint differently on every upload.
+    const a = { ...DEFAULT_RATE_LIBRARY, lastModified: '2026-01-01' };
+    const b = { ...DEFAULT_RATE_LIBRARY, lastModified: '2026-09-09' };
+    expect(fingerprintRateLibrary(b)).toBe(fingerprintRateLibrary(a));
+  });
+
+  it('changes when a single rate changes', () => {
+    const a = DEFAULT_RATE_LIBRARY;
+    const b = { ...a, materials: a.materials.map((m, i) => (i === 0 ? { ...m, pricePerKg: m.pricePerKg + 0.01 } : m)) };
+    expect(fingerprintRateLibrary(b)).not.toBe(fingerprintRateLibrary(a));
   });
 });

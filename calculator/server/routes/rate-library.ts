@@ -17,13 +17,14 @@ import db from '../db.js';
 import { requireAuth, type AuthenticatedRequest } from '../middleware/auth-middleware.js';
 import { requireAdmin } from '../middleware/require-admin.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
-import { resolveActiveLibrary, type RateSource, type RateTable } from '../../src/engine/rate-library-merge.js';
+import { resolveActiveLibrary, fingerprintRateLibrary, type RateSource, type RateTable } from '../../src/engine/rate-library-merge.js';
 import { buildRateLibraryWorkbook, parseRateLibraryWorkbook } from '../utils/rate-library-xlsx.js';
 import { buildSWRateWorkbook, parseSWRateWorkbook } from '../utils/sw-rate-library-xlsx.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../../src/engine/sw-rate-library.js';
 import {
   getCompanyLibrary, setCompanyLibrary, clearCompanyLibrary,
   getRateSource, setRateSource, getOverrides, setOverride, deleteOverride, clearOverrides,
+  recordRateLibraryVersion, listRateLibraryVersions, getRateLibraryVersion,
   getSWCompanyLibrary, setSWCompanyLibrary, clearSWCompanyLibrary, getSWRateSource, setSWRateSource,
   getPCBCountryOverrides, setPCBCountryOverrides, clearPCBCountryOverrides,
 } from '../data/rate-library-store.js';
@@ -64,6 +65,36 @@ function resolve() {
     source: getRateSource(db),
   });
 }
+
+/**
+ * Keep whatever the active book has just become.
+ *
+ * Called after every mutation — upload, source switch, a single cell override,
+ * reset — because all of them change the numbers a costing would produce.
+ * Versioning only uploads would leave an override silently unreproducible, and
+ * an override is exactly the kind of quiet change that needs a record.
+ *
+ * Stored under 'active' rather than 'company': what has to be recoverable is
+ * the RESOLVED book that was costed on, overrides included, which is what a run
+ * fingerprints. Identical content collapses onto the existing row, so switching
+ * back and forth does not churn the history.
+ */
+function snapshotActive(by: string, note: string): void {
+  recordRateLibraryVersion(db, 'active', resolve().library, new Date().toISOString(), by, note);
+}
+
+/** The rate books this deployment has costed on, newest first. */
+router.get('/versions', (_req, res: Response) => {
+  res.json({ versions: listRateLibraryVersions(db, 'active'),
+             current: fingerprintRateLibrary(resolve().library) });
+});
+
+/** One historical book by fingerprint — how a past costing is reproduced. */
+router.get('/versions/:id', (req, res: Response) => {
+  const library = getRateLibraryVersion(db, req.params.id);
+  if (!library) { res.status(404).json({ error: 'No rate book with that fingerprint' }); return; }
+  res.json({ library, id: req.params.id });
+});
 
 // Any signed-in user (the calculators call this)
 router.get('/active', (_req, res: Response) => {
@@ -149,7 +180,8 @@ router.post('/upload', upload.single('file'), (req: AuthenticatedRequest, res: R
   library.lastModified = new Date().toISOString();
   setCompanyLibrary(db, library, library.lastModified, req.user!.email);
   setRateSource(db, 'company');   // uploading activates the company library
-  res.json({ ok: true, counts, activated: true });
+  snapshotActive(req.user!.email, 'rate sheet uploaded');
+  res.json({ ok: true, counts, activated: true, version: fingerprintRateLibrary(resolve().library) });
 });
 
 router.put('/source', (req: AuthenticatedRequest, res: Response): void => {
@@ -157,6 +189,7 @@ router.put('/source', (req: AuthenticatedRequest, res: Response): void => {
   if (source !== 'builtin' && source !== 'company') { res.status(400).json({ error: 'source must be builtin or company' }); return; }
   if (source === 'company' && getCompanyLibrary(db) == null) { res.status(400).json({ error: 'No company library uploaded yet' }); return; }
   setRateSource(db, source);
+  snapshotActive(req.user!.email, `switched to ${source} rates`);
   res.json({ ok: true, source });
 });
 
@@ -176,13 +209,16 @@ router.post('/overrides', (req: AuthenticatedRequest, res: Response): void => {
     res.status(400).json({ error: 'computedRatePerHr is derived from the machine build-up — override the build-up fields instead' }); return;
   }
   setOverride(db, { table, id, field, value: value as number }, new Date().toISOString(), req.user!.email);
+  snapshotActive(req.user!.email, `override ${table}.${id}.${field} = ${value}`);
   res.json({ ok: true });
 });
 
 router.delete('/overrides', (req: AuthenticatedRequest, res: Response): void => {
   const { table, id, field } = req.query as { table?: string; id?: string; field?: string };
   if (!table || !id || !field) { res.status(400).json({ error: 'table, id and field query params required' }); return; }
-  res.json({ ok: deleteOverride(db, table, id, field) });
+  const removed = deleteOverride(db, table, id, field);
+  if (removed) snapshotActive(req.user!.email, `override cleared: ${table}.${id}.${field}`);
+  res.json({ ok: removed });
 });
 
 // ── PCB country rates (admin-editable; audit fix) ────────────────────────────
@@ -217,6 +253,7 @@ router.post('/reset', (_req, res: Response): void => {
   clearCompanyLibrary(db);
   clearOverrides(db);
   setRateSource(db, 'builtin');
+  snapshotActive(req.user?.email ?? 'system', 'reset to built-in');
   res.json({ ok: true, source: 'builtin' });
 });
 

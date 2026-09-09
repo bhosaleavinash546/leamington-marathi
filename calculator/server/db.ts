@@ -162,6 +162,28 @@ db.exec(`
     updated_at TEXT NOT NULL
   );
 
+  -- Every rate book that has ever been active, kept rather than overwritten.
+  -- The rate_library table holds only the CURRENT row, so before this a costing
+  -- could not be reproduced: change a rate and the book that produced last
+  -- quarter's numbers was gone. The id is the content fingerprint, so the same
+  -- sheet uploaded twice is the same version, and a run that recorded a
+  -- fingerprint can be matched back to the exact book it costed on.
+  -- Keyed on (library_id, id), not id alone: the same content legitimately
+  -- appears under more than one library_id — an uploaded sheet with no cell
+  -- overrides IS the resolved active book — and a bare primary key on the
+  -- fingerprint made the second insert fail with a UNIQUE violation.
+  CREATE TABLE IF NOT EXISTS rate_library_versions (
+    id          TEXT NOT NULL,
+    library_id  TEXT NOT NULL,
+    version_no  INTEGER NOT NULL,
+    data        TEXT NOT NULL,
+    created_at  TEXT NOT NULL,
+    created_by  TEXT NOT NULL DEFAULT '',
+    note        TEXT NOT NULL DEFAULT '',
+    PRIMARY KEY (library_id, id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_rate_versions ON rate_library_versions(library_id, version_no);
+
   CREATE INDEX IF NOT EXISTS idx_bom_parent ON bom_items(parent_scenario_id);
   CREATE INDEX IF NOT EXISTS idx_bom_child  ON bom_items(child_scenario_id);
 `);

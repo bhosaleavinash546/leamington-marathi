@@ -35,6 +35,10 @@
  *   run.json       the durable record — inputs, answers, provenance, and the
  *                  rule-engine and rate-library versions the numbers came from
  *
+ * `--rates-version <fingerprint>` costs on a rate book this deployment used
+ * before — the fingerprint every run.json records — which is how a costing from
+ * last quarter is reproduced rather than re-estimated at today's rates.
+ *
  * `--acknowledge <code>` accepts a blocking geometry check for this run, the
  * way the browser makes you tick one before Calculate. Without it a part that
  * fails a check is refused rather than costed, because nobody is at a screen.
@@ -114,6 +118,7 @@ function loadRates(path: string): RateLibrary {
  */
 async function resolveRates(): Promise<{ library?: RateLibrary; label: string }> {
   const path = flag('rates');
+  const versionId = flag('rates-version');
   if (path) {
     const library = loadRates(path);
     return { library, label: `${resolve(path)} (${library.materials.length} materials, `
@@ -139,10 +144,25 @@ async function resolveRates(): Promise<{ library?: RateLibrary; label: string }>
       : `built-in UK book — could not open the database: ${msg.slice(0, 90)}` };
   }
 
-  const { getCompanyLibrary, getOverrides, getRateSource } =
+  const { getCompanyLibrary, getOverrides, getRateSource, getRateLibraryVersion } =
     await import('../server/data/rate-library-store.js');
   const { resolveActiveLibrary } = await import('../src/engine/rate-library-merge.js');
   const typedDb = db as Parameters<typeof getCompanyLibrary>[0];
+
+  // Reproducing an old costing: cost on the exact book it recorded, by
+  // fingerprint. Refuses rather than falling back — a run asked to reproduce
+  // last quarter and quietly using today's rates is the worst possible answer.
+  if (versionId) {
+    const historical = getRateLibraryVersion(typedDb, versionId);
+    if (!historical) {
+      console.error(`\n  No rate book stored with fingerprint '${versionId}'.`);
+      console.error(`  List what is available:  GET /api/rate-library/versions\n`);
+      process.exit(1);
+    }
+    return { library: historical, label: `stored rate book ${versionId} — `
+      + `${historical.materials.length} materials, ${historical.machines.length} machines, `
+      + `${historical.labour.length} labour` };
+  }
 
   const company = getCompanyLibrary(typedDb);
   const overrides = getOverrides(typedDb);
@@ -342,8 +362,9 @@ async function main(): Promise<void> {
 
   console.log(`  written to ${resolve(outDir)}/  ·  run ${rec.runId}`);
   console.log(`  rules v${rec.engine.ruleEngineVersion} · rates ${rec.engine.rateLibraryVersion} `
-    + `(${rec.engine.rateLibrarySource}, ${rec.engine.rateLibraryLastModified}) `
-    + `· inputs ${rec.inputHash} · AI not used\n`);
+    + `(${rec.engine.rateLibrarySource}) · book ${rec.engine.rateLibraryFingerprint} `
+    + `· inputs ${rec.inputHash} · AI not used`);
+  console.log(`  reproduce this run:  --rates-version ${rec.engine.rateLibraryFingerprint}\n`);
 
   geometryPool().shutdown();
   process.exit(s.costed === 0 ? 3 : s.needsAnswer ? 2 : 0);

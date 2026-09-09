@@ -9,6 +9,7 @@
  *   3. Row overrides            (admin edits to individual cells, always applied on top)
  */
 
+import { createHash } from 'node:crypto';
 import type { RateLibrary, MachineRateBuildup } from './types.js';
 
 export type RateTable = 'materials' | 'machines' | 'labour' | 'energy' | 'fx' | 'overheadDefaults';
@@ -85,4 +86,35 @@ export function resolveActiveLibrary(opts: {
   const base = useCompany ? (opts.company as RateLibrary) : opts.builtIn;
   const library = applyRateOverrides(base, opts.overrides ?? []);
   return { library, effectiveSource: useCompany ? 'company' : 'builtin' };
+}
+
+/**
+ * A stable identity for a rate book, derived from its content.
+ *
+ * Every run records this. It is what makes a costing reproducible: the library's
+ * own `version` field is author-supplied and not unique — an uploaded sheet is
+ * always stamped `company-upload` — so two different books share it and a report
+ * cannot say which one produced its numbers. A content hash can, and it works
+ * the same for the built-in book, an uploaded sheet, and a resolved library with
+ * cell overrides applied, because it hashes what was actually costed on.
+ *
+ * Key order is normalised so a re-serialised library fingerprints identically.
+ */
+export function fingerprintRateLibrary(lib: RateLibrary): string {
+  const stable = (v: unknown): unknown => {
+    if (Array.isArray(v)) return v.map(stable);
+    if (v && typeof v === 'object') {
+      return Object.fromEntries(
+        Object.entries(v as Record<string, unknown>)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([k, val]) => [k, stable(val)]),
+      );
+    }
+    return v;
+  };
+  // `lastModified` is a timestamp, not a rate: the upload route stamps it with
+  // `now`, so including it would make the same sheet fingerprint differently on
+  // every upload and defeat the whole point.
+  const { lastModified: _ignored, ...rest } = lib as RateLibrary & { lastModified?: string };
+  return createHash('sha256').update(JSON.stringify(stable(rest))).digest('hex').slice(0, 16);
 }

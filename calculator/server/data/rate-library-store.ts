@@ -6,6 +6,7 @@
 import type { Database } from 'better-sqlite3';
 import type { RateLibrary } from '../../src/engine/types.js';
 import type { SWRateLibrary } from '../../src/engine/sw-rate-library.js';
+import { fingerprintRateLibrary } from '../../src/engine/rate-library-merge.js';
 import type { RateOverride, RateSource, RateTable } from '../../src/engine/rate-library-merge.js';
 
 const COMPANY_ID = 'company';
@@ -19,12 +20,76 @@ export function getCompanyLibrary(db: Database): RateLibrary | null {
   try { return JSON.parse(row.data) as RateLibrary; } catch { return null; }
 }
 
-export function setCompanyLibrary(db: Database, lib: RateLibrary, now: string, by: string): void {
+export interface RateLibraryVersion {
+  /** Content fingerprint — the id a costing records to be reproducible. */
+  id: string;
+  libraryId: string;
+  versionNo: number;
+  createdAt: string;
+  createdBy: string;
+  note: string;
+}
+
+/**
+ * Keep the book that is being replaced, then move the pointer.
+ *
+ * The old behaviour overwrote a single row, so changing one rate destroyed the
+ * book that produced every costing before it — a run could be explained but not
+ * reproduced, which is what blocked using bulk output for anything audited.
+ *
+ * Re-uploading an identical sheet is not a new version: the id is the content
+ * fingerprint, so it collapses onto the existing row rather than churning the
+ * history with duplicates.
+ */
+export function recordRateLibraryVersion(
+  db: Database, libraryId: string, lib: RateLibrary, now: string, by: string, note = '',
+): RateLibraryVersion {
+  const id = fingerprintRateLibrary(lib);
+  const existing = db.prepare(
+    'SELECT id, library_id, version_no, created_at, created_by, note FROM rate_library_versions WHERE id = ? AND library_id = ?',
+  ).get(id, libraryId) as {
+    id: string; library_id: string; version_no: number; created_at: string; created_by: string; note: string;
+  } | undefined;
+  if (existing) {
+    return { id: existing.id, libraryId: existing.library_id, versionNo: existing.version_no,
+             createdAt: existing.created_at, createdBy: existing.created_by, note: existing.note };
+  }
+  const next = (db.prepare('SELECT MAX(version_no) AS n FROM rate_library_versions WHERE library_id = ?')
+    .get(libraryId) as { n: number | null }).n ?? 0;
+  const versionNo = next + 1;
+  db.prepare(`INSERT INTO rate_library_versions (id, library_id, version_no, data, created_at, created_by, note)
+              VALUES (?, ?, ?, ?, ?, ?, ?)`)
+    .run(id, libraryId, versionNo, JSON.stringify(lib), now, by, note);
+  return { id, libraryId, versionNo, createdAt: now, createdBy: by, note };
+}
+
+/** Newest first. Metadata only — the blobs are large and rarely all wanted. */
+export function listRateLibraryVersions(db: Database, libraryId = COMPANY_ID): RateLibraryVersion[] {
+  return (db.prepare(
+    `SELECT id, library_id, version_no, created_at, created_by, note
+       FROM rate_library_versions WHERE library_id = ? ORDER BY version_no DESC`,
+  ).all(libraryId) as Array<{
+    id: string; library_id: string; version_no: number; created_at: string; created_by: string; note: string;
+  }>).map(r => ({ id: r.id, libraryId: r.library_id, versionNo: r.version_no,
+                  createdAt: r.created_at, createdBy: r.created_by, note: r.note }));
+}
+
+/** The book behind a fingerprint — this is what makes a run reproducible. */
+export function getRateLibraryVersion(db: Database, versionId: string): RateLibrary | null {
+  const row = db.prepare('SELECT data FROM rate_library_versions WHERE id = ?')
+    .get(versionId) as { data: string } | undefined;
+  if (!row) return null;
+  try { return JSON.parse(row.data) as RateLibrary; } catch { return null; }
+}
+
+export function setCompanyLibrary(db: Database, lib: RateLibrary, now: string, by: string, note = ''): RateLibraryVersion {
+  const version = recordRateLibraryVersion(db, COMPANY_ID, lib, now, by, note);
   db.prepare(`
     INSERT INTO rate_library (id, data, updated_at, updated_by)
     VALUES (?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at, updated_by = excluded.updated_by
   `).run(COMPANY_ID, JSON.stringify(lib), now, by);
+  return version;
 }
 
 export function clearCompanyLibrary(db: Database): void {

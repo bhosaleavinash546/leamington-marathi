@@ -54,6 +54,7 @@ import {
 } from '../../src/engine/cost-input-rules/to-cost-params.js';
 import { RULE_ENGINE_VERSION } from '../../src/engine/cost-input-rules/types.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
+import { fingerprintRateLibrary } from '../../src/engine/rate-library-merge.js';
 import type { RateLibrary } from '../../src/engine/types.js';
 import type { RuleContext } from '../../src/engine/cost-input-rules/types.js';
 
@@ -116,6 +117,15 @@ export interface BulkRunRecord {
     rateLibraryLastModified: string;
     /** 'builtin' = the shipped UK book; 'supplied' = rates handed in by the caller. */
     rateLibrarySource: 'builtin' | 'supplied';
+    /**
+     * Content fingerprint of the book these numbers were costed on.
+     *
+     * The library's own `version` is author-supplied and not unique — every
+     * uploaded sheet is stamped `company-upload` — so it cannot say WHICH book
+     * produced a report. This can, and `getRateLibraryVersion` takes it back to
+     * the stored book, which is what makes a run reproducible.
+     */
+    rateLibraryFingerprint: string;
     /** Row counts, so a report can be checked against the sheet that produced it. */
     rateLibraryCounts: { materials: number; machines: number; labour: number };
     shopDefaults: typeof SHOP_DEFAULTS;
@@ -378,6 +388,7 @@ export async function runBulkCosting(
       rateLibraryVersion: rates.version,
       rateLibraryLastModified: rates.lastModified,
       rateLibrarySource: opts.rateLibrary ? 'supplied' : 'builtin',
+      rateLibraryFingerprint: fingerprintRateLibrary(rates),
       rateLibraryCounts: {
         materials: rates.materials.length,
         machines: rates.machines.length,
