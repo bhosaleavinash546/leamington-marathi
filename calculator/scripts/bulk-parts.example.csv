@@ -1,0 +1,4 @@
+partNumber,file,commodity,material,annualVolume,region
+EXAMPLE-001,../tests/fixtures/cad-parts/block-2holes.step,machining,aluminium,50000,UK
+EXAMPLE-002,../tests/fixtures/cad-parts/flange-6holes-boss.step,machining,steel,50000,UK
+EXAMPLE-003,../tests/fixtures/cad-parts/plate-4holes.step,machining,aluminium,100000,

@@ -181,7 +181,10 @@ function secondaryMachining(
 export function toCostParams(
   commodity: string,
   ci: CostInputs,
-  annualVolume = SHOP_DEFAULTS.annualVolume,
+  // Typed, not inferred: SHOP_DEFAULTS is `as const`, so leaving this to
+  // inference narrows the parameter to the literal 100000 and every caller
+  // with a real volume fails to typecheck.
+  annualVolume: number = SHOP_DEFAULTS.annualVolume,
   familyHint?: MaterialFamily | null,
   geo?: OCCTGeometry,
 ): ToCostParamsResult | null {
