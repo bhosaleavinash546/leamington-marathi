@@ -35,6 +35,10 @@
  *   run.json       the durable record — inputs, answers, provenance, and the
  *                  rule-engine and rate-library versions the numbers came from
  *
+ * `--acknowledge <code>` accepts a blocking geometry check for this run, the
+ * way the browser makes you tick one before Calculate. Without it a part that
+ * fails a check is refused rather than costed, because nobody is at a screen.
+ *
  * Exit codes: 0 everything costed · 2 some parts still need an answer ·
  * 3 nothing costed · 1 bad usage. So a scheduled run can be checked by a script.
  */
@@ -155,6 +159,15 @@ async function resolveRates(): Promise<{ library?: RateLibrary; label: string }>
   return { label: 'built-in UK book — no company sheet uploaded yet' };
 }
 
+/** Sanity codes accepted for this run — the CLI form of the browser's
+ *  per-code acknowledgement. Repeatable: --acknowledge a --acknowledge b */
+const acknowledge: string[] = [];
+argv.forEach((a, i) => {
+  if (!a.startsWith('--acknowledge')) return;
+  const v = a.includes('=') ? a.slice(a.indexOf('=') + 1) : argv[i + 1];
+  if (v && !v.startsWith('--')) acknowledge.push(v.trim());
+});
+
 const outDir = flag('out') ?? 'bulk-run';
 const volume = flag('volume') ? parseInt(flag('volume')!, 10) : undefined;
 const concurrency = flag('concurrency') ? parseInt(flag('concurrency')!, 10) : 4;
@@ -234,7 +247,7 @@ const BUCKETS = ['rawMaterial', 'process', 'labour', 'tooling',
 
 function resultsCSV(rec: BulkRunRecord): string {
   const lines = [row(['partNumber', 'file', 'status', 'commodity', 'commoditySource',
-                      'volumeCm3', ...BUCKETS, 'totalGBP', 'code', 'note'])];
+                      'volumeCm3', ...BUCKETS, 'totalGBP', 'code', 'note', 'warnings'])];
   for (const p of rec.parts) {
     lines.push(row([
       p.partNumber, p.file, p.status, p.commodity ?? '', p.commoditySource ?? '',
@@ -243,6 +256,7 @@ function resultsCSV(rec: BulkRunRecord): string {
       p.total !== undefined ? p.total.toFixed(2) : '',
       p.code ?? '',
       p.error ?? (p.questions?.length ? `needs: ${p.questions.map(q => q.id).join(' ')}` : ''),
+      (p.warnings ?? []).map(w => `${w.code}${w.blocking ? '(blocking)' : ''}`).join(' '),
     ]));
   }
   return lines.join('\n') + '\n';
@@ -279,6 +293,7 @@ async function main(): Promise<void> {
   const rec = await runBulkCosting(parts, {
     answers, annualVolume: volume, concurrency,
     ...(rateLibrary ? { rateLibrary } : {}),
+    ...(acknowledge.length ? { acknowledge } : {}),
     onProgress: (done, total, p) => {
       const tail = p.status === 'costed' ? `£${p.total!.toFixed(2)}`
         : p.status === 'needs_answer' ? `needs ${p.questions!.map(q => q.id).join(', ')}`
@@ -299,6 +314,16 @@ async function main(): Promise<void> {
     + `   in ${((Date.now() - started) / 1000).toFixed(1)}s`);
   if (s.needsAnswer) console.log(`  ${s.needsAnswer} need an answer · ${s.refused} refused · ${s.errored} errored`);
   else if (s.refused || s.errored) console.log(`  ${s.refused} refused · ${s.errored} errored`);
+  if (s.withWarnings) console.log(`  ${s.withWarnings} costed with an advisory geometry warning — see the warnings column`);
+  const blocked = rec.parts.filter(p => p.code === 'sanity_blocked');
+  if (blocked.length) {
+    console.log(`\n  ${blocked.length} part(s) blocked by a geometry check. Accept one deliberately with`);
+    console.log(`  --acknowledge <code>, which is recorded in run.json:\n`);
+    for (const p of blocked.slice(0, 8)) {
+      console.log(`    ${p.partNumber}  ${(p.warnings ?? []).filter(w => w.blocking).map(w => w.code).join(', ')}`);
+      console.log(`      ${(p.error ?? '').split(' — ').slice(1).join(' — ').slice(0, 150)}`);
+    }
+  }
 
   if (rec.openQuestions.length) {
     console.log(`\n  ${rec.openQuestions.length} question(s) would unblock ` +

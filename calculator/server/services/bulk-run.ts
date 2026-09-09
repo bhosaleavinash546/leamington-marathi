@@ -20,7 +20,15 @@
  *    costing a Poland part at UK rates would be quietly wrong, which is worse
  *    than not costing it. When that gap closes, delete `regionGuard`.
  *
- * 3. **One answer, every part it affects.** Open questions are aggregated by
+ * 3. **The same geometry guards as the CAD route.** `runAllGuards` — the
+ *    near-net machining cap and the cad-sanity cross-checks — runs here on the
+ *    same analysis, in the same order cad.ts uses. It has to run *before*
+ *    `toCostParams`, because the machining cap mutates the analysis; after it,
+ *    the cap would be reported and the uncapped time still costed. A blocking
+ *    code refuses the part rather than being waved through, since nobody is at
+ *    a screen to acknowledge it mid-run; `acknowledge` accepts one deliberately.
+ *
+ * 4. **One answer, every part it affects.** Open questions are aggregated by
  *    decision id across the whole basket, so forty parts asking "what material?"
  *    surface as one question naming forty parts. Answering it in `answers`
  *    re-runs all of them.
@@ -35,6 +43,8 @@ import { basename } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { analyzeGeometry } from '../utils/geometry-bridge.js';
 import { executeCalculateCost } from './cost-executor.js';
+import { runAllGuards, statedFromAnswers, isCostable } from '../routes/cad.js';
+import type { CADSanityWarning } from '../utils/cad-sanity.js';
 import { buildDeterministicAnalysis } from '../../src/engine/cost-input-rules/deterministic.js';
 import { specForCommodity } from '../../src/engine/cost-input-rules/index.js';
 import { inferCommodity } from '../../src/engine/cost-input-rules/derive/commodity.js';
@@ -88,6 +98,8 @@ export interface BulkPartResult {
   /** field → { value, basis } — why each costed input is what it is. */
   provenance?: Record<string, { value: unknown; basis: string }>;
   questions?: BulkOpenQuestion[];
+  /** Geometry-vs-claim checks. Blocking ones stop the costing until acknowledged. */
+  warnings?: CADSanityWarning[];
   answersUsed?: Record<string, unknown>;
   error?: string;
   code?: string;
@@ -112,6 +124,8 @@ export interface BulkRunRecord {
   /** Stable over the inputs — two runs of the same basket share it. */
   inputHash: string;
   basketAnswers: Record<string, unknown>;
+  /** Blocking sanity codes accepted for this run. Empty means nothing was overridden. */
+  acknowledged: string[];
   parts: BulkPartResult[];
   openQuestions: BulkOpenQuestion[];
   summary: {
@@ -120,6 +134,8 @@ export interface BulkRunRecord {
     needsAnswer: number;
     refused: number;
     errored: number;
+    /** Costed parts that carried at least one advisory (non-blocking) warning. */
+    withWarnings: number;
     basketTotalGBP: number;
   };
 }
@@ -136,6 +152,13 @@ export interface BulkRunOptions {
   rateLibrary?: RateLibrary;
   /** Applied to every part; a part's own answer wins on a clash. */
   answers?: Record<string, unknown>;
+  /**
+   * Sanity codes accepted for this run, mirroring the per-code acknowledgement
+   * the browser requires before Calculate. Nobody is at the screen during a
+   * bulk run, so a blocking code refuses the part rather than being waved
+   * through — listing it here is the deliberate, recorded decision to accept it.
+   */
+  acknowledge?: string[];
   annualVolume?: number;
   /** Parts measured at once. The geometry pool bounds the Python side anyway. */
   concurrency?: number;
@@ -248,10 +271,27 @@ async function costOnePart(
              })) };
   }
 
+  // Before toCostParams, not after: applyNearNetMachiningCap MUTATES the
+  // analysis, so running the guards afterwards would report the cap and still
+  // cost the uncapped time. This is the order cad.ts uses on its own
+  // deterministic branch.
+  const warnings = runAllGuards(analysis, geo, geo.volume?.cm3 ?? null, statedFromAnswers(answers));
+  if (!isCostable([], warnings, opts.acknowledge ?? [])) {
+    const blocking = warnings.filter(w => w.blocking && !(opts.acknowledge ?? []).includes(w.code));
+    return { ...base, status: 'refused', commodity, commoditySource, geometry, warnings,
+             answersUsed: answers, code: 'sanity_blocked',
+             error: `blocked by ${blocking.map(w => w.code).join(', ')} — `
+                  + blocking.map(w => w.message).join(' | ') };
+  }
+
   const mapped = toCostParams(commodity, analysis.costInputSuggestions, annualVolume,
                               materialFacts(ctx).family, geo);
   if (!mapped) {
+    // Warnings ride along even here: a part that was acknowledged past a
+    // blocking check and then failed for another reason must still show that
+    // the check fired, or the record understates what was overridden.
     return { ...base, status: 'refused', commodity, commoditySource, geometry, code: 'no_cost_mapping',
+             ...(warnings.length ? { warnings } : {}), answersUsed: answers,
              error: `no cost mapping for '${commodity}' yet (have: ${COSTABLE_COMMODITIES.join(', ')})` };
   }
 
@@ -264,6 +304,7 @@ async function costOnePart(
   });
   if (!cost.success) {
     return { ...base, status: 'error', commodity, commoditySource, geometry, code: 'costing_failed',
+             ...(warnings.length ? { warnings } : {}), answersUsed: answers,
              error: cost.error ?? 'costing failed' };
   }
 
@@ -279,6 +320,7 @@ async function costOnePart(
     total: cost.total,
     assumed: mapped.assumed,
     provenance,
+    ...(warnings.length ? { warnings } : {}),
     answersUsed: answers,
   };
 }
@@ -346,6 +388,7 @@ export async function runBulkCosting(
     },
     inputHash: hashInputs(parts, basketAnswers),
     basketAnswers,
+    acknowledged: opts.acknowledge ?? [],
     parts: results,
     openQuestions: aggregateQuestions(results),
     summary: {
@@ -354,6 +397,7 @@ export async function runBulkCosting(
       needsAnswer: results.filter(r => r.status === 'needs_answer').length,
       refused: results.filter(r => r.status === 'refused').length,
       errored: results.filter(r => r.status === 'error').length,
+      withWarnings: costed.filter(r => (r.warnings ?? []).length > 0).length,
       basketTotalGBP: Number(costed.reduce((s, r) => s + (r.total ?? 0), 0).toFixed(2)),
     },
   };

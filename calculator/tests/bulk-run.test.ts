@@ -282,3 +282,77 @@ describe('bulk run — costing on an uploaded rate sheet (needs OCP)', () => {
     expect(round.parts[0].breakdown!.process).toBeCloseTo(base.parts[0].breakdown!.process, 4);
   }, 180_000);
 });
+
+/**
+ * The geometry guards, on this route.
+ *
+ * `runAllGuards` ran on the CAD routes and not here, so a bulk run could cost a
+ * part whose claimed geometry contradicted the measured geometry and say
+ * nothing. These tests pin that it now runs, that a blocking code refuses the
+ * part rather than being waved through, and that overriding one is recorded.
+ *
+ * The gear fixture is measured at 38 teeth. Claiming 38 passes; claiming 40 is
+ * the contradiction `gear_teeth_mismatch` exists to catch.
+ */
+describe('bulk run — geometry guards (needs OCP)', () => {
+  const gearStep = join(DIR, 'gear-m3-z38.step');
+  /** The gear pack's own blocking questions, so the run reaches the guards. */
+  const gearAnswers = {
+    'gear.helix': '0',
+    'gear.materialClass': 'case_hardening_steel',
+    'gear.qualityClass': '7',
+  };
+  const gearPart = (partNumber: string, teeth: string): BulkPartInput => ({
+    partNumber, file: gearStep, commodity: 'gear', material: 'steel',
+    answers: { 'gear.teethEntry': teeth },
+  });
+
+  it('refuses a part whose claimed teeth contradict the measured geometry', async () => {
+    if (!kernelAvailable || !existsSync(gearStep)) return;
+    const rec = await runBulkCosting([gearPart('GEAR-BAD', '40')], { answers: gearAnswers });
+    const p = rec.parts[0];
+    expect(p.status).toBe('refused');
+    expect(p.code).toBe('sanity_blocked');
+    expect(p.warnings?.some(w => w.code === 'gear_teeth_mismatch' && w.blocking)).toBe(true);
+    expect(p.total).toBeUndefined();
+  }, 180_000);
+
+  it('does not block the same part when the claim matches the geometry', async () => {
+    if (!kernelAvailable || !existsSync(gearStep)) return;
+    // Same file, same route, only the claim differs — so a pass here rules out
+    // "the guard blocks everything".
+    const rec = await runBulkCosting([gearPart('GEAR-OK', '38')], { answers: gearAnswers });
+    expect(rec.parts[0].code).not.toBe('sanity_blocked');
+  }, 180_000);
+
+  it('lets an acknowledged code through, and records that it was overridden', async () => {
+    if (!kernelAvailable || !existsSync(gearStep)) return;
+    const rec = await runBulkCosting([gearPart('GEAR-BAD', '40')], {
+      answers: gearAnswers, acknowledge: ['gear_teeth_mismatch'],
+    });
+    const p = rec.parts[0];
+    expect(p.code).not.toBe('sanity_blocked');
+    // The override has to survive in the record, or acknowledging hides the
+    // very thing it was meant to document.
+    expect(rec.acknowledged).toEqual(['gear_teeth_mismatch']);
+    expect(p.warnings?.some(w => w.code === 'gear_teeth_mismatch')).toBe(true);
+  }, 180_000);
+
+  it('carries advisory warnings on a part it still costs', async () => {
+    if (!kernelAvailable) return;
+    const rec = await runBulkCosting(
+      [{ partNumber: 'ADV', file: someStep, commodity: 'machining', material: 'aluminium' }],
+    );
+    // Whatever fires here, an advisory must never stop the costing.
+    expect(rec.parts[0].status).toBe('costed');
+    for (const w of rec.parts[0].warnings ?? []) expect(w.blocking).not.toBe(true);
+    expect(rec.summary.withWarnings).toBe((rec.parts[0].warnings ?? []).length ? 1 : 0);
+  }, 120_000);
+
+  it('reports nothing acknowledged when nothing was overridden', async () => {
+    const rec = await runBulkCosting([
+      { partNumber: 'P', file: someStep, commodity: 'machining', region: 'Poland' },
+    ]);
+    expect(rec.acknowledged).toEqual([]);
+  });
+});
