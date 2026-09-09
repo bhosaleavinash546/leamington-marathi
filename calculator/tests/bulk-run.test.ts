@@ -2,11 +2,11 @@
  * The bulk run — a basket in, a defensible record out.
  *
  * Two halves. The first needs no geometry kernel and pins the behaviour that has
- * to hold on any machine: a non-UK region is refused rather than costed at UK
- * rates, an unreadable file fails its own row instead of the run, and the record
- * carries the versions that produced the numbers. The second half needs OCP and
- * skips without it, exactly as the other CAD suites do — that is expected on the
- * Alpine image, not a failure.
+ * to hold on any machine: a region the rate model does not know is refused
+ * rather than quietly costed in the UK, an unreadable file fails its own row
+ * instead of the run, and the record carries the versions that produced the
+ * numbers. The second half needs OCP and skips without it, exactly as the other
+ * CAD suites do — that is expected on the Alpine image, not a failure.
  *
  * `AIR_GAPPED=1` is set for the whole file. If any of this ever reaches for a
  * model, `createAnthropic()` throws and these tests go red — which is the point:

@@ -495,13 +495,22 @@ def tile(slide, x, y, w, h, icon, title, body, accent):
 
 s = header('Option 2: what CostVision does', 'Option 2 · the capability')
 text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
-     [[('What the tool does. Five of these work today, one part at a time — running them over a '
-        'whole basket is what Option 2 builds.', 11.5, BODY, False)]])
+     [[('All six work today. The top row needs no AI at all; the bottom row needs an AI service, '
+        'which is the approval to start now.', 11.5, BODY, False)]])
 tiles = [
+    # Top row — no AI anywhere in it. These run under a deny-all-egress firewall.
     ('cog', 'Cost a whole basket, unattended',
      'A list of parts and their 3D models goes in. Every part costed and reported '
-     'with nobody sitting there. This is the one Option 2 builds.', AMBER),
-    ('eye', 'A board photo becomes a costed BOM',
+     'with nobody sitting there, on our own rates.', GREEN),
+    ('coins', 'Supplier quotes taken apart',
+     'Put their price next to our own build-up and see which part of it the gap is '
+     'in, with the questions to put to them.', GREEN),
+    ('press', 'Design changes priced, not guessed',
+     'It flags what makes a part expensive and puts a number on each change, '
+     'ranked by the money it would save.', GREEN),
+    # Bottom row — these read something a person would otherwise read, so they
+    # need a model, and therefore the approval.
+    ('eye', 'A board photo becomes a BOM',
      'Take a picture of a circuit board. The tool works out what is on it, builds '
      'the bill of materials and the board spec, and costs it.', VIOLET),
     ('clip', 'An RFQ pack becomes costed lines',
@@ -509,13 +518,7 @@ tiles = [
      'money and drafts the negotiation brief.', VIOLET),
     ('person', 'An assistant does the setting up',
      'It picks the process route and the machine and fills in what the geometry '
-     'gives, then asks one question instead of a hundred.', INDIGO),
-    ('coins', 'Supplier quotes taken apart',
-     'Put their price next to our own build-up and see which part of it the gap is '
-     'in, with the questions to put to them.', INDIGO),
-    ('press', 'Design changes priced, not guessed',
-     'It flags what makes a part expensive and puts a number on each change, '
-     'ranked by the money it would save.', INDIGO),
+     'gives, then asks one question instead of a hundred.', VIOLET),
 ]
 tw, tg = Inches(4.01), Inches(0.2)
 for i, (ic, t_, b_, c_) in enumerate(tiles):
@@ -524,32 +527,35 @@ for i, (ic, t_, b_, c_) in enumerate(tiles):
     tile(s, tx, ty, tw, Inches(2.05), ic, t_, b_, c_)
 callout(s, Inches(0.45), Inches(6.32), Inches(12.43), Inches(0.95), PANEL2, INDIGO,
         'All six end in the same engine',
-        'The AI reads, sorts and sets up — the photo, the pack, the drawing, the process route. It '
-        'never sets a price. The money is worked out by the same fixed rules and the same rate book '
-        'we use today, so every number can still be explained line by line.')
+        'Where the AI is used it reads, sorts and sets up — the photo, the pack, the drawing, the '
+        'process route. It never sets a price. The money is worked out by the same fixed rules and '
+        'the same rate book in every one of the six, so every number can be explained line by line.')
 notes(s, "This is the slide I would spend the most time on, because it is the part of the case that "
-         "is easy to under-sell. Six things the tool does, and one distinction I want to make "
-         "before I go through them: five of these work today, one part at a time, in the tool as it "
-         "stands. The first one does not, and that is why it is the amber tile. A list of parts and "
-         "their models goes in and every part comes back costed, with a report per part and per "
-         "basket, without anybody sitting there — that is what Option two builds, and today we cost "
-         "the parts we have hours for and estimate the rest from a sample. Next to it is the one that usually gets a reaction in "
-         "the room. You take a photograph of a circuit board and the tool works out what is on it, "
-         "builds the bill of materials, works out the board specification and costs it. That is a "
-         "job that takes an electronics buyer a long time and most of us cannot do at all. Third "
-         "along, an RFQ pack goes in and comes back as costed lines, ranked by where the money is, "
-         "with a first draft of the negotiation brief written for you. Bottom left is the "
-         "assistant, and I want to be precise about it. It does the setting up: it picks the "
-         "process route and the machine and fills in what the geometry gives it, and then it comes "
-         "back to a person with one question rather than a hundred. Next to that is the one our "
-         "buyers will care about most. Put a supplier's price next to our own build-up and the tool "
-         "tells you which part of it the gap sits in and what to ask them about it. And the last "
-         "one turns design-for-cost from a list into a decision: it flags what makes a part "
-         "expensive and puts a number on each change, ordered by what it saves. The blue strip at "
-         "the bottom is the sentence I would want people to leave with. The AI reads and sorts and "
-         "sets up. It never sets a price. The money is still worked out by the same fixed rules and "
-         "the same rate book we use now, so every number can be explained line by line, exactly as "
-         "it can today.")
+         "is easy to under-sell. Six things the tool does, and all six of them work today. The "
+         "split on the slide is not what works and what does not — it is what needs an AI service "
+         "and what does not. The top row needs none at all. It is the fixed rules and our own rate "
+         "book, so it is the same policy position as Option one. The bottom row reads something a "
+         "person would otherwise read, so it needs a model, and that is the approval I am asking "
+         "us to start. Taking the top row first. A list of parts and their three-D models goes in "
+         "and every part comes back costed, with a report per part and per basket, with nobody "
+         "sitting there and on our own rates. That one is built and it runs; today we cost the "
+         "parts we have hours for and estimate the rest from a sample. Next to it is the one our "
+         "buyers will care about most. Put a supplier's price next to our own build-up and the "
+         "tool tells you which part of it the gap sits in and what to ask them about it. And the "
+         "third turns design-for-cost from a list into a decision: it flags what makes a part "
+         "expensive and puts a number on each change, ordered by what it saves. Now the bottom "
+         "row. The first usually gets a reaction in the room. You take a photograph of a circuit "
+         "board and the tool works out what is on it, builds the bill of materials, works out the "
+         "board specification and costs it. That is a job that takes an electronics buyer a long "
+         "time and most of us cannot do at all. Next along, an RFQ pack goes in and comes back as "
+         "costed lines, ranked by where the money is, with a first draft of the negotiation brief "
+         "written for you. And the last is the assistant, and I want to be precise about it. It "
+         "does the setting up: it picks the process route and the machine and fills in what the "
+         "geometry gives it, and then it comes back to a person with one question rather than a "
+         "hundred. The blue strip at the bottom is the sentence I would want people to leave with. "
+         "Where the AI is used it reads and sorts and sets up. It never sets a price. The money is "
+         "still worked out by the same fixed rules and the same rate book we use now, so every "
+         "number can be explained line by line, exactly as it can today.")
 
 # ═══════════ 4 · WHAT WE GET FROM EACH ═════════════════════════════════════
 def wide_card(slide, x, y, w, h, accent, title, col1, col2):
@@ -680,8 +686,8 @@ card(s, Inches(0.45), Inches(1.72), Inches(6.1), Inches(1.05), GREEN,
       ('already bought, inside CAPEE.',)])
 card(s, Inches(6.78), Inches(1.72), Inches(6.1), Inches(1.05), VIOLET,
      'OPTION 2 · no decision today',
-     [('Start the AI approval in parallel, so it is not the thing',),
-      ('holding us up when the trial finishes.',)])
+     [('The bulk run is built and runs unattended on our own',),
+      ('parts. Start the AI approval so it is not what holds us up.',)])
 
 card(s, Inches(0.45), Inches(2.89), Inches(6.1), Inches(1.32), INDIGO,
      'OPTION 1 NEEDS',
@@ -690,9 +696,9 @@ card(s, Inches(0.45), Inches(2.89), Inches(6.1), Inches(1.32), INDIGO,
       ('An engineer from the commodity team for the trial',)])
 card(s, Inches(6.78), Inches(2.89), Inches(6.1), Inches(1.32), VIOLET,
      'OPTION 2 NEEDS',
-     [('Everything above, plus approval to use AI',),
-      ('Our own rate book loaded, with a change history',),
-      ('A record of every costing, and the run itself built',)])
+     [('Everything above, plus approval to use AI — for the',),
+      ('three on the last slide that read something',),
+      ('Our own rate book loaded. The rest is built',)])
 
 callout(s, Inches(0.45), Inches(4.33), Inches(12.43), Inches(0.9), GREENBG, GREEN,
         'What the trial gives us',
@@ -706,8 +712,8 @@ strip(s, Inches(0.45), Inches(5.36), Inches(12.43), Inches(0.58),
       'fixed rules we use today.', INDIGO)
 strip(s, Inches(0.45), Inches(5.98), Inches(12.43), Inches(0.58),
       'If the trial disappoints',
-      'Never checked against a price JLR has paid. If the answer is poor we stop, having spent '
-      'only our own time.', AMBER)
+      'Never checked against a price JLR has paid, and never yet run on a JLR laptop. If the answer '
+      'is poor we stop, having spent only our own time.', AMBER)
 strip(s, Inches(0.45), Inches(6.60), Inches(12.43), Inches(0.58),
       'Nobody has sized this yet',
       'How long it takes waits on one answer from IT about how CAPEE is built. The sizing comes '
@@ -715,13 +721,13 @@ strip(s, Inches(0.45), Inches(6.60), Inches(12.43), Inches(0.58),
 notes(s, "So this is the decision, and I have split it into what I want today and what I do not. On "
          "the left, Option one: approve the trial. One commodity, thirty to fifty parts we have "
          "already bought, run inside CAPEE. On the right, Option two: I am not asking you to decide "
-         "it. What I am asking is that we start the AI approval alongside the trial, because that "
-         "is the long pole and there is no sense discovering at the end of the trial that we now "
-         "have to begin it. The two cards underneath are what each one needs. Option one needs a "
+         "it. The bulk run itself is built — it costs a basket of our own parts unattended, on our "
+         "own rates. What I am asking is that we start the AI approval alongside the trial, "
+         "because that is the long pole and there is no sense discovering at the end of the "
+         "trial that we now have to begin it. The two cards underneath are what each one needs. Option one needs a "
          "server, a way to pass numbers into CAPEE, some parts where we know what we paid, and an "
-         "engineer from the commodity team for the trial. Option two needs all of that plus the AI "
-         "approval, our own rate book with a change history, and a few things built around the "
-         "engine. The green strip is what we get out of the trial and it is the reason to do it: "
+         "engineer from the commodity team for the trial. Option two needs all of that, plus the AI "
+         "approval and our own rate book loaded into the tool. The rest of it is built. The green strip is what we get out of the trial and it is the reason to do it: "
          "two numbers that nobody in this company can state today. How close the tool gets to a "
          "price we actually paid, and how much of the input it fills on its own. Until we have "
          "those, any conversation about Option two is people trading opinions. Then three short "
@@ -729,8 +735,9 @@ notes(s, "So this is the decision, and I have split it into what I want today an
          "and it is the one I would repeat if you take nothing else away: the AI reads, sorts and "
          "sets up, and it never sets a price. The money comes out of the same fixed rules and the "
          "same rate book as today, so every number can be defended line by line exactly as it can "
-         "now. The second is the exit. We have never compared this against a price we have paid. If "
-         "the trial says the tool is not close enough, we stop, and what we will have spent is our "
+         "now. The second is the exit. We have never compared this against a price we have paid, "
+         "and it has never been run on a JLR laptop. If the trial says the tool is not close enough, "
+         "we stop, and what we will have spent is our "
          "own engineering time — that is precisely why I am asking for a trial and not a rollout. "
          "And the third is the honest answer to how long: nobody has sized it. It waits on one "
          "answer from IT about how CAPEE is built, and the sizing comes back with that answer "

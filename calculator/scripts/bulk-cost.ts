@@ -22,7 +22,9 @@
  *                           left blank, the geometry decides — or asks
  *   material     optional   shorthand for the material.family answer
  *   annualVolume optional   defaults to --volume, else the shop default
- *   region       optional   UK only today; anything else is refused, not guessed
+ *   region       optional   code or name — PL, Poland, CN, United States. The whole
+ *                           rate book is rebuilt for it. Blank means UK. A region
+ *                           the model does not know is refused, not guessed at
  *
  * Any other column whose name contains a dot is treated as a per-part answer to
  * that decision — so `service.pressureTight` is a column, not a code change.
