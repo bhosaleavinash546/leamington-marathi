@@ -12,7 +12,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-2246f71163e295f8",
+      "partName": "cv-cad-b56d3bf199b01046",
       "boundingBox": {
         "xMm": 132.62,
         "yMm": 120.03,
@@ -705,9 +705,19 @@
       }
     },
     "outcome": {
-      "status": "refused",
+      "status": "costed",
       "commodity": "cast_and_machine",
-      "code": "no_cost_mapping"
+      "total": 37.61,
+      "breakdown": {
+        "rawMaterial": 3.48,
+        "process": 16.18,
+        "labour": 9.03,
+        "tooling": 2.03,
+        "packaging": 0.15,
+        "logistics": 0.27,
+        "overhead": 3.69,
+        "margin": 2.79
+      }
     }
   },
   {
@@ -723,7 +733,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-00646cae3d810c2b",
+      "partName": "cv-cad-f0c7d1bb41d8958c",
       "boundingBox": {
         "xMm": 276.78,
         "yMm": 223.15,
@@ -1718,9 +1728,19 @@
       }
     },
     "outcome": {
-      "status": "refused",
+      "status": "costed",
       "commodity": "cast_and_machine",
-      "code": "no_cost_mapping"
+      "total": 52.67,
+      "breakdown": {
+        "rawMaterial": 11.49,
+        "process": 16.4,
+        "labour": 9.23,
+        "tooling": 6,
+        "packaging": 0.18,
+        "logistics": 0.3,
+        "overhead": 5.17,
+        "margin": 3.9
+      }
     }
   },
   {
@@ -1733,7 +1753,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-dac49b91fbaa52fd",
+      "partName": "cv-cad-34f9eb1b3af91082",
       "boundingBox": {
         "xMm": 58.23,
         "yMm": 274.48,
@@ -2492,7 +2512,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-a3f2fac64a312fb8",
+      "partName": "cv-cad-90f06bd59ea5899d",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -3332,7 +3352,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-8f31d2c892926525",
+      "partName": "cv-cad-cbb5f8c12c79d9b2",
       "boundingBox": {
         "xMm": 116.49,
         "yMm": 236.81,
@@ -4281,7 +4301,7 @@
     "commodity": "gear",
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-8e5c7f4659d920c4",
+      "partName": "cv-cad-27f87ac18a2f59d8",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,

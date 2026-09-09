@@ -225,6 +225,64 @@ export function toCostParams(
   const finish = (r: ToCostParamsResult | null): ToCostParamsResult | null =>
     r === null ? null : { ...r, packagingPerPart, logisticsPerPart };
 
+  /**
+   * The subtype-specific block a casting needs — die, pattern, mould or wax.
+   *
+   * Shared by `casting` and `cast_and_machine` because the second is the first
+   * plus finish machining, and two copies of a die-cost mapping would drift.
+   * Only the chosen subtype's block is built: the others are noise the schema
+   * carries for every part. Pushes its own stated assumptions onto `assumed`.
+   */
+  function castingSubtypeBlock(
+    c: NonNullable<CostInputs['casting']>, weightKg: number,
+  ): Record<string, unknown> {
+    if (c.subtype === 'hpdc') {
+      // Tonnage is not in costInputSuggestions, so size from the plan area a
+      // part of this mass implies rather than defaulting to one press.
+      assumed.push('hpdc.machineId');
+      return {
+        hpdc: {
+          machineId: pickHPDCMachineId(weightKg * 220),
+          cycleTimeSec: num(c.cycleTimeHpdcSec, 45),
+          cavities: num(c.cavities, 1),
+          dieCost: num(c.dieMouldCostGBP),
+          dieLife: num(c.dieMouldLife, 100_000),
+        },
+      };
+    }
+    if (c.subtype === 'sand') {
+      assumed.push('sand.mouldLineId', 'sand.coreCostPerPart');
+      return {
+        sand: {
+          mouldLineId: 'sand-cast-line',
+          cycleTimeHr: num(c.cycleTimeSandGravHr, 0.25),
+          patternCost: num(c.dieMouldCostGBP),
+          patternLife: num(c.dieMouldLife, 50_000),
+          coreCostPerPart: 0,
+        },
+      };
+    }
+    if (c.subtype === 'gravity') {
+      assumed.push('gravity.machineId');
+      return {
+        gravity: {
+          machineId: 'grav-die-cast-std',
+          cycleTimeHr: num(c.cycleTimeSandGravHr, 0.08),
+          mouldCost: num(c.dieMouldCostGBP),
+          mouldLife: num(c.dieMouldLife, 50_000),
+        },
+      };
+    }
+    assumed.push('investment.waxCostPerPart', 'investment.shellBuildCostPerPart');
+    return {
+      investment: {
+        waxCostPerPart: 0, shellBuildCostPerPart: 0,
+        pourLabourId: labourId, pourCycleHr: num(c.cycleTimeSandGravHr, 0.15),
+        pourMachineId: 'invest-cast-furnace', waxDieCost: num(c.dieMouldCostGBP),
+      },
+    };
+  }
+
   return finish(buildParams());
 
   function buildParams(): ToCostParamsResult | null {
@@ -240,44 +298,7 @@ export function toCostParams(
         partWeightKg: weight,
         castingYield: num(c.yieldFraction, 0.65),
       };
-      // Only the chosen subtype's block is built — the others are noise the
-      // model emits for every part because the schema always includes them.
-      if (c.subtype === 'hpdc') {
-        // Tonnage is not in costInputSuggestions, so size from the plan area a
-        // part of this mass implies rather than defaulting to one press.
-        params.hpdc = {
-          machineId: pickHPDCMachineId(weight * 220),
-          cycleTimeSec: num(c.cycleTimeHpdcSec, 45),
-          cavities: num(c.cavities, 1),
-          dieCost: num(c.dieMouldCostGBP),
-          dieLife: num(c.dieMouldLife, 100_000),
-        };
-        assumed.push('hpdc.machineId');
-      } else if (c.subtype === 'sand') {
-        params.sand = {
-          mouldLineId: 'sand-cast-line',
-          cycleTimeHr: num(c.cycleTimeSandGravHr, 0.25),
-          patternCost: num(c.dieMouldCostGBP),
-          patternLife: num(c.dieMouldLife, 50_000),
-          coreCostPerPart: 0,
-        };
-        assumed.push('sand.mouldLineId', 'sand.coreCostPerPart');
-      } else if (c.subtype === 'gravity') {
-        params.gravity = {
-          machineId: 'grav-die-cast-std',
-          cycleTimeHr: num(c.cycleTimeSandGravHr, 0.08),
-          mouldCost: num(c.dieMouldCostGBP),
-          mouldLife: num(c.dieMouldLife, 50_000),
-        };
-        assumed.push('gravity.machineId');
-      } else {
-        params.investment = {
-          waxCostPerPart: 0, shellBuildCostPerPart: 0,
-          pourLabourId: labourId, pourCycleHr: num(c.cycleTimeSandGravHr, 0.15),
-          pourMachineId: 'invest-cast-furnace', waxDieCost: num(c.dieMouldCostGBP),
-        };
-        assumed.push('investment.waxCostPerPart', 'investment.shellBuildCostPerPart');
-      }
+      Object.assign(params, castingSubtypeBlock(c, weight));
       const sec = secondaryMachining(geo, labourId);
       if (sec) {
         params.secondaryMachiningOps = sec.operations;
@@ -285,6 +306,92 @@ export function toCostParams(
         assumed.push(`secondary-machining NRE £${SECONDARY_MACHINING_NRE_GBP} (fixtures + programming)`);
       }
       return { commodity, params, assumed };
+    }
+
+    case 'cast_and_machine': {
+      // A casting plus the finish machining that follows it. The rules pack
+      // composes CASTING_RULES with MACHINING_RULES, so both halves arrive
+      // populated and this mapping composes the same two — sharing
+      // `castingSubtypeBlock` with `casting` rather than restating it.
+      const c = ci.casting;
+      if (!c) return null;
+      const finished = num(ci.netWeightKg);
+      const ops = (ci.estimatedOperations ?? []).filter(o => num(o.cycleTimeHr) > 0);
+      const cycleHr = num(ci.estimatedCycleTimeHr);
+      const machineId = ci.machining?.machineId
+        || pickMachiningCentreId({ principalDirections: 3, axisymmetric: false });
+      const batchSize = standardBatchSize(annualVolume);
+
+      // Setups drive the setup factor in the module. The rules count them off
+      // the principal directions the part actually presents; clamp to the
+      // factor table's range rather than let an out-of-range index silently
+      // fall back to 1.0.
+      const setups = Math.round(num(ci.machining?.setupCount, 3));
+      const complexity = Math.min(5, Math.max(1, setups)) as 1 | 2 | 3 | 4 | 5;
+      if (!ci.machining?.setupCount) assumed.push('geometryComplexity (3 — no setup count measured)');
+
+      // NOT re-capped here. `machining` scales its operations down to the
+      // physical removal ceiling because a billet part's ops can claim more
+      // cutting than the stock can give up. This commodity's cycle already went
+      // through `capNearNetMachiningHr` inside the rules — the near-net finish
+      // envelope, which is the tighter and correct ceiling for a casting — and
+      // applying the billet ceiling on top would cap a capped number.
+      assumed.push(
+        `batchSize=${batchSize} (annualVolume / 20)`, 'partsPerCycle=1', 'labourTimeHr=cycleTimeHr',
+        'machiningToolingCost=0, machiningProgrammingNRE=0',
+        // The STEP is the finished part, so the as-cast weight — finished plus
+        // the stock the machining removes — is not measurable from it and no
+        // rule states a machining allowance. Taking them as equal understates
+        // the material bucket by the stock removed, which for a near-net
+        // casting is small but is not nothing. Stated, not hidden.
+        'castPartWeightKg = finishedWeightKg (no machining allowance is measured)',
+      );
+
+      return {
+        commodity, assumed,
+        params: {
+          castingSubtype: c.subtype,
+          materialId,
+          castPartWeightKg: finished,
+          finishedWeightKg: finished,
+          castingYield: num(c.yieldFraction, 0.65),
+          rejectRate: D.rejectRate,
+          castingLabourId: labourId,
+          castingOee: D.oee,
+          castingManning: D.manning,
+          castingLabourEfficiency: D.labourEfficiency,
+          ...castingSubtypeBlock(c, finished),
+
+          geometryComplexity: complexity,
+          machiningOps: (ops.length
+            ? ops.map(o => ({
+                name: o.name,
+                machineId: o.machineId || machineId,
+                cycleTimeHr: num(o.cycleTimeHr),
+                labourId: o.labourId || LABOUR.machining || labourId,
+                oee: num(o.oee, D.oee),
+                manning: num(o.manning, D.manning),
+                labourEfficiency: num(o.labourEfficiency, D.labourEfficiency),
+              }))
+            : [{
+                name: 'Finish machining', machineId, cycleTimeHr: cycleHr,
+                labourId: LABOUR.machining || labourId,
+                oee: D.oee, manning: D.manning, labourEfficiency: D.labourEfficiency,
+              }]
+          ).map(o => ({ ...o, type: 'milling', partsPerCycle: 1, labourTimeHr: o.cycleTimeHr })),
+          machiningSetup: {
+            setupTimeHr: num(ci.estimatedSetupTimeHr, 0.5),
+            batchSize,
+            machineId,
+            // The cutting is done by a machinist, not the foundry labour that
+            // pours the casting — `labourId` here is `lab-uk-foundry`.
+            labourId: LABOUR.machining || labourId,
+          },
+          machiningToolingCost: 0,
+          machiningProgrammingNRE: 0,
+          amortizationVolume: annualVolume,
+        },
+      };
     }
 
     case 'gear': {
@@ -540,5 +647,6 @@ export function toCostParams(
 
 /** Commodities `toCostParams` can convert today. */
 export const COSTABLE_COMMODITIES = [
-  'casting', 'forging', 'machining', 'injection_moulding', 'sheet_metal', 'blow_moulding', 'gear',
+  'casting', 'cast_and_machine', 'forging', 'machining', 'injection_moulding',
+  'sheet_metal', 'blow_moulding', 'gear',
 ];
