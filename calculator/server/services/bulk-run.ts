@@ -15,10 +15,10 @@
  *
  * 2. **Refuse rather than default.** A part whose geometry cannot settle the
  *    process, or which still has a blocking question, is returned as
- *    `needs_answer` with the question — not costed on a guess. A non-UK region
- *    is `refused`, because `executeCalculateCost` has no region parameter and
- *    costing a Poland part at UK rates would be quietly wrong, which is worse
- *    than not costing it. When that gap closes, delete `regionGuard`.
+ *    `needs_answer` with the question — not costed on a guess. A region the
+ *    rate model does not know is refused rather than quietly costed in the UK
+ *    and reported as that region; a region it does know has the whole rate book
+ *    rebuilt for it, the way the screens do it.
  *
  * 3. **The same geometry guards as the CAD route.** `runAllGuards` — the
  *    near-net machining cap and the cad-sanity cross-checks — runs here on the
@@ -55,7 +55,12 @@ import {
 import { RULE_ENGINE_VERSION } from '../../src/engine/cost-input-rules/types.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 import { fingerprintRateLibrary } from '../../src/engine/rate-library-merge.js';
+import {
+  buildRegionalLibrary, resolveManufacturingRegion, supportedRegions,
+} from '../../src/engine/regional-rates.js';
+import { recomputeMachineRates } from '../../src/engine/rate-library.js';
 import type { RateLibrary } from '../../src/engine/types.js';
+import type { ManufacturingRegion } from '../../src/engine/regional-rates.js';
 import type { RuleContext } from '../../src/engine/cost-input-rules/types.js';
 
 /** One line of the part list. Extra `a.b` keys are per-part decision answers. */
@@ -92,6 +97,8 @@ export interface BulkPartResult {
   /** How the commodity was settled — the list, or the geometry. */
   commoditySource?: 'list' | 'inferred';
   geometry?: { volumeCm3: number; bboxMm: [number, number, number] };
+  /** The region this part was costed in — the rate book was rebuilt for it. */
+  region?: ManufacturingRegion;
   breakdown?: Record<string, number>;
   total?: number;
   /** Values no CAD file carries, taken from SHOP_DEFAULTS or a picker. */
@@ -178,19 +185,34 @@ export interface BulkRunOptions {
 }
 
 /**
- * UK only, and loudly.
+ * The rate book for a region, built the way the screens build it.
  *
- * `executeCalculateCost` takes no region and always costs on
- * `DEFAULT_RATE_LIBRARY`, which is the UK book. A basket costed at UK rates when
- * the list said Poland is wrong in a way nobody would spot in a spreadsheet, so
- * the part is refused instead. Delete this once the executor takes a region.
+ * `buildRegionalLibrary` rescales the whole book — labour by category, machines
+ * by the regional capital and energy picture, materials by family — rather than
+ * scaling a finished UK total, which is the difference between costing a part in
+ * Poland and estimating it. `recomputeMachineRates` first, matching
+ * `src/ui/main.ts`, so a machine rate is always re-derived from its buildup
+ * instead of trusting a stale `computedRatePerHr` carried in from storage.
+ *
+ * Memoised per run: a 500-part basket in three regions rebuilds three books,
+ * not five hundred.
  */
-const UK = new Set(['', 'uk', 'gb', 'gbr', 'united kingdom', 'great britain']);
-function regionGuard(region: string | undefined): string | null {
-  const r = (region ?? '').trim().toLowerCase();
-  if (UK.has(r)) return null;
-  return `region '${region}' is not supported on the automated route yet — it always costs `
-       + 'on the UK rate book. Cost this part in the screens, or leave the region blank for UK.';
+function regionalBook(
+  base: RateLibrary, region: ManufacturingRegion, cache: Map<string, RateLibrary>,
+): RateLibrary {
+  // Keyed on the region alone: the cache is created per run and the base book is
+  // fixed for that run, so hashing the whole 328-material library into the key
+  // on every part was pure waste — it turned a 1-second basket into 11.
+  const key = region;
+  const hit = cache.get(key);
+  if (hit) return hit;
+  // UK is the basis the book is already expressed in — rescaling it by 1.0
+  // everywhere would be a no-op that still costs a full rebuild.
+  const built = region === 'UK'
+    ? recomputeMachineRates(base)
+    : buildRegionalLibrary(recomputeMachineRates(base), region);
+  cache.set(key, built);
+  return built;
 }
 
 /** Stable across key order so a re-run of the same basket hashes the same. */
@@ -206,13 +228,23 @@ function hashInputs(parts: BulkPartInput[], answers: Record<string, unknown>): s
 
 /** Cost one part through the deterministic chain. Never throws. */
 async function costOnePart(
-  part: BulkPartInput, opts: BulkRunOptions,
+  part: BulkPartInput, opts: BulkRunOptions & { _regionCache?: Map<string, RateLibrary> },
+  baseBook: RateLibrary,
 ): Promise<BulkPartResult> {
   const name = basename(part.file);
   const base: BulkPartResult = { partNumber: part.partNumber, file: part.file, status: 'error' };
 
-  const badRegion = regionGuard(part.region);
-  if (badRegion) return { ...base, status: 'refused', code: 'region_unsupported', error: badRegion };
+  // Blank means the book as supplied — for the built-in library that is the UK.
+  const region = part.region?.trim()
+    ? resolveManufacturingRegion(part.region)
+    : 'UK' as ManufacturingRegion;
+  if (!region) {
+    // Refuse rather than default: a part list saying "Polandd" costed in the UK
+    // and reported as Poland is the silent kind of wrong this tool exists to avoid.
+    return { ...base, status: 'refused', code: 'region_unknown',
+             error: `region '${part.region}' is not one this rate model knows. `
+                  + `Use a code or name from: ${supportedRegions().join(', ')}` };
+  }
 
   const answers: Record<string, unknown> = { ...(opts.answers ?? {}), ...(part.answers ?? {}) };
   if (part.material) answers['material.family'] = part.material;
@@ -307,7 +339,7 @@ async function costOnePart(
 
   const cost = executeCalculateCost({
     commodity, params: mapped.params, partName: geo.partName || name,
-    ...(opts.rateLibrary ? { rateLibrary: opts.rateLibrary } : {}),
+    rateLibrary: regionalBook(baseBook, region, opts._regionCache ?? new Map()),
     overheadPct: SHOP_DEFAULTS.overheadPct, marginPct: SHOP_DEFAULTS.marginPct,
     packagingPerPart: mapped.packagingPerPart ?? SHOP_DEFAULTS.packagingPerPart,
     logisticsPerPart: mapped.logisticsPerPart ?? SHOP_DEFAULTS.logisticsPerPart,
@@ -325,7 +357,7 @@ async function costOnePart(
 
   return {
     partNumber: part.partNumber, file: part.file, status: 'costed',
-    commodity, commoditySource, geometry,
+    commodity, commoditySource, geometry, region,
     breakdown: cost.breakdown as unknown as Record<string, number>,
     total: cost.total,
     assumed: mapped.assumed,
@@ -363,6 +395,7 @@ export async function runBulkCosting(
   const startedAt = new Date().toISOString();
   const basketAnswers = opts.answers ?? {};
   const rates = opts.rateLibrary ?? DEFAULT_RATE_LIBRARY;
+  const regionCache = new Map<string, RateLibrary>();
   const results: BulkPartResult[] = new Array(parts.length);
   const conc = Math.max(1, opts.concurrency ?? 4);
 
@@ -371,7 +404,7 @@ export async function runBulkCosting(
     for (;;) {
       const i = next++;
       if (i >= parts.length) return;
-      const r = await costOnePart(parts[i], opts);
+      const r = await costOnePart(parts[i], { ...opts, _regionCache: regionCache }, rates);
       results[i] = r;
       opts.onProgress?.(++done, parts.length, r);
     }

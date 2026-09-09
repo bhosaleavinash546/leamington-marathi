@@ -22,6 +22,8 @@ import { analyzeGeometry } from '../server/utils/geometry-bridge.js';
 import { RULE_ENGINE_VERSION } from '../src/engine/cost-input-rules/types.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { fingerprintRateLibrary } from '../src/engine/rate-library-merge.js';
+import { buildRegionalLibrary, resolveManufacturingRegion } from '../src/engine/regional-rates.js';
+import { recomputeMachineRates } from '../src/engine/rate-library.js';
 
 const DIR = join(__dirname, 'fixtures', 'cad-parts');
 const STEPS = existsSync(DIR) ? readdirSync(DIR).filter(f => f.endsWith('.step')).sort() : [];
@@ -40,29 +42,40 @@ beforeAll(async () => {
 }, 240_000);
 
 describe('bulk run — behaviour that holds without a geometry kernel', () => {
-  it('refuses a non-UK region instead of quietly costing it at UK rates', async () => {
-    // executeCalculateCost takes no region and always uses the UK book. Costing a
-    // Poland part on it would be wrong in a way a spreadsheet never shows.
+  it('refuses a region the rate model does not know', async () => {
+    // Not a rejection of foreign regions — those are costed now. This is the
+    // typo case: costing "Polandd" in the UK and labelling it Poland is the
+    // silent kind of wrong, so it is refused with the list of what is valid.
     const rec = await runBulkCosting([
-      { partNumber: 'P-PL', file: someStep, commodity: 'machining', region: 'Poland' },
+      { partNumber: 'P-??', file: someStep, commodity: 'machining', region: 'Polandd' },
     ]);
     expect(rec.parts[0].status).toBe('refused');
-    expect(rec.parts[0].code).toBe('region_unsupported');
+    expect(rec.parts[0].code).toBe('region_unknown');
     expect(rec.parts[0].total).toBeUndefined();
+    expect(rec.parts[0].error).toMatch(/PL \(Poland\)/);   // tells you the valid form
     expect(rec.summary.basketTotalGBP).toBe(0);
   });
 
-  it.each(['UK', 'uk', 'United Kingdom', ''])('accepts %j as the UK', async region => {
-    const rec = await runBulkCosting([
-      { partNumber: 'P-UK', file: someStep, commodity: 'machining', region },
-    ]);
-    expect(rec.parts[0].code).not.toBe('region_unsupported');
-  });
+  it.each(['UK', 'uk', 'United Kingdom', 'GB', 'Great Britain', ''])(
+    'accepts %j as the UK', async region => {
+      const rec = await runBulkCosting([
+        { partNumber: 'P-UK', file: someStep, commodity: 'machining', region },
+      ]);
+      expect(rec.parts[0].code).not.toBe('region_unknown');
+    });
+
+  it.each(['PL', 'Poland', 'CN', 'China', 'IN', 'India', 'US', 'United States', 'Czechia'])(
+    'accepts %j as a region it can cost in', async region => {
+      const rec = await runBulkCosting([
+        { partNumber: 'P', file: someStep, commodity: 'machining', region },
+      ]);
+      expect(rec.parts[0].code).not.toBe('region_unknown');
+    });
 
   it('fails one unreadable row without taking the run down', async () => {
     const rec = await runBulkCosting([
       { partNumber: 'GONE', file: join(DIR, 'no-such-part.step'), commodity: 'machining' },
-      { partNumber: 'P-PL', file: someStep, commodity: 'machining', region: 'Poland' },
+      { partNumber: 'P-??', file: someStep, commodity: 'machining', region: 'Atlantis' },
     ]);
     expect(rec.parts).toHaveLength(2);
     expect(rec.parts[0]).toMatchObject({ status: 'error', code: 'unreadable' });
@@ -72,7 +85,7 @@ describe('bulk run — behaviour that holds without a geometry kernel', () => {
 
   it('carries the versions the numbers came from, and says AI was not used', async () => {
     const rec = await runBulkCosting([
-      { partNumber: 'P1', file: someStep, commodity: 'machining', region: 'Poland' },
+      { partNumber: 'P1', file: someStep, commodity: 'machining', region: 'Atlantis' },
     ]);
     expect(rec.engine.ruleEngineVersion).toBe(RULE_ENGINE_VERSION);
     expect(rec.engine.rateLibraryVersion).toBe(DEFAULT_RATE_LIBRARY.version);
@@ -82,8 +95,8 @@ describe('bulk run — behaviour that holds without a geometry kernel', () => {
   });
 
   it('hashes the inputs, not the order they were listed in', async () => {
-    const a: BulkPartInput = { partNumber: 'A', file: someStep, region: 'Poland' };
-    const b: BulkPartInput = { partNumber: 'B', file: someStep, region: 'Poland' };
+    const a: BulkPartInput = { partNumber: 'A', file: someStep, region: 'Atlantis' };
+    const b: BulkPartInput = { partNumber: 'B', file: someStep, region: 'Atlantis' };
     const one = await runBulkCosting([a, b]);
     const two = await runBulkCosting([b, a]);
     expect(one.inputHash).toBe(two.inputHash);
@@ -95,7 +108,7 @@ describe('bulk run — behaviour that holds without a geometry kernel', () => {
 
   it('keeps results in list order however the workers finish', async () => {
     const parts: BulkPartInput[] = ['A', 'B', 'C', 'D'].map(n => ({
-      partNumber: n, file: someStep, region: 'Poland',
+      partNumber: n, file: someStep, region: 'Atlantis',
     }));
     const rec = await runBulkCosting(parts, { concurrency: 4 });
     expect(rec.parts.map(p => p.partNumber)).toEqual(['A', 'B', 'C', 'D']);
@@ -352,7 +365,7 @@ describe('bulk run — geometry guards (needs OCP)', () => {
 
   it('reports nothing acknowledged when nothing was overridden', async () => {
     const rec = await runBulkCosting([
-      { partNumber: 'P', file: someStep, commodity: 'machining', region: 'Poland' },
+      { partNumber: 'P', file: someStep, commodity: 'machining', region: 'Atlantis' },
     ]);
     expect(rec.acknowledged).toEqual([]);
   });
@@ -445,7 +458,7 @@ describe('bulk run — gear (needs OCP)', () => {
 describe('bulk run — naming the rate book it costed on', () => {
   it('records a fingerprint that identifies the exact book', async () => {
     const rec = await runBulkCosting([
-      { partNumber: 'P', file: someStep, commodity: 'machining', region: 'Poland' },
+      { partNumber: 'P', file: someStep, commodity: 'machining', region: 'Atlantis' },
     ]);
     expect(rec.engine.rateLibraryFingerprint).toBe(fingerprintRateLibrary(DEFAULT_RATE_LIBRARY));
     expect(rec.engine.rateLibraryFingerprint).toMatch(/^[0-9a-f]{16}$/);
@@ -456,8 +469,8 @@ describe('bulk run — naming the rate book it costed on', () => {
       ...DEFAULT_RATE_LIBRARY,
       materials: DEFAULT_RATE_LIBRARY.materials.map(m => ({ ...m, pricePerKg: m.pricePerKg * 2 })),
     };
-    const a = await runBulkCosting([{ partNumber: 'P', file: someStep, region: 'Poland' }]);
-    const b = await runBulkCosting([{ partNumber: 'P', file: someStep, region: 'Poland' }],
+    const a = await runBulkCosting([{ partNumber: 'P', file: someStep, region: 'Atlantis' }]);
+    const b = await runBulkCosting([{ partNumber: 'P', file: someStep, region: 'Atlantis' }],
                                    { rateLibrary: dearer });
     expect(b.engine.rateLibraryFingerprint).not.toBe(a.engine.rateLibraryFingerprint);
     expect(b.engine.rateLibrarySource).toBe('supplied');
@@ -486,4 +499,80 @@ describe('bulk run — naming the rate book it costed on', () => {
     expect(redo.parts[0].breakdown).toEqual(then.parts[0].breakdown);
     expect(redo.engine.rateLibraryFingerprint).toBe(then.engine.rateLibraryFingerprint);
   }, 180_000);
+});
+
+/**
+ * Costing a part in the region it is made in.
+ *
+ * The automated route used to refuse anything but the UK, because
+ * executeCalculateCost had no region and costing a Poland part on the UK book
+ * would have been quietly wrong. It now rebuilds the whole rate book per region
+ * — the same call the screens make — so the two paths cannot drift.
+ */
+describe('bulk run — regional costing (needs OCP)', () => {
+  const part = (partNumber: string, region: string): BulkPartInput => ({
+    partNumber, file: someStep, commodity: 'machining', material: 'aluminium', region,
+  });
+
+  it('builds the book the way the screens build it', () => {
+    // src/ui/main.ts: buildRegionalLibrary(recomputeMachineRates(base), region).
+    // If this ever diverges, the same part costs two different numbers depending
+    // on whether a person or a batch asked — the exact drift this pins shut.
+    const mine = buildRegionalLibrary(recomputeMachineRates(DEFAULT_RATE_LIBRARY), 'PL');
+    const screens = buildRegionalLibrary(recomputeMachineRates(DEFAULT_RATE_LIBRARY), 'PL');
+    expect(fingerprintRateLibrary(mine)).toBe(fingerprintRateLibrary(screens));
+    // …and it is genuinely a different book from the UK one.
+    expect(fingerprintRateLibrary(mine))
+      .not.toBe(fingerprintRateLibrary(recomputeMachineRates(DEFAULT_RATE_LIBRARY)));
+  });
+
+  it('costs the same part differently in a lower-cost region', async () => {
+    if (!kernelAvailable) return;
+    const rec = await runBulkCosting([part('UK-1', 'UK'), part('PL-1', 'Poland')]);
+    const [uk, pl] = rec.parts;
+    expect(uk.status).toBe('costed');
+    expect(pl.status).toBe('costed');
+    expect(pl.total!).toBeLessThan(uk.total!);
+    // A machined part is labour and machine heavy, so the gap must be material,
+    // not a rounding artefact of a book that was never really rebuilt.
+    expect(pl.total!).toBeLessThan(uk.total! * 0.95);
+  }, 180_000);
+
+  it('records the region each part was costed in', async () => {
+    if (!kernelAvailable) return;
+    const rec = await runBulkCosting([part('A', 'Poland'), part('B', 'CN'), part('C', '')]);
+    expect(rec.parts.map(p => p.region)).toEqual(['PL', 'CN', 'UK']);
+  }, 180_000);
+
+  it('gives the same answer for the same region however it was spelled', async () => {
+    if (!kernelAvailable) return;
+    const rec = await runBulkCosting([part('A', 'PL'), part('B', 'Poland')]);
+    expect(rec.parts[1].total).toBe(rec.parts[0].total);
+  }, 180_000);
+
+  it('leaves the UK book alone rather than rescaling it by 1.0', async () => {
+    if (!kernelAvailable) return;
+    const blank = await runBulkCosting([part('A', '')]);
+    const uk = await runBulkCosting([part('B', 'UK')]);
+    expect(uk.parts[0].total).toBe(blank.parts[0].total);
+  }, 180_000);
+});
+
+describe('region resolver', () => {
+  it.each([['UK', 'UK'], ['uk', 'UK'], ['GB', 'UK'], ['United Kingdom', 'UK'],
+           ['PL', 'PL'], ['poland', 'PL'], ['US', 'US'], ['united states', 'US'],
+           ['Czechia', 'CZ'], ['korea', 'KR'], ['  DE  ', 'DE']])(
+    'resolves %j to %s', (input, expected) => {
+      expect(resolveManufacturingRegion(input)).toBe(expected);
+    });
+
+  it.each(['Polandd', 'Atlantis', 'XX', 'United Kingdomm', 'poland '.repeat(3)])(
+    'refuses %j rather than guessing', bad => {
+      expect(resolveManufacturingRegion(bad)).toBeNull();
+    });
+
+  it('treats blank as unset, for the caller to default', () => {
+    expect(resolveManufacturingRegion('')).toBeNull();
+    expect(resolveManufacturingRegion(undefined)).toBeNull();
+  });
 });

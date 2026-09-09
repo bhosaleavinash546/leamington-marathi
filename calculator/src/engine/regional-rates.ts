@@ -530,6 +530,47 @@ export function classifyMaterialFamily(m: Pick<MaterialRate, 'id' | 'category'>)
  *                        metals & non-resin use materialMultiplier
  *   4. Energy rates  → replaced with regional energy rates
  */
+/**
+ * A user's region string → the code the rate model uses, or null.
+ *
+ * Derived from REGION_NAMES rather than a second hand-written table, so it
+ * cannot drift out of step with the regions that actually exist. Accepts the
+ * code ("PL"), the display name ("Poland") and the handful of spellings people
+ * genuinely type. Returns null rather than guessing: a part list saying
+ * "Polandd" must be refused, not costed in the UK and reported as Poland.
+ *
+ * (`resolveRegion` in rate-library.ts is a different thing — an 11-entry table
+ *  for the region-FILTERING path, returning display names. It does not cover
+ *  all twenty and is not interchangeable with this.)
+ */
+const REGION_SPELLINGS: Partial<Record<ManufacturingRegion, string[]>> = {
+  UK: ['gb', 'gbr', 'great britain', 'britain', 'england'],
+  US: ['usa', 'united states', 'united states of america', 'america'],
+  CZ: ['czechia', 'czech'],
+  KR: ['korea', 'republic of korea'],
+  VN: ['viet nam'],
+  DE: ['deutschland'],
+  TR: ['turkiye', 'türkiye'],
+  NL: ['holland'],
+};
+
+export function resolveManufacturingRegion(input: string | undefined | null): ManufacturingRegion | null {
+  const q = (input ?? '').trim().toLowerCase();
+  if (!q) return null;
+  for (const code of Object.keys(REGION_NAMES) as ManufacturingRegion[]) {
+    if (code.toLowerCase() === q) return code;
+    if (REGION_NAMES[code].toLowerCase() === q) return code;
+    if ((REGION_SPELLINGS[code] ?? []).includes(q)) return code;
+  }
+  return null;
+}
+
+/** Every region a part list may name, for an error message worth reading. */
+export function supportedRegions(): string[] {
+  return (Object.keys(REGION_NAMES) as ManufacturingRegion[])
+    .map(c => `${c} (${REGION_NAMES[c]})`);
+}
+
 export function buildRegionalLibrary(baseLibrary: RateLibrary, region: ManufacturingRegion): RateLibrary {
   const rd = REGIONAL_DATA[region];
 
