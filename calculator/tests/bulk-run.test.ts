@@ -16,6 +16,8 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { runBulkCosting, type BulkPartInput } from '../server/services/bulk-run.js';
+import { buildRateLibraryWorkbook } from '../server/utils/rate-library-xlsx.js';
+import { parseRateLibraryWorkbook } from '../server/utils/rate-library-xlsx.js';
 import { analyzeGeometry } from '../server/utils/geometry-bridge.js';
 import { RULE_ENGINE_VERSION } from '../src/engine/cost-input-rules/types.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
@@ -189,4 +191,94 @@ describe('bulk run — the costing itself (needs OCP)', () => {
     // Values a CAD file cannot carry are declared, not hidden.
     expect(p.assumed).toEqual(expect.arrayContaining(['oee']));
   }, 120_000);
+});
+
+/**
+ * An uploaded rate sheet has to reach the costing, or the feature is a lie.
+ *
+ * This route hardcoded `DEFAULT_RATE_LIBRARY` until now: a company sheet
+ * uploaded through the UI applied in the screens and was silently ignored by the
+ * automated route, so a bulk run quoted built-in rates while the operator
+ * believed it was on theirs. These tests exist so that cannot come back.
+ *
+ * The check is a round trip through the real workbook format — build the
+ * template from a library with known multipliers, parse it back, cost on it —
+ * because that is exactly what an upload does.
+ */
+describe('bulk run — costing on an uploaded rate sheet (needs OCP)', () => {
+  /** The same library JLR would download, edit and upload, with known factors. */
+  function sheetWith(matX: number, labX: number, machX: number) {
+    const lib = structuredClone(DEFAULT_RATE_LIBRARY);
+    lib.materials = lib.materials.map(m => ({
+      ...m,
+      pricePerKg: m.pricePerKg * matX,
+      // Both sides of the material bucket: cost is gross×price − scrap×recovery,
+      // so scaling only the price moves the bucket by slightly more than matX.
+      scrapRecoveryPricePerKg: m.scrapRecoveryPricePerKg * matX,
+    }));
+    lib.labour = lib.labour.map(l => ({ ...l, fullyLoadedRatePerHr: l.fullyLoadedRatePerHr * labX }));
+    lib.machines = lib.machines.map(m => ({
+      ...m,
+      buildup: {
+        ...m.buildup,
+        annualDepreciation: m.buildup.annualDepreciation * machX,
+        maintenance: m.buildup.maintenance * machX,
+        energy: m.buildup.energy * machX,
+        floorSpace: m.buildup.floorSpace * machX,
+        indirectSupport: m.buildup.indirectSupport * machX,
+        financeCost: m.buildup.financeCost * machX,
+      },
+    }));
+    const { library, errors } = parseRateLibraryWorkbook(buildRateLibraryWorkbook(lib));
+    expect(errors, 'the generated workbook must validate').toEqual([]);
+    return library!;
+  }
+
+  const part: BulkPartInput = {
+    partNumber: 'RATE-1', file: someStep, commodity: 'machining', material: 'aluminium',
+  };
+
+  it('moves each bucket by exactly the factor applied to that rate', async () => {
+    if (!kernelAvailable) return;
+    const base = await runBulkCosting([part]);
+    const withSheet = await runBulkCosting([part], { rateLibrary: sheetWith(2, 3, 1.5) });
+
+    expect(base.parts[0].status).toBe('costed');
+    expect(withSheet.parts[0].status).toBe('costed');
+    const b = base.parts[0].breakdown!, j = withSheet.parts[0].breakdown!;
+
+    expect(j.rawMaterial / b.rawMaterial).toBeCloseTo(2.0, 3);
+    expect(j.labour / b.labour).toBeCloseTo(3.0, 3);
+    expect(j.process / b.process).toBeCloseTo(1.5, 3);
+    expect(withSheet.parts[0].total!).toBeGreaterThan(base.parts[0].total!);
+  }, 180_000);
+
+  it('says which book produced the numbers', async () => {
+    if (!kernelAvailable) return;
+    const base = await runBulkCosting([part]);
+    expect(base.engine.rateLibrarySource).toBe('builtin');
+    expect(base.engine.rateLibraryVersion).toBe(DEFAULT_RATE_LIBRARY.version);
+
+    const sheet = sheetWith(2, 2, 2);
+    const withSheet = await runBulkCosting([part], { rateLibrary: sheet });
+    expect(withSheet.engine.rateLibrarySource).toBe('supplied');
+    expect(withSheet.engine.rateLibraryCounts).toEqual({
+      materials: sheet.materials.length,
+      machines: sheet.machines.length,
+      labour: sheet.labour.length,
+    });
+  }, 180_000);
+
+  it('changes nothing when the sheet carries the built-in rates', async () => {
+    if (!kernelAvailable) return;
+    // A round trip through the workbook must not move a single bucket. If it
+    // does, the parser is lossy and every uploaded sheet is quietly wrong.
+    const identity = sheetWith(1, 1, 1);
+    const base = await runBulkCosting([part]);
+    const round = await runBulkCosting([part], { rateLibrary: identity });
+    expect(round.parts[0].total).toBeCloseTo(base.parts[0].total!, 2);
+    expect(round.parts[0].breakdown!.rawMaterial).toBeCloseTo(base.parts[0].breakdown!.rawMaterial, 4);
+    expect(round.parts[0].breakdown!.labour).toBeCloseTo(base.parts[0].breakdown!.labour, 4);
+    expect(round.parts[0].breakdown!.process).toBeCloseTo(base.parts[0].breakdown!.process, 4);
+  }, 180_000);
 });

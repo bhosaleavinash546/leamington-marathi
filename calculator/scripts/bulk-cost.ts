@@ -2,7 +2,17 @@
  * Cost a basket of parts from a CSV, unattended, with no AI.
  *
  *   npx tsx scripts/bulk-cost.ts parts.csv --out runs/2026-09 \
- *        [--answer material.family=aluminium]... [--volume 50000] [--concurrency 4]
+ *        [--rates JLR-rates.xlsx] [--answer material.family=aluminium]... \
+ *        [--volume 50000] [--concurrency 4]
+ *
+ * With no flag the run uses whatever rate sheet is active in the app, so a
+ * workbook uploaded through the rate-library screen is what a bulk run costs on.
+ * `--rates` costs the basket on a sheet directly — the workbook downloaded
+ * from the tool's rate-library template, with your material prices, labour rates
+ * and machine buildups filled in. Without it the built-in UK book is used, and
+ * either way `run.json` records which one produced the numbers. A workbook that
+ * fails validation stops the run; falling back to built-in rates while the
+ * operator believes their sheet is loaded is the one outcome worth refusing.
  *
  * The CSV needs a header row. Recognised columns (case-insensitive, any order):
  *
@@ -28,10 +38,13 @@
  * Exit codes: 0 everything costed · 2 some parts still need an answer ·
  * 3 nothing costed · 1 bad usage. So a scheduled run can be checked by a script.
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { runBulkCosting, type BulkPartInput, type BulkRunRecord } from '../server/services/bulk-run.js';
 import { geometryPool } from '../server/utils/geometry-pool.js';
+import { parseRateLibraryWorkbook } from '../server/utils/rate-library-xlsx.js';
+import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import type { RateLibrary } from '../src/engine/types.js';
 
 // ── CLI ──────────────────────────────────────────────────────────────────────
 const argv = process.argv.slice(2);
@@ -55,6 +68,93 @@ if (!csvPath || !existsSync(csvPath)) {
   console.error('usage: tsx scripts/bulk-cost.ts <parts.csv> --out <dir> [--answer k=v]... [--volume N]');
   process.exit(1);
 }
+// ── Rates ────────────────────────────────────────────────────────────────────
+/** Load the caller's rate sheet, or stop. Never silently fall back. */
+function loadRates(path: string): RateLibrary {
+  if (!existsSync(path)) {
+    console.error(`Rate sheet not found: ${path}`);
+    process.exit(1);
+  }
+  const { library, errors, counts } = parseRateLibraryWorkbook(readFileSync(path));
+  if (!library) {
+    console.error(`\n  That rate sheet did not validate, so the run stopped rather than`);
+    console.error(`  quietly costing on the built-in UK book.\n`);
+    for (const e of errors.slice(0, 20)) console.error(`    ${e}`);
+    if (errors.length > 20) console.error(`    …and ${errors.length - 20} more`);
+    console.error(`\n  Rows read: ${JSON.stringify(counts)}`);
+    console.error(`  Start from the template: GET /api/rate-library/template\n`);
+    process.exit(1);
+  }
+  // The parser stamps its own version and leaves lastModified empty; the upload
+  // route fills it with `now`. Use the sheet's own mtime instead, so two runs
+  // from the same file record the same identity and a report can be traced back
+  // to the workbook that produced it.
+  library.lastModified = statSync(path).mtime.toISOString();
+  return library;
+}
+
+/**
+ * Which rates to cost on, in priority order:
+ *
+ *   --rates <file.xlsx>   that sheet, full stop. Standalone; no database needed.
+ *   --builtin             the shipped UK book, ignoring anything uploaded.
+ *   (nothing)             whatever is active in the app — so a sheet uploaded
+ *                         through the rate-library screen is what a bulk run
+ *                         uses, which is the whole point of uploading it.
+ *
+ * The database is opened lazily and failure is not fatal: a laptop running the
+ * CLI before the app has ever started has no database, and falling back to the
+ * built-in book with a message is better than refusing to run. What must never
+ * happen is using built-in rates *silently* while a sheet is loaded — hence the
+ * line printed before every run.
+ */
+async function resolveRates(): Promise<{ library?: RateLibrary; label: string }> {
+  const path = flag('rates');
+  if (path) {
+    const library = loadRates(path);
+    return { library, label: `${resolve(path)} (${library.materials.length} materials, `
+      + `${library.machines.length} machines, ${library.labour.length} labour)` };
+  }
+  if (argv.includes('--builtin')) {
+    return { label: 'built-in UK book (--builtin)' };
+  }
+
+  // Dynamic import, not require: this file is ESM, where `require` is not
+  // defined at all. It was, briefly — and because the failure was caught and
+  // reported as "no database found", an uploaded sheet would have been ignored
+  // in silence. That is the one outcome this whole feature exists to prevent,
+  // so the catch below reports what actually went wrong.
+  let db: unknown;
+  try {
+    db = (await import('../server/db.js')).default;
+  } catch (e) {
+    const msg = (e as Error).message;
+    const missing = /ENOENT|no such file|cannot open/i.test(msg);
+    return { label: missing
+      ? 'built-in UK book — no database yet (start the app once to upload a sheet, or pass --rates)'
+      : `built-in UK book — could not open the database: ${msg.slice(0, 90)}` };
+  }
+
+  const { getCompanyLibrary, getOverrides, getRateSource } =
+    await import('../server/data/rate-library-store.js');
+  const { resolveActiveLibrary } = await import('../src/engine/rate-library-merge.js');
+  const typedDb = db as Parameters<typeof getCompanyLibrary>[0];
+
+  const company = getCompanyLibrary(typedDb);
+  const overrides = getOverrides(typedDb);
+  const { library, effectiveSource } = resolveActiveLibrary({
+    builtIn: DEFAULT_RATE_LIBRARY, company, overrides, source: getRateSource(typedDb),
+  });
+
+  if (effectiveSource === 'company' || overrides.length) {
+    return { library, label: `uploaded rate sheet (${effectiveSource}`
+      + `${overrides.length ? `, +${overrides.length} field override${overrides.length > 1 ? 's' : ''}` : ''}) — `
+      + `${library.materials.length} materials, ${library.machines.length} machines, `
+      + `${library.labour.length} labour` };
+  }
+  return { label: 'built-in UK book — no company sheet uploaded yet' };
+}
+
 const outDir = flag('out') ?? 'bulk-run';
 const volume = flag('volume') ? parseInt(flag('volume')!, 10) : undefined;
 const concurrency = flag('concurrency') ? parseInt(flag('concurrency')!, 10) : 4;
@@ -164,10 +264,12 @@ function questionsCSV(rec: BulkRunRecord): string {
 
 // ── Run ──────────────────────────────────────────────────────────────────────
 async function main(): Promise<void> {
+  const { library: rateLibrary, label: ratesLabel } = await resolveRates();
   const parts = parsePartList(readFileSync(csvPath!, 'utf-8'), dirname(resolve(csvPath!)));
   if (!parts.length) { console.error('No usable rows in the part list.'); process.exit(1); }
 
   console.log(`\n  ${parts.length} parts · ${concurrency} at a time · no AI, no network`);
+  console.log(`  rates: ${ratesLabel}`);
   if (Object.keys(answers).length) {
     console.log(`  basket answers: ${Object.entries(answers).map(([k, v]) => `${k}=${v}`).join(', ')}`);
   }
@@ -176,6 +278,7 @@ async function main(): Promise<void> {
   const started = Date.now();
   const rec = await runBulkCosting(parts, {
     answers, annualVolume: volume, concurrency,
+    ...(rateLibrary ? { rateLibrary } : {}),
     onProgress: (done, total, p) => {
       const tail = p.status === 'costed' ? `£${p.total!.toFixed(2)}`
         : p.status === 'needs_answer' ? `needs ${p.questions!.map(q => q.id).join(', ')}`
@@ -214,7 +317,8 @@ async function main(): Promise<void> {
 
   console.log(`  written to ${resolve(outDir)}/  ·  run ${rec.runId}`);
   console.log(`  rules v${rec.engine.ruleEngineVersion} · rates ${rec.engine.rateLibraryVersion} `
-    + `(${rec.engine.rateLibraryLastModified}) · inputs ${rec.inputHash} · AI not used\n`);
+    + `(${rec.engine.rateLibrarySource}, ${rec.engine.rateLibraryLastModified}) `
+    + `· inputs ${rec.inputHash} · AI not used\n`);
 
   geometryPool().shutdown();
   process.exit(s.costed === 0 ? 3 : s.needsAnswer ? 2 : 0);

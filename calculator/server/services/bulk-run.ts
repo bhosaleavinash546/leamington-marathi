@@ -44,6 +44,7 @@ import {
 } from '../../src/engine/cost-input-rules/to-cost-params.js';
 import { RULE_ENGINE_VERSION } from '../../src/engine/cost-input-rules/types.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
+import type { RateLibrary } from '../../src/engine/types.js';
 import type { RuleContext } from '../../src/engine/cost-input-rules/types.js';
 
 /** One line of the part list. Extra `a.b` keys are per-part decision answers. */
@@ -101,6 +102,10 @@ export interface BulkRunRecord {
     ruleEngineVersion: number;
     rateLibraryVersion: string;
     rateLibraryLastModified: string;
+    /** 'builtin' = the shipped UK book; 'supplied' = rates handed in by the caller. */
+    rateLibrarySource: 'builtin' | 'supplied';
+    /** Row counts, so a report can be checked against the sheet that produced it. */
+    rateLibraryCounts: { materials: number; machines: number; labour: number };
     shopDefaults: typeof SHOP_DEFAULTS;
     aiUsed: false;
   };
@@ -120,6 +125,15 @@ export interface BulkRunRecord {
 }
 
 export interface BulkRunOptions {
+  /**
+   * Cost on these rates instead of the built-in UK book.
+   *
+   * This is how an uploaded JLR rate sheet reaches the run. Pass the library
+   * from `resolveActiveLibrary` (server) or `parseRateLibraryWorkbook` (CLI).
+   * Omitted, the built-in book is used and the record says so — a run must
+   * never leave it ambiguous which rates produced the numbers.
+   */
+  rateLibrary?: RateLibrary;
   /** Applied to every part; a part's own answer wins on a clash. */
   answers?: Record<string, unknown>;
   annualVolume?: number;
@@ -243,6 +257,7 @@ async function costOnePart(
 
   const cost = executeCalculateCost({
     commodity, params: mapped.params, partName: geo.partName || name,
+    ...(opts.rateLibrary ? { rateLibrary: opts.rateLibrary } : {}),
     overheadPct: SHOP_DEFAULTS.overheadPct, marginPct: SHOP_DEFAULTS.marginPct,
     packagingPerPart: mapped.packagingPerPart ?? SHOP_DEFAULTS.packagingPerPart,
     logisticsPerPart: mapped.logisticsPerPart ?? SHOP_DEFAULTS.logisticsPerPart,
@@ -295,6 +310,7 @@ export async function runBulkCosting(
 ): Promise<BulkRunRecord> {
   const startedAt = new Date().toISOString();
   const basketAnswers = opts.answers ?? {};
+  const rates = opts.rateLibrary ?? DEFAULT_RATE_LIBRARY;
   const results: BulkPartResult[] = new Array(parts.length);
   const conc = Math.max(1, opts.concurrency ?? 4);
 
@@ -317,8 +333,14 @@ export async function runBulkCosting(
     finishedAt: new Date().toISOString(),
     engine: {
       ruleEngineVersion: RULE_ENGINE_VERSION,
-      rateLibraryVersion: DEFAULT_RATE_LIBRARY.version,
-      rateLibraryLastModified: DEFAULT_RATE_LIBRARY.lastModified,
+      rateLibraryVersion: rates.version,
+      rateLibraryLastModified: rates.lastModified,
+      rateLibrarySource: opts.rateLibrary ? 'supplied' : 'builtin',
+      rateLibraryCounts: {
+        materials: rates.materials.length,
+        machines: rates.machines.length,
+        labour: rates.labour.length,
+      },
       shopDefaults: SHOP_DEFAULTS,
       aiUsed: false,
     },

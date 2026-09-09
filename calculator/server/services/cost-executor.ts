@@ -8,6 +8,7 @@
 
 import { computeUniversalStack, validateStackInput } from '../../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
+import type { RateLibrary } from '../../src/engine/types.js';
 
 import { computeMachiningDrivers }        from '../../src/engine/modules/machining.js';
 import { computeSheetMetalDrivers }        from '../../src/engine/modules/sheet-metal.js';
@@ -38,6 +39,16 @@ export interface CostToolInput {
   marginPct?: number;        // default 0.08
   packagingPerPart?: number; // default 0.15
   logisticsPerPart?: number; // default 0.25
+  /**
+   * The rates to cost on. Defaults to the built-in UK book.
+   *
+   * This route used to hardcode `DEFAULT_RATE_LIBRARY`, which meant an uploaded
+   * company rate sheet applied in the screens and was silently ignored here —
+   * the automated route would quote built-in rates while the operator believed
+   * it was using theirs. Callers that resolve an active library (see
+   * `resolveActiveLibrary`) must pass it.
+   */
+  rateLibrary?: RateLibrary;
 }
 
 export interface CostToolResult {
@@ -188,7 +199,8 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
     // which is worse than an error because a caller will format and report it.
     // `validateStackInput` already existed and gives field-level messages an
     // agent can act on; it simply was never called here.
-    const validation = validateStackInput(stackInput, DEFAULT_RATE_LIBRARY);
+    const rates = input.rateLibrary ?? DEFAULT_RATE_LIBRARY;
+    const validation = validateStackInput(stackInput, rates);
     if (!validation.valid) {
       return {
         ...emptyResult(partName, commodity),
@@ -197,7 +209,7 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
       };
     }
 
-    const result = computeUniversalStack(stackInput, DEFAULT_RATE_LIBRARY);
+    const result = computeUniversalStack(stackInput, rates);
 
     const bd = result.breakdown;
     const total = result.total;
