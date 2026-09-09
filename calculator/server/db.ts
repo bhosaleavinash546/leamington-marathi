@@ -4,7 +4,19 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = path.join(__dirname, '..', 'data');
+/**
+ * Where the database lives.
+ *
+ * Beside the code by default, which is right for a checkout and for the
+ * container. It is wrong for an installed copy: on Windows a standard user
+ * cannot write under `C:\\Program Files`, so the very first query fails with
+ * SQLITE_CANTOPEN and the app never starts. `CV_DATA_DIR` lets the launcher put
+ * it somewhere the user owns (`%LOCALAPPDATA%\\CostVision`) without moving the
+ * install, and keeps the data across a reinstall.
+ */
+const DATA_DIR = process.env.CV_DATA_DIR?.trim()
+  ? path.resolve(process.env.CV_DATA_DIR.trim())
+  : path.join(__dirname, '..', 'data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const DB_PATH = path.join(DATA_DIR, 'should-cost.db');

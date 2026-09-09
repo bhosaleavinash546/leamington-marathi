@@ -110,6 +110,22 @@ Vision pipeline: photo → BOM + fab spec → should-cost. Read ALL model text b
   — never `new Anthropic()`. It enforces `AIR_GAPPED=1` (throws, deterministic core
   still works) and `ANTHROPIC_BASE_URL` private routing.
 
+### Windows package — `scripts/package-windows.mjs` + `Start-CostVision.bat`
+A folder you copy to a locked-down laptop and double-click: portable Node,
+embedded Python with OCP, the app prebuilt, no installer and no admin rights.
+**Must be built on Windows x64** — `better-sqlite3`/`bcrypt` resolve win32-x64
+prebuilds and OCP is a `win_amd64` wheel with no sdist; the script refuses other
+platforms rather than produce a folder that fails on someone's desk. It ends by
+measuring a STEP fixture with the bundled interpreter against the committed
+truth value. Kernel pinned in root `requirements.txt` (`cadquery-ocp-novtk`,
+never `cadquery` — the engine imports OCP only). The launcher sets `AIR_GAPPED=1`
+(JLR has no AI approval yet — the AI code stays, it is switched off),
+`CV_DATA_DIR` (the install folder is not user-writable on Windows) and
+`PYTHON_BIN` (there is no `python3` on Windows). Anything POSIX-only in the
+Python engine must stay behind a `hasattr` guard — see `_set_alarm`; `SIGALRM`
+does not exist on Windows and referencing it kills the import. See
+`docs/WINDOWS-INSTALL.md` and `tests/windows-package.test.ts`.
+
 ## Working notes
 - Default dev branch is `claude/new-session-ts4byp`.
 - Before shipping a cost-logic change, prove it: unit test + `npm run accuracy`

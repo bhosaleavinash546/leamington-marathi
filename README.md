@@ -5,6 +5,26 @@ cost-saving recommendations across 19 manufacturing commodities.
 
 ---
 
+## 🪟 Install & Run (Windows — offline, no admin rights)
+
+For a locked-down laptop with no network and no AI. Copy the
+`CostVision-Windows` folder over and double-click **`Start-CostVision.bat`**.
+Nothing is installed and nothing is downloaded: the package carries its own
+Node, its own Python and the OCCT geometry kernel.
+
+Build the package on a Windows x64 machine with network:
+
+```
+cd calculator
+node scripts\package-windows.mjs
+```
+
+It fails the build if the finished bundle cannot measure a STEP fixture.
+Full details, including the offline-wheels path and what the launcher sets:
+**[docs/WINDOWS-INSTALL.md](docs/WINDOWS-INSTALL.md)**.
+
+---
+
 ## 🚀 Install & Run (MacBook — one command)
 
 You only need **Docker Desktop** installed. Everything else is automatic.

@@ -6,15 +6,34 @@ Output: single-line JSON to stdout.
 """
 import sys, json, os, math, signal, random
 
-# Best-effort self-timeout (Unix only). NOTE: Python signal handlers only run
-# between bytecode instructions, so this CANNOT interrupt a single long native
-# OCCT call (e.g. a pathological BRepMesh_IncrementalMesh). The authoritative
-# timeout is the Node parent's SIGKILL in geometry-bridge.ts; we self-abort ~10 s
-# earlier so a clean structured error beats the kill. Derived from the shared
+# Best-effort self-timeout. NOTE: Python signal handlers only run between
+# bytecode instructions, so this CANNOT interrupt a single long native OCCT call
+# (e.g. a pathological BRepMesh_IncrementalMesh). The authoritative timeout is
+# the Node parent's kill in geometry-bridge.ts; we self-abort ~10 s earlier so a
+# clean structured error beats the kill. Derived from the shared
 # CV_TESS_TIMEOUT_MS (default 300 s) so all layers move together.
+#
+# SIGALRM is POSIX-only — it does not exist on Windows, and referencing it there
+# raises AttributeError at import, before a single line of geometry runs. That
+# made this whole engine unimportable on a Windows install. Losing the alarm
+# there costs the nicer error message, not the safety: the parent's kill is what
+# actually bounds the work, and `child.kill()` terminates the process on Windows
+# too (Node ignores the signal name and calls TerminateProcess).
+_HAS_ALARM = hasattr(signal, "SIGALRM")
+
+
+def _set_alarm(seconds):
+    """Arm the self-timeout, or cancel it with 0. A no-op where SIGALRM is not."""
+    if _HAS_ALARM:
+        signal.alarm(seconds)
+
+
 def _timeout(_s, _f): raise TimeoutError("Geometry analysis timed out")
-signal.signal(signal.SIGALRM, _timeout)
-signal.alarm(max(30, int(os.environ.get("CV_TESS_TIMEOUT_MS", "300000")) // 1000 - 10))
+
+
+if _HAS_ALARM:
+    signal.signal(signal.SIGALRM, _timeout)
+_set_alarm(max(30, int(os.environ.get("CV_TESS_TIMEOUT_MS", "300000")) // 1000 - 10))
 
 
 # ─── Surface / edge type classification ──────────────────────────────────────
@@ -2425,7 +2444,7 @@ def serve():
     """
     global _SERVING
     _SERVING = True
-    signal.alarm(0)
+    _set_alarm(0)
     # Make absolutely sure nothing but our JSON reaches stdout.
     real_stdout = sys.stdout
     sys.stdout = sys.stderr
@@ -2447,7 +2466,7 @@ def serve():
             saved[k] = os.environ.get(k)
             os.environ[k] = str(v)
         timeout_s = max(5, int(job.get("timeoutMs") or 300000) // 1000)
-        signal.alarm(timeout_s)
+        _set_alarm(timeout_s)
         try:
             op = job.get("op")
             if op == "analyze":
@@ -2463,7 +2482,7 @@ def serve():
         except Exception as e:
             result = {"status": "error", "code": "crashed", "error": str(e)[:300]}
         finally:
-            signal.alarm(0)
+            _set_alarm(0)
             for k, v in saved.items():
                 if v is None:
                     os.environ.pop(k, None)

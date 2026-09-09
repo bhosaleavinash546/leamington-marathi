@@ -1,0 +1,28 @@
+# The geometry kernel, and nothing else.
+#
+# The engine (server/utils/cad-geometry-engine.py) imports OCP directly — every
+# `from OCP.…` and no `import cadquery` — so this deliberately does NOT install
+# cadquery. `_ShapeWrapper` in the engine is the pure-OCP replacement for the
+# cadquery Shape wrapper, written to drop that dependency.
+#
+# -novtk is the build without VTK: nothing here renders in Python (the viewer is
+# three.js in the browser, fed by tessellated STL), and VTK is most of the
+# download. 46 MB for the Windows wheel against ~160 MB unpacked.
+#
+# Pinned exactly. This is the version every measurement in tests/ and
+# cad-audit/truth was taken with, and an OCCT minor bump has broken us before:
+# OCP 8.0 moved `TopoDS.Face_s` to `Face`, removed `TopTools_IndexedMapOfShape`
+# outright, and changed what `Bnd_Box.Get()` returns.
+#
+# Wheels exist for cp310-cp313 on win_amd64, macosx (arm64/x86_64) and
+# manylinux_2_31 (x86_64/aarch64). There is no source distribution — if pip
+# reports "no matching distribution", the Python is the wrong version or the
+# wrong architecture, not the network.
+#
+#   pip install -r requirements.txt
+#
+# Offline (the JLR case) — fetch on a machine that has network, carry the folder:
+#   pip download -r requirements.txt -d wheels --platform win_amd64 \
+#       --python-version 312 --only-binary=:all:
+#   pip install --no-index --find-links wheels -r requirements.txt
+cadquery-ocp-novtk==7.9.3.1.1
