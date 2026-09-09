@@ -20,6 +20,9 @@ on:
       - 'calculator/server/utils/cad-geometry-engine.py'
       - 'calculator/scripts/check-face-id-contract.py'
       - 'calculator/tests/fixtures/cad-parts/**'
+      - 'calculator/tests/fixtures/real-parts-baseline.json'
+      - 'calculator/scripts/real-parts-baseline.ts'
+      - 'cad-audit/parts/**'
       - '.github/workflows/docker-cad.yml'
   pull_request:
     paths:
@@ -78,6 +81,18 @@ jobs:
           assert d['faces']['total'] > 0, d
           print(f\"OK - STEP measured: {d['volume']['cm3']} cm3, {d['faces']['total']} B-rep faces\")
           "
+
+      # The real production parts, measured and costed inside the image. This is
+      # the only job in CI with a geometry kernel, so it is the only place the
+      # re-measure half of the baseline can run — the half that catches a
+      # measurement regression like the one that read a casting's fillets as 43
+      # press-brake bends and routed a steering knuckle to laser cutting at
+      # £5.43. The parts live at the repo root, outside the build context, so
+      # they are mounted at the path the script resolves (/app/.. = /).
+      - name: Real-parts baseline — measure and cost the production parts
+        run: |
+          docker run --rm -v "$PWD/cad-audit:/cad-audit:ro" costvision-cad:ci \
+            npx tsx scripts/real-parts-baseline.ts
 
       # A geometric DFM finding names the B-rep faces that triggered it, and the
       # viewer highlights them by looking those ids up in the mesh. That only

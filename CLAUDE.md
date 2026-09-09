@@ -126,6 +126,21 @@ Python engine must stay behind a `hasattr` guard — see `_set_alarm`; `SIGALRM`
 does not exist on Windows and referencing it kills the import. See
 `docs/WINDOWS-INSTALL.md` and `tests/windows-package.test.ts`.
 
+### Real-parts baseline — `scripts/real-parts-baseline.ts` + `tests/real-parts-baseline.test.ts`
+The regression net for real CAD. 2,185 tests passed while a steering knuckle
+costed at £5.43: every costing test used a *synthetic* fixture (clean prismatic
+blocks, no fillets), and the bug only fired on real geometry. The baseline
+records route, questions, guards and cost for each part in `cad-audit/parts/`,
+plus its measured geometry. Two tiers: **replay** the recorded geometry through
+`costMeasuredPart` (the product's own chain — never re-implement it) runs
+everywhere including kernel-less CI; **re-measure** runs only where OCP is
+installed, and in `docker-cad.yml` inside the image with `cad-audit/` mounted at
+`/cad-audit`. A failure means a real part moved — read the diff, and if it is
+intended, `npx tsx scripts/real-parts-baseline.ts --update` with the reason in
+the commit message. The answers in `ANSWERS` are stated engineering judgements,
+not derivations, so they can be argued with. **It pins what the tool says, not
+what is true** — nothing here has been compared with a price JLR paid.
+
 ## Working notes
 - Default dev branch is `claude/new-session-ts4byp`.
 - Before shipping a cost-logic change, prove it: unit test + `npm run accuracy`

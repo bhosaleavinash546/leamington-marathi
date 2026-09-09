@@ -1,0 +1,4691 @@
+[
+  {
+    "part": "Casting_Braket.stp",
+    "sha256": "7237064f934fa1ae",
+    "note": "Named as a casting; 10.2 mm bulk wall, 16% fill, 10 blind holes and threads to finish. A mounting bracket seals nothing, so not pressure-tight.",
+    "answers": {
+      "material.family": "steel",
+      "commodity.route": "cast_and_machine",
+      "service.pressureTight": "no",
+      "service.toleranceClass": "standard",
+      "service.safetyCritical": "no"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-2246f71163e295f8",
+      "boundingBox": {
+        "xMm": 132.62,
+        "yMm": 120.03,
+        "zMm": 125
+      },
+      "volume": {
+        "mm3": 320015.4,
+        "cm3": 320.015
+      },
+      "surfaceArea": {
+        "mm2": 62826.6,
+        "cm2": 628.266
+      },
+      "fillRatio": 0.1608,
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 17,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "weights": {
+        "aluminiumKg": 0.864,
+        "steelKg": 2.5121,
+        "plasticKg": 0.336,
+        "castIronKg": 2.2881,
+        "copperKg": 2.8673,
+        "titaniumKg": 1.4177
+      },
+      "faces": {
+        "total": 230,
+        "byType": {
+          "CYLINDER": 99,
+          "PLANE": 39,
+          "CONE": 2,
+          "TORUS": 24,
+          "BSPLINE": 54,
+          "OTHER": 12
+        }
+      },
+      "edges": {
+        "total": 546,
+        "byType": {
+          "CIRCLE": 185,
+          "LINE": 169,
+          "BSPLINE": 175,
+          "OTHER": 17
+        },
+        "sampleCircleRadiiMm": [
+          2,
+          2.5,
+          3,
+          4,
+          6,
+          6.5,
+          7,
+          9,
+          10,
+          13,
+          13.2,
+          14,
+          15,
+          15.2,
+          16,
+          17,
+          17.2,
+          19,
+          20,
+          21,
+          23,
+          25,
+          48,
+          50
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 99,
+        "cylindricalFaceRadiiMm": [
+          2,
+          2.5,
+          6,
+          6.5,
+          7,
+          9,
+          10,
+          12,
+          14,
+          15,
+          15.2,
+          19,
+          20,
+          23,
+          25,
+          29,
+          36,
+          50
+        ],
+        "estimatedHoleCount": 10,
+        "holeRadiiMm": [
+          2,
+          2.5,
+          6.5,
+          7,
+          10
+        ],
+        "bossShaftCount": 1,
+        "bossShaftRadiiMm": [
+          9
+        ],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 39,
+        "freeFormFaceCount": 54,
+        "planarFaceAreaMm2": 30093
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 18,
+          "depthMm": 13.5,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            223,
+            224
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 4,
+          "depthMm": 6.5,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            84,
+            85
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 4.92,
+          "depthMm": 14.5,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            1,
+            3
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 13,
+          "depthMm": 8,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            19,
+            20
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 13,
+          "depthMm": 19,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            159,
+            160,
+            161,
+            162
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 13,
+          "depthMm": 41,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            163,
+            164
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 14,
+          "depthMm": 1,
+          "through": false,
+          "count": 3,
+          "faceIds": [
+            186,
+            187,
+            193,
+            194,
+            195,
+            196
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 20,
+          "depthMm": 1,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            9,
+            10
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 4385,
+          "faceIds": [
+            108
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2406,
+          "faceIds": [
+            146
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2191,
+          "faceIds": [
+            107
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1921,
+          "faceIds": [
+            41
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1892,
+          "faceIds": [
+            222
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1839,
+          "faceIds": [
+            225
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1838,
+          "faceIds": [
+            116
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1694,
+          "faceIds": [
+            133
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 15,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1839,
+          "faceIds": [
+            225
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 11,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1265,
+          "faceIds": [
+            33
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 10.19
+      },
+      "gear": null,
+      "wallThickness": {
+        "minMm": 1.54,
+        "maxMm": 30.21,
+        "p95Mm": 30.05,
+        "meanMm": 17.63,
+        "stdDevMm": 8.83,
+        "sampleCount": 22,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 17,
+        "zeroDraftFaceCount": 70,
+        "adequateDraftFaceCount": 31,
+        "minPositiveDraftDeg": 13.28,
+        "maxPositiveDraftDeg": 68.06,
+        "analyzedFaceCount": 118,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 17
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 28
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 40
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              1,
+              0
+            ],
+            "undercutFaceCount": 28
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Z",
+            "faceCount": 108,
+            "faceIds": [
+              2,
+              6,
+              11,
+              13,
+              17,
+              29,
+              37,
+              41,
+              59,
+              76,
+              104,
+              108,
+              112,
+              113,
+              122,
+              130,
+              133,
+              213,
+              214,
+              215,
+              219,
+              221,
+              225,
+              226,
+              22,
+              24,
+              26,
+              48,
+              92,
+              98,
+              105,
+              115,
+              126,
+              131,
+              138,
+              171,
+              179,
+              180,
+              184,
+              185,
+              188,
+              190,
+              192,
+              206,
+              209,
+              210,
+              218,
+              222,
+              4,
+              7,
+              18,
+              21,
+              74,
+              75,
+              77,
+              79,
+              80,
+              81,
+              106,
+              121,
+              123,
+              125,
+              139,
+              172,
+              174,
+              176,
+              183,
+              191,
+              212,
+              229,
+              12,
+              27,
+              53,
+              56,
+              57,
+              58,
+              66,
+              67,
+              103,
+              114,
+              128,
+              132,
+              189,
+              211,
+              230,
+              5,
+              8,
+              16,
+              30,
+              35,
+              55,
+              68,
+              69,
+              70,
+              71,
+              134,
+              227,
+              14,
+              32,
+              60,
+              61,
+              62,
+              63,
+              15,
+              31,
+              38,
+              228,
+              40
+            ]
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 70,
+            "faceIds": [
+              23,
+              25,
+              43,
+              45,
+              46,
+              51,
+              93,
+              95,
+              96,
+              165,
+              166,
+              167,
+              168,
+              169,
+              199,
+              201,
+              202,
+              208,
+              34,
+              44,
+              50,
+              83,
+              91,
+              127,
+              142,
+              143,
+              144,
+              146,
+              147,
+              148,
+              150,
+              152,
+              155,
+              158,
+              203,
+              217,
+              49,
+              52,
+              65,
+              99,
+              100,
+              110,
+              111,
+              136,
+              137,
+              170,
+              173,
+              181,
+              197,
+              198,
+              205,
+              42,
+              47,
+              73,
+              86,
+              87,
+              89,
+              90,
+              117,
+              118,
+              140,
+              178,
+              204,
+              207,
+              94,
+              119,
+              129,
+              145,
+              149,
+              175
+            ]
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 52,
+            "faceIds": [
+              9,
+              10,
+              19,
+              20,
+              28,
+              33,
+              54,
+              64,
+              84,
+              85,
+              97,
+              101,
+              102,
+              107,
+              116,
+              120,
+              159,
+              160,
+              161,
+              162,
+              163,
+              164,
+              186,
+              187,
+              193,
+              194,
+              195,
+              196,
+              223,
+              224,
+              1,
+              3,
+              36,
+              39,
+              72,
+              78,
+              88,
+              124,
+              141,
+              156,
+              157,
+              177,
+              182,
+              200,
+              216,
+              220,
+              82,
+              109,
+              135,
+              151,
+              153,
+              154
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 6,
+        "drillBoreTimeMins": 5,
+        "estimatedTotalMins": 56,
+        "estimatedTotalHrs": 0.9336,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 285000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 14500,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 58000,
+        "progressiveDieCostGBP": 25000
+      },
+      "manufacturabilityScore": 46,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1846,
+        "sandCycleTimeHrFerrous": 0.2415,
+        "forgeStrokes": 8,
+        "investWaxCostGBP": 9.42,
+        "investShellCostGBP": 28.27
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    },
+    "outcome": {
+      "status": "refused",
+      "commodity": "cast_and_machine",
+      "code": "no_cost_mapping"
+    }
+  },
+  {
+    "part": "PRCR002.stp",
+    "sha256": "e18406b344224a0c",
+    "note": "277 mm envelope at 9% fill, 15.1 mm bulk wall — a substantial cast housing. Assumed not pressure-tight; if it carries fluid, change this and the cost rises.",
+    "answers": {
+      "material.family": "aluminium",
+      "commodity.route": "cast_and_machine",
+      "service.pressureTight": "no",
+      "service.toleranceClass": "standard",
+      "service.safetyCritical": "no"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-00646cae3d810c2b",
+      "boundingBox": {
+        "xMm": 276.78,
+        "yMm": 223.15,
+        "zMm": 181.86
+      },
+      "volume": {
+        "mm3": 1037112.9,
+        "cm3": 1037.113
+      },
+      "surfaceArea": {
+        "mm2": 137005.9,
+        "cm2": 1370.059
+      },
+      "fillRatio": 0.0923,
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 2,
+        "shellCount": 2,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 4,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "weights": {
+        "aluminiumKg": 2.8002,
+        "steelKg": 8.1413,
+        "plasticKg": 1.089,
+        "castIronKg": 7.4154,
+        "copperKg": 9.2925,
+        "titaniumKg": 4.5944
+      },
+      "faces": {
+        "total": 364,
+        "byType": {
+          "TORUS": 34,
+          "PLANE": 67,
+          "CYLINDER": 132,
+          "CONE": 55,
+          "BSPLINE": 76
+        }
+      },
+      "edges": {
+        "total": 878,
+        "byType": {
+          "CIRCLE": 366,
+          "BSPLINE": 235,
+          "LINE": 277
+        },
+        "sampleCircleRadiiMm": [
+          0,
+          0.5,
+          1.5,
+          1.6,
+          2,
+          2.5,
+          3,
+          3.1,
+          4,
+          4.1,
+          4.2,
+          5,
+          5.6,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11.1,
+          11.5,
+          12,
+          14,
+          14.7,
+          15,
+          15.1,
+          15.5,
+          16,
+          16.4,
+          17,
+          17.5
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 132,
+        "cylindricalFaceRadiiMm": [
+          0.5,
+          1.5,
+          1.6,
+          2,
+          3,
+          3.1,
+          4,
+          4.2,
+          5,
+          6,
+          7,
+          8,
+          10,
+          12,
+          14,
+          14.7,
+          15,
+          15.5,
+          16,
+          17,
+          17.5,
+          18.5,
+          19.5,
+          20,
+          21.2,
+          22.5,
+          23,
+          27.5,
+          28.5,
+          31.5
+        ],
+        "estimatedHoleCount": 21,
+        "holeRadiiMm": [
+          1.6,
+          3.1,
+          5,
+          7,
+          8,
+          12,
+          18.5,
+          19.5,
+          20,
+          21.2,
+          22.5,
+          23
+        ],
+        "bossShaftCount": 7,
+        "bossShaftRadiiMm": [
+          10,
+          12,
+          17.5,
+          27.5,
+          28.5,
+          38.5,
+          57
+        ],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 67,
+        "freeFormFaceCount": 76,
+        "planarFaceAreaMm2": 42790
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 20,
+          "depthMm": 4,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            336
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 24,
+          "depthMm": 24.7,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            340,
+            345
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 35,
+          "depthMm": 47.2,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            329,
+            330
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 55,
+          "depthMm": 31.6,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            321,
+            326
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 57,
+          "depthMm": 7,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            16,
+            17
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 77,
+          "depthMm": 2,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            318,
+            319
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 114,
+          "depthMm": 6.9,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            246,
+            247
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 3.15,
+          "depthMm": 3,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            355,
+            356
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 6.3,
+          "depthMm": 3.7,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            269,
+            270
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 10,
+          "depthMm": 22.5,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            3,
+            6
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 14,
+          "depthMm": 8,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            39,
+            42,
+            46,
+            49
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 14,
+          "depthMm": 39.5,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            285,
+            286,
+            291,
+            292
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 14,
+          "depthMm": 59,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            107,
+            108,
+            113,
+            114
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 16,
+          "depthMm": 3.2,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            263,
+            264
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 24,
+          "depthMm": 17.5,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            243,
+            244
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 37,
+          "depthMm": 45,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            206,
+            207
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 39,
+          "depthMm": 45,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            91,
+            92
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 40,
+          "depthMm": 2.5,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            81,
+            82,
+            216,
+            303
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 40,
+          "depthMm": 7.4,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            88,
+            89,
+            209,
+            210
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 42.5,
+          "depthMm": 1.9,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            84,
+            85,
+            213,
+            214
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 45,
+          "depthMm": 3,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            203,
+            204
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 46,
+          "depthMm": 5.5,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            94,
+            159
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 10594,
+          "faceIds": [
+            36
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 4683,
+          "faceIds": [
+            2
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 3158,
+          "faceIds": [
+            11
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2940,
+          "faceIds": [
+            22
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2381,
+          "faceIds": [
+            146
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2212,
+          "faceIds": [
+            202
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1046,
+          "faceIds": [
+            218
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 910,
+          "faceIds": [
+            73
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 15.14
+      },
+      "gear": null,
+      "wallThickness": {
+        "minMm": 0.45,
+        "maxMm": 169.95,
+        "p95Mm": 169.85,
+        "meanMm": 34.1,
+        "stdDevMm": 46.62,
+        "sampleCount": 24,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 20,
+        "zeroDraftFaceCount": 105,
+        "adequateDraftFaceCount": 16,
+        "minPositiveDraftDeg": 4.57,
+        "maxPositiveDraftDeg": 68.98,
+        "analyzedFaceCount": 141,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 20
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 24
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 30
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              1,
+              0,
+              0
+            ],
+            "undercutFaceCount": 24
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Y",
+            "faceCount": 140,
+            "faceIds": [
+              3,
+              6,
+              12,
+              19,
+              20,
+              35,
+              39,
+              42,
+              46,
+              49,
+              62,
+              63,
+              71,
+              72,
+              74,
+              78,
+              83,
+              90,
+              93,
+              95,
+              96,
+              107,
+              108,
+              113,
+              114,
+              120,
+              121,
+              122,
+              146,
+              155,
+              156,
+              157,
+              158,
+              166,
+              167,
+              168,
+              175,
+              176,
+              187,
+              188,
+              189,
+              190,
+              193,
+              194,
+              202,
+              205,
+              208,
+              215,
+              218,
+              230,
+              231,
+              232,
+              237,
+              241,
+              253,
+              256,
+              285,
+              286,
+              291,
+              292,
+              306,
+              307,
+              312,
+              314,
+              317,
+              318,
+              319,
+              336,
+              339,
+              349,
+              361,
+              5,
+              23,
+              31,
+              33,
+              34,
+              37,
+              40,
+              47,
+              50,
+              64,
+              65,
+              77,
+              97,
+              98,
+              105,
+              110,
+              111,
+              116,
+              117,
+              131,
+              132,
+              147,
+              148,
+              149,
+              150,
+              151,
+              152,
+              153,
+              154,
+              160,
+              161,
+              162,
+              163,
+              164,
+              165,
+              174,
+              195,
+              220,
+              235,
+              236,
+              240,
+              260,
+              261,
+              273,
+              274,
+              283,
+              288,
+              289,
+              294,
+              295,
+              296,
+              299,
+              311,
+              316,
+              332,
+              337,
+              86,
+              197,
+              212,
+              298,
+              304,
+              305,
+              87,
+              178,
+              211,
+              276,
+              192,
+              257,
+              221
+            ]
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 127,
+            "faceIds": [
+              1,
+              4,
+              24,
+              27,
+              28,
+              30,
+              38,
+              41,
+              45,
+              48,
+              69,
+              70,
+              106,
+              109,
+              112,
+              115,
+              119,
+              128,
+              129,
+              145,
+              169,
+              177,
+              180,
+              183,
+              226,
+              227,
+              279,
+              280,
+              284,
+              287,
+              290,
+              293,
+              308,
+              338,
+              362,
+              2,
+              7,
+              10,
+              11,
+              13,
+              14,
+              21,
+              22,
+              29,
+              32,
+              36,
+              43,
+              44,
+              76,
+              103,
+              104,
+              179,
+              196,
+              219,
+              238,
+              250,
+              262,
+              281,
+              282,
+              313,
+              315,
+              335,
+              348,
+              350,
+              363,
+              8,
+              25,
+              52,
+              67,
+              68,
+              102,
+              139,
+              141,
+              143,
+              170,
+              171,
+              172,
+              185,
+              200,
+              255,
+              265,
+              268,
+              272,
+              278,
+              341,
+              343,
+              352,
+              353,
+              357,
+              51,
+              53,
+              57,
+              58,
+              99,
+              100,
+              118,
+              140,
+              222,
+              239,
+              266,
+              267,
+              271,
+              342,
+              344,
+              351,
+              354,
+              358,
+              18,
+              133,
+              134,
+              173,
+              201,
+              242,
+              249,
+              275,
+              277,
+              15,
+              130,
+              184,
+              228,
+              245,
+              248,
+              59,
+              60,
+              259,
+              297,
+              144
+            ]
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 97,
+            "faceIds": [
+              9,
+              16,
+              17,
+              54,
+              55,
+              66,
+              73,
+              75,
+              81,
+              82,
+              84,
+              85,
+              88,
+              89,
+              91,
+              92,
+              94,
+              101,
+              124,
+              125,
+              137,
+              138,
+              159,
+              181,
+              182,
+              199,
+              203,
+              204,
+              206,
+              207,
+              209,
+              210,
+              213,
+              214,
+              216,
+              223,
+              224,
+              243,
+              244,
+              251,
+              252,
+              258,
+              263,
+              264,
+              269,
+              270,
+              301,
+              303,
+              309,
+              310,
+              320,
+              321,
+              322,
+              323,
+              324,
+              325,
+              326,
+              327,
+              328,
+              329,
+              330,
+              331,
+              333,
+              334,
+              340,
+              345,
+              346,
+              347,
+              355,
+              356,
+              359,
+              360,
+              364,
+              79,
+              126,
+              135,
+              136,
+              225,
+              229,
+              233,
+              234,
+              246,
+              247,
+              300,
+              302,
+              56,
+              61,
+              80,
+              186,
+              191,
+              217,
+              254,
+              26,
+              123,
+              198,
+              127,
+              142
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 8.6,
+        "drillBoreTimeMins": 10.5,
+        "estimatedTotalMins": 64.1,
+        "estimatedTotalHrs": 1.0676,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 300000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 33000,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 180000,
+        "progressiveDieCostGBP": 30000
+      },
+      "manufacturabilityScore": 18,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.262,
+        "sandCycleTimeHrFerrous": 0.4466,
+        "forgeStrokes": 8,
+        "investWaxCostGBP": 20.55,
+        "investShellCostGBP": 61.65
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": true,
+        "detected": [],
+        "solidCount": 2,
+        "note": "multi-solid model but no weld-nut/stud-like bodies matched"
+      }
+    },
+    "outcome": {
+      "status": "refused",
+      "commodity": "cast_and_machine",
+      "code": "no_cost_mapping"
+    }
+  },
+  {
+    "part": "Part1.stp",
+    "sha256": "acf898894ae62deb",
+    "note": "274 mm, 23% fill, 10.4 mm bulk wall. Machined from billet at this volume.",
+    "answers": {
+      "material.family": "aluminium",
+      "commodity.route": "machining"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-dac49b91fbaa52fd",
+      "boundingBox": {
+        "xMm": 58.23,
+        "yMm": 274.48,
+        "zMm": 114.97
+      },
+      "volume": {
+        "mm3": 429433.5,
+        "cm3": 429.434
+      },
+      "surfaceArea": {
+        "mm2": 82977.1,
+        "cm2": 829.771
+      },
+      "fillRatio": 0.2337,
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "weights": {
+        "aluminiumKg": 1.1595,
+        "steelKg": 3.3711,
+        "plasticKg": 0.4509,
+        "castIronKg": 3.0704,
+        "copperKg": 3.8477,
+        "titaniumKg": 1.9024
+      },
+      "faces": {
+        "total": 248,
+        "byType": {
+          "CYLINDER": 88,
+          "PLANE": 52,
+          "TORUS": 42,
+          "BSPLINE": 62,
+          "CONE": 4
+        }
+      },
+      "edges": {
+        "total": 642,
+        "byType": {
+          "BSPLINE": 233,
+          "CIRCLE": 211,
+          "LINE": 198
+        },
+        "sampleCircleRadiiMm": [
+          1.5,
+          2,
+          4,
+          5.2,
+          6,
+          7,
+          7.5,
+          8,
+          9.5,
+          11,
+          12,
+          20.5,
+          21.5,
+          23.5,
+          24,
+          25,
+          27,
+          33,
+          35,
+          200,
+          202,
+          205,
+          207,
+          222,
+          224
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 88,
+        "cylindricalFaceRadiiMm": [
+          1.5,
+          2,
+          4,
+          5.2,
+          6,
+          7,
+          7.5,
+          11,
+          12,
+          19,
+          20,
+          21.5,
+          25,
+          30,
+          33,
+          35,
+          200,
+          207,
+          222
+        ],
+        "estimatedHoleCount": 15,
+        "holeRadiiMm": [
+          4,
+          5.2,
+          7,
+          11,
+          12,
+          21.5,
+          25
+        ],
+        "bossShaftCount": 0,
+        "bossShaftRadiiMm": [],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 52,
+        "freeFormFaceCount": 62,
+        "planarFaceAreaMm2": 29280
+      },
+      "featureTable": [
+        {
+          "kind": "hole",
+          "diaMm": 8,
+          "depthMm": 17.6,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            32,
+            33,
+            43,
+            44
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 8,
+          "depthMm": 23.4,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            34,
+            35,
+            45,
+            46
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 10.5,
+          "depthMm": 13.2,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            15,
+            16,
+            17,
+            18
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 14,
+          "depthMm": 10,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            25,
+            26,
+            36,
+            37
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 22,
+          "depthMm": 39.6,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            20,
+            21,
+            23,
+            24
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 24,
+          "depthMm": 16,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            3,
+            4
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 43,
+          "depthMm": 8,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            245,
+            246
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 50,
+          "depthMm": 12.9,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            240,
+            241
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 50,
+          "depthMm": 32,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            29,
+            41
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 2915,
+          "faceIds": [
+            129,
+            130
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 2551,
+          "faceIds": [
+            161,
+            182
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 1986,
+          "faceIds": [
+            91,
+            93
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 1423,
+          "faceIds": [
+            223,
+            224
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1357,
+          "faceIds": [
+            239
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 868,
+          "faceIds": [
+            244
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 698,
+          "faceIds": [
+            28,
+            40
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 695,
+          "faceIds": [
+            30,
+            39
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 22.2,
+          "through": null,
+          "count": 2,
+          "areaMm2": 2915,
+          "faceIds": [
+            129,
+            130
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 26.2,
+          "through": null,
+          "count": 2,
+          "areaMm2": 1986,
+          "faceIds": [
+            91,
+            93
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 10.35
+      },
+      "gear": null,
+      "wallThickness": {
+        "minMm": 6.19,
+        "maxMm": 49.75,
+        "p95Mm": 43.95,
+        "meanMm": 25.8,
+        "stdDevMm": 11.67,
+        "sampleCount": 22,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          1,
+          0,
+          0
+        ],
+        "undercutFaceCount": 19,
+        "zeroDraftFaceCount": 62,
+        "adequateDraftFaceCount": 23,
+        "minPositiveDraftDeg": 28.96,
+        "maxPositiveDraftDeg": 70,
+        "analyzedFaceCount": 104,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 19
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 30
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 39
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              0,
+              1
+            ],
+            "undercutFaceCount": 30
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+X",
+            "faceCount": 142,
+            "faceIds": [
+              6,
+              8,
+              11,
+              13,
+              19,
+              22,
+              25,
+              26,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              43,
+              44,
+              45,
+              46,
+              75,
+              76,
+              91,
+              92,
+              93,
+              94,
+              95,
+              96,
+              97,
+              98,
+              99,
+              100,
+              161,
+              162,
+              181,
+              182,
+              193,
+              194,
+              195,
+              196,
+              215,
+              216,
+              217,
+              218,
+              219,
+              220,
+              221,
+              222,
+              239,
+              244,
+              48,
+              49,
+              73,
+              82,
+              83,
+              84,
+              85,
+              103,
+              104,
+              105,
+              108,
+              109,
+              122,
+              142,
+              143,
+              144,
+              145,
+              146,
+              147,
+              149,
+              150,
+              151,
+              164,
+              165,
+              192,
+              203,
+              204,
+              225,
+              236,
+              237,
+              238,
+              242,
+              248,
+              53,
+              57,
+              69,
+              70,
+              111,
+              112,
+              113,
+              114,
+              115,
+              132,
+              133,
+              134,
+              135,
+              170,
+              187,
+              198,
+              199,
+              229,
+              230,
+              55,
+              56,
+              59,
+              60,
+              67,
+              117,
+              118,
+              119,
+              131,
+              137,
+              138,
+              168,
+              184,
+              208,
+              234,
+              47,
+              62,
+              74,
+              81,
+              87,
+              88,
+              101,
+              166,
+              167,
+              183,
+              205,
+              206,
+              223,
+              63,
+              64,
+              102,
+              106,
+              141,
+              148,
+              163,
+              190,
+              191,
+              226,
+              66,
+              86,
+              140,
+              171
+            ]
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 60,
+            "faceIds": [
+              15,
+              16,
+              17,
+              18,
+              20,
+              21,
+              23,
+              24,
+              27,
+              31,
+              38,
+              42,
+              123,
+              124,
+              125,
+              126,
+              129,
+              130,
+              156,
+              157,
+              174,
+              179,
+              209,
+              211,
+              212,
+              214,
+              240,
+              241,
+              245,
+              246,
+              54,
+              58,
+              68,
+              77,
+              78,
+              79,
+              80,
+              116,
+              120,
+              121,
+              136,
+              139,
+              152,
+              169,
+              185,
+              186,
+              197,
+              231,
+              232,
+              233,
+              243,
+              247,
+              28,
+              30,
+              173,
+              180,
+              39,
+              40,
+              155,
+              158
+            ]
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 46,
+            "faceIds": [
+              1,
+              3,
+              4,
+              5,
+              7,
+              9,
+              10,
+              12,
+              14,
+              41,
+              128,
+              153,
+              154,
+              159,
+              175,
+              178,
+              210,
+              50,
+              65,
+              71,
+              72,
+              107,
+              110,
+              172,
+              189,
+              202,
+              227,
+              51,
+              52,
+              89,
+              90,
+              188,
+              200,
+              201,
+              224,
+              228,
+              2,
+              29,
+              127,
+              160,
+              176,
+              177,
+              213,
+              61,
+              207,
+              235
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 5.9,
+        "drillBoreTimeMins": 7.5,
+        "estimatedTotalMins": 58.4,
+        "estimatedTotalHrs": 0.9726,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 300000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 15000,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 62000,
+        "progressiveDieCostGBP": 30000
+      },
+      "manufacturabilityScore": 49,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1964,
+        "sandCycleTimeHrFerrous": 0.2728,
+        "forgeStrokes": 8,
+        "investWaxCostGBP": 12.45,
+        "investShellCostGBP": 37.34
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "machining",
+      "total": 38.93,
+      "breakdown": {
+        "rawMaterial": 15.98,
+        "process": 9.49,
+        "labour": 6.5,
+        "tooling": 0,
+        "packaging": 0.1,
+        "logistics": 0.15,
+        "overhead": 3.84,
+        "margin": 2.88
+      }
+    }
+  },
+  {
+    "part": "Seat_Locking_Bracket.stp",
+    "sha256": "594fb07fcb259021",
+    "note": "The one genuine pressing: 1.55 mm wall throughout, 15 measured bends, 4% fill.",
+    "answers": {
+      "material.family": "steel",
+      "commodity.route": "sheet_metal"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-a3f2fac64a312fb8",
+      "boundingBox": {
+        "xMm": 255.77,
+        "yMm": 226.07,
+        "zMm": 31
+      },
+      "volume": {
+        "mm3": 71066.4,
+        "cm3": 71.066
+      },
+      "surfaceArea": {
+        "mm2": 91937,
+        "cm2": 919.37
+      },
+      "fillRatio": 0.0396,
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "weights": {
+        "aluminiumKg": 0.1919,
+        "steelKg": 0.5579,
+        "plasticKg": 0.0746,
+        "castIronKg": 0.5081,
+        "copperKg": 0.6368,
+        "titaniumKg": 0.3148
+      },
+      "faces": {
+        "total": 426,
+        "byType": {
+          "OTHER": 71,
+          "PLANE": 70,
+          "BSPLINE": 235,
+          "CYLINDER": 50
+        }
+      },
+      "edges": {
+        "total": 1054,
+        "byType": {
+          "LINE": 257,
+          "BSPLINE": 750,
+          "CIRCLE": 47
+        },
+        "sampleCircleRadiiMm": [
+          1.9,
+          2,
+          2.4,
+          3.5,
+          3.6,
+          4,
+          4.5,
+          5,
+          5.4,
+          6,
+          6.1,
+          6.5,
+          6.6,
+          7,
+          7.6,
+          11.5,
+          22.5
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 50,
+        "cylindricalFaceRadiiMm": [
+          1.9,
+          2,
+          2.4,
+          3.5,
+          3.6,
+          4,
+          4.5,
+          5,
+          5.4,
+          6,
+          6.1,
+          6.5,
+          6.6,
+          7,
+          7.6,
+          11.5,
+          22.5
+        ],
+        "estimatedHoleCount": 0,
+        "holeRadiiMm": [],
+        "bossShaftCount": 0,
+        "bossShaftRadiiMm": [],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 70,
+        "freeFormFaceCount": 235,
+        "planarFaceAreaMm2": 66301
+      },
+      "featureTable": [
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 13125,
+          "faceIds": [
+            357,
+            359
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 7909,
+          "faceIds": [
+            19,
+            24
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 7170,
+          "faceIds": [
+            416,
+            418
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 2951,
+          "faceIds": [
+            108,
+            112
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 591,
+          "faceIds": [
+            3,
+            6
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 14.7,
+          "through": null,
+          "count": 2,
+          "areaMm2": 13125,
+          "faceIds": [
+            357,
+            359
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 17.9,
+          "through": null,
+          "count": 1,
+          "areaMm2": 7909,
+          "faceIds": [
+            19
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 11.5,
+          "through": null,
+          "count": 1,
+          "areaMm2": 7909,
+          "faceIds": [
+            24
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 21.9,
+          "through": null,
+          "count": 1,
+          "areaMm2": 7170,
+          "faceIds": [
+            418
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 7.5,
+          "through": null,
+          "count": 1,
+          "areaMm2": 7170,
+          "faceIds": [
+            416
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 22.3,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2951,
+          "faceIds": [
+            108
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 7.1,
+          "through": null,
+          "count": 1,
+          "areaMm2": 2951,
+          "faceIds": [
+            112
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 15.9,
+          "through": null,
+          "count": 1,
+          "areaMm2": 591,
+          "faceIds": [
+            6
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 15,
+        "totalBendLengthMm": 634.8,
+        "thicknessMm": 1.55
+      },
+      "gear": null,
+      "wallThickness": {
+        "minMm": 0.53,
+        "maxMm": 2.17,
+        "p95Mm": null,
+        "meanMm": 1.55,
+        "stdDevMm": 43.26,
+        "sampleCount": 30,
+        "method": "volume_surface_shell",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          1,
+          0
+        ],
+        "undercutFaceCount": 24,
+        "zeroDraftFaceCount": 40,
+        "adequateDraftFaceCount": 18,
+        "minPositiveDraftDeg": 4.25,
+        "maxPositiveDraftDeg": 61,
+        "analyzedFaceCount": 82,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 24
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 28
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 28
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              1,
+              0,
+              0
+            ],
+            "undercutFaceCount": 28
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Z",
+            "faceCount": 274,
+            "faceIds": [
+              7,
+              8,
+              14,
+              15,
+              33,
+              34,
+              89,
+              91,
+              125,
+              126,
+              127,
+              133,
+              134,
+              135,
+              144,
+              145,
+              146,
+              152,
+              163,
+              164,
+              165,
+              171,
+              172,
+              173,
+              182,
+              183,
+              184,
+              190,
+              210,
+              211,
+              212,
+              213,
+              219,
+              220,
+              221,
+              227,
+              228,
+              229,
+              238,
+              239,
+              240,
+              246,
+              264,
+              265,
+              266,
+              267,
+              291,
+              292,
+              293,
+              299,
+              300,
+              301,
+              310,
+              311,
+              312,
+              318,
+              327,
+              344,
+              356,
+              361,
+              365,
+              370,
+              371,
+              372,
+              373,
+              398,
+              403,
+              404,
+              405,
+              406,
+              410,
+              412,
+              414,
+              417,
+              422,
+              424,
+              3,
+              6,
+              19,
+              24,
+              31,
+              32,
+              43,
+              106,
+              107,
+              108,
+              110,
+              112,
+              121,
+              136,
+              137,
+              138,
+              139,
+              159,
+              174,
+              175,
+              176,
+              177,
+              197,
+              198,
+              199,
+              200,
+              205,
+              206,
+              215,
+              230,
+              231,
+              232,
+              233,
+              287,
+              302,
+              303,
+              304,
+              305,
+              328,
+              329,
+              330,
+              331,
+              345,
+              346,
+              347,
+              348,
+              357,
+              359,
+              366,
+              367,
+              368,
+              369,
+              399,
+              400,
+              401,
+              402,
+              416,
+              418,
+              12,
+              13,
+              30,
+              35,
+              40,
+              41,
+              90,
+              96,
+              128,
+              129,
+              131,
+              132,
+              147,
+              148,
+              154,
+              166,
+              167,
+              169,
+              170,
+              185,
+              186,
+              193,
+              208,
+              209,
+              222,
+              223,
+              225,
+              226,
+              241,
+              242,
+              248,
+              263,
+              294,
+              295,
+              297,
+              298,
+              313,
+              314,
+              320,
+              323,
+              325,
+              338,
+              363,
+              374,
+              375,
+              396,
+              407,
+              408,
+              9,
+              16,
+              29,
+              38,
+              39,
+              92,
+              95,
+              109,
+              120,
+              122,
+              123,
+              124,
+              141,
+              142,
+              143,
+              158,
+              160,
+              161,
+              162,
+              179,
+              180,
+              181,
+              214,
+              216,
+              217,
+              218,
+              235,
+              236,
+              237,
+              286,
+              288,
+              289,
+              290,
+              307,
+              308,
+              309,
+              324,
+              337,
+              362,
+              395,
+              10,
+              11,
+              17,
+              18,
+              36,
+              37,
+              93,
+              94,
+              130,
+              140,
+              150,
+              151,
+              168,
+              178,
+              188,
+              189,
+              224,
+              234,
+              244,
+              245,
+              296,
+              306,
+              316,
+              317,
+              326,
+              341,
+              364,
+              397,
+              149,
+              155,
+              156,
+              187,
+              194,
+              195,
+              243,
+              249,
+              250,
+              315,
+              321,
+              322,
+              153,
+              192,
+              247,
+              319,
+              334,
+              335,
+              352,
+              353,
+              409,
+              413,
+              419,
+              421
+            ]
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 116,
+            "faceIds": [
+              1,
+              2,
+              4,
+              5,
+              20,
+              22,
+              26,
+              27,
+              42,
+              44,
+              45,
+              46,
+              47,
+              48,
+              53,
+              54,
+              55,
+              56,
+              59,
+              63,
+              67,
+              71,
+              72,
+              73,
+              79,
+              80,
+              81,
+              85,
+              97,
+              98,
+              99,
+              102,
+              103,
+              104,
+              105,
+              111,
+              113,
+              115,
+              116,
+              118,
+              119,
+              157,
+              191,
+              196,
+              201,
+              202,
+              203,
+              204,
+              207,
+              252,
+              253,
+              256,
+              257,
+              260,
+              261,
+              268,
+              270,
+              273,
+              277,
+              281,
+              285,
+              339,
+              340,
+              342,
+              343,
+              349,
+              377,
+              378,
+              380,
+              381,
+              382,
+              383,
+              384,
+              385,
+              386,
+              387,
+              390,
+              394,
+              420,
+              423,
+              426,
+              50,
+              51,
+              57,
+              58,
+              60,
+              62,
+              64,
+              74,
+              86,
+              269,
+              271,
+              272,
+              276,
+              282,
+              283,
+              284,
+              389,
+              393,
+              415,
+              425,
+              78,
+              82,
+              84,
+              278,
+              280,
+              358,
+              411,
+              28,
+              88,
+              336,
+              354,
+              355,
+              360,
+              25,
+              87
+            ]
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 36,
+            "faceIds": [
+              21,
+              23,
+              61,
+              65,
+              69,
+              75,
+              76,
+              77,
+              100,
+              101,
+              114,
+              117,
+              251,
+              254,
+              255,
+              258,
+              259,
+              262,
+              275,
+              376,
+              379,
+              392,
+              49,
+              52,
+              66,
+              68,
+              70,
+              83,
+              274,
+              279,
+              391,
+              332,
+              333,
+              350,
+              351,
+              388
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 13.3,
+        "drillBoreTimeMins": 0,
+        "estimatedTotalMins": 58.3,
+        "estimatedTotalHrs": 0.971,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 300000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 22500,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 96000,
+        "progressiveDieCostGBP": 25000
+      },
+      "manufacturabilityScore": 20,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1577,
+        "sandCycleTimeHrFerrous": 0.1703,
+        "forgeStrokes": 7,
+        "investWaxCostGBP": 13.79,
+        "investShellCostGBP": 41.37
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "sheet_metal",
+      "total": 4.96,
+      "breakdown": {
+        "rawMaterial": 0.43,
+        "process": 0.02,
+        "labour": 0.03,
+        "tooling": 3.48,
+        "packaging": 0.07,
+        "logistics": 0.09,
+        "overhead": 0.48,
+        "margin": 0.37
+      }
+    }
+  },
+  {
+    "part": "steering_knuckle_RH.stp",
+    "sha256": "8e3a5e80a1d257dc",
+    "note": "Suspension upright — safety-critical, so forged in production. 9.0 mm bulk wall, 6% fill.",
+    "answers": {
+      "material.family": "steel",
+      "commodity.route": "machining"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-8f31d2c892926525",
+      "boundingBox": {
+        "xMm": 116.49,
+        "yMm": 236.81,
+        "zMm": 210.05
+      },
+      "volume": {
+        "mm3": 356101.1,
+        "cm3": 356.101
+      },
+      "surfaceArea": {
+        "mm2": 78925.3,
+        "cm2": 789.253
+      },
+      "fillRatio": 0.0615,
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "weights": {
+        "aluminiumKg": 0.9615,
+        "steelKg": 2.7954,
+        "plasticKg": 0.3739,
+        "castIronKg": 2.5461,
+        "copperKg": 3.1907,
+        "titaniumKg": 1.5775
+      },
+      "faces": {
+        "total": 310,
+        "byType": {
+          "PLANE": 99,
+          "CYLINDER": 124,
+          "TORUS": 40,
+          "CONE": 17,
+          "BSPLINE": 24,
+          "OTHER": 6
+        }
+      },
+      "edges": {
+        "total": 806,
+        "byType": {
+          "CIRCLE": 329,
+          "LINE": 321,
+          "BSPLINE": 156
+        },
+        "sampleCircleRadiiMm": [
+          0.1,
+          0.2,
+          0.4,
+          0.5,
+          1,
+          2,
+          3,
+          3.5,
+          4,
+          5,
+          5.5,
+          6,
+          6.2,
+          6.8,
+          7,
+          7.5,
+          8,
+          8.1,
+          8.5,
+          10,
+          12.5,
+          13,
+          14.5,
+          15,
+          15.5,
+          16.5,
+          17,
+          17.5,
+          18.5,
+          20
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 124,
+        "cylindricalFaceRadiiMm": [
+          0.1,
+          0.2,
+          1,
+          2,
+          3,
+          4,
+          5,
+          5.5,
+          6,
+          6.2,
+          7.5,
+          8,
+          10,
+          12.5,
+          13,
+          15.5,
+          18.5,
+          20,
+          23,
+          25,
+          26,
+          28,
+          30,
+          31.5,
+          34,
+          35.5,
+          37.5,
+          39,
+          40,
+          44
+        ],
+        "estimatedHoleCount": 14,
+        "holeRadiiMm": [
+          5,
+          5.5,
+          6,
+          6.2,
+          7.5,
+          31.5,
+          34,
+          35.5,
+          37.5
+        ],
+        "bossShaftCount": 5,
+        "bossShaftRadiiMm": [
+          12.5,
+          15.5,
+          39
+        ],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 99,
+        "freeFormFaceCount": 24,
+        "planarFaceAreaMm2": 29842
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 25,
+          "depthMm": 17,
+          "through": null,
+          "count": 2,
+          "faceIds": [
+            231,
+            245
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 31,
+          "depthMm": 3,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            151,
+            152
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 31,
+          "depthMm": 26,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            66
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 78,
+          "depthMm": 16,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            172,
+            175
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 10,
+          "depthMm": 11.7,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            209,
+            211
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 11,
+          "depthMm": 5,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            203,
+            205
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 11,
+          "depthMm": 15.5,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            204,
+            206
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 12,
+          "depthMm": 2,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            272,
+            273
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 12.5,
+          "depthMm": 16,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            234,
+            251,
+            254,
+            255
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 12.5,
+          "depthMm": 25,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            304,
+            305
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 15,
+          "depthMm": 18.9,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            24
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 15,
+          "depthMm": 25,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            163,
+            164
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 63,
+          "depthMm": 3,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            2,
+            3
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 68,
+          "depthMm": 3.8,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            13,
+            14
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 68,
+          "depthMm": 36.5,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            6,
+            7
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 71,
+          "depthMm": 2.7,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            10,
+            11
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 75,
+          "depthMm": 6,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            29
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1544,
+          "faceIds": [
+            170
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1298,
+          "faceIds": [
+            256
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1184,
+          "faceIds": [
+            1
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1161,
+          "faceIds": [
+            131
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1012,
+          "faceIds": [
+            154
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1001,
+          "faceIds": [
+            129
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 962,
+          "faceIds": [
+            263
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 956,
+          "faceIds": [
+            48
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 20,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1544,
+          "faceIds": [
+            170
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 34,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1161,
+          "faceIds": [
+            131
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 34,
+          "through": null,
+          "count": 1,
+          "areaMm2": 913,
+          "faceIds": [
+            132
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 6.5,
+          "through": null,
+          "count": 1,
+          "areaMm2": 758,
+          "faceIds": [
+            197
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 68,
+          "through": null,
+          "count": 1,
+          "areaMm2": 491,
+          "faceIds": [
+            309
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 9.02
+      },
+      "gear": null,
+      "wallThickness": {
+        "minMm": 1.36,
+        "maxMm": 46.75,
+        "p95Mm": 42.73,
+        "meanMm": 23.03,
+        "stdDevMm": 13.04,
+        "sampleCount": 26,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 29,
+        "zeroDraftFaceCount": 102,
+        "adequateDraftFaceCount": 38,
+        "minPositiveDraftDeg": 4.52,
+        "maxPositiveDraftDeg": 64.92,
+        "analyzedFaceCount": 169,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 29
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 34
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 52
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              1,
+              0,
+              0
+            ],
+            "undercutFaceCount": 34
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+X",
+            "faceCount": 166,
+            "faceIds": [
+              1,
+              4,
+              9,
+              12,
+              16,
+              18,
+              19,
+              24,
+              28,
+              30,
+              32,
+              33,
+              34,
+              46,
+              47,
+              48,
+              55,
+              56,
+              70,
+              71,
+              90,
+              123,
+              124,
+              131,
+              132,
+              146,
+              149,
+              150,
+              151,
+              152,
+              170,
+              178,
+              179,
+              182,
+              194,
+              196,
+              200,
+              201,
+              212,
+              217,
+              218,
+              219,
+              232,
+              233,
+              236,
+              237,
+              260,
+              261,
+              285,
+              288,
+              309,
+              31,
+              53,
+              60,
+              75,
+              79,
+              87,
+              89,
+              98,
+              106,
+              140,
+              141,
+              157,
+              158,
+              165,
+              166,
+              169,
+              198,
+              229,
+              239,
+              277,
+              278,
+              281,
+              284,
+              308,
+              8,
+              45,
+              51,
+              61,
+              77,
+              81,
+              102,
+              110,
+              121,
+              136,
+              147,
+              174,
+              176,
+              222,
+              235,
+              252,
+              256,
+              266,
+              289,
+              292,
+              303,
+              5,
+              41,
+              67,
+              69,
+              73,
+              85,
+              94,
+              118,
+              130,
+              145,
+              171,
+              173,
+              192,
+              250,
+              253,
+              262,
+              301,
+              20,
+              21,
+              25,
+              26,
+              42,
+              52,
+              83,
+              114,
+              125,
+              187,
+              214,
+              215,
+              225,
+              243,
+              76,
+              78,
+              80,
+              99,
+              103,
+              107,
+              167,
+              168,
+              221,
+              283,
+              286,
+              287,
+              290,
+              299,
+              72,
+              74,
+              86,
+              91,
+              95,
+              119,
+              143,
+              144,
+              224,
+              247,
+              248,
+              268,
+              302,
+              82,
+              111,
+              294,
+              297,
+              298,
+              84,
+              115,
+              188,
+              191,
+              17,
+              27,
+              59
+            ]
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 86,
+            "faceIds": [
+              2,
+              3,
+              6,
+              7,
+              10,
+              11,
+              13,
+              14,
+              15,
+              35,
+              38,
+              39,
+              40,
+              44,
+              50,
+              63,
+              64,
+              65,
+              68,
+              93,
+              101,
+              109,
+              117,
+              122,
+              128,
+              129,
+              137,
+              142,
+              148,
+              154,
+              156,
+              160,
+              172,
+              175,
+              184,
+              195,
+              199,
+              202,
+              210,
+              213,
+              220,
+              223,
+              226,
+              228,
+              231,
+              234,
+              238,
+              244,
+              245,
+              246,
+              251,
+              254,
+              255,
+              258,
+              270,
+              271,
+              272,
+              273,
+              276,
+              310,
+              37,
+              62,
+              100,
+              104,
+              108,
+              116,
+              155,
+              159,
+              185,
+              193,
+              208,
+              240,
+              241,
+              242,
+              274,
+              135,
+              138,
+              181,
+              207,
+              216,
+              279,
+              126,
+              230,
+              249,
+              293,
+              291
+            ]
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 58,
+            "faceIds": [
+              22,
+              23,
+              29,
+              36,
+              57,
+              66,
+              88,
+              97,
+              105,
+              113,
+              134,
+              163,
+              164,
+              197,
+              203,
+              204,
+              205,
+              206,
+              209,
+              211,
+              257,
+              259,
+              263,
+              265,
+              267,
+              269,
+              295,
+              300,
+              304,
+              305,
+              58,
+              92,
+              96,
+              112,
+              120,
+              127,
+              139,
+              153,
+              161,
+              177,
+              180,
+              183,
+              186,
+              227,
+              280,
+              296,
+              306,
+              43,
+              54,
+              133,
+              162,
+              189,
+              190,
+              275,
+              282,
+              307,
+              49,
+              264
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 6,
+        "drillBoreTimeMins": 7,
+        "estimatedTotalMins": 58,
+        "estimatedTotalHrs": 0.9661,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 300000,
+        "gravityMouldCostGBP": 80000,
+        "sandPatternCostGBP": 17000,
+        "imMouldCostGBP": 200000,
+        "forgeDieCostGBP": 128000,
+        "progressiveDieCostGBP": 30000
+      },
+      "manufacturabilityScore": 46,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1885,
+        "sandCycleTimeHrFerrous": 0.2518,
+        "forgeStrokes": 6,
+        "investWaxCostGBP": 11.84,
+        "investShellCostGBP": 35.52
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "machining",
+      "total": 63.46,
+      "breakdown": {
+        "rawMaterial": 36.53,
+        "process": 9.21,
+        "labour": 6.31,
+        "tooling": 0,
+        "packaging": 0.17,
+        "logistics": 0.3,
+        "overhead": 6.25,
+        "margin": 4.7
+      }
+    }
+  },
+  {
+    "part": "test-gear-m3-z38.step",
+    "sha256": "9a73f0a268c4189b",
+    "note": "Module 3, 38 teeth, counted off the tip circle. Commodity stated: the bulk path has no gear branch in inferCommodity, unlike the browser path.",
+    "answers": {
+      "material.family": "steel",
+      "gear.helix": "spur",
+      "gear.qualityClass": "8",
+      "gear.materialClass": "case_hardening_steel"
+    },
+    "commodity": "gear",
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-8e5c7f4659d920c4",
+      "boundingBox": {
+        "xMm": 120,
+        "yMm": 119.76,
+        "zMm": 30
+      },
+      "volume": {
+        "mm3": 265959.5,
+        "cm3": 265.959
+      },
+      "surfaceArea": {
+        "mm2": 42968.1,
+        "cm2": 429.681
+      },
+      "fillRatio": 0.6169,
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "weights": {
+        "aluminiumKg": 0.7181,
+        "steelKg": 2.0878,
+        "plasticKg": 0.2793,
+        "castIronKg": 1.9016,
+        "copperKg": 2.383,
+        "titaniumKg": 1.1782
+      },
+      "faces": {
+        "total": 155,
+        "byType": {
+          "OTHER": 76,
+          "CYLINDER": 77,
+          "PLANE": 2
+        }
+      },
+      "edges": {
+        "total": 459,
+        "byType": {
+          "LINE": 153,
+          "BSPLINE": 152,
+          "CIRCLE": 154
+        },
+        "sampleCircleRadiiMm": [
+          3.6,
+          20,
+          60
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 77,
+        "cylindricalFaceRadiiMm": [
+          3.6,
+          20,
+          60
+        ],
+        "estimatedHoleCount": 1,
+        "holeRadiiMm": [
+          20
+        ],
+        "bossShaftCount": 0,
+        "bossShaftRadiiMm": [],
+        "threadFeaturesDetected": true,
+        "planarFaceCount": 2,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 17731
+      },
+      "featureTable": [
+        {
+          "kind": "hole",
+          "diaMm": 40,
+          "depthMm": 30,
+          "through": true,
+          "count": 1,
+          "faceIds": [
+            155
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 8865,
+          "faceIds": [
+            4,
+            5
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 12.38
+      },
+      "gear": {
+        "likelyGear": true,
+        "teeth": 38,
+        "tipDiameterMm": 120,
+        "faceWidthMm": 30,
+        "boreDiameterMm": 40,
+        "derivedNormalModuleMm": 3,
+        "moduleBasis": "OD 120.0 mm / (z 38 + 2) — standard addendum, external, spur-equivalent; helical parts need the drawing's normal module",
+        "teethBasis": "counted 38 tip-circle patch(es) at r≈60.0 mm clustered to 38 angular positions",
+        "helixAngleDeg": null,
+        "internal": false
+      },
+      "wallThickness": null,
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 77,
+        "adequateDraftFaceCount": 0,
+        "minPositiveDraftDeg": null,
+        "maxPositiveDraftDeg": null,
+        "analyzedFaceCount": 77,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 30
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 30
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              1,
+              0
+            ],
+            "undercutFaceCount": 30
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+X",
+            "faceCount": 79,
+            "faceIds": [
+              2,
+              3,
+              8,
+              9,
+              12,
+              13,
+              16,
+              17,
+              20,
+              43,
+              46,
+              51,
+              54,
+              59,
+              62,
+              67,
+              70,
+              75,
+              78,
+              79,
+              82,
+              87,
+              90,
+              95,
+              98,
+              103,
+              106,
+              111,
+              114,
+              137,
+              140,
+              141,
+              144,
+              145,
+              148,
+              149,
+              152,
+              153,
+              155,
+              21,
+              25,
+              29,
+              30,
+              33,
+              37,
+              38,
+              58,
+              66,
+              74,
+              83,
+              91,
+              99,
+              119,
+              120,
+              124,
+              127,
+              128,
+              132,
+              136,
+              24,
+              27,
+              28,
+              32,
+              35,
+              36,
+              40,
+              55,
+              63,
+              71,
+              86,
+              94,
+              102,
+              117,
+              121,
+              122,
+              125,
+              129,
+              130,
+              133
+            ]
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 74,
+            "faceIds": [
+              1,
+              10,
+              11,
+              18,
+              19,
+              23,
+              31,
+              39,
+              44,
+              47,
+              48,
+              52,
+              56,
+              60,
+              64,
+              68,
+              72,
+              76,
+              77,
+              80,
+              81,
+              85,
+              89,
+              93,
+              97,
+              101,
+              105,
+              109,
+              110,
+              113,
+              118,
+              126,
+              134,
+              138,
+              139,
+              146,
+              147,
+              154,
+              6,
+              7,
+              14,
+              15,
+              22,
+              26,
+              34,
+              41,
+              42,
+              45,
+              49,
+              50,
+              53,
+              57,
+              61,
+              65,
+              69,
+              73,
+              84,
+              88,
+              92,
+              96,
+              100,
+              104,
+              107,
+              108,
+              112,
+              115,
+              116,
+              123,
+              131,
+              135,
+              142,
+              143,
+              150,
+              151
+            ]
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 2,
+            "faceIds": [
+              4,
+              5
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 3.5,
+        "drillBoreTimeMins": 0.5,
+        "estimatedTotalMins": 49,
+        "estimatedTotalHrs": 0.8174,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 80000,
+        "gravityMouldCostGBP": 15000,
+        "sandPatternCostGBP": 7000,
+        "imMouldCostGBP": 55000,
+        "forgeDieCostGBP": 20000,
+        "progressiveDieCostGBP": 20000
+      },
+      "manufacturabilityScore": 100,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1787,
+        "sandCycleTimeHrFerrous": 0.2261,
+        "forgeStrokes": 5,
+        "investWaxCostGBP": 6.45,
+        "investShellCostGBP": 19.34
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "step"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "gear",
+      "total": 25.5,
+      "breakdown": {
+        "rawMaterial": 8.14,
+        "process": 8.04,
+        "labour": 3.61,
+        "tooling": 0.96,
+        "packaging": 0.13,
+        "logistics": 0.23,
+        "overhead": 2.49,
+        "margin": 1.89
+      }
+    }
+  }
+]

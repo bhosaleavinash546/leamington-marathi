@@ -41,7 +41,7 @@
 import { readFileSync } from 'node:fs';
 import { basename } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
-import { analyzeGeometry } from '../utils/geometry-bridge.js';
+import { analyzeGeometry, type OCCTGeometry } from '../utils/geometry-bridge.js';
 import { executeCalculateCost } from './cost-executor.js';
 import { runAllGuards, statedFromAnswers, isCostable } from '../routes/cad.js';
 import type { CADSanityWarning } from '../utils/cad-sanity.js';
@@ -264,6 +264,30 @@ async function costOnePart(
              error: geo.error ?? 'geometry could not be measured' };
   }
 
+  return costMeasuredPart(geo, name, part, answers, region, opts, baseBook, base);
+}
+
+/**
+ * Everything after the measurement: route, decisions, guards, cost.
+ *
+ * Split out because it is a pure function of the geometry, and that makes it
+ * replayable. `tests/real-parts-baseline.test.ts` feeds it geometry recorded
+ * from the real production parts, so the routing and costing of a steering
+ * knuckle is checked on every CI run rather than only where OCP is installed.
+ * A baseline that re-implemented this chain would drift from it and prove
+ * nothing, which is why the test calls in here rather than copying it.
+ */
+export async function costMeasuredPart(
+  /** Already measured, and already known to be `status: 'success'`. */
+  geo: OCCTGeometry,
+  name: string,
+  part: BulkPartInput,
+  answers: Record<string, unknown>,
+  region: ManufacturingRegion,
+  opts: BulkRunOptions & { _regionCache?: Map<string, RateLibrary> },
+  baseBook: RateLibrary,
+  base: BulkPartResult,
+): Promise<BulkPartResult> {
   const annualVolume = part.annualVolume ?? opts.annualVolume ?? SHOP_DEFAULTS.annualVolume;
   const ctxFor = (commodity: string): RuleContext => ({
     geo, geometryQuality: 'occt', commodity, commoditySource: 'engineer',
