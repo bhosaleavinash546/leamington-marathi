@@ -28,6 +28,7 @@ import { computeCastAndMachineDrivers }    from '../../src/engine/modules/cast-a
 import { computeRubberDrivers }            from '../../src/engine/modules/rubber.js';
 import { computeCompositeDrivers }         from '../../src/engine/modules/composites.js';
 import { computeWiringHarnessDrivers }     from '../../src/engine/modules/wiring-harness.js';
+import { computeGearDrivers }             from '../../src/engine/modules/gear.js';
 
 // ─── Public interfaces ────────────────────────────────────────────────────────
 
@@ -95,6 +96,7 @@ const COMMODITY_MAP: Record<string, ComputeFn> = {
   rubber:               computeRubberDrivers            as unknown as ComputeFn,
   composites:           computeCompositeDrivers         as unknown as ComputeFn,
   wiring_harness:       computeWiringHarnessDrivers     as unknown as ComputeFn,
+  gear:                 computeGearDrivers              as unknown as ComputeFn,
 };
 
 // ─── DFM opportunity generator ────────────────────────────────────────────────

@@ -356,3 +356,80 @@ describe('bulk run — geometry guards (needs OCP)', () => {
     expect(rec.acknowledged).toEqual([]);
   });
 });
+
+/**
+ * Gear on the automated route.
+ *
+ * Gear costed in the screens and had its own rule pack, but `toCostParams` had
+ * no mapping for it, so the bulk route refused every gear with
+ * `no_cost_mapping` — a basket with gears in it silently skipped them. That was
+ * the last named coverage gap in the Option 2 prerequisites.
+ */
+describe('bulk run — gear (needs OCP)', () => {
+  const gearStep = join(DIR, 'gear-m3-z38.step');
+  const gearAnswers = {
+    'gear.helix': '0',
+    'gear.materialClass': 'case_hardening_steel',
+    'gear.qualityClass': '7',
+    'gear.teethEntry': '38',          // matches the measured count
+  };
+
+  it('costs a gear instead of refusing it', async () => {
+    if (!kernelAvailable || !existsSync(gearStep)) return;
+    const rec = await runBulkCosting(
+      [{ partNumber: 'G1', file: gearStep, commodity: 'gear', material: 'steel' }],
+      { answers: gearAnswers },
+    );
+    const p = rec.parts[0];
+    expect(p.code, 'gear must no longer fall out at the mapping').not.toBe('no_cost_mapping');
+    expect(p.status).toBe('costed');
+    expect(p.total!).toBeGreaterThan(0);
+    expect(Object.keys(p.breakdown!)).toHaveLength(8);
+  }, 180_000);
+
+  it('reconciles the material bucket to the blank plus heat treat', async () => {
+    if (!kernelAvailable || !existsSync(gearStep)) return;
+    const rec = await runBulkCosting(
+      [{ partNumber: 'G1', file: gearStep, commodity: 'gear', material: 'steel' }],
+      { answers: gearAnswers },
+    );
+    const p = rec.parts[0];
+    if (p.status !== 'costed') return;
+
+    // The module bills the blank as a pass-through and heat treat as a per-part
+    // consumable, both scaled by the reject uplift. So the bucket must exceed
+    // the blank alone — if it ever equals it, heat treat has been dropped; if it
+    // equals blank x uplift x 2, something is double-counted.
+    const blank = Number(p.provenance?.['gear-blank-cost']?.value ?? 0);
+    expect(blank, 'the rules must have priced a blank').toBeGreaterThan(0);
+    const uplift = 1 / (1 - 0.03);          // SHOP_DEFAULTS.rejectRate
+    expect(p.breakdown!.rawMaterial).toBeGreaterThan(blank * uplift);
+    expect(p.breakdown!.rawMaterial).toBeLessThan(blank * uplift * 2);
+  }, 180_000);
+
+  it('carries the measured geometry into the costing, not a default', async () => {
+    if (!kernelAvailable || !existsSync(gearStep)) return;
+    const rec = await runBulkCosting(
+      [{ partNumber: 'G1', file: gearStep, commodity: 'gear', material: 'steel' }],
+      { answers: gearAnswers },
+    );
+    const p = rec.parts[0];
+    if (p.status !== 'costed') return;
+    // m3, z38 — the fixture's name is its truth, and the rules read it off the
+    // B-rep rather than taking the typed entry.
+    expect(Number(p.provenance?.['gear-teeth']?.value)).toBe(38);
+    expect(Number(p.provenance?.['gear-module']?.value)).toBe(3);
+  }, 180_000);
+
+  it('still blocks a gear whose claim contradicts the geometry', async () => {
+    if (!kernelAvailable || !existsSync(gearStep)) return;
+    // Costing gear must not have weakened the guard that was wired in first.
+    const rec = await runBulkCosting(
+      [{ partNumber: 'G-BAD', file: gearStep, commodity: 'gear', material: 'steel',
+         answers: { 'gear.teethEntry': '40' } }],
+      { answers: { ...gearAnswers, 'gear.teethEntry': '40' } },
+    );
+    expect(rec.parts[0].code).toBe('sanity_blocked');
+    expect(rec.parts[0].total).toBeUndefined();
+  }, 180_000);
+});

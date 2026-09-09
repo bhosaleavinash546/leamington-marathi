@@ -116,6 +116,7 @@ const LABOUR: Record<string, string> = {
   rotational_moulding: 'lab-uk-roto',
   rubber: 'lab-uk-semiskilled',
   composites: 'lab-uk-skilled',
+  gear: 'lab-uk-skilled',
 };
 
 const num = (v: unknown, fallback = 0): number =>
@@ -284,6 +285,44 @@ export function toCostParams(
         assumed.push(`secondary-machining NRE £${SECONDARY_MACHINING_NRE_GBP} (fixtures + programming)`);
       }
       return { commodity, params, assumed };
+    }
+
+    case 'gear': {
+      const g = ci.gear;
+      // Every field here is rule-written with provenance; nothing is inferred.
+      // The module refuses rather than guesses if one is missing, so a partial
+      // gear analysis must not be dressed up as costable.
+      if (!g || !num(g.normalModuleMm) || !num(g.teeth) || !num(g.faceWidthMm)) return null;
+
+      // Deliberately NOT `...shop`: GearInputs takes its shop floor from
+      // `shopData`, and oee / manning / labourEfficiency are not fields on it.
+      // Spreading them would put dead keys in the params and imply they matter.
+      const params: Record<string, unknown> = {
+        normalModuleMm: num(g.normalModuleMm),
+        teeth: num(g.teeth),
+        helixAngleDeg: typeof g.helixAngleDeg === 'number' ? g.helixAngleDeg : 0,
+        faceWidthMm: num(g.faceWidthMm),
+        internal: g.internal === true,
+        qualityClass: num(g.qualityClass, 7),
+        materialClass: g.materialClass ?? 'case_hardening_steel',
+        caseHardened: g.caseHardened !== false,
+        blankCostPerPart: num(g.blankCostPerPart),
+        netWeightKg: num(ci.netWeightKg),
+        materialId,
+        annualVolume,
+        amortizationVolume: annualVolume,
+        batchSize: num(g.batchSize, standardBatchSize(annualVolume)),
+        labourId,
+        rejectRate: D.rejectRate,
+      };
+      // Optional, and only when the rules actually decided them — passing a
+      // zero would read as "no case depth" rather than "not stated".
+      if (num(g.effectiveCaseDepthMm) > 0) params.effectiveCaseDepthMm = num(g.effectiveCaseDepthMm);
+      if (num(g.blankPrepCycleSec) > 0) params.blankPrepCycleSec = num(g.blankPrepCycleSec);
+      if (g.hardeningRoute) params.hardeningRoute = g.hardeningRoute;
+      if (!num(g.qualityClass)) assumed.push('qualityClass (ISO 7 assumed)');
+      if (!num(g.batchSize)) assumed.push('batchSize (standard EOQ)');
+      return { commodity, params, assumed, packagingPerPart, logisticsPerPart };
     }
 
     case 'forging': {
@@ -501,5 +540,5 @@ export function toCostParams(
 
 /** Commodities `toCostParams` can convert today. */
 export const COSTABLE_COMMODITIES = [
-  'casting', 'forging', 'machining', 'injection_moulding', 'sheet_metal', 'blow_moulding',
+  'casting', 'forging', 'machining', 'injection_moulding', 'sheet_metal', 'blow_moulding', 'gear',
 ];
