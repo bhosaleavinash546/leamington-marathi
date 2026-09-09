@@ -107,9 +107,11 @@ function processOf(
   const s = result.suggestions as Record<string, Record<string, unknown> | undefined>;
   const sub = Object.values(s).find(v => v && typeof v === 'object');
   const chosen = (sub?.process ?? sub?.subtype ?? sub?.dieType) as string | undefined;
-  const cycleHr = Number(
-    (s.machining?.estimatedCycleTimeHr as number | undefined)
-    ?? (s.gear?.cycleTimeHr as number | undefined) ?? 0);
+  // Only these two commodities derive a cycle at rule time; everywhere else it
+  // is the driver's to compute. Leave it undefined rather than saying zero.
+  const cycleRaw = (s.machining?.estimatedCycleTimeHr as number | undefined)
+    ?? (s.gear?.cycleTimeHr as number | undefined);
+  const cycleHr = typeof cycleRaw === 'number' && Number.isFinite(cycleRaw) ? cycleRaw : undefined;
   const basis = Object.values(result.provenance)
     .find(p => /\.(process|subtype|dieType)$/.test(p.ruleId))?.basis;
   return [{
@@ -119,7 +121,7 @@ function processOf(
     // and the basis says why; the uncertainty lives in the open decisions.
     confidencePct: result.status === 'complete' ? 100 : 50,
     reasoning: basis ?? 'selected by the deterministic rules for this commodity',
-    estimatedCycleTimeHr: cycleHr,
+    ...(cycleHr === undefined ? {} : { estimatedCycleTimeHr: cycleHr }),
   }];
 }
 

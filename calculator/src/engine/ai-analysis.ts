@@ -249,7 +249,14 @@ export interface ProcessRecommendation {
   commodityType: string;
   confidencePct: number;
   reasoning: string;
-  estimatedCycleTimeHr: number;
+  /**
+   * Absent when the source did not state one. The deterministic path only
+   * derives a cycle for machining and gear; for every other commodity the
+   * number lives in the driver, not here. It used to be reported as 0, which
+   * the sanity layer reads as "this process claims a zero cycle" — a real
+   * fault, and indistinguishable from "nobody filled this in".
+   */
+  estimatedCycleTimeHr?: number;
 }
 
 export interface ManufacturabilityRisk {

@@ -2106,7 +2106,7 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG },
     head: [['Process', 'Commodity', 'Confidence', 'Cycle Time (hr)', 'Reasoning']],
-    body: r.processRecommendations.map(p => [p.process, p.commodityType, `${p.confidencePct}%`, p.estimatedCycleTimeHr.toFixed(4), p.reasoning]),
+    body: r.processRecommendations.map(p => [p.process, p.commodityType, `${p.confidencePct}%`, p.estimatedCycleTimeHr === undefined ? '—' : p.estimatedCycleTimeHr.toFixed(4), p.reasoning]),
     theme: 'plain',
     headStyles: { fillColor: HDR3, textColor: DARK, fontStyle: 'bold', fontSize: 7.5, cellPadding: 3 },
     bodyStyles: { fontSize: 7.5, textColor: DARK, cellPadding: 3 },

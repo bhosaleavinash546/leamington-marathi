@@ -5,7 +5,7 @@ import {
   getRateSource, setRateSource, getOverrides, setOverride, deleteOverride, clearOverrides,
   recordRateLibraryVersion, listRateLibraryVersions, getRateLibraryVersion,
 } from '../server/data/rate-library-store.js';
-import { fingerprintRateLibrary } from '../src/engine/rate-library-merge.js';
+import { fingerprintRateLibrary } from '../server/utils/rate-library-fingerprint.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 
 let db: Database.Database;

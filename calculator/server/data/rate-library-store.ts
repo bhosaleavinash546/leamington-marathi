@@ -6,7 +6,7 @@
 import type { Database } from 'better-sqlite3';
 import type { RateLibrary } from '../../src/engine/types.js';
 import type { SWRateLibrary } from '../../src/engine/sw-rate-library.js';
-import { fingerprintRateLibrary } from '../../src/engine/rate-library-merge.js';
+import { fingerprintRateLibrary } from '../utils/rate-library-fingerprint.js';
 import type { RateOverride, RateSource, RateTable } from '../../src/engine/rate-library-merge.js';
 
 const COMPANY_ID = 'company';

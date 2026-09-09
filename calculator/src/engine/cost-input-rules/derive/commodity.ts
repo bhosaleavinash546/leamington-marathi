@@ -31,6 +31,17 @@ import { hollowVerdict } from './hollow.js';
 
 export const COMMODITY_DECISION_ID = 'commodity.route';
 
+/**
+ * How far the mean wall may exceed the reported gauge and still read as sheet.
+ *
+ * A pressing is one wall throughout, but the ray-cast mean is not exactly the
+ * gauge: rays that graze a bend or run along the sheet plane read long, and a
+ * flange doubles locally. Two lets that through. The parts this exists to keep
+ * out are not marginal — the bracket, knuckle and PRCR002 in the audit set
+ * measure 11x, 17x and 76x their reported gauge.
+ */
+const GAUGE_WALL_TOLERANCE = 2;
+
 export interface CommodityVerdict {
   /** Set when the measurement settles it. */
   commodity?: string;
@@ -96,11 +107,22 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
 
   // 1. Bends at a sheet gauge. A moulding has no measurable bend radius on a
   //    1.5 mm wall — this is the one thin-shell signal that is not ambiguous.
+  //
+  //    It IS ambiguous if the gauge is not the wall the part actually has. A
+  //    pressing has one wall, so its gauge and its mean wall agree; a solid
+  //    casting whose fillets were misread as bends reports a gauge many times
+  //    thinner than its body. The geometry engine now measures the gauge from
+  //    the mean wall so this cannot arise upstream, but geometry reaches here
+  //    from a cache and from files measured by an older engine, so the
+  //    contradiction is refused here too rather than trusted twice.
   const sm = g.sheetMetal;
-  if (sm && (sm.bendCount ?? 0) >= 2 && (sm.thicknessMm ?? 0) > 0 && (sm.thicknessMm ?? 99) <= 6) {
+  const gauge = sm?.thicknessMm ?? 0;
+  const meanWall = g.wallThickness?.meanMm ?? null;
+  const gaugeIsTheBulkWall = meanWall == null || meanWall <= GAUGE_WALL_TOLERANCE * gauge;
+  if (sm && (sm.bendCount ?? 0) >= 2 && gauge > 0 && gauge <= 6 && gaugeIsTheBulkWall) {
     return {
       commodity: 'sheet_metal',
-      basis: `${sm.bendCount} bends measured at a ${sm.thicknessMm?.toFixed(1)} mm gauge`,
+      basis: `${sm.bendCount} bends measured at a ${gauge.toFixed(1)} mm gauge`,
     };
   }
 

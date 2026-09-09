@@ -21,7 +21,7 @@ import { parseRateLibraryWorkbook } from '../server/utils/rate-library-xlsx.js';
 import { analyzeGeometry } from '../server/utils/geometry-bridge.js';
 import { RULE_ENGINE_VERSION } from '../src/engine/cost-input-rules/types.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
-import { fingerprintRateLibrary } from '../src/engine/rate-library-merge.js';
+import { fingerprintRateLibrary } from '../server/utils/rate-library-fingerprint.js';
 import { buildRegionalLibrary, resolveManufacturingRegion } from '../src/engine/regional-rates.js';
 import { recomputeMachineRates } from '../src/engine/rate-library.js';
 

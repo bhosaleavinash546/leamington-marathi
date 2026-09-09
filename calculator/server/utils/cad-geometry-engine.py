@@ -235,6 +235,25 @@ def _extract_machining_features(wrapped, bbox):
     return rows
 
 
+def _bulk_wall_mm(volume_mm3, surface_mm2):
+    """The wall the part has in bulk, as 2·V/S.
+
+    For a plate of thickness t the surface is dominated by its two faces, so
+    V/S -> t/2 and this returns t. For anything solid it returns something of
+    the order of the body, not of its thinnest sliver — which is the property
+    the sheet-metal gate needs and neither the ray-cast minimum nor its mean
+    provides. The minimum is set by the smallest fillet anywhere; the mean is
+    set by rays that run ALONG a thin sheet rather than across it, which is why
+    a 1.55 mm seat bracket ray-casts at 24.9 mm and needs the same 2·V/S
+    correction `applyShellWallCorrection` already applies on the TypeScript
+    side. Measured over the audit set the separation is not marginal: the parts
+    that are sheet come out at 1.5-4.5 mm, the parts that are not at 8.6-15.1.
+    """
+    if not volume_mm3 or not surface_mm2 or surface_mm2 <= 0:
+        return None
+    return 2.0 * volume_mm3 / surface_mm2
+
+
 def _detect_bends(wrapped, sheet_thickness):
     """Phase 3 — sheet-metal bend detection (forming feature).
 
@@ -245,6 +264,17 @@ def _detect_bends(wrapped, sheet_thickness):
     only plate-like parts (thin, uniform wall) are treated as sheet metal.
     A bend cylinder is LONG along its axis (spans width) — that separates it
     from a drilled hole, whose cylinder is only as long as the sheet is thick.
+
+    `sheet_thickness` must be the wall the part has IN BULK — see `_bulk_wall_mm`.
+    It used to be the MINIMUM ray-cast wall, and a solid casting has a minimum
+    somewhere (a fillet run-out, a web, the lip of a boss) that says nothing
+    about the body: the steering knuckle measures a 1.36 mm minimum against a
+    9.02 mm bulk wall. That read as thin sheet, its fillets read as 28 bends, and
+    because this branch is decisive in `inferCommodity` nothing downstream got a
+    vote — the knuckle was routed to laser cutting and costed at £5.43. Every
+    real production part in the audit set went the same way. The synthetic
+    fixtures never showed it: they are clean prismatic blocks with no fillets to
+    misread, so they measure zero bends and the branch never fires.
     """
     from OCP.TopExp import TopExp_Explorer
     from OCP.TopAbs import TopAbs_FACE
@@ -2029,7 +2059,7 @@ def analyze(filepath: str) -> dict:
             # axis-deduped counts — feeds the operations mapping in the client.
             "featureTable": ft_rows,
             # Sheet-metal forming features (bends) — for the SM Fab press-brake cost.
-            "sheetMetal": _detect_bends(wrapped, wall_stats["minMm"] if wall_stats else None),
+            "sheetMetal": _detect_bends(wrapped, _bulk_wall_mm(volume_mm3, sa_mm2)),
             # Gear metrology — teeth counted from tip-circle patches; None when
             # the shape does not read as a gear.
             "gear": _safe_gear_metrics(wrapped),

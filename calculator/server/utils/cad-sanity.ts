@@ -158,8 +158,15 @@ export function runCADSanityChecks(
     // claiming a zero cycle is the bug this check exists for.
     if (ct === 0 && pi > 0) continue;
     if (ct < 0.0005 || ct > 24) {
+      // Blocking, not advisory. Every bucket downstream is priced off this
+      // number, so a primary process claiming a zero cycle does not make the
+      // answer slightly wrong — it makes it meaningless. It was severity-only
+      // until a misrouted steering knuckle came back costable at £5.43 with
+      // this exact warning showing beside the total. `isCostable` reads
+      // `blocking`, not `severity`, so saying "error" was never enough.
       w.push({
         code: 'cycle_time_implausible',
+        blocking: true,
         message: `Cycle time ${ct} hr for "${p.process ?? 'process'}" is outside plausible bounds (1.8 s – 24 h).`,
         severity: 'error',
       });
