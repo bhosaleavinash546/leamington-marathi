@@ -180,6 +180,7 @@ import { CAD_AI_DEMOS } from './data/cad-ai-demos.js';
 import { COMMODITY_LABELS, COMMODITY_BADGE_COLOURS, CPICKER_META } from './data/commodity-meta.js';
 import { renderSTLViews } from './cad-views.js';
 import { CAD_COMMODITY_OPTIONS, CAD_MATERIALS_BY_COMMODITY } from './data/cad-options.js';
+import { analysisErrorHint } from './cad-error-hint.js';
 import { COMMODITY_DEMO_SNIPPETS } from './data/demo-snippets.js';
 import { PCB_COUNTRY_META, computeClientRiskProfile } from './data/pcb-country-meta.js';
 import { apiBase } from '../api-base.js';
@@ -6511,11 +6512,12 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     // A render bug and a dead server look identical in the panel without this.
     console.error('[CAD] analysis render failed:', err);
     const cadErrEl = document.getElementById('cad-results');
+    const cadErrMsg = err instanceof Error ? err.message : String(err);
     if (cadErrEl) cadErrEl.innerHTML = `
       <div class="risk-card High" style="margin-top:10px">
         <div class="risk-feature">Analysis Error</div>
-        <div>${escHtml(err instanceof Error ? err.message : String(err))}</div>
-        <div class="risk-suggestion">Ensure the API server is running (<code>npm run server</code>) and ANTHROPIC_API_KEY is configured.</div>
+        <div>${escHtml(cadErrMsg)}</div>
+        <div class="risk-suggestion">${analysisErrorHint(cadErrMsg)}</div>
       </div>`;
   } finally {
     clearTimeout(timeoutId);
