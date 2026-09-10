@@ -184,18 +184,18 @@ box(s1, { ...R, y: 2.67, h: 4.58 });
 heading(s1, 'Technical Scoping:', { x: R.x + 0.20, y: 2.77, w: 2.5, size: 10.5 });
 T(s1, [
   { text: 'Enabling AI on an existing system?', options: { breakLine: true } },
-  { text: 'NO — it is a separate application and it is already built and running. It feeds the existing costing systems by export.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
+  { text: 'NO — a separate application, already built and running. It feeds the existing costing system by export and does not replace the costing method.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
   { text: 'Model used:  ANTHROPIC Claude', options: { breakLine: true, paraSpaceAfter: 8 } },
   { text: 'Technical implementation/support required?', options: { breakLine: true } },
   { text: 'YES — somewhere to host it, a disk that persists, and an API key. No new hardware.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
   { text: 'Data handling:', options: { breakLine: true } },
-  { text: 'CAD, drawings and cost data stay inside the deployment. Accounts hold a work email address and nothing else.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
+  { text: 'CAD and drawing files are processed on the server and are never sent out. Text taken from them — part name, dimensions, material, cost figures — goes to the Anthropic API so the ideas can be written, and so does a supplier quote if you upload one to be read. Accounts hold a work email and nothing else.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
   { text: 'What a run needs:', options: { breakLine: true } },
   { text: '3D CAD (STEP or native), 2D drawings, annual volume, and the current price or supplier quote where there is one.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
   { text: 'What comes out:', options: { breakLine: true } },
-  { text: 'Excel, PowerPoint and PDF, ready for the programme review.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
+  { text: 'Excel, PowerPoint and PDF for the programme review.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
   { text: 'How to prove it:', options: { breakLine: true } },
-  { text: 'Run a set of parts that have already been costed by hand and compare the two, before anything is relied on.', options: { fontSize: 7.8, color: MUTED } },
+  { text: 'Run parts already costed by hand and compare, before anything is relied on.', options: { fontSize: 7.8, color: MUTED } },
 ], { x: R.x + 0.20, y: 3.05, w: R.w - 0.40, h: 4.14, isTextBox: true, fontFace: FONT,
      fontSize: 8.8, color: INK, margin: 0, valign: 'top', lineSpacingMultiple: 0.92 });
 
