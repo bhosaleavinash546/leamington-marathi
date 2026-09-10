@@ -142,6 +142,29 @@ describe('the Windows launcher and the code agree', () => {
     expect(bat).toMatch(/AIR_GAPPED=1/);
   });
 
+  it('has CRLF line endings, or cmd.exe mis-parses it', () => {
+    // Batch is parsed by bytes. With LF-only endings cmd.exe can fail to find a
+    // `goto` label — and this launcher is built on labels (:wait, :up, :die,
+    // :done), so it would not run at all. It was written LF-only; .gitattributes
+    // now pins eol=crlf so a checkout on Windows, or a contributor with
+    // core.autocrlf=input, cannot quietly undo it.
+    const raw = readFileSync(join(REPO, 'Start-CostVision.bat'));
+    const crlf = raw.toString('binary').split('\r\n').length - 1;
+    const lf = raw.toString('binary').split('\n').length - 1;
+    expect(crlf, 'every line must end CRLF').toBe(lf);
+    expect(lf).toBeGreaterThan(50);
+  });
+
+  it('is pinned to CRLF by .gitattributes', () => {
+    const attrs = readFileSync(join(REPO, '.gitattributes'), 'utf8');
+    expect(attrs).toMatch(/^\*\.bat\s+text\s+eol=crlf/m);
+    // The CAD fixtures must NOT be line-ending normalised — rewriting bytes in
+    // a STEP file changes a measured volume, or breaks it outright.
+    for (const ext of ['step', 'stp', 'stl']) {
+      expect(attrs, `*.${ext} should be binary`).toMatch(new RegExp(`^\\*\\.${ext}\\s+binary`, 'm'));
+    }
+  });
+
   it('generates the signing secret on the machine instead of shipping one', () => {
     expect(bat).toMatch(/randomBytes\(32\)/);
     expect(bat).not.toMatch(/JWT_SECRET=[A-Za-z0-9]{16,}/);

@@ -1,0 +1,27 @@
+# Windows shells parse batch files by bytes, and cmd.exe mishandles LF-only
+# scripts: `goto` can fail to find its label, which is exactly what
+# Start-CostVision.bat is built on. Force CRLF on checkout everywhere so a
+# clone on Windows — or a contributor with core.autocrlf=input — cannot quietly
+# produce a launcher that does not run.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Everything else stays LF; these are read by tools that do not care.
+*.sh        text eol=lf
+*.command   text eol=lf
+*.py        text eol=lf
+*.ts        text eol=lf
+*.mjs       text eol=lf
+*.mts       text eol=lf
+
+# CAD fixtures and binaries are bytes, not text — a line-ending rewrite would
+# change a measured volume or corrupt the file outright.
+*.step  binary
+*.stp   binary
+*.igs   binary
+*.iges  binary
+*.stl   binary
+*.pptx  binary
+*.xlsx  binary
+*.pdf   binary
