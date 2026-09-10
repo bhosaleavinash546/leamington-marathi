@@ -27,10 +27,12 @@
  *     pip download -r requirements.txt -d wheels --platform win_amd64 ^
  *         --python-version 312 --only-binary=:all:
  *
- * The script ends by measuring a real STEP fixture with the bundled Python and
- * comparing it against the committed truth value. A package that cannot measure
- * geometry is the failure worth catching here rather than on someone's desk,
- * and it is the same check CI runs against the Docker image.
+ * The script ends by measuring two STEP fixtures with the BUNDLED Python and
+ * comparing volume, hole count and bend count against the values this
+ * repository was developed on. That is the check that answers "will it behave
+ * the same as it did in testing": the OCP wheel is the only piece that differs
+ * between the two machines, and if it disagrees the build fails rather than
+ * handing someone a package that costs parts differently.
  */
 import { execFileSync, execSync } from 'node:child_process';
 import { existsSync, mkdirSync, cpSync, rmSync, readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
@@ -49,11 +51,37 @@ const NODE_URL = `https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}
 const PYTHON_URL = `https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-embed-amd64.zip`;
 const GET_PIP_URL = 'https://bootstrap.pypa.io/get-pip.py';
 
-// The fixture the finished package must measure, and what it must measure.
-// From cad-audit/truth/block-2holes.json, taken with raw OCCT independently of
-// the pipeline.
-const FIXTURE = 'tests/fixtures/cad-parts/block-2holes.step';
-const EXPECT_CM3 = 44.858;
+/**
+ * What the finished package must measure, and what it must say.
+ *
+ * The one thing that genuinely differs between the machine this was developed
+ * on and the machine it ships to is the OCP wheel: the same OCCT version
+ * (7.9.3.1.1, pinned in requirements.txt) but a win_amd64 build rather than
+ * manylinux, on a different CPython minor. Everything downstream — the rules,
+ * the rate library, the eight-bucket arithmetic — is the same source running on
+ * the same Node.
+ *
+ * So the geometry is the thing to check, and checking a volume alone is not
+ * enough: a cost is driven as much by the FEATURE TABLE (holes to drill) and by
+ * the sheet-metal gate (bend count and gauge — the pair that once routed a
+ * steering knuckle to laser cutting at £5.43) as by mass. Both fixtures are
+ * measured, and the build fails rather than shipping a package whose kernel
+ * disagrees with the one every number in this repository was taken with.
+ *
+ * Truth values: cad-audit/truth/block-2holes.json (raw OCCT, independent of the
+ * pipeline) and, for the plate, hand-computed —
+ *   228 x 228 x 8 = 415.872 cm³, less 324 x pi x 3² x 8 = 73.287 cm³.
+ */
+const CHECKS = [
+  {
+    file: 'tests/fixtures/cad-parts/block-2holes.step',
+    cm3: 44.858, holes: 2, bends: 0,
+  },
+  {
+    file: 'tests/fixtures/cad-parts/plate-324holes.step',
+    cm3: 342.585, holes: 324, bends: 0,
+  },
+];
 
 const args = process.argv.slice(2);
 const flag = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
@@ -171,19 +199,46 @@ cpSync(join(REPO, 'requirements.txt'), join(OUT, 'requirements.txt'));
 say('  ok  app\\, launcher, requirements');
 
 // ── Prove it measures geometry ──────────────────────────────────────────────
-step('Verifying the package measures a real STEP file');
-const out = execFileSync(PY, [join(OUT, 'app', 'server', 'utils', 'cad-geometry-engine.py'),
-                              join(OUT, 'app', ...FIXTURE.split('/'))],
-                         { encoding: 'utf8', maxBuffer: 64 << 20 });
-const geo = JSON.parse(out);
-if (geo.status !== 'success') { console.error(`  FAILED: ${geo.error ?? geo.status}`); process.exit(1); }
-const cm3 = geo.volume?.cm3;
-const errPct = Math.abs(cm3 - EXPECT_CM3) / EXPECT_CM3 * 100;
-if (!(errPct < 0.01)) {
-  console.error(`  FAILED: measured ${cm3} cm3, expected ${EXPECT_CM3} (${errPct.toFixed(3)}% out)`);
+step('Verifying the bundled kernel measures what it measured here');
+let failed = 0;
+for (const c of CHECKS) {
+  const target = join(OUT, 'app', ...c.file.split('/'));
+  if (!existsSync(target)) { console.error(`  MISSING: ${c.file}`); failed++; continue; }
+  let geo;
+  try {
+    geo = JSON.parse(execFileSync(PY, [join(OUT, 'app', 'server', 'utils', 'cad-geometry-engine.py'), target],
+                                  { encoding: 'utf8', maxBuffer: 64 << 20 }));
+  } catch (e) {
+    console.error(`  FAILED ${c.file}: the engine did not run — ${String(e).slice(0, 160)}`);
+    failed++; continue;
+  }
+  if (geo.status !== 'success') {
+    console.error(`  FAILED ${c.file}: ${geo.error ?? geo.status}`); failed++; continue;
+  }
+  const name = c.file.split('/').pop();
+  const cm3 = geo.volume?.cm3 ?? 0;
+  const errPct = Math.abs(cm3 - c.cm3) / c.cm3 * 100;
+  const holes = geo.features?.estimatedHoleCount ?? -1;
+  const bends = geo.sheetMetal?.bendCount ?? -1;
+  const bad = [];
+  if (!(errPct < 0.01)) bad.push(`volume ${cm3} cm3 vs ${c.cm3} (${errPct.toFixed(3)}% out)`);
+  // The feature table drives drilling time. A kernel that measures the mass
+  // correctly and the features differently still costs the part differently.
+  if (holes !== c.holes) bad.push(`${holes} holes, expected ${c.holes}`);
+  // The pair the sheet-metal gate reads. A solid reporting bends is the shape
+  // of the misroute this repository exists to have fixed.
+  if (bends !== c.bends) bad.push(`${bends} bends, expected ${c.bends}`);
+  if (bad.length) { console.error(`  FAILED ${name}: ${bad.join('; ')}`); failed++; }
+  else say(`  ok  ${name.padEnd(24)} ${cm3} cm3, ${holes} holes, ${bends} bends, ${geo.faces?.total} faces`);
+}
+if (failed) {
+  console.error(
+    `\n  ${failed} check(s) failed. The bundled kernel does not agree with the one\n`
+    + '  every number in this repository was measured with, so this package would\n'
+    + '  cost parts differently. Do not ship it.\n');
   process.exit(1);
 }
-say(`  ok  ${cm3} cm3 against a truth of ${EXPECT_CM3} — ${geo.faces?.total} B-rep faces`);
+say('  the kernel agrees with the development machine on mass AND features');
 
 // ── Footprint ───────────────────────────────────────────────────────────────
 const sizeOf = p => {
