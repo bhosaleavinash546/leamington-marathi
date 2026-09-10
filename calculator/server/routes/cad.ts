@@ -560,6 +560,14 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
 
       // Build an OCCTGeometry-shaped object so the rest of the pipeline
       // (Stage-1 Haiku selector, prompt builder, JSON schema) works unchanged.
+      //
+      // "Unchanged" was not true: this shim has mass properties and NO B-rep —
+      // no `features`, `faces` or `edges` — and `buildPrompt` asserted all
+      // three with `!`, so every STL upload returned a 500 in both modes. The
+      // prompt builder now handles a mesh explicitly. Anything else added here
+      // that assumes topology will fail the same way, so leave those fields
+      // absent rather than faking empty ones: absent means "not measured",
+      // whereas zeros would read as "measured, none found".
       const bb = stlGeometry.boundingBox;
       const densities = { al: 2700, steel: 7850, castIron: 7150, plastic: 1050 };
       geo = {
@@ -652,7 +660,8 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       // The thin-shell wall correction now runs inside `analyzeGeometry`, at the
       // measurement boundary, so it cannot be missed by a caller. It used to be
       // here, which meant it applied to this route and nowhere else.
-      console.log(`[CAD] OCCT success — V=${geo.volume!.cm3.toFixed(1)}cm³  SA=${geo.surfaceArea!.cm2.toFixed(0)}cm²  faces=${geo.faces!.total}`);
+      console.log(`[CAD] OCCT success — V=${geo.volume?.cm3.toFixed(1) ?? '?'}cm³  `
+        + `SA=${geo.surfaceArea?.cm2.toFixed(0) ?? '?'}cm²  faces=${geo.faces?.total ?? '?'}`);
     } else {
       // This used to fall back to a "text preprocessor" and return 200 with a
       // costing built on nothing — and, in AI mode, a prompt that told the
@@ -1389,7 +1398,15 @@ export function validMaterialsForCommodity(commodity: string): string {
   return CAD_GENERIC_MATERIALS;
 }
 
-function buildPrompt(
+/**
+ * Exported for `tests/stl-path.test.ts`.
+ *
+ * It reads a measured geometry and used to assume a B-rep, so an STL — which
+ * has mass properties and no topology — crashed it. A test can only pin that if
+ * it can call it; `enforceGeometryCommodity` and `isCostable` are exported from
+ * here for the same reason.
+ */
+export function buildPrompt(
   geo: OCCTGeometry,
   pre: ReturnType<typeof preprocessCADFile>,
   filename: string,
@@ -1403,14 +1420,21 @@ function buildPrompt(
 
   let geometrySection: string;
 
-  if (geo.status === 'success') {
+  // A measured geometry always has mass properties. It does NOT always have a
+  // B-rep: an STL is a triangle mesh, so `features`, `faces` and `edges` are
+  // absent and the `!` assertions below used to throw
+  // "Cannot read properties of undefined (reading 'cylindricalFaceCount')" —
+  // a 500 on every STL upload, in BOTH modes, because this runs before the mode
+  // branch. STL is an accepted format on the file input, so that was a crash on
+  // an ordinary action.
+  if (geo.status === 'success' && geo.features && geo.faces && geo.edges) {
     const bb = geo.boundingBox!;
     const vol = geo.volume!;
     const sa = geo.surfaceArea!;
     const w = geo.weights!;
-    const f = geo.features!;
-    const faces = geo.faces!;
-    const edges = geo.edges!;
+    const f = geo.features;
+    const faces = geo.faces;
+    const edges = geo.edges;
 
     const faceBreakdown = Object.entries(faces.byType)
       .sort(([, a], [, b]) => b - a)
@@ -1463,7 +1487,10 @@ function buildPrompt(
     const mfgScore = geo.manufacturabilityScore ?? null;
 
     const warningLines: string[] = [];
-    if (geo.assemblyWarning) warningLines.push(`⚠ ASSEMBLY DETECTED: ${geo.assemblyWarning} — cost per component, not per assembly`);
+    // The engine's message already says the bodies are MERGED and the cost is
+    // for the merged solid. Appending "cost per component" told the model the
+    // opposite of what the geometry is.
+    if (geo.assemblyWarning) warningLines.push(`⚠ ASSEMBLY DETECTED: ${geo.assemblyWarning}`);
     if (geo.unitWarning)    warningLines.push(`⚠ UNIT WARNING: ${geo.unitWarning}`);
 
     geometrySection = `=== GEOMETRY (measured by Open CASCADE OCCT — all values are precise) ===
@@ -1527,6 +1554,22 @@ Boss/shaft features (r ≥ 30mm): ${f.bossShaftRadiiMm.length > 0 ? f.bossShaftR
 Threaded features: ${f.threadFeaturesDetected ? 'DETECTED' : 'not detected'}
 Planar faces: ${f.planarFaceCount}
 Free-form surfaces (B-spline/Bezier): ${f.freeFormFaceCount}`;
+  } else if (geo.status === 'success') {
+    // Measured, but from a mesh — mass properties are real, topology does not
+    // exist. Say which is which rather than leaving the reader to assume a
+    // silent absence means "none found".
+    const bb = geo.boundingBox!;
+    const vol = geo.volume!;
+    geometrySection = `=== GEOMETRY (measured from a tessellated mesh) ===
+File: ${filename}
+Bounding box (mm): ${bb.xMm.toFixed(2)} x ${bb.yMm.toFixed(2)} x ${bb.zMm.toFixed(2)}
+True volume: ${vol.cm3.toFixed(3)} cm³
+True surface area: ${geo.surfaceArea ? `${geo.surfaceArea.cm2.toFixed(2)} cm²` : 'not available'}
+Fill ratio: ${geo.fillRatio != null ? geo.fillRatio.toFixed(4) : 'not available'}
+NO B-REP TOPOLOGY: this is a triangle mesh, so there is no face or edge
+classification, no hole/boss feature table and no setup count. Absent feature
+data here means NOT MEASURED, not "none present" — do not infer a featureless
+part. A hole count or a setup count for this part would be a guess.`;
   } else {
     geometrySection = `=== GEOMETRY (text-parsed from ${pre.format} file — lower confidence) ===
 File: ${filename}  Size: ${pre.fileSizeKB.toFixed(0)} KB
@@ -1557,6 +1600,23 @@ ${pre.summary}`;
   // Commodity-specific cost input rules
   const commodityRules = buildCommodityRules(ruleContextFor(selectedCommodity, geo, filename, overrides));
 
+  // Topology hints, only where there IS topology. A mesh has no B-rep, and the
+  // `!` assertions these replace threw on every STL upload — the second of two
+  // such sites, which is why guarding one was not enough. Absent is stated
+  // rather than silently rendered as "prismatic, no holes, no threads", which
+  // is a description of a part nobody measured.
+  const brepHints = geo.features && geo.faces
+    ? [
+        geo.features.freeFormFaceCount > (geo.faces.total * 0.15)
+          ? `High free-form content (${geo.features.freeFormFaceCount}/${geo.faces.total} faces) → organic shape → favour casting or 5-axis`
+          : 'Mostly prismatic geometry → favour machining or forging',
+        geo.features.estimatedHoleCount > 8
+          ? `${geo.features.estimatedHoleCount} holes detected → significant drilling/boring operations required` : '',
+        geo.features.threadFeaturesDetected ? 'Threads detected → include threading operation' : '',
+      ].filter(Boolean).join('\n- ')
+    : 'No B-rep topology (tessellated mesh): face classification, hole count and '
+      + 'thread detection are NOT MEASURED. Do not infer a prismatic, hole-free part.';
+
   const baseInstructions = geo.status === 'success'
     ? `IMPORTANT GUIDELINES:
 - Use the PRECISE OCCT measurements above — do NOT re-estimate geometry
@@ -1565,9 +1625,7 @@ ${pre.summary}`;
 - Set estimatedWeightKg.aluminum/steel/plastic using the weights above
 - Set netWeightKg for the primary material suggestion using its weight from above
 - Fill ratio ${geo.fillRatio} and face topology determine process: ${geo.fillRatio! > 0.5 ? 'high fill → likely machined or forged' : 'low fill → likely cast, moulded, or fabricated'}
-- ${geo.features!.freeFormFaceCount > (geo.faces!.total * 0.15) ? `High free-form content (${geo.features!.freeFormFaceCount}/${geo.faces!.total} faces) → organic shape → favour casting or 5-axis` : 'Mostly prismatic geometry → favour machining or forging'}
-- ${geo.features!.estimatedHoleCount > 8 ? `${geo.features!.estimatedHoleCount} holes detected → significant drilling/boring operations required` : ''}
-- ${geo.features!.threadFeaturesDetected ? 'Threads detected → include threading operation' : ''}
+- ${brepHints}
 - ${cncHrs !== null ? `For machining: use estimatedCycleTimeHr=${cncHrs.toFixed(3)} from bottom-up CNC estimate (do NOT guess)` : ''}
 - ${setupCount !== null ? `For machining/CAM: estimatedSetupTimeHr=${((setupCount * (geo.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45)) / 60).toFixed(3)} (${setupCount} setups)` : ''}
 - ${undercutCount > 0 ? `${undercutCount} undercuts detected → add High severity manufacturability risk for casting/moulding; machining may need 5-axis` : 'No undercuts — standard tooling angles acceptable'}

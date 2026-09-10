@@ -10552,7 +10552,13 @@ function buildOCCTPanel(geo: OCCTGeometry | null, source: string): string {
   const mfgScore = geo.manufacturabilityScore;
   const mfgScoreClass = mfgScore === undefined ? '' : mfgScore >= 75 ? 'score-high' : mfgScore >= 50 ? 'score-med' : 'score-low';
   const warningBanners = [
-    geo.assemblyWarning ? `<div class="occt-warning occt-warning--red">⚠ Assembly detected: ${geo.assemblyWarning} — costs shown per component</div>` : '',
+    // The engine's message already opens with "Assembly detected:" and already
+    // says what the number means: all bodies are MERGED, so the cost is for the
+    // merged solid. The banner used to prepend the phrase again and append
+    // "costs shown per component", which is the opposite of what happens — a
+    // false reassurance about a number, printed next to the number. Let the
+    // engine's own sentence stand.
+    geo.assemblyWarning ? `<div class="occt-warning occt-warning--red">⚠ ${escHtml(geo.assemblyWarning)}</div>` : '',
     geo.unitWarning    ? `<div class="occt-warning occt-warning--orange">⚠ ${geo.unitWarning}</div>` : '',
   ].join('');
 

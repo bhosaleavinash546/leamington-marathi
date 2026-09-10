@@ -21,6 +21,15 @@ export function analysisErrorHint(message: string): string {
     return 'Set a key in .env, or leave Analysis mode on "Rules only — no AI call", '
       + 'which needs no key.';
   }
+  if (/does not look like a|missing ISO-10303-21|not a valid|unsupported file/i.test(message)) {
+    return 'The file itself could not be read. STEP (.step/.stp), IGES (.igs/.iges) '
+      + 'and STL are supported — re-export from CAD as STEP AP214 if in doubt.';
+  }
+  if (/not a closed solid|free edge|open boundary/i.test(message)) {
+    return 'This is a surface model, not a solid. Cost needs a volume, and an open '
+      + 'shell has none — re-export it as a solid body, or stitch and thicken the '
+      + 'surfaces in CAD first.';
+  }
   if (/timed out|timeout/i.test(message)) {
     return 'The geometry kernel took too long on this model. Try again, or simplify '
       + 'the file — very large assemblies can exceed the limit.';

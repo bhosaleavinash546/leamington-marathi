@@ -31,6 +31,24 @@ describe('the hint matches the failure', () => {
     expect(hint).toMatch(/Rules only/);
   });
 
+  it('tells them to re-export when the file itself is unreadable', () => {
+    // Verified live: POST an empty .step and the server answers 415 with this.
+    const hint = analysisErrorHint(
+      'File does not look like a STEP file (missing ISO-10303-21 header). Re-export the model.');
+    expect(hint).toMatch(/STEP|IGES|STL/);
+    expect(hint).not.toMatch(/npm run server/);
+  });
+
+  it('explains a surface model rather than blaming the server', () => {
+    // Verified live: flange-open-surface.step answers 422 with this. The old
+    // fallback told the reader to check the API server, which is running fine.
+    const hint = analysisErrorHint(
+      'Model is not a closed solid: 0 solid(s), 7 free edge(s), 7 open boundary wire(s)');
+    expect(hint).toMatch(/surface model/i);
+    expect(hint).toMatch(/solid/);
+    expect(hint).not.toMatch(/npm run server/);
+  });
+
   it('says what to do about a timeout', () => {
     expect(analysisErrorHint('Geometry analysis timed out')).toMatch(/simplify|Try again/i);
   });
