@@ -200,7 +200,7 @@ box(s1, { ...R, y: 2.68, h: 4.57 });
 heading(s1, 'Technical Scoping:', { x: R.x + 0.20, y: 2.78, w: 2.5, size: 10.5 });
 T(s1, [
   { text: 'Enabling AI on an existing system?', options: { breakLine: true } },
-  { text: 'NO — a separate application, already built and running. It feeds the existing costing system by export.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
+  { text: 'NO — a separate application, and it is already built and running.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
   { text: 'Model used:  ANTHROPIC Claude', options: { breakLine: true, paraSpaceAfter: 8 } },
   { text: 'Technical implementation/support required?', options: { breakLine: true } },
   { text: 'YES — somewhere to host it, a disk that persists and an API key. No new hardware.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
@@ -211,7 +211,7 @@ T(s1, [
   { text: 'What comes out:', options: { breakLine: true } },
   { text: 'Excel, PowerPoint and PDF for the review.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
   { text: 'What this is not:', options: { breakLine: true } },
-  { text: 'It does not replace the cost engineer\'s judgement or the established costing method. It does the data work and the first pass.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
+  { text: 'It does not replace the cost engineer\'s judgement. It does the data work and the first pass; the decisions stay with the engineer.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
   { text: 'How to prove it:', options: { breakLine: true } },
   { text: 'Run parts already costed by hand and compare, before anything is relied on.', options: { fontSize: 7.8, color: MUTED } },
 ], { x: R.x + 0.20, y: 3.06, w: R.w - 0.40, h: 4.13, isTextBox: true, fontFace: FONT,
