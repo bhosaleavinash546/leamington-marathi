@@ -16,6 +16,46 @@ export type RubberProc =
   | 'compression_mould' | 'transfer_mould' | 'injection_mould_lsr'
   | 'extrusion_vulcanise' | 'calendering' | 'die_cut';
 
+/**
+ * The short process token the CAD analysis carries, mapped to the real one.
+ *
+ * `costInputSuggestions.rubber.process` is part of the schema shared with the
+ * AI path, and that schema is documented in short form: 'compression',
+ * 'transfer', 'injection', 'extrusion'. The engine module and the rubber form
+ * both use the long form — 'compression_mould', 'transfer_mould',
+ * 'injection_mould_lsr', 'extrusion_vulcanise'.
+ *
+ * Nothing converted between them, and the browser's guard is written to refuse
+ * a value the select does not offer — correctly — so `transfer` matched no
+ * option, was silently dropped, and every CAD-suggested rubber part fell back
+ * to the form's default of compression moulding. Transfer against compression
+ * is a different cycle and a different tool, so the cost moved without anyone
+ * being told. One table, used by the form and by `toCostParams`.
+ */
+const SUGGESTION_PROCESS: Record<string, RubberProc> = {
+  compression: 'compression_mould',
+  transfer: 'transfer_mould',
+  injection: 'injection_mould_lsr',
+  injection_lsr: 'injection_mould_lsr',
+  extrusion: 'extrusion_vulcanise',
+  calendering: 'calendering',
+  die_cut: 'die_cut',
+};
+
+/**
+ * Resolve a process token from either vocabulary, or null when it is neither.
+ *
+ * Null rather than a default: a token nobody recognises is a contract change,
+ * and quietly costing it as compression moulding is what this exists to stop.
+ */
+export function rubberProcFromSuggestion(token: unknown): RubberProc | null {
+  if (typeof token !== 'string' || !token) return null;
+  const t = token.trim();
+  if (t in SUGGESTION_PROCESS) return SUGGESTION_PROCESS[t];
+  // Already the long form (the rules' own `processFor` returns these).
+  return (Object.values(SUGGESTION_PROCESS) as string[]).includes(t) ? t as RubberProc : null;
+}
+
 export type RubberMouldSteel = 'aluminium' | 'p20' | 'h13';
 export type RubberComplexity = 'simple' | 'moderate' | 'complex';
 

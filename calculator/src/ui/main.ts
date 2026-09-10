@@ -181,6 +181,7 @@ import { COMMODITY_LABELS, COMMODITY_BADGE_COLOURS, CPICKER_META } from './data/
 import { renderSTLViews } from './cad-views.js';
 import { CAD_COMMODITY_OPTIONS, CAD_MATERIALS_BY_COMMODITY } from './data/cad-options.js';
 import { analysisErrorHint } from './cad-error-hint.js';
+import { rubberProcFromSuggestion } from '../engine/modules/rubber-advisor.js';
 import { COMMODITY_DEMO_SNIPPETS } from './data/demo-snippets.js';
 import { PCB_COUNTRY_META, computeClientRiskProfile } from './data/pcb-country-meta.js';
 import { apiBase } from '../api-base.js';
@@ -12003,8 +12004,16 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('rub-mould-life', rub.mouldLife, 0);
           const rubProcEl = el<HTMLSelectElement>('rub-process');
           if (rubProcEl && rub.process) {
-            if (Array.from(rubProcEl.options).some(o => o.value === rub.process)) {
-              rubProcEl.value = rub.process; markAIFilled(rubProcEl);
+            // The suggestion carries the schema's short token ('transfer'); the
+            // select offers the long one ('transfer_mould'). Without the map the
+            // guard below never matched, so the process the rules chose was
+            // dropped and every part fell back to compression moulding.
+            const proc = rubberProcFromSuggestion(rub.process);
+            if (proc && Array.from(rubProcEl.options).some(o => o.value === proc)) {
+              rubProcEl.value = proc; markAIFilled(rubProcEl);
+              rubProcEl.dispatchEvent(new Event('change'));
+            } else {
+              console.warn(`[CAD] rubber process '${rub.process}' is not a form option — form default kept`);
             }
           }
         } else {

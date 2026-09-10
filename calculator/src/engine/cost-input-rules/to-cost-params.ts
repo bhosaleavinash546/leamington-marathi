@@ -49,6 +49,7 @@ const MACHINABILITY_FOR_CEILING: Partial<Record<MaterialFamily, number>> = {
   'cast iron': 1.4, steel: 1.5, titanium: 2.5,
 };
 import { representativeMaterialId, isLibraryMaterialId, familyFromMaterialId } from './derive/material.js';
+import { rubberProcFromSuggestion } from '../modules/rubber-advisor.js';
 import type { MaterialFamily } from '../material-family.js';
 
 type CostInputs = CADAnalysisResult['costInputSuggestions'];
@@ -89,6 +90,16 @@ function resolveMaterialId(
  * pretending, 92% labour efficiency allows for breaks and changeover, and a 2–5%
  * scrap band varies by how forgiving the process is.
  */
+/** The press each rubber route runs on. Not a default — the route decides. */
+const RUBBER_MACHINE: Record<string, string> = {
+  compression_mould: 'compression-mould-std',
+  transfer_mould: 'transfer-mould-std',
+  injection_mould_lsr: 'lsr-injection-machine',
+  extrusion_vulcanise: 'extruder-rubber-60mm',
+  calendering: 'die-cut-press-rubber',
+  die_cut: 'die-cut-press-rubber',
+};
+
 export const SHOP_DEFAULTS = {
   oee: 0.80,
   manning: 1,
@@ -613,6 +624,105 @@ export function toCostParams(
       };
     }
 
+    case 'rubber': {
+      const rb = ci.rubber;
+      if (!rb) return null;
+      // The suggestion schema uses short process tokens and the module uses long
+      // ones. Refuse an unknown token rather than default it: transfer against
+      // compression is a different cycle and a different tool.
+      const proc = rubberProcFromSuggestion(rb.process);
+      if (!proc) return null;
+      const machineId = RUBBER_MACHINE[proc];
+      assumed.push(`${machineId} (from the ${proc.replace(/_/g, ' ')} route)`);
+      assumed.push('oee/manning/labourEfficiency from shop defaults');
+      return {
+        commodity, assumed,
+        params: {
+          ...shop,
+          materialId,
+          partWeightKg: num(ci.netWeightKg),
+          flashAndRunnerWeightKg: num(rb.flashWeightKg),
+          process: proc,
+          machineId,
+          cycleTimeSec: num(rb.cycleTimeSec),
+          cavities: Math.max(1, Math.round(num(rb.cavities, 1))),
+          mouldCost: num(rb.mouldCostGBP),
+          mouldLife: num(rb.mouldLife, 200_000),
+        },
+      };
+    }
+
+    case 'rotational_moulding': {
+      const rm = ci.rotationalMoulding;
+      if (!rm) return null;
+      const arms = Math.max(1, Math.round(num(rm.numArms, 1)));
+      // The machine follows the arm count the rules derived, not a default.
+      const machineId = arms >= 4 ? 'rotomould-carousel-4arm'
+        : arms >= 3 ? 'rotomould-biaxial'
+        : arms === 2 ? 'rotomould-shuttle' : 'rotomould-lab-1arm';
+      const perArm = Math.max(1, Math.round(num(rm.partsPerArm, 1)));
+      assumed.push(`${machineId} (from ${arms} arm${arms === 1 ? '' : 's'})`);
+      assumed.push('loadUnloadTimeSec=60', 'powderCostAdderPerKg=0 (no grinding premium stated)');
+      // Say the tool count out loud. `mouldCostGBP` prices ONE tool, and roto
+      // needs one per station, so the module charges arms x partsPerArm of them.
+      // On a 4-arm carousel at 8 parts an arm that is 32 tools, and the tooling
+      // bucket then dominates a small part — which is the model being
+      // consistent, not a fault, but it is not obvious from a total.
+      assumed.push(`${arms * perArm} moulds (${arms} arms x ${perArm} per arm) at the stated per-mould cost`);
+      return {
+        commodity, assumed,
+        params: {
+          ...shop,
+          materialId,
+          partWeightKg: num(ci.netWeightKg),
+          // Grinding pellet to powder is a real adder, but no rule states one and
+          // inventing a figure would move the material bucket silently.
+          powderCostAdderPerKg: 0,
+          numArms: arms,
+          partsPerArm: perArm,
+          heatingTimeSec: num(rm.heatTimeSec),
+          coolingTimeSec: num(rm.coolTimeSec),
+          loadUnloadTimeSec: 60,
+          machineId,
+          mouldCost: num(rm.mouldCostGBP),
+          mouldLife: num(rm.mouldLife, 10_000),
+        },
+      };
+    }
+
+    case 'thermoforming': {
+      const tf = ci.thermoforming;
+      if (!tf) return null;
+      // Sheet weight over part weight is how many parts the sheet yields — the
+      // rules measure both, so this is arithmetic rather than an assumption.
+      const partKg = num(tf.partWeightKg) || num(ci.netWeightKg);
+      const sheetKg = num(tf.sheetWeightKg);
+      const perSheet = partKg > 0 && sheetKg > 0 ? Math.max(1, Math.round(sheetKg / partKg)) : 1;
+      const areaCm2 = geo?.surfaceArea?.cm2 ?? 0;
+      // A cut-sheet former for a small part, an inline machine for a large one.
+      const machineId = tf.method === 'pressure' ? 'thermoform-pressure'
+        : areaCm2 > 5_000 ? 'thermoform-large' : 'thermoform-small';
+      assumed.push(`${machineId} (${tf.method ?? 'vacuum'} forming at ${areaCm2.toFixed(0)} cm² surface)`);
+      assumed.push('indexTimeSec=6', `partsPerSheet=${perSheet} (sheet weight / part weight)`);
+      return {
+        commodity, assumed,
+        params: {
+          ...shop,
+          materialId,
+          sheetWeightKg: sheetKg,
+          partsPerSheet: perSheet,
+          partWeightKg: partKg,
+          method: tf.method,
+          machineId,
+          heatTimeSec: num(tf.heatTimeSec),
+          formTimeSec: num(tf.formTimeSec),
+          trimTimeSec: num(tf.trimTimeSec),
+          indexTimeSec: 6,
+          toolCost: num(tf.toolCostGBP),
+        },
+      };
+    }
+
     case 'blow_moulding': {
       const b = ci.blowMoulding;
       if (!b) return null;
@@ -648,5 +758,6 @@ export function toCostParams(
 /** Commodities `toCostParams` can convert today. */
 export const COSTABLE_COMMODITIES = [
   'casting', 'cast_and_machine', 'forging', 'machining', 'injection_moulding',
-  'sheet_metal', 'blow_moulding', 'gear',
+  'sheet_metal', 'blow_moulding', 'gear', 'rubber', 'rotational_moulding',
+  'thermoforming',
 ];
