@@ -691,7 +691,7 @@ card(s, Inches(6.78), Inches(1.72), Inches(6.1), Inches(1.05), VIOLET,
 
 card(s, Inches(0.45), Inches(2.89), Inches(6.1), Inches(1.32), INDIGO,
      'OPTION 1 NEEDS',
-     [('A Linux server, and a way to pass numbers into CAPEE',),
+     [('A server to run the measurement on, and a way to pass numbers into CAPEE',),
       ('30 to 50 parts where we know the price we paid',),
       ('An engineer from the commodity team for the trial',)])
 card(s, Inches(6.78), Inches(2.89), Inches(6.1), Inches(1.32), VIOLET,
