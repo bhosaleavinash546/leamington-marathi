@@ -250,7 +250,7 @@ router.delete('/pcb-countries/overrides', (_req, res: Response): void => {
   res.json({ ok: true });
 });
 
-router.post('/reset', (_req, res: Response): void => {
+router.post('/reset', (req: AuthenticatedRequest, res: Response): void => {
   clearCompanyLibrary(db);
   clearOverrides(db);
   setRateSource(db, 'builtin');

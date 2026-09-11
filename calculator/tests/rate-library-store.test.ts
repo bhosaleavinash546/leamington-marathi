@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import Database from 'better-sqlite3';
+import { readFileSync } from 'node:fs';
 import {
   getCompanyLibrary, setCompanyLibrary, clearCompanyLibrary,
   getRateSource, setRateSource, getOverrides, setOverride, deleteOverride, clearOverrides,
@@ -150,5 +151,34 @@ describe('rate-library fingerprint', () => {
     const a = DEFAULT_RATE_LIBRARY;
     const b = { ...a, materials: a.materials.map((m, i) => (i === 0 ? { ...m, pricePerKg: m.pricePerKg + 0.01 } : m)) };
     expect(fingerprintRateLibrary(b)).not.toBe(fingerprintRateLibrary(a));
+  });
+});
+
+/**
+ * Every admin mutation records a version — including the reset.
+ *
+ * `/reset` was declared `(_req, res)` and then referenced `req.user` in its
+ * body. The three state changes ran, the snapshot threw, and the route answered
+ * 500: an admin pressing "Reset to built-in" saw an error for an action that
+ * had in fact worked, and the audit trail lost the entry. Typecheck did not
+ * catch it — `req` resolved to something ambient — so this asserts the shape of
+ * every handler that snapshots instead of trusting the compiler.
+ */
+describe('the admin routes can all reach req.user', () => {
+  it('never snapshots from a handler whose request is discarded', () => {
+    const src = readFileSync(new URL('../server/routes/rate-library.ts', import.meta.url), 'utf8');
+    const lines = src.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      if (!lines[i].includes('snapshotActive(')) continue;
+      // Walk back to the handler this call sits in.
+      let sig = '';
+      for (let j = i; j >= 0; j--) {
+        if (/^router\.(post|put|delete|get)\(/.test(lines[j])) { sig = lines[j]; break; }
+      }
+      if (!sig) continue;
+      expect(sig.includes('_req'),
+        `line ${i + 1} snapshots but its handler discards the request: ${sig.trim().slice(0, 70)}`)
+        .toBe(false);
+    }
   });
 });
