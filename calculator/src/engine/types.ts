@@ -99,6 +99,30 @@ export interface OverheadDefault {
   sourceNote: string;
 }
 
+/**
+ * "Use OUR asset wherever the tool asks for this one."
+ *
+ * The costing formulas name machines and labour grades by id — the smallest
+ * press that covers the tonnage is `press-630t`, the machinist is
+ * `lab-uk-skilled`. Those ids are SLOTS, chosen by capability, not by who owns
+ * the asset. A plant that renames them breaks every costing, loudly:
+ * "Machine 'mach-haas-vf2' not found in rate library".
+ *
+ * An alias lets a plant keep its own asset register. JLR upload their machines
+ * under their own ids and add one row here per slot they cover; the formulas go
+ * on choosing slots, and the slot resolves to their asset's economics. The
+ * resolved row keeps the JLR description and records which asset stood in, so a
+ * report names the real machine rather than ours.
+ */
+export interface RateAlias {
+  kind: 'machine' | 'labour';
+  /** The id the formulas ask for, e.g. `mach-haas-vf2`. */
+  slot: string;
+  /** The id in this library to use instead, e.g. `JLR-SOL-VMC-014`. */
+  useId: string;
+  note?: string;
+}
+
 export interface RateLibrary {
   materials: MaterialRate[];
   machines: MachineRate[];
@@ -106,6 +130,8 @@ export interface RateLibrary {
   energy: EnergyRate[];
   fx: FXRate[];
   overheadDefaults: OverheadDefault[];
+  /** Optional. Absent means the ids are used exactly as supplied. */
+  aliases?: RateAlias[];
   version: string;
   lastModified: string;
 }

@@ -11,6 +11,7 @@
 
 import * as XLSX from 'xlsx';
 import type {
+  RateAlias,
   RateLibrary, MaterialRate, MachineRate, LabourRate, EnergyRate, FXRate, OverheadDefault, Confidence,
 } from '../../src/engine/types.js';
 import { computeMachineRatePerHr } from '../../src/engine/rate-library-merge.js';
@@ -28,6 +29,7 @@ const SHEETS = {
   energy: 'Energy',
   fx: 'FX',
   overhead: 'Overhead',
+  aliases: 'Aliases',
 } as const;
 
 const num = (v: unknown): number => {
@@ -83,6 +85,19 @@ export function buildRateLibraryWorkbook(lib: RateLibrary): Buffer {
     ['id', 'commodityType', 'supplierTier', 'overheadPct', 'marginPct', 'sourceNote'],
     ...lib.overheadDefaults.map(o => [o.id, o.commodityType, o.supplierTier, o.overheadPct, o.marginPct, o.sourceNote]),
   ], [22, 20, 16, 12, 12, 40]);
+
+  // Optional. Blank by default — the ids above are then used exactly as they
+  // stand. A plant that keeps its own asset register fills this in instead of
+  // renaming the rows above, which would break every costing.
+  const exampleMachine = lib.machines[0]?.id ?? 'mach-vmc3';
+  const exampleLabour = lib.labour[0]?.id ?? 'lab-uk-skilled';
+  add(SHEETS.aliases, [
+    ['kind', 'slot', 'useId', 'note'],
+    ['# machine or labour', '# the id the tool asks for', '# your id to use instead',
+     '# delete these two example rows before uploading'],
+    ['# machine', exampleMachine, 'YOUR-ASSET-ID', 'example only'],
+    ['# labour', exampleLabour, 'YOUR-GRADE-ID', 'example only'],
+  ], [14, 30, 30, 46]);
 
   return XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer;
 }
@@ -159,7 +174,33 @@ export function parseRateLibraryWorkbook(buf: Buffer): ParseResult {
     sourceNote: str(r.sourceNote),
   }));
 
-  const counts = { materials: materials.length, machines: machines.length, labour: labour.length, energy: energy.length, fx: fx.length, overheadDefaults: overheadDefaults.length };
+  // Optional sheet. Rows whose kind starts with '#' are the template's own
+  // commentary and examples — a plant that ignores the sheet must not have them
+  // loaded as real mappings.
+  const aliases: RateAlias[] = rows(wb, SHEETS.aliases)
+    .filter(r => {
+      const k = str(r.kind);
+      return k && !k.startsWith('#') && str(r.slot) && str(r.useId);
+    })
+    .map((r, i) => {
+      const kind = str(r.kind).toLowerCase();
+      if (kind !== 'machine' && kind !== 'labour') {
+        errors.push(`Aliases row ${i + 2}: kind must be 'machine' or 'labour', not '${kind}'`);
+      }
+      return { kind: kind as RateAlias['kind'], slot: str(r.slot), useId: str(r.useId), note: str(r.note) };
+    });
+
+  // Check the targets here, while there is still a row number to quote. The
+  // engine-side `applyAliases` checks again — a library can reach it from the
+  // database without passing through this parser.
+  for (const [i, a] of aliases.entries()) {
+    const pool = a.kind === 'labour' ? labour.map(l => l.id) : machines.map(m => m.id);
+    if (a.useId && !pool.includes(a.useId)) {
+      errors.push(`Aliases row ${i + 2}: no ${a.kind} '${a.useId}' in the ${a.kind === 'labour' ? 'Labour' : 'Machines'} sheet`);
+    }
+  }
+
+  const counts = { materials: materials.length, machines: machines.length, labour: labour.length, energy: energy.length, fx: fx.length, overheadDefaults: overheadDefaults.length, aliases: aliases.length };
   if (materials.length === 0 && machines.length === 0 && labour.length === 0) {
     errors.push('No rows found — is this the correct template with the Materials/Machines/Labour sheets?');
   }
@@ -167,6 +208,7 @@ export function parseRateLibraryWorkbook(buf: Buffer): ParseResult {
 
   const library: RateLibrary = {
     materials, machines, labour, energy, fx, overheadDefaults,
+    ...(aliases.length ? { aliases } : {}),
     version: 'company-upload', lastModified: '',   // stamped by the caller
   };
   return { library, errors: [], counts };

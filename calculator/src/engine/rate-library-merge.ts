@@ -75,6 +75,61 @@ export function applyRateOverrides(lib: RateLibrary, overrides: RateOverride[]):
 }
 
 /** Resolve the effective library the calculators should use. */
+/**
+ * Resolve aliases into real rows, so the engine never has to know about them.
+ *
+ * Each alias says "when the formulas ask for `slot`, use `useId`". Rather than
+ * teach every lookup about aliases — there are several, and one missed site is
+ * a silently different machine — the slot is materialised as its own row
+ * carrying the target's economics. The engine then finds `slot` exactly as it
+ * always did.
+ *
+ * The row keeps the TARGET's description and records where it came from, so a
+ * report names JLR's asset rather than ours, and anyone reading it can see the
+ * substitution rather than having to know about it.
+ *
+ * An alias pointing at an id that is not in the library is dropped and
+ * reported. Costing on a slot the plant believed it had replaced — quietly
+ * falling back to our machine — is the outcome worth refusing.
+ */
+export function applyAliases(lib: RateLibrary): { library: RateLibrary; errors: string[] } {
+  const aliases = lib.aliases ?? [];
+  if (!aliases.length) return { library: lib, errors: [] };
+
+  const errors: string[] = [];
+  const machines = [...lib.machines];
+  const labour = [...lib.labour];
+
+  for (const a of aliases) {
+    const slot = a.slot?.trim(), useId = a.useId?.trim();
+    if (!slot || !useId) { errors.push(`Alias with a blank slot or target is ignored.`); continue; }
+    if (slot === useId) continue;   // a no-op, not an error
+
+    if (a.kind === 'machine') {
+      const target = lib.machines.find(m => m.id === useId);
+      if (!target) { errors.push(`Alias ${slot} -> ${useId}: no machine '${useId}' in this sheet.`); continue; }
+      const i = machines.findIndex(m => m.id === slot);
+      const row = {
+        ...target, id: slot,
+        sourceNote: `${useId}${target.sourceNote ? ` — ${target.sourceNote}` : ''} (used for ${slot})`,
+      };
+      if (i >= 0) machines[i] = row; else machines.push(row);
+    } else if (a.kind === 'labour') {
+      const target = lib.labour.find(l => l.id === useId);
+      if (!target) { errors.push(`Alias ${slot} -> ${useId}: no labour grade '${useId}' in this sheet.`); continue; }
+      const i = labour.findIndex(l => l.id === slot);
+      const row = {
+        ...target, id: slot,
+        sourceNote: `${useId}${target.sourceNote ? ` — ${target.sourceNote}` : ''} (used for ${slot})`,
+      };
+      if (i >= 0) labour[i] = row; else labour.push(row);
+    } else {
+      errors.push(`Alias ${slot}: kind must be 'machine' or 'labour'.`);
+    }
+  }
+  return { library: { ...lib, machines, labour }, errors };
+}
+
 export function resolveActiveLibrary(opts: {
   builtIn: RateLibrary;
   company?: RateLibrary | null;
@@ -83,6 +138,9 @@ export function resolveActiveLibrary(opts: {
 }): { library: RateLibrary; effectiveSource: RateSource } {
   const useCompany = opts.source === 'company' && opts.company != null;
   const base = useCompany ? (opts.company as RateLibrary) : opts.builtIn;
-  const library = applyRateOverrides(base, opts.overrides ?? []);
+  // Aliases first: an override edits a cell on a row, and the row a slot points
+  // at must exist before a cell on it can be edited.
+  const aliased = applyAliases(base).library;
+  const library = applyRateOverrides(aliased, opts.overrides ?? []);
   return { library, effectiveSource: useCompany ? 'company' : 'builtin' };
 }
