@@ -23,6 +23,7 @@ import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { parseRateLibraryWorkbook } from '../server/utils/rate-library-xlsx.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
 
@@ -324,11 +325,11 @@ describe('once the lookups resolve, JLR’s numbers come through', () => {
  */
 describe('the instructions describe the workbook that actually exists', () => {
   const readme = () =>
-    (XLSX.utils.sheet_to_json(read().Sheets['Read me'], { header: 1 }) as string[][])
+    (XLSX.utils.sheet_to_json(read().Sheets['Start here'], { header: 1 }) as string[][])
       .map(r => r.join(' ')).join('\n');
 
-  it('is the first tab, because it says "start here"', () => {
-    expect(read().SheetNames[0]).toBe('Read me');
+  it('is the first tab, and is called that', () => {
+    expect(read().SheetNames[0]).toBe('Start here');
     expect(readme()).toContain('Start here');
   });
 
@@ -347,8 +348,8 @@ describe('the instructions describe the workbook that actually exists', () => {
     expect(cell(st, 'A4').v).toBe('Material period');
     expect(cell(st, 'A5').v).toBe('MATERIAL_RECLAIM is');
     const text = readme();
-    expect(text).toContain('B2  Country');
-    expect(text).toContain('B5  MATERIAL_RECLAIM');
+    expect(text).toContain('B2   Country');
+    expect(text).toContain('B5   MATERIAL_RECLAIM');
   });
 
   it('tells the truth about the example row it asks people to delete', () => {
@@ -376,6 +377,60 @@ describe('the instructions describe the workbook that actually exists', () => {
     // "Edit Rates" then "Upload company rates" — the wording on the buttons.
     expect(readme()).toContain('Edit Rates');
     expect(readme()).toContain('Upload company rates');
+  });
+});
+
+/**
+ * The formatting, read back.
+ *
+ * SheetJS cannot see a fill or a border, so nothing above would notice if the
+ * styling were stripped — and a workbook that looks like a data dump is one
+ * people do not trust with their rates. ExcelJS reads it back.
+ */
+describe('it looks like something somebody made on purpose', () => {
+  let book: ExcelJS.Workbook;
+  beforeAll(async () => { book = new ExcelJS.Workbook(); await book.xlsx.readFile(BOOK); }, 60_000);
+
+  it('marks the cells a person fills in, and only those', () => {
+    // Amber means "type here". If it ever spread to a calculated column, people
+    // would type into it and lose their work on the next recalculation.
+    const map = book.getWorksheet('Mapping')!;
+    expect((map.getCell('C2').fill as ExcelJS.FillPattern)?.fgColor?.argb).toBe('FFFFF6DE');
+    expect((map.getCell('B2').fill as ExcelJS.FillPattern)?.fgColor?.argb).toBeUndefined();
+    const set = book.getWorksheet('Settings')!;
+    for (const r of [2, 3, 4, 5])
+      expect((set.getCell(`B${r}`).fill as ExcelJS.FillPattern)?.fgColor?.argb).toBe('FFFFF6DE');
+  });
+
+  it('freezes the header row so 328 rows stay readable', () => {
+    for (const name of ['Materials', 'Machines', 'Labour', 'Mapping', 'JLR Machines']) {
+      const view = book.getWorksheet(name)!.views[0] as { state?: string; ySplit?: number };
+      expect(view.state).toBe('frozen');
+      expect(view.ySplit).toBe(1);
+    }
+  });
+
+  it('turns the Check tab red when a count is not zero', () => {
+    const cf = (book.getWorksheet('Check') as unknown as
+      { conditionalFormattings: { rules: { type: string }[] }[] }).conditionalFormattings;
+    expect(cf.length).toBeGreaterThan(4);
+    expect(cf.every(c => c.rules.length === 2)).toBe(true);
+  });
+
+  it('offers the two answers to the one question with only two answers', () => {
+    // percent or per kg, from a list — the setting where a typo is a 40x error.
+    const dv = book.getWorksheet('Settings')!.getCell('B5').dataValidation;
+    expect(dv?.type).toBe('list');
+    expect(dv?.formulae?.[0]).toContain('per kg');
+  });
+
+  it('shows its working rather than hiding it', () => {
+    // The helper columns are greyed, not hidden. Somebody checking a number has
+    // to be able to follow it.
+    const mach = book.getWorksheet('Machines')!;
+    expect(mach.getCell('O1').value).toBe('JLR code');
+    expect((mach.getCell('O2').fill as ExcelJS.FillPattern)?.fgColor?.argb).toBe('FFEDEFF3');
+    expect(mach.getColumn('O').hidden).toBeFalsy();
   });
 });
 

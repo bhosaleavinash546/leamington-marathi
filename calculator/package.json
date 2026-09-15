@@ -64,6 +64,7 @@
     "@types/pngjs": "^6.0.5",
     "@types/three": "^0.185.1",
     "concurrently": "^8.2.0",
+    "exceljs": "^4.4.0",
     "pixelmatch": "^7.2.0",
     "playwright": "^1.60.0",
     "pngjs": "^7.0.0",
