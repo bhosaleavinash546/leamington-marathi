@@ -155,17 +155,18 @@ r.font.size = Pt(17); r.font.color.rgb = INK; r.font.name = FONT
 spaced(r, 2.4)
 
 # ── Problem Statement ────────────────────────────────────────────────────────
-box(0.42, 1.14, 6.22, 1.92)
-tf = panel_text(0.66, 1.28, 4.10, 0.28)
+box(0.42, 1.14, 6.22, 1.96)
+tf = panel_text(0.66, 1.26, 4.10, 0.28)
 heading(tf, 'Problem Statement')
-tf = panel_text(0.66, 1.52, 5.78, 1.46)
-bullet(tf, 'Most of what a cost engineer needs is written on the 2D drawing, not held in the 3D '
-           'model. Tolerances, surface finish, heat treatment and material notes are read by eye '
-           'and typed in by hand.', size=9.5, space_before=0)
-bullet(tf, 'Many parts never reach us as a 3D model. We are sent a drawing. For electronics we are '
-           'sent a photograph of the board.', size=9.5)
-bullet(tf, 'The costing method and the rate data do not change. This is only about reading the input.',
-       size=9.5)
+tf = panel_text(0.66, 1.50, 5.78, 1.52)
+bullet(tf, 'Costing a circuit board means listing every component on it and pricing each one. A '
+           'board with a few hundred parts is a few hundred separate decisions.', size=9.5,
+       space_before=0)
+bullet(tf, 'It needs someone who knows what electronics cost \u2014 a small capacitor, a six-layer '
+           'board, placing a fine-pitch chip. Few people have that, so boards wait for them.', size=9.5)
+bullet(tf, 'On mechanical parts, most of what we need is written on the 2D drawing, not held in the '
+           '3D model, and is read by eye and typed in by hand.', size=9.5)
+bullet(tf, 'The costing method and the rate data do not change. Only the reading changes.', size=9.5)
 
 # The PII question, answered. Drawings and board photos carry no personal data.
 tf = textbox(4.86, 1.30, 0.60, 0.28)
@@ -188,7 +189,7 @@ heading(tf, 'Projected ROI', size=12.5, space_after=3)
 plain(tf, 'Cost: \u00a3???', size=11, colour=INK, bold=True, space_before=4)
 plain(tf, 'Return: \u00a3???', size=11, colour=INK, bold=True, space_before=2)
 plain(tf, 'What is the return based on?', size=10, colour=INK, bold=True, space_before=4)
-plain(tf, 'Parts we cannot cost today, plus the hours spent reading drawings by hand.',
+plain(tf, 'The boards we turn away today, and the specialist hours spent on them.',
       size=8.5, space_before=1)
 
 # ── Time ─────────────────────────────────────────────────────────────────────
@@ -201,12 +202,16 @@ box(0.30, 3.12, 9.36, 1.76)
 tf = panel_text(0.56, 3.22, 3.00, 0.28)
 heading(tf, 'Current State')
 tf = panel_text(0.56, 3.46, 8.90, 1.34)
-bullet(tf, 'A cost engineer reads the drawing, notes the tolerances, finish and heat treatment, and '
-           'types them into CAPPe alongside the figures taken off the model.', size=9.5, space_before=0)
-bullet(tf, 'For a circuit board, someone lists every component by hand from a photograph or a sample '
-           'board, then prices each line before any costing can begin.', size=9.5)
-bullet(tf, 'Because it takes so long, we cost the parts we are asked about rather than the ones worth '
-           'asking about, and a cost is rarely revisited when the design moves on.', size=9.5)
+bullet(tf, 'For a board, someone identifies every component from a photo or a sample \u2014 package, '
+           'value, rating, and the exact part number for each chip \u2014 then finds a price for every '
+           'line at the volume we are asking about.', size=9.5, space_before=0)
+bullet(tf, 'The bare board is estimated separately for size, layers, finish and test, and then the '
+           'assembly on top: how many placements, how many are fine-pitch or BGA, one side or two.',
+       size=9.5)
+bullet(tf, 'All of it needs an electronics cost specialist. When they are busy the board waits. If '
+           'they move on, we cannot cost boards at all.', size=9.5)
+bullet(tf, 'For a machined part, the drawing is read by eye and the tolerances, finish and heat '
+           'treatment typed into CAPPe by hand.', size=9.5)
 
 # ── Proposed Solution ────────────────────────────────────────────────────────
 box(0.40, 4.92, 9.20, 2.34)
@@ -215,25 +220,26 @@ heading(tf, 'Proposed Solution/Model')
 # Narrow on purpose: the Expected Benefits box starts at 5.92 and PowerPoint
 # will not flow text around it.
 tf = panel_text(0.66, 5.32, 5.10, 1.86)
-bullet(tf, 'Conduct a 3-stage Proof of Value (PoV) project, run the same way as the CAD to Cost PoV.',
-       size=9.5, space_before=0)
-bullet(tf, 'Use an assistant to read the 2D drawing and the board photo and write down what it found '
-           '\u2014 tolerances, finish and heat treatment for a part, the component list for a board.',
-       size=9.5)
-bullet(tf, 'Everything it reads is checked against the measured geometry or a price catalogue before '
-           'it is used. It reads the input. It does not set any price.', size=9.5)
-bullet(tf, 'Generate cost estimates for a sample of parts and boards, and validate outputs vs '
-           'existing cost estimates.', size=9.5)
+bullet(tf, 'Conduct a 3-stage Proof of Value (PoV), run the same way as the CAD to Cost PoV, and '
+           'validate outputs vs existing cost estimates.', size=9.5, space_before=0)
+bullet(tf, 'For a board: upload a photo, say how many you are making and where it is built. The tool '
+           'lists the components, prices each line, works out the bare board and the assembly, and '
+           'gives the full cost.', size=9.5)
+bullet(tf, 'For a machined part: the drawing is read alongside the model, for the tolerances, finish '
+           'and heat treatment the model cannot carry.', size=9.5)
+bullet(tf, 'Everything it reads is checked against a price catalogue or the measured geometry before '
+           'it is used. It does not set any price.', size=9.5)
 
 # ── Expected Benefits ────────────────────────────────────────────────────────
 box(5.92, 5.10, 3.54, 2.00, fill=GREEN, line=GREEN_ED)
 tf = panel_text(6.14, 5.22, 3.10, 0.28)
 heading(tf, 'Expected Benefits:', size=12.5)
 tf = panel_text(6.14, 5.56, 3.10, 1.44)
-bullet(tf, 'Cost the parts and boards we cannot cost today, because a drawing or a photograph is '
-           'all we have.', lead='Wider Coverage: ', size=9.5, space_before=0)
-bullet(tf, 'Fewer mistakes copying figures across, and the same drawing read the same way every time.',
-       lead='Improved Quality: ', size=10, space_before=6)
+bullet(tf, 'A cost engineer can cost a board without being an electronics pricing specialist. The '
+           'specialist checks the answer instead of building it.',
+       lead='No Specialist Needed: ', size=9.5, space_before=0)
+bullet(tf, 'We can cost the boards and parts we turn away today, and re-cost them when the design '
+           'changes.', lead='Wider Coverage: ', size=9.5, space_before=6)
 
 # ── Technical Scoping ────────────────────────────────────────────────────────
 box(9.98, 3.42, 3.06, 3.84)
