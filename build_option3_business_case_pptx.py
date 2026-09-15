@@ -160,8 +160,7 @@ tf = panel_text(0.66, 1.26, 4.10, 0.28)
 heading(tf, 'Problem Statement')
 tf = panel_text(0.66, 1.50, 5.78, 1.52)
 bullet(tf, 'Costing a circuit board means listing every component on it and pricing each one. A '
-           'board with a few hundred parts is a few hundred separate decisions.', size=9.5,
-       space_before=0)
+           'medium-complexity board takes two to three weeks.', size=9.5, space_before=0)
 bullet(tf, 'It needs someone who knows what electronics cost \u2014 a small capacitor, a six-layer '
            'board, placing a fine-pitch chip. Few people have that, so boards wait for them.', size=9.5)
 bullet(tf, 'On mechanical parts, most of what we need is written on the 2D drawing, not held in the '
@@ -183,19 +182,23 @@ r = p.add_run(); r.text = 'No'
 r.font.size = Pt(10.5); r.font.bold = True; r.font.color.rgb = INK; r.font.name = FONT
 
 # ── Projected ROI ────────────────────────────────────────────────────────────
-box(6.88, 1.14, 2.98, 1.36, fill=GREEN, line=GREEN_ED)
-tf = panel_text(7.08, 1.26, 2.60, 1.12)
+box(6.88, 1.12, 2.98, 1.38, fill=GREEN, line=GREEN_ED)
+tf = panel_text(7.08, 1.24, 2.60, 1.10)
 heading(tf, 'Projected ROI', size=12.5, space_after=3)
 plain(tf, 'Cost: \u00a3???', size=11, colour=INK, bold=True, space_before=4)
 plain(tf, 'Return: \u00a3???', size=11, colour=INK, bold=True, space_before=2)
 plain(tf, 'What is the return based on?', size=10, colour=INK, bold=True, space_before=4)
-plain(tf, 'The boards we turn away today, and the specialist hours spent on them.',
+plain(tf, 'The boards we turn away, and the weeks a specialist spends on each one.',
       size=8.5, space_before=1)
 
 # ── Time ─────────────────────────────────────────────────────────────────────
-box(6.88, 2.62, 2.98, 0.42, fill=BLUE, line=BLUE_ED)
-tf = panel_text(7.08, 2.72, 2.60, 0.24)
+box(6.88, 2.56, 2.98, 0.54, fill=BLUE, line=BLUE_ED)
+tf = panel_text(7.08, 2.63, 2.60, 0.42)
 heading(tf, 'Time (hrs/week)', size=12, space_after=0)
+# Stated as it was given — per board, not per week. The form asks for hrs/week
+# and this is elapsed time, so it is written the way it is true rather than
+# converted into the box's units and quietly becoming a different claim.
+plain(tf, '2\u20133 weeks per board', size=10, colour=INK, bold=True, space_before=2)
 
 # ── Current State ────────────────────────────────────────────────────────────
 box(0.30, 3.12, 9.36, 1.76)
@@ -208,8 +211,8 @@ bullet(tf, 'For a board, someone identifies every component from a photo or a sa
 bullet(tf, 'The bare board is estimated separately for size, layers, finish and test, and then the '
            'assembly on top: how many placements, how many are fine-pitch or BGA, one side or two.',
        size=9.5)
-bullet(tf, 'All of it needs an electronics cost specialist. When they are busy the board waits. If '
-           'they move on, we cannot cost boards at all.', size=9.5)
+bullet(tf, 'All of it needs an electronics cost specialist, and two to three weeks. A design change '
+           'means starting again.', size=9.5)
 bullet(tf, 'For a machined part, the drawing is read by eye and the tolerances, finish and heat '
            'treatment typed into CAPPe by hand.', size=9.5)
 
