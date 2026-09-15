@@ -59,13 +59,26 @@ describe('the workbook is a valid upload the moment it is generated', () => {
     expect(vmc.computedRatePerHr).toBeCloseTo(LIB.machines.find(m => m.id === 'mach-vmc3')!.computedRatePerHr, 6);
   });
 
-  it('offers every id the tool uses for mapping, with a description', () => {
+  it('offers every id the JLR card can fill, and none it cannot', () => {
+    // Energy, FX and overhead are not on the JLR exports. Listing them was 43
+    // rows inviting somebody to type a code that nothing would ever read.
     const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(read().Sheets.Mapping);
-    expect(rows).toHaveLength(LIB.materials.length + LIB.machines.length + LIB.labour.length
-      + LIB.energy.length + LIB.fx.length + LIB.overheadDefaults.length);
+    expect(rows).toHaveLength(LIB.materials.length + LIB.machines.length + LIB.labour.length);
+    const ids = new Set(rows.map(r => r['tool id']));
+    for (const e of [...LIB.energy, ...LIB.fx, ...LIB.overheadDefaults]) expect(ids.has(e.id)).toBe(false);
     // The description is what lets someone match "1045 / C45" to their own
     // label without knowing our id scheme.
     for (const r of rows.slice(0, 40)) expect(String(r['what it is (do not edit)']).length).toBeGreaterThan(1);
+  });
+
+  it('says which region each rate belongs to', () => {
+    // Five labour grades are called "Skilled Machinist" — one per region. Without
+    // the region on the line there is no way to tell which is which, and a UK
+    // rate mapped onto the Chinese row loads perfectly happily and is wrong.
+    const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(read().Sheets.Mapping);
+    const skilled = rows.filter(r => String(r['what it is (do not edit)']).startsWith('Skilled Machinist'));
+    expect(skilled.length).toBeGreaterThan(1);
+    expect(new Set(skilled.map(r => r['what it is (do not edit)'])).size).toBe(skilled.length);
   });
 
   it('carries JLR’s own headers on the tabs the card is pasted into', () => {
@@ -128,6 +141,54 @@ describe('the formulas stay simple enough to debug', () => {
     expect(code).toContain('MATCH(');
     expect(code).not.toContain('XLOOKUP');
     expect(String(cell(wb().Sheets.Materials, 'L2').f)).toContain('COUNTIFS(');
+  });
+});
+
+/**
+ * Text that goes inside a formula, and the two ways it goes wrong.
+ *
+ * Excel escapes a quotation mark by doubling it and caps a string literal at
+ * 255 characters. The library carries notes that break both rules — Xiaomi's
+ * "Titan Metal" quoted inside one, and three notes over 255 characters — and
+ * the generated file showed #VALUE! on two cells because of it. Both classes
+ * are now kept out of formulas entirely: the fall-back text sits in a cell and
+ * the formula points at it. These watch that it stays that way, in the tier
+ * that runs everywhere.
+ */
+describe('no formula carries text that a spreadsheet will choke on', () => {
+  const formulas = () => {
+    const wb = read(), out: [string, string, string][] = [];
+    for (const name of wb.SheetNames) {
+      const ws = wb.Sheets[name];
+      for (const addr of Object.keys(ws)) {
+        if (addr.startsWith('!')) continue;
+        const f = (ws[addr] as XLSX.CellObject).f;
+        if (f) out.push([name, addr, String(f)]);
+      }
+    }
+    return out;
+  };
+
+  it('never escapes a quote the JSON way', () => {
+    const bad = formulas().filter(([, , f]) => f.includes('\\"'));
+    expect(bad.map(([s, a]) => `${s}!${a}`)).toEqual([]);
+  });
+
+  it('never embeds a string literal longer than Excel allows', () => {
+    const tooLong = formulas().flatMap(([sheet, addr, f]) =>
+      (f.match(/"(?:[^"]|"")*"/g) ?? [])
+        .filter(lit => lit.length - 2 > 255)
+        .map(() => `${sheet}!${addr}`));
+    expect(tooLong).toEqual([]);
+  });
+
+  it('puts the fall-back text in a cell instead', () => {
+    // The note the formula falls back to is a plain value at the end of the row.
+    const wb = read();
+    const head = (XLSX.utils.sheet_to_json(wb.Sheets.Materials, { header: 1 })[0] as string[]);
+    expect(head).toContain('built-in source note');
+    expect(String(cell(wb.Sheets.Materials, 'I2').f)).toContain('$Q2');
+    expect(cell(wb.Sheets.Materials, 'Q2').f).toBeUndefined();
   });
 });
 

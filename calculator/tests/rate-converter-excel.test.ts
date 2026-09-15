@@ -80,6 +80,7 @@ let dir = '';
 let parsed: ReturnType<typeof parseRateLibraryWorkbook>;
 let lib: RateLibrary;
 let recalculated: XLSX.WorkBook;
+let untouched: XLSX.WorkBook;
 
 const set = (ws: XLSX.WorkSheet, addr: string, v: string | number) => {
   ws[addr] = typeof v === 'number' ? { t: 'n', v } : { t: 's', v };
@@ -94,7 +95,7 @@ const set = (ws: XLSX.WorkSheet, addr: string, v: string | number) => {
  * which is exactly the failure this file exists to catch. The setting lives in
  * a throwaway profile so nothing on the machine is touched.
  */
-function recalc(src: string): string {
+function recalc(src: string, name = 'filled'): string {
   const home = join(dir, 'lo-profile');
   const user = join(home, '.config', 'libreoffice', '4', 'user');
   mkdirSync(user, { recursive: true });
@@ -106,10 +107,10 @@ function recalc(src: string): string {
     '<item oor:path="/org.openoffice.Office.Calc/Formula/Load">' +
     '<prop oor:name="OOXMLRecalcMode" oor:op="fuse"><value>0</value></prop></item>\n' +
     '</oor:items>\n');
-  const out = join(dir, 'recalculated');
+  const out = join(dir, `recalculated-${name}`);
   execFileSync('soffice', ['--headless', '--norestore', '--convert-to', 'xlsx', '--outdir', out, src],
                { env: { ...process.env, HOME: home }, encoding: 'utf8', timeout: 240_000 });
-  return join(out, 'filled.xlsx');
+  return join(out, `${name}.xlsx`);
 }
 
 beforeAll(() => {
@@ -144,6 +145,7 @@ beforeAll(() => {
   const filled = join(dir, 'filled.xlsx');
   writeFileSync(filled, XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }) as Buffer);
 
+  untouched = XLSX.read(readFileSync(recalc(blank, 'blank')));
   const done = readFileSync(recalc(filled));
   recalculated = XLSX.read(done);
   parsed = parseRateLibraryWorkbook(done);
@@ -233,33 +235,78 @@ d('a real spreadsheet turns JLR’s card into an upload the tool accepts', () =>
   });
 });
 
-d('the Check tab reports what actually happened', () => {
-  const v = (addr: string) => (recalculated.Sheets.Check[addr] as XLSX.CellObject).v;
-
-  it('counts the codes filled in, and finds none of them wrong', () => {
-    expect(v('B4')).toBe(Object.keys(MAPPING).length);
-    expect(v('B5')).toBe(0);          // none NOT FOUND
+/**
+ * Every cell, evaluated, with nothing pasted in.
+ *
+ * This is the guard for a whole class of bug rather than one case: a formula
+ * that a spreadsheet cannot evaluate shows as #VALUE! or #NAME? in the file
+ * somebody opens, and the generator has no way of noticing. It caught two —
+ * source notes quoting Xiaomi's "Titan Metal" and a "die-casting cluster",
+ * where the quote had been escaped the JSON way, backslash instead of doubled.
+ */
+d('the workbook a person opens has no broken cells in it', () => {
+  it('recalculates every formula without producing an error', () => {
+    const ERR: Record<number, string> = { 0: '#NULL!', 7: '#DIV/0!', 15: '#VALUE!', 23: '#REF!',
+                                          29: '#NAME?', 36: '#NUM!', 42: '#N/A' };
+    const broken: string[] = [];
+    for (const name of untouched.SheetNames) {
+      const ws = untouched.Sheets[name];
+      for (const addr of Object.keys(ws)) {
+        if (addr.startsWith('!')) continue;
+        const c = ws[addr] as XLSX.CellObject;
+        if (c.t === 'e') broken.push(`${name}!${addr} ${ERR[c.v as number] ?? c.v}`);
+      }
+    }
+    expect(broken).toEqual([]);
   });
 
-  it('counts what was taken', () => {
-    expect(v('B7')).toBe(1);          // materials
-    expect(v('B8')).toBe(2);          // machines — 712008 and 712063
-    expect(v('B9')).toBe(1);          // labour
+  it('keeps a source note that contains a quotation mark intact', () => {
+    // The two rows that were #VALUE!. Reading the text back proves the fix went
+    // the right way — an empty string would also have cleared the error.
+    const notes = XLSX.utils.sheet_to_json<Record<string, unknown>>(untouched.Sheets.Materials)
+      .map(r => String(r.sourceNote ?? ''));
+    expect(notes.some(n => n.includes('"Titan Metal"'))).toBe(true);
+    const mach = XLSX.utils.sheet_to_json<Record<string, unknown>>(untouched.Sheets.Machines)
+      .map(r => String(r.sourceNote ?? ''));
+    expect(mach.some(n => n.includes('"die-casting cluster"'))).toBe(true);
+  });
+});
+
+d('the Check tab reports what actually happened', () => {
+  // By label, not by cell address — the tab gains lines, and a test that has to
+  // be renumbered every time is a test that stops being read.
+  const v = (label: string) => {
+    const rows = XLSX.utils.sheet_to_json(recalculated.Sheets.Check, { header: 1 }) as unknown[][];
+    const row = rows.find(r => String(r[0] ?? '').startsWith(label));
+    if (!row) throw new Error(`no line on the Check tab starting "${label}"`);
+    return row[1];
+  };
+
+  it('counts the codes filled in, and finds none of them wrong', () => {
+    expect(v('Codes you have filled in')).toBe(Object.keys(MAPPING).length);
+    expect(v('…of those, codes not found')).toBe(0);
+  });
+
+  it('counts the rates that actually arrived', () => {
+    expect(v('Materials taking a JLR price')).toBe(1);
+    expect(v('Machines taking a JLR rate')).toBe(2);   // 712008 and 712063
+    expect(v('Labour grades taking a JLR rate')).toBe(1);
+    expect(v('Codes that found their row but the rate')).toBe(0);
   });
 
   it('reports the duplicate rather than hiding it', () => {
-    // The one number on this tab that is allowed to be non-zero here, because
-    // the fixture deliberately contains a duplicate.
-    expect(v('B11')).toBe(1);
+    // The one number on this tab allowed to be non-zero here, because the
+    // fixture deliberately contains a duplicate.
+    expect(v('Codes matching MORE than one')).toBe(1);
   });
 
   it('confirms every rebuilt rate returns JLR’s own total', () => {
-    expect(v('B12')).toBe(0);
+    expect(v('Machines whose rebuilt')).toBe(0);
   });
 
   it('finds JLR’s card consistent with itself', () => {
     // 712008's seven elements come to 10.05 against a stated 10.06 — a penny of
     // rounding, inside the tolerance. A real disagreement would show here.
-    expect(v('B13')).toBe(0);
+    expect(v('Pasted machine rows whose 7 elements')).toBe(0);
   });
 });

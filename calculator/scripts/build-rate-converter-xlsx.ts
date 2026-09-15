@@ -127,7 +127,19 @@ const pickText = (countCell: string, codeCell: string, tab: string, keyCol: stri
 /** Take the JLR value when there is one, else keep ours. */
 const orBuiltin = (helper: string, builtin: number): string => `IF(${helper}>0,${helper},${builtin})`;
 
-const q = (s: string) => JSON.stringify(s ?? '');
+/**
+ * A text literal inside a formula.
+ *
+ * NOT JSON.stringify, which was the bug here: it escapes a quote as \" and
+ * Excel wants "". Two rows in the library carry a quoted phrase in their source
+ * note — Xiaomi's "Titan Metal", a "die-casting cluster" — and both came out as
+ * #VALUE! in the generated file.
+ *
+ * Short strings only. Excel caps a string literal inside a formula at 255
+ * characters and three source notes are longer than that, so anything that
+ * might be long goes in a helper cell and the formula points at it.
+ */
+const q = (s: string) => `"${String(s ?? '').replace(/"/g, '""')}"`;
 
 /**
  * A formula cell, carrying the value it evaluates to before Excel has ever run.
@@ -220,6 +232,10 @@ add('Read me', [
   ['', ''],
   ['', 'For labour, the code is the LABOUR_CATEGORY — CB, for example — not a machine number.'],
   ['', ''],
+  ['', 'Every description ends with the region that rate belongs to — "— UK", "— CN". Put a'],
+  ['', 'UK rate card against the UK rows. A UK number mapped onto a Chinese row will load'],
+  ['', 'perfectly happily and be wrong, and nothing downstream can tell.'],
+  ['', ''],
   ['', 'You do NOT have to fill in all of them. Map the twenty materials you actually buy and'],
   ['', 'the other three hundred keep the values the tool ships with. That is a normal way to'],
   ['', 'use this and nothing breaks.'],
@@ -307,6 +323,10 @@ add('Read me', [
   ['', 'tool will ignore that column.'],
   ['•', 'The one row on the Check tab that looks at your pasted data reads down to row 5000.'],
   ['', 'The rates themselves have no limit — only that one check does.'],
+  ['•', 'Energy, FX and overhead are not on the JLR exports, so they are not on Mapping.'],
+  ['', 'They sit on their own tabs as plain numbers — edit them there if they need to move.'],
+  ['•', 'The last columns on the Materials, Machines and Labour tabs hold the tool’s own'],
+  ['', 'source notes. They are there for the formulas to fall back on. Leave them alone.'],
   [],
   ['WHAT EACH TAB IS FOR'],
   ['', 'Read me         this page'],
@@ -315,7 +335,6 @@ add('Read me', [
   ['', 'JLR Materials   paste your material rate card here'],
   ['', 'JLR Labour      paste your labour rate card here, or leave empty'],
   ['', 'Mapping         your JLR code against each tool rate — filled in once'],
-  ['', 'Builtin         the values the tool ships with. Do not edit.'],
   ['', 'Materials       ┐'],
   ['', 'Machines        │'],
   ['', 'Labour          ├ the tool’s upload format, filled in for you.'],
@@ -348,19 +367,21 @@ add('JLR Machines', [
   ['MACHINE_CODE', 'MACHINE_NAME', 'COUNTRY_NAME', 'PERIOD_CODE', 'LABOUR_CATEGORY',
    'TOTAL_LABOUR_RATE', 'DEPRECIATION', 'FLOORSPACE', 'MRO', 'INSURANCE', 'INTEREST',
    'UTILITIES', 'CONSUMABLES', 'TOTAL_MACHINE_RATE'],
-  [712008, '100t Hydraulic Injection Moulding MC + EuroMap290 Inj Unit — EXAMPLE ROW, DELETE IT',
+  // A code no export will contain, so that a row left behind by mistake cannot
+  // collide with a real machine and quietly become a second match for it.
+  ['EXAMPLE', 'EXAMPLE ROW, DELETE IT — your machine export goes here, from cell A2 down',
    'United Kingdom', '04042025', 'CB', 40.97, 1.75, 1.06, 1.97, 0.18, 0.64, 4.45, 0, 10.06],
 ], [14, 56, 16, 14, 16, 18, 14, 12, 10, 11, 10, 11, 13, 20]);
 
 add('JLR Materials', [
   ['CODE', 'MATERIAL', 'COUNTRY', 'PERIOD', 'MATERIAL_RATE', 'MATERIAL_RECLAIM', 'CO2'],
-  [10080020309, 'HSLA360 Steel Coil: <1mm Thickness — EXAMPLE ROW, DELETE IT',
+  ['EXAMPLE', 'EXAMPLE ROW, DELETE IT — your material export goes here, from cell A2 down',
    'United Kingdom', '04-04-2025', 0.72, 40.48, 2.19],
 ], [16, 56, 16, 14, 14, 18, 10]);
 
 add('JLR Labour', [
   ['LABOUR_CATEGORY', 'DESCRIPTION', 'COUNTRY_NAME', 'PERIOD_CODE', 'TOTAL_LABOUR_RATE'],
-  ['CB', 'EXAMPLE ROW, DELETE IT — or leave this whole tab empty and the sheet will',
+  ['EXAMPLE', 'EXAMPLE ROW, DELETE IT — or leave this whole tab empty and the sheet will',
    'United Kingdom', '04042025', 40.97],
   ['', 'read TOTAL_LABOUR_RATE out of the JLR Machines tab by LABOUR_CATEGORY instead.'],
 ], [18, 72, 16, 14, 18]);
@@ -368,13 +389,23 @@ add('JLR Labour', [
 // ── 4. Mapping — every id the tool uses, waiting for a JLR code ──────────────
 const mapRows: unknown[][] = [['tool id', 'what it is (do not edit)', 'JLR code', 'JLR name for that code', 'category']];
 type MapSeed = [id: string, what: string, category: string];
+/**
+ * Materials, machines and labour only.
+ *
+ * Energy, FX and overhead used to be listed here too, which was 43 rows
+ * inviting somebody to type a code that nothing would ever read — the JLR
+ * exports do not carry those rates. They are carried through as values on their
+ * own tabs, where they can be edited directly.
+ *
+ * The region is on every description because the rate card is per country, and
+ * mapping a UK rate onto the library's Chinese row would be a silent error —
+ * the number would load, against the wrong row.
+ */
 const seeds: MapSeed[] = [
-  ...LIB.materials.map(m => [m.id, `${m.grade}${m.category ? ` — ${m.category}` : ''}`, 'material'] as MapSeed),
-  ...LIB.machines.map(m => [m.id, m.machineClass, 'machine'] as MapSeed),
-  ...LIB.labour.map(l => [l.id, l.skillLevel, 'labour'] as MapSeed),
-  ...LIB.energy.map(e => [e.id, `Energy — ${e.region}`, 'energy'] as MapSeed),
-  ...LIB.fx.map(f => [f.id, `${f.fromCurrency} to ${f.toCurrency}`, 'fx'] as MapSeed),
-  ...LIB.overheadDefaults.map(o => [o.id, `${o.commodityType} — ${o.supplierTier}`, 'overhead'] as MapSeed),
+  ...LIB.materials.map(m =>
+    [m.id, `${m.grade}${m.category ? ` — ${m.category}` : ''} — ${m.region}`, 'material'] as MapSeed),
+  ...LIB.machines.map(m => [m.id, `${m.machineClass} — ${m.region}`, 'machine'] as MapSeed),
+  ...LIB.labour.map(l => [l.id, `${l.skillLevel} — ${l.region}`, 'labour'] as MapSeed),
 ];
 seeds.forEach(([id, what, category], i) => {
   const r = i + 2;
@@ -392,20 +423,17 @@ seeds.forEach(([id, what, category], i) => {
 });
 add('Mapping', mapRows, [24, 46, 14, 50, 12]);
 
-// ── 5. Builtin — what the tool ships with, so a blank mapping keeps working ──
-const builtinRows: unknown[][] = [['id', 'v1', 'v2']];
-for (const m of LIB.materials) builtinRows.push([m.id, m.pricePerKg, m.scrapRecoveryPricePerKg]);
-for (const m of LIB.machines) builtinRows.push([m.id, m.computedRatePerHr, '']);
-for (const l of LIB.labour) builtinRows.push([l.id, l.fullyLoadedRatePerHr, '']);
-add('Builtin', builtinRows, [24, 14, 14]);
-
-// ── 6. Materials — the tool's upload format, filled by formula ───────────────
+// ── 5. Materials — the tool's upload format, filled by formula ───────────────
 const matRows: unknown[][] = [[
   'id', 'grade', 'category', 'pricePerKg', 'scrapRecoveryPricePerKg', 'densityKgPerM3',
   'region', 'effectiveDate', 'sourceNote', 'confidence',
   // Helper columns. The upload ignores anything it does not recognise — checked —
   // so they stay where the person filling this in can watch the lookup work.
   'JLR code', 'rows matched', 'MATERIAL_RATE', 'MATERIAL_RECLAIM', 'scrap £/kg', 'CO2 (reference only)',
+  // The fall-backs live in cells rather than inside the formulas: Excel caps a
+  // string literal in a formula at 255 characters and some of these notes are
+  // longer than that.
+  'built-in source note', 'built-in effective date',
 ]];
 LIB.materials.forEach((m, i) => {
   const r = i + 2;
@@ -415,8 +443,8 @@ LIB.materials.forEach((m, i) => {
     fx(orBuiltin(M, m.pricePerKg), m.pricePerKg),
     fx(orBuiltin(O, m.scrapRecoveryPricePerKg), m.scrapRecoveryPricePerKg),
     m.densityKgPerM3, m.region,
-    fx(`IF(${M}>0,${pickText(L, K, MATL, 'A', 'D', q(m.effectiveDate))},${q(m.effectiveDate)})`, m.effectiveDate),
-    fx(`IF(${M}>0,"JLR rate card — material code "&${K},${q(m.sourceNote)})`, m.sourceNote),
+    fx(`IF(${M}>0,${pickText(L, K, MATL, 'A', 'D', `$R${r}`)},$R${r})`, m.effectiveDate),
+    fx(`IF(${M}>0,"JLR rate card — material code "&${K},$Q${r})`, m.sourceNote),
     m.confidence,
     fx(code(r), ''),
     fx(matches(K, MATL, 'A', 'C', 'D'), 0),
@@ -426,9 +454,10 @@ LIB.materials.forEach((m, i) => {
     // here would be a 40x error in either direction.
     fx(`IF(${N}=0,0,IF(Settings!$B$5="percent",${M}*${N}/100,${N}))`, 0),
     fx(pick(L, K, MATL, 'A', 'G', 'C', 'D'), 0),
+    m.sourceNote, m.effectiveDate,
   ]);
 });
-add('Materials', matRows, [22, 24, 16, 12, 22, 14, 10, 14, 40, 12, 12, 12, 14, 16, 12, 18]);
+add('Materials', matRows, [22, 24, 16, 12, 22, 14, 10, 14, 40, 12, 12, 12, 14, 16, 12, 18, 40, 16]);
 
 /**
  * Machines. `computedRatePerHr` is derived by the tool and ignored from the
@@ -443,6 +472,7 @@ const machRows: unknown[][] = [[
   'effectiveDate', 'sourceNote', 'confidence',
   'JLR code', 'rows matched', 'DEPRECIATION', 'FLOORSPACE', 'MRO', 'INSURANCE', 'INTEREST',
   'UTILITIES', 'CONSUMABLES', 'TOTAL_MACHINE_RATE', 'elements add to', 'rebuilt £/hr − JLR total',
+  'built-in source note', 'built-in effective date',
 ]];
 LIB.machines.forEach((m, i) => {
   const r = i + 2;
@@ -467,11 +497,11 @@ LIB.machines.forEach((m, i) => {
     fx(`IF(${X}>0,IF(${Y}>0,(${T}+${W})*${scale},0),${b.indirectSupport})`, b.indirectSupport),
     annual(U, b.financeCost),        // INTEREST   → financeCost
     b.annualAvailableHours, b.machineUtilization,
-    fx(`IF(${X}>0,${pickText(P, O, MACH, 'A', 'D', q(m.effectiveDate))},${q(m.effectiveDate)})`, m.effectiveDate),
+    fx(`IF(${X}>0,${pickText(P, O, MACH, 'A', 'D', `$AB${r}`)},$AB${r})`, m.effectiveDate),
     // Say plainly which of the two happened, so nobody reads a back-solved
     // lump as a real depreciation figure.
     fx(`IF(${X}>0,IF(${Y}>0,"JLR machine "&${O}&" at "&TEXT(${X},"0.00")&" per hr — build-up as supplied",` +
-       `"JLR machine "&${O}&" at "&TEXT(${X},"0.00")&" per hr — build-up not supplied"),${q(m.sourceNote ?? '')})`,
+       `"JLR machine "&${O}&" at "&TEXT(${X},"0.00")&" per hr — build-up not supplied"),$AA${r})`,
        m.sourceNote ?? ''),
     m.confidence,
     fx(code(r), ''),
@@ -488,15 +518,17 @@ LIB.machines.forEach((m, i) => {
     // The self-proof: put the six upload columns back through the tool's own
     // division and see whether JLR's total comes out. Counted on Check.
     fx(`IF(${X}<=0,0,ROUND((D${r}+E${r}+F${r}+G${r}+H${r}+I${r})/${scale}-${X},4))`, 0),
+    m.sourceNote ?? '', m.effectiveDate,
   ]);
 });
 add('Machines', machRows, [22, 28, 10, 18, 14, 12, 12, 16, 14, 20, 18, 14, 52, 12,
-                           12, 12, 14, 12, 10, 11, 10, 11, 13, 20, 14, 22]);
+                           12, 12, 14, 12, 10, 11, 10, 11, 13, 20, 14, 22, 40, 16]);
 
-// ── 7. Labour — from its own tab if there is one, else out of the machines ───
+// ── 6. Labour — from its own tab if there is one, else out of the machines ───
 const labRows: unknown[][] = [[
   'id', 'region', 'skillLevel', 'fullyLoadedRatePerHr', 'effectiveDate', 'sourceNote',
   'confidence', 'JLR code', 'rows matched', 'from JLR Labour', 'from JLR Machines', 'rate used',
+  'built-in source note',
 ]];
 LIB.labour.forEach((l, i) => {
   const r = i + 2;
@@ -505,7 +537,7 @@ LIB.labour.forEach((l, i) => {
     l.id, l.region, l.skillLevel,
     fx(orBuiltin(L, l.fullyLoadedRatePerHr), l.fullyLoadedRatePerHr),
     l.effectiveDate,
-    fx(`IF(${L}>0,"JLR rate card — labour category "&${H},${q(l.sourceNote)})`, l.sourceNote),
+    fx(`IF(${L}>0,"JLR rate card — labour category "&${H},$M${r})`, l.sourceNote),
     l.confidence,
     fx(code(r), ''),
     fx(matches(H, LABR, 'A', 'C', 'D'), 0),
@@ -515,9 +547,10 @@ LIB.labour.forEach((l, i) => {
     // machine lookup there is no single row to insist on.
     fx(`IF(${H}="",0,IFERROR(AVERAGEIFS(${MACH}!$F:$F,${MACH}!$E:$E,${H},${filt(MACH, 'C', 'D')}),0))`, 0),
     fx(`IF(${J}>0,${J},${K})`, 0),
+    l.sourceNote,
   ]);
 });
-add('Labour', labRows, [22, 12, 26, 20, 14, 44, 12, 12, 12, 16, 18, 12]);
+add('Labour', labRows, [22, 12, 26, 20, 14, 44, 12, 12, 12, 16, 18, 12, 40]);
 
 // Energy, FX and overhead are not on the three JLR exports, so they are carried
 // through as values. Edit in place if they need to move.
@@ -534,7 +567,7 @@ add('Overhead', [
   ...LIB.overheadDefaults.map(o => [o.id, o.commodityType, o.supplierTier, o.overheadPct, o.marginPct, o.sourceNote]),
 ], [22, 20, 16, 12, 12, 36]);
 
-// ── 8. Check — did it pick anything up, and does it add up ───────────────────
+// ── 7. Check — did it pick anything up, and does it add up ───────────────────
 const nMat = LIB.materials.length, nMach = LIB.machines.length, nLab = LIB.labour.length;
 const mapEnd = 1 + seeds.length;
 const R = 5000;   // how far down the paste tabs the integrity check looks
@@ -548,12 +581,19 @@ add('Check', [
   ['…of those, codes not found on any JLR tab',
    fx(`COUNTIF(Mapping!D2:D${mapEnd},"NOT FOUND*")`, 0), '0 — the code is wrong'],
   [],
+  // Counting matches rather than values was misleading: a code that found its
+  // row but whose rate cell was blank counted as "taken" while the row quietly
+  // kept the tool's own number. These count the rate that actually arrived.
   ['Materials taking a JLR price',
-   fx(`COUNTIF(Materials!L2:L${nMat + 1},1)`, 0), ''],
+   fx(`COUNTIF(Materials!M2:M${nMat + 1},">0")`, 0), ''],
   ['Machines taking a JLR rate',
-   fx(`COUNTIF(Machines!P2:P${nMach + 1},1)`, 0), ''],
+   fx(`COUNTIF(Machines!X2:X${nMach + 1},">0")`, 0), ''],
   ['Labour grades taking a JLR rate',
    fx(`COUNTIF(Labour!L2:L${nLab + 1},">0")`, 0), ''],
+  ['Codes that found their row but the rate on it was blank or zero',
+   fx(`COUNTIF(Materials!L2:L${nMat + 1},1)-COUNTIF(Materials!M2:M${nMat + 1},">0")` +
+      `+COUNTIF(Machines!P2:P${nMach + 1},1)-COUNTIF(Machines!X2:X${nMach + 1},">0")`, 0),
+   '0 — otherwise those rows kept our value'],
   [],
   ['Codes matching MORE than one pasted row (country/period not narrowed)',
    fx(`COUNTIF(Materials!L2:L${nMat + 1},">1")+COUNTIF(Machines!P2:P${nMach + 1},">1")`, 0),
