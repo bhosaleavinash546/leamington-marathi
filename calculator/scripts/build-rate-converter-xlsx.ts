@@ -60,10 +60,31 @@ import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-
 const LIB = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 const OUT = process.argv[2] ?? 'CostVision-JLR-Rate-Converter.xlsx';
 
+/**
+ * How far down the paste tabs every lookup reads.
+ *
+ * Whole-column references (`'JLR Machines'!$A:$A`) came to seventeen thousand
+ * of them across the workbook, each nominally a million rows. Excel usually
+ * narrows that to the used range, but "usually" is not what you want on a
+ * locked-down laptop with a recalculation in front of somebody. Bounded, and
+ * the Check tab counts what was pasted so a card longer than this says so
+ * rather than losing rows in silence.
+ */
+const PASTE_ROWS = 20_000;
+
+/** Rows on Mapping — one per rate the JLR card can fill. */
+const MAP_ROWS = DEFAULT_RATE_LIBRARY.materials.length + DEFAULT_RATE_LIBRARY.machines.length
+               + DEFAULT_RATE_LIBRARY.labour.length;
+
 /** The three tabs JLR's export is pasted into, named as they are referenced. */
 const MACH = `'JLR Machines'`;
 const MATL = `'JLR Materials'`;
 const LABR = `'JLR Labour'`;
+
+/** One bounded column of a paste tab, header excluded. */
+const rng = (tab: string, c: string) => `${tab}!$${c}$2:$${c}$${PASTE_ROWS + 1}`;
+/** One bounded column of the Mapping tab. */
+const mapRng = (c: string) => `Mapping!$${c}$2:$${c}$${MAP_ROWS + 1}`;
 
 /**
  * The country and period to take, as SUMIFS/COUNTIFS criteria.
@@ -89,7 +110,7 @@ const PERI_MATL = `IF(Settings!$B$4="","<>",Settings!$B$4)`;
 /** Same country/period filter on whichever tab, as the tail of a *IFS call. */
 const filt = (tab: string, countryCol: string, periodCol: string) => {
   const period = tab === MATL ? PERI_MATL : PERI_MACH;
-  return `${tab}!$${countryCol}:$${countryCol},${CTRY},${tab}!$${periodCol}:$${periodCol},${period}`;
+  return `${rng(tab, countryCol)},${CTRY},${rng(tab, periodCol)},${period}`;
 };
 
 /**
@@ -101,7 +122,7 @@ const filt = (tab: string, countryCol: string, periodCol: string) => {
  * the person filling it in can see they picked the right row.
  */
 const code = (row: number) =>
-  `IFERROR(INDEX(Mapping!$C:$C,MATCH($A${row},Mapping!$A:$A,0)),"")`;
+  `IFERROR(INDEX(${mapRng('C')},MATCH($A${row},${mapRng('A')},0)),"")`;
 
 /**
  * How many pasted rows this code matches under the current filter.
@@ -112,17 +133,17 @@ const code = (row: number) =>
  * keeps the tool's own value and Check counts it.
  */
 const matches = (codeCell: string, tab: string, keyCol: string, countryCol: string, periodCol: string) =>
-  `IF(${codeCell}="",0,COUNTIFS(${tab}!$${keyCol}:$${keyCol},${codeCell},${filt(tab, countryCol, periodCol)}))`;
+  `IF(${codeCell}="",0,COUNTIFS(${rng(tab, keyCol)},${codeCell},${filt(tab, countryCol, periodCol)}))`;
 
 /** One column of the matched row, or 0 when it is not a clean single match. */
 const pick = (countCell: string, codeCell: string, tab: string, keyCol: string,
               valueCol: string, countryCol: string, periodCol: string) =>
-  `IF(${countCell}<>1,0,SUMIFS(${tab}!$${valueCol}:$${valueCol},${tab}!$${keyCol}:$${keyCol},${codeCell},${filt(tab, countryCol, periodCol)}))`;
+  `IF(${countCell}<>1,0,SUMIFS(${rng(tab, valueCol)},${rng(tab, keyCol)},${codeCell},${filt(tab, countryCol, periodCol)}))`;
 
 /** A text column of the first row carrying this code (SUMIFS cannot return text). */
 const pickText = (countCell: string, codeCell: string, tab: string, keyCol: string,
                   valueCol: string, fallback: string) =>
-  `IF(${countCell}<>1,${fallback},IFERROR(INDEX(${tab}!$${valueCol}:$${valueCol},MATCH(${codeCell},${tab}!$${keyCol}:$${keyCol},0)),${fallback}))`;
+  `IF(${countCell}<>1,${fallback},IFERROR(INDEX(${rng(tab, valueCol)},MATCH(${codeCell},${rng(tab, keyCol)},0)),${fallback}))`;
 
 /** Take the JLR value when there is one, else keep ours. */
 const orBuiltin = (helper: string, builtin: number): string => `IF(${helper}>0,${helper},${builtin})`;
@@ -321,8 +342,9 @@ add('Read me', [
   ['•', 'Anything you do not map keeps the value the tool ships with. A partial card is fine.'],
   ['•', 'CO2 is brought across for reference only. The upload has no carbon field, so the'],
   ['', 'tool will ignore that column.'],
-  ['•', 'The one row on the Check tab that looks at your pasted data reads down to row 5000.'],
-  ['', 'The rates themselves have no limit — only that one check does.'],
+  ['•', 'The sheet reads the first 20,000 rows of each JLR tab. That is far more than a'],
+  ['', 'rate card, but if you ever paste more, the Check tab tells you — it does not'],
+  ['', 'quietly ignore them.'],
   ['•', 'Energy, FX and overhead are not on the JLR exports, so they are not on Mapping.'],
   ['', 'They sit on their own tabs as plain numbers — edit them there if they need to move.'],
   ['•', 'The last columns on the Materials, Machines and Labour tabs hold the tool’s own'],
@@ -414,9 +436,9 @@ seeds.forEach(([id, what, category], i) => {
   // anything, and it should still answer when the filter excludes every row.
   const echo =
     `IF($C${r}="","",IFERROR(` +
-    `IF($E${r}="machine",INDEX(${MACH}!$B:$B,MATCH($C${r},${MACH}!$A:$A,0)),` +
-    `IF($E${r}="material",INDEX(${MATL}!$B:$B,MATCH($C${r},${MATL}!$A:$A,0)),` +
-    `IF($E${r}="labour",IFERROR(INDEX(${LABR}!$B:$B,MATCH($C${r},${LABR}!$A:$A,0)),` +
+    `IF($E${r}="machine",INDEX(${rng(MACH, 'B')},MATCH($C${r},${rng(MACH, 'A')},0)),` +
+    `IF($E${r}="material",INDEX(${rng(MATL, 'B')},MATCH($C${r},${rng(MATL, 'A')},0)),` +
+    `IF($E${r}="labour",IFERROR(INDEX(${rng(LABR, 'B')},MATCH($C${r},${rng(LABR, 'A')},0)),` +
     `"labour category "&$C${r}&" — from the machine tab"),""))),` +
     `"NOT FOUND — check the code"))`;
   mapRows.push([id, what, '', fx(echo, ''), category]);
@@ -545,7 +567,7 @@ LIB.labour.forEach((l, i) => {
     // The fallback. Every machine on a category carries the same
     // TOTAL_LABOUR_RATE, so an average over them is that rate — and unlike the
     // machine lookup there is no single row to insist on.
-    fx(`IF(${H}="",0,IFERROR(AVERAGEIFS(${MACH}!$F:$F,${MACH}!$E:$E,${H},${filt(MACH, 'C', 'D')}),0))`, 0),
+    fx(`IF(${H}="",0,IFERROR(AVERAGEIFS(${rng(MACH, 'F')},${rng(MACH, 'E')},${H},${filt(MACH, 'C', 'D')}),0))`, 0),
     fx(`IF(${J}>0,${J},${K})`, 0),
     l.sourceNote,
   ]);
@@ -570,8 +592,7 @@ add('Overhead', [
 // ── 7. Check — did it pick anything up, and does it add up ───────────────────
 const nMat = LIB.materials.length, nMach = LIB.machines.length, nLab = LIB.labour.length;
 const mapEnd = 1 + seeds.length;
-const R = 5000;   // how far down the paste tabs the integrity check looks
-const elems = ['G', 'H', 'I', 'J', 'K', 'L', 'M'].map(c => `${MACH}!$${c}$2:$${c}$${R}`).join('+');
+const elems = ['G', 'H', 'I', 'J', 'K', 'L', 'M'].map(c => rng(MACH, c)).join('+');
 add('Check', [
   ['Check before you upload'],
   [],
@@ -604,10 +625,14 @@ add('Check', [
    // Rows carrying only a total are a case the sheet handles on purpose, so
    // they are not counted here — this is looking for a card that disagrees
    // with itself, not for one that is less detailed than it could be.
-   fx(`SUMPRODUCT((${MACH}!$A$2:$A$${R}<>"")*` +
+   fx(`SUMPRODUCT((${rng(MACH, 'A')}<>"")*` +
       `((${elems})>0)*` +
-      `(ABS((${elems})-${MACH}!$N$2:$N$${R})>0.02))`, 0),
+      `(ABS((${elems})-${rng(MACH, 'N')})>0.02))`, 0),
    '0 — otherwise ask about the export'],
+  ['Pasted rows beyond the ' + PASTE_ROWS.toLocaleString('en-GB') + ' this sheet reads',
+   fx(`MAX(0,COUNTA(${MACH}!$A:$A)-1-${PASTE_ROWS})+MAX(0,COUNTA(${MATL}!$A:$A)-1-${PASTE_ROWS})` +
+      `+MAX(0,COUNTA(${LABR}!$A:$A)-1-${PASTE_ROWS})`, 0),
+   '0 — rows past it are not read'],
   [],
   ['Settings in force'],
   ['Country', fx('IF(Settings!$B$2="","(any)",Settings!$B$2)', '(any)'), ''],

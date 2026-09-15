@@ -32,7 +32,9 @@ import { tmpdir } from 'node:os';
 import * as XLSX from 'xlsx';
 import { parseRateLibraryWorkbook } from '../server/utils/rate-library-xlsx.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
-import type { RateLibrary } from '../src/engine/types.js';
+import { resolveActiveLibrary } from '../src/engine/rate-library-merge.js';
+import { computeUniversalStack } from '../src/engine/core.js';
+import type { RateLibrary, UniversalStackInput } from '../src/engine/types.js';
 
 const LIB = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 const haveCalc = spawnSync('soffice', ['--version'], { encoding: 'utf8' }).status === 0;
@@ -58,6 +60,9 @@ const JLR_MACHINES: unknown[][] = [
    6.10, 1.80, 3.40, 0.30, 1.15, 6.50, 0, 19.25],
   [712075, '1000t Injection Moulding MC', 'United Kingdom', '04042025', 'CB', 40.97,
    6.10, 1.80, 3.40, 0.30, 1.15, 6.50, 0, 19.25],
+  // Constructed, to put a JLR rate on the machine the reference part mills on.
+  [850012, '3-Axis CNC Machining Centre', 'United Kingdom', '04042025', 'CB', 40.97,
+   9.20, 2.10, 4.80, 0.35, 1.55, 3.00, 0.50, 21.50],
 ];
 
 const JLR_MATERIALS: unknown[][] = [
@@ -65,6 +70,8 @@ const JLR_MATERIALS: unknown[][] = [
   [10080020309, 'HSLA360 Steel Coil: <1mm Thickness', 'United Kingdom', '04-04-2025', 0.72, 40.48, 2.19],
   // Constructed, for the country filter.
   [10080020309, 'HSLA360 Steel Coil: <1mm Thickness', 'Slovakia', '04-04-2025', 0.61, 38.00, 2.40],
+  // Constructed in JLR's shape, to reprice the repo's hand-computed reference part.
+  [10090010101, 'Aluminium 6061 Bar', 'United Kingdom', '04-04-2025', 2.85, 30.00, 8.10],
 ];
 
 /** tool id -> JLR code, as somebody would type it on the Mapping tab. */
@@ -74,6 +81,8 @@ const MAPPING: Record<string, string | number> = {
   'imm-200t': 712063,     // the total-only row
   'imm-350t': 712075,     // the duplicated row — must stay on our own value
   'lab-uk-skilled': 'CB', // labour, read out of the machine tab
+  'mach-vmc3': 850012,    // the reference part's milling machine
+  'mat-al6061': 10090010101,
 };
 
 let dir = '';
@@ -226,8 +235,8 @@ d('a real spreadsheet turns JLR’s card into an upload the tool accepts', () =>
   it('leaves every unmapped row exactly as the tool ships it', () => {
     expect(lib.materials.find(m => m.id === 'mat-ss316l')!.pricePerKg)
       .toBe(LIB.materials.find(m => m.id === 'mat-ss316l')!.pricePerKg);
-    expect(lib.machines.find(m => m.id === 'mach-vmc3')!.computedRatePerHr)
-      .toBeCloseTo(LIB.machines.find(m => m.id === 'mach-vmc3')!.computedRatePerHr, 6);
+    expect(lib.machines.find(m => m.id === 'mach-vmc5')!.computedRatePerHr)
+      .toBeCloseTo(LIB.machines.find(m => m.id === 'mach-vmc5')!.computedRatePerHr, 6);
     expect(lib.labour.find(l => l.id === 'lab-uk-engineer')!.fullyLoadedRatePerHr)
       .toBe(LIB.labour.find(l => l.id === 'lab-uk-engineer')!.fullyLoadedRatePerHr);
     expect(lib.materials).toHaveLength(LIB.materials.length);
@@ -288,8 +297,8 @@ d('the Check tab reports what actually happened', () => {
   });
 
   it('counts the rates that actually arrived', () => {
-    expect(v('Materials taking a JLR price')).toBe(1);
-    expect(v('Machines taking a JLR rate')).toBe(2);   // 712008 and 712063
+    expect(v('Materials taking a JLR price')).toBe(2);   // the steel coil and the aluminium bar
+    expect(v('Machines taking a JLR rate')).toBe(3);     // 712008, 712063 and 850012
     expect(v('Labour grades taking a JLR rate')).toBe(1);
     expect(v('Codes that found their row but the rate')).toBe(0);
   });
@@ -308,5 +317,66 @@ d('the Check tab reports what actually happened', () => {
     // 712008's seven elements come to 10.05 against a stated 10.06 — a penny of
     // rounding, inside the tolerance. A real disagreement would show here.
     expect(v('Pasted machine rows whose 7 elements')).toBe(0);
+  });
+});
+
+/**
+ * The reference part, repriced.
+ *
+ * Everything above ends at the upload parser. This carries on into the costing,
+ * on the part the repo pins by hand calculation — so what is being proved is
+ * not "the file loads" but "the tool charges JLR's rates". The movement is then
+ * reconciled by hand, because a total that changed is not evidence that it
+ * changed correctly.
+ */
+const op = (operationName: string, machineId: string, hr: number) => ({
+  operationName, machineId, labourId: 'lab-uk-skilled', cycleTimeHr: hr, partsPerCycle: 1,
+  oee: 0.85, manning: 1, labourTimeHr: hr, labourEfficiency: 0.92,
+});
+const REFERENCE: UniversalStackInput = {
+  partName: 'Al6061 Bracket — Reference Part',
+  rawMaterial: { materialId: 'mat-al6061', netWeightKg: 0.5, materialUtilization: 0.65 },
+  operations: [op('CNC Turning', 'mach-lathe-cnc', 0.05), op('CNC Milling', 'mach-vmc3', 0.12),
+               op('CNC Drilling', 'mach-drill', 0.03)],
+  tooling: { totalToolingCost: 15000, amortizationVolume: 50000, mode: 'amortized' },
+  packagingPerPart: 0.15, logisticsPerPart: 0.25, overheadPct: 0.12, marginPct: 0.08,
+};
+
+d('a costing actually charges the uploaded rates', () => {
+  const active = () => resolveActiveLibrary({ builtIn: LIB, company: lib, source: 'company', overrides: [] }).library;
+  const before = () => computeUniversalStack(REFERENCE, LIB);
+  const after = () => computeUniversalStack(REFERENCE, active());
+
+  it('moves the part, and leaves the untouched operation alone', () => {
+    expect(after().total).not.toBeCloseTo(before().total, 2);
+    // mach-drill was never mapped. If it moved, something is being rewritten
+    // that should not be.
+    const rate = (l: RateLibrary, id: string) => l.machines.find(m => m.id === id)!.computedRatePerHr;
+    expect(rate(active(), 'mach-drill')).toBe(rate(LIB, 'mach-drill'));
+  });
+
+  it('reconciles to the penny against a hand calculation', () => {
+    // Three rates moved, and only three. Machine time is cycle / OEE, labour
+    // time is the sum of the three operations / efficiency, and the material is
+    // gross weight at the new price less the scrap credit on the offcut.
+    const A = active();
+    const num = (l: RateLibrary, id: string) => l.machines.find(m => m.id === id)!.computedRatePerHr;
+    const labr = (l: RateLibrary, id: string) => l.labour.find(m => m.id === id)!.fullyLoadedRatePerHr;
+    const matl = (l: RateLibrary, id: string) => l.materials.find(m => m.id === id)!;
+    const gross = 0.5 / 0.65;
+    const byHand =
+      (num(A, 'mach-vmc3') - num(LIB, 'mach-vmc3')) * (0.12 / 0.85)
+      + (labr(A, 'lab-uk-skilled') - labr(LIB, 'lab-uk-skilled')) * (0.20 / 0.92)
+      + (matl(A, 'mat-al6061').pricePerKg - matl(LIB, 'mat-al6061').pricePerKg) * gross
+      - (matl(A, 'mat-al6061').scrapRecoveryPricePerKg - matl(LIB, 'mat-al6061').scrapRecoveryPricePerKg)
+        * (gross - 0.5);
+    expect(after().factoryCost - before().factoryCost).toBeCloseTo(byHand, 9);
+  });
+
+  it('charges the rate the card states, not one near it', () => {
+    const A = active();
+    expect(A.machines.find(m => m.id === 'mach-vmc3')!.computedRatePerHr).toBeCloseTo(21.50, 9);
+    expect(A.materials.find(m => m.id === 'mat-al6061')!.pricePerKg).toBe(2.85);
+    expect(A.materials.find(m => m.id === 'mat-al6061')!.scrapRecoveryPricePerKg).toBeCloseTo(2.85 * 0.30, 9);
   });
 });
