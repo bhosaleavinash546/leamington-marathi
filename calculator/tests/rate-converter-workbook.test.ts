@@ -254,6 +254,70 @@ describe('once the lookups resolve, JLR’s numbers come through', () => {
   });
 });
 
+/**
+ * The instructions are part of the deliverable, and they go stale silently.
+ * Somebody following them types into the cells they name — so a Settings row
+ * that moves, or an example row that is no longer where it says, turns a
+ * ten-minute job into a support call. These pin the claims the Read me makes
+ * about the workbook it sits in.
+ */
+describe('the instructions describe the workbook that actually exists', () => {
+  const readme = () =>
+    (XLSX.utils.sheet_to_json(read().Sheets['Read me'], { header: 1 }) as string[][])
+      .map(r => r.join(' ')).join('\n');
+
+  it('is the first tab, because it says "start here"', () => {
+    expect(read().SheetNames[0]).toBe('Read me');
+    expect(readme()).toContain('Start here');
+  });
+
+  it('names every tab in the workbook, and no tab that is not', () => {
+    const text = readme(), wb = read();
+    for (const name of wb.SheetNames) expect(text).toContain(name);
+  });
+
+  it('points at the Settings cells that hold what it says they hold', () => {
+    // The Read me tells someone to type a country into B2 and a reclaim basis
+    // into B5. If a row were inserted above, they would be filling in the wrong
+    // cells and nothing would match.
+    const st = read().Sheets.Settings;
+    expect(cell(st, 'A2').v).toBe('Country');
+    expect(cell(st, 'A3').v).toBe('Machine period');
+    expect(cell(st, 'A4').v).toBe('Material period');
+    expect(cell(st, 'A5').v).toBe('MATERIAL_RECLAIM is');
+    const text = readme();
+    expect(text).toContain('B2  Country');
+    expect(text).toContain('B5  MATERIAL_RECLAIM');
+  });
+
+  it('tells the truth about the example row it asks people to delete', () => {
+    const wb = read();
+    for (const tab of ['JLR Machines', 'JLR Materials']) {
+      expect(String(cell(wb.Sheets[tab], 'B2').v)).toContain('EXAMPLE ROW, DELETE IT');
+    }
+    expect(String(cell(wb.Sheets['JLR Labour'], 'B2').v)).toContain('EXAMPLE ROW, DELETE IT');
+    expect(readme()).toContain('Delete Row');
+  });
+
+  it('sends the paste to the first empty row, under headers it does not touch', () => {
+    // A2, because row 1 carries JLR's own headers and the lookups read them by
+    // column position.
+    expect(readme()).toContain('click cell  A2 , and paste');
+  });
+
+  it('gives the seven steps it promises', () => {
+    const text = readme();
+    expect(text).toContain('Seven steps');
+    for (const n of [1, 2, 3, 4, 5, 6, 7]) expect(text).toContain(`STEP ${n}`);
+  });
+
+  it('quotes the upload path the tool actually offers', () => {
+    // "Edit Rates" then "Upload company rates" — the wording on the buttons.
+    expect(readme()).toContain('Edit Rates');
+    expect(readme()).toContain('Upload company rates');
+  });
+});
+
 describe('cleanup', () => {
   it('removes the temporary workbook', () => {
     rmSync(dir, { recursive: true, force: true });
