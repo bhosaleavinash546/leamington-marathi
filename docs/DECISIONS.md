@@ -3817,3 +3817,27 @@ what that domain serves; merging this branch to its `main` would replace the
 site's source. Neither is a thing to discover after the fact, so the repo
 identity is a checked-in fact (`site/site.config.json`) rather than a default in
 four scripts, and DEPLOYMENT §9 states the constraint next to the instructions.
+
+## 72. Extended thinking was silently off on every analysis
+
+`/api/analyze` sent `thinking: { type: 'enabled', budget_tokens: N }` to the
+flagship. That shape is no longer accepted: the API returns 400 and names the
+replacement — `thinking.type: 'adaptive'` with `output_config.effort`.
+
+It did not show up as an outage because the handler already had a defensive
+fallback that strips `thinking` on any 400 mentioning it and retries. So
+generation kept working, and the only symptoms were a wasted round trip on
+every single analysis and, more importantly, **ideas generated without the
+extended reasoning the prompt was written to rely on**. A guard built to keep
+the feature alive is exactly what stopped anyone noticing the feature was gone.
+
+Found while recording a live demo: the run appeared to hang, and the
+`llm_calls` table showed three failures at 170–400 ms each — too fast to be a
+network problem, which is what pointed at a 4xx rather than a timeout.
+
+The replacement shape was verified against the live API before being written in
+(`thinking:{type:'adaptive'}` + `output_config:{effort:'high'|'medium'}` → 200
+on the flagship), not inferred from the error text. `CV_THINKING_BUDGET` keeps
+its meaning as the on/off switch and now also picks the effort level, so no
+deployment has to change. The fallback's match was widened to `output_config`
+and `effort` so the next shape change degrades the same way rather than failing.

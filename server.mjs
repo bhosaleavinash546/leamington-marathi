@@ -3542,8 +3542,18 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       params.tool_choice = { type: 'auto' };
       // Chief-Engineer-grade tradeoffs deserve actual reasoning: enable extended
       // thinking (env-tunable; 0 disables). Falls back below if the API rejects it.
+      //
+      // The flagship no longer accepts `thinking.type: 'enabled'` with a token
+      // budget — it returns 400 and names the replacement: `thinking.type:
+      // 'adaptive'` plus `output_config.effort`. The fallback below was catching
+      // that and retrying without thinking, so generation still worked but every
+      // analysis burned a wasted round trip AND silently lost its reasoning.
+      // CV_THINKING_BUDGET keeps its meaning as the on/off and rough level.
       const thinkBudget = Number(process.env.CV_THINKING_BUDGET ?? 6000);
-      if (thinkBudget >= 1024) params.thinking = { type: 'enabled', budget_tokens: thinkBudget };
+      if (thinkBudget >= 1024) {
+        params.thinking = { type: 'adaptive' };
+        params.output_config = { effort: thinkBudget >= 8000 ? 'high' : 'medium' };
+      }
 
       // A 24k-token generation legitimately exceeds the default 90s client
       // timeout; give it room and don't retry the full doomed request 3× (which
@@ -3554,8 +3564,8 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       } catch (e) {
         // Defensive: if this provider/config combination rejects extended
         // thinking, retry once without rather than failing the analysis.
-        if (params.thinking && e?.status === 400 && /thinking/i.test(e?.message || '')) {
-          delete params.thinking;
+        if ((params.thinking || params.output_config) && e?.status === 400 && /thinking|output_config|effort/i.test(e?.message || '')) {
+          delete params.thinking; delete params.output_config;
           response = await client.messages.create(params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
         } else throw e;
       }
