@@ -46,6 +46,12 @@ export async function messagesJson(client, {
   const resp = await client.messages.create(params, requestOptions);
   const block = resp.content?.find(b => b.type === 'tool_use' && b.name === toolName);
   if (!block || typeof block.input !== 'object' || block.input === null) {
+    // A forced tool call that hits the output ceiling comes back with no tool
+    // block (or a partial one). Say that, rather than implying the model chose
+    // not to answer — the caller's fix is a bigger budget or a smaller ask.
+    if (resp?.stop_reason === 'max_tokens') {
+      throw new Error(`Model output hit the ${Number(maxTokens).toLocaleString()}-token limit before completing the structured result.`);
+    }
     throw new Error('Model did not return a structured tool call.');
   }
   return block.input;

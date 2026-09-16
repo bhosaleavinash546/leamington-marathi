@@ -130,3 +130,13 @@ describe('cacheable', () => {
     assert.deepEqual(cacheable('hi'), [{ type: 'text', text: 'hi', cache_control: { type: 'ephemeral' } }]);
   });
 });
+
+describe('truncation', () => {
+it('a max_tokens stop with no tool block is reported as a budget problem, not a refusal', async () => {
+  const client = { messages: { create: async () => ({ stop_reason: 'max_tokens', content: [{ type: 'text', text: '' }] }) } };
+  await assert.rejects(
+    () => messagesJson(client, { messages: [], schema: { type: 'object' }, maxTokens: 1500 }),
+    /1,500-token limit/,
+  );
+});
+});
