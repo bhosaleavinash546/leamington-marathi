@@ -113,6 +113,8 @@ during `npm run build:site`, never by the running server.
 | Variable | Default | Notes |
 |---|---|---|
 | `SITE_BASE` | `/<repo>/` from `site/site.config.json` | URL prefix the GitHub Pages bundle is built for. **Unset is the normal case** — the default is derived from the repo name, which is what Pages serves a project site from. Set it to `/` to host the shop window at a domain root. Get it wrong and every asset URL points outside the site: the postbuild fails the build rather than shipping a page with no fonts. |
+| `ANTHROPIC_BASE_URL` | unset | Read by the Anthropic SDK itself, not by BrainSpark code. Point it at `scripts/fake-llm.mjs` (`http://127.0.0.1:19999`) to drive the whole `/api/analyze` path — browser, validator, engine checks, results, exports — with the model stubbed and **no API spend**. The stub's output is synthetic and says so in every idea id; it proves plumbing, never engineering judgement. Never set this in production. |
+| `FAKE_LLM_PORT` / `FAKE_LLM_PACE_MS` | `19999` / `25000` | `scripts/fake-llm.mjs` only: listen port, and how long a streamed reply takes, so the UI's progress feed is exercised. |
 | `VITE_STATIC_SITE` | unset | `1` selects the shop-window branch of the landing page — every call to action becomes an external link, because no backend is deployed alongside it. **Unset while running `build:site` publishes a page of dead buttons**, so `tests/static-site.test.mjs` fails the build if it is missing. See DEPLOYMENT §9. |
 
 ### External data

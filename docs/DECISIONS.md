@@ -3908,3 +3908,21 @@ knowingly; `0` restores the pre-72 behaviour exactly.
 capture, a 2,500-token replay, and five one-token `max_tokens` probes. The
 previous rounds used full 24k-token generations as probes, which is how a
 debugging session became expensive. Cheap probes first is now the rule.
+
+## 75. The ideation path can be driven without a key: scripts/fake-llm.mjs
+
+Until now `/api/analyze` could only be exercised against the live API with a
+live balance. Every diagnosis of DECISIONS 72–74 therefore cost real money, and
+the one time the balance ran out, verification stopped dead. That violates the
+repo's own rule that LLM-dependent paths stay testable through injected
+clients — the route had no seam at all.
+
+The seam turned out to already exist: the Anthropic SDK reads
+`ANTHROPIC_BASE_URL` from the environment. `scripts/fake-llm.mjs` speaks enough
+of the Messages API — streaming SSE with a thinking block and a paced
+`input_json_delta` tool call, or plain JSON — for the real server, the real
+browser, the validator, the engine checks, the results page and the PDF export
+to run unchanged. Output is synthetic and every idea id starts `stub-`, every
+description starts SYNTHETIC TEST CONTENT, and the benchmark field says no real
+programme is cited. It proves plumbing. It must never be mistaken for a demo of
+the product's judgement, and it must never be set in production.

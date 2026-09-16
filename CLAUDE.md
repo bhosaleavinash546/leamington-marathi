@@ -17,6 +17,7 @@ npm run build              # tsc && vite build  (run npx tsc --noEmit for typech
 npm test                   # full suite, node --test (280+ tests, no network/keys needed)
 node --test tests/pcb-cost.test.mjs        # single test file
 npm run test:integration   # boots a real server on a temp DB and exercises HTTP
+node scripts/fake-llm.mjs  # stand-in for api.anthropic.com; run the server with ANTHROPIC_BASE_URL=http://127.0.0.1:19999 to drive /api/analyze end to end for free
 npm run e2e                # e2e/smoke.mjs
 
 # Accuracy gates (CI fails on regression — see .github/workflows/ci.yml)
