@@ -8,25 +8,19 @@
 // the ask was to keep the attached format, and a business case that arrives in
 // the reviewer's own layout gets read instead of reformatted.
 //
-// The tool list on slide 2 is generated from src/config/tools.ts, the single
-// nav registry, so the deck cannot claim a tool the product does not have.
+// Two slides:
+//   1. The case for change — Problem Statement, Current State, ROI, Time,
+//      Technical Scoping. Deliberately airy; the director's note was that the
+//      one-pager had become too busy.
+//   2. The proposal and its benefits, on the customer's own second template
+//      (Proposal box left, Expected Benefits right).
 //
 //   node scripts/make-business-case-deck.mjs [-o out.pptx]
 // ─────────────────────────────────────────────────────────────────────────────
 import pptxgen from 'pptxgenjs';
-import { readFileSync } from 'node:fs';
 
 const OUT = (() => { const i = process.argv.indexOf('-o'); return i > -1 ? process.argv[i + 1] : 'BrainSpark_Business_Case.pptx'; })();
 
-// ── Tool suite, read from the registry rather than retyped ───────────────────
-const registry = readFileSync(new URL('../src/config/tools.ts', import.meta.url), 'utf-8');
-const TOOLS = [...registry.matchAll(/label:\s*'([^']+)'[\s\S]*?category:\s*'(\w+)',\s*description:\s*'([^']+)'/g)]
-  .map(m => ({ label: m[1], category: m[2], description: m[3] }))
-  .filter(t => t.label !== 'Help');
-if (TOOLS.length < 15) throw new Error(`tool registry parse found only ${TOOLS.length} tools — the regex is stale`);
-
-// One line of plain benefit per tool. Keyed by the registry label so a renamed
-// or removed tool fails loudly here instead of quietly shipping a stale claim.
 // ── Template palette, sampled from the attached slide ────────────────────────
 const INK = '1F2328', MUTED = '5B6570', RULE = 'C8CFD6';
 const BOX_FILL = 'FBFCFD', BOX_LINE = 'C9D1D9';
@@ -41,7 +35,7 @@ const rec = e => RECORD[SLIDE].push(e);
 const pres = new pptxgen();
 pres.layout = 'LAYOUT_WIDE';                 // 13.333 x 7.5 — set BEFORE any slide
 pres.author = 'BrainSpark';
-pres.title = 'BrainSpark — AI-Assisted Cost Reduction Idea Generation';
+pres.title = 'BrainSpark — AI Idea Generation Tool';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 const box = (s, { x, y, w, h, fill = BOX_FILL, line = BOX_LINE }) => {
@@ -79,149 +73,129 @@ const checkbox = (s, { x, y, size = 0.26 }) =>
   rec({ kind: 'checkbox', x, y, w: size, h: size }) &&
   s.addShape(pres.ShapeType.rect, { x, y, w: size, h: size, fill: { color: 'FFFFFF' }, line: { color: '3A4046', width: 1.25 } });
 
-// ═══ ONE SLIDE ══════════════════════════════════════════════════════════════
-// The customer's own one-page template, three columns. Written for a cost
-// engineering director: plain sentences, no slogans, and the tools named where
-// they actually do the work rather than listed as a catalogue.
+// ── shared masthead ─────────────────────────────────────────────────────────
+const masthead = (s, eyebrow) => {
+  if (eyebrow) T(s, eyebrow, {
+    x: 0.5, y: 0.22, w: 8, h: 0.24, isTextBox: true, fontFace: FONT, fontSize: 9,
+    color: MUTED, charSpacing: 2.2, margin: 0, valign: 'middle',
+  });
+  T(s, 'BrainSpark  –  AI Idea Generation Tool', {
+    x: 0.5, y: eyebrow ? 0.48 : 0.38, w: 10.5, h: 0.42, isTextBox: true, fontFace: FONT,
+    fontSize: 20, color: INK, charSpacing: 1.8, margin: 0, valign: 'middle',
+  });
+};
+
+// ═══ SLIDE 1 — the case for change ══════════════════════════════════════════
+// Two columns, not three. The content that was crowding this page has moved to
+// slide 2, so everything here can sit at a size a director reads rather than
+// squints at.
 const s1 = pres.addSlide();
 s1.background = { color: 'FFFFFF' };
+masthead(s1, 'IDEA GENERATION BUSINESS CASE');
 
-T(s1, 'IDEA GENERATION BUSINESS CASE', {
-  x: 0.42, y: 0.18, w: 8, h: 0.24, isTextBox: true, fontFace: FONT, fontSize: 8.5,
-  color: MUTED, charSpacing: 2.2, margin: 0, valign: 'middle',
-});
-T(s1, 'BrainSpark  –  Cost Reduction Idea Generation', {
-  x: 0.42, y: 0.44, w: 10.5, h: 0.38, isTextBox: true, fontFace: FONT, fontSize: 18,
-  color: INK, charSpacing: 1.4, margin: 0, valign: 'middle',
-});
-
-const L = { x: 0.25, w: 6.55 }, M = { x: 6.95, w: 3.05 }, R = { x: 10.15, w: 2.93 };
-const BODY = 7.8;
+const A = { x: 0.5, w: 7.45 }, B = { x: 8.20, w: 4.63 };
+const BODY = 10.5;
 
 // ── Problem statement ────────────────────────────────────────────────────────
-box(s1, { ...L, y: 0.94, h: 1.91 });
-heading(s1, 'Problem Statement', { x: L.x + 0.23, y: 1.04, w: 2.6, size: 10.5 });
-field(s1, 'PII:', { x: 5.45, y: 1.04, w: 0.5, fontSize: 10, bold: true });
-checkbox(s1, { x: 5.92, y: 1.00, size: 0.24 });
+box(s1, { ...A, y: 1.05, h: 2.90 });
+heading(s1, 'Problem Statement', { x: A.x + 0.26, y: 1.18, w: 3.0, size: 12 });
+field(s1, 'PII:', { x: 6.55, y: 1.18, w: 0.5, fontSize: 11, bold: true });
+checkbox(s1, { x: 7.05, y: 1.14, size: 0.26 });
 bullets(s1, [
-  ['Most of the cost is never challenged.', 'A programme carries thousands of parts; a workshop reaches a few dozen, so most of the spend is never looked at.'],
-  ['Ideas cannot be used as written.', 'They come as single lines — "change the material", "delete the bracket" — with no process, grade, tolerance or number, so nobody can act on one without going back to whoever wrote it.'],
-  ['Nothing can be ranked.', 'Nobody knows whether an idea is worth 20p or £2 until an engineer costs it by hand, which can take a day for a single idea.'],
-  ['Finance discounts what we submit,', 'because the savings are a judgement rather than a calculation. The number that reaches the plan is never the number on the sheet.'],
-  ['The same work is done twice.', 'Nothing is kept, so ideas already tried — and ideas already rejected — come round again on the next programme.'],
-  ['It does not scale.', 'More programmes and more variants mean more workshops, and there are only so many people who can run them.'],
-], { x: L.x + 0.23, y: 1.32, w: L.w - 0.46, h: 1.45, size: BODY, lineGap: 0.5 });
+  'Cost reduction ideas are usually generated through workshops. Setting these up can take weeks, and the quality of the output depends on which cross-functional team members attend.',
+  'Most ideas are captured as a single line, such as "change the material" or "remove the bracket", with little detail on the process, material grade, tolerances or quantities involved.',
+  'Nobody knows whether an idea is worth 20p or £2 until someone manually evaluates and costs it.',
+  'A programme can contain thousands of parts, but workshops typically review only a small number, so many commodities and opportunities are never explored.',
+  'Opportunities often depend on individual expertise. If the right knowledge is not in the room at the time, valuable ideas are overlooked.',
+], { x: A.x + 0.26, y: 1.54, w: A.w - 0.52, h: 2.22, size: BODY, lineGap: 10 });
 
-// ── Current state: how it actually runs today ────────────────────────────────
-box(s1, { ...L, y: 2.89, h: 1.58 });
-heading(s1, 'Current State', { x: L.x + 0.23, y: 2.99, w: 2.6, size: 10.5 });
+// ── Current state ────────────────────────────────────────────────────────────
+box(s1, { ...A, y: 4.07, h: 3.18 });
+heading(s1, 'Current State', { x: A.x + 0.26, y: 4.20, w: 3.0, size: 12 });
 bullets(s1, [
-  ['One or two people carry it.', 'A small number of experienced engineers generate most of the ideas. When they are on other work, or they leave, it stops.'],
-  ['Days of preparation first.', 'Drawings, BOMs, current piece costs and benchmark data are pulled together by hand before a workshop can be held.'],
-  ['Then the workshop itself,', 'taking eight to fifteen people off the job for one or two days, away from their normal work.'],
-  ['Then weeks of chasing.', 'Each author is asked what they meant, whether it can be done and what it saves. Many never reply, and those ideas quietly die.'],
-  ['Coverage follows the room.', 'Whole commodities are skipped because nobody who attended knew them well enough to challenge them.'],
-], { x: L.x + 0.23, y: 3.27, w: L.w - 0.46, h: 1.16, size: BODY, lineGap: 0.5 });
-
-// ── Proposed solution, ending in the ask ─────────────────────────────────────
-box(s1, { ...L, y: 4.51, h: 2.74 });
-heading(s1, 'Proposed Solution / Model', { x: L.x + 0.23, y: 4.61, w: 3.4, size: 10.5 });
-bullets(s1, [
-  ['Upload the CAD and the drawings.', 'Geometry, material, tolerances and finishes are read from the files, for a single part or a whole assembly. Nobody types them in.'],
-  ['Should-Cost sets the baseline.', 'It builds the piece price from the bottom up — material, cycle time, tooling and overhead — so every idea is measured against a number rather than an opinion.'],
-  ['Prism shows where the price sits.', 'It splits one part into what the design costs, what the specification costs, what the chosen process costs and what the sourcing location costs, so you know which line of a supplier quote to argue with.'],
-  ['DFM / DFA Studio reads the model,', 'flagging what will be awkward or expensive to make and assemble — thin walls, undercuts, missing draft, too many fasteners — while the design can still change.'],
-  ['Innovation Studio and TRIZ Studio generate the ideas;', 'eight structured value engineering methods, plus a way of breaking a cost-versus-performance trade-off rather than accepting it. Horizon checks the decision against where the technology is going.'],
-  ['Ideas come at four levels', '— assembly, sub-assembly, part, technology — each naming the change, the process, the material and the saving per part, across every commodity.'],
-  ['The saving is always calculated', 'by the cost engine, and every idea says whether it was confirmed, contradicted, or could not be checked and why. The AI writes the idea; it never supplies the number.'],
-], { x: L.x + 0.23, y: 4.89, w: L.w - 0.46, h: 2.32, size: BODY, lineGap: 0.5 });
+  'Opportunities are identified mainly through workshops, which take time to organise and depend heavily on the knowledge of those who attend.',
+  'Ideas are often high level, with limited detail on materials, processes, specifications or technical constraints.',
+  'Savings can only be confirmed after manual analysis, costing and data review.',
+  'Technical review, costing and prioritisation are carried out separately, which slows decision making.',
+  'The quality of ideas varies with individual experience, and only a small portion of parts can be reviewed.',
+  'Engineers spend significant time collecting and interpreting data instead of implementing improvements.',
+  'The process is resource-intensive, time-consuming and difficult to scale across programmes and teams.',
+], { x: A.x + 0.26, y: 4.56, w: A.w - 0.52, h: 2.55, size: BODY, lineGap: 10 });
 
 // ── Projected ROI ────────────────────────────────────────────────────────────
-box(s1, { ...M, y: 0.94, h: 1.70, fill: GREEN_FILL, line: GREEN_LINE });
-heading(s1, 'Projected ROI', { x: M.x + 0.20, y: 1.04, w: 2.6, size: 10.5 });
+box(s1, { ...B, y: 1.05, h: 1.65, fill: GREEN_FILL, line: GREEN_LINE });
+heading(s1, 'Projected ROI', { x: B.x + 0.26, y: 1.18, w: 3.0, size: 12 });
 T(s1, [
-  { text: 'Cost: £', options: { breakLine: true } },
-  { text: 'Hosting and API usage. No new hardware and no licences.', options: { fontSize: 7.4, color: MUTED, breakLine: true, paraSpaceAfter: 3 } },
-  { text: 'Return: £', options: { breakLine: true } },
-  { text: 'What is the return based on?', options: { breakLine: true } },
-  { text: '( engineer hours released per week × loaded rate × weeks )', options: { italic: true, fontSize: 7.2, color: MUTED, breakLine: true } },
-  { text: '+ ( saving per part the engine confirms × annual volume )', options: { italic: true, fontSize: 7.2, color: MUTED } },
-], { x: M.x + 0.20, y: 1.32, w: M.w - 0.40, h: 1.16, isTextBox: true, fontFace: FONT,
-     fontSize: 9.5, color: INK, margin: 0, valign: 'top', lineSpacingMultiple: 0.94 });
+  { text: 'Cost: ', options: { bold: true } },
+  { text: 'Hosting and API usage. No new hardware and no licences.', options: { breakLine: true, paraSpaceAfter: 6 } },
+  { text: 'Return: ', options: { bold: true } },
+  { text: '', options: { breakLine: true, paraSpaceAfter: 6 } },
+  { text: 'What is the return based on?', options: { bold: true } },
+], { x: B.x + 0.26, y: 1.54, w: B.w - 0.52, h: 1.20, isTextBox: true, fontFace: FONT,
+     fontSize: 10, color: INK, margin: 0, valign: 'top', lineSpacingMultiple: 0.95 });
 
-// ── Time ─────────────────────────────────────────────────────────────────────
-box(s1, { ...M, y: 2.68, h: 0.46, fill: BLUE_FILL, line: BLUE_LINE });
-field(s1, 'Time (hrs/week)', { x: M.x + 0.20, y: 2.79, w: 2.6, fontSize: 10.5, bold: true });
-
-// ── Expected benefits ────────────────────────────────────────────────────────
-box(s1, { ...M, y: 3.18, h: 3.06, fill: GREEN_FILL, line: GREEN_LINE });
-heading(s1, 'Expected Benefits:', { x: M.x + 0.20, y: 3.28, w: 2.6, size: 10.5 });
-T(s1, [
-  { text: 'More parts covered.  ', options: { bold: true } },
-  { text: 'A programme has thousands of parts. This looks at all of them, not the few a workshop reaches.', options: { breakLine: true, paraSpaceAfter: 5 } },
-  { text: 'Much faster, and usable.  ', options: { bold: true } },
-  { text: 'An idea arrives already written up and costed, naming the change, the process, the material and the saving per part. Nothing to chase.', options: { breakLine: true, paraSpaceAfter: 5 } },
-  { text: 'The same standard every time.  ', options: { bold: true } },
-  { text: 'It does not depend on who was available that week.', options: { breakLine: true, paraSpaceAfter: 5 } },
-  { text: 'Numbers Finance can check.  ', options: { bold: true } },
-  { text: 'Every saving is calculated and the working is shown, so less of it gets discounted.', options: { breakLine: true, paraSpaceAfter: 5 } },
-  { text: 'Nothing is lost.  ', options: { bold: true } },
-  { text: 'Ideas, decisions and confirmed savings are kept and reused on the next programme.', options: { breakLine: true, paraSpaceAfter: 5 } },
-  { text: 'Better use of engineers.  ', options: { bold: true } },
-  { text: 'Their time goes on judging and implementing ideas rather than collecting data.', options: {} },
-], { x: M.x + 0.20, y: 3.56, w: M.w - 0.40, h: 2.66, isTextBox: true, fontFace: FONT,
-     fontSize: 8.2, color: INK, margin: 0, valign: 'top', lineSpacingMultiple: 0.94 });
-
-// ── Measured result, and the ask ─────────────────────────────────────────────
-// A business case has to end in something to approve, and the one number this
-// product actually owns belongs next to it.
-box(s1, { ...M, y: 6.28, h: 0.97, fill: GREEN_FILL, line: GREEN_LINE });
-T(s1, [
-  { text: 'Already measured.  ', options: { bold: true } },
-  { text: 'Run against 16 reference parts held back from development: 15 landed inside tolerance, average error 11%.', options: { breakLine: true, paraSpaceAfter: 3 } },
-  { text: 'What we are asking for.  ', options: { bold: true } },
-  { text: 'A pilot on one part family — about twenty parts already costed by hand, run in parallel and judged by comparing the two sets of numbers.', options: {} },
-], { x: M.x + 0.20, y: 6.38, w: M.w - 0.40, h: 0.82, isTextBox: true, fontFace: FONT,
-     fontSize: 7.4, color: INK, margin: 0, valign: 'top', lineSpacingMultiple: 0.93 });
-
-// ── Key individuals ──────────────────────────────────────────────────────────
-box(s1, { ...R, y: 0.94, h: 1.70 });
-heading(s1, 'Key Individuals:', { x: R.x + 0.20, y: 1.04, w: 2.5, size: 10.5 });
-T(s1, [
-  { text: 'Use Case Submitter:', options: { breakLine: true } },
-  { text: 'LL4 Sponsor:', options: {} },
-], { x: R.x + 0.20, y: 1.34, w: R.w - 0.40, h: 0.52, isTextBox: true, fontFace: FONT,
-     fontSize: 9.5, color: INK, margin: 0, valign: 'top' });
-field(s1, 'Funding agreed with\nFinance', { x: R.x + 0.20, y: 1.95, w: 1.85, h: 0.44, fontSize: 9.5 });
-checkbox(s1, { x: R.x + 2.35, y: 2.01, size: 0.24 });
+// ── Time demand ──────────────────────────────────────────────────────────────
+box(s1, { ...B, y: 2.82, h: 0.60, fill: BLUE_FILL, line: BLUE_LINE });
+field(s1, 'Time demand (hrs/week)', { x: B.x + 0.26, y: 2.99, w: 3.4, fontSize: 12, bold: true });
 
 // ── Technical scoping ────────────────────────────────────────────────────────
-box(s1, { ...R, y: 2.68, h: 4.57 });
-heading(s1, 'Technical Scoping:', { x: R.x + 0.20, y: 2.78, w: 2.5, size: 10.5 });
+box(s1, { ...B, y: 3.54, h: 3.71 });
+heading(s1, 'Technical Scoping', { x: B.x + 0.26, y: 3.67, w: 3.0, size: 12 });
 T(s1, [
-  { text: 'Enabling AI on an existing system?', options: { breakLine: true } },
-  { text: 'NO — a separate application, and it is already built and running.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
-  { text: 'Model used:  ANTHROPIC Claude', options: { breakLine: true, paraSpaceAfter: 8 } },
-  { text: 'Technical implementation/support required?', options: { breakLine: true } },
-  { text: 'YES — somewhere to host it, a disk that persists and an API key. No new hardware.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
-  { text: 'Data handling:', options: { breakLine: true } },
-  { text: 'CAD and drawing files are processed on the server and never sent out. Text taken from them — part name, dimensions, material, cost figures — goes to the Anthropic API so the ideas can be written, as does a supplier quote if you upload one to be read.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
-  { text: 'What a run needs:', options: { breakLine: true } },
-  { text: '3D CAD (STEP or native), 2D drawings, annual volume, and the current price or quote if there is one.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
-  { text: 'What comes out:', options: { breakLine: true } },
-  { text: 'Excel, PowerPoint and PDF for the review.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
-  { text: 'What this is not:', options: { breakLine: true } },
-  { text: 'It does not replace the cost engineer\'s judgement. It does the data work and the first pass; the decisions stay with the engineer.', options: { fontSize: 7.8, color: MUTED, breakLine: true, paraSpaceAfter: 8 } },
-  { text: 'How to prove it:', options: { breakLine: true } },
-  { text: 'Run parts already costed by hand and compare, before anything is relied on.', options: { fontSize: 7.8, color: MUTED } },
-], { x: R.x + 0.20, y: 3.06, w: R.w - 0.40, h: 4.13, isTextBox: true, fontFace: FONT,
-     fontSize: 8.8, color: INK, margin: 0, valign: 'top', lineSpacingMultiple: 0.92 });
+  { text: 'Enabling AI on an existing system?', options: { bold: true, breakLine: true } },
+  { text: 'YES / NO', options: { breakLine: true, paraSpaceAfter: 11 } },
+  { text: 'Model used', options: { bold: true, breakLine: true } },
+  { text: 'Anthropic Claude', options: { breakLine: true, paraSpaceAfter: 11 } },
+  { text: 'Technical implementation / support required?', options: { bold: true, breakLine: true } },
+  { text: 'YES. Basic setup is needed, including hosting, local storage and an API key. No new hardware required.', options: { breakLine: true, paraSpaceAfter: 11 } },
+  { text: 'Data handling', options: { bold: true, breakLine: true } },
+  { text: 'CAD and drawing files are processed on the server and are not sent out. Text taken from them — part name, dimensions, material, cost figures — goes to the Anthropic API so the ideas can be written.', options: { breakLine: true, paraSpaceAfter: 11 } },
+  { text: 'How this is proven', options: { bold: true, breakLine: true } },
+  { text: 'Run a set of parts that have already been costed by hand and compare the two, before anything is relied on.', options: {} },
+], { x: B.x + 0.26, y: 4.06, w: B.w - 0.52, h: 3.04, isTextBox: true, fontFace: FONT,
+     fontSize: 10, color: INK, margin: 0, valign: 'top', lineSpacingMultiple: 0.95 });
+
+// ═══ SLIDE 2 — the proposal, on the customer's second template ══════════════
+// Layout copied from the attached example: a Proposal box on the left and an
+// Expected Benefits box on the right, sitting slightly lower. Content is
+// BrainSpark's; none of the example's subject matter is carried across.
+SLIDE = 1;
+const s2 = pres.addSlide();
+s2.background = { color: 'FFFFFF' };
+masthead(s2, null);
+
+box(s2, { x: 0.5, y: 1.15, w: 6.05, h: 5.95 });
+heading(s2, 'Proposal', { x: 0.78, y: 1.32, w: 3.0, size: 13 });
+bullets(s2, [
+  'Upload CAD models, drawings, BOMs and cost data into the tool.',
+  'The design, materials, manufacturing processes and costs are reviewed automatically.',
+  'It generates detailed cost reduction ideas rather than high level suggestions.',
+  'Each idea includes the recommended change, the estimated saving and the supporting rationale.',
+  'Thousands of parts and assemblies can be assessed, not just the few reviewed in a workshop.',
+  'Opportunities are identified consistently, using the same approach every time.',
+  'Savings are estimated automatically, which reduces manual costing effort.',
+  'Engineers focus on evaluating and implementing the best ideas rather than collecting and analysing data.',
+  'Tools built inside BrainSpark: Prism (CAD to idea), Innovation Studio (text to idea), TRIZ Studio (problem solving), DFM / DFA (design optimisation).',
+], { x: 0.78, y: 1.76, w: 5.49, h: 5.16, size: 12.5, lineGap: 13 });
+
+box(s2, { x: 6.90, y: 1.42, w: 5.93, h: 5.68, fill: GREEN_FILL, line: GREEN_LINE });
+heading(s2, 'Expected Benefits', { x: 7.18, y: 1.59, w: 3.0, size: 13 });
+bullets(s2, [
+  'Identify cost reduction opportunities much faster than traditional workshop-based approaches.',
+  'Increase programme coverage by assessing hundreds of parts rather than a limited sample.',
+  'Improve consistency by applying the same analysis across all commodities and programmes.',
+  'Provide early visibility of savings potential, helping teams prioritise high value opportunities.',
+  'Reduce manual effort spent on data collection, costing and initial analysis.',
+  'Improve engineering productivity by allowing teams to focus on validation and implementation.',
+  'Support better decision making through quantified savings estimates.',
+  'Accelerate delivery of cost reduction targets and increase realised savings.',
+], { x: 7.18, y: 2.03, w: 5.37, h: 4.86, size: 12.5, lineGap: 13 });
 
 await pres.writeFile({ fileName: OUT });
 if (process.argv.includes('--emit-layout')) {
   const { writeFileSync } = await import('node:fs');
   const path = OUT.replace(/\.pptx$/, '.layout.json');
-  writeFileSync(path, JSON.stringify({ w: 13.333, h: 7.5, slides: [RECORD[0]] }, null, 1));
+  writeFileSync(path, JSON.stringify({ w: 13.333, h: 7.5, slides: RECORD }, null, 1));
   console.log(`wrote ${path} for visual QA`);
 }
-console.log(`wrote ${OUT} — one slide`);
+console.log(`wrote ${OUT} — two slides`);
