@@ -3395,7 +3395,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       const built = { applied: 0, refused: 0, reasons: {} };
       for (const idea of validated) {
         if (!idea?.savingModel) continue;
-        const r = applySavingModel(idea, { annualVolume: effectiveVolume });
+        const r = applySavingModel(idea, { annualVolume: effectiveVolume, currency: config.currency });   // label in the user's currency — the model stated its terms in it
         if (r.ok) built.applied++;
         else { built.refused++; built.reasons[r.reason] = (built.reasons[r.reason] || 0) + 1; delete idea.savingModel; }
       }

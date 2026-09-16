@@ -317,7 +317,7 @@ export function parseBasis(basis, { annualVolume = null, annualValueText = '' } 
     if (t.reduce != null) { reductions.push(t.reduce); continue; }
     if (t.context != null) {
       context = t.context;
-      if (pendingApply != null) { perPart += context * pendingApply; anyPerPart = true; terms.push({ clause: c.slice(0, 80), value: context * pendingApply, perYear: false, how: `${Math.round(pendingApply * 100)}% × €${context}` }); pendingApply = null; }
+      if (pendingApply != null) { perPart += context * pendingApply; anyPerPart = true; terms.push({ clause: c.slice(0, 80), value: context * pendingApply, perYear: false, how: `${Math.round(pendingApply * 100)}% × ${context}`   /* symbol-agnostic: the clause text alongside carries the currency the model wrote */ }); pendingApply = null; }
       continue;
     }
     if (t.apply != null) {

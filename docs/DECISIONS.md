@@ -3926,3 +3926,25 @@ to run unchanged. Output is synthetic and every idea id starts `stub-`, every
 description starts SYNTHETIC TEST CONTENT, and the benchmark field says no real
 programme is cited. It proves plumbing. It must never be mistaken for a demo of
 the product's judgement, and it must never be set in production.
+
+## 76. The computed saving is labelled in the user's currency
+
+Seen on the first end-to-end run through the stub (DECISIONS 75): the wizard
+was set to GBP and the results page read "€432K at 120,000 units/yr".
+`saving-model.mjs` hard-coded `€` into every figure it rendered — the annual
+value and the calculation basis — regardless of the run's currency.
+
+The model states its saving terms in the user's currency; the prompt hands it
+the symbol and asks for figures in it. So the label on the computed result must
+be the same symbol. This is a label, not a conversion: converting inside an
+engine is what the house rule forbids, and `fx-rates.mjs` still does that at
+the display boundary. `applySavingModel` now takes `currency`, the ideation
+route passes `config.currency`, and the default stays EUR so nothing else
+moves. `idea-arith.mjs` had the same defect in its explanation text and now
+writes the multiplier without a symbol, since the clause beside it carries the
+one the model wrote.
+
+For a cost engineering tool a mislabelled currency IS a wrong number — the
+reader converts it in their head at the FX rate and every downstream decision
+inherits the error. Found only because the stub made a full run free to look
+at; it had been shipping.

@@ -37,8 +37,16 @@ export const TERM_SIGNS = Object.freeze(['saving', 'cost']);
 
 const MAX_TERMS = 12;
 const round2 = (n) => Math.round(n * 100) / 100;
-const money = (n) => `€${Math.round(n).toLocaleString('en-GB')}`;
-const per = (n) => `€${n.toFixed(n < 1 ? 3 : 2)}`;
+// The model states every term in the USER'S currency — the prompt hands it the
+// symbol and asks for figures in it — so the label written here must be that
+// symbol, not a fixed one. This is a label, never a conversion: converting
+// inside an engine is what the house rule forbids (fx-rates.mjs does it at the
+// display boundary). Until Sept 2026 this was hard-coded to €, and a GBP run
+// rendered "€432K/yr" for numbers the model had stated in pounds.
+export const CURRENCY_SYMBOLS = Object.freeze({ EUR: '€', GBP: '£', USD: '$', CNY: '¥', INR: '₹', JPY: '¥' });
+export const symbolFor = (currency) => CURRENCY_SYMBOLS[String(currency || '').toUpperCase()] || '€';
+const money = (n, sym = '€') => `${sym}${Math.round(n).toLocaleString('en-GB')}`;
+const per = (n, sym = '€') => `${sym}${n.toFixed(n < 1 ? 3 : 2)}`;
 
 /**
  * Evaluate a structured saving model.
@@ -53,7 +61,8 @@ const per = (n) => `€${n.toFixed(n < 1 ? 3 : 2)}`;
  * back `ok: false` with the reason — the caller then falls through to the prose
  * parser, exactly as it did before, and says so.
  */
-export function evaluateSavingModel(model, { annualVolume = null } = {}) {
+export function evaluateSavingModel(model, { annualVolume = null, currency = 'EUR' } = {}) {
+  const sym = symbolFor(currency);
   const refuse = (reason) => ({ ok: false, reason });
   if (!model || typeof model !== 'object') return refuse('no structured saving model supplied');
   const raw = Array.isArray(model.terms) ? model.terms.slice(0, MAX_TERMS) : [];
@@ -110,7 +119,7 @@ export function evaluateSavingModel(model, { annualVolume = null } = {}) {
   return {
     ok: true, annualEur, perPartEur: round2(perPart), volume, terms, excluded,
     ...(unpricedTerms.length ? { unpricedTerms } : {}),
-    basis: renderBasis({ terms, volume, perPart, annual, annualEur }),
+    basis: renderBasis({ terms, volume, perPart, annual, annualEur }, sym),
   };
 }
 
@@ -119,29 +128,30 @@ export function evaluateSavingModel(model, { annualVolume = null } = {}) {
  * it. Nothing here is the model's prose, so nothing here can disagree with the
  * total — which was the entire defect.
  */
-function renderBasis({ terms, volume, perPart, annual, annualEur }) {
+function renderBasis({ terms, volume, perPart, annual, annualEur }, sym = '€') {
   const bits = [];
   for (const t of terms) {
     if (t.value == null) { bits.push(`${t.label} (not priced: ${t.reason})`); continue; }
     const s = t.sign === 'cost' ? '−' : '+';
-    if (t.scope === 'of') bits.push(`${s}${t.value}% of ${t.resolvedFrom} = ${per(t.eur)}${t.resolvedScope === 'annual' ? '/yr' : '/part'} (${t.label})`);
-    else if (t.scope === 'annual') bits.push(`${s}${money(t.value)}/yr (${t.label})`);
-    else bits.push(`${s}${per(t.value)}/part (${t.label})`);
+    if (t.scope === 'of') bits.push(`${s}${t.value}% of ${t.resolvedFrom} = ${per(t.eur, sym)}${t.resolvedScope === 'annual' ? '/yr' : '/part'} (${t.label})`);
+    else if (t.scope === 'annual') bits.push(`${s}${money(t.value, sym)}/yr (${t.label})`);
+    else bits.push(`${s}${per(t.value, sym)}/part (${t.label})`);
   }
   const walk = bits.join(' ');
   const tail = perPart !== 0 && volume
-    ? ` → ${per(perPart)}/part × ${volume.toLocaleString('en-GB')}/yr${annual !== 0 ? ` ${annual > 0 ? '+' : '−'} ${money(Math.abs(annual))}/yr` : ''} = ${money(annualEur)}/yr`
-    : ` → ${money(annualEur)}/yr`;
+    ? ` → ${per(perPart, sym)}/part × ${volume.toLocaleString('en-GB')}/yr${annual !== 0 ? ` ${annual > 0 ? '+' : '−'} ${money(Math.abs(annual), sym)}/yr` : ''} = ${money(annualEur, sym)}/yr`
+    : ` → ${money(annualEur, sym)}/yr`;
   return `computed from stated terms: ${walk}${tail}`;
 }
 
 /** The annual-value string the UI shows, generated from the computed figure. */
-export function renderAnnualValue(evaluated) {
+export function renderAnnualValue(evaluated, currency = 'EUR') {
   if (!evaluated?.ok) return null;
+  const sym = symbolFor(currency);
   const v = evaluated.annualEur;
-  const fmt = Math.abs(v) >= 1_000_000 ? `€${(v / 1_000_000).toFixed(2)}M`
-    : Math.abs(v) >= 1_000 ? `€${Math.round(v / 1_000).toLocaleString('en-GB')}K`
-      : money(v);
+  const fmt = Math.abs(v) >= 1_000_000 ? `${sym}${(v / 1_000_000).toFixed(2)}M`
+    : Math.abs(v) >= 1_000 ? `${sym}${Math.round(v / 1_000).toLocaleString('en-GB')}K`
+      : money(v, sym);
   return evaluated.volume ? `${fmt} at ${evaluated.volume.toLocaleString('en-GB')} units/yr` : `${fmt}/yr`;
 }
 
@@ -153,14 +163,14 @@ export function renderAnnualValue(evaluated) {
  * visible rather than silent — the same rule every other stamp in this pipeline
  * follows. When the two already agreed, that is worth knowing too.
  */
-export function applySavingModel(idea, { annualVolume = null } = {}) {
+export function applySavingModel(idea, { annualVolume = null, currency = 'EUR' } = {}) {
   const model = idea?.savingModel;
-  const ev = evaluateSavingModel(model, { annualVolume });
+  const ev = evaluateSavingModel(model, { annualVolume, currency });
   if (!ev.ok) return { ok: false, reason: ev.reason };
 
   const csp = idea.costSavingPotential && typeof idea.costSavingPotential === 'object' ? idea.costSavingPotential : {};
   const statedText = String(csp.annualValue ?? '');
-  const rendered = renderAnnualValue(ev);
+  const rendered = renderAnnualValue(ev, currency);
 
   idea.costSavingPotential = { ...csp, annualValue: rendered, calculationBasis: ev.basis };
   idea.savingModel = {

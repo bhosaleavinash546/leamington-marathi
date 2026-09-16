@@ -161,3 +161,27 @@ describe('what it deliberately does not claim', () => {
     assert.equal(r.annualEur, 24_000_000);
   });
 });
+
+describe('the label is the currency the model stated its terms in', () => {
+it('GBP prints pounds, EUR stays the default, symbols are case-insensitive', () => {
+  const mk = () => ({ savingModel: { terms: [
+    { label: 'Connector deleted', value: 3.2, scope: 'per-part', sign: 'saving' },
+    { label: 'Tooling', value: 180000, scope: 'annual', sign: 'cost' },
+  ] }, costSavingPotential: {} });
+
+  const gbp = mk();
+  assert.equal(applySavingModel(gbp, { annualVolume: 120000, currency: 'GBP' }).ok, true);
+  assert.match(gbp.costSavingPotential.annualValue, /^£/);
+  assert.match(gbp.costSavingPotential.calculationBasis, /£3\.20\/part/);
+  assert.doesNotMatch(gbp.costSavingPotential.annualValue + gbp.costSavingPotential.calculationBasis, /€/,
+    'a GBP run must not print euro signs — that is a wrong number to a cost engineer');
+
+  const eur = mk();
+  applySavingModel(eur, { annualVolume: 120000 });        // default unchanged
+  assert.match(eur.costSavingPotential.annualValue, /^€/);
+
+  const usd = mk();
+  applySavingModel(usd, { annualVolume: 120000, currency: 'usd' });   // case-insensitive
+  assert.match(usd.costSavingPotential.annualValue, /^\$/);
+});
+});
