@@ -3841,3 +3841,32 @@ on the flagship), not inferred from the error text. `CV_THINKING_BUDGET` keeps
 its meaning as the on/off switch and now also picks the effort level, so no
 deployment has to change. The fallback's match was widened to `output_config`
 and `effort` so the next shape change degrades the same way rather than failing.
+
+## 73. The long generation call has to stream
+
+Fixing the adaptive-thinking bug (DECISIONS 72) made `/api/analyze` fail a
+different way: every run died at almost exactly **602 seconds** with the SDK's
+"Request timed out", no matter what the client timeout said. Raising
+`CV_ANALYZE_CALL_TIMEOUT_MS` to 25 minutes changed nothing — verified by
+reading `/proc/<pid>/environ` on the process actually holding the port, because
+the obvious explanation (the env var not reaching the server) had to be ruled
+out before blaming the network.
+
+It is not the sandbox's egress proxy either: `api.anthropic.com` sits in that
+proxy's `noProxy` list, so the SDK dials it directly.
+
+What is left is the request itself. `max_tokens: 24000` with extended thinking
+runs for many minutes, and a NON-streaming request of that length does not
+survive the wire — it is cut around ten minutes. `client.messages.stream(...)
+.finalMessage()` keeps bytes flowing and returns an identical `Message`, so
+every caller downstream is untouched.
+
+The two bugs hid each other. While `thinking` was being silently stripped the
+call was fast enough to complete non-streaming, so nothing looked wrong; the
+moment reasoning actually engaged, the transport assumption underneath it broke.
+A fix that restores a feature can expose the next thing that was only working by
+accident.
+
+**Scope note:** the same one-line change was applied to the Prism per-lens call,
+which has identical exposure — same 24k ceiling, same non-streaming call. That
+path was NOT exercised by the run that proved the main path, and is untested.

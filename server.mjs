@@ -3178,6 +3178,18 @@ function autoSaveProject(userId, projectId, systemName, subassemblyName, partNam
   }
 }
 
+// A 24k-token generation with extended thinking runs for many minutes, and a
+// NON-streaming request of that length does not survive the wire — it is cut
+// around the ten-minute mark and surfaces as "Request timed out" after ~600s,
+// whatever the client timeout is set to. Streaming keeps bytes flowing and
+// reassembles the identical Message object, so every caller below is unchanged.
+// This only became reachable once extended thinking actually started working
+// (see the adaptive-thinking fix above): while it was being silently stripped,
+// the call was fast enough to fit.
+async function createLongMessage(client, params, opts) {
+  return await client.messages.stream(params, opts).finalMessage();
+}
+
 app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1000), async (req, res) => {
   const { config, systemName, subassemblyName, partName, enableSearch, searchApiKey, cadGeometry } = req.body;
   // Body key → stored credential → server env (resolveApiKey reads req.body.apiKey,
@@ -3508,7 +3520,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
         };
         let response;
         try {
-          response = await client.messages.create(params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
+          response = await createLongMessage(client, params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
         } catch (e) {
           // One failed lens must not sink the run — the merged set says which
           // lens is missing rather than silently narrowing coverage. Logged
@@ -3560,13 +3572,13 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       // would burn ~4× the tokens before failing).
       let response;
       try {
-        response = await client.messages.create(params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
+        response = await createLongMessage(client, params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
       } catch (e) {
         // Defensive: if this provider/config combination rejects extended
         // thinking, retry once without rather than failing the analysis.
         if ((params.thinking || params.output_config) && e?.status === 400 && /thinking|output_config|effort/i.test(e?.message || '')) {
           delete params.thinking; delete params.output_config;
-          response = await client.messages.create(params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
+          response = await createLongMessage(client, params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
         } else throw e;
       }
 
