@@ -327,7 +327,7 @@ export function parseBasis(basis, { annualVolume = null, annualValueText = '' } 
       // per-part term at all, so the capture rate was parked in pendingApply and
       // silently never applied, leaving the ceiling as the answer.
       else if (anyPerYear && perYear > 0) { perYear *= t.apply; terms.push({ clause: c.slice(0, 80), value: null, perYear: true, how: `× ${Math.round(t.apply * 100)}%` }); }
-      else if (context != null) { perPart += context * t.apply; anyPerPart = true; terms.push({ clause: c.slice(0, 80), value: context * t.apply, perYear: false, how: `${Math.round(t.apply * 100)}% × €${context}` }); }
+      else if (context != null) { perPart += context * t.apply; anyPerPart = true; terms.push({ clause: c.slice(0, 80), value: context * t.apply, perYear: false, how: `${Math.round(t.apply * 100)}% × ${context}` }); }   /* symbol-agnostic, as above */
       else pendingApply = t.apply;
       continue;
     }

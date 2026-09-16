@@ -3948,3 +3948,13 @@ For a cost engineering tool a mislabelled currency IS a wrong number — the
 reader converts it in their head at the FX rate and every downstream decision
 inherits the error. Found only because the stub made a full run free to look
 at; it had been shipping.
+
+**Gap, documented not patched.** The engine cross-check badge
+(`ResultsPage.tsx:422`) prints the engine's `baselineEur → proposedEur` with a
+hard-coded `€`. Those figures ARE euros — the engine computes in EUR by design —
+so the label is truthful, which is why it was left alone: relabelling them `£`
+would be the actual lie. What is missing is the other half of the house rule:
+the client never imports `fx-rates.mjs`, so nothing converts engine figures at
+the display boundary, and a GBP run shows a £ saving beside a € engine check.
+The honest fix is a converted figure that names its rate and date; that is a
+design change, not a one-liner, and it is recorded here rather than improvised.
