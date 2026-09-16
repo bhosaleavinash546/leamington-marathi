@@ -262,10 +262,16 @@ function makeAnthropic(apiKey, meta = {}) {
   // Instrument messages.create: every call logs model/tokens/latency to llm_calls
   // (metadata only — never prompt content). Failures are logged with ok=0.
   const origCreate = client.messages.create.bind(client.messages);
-  client.messages.create = async (params, opts) => {
+  // Wrap by SUBSCRIBING, not by replacing the return value. The SDK's create()
+  // returns an APIPromise carrying .withResponse(), and messages.stream() calls
+  // exactly that — so an `async` wrapper (which returns a plain Promise) breaks
+  // every streaming call with "messages.create(...).withResponse is not a
+  // function". Returning the original APIPromise keeps streaming working and
+  // still logs every call.
+  client.messages.create = (params, opts) => {
     const t0 = Date.now();
-    try {
-      const resp = await origCreate(params, opts);
+    const promise = origCreate(params, opts);
+    promise.then(resp => {
       try {
         // Streaming calls return a Stream immediately (no usage, ~0 ms) — record
         // them with null latency/tokens so the log never shows a fake fast call.
@@ -273,14 +279,13 @@ function makeAnthropic(apiKey, meta = {}) {
         db.prepare('INSERT INTO llm_calls (id, model, inputTokens, outputTokens, cacheReadTokens, latencyMs, ok, createdAt, userId, route) VALUES (?,?,?,?,?,?,1,?,?,?)')
           .run(crypto.randomUUID(), (params?.model || '') + (streaming ? ' (stream)' : ''), resp?.usage?.input_tokens ?? null, resp?.usage?.output_tokens ?? null, resp?.usage?.cache_read_input_tokens ?? null, streaming ? null : Date.now() - t0, new Date().toISOString(), meta.userId ?? null, meta.route ?? null);
       } catch { /* logging must never break the call */ }
-      return resp;
-    } catch (e) {
+    }, e => {
       try {
         db.prepare('INSERT INTO llm_calls (id, model, latencyMs, ok, createdAt, userId, route) VALUES (?,?,?,0,?,?,?)')
           .run(crypto.randomUUID(), params?.model || '', Date.now() - t0, new Date().toISOString(), meta.userId ?? null, meta.route ?? null);
       } catch { /* ignore */ }
-      throw e;
-    }
+    });
+    return promise;   // still an APIPromise — .withResponse() intact
   };
   return client;
 }
