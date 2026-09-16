@@ -94,10 +94,10 @@ s1.background = { color: 'FFFFFF' };
 masthead(s1, 'IDEA GENERATION BUSINESS CASE');
 
 const A = { x: 0.5, w: 7.45 }, B = { x: 8.20, w: 4.63 };
-const BODY = 10.5;
+const BODY = 10.0;
 
 // ── Problem statement ────────────────────────────────────────────────────────
-box(s1, { ...A, y: 1.05, h: 2.90 });
+box(s1, { ...A, y: 1.05, h: 2.52 });
 heading(s1, 'Problem Statement', { x: A.x + 0.26, y: 1.18, w: 3.0, size: 12 });
 field(s1, 'PII:', { x: 6.55, y: 1.18, w: 0.5, fontSize: 11, bold: true });
 checkbox(s1, { x: 7.05, y: 1.14, size: 0.26 });
@@ -107,20 +107,31 @@ bullets(s1, [
   'Nobody knows whether an idea is worth 20p or £2 until someone manually evaluates and costs it.',
   'A programme can contain thousands of parts, but workshops typically review only a small number, so many commodities and opportunities are never explored.',
   'Opportunities often depend on individual expertise. If the right knowledge is not in the room at the time, valuable ideas are overlooked.',
-], { x: A.x + 0.26, y: 1.54, w: A.w - 0.52, h: 2.22, size: BODY, lineGap: 10 });
+], { x: A.x + 0.26, y: 1.50, w: A.w - 0.52, h: 1.90, size: BODY, lineGap: 9 });
 
 // ── Current state ────────────────────────────────────────────────────────────
-box(s1, { ...A, y: 4.07, h: 3.18 });
-heading(s1, 'Current State', { x: A.x + 0.26, y: 4.20, w: 3.0, size: 12 });
+box(s1, { ...A, y: 3.64, h: 1.73 });
+heading(s1, 'Current State', { x: A.x + 0.26, y: 3.75, w: 3.0, size: 12 });
 bullets(s1, [
-  'Opportunities are identified mainly through workshops, which take time to organise and depend heavily on the knowledge of those who attend.',
+  'Opportunities are identified mainly through workshops, which take time to organise and depend on who attends.',
   'Ideas are often high level, with limited detail on materials, processes, specifications or technical constraints.',
   'Savings can only be confirmed after manual analysis, costing and data review.',
-  'Technical review, costing and prioritisation are carried out separately, which slows decision making.',
-  'The quality of ideas varies with individual experience, and only a small portion of parts can be reviewed.',
-  'Engineers spend significant time collecting and interpreting data instead of implementing improvements.',
-  'The process is resource-intensive, time-consuming and difficult to scale across programmes and teams.',
-], { x: A.x + 0.26, y: 4.56, w: A.w - 0.52, h: 2.55, size: BODY, lineGap: 10 });
+  'Engineers spend significant time collecting and interpreting data, and the process is difficult to scale.',
+], { x: A.x + 0.26, y: 4.09, w: A.w - 0.52, h: 1.21, size: BODY, lineGap: 6 });
+
+// ── Proposed solution, in brief — the detail is on slide 2 ───────────────────
+box(s1, { ...A, y: 5.47, h: 1.78 });
+heading(s1, 'Proposed Solution / Model', { x: A.x + 0.26, y: 5.58, w: 3.6, size: 12 });
+T(s1, 'Detail on slide 2', {
+  x: A.x + A.w - 1.75, y: 5.60, w: 1.5, h: 0.22, isTextBox: true, fontFace: FONT,
+  fontSize: 9, italic: true, color: MUTED, margin: 0, align: 'right', valign: 'top',
+});
+bullets(s1, [
+  'Upload CAD models, drawings, BOMs and cost data into the tool.',
+  'The design, materials, processes and costs are reviewed automatically, and detailed ideas are generated — each with the change, the saving and the rationale.',
+  'Thousands of parts and assemblies can be assessed, consistently, using the same approach every time.',
+  'Tools built inside BrainSpark: Prism, Innovation Studio, TRIZ Studio and DFM / DFA.',
+], { x: A.x + 0.26, y: 5.92, w: A.w - 0.52, h: 1.24, size: BODY, lineGap: 9 });
 
 // ── Projected ROI ────────────────────────────────────────────────────────────
 box(s1, { ...B, y: 1.05, h: 1.65, fill: GREEN_FILL, line: GREEN_LINE });
