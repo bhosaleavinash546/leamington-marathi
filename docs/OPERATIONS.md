@@ -87,10 +87,10 @@ merely picking a default, the row says so.
 | Variable | Default | Notes |
 |---|---|---|
 | `CV_SMALL_MODEL` | `claude-sonnet-5` | The cheap model for critics, repairs and extraction. The flagship is a literal in the code, deliberately — see DECISIONS. |
-| `CV_THINKING_BUDGET` | `6000` | Extended-thinking token budget on the ideation call. |
+| `CV_THINKING_BUDGET` | `6000` | Extended thinking on the ideation call. `0` turns it off (the cheapest run, no reasoning). Otherwise the number selects the effort level — up to 8000 → `low`, up to 16000 → `medium`, above → `high` — and reserves matching output headroom (8k / 16k / 24k tokens) ON TOP of the 24k the idea list needs, because thinking tokens count against `max_tokens` and would otherwise starve the output (`llm-budget.mjs`). Expect a run to bill up to base + headroom output tokens. |
 | `CV_MONTHLY_TOKEN_QUOTA` | `3000000` | Per-user monthly cap. Requests past it are refused with the tally, not silently truncated. |
-| `CV_ANALYZE_TIMEOUT_MS` | `600000` | Whole-pipeline ceiling for `/api/analyze`. |
-| `CV_ANALYZE_CALL_TIMEOUT_MS` | `420000` | Ceiling for a single model call inside that pipeline. |
+| `CV_ANALYZE_TIMEOUT_MS` | `1200000` | Whole-pipeline ceiling for `/api/analyze`. Raised from 10 to 20 min: with reasoning genuinely on, a single-part run is a several-minute generation. |
+| `CV_ANALYZE_CALL_TIMEOUT_MS` | `900000` | Ceiling for a single model call inside that pipeline (the call streams, so this governs the connection rather than an idle stall). |
 | `BRAINSPARK_IDEATION_MODE` | unset | `legacy` reverts every generation upgrade from this build — the A/B arm the ideation eval measures against. |
 | `CV_FORESIGHT_READ_COUNT` | `6` | Documents the Horizon deep-research loop fetches and reads per sweep. |
 

@@ -36,6 +36,7 @@ import { getActiveLibrary } from './active-library.mjs';
 import { applyLiveMaterialPrices } from './material-commodity.mjs';
 import { buildCostTools, runToolLoop } from './cost-tools.mjs';
 import { messagesJson } from './llm-json.mjs';
+import { ideationParams, truncationReason } from './llm-budget.mjs';
 import { validate, SCHEMAS } from './schemas.mjs';
 import { buildIndex, tokenize } from './idea-index.mjs';
 import { batchDiversity, dedupeIdeas, rankIdeas } from './idea-quality.mjs';
@@ -272,6 +273,11 @@ function makeAnthropic(apiKey, meta = {}) {
     const t0 = Date.now();
     const promise = origCreate(params, opts);
     promise.then(resp => {
+      // A streamed call resolves here when the stream OPENS, before any usage
+      // exists. createLongMessage meters it from the final message instead —
+      // otherwise every long generation is logged with no tokens and the
+      // monthly quota (which sums outputTokens) stops counting the biggest call.
+      if (params?.stream === true) return;
       try {
         // Streaming calls return a Stream immediately (no usage, ~0 ms) — record
         // them with null latency/tokens so the log never shows a fake fast call.
@@ -287,6 +293,7 @@ function makeAnthropic(apiKey, meta = {}) {
     });
     return promise;   // still an APIPromise — .withResponse() intact
   };
+  client._meta = meta;   // so createLongMessage can attribute its own metering row
   return client;
 }
 
@@ -3158,8 +3165,11 @@ function repairTruncatedJsonArray(raw) {
 // prompt is far richer and the final 24k-token call with extended thinking can
 // legitimately run 3-5 minutes on its own — 300s total made search-enabled runs
 // time out routinely. 600s total / 420s per call; both env-tunable.
-const ANALYZE_TIMEOUT_MS = Number(process.env.CV_ANALYZE_TIMEOUT_MS ?? 600_000);
-const ANALYZE_CALL_TIMEOUT_MS = Number(process.env.CV_ANALYZE_CALL_TIMEOUT_MS ?? 420_000);
+const ANALYZE_TIMEOUT_MS = Number(process.env.CV_ANALYZE_TIMEOUT_MS ?? 1_200_000);
+const ANALYZE_CALL_TIMEOUT_MS = Number(process.env.CV_ANALYZE_CALL_TIMEOUT_MS ?? 900_000);
+// Output the emit_ideas call needs on its own. Thinking headroom is ADDED to
+// this (llm-budget.mjs) — it must never be carved out of it.
+const BASE_OUTPUT_TOKENS = 24000;
 
 function autoSaveProject(userId, projectId, systemName, subassemblyName, partName, config, ideas, sources) {
   try {
@@ -3191,8 +3201,43 @@ function autoSaveProject(userId, projectId, systemName, subassemblyName, partNam
 // This only became reachable once extended thinking actually started working
 // (see the adaptive-thinking fix above): while it was being silently stripped,
 // the call was fast enough to fit.
-async function createLongMessage(client, params, opts) {
-  return await client.messages.stream(params, opts).finalMessage();
+async function createLongMessage(client, params, opts, onProgress) {
+  const t0 = Date.now();
+  const meta = client._meta || {};
+  const stream = client.messages.stream(params, opts);
+  if (onProgress) {
+    // Adaptive thinking streams summarised deltas (often empty text), so token
+    // counts during reasoning are unknowable from here; report elapsed time
+    // instead, and switch to a token estimate once real output starts flowing.
+    let outChars = 0, last = 0;
+    stream.on('streamEvent', ev => {
+      const d = ev.delta;
+      if (d?.type === 'input_json_delta') outChars += (d.partial_json || '').length;
+      else if (d?.type === 'text_delta') outChars += (d.text || '').length;
+      const now = Date.now();
+      if (now - last < 5000) return;
+      last = now;
+      try { onProgress({ elapsedMs: now - t0, outTokens: Math.round(outChars / 3.7) }); } catch { /* UI only */ }
+    });
+  }
+  try {
+    const msg = await stream.finalMessage();
+    try {
+      db.prepare('INSERT INTO llm_calls (id, model, inputTokens, outputTokens, cacheReadTokens, latencyMs, ok, createdAt, userId, route) VALUES (?,?,?,?,?,?,1,?,?,?)')
+        .run(crypto.randomUUID(), params.model + ' (stream)', msg.usage?.input_tokens ?? null, msg.usage?.output_tokens ?? null, msg.usage?.cache_read_input_tokens ?? null, Date.now() - t0, new Date().toISOString(), meta.userId ?? null, meta.route ?? null);
+    } catch { /* metering must never break the call */ }
+    return msg;
+  } catch (e) {
+    // An API error at OPEN carries a status and was already logged by the
+    // wrapper; a mid-stream failure has none and is logged here.
+    if (e?.status == null) {
+      try {
+        db.prepare('INSERT INTO llm_calls (id, model, latencyMs, ok, createdAt, userId, route) VALUES (?,?,?,0,?,?,?)')
+          .run(crypto.randomUUID(), params.model + ' (stream)', Date.now() - t0, new Date().toISOString(), meta.userId ?? null, meta.route ?? null);
+      } catch { /* ignore */ }
+    }
+    throw e;
+  }
 }
 
 app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1000), async (req, res) => {
@@ -3290,6 +3335,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
   emit({ type: 'connecting', message: 'Connecting to AI chief engineer...' });
 
   const deadline = Date.now() + ANALYZE_TIMEOUT_MS;
+  let lastStopReason = null;   // why the last model call ended — part of any failure message
 
   // Shared completion for BOTH output channels (emit_ideas tool + legacy text
   // JSON): critic validation → deterministic engine cross-check → prior-art
@@ -3310,7 +3356,10 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     // Critic pass: schema-validate, coerce enums, sanity-band numbers, resolve
     // citations and grades, score technical depth, drop broken ideas.
     const { ideas: validated, summary: validationSummary } = validateIdeas(parsedIdeas, { searchExecuted, hasEvidence, evidenceIds, materials: catalogueMaterials });
-    if (validated.length === 0) throw new Error('No valid ideas could be generated. Please retry.');
+    if (validated.length === 0) {
+      throw new Error(`No usable ideas: the model returned ${validationSummary.total} and the validator dropped `
+        + `${validationSummary.dropped} (model stopped because: ${lastStopReason ?? 'unknown'}). Retry, or narrow the part or context.`);
+    }
     // Stage failures are REPORTED, not swallowed. Until Sept 2026 (review
     // R-23) a thrown engine check, arithmetic pass or critique panel produced
     // exactly the payload a clean run with nothing to say produces, so the UI
@@ -3554,41 +3603,58 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
 
     for (let i = 0; i < 8; i++) {
       if (Date.now() > deadline) throw new Error(`Analysis timed out after ${Math.round(ANALYZE_TIMEOUT_MS / 60000)} minutes. Please try again with web search disabled.`);
-      const params = { model: 'claude-opus-4-8', max_tokens: 24000, system: cachedSystem(CHIEF_ENGINEER_PROMPT), messages };
+      // Chief-Engineer-grade tradeoffs deserve actual reasoning. On the flagship
+      // that is `thinking.type: 'adaptive'` + `output_config.effort`; the old
+      // enabled/budget_tokens shape is rejected. Thinking tokens count against
+      // max_tokens, and measured on THIS prompt the model can spend the whole
+      // budget reasoning before it starts the tool call — so the headroom for
+      // thinking is added on top of the output budget, never carved out of it
+      // (llm-budget.mjs, tested). CV_THINKING_BUDGET keeps its meaning: 0 is
+      // off; the number picks the effort level.
+      const budget = ideationParams(BASE_OUTPUT_TOKENS, process.env.CV_THINKING_BUDGET ?? 6000);
+      const params = { model: 'claude-opus-4-8', max_tokens: budget.max_tokens, system: cachedSystem(CHIEF_ENGINEER_PROMPT), messages };
       params.tools = enableSearch ? [webSearchTool, emitIdeasTool] : [emitIdeasTool];
       params.tool_choice = { type: 'auto' };
-      // Chief-Engineer-grade tradeoffs deserve actual reasoning: enable extended
-      // thinking (env-tunable; 0 disables). Falls back below if the API rejects it.
-      //
-      // The flagship no longer accepts `thinking.type: 'enabled'` with a token
-      // budget — it returns 400 and names the replacement: `thinking.type:
-      // 'adaptive'` plus `output_config.effort`. The fallback below was catching
-      // that and retrying without thinking, so generation still worked but every
-      // analysis burned a wasted round trip AND silently lost its reasoning.
-      // CV_THINKING_BUDGET keeps its meaning as the on/off and rough level.
-      const thinkBudget = Number(process.env.CV_THINKING_BUDGET ?? 6000);
-      if (thinkBudget >= 1024) {
-        params.thinking = { type: 'adaptive' };
-        params.output_config = { effort: thinkBudget >= 8000 ? 'high' : 'medium' };
-      }
+      if (budget.thinking) { params.thinking = budget.thinking; params.output_config = budget.output_config; }
 
       // A 24k-token generation legitimately exceeds the default 90s client
       // timeout; give it room and don't retry the full doomed request 3× (which
       // would burn ~4× the tokens before failing).
+      const callOpts = { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 };
+      const fmt = ms => `${Math.floor(ms / 60000)}m ${String(Math.floor((ms % 60000) / 1000)).padStart(2, '0')}s`;
+      const onTokens = ({ elapsedMs, outTokens }) => emit({ type: 'progress', message: outTokens > 0
+        ? `Writing ideas… ~${outTokens.toLocaleString()} tokens (${fmt(elapsedMs)})`
+        : `Reasoning… ${fmt(elapsedMs)}` });
+      const withoutThinking = () => { delete params.thinking; delete params.output_config; params.max_tokens = BASE_OUTPUT_TOKENS; };
       let response;
       try {
-        response = await createLongMessage(client, params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
+        response = await createLongMessage(client, params, callOpts, onTokens);
       } catch (e) {
         // Defensive: if this provider/config combination rejects extended
         // thinking, retry once without rather than failing the analysis.
         if ((params.thinking || params.output_config) && e?.status === 400 && /thinking|output_config|effort/i.test(e?.message || '')) {
-          delete params.thinking; delete params.output_config;
-          response = await createLongMessage(client, params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
+          withoutThinking();
+          response = await createLongMessage(client, params, callOpts, onTokens);
         } else throw e;
       }
+      lastStopReason = response.stop_reason;
 
       // Strict path: the model called emit_ideas — its input IS the idea array.
-      const emitBlock = response.content.find(b => b.type === 'tool_use' && b.name === 'emit_ideas');
+      let emitBlock = response.content.find(b => b.type === 'tool_use' && b.name === 'emit_ideas');
+      // Output-budget starvation is detected and SAID, then recovered once with
+      // reasoning off — announced in the progress feed, never silent. A second
+      // truncation is a real error and is reported as one.
+      let trunc = truncationReason(response.stop_reason, emitBlock, params.max_tokens, !!params.thinking);
+      if (trunc && params.thinking) {
+        emit({ type: 'progress', message: `${trunc} Retrying once with reasoning off.` });
+        console.warn('[Analysis] ' + trunc + ' Retrying once without thinking.');
+        withoutThinking();
+        response = await createLongMessage(client, params, callOpts, onTokens);
+        lastStopReason = response.stop_reason;
+        emitBlock = response.content.find(b => b.type === 'tool_use' && b.name === 'emit_ideas');
+        trunc = truncationReason(response.stop_reason, emitBlock, params.max_tokens, false);
+      }
+      if (trunc) throw new Error(`${trunc} Try a narrower part or a shorter context.`);
       if (emitBlock) {
         emit({ type: 'synthesizing', message: `Synthesising all available cost-reduction ideas${sources.length > 0 ? ` (${sources.length} searches complete)` : ''}...` });
         return await finishAnalysis(Array.isArray(emitBlock.input?.ideas) ? emitBlock.input.ideas : []);

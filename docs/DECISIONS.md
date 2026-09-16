@@ -3870,3 +3870,41 @@ accident.
 **Scope note:** the same one-line change was applied to the Prism per-lens call,
 which has identical exposure — same 24k ceiling, same non-streaming call. That
 path was NOT exercised by the run that proved the main path, and is untested.
+
+## 74. Thinking headroom is added to the output budget, never carved out of it
+
+The fourth link in the chain that started at DECISIONS 72. With extended
+thinking genuinely on and the call streaming, every run still ended in
+"No valid ideas could be generated. Please retry." — an error that named no
+cause. Replaying the app's exact request with a 2,500-token cap showed why for
+a few cents: the model spent the entire cap on a `thinking` block and never
+began the tool call. Thinking tokens count against `max_tokens`. The 24k
+ceiling that used to be all output was now shared, the eight-idea `emit_ideas`
+call was truncated or never started, the validator received nothing, and the
+generic error hid all of it. The API accepts `max_tokens` up to 128k on this
+model; 24k was an assumption from the era when thinking was silently off.
+
+**What changed.** `llm-budget.mjs` (pure, tested) turns `CV_THINKING_BUDGET`
+into an effort level and ADDS matching headroom to the output budget. A
+`max_tokens` stop with no usable idea list is now detected and *named*
+(`truncationReason`), recovered once with reasoning off — announced in the
+progress feed, never silent — and reported as an error if it happens twice.
+"No usable ideas" now states how many ideas came back, how many the validator
+dropped, and why the model stopped.
+
+**Two things the fix exposed.** Streamed calls were being metered at stream
+OPEN with no token counts, so the monthly quota had quietly stopped counting
+the largest call — they are now metered from the final message. And the UI sat
+on "Connecting to AI chief engineer…" for the whole generation because nothing
+was emitted in between; the stream now reports elapsed reasoning time and
+tokens written, and the client renders `progress` events it previously dropped.
+
+**The default.** `CV_THINKING_BUDGET=6000` now maps to `low` effort — the
+faithful translation of the original 6k-token intent, and the cheapest run that
+still reasons. Anyone who wants more sets a higher number and pays for it
+knowingly; `0` restores the pre-72 behaviour exactly.
+
+**Method note.** Every diagnostic here cost cents: a zero-token request
+capture, a 2,500-token replay, and five one-token `max_tokens` probes. The
+previous rounds used full 24k-token generations as probes, which is how a
+debugging session became expensive. Cheap probes first is now the rule.

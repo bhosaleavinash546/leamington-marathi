@@ -250,6 +250,11 @@ export default function AnalyzePage() {
           );
         case 'synthesizing':
           return [...markActiveDone(), { id: 'synth', label: event.message || 'Synthesising expert ideas...', status: 'active' as const }];
+        case 'progress':
+          // Server-side stage notes (reasoning elapsed, tokens written, a retry
+          // announced) land on the step that is running, so a multi-minute
+          // generation never looks frozen on "Connecting…".
+          return prev.map((s, i) => i === prev.length - 1 && s.status === 'active' ? { ...s, detail: event.message } : s);
         default:
           return prev;
       }
@@ -1013,7 +1018,7 @@ export default function AnalyzePage() {
                     <div className="flex items-center gap-2 mb-3">
                       <ButtonSpinner size={14} />
                       <span className="text-gold-400 font-medium text-sm">Analysis in progress…</span>
-                      <span className="text-slate-500 text-xs ml-auto">{enableSearch ? '30–60s' : '15–25s'}</span>
+                      <span className="text-slate-500 text-xs ml-auto">{enableSearch ? 'several minutes' : 'a few minutes'}</span>
                     </div>
                     {progressSteps.length === 0 ? (
                       <div className="h-1 bg-white/5 rounded-full overflow-hidden">
