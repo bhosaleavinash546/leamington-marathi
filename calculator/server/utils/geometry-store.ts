@@ -88,6 +88,35 @@ export function getGeometry(hash: string, unitScale = 1): OCCTGeometry | null {
   return g && typeof g === 'object' ? (g as OCCTGeometry) : null;
 }
 
+/**
+ * Developed blanks, addressed by the SHA-256 of the DXF bytes.
+ *
+ * Deliberately NOT stored against the CAD file's hash. The blank is a second
+ * file the engineer chose, not a property of the part: two people costing the
+ * same STEP can legitimately bring different blanks, and keying it by the CAD
+ * hash would hand one of them the other's profile without either of them
+ * knowing. Its own hash cannot collide that way.
+ *
+ * Addressing it by content also keeps /reanalyze's rule intact — the client
+ * names a blank the server has already measured, and still cannot post numbers
+ * of its own.
+ */
+const blankCache = new Map<string, unknown>();
+
+export function blankHashOf(dxf: Buffer): string {
+  return createHash('sha256').update(dxf).digest('hex');
+}
+
+export function putBlank(hash: string, blank: unknown): void {
+  blankCache.set(hash, blank);
+}
+
+export function getBlank<T>(hash: string): T | null {
+  if (!/^[a-f0-9]{64}$/.test(hash)) return null;
+  const b = blankCache.get(hash);
+  return b && typeof b === 'object' ? (b as T) : null;
+}
+
 /** Sweep stale upload files. Called at startup; cheap enough to call on every put too. */
 export function sweepUploadFiles(): number {
   let n = 0;

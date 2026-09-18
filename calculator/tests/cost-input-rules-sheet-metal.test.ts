@@ -178,9 +178,42 @@ describe('gauge', () => {
 });
 
 describe('blank, stations and complexity', () => {
-  it('develops the blank from the two largest bbox dimensions plus trim', () => {
+  it('estimates the blank from the two largest bbox dimensions plus trim', () => {
     // 620 x 1.05 = 651, 180 x 1.05 = 189. The 60 mm form depth is not a blank dimension.
-    expect(blankDims(ctx(CROSS_MEMBER))).toEqual({ lengthMm: 651, widthMm: 189 });
+    const b = blankDims(ctx(CROSS_MEMBER))!;
+    expect({ lengthMm: b.lengthMm, widthMm: b.widthMm }).toEqual({ lengthMm: 651, widthMm: 189 });
+  });
+
+  it('calls the bbox blank an estimate, and is not confident in it', () => {
+    // It is a guess at the flat pattern, and on the recorded audit parts a guess
+    // that runs 39-48% high. A report that presented it as measured geometry
+    // would be inviting somebody to trust the material bucket.
+    const b = blankDims(ctx(CROSS_MEMBER))!;
+    expect(b.developed).toBe(false);
+    expect(b.basis).toMatch(/ESTIMATED/);
+    expect(b.basis).toMatch(/FASTBLANK/);
+    expect(b.confidence).toBeLessThan(0.5);
+  });
+
+  it('uses the developed blank instead, when one was supplied', () => {
+    // The whole point: CAPPe develops the flat pattern in FASTBLANK, and that
+    // profile is the answer the bbox is only guessing at. 1180 x 240 is nothing
+    // like the 651 x 189 the bounding box would have given.
+    const geo = {
+      ...CROSS_MEMBER,
+      blank: {
+        grossAreaMm2: 226_000, netAreaMm2: 219_000, outerPerimeterMm: 2_900,
+        holePerimeterMm: 260, holeCount: 6,
+        boundingRectMm: { lengthMm: 1180, widthMm: 240 },
+        rectangleFill: 0.798, source: 'FASTBLANK DXF',
+      },
+    };
+    const b = blankDims(ctx(geo))!;
+    expect({ lengthMm: b.lengthMm, widthMm: b.widthMm }).toEqual({ lengthMm: 1180, widthMm: 240 });
+    expect(b.developed).toBe(true);
+    expect(b.confidence).toBeGreaterThan(0.9);
+    expect(b.basis).toContain('FASTBLANK DXF');
+    expect(b.basis).toContain('2260 cm²');       // the profile area, not the rectangle
   });
 
   it('grades hole density per unit blank area, not per part', () => {

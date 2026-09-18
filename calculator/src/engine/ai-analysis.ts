@@ -171,6 +171,29 @@ export interface OCCTGeometry {
   /** Sheet-metal forming features — geometry-measured bend count for SM Fab. */
   sheetMetal?: { bendCount: number; totalBendLengthMm: number; thicknessMm: number };
   /**
+   * The developed flat blank, read from a DXF the engineer supplied.
+   *
+   * CAPPe develops the blank for a formed part in FASTBLANK, whose inverse
+   * solver reverse-stamps the 3D part into a flat profile. That profile is the
+   * answer; the bounding box of the formed part is a guess at it, and on our own
+   * recorded parts a guess that runs 39-48% high. When this is present every
+   * blank-derived figure comes from it instead.
+   *
+   * `grossAreaMm2` is the metal bought — a pierced slug is scrap already paid
+   * for — and `netAreaMm2` is what stays in the part.
+   */
+  blank?: {
+    grossAreaMm2: number;
+    netAreaMm2: number;
+    outerPerimeterMm: number;
+    holePerimeterMm: number;
+    holeCount: number;
+    boundingRectMm: { lengthMm: number; widthMm: number };
+    rectangleFill: number;
+    source: string;
+    warnings?: string[];
+  };
+  /**
    * Gear metrology, from the B-rep: teeth counted from tip-circle cylinder
    * patches, module derived as OD/(z+2). Null/absent when the shape is not
    * gear-like. Helix is deliberately never derived — a STEP file's flank

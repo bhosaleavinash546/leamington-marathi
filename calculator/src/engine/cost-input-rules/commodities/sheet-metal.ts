@@ -40,13 +40,59 @@ const SHEAR_MPA: Partial<Record<MaterialFamily, number>> = {
 };
 
 /** Blank footprint: the two largest bbox dimensions with a trim allowance. */
-export function blankDims(ctx: RuleContext): { lengthMm: number; widthMm: number } | null {
+export interface BlankDims {
+  lengthMm: number;
+  widthMm: number;
+  /** How it was arrived at, for the report. */
+  basis: string;
+  confidence: number;
+  /** True when a developed blank was supplied rather than estimated. */
+  developed: boolean;
+}
+
+/**
+ * The blank rectangle every strip figure is built on.
+ *
+ * Prefers a DEVELOPED blank — the flat profile CAPPe produces in FASTBLANK,
+ * supplied as a DXF. That profile is the answer to the question this function
+ * asks; everything else here is an estimate of it.
+ *
+ * The fall-back is the bounding box of the FORMED part plus 5%, and it should be
+ * read as what it is. A formed part's footprint is not its developed shape: on
+ * the recorded audit geometry the bumper beam's bbox blank is 48% larger than
+ * the metal the part contains and the seat bracket's is 39% larger, while a deep
+ * drawn panel with tall walls goes the other way and the footprint understates
+ * it. Wrong in both directions is worse than wrong in one, which is why the
+ * confidence on the estimate is low and the basis says so out loud.
+ *
+ * This one function feeds the blank size, the strip pitch, the strip width, the
+ * press feed rate and the die footprint — so a real blank fixes material cost,
+ * cycle time and tooling together.
+ */
+export function blankDims(ctx: RuleContext): BlankDims | null {
+  const dev = ctx.geo.blank;
+  if (dev && dev.boundingRectMm.lengthMm > 0 && dev.boundingRectMm.widthMm > 0) {
+    return {
+      lengthMm: Math.round(dev.boundingRectMm.lengthMm),
+      widthMm: Math.round(dev.boundingRectMm.widthMm),
+      basis: `developed blank from ${dev.source} — ${(dev.grossAreaMm2 / 100).toFixed(0)} cm² profile `
+        + `filling ${(dev.rectangleFill * 100).toFixed(0)}% of its ${Math.round(dev.boundingRectMm.lengthMm)}`
+        + `×${Math.round(dev.boundingRectMm.widthMm)} mm rectangle`,
+      confidence: 0.95,
+      developed: true,
+    };
+  }
   const bb = ctx.geo.boundingBox;
   if (!bb) return null;
   const sorted = [bb.xMm, bb.yMm, bb.zMm].sort((a, b) => b - a);
   return {
     lengthMm: Math.round(sorted[0] * 1.05),
     widthMm: Math.round(sorted[1] * 1.05),
+    basis: 'ESTIMATED from the formed part\u2019s bounding box × 1.05 — no developed blank was '
+      + 'supplied. A formed part\u2019s footprint is not its flat pattern, so this can be well out '
+      + 'in either direction; upload the FASTBLANK DXF to replace it with the real profile',
+    confidence: 0.45,
+    developed: false,
   };
 }
 
@@ -251,13 +297,13 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         if (!b) return ask({
           id: 'sheetMetal.blank', kind: 'geometry_gap',
           question: 'What are the blank dimensions?',
-          why: 'No bounding box was measured, so the developed blank cannot be derived.',
+          why: 'No developed blank was supplied and no bounding box was measured, so the blank '
+            + 'cannot be derived. Upload the FASTBLANK DXF, or enter the blank size.',
           options: [{ value: 'enter', label: 'Enter blank length and width' }],
           entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
-        return decided('sheetMetal.blankLengthMm', b.lengthMm, 'geometry',
-          'largest bounding-box dimension × 1.05 trim allowance', 0.8);
+        return decided('sheetMetal.blankLengthMm', b.lengthMm, 'geometry', b.basis, b.confidence);
       },
     },
     {
@@ -270,13 +316,13 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         if (!b) return ask({
           id: 'sheetMetal.blank', kind: 'geometry_gap',
           question: 'What are the blank dimensions?',
-          why: 'No bounding box was measured, so the developed blank cannot be derived.',
+          why: 'No developed blank was supplied and no bounding box was measured, so the blank '
+            + 'cannot be derived. Upload the FASTBLANK DXF, or enter the blank size.',
           options: [{ value: 'enter', label: 'Enter blank length and width' }],
           entry: { kind: 'number' },
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
-        return decided('sheetMetal.blankWidthMm', b.widthMm, 'geometry',
-          'second-largest bounding-box dimension × 1.05 trim allowance', 0.8);
+        return decided('sheetMetal.blankWidthMm', b.widthMm, 'geometry', b.basis, b.confidence);
       },
     },
     {

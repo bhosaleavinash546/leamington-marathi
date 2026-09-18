@@ -6,8 +6,8 @@
 SHEET METAL COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
   thicknessMm=12.25  [raised from 2.40 mm (measured from 4 bend face(s)) to the mass-consistent floor — measured 1037 cm³ over a 336×252 blank needs ≥12.25 mm; a thinner read means the blank could not weigh as much as the part — deterministic, use verbatim]
-  blankLengthMm=336  [largest bounding-box dimension × 1.05 trim allowance — deterministic, use verbatim]
-  blankWidthMm=252  [second-largest bounding-box dimension × 1.05 trim allowance — deterministic, use verbatim]
+  blankLengthMm=336  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
+  blankWidthMm=252  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
   numOps=6  [1 blank + 4 bend(s) + 1 pierce = 6 stations — deterministic, use verbatim]
   pitchMm=361  [blank 336 mm + 25 mm web (max(3, 2 × gauge)) — deterministic, use verbatim]
   stripWidthMm=301  [blank 252 mm + 2 × 25 mm edge margin — deterministic, use verbatim]
@@ -24,8 +24,8 @@ SHEET METAL COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
   thicknessMm: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
-  blankLengthMm=336  [largest bounding-box dimension × 1.05 trim allowance — deterministic, use verbatim]
-  blankWidthMm=252  [second-largest bounding-box dimension × 1.05 trim allowance — deterministic, use verbatim]
+  blankLengthMm=336  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
+  blankWidthMm=252  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
   numOps=2  [1 blank + 0 bend(s) = 2 stations — deterministic, use verbatim]
   dieCostGBP: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   dieLife: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)

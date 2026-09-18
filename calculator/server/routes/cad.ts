@@ -11,6 +11,8 @@ import { hashUpload, putUploadFile, getUploadFile, putGeometry, getGeometry, swe
 import type Anthropic from '@anthropic-ai/sdk';
 import { preprocessCADFile } from '../utils/preprocessor.js';
 import { analyzeGeometry, tessellateToSTL } from '../utils/geometry-bridge.js';
+import { measureBlankDxf } from '../utils/dxf-blank.js';
+import { blankHashOf, putBlank, getBlank } from '../utils/geometry-store.js';
 import type { TessellationMeta } from '../utils/geometry-bridge.js';
 import type { OCCTGeometry } from '../utils/geometry-bridge.js';
 import { parseSTL } from '../services/stl-parser.js';
@@ -49,7 +51,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // v16: engineer material confirm wins over AI on reanalyse (withAIMaterial),
 //      and casting/cast_and_machine emit the material GRADE from the confirmed
 //      family (was AI grade on cast-iron mass). Final-verification-run fixes.
-const CAD_PROMPT_VERSION = 21;
+const CAD_PROMPT_VERSION = 22;   // 22: the blank says whether it was developed or estimated
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -79,6 +81,8 @@ const upload = multer({
   limits: { fileSize: MAX_UPLOAD_BYTES, fieldSize: 8 * 1024 * 1024, files: 2, fields: 40, parts: 60 },
 });
 const MAX_DRAWING_PDF_BYTES = 30 * 1024 * 1024;
+/** A blank profile is a handful of curves. Anything this big is not one. */
+const MAX_BLANK_DXF_BYTES = 20 * 1024 * 1024;
 sweepUploadFiles();
 
 /**
@@ -482,13 +486,17 @@ function buildGeoSanityContext(
 // and then learned the cap from the 413. One list of extensions for every input.
 export const CAD_ACCEPT = ['.step', '.stp', '.iges', '.igs', '.stl'];
 router.get('/limits', (_req, res) => {
-  res.json({ maxUploadMb: MAX_UPLOAD_MB, maxDrawingPdfMb: MAX_DRAWING_PDF_BYTES / 1048576, accept: CAD_ACCEPT });
+  res.json({
+    maxUploadMb: MAX_UPLOAD_MB, maxDrawingPdfMb: MAX_DRAWING_PDF_BYTES / 1048576,
+    maxBlankDxfMb: MAX_BLANK_DXF_BYTES / 1048576, accept: CAD_ACCEPT,
+  });
 });
 
 // POST /api/cad/analyze
 router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   { name: 'cadFile', maxCount: 1 },
   { name: 'drawingPdf', maxCount: 1 },
+  { name: 'blankDxf', maxCount: 1 },
 ]), asyncRoute(async (req, res): Promise<void> => {
   const filesMap = req.files as Record<string, Express.Multer.File[]> | undefined;
   const cadUpload = filesMap?.cadFile?.[0];
@@ -496,6 +504,14 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // Optional 2D engineering drawing — carries tolerances, GD&T, surface
   // finishes and material callouts that the STEP geometry cannot express.
   const drawingUpload = filesMap?.drawingPdf?.[0] ?? null;
+  // Optional developed blank. CAPPe flattens a formed part in FASTBLANK, whose
+  // inverse solver reverse-stamps it into a flat profile and exports a 2D DXF.
+  // That profile is the blank; without it the blank is estimated from the
+  // formed part's bounding box, which on the recorded audit parts runs 39-48%
+  // high and on a deep-drawn panel goes the other way.
+  const blankUpload = filesMap?.blankDxf?.[0] ?? null;
+  let blankError: string | null = null;
+  let blankHash: string | null = null;
   const { originalname, size, buffer } = cadUpload;
   const ext = originalname.toLowerCase().split('.').pop() ?? '';
   if (['x_t', 'x_b', 'xmt_txt', 'jt', 'prt', 'sldprt', 'catpart', 'ipt', 'par'].includes(ext)) {
@@ -512,6 +528,17 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // AND spends AI tokens checked the extension and nothing else.
   const sniffed = sniffCadContent(ext, buffer);
   if (sniffed) { res.status(415).json({ error: sniffed }); return; }
+  if (blankUpload) {
+    if (blankUpload.size > MAX_BLANK_DXF_BYTES) {
+      res.status(413).json({ error: `Blank DXF is ${(blankUpload.size / 1048576).toFixed(0)} MB; the limit is 20 MB.` });
+      return;
+    }
+    if (!/\.dxf$/i.test(blankUpload.originalname)) {
+      res.status(415).json({ error: 'The developed blank must be a DXF. FASTBLANK exports one from '
+        + 'its Export step; an IGES or a PDF of the profile cannot be measured.' });
+      return;
+    }
+  }
   if (drawingUpload) {
     if (drawingUpload.size > MAX_DRAWING_PDF_BYTES) {
       res.status(413).json({ error: `Drawing PDF is ${(drawingUpload.size / 1048576).toFixed(0)} MB; the limit is 30 MB.` });
@@ -683,6 +710,31 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // A confirmed "these are millimetres" clears the proposal; a confirmed inch
   // re-measured above at 25.4x and the engine no longer flags it.
   if (unitAnswer === 'mm' && geo.status === 'success' && geo.unitCheck) geo = { ...geo, unitCheck: null };
+
+  // Attach the developed blank, if one came with the part. A DXF that cannot be
+  // measured is reported and the analysis carries on with the estimate — losing
+  // the whole costing over a bad profile would be the wrong trade.
+  if (blankUpload && geo.status === 'success') {
+    try {
+      const m = measureBlankDxf(blankUpload.buffer.toString('utf-8'));
+      const blank = {
+        grossAreaMm2: m.grossAreaMm2, netAreaMm2: m.netAreaMm2,
+        outerPerimeterMm: m.outerPerimeterMm, holePerimeterMm: m.holePerimeterMm,
+        holeCount: m.holeCount, boundingRectMm: m.boundingRectMm,
+        rectangleFill: m.rectangleFill,
+        source: `FASTBLANK DXF (${blankUpload.originalname})`
+          + (m.unitsAssumed ? ', units not declared — read as mm' : ''),
+        ...(m.warnings.length ? { warnings: m.warnings } : {}),
+      };
+      // Kept under the DXF's own hash so /reanalyze can pick the same blank up
+      // without the costing quietly falling back to the bounding-box estimate.
+      blankHash = blankHashOf(blankUpload.buffer);
+      putBlank(blankHash, blank);
+      geo = { ...geo, blank };
+    } catch (e) {
+      blankError = e instanceof Error ? e.message : 'The blank DXF could not be read.';
+    }
+  }
   const unitsDecision = unitsDecisionFor(geo);
 
   // --- Phase 2: Build text-preprocessor summary for Claude (skip for STL — binary mesh, no text tokens) ---
@@ -945,6 +997,10 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       success: true,
       analysis: det.analysis,
       sanityWarnings: detWarnings,
+      // A blank DXF that could not be read. The costing carried on with the
+      // bbox estimate, and the person who attached the file needs to know that.
+      blankDxfError: blankError,
+      blankHash,
       costable: isCostable(detDecisions, detWarnings, acknowledged),
       ruleOverrides: det.applied,
       ruleFields: det.ruleFields,
@@ -1055,6 +1111,8 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     success: true,
     analysis,
     sanityWarnings,
+    blankDxfError: blankError,
+    blankHash,
     // What the deterministic rules decided, what the model had said, and what
     // nobody could decide. The report renders this as the provenance trail.
     ruleOverrides,
@@ -2461,6 +2519,15 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     return;
   }
   if (earlyAnswers['units.confirm'] === 'mm' && geo.unitCheck) geo = { ...geo, unitCheck: null };
+  // The developed blank the first pass measured. Named by its own hash, so this
+  // is still the server's measurement and not numbers from the body — and
+  // without it a reanalyse would silently drop back to the bbox estimate and
+  // move the material cost with nobody having asked for that.
+  const reBlankHash = typeof req.body?.blankHash === 'string' ? req.body.blankHash.trim() : '';
+  if (reBlankHash) {
+    const b = getBlank<NonNullable<OCCTGeometry['blank']>>(reBlankHash);
+    if (b) geo = { ...geo, blank: b };
+  }
   const unitsDecision = unitsDecisionFor(geo);
 
   const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
@@ -2634,6 +2701,10 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
       success: true,
       analysis: det.analysis,
       sanityWarnings: detWarnings,
+      // A blank DXF that could not be read. The costing carried on with the
+      // bbox estimate, and the person who attached the file needs to know that.
+      blankDxfError: null,   // no DXF is parsed here; the blank arrives by hash
+      blankHash: geo.blank ? reBlankHash : null,
       costable: isCostable(detDecisions, detWarnings, acknowledged),
       ruleOverrides: det.applied,
       ruleFields: det.ruleFields,
@@ -2717,6 +2788,8 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     success: true,
     analysis,
     sanityWarnings,
+    blankDxfError: null,   // no DXF is parsed here; the blank arrives by hash
+    blankHash: geo.blank ? reBlankHash : null,
     // What the deterministic rules decided, what the model had said, and what
     // nobody could decide. The report renders this as the provenance trail.
     ruleOverrides,
