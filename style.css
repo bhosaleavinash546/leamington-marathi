@@ -1469,6 +1469,49 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
   50% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(244, 164, 18, 0.95)); }
 }
 
+/* ---------- Add to phone banner ---------- */
+.pwa-banner {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(420px, calc(100vw - 32px));
+  padding: 12px 14px;
+  background: var(--white);
+  border-radius: 14px;
+  border-left: 4px solid var(--gold);
+  box-shadow: 0 18px 44px rgba(74, 19, 11, 0.28);
+  animation: fade-up 0.5s ease both;
+}
+.pwa-banner[hidden] { display: none; }
+.pwa-banner img { border-radius: 10px; flex-shrink: 0; }
+.pwa-text { flex: 1; min-width: 0; font-size: 0.88rem; line-height: 1.4; }
+.pwa-text strong { display: block; color: var(--red-dark); font-size: 0.98rem; }
+.pwa-banner .btn { padding: 8px 16px; font-size: 0.9rem; flex-shrink: 0; }
+.pwa-close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--maroon);
+  color: var(--white);
+  cursor: pointer;
+  font-size: 0.8rem;
+  box-shadow: var(--shadow);
+}
+.footer-install { margin: 10px 0 0; }
+.footer-install .linklike { color: var(--gold); font-size: 0.9rem; }
+@media (max-width: 560px) {
+  .pwa-banner { flex-wrap: wrap; bottom: 84px; }
+  .pwa-banner .btn { margin-left: auto; }
+}
+
 /* ---------- Maharashtra page ---------- */
 /* Teaser card at the end of About on the homepage */
 .about-mh {

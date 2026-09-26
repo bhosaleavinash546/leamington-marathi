@@ -32,6 +32,14 @@ activation email to that inbox — click the link in it once and everything flow
 See **[EDITING.md](EDITING.md)** — written for non-developers; everything can be done
 from the GitHub website without installing anything.
 
+## Add to phone (PWA)
+
+`manifest.webmanifest` and `sw.js` make the site installable (home screen icon, opens
+like an app) and keep visited pages working offline. Pages are always fetched fresh
+when online; other files are served from cache and refreshed in the background. Videos
+are never cached. If you add a new page, add it to the `CORE` list in `sw.js` and bump
+`VERSION` there so old caches are cleared. Icons live in `images/icons/`.
+
 ## Membership (member.html)
 
 Free member accounts (sign up / sign in / forgot password / one-time email-link

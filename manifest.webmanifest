@@ -1,0 +1,25 @@
+{
+  "name": "Leamington Marathi",
+  "short_name": "लेमिंगटन मराठी",
+  "description": "Leamington Marathi: a community of Marathi families in Leamington Spa and Warwick, UK. Events, Dhol Tasha, calendar, Diwali Ank and our Maharashtra page.",
+  "id": "/",
+  "start_url": "/?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff8ee",
+  "theme_color": "#d92a1c",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["social", "lifestyle", "education"],
+  "icons": [
+    { "src": "images/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "images/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "images/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Events", "short_name": "Events", "url": "/?source=app#events" },
+    { "name": "Marathi Calendar", "short_name": "Calendar", "url": "/?source=app#kalnirnay" },
+    { "name": "आपला महाराष्ट्र", "short_name": "Maharashtra", "url": "/maharashtra.html?source=app" }
+  ]
+}

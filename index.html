@@ -6,7 +6,12 @@
   <title>Leamington Marathi | लेमिंगटन मराठी | वारसा मराठी संस्कृतीचा</title>
   <meta name="description" content="Leamington Marathi is a community group of more than 400 Marathi families in Leamington Spa and Warwick, UK. Festivals, Dhol Tasha, food and friendship.">
   <link rel="icon" type="image/png" href="images/logo-emblem.png">
-  <link rel="apple-touch-icon" href="images/logo-emblem.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#d92a1c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Leamington Marathi">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <script>if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js'));</script>
   <link rel="canonical" href="https://leamingtonmarathi.com/">
 
   <!-- Social share cards (WhatsApp / Facebook / Twitter) -->
@@ -720,8 +725,20 @@
       our group inbox and nowhere else. If you would like a photo or your details taken down, email <a href="mailto:leamingtonmarathi@gmail.com">leamingtonmarathi@gmail.com</a>.
     </p>
     <p class="footer-copy">© <span id="year">2026</span> Leamington Marathi. All rights reserved. | <span class="marathi" lang="mr">जय महाराष्ट्र 🚩</span></p>
+    <p class="footer-install"><button type="button" class="linklike" id="pwa-footer">📲 Add this site to your phone</button></p>
     <p class="footer-credit">Designed &amp; Developed by Avinash Bhosale</p>
   </footer>
+
+  <!-- Add-to-phone banner: shown by script.js when the browser offers to install, or on iPhone with a hint -->
+  <div id="pwa-banner" class="pwa-banner" role="dialog" aria-label="Add Leamington Marathi to your phone" hidden>
+    <img src="images/icons/icon-192.png" alt="" width="44" height="44">
+    <div class="pwa-text">
+      <strong>Add us to your phone</strong>
+      <span id="pwa-hint">Opens like an app, works even with a poor signal. <span class="marathi" lang="mr">अ‍ॅपसारखं वापरा.</span></span>
+    </div>
+    <button type="button" class="btn btn-primary" id="pwa-install">Install</button>
+    <button type="button" class="pwa-close" id="pwa-dismiss" aria-label="Not now">✕</button>
+  </div>
 
   <!-- Floating Contact Us button -->
   <a href="mailto:leamingtonmarathi@gmail.com" class="contact-fab" aria-label="Contact us by email">
