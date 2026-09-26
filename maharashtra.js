@@ -233,6 +233,12 @@ document.addEventListener('DOMContentLoaded', () => {
       body.querySelector('.mh-name-mr').textContent = (mode === 'route' ? `${mrNum(i + 1)}. ` : '') + p.mr;
       body.querySelector('.mh-name-en').textContent = p.en;
       body.querySelector('.mh-card-text').textContent = p.ten;
+      if (p.hmr && p.hmr.length) {
+        const more = document.createElement('p');
+        more.className = 'mh-card-more';
+        more.innerHTML = '<span lang="mr" class="marathi">इतिहास वाचा</span> →';
+        body.appendChild(more);
+      }
       card.appendChild(body);
       const act = () => {
         if (mode === 'route') jumpTo(i); else select(i, false);
@@ -255,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     current = places.filter(p => p.cat === cat);
     buildPins(current, CATS[cat].color, false);
     buildCards(current);
-    select(-1);
+    select(isPhone() ? -1 : 0, false);
     setChips(cat, null);
     routeBar.hidden = true;
     if (viewBox.join() !== FULL.join()) animateViewBox(FULL.slice());
@@ -347,7 +353,12 @@ document.addEventListener('DOMContentLoaded', () => {
     clearRouteLayer();
     mode = 'route';
     route = routes[key];
-    current = route.stops.map(s => ({ ...s, icon: route.icon, distLabel: 'केव्हा:', dist: s.when, cat: 'kille' }));
+    // a stop that is also a place on the map (Raigad, Jejuri...) carries that place's full history and facts
+    const byName = Object.fromEntries(places.map(pl => [pl.en.toLowerCase(), pl]));
+    current = route.stops.map(s => {
+      const pl = byName[(s.en || '').toLowerCase().replace(/^back to /, '')] || places.find(pl => pl.mr === s.mr) || {};
+      return { hmr: pl.hmr, hen: pl.hen, facts: pl.facts, photo: pl.photo, credit: pl.credit, ...s, icon: route.icon, distLabel: 'केव्हा:', dist: s.when, cat: 'kille' };
+    });
     const pts = current.map(s => proj(s.lon, s.lat));
     buildPins(current, route.color, true);
     buildCards(current);
