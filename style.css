@@ -1671,6 +1671,78 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
 }
 
 /* ---------- Member page ---------- */
+/* (Maharashtra page, Phase 2: districts, journeys, quiz) */
+#mh-districts path { fill: none; stroke: #e7c99a; stroke-width: 1.1; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+#mh-outline { vector-effect: non-scaling-stroke; }
+.mh-map-credit { margin: 8px 6px 0; font-size: 0.74rem; color: #8a6f63; text-align: right; }
+.mh-routes-label { text-align: center; margin: 4px 0 8px; font-size: 0.9rem; color: #6b544b; }
+.mh-chip.route { border-color: var(--gold); background: #fffaf0; }
+.mh-chip.route.active { background: linear-gradient(135deg, var(--maroon), var(--red-dark)); color: var(--white); border-color: transparent; }
+.mh-route-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 18px;
+  margin: 0 0 16px;
+  padding: 12px 18px;
+  background: var(--cream-deep);
+  border-radius: 12px;
+  text-align: center;
+}
+.mh-route-title { margin: 0; font-weight: 800; color: var(--red-dark); width: 100%; }
+.mh-route-intro { margin: 0; font-size: 0.93rem; color: var(--ink); }
+.mh-route-bar .btn { padding: 8px 18px; font-size: 0.9rem; }
+.mh-route-base { fill: none; stroke: rgba(74, 19, 11, 0.22); stroke-width: 3; stroke-dasharray: 6 6; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.mh-route { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+#mh-marker circle { fill: var(--white); stroke-width: 2.5; filter: drop-shadow(0 3px 5px rgba(74, 19, 11, 0.35)); }
+#mh-marker text { font-size: 15px; }
+.mh-pin .num { font: 800 11px var(--font-body); fill: var(--white); pointer-events: none; }
+.mh-pin.passed .dot { stroke: var(--gold); stroke-width: 3; }
+.mh-pin.numbered .label { y: -17px; }
+.mh-quiz { margin-top: 44px; }
+.mh-quiz-box {
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border-top: 4px solid var(--gold);
+  padding: 22px 26px 26px;
+}
+.mh-q-progress { margin: 0 0 6px; font-size: 0.85rem; color: var(--saffron-text); font-weight: 700; }
+.mh-q-mr { margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--red-dark); line-height: 1.4; }
+.mh-q-en { margin: 4px 0 16px; color: #6b544b; }
+.mh-q-options { display: grid; gap: 10px; }
+.mh-q-opt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 12px 16px;
+  border: 2px solid #f0dcc3;
+  border-radius: 12px;
+  background: var(--cream);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.mh-q-opt .marathi { font-weight: 700; }
+.mh-q-opt-en { font-size: 0.85rem; color: #8a6f63; text-align: right; }
+.mh-q-opt:hover:not(:disabled) { border-color: var(--saffron); }
+.mh-q-opt:disabled { cursor: default; opacity: 0.8; }
+.mh-q-opt.right { border-color: #1e6b2e; background: #eef7ee; opacity: 1; }
+.mh-q-opt.wrong { border-color: var(--red); background: #fdeaea; opacity: 1; }
+.mh-q-feedback { margin: 14px 0 0; font-weight: 600; color: var(--maroon); }
+.mh-q-next, .mh-q-again { margin-top: 14px; }
+.mh-q-score { margin: 0; font-family: var(--font-body); font-weight: 800; font-size: 2.4rem; color: var(--red); text-align: center; }
+.mh-q-line { margin: 4px 0 0; text-align: center; font-size: 1.2rem; font-weight: 700; color: var(--maroon); }
+.mh-quiz .mh-q-en { text-align: center; }
+.mh-quiz .mh-q-again { display: block; margin: 16px auto 0; }
 .member-back { color: var(--red-dark); font-weight: 700; text-decoration: none; font-size: 0.95rem; }
 .member-back:hover { text-decoration: underline; }
 .member-wrap { max-width: 560px; margin: 0 auto; padding: 46px 20px 80px; }

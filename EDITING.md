@@ -48,6 +48,9 @@ Marathi and English name, the district, two short lines in each language, and th
 position. To add a photo, put the file in `images/maharashtra/` and add two lines to that
 place's block: `photo: 'images/maharashtra/raigad.jpg', credit: 'the Kulkarni family, 2023'`.
 The short history at the top of the page is plain text in `maharashtra.html`.
+The two journeys (`LM_ROUTES`) and the quiz questions (`LM_QUIZ`) are at the bottom of
+`maharashtra-data.js`; add a quiz question by copying one block and changing the words
+(`answer` is the position of the right option, counting from 0).
 
 ## Keeping the site fresh (15 minutes, four times a year)
 
