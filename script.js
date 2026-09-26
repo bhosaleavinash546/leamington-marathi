@@ -623,5 +623,56 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.diya-row').forEach(row => diyaObserver.observe(row));
   }
 
+  // ---- Add to phone (PWA install) ----
+  // Android/desktop browsers fire beforeinstallprompt; we keep the event and show our
+  // own banner. iPhone never fires it, so there we show a short "Share, then Add to
+  // Home Screen" hint instead. Dismissing hides the banner for 30 days.
+  const pwaBanner = document.getElementById('pwa-banner');
+  if (pwaBanner) {
+    const installBtn = document.getElementById('pwa-install');
+    const hint = document.getElementById('pwa-hint');
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+    const snoozedUntil = +(localStorage.getItem('lm-pwa-snooze') || 0);
+    let deferredPrompt = null;
+    const showBanner = () => { if (!standalone) pwaBanner.hidden = false; };
+    const hideBanner = days => {
+      pwaBanner.hidden = true;
+      if (days) localStorage.setItem('lm-pwa-snooze', String(Date.now() + days * 86400000));
+    };
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (Date.now() > snoozedUntil) showBanner();
+    });
+    window.addEventListener('appinstalled', () => hideBanner(365));
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        hideBanner(outcome === 'accepted' ? 365 : 30);
+      } else if (isIOS) {
+        hint.innerHTML = 'In Safari tap <strong>Share</strong> (the square with an arrow), then <strong>Add to Home Screen</strong>.';
+        installBtn.hidden = true;
+      } else {
+        hint.textContent = 'Open the browser menu (⋮) and choose "Install app" or "Add to Home screen".';
+        installBtn.hidden = true;
+      }
+    });
+    document.getElementById('pwa-dismiss').addEventListener('click', () => hideBanner(30));
+    // footer link always works, even if the browser never offered to install
+    document.getElementById('pwa-footer').addEventListener('click', () => {
+      installBtn.hidden = false;
+      showBanner();
+      if (!deferredPrompt) installBtn.click();
+      pwaBanner.scrollIntoView({ block: 'nearest' });
+    });
+    if (isIOS && !standalone && Date.now() > snoozedUntil && sessionStorage.getItem('lm-pwa-ios') !== '1') {
+      sessionStorage.setItem('lm-pwa-ios', '1');
+      setTimeout(() => { installBtn.textContent = 'How?'; showBanner(); }, 20000);
+    }
+  }
+
   document.getElementById('year').textContent = new Date().getFullYear();
 });
