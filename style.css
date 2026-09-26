@@ -1628,6 +1628,23 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
 .mh-dist { margin: 0 0 8px; font-size: 0.82rem; color: #8a6f63; }
 .mh-text-mr { margin: 0 0 6px; font-weight: 600; color: var(--maroon); font-size: 0.95rem; }
 .mh-text-en { margin: 0; font-size: 0.92rem; }
+.mh-more { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #f0dcc3; }
+.mh-more-title { margin: 0 0 8px; font-size: 1rem; color: var(--red-dark); }
+.mh-more-title span { font-weight: 800; }
+.mh-more-mr { margin: 0 0 4px; font-size: 0.92rem; font-weight: 600; color: var(--maroon); line-height: 1.6; }
+.mh-more-en { margin: 0 0 12px; font-size: 0.88rem; color: #4d3a33; line-height: 1.55; }
+.mh-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 12px;
+  margin: 4px 0 0;
+  padding: 10px 12px;
+  background: var(--cream-deep);
+  border-radius: 10px;
+  font-size: 0.86rem;
+}
+.mh-facts dt { font-weight: 800; color: var(--saffron-text); }
+.mh-facts dd { margin: 0; color: var(--ink); }
 .mh-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

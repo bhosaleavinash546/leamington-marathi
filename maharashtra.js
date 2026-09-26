@@ -119,6 +119,39 @@ document.addEventListener('DOMContentLoaded', () => {
     body.querySelector('.mh-dist-val').textContent = p.dist;
     body.querySelector('.mh-text-mr').textContent = p.tmr;
     body.querySelector('.mh-text-en').textContent = p.ten;
+    // longer history and a facts strip, where a place has them (the forts do)
+    if (p.hmr && p.hmr.length) {
+      const more = document.createElement('div');
+      more.className = 'mh-more';
+      const h = document.createElement('h3');
+      h.className = 'mh-more-title';
+      h.innerHTML = '<span lang="mr" class="marathi">इतिहास</span> | History';
+      more.appendChild(h);
+      p.hmr.forEach((para, i) => {
+        const pm = document.createElement('p');
+        pm.className = 'mh-more-mr marathi';
+        pm.lang = 'mr';
+        pm.textContent = para;
+        more.appendChild(pm);
+        if (p.hen && p.hen[i]) {
+          const pe = document.createElement('p');
+          pe.className = 'mh-more-en';
+          pe.textContent = p.hen[i];
+          more.appendChild(pe);
+        }
+      });
+      if (p.facts && p.facts.length) {
+        const dl = document.createElement('dl');
+        dl.className = 'mh-facts';
+        p.facts.forEach(([k, v]) => {
+          const dt = document.createElement('dt'); dt.lang = 'mr'; dt.className = 'marathi'; dt.textContent = k;
+          const dd = document.createElement('dd'); dd.lang = 'mr'; dd.className = 'marathi'; dd.textContent = v;
+          dl.append(dt, dd);
+        });
+        more.appendChild(dl);
+      }
+      body.appendChild(more);
+    }
     detail.appendChild(body);
     const close = document.createElement('button');
     close.type = 'button';
