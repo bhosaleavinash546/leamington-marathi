@@ -41,6 +41,14 @@ folder. You almost never need to touch `style.css` or `script.js`.
 - **Proverb and word of the day**: both lists live in `culture-data.js`. Copy any line, change the
   words, keep the quotes and commas. The more entries, the longer before they repeat.
 
+## आपला महाराष्ट्र page (maharashtra.html)
+
+All the places on the map live in **`maharashtra-data.js`**, one block per place with the
+Marathi and English name, the district, two short lines in each language, and the map
+position. To add a photo, put the file in `images/maharashtra/` and add two lines to that
+place's block: `photo: 'images/maharashtra/raigad.jpg', credit: 'the Kulkarni family, 2023'`.
+The short history at the top of the page is plain text in `maharashtra.html`.
+
 ## Keeping the site fresh (15 minutes, four times a year)
 
 Dates carry on moving after the site is published. Anything marked `data-until` retires

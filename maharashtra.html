@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>आपला महाराष्ट्र | Leamington Marathi</title>
+  <meta name="description" content="Maharashtra for our children: forts, saints and great people, temples and places to visit, on a map, with a short history in Marathi and English.">
+  <link rel="icon" type="image/png" href="images/logo-emblem.png">
+  <link rel="canonical" href="https://leamingtonmarathi.com/maharashtra.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="आपला महाराष्ट्र | Leamington Marathi">
+  <meta property="og:description" content="Forts, saints, temples and places to visit in Maharashtra, on a map, for the children of Leamington Marathi.">
+  <meta property="og:url" content="https://leamingtonmarathi.com/maharashtra.html">
+  <meta property="og:image" content="https://leamingtonmarathi.com/images/share-banner.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&family=Yatra+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.classList.add('js');</script>
+  <script src="maharashtra-data.js" defer></script>
+  <script src="maharashtra.js" defer></script>
+</head>
+<body class="mh-page">
+
+  <header id="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="brand">
+        <img src="images/logo-emblem.png" alt="Leamington Marathi emblem" class="logo-emblem" width="216" height="216">
+        <img src="images/logo.png" alt="Leamington Marathi" class="logo" width="444" height="120">
+      </a>
+      <a href="index.html" class="member-back">← Back to website</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="mh-head">
+      <p class="section-kicker marathi" lang="mr">आपला महाराष्ट्र</p>
+      <h1>Maharashtra, for our children</h1>
+      <p class="mh-sub">The forts, the saints, the temples and the places our families talk about, on one map.
+        <span class="marathi" lang="mr">आपल्या मुलांसाठी, आपल्या महाराष्ट्राची ओळख.</span></p>
+    </div>
+
+    <!-- TODO committee: please read this short history before it goes public -->
+    <section class="mh-history" aria-labelledby="mh-history-title">
+      <h2 id="mh-history-title">थोडक्यात इतिहास <span>| A short history</span></h2>
+      <p lang="mr">महाराष्ट्र म्हणजे मराठी माणसाचं राज्य. मराठी भाषा किमान हजार वर्षं जुनी आहे. संत ज्ञानेश्वरांनी १२९० मध्ये ज्ञानेश्वरी मराठीत लिहिली, तेव्हापासून ती घराघरात पोहोचली.</p>
+      <p>Maharashtra is the home of the Marathi language, which is at least a thousand years old. When Sant Dnyaneshwar wrote the Dnyaneshwari in Marathi in 1290, it reached every home.</p>
+      <p lang="mr">दोन हजार वर्षांपूर्वी इथे सातवाहनांचं राज्य होतं. अजिंठा आणि वेरूळची लेणी त्याच काळापासून पुढे कोरली गेली.</p>
+      <p>Two thousand years ago the Satavahanas ruled here. The caves of Ajanta and Ellora were carved from that time onwards.</p>
+      <p lang="mr">ज्ञानेश्वर, नामदेव, एकनाथ, तुकाराम अशा संतांनी भक्तीचा मार्ग सोप्या मराठीत सांगितला. पंढरपूरची वारी आजही तशीच चालू आहे.</p>
+      <p>Saints like Dnyaneshwar, Namdev, Eknath and Tukaram taught devotion in simple Marathi. The walk to Pandharpur continues to this day.</p>
+      <p lang="mr">१६७४ मध्ये शिवाजी महाराजांचा रायगडावर राज्याभिषेक झाला आणि स्वराज्य उभं राहिलं. पुढे फुले, शाहू, आंबेडकर, टिळक यांनी शिक्षण, समता आणि स्वातंत्र्यासाठी काम केलं.</p>
+      <p>In 1674 Shivaji Maharaj was crowned at Raigad and Swarajya was born. Later Phule, Shahu, Ambedkar and Tilak worked for education, equality and freedom.</p>
+      <p lang="mr">१ मे १९६० रोजी मराठी भाषिकांचं महाराष्ट्र राज्य स्थापन झालं. म्हणून आपण महाराष्ट्र दिन साजरा करतो.</p>
+      <p>On 1 May 1960 the state of Maharashtra was formed for Marathi speakers. That is why we celebrate Maharashtra Din.</p>
+    </section>
+
+    <section aria-labelledby="mh-map-title">
+      <h2 id="mh-map-title" class="mh-map-title">नकाशावर <span>| On the map</span></h2>
+      <p class="mh-map-help">Pick a group, then tap a pin or a card. <span class="marathi" lang="mr">एक गट निवडा आणि नकाशावरच्या खुणेवर टिचकी मारा.</span></p>
+      <div class="mh-chips" id="mh-chips" role="tablist" aria-label="Place groups"></div>
+
+      <div class="mh-stage">
+        <div class="mh-map-wrap">
+          <svg id="mh-map" viewBox="0 0 900 740" role="img" aria-label="Map of Maharashtra with places marked">
+            <defs>
+              <linearGradient id="mh-sea" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0" stop-color="#e3f0f6"/>
+                <stop offset="0.35" stop-color="#fff8ee"/>
+              </linearGradient>
+            </defs>
+            <rect width="900" height="740" fill="url(#mh-sea)" rx="14"/>
+            <text x="30" y="560" class="mh-sea-label">अरबी समुद्र</text>
+            <!-- Simplified outline of the state; swap this path for a district map when available -->
+            <path id="mh-outline" pathLength="1" d="M33.3 239.8 L57.2 192.5 L98.9 148.5 L150.9 104.5 L171.7 38.5 L223.7 60.5 L281.0 93.5 L338.2 99.0 L379.8 82.5 L437.1 104.5 L489.1 60.5 L551.5 71.5 L614.0 82.5 L681.6 66.0 L738.8 60.5 L801.3 71.5 L848.1 104.5 L884.5 137.5 L853.3 192.5 L832.5 253.0 L879.3 313.5 L832.5 379.5 L785.7 368.5 L744.0 313.5 L686.8 302.5 L619.2 297.0 L587.9 341.0 L567.1 390.5 L535.9 423.5 L489.1 451.0 L463.1 478.5 L421.4 533.5 L379.8 544.5 L338.2 561.0 L307.0 588.5 L275.8 599.5 L234.1 610.5 L223.7 654.5 L197.7 698.5 L171.7 720.5 L135.3 723.8 L128.0 708.4 L111.3 686.4 L93.7 584.1 L82.2 530.2 L81.2 499.4 L64.5 468.6 L58.3 436.7 L48.9 402.6 L44.7 368.5 L41.6 322.3 Z"/>
+            <g id="mh-pins"></g>
+          </svg>
+        </div>
+        <aside class="mh-detail" id="mh-detail" aria-live="polite">
+          <div class="mh-photo">🗺️ Tap a pin on the map to see the place here.<br><span class="marathi" lang="mr">नकाशावरची खूण निवडा.</span></div>
+        </aside>
+      </div>
+
+      <div class="mh-cards" id="mh-cards"></div>
+      <noscript><p class="mh-map-help">The map needs JavaScript turned on to show the places.</p></noscript>
+    </section>
+
+    <section class="mh-send">
+      <h2>Been to one of these places? <span class="marathi" lang="mr">फोटो पाठवा!</span></h2>
+      <p>We want this page filled with our own families’ photos, not stock pictures. Email your photo with the place
+        and your family name to <a href="mailto:leamingtonmarathi@gmail.com?subject=Maharashtra%20page%20photo">leamingtonmarathi@gmail.com</a>
+        and we will add it with your name.</p>
+    </section>
+
+    <!-- TODO: add the names of the members who wrote and checked the text -->
+    <p class="mh-credits" lang="mr">लेखन आणि तपासणी: लेमिंगटन मराठी स्वयंसेवक</p>
+  </main>
+
+  <footer>
+    <p class="footer-copy">© 2026 Leamington Marathi | <span class="marathi" lang="mr">जय महाराष्ट्र 🚩</span></p>
+    <p class="footer-credit">Designed &amp; Developed by Avinash Bhosale</p>
+  </footer>
+
+</body>
+</html>
