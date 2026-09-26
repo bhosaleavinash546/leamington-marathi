@@ -220,7 +220,7 @@ window.LM_ROUTES = {
     ],
   },
   wari: {
-    mr: 'आषाढी वारी', en: 'The Ashadhi wari to Pandharpur', icon: '🎶', color: '#c2470a',
+    mr: 'आषाढी वारी', en: 'The Ashadhi wari to Pandharpur', icon: '🎶', color: '#c2470a', marker: 'procession',
     imr: 'देहू आणि आळंदीहून पंढरपूरपर्यंत, सुमारे अठरा दिवसांची पायी वारी.',
     ien: 'From Dehu and Alandi to Pandharpur, about eighteen days on foot. Day numbers are approximate.',
     stops: [

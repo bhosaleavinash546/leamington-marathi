@@ -237,9 +237,49 @@ document.addEventListener('DOMContentLoaded', () => {
   const exitRoute = () => { if (mode !== 'route') return; clearRouteLayer(); route = null; };
   const placeMarker = len => {
     if (!marker || !routePath) return;
-    const pt = routePath.getPointAtLength(Math.max(0, Math.min(routeLen, len)));
+    const L = Math.max(0, Math.min(routeLen, len));
+    const pt = routePath.getPointAtLength(L);
     marker.dataset.len = len;
     marker.setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)}) scale(${invScale()})`);
+    // the procession turns to face the way it is walking
+    const face = marker.querySelector('.mh-face');
+    if (face) {
+      const ahead = routePath.getPointAtLength(Math.min(routeLen, L + 4));
+      const behind = routePath.getPointAtLength(Math.max(0, L - 4));
+      face.setAttribute('transform', `scale(${ahead.x >= behind.x ? 1.6 : -1.6} 1.6)`);
+    }
+  };
+
+  // A little dindi: flag bearers, a woman with the tulsi vrindavan, taal and mridang players.
+  // Drawn facing right with the feet at y = 0; CSS makes them walk and the flags wave.
+  const el = (tag, attrs) => { const e = document.createElementNS(SVG, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); return e; };
+  const warkari = (x, kind) => {
+    const slot = el('g', { transform: `translate(${x} 0)` });
+    const g = el('g', { class: 'mh-warkari' });
+    g.append(
+      el('path', { d: 'M0 -12 L-4 0 M0 -12 L4 0' }),          // legs
+      el('path', { d: 'M0 -12 L0 -24' }),                       // body
+      el('circle', { class: 'head', cx: 0, cy: -28, r: 3.4 }),
+    );
+    if (kind === 'flag') {
+      g.append(el('path', { d: 'M0 -21 L5 -15 M5 -15 L5 -48' }), el('polygon', { class: 'flag', points: '5,-48 21,-43 5,-38' }));
+    } else if (kind === 'tulsi') {
+      g.append(el('path', { d: 'M0 -21 L4 -30 M0 -21 L-4 -30' }), el('rect', { class: 'pot', x: -4.5, y: -37, width: 9, height: 5.5, rx: 1 }), el('circle', { class: 'tulsi', cx: 0, cy: -40, r: 3.6 }));
+    } else if (kind === 'taal') {
+      g.append(el('path', { d: 'M0 -21 L5 -16 M0 -21 L-5 -16' }), el('circle', { class: 'taal', cx: 5.5, cy: -15.5, r: 2.4 }), el('circle', { class: 'taal', cx: -5.5, cy: -15.5, r: 2.4 }));
+    } else if (kind === 'mridang') {
+      g.append(el('ellipse', { class: 'mridang', cx: 4, cy: -16, rx: 6.5, ry: 3.6 }), el('path', { d: 'M0 -21 L7 -17 M0 -21 L1 -17' }));
+    } else {
+      g.append(el('path', { d: 'M0 -21 L4 -14 M0 -21 L-3 -14' }));
+    }
+    slot.appendChild(g);
+    return slot;
+  };
+  const buildProcession = () => {
+    const face = el('g', { class: 'mh-face' });
+    [['flag', 34], ['walker', 22], ['tulsi', 10], ['taal', -2], ['mridang', -14], ['walker', -26], ['flag', -38]]
+      .forEach(([kind, x]) => face.appendChild(warkari(x, kind)));
+    return face;
   };
   const showProgress = len => {
     routePath.style.strokeDashoffset = routeLen - len;
@@ -299,14 +339,19 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i < pts.length; i++) stopLens.push(stopLens[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
     marker = document.createElementNS(SVG, 'g');
     marker.setAttribute('id', 'mh-marker');
-    const mc = document.createElementNS(SVG, 'circle');
-    mc.setAttribute('r', '14');
-    mc.setAttribute('stroke', route.color);
-    const mt = document.createElementNS(SVG, 'text');
-    mt.setAttribute('y', '5');
-    mt.setAttribute('text-anchor', 'middle');
-    mt.textContent = route.icon;
-    marker.append(mc, mt);
+    if (route.marker === 'procession') {
+      marker.classList.add('procession');
+      marker.appendChild(buildProcession());
+    } else {
+      const mc = document.createElementNS(SVG, 'circle');
+      mc.setAttribute('r', '14');
+      mc.setAttribute('stroke', route.color);
+      const mt = document.createElementNS(SVG, 'text');
+      mt.setAttribute('y', '5');
+      mt.setAttribute('text-anchor', 'middle');
+      mt.textContent = route.icon;
+      marker.append(mc, mt);
+    }
     pinsG.after(marker);
     placeMarker(0);
     emptyDetail();
