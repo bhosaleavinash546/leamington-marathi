@@ -1,11 +1,17 @@
-/* आपला महाराष्ट्र: draws the pins on the map, the filter chips, the cards and
-   the detail panel from the data in maharashtra-data.js. */
+/* आपला महाराष्ट्र: pins, filter chips, cards and the detail panel; the two
+   animated journeys (the map zooms to the route, the road draws itself and a
+   marker travels stop by stop); and the children's quiz. All the words live
+   in maharashtra-data.js. */
 document.addEventListener('DOMContentLoaded', () => {
   const places = window.LM_PLACES || [];
+  const routes = window.LM_ROUTES || {};
+  const quizPool = window.LM_QUIZ || [];
   const SVG = 'http://www.w3.org/2000/svg';
-  // Same projection constants as the outline path in maharashtra.html
-  const P = { lon0: 72.4, lat0: 22.3, s: 110, kx: 0.946 };
-  const proj = (lon, lat) => [(lon - P.lon0) * P.s * P.kx, (P.lat0 - lat) * P.s];
+  const svg = document.getElementById('mh-map');
+  // Longitude/latitude calibration lives on the svg element (set when the map was traced)
+  const C = Object.fromEntries(['x0', 'y0', 'w', 'h', 'lon0', 'lon1', 'lat0', 'lat1'].map(k => [k, parseFloat(svg.dataset[k])]));
+  const FULL = svg.dataset.vb.split(' ').map(Number);
+  const proj = (lon, lat) => [C.x0 + (lon - C.lon0) / (C.lon1 - C.lon0) * C.w, C.y0 + (C.lat1 - lat) / (C.lat1 - C.lat0) * C.h];
   const CATS = {
     kille: { mr: 'किल्ले', en: 'Forts', icon: '🏯', color: '#a81607' },
     yugpurush: { mr: 'संत आणि युगपुरुष', en: 'Saints and great people', icon: '🙏', color: '#c2470a' },
@@ -13,17 +19,64 @@ document.addEventListener('DOMContentLoaded', () => {
     paryatan: { mr: 'पर्यटन', en: 'Places to visit', icon: '🌄', color: '#1e6b2e' },
   };
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isPhone = () => window.matchMedia('(max-width: 900px)').matches;
   const pinsG = document.getElementById('mh-pins');
   const cardsEl = document.getElementById('mh-cards');
   const detail = document.getElementById('mh-detail');
   const chipsEl = document.getElementById('mh-chips');
+  const routesEl = document.getElementById('mh-routes');
+  const routeBar = document.getElementById('mh-route-bar');
+  const replayBtn = routeBar.querySelector('.mh-replay');
   const outline = document.getElementById('mh-outline');
+  const MR_DIGITS = '०१२३४५६७८९';
+  const mrNum = n => String(n).replace(/\d/g, d => MR_DIGITS[d]);
+
+  let viewBox = FULL.slice();
   let current = [];
   let activeIdx = -1;
+  let mode = 'cat';
+  let route = null, routePath = null, routeBase = null, marker = null;
+  let routeLen = 0, stopLens = [], travelRaf = null, vbRaf = null;
 
-  // the state outline draws itself once the page has loaded
   requestAnimationFrame(() => outline.classList.add('drawn'));
 
+  // ---- zooming the map (animated viewBox) ----
+  const invScale = () => (viewBox[2] / FULL[2]).toFixed(3); // keeps pins the same size on screen when zoomed
+  const rescale = () => {
+    const inv = invScale();
+    pinsG.querySelectorAll(':scope > g').forEach(g => g.setAttribute('transform', `translate(${g.dataset.x} ${g.dataset.y}) scale(${inv})`));
+    if (marker) placeMarker(+marker.dataset.len || 0);
+  };
+  const setViewBox = vb => {
+    viewBox = vb;
+    svg.setAttribute('viewBox', vb.map(n => n.toFixed(1)).join(' '));
+    rescale();
+  };
+  const animateViewBox = target => new Promise(resolve => {
+    cancelAnimationFrame(vbRaf);
+    if (reduced) { setViewBox(target); resolve(); return; }
+    const from = viewBox.slice();
+    const t0 = performance.now();
+    const step = now => {
+      const t = Math.min(1, (now - t0) / 750);
+      const e = 1 - Math.pow(1 - t, 3);
+      setViewBox(from.map((v, i) => v + (target[i] - v) * e));
+      if (t < 1) vbRaf = requestAnimationFrame(step); else resolve();
+    };
+    vbRaf = requestAnimationFrame(step);
+  });
+  const fitViewBox = pts => {
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    pts.forEach(([x, y]) => { minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y); });
+    const padX = (maxX - minX) * 0.3 + 60, padY = (maxY - minY) * 0.3 + 60;
+    minX -= padX; maxX += padX; minY -= padY; maxY += padY;
+    let w = maxX - minX, h = maxY - minY;
+    const ar = FULL[2] / FULL[3];
+    if (w / h > ar) { const nh = w / ar; minY -= (nh - h) / 2; h = nh; } else { const nw = h * ar; minX -= (nw - w) / 2; w = nw; }
+    return w >= FULL[2] ? FULL.slice() : [minX, minY, w, h];
+  };
+
+  // ---- detail panel ----
   const photoBlock = (p, small) => {
     const wrap = document.createElement('div');
     wrap.className = 'mh-photo';
@@ -40,7 +93,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return wrap;
   };
-
+  const emptyDetail = () => {
+    detail.innerHTML = '<div class="mh-photo">🗺️ Tap a pin on the map to see the place here.<br><span class="marathi" lang="mr">नकाशावरची खूण निवडा.</span></div>';
+  };
   const fillDetail = p => {
     detail.innerHTML = '';
     detail.appendChild(photoBlock(p, false));
@@ -55,11 +110,12 @@ document.addEventListener('DOMContentLoaded', () => {
     body.innerHTML = `
       <p class="mh-name-mr marathi" lang="mr"></p>
       <p class="mh-name-en"></p>
-      <p class="mh-dist"><span lang="mr" class="marathi">जिल्हा:</span> <span lang="mr" class="marathi mh-dist-val"></span></p>
+      <p class="mh-dist"><span lang="mr" class="marathi mh-dist-label"></span> <span lang="mr" class="marathi mh-dist-val"></span></p>
       <p class="mh-text-mr marathi" lang="mr"></p>
       <p class="mh-text-en"></p>`;
     body.querySelector('.mh-name-mr').textContent = p.mr;
-    body.querySelector('.mh-name-en').textContent = `${CATS[p.cat].icon} ${p.en}`;
+    body.querySelector('.mh-name-en').textContent = `${p.icon || CATS[p.cat].icon} ${p.en}`;
+    body.querySelector('.mh-dist-label').textContent = p.distLabel || 'जिल्हा:';
     body.querySelector('.mh-dist-val').textContent = p.dist;
     body.querySelector('.mh-text-mr').textContent = p.tmr;
     body.querySelector('.mh-text-en').textContent = p.ten;
@@ -72,32 +128,27 @@ document.addEventListener('DOMContentLoaded', () => {
     close.addEventListener('click', () => select(-1));
     detail.appendChild(close);
   };
-
-  const select = idx => {
+  const select = (idx, scroll = true) => {
     activeIdx = idx;
     pinsG.querySelectorAll('.mh-pin').forEach(g => g.classList.toggle('active', +g.dataset.i === idx));
     cardsEl.querySelectorAll('.mh-card').forEach(c => c.classList.toggle('active', +c.dataset.i === idx));
-    if (idx < 0) {
-      detail.innerHTML = '<div class="mh-photo">🗺️ Tap a pin on the map to see the place here.<br><span class="marathi" lang="mr">नकाशावरची खूण निवडा.</span></div>';
-      return;
-    }
+    if (idx < 0) { emptyDetail(); return; }
     fillDetail(current[idx]);
-    // on phones the panel sits below the map, so bring it into view
-    if (window.matchMedia('(max-width: 900px)').matches) {
-      detail.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
-    }
+    if (scroll && isPhone()) detail.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
   };
 
-  const render = cat => {
-    current = places.filter(p => p.cat === cat);
+  // ---- pins and cards ----
+  const buildPins = (list, color, numbered) => {
     pinsG.innerHTML = '';
-    cardsEl.innerHTML = '';
-    current.forEach((p, i) => {
+    const inv = invScale();
+    list.forEach((p, i) => {
       const [x, y] = proj(p.lon, p.lat);
       const outer = document.createElementNS(SVG, 'g');
-      outer.setAttribute('transform', `translate(${(x + (p.dx || 0)).toFixed(1)} ${(y + (p.dy || 0)).toFixed(1)})`);
+      outer.dataset.x = (x + (p.dx || 0)).toFixed(1);
+      outer.dataset.y = (y + (p.dy || 0)).toFixed(1);
+      outer.setAttribute('transform', `translate(${outer.dataset.x} ${outer.dataset.y}) scale(${inv})`);
       const g = document.createElementNS(SVG, 'g');
-      g.setAttribute('class', 'mh-pin');
+      g.setAttribute('class', 'mh-pin' + (numbered ? ' numbered' : ''));
       g.dataset.i = i;
       g.setAttribute('tabindex', '0');
       g.setAttribute('role', 'button');
@@ -107,22 +158,37 @@ document.addEventListener('DOMContentLoaded', () => {
       ring.setAttribute('class', 'ring');
       ring.setAttribute('r', '8');
       ring.setAttribute('fill', 'none');
-      ring.setAttribute('stroke', CATS[cat].color);
+      ring.setAttribute('stroke', color);
       const dot = document.createElementNS(SVG, 'circle');
       dot.setAttribute('class', 'dot');
-      dot.setAttribute('r', '7');
-      dot.setAttribute('fill', CATS[cat].color);
+      dot.setAttribute('r', numbered ? '10' : '7');
+      dot.setAttribute('fill', color);
+      g.append(ring, dot);
+      if (numbered) {
+        const num = document.createElementNS(SVG, 'text');
+        num.setAttribute('class', 'num');
+        num.setAttribute('y', '4');
+        num.setAttribute('text-anchor', 'middle');
+        num.textContent = mrNum(i + 1);
+        g.appendChild(num);
+      }
       const label = document.createElementNS(SVG, 'text');
-      label.setAttribute('y', '-13');
+      label.setAttribute('class', 'label');
+      label.setAttribute('y', numbered ? '-17' : '-13');
       label.setAttribute('text-anchor', 'middle');
       label.setAttribute('lang', 'mr');
       label.textContent = p.mr;
-      g.append(ring, dot, label);
-      g.addEventListener('click', () => select(i));
-      g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(i); } });
+      g.appendChild(label);
+      const act = () => (mode === 'route' ? jumpTo(i) : select(i));
+      g.addEventListener('click', act);
+      g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); } });
       outer.appendChild(g);
       pinsG.appendChild(outer);
-
+    });
+  };
+  const buildCards = list => {
+    cardsEl.innerHTML = '';
+    list.forEach((p, i) => {
       const card = document.createElement('article');
       card.className = 'mh-card';
       card.dataset.i = i;
@@ -131,22 +197,126 @@ document.addEventListener('DOMContentLoaded', () => {
       const body = document.createElement('div');
       body.className = 'mh-card-body';
       body.innerHTML = '<p class="mh-name-mr marathi" lang="mr"></p><p class="mh-name-en"></p><p class="mh-card-text"></p>';
-      body.querySelector('.mh-name-mr').textContent = p.mr;
+      body.querySelector('.mh-name-mr').textContent = (mode === 'route' ? `${mrNum(i + 1)}. ` : '') + p.mr;
       body.querySelector('.mh-name-en').textContent = p.en;
       body.querySelector('.mh-card-text').textContent = p.ten;
       card.appendChild(body);
-      card.addEventListener('click', () => { select(i); if (window.matchMedia('(max-width: 900px)').matches) detail.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' }); });
-      card.addEventListener('keydown', e => { if (e.key === 'Enter') select(i); });
+      const act = () => {
+        if (mode === 'route') jumpTo(i); else select(i, false);
+        if (isPhone()) detail.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
+      };
+      card.addEventListener('click', act);
+      card.addEventListener('keydown', e => { if (e.key === 'Enter') act(); });
       cardsEl.appendChild(card);
     });
-    select(-1);
-    chipsEl.querySelectorAll('.mh-chip').forEach(b => {
-      const on = b.dataset.cat === cat;
-      b.classList.toggle('active', on);
-      b.setAttribute('aria-selected', on);
-    });
+  };
+  const setChips = (catKey, routeKey) => {
+    chipsEl.querySelectorAll('.mh-chip').forEach(b => { const on = b.dataset.cat === catKey; b.classList.toggle('active', on); b.setAttribute('aria-selected', on); });
+    routesEl.querySelectorAll('.mh-chip').forEach(b => { const on = b.dataset.route === routeKey; b.classList.toggle('active', on); b.setAttribute('aria-selected', on); });
   };
 
+  // ---- category mode ----
+  const render = cat => {
+    exitRoute();
+    mode = 'cat';
+    current = places.filter(p => p.cat === cat);
+    buildPins(current, CATS[cat].color, false);
+    buildCards(current);
+    select(-1);
+    setChips(cat, null);
+    routeBar.hidden = true;
+    if (viewBox.join() !== FULL.join()) animateViewBox(FULL.slice());
+  };
+
+  // ---- journeys ----
+  const clearRouteLayer = () => {
+    cancelAnimationFrame(travelRaf);
+    [routeBase, routePath, marker].forEach(el => el && el.remove());
+    routeBase = routePath = marker = null;
+  };
+  const exitRoute = () => { if (mode !== 'route') return; clearRouteLayer(); route = null; };
+  const placeMarker = len => {
+    if (!marker || !routePath) return;
+    const pt = routePath.getPointAtLength(Math.max(0, Math.min(routeLen, len)));
+    marker.dataset.len = len;
+    marker.setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)}) scale(${invScale()})`);
+  };
+  const showProgress = len => {
+    routePath.style.strokeDashoffset = routeLen - len;
+    placeMarker(len);
+    const pins = pinsG.querySelectorAll('.mh-pin');
+    stopLens.forEach((L, i) => pins[i].classList.toggle('passed', len >= L - 0.5));
+  };
+  const travel = () => {
+    cancelAnimationFrame(travelRaf);
+    replayBtn.hidden = true;
+    const ms = current.length * 1700;
+    const t0 = performance.now();
+    let lastStop = -1;
+    const step = now => {
+      const t = Math.min(1, (now - t0) / ms);
+      const len = t * routeLen;
+      showProgress(len);
+      let reached = -1;
+      stopLens.forEach((L, i) => { if (len >= L - 0.5) reached = i; });
+      if (reached !== lastStop) { lastStop = reached; select(reached, false); }
+      if (t < 1) travelRaf = requestAnimationFrame(step); else replayBtn.hidden = false;
+    };
+    travelRaf = requestAnimationFrame(step);
+  };
+  const jumpTo = i => {
+    cancelAnimationFrame(travelRaf);
+    showProgress(stopLens[i]);
+    select(i, false);
+    replayBtn.hidden = false;
+  };
+  const renderRoute = async key => {
+    clearRouteLayer();
+    mode = 'route';
+    route = routes[key];
+    current = route.stops.map(s => ({ ...s, icon: route.icon, distLabel: 'केव्हा:', dist: s.when, cat: 'kille' }));
+    const pts = current.map(s => proj(s.lon, s.lat));
+    buildPins(current, route.color, true);
+    buildCards(current);
+    setChips(null, key);
+    routeBar.hidden = false;
+    routeBar.querySelector('.mh-route-title').textContent = `${route.icon} ${route.mr} | ${route.en}`;
+    routeBar.querySelector('.mh-route-intro').textContent = `${route.imr} ${route.ien}`;
+    replayBtn.hidden = true;
+    const d = 'M' + pts.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join(' L');
+    routeBase = document.createElementNS(SVG, 'path');
+    routeBase.setAttribute('class', 'mh-route-base');
+    routeBase.setAttribute('d', d);
+    routePath = document.createElementNS(SVG, 'path');
+    routePath.setAttribute('class', 'mh-route');
+    routePath.setAttribute('d', d);
+    routePath.setAttribute('stroke', route.color);
+    pinsG.before(routeBase, routePath);
+    routeLen = routePath.getTotalLength();
+    routePath.style.strokeDasharray = routeLen;
+    routePath.style.strokeDashoffset = routeLen;
+    stopLens = [0];
+    for (let i = 1; i < pts.length; i++) stopLens.push(stopLens[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    marker = document.createElementNS(SVG, 'g');
+    marker.setAttribute('id', 'mh-marker');
+    const mc = document.createElementNS(SVG, 'circle');
+    mc.setAttribute('r', '14');
+    mc.setAttribute('stroke', route.color);
+    const mt = document.createElementNS(SVG, 'text');
+    mt.setAttribute('y', '5');
+    mt.setAttribute('text-anchor', 'middle');
+    mt.textContent = route.icon;
+    marker.append(mc, mt);
+    pinsG.after(marker);
+    placeMarker(0);
+    emptyDetail();
+    await animateViewBox(fitViewBox(pts));
+    if (mode !== 'route' || !routePath) return; // user switched away during the zoom
+    if (reduced) { showProgress(routeLen); select(0, false); replayBtn.hidden = false; } else travel();
+  };
+  replayBtn.addEventListener('click', () => { if (mode === 'route') { showProgress(0); travel(); } });
+
+  // ---- chips ----
   Object.entries(CATS).forEach(([key, c]) => {
     const b = document.createElement('button');
     b.type = 'button';
@@ -160,7 +330,73 @@ document.addEventListener('DOMContentLoaded', () => {
     b.addEventListener('click', () => render(key));
     chipsEl.appendChild(b);
   });
-
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && activeIdx >= 0) select(-1); });
+  Object.entries(routes).forEach(([key, r]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mh-chip route';
+    b.dataset.route = key;
+    b.setAttribute('role', 'tab');
+    b.innerHTML = `${r.icon} <span lang="mr" class="marathi"></span>`;
+    b.querySelector('.marathi').textContent = r.mr;
+    b.title = r.en;
+    b.addEventListener('click', () => renderRoute(key));
+    routesEl.appendChild(b);
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && activeIdx >= 0 && mode === 'cat') select(-1); });
   render('kille');
+
+  // ---- quiz ----
+  const quizBody = document.getElementById('mh-quiz-body');
+  if (quizBody && quizPool.length) {
+    const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+    const startQuiz = () => {
+      const qs = shuffle(quizPool).slice(0, 5);
+      let i = 0, score = 0;
+      const showQ = () => {
+        const q = qs[i];
+        quizBody.innerHTML = `
+          <p class="mh-q-progress"><span lang="mr" class="marathi">प्रश्न ${mrNum(i + 1)} / ${mrNum(qs.length)}</span></p>
+          <p class="mh-q-mr marathi" lang="mr"></p>
+          <p class="mh-q-en"></p>
+          <div class="mh-q-options"></div>
+          <p class="mh-q-feedback" role="status" aria-live="polite" hidden></p>
+          <button type="button" class="btn btn-primary mh-q-next" hidden></button>`;
+        quizBody.querySelector('.mh-q-mr').textContent = q.qmr;
+        quizBody.querySelector('.mh-q-en').textContent = q.qen;
+        const opts = quizBody.querySelector('.mh-q-options');
+        const fb = quizBody.querySelector('.mh-q-feedback');
+        const next = quizBody.querySelector('.mh-q-next');
+        q.options.forEach(([omr, oen], k) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'mh-q-opt';
+          b.innerHTML = '<span lang="mr" class="marathi"></span><span class="mh-q-opt-en"></span>';
+          b.querySelector('.marathi').textContent = omr;
+          b.querySelector('.mh-q-opt-en').textContent = oen;
+          b.addEventListener('click', () => {
+            opts.querySelectorAll('button').forEach((x, n) => { x.disabled = true; x.classList.toggle('right', n === q.answer); });
+            const ok = k === q.answer;
+            if (!ok) b.classList.add('wrong'); else score++;
+            fb.textContent = `${ok ? 'बरोबर! ✅' : 'चुकलं. ❌'} ${q.wmr} ${q.wen}`;
+            fb.hidden = false;
+            next.textContent = i + 1 < qs.length ? 'पुढचा प्रश्न →' : 'निकाल पहा →';
+            next.hidden = false;
+          });
+          opts.appendChild(b);
+        });
+        next.addEventListener('click', () => { i++; if (i < qs.length) showQ(); else showResult(); });
+      };
+      const showResult = () => {
+        const line = score === qs.length ? 'शाब्बास! सगळे बरोबर! 🎉' : score >= 3 ? 'छान! 👏' : 'हरकत नाही, पुन्हा प्रयत्न करा. 🙂';
+        quizBody.innerHTML = `
+          <p class="mh-q-score marathi" lang="mr">${mrNum(qs.length)} पैकी ${mrNum(score)}</p>
+          <p class="mh-q-line marathi" lang="mr">${line}</p>
+          <p class="mh-q-en">You got ${score} out of ${qs.length}.</p>
+          <button type="button" class="btn btn-primary mh-q-again">पुन्हा खेळा · Play again</button>`;
+        quizBody.querySelector('.mh-q-again').addEventListener('click', startQuiz);
+      };
+      showQ();
+    };
+    startQuiz();
+  }
 });
