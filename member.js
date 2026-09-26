@@ -33,16 +33,16 @@
 
   // Firebase error codes → friendly words
   const FRIENDLY = {
-    'auth/email-already-in-use': 'An account with this email already exists — try signing in instead.',
-    'auth/invalid-email': 'That email address doesn’t look right — please check it.',
+    'auth/email-already-in-use': 'An account with this email already exists. Try signing in instead.',
+    'auth/invalid-email': 'That email address does not look right. Please check it.',
     'auth/weak-password': 'Please choose a stronger password (at least 8 characters).',
-    'auth/user-not-found': 'No account found for that email — create one first!',
-    'auth/wrong-password': 'Wrong password — try again, or use "Forgot password?".',
-    'auth/invalid-credential': 'Email or password is incorrect — try again, or use "Forgot password?".',
-    'auth/too-many-requests': 'Too many attempts — please wait a few minutes and try again.',
-    'auth/network-request-failed': 'Network problem — please check your connection and try again.',
+    'auth/user-not-found': 'No account found for that email. Create one first.',
+    'auth/wrong-password': 'Wrong password. Try again, or use "Forgot password?".',
+    'auth/invalid-credential': 'Email or password is incorrect. Try again, or use "Forgot password?".',
+    'auth/too-many-requests': 'Too many attempts. Please wait a few minutes and try again.',
+    'auth/network-request-failed': 'Network problem. Please check your connection and try again.',
   };
-  const friendly = err => FRIENDLY[err && err.code] || 'Something went wrong — please try again.';
+  const friendly = err => FRIENDLY[err && err.code] || 'Something went wrong. Please try again.';
 
   // ---- Panel switching ----
   const panels = ['panel-signin', 'panel-signup', 'panel-magic', 'panel-reset'];
@@ -90,7 +90,7 @@
       await fb.updateProfile(cred.user, { displayName: f.name.value.trim() });
       fb.sendEmailVerification(cred.user).catch(() => {});
       $('member-name').textContent = f.name.value.trim();
-      say('🎉 Welcome to the family! Your free membership is ready.');
+      say('🎉 Your account is ready. Welcome!');
     } catch (err) {
       say(friendly(err), true);
     }
@@ -150,7 +150,7 @@
     busy(f, true, 'Sending…');
     try {
       await fb.sendPasswordResetEmail(fb.auth, f.email.value.trim());
-      say('📬 Reset link sent — check your inbox (and the spam folder, just in case).');
+      say('📬 Reset link sent. Check your inbox, and the spam folder just in case.');
       f.reset();
     } catch (err) {
       say(friendly(err), true);
@@ -162,7 +162,7 @@
   $('resend-verify').addEventListener('click', async () => {
     if (fb.auth.currentUser) {
       await fb.sendEmailVerification(fb.auth.currentUser).catch(() => {});
-      $('verify-banner').firstChild.textContent = '📧 Verification email sent again — check your inbox. ';
+      $('verify-banner').firstChild.textContent = '📧 Verification email sent again. Check your inbox. ';
     }
   });
   $('sign-out').addEventListener('click', () => fb.signOut(fb.auth));
