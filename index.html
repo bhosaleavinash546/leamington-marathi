@@ -86,11 +86,11 @@
   <div class="news-ticker" role="region" aria-label="Latest updates">
     <span class="ticker-label marathi" lang="mr">ताज्या घडामोडी</span>
     <ul id="ticker-items">
-      <li class="active"><a href="#dhol">🏆 World Book of Records — 13 pathaks, 270 players in London!</a></li>
-      <li><a href="https://www.ticketsource.com/leamingtonmarathi/shivrajyostav-2026/e-vrzqqo" target="_blank" rel="noopener">🎟 Shivrajyostav 2026 tickets on sale — book now!</a></li>
+      <li class="active" data-until="2026-10-15"><a href="ank.html">🪔 दिवाळी अंक २०२६ — send your लेख, कविता, recipes &amp; kids' art by १५ ऑक्टोबर!</a></li>
+      <li><a href="#dhol">🏆 World Book of Records — 13 pathaks, 270 players in London!</a></li>
+      <li><a href="#events">🪔 Diwali Bhet 2026 is coming — date &amp; tickets announced here first</a></li>
       <li><a href="#get-involved">🥁 New drummers welcome — join our Dhol Tasha Pathak</a></li>
       <li><a href="#gallery">📸 Fresh photos from our events — take a look</a></li>
-      <li><a href="ank.html">🪔 दिवाळी अंक २०२६ — send us your articles, poems &amp; kids' art!</a></li>
       <li><a href="member.html">🆕 Free membership is coming — सभासद व्हा!</a></li>
     </ul>
   </div>
@@ -110,9 +110,11 @@
         <a href="#contact" class="btn btn-primary">Join Our Community</a>
         <a href="#sponsor" class="btn btn-outline">Become a Sponsor</a>
       </div>
-      <!-- Tickets-on-sale chip. To switch back to a countdown chip, point href
-           at #events and set data-event-date="YYYY-MM-DD". -->
-      <a href="https://www.ticketsource.com/leamingtonmarathi/shivrajyostav-2026/e-vrzqqo" target="_blank" rel="noopener" class="hero-next">🎟 Tickets on sale: Shivrajyostav 2026 <span class="marathi" lang="mr">शिवराज्योत्सव</span> — Book now!</a>
+      <!-- Next-event chip. data-event-date drives the "N days to go" countdown (script.js);
+           data-until hides the chip automatically the day after that date, so it can never
+           advertise a past event. TODO committee: once the Diwali Bhet 2026 date and venue
+           are confirmed, put them in the text and set both dates to the Bhet date. -->
+      <a href="#events" class="hero-next" data-event-date="2026-11-08" data-until="2026-11-08">🪔 Diwali 2026 <span class="marathi" lang="mr">दिवाळी</span> — Diwali Bhet details coming soon</a>
     </div>
     <div class="hero-stats reveal">
       <div class="stat">
@@ -272,12 +274,16 @@
         </div>
       </div>
       <div class="timeline-item reveal">
-        <div class="timeline-month">May <span class="marathi" lang="mr">| मे</span></div>
+        <div class="timeline-month">May / June <span class="marathi" lang="mr">| मे–जून</span></div>
         <div class="timeline-card">
           <h3>Shivrajyotsav <span class="marathi" lang="mr">– शिवराज्योत्सव</span></h3>
           <p>Celebrating <strong>Chhatrapati Shivaji Maharaj Jayanti</strong> and <strong>Maharashtra Din</strong> with skits, music, dance and art performances. <em>जय भवानी, जय शिवाजी!</em></p>
           <span class="timeline-badge">280+ participants</span>
-          <a class="ticket-link" href="https://www.ticketsource.com/leamingtonmarathi/shivrajyostav-2026/e-vrzqqo" target="_blank" rel="noopener">🎟 Book tickets</a>
+          <!-- When tickets go on sale again, swap this for:
+               <a class="ticket-link" href="TICKET-URL" target="_blank" rel="noopener"
+                  data-until="EVENT-DATE" data-expired-text="📸 See the photos →" data-expired-href="#gallery">🎟 Book tickets</a>
+               and it will retire itself the day after the event. -->
+          <a class="rsvp-link" href="#contact" data-event="Shivrajyotsav">Register interest →</a>
         </div>
       </div>
       <div class="timeline-item reveal">

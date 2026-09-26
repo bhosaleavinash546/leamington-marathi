@@ -23,13 +23,31 @@ folder. You almost never need to touch `style.css` or `script.js`.
 
 | What | Search for this in `index.html` |
 |------|--------------------------------|
-| "What's New" ticker announcements | `ticker-items` — each `<li>` is one rotating headline; add/remove/reorder freely |
-| Next-event chip in the hero | `hero-next` — update the text AND `data-event-date="YYYY-MM-DD"` (drives the countdown) |
+| "What's New" ticker announcements | `ticker-items` — each `<li>` is one rotating headline; add/remove/reorder freely. Add `data-until="YYYY-MM-DD"` to a headline with a deadline and it disappears by itself the day after |
+| Next-event chip in the hero | `hero-next` — update the text, `data-event-date` (drives the countdown) AND `data-until` (the chip hides itself the day after) |
+| Event tickets on sale | `timeline-card` — there is a ready-made `ticket-link` snippet in a comment on the Shivrajyotsav card; it turns into "See the photos →" automatically after the event |
 | Event details / participant counts | `timeline-card` |
 | Stats (400+ families etc.) | `data-count` — change both the attribute and the visible number |
 | Testimonial quotes | `testimonial` — replace the sample quotes with real ones |
 | Sponsor logos | `supporter-slot` — swap a placeholder for `<img src="images/sponsor-name.png" alt="Sponsor Name">` |
 | Social media links | `socials` |
+
+## Keeping the site fresh (15 minutes, four times a year)
+
+Dates carry on moving after the site is published. Anything marked `data-until` retires
+itself, but a person still needs to add what comes next. After each big event, and at
+least every quarter, run through this list:
+
+1. **Hero chip** (`hero-next`) — point it at the next event with its date.
+2. **Ticker** (`ticker-items`) — remove anything that has happened, add what's coming.
+3. **Events timeline** — tickets link for the next event (snippet in the Shivrajyotsav card).
+4. **Gallery & flyers** — add the latest event's best photos and poster.
+5. **Journey** (`p-stones`) — add a milestone if something big happened.
+6. **Festival dates** (`FESTIVALS` in `script.js`) — every January, update the lunar
+   festival ranges (Ganeshotsav, Diwali) for the new year.
+7. **Diwali Ank** (`ank.html`) — deadline and contents each autumn.
+8. **Membership** (`member.html`) — once switched on, nothing to do; until then, see
+   the checklist at the top of `member-config.js`.
 
 ## Adding or replacing photos
 

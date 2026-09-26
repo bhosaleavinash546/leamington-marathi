@@ -17,6 +17,32 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
+  // Self-expiring content: anything with data-until="YYYY-MM-DD" (a ticket link, a
+  // deadline headline, the hero chip) is retired the day after that date, so the site
+  // can never keep advertising a past event. A link with data-expired-text swaps its
+  // wording (and data-expired-href) instead of disappearing.
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  document.querySelectorAll('[data-until]').forEach(el => {
+    const until = new Date(`${el.dataset.until}T23:59:59`);
+    if (isNaN(until) || todayStart <= until) return;
+    if (el.dataset.expiredText) {
+      el.textContent = el.dataset.expiredText;
+      if (el.dataset.expiredHref) {
+        el.href = el.dataset.expiredHref;
+        el.removeAttribute('target');
+      }
+      el.removeAttribute('data-until');
+    } else {
+      (el.closest('li') || el).remove();
+    }
+  });
+  // If the ticker's active headline just expired, promote the next one
+  const tickerList = document.getElementById('ticker-items');
+  if (tickerList && !tickerList.querySelector('.active') && tickerList.firstElementChild) {
+    tickerList.firstElementChild.classList.add('active');
+  }
+
   // Highlight the nav link for the section in view
   // (only sections that have a nav link, so e.g. #join doesn't clear the highlight)
   const navTargets = new Set([...navLinks].map(link => link.getAttribute('href')));
