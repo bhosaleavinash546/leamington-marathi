@@ -1710,6 +1710,7 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
 .mh-card-body .mh-name-mr { font-size: 1.05rem; }
 .mh-card-body .mh-name-en { margin-bottom: 4px; font-size: 0.82rem; }
 .mh-card-text { margin: 0; font-size: 0.86rem; color: #6b544b; line-height: 1.45; }
+.mh-card-more { margin: 8px 0 0; font-size: 0.82rem; font-weight: 700; color: var(--red-dark); }
 .mh-send {
   margin-top: 40px;
   background: linear-gradient(135deg, var(--red-dark), var(--red) 60%, var(--saffron));
