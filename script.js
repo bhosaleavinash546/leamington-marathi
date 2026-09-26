@@ -108,18 +108,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('https://formsubmit.co/ajax/leamingtonmarathi@gmail.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ name, email, message, _subject: 'Website enquiry — Leamington Marathi' }),
+        body: JSON.stringify({ name, email, message, _subject: 'Website enquiry, Leamington Marathi' }),
       });
       if (!res.ok) throw new Error(`relay responded ${res.status}`);
       form.reset();
-      formNote.textContent = 'धन्यवाद! Message sent — we usually reply within a couple of days.';
+      formNote.textContent = 'धन्यवाद! Your message has been sent. We usually reply within a couple of days.';
       submitBtn.textContent = 'Sent ✓';
     } catch {
       // Relay unreachable: open the visitor's mail app with everything pre-filled
       const subject = encodeURIComponent(`Website enquiry from ${name}`);
       const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
       window.location.href = `mailto:leamingtonmarathi@gmail.com?subject=${subject}&body=${body}`;
-      formNote.textContent = 'Opening your email app instead — or write to us at leamingtonmarathi@gmail.com.';
+      formNote.textContent = 'Opening your email app instead. Or write to us at leamingtonmarathi@gmail.com.';
       submitBtn.disabled = false;
       submitBtn.textContent = 'Send Message';
     }
@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     searchIndex.push({
-      label: 'दिवाळी अंक २०२६ — Diwali Ank',
+      label: 'दिवाळी अंक २०२६ | Diwali Ank',
       text: 'diwali ank magazine articles poems recipes editorial दिवाळी अंक लेख कविता पाककृती बालविभाग संपादकीय',
       href: 'ank.html',
       section: 'Magazine',
@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!hits.length) {
         const li = document.createElement('li');
         li.className = 'search-empty';
-        li.textContent = 'काही सापडलं नाही — nothing found for "' + searchInput.value.trim() + '"';
+        li.textContent = 'काही सापडलं नाही. Nothing found for "' + searchInput.value.trim() + '"';
         searchResults.appendChild(li);
         return;
       }
@@ -454,19 +454,19 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
           interest, name, email, phone, comment,
-          _subject: `Get Involved — ${interest}`,
+          _subject: `Get Involved: ${interest}`,
         }),
       });
       if (!res.ok) throw new Error(`relay responded ${res.status}`);
       involvedForm.reset();
-      involvedNote.textContent = 'धन्यवाद! We’ve got it — we’ll be in touch soon 🎉';
+      involvedNote.textContent = 'धन्यवाद! We have your details and will be in touch soon 🎉';
       btn.textContent = 'Sent ✓';
     } catch {
       const body = encodeURIComponent(`Interest: ${interest}\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nComment: ${comment}`);
-      window.location.href = `mailto:leamingtonmarathi@gmail.com?subject=${encodeURIComponent(`Get Involved — ${interest}`)}&body=${body}`;
-      involvedNote.textContent = 'Opening your email app instead — just hit send.';
+      window.location.href = `mailto:leamingtonmarathi@gmail.com?subject=${encodeURIComponent(`Get Involved: ${interest}`)}&body=${body}`;
+      involvedNote.textContent = 'Opening your email app instead. Just press send.';
       btn.disabled = false;
-      btn.textContent = 'Count Me In!';
+      btn.textContent = 'Send';
     }
   });
 
