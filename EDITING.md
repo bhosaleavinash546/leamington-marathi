@@ -32,6 +32,15 @@ folder. You almost never need to touch `style.css` or `script.js`.
 | Sponsor logos | `supporter-slot` — swap a placeholder for `<img src="images/sponsor-name.png" alt="Sponsor Name">` |
 | Social media links | `socials` |
 
+## Marathi Calendar corner
+
+- **Festival dates**: search `kal-list` in `index.html`. Each `<li>` has a `data-date="YYYY-MM-DD"`,
+  a short Marathi date badge, a Marathi name and an English line. Past dates hide themselves and
+  the next six show, so you can add a whole year at once. Every January, check the dates that
+  follow the moon (Sankranti, Holi, Padwa, Ganesh, Diwali) against a panchang and add the new year.
+- **Proverb and word of the day**: both lists live in `culture-data.js`. Copy any line, change the
+  words, keep the quotes and commas. The more entries, the longer before they repeat.
+
 ## Keeping the site fresh (15 minutes, four times a year)
 
 Dates carry on moving after the site is published. Anything marked `data-until` retires
