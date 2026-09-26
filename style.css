@@ -1316,6 +1316,155 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
 }
 .js .reveal.visible { opacity: 1; transform: none; }
 
+/* ---------- Paithani dividers (draw themselves on scroll) ---------- */
+.divider {
+  display: block;
+  width: min(600px, 88vw);
+  height: 40px;
+  margin: 0 auto -30px;
+  stroke: var(--gold);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  fill: var(--saffron);
+  opacity: 0.75;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+/* Only inherited properties reach inside the <use> copy, so the dots fade via
+   fill-opacity. Hidden state applies only when JS will animate it. */
+.js .divider {
+  stroke-dashoffset: 1;
+  fill-opacity: 0;
+  transition: stroke-dashoffset 1.6s ease-out, fill-opacity 0.6s ease 1.2s;
+}
+.js .divider.drawn { stroke-dashoffset: 0; fill-opacity: 1; }
+
+/* ---------- Marathi calendar corner ---------- */
+.kal-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 22px;
+  align-items: start;
+}
+.kal-side { display: grid; gap: 22px; }
+.kal-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px 26px;
+  border-top: 4px solid var(--gold);
+}
+.kal-label {
+  margin: 0 0 6px;
+  color: var(--saffron-text);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.4px;
+}
+.kal-date {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  color: var(--red-dark);
+  line-height: 1.3;
+}
+.kal-next { margin: 4px 0 0; color: var(--ink); font-weight: 600; }
+.kal-heading { margin: 22px 0 8px; color: var(--red-dark); font-size: 1.1rem; }
+.kal-list { list-style: none; margin: 0; padding: 0; }
+.kal-list li {
+  display: grid;
+  grid-template-columns: 78px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px dashed #f0dcc3;
+}
+.kal-list li:last-child { border-bottom: none; }
+.kal-list li[hidden] { display: none; }
+.kal-day {
+  font-weight: 800;
+  color: var(--red-dark);
+  background: var(--cream-deep);
+  border-radius: 8px;
+  padding: 4px 6px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+.kal-name { font-size: 0.93rem; color: #6b544b; line-height: 1.45; }
+.kal-name strong { display: block; color: var(--ink); font-size: 1rem; }
+.kal-in { font-size: 0.8rem; color: var(--saffron-text); font-weight: 700; white-space: nowrap; }
+.kal-add {
+  display: inline-block;
+  margin-top: 3px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--red-dark);
+  text-decoration: none;
+  border: 1.5px solid #f0dcc3;
+  border-radius: 20px;
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+.kal-add:hover { background: var(--cream-deep); border-color: var(--saffron); }
+.kal-actions { text-align: right; }
+.kal-note { margin: 12px 0 0; font-size: 0.82rem; color: #8a6f63; }
+.kal-mhan {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  color: var(--red);
+  line-height: 1.4;
+}
+.kal-shabda {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  color: var(--red);
+  line-height: 1.2;
+}
+.kal-meaning { margin: 0; color: var(--ink); font-size: 0.98rem; }
+.kal-meaning strong { color: var(--saffron-text); }
+
+@media (max-width: 900px) {
+  .kal-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .kal-list li { grid-template-columns: 66px 1fr; }
+  .kal-actions { grid-column: 1 / -1; text-align: left; }
+  .kal-actions .kal-in { margin-right: 10px; }
+}
+
+/* ---------- Flyer tilt (3D lean towards the pointer or phone tilt) ---------- */
+.flyers-track { perspective: 1100px; }
+.flyer-card { transform-style: preserve-3d; will-change: transform; }
+.flyer-card.tilting { transition: transform 0.08s linear; box-shadow: 0 22px 44px rgba(74, 19, 11, 0.22); }
+
+/* ---------- Diwali diyas (only during the Diwali week; script.js adds them) ---------- */
+.diya-row {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin: -10px 0 18px;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.diya-row span {
+  display: inline-block;
+  filter: grayscale(1) opacity(0.35);
+  transition: filter 0.7s ease, transform 0.7s ease;
+}
+.diya-row.lit span {
+  filter: none;
+  animation: diya-flicker 2.6s ease-in-out infinite;
+}
+.diya-row.lit span:nth-child(2n) { animation-delay: 0.6s; }
+.diya-row.lit span:nth-child(3n) { animation-delay: 1.1s; }
+
+@keyframes diya-flicker {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(244, 164, 18, 0.55)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(244, 164, 18, 0.95)); }
+}
+
 /* ---------- Member page ---------- */
 .member-back { color: var(--red-dark); font-weight: 700; text-decoration: none; font-size: 0.95rem; }
 .member-back:hover { text-decoration: underline; }

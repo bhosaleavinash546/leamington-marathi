@@ -43,11 +43,25 @@
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&family=Yatra+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script>document.documentElement.classList.add('js');</script>
+  <script src="culture-data.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
 
   <a class="skip-link" href="#about">Skip to content</a>
+
+  <!-- Paithani border motif. Each divider below draws it as you scroll (script.js adds .drawn) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="paithani" viewBox="0 0 600 40">
+      <path pathLength="1" fill="none" d="M0 20 L15 8 30 20 45 32 60 20 75 8 90 20 105 32 120 20 135 8 150 20 165 32 180 20 195 8 210 20 225 32 240 20 255 8 270 20 285 32 300 20 315 8 330 20 345 32 360 20 375 8 390 20 405 32 420 20 435 8 450 20 465 32 480 20 495 8 510 20 525 32 540 20 555 8 570 20 585 32 600 20"/>
+      <path pathLength="1" fill="none" d="M0 20 L15 32 30 20 45 8 60 20 75 32 90 20 105 8 120 20 135 32 150 20 165 8 180 20 195 32 210 20 225 8 240 20 255 32 270 20 285 8 300 20 315 32 330 20 345 8 360 20 375 32 390 20 405 8 420 20 435 32 450 20 465 8 480 20 495 32 510 20 525 8 540 20 555 32 570 20 585 8 600 20"/>
+      <g stroke="none">
+        <circle cx="30" cy="20" r="2.4"/><circle cx="90" cy="20" r="2.4"/><circle cx="150" cy="20" r="2.4"/><circle cx="210" cy="20" r="2.4"/><circle cx="270" cy="20" r="2.4"/>
+        <circle cx="330" cy="20" r="2.4"/><circle cx="390" cy="20" r="2.4"/><circle cx="450" cy="20" r="2.4"/><circle cx="510" cy="20" r="2.4"/><circle cx="570" cy="20" r="2.4"/>
+        <circle cx="300" cy="20" r="6" fill="#d92a1c"/>
+      </g>
+    </symbol>
+  </svg>
 
   <!-- ===== Header / Navigation ===== -->
   <header id="site-header">
@@ -133,6 +147,7 @@
   </section>
 
   <!-- ===== About ===== -->
+  <svg class="divider" aria-hidden="true" focusable="false"><use href="#paithani"/></svg>
   <section id="about" class="section about">
     <div class="section-head reveal">
       <p class="section-kicker marathi" lang="mr">आमच्याविषयी</p>
@@ -183,6 +198,7 @@
   <!-- ===== Our Journey ===== -->
   <!-- TODO: confirm/adjust the years and milestones below — drafted from the
        sponsor letter and event photos; the founding year is an estimate -->
+  <svg class="divider" aria-hidden="true" focusable="false"><use href="#paithani"/></svg>
   <section id="journey" class="section journey">
     <div class="section-head reveal">
       <p class="section-kicker marathi" lang="mr">आमची वाटचाल</p>
@@ -246,6 +262,7 @@
   </section>
 
   <!-- ===== Events / Annual Calendar ===== -->
+  <svg class="divider" aria-hidden="true" focusable="false"><use href="#paithani"/></svg>
   <section id="events" class="section events">
     <div class="section-head reveal">
       <p class="section-kicker marathi" lang="mr">आमचे कार्यक्रम</p>
@@ -300,6 +317,55 @@
           <p>An evening of performances and faraal for the whole family. Our pathak also plays at the town's <strong>Diwali lights switch on</strong>. <em>दिवाळीच्या हार्दिक शुभेच्छा!</em></p>
           <span class="timeline-badge">280+ &amp; 700+ participants</span>
           <a class="rsvp-link" href="#contact" data-event="Diwali Celebration">Register interest →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Marathi Calendar corner =====
+       Festival dates live in the list below (data-date="YYYY-MM-DD"). Past dates hide
+       themselves and the next six show. Dates that follow the moon (Sankranti, Holi,
+       Padwa, Ganesh, Diwali) must be checked against a panchang every January.
+       The proverb and the word of the day come from culture-data.js. -->
+  <svg class="divider" aria-hidden="true" focusable="false"><use href="#paithani"/></svg>
+  <section id="kalnirnay" class="section kalnirnay">
+    <div class="section-head reveal">
+      <p class="section-kicker marathi" lang="mr">आजचा दिवस</p>
+      <h2>Marathi Calendar</h2>
+      <p class="section-sub">Festival dates for your UK diary, plus a proverb and a word for the day.</p>
+    </div>
+    <div class="kal-grid">
+      <div class="kal-card kal-today reveal">
+        <p class="kal-label marathi" lang="mr">आज</p>
+        <p class="kal-date marathi" lang="mr" id="kal-date"></p>
+        <p class="kal-next" id="kal-next"></p>
+        <h3 class="kal-heading marathi" lang="mr">येणारे सण</h3>
+        <ul class="kal-list" id="kal-list">
+          <li data-date="2026-10-15" data-title="Diwali Ank: last date to send your writing"><span class="kal-day marathi" lang="mr">१५ ऑक्टो</span><span class="kal-name"><strong class="marathi" lang="mr">दिवाळी अंक: शेवटची तारीख</strong>Last date to send your writing for the ank</span></li>
+          <li data-date="2026-11-06" data-title="Dhantrayodashi (Diwali begins)"><span class="kal-day marathi" lang="mr">६ नोव्हें</span><span class="kal-name"><strong class="marathi" lang="mr">धनत्रयोदशी</strong>Dhanteras, the first day of Diwali</span></li>
+          <li data-date="2026-11-07" data-title="Narak Chaturdashi"><span class="kal-day marathi" lang="mr">७ नोव्हें</span><span class="kal-name"><strong class="marathi" lang="mr">नरक चतुर्दशी</strong>Abhyangasnan and faraal</span></li>
+          <li data-date="2026-11-08" data-title="Lakshmi Pujan"><span class="kal-day marathi" lang="mr">८ नोव्हें</span><span class="kal-name"><strong class="marathi" lang="mr">लक्ष्मीपूजन</strong>Lakshmi Pujan, the main Diwali evening</span></li>
+          <li data-date="2026-11-09" data-title="Diwali Padwa"><span class="kal-day marathi" lang="mr">९ नोव्हें</span><span class="kal-name"><strong class="marathi" lang="mr">दिवाळी पाडवा</strong>Balipratipada, Marathi new year of the merchants</span></li>
+          <li data-date="2026-11-10" data-title="Bhaubeej"><span class="kal-day marathi" lang="mr">१० नोव्हें</span><span class="kal-name"><strong class="marathi" lang="mr">भाऊबीज</strong>Bhaubeej, brothers and sisters</span></li>
+          <li data-date="2027-01-14" data-title="Makar Sankranti"><span class="kal-day marathi" lang="mr">१४ जाने</span><span class="kal-name"><strong class="marathi" lang="mr">मकर संक्रांत</strong>Makar Sankranti, tilgul time</span></li>
+          <li data-date="2027-02-19" data-title="Shiv Jayanti"><span class="kal-day marathi" lang="mr">१९ फेब्रु</span><span class="kal-name"><strong class="marathi" lang="mr">शिवजयंती</strong>Chhatrapati Shivaji Maharaj Jayanti</span></li>
+          <li data-date="2027-03-22" data-title="Holi"><span class="kal-day marathi" lang="mr">२२ मार्च</span><span class="kal-name"><strong class="marathi" lang="mr">होळी</strong>Holi, Dhulivandan the next day</span></li>
+          <li data-date="2027-04-07" data-title="Gudhi Padwa"><span class="kal-day marathi" lang="mr">७ एप्रिल</span><span class="kal-name"><strong class="marathi" lang="mr">गुढीपाडवा</strong>Gudhi Padwa, Marathi New Year</span></li>
+          <li data-date="2027-05-01" data-title="Maharashtra Din"><span class="kal-day marathi" lang="mr">१ मे</span><span class="kal-name"><strong class="marathi" lang="mr">महाराष्ट्र दिन</strong>Maharashtra Din</span></li>
+        </ul>
+        <p class="kal-note">Dates that follow the moon are checked against the panchang each January.</p>
+      </div>
+      <div class="kal-side">
+        <div class="kal-card reveal">
+          <p class="kal-label marathi" lang="mr">आजची म्हण</p>
+          <p class="kal-mhan marathi" lang="mr" id="mhan-text">थेंबे थेंबे तळे साचे</p>
+          <p class="kal-meaning" id="mhan-meaning">Drop by drop, a pond fills up. Small things add up.</p>
+        </div>
+        <div class="kal-card reveal">
+          <p class="kal-label marathi" lang="mr">आजचा शब्द</p>
+          <p class="kal-shabda marathi" lang="mr" id="shabda-text">आकाश</p>
+          <p class="kal-meaning" id="shabda-meaning"><strong>aakaash</strong>: sky. <span class="marathi" lang="mr">आज आकाश निळं आहे.</span></p>
+          <p class="kal-note">A new word every day. Try it at home with the children.</p>
         </div>
       </div>
     </div>
@@ -406,6 +472,7 @@
   </section>
 
   <!-- ===== Gallery ===== -->
+  <svg class="divider" aria-hidden="true" focusable="false"><use href="#paithani"/></svg>
   <section id="gallery" class="section gallery">
     <div class="section-head reveal">
       <p class="section-kicker marathi" lang="mr">क्षणचित्रे</p>
@@ -491,6 +558,7 @@
   </section>
 
   <!-- ===== Testimonials ===== -->
+  <svg class="divider" aria-hidden="true" focusable="false"><use href="#paithani"/></svg>
   <section id="testimonials" class="section testimonials">
     <div class="section-head reveal">
       <p class="section-kicker marathi" lang="mr">आपल्या मंडळींचे शब्द</p>
@@ -514,6 +582,7 @@
   </section>
 
   <!-- ===== Sponsorship ===== -->
+  <svg class="divider" aria-hidden="true" focusable="false"><use href="#paithani"/></svg>
   <section id="sponsor" class="section sponsor">
     <div class="section-head reveal">
       <p class="section-kicker marathi" lang="mr">प्रायोजक व्हा</p>
@@ -587,6 +656,7 @@
 
 
   <!-- ===== Contact ===== -->
+  <svg class="divider" aria-hidden="true" focusable="false"><use href="#paithani"/></svg>
   <section id="contact" class="section contact">
     <div class="section-head reveal">
       <p class="section-kicker marathi" lang="mr">संपर्क</p>

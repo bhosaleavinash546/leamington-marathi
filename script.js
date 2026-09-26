@@ -473,5 +473,155 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // Footer year
+  // Paithani dividers draw themselves the first time they scroll into view
+  const dividerObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('drawn');
+      dividerObserver.unobserve(entry.target);
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('.divider').forEach(el => dividerObserver.observe(el));
+
+  // ---- Marathi calendar corner ----
+  const MR_DIGITS = '०१२३४५६७८९';
+  const toMarathiDigits = n => String(n).replace(/\d/g, d => MR_DIGITS[d]);
+  const MR_DAYS = ['रविवार', 'सोमवार', 'मंगळवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'];
+  const MR_MONTHS = ['जानेवारी', 'फेब्रुवारी', 'मार्च', 'एप्रिल', 'मे', 'जून', 'जुलै', 'ऑगस्ट', 'सप्टेंबर', 'ऑक्टोबर', 'नोव्हेंबर', 'डिसेंबर'];
+  const kalDate = document.getElementById('kal-date');
+  if (kalDate) {
+    const now = new Date();
+    kalDate.textContent = `${MR_DAYS[now.getDay()]}, ${toMarathiDigits(now.getDate())} ${MR_MONTHS[now.getMonth()]} ${toMarathiDigits(now.getFullYear())}`;
+
+    // Festival list: hide past dates, show the next six, add "in N days" and a calendar file
+    const dayMs = 86400000;
+    const items = [...document.querySelectorAll('#kal-list li[data-date]')];
+    let shown = 0;
+    let first = null;
+    items.forEach(li => {
+      const when = new Date(`${li.dataset.date}T00:00:00`);
+      const days = Math.round((when - todayStart) / dayMs);
+      if (days < 0 || shown >= 6) { li.hidden = true; return; }
+      shown++;
+      if (!first) first = { li, days };
+      const actions = document.createElement('span');
+      actions.className = 'kal-actions';
+      const inSpan = document.createElement('span');
+      inSpan.className = 'kal-in';
+      inSpan.textContent = days === 0 ? 'आज!' : days === 1 ? 'उद्या' : `${days} days`;
+      actions.appendChild(inSpan);
+      // one day, all day .ics file the phone or laptop calendar can open
+      const ymd = li.dataset.date.replace(/-/g, '');
+      const next = new Date(when.getTime() + dayMs);
+      const ymdNext = `${next.getFullYear()}${String(next.getMonth() + 1).padStart(2, '0')}${String(next.getDate()).padStart(2, '0')}`;
+      const title = li.dataset.title || li.querySelector('strong').textContent;
+      const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Leamington Marathi//EN', 'BEGIN:VEVENT',
+        `UID:${ymd}-${title.replace(/\W+/g, '')}@leamingtonmarathi.com`,
+        `DTSTAMP:${ymd}T000000Z`, `DTSTART;VALUE=DATE:${ymd}`, `DTEND;VALUE=DATE:${ymdNext}`,
+        `SUMMARY:${title}`, 'DESCRIPTION:Leamington Marathi calendar. leamingtonmarathi.com',
+        'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+      const add = document.createElement('a');
+      add.className = 'kal-add';
+      add.href = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
+      add.download = `${title.replace(/[^\w]+/g, '-').toLowerCase()}.ics`;
+      add.textContent = '📅 Add to calendar';
+      actions.appendChild(document.createElement('br'));
+      actions.appendChild(add);
+      li.appendChild(actions);
+    });
+    const kalNext = document.getElementById('kal-next');
+    if (first) {
+      const name = first.li.querySelector('strong').textContent;
+      kalNext.textContent = first.days === 0 ? `आज ${name}!` : first.days === 1 ? `उद्या ${name}` : `${name} in ${first.days} days`;
+    } else {
+      kalNext.textContent = 'New dates will be added soon.';
+    }
+
+    // Proverb and word of the day, chosen by the day of the year
+    const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / dayMs);
+    const mhani = window.LM_MHANI || [];
+    const shabda = window.LM_SHABDA || [];
+    if (mhani.length) {
+      const m = mhani[dayOfYear % mhani.length];
+      document.getElementById('mhan-text').textContent = m.m;
+      document.getElementById('mhan-meaning').textContent = m.a;
+    }
+    if (shabda.length) {
+      const s = shabda[dayOfYear % shabda.length];
+      document.getElementById('shabda-text').textContent = s.s;
+      const meaning = document.getElementById('shabda-meaning');
+      meaning.textContent = '';
+      const strong = document.createElement('strong');
+      strong.textContent = s.r;
+      meaning.append(strong, `: ${s.e}. `);
+      const ex = document.createElement('span');
+      ex.className = 'marathi';
+      ex.lang = 'mr';
+      ex.textContent = s.ex;
+      meaning.appendChild(ex);
+    }
+  }
+
+  // ---- Flyer tilt: cards lean towards the pointer (or the phone's tilt) ----
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const flyerCards = document.querySelectorAll('.flyer-card');
+  if (flyerCards.length && !reducedMotion) {
+    const tilt = (card, rx, ry) => {
+      card.classList.add('tilting');
+      card.style.transform = `translateY(-6px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    };
+    const untilt = card => { card.classList.remove('tilting'); card.style.transform = ''; };
+    flyerCards.forEach(card => {
+      card.addEventListener('pointermove', e => {
+        if (e.pointerType === 'touch') return;
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        tilt(card, -y * 14, x * 14);
+      });
+      card.addEventListener('pointerleave', () => untilt(card));
+    });
+    // Phones without a permission prompt (Android): lean with the device
+    if ('DeviceOrientationEvent' in window && typeof DeviceOrientationEvent.requestPermission !== 'function') {
+      let ticking = false;
+      window.addEventListener('deviceorientation', e => {
+        if (ticking || e.gamma === null) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const ry = Math.max(-12, Math.min(12, e.gamma / 3));
+          const rx = Math.max(-12, Math.min(12, (e.beta - 45) / -4));
+          flyerCards.forEach(card => tilt(card, rx, ry));
+          ticking = false;
+        });
+      }, { passive: true });
+    }
+  }
+
+  // ---- Diwali diyas: during the Diwali week a row of lamps sits above each section
+  // heading and lights up as you scroll to it ----
+  if (festival && festival.name === 'Diwali') {
+    const heads = document.querySelectorAll('.section-head');
+    heads.forEach(head => {
+      const row = document.createElement('div');
+      row.className = 'diya-row';
+      row.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < 5; i++) {
+        const s = document.createElement('span');
+        s.textContent = '🪔';
+        s.style.transitionDelay = `${i * 140}ms`;
+        row.appendChild(s);
+      }
+      head.prepend(row);
+    });
+    const diyaObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('lit');
+        diyaObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.diya-row').forEach(row => diyaObserver.observe(row));
+  }
+
   document.getElementById('year').textContent = new Date().getFullYear();
 });
