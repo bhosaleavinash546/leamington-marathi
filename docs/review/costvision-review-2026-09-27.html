@@ -95,7 +95,7 @@ footer{border-top:1px solid var(--rule);padding-top:16px;font-size:.9rem;color:v
 <div class="wrap">
 
 <header class="top">
-  <div class="eyebrow">Independent review · commit daa87de · 27 September 2026</div>
+  <div class="eyebrow">Independent review · commit daa87de · re-checked 27 September 2026</div>
   <h1>CostVision review</h1>
   <p class="lede">The costing engine is well built and well tested. The problems are around it: how the server protects data, the default values every user sees first, one gap in how CAD parts get routed, and a product identity that still says "AI" in a build that has AI switched off. None of these is hard to fix. Several should be fixed before anyone outside the team uses the tool.</p>
   <div class="tally" aria-label="Findings by severity">
@@ -104,24 +104,35 @@ footer{border-top:1px solid var(--rule);padding-top:16px;font-size:.9rem;color:v
     <span class="t-med"><b>11</b> medium</span>
     <span class="t-low"><b>17</b> low</span>
   </div>
-  <p class="muted" style="font-size:.95rem">Every finding below was reproduced by running the tool: live API calls against an isolated database, the browser driven through all 22 commodity tabs and 8 pages, an automated accessibility audit, exports opened and reconciled, and the full test suite run with and without the geometry kernel. Where something was checked and turned out fine, it is listed under "Checked and ruled out".</p>
+  <p class="muted" style="font-size:.95rem">Every finding below was reproduced by running the tool: live API calls against an isolated database, the browser driven through all 22 commodity tabs and 8 pages, an automated accessibility audit, exports opened and reconciled, and the full test suite run with and without the geometry kernel. Where something was checked and turned out fine, it is listed under "Checked and ruled out". What changed on re-check is listed after the priority list.</p>
 </header>
 
 <section>
-  <h2>Fix these first</h2>
-  <p class="muted">In this order. The first four are small changes with large consequences.</p>
-  <ol class="first">
-    <li><div><strong>Load the settings file before anything reads it.</strong> One line in <code>server/index.ts</code>. Today a native start ignores the real session secret and several other settings. <span class="sev crit">C1</span></div></li>
-    <li><div><strong>Require sign-in on every data route, and fail closed when no team key is set.</strong> Saved scenarios and supplier quotes are open to anyone who can reach the server. <span class="sev high">H1</span> <span class="sev high">H2</span></div></li>
-    <li><div><strong>Bind the laptop package to 127.0.0.1.</strong> It currently listens on every network interface. <span class="sev high">H3</span></div></li>
-    <li><div><strong>Escape PCB bill-of-materials fields before rendering them.</strong> Markup in an uploaded BOM file reaches the page as HTML. <span class="sev high">H6</span></div></li>
-    <li><div><strong>Make each commodity's default tooling volume match its default annual volume.</strong> The tool's own audit flags its defaults as wrong on 17 of 20 commodities. <span class="sev high">H4</span></div></li>
-    <li><div><strong>Offer casting and forging in the route question when the measured wall is thick.</strong> Then make the regression baseline answer only with options a user can actually pick. <span class="sev high">H5</span></div></li>
-    <li><div><strong>Remove accuracy claims that have no data behind them.</strong> Stop the accuracy report pooling example rows into a "high confidence" figure. <span class="sev high">H7</span></div></li>
-    <li><div><strong>Decide whether the PCB fabrication table is a price or a cost.</strong> Then stop stacking overhead and margin on it if it is a price. <span class="sev high">H8</span></div></li>
-    <li><div><strong>Fix the Assembly tab error, and say "AI is switched off" in the no-AI build.</strong> Also reconcile the uncertainty band with the confidence label. <span class="sev med">M1</span> <span class="sev med">M2</span> <span class="sev med">M3</span></div></li>
-    <li><div><strong>Accessibility quick wins.</strong> Name the region and currency controls, raise the primary button contrast, and let Escape close dialogs. <span class="sev med">M10</span></div></li>
-  </ol>
+  <h2>Priority list</h2>
+  <p class="muted">All 37 findings, grouped by when they need doing. Effort is an estimate for one developer who knows the code.</p>
+  <h3><span class="sev crit">P0</span> Before the director demo or any JLR install</h3>
+  <div class="tablebox"><table><thead><tr><th>Finding</th><th>What to do</th><th>Effort</th><th>Why now</th></tr></thead><tbody><tr><td><span class="sev crit">C1</span></td><td>Make <code>import 'dotenv/config'</code> the first line of <code>server/index.ts</code></td><td class="num">Minutes</td><td>Any made-up user gets in on a native start. One line.</td></tr><tr><td><span class="sev high">H3</span></td><td>Bind the server to 127.0.0.1 by default</td><td class="num">Minutes</td><td>Takes the laptop off the network, which contains H1 and H2 while those are fixed</td></tr><tr><td><span class="sev high">H1</span> <span class="sev high">H2</span></td><td>Require sign-in on every data route; refuse sync requests when no team key is set</td><td class="num">Half a day</td><td>Saved scenarios and supplier quotes are open without a login</td></tr><tr><td><span class="sev high">H6</span></td><td>Wrap the PCB BOM fields in <code>escHtml()</code></td><td class="num">An hour</td><td>Small fix for a script-injection path</td></tr><tr><td><span class="sev med">M3</span> <span class="sev med">I2</span></td><td>Report <code>airGapped</code> from the health check; in that build, hide AI entry points and replace the messages with "AI is switched off"</td><td class="num">Half a day</td><td>Every result in the JLR build tells users to add an AI key</td></tr><tr><td><span class="sev high">H4</span></td><td>Set each default tooling volume from annual volume × a stated programme life</td><td class="num">Half a day</td><td>The tool flags its own defaults on 18 of 20 screens</td></tr><tr><td><span class="sev high">H5</span></td><td>Filter route options by measured wall thickness; assert the baseline only uses offered options</td><td class="num">Half a day</td><td>3 of 5 real parts can't be routed to casting or forging</td></tr><tr><td><span class="sev med">M7</span></td><td>Scroll to the result after Calculate</td><td class="num">An hour</td><td>Calculate looks like it does nothing</td></tr><tr><td><span class="sev high">H7</span></td><td>Remove "±8%" and "10×" from the deck; make the accuracy report skip example rows and stop pooling</td><td class="num">An hour</td><td>These are claims with no data behind them</td></tr><tr><td><span class="sev low">L1</span> <span class="sev low">L2</span> <span class="sev low">I1</span> <span class="sev low">I3</span></td><td>Print the band once, hide internal field names, one version number, one rates date</td><td class="num">An hour in total</td><td>Small things a director notices at once</td></tr></tbody></table></div>
+  <h3 style="margin-top:6px"><span class="sev high">P1</span> Before rolling out beyond the pilot</h3>
+  <div class="tablebox"><table><thead><tr><th>Finding</th><th>What to do</th><th>Effort</th><th>Why now</th></tr></thead><tbody><tr><td><span class="sev high">H8</span></td><td>Decide whether the PCB fab table is a price or a cost; model conversion, or drop overhead and margin on a price</td><td class="num">A day</td><td>Up to 21% overstated on PCB fab</td></tr><tr><td><span class="sev med">M1</span></td><td>Clear the previous result when the commodity changes; tell the user what Assembly needs before it can calculate</td><td class="num">Half a day</td><td>Shows another commodity's cost as its own</td></tr><tr><td><span class="sev med">M2</span></td><td>Sample the direct-cost figure in the Monte Carlo run, or hide the band where most of the cost isn't sampled</td><td class="num">Half a day</td><td>"±0.1%" beside "Low confidence"</td></tr><tr><td><span class="sev med">M9</span></td><td>Show the overhead base as its own line on screen, in the PDF and in the workbook</td><td class="num">An hour</td><td>The arithmetic looks wrong when it isn't</td></tr><tr><td><span class="sev med">M6</span></td><td>Move <code>xlsx</code> to the patched SheetJS build; update the other flagged packages</td><td class="num">Half a day</td><td>The vulnerable parser reads uploaded rate cards</td></tr><tr><td><span class="sev med">M4</span></td><td>Look the user up on each request, or add revocation</td><td class="num">Half a day</td><td>Locked or deleted users keep access for 7 days</td></tr><tr><td><span class="sev low">L10</span></td><td>Browser tests for each commodity, CAD upload and exports</td><td class="num">2–3 days</td><td>M1 and M7 would have been caught</td></tr></tbody></table></div>
+  <h3 style="margin-top:6px"><span class="sev med">P2</span> Next quarter</h3>
+  <div class="tablebox"><table><thead><tr><th>Finding</th><th>What to do</th><th>Effort</th><th>Why now</th></tr></thead><tbody><tr><td><span class="sev med">M10</span></td><td>Name the region and currency controls, raise primary-button contrast to 4.5:1, let Escape close dialogs, label the ✕</td><td class="num">Half a day</td><td>Fails WCAG 2.1 AA on every page</td></tr><tr><td><span class="sev med">M5</span></td><td>Rate-limit the AI routes</td><td class="num">An hour</td><td>Needed before Option 3 turns AI on</td></tr><tr><td><span class="sev med">M8</span></td><td>Close the commodity picker once a commodity is chosen</td><td class="num">An hour</td><td>Wastes a quarter of the screen</td></tr><tr><td><span class="sev low">L3</span> <span class="sev low">L4</span></td><td>Style entered values as values; one primary action, the rest secondary</td><td class="num">Half a day</td><td>Form reads more clearly</td></tr><tr><td><span class="sev low">L7</span></td><td>Say on the CAD panel what the upload can and can't fill for SM fab, extrusion and composites</td><td class="num">An hour</td><td>Sets the right expectation</td></tr><tr><td><span class="sev low">L12</span></td><td>Split <code>main.ts</code> by commodity; correct the line count in <code>CLAUDE.md</code></td><td class="num">Ongoing</td><td>20,751 lines in one file</td></tr></tbody></table></div>
+  <h3 style="margin-top:6px"><span class="sev low">P3</span> Polish</h3>
+  <div class="tablebox"><table><thead><tr><th>Finding</th><th>What to do</th><th>Effort</th><th>Why now</th></tr></thead><tbody><tr><td><span class="sev low">I4</span> <span class="sev low">I5</span></td><td>Replace emoji icons with the SVG set; one identity across the app, decks and workbook</td><td class="num">2–3 days</td><td>Consistent look on Windows</td></tr><tr><td><span class="sev low">L5</span> <span class="sev low">L6</span> <span class="sev low">L8</span> <span class="sev low">I6</span></td><td>OBJ wording, export filenames, a key for badges, one commodity count</td><td class="num">An hour in total</td><td>Polish</td></tr><tr><td><span class="sev low">L9</span> <span class="sev low">L11</span></td><td>Gear test on OCP rather than <code>cadquery</code>; remove <code>NODE_ENV</code> from <code>.env</code></td><td class="num">An hour</td><td>Housekeeping</td></tr></tbody></table></div>
+  <p class="muted" style="font-size:.95rem">P0 adds up to about three days of work. Items 1–4 of P0 are the security fixes, and together they take under a day.</p>
+</section>
+
+<section>
+  <h2>Re-checked on 27 September</h2>
+  <div class="note">
+    <p>Every critical and high finding was reproduced a second time against the current code. The medium ones were re-run where it was quick, and every remaining finding was re-read against its source line. Four statements changed:</p>
+    <ul>
+      <li><strong>C1 is broader than first written.</strong> A user that doesn't exist gets into every signed-in route. The earlier version called <code>/status</code> admin-only; it isn't. Admin routes still refuse a made-up user.</li>
+      <li><strong>H4 is 18 of 20, not 17.</strong> PCB fab also carries the flag. The audit rates it HIGH on 14 commodities and MEDIUM on 4.</li>
+      <li><strong>M1 is reworded.</strong> The script error didn't reproduce with real clicks. The stale cost did, and Calculate on Assembly produces nothing.</li>
+      <li><strong>L7 is narrowed</strong> to what was measured.</li>
+    </ul>
+    <p>M3 was confirmed through the real screens with <code>AIR_GAPPED=1</code>. The severity totals are unchanged.</p>
+  </div>
 </section>
 
 <section>
@@ -149,7 +160,7 @@ footer{border-top:1px solid var(--rule);padding-top:16px;font-size:.9rem;color:v
       <div class="head"><span class="sev crit">Critical</span><span class="id">C1</span><h3>A native start signs sessions with the public default secret</h3></div>
       <p>ES module imports run before the module body. So the auth middleware reads <code>JWT_SECRET</code> before <code>config()</code> loads <code>.env</code>, finds nothing, and falls back to the default written in the source. The startup banner and <code>/api/health</code> still report the secret as configured.</p>
       <dl>
-        <dt>Proof</dt><dd>A token signed with <code>should-cost-dev-secret-DO-NOT-USE-IN-PRODUCTION</code> was accepted by <code>/api/auth/me</code> and by the admin-only <code>/api/rate-library/status</code> (200). The middleware trusts the token payload without a database lookup, so any made-up user id works on non-admin routes.</dd>
+        <dt>Proof</dt><dd>A token signed with <code>should-cost-dev-secret-DO-NOT-USE-IN-PRODUCTION</code> for a user that does not exist was accepted by <code>/api/projects</code> (200). The middleware trusts the token payload without a database lookup, so any made-up user id works on every signed-in route. A token signed with the secret actually configured in <code>.env</code> is rejected (401). Admin routes still refuse a made-up user (403); a forged token reaches them only with a real admin's user id, which is a random UUID that no endpoint I found exposes.</dd>
         <dt>Affected</dt><dd><code>make start</code>, <code>npm run server</code>, <code>npm run dev:full</code>. Not affected: the Windows package and Docker, which set real environment variables before Node starts.</dd>
         <dt>Also ignored</dt><dd>Every setting read at import time: <code>TEAM_API_KEY</code>, the SMTP settings (so sign-up and password-reset emails), <code>CV_DATA_DIR</code>, <code>PYTHON_BIN</code>, upload limits.</dd>
         <dt>Where</dt><dd><code>server/index.ts:7</code> and <code>:32</code>, <code>server/middleware/auth-middleware.ts:9–17</code></dd>
@@ -222,8 +233,8 @@ footer{border-top:1px solid var(--rule);padding-top:16px;font-size:.9rem;color:v
   <div class="findings">
 
     <article class="f high">
-      <div class="head"><span class="sev high">High</span><span class="id">H4</span><h3>The shipped defaults fail the tool's own audit on 17 of 20 commodities</h3></div>
-      <p>Every default form states an annual volume of 10,000 but amortises tooling over anything from 2,000 to 500,000 parts. The tool's self-audit marks this HIGH on its own first screen, with per-part tooling out by between 0.2× and 50×. It's the first thing a new user or a director sees.</p>
+      <div class="head"><span class="sev high">High</span><span class="id">H4</span><h3>The shipped defaults fail the tool's own audit on 18 of 20 commodities</h3></div>
+      <p>Every default form states an annual volume of 10,000 but amortises tooling over anything from 2,000 to 500,000 parts. The tool's own self-audit flags it on the first screen: HIGH on 14 commodities and MEDIUM on 4, with per-part tooling out by between 0.2× and 50×. It's the first thing a new user or a director sees.</p>
       <dl><dt>Fix</dt><dd>Set each default amortisation volume to annual volume × a stated programme life, and show that life on the form.</dd></dl>
     </article>
 
@@ -257,8 +268,8 @@ footer{border-top:1px solid var(--rule);padding-top:16px;font-size:.9rem;color:v
     </article>
 
     <article class="f med">
-      <div class="head"><span class="sev med">Medium</span><span class="id">M1</span><h3>The Assembly tab throws an error and shows the previous commodity's result</h3></div>
-      <p>Switching to Assembly BOM raises <code>Cannot read properties of null (reading 'querySelectorAll')</code>. The result panel keeps showing £31.86 from Wiring Harness, including the text "Uncalibrated for wiring harness".</p>
+      <div class="head"><span class="sev med">Medium</span><span class="id">M1</span><h3>Assembly shows the previous commodity's cost as its own</h3></div>
+      <p>Cost a wiring harness, then open Assembly BOM from the picker. The result panel already shows £31.86, the harness figure, before anything is calculated. Clicking Calculate on Assembly with its default inputs produces nothing and gives no message, so the harness cost stays on screen under the Assembly heading. Confirmed through real clicks. A script error, <code>Cannot read properties of null</code>, also appears when the tab is triggered by script; I could not reproduce it with real clicks, so it isn't counted here.</p>
     </article>
 
     <article class="f med">
@@ -269,13 +280,13 @@ footer{border-top:1px solid var(--rule);padding-top:16px;font-size:.9rem;color:v
 
     <article class="f med">
       <div class="head"><span class="sev med">Medium</span><span class="id">M9</span><h3>The overhead base isn't the Factory Cost shown on screen</h3></div>
-      <p>Overhead is 12% of material + process + labour + tooling. The Factory Cost on screen also includes packaging and logistics, and the report just says "12% of factory base". On the machining default, 12% × £7.77 shown = £0.93, but the overhead line reads £0.88. The engine's choice is defensible; the labelling makes a correct number look wrong.</p>
+      <p>Overhead is 12% of material + process + labour + tooling. The Factory Cost on screen also includes packaging and logistics, and the report just says "12% of factory base". On the machining default, 12% × £7.76 shown = £0.93, but the overhead line reads £0.88. The engine's choice is defensible; the labelling makes a correct number look wrong.</p>
       <dl><dt>Where</dt><dd><code>src/engine/core.ts:253–255</code></dd><dt>Fix</dt><dd>Show the overhead base as its own line in the breakdown, the PDF and the workbook.</dd></dl>
     </article>
 
     <article class="f low">
       <div class="head"><span class="sev low">Low</span><span class="id">L7</span><h3>A CAD upload is offered on commodities the CAD path can't cost</h3></div>
-      <p>11 of 20 commodities can be costed straight from a CAD file. Sheet-metal fab, extrusion and composites still show "Upload CAD to auto-fill this form", even though none of them can be costed from CAD.</p>
+      <p>11 of 20 commodities can be costed straight from a CAD file through the CAD-to-cost path. Sheet-metal fab, extrusion and composites are not among them, yet their forms still offer "Upload CAD to auto-fill this form". On those three the upload can fill some fields but can't produce a cost by itself, and the panel doesn't say so. I did not measure how many fields it fills.</p>
     </article>
   </div>
 
@@ -298,13 +309,13 @@ footer{border-top:1px solid var(--rule);padding-top:16px;font-size:.9rem;color:v
         <tr><td>Gear cutting</td><td class="num">£25.33</td><td class="num">±4.2%</td><td>Tooling 20×</td><td class="y">Yes</td></tr>
         <tr><td>Painting</td><td class="num">£5.21</td><td class="num">±5%</td><td>Tooling 10×</td><td class="n">No</td></tr>
         <tr><td>BIW / assembly</td><td class="num">£69.23</td><td class="num">±0.8%</td><td>Tooling 5×; material 75% as one unitemised figure</td><td class="n">No</td></tr>
-        <tr><td>PCB fab</td><td class="num">£100.75</td><td class="num">±0.1%</td><td>Three flags, including "material only, no conversion"</td><td class="n">No</td></tr>
+        <tr><td>PCB fab</td><td class="num">£100.75</td><td class="num">±0.1%</td><td>Material only, no conversion; material 82% as one figure; tooling 0.5×</td><td class="n">No</td></tr>
         <tr><td>PCBA</td><td class="num">£7.42</td><td class="num">±0.3%</td><td>Tooling 0.5×</td><td class="n">No</td></tr>
         <tr><td>Cast + machine</td><td class="num">£16.64</td><td class="num">±8.7%</td><td>Tooling 5×</td><td class="y">Yes</td></tr>
         <tr><td>Rubber</td><td class="num">£1.38</td><td class="num">±5.8%</td><td>Tooling 5×</td><td class="y">Yes</td></tr>
         <tr><td>Composites</td><td class="num">£561.52</td><td class="num">±5.6%</td><td>Tooling 0.2×</td><td class="p">Form only</td></tr>
         <tr><td>Wiring harness</td><td class="num">£31.86</td><td class="num">±3.6%</td><td>Material 42% as one unitemised figure</td><td class="n">No</td></tr>
-        <tr><td>Assembly BOM</td><td class="num">—</td><td class="num">—</td><td>JavaScript error; shows the harness result (M1)</td><td class="n">No</td></tr>
+        <tr><td>Assembly BOM</td><td class="num">—</td><td class="num">—</td><td>No result with default inputs; shows the previous commodity's cost (M1)</td><td class="n">No</td></tr>
       </tbody>
     </table>
   </div>
