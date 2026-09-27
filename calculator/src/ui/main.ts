@@ -8104,7 +8104,7 @@ async function analyzePCBImages(): Promise<void> {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     const resultsEl = el('pcb-img-results');
-    if (resultsEl) resultsEl.innerHTML = `<div class="pcb-img-error">⚠ Analysis failed: ${msg}</div>`;
+    if (resultsEl) resultsEl.innerHTML = `<div class="pcb-img-error">⚠ Analysis failed: ${escHtml(msg)}</div>`;
   } finally {
     pcbImageLoading = false;
     finishPcbStageTrack();
@@ -8174,7 +8174,13 @@ function injectPCBDemoCards(): void {
 function injectPCBImagePanel(): void {
   const resultsEl = el('pcb-img-results');
   if (!resultsEl || !pcbImageResult) return;
-  resultsEl.innerHTML = buildPCBImagePanel(pcbImageResult);
+  // Rendered from an escaped copy. Every string in this analysis comes from the
+  // vision model or an uploaded BOM file, and the thirteen builders below put
+  // 278 of them into HTML — three were escaped. A BOM description such as
+  // <img src=x onerror=…> ran as script. Escaping the copy once, here at the
+  // single entry point, covers every builder and any field added later; the
+  // live pcbImageResult, which costing and the PDF export read, is untouched.
+  resultsEl.innerHTML = buildPCBImagePanel(escapedForDisplay(pcbImageResult));
 
   el('pcb-apply-fab-btn')?.addEventListener('click', () => applyPCBImageToFab());
   el('pcb-apply-pcba-btn')?.addEventListener('click', () => applyPCBImageToPCBA());
@@ -8576,6 +8582,23 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
   }
 }
 
+/**
+ * A deep copy with every string HTML-escaped, for interpolating into markup.
+ * Numbers and booleans pass through. Text displays exactly as before — the
+ * browser decodes the entities — and data-* attributes read back unescaped.
+ * Builders fed this copy must not escape again, or "R&D" shows as "R&amp;D".
+ */
+function escapedForDisplay<T>(v: T): T {
+  if (typeof v === 'string') return escHtml(v).replace(/'/g, '&#39;') as unknown as T;
+  if (Array.isArray(v)) return v.map(x => escapedForDisplay(x)) as unknown as T;
+  if (v && typeof v === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, x] of Object.entries(v as Record<string, unknown>)) out[k] = escapedForDisplay(x);
+    return out as T;
+  }
+  return v;
+}
+
 function buildPCBImagePanel(r: PCBImageAnalysis): string {
   const b = r.boardSpec;
   const a = r.assembly;
@@ -8748,9 +8771,9 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         if (!uc.length) return '';
         const rows = uc.slice(0, 8).map(b => `
           <li style="margin:3px 0;line-height:1.45">
-            <span style="font-family:var(--font-mono);font-weight:700;background:rgba(220,38,38,0.12);color:#dc2626;padding:0 5px;border-radius:4px">${escHtml(b.refDes || '?')}</span>
-            <span style="color:var(--text-primary)">${escHtml(b.description || b.componentType || 'component')}</span>
-            <span style="color:var(--text-muted)">${b.pkg ? `· ${escHtml(b.pkg)}` : ''}${b.lineTotalGBP ? ` · est. £${b.lineTotalGBP.toFixed(2)}/board` : ''}</span>
+            <span style="font-family:var(--font-mono);font-weight:700;background:rgba(220,38,38,0.12);color:#dc2626;padding:0 5px;border-radius:4px">${b.refDes || '?'}</span>
+            <span style="color:var(--text-primary)">${b.description || b.componentType || 'component'}</span>
+            <span style="color:var(--text-muted)">${b.pkg ? `· ${b.pkg}` : ''}${b.lineTotalGBP ? ` · est. £${b.lineTotalGBP.toFixed(2)}/board` : ''}</span>
           </li>`).join('');
         return `<div id="pcb-recapture-panel" style="margin-top:8px;padding:11px 13px;background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.3);border-left:3px solid #dc2626;border-radius:8px">
           <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">🎯 Improve accuracy — ${uc.length} component${uc.length > 1 ? 's' : ''} need${uc.length > 1 ? '' : 's'} a close-up</div>

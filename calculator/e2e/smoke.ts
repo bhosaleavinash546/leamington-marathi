@@ -72,7 +72,10 @@ async function main(): Promise<void> {
       }
       throw e; // in CI a missing browser is a real failure (install step is required)
     }
-    const page = await browser.newPage();
+    // Service workers blocked so page.route can intercept API calls (a worker's
+    // fetches bypass routing) — step 7 needs that.
+    const context = await browser.newContext({ serviceWorkers: 'block' });
+    const page = await context.newPage();
 
     // Fail the smoke on any uncaught exception in page context — that IS a crash.
     const pageErrors: string[] = [];
@@ -135,11 +138,62 @@ async function main(): Promise<void> {
     if (rtabCount < 3) throw new Error(`Results tab bar missing after Calculate (got ${rtabCount} tabs)`);
     log(`results tabs render after commodity switch (${rtabCount} tabs)`);
 
+    // 7. PCB image results must show AI-read text as text. A board photo whose
+    // silkscreen or chip marking reads as markup used to reach innerHTML
+    // unescaped — the BOM description, part number, insights, DFM lines. The
+    // analysis is stubbed; this is about rendering, not the vision pipeline.
+    // (vite preview sends no CSP, so on the old code the handler really fires.)
+    const HOSTILE = '<img src=x onerror="window.__cvXss=(window.__cvXss||0)+1">';
+    const analysis = {
+      partName: `Board ${HOSTILE}`,
+      boardSpec: { estimatedLayers: 4, widthMm: 80, heightMm: 60, surfaceFinish: `ENIG ${HOSTILE}`, solderMaskColour: 'green',
+        silkscreenSides: 2, throughVias: 100, blindVias: 0, buriedVias: 0, microVias: 0, bgaDetected: false, minTraceSpaceMm: 0.15,
+        technologyType: 'Standard', hdiStructure: 'none', impedanceControlRequired: false, copperWeightOz: 1,
+        qualityGrade: 'IPC Class 2', panelUtilisation: 0.8 },
+      bom: [
+        { refDes: `U1${HOSTILE}`, componentType: 'IC', description: `MCU ${HOSTILE}`, pkg: `QFN'"${HOSTILE}`, value: HOSTILE,
+          voltage: '3V3', qty: 1, unitPriceGBP: 2.5, moq: 1, automotive: true, highCost: true, partNumber: `STM32${HOSTILE}` },
+        { refDes: 'R1', componentType: 'Resistor', description: '10k <1% "tol"', pkg: '0402', value: '10k', voltage: '',
+          qty: 10, unitPriceGBP: 0.002, moq: 1, automotive: true, highCost: false },
+      ],
+      assembly: { smtPlacements: 11, throughHoleJoints: 0, manualJoints: 0, bgaCount: 0, complexity: 'Moderate',
+        reflowSides: 1, aoiRequired: true, ictTimeSec: 30 },
+      costEstimates: { pcbFabGBP: { min: 1, mid: 2, max: 3 }, totalBOMCostGBP: 2.52, smtAssemblyCostGBP: 1 },
+      aiInsights: [`Insight ${HOSTILE}`], dfmIssues: [`DFM ${HOSTILE}`], highCostComponents: [`U1 ${HOSTILE}`],
+      optimisationSuggestions: [`Opt ${HOSTILE}`], confidenceLevel: 'Medium', analysisLimitations: [`Lim ${HOSTILE}`],
+    };
+    await page.route('**/api/pcb/analyze-image-stream', r => r.fulfill({
+      status: 200, headers: { 'content-type': 'text/event-stream' },
+      body: `data: ${JSON.stringify({ type: 'complete', success: true, analysis })}\n\n`,
+    }));
+    await page.click('#new-costing-btn', { timeout: 15_000 });
+    await page.click('.cpicker-tile[data-commodity="pcb_fab"]', { timeout: 15_000 });
+    const onePixelPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+    await page.setInputFiles('#pcb-img-input-0', { name: 'board.png', mimeType: 'image/png', buffer: onePixelPng });
+    await page.click('#pcb-img-analyze-btn', { timeout: 15_000 });
+    await page.waitForFunction(() => (document.getElementById('pcb-img-results')?.textContent ?? '').includes('Board '),
+      null, { timeout: 15_000 });
+    await page.waitForTimeout(500);   // give any injected onerror time to fire
+    const pcb = await page.evaluate(() => {
+      const r = document.getElementById('pcb-img-results')!;
+      return {
+        fired: (window as unknown as { __cvXss?: number }).__cvXss ?? 0,
+        injected: r.querySelectorAll('[onerror]').length,
+        literal: (r.textContent!.match(/<img src=x onerror=/g) ?? []).length,
+        plain: r.textContent!.includes('10k <1% "tol"'),
+        doubled: r.textContent!.includes('&lt;') || r.textContent!.includes('&#39;') || r.textContent!.includes('&amp;'),
+      };
+    });
+    if (pcb.fired || pcb.injected) throw new Error(`PCB results rendered AI text as markup (${pcb.injected} injected elements, ${pcb.fired} handlers ran)`);
+    if (pcb.literal < 5 || !pcb.plain) throw new Error(`PCB results lost AI text instead of showing it (${pcb.literal} literal, plain=${pcb.plain})`);
+    if (pcb.doubled) throw new Error('PCB results show escaped entities — text was escaped twice');
+    log(`PCB results show AI text as text (${pcb.literal} hostile strings shown literally, none ran)`);
+
     if (pageErrors.length) {
       throw new Error(`Uncaught page error(s):\n  - ${pageErrors.join('\n  - ')}`);
     }
 
-    log('SMOKE PASSED — app boots, SW panel renders, calculation works, no page errors');
+    log('SMOKE PASSED — app boots, SW panel renders, calculation works, PCB text escaped, no page errors');
   } finally {
     cleanup();
   }
