@@ -174,3 +174,52 @@ describe('the same abort on the chat and Prism routes', () => {
     assert.equal(after.aborted, before.aborted);
   });
 });
+
+describe('the same abort on the Innovation and Horizon routes', () => {
+  it('/api/innovate/resolve: a closed request aborts the method pipeline\'s model calls', async () => {
+    const before = await stubStats();
+    const ctl = new AbortController();
+    const p = fetch(`${BASE}/api/innovate/resolve`, {
+      method: 'POST', signal: ctl.signal,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ apiKey: 'sk-ant-api03-STUB', method: 'scamper', context: { part: 'Inverter busbar', system: 'EDU', annualVolume: 120000 } }),
+    }).catch(() => null);
+    await waitForStub(st => st.requests > before.requests);
+    ctl.abort();
+    await p;
+    const after = await waitForStub(st => st.aborted > before.aborted);
+    assert.equal(after.completed, before.completed, 'no held model reply may have completed after the hang-up');
+  });
+
+  it('/api/foresight/predict: a closed request aborts the narrative call', async () => {
+    const cat = await (await fetch(`${BASE}/api/foresight/catalogue`)).json();
+    const before = await stubStats();
+    const ctl = new AbortController();
+    const p = fetch(`${BASE}/api/foresight/predict`, {
+      method: 'POST', signal: ctl.signal,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ apiKey: 'sk-ant-api03-STUB', commodity: cat.commodities[0], narrate: true, research: false }),
+    }).catch(() => null);
+    await waitForStub(st => st.requests > before.requests);
+    ctl.abort();
+    await p;
+    const after = await waitForStub(st => st.aborted > before.aborted);
+    assert.equal(after.completed, before.completed);
+  });
+
+  it('an uninterrupted predict still answers with the deterministic cards (the guard did not break the happy path)', async () => {
+    const cat = await (await fetch(`${BASE}/api/foresight/catalogue`)).json();
+    const before = await stubStats();
+    const r = await fetch(`${BASE}/api/foresight/predict`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ apiKey: 'sk-ant-api03-STUB', commodity: cat.commodities[0], narrate: true, research: false }),
+    });
+    assert.equal(r.status, 200);
+    const d = await r.json();
+    assert.ok(d.horizons, 'deterministic foresight missing');
+    const after = await stubStats();
+    assert.equal(after.completed, before.completed + 1);
+    assert.equal(after.aborted, before.aborted);
+  });
+});

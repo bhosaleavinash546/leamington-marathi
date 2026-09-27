@@ -4081,10 +4081,10 @@ registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, 
 registerPart360Routes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, sanitize, shouldCostApi, db, jobsApi, runAbort });
 // Innovation methods (Value Engineering, DFA, Design-to-Cost, SCAMPER,
 // Morphological, Effects & Trends, Circularity) — structured idea generation.
-registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
+registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, runAbort });
 // BrainSpark Horizon: deterministic technology foresight (register + S-curve/
 // Bass/Wright cores) with optional LLM narration on top.
-registerForesightRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, performSearch, jobsApi });
+registerForesightRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, performSearch, jobsApi, runAbort });
 // PCB → BOM → Cost v2: multi-photo vision BOM, multi-region costing, sensitivity,
 // engine-verified insights.
 registerPcbRoutes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, safeLlmError, db });

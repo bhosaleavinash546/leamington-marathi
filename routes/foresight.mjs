@@ -130,7 +130,7 @@ function snapshotCards(result) {
   }));
 }
 
-export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, performSearch, jobsApi }) {
+export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, performSearch, jobsApi, runAbort }) {
   initKnowledge(db);
   db.exec(`CREATE TABLE IF NOT EXISTS foresight_ledger (
     id TEXT PRIMARY KEY,
@@ -167,6 +167,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     const segment = SEGMENTS.includes(req.body?.segment) ? req.body.segment : null;
     if (!query && !commodity && !segment) return res.status(400).json({ error: 'Give a part/assembly name (e.g. "BEV HV battery", "diff lock"), pick a commodity, or choose the Off-Road / Luxury segment lens.' });
 
+    const run = runAbort(res, 'Horizon predict');
     // ── Step 1: deterministic foresight — the only source of numbers ──
     const result = foresightFor({ query, commodity, powertrain, segment }, { register: mergedRegister(db) });
     // SUV segment lenses → include the curated competitor benchmark set
@@ -217,7 +218,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
       researched = { candidates: [], evidence: { searches: [], patents: [] }, landscapeNote: null, evidenceGaps: null, trigger: trigger.reason, note: `${why}, but it needs an Anthropic API key (Settings) — showing curated technologies only rather than guessing.` };
     } else if (!researched && wantResearch && researchKey) {
       try {
-        const client = makeAnthropic(researchKey, { userId: req.user?.id, route: '/api/foresight/predict:research' });
+        const client = makeAnthropic(researchKey, { userId: req.user?.id, route: '/api/foresight/predict:research', signal: run.signal });
         const out = await researchFutureTechnologies(researchSubject, {
           performSearch, searchPatents, client, messagesJson, model: SMALL_MODEL, sanitize,
           searchApiKey: typeof req.body?.searchApiKey === 'string' ? req.body.searchApiKey : (process.env.BRAVE_API_KEY || ''),
@@ -258,7 +259,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
         const cardBlock = cards.slice(0, 18).map((c) =>
           `- [${c.id}] ${c.name} (${c.horizon}, ${c.phase}, momentum ${c.momentum}/100, ${c.confidence}) replaces: ${c.replaces}; adoption ${c.adoptionPct}% -> ~${c.projection.adoption.in5}% in 5y (modelled); cost index ${c.projection.costIndex.in5} in 5y; players: ${c.players.join(', ')}${c.regAnchorDetail ? `; regulation: ${c.regAnchorDetail.name} (${c.regAnchorDetail.year})` : ''}. ${c.note}`,
         ).join('\n');
-        const client = makeAnthropic(key, { userId: req.user?.id, route: '/api/foresight/predict' });
+        const client = makeAnthropic(key, { userId: req.user?.id, route: '/api/foresight/predict', signal: run.signal });
         narrative = await messagesJson(client, {
           model: SMALL_MODEL,
           maxTokens: 1200,
@@ -277,6 +278,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
       }
     }
 
+    if (run.signal.aborted) return;   // the reader left during a model call
     res.json({
       ...result,
       narrative,
@@ -387,6 +389,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     const tech = mergedRegister(db).find((t) => t.id === req.body?.techId);
     if (!tech) return res.status(404).json({ error: 'Unknown technology id.' });
     const key = resolveApiKey(req);
+    const run = runAbort(res, 'Horizon deep-dive');
     if (!key) return res.status(400).json({ error: 'Deep research needs an Anthropic API key (Settings) — the evidence synthesis is an AI step. The deterministic foresight and patent evidence work without one.' });
 
     try {
@@ -415,7 +418,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
         ...patents.patents.map((p, i) => `[patent ${i + 1}] ${p.title} (${p.assignee}, ${p.date})\nurl: ${p.url}\n${p.snippet}`),
       ].join('\n\n');
 
-      const client = makeAnthropic(key, { userId: req.user?.id, route: '/api/foresight/deepdive' });
+      const client = makeAnthropic(key, { userId: req.user?.id, route: '/api/foresight/deepdive', signal: run.signal });
       const research = await messagesJson(client, {
         model: SMALL_MODEL,
         maxTokens: 1500,
@@ -439,6 +442,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
         note: 'Every finding cites a retrieved source (uncited claims were dropped server-side). This is a synthesis of live search + patent evidence — check the sources before commercial decisions.',
       });
     } catch (err) {
+      if (run.signal.aborted) return;   // nobody is listening
       const status = err?.status || err?.response?.status;
       res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : 'Deep research failed.' });
     }
@@ -453,6 +457,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     const query = sanitize(String(req.body?.query || ''), 200).trim();
     if (query.length < 3) return res.status(400).json({ error: 'Give a part/assembly/technology to research.' });
     const key = resolveApiKey(req);
+    const run = runAbort(res, 'Horizon research');
     if (!key) return res.status(400).json({ error: 'Deep research needs an Anthropic API key (Settings) — the synthesis is an AI step over retrieved sources.' });
 
     try {
@@ -481,7 +486,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
         ...patents.patents.map((p, i) => `[patent ${i + 1}] ${p.title} (${p.assignee}, ${p.date})\nurl: ${p.url}\n${p.snippet}`),
       ].join('\n\n');
 
-      const client = makeAnthropic(key, { userId: req.user?.id, route: '/api/foresight/research' });
+      const client = makeAnthropic(key, { userId: req.user?.id, route: '/api/foresight/research', signal: run.signal });
       const research = await messagesJson(client, {
         model: SMALL_MODEL,
         maxTokens: 1500,
@@ -510,6 +515,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
         note: 'AI-RESEARCHED, NOT CURATED: live retrieval + grounded synthesis (uncited claims dropped in code). Review the sources; promote to the curated register with evidence if it earns a place.',
       });
     } catch (err) {
+      if (run.signal.aborted) return;   // nobody is listening
       const status = err?.status || err?.response?.status;
       res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : 'Deep research failed.' });
     }
@@ -559,8 +565,9 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     ).join('\n');
     const validIds = new Set(cards.map((c) => c.id));
 
+    const run = runAbort(res, 'Horizon critique');
     try {
-      const client = makeAnthropic(key, { userId: req.user?.id, route: '/api/foresight/critique' });
+      const client = makeAnthropic(key, { userId: req.user?.id, route: '/api/foresight/critique', signal: run.signal });
       const panel = await Promise.all(PANEL.map(async (p) => {
         const out = await messagesJson(client, {
           model: SMALL_MODEL,
@@ -577,6 +584,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
           critiques: (out.critiques || []).filter((c) => validIds.has(c.techId)).slice(0, cards.length),
         };
       }));
+      if (run.signal.aborted) return;
       const any = panel.some((p) => p.critiques.length);
       res.json({
         panel,
@@ -585,6 +593,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
           : 'The panel calls failed — no critiques available. Check your API key and try again.',
       });
     } catch (err) {
+      if (run.signal.aborted) return;   // nobody is listening
       const status = err?.status || err?.response?.status;
       res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : 'Panel critique failed.' });
     }

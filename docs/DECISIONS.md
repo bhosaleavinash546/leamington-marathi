@@ -4104,3 +4104,28 @@ Tested against the stub, which now holds a non-streamed reply for
 draft-functions both register the hang-up, and an uninterrupted draft still
 completes. The rule for any new LLM route: take `runAbort` from deps, pass
 its signal to `makeAnthropic`, and add a case to `tests/analyze-cancel.test.mjs`.
+
+## 84. Innovation and Horizon take the run-scoped abort; the deep-research job does not
+
+The last routes on the review's list. `/api/innovate/resolve` (structure →
+embodiment → engine-check, several model calls per method) and the Horizon
+routes that answer inside a request — `predict` (research and narrative
+clients share one signal), `deepdive`, `research` and `critique` (three
+persona calls in parallel, one signal) — now take `runAbort` from `deps`
+exactly as DECISIONS 83 prescribes, and end quietly when the reader has
+gone.
+
+`/api/foresight/deep` is deliberately NOT guarded. It is a background job:
+the POST returns a job id in milliseconds and the client polls, because a
+deep run is minutes long and the design accepts that the browser may
+close and come back. Aborting it on the POST's close would kill every job
+the moment it started. If deep runs need cancelling, that is a job-cancel
+endpoint (`DELETE /api/foresight/deep/:jobId`) with its own semantics,
+recorded here as the open item rather than bolted onto the wrong hook.
+
+Tests: `tests/analyze-cancel.test.mjs` now covers eight routes/cases
+against the stub. Two of the Horizon routes (`deepdive`, `research`) only
+reach the model after live search has returned evidence, which the test
+sandbox cannot do, so they are covered by code review of the same three
+lines rather than a stub run — said here so nobody reads the suite as
+proving them.

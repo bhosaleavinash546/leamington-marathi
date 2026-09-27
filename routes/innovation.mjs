@@ -244,7 +244,7 @@ async function buildMethodContext(method, body, client) {
   }
 }
 
-export function registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize }) {
+export function registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, runAbort }) {
   app.get('/api/innovate/methods', (_req, res) => res.json({ methods: METHODS, scamper: SCAMPER, effects: EFFECTS, trends: TRENDS, circularity: CIRCULARITY }));
 
   // Deterministic-only endpoints (no key needed) — for the studio's live analysis.
@@ -287,7 +287,10 @@ export function registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnth
     const annualVolume = Number(ctx.annualVolume) > 0 ? Number(ctx.annualVolume) : 80000;
     if (!part) return res.status(400).json({ error: 'Name the part or assembly to analyse.' });
 
-    const client = makeAnthropic(key, { userId: req.user?.id, route: `/api/innovate/resolve:${method.id}` });
+    // Structure → embodiment → engine-check can be several model calls; a
+    // reader who leaves stops all of them (DECISIONS 83).
+    const run = runAbort(res, `Innovation ${method.id}`);
+    const client = makeAnthropic(key, { userId: req.user?.id, route: `/api/innovate/resolve:${method.id}`, signal: run.signal });
 
     try {
       const { analysis, directive } = await buildMethodContext(method.id, { ...req.body, context: { ...ctx, part } }, client);
@@ -313,6 +316,7 @@ export function registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnth
         note: 'Method structure is deterministic; every £ figure is engine-checked or labelled. Validate before commercial use.',
       });
     } catch (err) {
+      if (run.signal.aborted) return;   // nobody is listening
       const status = err?.status || err?.response?.status;
       const msg = typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : (err?.message || 'Idea generation failed.');
       res.status(typeof status === 'number' ? 502 : 500).json({ error: msg });
