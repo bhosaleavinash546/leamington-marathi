@@ -150,6 +150,18 @@ async function main(): Promise<void> {
     if (rtabCount < 3) throw new Error(`Results tab bar missing after Calculate (got ${rtabCount} tabs)`);
     log(`results tabs render after commodity switch (${rtabCount} tabs)`);
 
+    // The cost must be on screen after Calculate. The results used to sit in a
+    // 32 px scroll box under the form, so the button looked like it did nothing.
+    await page.waitForTimeout(1200);   // the smooth scroll
+    const hero = await page.evaluate(() => {
+      const r = document.getElementById('cv-result-hero')?.getBoundingClientRect();
+      return r ? { top: r.top, bottom: r.bottom, vh: innerHeight } : null;
+    });
+    if (!hero || hero.top < 0 || hero.bottom > hero.vh) {
+      throw new Error(`Result not on screen after Calculate (${JSON.stringify(hero)})`);
+    }
+    log('result scrolled into view after Calculate');
+
     // 7. PCB image results must show AI-read text as text. A board photo whose
     // silkscreen or chip marking reads as markup used to reach innerHTML
     // unescaped — the BOM description, part number, insights, DFM lines. The

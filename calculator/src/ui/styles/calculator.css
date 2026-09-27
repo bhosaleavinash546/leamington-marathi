@@ -3402,11 +3402,18 @@ body.cv-new-costing #costing-view .input-panel {
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
+/* The results flow below the form and #costing-view scrolls them both, as in
+   the workflow panel above. They used to be flex: 1 with their own scroll box;
+   under a full-height form that left the whole result inside a 32 px strip at
+   the bottom (hero at y=884 of 900), so Calculate looked like it did nothing
+   and scrolling to the result had nowhere to go. */
 body.cv-new-costing #costing-view .results-panel {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;
+  flex: none;
+  overflow-y: visible;
+  min-height: auto;
 }
+/* Land the result below the sticky panel header, not under it. */
+body.cv-new-costing #cv-result-hero { scroll-margin-top: 76px; }
 @media (max-width: 900px) {
   body.cv-new-costing #commodity-picker-view { width: 220px; }
   body.cv-new-costing #costing-view { left: calc(var(--cv-nav-offset) + 220px); width: auto !important; }
