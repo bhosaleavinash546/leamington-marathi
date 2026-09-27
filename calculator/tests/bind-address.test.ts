@@ -11,18 +11,29 @@ import { spawn, type ChildProcess } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir, networkInterfaces } from 'node:os';
+import { createServer } from 'node:net';
 
 const ROOT = join(__dirname, '..');
 const lanAddress = Object.values(networkInterfaces()).flat()
   .find(a => a && a.family === 'IPv4' && !a.internal)?.address;
 let srv: ChildProcess | null = null, dir = '';
 
+/** A port nothing holds. A random pick from a small range once landed on the
+ *  previous test's server, still alive under its tsx wrapper, and read that
+ *  server's 127.0.0.1-only answer as this one's. */
+const freePort = () => new Promise<number>((resolve, reject) => {
+  const s = createServer();
+  s.once('error', reject);
+  s.listen(0, '0.0.0.0', () => { const p = (s.address() as { port: number }).port; s.close(() => resolve(p)); });
+});
+
 async function boot(extra: Record<string, string>): Promise<number> {
-  const port = 3990 + Math.floor(Math.random() * 9);
+  const port = await freePort();
   dir = mkdtempSync(join(tmpdir(), 'cv-bind-'));
   const env: NodeJS.ProcessEnv = { ...process.env, CV_DATA_DIR: dir, PORT: String(port), NODE_ENV: 'development', ...extra };
   if (!('HOST' in extra)) delete env.HOST;
-  srv = spawn(join(ROOT, 'node_modules/.bin/tsx'), [join(ROOT, 'server/index.ts')], { cwd: dir, env, stdio: 'ignore' });
+  // Its own process group, so afterEach can stop tsx AND the server it starts.
+  srv = spawn(join(ROOT, 'node_modules/.bin/tsx'), [join(ROOT, 'server/index.ts')], { cwd: dir, env, stdio: 'ignore', detached: true });
   for (let i = 0; i < 120; i++) {
     try { if ((await fetch(`http://127.0.0.1:${port}/api/health`)).ok) return port; } catch { /* starting */ }
     await new Promise(r => setTimeout(r, 250));
@@ -32,7 +43,15 @@ async function boot(extra: Record<string, string>): Promise<number> {
 const reach = async (host: string, port: number) =>
   fetch(`http://${host}:${port}/api/health`, { signal: AbortSignal.timeout(1500) }).then(r => r.ok, () => false);
 
-afterEach(() => { srv?.kill(); srv = null; rmSync(dir, { recursive: true, force: true }); });
+afterEach(async () => {
+  if (srv?.pid) {
+    const exited = new Promise(r => srv!.once('exit', r));
+    try { process.kill(-srv.pid, 'SIGKILL'); } catch { /* already gone */ }
+    await exited;
+  }
+  srv = null;
+  rmSync(dir, { recursive: true, force: true });
+});
 
 describe('bind address', () => {
   it.skipIf(!lanAddress)('answers on localhost but not on the network address by default', async () => {
