@@ -1,6 +1,6 @@
 {
   "name": "should-cost-calculator",
-  "version": "1.0.0",
+  "version": "4.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

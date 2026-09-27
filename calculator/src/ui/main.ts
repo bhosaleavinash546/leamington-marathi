@@ -2,6 +2,7 @@
 import './auth-fetch.js';
 // Before any markup renders: whether this installation has AI at all.
 import { isAiOff } from './ai-mode.js';
+import { fieldLabel } from './field-labels.js';
 import './styles/calculator.css';
 import {
   computeUniversalStack, validateStackInput, breakdownPercentages,
@@ -14802,7 +14803,7 @@ function compute(): void {
     calcBtn.disabled = false;
     calcBtn.textContent = originalLabel;
     errBox.style.display = 'block';
-    errBox.innerHTML = `<strong>Errors:</strong><ul>${validation.errors.map(e => `<li>${escHtml(e.field)}: ${escHtml(e.message)}</li>`).join('')}</ul>`;
+    errBox.innerHTML = `<strong>Errors:</strong><ul>${validation.errors.map(e => `<li>${escHtml(fieldLabel(e.field))}: ${escHtml(e.message)}</li>`).join('')}</ul>`;
     warnBox.style.display = 'none';
     setValidationChip(validation.errors.length);
     return;
@@ -14812,7 +14813,7 @@ function compute(): void {
   setDirty(false);
 
   const allWarnings = [
-    ...validation.warnings.map(w => `${w.field}: ${w.message}`),
+    ...validation.warnings.map(w => `${fieldLabel(w.field)}: ${w.message}`),
     ..._smExtraWarnings,
   ];
   if (allWarnings.length > 0) {
@@ -15677,7 +15678,7 @@ function buildResultHeroBlock(result: PartCostResult, input: UniversalStackInput
       </div>
       <div class="cv-rhero-chips">
         <span class="cv-rchip cv-rchip--band" title="Monte-Carlo band width (CV ${u.cvPct}%)"><span class="cv-rdot"></span>${u.band} band</span>
-        <span class="cv-rchip" title="Rates and material prices in force — edit in the Rate Library">${escHtml(region)} rates · ${RATES_ASOF}</span>
+        <span class="cv-rchip" title="Rates and material prices in force — edit in the Rate Library">${escHtml(region)} rates · ${ratesAsOf()}</span>
         <span class="cv-rchip" title="How the band width was derived">${confLabel}</span>
         ${conf90.applied ? `<span class="cv-rchip cv-rchip--ok" title="Coverage-guaranteed range from ${conf90.n} logged actuals">90% land within ±${conf90.halfWidthPct}%</span>` : ''}
       </div>
@@ -20379,7 +20380,7 @@ async function shareCurrentCosting(): Promise<void> {
     partName: r.partName, commodity: activeCommodity, region,
     total: r.total, factoryCost: r.factoryCost,
     breakdown: r.breakdown,
-    band: _lastBandInfo, ratesAsOf: RATES_ASOF,
+    band: _lastBandInfo, ratesAsOf: ratesAsOf(),
     generatedAt: new Date().toISOString(),
   };
   try {
@@ -20529,7 +20530,15 @@ function initDraftAutosave(): void {
 }
 
 // ═══ Result hero + trace drawer (money-screen pass) ══════════════════════════
-const RATES_ASOF = 'Jul 2026';
+/** The date the rates in force were last changed — the same date the stale-rates
+ *  warning quotes. Results used to print a hard-coded "Jul 2026" while that
+ *  warning said "last updated 16/06/2026": two dates for one set of rates. */
+function ratesAsOf(): string {
+  const d = library.lastModified ? new Date(library.lastModified) : null;
+  return d && !isNaN(d.getTime())
+    ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+    : 'date not recorded';
+}
 let _lastBandInfo: { pm: number; band: string; conf: string } | null = null;
 
 const BUCKET_TRACE_META: Record<string, { formula: string; match: RegExp }> = {
@@ -20564,7 +20573,9 @@ function renderResultHero(): void {
     }
   } catch { /* history unavailable — skip delta */ }
   const bandChip = band
-    ? `<span class="crh-chip crh-chip--band-${band.band}" title="Monte-Carlo uncertainty band (${band.conf})">±${band.pm}% · ${band.band} band</span>`
+    // The ±% is printed beside the total already; the chip names the band only
+    // (it used to repeat the figure: "£10.79 ±7.9%  ±7.9% · moderate band").
+    ? `<span class="crh-chip crh-chip--band-${band.band}" title="Monte-Carlo uncertainty band ±${band.pm}% (${band.conf})">${band.band} band</span>`
     : '';
   host.innerHTML = `
     <div class="crh-part">
@@ -20573,7 +20584,7 @@ function renderResultHero(): void {
     </div>
     <div class="crh-chips">
       ${bandChip}
-      <span class="crh-chip" title="Rates and material prices in force for this calculation — edit in the Rate Library">${escHtml(region)} rates · ${RATES_ASOF}</span>
+      <span class="crh-chip" title="Rates and material prices in force for this calculation — edit in the Rate Library">${escHtml(region)} rates · ${ratesAsOf()}</span>
       ${deltaHtml}
     </div>
     <div class="crh-actions">
@@ -20650,7 +20661,7 @@ function openTraceDrawer(bucket: string): void {
           </tr>`).join('')}</tbody>
         </table>` : '<div style="font-size:0.78rem;color:var(--text-muted)">No line-level trace records matched this bucket — see the Detail tab for the full trace table.</div>'}
       </div>
-      <div class="ctd-foot">${escHtml(region)} rates · as-of ${RATES_ASOF} · every rate is editable in the Rate Library (Edit Rates)</div>
+      <div class="ctd-foot">${escHtml(region)} rates · as-of ${ratesAsOf()} · every rate is editable in the Rate Library (Edit Rates)</div>
     </div>`;
   host.classList.add('open');
 }
