@@ -15,6 +15,10 @@ if (!JWT_SECRET) {
 }
 const _JWT_SECRET = JWT_SECRET ?? 'should-cost-dev-secret-DO-NOT-USE-IN-PRODUCTION';
 
+/** Whether sessions are signed with a real secret. The health check and the
+ *  startup banner report THIS, so they cannot disagree with the middleware. */
+export const JWT_SECRET_CONFIGURED = !!JWT_SECRET;
+
 export function requireAuth(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {

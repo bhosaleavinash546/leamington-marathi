@@ -1,10 +1,19 @@
+// Must stay the FIRST import. ES modules evaluate every import before this
+// file's body runs, so a `config()` call further down came too late: the auth
+// middleware had already read JWT_SECRET, found nothing, and fallen back to the
+// default printed in its source — while the banner below, reading the env after
+// config(), reported the secret as configured. Anything else read at import
+// time (team key, SMTP, data directory, Python path, upload limits) was
+// silently ignored the same way on a native start. Real environment variables
+// still win: dotenv never overwrites one that is already set, which is how the
+// Windows launcher and Docker pass their settings.
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
 import type { Request, Response, NextFunction } from 'express';
-import { config } from 'dotenv';
 import { hasUsableServerKey } from './utils/api-key.js';
 import { isOriginAllowed } from './utils/cors-policy.js';
 import cadRouter from './routes/cad.js';
@@ -24,12 +33,11 @@ import quotesRouter from './routes/quotes.js';
 import bomRouter from './routes/bom.js';
 import rfqRouter from './routes/rfq.js';
 import { aiEndpointDescription } from './utils/ai-client.js';
+import { JWT_SECRET_CONFIGURED } from './middleware/auth-middleware.js';
 import knowledgeRouter from './routes/knowledge.js';
 import shareRouter from './routes/share.js';
 import { fetchAndCachePrices, arePricesStale } from './services/price-fetcher.js';
 import db from './db.js';
-
-config(); // load .env
 
 const app = express();
 // Behind a reverse proxy (fly.io, nginx) every request arrives from the proxy's
@@ -107,7 +115,7 @@ app.get('/api/health', (_req, res) => {
     apiKeyConfigured: hasUsableServerKey(),
     teamAuthEnabled: !!process.env.TEAM_API_KEY,
     smtpConfigured: !!(process.env.SMTP_HOST && process.env.SMTP_USER),
-    jwtConfigured: !!process.env.JWT_SECRET,
+    jwtConfigured: JWT_SECRET_CONFIGURED,   // what the middleware actually signs with, not a second read of the env
   });
 });
 
@@ -133,7 +141,7 @@ const server = app.listen(PORT, () => {
   console.log(`Should-Cost server running on http://localhost:${PORT}`);
   console.log(`[Deployment] AI egress: ${aiEndpointDescription()}`);
   console.log(`API key:      ${hasUsableServerKey() ? '✓ configured' : '✗ NOT SET — set ANTHROPIC_API_KEY in .env (run: make dev, or ./dev-start.sh)'}`);
-  console.log(`JWT secret:   ${process.env.JWT_SECRET ? '✓ configured' : '⚠  using dev default — set JWT_SECRET in .env'}`);
+  console.log(`JWT secret:   ${JWT_SECRET_CONFIGURED ? '✓ configured' : '⚠  using dev default — set JWT_SECRET in .env'}`);
   console.log(`SMTP:         ${process.env.SMTP_HOST ? `✓ ${process.env.SMTP_HOST}` : 'not configured — OTPs logged to console'}`);
   console.log(`Team sync:    ${process.env.TEAM_API_KEY ? '✓ enabled' : 'disabled'}`);
   console.log(`Environment:  ${IS_PROD ? 'production' : 'development'}`);
