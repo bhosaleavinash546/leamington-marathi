@@ -66,6 +66,21 @@ describe('http integration', () => {
     assert.equal(bad.status, 401);
   });
 
+  it('GET /api/fx serves the EUR-base snapshot the client display boundary converts with', async () => {
+    const r = await fetch(`${BASE}/api/fx`);
+    assert.equal(r.status, 200);
+    const d = await r.json();
+    assert.equal(d.base, 'EUR');
+    assert.equal(d.rates.EUR, 1);
+    assert.ok(d.rates.GBP > 0 && d.rates.GBP < 1, 'GBP per EUR is a fraction');
+    assert.equal(d.symbols.GBP, '£');
+    assert.equal(typeof d.live, 'boolean');
+    assert.equal(typeof d.stale, 'boolean');
+    assert.ok(typeof d.source === 'string' && d.source.length > 0);
+    // Offline in CI: the fallback table must declare itself stale with a vintage.
+    if (!d.live) { assert.equal(d.stale, true); assert.match(String(d.date), /^\d{4}-\d{2}-\d{2}$/); }
+  });
+
   it('protected endpoints reject missing/garbage tokens', async () => {
     for (const auth of [undefined, 'Bearer nonsense']) {
       const r = await fetch(`${BASE}/api/should-cost`, {

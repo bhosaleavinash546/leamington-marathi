@@ -278,3 +278,27 @@ test('the always-dark opt-out uses the dark theme\'s CURRENT slate values, not s
     .map(([step, colour]) => `slate-${step}: opt-out ${colour} vs dark ${base[step]}`);
   assert.deepEqual(drifted, [], 'a dark panel on a light page must render exactly like the dark theme');
 });
+
+/**
+ * MONEY AT THE DISPLAY BOUNDARY (DECISIONS 82).
+ *
+ * Engines compute in EUR and pages used to print those figures with a bare
+ * "€" beside a "£" saving from the same run. A rendered engine figure now
+ * goes through <Money> / fmtMoney (src/lib/money.ts), which converts at the
+ * shared FX snapshot and names its rate and date. The rate library page is
+ * the one allowed exception: it EDITS the engine's EUR rates, so EUR is the
+ * truth there. Strings built for the model are not rendered and are written
+ * by concatenation, which this scanner does not match.
+ */
+const EURO_ALLOWLIST = new Set(['src/pages/AdminRateLibraryPage.tsx']);
+test('no rendered engine figure carries a bare € glyph — it goes through <Money>', () => {
+  const bad = [];
+  for (const f of files.filter(f => /\.tsx$/.test(f))) {
+    if (EURO_ALLOWLIST.has(f.split(/[\\/]/).join('/'))) continue;
+    const src = readFileSync(f, 'utf8');
+    src.split('\n').forEach((line, i) => {
+      if (/€\{|€\$\{|prefix="€"/.test(line)) bad.push(`${f}:${i + 1}: ${line.trim().slice(0, 90)}`);
+    });
+  }
+  assert.deepEqual(bad, [], 'render engine EUR figures through <Money eur={…}> (src/components/ui/Money.tsx)');
+});

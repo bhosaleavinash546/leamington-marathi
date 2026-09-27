@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import TickNumber from '../components/dfm/TickNumber';
 import ScoreRing from '../components/dfm/ScoreRing';
+import { Money, FxNote } from '../components/ui/Money';
 import {
   FileDown, FileSpreadsheet, Presentation, ArrowLeft, Filter,
   TrendingDown, Zap, AlertTriangle, CheckCircle, Clock,
@@ -165,9 +166,11 @@ const REJECTION_REASONS: { key: string; label: string }[] = [
   { key: 'other',               label: 'Other reason' },
 ];
 
-function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSelect }: {
+function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSelect, currency }: {
   idea: CostReductionIdea;
   index: number;
+  /** The run's currency: engine EUR figures are converted to it at display. */
+  currency?: string;
   annotation?: IdeaAnnotation;
   onAnnotate: (a: IdeaAnnotation) => void;
   isSelected?: boolean;
@@ -417,9 +420,10 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                 Engine Cross-Check — {idea.engineCheck.direction}:
               </span>{' '}
               <span className="text-slate-300 text-sm">
-                €{idea.engineCheck.baselineEur.toFixed(2)} → €{idea.engineCheck.proposedEur.toFixed(2)} ({idea.engineCheck.savingPct > 0 ? '−' : '+'}{Math.abs(idea.engineCheck.savingPct)}%) on {idea.engineCheck.referenceCase}
+                <Money eur={idea.engineCheck.baselineEur} currency={currency} /> → <Money eur={idea.engineCheck.proposedEur} currency={currency} /> ({idea.engineCheck.savingPct > 0 ? '−' : '+'}{Math.abs(idea.engineCheck.savingPct)}%) on {idea.engineCheck.referenceCase}
               </span>
               <p className="text-slate-500 text-xs mt-1">{idea.engineCheck.basis}</p>
+              <FxNote currency={currency} className="mt-1" />
               <p className="text-slate-500 text-xs mt-1">
                 This is the engine&apos;s figure for its own reference case — it tests whether the
                 change moves cost in the claimed direction, not whether the saving quoted above is
@@ -1660,6 +1664,7 @@ export default function ResultsPage() {
                   onAnnotate={(a) => handleAnnotate(idea.id, a)}
                   isSelected={selectedIds.has(idea.id)}
                   onToggleSelect={toggleSelect}
+                  currency={result.config.currency}
                 />
               ))}
             </AnimatePresence>

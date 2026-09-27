@@ -3081,6 +3081,17 @@ app.post('/api/cad-analyze', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60
   }
 });
 
+// FX snapshot for the client's display boundary (src/lib/money.ts). Engines
+// compute in EUR; the browser converts where a figure is SHOWN and names the
+// rate and date it used. Public like /api/prices: rates are not a secret and
+// the landing page's figures need them before sign-in.
+app.get('/api/fx', rateLimit(120, 60 * 60 * 1000), async (req, res) => {
+  const fx = await getFxRates().catch(() => null);
+  if (!fx) return res.status(503).json({ error: 'FX rates unavailable' });
+  res.set('Cache-Control', 'public, max-age=900');
+  res.json({ base: 'EUR', rates: fx.rates, symbols: FX_SYMBOLS, currencies: FX_CURRENCIES, live: !!fx.live, date: fx.date ?? null, stale: !!fx.stale, source: fx.source });
+});
+
 // Commodity prices endpoint
 app.get('/api/prices', async (req, res) => {
   // Use cached data (do not force refresh on every page load)

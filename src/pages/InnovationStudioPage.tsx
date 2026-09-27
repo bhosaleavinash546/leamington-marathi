@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+import { Money, FxNote } from '../components/ui/Money';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Sparkles, CheckCircle, XCircle, Layers, Cpu, Wand2, ArrowRight, FileDown, Table2,
@@ -1000,14 +1001,15 @@ function AnalysisPanel({ methodId, analysis }: { methodId: string; analysis: unk
         )}
         {deltas && deltas.steps.length > 0 && (
           <>
-            <p className="text-slate-500 text-xs uppercase tracking-wider mb-2 mt-3">Engine-verified relaxation savings (baseline €{deltas.baseline})</p>
+            <p className="text-slate-500 text-xs uppercase tracking-wider mb-2 mt-3">Engine-verified relaxation savings (baseline <Money eur={deltas.baseline} />)</p>
             <div className="flex flex-wrap gap-2">
               {deltas.steps.map(s => (
                 <span key={s.id} className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs">
-                  {s.label}: −€{s.savingEur} ({s.savingPct}%)
+                  {s.label}: −<Money eur={s.savingEur} /> ({s.savingPct}%)
                 </span>
               ))}
             </div>
+            <FxNote pickable className="mt-2" />
           </>
         )}
       </Panel>

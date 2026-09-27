@@ -31,6 +31,9 @@ import { useSpotlight } from '../components/dfm/useSpotlight';
 import StepRail, { RailStep } from '../components/dfm/StepRail';
 import TickNumber from '../components/dfm/TickNumber';
 import ScoreRing from '../components/dfm/ScoreRing';
+import { Money, FxNote } from '../components/ui/Money';
+import { useFx, useDisplayCurrency } from '../hooks/useFx';
+import { fmtMoney } from '../lib/money';
 import './dfm.css';
 
 // ── Types mirrored from the server contracts ─────────────────────────────────
@@ -122,7 +125,9 @@ const REGION_TO_PLANT: Record<string, PlantRegion> = {
 // Default lens selection: the four highest-yield angles. All six remain a click away.
 const DEFAULT_LENSES = new Set(['vave', 'process', 'spec', 'commercial']);
 
-const eur = (n: number | null | undefined) => (n == null || !Number.isFinite(n) ? '—' : `€${n.toFixed(2)}`);
+// Engine figures handed to the MODEL stay in the engine's EUR (string built by
+// concatenation so the display-boundary gate can tell it from a rendered figure).
+const eurForModel = (n: number | null | undefined) => (n == null || !Number.isFinite(n) ? '—' : '€' + n.toFixed(2));
 
 // The DFM engines weigh the measured volume in six stock materials
 // (geometry.weights). Map the chosen catalogue material onto the right one so
@@ -657,8 +662,8 @@ export default function Part360Page() {
     const co = dossier.counter;
     const text = [
       `Counter positions — ${partName || 'part'} (engine-anchored targets)`,
-      ...co.rows.map(r => `• ${r.label}: quoted €${r.quotedEur.toFixed(2)} → ${r.targetEur != null ? `target €${r.targetEur.toFixed(2)} (ask €${(r.askEur ?? 0).toFixed(2)})` : 'please break this line down'} — ${r.argument}`),
-      `Total per-line ask: €${co.totalAskEur.toFixed(2)}/part`,
+      ...co.rows.map(r => `• ${r.label}: quoted ${money(r.quotedEur)} → ${r.targetEur != null ? `target ${money(r.targetEur)} (ask ${money(r.askEur ?? 0)})` : 'please break this line down'} — ${r.argument}`),
+      `Total per-line ask: ${money(co.totalAskEur)}/part`,
       co.caveat,
     ].join('\n');
     try { await navigator.clipboard.writeText(text); toast('Counter sheet copied — paste into your supplier email.', 'success'); }
@@ -726,7 +731,7 @@ export default function Part360Page() {
       const config: AnalysisConfig = {
         systemId: 'part360', subassemblyId: 'part360', vehicleType: 'Platform-agnostic assembly',
         annualVolume: Number(annualVolume) || 80000, plantRegion: REGION_TO_PLANT[region] ?? 'germany', currency: 'EUR',
-        additionalContext: `Prism ASSEMBLY review of "${asmName}" — engine-costed BOM total €${asmDossier.rollUp.totalEur} across ${asmDossier.rollUp.partCount} part instances.${asmContext.trim() ? ` Assembly function as stated by the user: ${asmContext.trim().slice(0, 600)}` : ''}`,
+        additionalContext: `Prism ASSEMBLY review of "${asmName}" — engine-costed BOM total ${eurForModel(asmDossier.rollUp.totalEur)} across ${asmDossier.rollUp.partCount} part instances.${asmContext.trim() ? ` Assembly function as stated by the user: ${asmContext.trim().slice(0, 600)}` : ''}`,
         deepMode, apiKey,
       };
       const { ideas, sources, resultId, validation } = await generateCostReductionIdeas(
@@ -769,6 +774,12 @@ export default function Part360Page() {
   };
 
   const sym = CURRENCY_SYMBOLS[quoteCurrency] || '€';
+  // Display boundary: every engine EUR figure this page RENDERS goes through
+  // money()/<Money>, converted to the reader's display currency with the rate
+  // and date named (FxNote). Figures handed to the model stay EUR.
+  const fx = useFx();
+  const [dispCcy] = useDisplayCurrency();
+  const money = (n: number | null | undefined) => fmtMoney(n, dispCcy, fx);
 
   // ── Waterfall geometry: bar widths in % of the tallest engine figure ──────
   const wf = dossier?.waterfall;
@@ -939,7 +950,7 @@ export default function Part360Page() {
                 <div className="flex flex-wrap items-baseline justify-between gap-3 mb-1">
                   <h2 className="text-white font-semibold text-sm">Assembly roll-up — {asmDossier.assemblyName}</h2>
                   <div className="dfm-kpi-value text-teal-300" style={{ fontSize: 24 }}>
-                    <TickNumber value={asmDossier.rollUp.totalEur} decimals={2} prefix="€" />
+                    <Money tick eur={asmDossier.rollUp.totalEur} decimals={2} />
                   </div>
                 </div>
                 <p className="text-slate-500 text-2xs mb-4">{asmDossier.rollUp.caveat}</p>
@@ -951,7 +962,7 @@ export default function Part360Page() {
                         <motion.span className={i === 0 ? 'bg-gradient-to-r from-gold-500/80 to-gold-400/80' : 'bg-gradient-to-r from-teal-500/60 to-teal-400/60'}
                           initial={{ width: 0 }} animate={{ width: `${sb.sharePct ?? 0}%` }} transition={m.t(0.5, m.beat(i))} />
                       </div>
-                      <span className="dfm-num text-xs text-right text-white">€{sb.eur} <span className="text-slate-500">({sb.sharePct}%)</span></span>
+                      <span className="dfm-num text-xs text-right text-white"><Money eur={sb.eur} /> <span className="text-slate-500">({sb.sharePct}%)</span></span>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -1063,8 +1074,8 @@ export default function Part360Page() {
                                 <div className="text-sm text-white">{row.file}</div>
                                 <div className="text-2xs text-slate-500">{row.massKg} kg · {row.massSource}</div>
                               </div>
-                              <div className="dfm-num text-xs text-slate-400 w-24 text-right">engine {eur(row.engineEur)}</div>
-                              <div className="dfm-num text-xs text-teal-300 w-24 text-right">entitle {eur(row.entitlementEur)}</div>
+                              <div className="dfm-num text-xs text-slate-400 w-24 text-right">engine {money(row.engineEur)}</div>
+                              <div className="dfm-num text-xs text-teal-300 w-24 text-right">entitle {money(row.entitlementEur)}</div>
                               <div className="w-36 hidden sm:block">
                                 <div className="dfm-bar">
                                   <motion.span className="bg-gold-400/80" initial={{ width: 0 }}
@@ -1072,7 +1083,7 @@ export default function Part360Page() {
                                 </div>
                               </div>
                               <div className="dfm-num text-xs text-gold-400 font-semibold w-28 text-right">
-                                {row.annualGapEur != null ? `€${row.annualGapEur.toLocaleString()}/yr` : '—'}
+                                {row.annualGapEur != null ? <Money eur={row.annualGapEur} decimals={0} suffix="/yr" /> : '—'}
                               </div>
                               <motion.button {...m.press}
                                 onClick={() => { setPartName(row.file.replace(/\.(step|stp|igs|iges)$/i, '')); setWeightKg(String(row.massKg ?? '')); setBatchMode(false); setStep(0); toast('Prefilled — re-attach the CAD file for the full deep-dive.', 'info'); }}
@@ -1504,7 +1515,8 @@ export default function Part360Page() {
                   <Layers size={15} className="text-gold-400" />
                   <h2 className="text-white font-semibold text-sm">Cost entitlement waterfall</h2>
                 </div>
-                <p className="text-slate-500 text-2xs mb-5 max-w-3xl">{wf.caution}</p>
+                <p className="text-slate-500 text-2xs mb-2 max-w-3xl">{wf.caution}</p>
+                <FxNote pickable className="mb-5" />
 
                 <div className="space-y-2.5 mb-5" role="img" aria-label="Waterfall of engine-computed cost premiums from quote to entitlement">
                   {wf.quoteEur != null && (
@@ -1518,7 +1530,7 @@ export default function Part360Page() {
                         />
                       </div>
                       <div className="dfm-num text-xs text-white font-semibold text-right">
-                        <TickNumber value={wf.quoteEur} decimals={2} prefix="€" delay={m.beat(0)} />
+                        <Money tick eur={wf.quoteEur} decimals={2} delay={m.beat(0)} />
                       </div>
                     </div>
                   )}
@@ -1542,7 +1554,7 @@ export default function Part360Page() {
                             transition={m.t(0.5, m.beat(i + 1))}
                           />
                           <motion.span
-                            title={`${s.name}: ${eur(Math.abs(s.deltaEur))} ${s.deltaEur >= 0 ? 'removable premium' : 'below the model'}`}
+                            title={`${s.name}: ${money(Math.abs(s.deltaEur))} ${s.deltaEur >= 0 ? 'removable premium' : 'below the model'}`}
                             className={`absolute top-0 h-full ${s.deltaEur >= 0 ? 'bg-gradient-to-r from-gold-500/75 to-gold-400/75' : 'bg-emerald-500/60'}`}
                             style={{ left: `${pct(Math.min(s.toEur, s.fromEur))}%`, borderRadius: '0 6px 6px 0' }}
                             initial={{ width: 0 }} animate={{ width: `${Math.abs(pct(s.fromEur) - pct(s.toEur))}%` }}
@@ -1552,7 +1564,7 @@ export default function Part360Page() {
                       )}
                       <div className={`dfm-num text-xs font-semibold text-right ${s.skipped ? 'text-slate-500' : s.deltaEur > 0 ? 'text-gold-400' : 'text-slate-400'}`}>
                         {s.skipped ? '—' : <>
-                          {Math.abs(s.deltaEur) < 0.005 ? '' : s.deltaEur < 0 ? '+' : '−'}<TickNumber value={Math.abs(s.deltaEur)} decimals={2} prefix="€" delay={m.beat(i + 1)} />
+                          {Math.abs(s.deltaEur) < 0.005 ? '' : s.deltaEur < 0 ? '+' : '−'}<Money tick eur={Math.abs(s.deltaEur)} decimals={2} delay={m.beat(i + 1)} />
                           {Number.isFinite(s.co2DeltaKg) && (
                             <span
                               title={s.co2Basis ?? undefined}
@@ -1575,15 +1587,15 @@ export default function Part360Page() {
                       />
                     </div>
                     <div className="dfm-num text-xs text-teal-300 font-bold text-right">
-                      <TickNumber value={wf.entitlementEur} decimals={2} prefix="€" delay={m.beat(wf.steps.length + 1)} />
+                      <Money tick eur={wf.entitlementEur} decimals={2} delay={m.beat(wf.steps.length + 1)} />
                     </div>
                   </div>
                 </div>
 
                 <div className="text-sm font-semibold text-gold-400 mb-4">
                   {wf.quoteEur != null
-                    ? <>Quote {eur(wf.quoteEur)} → engine entitlement {eur(wf.entitlementEur)} (gap {eur(wf.totalGapEur)})</>
-                    : <>Engine entitlement {eur(wf.entitlementEur)} — no quote supplied, commercial step not evaluated</>}
+                    ? <>Quote {money(wf.quoteEur)} → engine entitlement {money(wf.entitlementEur)} (gap {money(wf.totalGapEur)})</>
+                    : <>Engine entitlement {money(wf.entitlementEur)} — no quote supplied, commercial step not evaluated</>}
                 </div>
 
                 {/* The audit trail: every step's engine basis, verbatim. */}
@@ -1609,8 +1621,8 @@ export default function Part360Page() {
                               <td colSpan={2} className="py-2 pr-3 text-slate-500 text-xs italic text-center">not evaluated</td>
                             ) : (
                               <>
-                                <td className="py-2 pr-3 text-right dfm-num text-slate-300 text-xs">{eur(s.fromEur)}</td>
-                                <td className="py-2 pr-3 text-right dfm-num text-slate-300 text-xs">{eur(s.toEur)}</td>
+                                <td className="py-2 pr-3 text-right dfm-num text-slate-300 text-xs">{money(s.fromEur)}</td>
+                                <td className="py-2 pr-3 text-right dfm-num text-slate-300 text-xs">{money(s.toEur)}</td>
                               </>
                             )}
                             <td className="py-2 text-slate-500 text-xs max-w-lg">{s.skipped ? s.reason : s.basis}</td>
@@ -1656,11 +1668,11 @@ export default function Part360Page() {
                   <div className="text-right min-w-[170px]">
                     <div className="dfm-label text-slate-500 mb-1">Engine total at these settings</div>
                     <div className="dfm-kpi-value text-white" style={{ fontSize: 26 }}>
-                      {wiBusy ? <Loader2 size={18} className="animate-spin inline text-slate-500" /> : wiTotal != null ? <TickNumber value={wiTotal} decimals={2} prefix="€" /> : '—'}
+                      {wiBusy ? <Loader2 size={18} className="animate-spin inline text-slate-500" /> : wiTotal != null ? <Money tick eur={wiTotal} decimals={2} /> : '—'}
                     </div>
                     {wiTotal != null && !wiBusy && (
                       <div className={`dfm-num text-xs mt-0.5 ${wiTotal <= dossier.engineTotalEur ? 'text-emerald-400' : 'text-amber-400'}`}>
-                        {wiTotal <= dossier.engineTotalEur ? '−' : '+'}€{Math.abs(wiTotal - dossier.engineTotalEur).toFixed(2)} vs dossier baseline
+                        {wiTotal <= dossier.engineTotalEur ? '−' : '+'}<Money eur={Math.abs(wiTotal - dossier.engineTotalEur)} /> vs dossier baseline
                       </div>
                     )}
                   </div>
@@ -1693,8 +1705,8 @@ export default function Part360Page() {
                               <div className="text-sm text-white">{r.label}</div>
                               <div className="text-2xs text-slate-500 uppercase tracking-wider">{r.kind}</div>
                             </div>
-                            <div className="dfm-num text-xs text-slate-300 text-right w-20">{eur(r.quoteEur)}</div>
-                            <div className="dfm-num text-xs text-slate-500 text-right w-20">{r.engineEur != null ? eur(r.engineEur) : '—'}</div>
+                            <div className="dfm-num text-xs text-slate-300 text-right w-20">{money(r.quoteEur)}</div>
+                            <div className="dfm-num text-xs text-slate-500 text-right w-20">{r.engineEur != null ? money(r.engineEur) : '—'}</div>
                             <div className="w-32 hidden sm:block">
                               {ratio != null ? (
                                 <div className="dfm-bar relative" title={`quote is ${(r.ratio! * 100).toFixed(0)}% of the engine bucket`}>
@@ -1727,7 +1739,7 @@ export default function Part360Page() {
                     <div className="flex items-center gap-2">
                       <FileText size={15} className="text-gold-400" />
                       <h2 className="text-white font-semibold text-sm">Counter positions</h2>
-                      <span className="dfm-num text-xs text-gold-400 font-semibold">total ask €{dossier.counter.totalAskEur.toFixed(2)}/part</span>
+                      <span className="dfm-num text-xs text-gold-400 font-semibold">total ask <Money eur={dossier.counter.totalAskEur} />/part</span>
                     </div>
                     <motion.button {...m.press} onClick={copyCounterSheet}
                       className="dfm-lift bg-white/[0.06] hover:bg-white/10 text-white text-xs rounded-lg px-3 py-1.5 border border-white/10">
@@ -1739,9 +1751,9 @@ export default function Part360Page() {
                       <div key={i} className="dfm-row-hover rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-2.5">
                         <div className="flex flex-wrap items-center gap-3 text-xs">
                           <span className="text-white min-w-[120px] flex-1">{r.label}</span>
-                          <span className="dfm-num text-slate-400 w-20 text-right">quoted €{r.quotedEur.toFixed(2)}</span>
-                          <span className={`dfm-num w-24 text-right ${r.targetEur != null ? 'text-teal-300' : 'text-slate-500 italic'}`}>{r.targetEur != null ? `target €${r.targetEur.toFixed(2)}` : 'clarify'}</span>
-                          <span className={`dfm-num w-20 text-right font-semibold ${r.askEur ? 'text-gold-400' : 'text-slate-500'}`}>{r.askEur ? `−€${r.askEur.toFixed(2)}` : '—'}</span>
+                          <span className="dfm-num text-slate-400 w-20 text-right">quoted <Money eur={r.quotedEur} /></span>
+                          <span className={`dfm-num w-24 text-right ${r.targetEur != null ? 'text-teal-300' : 'text-slate-500 italic'}`}>{r.targetEur != null ? <>target <Money eur={r.targetEur} /></> : 'clarify'}</span>
+                          <span className={`dfm-num w-20 text-right font-semibold ${r.askEur ? 'text-gold-400' : 'text-slate-500'}`}>{r.askEur ? <>−<Money eur={r.askEur} /></> : '—'}</span>
                         </div>
                         <p className="text-2xs text-slate-500 mt-1">{r.argument}</p>
                       </div>

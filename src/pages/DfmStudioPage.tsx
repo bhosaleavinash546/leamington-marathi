@@ -24,6 +24,7 @@ import { useDfmMotion, scoreTone, TONE_TEXT, TONE_LABEL } from '../lib/motion';
 import Panel from '../components/dfm/Panel';
 import ScoreRing from '../components/dfm/ScoreRing';
 import TickNumber from '../components/dfm/TickNumber';
+import { Money, FxNote } from '../components/ui/Money';
 import StepRail, { type RailStep } from '../components/dfm/StepRail';
 import SectionNav, { type NavSection } from '../components/dfm/SectionNav';
 import { useSpotlight } from '../components/dfm/useSpotlight';
@@ -2272,7 +2273,7 @@ export default function DfmStudioPage() {
                     { label: 'Rules evaluated', value: summary.evaluated,
                       sub: `of ${summary.ruleCount} that apply`, tone: 'text-white',
                       viz: 'coverage' as const },
-                    { label: 'Priced impact', value: summary.annualEur, prefix: '€', suffix: '/yr',
+                    { label: 'Priced impact', value: summary.annualEur, money: true, suffix: '/yr',
                       sub: summary.annualEur > 0 ? 'upper bound, engine-priced' : 'nothing priced',
                       tone: summary.annualEur > 0 ? 'text-emerald-400' : 'text-slate-500' },
                     { label: 'Not evaluated', value: summary.notEvaluated,
@@ -2280,7 +2281,9 @@ export default function DfmStudioPage() {
                   ].map((k) => (
                     <div key={k.label} className="min-w-0">
                       <p className={`dfm-kpi-value ${k.tone}`}>
-                        <TickNumber value={k.value} prefix={k.prefix ?? ''} suffix={k.suffix ?? ''} delay={m.beat(2)} />
+                        {k.money
+                          ? <Money tick eur={k.value} decimals={0} suffix={k.suffix ?? ''} delay={m.beat(2)} />
+                          : <TickNumber value={k.value} suffix={k.suffix ?? ''} delay={m.beat(2)} />}
                       </p>
                       <p className="dfm-label text-slate-500 mt-1.5">{k.label}</p>
                       {k.viz === 'severity' && summary.findings > 0 && (
@@ -2308,6 +2311,7 @@ export default function DfmStudioPage() {
                   ))}
                 </div>
               )}
+              {summary && <FxNote pickable className="mt-4" />}
             </motion.div>
 
             {/* ── Drawing vs model reconciliation ──────────────────────────
@@ -2606,7 +2610,7 @@ export default function DfmStudioPage() {
                       </span>
                       <span className="dfm-num">{r.coveragePct}% ({r.evaluatedCount}/{r.ruleCount})</span>
                     </span>
-                    {r.impact?.annualEur ? <span className="text-emerald-400 dfm-num">€{r.impact.annualEur.toLocaleString()}/yr priced</span> : null}
+                    {r.impact?.annualEur ? <span className="text-emerald-400 dfm-num"><Money eur={r.impact.annualEur} decimals={0} suffix="/yr" /> priced</span> : null}
                   </div>
                 </div>
 
@@ -2666,7 +2670,7 @@ export default function DfmStudioPage() {
                     <p className="text-xs opacity-90 pl-6">
                       Measured <span className="font-semibold dfm-num">{f.measured ?? '—'} {f.unit}</span> · guideline <span className="dfm-num">{f.thresholdText}</span>
                       {f.cost?.priced && f.cost.annualDeltaEur ? (
-                        <span className="text-emerald-300"> · €{f.cost.annualDeltaEur.toLocaleString()}/yr at stake</span>
+                        <span className="text-emerald-300"> · <Money eur={f.cost.annualDeltaEur} decimals={0} suffix="/yr" /> at stake</span>
                       ) : null}
                     </p>
                     {/* WHY THIS ONE CANNOT BE SHOWN. Said in grey, in the same
@@ -2710,8 +2714,8 @@ export default function DfmStudioPage() {
                     <p className="text-emerald-300 text-xs mb-2"><span className="text-slate-500">What to do:</span> {f.fix}</p>
                     {f.cost?.priced ? (
                       <p className="text-emerald-300 text-xs">
-                        <span className="text-slate-500">Cost impact:</span> {f.cost.changeDescription} saves €{f.cost.deltaEur}/part
-                        {f.cost.annualDeltaEur ? ` (€${f.cost.annualDeltaEur.toLocaleString()}/yr)` : ''} — {f.cost.basis}
+                        <span className="text-slate-500">Cost impact:</span> {f.cost.changeDescription} saves <Money eur={f.cost.deltaEur} />/part
+                        {f.cost.annualDeltaEur ? <> (<Money eur={f.cost.annualDeltaEur} decimals={0} suffix="/yr" />)</> : ''} — {f.cost.basis}
                         {/* A ceiling must never be shown as a forecast. This is
                             the number a director remembers. */}
                         {f.cost.caveat && (
@@ -2855,7 +2859,7 @@ export default function DfmStudioPage() {
                             )}
                             {r.viable !== false && !r.isChosen && Number.isFinite(r.deltaPieceEur as number) && (
                               <span className={`block mt-0.5 ${(r.deltaPieceEur as number) < 0 ? 'text-emerald-400/80' : 'text-slate-500'}`}>
-                                {(r.deltaPieceEur as number) < 0 ? '−' : '+'}€{Math.abs(r.deltaPieceEur as number).toFixed(2)}/part vs your route
+                                {(r.deltaPieceEur as number) < 0 ? '−' : '+'}<Money eur={Math.abs(r.deltaPieceEur as number)} />/part vs your route
                               </span>
                             )}
                             {r.topFindings?.[0] && (

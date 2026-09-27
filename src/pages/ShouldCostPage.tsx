@@ -613,7 +613,7 @@ export default function ShouldCostPage() {
                     </span>
                     {result.carbon.cbam && (
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-2xs">
-                        CBAM ≈ €{result.carbon.cbam.eur}/part if EU-imported
+                        CBAM ≈ {result.symbol || result.currency}{(Number(result.carbon.cbam.eur) * (result.fx?.rate ?? 1)).toFixed(2)}/part if EU-imported
                       </span>
                     )}
                     <span className="text-slate-500 text-2xs">{result.carbon.basis}</span>

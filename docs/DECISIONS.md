@@ -4036,3 +4036,46 @@ it: the review's sweep found every Results and Dashboard axis at 10 px and
 the DFM score ring's denominator at 8 px. Same floor, read the way JSX
 writes it. The ring now drops its "/ 100" below 80 px rather than shrinking
 it under the floor; the sublabel beside it carries the denominator.
+
+## 82. Engine figures are converted where they are shown, and say at what rate
+
+The gap recorded in DECISIONS 76 is closed. The client never converted
+anything: every engine figure a page rendered — the Results engine badge,
+the DFM priced impact, the Prism waterfall and counter positions, the
+harness total, the Innovation relaxation deltas, the CBAM estimate — was
+printed with a hard-coded "€" beside a "£" saving from the same run.
+
+The server now publishes its FX snapshot at `GET /api/fx` (EUR base, rates,
+symbols, live/stale flags, source and date — the same `getFxRates()` every
+server-side conversion uses, so the browser and the exports cannot disagree
+about a rate). `src/lib/money.ts` holds the pure conversion; `<Money>` and
+`<FxNote>` (`src/components/ui/Money.tsx`) render it. Three rules are in the
+code rather than in a comment:
+
+1. **A converted figure names its rate and date.** Every `<Money>` carries
+   "Converted from €432.00 at 1 EUR = 0.85 GBP · ECB (frankfurter.app),
+   2026-09-26" in its title, and every panel with converted figures prints
+   one `<FxNote>` line saying the same — with the display-currency picker
+   on pages that have no run currency of their own.
+2. **No rates, no conversion.** If `/api/fx` is unreachable the figure is
+   shown in the engine's EUR with "€" and the note says "not converted to
+   GBP". The client keeps no fallback table: the server's fallback already
+   labels itself "static reference" with a vintage and `stale: true`, and a
+   second copy in the browser would drift from it.
+3. **Absent stays absent.** A non-finite figure renders "—", never £0.
+
+Which currency: the Results page uses the **run's** currency
+(`config.currency`), because the AI-stated savings beside the engine badge
+are in it and one card must read in one currency. The tool pages (DFM,
+Prism, Harness, Innovation, CAD Diff) have no run currency, so they follow a
+per-browser display preference, default GBP (the app's display default),
+changed from the picker in any `<FxNote>` and applied to every figure on
+the page at once. Should-cost already converted on the server and returns
+its own `fx`; its CBAM line now uses that rate instead of a bare euro.
+
+What stays EUR on purpose: the Rate Library page (it edits the engine's EUR
+rates — converting them would be the lie), and every string handed to the
+model (Prism's assembly context, deep mode's contradiction note), which now
+say "engine reference figures in EUR". A design-system gate fails the build
+on any rendered `€{…}` outside that allowlist, so the badge cannot quietly
+go back to two currencies on one line.

@@ -6,6 +6,7 @@ import ButtonSpinner from '../components/ui/ButtonSpinner';
 import CadViewer3D from '../components/CadViewer3D';
 import { getAuthToken } from '../services/auth';
 import PageHeader from '../components/ui/PageHeader';
+import { Money, FxNote } from '../components/ui/Money';
 
 const is3dCad = (name: string) => /\.(step|stp|igs|iges|stl)$/i.test(name);
 const authToken = () => getAuthToken() ?? '';
@@ -165,6 +166,7 @@ export default function CadDiffPage() {
             <h2 className="text-white font-bold text-lg flex items-center gap-2">
               <ChevronRight size={18} className="text-cyan-400" /> {ideas.length} Delta-Driven Ideas
             </h2>
+            <FxNote pickable />
             {ideas.map((idea, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
                 className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-cyan-500/25 transition-ui">
@@ -188,7 +190,7 @@ export default function CadDiffPage() {
                     {/* "confirmed", not "verified": the check tests the DIRECTION
                         of the move on a reference part, not this part's figure. */}
                     {idea.engineCheck.direction === 'confirmed'
-                      ? `Engine-confirmed direction: −${Math.abs(idea.engineCheck.savingPct)}% (€${idea.engineCheck.baselineEur.toFixed(2)} → €${idea.engineCheck.proposedEur.toFixed(2)})`
+                      ? <>Engine-confirmed direction: −{Math.abs(idea.engineCheck.savingPct)}% (<Money eur={idea.engineCheck.baselineEur} /> → <Money eur={idea.engineCheck.proposedEur} />)</>
                       : 'Engine contradicts this saving on a reference part'}
                   </div>
                 ) : (

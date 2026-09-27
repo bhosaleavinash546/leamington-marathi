@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { Cable, Loader2 } from 'lucide-react';
 import { getAuthToken } from '../services/auth';
 import PageHeader from '../components/ui/PageHeader';
+import { Money, FxNote } from '../components/ui/Money';
 
 const REGIONS = ['Mexico', 'Czech Republic', 'India', 'China', 'Spain', 'Germany', 'UK', 'USA', 'Korea'];
 
@@ -122,12 +123,12 @@ export default function HarnessCostPage() {
                 <div className="flex flex-wrap items-end gap-6">
                   <div>
                     <div className="text-slate-500 text-xs uppercase tracking-wider">Should-cost / harness</div>
-                    <div className="text-4xl font-bold text-white tabular-nums">€{total.toFixed(2)}</div>
+                    <div className="text-4xl font-bold text-white tabular-nums"><Money eur={total} /></div>
                   </div>
                   <div>
                     <div className="text-slate-500 text-xs uppercase tracking-wider">Range (±{result.band.pct}%)</div>
                     <div className="text-lg text-slate-300 tabular-nums">
-                      €{result.band.lowEur.toFixed(2)} – €{result.band.highEur.toFixed(2)}
+                      <Money eur={result.band.lowEur} /> – <Money eur={result.band.highEur} />
                     </div>
                   </div>
                   <div className="ml-auto text-right">
@@ -137,6 +138,7 @@ export default function HarnessCostPage() {
                     </div>
                   </div>
                 </div>
+                <FxNote pickable className="mt-3" />
               </div>
 
               <div className="bg-navy-900 border border-white/10 rounded-2xl p-6">
@@ -150,7 +152,7 @@ export default function HarnessCostPage() {
                         <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
                           <div className="h-full bg-gold-500/70" style={{ width: `${total ? (v / total) * 100 : 0}%` }} />
                         </div>
-                        <span className="text-white text-sm tabular-nums w-20 text-right">€{v.toFixed(2)}</span>
+                        <span className="text-white text-sm tabular-nums w-20 text-right"><Money eur={v} /></span>
                         <span className="text-slate-500 text-xs tabular-nums w-12 text-right">
                           {total ? ((v / total) * 100).toFixed(0) : 0}%
                         </span>

@@ -113,6 +113,7 @@ form) — everything that reads or writes user data requires a token.
 | POST | `/api/cost-down` | yes | agentic cost-down: the model explores, the engine verifies |
 | POST | `/api/harness-cost` | yes | wire-harness engine (conductors, terminals, connectors, assembly) |
 | GET | `/api/prices` | no | live commodity prices with their vintage |
+| GET | `/api/fx` | no | EUR-base FX snapshot (rates, symbols, source, date, stale) for the client display boundary |
 
 ### PCB
 | Method | Path | Auth | Purpose |

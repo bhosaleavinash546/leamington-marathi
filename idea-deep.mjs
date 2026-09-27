@@ -318,7 +318,7 @@ export async function runDeepPass(client, ideas, ctx, { emit = () => {}, seed = 
     const original = ideas[idx];
     summary.refineAttempted++;
     const problems = [
-      ...(original.engineCheck?.direction === 'contradicted' ? [`ENGINE CONTRADICTION: the deterministic cost engine found the proposed move COSTS MORE on a reference part (${original.engineCheck.referenceCase}: €${original.engineCheck.baselineEur} → €${original.engineCheck.proposedEur}). The direction must be repaired, not re-asserted.`] : []),
+      ...(original.engineCheck?.direction === 'contradicted' ? [`ENGINE CONTRADICTION: the deterministic cost engine found the proposed move COSTS MORE on a reference part (${original.engineCheck.referenceCase}: €${original.engineCheck.baselineEur} → €${original.engineCheck.proposedEur}, engine reference figures in EUR). The direction must be repaired, not re-asserted.`] : []),
       // The arithmetic re-check hands the model its OWN figure back. The fix is
       // almost always the stated annualValue, not the engineering — so say which
       // one is wrong rather than inviting a rewrite of a sound idea.
