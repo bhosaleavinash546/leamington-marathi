@@ -28,6 +28,7 @@
  */
 import type { Decision, RuleContext } from '../types.js';
 import { hollowVerdict } from './hollow.js';
+import { shellWallEstimateMm } from '../../geometry-sanity.js';
 
 export const COMMODITY_DECISION_ID = 'commodity.route';
 
@@ -69,6 +70,17 @@ export function looksLikeGear(
  * measure 11x, 17x and 76x their reported gauge.
  */
 const GAUGE_WALL_TOLERANCE = 2;
+
+/**
+ * Above this bulk wall a sparse part is not a pressing or a moulding.
+ *
+ * Sheet steel for pressings stops around 6 mm, and injection moulding is
+ * designed to 1–4 mm because a thick section sinks and cycles for minutes. A
+ * sparse part with walls past this is a casting, a forging or a machined part
+ * — the knuckle, Casting_Braket and PRCR002 in the audit set measure 9–15 mm,
+ * and were only ever offered sheet metal, injection moulding or machining.
+ */
+const THICK_WALL_MM = 6;
 
 export interface CommodityVerdict {
   /** Set when the measurement settles it. */
@@ -199,8 +211,21 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
 
   // 2. Everything else is the prompt's fill ladder, and every rung of it names
   //    more than one route. Ask, with the rung as the reason.
+  //
+  //    Low fill does not mean thin walls: a knuckle or a bracket is sparse in
+  //    its bounding box and 10+ mm thick. The bulk wall 2·V/S separates them —
+  //    it is the characteristic thickness of the whole solid, and unlike the
+  //    ray-cast mean it cannot read a cavity as wall. The ray-cast mean is the
+  //    fallback when volume or surface area is missing.
+  const vCm3 = g.volume?.cm3 ?? 0;
+  const sCm2 = g.surfaceArea?.cm2 ?? 0;
+  const bulkWall = vCm3 > 0 && sCm2 > 0 ? shellWallEstimateMm(vCm3, sCm2) : wall;
   const rung =
-    fill < 0.20 ? {
+    fill < 0.20 && bulkWall != null && bulkWall > THICK_WALL_MM ? {
+      why: `${(fill * 100).toFixed(0)}% fill but a ${bulkWall.toFixed(1)} mm bulk wall (2·V/S) — `
+        + `sparse, yet too thick to press or mould.`,
+      routes: ['casting', 'forging', 'cast_and_machine', 'machining'],
+    } : fill < 0.20 ? {
       why: `${(fill * 100).toFixed(0)}% fill — a sparse thin-wall part.`,
       routes: ['sheet_metal', 'injection_moulding', 'machining'],
     } : fill < 0.40 ? {

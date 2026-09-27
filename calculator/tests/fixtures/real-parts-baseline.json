@@ -12,7 +12,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-2d49d89a2f523884",
+      "partName": "cv-cad-9c6aff4a83e5b37f",
       "boundingBox": {
         "xMm": 132.62,
         "yMm": 120.03,
@@ -733,7 +733,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-77154583d4be9e52",
+      "partName": "cv-cad-989844925d251a49",
       "boundingBox": {
         "xMm": 276.78,
         "yMm": 223.15,
@@ -1753,7 +1753,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-4fc17230938e7f21",
+      "partName": "cv-cad-27caca85f8a0631b",
       "boundingBox": {
         "xMm": 58.23,
         "yMm": 274.48,
@@ -2512,7 +2512,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-4a1390c43f116d8d",
+      "partName": "cv-cad-808561bfd42e5554",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -3345,14 +3345,16 @@
   {
     "part": "steering_knuckle_RH.stp",
     "sha256": "8e3a5e80a1d257dc",
-    "note": "Suspension upright — safety-critical, so forged in production. 9.0 mm bulk wall, 6% fill.",
+    "note": "Suspension upright — safety-critical, so forged in production. 9.0 mm bulk wall, 6% fill. Standard as-forged tolerance: the bearing bore and mounting faces are finish-machined after, which the forging route carries as secondary machining.",
     "answers": {
       "material.family": "steel",
-      "commodity.route": "machining"
+      "commodity.route": "forging",
+      "service.toleranceClass": "standard",
+      "service.safetyCritical": "yes"
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f2d0fbe9d2835c90",
+      "partName": "cv-cad-32edc4513a355869",
       "boundingBox": {
         "xMm": 116.49,
         "yMm": 236.81,
@@ -4274,17 +4276,17 @@
     },
     "outcome": {
       "status": "costed",
-      "commodity": "machining",
-      "total": 63.46,
+      "commodity": "forging",
+      "total": 32.16,
       "breakdown": {
-        "rawMaterial": 36.53,
-        "process": 9.21,
-        "labour": 6.31,
-        "tooling": 0,
+        "rawMaterial": 7.92,
+        "process": 10.47,
+        "labour": 6.28,
+        "tooling": 1.51,
         "packaging": 0.17,
         "logistics": 0.3,
-        "overhead": 6.25,
-        "margin": 4.7
+        "overhead": 3.14,
+        "margin": 2.38
       }
     }
   },
@@ -4300,7 +4302,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-13150e575093f7a6",
+      "partName": "cv-cad-1aaeb4ed5c42b94d",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,

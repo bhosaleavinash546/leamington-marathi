@@ -46,6 +46,8 @@ import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { analyzeGeometry, type OCCTGeometry } from '../server/utils/geometry-bridge.js';
 import { BASELINE, PARTS_DIR, outcomeFor, type PartBaseline } from '../scripts/real-parts-baseline.js';
+import { inferCommodity, COMMODITY_DECISION_ID } from '../src/engine/cost-input-rules/derive/commodity.js';
+import type { RuleContext } from '../src/engine/cost-input-rules/types.js';
 
 process.env.AIR_GAPPED = '1';
 
@@ -78,6 +80,26 @@ describe('the baseline itself', () => {
       expect(Object.keys(b.answers).length, `${b.part} has no answers`).toBeGreaterThan(0);
     }
   });
+});
+
+describe('every answer is one a user could give', () => {
+  // The baseline used to answer two parts with cast_and_machine and the knuckle
+  // with machining while the route question never offered cast_and_machine for
+  // them — it passed on paths no user can reach. An answer must be one of the
+  // options the question shows for that part's measured geometry.
+  it.each(baseline.filter(b => b.answers[COMMODITY_DECISION_ID]).map(b => ({ part: b.part, b })))(
+    '$part', ({ b }) => {
+      const verdict = inferCommodity({
+        geo: b.geometry, answers: {}, annualVolume: 50_000, filename: b.part,
+      } as unknown as RuleContext);
+      const answer = b.answers[COMMODITY_DECISION_ID];
+      if (verdict.commodity) {
+        expect(answer, `${b.part}: the geometry settles the route as ${verdict.commodity}`).toBe(verdict.commodity);
+        return;
+      }
+      const offered = verdict.decision?.options.map(o => o.value) ?? [];
+      expect(offered, `${b.part}: answered ${answer}, but the question offers ${offered.join(', ')}`).toContain(answer);
+    });
 });
 
 describe('replaying the recorded geometry — no kernel needed', () => {

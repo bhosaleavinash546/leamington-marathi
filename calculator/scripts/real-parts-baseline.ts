@@ -59,8 +59,11 @@ export const ANSWERS: Record<string, {
   commodity?: string;
 }> = {
   'steering_knuckle_RH.stp': {
-    note: 'Suspension upright — safety-critical, so forged in production. 9.0 mm bulk wall, 6% fill.',
-    answers: { 'material.family': 'steel', 'commodity.route': 'machining' },
+    note: 'Suspension upright — safety-critical, so forged in production. 9.0 mm bulk wall, 6% fill. '
+        + 'Standard as-forged tolerance: the bearing bore and mounting faces are finish-machined after, '
+        + 'which the forging route carries as secondary machining.',
+    answers: { 'material.family': 'steel', 'commodity.route': 'forging',
+               'service.toleranceClass': 'standard', 'service.safetyCritical': 'yes' },
   },
   'Casting_Braket.stp': {
     note: 'Named as a casting; 10.2 mm bulk wall, 16% fill, 10 blind holes and threads to finish. '
