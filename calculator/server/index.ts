@@ -46,6 +46,12 @@ const app = express();
 // that is NOT behind a proxy lets any client spoof its IP.
 if (process.env.CV_TRUST_PROXY) app.set('trust proxy', parseInt(process.env.CV_TRUST_PROXY, 10) || 1);
 const PORT = parseInt(process.env.PORT ?? '3002', 10);
+// Listen on this machine only unless told otherwise. The laptop package is a
+// single-user install; listening on every interface put its saved costings one
+// firewall rule away from the rest of the network. Containers set HOST=0.0.0.0
+// (see the Dockerfiles and fly.toml), because inside a container the published
+// port reaches the app only through a non-loopback interface.
+const HOST = process.env.HOST?.trim() || '127.0.0.1';
 const IS_PROD = process.env.NODE_ENV === 'production';
 
 // Security headers
@@ -137,8 +143,8 @@ process.on('uncaughtException', (err) => {
   console.error('[FATAL-AVOIDED] Uncaught exception:', err.stack ?? err.message);
 });
 
-const server = app.listen(PORT, () => {
-  console.log(`Should-Cost server running on http://localhost:${PORT}`);
+const server = app.listen(PORT, HOST, () => {
+  console.log(`Should-Cost server running on http://localhost:${PORT} (listening on ${HOST})`);
   console.log(`[Deployment] AI egress: ${aiEndpointDescription()}`);
   console.log(`API key:      ${hasUsableServerKey() ? '✓ configured' : '✗ NOT SET — set ANTHROPIC_API_KEY in .env (run: make dev, or ./dev-start.sh)'}`);
   console.log(`JWT secret:   ${JWT_SECRET_CONFIGURED ? '✓ configured' : '⚠  using dev default — set JWT_SECRET in .env'}`);

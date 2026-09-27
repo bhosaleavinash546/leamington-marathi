@@ -20,5 +20,8 @@ RUN npm run build
 EXPOSE 3002
 
 ENV NODE_ENV=production
+# The server listens on 127.0.0.1 by default; a container must listen on all
+# interfaces or the published port cannot reach it.
+ENV HOST=0.0.0.0
 
 CMD ["npx", "tsx", "server/index.ts"]

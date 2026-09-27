@@ -34,6 +34,9 @@ RUN npm run build
 
 EXPOSE 3002
 ENV NODE_ENV=production
+# The server listens on 127.0.0.1 by default; a container must listen on all
+# interfaces or the published port cannot reach it.
+ENV HOST=0.0.0.0
 # Cap concurrent OCP processes to the memory budget (each costs a few hundred MB).
 # With the warm pool (CV_GEOMETRY_POOL=1, default) this is the number of
 # long-lived workers, each importing OCP once (2.9-4.0 s measured) and keeping
