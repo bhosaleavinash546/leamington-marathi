@@ -137,6 +137,11 @@ async function main(): Promise<void> {
     if (!(await page.locator('#calc-btn').isVisible())) {
       throw new Error('Calculate button hidden after SW → machining switch (results tabs would never render)');
     }
+    // Tooling amortisation defaults follow the stated volume (annual × programme
+    // life, blank life = 1 year). Hard-coded per-form defaults used to fail the
+    // tool's own self-audit on 18 of 20 forms.
+    const [amort, annual] = await Promise.all([page.inputValue('#mach-amort'), page.inputValue('#annual-volume')]);
+    if (amort !== annual) throw new Error(`Default amortisation ${amort} does not follow annual volume ${annual}`);
     await page.click('#load-ref-btn', { timeout: 15_000 });
     await page.waitForTimeout(300);
     await page.click('#calc-btn', { timeout: 15_000 });

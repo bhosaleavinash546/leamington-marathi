@@ -12610,6 +12610,40 @@ function switchCommodity(type: CommodityType): void {
     wireInlineCAD(type);
   }
 
+  followAmortDefaults(area);
+}
+
+// ─── Tooling amortisation defaults ────────────────────────────────────────────
+// Each form used to ship its own amortisation volume, anywhere from 2,000 to
+// 500,000, against a stated annual volume of 10,000. The tool's own audit
+// flagged its defaults on 18 of 20 forms, per-part tooling out by 0.2x to 50x.
+// A default now follows the header instead: annual volume x programme life,
+// where a blank life means one year (the audit's own defensible base).
+// A value someone typed, or that a demo or saved scenario loaded, is never
+// overwritten: a field follows only while it still holds what this code put there.
+
+const AMORT_FIELDS = 'input[id$="-amort"]';
+
+function defaultAmortVolume(): { volume: number; years: number } | null {
+  const annual = parseFloat((document.getElementById('annual-volume') as HTMLInputElement | null)?.value ?? '');
+  if (!(annual > 0)) return null;
+  const life = parseFloat((document.getElementById('programme-years') as HTMLInputElement | null)?.value ?? '');
+  const years = life > 0 ? life : 1;
+  return { volume: Math.round(annual * years), years };
+}
+
+function followAmortDefaults(root: ParentNode = document): void {
+  const d = defaultAmortVolume();
+  if (!d) return;
+  root.querySelectorAll<HTMLInputElement>(AMORT_FIELDS).forEach(el => {
+    const followed = el.dataset.amortDefault;
+    if (followed !== undefined && el.value !== followed) return;   // someone else set it
+    el.value = String(d.volume);
+    el.dataset.amortDefault = el.value;
+    if (el.dataset.amortTitle === undefined) el.dataset.amortTitle = el.title;
+    el.title = `Default: annual volume × programme life (${d.years} ${d.years === 1 ? 'year' : 'years'}). Type a value to override.`
+      + (el.dataset.amortTitle ? `\n${el.dataset.amortTitle}` : '');
+  });
 }
 
 // ─── Input collectors ─────────────────────────────────────────────────────────
@@ -19636,18 +19670,11 @@ async function init(): Promise<void> {
     });
   });
 
-  // Keep the active commodity's tooling-amortisation field in sync with the
-  // universal "Annual Volume" the user types. Without this, a per-commodity
-  // amort default (sheet metal = 500,000) silently shadows the entered volume —
-  // collectSheetMetalInput reads `num('sm-amort') || num('annual-volume')`, so a
-  // stale 500k default always wins and the user's 100k never reaches tooling.
-  document.getElementById('annual-volume')?.addEventListener('input', () => {
-    const v = (document.getElementById('annual-volume') as HTMLInputElement | null)?.value;
-    if (!v || !(parseFloat(v) > 0)) return;
-    const amortId = COMMODITY_AMORT_FIELD[activeCommodity];
-    const amortEl = amortId ? (document.getElementById(amortId) as HTMLInputElement | null) : null;
-    if (amortEl && amortEl.value !== v) { amortEl.value = v; amortEl.dispatchEvent(new Event('input')); }
-  });
+  // (Tooling amortisation fields follow the universal Annual Volume and
+  // Programme Life through followAmortDefaults — wired with the home start
+  // cards below. It replaced a listener here that copied Annual Volume into the
+  // active form's field on every keystroke, over a value someone had typed and
+  // ignoring programme life.)
 
   // Results tabs
   document.querySelectorAll<HTMLElement>('.rtab').forEach(tab => {
@@ -20159,6 +20186,10 @@ async function init(): Promise<void> {
   // Route through showWorkflowPanel so home and the picker share ONE costing UI.
   document.getElementById('hs-mode-cad')?.addEventListener('click', () => showWorkflowPanel('cad_analysis'));
   document.getElementById('hs-mode-pcb')?.addEventListener('click', () => showWorkflowPanel('pcb_fab'));
+  // Tooling amortisation defaults follow annual volume × programme life.
+  for (const id of ['annual-volume', 'programme-years']) {
+    document.getElementById(id)?.addEventListener('input', () => followAmortDefaults());
+  }
   document.getElementById('hs-browse-all')?.addEventListener('click', () => showCommodityPicker());
   document.querySelectorAll<HTMLElement>('#home-start .hs-chip[data-commodity]').forEach(chip =>
     chip.addEventListener('click', () => { if (chip.dataset.commodity) showWorkflowPanel(chip.dataset.commodity); }));
