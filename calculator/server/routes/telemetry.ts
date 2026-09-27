@@ -8,6 +8,7 @@
  */
 
 import { Router } from 'express';
+import { requireAuth } from '../middleware/auth-middleware.js';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 
@@ -55,7 +56,9 @@ router.post('/error', limiter, (req, res): void => {
 });
 
 /** Quick operational peek at the most recent client errors. */
-router.get('/recent', (_req, res): void => {
+// Reading reports back needs a session; only posting one (via sendBeacon,
+// which cannot carry a token) is open.
+router.get('/recent', requireAuth, (_req, res): void => {
   res.json({ count: _recent.length, errors: _recent.slice(-50) });
 });
 

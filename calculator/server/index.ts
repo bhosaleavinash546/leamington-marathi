@@ -33,7 +33,7 @@ import quotesRouter from './routes/quotes.js';
 import bomRouter from './routes/bom.js';
 import rfqRouter from './routes/rfq.js';
 import { aiEndpointDescription } from './utils/ai-client.js';
-import { JWT_SECRET_CONFIGURED } from './middleware/auth-middleware.js';
+import { JWT_SECRET_CONFIGURED, requireAuth } from './middleware/auth-middleware.js';
 import knowledgeRouter from './routes/knowledge.js';
 import shareRouter from './routes/share.js';
 import { fetchAndCachePrices, arePricesStale } from './services/price-fetcher.js';
@@ -86,24 +86,34 @@ app.use(cors((req: Request, done: (err: Error | null, opts?: cors.CorsOptions) =
 
 app.use(express.json({ limit: '10mb' })); // increased for base64 photo payloads
 
+// ── Routes ──────────────────────────────────────────────────────────────────
+// Sign-in is required on every route that holds or spends anything. The routers
+// below that did not check it themselves are guarded here, at the mount, so a
+// route added to one of them later is covered without anyone remembering to.
+// Deliberately public, and only these:
+//   /api/auth            signing in has to work before you are signed in
+//   /api/health          the launcher and load balancers poll it
+//   POST /api/telemetry/error   sendBeacon cannot carry a token, and errors on
+//                               the sign-in page must still be reportable
+//   GET  /api/share/:id  a share link exists to be opened without an account
 app.use('/api/auth', authRouter);
-app.use('/api/cad', cadRouter);
-app.use('/api/pcb', pcbRouter);
-app.use('/api/projects', projectsRouter);
-app.use('/api/rate-library', rateLibraryRouter);
-app.use('/api/telemetry', telemetryRouter);
-app.use('/api/aichat', aichatRouter);
-app.use('/api/sync', syncRouter);
-app.use('/api/agent', agentRouter);
-app.use('/api/dfm', dfmRouter);
-app.use('/api/news', newsRouter);
-app.use('/api/commodities', commoditiesRouter);
-app.use('/api/prices', pricesRouter);
-app.use('/api/quotes', quotesRouter);
-app.use('/api/bom', bomRouter);
-app.use('/api/rfq', rfqRouter);
-app.use('/api/knowledge', knowledgeRouter);
-app.use('/api/share', shareRouter);
+app.use('/api/cad', cadRouter);                         // guards each route itself
+app.use('/api/pcb', requireAuth, pcbRouter);
+app.use('/api/projects', projectsRouter);               // router-wide guard inside
+app.use('/api/rate-library', rateLibraryRouter);        // router-wide guard inside, admin below
+app.use('/api/telemetry', telemetryRouter);             // POST /error public, GET /recent guarded inside
+app.use('/api/aichat', requireAuth, aichatRouter);
+app.use('/api/sync', requireAuth, syncRouter);
+app.use('/api/agent', requireAuth, agentRouter);
+app.use('/api/dfm', requireAuth, dfmRouter);
+app.use('/api/news', requireAuth, newsRouter);
+app.use('/api/commodities', requireAuth, commoditiesRouter);
+app.use('/api/prices', requireAuth, pricesRouter);
+app.use('/api/quotes', requireAuth, quotesRouter);
+app.use('/api/bom', requireAuth, bomRouter);
+app.use('/api/rfq', requireAuth, rfqRouter);
+app.use('/api/knowledge', knowledgeRouter);             // router-wide guard inside
+app.use('/api/share', shareRouter);                     // POST guarded inside; GET /:id public by design
 
 // ── In production serve the Vite build so one URL covers everything ──────────
 if (IS_PROD) {

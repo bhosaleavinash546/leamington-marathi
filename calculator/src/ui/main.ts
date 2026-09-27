@@ -1,3 +1,5 @@
+// First: every later fetch to our API must carry the session token.
+import './auth-fetch.js';
 import './styles/calculator.css';
 import {
   computeUniversalStack, validateStackInput, breakdownPercentages,
