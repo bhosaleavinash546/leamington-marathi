@@ -1,0 +1,451 @@
+<title>CostVision Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#f5f6f3; --panel:#ffffff; --ink:#18212b; --muted:#56636d; --rule:#d9ddd8; --soft:#eef0ec;
+  --accent:#2b4c66; --accent-soft:#e3ebf1;
+  --crit:#b33a2a; --crit-bg:#f9e7e4; --high:#b35d17; --high-bg:#fbeee2;
+  --med:#8a6f0c; --med-bg:#f7f1dc; --low:#4a7353; --low-bg:#e6f0e8; --good:#2f6b5a; --good-bg:#e2efea;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#121619; --panel:#1a2025; --ink:#e6ebe8; --muted:#9ba7ae; --rule:#2d363d; --soft:#20282e;
+    --accent:#93b6d2; --accent-soft:#223240;
+    --crit:#f0806f; --crit-bg:#3a201c; --high:#f0a45e; --high-bg:#382818; --med:#dcc35a; --med-bg:#322c15;
+    --low:#8ec59c; --low-bg:#1c2e22; --good:#7dc6b1; --good-bg:#18302a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#121619; --panel:#1a2025; --ink:#e6ebe8; --muted:#9ba7ae; --rule:#2d363d; --soft:#20282e;
+  --accent:#93b6d2; --accent-soft:#223240;
+  --crit:#f0806f; --crit-bg:#3a201c; --high:#f0a45e; --high-bg:#382818; --med:#dcc35a; --med-bg:#322c15;
+  --low:#8ec59c; --low-bg:#1c2e22; --good:#7dc6b1; --good-bg:#18302a;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;padding-inline:20px;padding-block:28px 64px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,4.2vw,2.9rem);font-weight:800;letter-spacing:-.015em}
+h2{font-size:1.55rem;font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.06rem;font-weight:700}
+p{margin:0;max-width:68ch}
+a{color:var(--accent)}
+code,.mono{font-family:var(--mono);font-size:.86em}
+code{background:var(--soft);padding:.08em .35em;border-radius:3px;overflow-wrap:anywhere}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:16px}
+.lede{font-size:1.12rem;color:var(--ink)}
+.muted{color:var(--muted)}
+header.top{display:flex;flex-direction:column;gap:14px;padding-bottom:26px;border-bottom:2px solid var(--ink)}
+
+.tally{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.tally span{display:inline-flex;align-items:baseline;gap:8px;padding:6px 12px;border-radius:4px;font-weight:600;font-variant-numeric:tabular-nums}
+.tally b{font-family:var(--display);font-size:1.35rem}
+.t-crit{background:var(--crit-bg);color:var(--crit)} .t-high{background:var(--high-bg);color:var(--high)}
+.t-med{background:var(--med-bg);color:var(--med)} .t-low{background:var(--low-bg);color:var(--low)}
+
+.sev{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:3px;white-space:nowrap}
+.sev.crit{background:var(--crit-bg);color:var(--crit)} .sev.high{background:var(--high-bg);color:var(--high)}
+.sev.med{background:var(--med-bg);color:var(--med)} .sev.low{background:var(--low-bg);color:var(--low)}
+.sev.ok{background:var(--good-bg);color:var(--good)}
+
+ol.first{margin:0;padding:0;list-style:none;counter-reset:n;display:grid;gap:10px}
+ol.first li{counter-increment:n;display:grid;grid-template-columns:2.2rem 1fr;gap:12px;align-items:start;background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:12px 14px}
+ol.first li::before{content:counter(n);font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--accent);line-height:1.2}
+ol.first strong{display:block}
+
+.findings{display:flex;flex-direction:column;gap:12px}
+.f{background:var(--panel);border:1px solid var(--rule);border-left:5px solid var(--rule);border-radius:4px 6px 6px 4px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.f.crit{border-left-color:var(--crit)} .f.high{border-left-color:var(--high)} .f.med{border-left-color:var(--med)} .f.low{border-left-color:var(--low)} .f.ok{border-left-color:var(--good)}
+.f .head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.f .id{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.f dl{display:grid;grid-template-columns:7.2rem 1fr;gap:4px 14px;margin:2px 0 0;font-size:.95rem}
+.f dt{color:var(--muted);font-weight:600}
+.f dd{margin:0;min-width:0}
+.f ul{margin:2px 0 0;padding-left:1.1rem}
+@media (max-width:560px){.f dl{grid-template-columns:1fr}.f dt{margin-top:6px}}
+
+.tablebox{overflow-x:auto;border:1px solid var(--rule);border-radius:6px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:640px}
+th,td{padding:8px 11px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--display);font-weight:600;font-size:.8rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+tr:last-child td{border-bottom:0}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.y{color:var(--good);font-weight:600} td.n{color:var(--crit);font-weight:600} td.p{color:var(--med);font-weight:600}
+
+.good-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.good-grid div{background:var(--good-bg);border-radius:6px;padding:11px 13px;font-size:.95rem}
+.good-grid b{color:var(--good)}
+
+.roadmap{display:grid;gap:10px}
+.roadmap div{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;border-top:1px solid var(--rule);padding-top:10px}
+.roadmap h3 span{font-family:var(--mono);font-size:.75rem;color:var(--muted);font-weight:400;margin-left:8px}
+.note{background:var(--accent-soft);border-radius:6px;padding:12px 14px;font-size:.95rem}
+footer{border-top:1px solid var(--rule);padding-top:16px;font-size:.9rem;color:var(--muted);display:flex;flex-direction:column;gap:8px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">Independent review · commit daa87de · 27 September 2026</div>
+  <h1>CostVision review</h1>
+  <p class="lede">The costing engine is well built and well tested. The problems are around it: how the server protects data, the default values every user sees first, one gap in how CAD parts get routed, and a product identity that still says "AI" in a build that has AI switched off. None of these is hard to fix. Several should be fixed before anyone outside the team uses the tool.</p>
+  <div class="tally" aria-label="Findings by severity">
+    <span class="t-crit"><b>1</b> critical</span>
+    <span class="t-high"><b>8</b> high</span>
+    <span class="t-med"><b>11</b> medium</span>
+    <span class="t-low"><b>17</b> low</span>
+  </div>
+  <p class="muted" style="font-size:.95rem">Every finding below was reproduced by running the tool: live API calls against an isolated database, the browser driven through all 22 commodity tabs and 8 pages, an automated accessibility audit, exports opened and reconciled, and the full test suite run with and without the geometry kernel. Where something was checked and turned out fine, it is listed under "Checked and ruled out".</p>
+</header>
+
+<section>
+  <h2>Fix these first</h2>
+  <p class="muted">In this order. The first four are small changes with large consequences.</p>
+  <ol class="first">
+    <li><div><strong>Load the settings file before anything reads it.</strong> One line in <code>server/index.ts</code>. Today a native start ignores the real session secret and several other settings. <span class="sev crit">C1</span></div></li>
+    <li><div><strong>Require sign-in on every data route, and fail closed when no team key is set.</strong> Saved scenarios and supplier quotes are open to anyone who can reach the server. <span class="sev high">H1</span> <span class="sev high">H2</span></div></li>
+    <li><div><strong>Bind the laptop package to 127.0.0.1.</strong> It currently listens on every network interface. <span class="sev high">H3</span></div></li>
+    <li><div><strong>Escape PCB bill-of-materials fields before rendering them.</strong> Markup in an uploaded BOM file reaches the page as HTML. <span class="sev high">H6</span></div></li>
+    <li><div><strong>Make each commodity's default tooling volume match its default annual volume.</strong> The tool's own audit flags its defaults as wrong on 17 of 20 commodities. <span class="sev high">H4</span></div></li>
+    <li><div><strong>Offer casting and forging in the route question when the measured wall is thick.</strong> Then make the regression baseline answer only with options a user can actually pick. <span class="sev high">H5</span></div></li>
+    <li><div><strong>Remove accuracy claims that have no data behind them.</strong> Stop the accuracy report pooling example rows into a "high confidence" figure. <span class="sev high">H7</span></div></li>
+    <li><div><strong>Decide whether the PCB fabrication table is a price or a cost.</strong> Then stop stacking overhead and margin on it if it is a price. <span class="sev high">H8</span></div></li>
+    <li><div><strong>Fix the Assembly tab error, and say "AI is switched off" in the no-AI build.</strong> Also reconcile the uncertainty band with the confidence label. <span class="sev med">M1</span> <span class="sev med">M2</span> <span class="sev med">M3</span></div></li>
+    <li><div><strong>Accessibility quick wins.</strong> Name the region and currency controls, raise the primary button contrast, and let Escape close dialogs. <span class="sev med">M10</span></div></li>
+  </ol>
+</section>
+
+<section>
+  <h2>What is working</h2>
+  <p class="muted">Verified during this review, not taken from documentation.</p>
+  <div class="good-grid">
+    <div><b>Tests.</b> 2,338 of 2,338 pass, including with the real OCCT kernel installed. The real-parts baseline re-measures the actual STEP files and still reproduces its recorded costs.</div>
+    <div><b>Build.</b> Typecheck and production build are clean. The committed <code>dist</code> matches the source.</div>
+    <div><b>Stability.</b> No JavaScript errors on any of the eight main pages. No sideways scrolling on desktop or at 390&nbsp;px phone width.</div>
+    <div><b>Keyboard.</b> Focus is visible on every stop, in a sensible order, with clear labels on the navigation.</div>
+    <div><b>Motion.</b> Eight short transitions, none looping, the longest 580&nbsp;ms. All of them stop when the viewer asks for reduced motion.</div>
+    <div><b>Exports.</b> Excel and PDF both reproduce the on-screen total to the penny (£9.34). The workbook carries six sheets, including a traceability sheet.</div>
+    <div><b>Air gap.</b> With <code>AIR_GAPPED=1</code>, model calls throw. The CAD path asks the engineer for route and material instead of guessing.</div>
+    <div><b>Database access.</b> Queries use bound parameters. Both dynamic updates whitelist their columns.</div>
+    <div><b>Laptop package secret.</b> The Windows launcher and Docker both pass the session secret correctly. The critical finding below does not affect them.</div>
+    <div><b>Self-audit layer.</b> The tool's own audit caught the default-value problem in H4. The idea is sound; the defaults are what need fixing.</div>
+  </div>
+</section>
+
+<section>
+  <h2>Security and data</h2>
+  <div class="findings">
+
+    <article class="f crit">
+      <div class="head"><span class="sev crit">Critical</span><span class="id">C1</span><h3>A native start signs sessions with the public default secret</h3></div>
+      <p>ES module imports run before the module body. So the auth middleware reads <code>JWT_SECRET</code> before <code>config()</code> loads <code>.env</code>, finds nothing, and falls back to the default written in the source. The startup banner and <code>/api/health</code> still report the secret as configured.</p>
+      <dl>
+        <dt>Proof</dt><dd>A token signed with <code>should-cost-dev-secret-DO-NOT-USE-IN-PRODUCTION</code> was accepted by <code>/api/auth/me</code> and by the admin-only <code>/api/rate-library/status</code> (200). The middleware trusts the token payload without a database lookup, so any made-up user id works on non-admin routes.</dd>
+        <dt>Affected</dt><dd><code>make start</code>, <code>npm run server</code>, <code>npm run dev:full</code>. Not affected: the Windows package and Docker, which set real environment variables before Node starts.</dd>
+        <dt>Also ignored</dt><dd>Every setting read at import time: <code>TEAM_API_KEY</code>, the SMTP settings (so sign-up and password-reset emails), <code>CV_DATA_DIR</code>, <code>PYTHON_BIN</code>, upload limits.</dd>
+        <dt>Where</dt><dd><code>server/index.ts:7</code> and <code>:32</code>, <code>server/middleware/auth-middleware.ts:9–17</code></dd>
+        <dt>Fix</dt><dd>Make <code>import 'dotenv/config'</code> the first line of <code>server/index.ts</code>. Have the health check report the secret the middleware actually uses.</dd>
+      </dl>
+    </article>
+
+    <article class="f high">
+      <div class="head"><span class="sev high">High</span><span class="id">H1</span><h3>Anyone who can reach the server can read, add and delete every saved scenario</h3></div>
+      <p>The sync routes allow everything when no team key is configured (<code>if (!TEAM_KEY) return true</code>). The Windows launcher never sets one. The UI silently copies every saved scenario, with its full inputs and cost results, to this endpoint.</p>
+      <dl>
+        <dt>Proof</dt><dd>With no credentials: POST a scenario, 200. GET returned it. DELETE, 200.</dd>
+        <dt>Where</dt><dd><code>server/routes/sync.ts:8–11</code>, <code>src/ui/main.ts:17729</code></dd>
+        <dt>Fix</dt><dd>Put <code>requireAuth</code> on the router, scope scenarios to their owner, and refuse requests when no team key is set.</dd>
+      </dl>
+    </article>
+
+    <article class="f high">
+      <div class="head"><span class="sev high">High</span><span class="id">H2</span><h3>Supplier quotes can be created and listed without signing in</h3></div>
+      <p>Eleven route files have no sign-in check at all: <code>quotes</code>, <code>bom</code>, <code>rfq</code>, <code>pcb</code>, <code>prices</code>, <code>telemetry</code>, <code>aichat</code>, <code>agent</code>, <code>sync</code>, <code>commodities</code> and <code>news</code>. The last two may be meant to be public. The others hold commercial data or spend AI credit.</p>
+      <dl>
+        <dt>Proof</dt><dd>With no credentials: POST <code>/api/quotes</code> returned 201, and GET listed the new quote. The chat and agent routes answered too; they only refused because no AI key was set.</dd>
+        <dt>Fix</dt><dd>Mount <code>requireAuth</code> on each router in <code>server/index.ts</code>. List any route that is deliberately public in one place.</dd>
+      </dl>
+    </article>
+
+    <article class="f high">
+      <div class="head"><span class="sev high">High</span><span class="id">H3</span><h3>The server listens on every network interface</h3></div>
+      <p><code>app.listen(PORT)</code> binds to 0.0.0.0. Together with H1 and H2, the machine's firewall is the only thing between the network and the saved costings.</p>
+      <dl>
+        <dt>Proof</dt><dd>The scenario endpoint answered 200 on the container's network address, not only on localhost.</dd>
+        <dt>Fix</dt><dd>Bind to 127.0.0.1 by default, with a <code>HOST</code> setting for deliberate server installs.</dd>
+      </dl>
+    </article>
+
+    <article class="f high">
+      <div class="head"><span class="sev high">High</span><span class="id">H6</span><h3>Markup in an uploaded BOM file is rendered as HTML</h3></div>
+      <p><code>parseBOMFile</code> keeps a description such as <code>&lt;img src=x onerror=…&gt;</code> unchanged. The PCB panel then puts reference, description, package, value, part name and limitation text into the page without escaping. The security policy allows inline handlers, and the session token lives in <code>localStorage</code>, where a script can read it.</p>
+      <dl>
+        <dt>Proof</dt><dd>Parser output confirmed directly, and template lines confirmed unescaped. Not fired end to end in a browser.</dd>
+        <dt>Where</dt><dd><code>src/ui/main.ts:8590–8594</code>, <code>:8606</code>, <code>:8615</code></dd>
+        <dt>Fix</dt><dd>Wrap each field in <code>escHtml()</code>, which the file already uses 242 times elsewhere.</dd>
+      </dl>
+    </article>
+
+    <article class="f med">
+      <div class="head"><span class="sev med">Medium</span><span class="id">M4</span><h3>Sessions cannot be revoked</h3></div>
+      <p>The middleware accepts any validly signed token for seven days without checking that the user still exists or isn't locked. A deleted or locked account keeps working until its token expires.</p>
+      <dl><dt>Where</dt><dd><code>server/middleware/auth-middleware.ts:25–33</code></dd><dt>Fix</dt><dd>Look the user up on each request (the admin check already does), or keep a short token life with a revocation list.</dd></dl>
+    </article>
+
+    <article class="f med">
+      <div class="head"><span class="sev med">Medium</span><span class="id">M5</span><h3>No rate limit on the AI routes</h3></div>
+      <p><code>aichat</code>, <code>agent</code> and <code>pcb</code> have no limiter, and there is no global one. This doesn't matter while air-gapped. It matters for Option 3, where each call costs money.</p>
+    </article>
+
+    <article class="f med">
+      <div class="head"><span class="sev med">Medium</span><span class="id">M6</span><h3>Ten production dependency advisories, five of them high</h3></div>
+      <ul>
+        <li><code>xlsx</code> 0.18.5: prototype pollution and ReDoS. There is no fix on npm; SheetJS publishes fixed builds on its own CDN. This library parses uploaded rate cards.</li>
+        <li><code>nodemailer</code>, <code>express-rate-limit</code> (via <code>ip-address</code>), <code>pptxgenjs</code> (via <code>image-size</code>): high. <code>body-parser</code>, <code>qs</code>, <code>dompurify</code>, <code>morgan</code>: moderate.</li>
+        <li>Development only: <code>vitest</code> (critical, UI server), <code>vite</code> (path traversal in the dev server).</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2>Costing correctness</h2>
+  <div class="findings">
+
+    <article class="f high">
+      <div class="head"><span class="sev high">High</span><span class="id">H4</span><h3>The shipped defaults fail the tool's own audit on 17 of 20 commodities</h3></div>
+      <p>Every default form states an annual volume of 10,000 but amortises tooling over anything from 2,000 to 500,000 parts. The tool's self-audit marks this HIGH on its own first screen, with per-part tooling out by between 0.2× and 50×. It's the first thing a new user or a director sees.</p>
+      <dl><dt>Fix</dt><dd>Set each default amortisation volume to annual volume × a stated programme life, and show that life on the form.</dd></dl>
+    </article>
+
+    <article class="f high">
+      <div class="head"><span class="sev high">High</span><span class="id">H5</span><h3>The route question leaves out casting and forging for thick-walled sparse parts</h3></div>
+      <p>Below 20% fill, the question always offers sheet metal, injection moulding or machining, whatever the measured wall. The question's own explanation says "the same shape is cast at one volume and machined at another" — then offers no casting option.</p>
+      <dl>
+        <dt>Proof</dt><dd>Three of the five real production parts get only those three options: the steering knuckle, <code>Casting_Braket</code> and <code>PRCR002</code>, all with 9–15&nbsp;mm walls. The engine accepts <code>cast_and_machine</code> when sent directly (it moves on to the next question), but the screen never offers it.</dd>
+        <dt>Masked by</dt><dd>The real-parts baseline answers two of these parts with <code>cast_and_machine</code>, an option users are never shown. It answers the knuckle with <code>machining</code>, although its own note says the knuckle is forged in production. The regression net passes on paths no user can reach.</dd>
+        <dt>Where</dt><dd><code>src/engine/cost-input-rules/derive/commodity.ts:202–206</code>, <code>scripts/real-parts-baseline.ts:61–83</code></dd>
+        <dt>Fix</dt><dd>Use the measured bulk wall to filter routes: above about 6&nbsp;mm, drop sheet metal and injection moulding and add casting, forging and cast-and-machine. Assert in the baseline that every answer is one of the options offered.</dd>
+      </dl>
+    </article>
+
+    <article class="f high">
+      <div class="head"><span class="sev high">High</span><span class="id">H7</span><h3>Accuracy figures are shown with no data behind them</h3></div>
+      <p>The accuracy dataset is five rows, each marked "EXAMPLE — replace with real quote". The report still prints <strong>ALL: 5% MAPE, confidence high</strong>, because pooling one or two example points per commodity crosses its five-point threshold. The executive deck claims "±8% typical model accuracy" and "10× faster than manual costing".</p>
+      <dl>
+        <dt>Where</dt><dd><code>scripts/accuracy-samples.csv</code>, <code>src/engine/accuracy.ts:57–62</code>, <code>build_pptx.py:618–620</code></dd>
+        <dt>Fix</dt><dd>Remove the claims until real estimate-and-actual pairs exist. Make the report skip rows marked EXAMPLE, and don't let the pooled row claim confidence that no single commodity has earned.</dd>
+      </dl>
+    </article>
+
+    <article class="f high">
+      <div class="head"><span class="sev high">High</span><span class="id">H8</span><h3>PCB fabrication adds overhead and margin to a figure documented as a price</h3></div>
+      <p>The base is "Base panel price (£) for 500×600&nbsp;mm 2-layer FR4". The whole board cost enters as one line on material with no operations, and then gets 12% overhead and 8% margin. Default: £82.43 becomes £100.75, which is ×1.22. Conversion shows £0.00, and the tool's own audit says "the estimate is a purchase price, not a should-cost". The ±0.1% band on this result is covered under M2.</p>
+      <dl>
+        <dt>Where</dt><dd><code>src/engine/modules/pcb-fab.ts:64–65</code> and <code>:340–360</code></dd>
+        <dt>Fix</dt><dd>Either model fabrication as operations (imaging, etching, lamination, drilling, plating, test), or treat the table as a price and set overhead and margin to zero for this commodity. Either way, label it.</dd>
+      </dl>
+    </article>
+
+    <article class="f med">
+      <div class="head"><span class="sev med">Medium</span><span class="id">M1</span><h3>The Assembly tab throws an error and shows the previous commodity's result</h3></div>
+      <p>Switching to Assembly BOM raises <code>Cannot read properties of null (reading 'querySelectorAll')</code>. The result panel keeps showing £31.86 from Wiring Harness, including the text "Uncalibrated for wiring harness".</p>
+    </article>
+
+    <article class="f med">
+      <div class="head"><span class="sev med">Medium</span><span class="id">M2</span><h3>Uncertainty bands collapse where cost enters as one figure, and contradict the confidence label</h3></div>
+      <p>PCB fab shows ±0.1%, PCBA ±0.3% and BIW ±0.8%, each described as a "tight band" — next to "Low confidence" on the same result. The Monte Carlo run samples only the small part of the cost that isn't a single fixed figure, so the band shrinks exactly where uncertainty is largest.</p>
+      <dl><dt>Fix</dt><dd>Sample the direct-cost figure too, with a spread set by its confidence, or show no band when most of the cost isn't sampled.</dd></dl>
+    </article>
+
+    <article class="f med">
+      <div class="head"><span class="sev med">Medium</span><span class="id">M9</span><h3>The overhead base isn't the Factory Cost shown on screen</h3></div>
+      <p>Overhead is 12% of material + process + labour + tooling. The Factory Cost on screen also includes packaging and logistics, and the report just says "12% of factory base". On the machining default, 12% × £7.77 shown = £0.93, but the overhead line reads £0.88. The engine's choice is defensible; the labelling makes a correct number look wrong.</p>
+      <dl><dt>Where</dt><dd><code>src/engine/core.ts:253–255</code></dd><dt>Fix</dt><dd>Show the overhead base as its own line in the breakdown, the PDF and the workbook.</dd></dl>
+    </article>
+
+    <article class="f low">
+      <div class="head"><span class="sev low">Low</span><span class="id">L7</span><h3>A CAD upload is offered on commodities the CAD path can't cost</h3></div>
+      <p>11 of 20 commodities can be costed straight from a CAD file. Sheet-metal fab, extrusion and composites still show "Upload CAD to auto-fill this form", even though none of them can be costed from CAD.</p>
+    </article>
+  </div>
+
+  <h3 style="margin-top:8px">Every commodity, default inputs</h3>
+  <p class="muted" style="font-size:.95rem">Costed through the live UI. Totals are the tool's own; the flag column is its own self-audit.</p>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>Commodity</th><th>Default total</th><th>Band</th><th>Self-audit on its own defaults</th><th>Costed from CAD</th></tr></thead>
+      <tbody>
+        <tr><td>Machining</td><td class="num">£9.34</td><td class="num">±8.9%</td><td>Tooling over 50,000 vs 10,000/yr (5×)</td><td class="y">Yes</td></tr>
+        <tr><td>Sheet metal</td><td class="num">£0.85</td><td class="num">±6.8%</td><td>Tooling over 500,000 (50×)</td><td class="y">Yes</td></tr>
+        <tr><td>Sheet metal fab</td><td class="num">£9.81</td><td class="num">±8.5%</td><td>Tooling over 5,000 (0.5×)</td><td class="p">Form only</td></tr>
+        <tr><td>Injection moulding</td><td class="num">£0.68</td><td class="num">±3.7%</td><td>Tooling 50×; 200&nbsp;t press where 50&nbsp;t suffices</td><td class="y">Yes</td></tr>
+        <tr><td>Blow moulding</td><td class="num">£0.74</td><td class="num">±4.6%</td><td>Tooling 50×</td><td class="y">Yes</td></tr>
+        <tr><td>Extrusion</td><td class="num">£7.53</td><td class="num">±11.8%</td><td>Tooling 10×</td><td class="p">Form only</td></tr>
+        <tr><td>Thermoforming</td><td class="num">£1.37</td><td class="num">±6%</td><td>Tooling 5×</td><td class="y">Yes</td></tr>
+        <tr><td>Rotational moulding</td><td class="num">£47.12</td><td class="num">±9.3%</td><td>Tooling 0.5×</td><td class="y">Yes</td></tr>
+        <tr><td>Casting</td><td class="num">£7.42</td><td class="num">±13.1%</td><td>Tooling 20×</td><td class="y">Yes</td></tr>
+        <tr><td>Forging</td><td class="num">£5.78</td><td class="num">±7.5%</td><td>Tooling 10×</td><td class="y">Yes</td></tr>
+        <tr><td>Gear cutting</td><td class="num">£25.33</td><td class="num">±4.2%</td><td>Tooling 20×</td><td class="y">Yes</td></tr>
+        <tr><td>Painting</td><td class="num">£5.21</td><td class="num">±5%</td><td>Tooling 10×</td><td class="n">No</td></tr>
+        <tr><td>BIW / assembly</td><td class="num">£69.23</td><td class="num">±0.8%</td><td>Tooling 5×; material 75% as one unitemised figure</td><td class="n">No</td></tr>
+        <tr><td>PCB fab</td><td class="num">£100.75</td><td class="num">±0.1%</td><td>Three flags, including "material only, no conversion"</td><td class="n">No</td></tr>
+        <tr><td>PCBA</td><td class="num">£7.42</td><td class="num">±0.3%</td><td>Tooling 0.5×</td><td class="n">No</td></tr>
+        <tr><td>Cast + machine</td><td class="num">£16.64</td><td class="num">±8.7%</td><td>Tooling 5×</td><td class="y">Yes</td></tr>
+        <tr><td>Rubber</td><td class="num">£1.38</td><td class="num">±5.8%</td><td>Tooling 5×</td><td class="y">Yes</td></tr>
+        <tr><td>Composites</td><td class="num">£561.52</td><td class="num">±5.6%</td><td>Tooling 0.2×</td><td class="p">Form only</td></tr>
+        <tr><td>Wiring harness</td><td class="num">£31.86</td><td class="num">±3.6%</td><td>Material 42% as one unitemised figure</td><td class="n">No</td></tr>
+        <tr><td>Assembly BOM</td><td class="num">—</td><td class="num">—</td><td>JavaScript error; shows the harness result (M1)</td><td class="n">No</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Interface and experience</h2>
+  <div class="findings">
+    <article class="f med">
+      <div class="head"><span class="sev med">Medium</span><span class="id">M3</span><h3>The no-AI build keeps asking for an AI key</h3></div>
+      <p>With <code>AIR_GAPPED=1</code> on the server:</p>
+      <ul>
+        <li>The chat replies "Add it in Settings or set the ANTHROPIC_API_KEY".</li>
+        <li>Every result shows "AI assistant requires an Anthropic API key".</li>
+        <li>The home page leads with two AI start cards and a chat bubble.</li>
+        <li><code>/api/health</code> doesn't report the air gap, so the interface can't know about it.</li>
+      </ul>
+      <p>For JLR, this tells users to do the one thing the policy forbids. The air gap itself holds: the routes check for a key before they check the air gap, so users get the wrong message.</p>
+      <dl><dt>Where</dt><dd><code>server/routes/aichat.ts:34–36</code>; the same pattern in <code>agent.ts</code> and <code>pcb.ts</code></dd><dt>Fix</dt><dd>Report <code>airGapped</code> from the health check. Hide AI entry points and replace the messages with "AI is switched off in this installation".</dd></dl>
+    </article>
+    <article class="f med">
+      <div class="head"><span class="sev med">Medium</span><span class="id">M7</span><h3>After Calculate, the result is off screen</h3></div>
+      <p>On a 900&nbsp;px-tall window the result starts at y&nbsp;=&nbsp;884, so 16 pixels are visible. Nothing scrolls to it, and to the user the button appears to do nothing.</p>
+      <dl><dt>Fix</dt><dd>Scroll the result panel to the result, or pin a total bar that updates on Calculate.</dd></dl>
+    </article>
+    <article class="f med">
+      <div class="head"><span class="sev med">Medium</span><span class="id">M8</span><h3>The commodity picker never closes</h3></div>
+      <p>After you choose a commodity, the picker stays on screen squeezed into a column about 250&nbsp;px wide, with its title wrapping onto three lines. It takes up that space for the rest of the session.</p>
+    </article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">L1</span><h3>The result header prints the band twice</h3></div><p>"£9.34 ±8.9% ±8.9%".</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">L2</span><h3>Internal field names reach the user</h3></div><p>"Warnings: rawMaterial.materialId: Material rate confidence: Medium".</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">L3</span><h3>Entered values look like placeholder hints</h3></div><p>Annual Volume "10000", Learning Curve "85" and Reference Volume "1000" are in the same grey as hint text.</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">L4</span><h3>Eleven action buttons with no clear primary</h3></div><p>Three are filled blue and compete with Calculate. Icons are mixed: emoji on some, ↗ on others, ⬇/⬆ on a third set.</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">L5</span><h3>The upload hint mentions OBJ, which isn't accepted</h3></div><p>"STL/OBJ meshes are approximate", but the file picker accepts only STEP, IGES and STL.</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">L6</span><h3>Export filenames follow different rules</h3></div><p><code>should-cost-Unnamed-Part.xlsx</code> against <code>should-cost-unnamed-part-2026-09-27.pdf</code>: different casing, and a date on only one.</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">L8</span><h3>Badges and highlights have no key</h3></div><p>Tabs carry ✦, ✓, ⚙ and 🔬. Picker tiles carry amber and cyan borders. Nothing says what any of them means.</p></article>
+  </div>
+</section>
+
+<section>
+  <h2>Accessibility and motion</h2>
+  <div class="findings">
+    <article class="f med">
+      <div class="head"><span class="sev med">Medium</span><span class="id">M10</span><h3>Four accessibility failures that repeat on every page</h3></div>
+      <ul>
+        <li><strong>Unnamed controls.</strong> The region and currency selectors (<code>#mfg-region-selector</code>, <code>#currency-selector</code>) have no accessible name, so a screen reader says only "combo box". axe rates this critical, and it appears on all eight pages.</li>
+        <li><strong>Primary button contrast.</strong> "Start a costing" and "New Costing" are white on <code>#38bdf8</code> at 2.14:1. WCAG requires 4.5:1 for normal text, and even large text needs 3:1.</li>
+        <li><strong>Help Centre.</strong> Escape doesn't close it, and its ✕ has no label or title.</li>
+        <li><strong>Label mismatch.</strong> The visible text "New Costing" has the accessible name "Start new should-costing", so a voice-control user saying "click New Costing" gets nothing (WCAG 2.5.3). A popover (<code>#cv-popover</code>) also has no accessible name.</li>
+      </ul>
+    </article>
+    <article class="f ok">
+      <div class="head"><span class="sev ok">Good</span><h3>Motion is handled properly</h3></div>
+      <p>No looping animation, nothing longer than 580&nbsp;ms, and every animation stops under <code>prefers-reduced-motion</code>. The phone layout at 390&nbsp;px is well done.</p>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2>Identity and consistency</h2>
+  <div class="findings">
+    <article class="f med">
+      <div class="head"><span class="sev med">Medium</span><span class="id">I2</span><h3>The brand says AI; the deployment doesn't have it</h3></div>
+      <p>The logo line reads "AI COST INTELLIGENCE", and the copy says "AI-powered" ten times, including "master AI-powered should-costing" in Help. The same home page says "No external AI required", and the JLR build has AI switched off. Pick one position per build.</p>
+    </article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">I1</span><h3>Three current versions</h3></div><p>The changelog header says V4.2, the tour and Help badge say V4.1, and <code>package.json</code> says 1.0.0.</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">I3</span><h3>Two dates for the same rates</h3></div><p>The warning says rates were "last updated 16/06/2026"; every result says "UK rates · Jul 2026".</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">I4</span><h3>341 emoji used as icons, alongside an SVG icon set</h3></div><p>99 different emoji. They render differently on every operating system, so on JLR's Windows laptops the app won't look as designed.</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">I5</span><h3>The app and its documents look like different products</h3></div><p>The app uses Inter with a sky-and-violet accent; its light theme switches to a different blue. The decks and the rate-card workbook use Calibri and Cambria on navy <code>#1F2A44</code>.</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">I6</span><h3>Commodity count differs</h3></div><p>Help says "19+ manufacturing processes"; the home page says "Browse all 20".</p></article>
+  </div>
+</section>
+
+<section>
+  <h2>Code health</h2>
+  <div class="findings">
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">L9</span><h3>The gear re-measure test can never run in production-like setups</h3></div><p>It imports the full <code>cadquery</code> package. The product and the Windows package use OCP only, so the test always skips there.</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">L10</span><h3>The browser smoke test covers one feature</h3></div><p><code>e2e/smoke.ts</code> drives only the software should-cost panel. The 20 commodity screens, CAD upload and exports have no browser test, which is how M1 and M7 went unnoticed.</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">L11</span><h3><code>.env</code> sets <code>NODE_ENV=production</code></h3></div><p>Vite warns on every build that it doesn't support this.</p></article>
+    <article class="f low"><div class="head"><span class="sev low">Low</span><span class="id">L12</span><h3>The interface is one 20,751-line file, and the docs understate it</h3></div><p><code>CLAUDE.md</code> says about 17,800 lines. It holds 177 <code>innerHTML</code> assignments and all 20 forms. Splitting by commodity would make H6-type issues easier to find.</p></article>
+  </div>
+</section>
+
+<section>
+  <h2>How it compares</h2>
+  <p class="muted">Competitor cells are taken only from the vendors' own published pages (sources below). "Not assessed" means those pages didn't settle it, not that the product lacks it.</p>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>Capability</th><th>CostVision</th><th>aPriori</th><th>Teamcenter PCM</th><th>Tset</th></tr></thead>
+      <tbody>
+        <tr><td>Cost from 3D CAD</td><td class="p">11 of 20 commodities</td><td class="y">Yes</td><td class="y">Geometry to cost drivers (NX Feature2Cost)</td><td class="y">Automated calculations</td></tr>
+        <tr><td>PLM integration</td><td class="n">None</td><td class="y">Costs on PLM check-in</td><td class="y">Part of Teamcenter</td><td>Not assessed</td></tr>
+        <tr><td>Bulk costing</td><td class="p">CAD path, 11 commodities</td><td class="y">Yes</td><td>Not assessed</td><td>Not assessed</td></tr>
+        <tr><td>Carbon per part</td><td class="p">Basic: material, energy, grid, logistics</td><td class="y">Embodied carbon</td><td class="y">CO₂ footprint</td><td class="y">CO₂ alongside cost</td></tr>
+        <tr><td>Tool costing from geometry</td><td class="p">Parametric mould and die estimates</td><td>Not assessed</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+        <tr><td>Sheet-metal blank development</td><td class="n">No (FastBlank import only)</td><td class="p">Sheet-metal process models</td><td>Not assessed</td><td class="p">Forming costs</td></tr>
+        <tr><td>Tolerances read from the STEP file (AP242)</td><td class="n">No</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+        <tr><td>Approval workflow</td><td class="n">Rate versioning only</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+        <tr><td>Runs fully offline</td><td class="y">Yes, air-gapped</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+        <tr><td>PCB photo to costed BOM</td><td class="y">Yes</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+        <tr><td>Automotive software should-cost</td><td class="y">50-module model</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+        <tr><td>Uncertainty band on every result</td><td class="y">Monte Carlo P10–P90</td><td>Not assessed</td><td>Not assessed</td><td>Not assessed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="margin-top:8px">Advanced features worth adding</h3>
+  <div class="roadmap">
+    <div><h3>Read tolerances and GD&amp;T from the STEP file <span>fits the no-AI policy</span></h3><p>STEP AP242 can carry semantic tolerances, and OCCT reads them through its XCAF tools. That gives tolerance-driven machining cost without anyone reading a PDF drawing, so it needs no AI approval.</p></div>
+    <div><h3>Developed blank and nesting for sheet metal and BIW <span>researched</span></h3><p>The prototype matched a hand calculation to 0.001% on a bent part and a textbook drawn-cup blank to within 0.62%. Nesting two interlocked blanks raised material use from 71.7% to 94.6%. The FastBlank DXF import already exists.</p></div>
+    <div><h3>Validation against real JLR actuals <span>unblocks H7</span></h3><p>Replace the five example rows with CAPPe and FastBlank results, and purchase orders. Report error per commodity, and publish a number only once it's earned.</p></div>
+    <div><h3>PLM hook</h3><p>Re-cost a part automatically when its CAD is checked in or an engineering change lands, so costs don't go stale between reviews.</p></div>
+    <div><h3>Approval and audit workflow</h3><p>Submit, review, sign off, with locked versions and a readable change history between versions.</p></div>
+    <div><h3>A real commodity index feed</h3><p>Commodity prices are currently a seeded random walk labelled "indicative". Connect a licensed index or JLR's own purchasing data, with indexation clauses.</p></div>
+    <div><h3>Better carbon</h3><p>Per-commodity process energy and supplier grid mix, reported beside cost the way the three tools above present it.</p></div>
+    <div><h3>BIW press process</h3><p>Tandem and transfer lines, draw-panel addendum and binder, tailor-welded blanks, and a separate blanking-line operation.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Checked and ruled out</h2>
+  <div class="findings">
+    <article class="f ok"><div class="head"><span class="sev ok">Fine</span><h3>Rate warning covering the header buttons</h3></div><p>It dismisses itself after a few seconds, and measured, it overlaps no button on desktop. On a phone it briefly covers the header.</p></article>
+    <article class="f ok"><div class="head"><span class="sev ok">Fine</span><h3>Low contrast on the headline word "cost"</h3></div><p>That was the tour's dimmed backdrop in an early screenshot. Without the tour, it renders in readable violet.</p></article>
+    <article class="f ok"><div class="head"><span class="sev ok">Fine</span><h3>The sync library overwriting live costing rates</h3></div><p>The open sync route writes row <code>default</code>; costing reads row <code>company</code>. The route is still open (H1), but it doesn't change the rates that price parts.</p></article>
+    <article class="f ok"><div class="head"><span class="sev ok">Fine</span><h3>SQL injection, a stale committed build, the session secret on Windows and Docker</h3></div><p>Each was checked and none is an issue.</p></article>
+  </div>
+</section>
+
+<footer>
+  <p><strong>What was run.</strong> Typecheck; production build; all 2,338 tests, with and without the OCCT kernel; the accuracy report; the browser smoke test; <code>npm audit</code>; live API calls against an isolated database with <code>AIR_GAPPED=1</code>; all six real STEP parts through <code>/api/cad/analyze</code>; the browser driven through 22 tabs and 8 pages; axe-core 4.13 against WCAG 2.1 AA; keyboard traversal; reduced-motion emulation; a 390&nbsp;px phone view; Excel and PDF exports reconciled against the screen.</p>
+  <p><strong>Not covered.</strong> Microsoft Excel and a real Windows laptop. AI-enabled paths, since no key was used. The mobile app build. Exports for commodities other than machining. The light theme's accessibility. A line-by-line read of all of <code>main.ts</code>.</p>
+  <p><strong>Sources for the comparison.</strong>
+    <a href="https://www.apriori.com/cad-to-cost/">aPriori — CAD to cost</a>,
+    <a href="https://www.apriori.com/blog/what-to-look-for-in-manufacturing-costing-software/">aPriori — costing software</a>,
+    <a href="https://www.apriori.com/blog/apriori-22-1-expands-manufacturing-insights-cost-savings-analysis/">aPriori 22.1</a>,
+    <a href="https://www.siemens.com/en-us/products/teamcenter/solutions/product-cost-management/">Siemens Teamcenter PCM</a>,
+    <a href="https://blogs.sw.siemens.com/teamcenter/new-teamcenter-product-cost-management-capabilities/">Teamcenter PCM capabilities</a>,
+    <a href="https://tset.com/">Tset</a>,
+    <a href="https://tset.com/industries/automotive">Tset — automotive</a>.
+  </p>
+</footer>
+
+</div>
