@@ -5,7 +5,7 @@ import { queueDFMJobFromBuffer } from '../utils/dfm-job-runner.js';
 import { GEOMETRIC_DFM_COMMODITIES } from '../../src/engine/dfm-geometry/index.js';
 import type { CommodityType } from '../../src/engine/types.js';
 import rateLimit from 'express-rate-limit';
-import { createAnthropic } from '../utils/ai-client.js';
+import { createAnthropic, isAirGapped, aiDisabledBody, AI_DISABLED_MESSAGE } from '../utils/ai-client.js';
 import { requireAuth } from '../middleware/auth-middleware.js';
 import { hashUpload, putUploadFile, getUploadFile, putGeometry, getGeometry, sweepUploadFiles, putMesh, getMesh } from '../utils/geometry-store.js';
 import type Anthropic from '@anthropic-ai/sdk';
@@ -818,6 +818,13 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // does a key matter, and only when the mode asks for a model.
   let anthropic: ReturnType<typeof createAnthropic> | null = null;
   if (analysisMode !== 'deterministic') {
+    if (isAirGapped()) {
+      res.status(503).json({
+        ...aiDisabledBody('AI analysis of a CAD model'),
+        error: `AI analysis of a CAD model uses AI. ${AI_DISABLED_MESSAGE} Send mode='deterministic' to cost from the measured geometry.`,
+      });
+      return;
+    }
     const apiKey = resolveApiKey(req);
     if (!apiKey) {
       res.status(400).json({
@@ -970,12 +977,15 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     // whether deterministic was *asked for* or merely defaulted to: an explicit
     // request gets a straight answer about what does not exist, but a default
     // must not turn a commodity that analysed fine yesterday into an error.
-    const fallbackKey = modeExplicit ? '' : resolveApiKey(req);
+    // Air-gapped, there is no AI path to fall back to, even with a key in .env.
+    const fallbackKey = modeExplicit || isAirGapped() ? '' : resolveApiKey(req);
     if (!fallbackKey) {
       res.status(422).json({
         error: `No deterministic rules exist for '${selectedCommodity}' yet. `
           + `Converted so far: ${DETERMINISTIC_COMMODITIES.join(', ')}.`
-          + (modeExplicit ? '' : ' An API key would have let this fall back to the AI path.'),
+          + (modeExplicit ? '' : isAirGapped()
+            ? ' AI is switched off in this installation, so there is no AI path to fall back to.'
+            : ' An API key would have let this fall back to the AI path.'),
         decisions: [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecision ? [commodityDecision] : [])],
       });
       return;
@@ -2553,6 +2563,13 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
 
   let anthropic: ReturnType<typeof createAnthropic> | null = null;
   if (analysisMode !== 'deterministic') {
+    if (isAirGapped()) {
+      res.status(503).json({
+        ...aiDisabledBody('AI analysis of a CAD model'),
+        error: `AI analysis of a CAD model uses AI. ${AI_DISABLED_MESSAGE} Send mode='deterministic' to cost from the measured geometry.`,
+      });
+      return;
+    }
     const apiKey = resolveApiKey(req);
     if (!apiKey) {
       res.status(400).json({
@@ -2677,12 +2694,15 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     // As on /analyze: an explicit deterministic request is told what does not
     // exist; a defaulted one falls back rather than breaking a commodity that
     // re-analysed fine before the default moved.
-    const fallbackKey = modeExplicit ? '' : resolveApiKey(req);
+    // Air-gapped, there is no AI path to fall back to, even with a key in .env.
+    const fallbackKey = modeExplicit || isAirGapped() ? '' : resolveApiKey(req);
     if (!fallbackKey) {
       res.status(422).json({
         error: `No deterministic rules exist for '${selectedCommodity}' yet. `
           + `Converted so far: ${DETERMINISTIC_COMMODITIES.join(', ')}.`
-          + (modeExplicit ? '' : ' An API key would have let this fall back to the AI path.'),
+          + (modeExplicit ? '' : isAirGapped()
+            ? ' AI is switched off in this installation, so there is no AI path to fall back to.'
+            : ' An API key would have let this fall back to the AI path.'),
       });
       return;
     }

@@ -7045,3 +7045,8 @@ select:focus-visible, [tabindex]:focus-visible, .hs-mode:focus-visible {
 .dfm-geo-lims { margin-top: 10px; }
 .dfm-geo-lims > summary { cursor: pointer; font-size: 0.82rem; color: var(--text-secondary); }
 .dfm-geo-lims ul { margin: 6px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
+
+/* ── AI switched off in this installation (ai-mode.ts) ─────────────────────── */
+/* AIR_GAPPED=1: the AI code stays, its entry points are hidden. */
+html[data-ai="off"] .ai-only { display: none !important; }
+html[data-ai="off"] .hs-modes { grid-template-columns: 1fr; }

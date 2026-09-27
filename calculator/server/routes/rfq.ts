@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
-import { createAnthropic } from '../utils/ai-client.js';
+import { createAnthropic, isAirGapped, aiDisabledBody } from '../utils/ai-client.js';
 import { analyzeRfq, type RfqLineItem } from '../../src/engine/rfq.js';
 
 const router = Router();
@@ -18,6 +18,8 @@ router.post('/analyze', async (req: Request, res: Response): Promise<void> => {
 
     // Decompose raw RFQ text with the LLM when structured lines aren't supplied.
     if ((!items || items.length === 0) && text && text.trim()) {
+      // Structured lines still work air-gapped; only reading free text needs AI.
+      if (isAirGapped()) { res.status(503).json(aiDisabledBody('Reading line items from RFQ text')); return; }
       const key = apiKey || process.env.ANTHROPIC_API_KEY;
       if (!key) { res.status(400).json({ error: 'Provide "lines", or "text" plus an Anthropic API key to decompose it.' }); return; }
       const anthropic = createAnthropic(key);

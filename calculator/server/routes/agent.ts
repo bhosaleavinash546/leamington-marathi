@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { resolveApiKey } from '../utils/api-key.js';
 import Anthropic from '@anthropic-ai/sdk';
-import { createAnthropic } from '../utils/ai-client.js';
+import { createAnthropic, isAirGapped, aiDisabledBody } from '../utils/ai-client.js';
 import { z } from 'zod';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 import { buildRateCorpus, groundingBlock } from '../../src/engine/rag-retrieval.js';
@@ -953,6 +953,7 @@ router.post('/chat', async (req, res): Promise<void> => {
     return;
   }
 
+  if (isAirGapped()) { res.status(503).json(aiDisabledBody('The costing agent')); return; }
   const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured.' });
@@ -1040,6 +1041,7 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
     return;
   }
 
+  if (isAirGapped()) { res.status(503).json(aiDisabledBody('The costing agent')); return; }
   const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured.' });

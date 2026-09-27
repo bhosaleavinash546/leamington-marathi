@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { resolveApiKey } from '../utils/api-key.js';
-import { createAnthropic } from '../utils/ai-client.js';
+import { createAnthropic, isAirGapped, aiDisabledBody } from '../utils/ai-client.js';
 
 const router = Router();
 
@@ -31,6 +31,11 @@ router.post('/', async (req, res): Promise<void> => {
   const { message } = req.body as { message?: string };
   if (!message?.trim()) { res.status(400).json({ error: 'No message provided' }); return; }
 
+  if (isAirGapped()) {
+    const body = aiDisabledBody('The assistant');
+    res.status(503).json({ ...body, reply: body.error });
+    return;
+  }
   const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.json({ reply: 'AI assistant requires an Anthropic API key. Add it in Settings or set the ANTHROPIC_API_KEY environment variable.' });

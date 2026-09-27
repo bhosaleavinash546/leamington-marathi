@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth-middleware.js';
 import type { Request, Response } from 'express';
-import { createAnthropic } from '../utils/ai-client.js';
+import { createAnthropic, isAirGapped, aiDisabledBody } from '../utils/ai-client.js';
 import { queueDFMJob, getDFMJob, requeueOrphans } from '../utils/dfm-job-runner.js';
 import { GEOMETRIC_DFM_COMMODITIES } from '../../src/engine/dfm-geometry/index.js';
 import type { CommodityType } from '../../src/engine/types.js';
@@ -9,6 +9,8 @@ import type { CommodityType } from '../../src/engine/types.js';
 const router = Router();
 
 router.post('/analyze', async (req: Request, res: Response) => {
+  // The rule-based DFM result is computed in the browser; only this commentary needs AI.
+  if (isAirGapped()) { res.status(503).json(aiDisabledBody('Expert DFM commentary')); return; }
   try {
     const { result, input, commodity, dfmResult } = req.body as {
       result: unknown;

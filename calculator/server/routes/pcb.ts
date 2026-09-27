@@ -4,7 +4,7 @@ import { resolveApiKey } from '../utils/api-key.js';
 import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
 import { createAnalysisCache } from '../utils/analysis-cache.js';
-import { createAnthropic } from '../utils/ai-client.js';
+import { createAnthropic, isAirGapped, aiDisabledBody, AI_DISABLED_MESSAGE } from '../utils/ai-client.js';
 import {
   computeAllCountryCosts,
   computePCBCountryCost,
@@ -1056,6 +1056,7 @@ router.post('/analyze-image', upload.fields([
     }
   }
 
+  if (isAirGapped()) { res.status(503).json(aiDisabledBody('Reading a board from a photo')); return; }
   const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured. Add it in Settings or set the environment variable.' });
@@ -1590,6 +1591,7 @@ router.post('/reanalyze', upload.fields([
   const imageFiles = files?.pcbImages ?? [];
   const deepAnalysis = isDeep(req);
 
+  if (isAirGapped()) { res.status(503).json(aiDisabledBody('Reading a board from a photo')); return; }
   const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured. Add it in Settings or set the environment variable.' });
@@ -2021,6 +2023,10 @@ router.post('/analyze-image-stream', upload.fields([
   const primaryImage = imageFiles[0];
   if (!primaryImage) { emit('error', { message: 'No image uploaded' }); res.end(); return; }
 
+  if (isAirGapped()) {
+    emit('error', { message: `Reading a board from a photo uses AI. ${AI_DISABLED_MESSAGE}`, code: 'AI_DISABLED' });
+    res.end(); return;
+  }
   const apiKey = resolveApiKey(req);
   if (!apiKey) { emit('error', { message: 'ANTHROPIC_API_KEY not configured' }); res.end(); return; }
 

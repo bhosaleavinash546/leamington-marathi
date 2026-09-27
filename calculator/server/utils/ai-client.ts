@@ -33,6 +33,16 @@ export function isAirGapped(): boolean {
   return process.env.AIR_GAPPED === '1';
 }
 
+/** What an AI entry point says when AI is switched off in this installation.
+ *  Checked before the API key: with AIR_GAPPED=1 a missing key is not the
+ *  reason, and "add a key in Settings" is advice that cannot be followed. */
+export const AI_DISABLED_MESSAGE =
+  'AI is switched off in this installation. Costing, CAD geometry and the learning loop work without it.';
+
+export function aiDisabledBody(feature: string): { error: string; code: 'AI_DISABLED'; airGapped: true } {
+  return { error: `${feature} uses AI. ${AI_DISABLED_MESSAGE}`, code: 'AI_DISABLED', airGapped: true };
+}
+
 /** Human-readable description of the AI egress posture — logged at boot. */
 export function aiEndpointDescription(): string {
   if (isAirGapped()) return 'AIR-GAPPED — all external AI/news/pricing calls disabled';

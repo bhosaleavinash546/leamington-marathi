@@ -1,5 +1,7 @@
 // First: every later fetch to our API must carry the session token.
 import './auth-fetch.js';
+// Before any markup renders: whether this installation has AI at all.
+import { isAiOff } from './ai-mode.js';
 import './styles/calculator.css';
 import {
   computeUniversalStack, validateStackInput, breakdownPercentages,
@@ -7602,7 +7604,7 @@ function buildPCBDemoSection(): string {
 
 function buildPCBImageUploadZone(): string {
   return `
-    <div class="pcb-img-zone" id="pcb-img-zone">
+    <div class="pcb-img-zone ai-only" id="pcb-img-zone">
       <input type="file" id="pcb-img-input" accept="image/jpeg,image/png,image/webp" style="display:none"/>
       <div class="pcb-img-zone-content" id="pcb-img-zone-content">
         <div style="font-size:1.4rem;margin-bottom:4px">🔬</div>
@@ -12607,6 +12609,7 @@ function switchCommodity(type: CommodityType): void {
     area.insertAdjacentHTML('afterbegin', inlineCADPanelHTML());
     wireInlineCAD(type);
   }
+
 }
 
 // ─── Input collectors ─────────────────────────────────────────────────────────
@@ -15049,6 +15052,7 @@ function updateTabBadges(result: PartCostResult, input: UniversalStackInput): vo
 function fetchAICommentary(result: PartCostResult): void {
   const div = document.getElementById('ai-commentary-box');
   if (!div) return;
+  if (isAiOff()) { div.style.display = 'none'; return; }   // no AI here — nothing to say, nothing to ask for
   const pcts = breakdownPercentages(result);
   div.innerHTML = `<div class="ai-commentary-label">✦ AI Cost Commentary</div>
     <span class="ai-commentary-loading">Analysing cost structure…</span>`;
@@ -20692,11 +20696,15 @@ function _cmdkBuild(): CmdkEntry[] {
     { label: 'Help centre', sub: 'Open', icon: 'i-help', run: byId('help-btn') },
     { label: 'Contact support', sub: 'Open', icon: 'i-mail', run: byId('contact-btn') },
     { label: 'Toggle dark / light theme', sub: 'Action', icon: 'i-moon', run: byId('theme-toggle-btn') },
-    { label: 'PCB image to BOM', sub: 'AI', icon: 'i-chart', run: byId('tile-pcb-image') },
-    { label: 'CAD to cost — upload STEP / STL', sub: 'AI', icon: 'i-plus', run: byId('tile-cad') },
-    { label: 'AI agent — cost it in plain English', sub: 'AI', icon: 'i-bulb', run: byId('tile-ai-agent') },
+    // CAD to cost measures the geometry and runs deterministic by default — not an AI feature.
+    { label: 'CAD to cost — upload STEP / STL', sub: 'Geometry', icon: 'i-plus', run: byId('tile-cad') },
+    ...(isAiOff() ? [] : [
+      { label: 'PCB image to BOM', sub: 'AI', icon: 'i-chart', run: byId('tile-pcb-image') },
+      { label: 'AI agent — cost it in plain English', sub: 'AI', icon: 'i-bulb', run: byId('tile-ai-agent') },
+    ]),
   ];
   document.querySelectorAll<HTMLElement>('#commodity-picker-view .cpicker-tile[data-commodity]').forEach(tile => {
+    if (tile.classList.contains('ai-only') && isAiOff()) return;
     const label = tile.querySelector('.cpicker-tile-label')?.textContent?.trim();
     const sub = tile.querySelector('.cpicker-tile-sub')?.textContent?.trim() ?? '';
     if (!label) return;

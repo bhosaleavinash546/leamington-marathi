@@ -96,6 +96,13 @@ async function main(): Promise<void> {
       localStorage.setItem('cv-wizard-off', '1');
     });
 
+    // Step 7 drives the PCB photo panel, which is hidden when the server says AI
+    // is switched off. vite preview proxies /api to whatever runs on :3002, so
+    // pin the answer rather than inherit a local air-gapped server's.
+    await page.route('**/api/health', r => r.fulfill({
+      status: 200, contentType: 'application/json', body: JSON.stringify({ status: 'ok', airGapped: false }),
+    }));
+
     await page.goto(BASE, { waitUntil: 'domcontentloaded' });
     log('page loaded');
 

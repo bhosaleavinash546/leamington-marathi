@@ -32,7 +32,7 @@ import pricesRouter from './routes/prices.js';
 import quotesRouter from './routes/quotes.js';
 import bomRouter from './routes/bom.js';
 import rfqRouter from './routes/rfq.js';
-import { aiEndpointDescription } from './utils/ai-client.js';
+import { aiEndpointDescription, isAirGapped } from './utils/ai-client.js';
 import { JWT_SECRET_CONFIGURED, requireAuth } from './middleware/auth-middleware.js';
 import knowledgeRouter from './routes/knowledge.js';
 import shareRouter from './routes/share.js';
@@ -129,6 +129,10 @@ app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
     apiKeyConfigured: hasUsableServerKey(),
+    // The UI reads this to hide its AI entry points. Air-gapped wins over a key:
+    // a key left in .env does not make AI available when AIR_GAPPED=1.
+    airGapped: isAirGapped(),
+    aiAvailable: !isAirGapped() && hasUsableServerKey(),
     teamAuthEnabled: !!process.env.TEAM_API_KEY,
     smtpConfigured: !!(process.env.SMTP_HOST && process.env.SMTP_USER),
     jwtConfigured: JWT_SECRET_CONFIGURED,   // what the middleware actually signs with, not a second read of the env
