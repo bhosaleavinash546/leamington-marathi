@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence, animate } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import TickNumber from '../components/dfm/TickNumber';
+import ScoreRing from '../components/dfm/ScoreRing';
 import {
   FileDown, FileSpreadsheet, Presentation, ArrowLeft, Filter,
   TrendingDown, Zap, AlertTriangle, CheckCircle, Clock,
@@ -8,7 +10,7 @@ import {
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
   MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2, ClipboardList, X,
-  Square, Store, Layers, Gauge, ThumbsUp, FileSearch
+  Square, Store, Layers, ThumbsUp, FileSearch
 } from 'lucide-react';
 import PrismIcon from '../components/icons/PrismIcon';
 import TypingDots from '../components/ui/TypingDots';
@@ -78,21 +80,6 @@ const ANNOTATION_STATUS_CONFIG: Record<AnnotationStatus, { label: string; color:
   'rejected':      { label: 'Rejected',      color: 'text-danger-400',   bg: 'bg-danger-500/10',  border: 'border-danger-500/20' },
   'on-hold':       { label: 'On Hold',       color: 'text-purple-400',   bg: 'bg-purple-500/10',  border: 'border-purple-500/20' },
 };
-
-function CountUp({ to }: { to: number }) {
-  const countRef = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    const node = countRef.current;
-    if (!node) return;
-    const ctrl = animate(0, to, {
-      duration: 0.7,
-      ease: [0.16, 1, 0.3, 1],
-      onUpdate: v => { node.textContent = Math.round(v).toString(); },
-    });
-    return ctrl.stop;
-  }, [to]);
-  return <span ref={countRef}>0</span>;
-}
 
 const CHAT_FOLLOW_UPS = [
   'What tooling investment is needed?',
@@ -300,7 +287,18 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
       animate={{ opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94], delay: Math.min(index * 0.04, 0.4) } }}
       exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.18 } }}
       whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(245,158,11,0.12)', transition: { type: 'spring', stiffness: 400, damping: 25 } }}
-      className={`bg-navy-900 border rounded-2xl overflow-hidden transition-ui cursor-default shadow-card ${isSelected ? 'border-gold-500/50 shadow-glow-gold' : 'border-white/10 hover:border-gold-500/25'}`}
+      className={`bg-navy-900 border rounded-2xl overflow-hidden transition-ui cursor-default shadow-card focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 ${isSelected ? 'border-gold-500/50 shadow-glow-gold' : 'border-white/10 hover:border-gold-500/25'}`}
+      /* Keyboard: the card itself is a stop. Enter/Space expands, x selects;
+         j/k between cards is handled by the list. Inner controls keep their own keys. */
+      tabIndex={0}
+      data-idea-card=""
+      role="article"
+      aria-label={`Idea ${index + 1}: ${idea.title}`}
+      onKeyDown={e => {
+        if (e.target !== e.currentTarget) return;
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(v => !v); }
+        else if (e.key.toLowerCase() === 'x' && onToggleSelect) { e.preventDefault(); onToggleSelect(idea.id); }
+      }}
     >
       <div className="p-5 pb-4">
         {/* Title row */}
@@ -1358,7 +1356,7 @@ export default function ResultsPage() {
               <button
                 onClick={handleExcelExport}
                 disabled={!!exporting}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
               >
                 <FileSpreadsheet size={16} />
                 {exporting === 'excel' ? 'Exporting...' : 'Excel'}
@@ -1366,7 +1364,7 @@ export default function ResultsPage() {
               <button
                 onClick={handlePptxExport}
                 disabled={!!exporting}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-700 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
               >
                 <Presentation size={16} />
                 {exporting === 'pptx' ? 'Exporting...' : 'PowerPoint'}
@@ -1407,7 +1405,7 @@ export default function ResultsPage() {
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3`}>
                 <stat.icon size={20} className="text-white" />
               </div>
-              <div className="text-3xl font-bold text-white"><CountUp to={stat.value} /></div>
+              <div className="text-3xl font-bold text-white"><TickNumber value={stat.value} /></div>
               <div className="text-slate-500 text-sm mt-0.5">{stat.label}</div>
             </div>
           ))}
@@ -1450,7 +1448,10 @@ export default function ResultsPage() {
           if (!t.total) return null;
           return (
             <div className="mb-5 p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-wrap items-center gap-x-5 gap-y-2">
-              <Gauge size={18} className="text-slate-400 flex-shrink-0" />
+              {/* The portfolio's verified share as a swept gauge — the same
+                  dial the DFM Studio uses for its score, so a reader who
+                  knows one knows the other. It lands on the measured ratio. */}
+              <ScoreRing score={Math.round((t.confirmed / t.total) * 100)} size={64} label="engine-verified" sublabel={`${t.confirmed} of ${t.total}`} />
               <span className="text-slate-300 text-sm">
                 <strong className="text-white">{t.confirmed} of {t.total}</strong> ideas engine-verified
               </span>
@@ -1629,7 +1630,26 @@ export default function ResultsPage() {
         {filtered.length === 0 ? (
           <motion.div layout className="text-center py-12 text-slate-500">No ideas match the current filters.</motion.div>
         ) : (
-          <motion.div layout className="space-y-4 mb-8">
+          <motion.div
+            layout
+            className="space-y-4 mb-8"
+            role="group"
+            aria-label="Cost-reduction ideas"
+            onKeyDown={e => {
+              if (!['j', 'k', 'ArrowDown', 'ArrowUp'].includes(e.key)) return;
+              const t = e.target as HTMLElement;
+              if (['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName) || t.isContentEditable) return;
+              const cards = [...e.currentTarget.querySelectorAll<HTMLElement>('[data-idea-card]')];
+              const cur = cards.findIndex(c => c.contains(t));
+              const next = (e.key === 'j' || e.key === 'ArrowDown') ? Math.min(cards.length - 1, cur + 1) : Math.max(0, cur - 1);
+              if (cards[next] && next !== cur) { e.preventDefault(); cards[next].focus(); cards[next].scrollIntoView({ block: 'nearest' }); }
+            }}
+          >
+            <div className="hidden lg:flex justify-end gap-3 text-2xs text-slate-600 -mb-2" aria-hidden="true">
+              <span><kbd className="font-mono">j</kbd>/<kbd className="font-mono">k</kbd> move</span>
+              <span><kbd className="font-mono">↵</kbd> expand</span>
+              <span><kbd className="font-mono">x</kbd> select</span>
+            </div>
             <AnimatePresence mode="popLayout" initial={false}>
               {filtered.map((idea, i) => (
                 <IdeaCard
@@ -1834,11 +1854,11 @@ export default function ResultsPage() {
           </div>
           <div className="flex gap-3">
             <button onClick={handleExcelExport} disabled={!!exporting}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold text-sm">
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white font-semibold text-sm">
               <FileSpreadsheet size={16} /> Excel Workbook
             </button>
             <button onClick={handlePptxExport} disabled={!!exporting}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white font-semibold text-sm">
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-700 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold text-sm">
               <FileDown size={16} /> PowerPoint Deck
             </button>
             <button onClick={handlePdfExport} disabled={!!exporting}

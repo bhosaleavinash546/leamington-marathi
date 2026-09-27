@@ -1,4 +1,5 @@
 import { useIsNative } from '../hooks/useMobile';
+import { writeString } from '../lib/storage';
 import { useState, useEffect } from 'react';
 import { Server, CheckCircle, XCircle, Wifi, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +23,7 @@ export default function ServerSettingsPage() {
 
   const handleSave = () => {
     const trimmed = url.trim().replace(/\/$/, '');
-    localStorage.setItem('brainspark_server_url', trimmed);
+    writeString('brainspark_server_url', trimmed);
     setSaved(trimmed);
     setStatus('idle');
   };

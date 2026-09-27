@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, type FormEvent } from 'react';
+import { writeJSON } from '../lib/storage';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -151,8 +152,8 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
           {commData.length > 0 ? (
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={commData} layout="vertical" margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
-                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} width={80} />
+                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} width={80} />
                 <Tooltip
                   contentStyle={isDark ? { background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 } : { background: '#ffffff', border: '1px solid rgba(17,24,39,0.12)', borderRadius: 8, color: '#111827' }}
                   formatter={(v: any) => [fmtM((Number(v) || 0) * 1000), 'Saving']}
@@ -375,7 +376,7 @@ export default function DashboardPage() {
       sessionStorage.setItem('analysisSystemName', p.systemName);
       sessionStorage.setItem('analysisSubName', p.subassemblyName);
       if (Array.isArray(project.ideas)) {
-        localStorage.setItem(`brainspark_ideas_${id}`, JSON.stringify(project.ideas));
+        writeJSON(`brainspark_ideas_${id}`, project.ideas);
       }
       navigate('/results');
     } catch { toast('Could not load project — please try again', 'error'); }

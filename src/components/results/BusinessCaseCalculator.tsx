@@ -395,8 +395,8 @@ export default function BusinessCaseCalculator() {
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                      <XAxis dataKey="year" tickFormatter={v => `Yr ${v}`} tick={{ fill: axisColor, fontSize: 10 }} axisLine={false} tickLine={false} />
-                      <YAxis tickFormatter={v => fmt(v)} tick={{ fill: axisColor, fontSize: 9 }} axisLine={false} tickLine={false} width={55} />
+                      <XAxis dataKey="year" tickFormatter={v => `Yr ${v}`} tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} />
+                      <YAxis tickFormatter={v => fmt(v)} tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} width={55} />
                       <ReferenceLine y={0} stroke={isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'} strokeDasharray="4 4" />
                       <Tooltip content={<CustomTooltip isDark={isDark} />} />
                       <Area

@@ -7,6 +7,7 @@ import { OnboardingHeaderChip } from '../OnboardingChecklist';
 import { useTheme } from '../../contexts/ThemeContext';
 import { TOOLS, TOOL_GROUPS, SETTINGS_LINKS } from '../../config/tools';
 import { getAuthToken } from '../../services/auth';
+import { readJSON, pushRecent } from '../../lib/storage';
 
 const dropdownVariants = {
   hidden: { opacity: 0, y: -6, scale: 0.97 },
@@ -14,29 +15,46 @@ const dropdownVariants = {
   exit:    { opacity: 0, y: -6, scale: 0.97, transition: { duration: 0.1, ease: 'easeIn' } },
 };
 
-/** Lightweight tool jumper: type to filter the registry, Enter opens the top hit. */
+/**
+ * THE COMMAND PALETTE (⌘K).
+ *
+ * Type to filter the tool registry and, from two characters, the server's
+ * BM25 index over the marketplace and the caller's own projects and quotes.
+ * It used to open the top hit on Enter and nothing else — no arrow keys, no
+ * memory, no accessible semantics. Now it is a combobox in the ARIA sense:
+ * ↑/↓ move the active row, Enter opens it, Escape closes, and a screen
+ * reader is told which row is active. Empty query shows the five tools used
+ * most recently, from browser storage that cannot throw (src/lib/storage.ts).
+ */
 interface ContentHit { kind: 'idea' | 'project' | 'quote'; id: string; title: string; route: string }
 const HIT_LABEL: Record<ContentHit['kind'], string> = { idea: 'Idea', project: 'Analysis', quote: 'Quote' };
+const RECENTS_KEY = 'brainspark_palette_recents';
+
+type PaletteRow =
+  | { key: string; kind: 'tool'; tool: typeof TOOLS[number] }
+  | { key: string; kind: 'hit'; hit: ContentHit };
 
 function ToolSearch() {
   const navigate = useNavigate();
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const [recents, setRecents] = useState<string[]>(() => readJSON<string[]>(RECENTS_KEY, []));
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const listId = 'palette-listbox';
 
   const matches = useMemo(() => {
     const s = q.trim().toLowerCase();
-    if (!s) return [];
+    if (!s) {
+      // Recents, in order, only ones that still exist in the registry.
+      return recents.map(id => TOOLS.find(t => t.id === id)).filter((t): t is typeof TOOLS[number] => !!t).slice(0, 5);
+    }
     return TOOLS.filter(t =>
       t.label.toLowerCase().includes(s) || t.description.toLowerCase().includes(s)
     ).slice(0, 5);
-  }, [q]);
+  }, [q, recents]);
 
-  // The tool list above is a static filter over nav labels. The server has had
-  // a real BM25 index over the marketplace corpus plus the caller's own
-  // projects and quotes since it was written, at GET /api/search, and nothing
-  // ever called it — so searching for a PART you had costed found nothing.
   const [content, setContent] = useState<ContentHit[]>([]);
   useEffect(() => {
     const s = q.trim();
@@ -61,12 +79,19 @@ function ToolSearch() {
     return () => { clearTimeout(t); ctl.abort(); };
   }, [q]);
 
+  const rows = useMemo<PaletteRow[]>(() => [
+    ...matches.map(tool => ({ key: `tool-${tool.id}`, kind: 'tool' as const, tool })),
+    ...content.map(hit => ({ key: `${hit.kind}-${hit.id}`, kind: 'hit' as const, hit })),
+  ], [matches, content]);
+  useEffect(() => { setActive(0); }, [q, rows.length]);
+
   // ⌘K / Ctrl+K focuses the jumper from anywhere.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         inputRef.current?.focus();
+        setOpen(true);
       }
     }
     window.addEventListener('keydown', onKey);
@@ -81,10 +106,14 @@ function ToolSearch() {
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
 
-  function go(route: string) {
+  function go(row: PaletteRow) {
+    if (row.kind === 'tool') setRecents(pushRecent(RECENTS_KEY, row.tool.id, 5));
     setQ(''); setOpen(false); inputRef.current?.blur();
-    navigate(route);
+    navigate(row.kind === 'tool' ? row.tool.route : row.hit.route);
   }
+
+  const showList = open && rows.length > 0;
+  const showingRecents = !q.trim() && matches.length > 0;
 
   return (
     <div ref={wrapRef} className="relative hidden md:block w-64 lg:w-80">
@@ -96,50 +125,73 @@ function ToolSearch() {
           onChange={e => { setQ(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
           onKeyDown={e => {
-            if (e.key === 'Enter' && matches[0]) go(matches[0].route);
-            if (e.key === 'Escape') { setQ(''); setOpen(false); inputRef.current?.blur(); }
+            if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); setActive(i => rows.length ? (i + 1) % rows.length : 0); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(i => rows.length ? (i - 1 + rows.length) % rows.length : 0); }
+            else if (e.key === 'Home' && rows.length) { e.preventDefault(); setActive(0); }
+            else if (e.key === 'End' && rows.length) { e.preventDefault(); setActive(rows.length - 1); }
+            else if (e.key === 'Enter' && rows[active]) go(rows[active]);
+            else if (e.key === 'Escape') { setQ(''); setOpen(false); inputRef.current?.blur(); }
           }}
           placeholder="Jump to a tool…"
           className="flex-1 bg-transparent text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none min-w-0"
+          role="combobox"
           aria-label="Jump to a tool"
+          aria-expanded={showList}
+          aria-controls={listId}
+          aria-autocomplete="list"
+          aria-activedescendant={showList && rows[active] ? `${listId}-${rows[active].key}` : undefined}
         />
         <kbd className="text-2xs text-slate-400 border border-hairline-strong rounded px-1 py-px shrink-0">⌘K</kbd>
       </div>
       <AnimatePresence>
-        {open && (matches.length > 0 || content.length > 0) && (
+        {showList && (
           <motion.div
             variants={dropdownVariants} initial="hidden" animate="visible" exit="exit"
-            className="absolute top-full left-0 right-0 mt-1.5 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden z-50"
+            id={listId}
+            role="listbox"
+            aria-label={showingRecents ? 'Recent tools' : 'Results'}
+            className="absolute top-full left-0 right-0 mt-1.5 rounded-xl bg-navy-800 border border-white/10 shadow-popover py-1 overflow-hidden z-popover"
           >
-            {matches.map((t, i) => (
-              <button
-                key={t.id}
-                onClick={() => go(t.route)}
-                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-left transition-colors ${i === 0 ? 'bg-white/5 text-white' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}
-              >
-                <t.icon size={14} className="text-gold-400 shrink-0" />
-                <span className="font-medium">{t.label}</span>
-                <span className="text-slate-500 text-xs truncate ml-auto">{t.description}</span>
-              </button>
-            ))}
-            {content.length > 0 && (
-              <>
-                <div className="px-3.5 pt-2 pb-1 text-2xs uppercase tracking-wider text-slate-500 border-t border-white/8 mt-1">
-                  Your content
-                </div>
-                {content.map(h => (
-                  <button
-                    key={`${h.kind}-${h.id}`}
-                    onClick={() => go(h.route)}
-                    className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-left text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
-                  >
-                    <Search size={13} className="text-slate-500 shrink-0" />
-                    <span className="truncate">{h.title}</span>
-                    <span className="text-slate-500 text-2xs uppercase tracking-wider ml-auto shrink-0">{HIT_LABEL[h.kind]}</span>
-                  </button>
-                ))}
-              </>
+            {showingRecents && (
+              <div className="px-3.5 pt-1.5 pb-1 text-2xs uppercase tracking-wider text-slate-500">Recent</div>
             )}
+            {rows.map((row, i) => {
+              const isActive = i === active;
+              const base = `w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-left transition-colors ${isActive ? 'bg-white/5 text-white' : 'text-slate-300 hover:text-white hover:bg-white/5'}`;
+              const firstHit = row.kind === 'hit' && (i === 0 || rows[i - 1].kind === 'tool');
+              return (
+                <div key={row.key}>
+                  {firstHit && (
+                    <div className="px-3.5 pt-2 pb-1 text-2xs uppercase tracking-wider text-slate-500 border-t border-white/8 mt-1">Your content</div>
+                  )}
+                  <button
+                    id={`${listId}-${row.key}`}
+                    role="option"
+                    aria-selected={isActive}
+                    onMouseEnter={() => setActive(i)}
+                    onClick={() => go(row)}
+                    className={base}
+                  >
+                    {row.kind === 'tool' ? (
+                      <>
+                        <row.tool.icon size={14} className="text-gold-400 shrink-0" />
+                        <span className="font-medium whitespace-nowrap shrink-0">{row.tool.label}</span>
+                        <span className="text-slate-500 text-xs truncate ml-auto min-w-0">{row.tool.description}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Search size={13} className="text-slate-500 shrink-0" />
+                        <span className="truncate">{row.hit.title}</span>
+                        <span className="text-slate-500 text-2xs uppercase tracking-wider ml-auto shrink-0">{HIT_LABEL[row.hit.kind]}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              );
+            })}
+            <div className="px-3.5 pt-1.5 pb-1 text-2xs text-slate-600 border-t border-white/8 mt-1 flex gap-3">
+              <span><kbd className="font-mono">↑↓</kbd> move</span><span><kbd className="font-mono">↵</kbd> open</span><span><kbd className="font-mono">esc</kbd> close</span>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -219,8 +271,9 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-3 shrink-0">
             {isAuthenticated && <OnboardingHeaderChip />}
             <button
-              onClick={toggleTheme}
+              onClick={e => { const r = e.currentTarget.getBoundingClientRect(); toggleTheme({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); }}
               title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
               className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-gold-500/30 transition-ui group"
             >
               {theme === 'dark'
@@ -340,7 +393,7 @@ export default function Header() {
                     <s.icon size={14} className="text-slate-500" /> {s.label}
                   </Link>
                 ))}
-                <button onClick={() => { toggleTheme(); setMenuOpen(false); }} className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg">
+                <button onClick={e => { const r = e.currentTarget.getBoundingClientRect(); toggleTheme({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); setMenuOpen(false); }} className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg">
                   {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
                   {theme === 'dark' ? 'Light Theme' : 'Dark Theme'}
                 </button>

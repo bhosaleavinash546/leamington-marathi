@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { writeString } from '../lib/storage';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload, FileBox, AlertTriangle, CheckCircle, BarChart3,
@@ -346,7 +347,7 @@ export default function CadToCostPage() {
           <input
             type="password"
             value={apiKey}
-            onChange={e => { setApiKey(e.target.value); localStorage.setItem('brainspark_api_key', e.target.value); }}
+            onChange={e => { setApiKey(e.target.value); writeString('brainspark_api_key', e.target.value); }}
             placeholder="sk-ant-api03-..."
             className="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/50"
           />

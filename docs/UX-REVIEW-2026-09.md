@@ -306,3 +306,37 @@ because the review is worth less if it only lists what confirmed:
   label names the group, the titles name the items. Left as it is.
 - I also reported "21 uppercase labels with no tracking". The true number is
   **2**; the 21 came from comparing an occurrence count with a line count.
+
+
+## 8. Wave 3 delivered — 27 September
+
+The register for this pass is `docs/REVIEW-2026-09-27.md`; the decisions are
+DECISIONS 77–81. What moved, measured on the rebuilt bundle:
+
+| Measure | Before | After | Basis |
+|---|---|---|---|
+| Generation run: what the user sees for the reasoning minutes | "Connecting…" | Phase rail Connect → Search → Reason → Write → Verify, elapsed clock, server token estimate, Cancel | MEASURED (stub run, both themes) |
+| Cancel stops the upstream model call | no — ran to the 10-minute timeout, billed | yes; metered as cancelled | MEASURED (`tests/analyze-cancel.test.mjs`) |
+| Sub-11 px text on `/results` | 15 nodes per render | 0 | MEASURED |
+| axe serious/critical on `/results` | 4 (dark) / 4 (light) | 0 / 0 | MEASURED |
+| Command palette | Enter on top hit only | ↑↓ Home End Enter Esc, recents, combobox semantics | MEASURED (keyboard-driven) |
+| Results grid keyboard | none | j/k/arrows, Enter, x; visible ring; hint | MEASURED |
+| Measured numbers on Results | local `CountUp` | shared `TickNumber`; verified share as `ScoreRing` | CODE |
+| Theme change | hard cut | View Transition circle from the toggle, 3 guards | MEASURED (mid-frame capture) |
+| Platform CSS in use | `text-wrap: balance` utility only | `@property`, `@starting-style`, View Transitions, `text-wrap: pretty`, `content-visibility: auto` | CODE |
+| Raw `localStorage.setItem` outside try/catch | 9 | 0 | CODE |
+| Design-system gate | CSS/Tailwind literals | + JS-number font sizes (chart ticks, style objects) | CODE, gated |
+
+| Dimension | 25 Sept | 27 Sept | What moved it |
+|---|---|---|---|
+| Motion | 8.5 | 9 | The run rail and theme reveal are the two largest motions in the product and both explain state; both degrade honestly. |
+| Interaction states | 8 | 8.5 | Cancel exists; palette and results grid are keyboard-complete. |
+| Accessibility | 8.5 | 9 | Results and the running Analyze page clean; switches named. |
+| Typography | 8 | 8.5 | The last sub-floor sizes (chart ticks) found and gated. |
+| States | 7 | 8 | The long-running state is designed; the cancelled state is a plain line, not an error. |
+| Performance feel | 6 | 6.5 | `content-visibility` on marketplace cards; the list is still not virtualised. |
+| **Overall** | **7.7** | **8.2** | |
+
+What a 9 still needs: the marketplace virtualised, the form primitives
+adopted on the five compact table pages, and engine figures converted at
+the display boundary with their rate shown (DECISIONS 76).

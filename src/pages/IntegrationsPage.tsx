@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { writeJSON } from '../lib/storage';
 import { motion } from 'framer-motion';
 import { Link2, CheckCircle, AlertCircle, ExternalLink, Slack, Send, Construction, Clock, Database, Settings, GitBranch, Box } from 'lucide-react';
 import { toast } from '../hooks/useToast';
@@ -39,7 +40,7 @@ export default function IntegrationsPage() {
   }, []);
 
   function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    if (!writeJSON(STORAGE_KEY, config)) { toast('Could not save — browser storage is blocked or full.', 'error'); return; }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }

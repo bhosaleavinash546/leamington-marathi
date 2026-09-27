@@ -60,11 +60,24 @@ const ideas = [
     engineering: { mechanism: 'Remove unused current margin.', specDeltas: 'Die per switch 4 → 3.', validationPlan: 'Short-circuit and drive-cycle thermal validation.', dfmImplications: 'None.', costBridge: 'Die cost.' } },
 ];
 
-const write = (res, ev, data) => res.write(`event: ${ev}\ndata: ${JSON.stringify(data)}\n\n`);
+const write = (res, ev, data) => { if (!res.destroyed) res.write(`event: ${ev}\ndata: ${JSON.stringify(data)}\n\n`); };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+// Observable from tests: how many calls opened, and how many the CALLER hung
+// up on before the reply finished (the server aborting upstream on a client
+// disconnect is what /api/analyze must do — this is where it is measured).
+const stats = { requests: 0, completed: 0, aborted: 0 };
+
 http.createServer(async (req, res) => {
+  if (req.method === 'GET' && req.url === '/__stats') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify(stats)); }
   if (req.method !== 'POST' || !req.url.startsWith('/v1/messages')) { res.writeHead(404); return res.end(); }
+  stats.requests++;
+  // Detect the CALLER hanging up. This must watch the response, not the
+  // request: since Node 16 `req` emits 'close' as soon as its body has been
+  // read, which is long before a streamed reply is done — the first version
+  // of this listener declared every call aborted the moment it started.
+  let gone = false;
+  res.on('close', () => { if (!res.writableFinished) { gone = true; stats.aborted++; console.log('[fake-llm] caller aborted mid-reply'); } });
   let body = ''; for await (const c of req) body += c;
   let p = {}; try { p = JSON.parse(body); } catch {}
   const tool = (p.tools || []).find(t => t.name === 'emit_ideas') || (p.tools || [])[0];
@@ -92,7 +105,8 @@ http.createServer(async (req, res) => {
   if (tool) {
     write(res, 'content_block_start', { type: 'content_block_start', index: idx, content_block: { type: 'tool_use', id: 'toolu_stub', name: tool.name, input: {} } });
     const chunks = 40, step = Math.ceil(json.length / chunks), pace = Math.max(50, (PACE_MS * 0.75) / chunks);
-    for (let i = 0; i < json.length; i += step) { write(res, 'content_block_delta', { type: 'content_block_delta', index: idx, delta: { type: 'input_json_delta', partial_json: json.slice(i, i + step) } }); await sleep(pace); }
+    for (let i = 0; i < json.length && !gone; i += step) { write(res, 'content_block_delta', { type: 'content_block_delta', index: idx, delta: { type: 'input_json_delta', partial_json: json.slice(i, i + step) } }); await sleep(pace); }
+    if (gone) return;
   } else {
     write(res, 'content_block_start', { type: 'content_block_start', index: idx, content_block: { type: 'text', text: '' } });
     write(res, 'content_block_delta', { type: 'content_block_delta', index: idx, delta: { type: 'text_delta', text: 'ok' } });
@@ -100,5 +114,6 @@ http.createServer(async (req, res) => {
   write(res, 'content_block_stop', { type: 'content_block_stop', index: idx });
   write(res, 'message_delta', { type: 'message_delta', delta: { stop_reason: tool ? 'tool_use' : 'end_turn', stop_sequence: null }, usage: { output_tokens: outTok } });
   write(res, 'message_stop', { type: 'message_stop' });
+  stats.completed++;
   res.end();
 }).listen(PORT, '127.0.0.1', () => console.log(`[fake-llm] listening on http://127.0.0.1:${PORT} — synthetic output, pace ${PACE_MS}ms`));

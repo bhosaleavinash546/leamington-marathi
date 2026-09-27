@@ -3958,3 +3958,81 @@ the client never imports `fx-rates.mjs`, so nothing converts engine figures at
 the display boundary, and a GBP run shows a £ saving beside a € engine check.
 The honest fix is a converted figure that names its rate and date; that is a
 design change, not a one-liner, and it is recorded here rather than improvised.
+
+## 77. A closed response aborts every model call the run owns
+
+Found in the September 2026 360° review, reading `/api/analyze`: the only
+thing the server did when the browser went away was clear the SSE heartbeat.
+The upstream model call kept generating — for up to the ten-minute call
+timeout — and was billed, while the only channel it could have returned on
+was already closed. A reload at minute four (the review watched one) started
+a second bill on top of the first.
+
+The route now owns one `AbortController`. `res.on('close')` before the
+response has ended aborts it; the signal rides into `createLongMessage` (so
+the SDK's `MessageStream` tears down its fetch) and, through `makeAnthropic`,
+into every `messages.create` the same client makes without a signal of its
+own — the critic, engine-check and deep-mode steps stop with the generation.
+`finishAnalysis` checks the signal before its own model calls. A cancelled
+stream is metered as `(stream, cancelled)` with `ok=0`, never as a provider
+failure. The client side is a `Cancel run` button and an abort on unmount,
+because leaving the page loses the result anyway.
+
+The rule this sets: **a long model call is owned by the response that will
+carry its result**. Any new route that streams for minutes takes the same
+controller. `tests/analyze-cancel.test.mjs` proves it against the stub, which
+now counts the calls its caller hung up on (`GET /__stats`).
+
+## 78. The run panel shows the server's phase, never a guessed progress bar
+
+The generation panel was a list of one-line events under a spinner; for the
+minutes the model spent reasoning it read "Connecting…", which is what made
+people reload. The new panel (`src/components/analyze/RunPanel.tsx`) has a
+five-stop rail — Connect → Search → Reason → Write → Verify — and the
+`progress` events now carry `phase`, `elapsedMs` and `outTokens`, so the
+rail advances only when the server says the phase changed. The token figure
+is the server's own estimate from streamed characters and is labelled as an
+estimate. The clock is the one self-driven element, because time genuinely
+passes. Nothing on the panel guesses ahead of the stream — the same rule as
+motion.ts: motion explains state it has evidence for.
+
+Two platform features carry the motion with no JavaScript: `@property`
+registers `--run-fill` as a `<number>` so the rail's width interpolates
+between phases (an unregistered custom property cannot animate), and
+`@starting-style` gives each new event row its entrance. Both degrade to an
+instant change in browsers without them and under `prefers-reduced-motion`.
+
+## 79. The theme change is a View Transition, with three guards
+
+Switching every surface at once is the largest visual event in the product
+and it was a hard cut. `toggleTheme(origin)` now runs the swap inside
+`document.startViewTransition` and animates the new snapshot's `clip-path`
+as a circle growing from the toggle button, on the house curve and the
+`draw` duration. Guards: no API → plain swap; `prefers-reduced-motion` →
+plain swap; the API throwing (a transition already running) → plain swap.
+The default cross-fade is switched off in `index.css` because the circle is
+the transition. This is the only View Transition in the product; route
+changes keep the framer-motion `PageTransition`, because running both would
+animate every navigation twice.
+
+## 80. Browser storage cannot throw at a caller
+
+`src/lib/storage.ts` wraps `localStorage` so a blocked or full store returns
+a fallback on read and `false` on write. The motivating bug: `signIn` wrote
+the session with a bare `setItem`, so on a laptop with site data blocked the
+write threw out of sign-in and the user was signed out on the next
+navigation with no message. The session now lives for the tab regardless and
+the persistence failure is logged; Integrations reports a failed save
+instead of pretending. The helper's own first version returned `true` with
+no store at all — caught by its test before it shipped, which is the reason
+the tests exist.
+
+## 81. Type-floor gate reads JavaScript numbers too
+
+The literal scanner in `tests/design-system.test.mjs` read CSS and Tailwind
+arbitrary values. Chart ticks (`tick={{ fontSize: 10 }}`) and style objects
+(`style={{ fontSize: 8 }}`) carry their size as a number and slipped past
+it: the review's sweep found every Results and Dashboard axis at 10 px and
+the DFM score ring's denominator at 8 px. Same floor, read the way JSX
+writes it. The ring now drops its "/ 100" below 80 px rather than shrinking
+it under the floor; the sublabel beside it carries the denominator.

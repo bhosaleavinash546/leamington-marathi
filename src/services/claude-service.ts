@@ -3,9 +3,16 @@ import { getAuthToken } from './auth';
 
 export type ChatHistory = { role: 'user' | 'assistant'; content: string }[];
 
+/** Where a run is on its rail. Emitted by the server; the client never guesses ahead of it. */
+export type RunPhase = 'connect' | 'search' | 'reason' | 'write' | 'verify';
+
 export interface ProgressEvent {
   type: 'connecting' | 'searching' | 'search_done' | 'synthesizing' | 'progress' | 'complete' | 'error';
   message?: string;
+  phase?: RunPhase;
+  /** Output tokens streamed so far — an estimate from characters, labelled as such in the UI. */
+  outTokens?: number;
+  elapsedMs?: number;
   query?: string;
   purpose?: string;
   searchNumber?: number;
@@ -76,7 +83,16 @@ export async function generateCostReductionIdeas(
   searchApiKey?: string,
   onProgress?: (event: ProgressEvent) => void,
   /** Part 360 grounded mode: per-lens evidence blocks from /api/part360/dossier. */
-  extra?: { partEvidence?: { blocks: Array<{ lensId: string; text: string }> }; prismRunId?: string }
+  extra?: {
+    partEvidence?: { blocks: Array<{ lensId: string; text: string }> };
+    prismRunId?: string;
+    /**
+     * Cancel. Aborting closes the SSE response, and the server aborts its
+     * upstream model calls on that close — so Cancel stops the bill, not
+     * just the spinner. Rejects with an Error whose name is 'AbortError'.
+     */
+    signal?: AbortSignal;
+  }
 ): Promise<AnalysisResponse> {
   const token = getAuthToken();
   const headers: Record<string, string> = {
@@ -88,6 +104,7 @@ export async function generateCostReductionIdeas(
   const response = await fetch('/api/analyze', {
     method: 'POST',
     headers,
+    signal: extra?.signal,
     body: JSON.stringify({
       config,
       systemName,

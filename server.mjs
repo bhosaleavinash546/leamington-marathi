@@ -271,6 +271,11 @@ function makeAnthropic(apiKey, meta = {}) {
   // still logs every call.
   client.messages.create = (params, opts) => {
     const t0 = Date.now();
+    // A run-scoped abort signal (set by /api/analyze when the browser goes
+    // away) rides into every call that did not bring its own, so the critic,
+    // engine-check and deep-mode steps stop with the main generation instead
+    // of billing on for a reader who has left.
+    if (client._abortSignal && !opts?.signal) opts = { ...(opts || {}), signal: client._abortSignal };
     const promise = origCreate(params, opts);
     promise.then(resp => {
       // A streamed call resolves here when the stream OPENS, before any usage
@@ -3229,11 +3234,12 @@ async function createLongMessage(client, params, opts, onProgress) {
     return msg;
   } catch (e) {
     // An API error at OPEN carries a status and was already logged by the
-    // wrapper; a mid-stream failure has none and is logged here.
+    // wrapper; a mid-stream failure has none and is logged here. A stream the
+    // caller aborted is labelled as such — it was billed for what it streamed.
     if (e?.status == null) {
       try {
         db.prepare('INSERT INTO llm_calls (id, model, latencyMs, ok, createdAt, userId, route) VALUES (?,?,?,0,?,?,?)')
-          .run(crypto.randomUUID(), params.model + ' (stream)', Date.now() - t0, new Date().toISOString(), meta.userId ?? null, meta.route ?? null);
+          .run(crypto.randomUUID(), params.model + (opts?.signal?.aborted ? ' (stream, cancelled)' : ' (stream)'), Date.now() - t0, new Date().toISOString(), meta.userId ?? null, meta.route ?? null);
       } catch { /* ignore */ }
     }
     throw e;
@@ -3296,6 +3302,18 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     const hb = setInterval(() => { try { res.write(':hb\n\n'); } catch { /* closed */ } }, 15_000);
     res.on('close', () => clearInterval(hb));
   }
+  // The money guard. A browser that closes the tab, hits Cancel or loses its
+  // connection mid-run used to leave the upstream model call generating for
+  // another ten minutes — billed, and the result unreadable because this
+  // response is the only channel it could return on. 'close' before 'end'
+  // means the reader is gone; abort every model call this run owns.
+  const run = new AbortController();
+  const startedAt = Date.now();
+  res.on('close', () => {
+    if (res.writableEnded) return;
+    run.abort(new Error('client disconnected'));
+    console.warn(`[Analysis] client disconnected after ${Math.round((Date.now() - startedAt) / 1000)}s — upstream model calls aborted.`);
+  });
 
   function emit(data) {
     if (useSSE) res.write(`data: ${JSON.stringify(data)}\n\n`);
@@ -3312,7 +3330,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       autoSaveProject(req.user.id, projectId, sysName, subName, prtName, config, cached.ideas, cached.sources);
       if (useSSE) {
         emit({ type: 'connecting', message: 'Loading cached analysis…' });
-        emit({ type: 'synthesizing', message: 'Restoring from cache…' });
+        emit({ type: 'synthesizing', phase: 'verify', message: 'Restoring from cache…' });
         emit({ type: 'complete', ideas: cached.ideas, sources: cached.sources, projectId, cached: true });
         res.end();
       } else {
@@ -3324,6 +3342,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
   }
 
   const client = makeAnthropic(config.apiKey, { userId: req.user?.id, route: '/api/analyze' });
+  client._abortSignal = run.signal;
   // Positive feedback loop: what this user approved/confirmed feeds generation
   // (prompt examples) AND ranking (visible tasteMatch boost in finishAnalysis).
   let tasteProfile = null;
@@ -3341,6 +3360,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
   // JSON): critic validation → deterministic engine cross-check → prior-art
   // labelling → autosave → respond.
   async function finishAnalysis(parsedIdeas) {
+    if (run.signal.aborted) throw run.signal.reason;
     // Evidence is only "verified" if live retrieval actually returned data.
     // Otherwise every citation is model-asserted and must be labelled unverified.
     const searchExecuted = enableSearch && sources.some(s => Array.isArray(s.results) && s.results.length > 0);
@@ -3574,7 +3594,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
         };
         let response;
         try {
-          response = await createLongMessage(client, params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
+          response = await createLongMessage(client, params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1, signal: run.signal });
         } catch (e) {
           // One failed lens must not sink the run — the merged set says which
           // lens is missing rather than silently narrowing coverage. Logged
@@ -3620,9 +3640,13 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       // A 24k-token generation legitimately exceeds the default 90s client
       // timeout; give it room and don't retry the full doomed request 3× (which
       // would burn ~4× the tokens before failing).
-      const callOpts = { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 };
+      const callOpts = { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1, signal: run.signal };
       const fmt = ms => `${Math.floor(ms / 60000)}m ${String(Math.floor((ms % 60000) / 1000)).padStart(2, '0')}s`;
-      const onTokens = ({ elapsedMs, outTokens }) => emit({ type: 'progress', message: outTokens > 0
+      // `phase` drives the run panel's rail (connect → search → reason →
+      // write → verify); the message is the human line under it. Both say
+      // only what the stream has actually shown — a token estimate appears
+      // once output bytes are flowing, never before.
+      const onTokens = ({ elapsedMs, outTokens }) => emit({ type: 'progress', phase: outTokens > 0 ? 'write' : 'reason', elapsedMs, outTokens, message: outTokens > 0
         ? `Writing ideas… ~${outTokens.toLocaleString()} tokens (${fmt(elapsedMs)})`
         : `Reasoning… ${fmt(elapsedMs)}` });
       const withoutThinking = () => { delete params.thinking; delete params.output_config; params.max_tokens = BASE_OUTPUT_TOKENS; };
@@ -3656,7 +3680,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       }
       if (trunc) throw new Error(`${trunc} Try a narrower part or a shorter context.`);
       if (emitBlock) {
-        emit({ type: 'synthesizing', message: `Synthesising all available cost-reduction ideas${sources.length > 0 ? ` (${sources.length} searches complete)` : ''}...` });
+        emit({ type: 'synthesizing', phase: 'verify', message: `Synthesising all available cost-reduction ideas${sources.length > 0 ? ` (${sources.length} searches complete)` : ''}...` });
         return await finishAnalysis(Array.isArray(emitBlock.input?.ideas) ? emitBlock.input.ideas : []);
       }
 
@@ -3676,7 +3700,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
         messages.push({ role: 'assistant', content: response.content });
         messages.push({ role: 'user', content: toolResults });
       } else {
-        emit({ type: 'synthesizing', message: `Synthesising all available cost-reduction ideas${sources.length > 0 ? ` (${sources.length} searches complete)` : ''}...` });
+        emit({ type: 'synthesizing', phase: 'verify', message: `Synthesising all available cost-reduction ideas${sources.length > 0 ? ` (${sources.length} searches complete)` : ''}...` });
         const textBlock = response.content.find(b => b.type === 'text');
         if (!textBlock) throw new Error('No text response from AI.');
         let raw = textBlock.text.trim();
@@ -3700,6 +3724,11 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     }
     throw new Error('Max search iterations reached — try disabling web search.');
   } catch (err) {
+    if (run.signal.aborted) {
+      // Nobody is listening; say so in the log (once, at warn above) and stop.
+      try { if (!res.writableEnded) res.end(); } catch { /* already closed */ }
+      return;
+    }
     console.error('[Analysis Error]', err?.message, err?.status || '');
     // Sanitise genuine SDK/provider errors, but surface our own app-level messages
     // (timeout, max-iterations, no-valid-ideas, JSON parse) so users can act on them.

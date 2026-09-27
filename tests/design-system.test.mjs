@@ -60,7 +60,28 @@ test(`type floor is ${TYPE_FLOOR_PX} px, tested as a number rather than a list o
   assert.deepEqual(bad, [], `nothing may render below ${TYPE_FLOOR_PX}px; use text-2xs`);
 });
 
+// The literal scanner reads CSS and Tailwind arbitrary values. A chart tick
+// (`tick={{ fontSize: 10 }}`) or an inline style object (`style={{ fontSize: 8 }}`)
+// carries its size as a JavaScript number and slipped past it: the September
+// 2026 sweep found every Results and Dashboard chart axis at 10 px and a
+// gauge sub-label at 8 px. Same floor, read the way JSX writes it.
+export function jsFontSizes(src) {
+  return [...src.matchAll(/fontSize:\s*(\d+(?:\.\d+)?)\b/g)].map(m => ({ px: parseFloat(m[1]), raw: m[0] }));
+}
+
+test(`inline fontSize numbers in .tsx respect the ${TYPE_FLOOR_PX} px floor (chart ticks, style objects)`, () => {
+  const bad = [];
+  for (const f of files.filter(f => /\.tsx$/.test(f))) {
+    for (const { px, raw } of jsFontSizes(readFileSync(f, 'utf8'))) {
+      if (px < TYPE_FLOOR_PX) bad.push(`${f}: ${raw}`);
+    }
+  }
+  assert.deepEqual(bad, [], `recharts tick={{ fontSize }} and style={{ fontSize }} must be ≥ ${TYPE_FLOOR_PX}`);
+});
+
 test('the type-floor scanner catches the size its first version missed', () => {
+  assert.equal(jsFontSizes('<YAxis tick={{ fill: c, fontSize: 10 }} />')[0].px, 10);
+  assert.deepEqual(jsFontSizes('fontSize: 12'), [{ px: 12, raw: 'fontSize: 12' }]);
   assert.equal(literalFontSizes('<span className="text-[8px]">LIVE</span>').length, 1);
   assert.equal(literalFontSizes('<span className="text-[8px]">LIVE</span>')[0].px, 8);
   assert.equal(literalFontSizes('.x { font-size: 9px; }')[0].px, 9);

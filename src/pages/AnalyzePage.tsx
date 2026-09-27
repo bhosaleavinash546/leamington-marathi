@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,12 +11,17 @@ import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { toast } from '../hooks/useToast';
 import { markOnboardingStep } from '../components/OnboardingChecklist';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
-import { generateCostReductionIdeas, saveFullResult, ProgressEvent } from '../services/claude-service';
+import { generateCostReductionIdeas, saveFullResult, ProgressEvent, RunPhase } from '../services/claude-service';
+import RunPanel from '../components/analyze/RunPanel';
+import { writeString } from '../lib/storage';
 import { parseCadFile, CadGeometry, formatFileSize } from '../services/cad-parser';
 import CadViewer3D from '../components/CadViewer3D';
 import { AnalysisConfig, AnalysisResult, BodyStyle, PlantRegion, Currency } from '../types';
 import { getAuthToken } from '../services/auth';
 import PageHeader from '../components/ui/PageHeader';
+
+/** Event types that imply a rail phase when the server did not name one. */
+const PHASE_OF: Partial<Record<ProgressEvent['type'], RunPhase>> = { connecting: 'connect', searching: 'search', search_done: 'search', synthesizing: 'verify' };
 
 interface ProgressStep {
   id: string;
@@ -158,6 +163,14 @@ export default function AnalyzePage() {
   const [cadGeometry, setCadGeometry] = useState<CadGeometry | null>(null);
   const [isParsing, setIsParsing] = useState(false);
   const [progressSteps, setProgressSteps] = useState<ProgressStep[]>([]);
+  // The live run: when it started, which phase the server last reported, and
+  // the server's own output-token estimate. Rendered by RunPanel.
+  const [run, setRun] = useState<{ startedAt: number; phase: RunPhase; outTokens: number } | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  // One controller per run. Cancel aborts the fetch, which closes the SSE
+  // response, which makes the server abort its upstream model call.
+  const abortRef = useRef<AbortController | null>(null);
+  useEffect(() => () => abortRef.current?.abort(), []);   // leaving the page stops the bill too
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -232,6 +245,8 @@ export default function AnalyzePage() {
   });
 
   const handleProgress = useCallback((event: ProgressEvent) => {
+    const phase = event.phase ?? PHASE_OF[event.type];
+    setRun(r => r ? { ...r, phase: phase ?? r.phase, outTokens: event.outTokens ?? r.outTokens } : r);
     setProgressSteps(prev => {
       const markActiveDone = () => prev.map(s => s.status === 'active' ? { ...s, status: 'done' as const } : s);
       switch (event.type) {
@@ -290,8 +305,13 @@ export default function AnalyzePage() {
     setLoading(true);
     setError('');
     setProgressSteps([]);
-    localStorage.setItem('brainspark_api_key', apiKey);
-    if (searchApiKey) localStorage.setItem('brainspark_brave_key', searchApiKey);
+    setCancelling(false);
+    setRun({ startedAt: Date.now(), phase: 'connect', outTokens: 0 });
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    writeString('brainspark_api_key', apiKey);
+    if (searchApiKey) writeString('brainspark_brave_key', searchApiKey);
 
     try {
       let contextWithTeardown = additionalContext;
@@ -349,7 +369,8 @@ export default function AnalyzePage() {
       const part = partId ? selectedSub?.parts.find(p => p.id === partId) : undefined;
 
       const { ideas, sources, resultId } = await generateCostReductionIdeas(
-        config, system.name, sub.name, part?.name, enableSearch, searchApiKey || undefined, handleProgress
+        config, system.name, sub.name, part?.name, enableSearch, searchApiKey || undefined, handleProgress,
+        { signal: controller.signal }
       );
 
       const quickWins = ideas.filter(i => i.implementationDifficulty === 'Low').length;
@@ -376,13 +397,27 @@ export default function AnalyzePage() {
       markOnboardingStep('generate');
       navigate('/results');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message.includes('ECONNREFUSED') || message.includes('fetch')
-        ? 'Cannot connect to BrainSpark server. Run "npm run server" in a separate terminal and retry.'
-        : `Analysis failed: ${message}`);
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        // The user's own decision, not a failure: no red banner, one plain line.
+        toast('Run cancelled. The model call was stopped; only what had already streamed is billed.', 'info');
+      } else {
+        const message = err instanceof Error ? err.message : String(err);
+        setError(message.includes('ECONNREFUSED') || message.includes('fetch')
+          ? 'Cannot connect to BrainSpark server. Run "npm run server" in a separate terminal and retry.'
+          : `Analysis failed: ${message}`);
+      }
     } finally {
       setLoading(false);
+      setRun(null);
+      setCancelling(false);
+      abortRef.current = null;
     }
+  };
+
+  const cancelRun = () => {
+    if (!abortRef.current) return;
+    setCancelling(true);
+    abortRef.current.abort();
   };
 
   return (
@@ -886,6 +921,10 @@ export default function AnalyzePage() {
                       <span className="px-1.5 py-0.5 rounded text-xs bg-blue-500/15 text-blue-300 border border-blue-500/20">Recommended</span>
                     </div>
                     <button
+                      type="button"
+                      role="switch"
+                      aria-checked={enableSearch}
+                      aria-label="Live web search"
                       onClick={() => setEnableSearch(!enableSearch)}
                       className={`relative w-11 h-6 rounded-full transition-colors ${enableSearch ? 'bg-blue-500' : 'bg-white/15'}`}
                     >
@@ -920,8 +959,11 @@ export default function AnalyzePage() {
                       <span className="px-1.5 py-0.5 rounded text-xs bg-violet-500/15 text-violet-300 border border-violet-500/20">~3–5× token cost</span>
                     </div>
                     <button
+                      type="button"
+                      role="switch"
+                      aria-checked={deepMode}
+                      aria-label="Deep mode"
                       onClick={() => setDeepMode(!deepMode)}
-                      aria-pressed={deepMode}
                       className={`relative w-11 h-6 rounded-full transition-colors ${deepMode ? 'bg-violet-500' : 'bg-white/15'}`}
                     >
                       <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${deepMode ? 'translate-x-5.5 left-0' : 'left-0.5'}`} />
@@ -1012,42 +1054,17 @@ export default function AnalyzePage() {
                   </button>
                 </div>
 
-                {/* Loading status */}
-                {loading && (
-                  <div className="p-4 rounded-xl bg-navy-800 border border-white/10 space-y-2">
-                    <div className="flex items-center gap-2 mb-3">
-                      <ButtonSpinner size={14} />
-                      <span className="text-gold-400 font-medium text-sm">Analysis in progress…</span>
-                      <span className="text-slate-500 text-xs ml-auto">{enableSearch ? 'several minutes' : 'a few minutes'}</span>
-                    </div>
-                    {progressSteps.length === 0 ? (
-                      <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-gold-500 to-amber-400 rounded-full animate-pulse w-1/4" />
-                      </div>
-                    ) : (
-                      <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                        {progressSteps.map(step => (
-                          <div key={step.id} className="flex items-start gap-2 text-xs">
-                            <span className={`flex-shrink-0 mt-0.5 ${
-                              step.status === 'done'  ? 'text-success-400' :
-                              step.status === 'active' ? 'text-gold-400' :
-                              step.status === 'error'  ? 'text-danger-400' : 'text-slate-500'
-                            }`}>
-                              {step.status === 'done' ? '✓' : step.status === 'active' ? '⟳' : step.status === 'error' ? '✕' : '○'}
-                            </span>
-                            <div className="flex-1 min-w-0">
-                              <span className={step.status === 'done' ? 'text-slate-400' : step.status === 'active' ? 'text-white' : 'text-slate-500'}>
-                                {step.label}
-                              </span>
-                              {step.detail && (
-                                <span className="text-slate-500 ml-1">({step.detail})</span>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                {/* Live run: phase rail, elapsed clock, event log, Cancel. */}
+                {loading && run && (
+                  <RunPanel
+                    steps={progressSteps}
+                    phase={run.phase}
+                    startedAt={run.startedAt}
+                    outTokens={run.outTokens}
+                    enableSearch={enableSearch}
+                    onCancel={cancelRun}
+                    cancelling={cancelling}
+                  />
                 )}
               </div>
             </motion.div>

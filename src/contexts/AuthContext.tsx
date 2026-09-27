@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { writeJSON, remove } from '../lib/storage';
 
 interface User {
   id: string;
@@ -38,14 +39,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   function signIn(newToken: string, newUser: User) {
     setToken(newToken);
     setUser(newUser);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ token: newToken, user: newUser }));
+    // On a locked-down laptop (site data blocked) this write used to THROW
+    // out of signIn — the session was lost on the next navigation with no
+    // message. The session now lives for the tab regardless; persistence is
+    // the convenience that degrades.
+    if (!writeJSON(STORAGE_KEY, { token: newToken, user: newUser })) {
+      console.warn('[auth] Browser storage is unavailable — you will need to sign in again after a reload.');
+    }
   }
 
   function signOut() {
     const currentToken = token;
     setToken(null);
     setUser(null);
-    localStorage.removeItem(STORAGE_KEY);
+    remove(STORAGE_KEY);
     if (currentToken) {
       fetch('/api/auth/signout', {
         method: 'POST',

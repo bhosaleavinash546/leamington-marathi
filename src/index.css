@@ -332,6 +332,16 @@
 /* Primary text */
 [data-theme="light"] .text-white              { color: rgb(var(--navy-300)) !important; }
 [data-theme="light"] .hover\:text-white:hover { color: rgb(var(--navy-300)) !important; }
+/* …except on a SOLID coloured button, where the ground does not flip and the
+   remap above turned white into navy-on-blue at 2.5:1 (the Results export row,
+   axe, September 2026 review). Solid 600/700 accent fills only — a tinted
+   panel (bg-blue-500/10) is a different class and keeps the remap. */
+[data-theme="light"] :is(.bg-blue-600, .bg-blue-700, .bg-green-600, .bg-green-700, .bg-emerald-600, .bg-emerald-700,
+  .bg-orange-600, .bg-orange-700, .bg-red-600, .bg-red-700, .bg-violet-600, .bg-violet-700, .bg-purple-600, .bg-purple-700,
+  .bg-indigo-600, .bg-indigo-700, .bg-teal-600, .bg-teal-700, .bg-rose-600, .bg-rose-700, .bg-danger-600, .bg-success-600).text-white,
+[data-theme="light"] :is(.bg-blue-600, .bg-blue-700, .bg-green-600, .bg-green-700, .bg-emerald-600, .bg-emerald-700,
+  .bg-orange-600, .bg-orange-700, .bg-red-600, .bg-red-700, .bg-violet-600, .bg-violet-700, .bg-purple-600, .bg-purple-700,
+  .bg-indigo-600, .bg-indigo-700, .bg-teal-600, .bg-teal-700, .bg-rose-600, .bg-rose-700, .bg-danger-600, .bg-success-600) .text-white { color: #fff !important; }
 
 /* Secondary text: slate scale mapped dark→readable on warm-white
    (Fixes the previous inverted mapping where slate-600 became #b0bec5) */
@@ -561,10 +571,86 @@
 [data-theme="light"] [data-theme="dark"] .border-white\/15 { border-color: rgba(255,255,255,0.15) !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   THE LIVE RUN PANEL (src/components/analyze/RunPanel.tsx)
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* A registered custom property: without @property a custom property has no
+   type, so `transition` cannot interpolate it and the rail would jump between
+   phases. With it, the fill glides on the house curve. Browsers without
+   @property still render the fill at the right width; only the glide is lost. */
+@property --run-fill {
+  syntax: '<number>';
+  inherits: true;      /* set on the rail, read by the fill child */
+  initial-value: 0;
+}
+.run-rail {
+  position: relative;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--tint-strong, rgba(255,255,255,0.08));
+  overflow: hidden;
+  --run-fill: 0;
+  transition: --run-fill var(--dur-draw) var(--ease-out);
+}
+.run-rail-fill {
+  position: absolute; inset: 0;
+  width: calc(var(--run-fill) * 100%);
+  min-width: 6px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgb(var(--gold-500)) 0%, rgb(var(--gold-400)) 100%);
+  transition: width var(--dur-draw) var(--ease-out);
+}
+/* The active-phase dot breathes; it is the one ambient motion in the panel
+   and it means "the stream is open". The global reduced-motion rule stops it. */
+.run-dot {
+  width: 8px; height: 8px; border-radius: 999px; flex: none;
+  background: rgb(var(--gold-400));
+  box-shadow: 0 0 0 0 rgb(var(--gold-400) / 0.55);
+  animation: run-breathe 1.6s var(--ease-out) infinite;
+}
+@keyframes run-breathe {
+  0%   { box-shadow: 0 0 0 0 rgb(var(--gold-400) / 0.55); }
+  70%  { box-shadow: 0 0 0 7px rgb(var(--gold-400) / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(var(--gold-400) / 0); }
+}
+/* A new event row enters from its starting style (opacity 0, 6 px low) onto
+   the house curve. @starting-style is the platform's own "animate-in on
+   insert" — no JS, no framer, and it composes with the reduced-motion rule
+   above, which collapses the transition to an instant change. */
+.run-step {
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity var(--dur-enter) var(--ease-out), translate var(--dur-enter) var(--ease-out);
+}
+@starting-style {
+  .run-step { opacity: 0; translate: 0 6px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME CHANGE AS A VIEW TRANSITION (src/contexts/ThemeContext.tsx)
+   The new theme is revealed in a circle growing from the toggle. The default
+   cross-fade is switched off because the JS animates the new snapshot's
+   clip-path itself; browsers without startViewTransition just swap themes.
+   ═══════════════════════════════════════════════════════════════════════════ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    UTILITIES
    ═══════════════════════════════════════════════════════════════════════════ */
 @layer utilities {
   .text-balance { text-wrap: balance; }
+  /* Running text: `pretty` avoids a one-word last line (an orphan) by
+     re-breaking the preceding lines. Applied with .measure below, so every
+     paragraph that has a reading width also has a clean last line. */
+  .text-pretty { text-wrap: pretty; }
+  /* Long lists (marketplace cards, idea cards, foresight rows): the browser
+     skips layout and paint for rows below the fold until they scroll near.
+     The intrinsic size keeps the scrollbar honest before a row is rendered.
+     A row is never hidden — only its off-screen work is deferred. */
+  .cv-auto { content-visibility: auto; contain-intrinsic-size: auto 320px; }
 
   /* READING MEASURE.
      The September 2026 typography review measured 14 paragraphs rendering
@@ -574,7 +660,7 @@
      failure mode for a tool people read standing at a screen in a review.
      `ch` is the width of a "0" in the current font and size, so this tracks
      the type rather than guessing a pixel value. */
-  .measure { max-width: 68ch; }
+  .measure { max-width: 68ch; text-wrap: pretty; }
   .measure-tight { max-width: 56ch; }
 
   .pt-safe  { padding-top:    env(safe-area-inset-top); }

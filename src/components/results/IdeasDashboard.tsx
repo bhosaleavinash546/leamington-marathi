@@ -158,7 +158,7 @@ export default function IdeasDashboard({ ideas }: Props) {
             <BarChart data={diffData} barCategoryGap="30%" margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
               <XAxis dataKey="name" tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: axisColor, fontSize: 10 }} axisLine={false} tickLine={false} allowDecimals={false} />
+              <YAxis tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
               <Tooltip {...tooltipProps} />
               <Bar dataKey="value" name="Ideas" radius={[6, 6, 0, 0]}>
                 {diffData.map((d, i) => <Cell key={i} fill={d.color} />)}
@@ -174,7 +174,7 @@ export default function IdeasDashboard({ ideas }: Props) {
             <BarChart data={levelData} barCategoryGap="30%" margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
               <XAxis dataKey="name" tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: axisColor, fontSize: 10 }} axisLine={false} tickLine={false} allowDecimals={false} />
+              <YAxis tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
               <Tooltip {...tooltipProps} />
               <Bar dataKey="value" name="Ideas" radius={[6, 6, 0, 0]}>
                 {levelData.map((d, i) => <Cell key={i} fill={d.color} />)}
@@ -193,7 +193,7 @@ export default function IdeasDashboard({ ideas }: Props) {
             <ResponsiveContainer width="100%" height={160}>
               <BarChart data={qualData} layout="vertical" margin={{ top: 0, right: 40, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridColor} horizontal={false} />
-                <XAxis type="number" tick={{ fill: axisColor, fontSize: 10 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                <XAxis type="number" tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
                 <YAxis type="category" dataKey="name" tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} width={70} />
                 <Tooltip {...tooltipProps} />
                 <Bar dataKey="value" name="Ideas" radius={[0, 6, 6, 0]}>

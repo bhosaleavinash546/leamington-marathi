@@ -80,7 +80,9 @@ export default function ScoreRing({
             <>
               <span className={`dfm-num font-bold leading-none ${TONE_TEXT[tone]}`}
                 style={{ fontSize: size * 0.30 }}>{Math.round(value)}</span>
-              <span className="dfm-label text-slate-500 mt-0.5" style={{ fontSize: 8 }}>/ 100</span>
+              {/* The denominator only fits above the 11 px type floor on a
+                  dial ≥ 80 px; a smaller dial carries it in its sublabel. */}
+              {size >= 80 && <span className="dfm-label text-slate-500 mt-0.5 text-2xs">/ 100</span>}
             </>
           ) : (
             <span className="text-slate-500 text-lg leading-none" aria-hidden="true">—</span>

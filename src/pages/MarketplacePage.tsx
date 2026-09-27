@@ -753,7 +753,7 @@ export default function MarketplacePage() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(i, 12) * 0.03 }}
-                  className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-gold-500/25 transition-ui"
+                  className="cv-auto bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-gold-500/25 transition-ui"
                 >
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="min-w-0">

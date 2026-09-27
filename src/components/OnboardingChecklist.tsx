@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { writeJSON } from '../lib/storage';
 import { Link, useLocation } from 'react-router-dom';
 import { X, CheckCircle2, Circle, Sparkles, ChevronUp } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -22,7 +23,7 @@ function load(): OnbState {
   try { return { dismissed: false, done: {}, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; }
   catch { return { dismissed: false, done: {} }; }
 }
-function save(s: OnbState) { localStorage.setItem(KEY, JSON.stringify(s)); }
+function save(s: OnbState) { writeJSON(KEY, s); }
 
 /** Pages call this when the user completes a step (fire-and-forget). */
 export function markOnboardingStep(id: 'generate' | 'shouldcost' | 'teach') {

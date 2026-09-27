@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { writeString } from '../lib/storage';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, X, Zap, AlertCircle, CheckCircle, BarChart3, Download } from 'lucide-react';
@@ -249,7 +250,7 @@ export default function BomAnalysisPage() {
             <h2 className="text-white font-semibold">Settings</h2>
             <div>
               <label className="text-slate-400 text-sm mb-1.5 block">Anthropic API Key</label>
-              <input type="password" value={apiKey} onChange={e => { setApiKey(e.target.value); localStorage.setItem('brainspark_api_key', e.target.value); }}
+              <input type="password" value={apiKey} onChange={e => { setApiKey(e.target.value); writeString('brainspark_api_key', e.target.value); }}
                 className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold-500/40" placeholder="sk-ant-..." />
             </div>
             <div>
