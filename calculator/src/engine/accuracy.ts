@@ -39,6 +39,8 @@ export interface AccuracyReport {
   byCommodity: CommodityAccuracy[];
   totalPoints: number;
   skipped: number;         // points dropped for invalid data
+  /** Template rows marked EXAMPLE, dropped: they are made-up numbers. */
+  examples: number;
   generatedNote: string;
 }
 
@@ -79,9 +81,17 @@ function statsFor(commodity: string, pts: AccuracyPoint[]): CommodityAccuracy {
   };
 }
 
+/** A template row, not data. The shipped samples CSV is five such rows, and the
+ *  report used to grade them as a "high" accuracy figure. */
+export function isExamplePoint(p: AccuracyPoint): boolean {
+  return /\bEXAMPLE\b/.test(`${p.partName ?? ''} ${p.source ?? ''}`);
+}
+
 export function computeAccuracyReport(points: AccuracyPoint[]): AccuracyReport {
-  const valid = points.filter(p => Number.isFinite(p.estimateGBP) && Number.isFinite(p.actualGBP) && p.actualGBP > 0 && p.estimateGBP >= 0);
-  const skipped = points.length - valid.length;
+  const real = points.filter(p => !isExamplePoint(p));
+  const examples = points.length - real.length;
+  const valid = real.filter(p => Number.isFinite(p.estimateGBP) && Number.isFinite(p.actualGBP) && p.actualGBP > 0 && p.estimateGBP >= 0);
+  const skipped = real.length - valid.length;
 
   const groups = new Map<string, AccuracyPoint[]>();
   for (const p of valid) {
@@ -92,14 +102,29 @@ export function computeAccuracyReport(points: AccuracyPoint[]): AccuracyReport {
     .map(([c, pts]) => statsFor(c, pts))
     .sort((a, b) => b.n - a.n || a.commodity.localeCompare(b.commodity));
 
+  // The overall row is graded only on commodities that have earned a grade.
+  // Pooling used to turn one point in each of five commodities — every one of
+  // them "insufficient" — into a "high" overall accuracy. Five thin samples of
+  // different processes are not one good sample of anything.
+  const gradedCommodities = new Set(byCommodity.filter(c => c.n >= MIN_POINTS_FOR_CONFIDENCE).map(c => c.commodity));
+  const graded = valid.filter(p => gradedCommodities.has(p.commodity || 'unknown'));
+  const overall = graded.length
+    ? statsFor('ALL', graded)
+    : { ...statsFor('ALL', valid), confidence: 'insufficient' as const };
+  const ungraded = valid.length - graded.length;
+
   return {
-    overall: statsFor('ALL', valid),
+    overall,
     byCommodity,
     totalPoints: valid.length,
     skipped,
-    generatedNote: valid.length < MIN_POINTS_FOR_CONFIDENCE
-      ? `Only ${valid.length} valid point(s) — not enough to claim accuracy. Log more actuals.`
-      : `${valid.length} points across ${byCommodity.length} commodities.`,
+    examples,
+    generatedNote: valid.length === 0
+      ? (examples ? `No real data — ${examples} template EXAMPLE row(s) ignored. Log real actuals.` : 'No data. Log real actuals.')
+      : !graded.length
+        ? `${valid.length} point(s), but no commodity has ${MIN_POINTS_FOR_CONFIDENCE} — not enough to claim accuracy. Log more actuals.`
+        : `${graded.length} points across ${gradedCommodities.size} graded commodit${gradedCommodities.size === 1 ? 'y' : 'ies'}`
+          + (ungraded ? `; ${ungraded} more in commodities with too few to grade, left out of ALL.` : '.'),
   };
 }
 

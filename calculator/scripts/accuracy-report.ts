@@ -5,6 +5,7 @@
  *   npm run accuracy path/to/quotes.csv    # your real data
  *
  * CSV columns (header row, any order): commodity, part, estimate, actual, source
+ * Rows whose part or source says EXAMPLE are template rows and are ignored.
  * Every figure is graded honestly — small samples are reported as "insufficient",
  * never dressed up as a headline accuracy number.
  */
@@ -64,4 +65,5 @@ console.log('  ' + '─'.repeat(78));
 row(rep.overall);
 console.log('  ' + '─'.repeat(78));
 console.log('  ' + rep.generatedNote + (rep.skipped ? `  (${rep.skipped} invalid row(s) skipped)` : ''));
+if (rep.examples && rep.totalPoints) console.log(`  ${rep.examples} template EXAMPLE row(s) ignored — they are made-up numbers.`);
 console.log('  Honest reporting: commodities with fewer than 5 actuals show "insufficient" — collect more before quoting a number.\n');

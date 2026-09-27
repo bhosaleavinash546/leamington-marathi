@@ -45,3 +45,35 @@ describe('accuracy harness', () => {
     expect(c.mapePct).toBeGreaterThan(25);
   });
 });
+
+describe('no accuracy figure from made-up or pooled data', () => {
+  it('ignores the template EXAMPLE rows the samples CSV ships with', () => {
+    // The shipped CSV is five EXAMPLE rows; `npm run accuracy` graded them "high".
+    const ex = (c: string, e: number, a: number): AccuracyPoint =>
+      ({ commodity: c, estimateGBP: e, actualGBP: a, partName: `EXAMPLE ${c} part`, source: 'EXAMPLE — replace with real quote' });
+    const rep = computeAccuracyReport([ex('machining', 86.34, 91), ex('machining', 42.1, 44.5), ex('casting', 142.5, 151),
+      ex('injection_moulding', 34.6, 33.2), ex('sheet_metal', 12.8, 13.4)]);
+    expect(rep.examples).toBe(5);
+    expect(rep.totalPoints).toBe(0);
+    expect(rep.overall.confidence).toBe('insufficient');
+    expect(rep.generatedNote).toMatch(/No real data/);
+  });
+
+  it('does not pool thin commodities into a confident overall figure', () => {
+    // One or two points in each of four processes: every row is insufficient,
+    // so ALL must be too — it used to read "high".
+    const rep = computeAccuracyReport([P('machining', 86, 91), P('machining', 42, 44.5), P('casting', 142, 151),
+      P('injection_moulding', 34.6, 33.2), P('sheet_metal', 12.8, 13.4)]);
+    expect(rep.byCommodity.every(c => c.confidence === 'insufficient')).toBe(true);
+    expect(rep.overall.confidence).toBe('insufficient');
+  });
+
+  it('grades ALL on the commodities that earned a grade, and says what it left out', () => {
+    const good = [P('machining', 100, 95), P('machining', 50, 48), P('machining', 200, 190), P('machining', 80, 77), P('machining', 120, 114)];
+    const rep = computeAccuracyReport([...good, P('casting', 300, 100)]);   // one wild casting point
+    expect(rep.overall.n).toBe(5);
+    expect(rep.overall.confidence).toBe('high');
+    expect(rep.overall.mapePct).toBeLessThan(7);                            // the casting point is not pooled in
+    expect(rep.generatedNote).toMatch(/1 more in commodities with too few to grade/);
+  });
+});

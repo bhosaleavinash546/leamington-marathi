@@ -189,11 +189,11 @@ def card(slide, x, y, w, h, title, body, accent=ACCENT_B, icon="",
     txb(slide, body, x + Inches(0.14), y + Inches(0.42), w - Inches(0.2), h - Inches(0.54),
         size=body_pt, color=TEXT_G, wrap=True)
 
-def stat_card(slide, x, y, w, h, number, label, color=ACCENT_B):
+def stat_card(slide, x, y, w, h, number, label, color=ACCENT_B, size=28):
     """Stat card with big number."""
     rect(slide, x, y, w, h, SURFACE2, BORDER, Pt(0.5))
     txb(slide, number, x, y + Inches(0.1), w, Inches(0.55),
-        size=28, bold=True, color=color, align=PP_ALIGN.CENTER)
+        size=size, bold=True, color=color, align=PP_ALIGN.CENTER)
     txb(slide, label, x, y + Inches(0.62), w, Inches(0.38),
         size=8, color=TEXT_G, align=PP_ALIGN.CENTER, wrap=True)
 
@@ -616,12 +616,17 @@ slide_header(slide, 5, "Automation", "CAD-to-Cost: Geometry to Should-Cost Autom
 # laid on the same 1.98"–3.00" band at the same x, so the formats bar was drawn
 # straight over all three stat cards and hid them completely.
 STAT_Y, STAT_H = Inches(1.98), Inches(1.0)
-stats = [("10×", "Faster than manual costing", ACCENT_B),
-         ("±8%", "Typical model accuracy", ACCENT_G),
-         ("0", "Manual routing steps required", ORANGE)]
+# Only numbers the repository can show. "10×", "±8%" and "0 manual routing
+# steps" used to sit here with no data behind them — nothing has yet been
+# compared with a price actually paid, and the route question is asked, not
+# skipped. Each figure below is pinned by a test.
+stats = [("<0.01%", "Engine vs hand calc, reference part", ACCENT_B),   # tests/reference-part.test.ts
+         ("8", "Cost buckets, each traced to a rate", ACCENT_G),
+         ("6", "Real parts pinned in regression", ORANGE)]              # tests/real-parts-baseline.test.ts
 _sw5, _sg5 = Inches(1.75), Inches(0.1)
 for i, (num, lbl, col) in enumerate(stats):
-    stat_card(slide, Inches(0.45) + i * (_sw5 + _sg5), STAT_Y, _sw5, STAT_H, num, lbl, col)
+    # 22 pt: a 1.75" card holds "<0.01%" on one line; 28 pt wrapped it.
+    stat_card(slide, Inches(0.45) + i * (_sw5 + _sg5), STAT_Y, _sw5, STAT_H, num, lbl, col, size=22)
 _fmt_x = Inches(0.45) + len(stats) * (_sw5 + _sg5) + Inches(0.1)
 assert _fmt_x >= Inches(0.45) + 3 * (_sw5 + _sg5), 'formats panel overlaps the stat cards'
 
@@ -1555,7 +1560,7 @@ slide_header(slide, 18, "Value Delivered", "What This Is Worth",
 # Stat row
 stats14 = [
     ("70–90%", "Reduction in costing time",                     ACCENT_B),
-    ("±8%",    "Typical cost model accuracy",                   ACCENT_G),
+    ("<0.01%", "Engine vs hand calc, reference part",           ACCENT_G),   # not accuracy vs a paid price
     ("15–25%", "Typical supplier price reduction",              ORANGE),
     ("3×",     "Faster sourcing decisions",                     ACCENT_P),
     ("£15M",   "On £500M of spend, a 3% improvement",           ACCENT_G),
@@ -1570,7 +1575,7 @@ benefits14 = [
     (ACCENT_B, "⚡ Speed",
      "Two to four weeks becomes ten minutes. Engineers spend the day deciding, not building spreadsheets."),
     (ACCENT_G, "🎯 Accuracy",
-     "Built from the physics of the process and checked against real shop-floor data — not a rule of thumb."),
+     "Built from the physics of the process, every rate on record. Accuracy is measured as real prices are logged — not claimed up front."),
     (ORANGE,   "💰 Negotiation",
      "A floor price you can defend, part by part. Supplier margin becomes visible instead of assumed."),
     (ACCENT_P, "📐 Early Warning",
@@ -1602,9 +1607,10 @@ notes(slide,
     "Let me translate all of that into the numbers a manager actually cares about. "
     "Speed first: what took two to four weeks now takes minutes. That's the seventy-to-ninety "
     "percent time reduction, and it means engineers spend their day on decisions instead of "
-    "spreadsheets. On accuracy, the models are calibrated to real shop-floor data and now corrected "
-    "by the self-audit — which is exactly what tightens that plus-or-minus-eight-percent band over "
-    "time. "
+    "spreadsheets. On accuracy, be precise: the engine's arithmetic matches a hand calculation to "
+    "a hundredth of a percent, but no estimate has yet been compared with a price we actually paid. "
+    "That comparison is what the Log Actual button builds, part by part, and it is the number to "
+    "quote once it exists. "
     "But the line that pays for the whole thing is negotiation power. When you walk into a supplier "
     "meeting with a defensible floor price, a fifteen-to-twenty-five percent reduction is a "
     "realistic ask — and the far-right stat makes it concrete: on five hundred million of spend, a "
