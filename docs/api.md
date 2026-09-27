@@ -198,6 +198,7 @@ form) — everything that reads or writes user data requires a token.
 | POST | `/api/foresight/deepdive` | yes | a single question, researched |
 | POST | `/api/foresight/research` | yes | one research sweep |
 | POST | `/api/foresight/deep` | yes | the iterative deepening loop; returns a job |
+| DELETE | `/api/foresight/deep/:jobId` | yes | cancel a running deep-research job: marks it cancelled, aborts its model calls; 409 if already finished |
 | GET | `/api/foresight/deep/:jobId` | yes | that job's state and result |
 | POST | `/api/foresight/critique` | yes | adversarial read of a finding |
 | GET | `/api/foresight/ledger` | yes | the research ledger |

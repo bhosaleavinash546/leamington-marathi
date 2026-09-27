@@ -384,7 +384,17 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
     client, messagesJson, model = 'claude-sonnet-5',
     sanitize = (s) => s, searchApiKey = '', patentDeps = {},
     onProgress = () => {},
+    // Cancellation. The job owner aborts this signal (DELETE /api/foresight/
+    // deep/:jobId); the run stops at its next step boundary and every model
+    // call in flight is aborted through the client's own signal. Between
+    // boundaries a page fetch or search is allowed to finish — they are
+    // bounded and cheap; the model calls are the cost.
+    signal = null,
   } = deps;
+  const say = (m) => {
+    if (signal?.aborted) { const e = new Error('Research cancelled'); e.name = 'AbortError'; throw e; }
+    onProgress(m);
+  };
   const preset = DEPTH_PRESETS[opts.depth] ?? DEPTH_PRESETS.standard;
   const cfg = { ...preset, ...opts };
   const now = opts.now ?? new Date().getFullYear();
@@ -398,7 +408,7 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
   limitations.push('Paid engineering databases (SAE Mobilus, IEEE Xplore, ScienceDirect) require a subscription and were NOT searched. Patent claims and open technical sources carry that weight instead, and some peer-reviewed detail is therefore out of reach.');
 
   // ── 1. SCOPE ───────────────────────────────────────────────────────────────
-  onProgress('scoping the subject into research questions');
+  say('scoping the subject into research questions');
   // Scoping is the one step with no fallback: everything downstream is built on
   // its questions. Live runs showed a forced tool call occasionally returning an
   // EMPTY input — transient, and fatal to the whole run if unhandled, so it gets
@@ -419,7 +429,7 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
   let scopeError = null;
   let scope = await askScope(cfg.questions).catch((e) => { scopeError = e; return null; });
   if (!Array.isArray(scope?.questions) || !scope.questions.length) {
-    onProgress(`scoping returned nothing usable${scopeError ? ` (${String(scopeError.message).slice(0, 80)})` : ''} — retrying once`);
+    say(`scoping returned nothing usable${scopeError ? ` (${String(scopeError.message).slice(0, 80)})` : ''} — retrying once`);
     scope = await askScope(Math.max(3, Math.min(4, cfg.questions))).catch((e) => { scopeError = e; return null; });
   }
   // Defensive: on the first live run the scoping step returned `questions` as a
@@ -460,7 +470,7 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
   for (let round = 1; round <= cfg.rounds; round++) {
     const fresh = activeProbes.filter((p) => !triedTerms.has(p.term.toLowerCase()));
     if (!fresh.length) { roundLog.push({ round, probes: 0, newSources: 0, newClaims: 0, note: 'no new probes to run' }); break; }
-    onProgress(`round ${round}: searching ${fresh.length} probes`);
+    say(`round ${round}: searching ${fresh.length} probes`);
 
     // SWEEP
     const found = [];
@@ -487,7 +497,7 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
     // READ — open the newest-looking of this round's finds
     const yearOf = (s) => { const m = String(`${s.title} ${s.snippet} ${s.url}`).match(/(20[12]\d)/g); return m ? Math.max(...m.map(Number)) : 0; };
     const toRead = [...found].sort((a, b) => yearOf(b) - yearOf(a)).slice(0, cfg.readPerRound);
-    onProgress(`round ${round}: opening ${toRead.length} sources`);
+    say(`round ${round}: opening ${toRead.length} sources`);
     const articles = fetchImpl && toRead.length
       ? await fetchArticles(toRead.map((s) => s.url), { fetchImpl, concurrency: 4, maxChars: 12_000 })
       : [];
@@ -501,7 +511,7 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
 
     // EXTRACT — claims, with quote-or-drop against the page we read
     const readable = found.filter((s) => s.read && s.text);
-    onProgress(`round ${round}: extracting claims from ${readable.length} pages`);
+    say(`round ${round}: extracting claims from ${readable.length} pages`);
     let newClaims = 0;
     for (const s of readable) {
       let out;
@@ -539,8 +549,8 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
     // GAPS — only worth asking if another round is available
     if (round >= cfg.rounds) break;
     const open = unansweredQuestions(questions, claims);
-    if (!open.length) { onProgress('all research questions answered — stopping early'); break; }
-    onProgress(`round ${round}: ${open.length} questions still open, planning follow-ups`);
+    if (!open.length) { say('all research questions answered — stopping early'); break; }
+    say(`round ${round}: ${open.length} questions still open, planning follow-ups`);
     let gaps;
     try {
       gaps = await messagesJson(client, {
@@ -571,7 +581,7 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
   // ── PATENTS ────────────────────────────────────────────────────────────────
   let patentBlock = { configured: false, patents: [], read: 0, note: 'Patent mining was not requested for this depth.' };
   if (cfg.patents > 0 && searchPatents) {
-    onProgress('mining patent claims');
+    say('mining patent claims');
     patentBlock = await minePatents(q, { searchPatents, fetchImpl, max: cfg.patents, read: Math.min(cfg.patents, 4), patentDeps });
     for (const p of patentBlock.patents ?? []) {
       sources.push({
@@ -597,12 +607,12 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
   if (!patentBlock.configured && patentBlock.note) limitations.push(patentBlock.note);
 
   // ── CONFLICTS + INDEPENDENCE ──────────────────────────────────────────────
-  onProgress('checking contradictions and source independence');
+  say('checking contradictions and source independence');
   const assessed = assessIndependence(claims);
   const contradictions = numericConflicts(assessed);
 
   // ── SYNTHESIS ──────────────────────────────────────────────────────────────
-  onProgress('writing the report');
+  say('writing the report');
   const claimBlock = assessed.map((c) =>
     `[${c.id}] (${c.questionId}${c.independent ? `, ${c.origins} independent origins` : ', single origin'}) ${c.statement}`
     + `${c.value ? ` — ${c.metric}: ${c.value} for ${c.subject}` : ''}\n    source: ${c.sourceUrl}\n    quote: "${c.quote}"`).join('\n');

@@ -223,3 +223,41 @@ describe('the same abort on the Innovation and Horizon routes', () => {
     assert.equal(after.aborted, before.aborted);
   });
 });
+
+describe('cancelling a deep-research JOB (DELETE, not response-close)', () => {
+  it('DELETE marks the job cancelled, aborts its model call, and later polls agree', async () => {
+    const before = await stubStats();
+    const start = await fetch(`${BASE}/api/foresight/deep`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ apiKey: 'sk-ant-api03-STUB', subject: 'SiC inverter module', depth: 'quick' }),
+    });
+    assert.equal(start.status, 200);
+    const { jobId } = await start.json();
+    assert.ok(jobId);
+    await waitForStub(st => st.requests > before.requests);   // scoping call is open, held by the stub's delay
+    const del = await fetch(`${BASE}/api/foresight/deep/${jobId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+    assert.equal(del.status, 200);
+    const d = await del.json();
+    assert.equal(d.status, 'cancelled');
+    assert.equal(d.wasRunning, true);
+    const after = await waitForStub(st => st.aborted > before.aborted);
+    assert.equal(after.completed, before.completed, 'the held scoping reply must not have completed');
+    // The poll a UI makes next sees the cancel, with the reason in the trace.
+    let job = null;
+    for (let i = 0; i < 20; i++) {
+      job = await (await fetch(`${BASE}/api/foresight/deep/${jobId}`, { headers: { Authorization: `Bearer ${token}` } })).json();
+      if (job.status === 'cancelled' && job.progress?.trace?.some(t => /cancel/.test(t.message))) break;
+      await sleep(200);
+    }
+    assert.equal(job.status, 'cancelled');
+    assert.equal(job.error, null);
+    assert.ok(job.progress.trace.some(t => /cancel requested by user/.test(t.message)));
+    // Cancelling again is a 409 with the real status; an unknown id is a 404.
+    const again = await fetch(`${BASE}/api/foresight/deep/${jobId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+    assert.equal(again.status, 409);
+    assert.equal((await again.json()).status, 'cancelled');
+    const nope = await fetch(`${BASE}/api/foresight/deep/no-such-job`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+    assert.equal(nope.status, 404);
+  });
+});

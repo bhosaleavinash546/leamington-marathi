@@ -566,6 +566,10 @@ export default function ForesightPage() {
   const [deepRunning, setDeepRunning] = useState(false);
   const [deepTrace, setDeepTrace] = useState<string[]>([]);
   const [deepError, setDeepError] = useState('');
+  // The running job's id, so Cancel can name it. A job outlives navigation
+  // by design (it is polled), so this is state, not an abort-on-unmount.
+  const [deepJobId, setDeepJobId] = useState<string | null>(null);
+  const [deepCancelled, setDeepCancelled] = useState(false);
   const [panelLoading, setPanelLoading] = useState(false);
   const [panelError, setPanelError] = useState('');
   const [ledger, setLedger] = useState<LedgerEntry[] | null>(null);
@@ -601,7 +605,7 @@ export default function ForesightPage() {
   async function runDeepResearch() {
     const subject = (query || commodity || segment || '').trim();
     if (!subject || deepRunning) return;
-    setDeepRunning(true); setDeepError(''); setDeep(null); setDeepTrace([]);
+    setDeepRunning(true); setDeepError(''); setDeep(null); setDeepTrace([]); setDeepCancelled(false); setDeepJobId(null);
     try {
       const start = await fetch('/api/foresight/deep', {
         method: 'POST', headers: authHeaders,
@@ -618,6 +622,7 @@ export default function ForesightPage() {
       });
       const started = await start.json();
       if (!start.ok || !started.jobId) throw new Error(started.error || 'Could not start the research run.');
+      setDeepJobId(started.jobId);
       // Poll. The trace is the point: a multi-minute run with no visible
       // activity is indistinguishable from a hang, and users kill it.
       for (let i = 0; i < 600; i++) {
@@ -626,12 +631,27 @@ export default function ForesightPage() {
         const j = await r.json();
         if (j.progress?.trace) setDeepTrace(j.progress.trace.map((t: { message: string }) => t.message));
         if (j.status === 'done' && j.result) { setDeep(j.result); break; }
+        if (j.status === 'cancelled') { setDeepCancelled(true); break; }
         if (j.status === 'error') throw new Error(j.error || 'The research run failed.');
       }
     } catch (e) {
       setDeepError(e instanceof Error ? e.message : 'The research run failed.');
     } finally {
       setDeepRunning(false);
+      setDeepJobId(null);
+    }
+  }
+
+  // Cancel stops the bill: the server aborts the job's model calls and the
+  // run halts at its next step boundary. What was written so far is shown
+  // in the trace; no report is produced.
+  async function cancelDeepResearch() {
+    if (!deepJobId) return;
+    try {
+      const r = await fetch(`/api/foresight/deep/${deepJobId}`, { method: 'DELETE', headers: authHeaders });
+      if (!r.ok && r.status !== 409) { const d = await r.json().catch(() => ({})); throw new Error(d.error || 'Could not cancel the run.'); }
+    } catch (e) {
+      setDeepError(e instanceof Error ? e.message : 'Could not cancel the run.');
     }
   }
 
@@ -974,7 +994,18 @@ export default function ForesightPage() {
               )}
               {deepRunning && (
                 <div>
-                  <div className="flex items-center gap-2 mb-2 text-teal-200 text-xs"><ButtonSpinner size={12} /> Researching — this takes minutes, not seconds.</div>
+                  <div className="flex items-center gap-2 mb-2 text-teal-200 text-xs">
+                    <ButtonSpinner size={12} /> Researching — this takes minutes, not seconds.
+                    <button
+                      type="button"
+                      onClick={cancelDeepResearch}
+                      disabled={!deepJobId}
+                      title="Stop the run. Model calls in flight are aborted; only the steps already taken are billed."
+                      className="ml-auto inline-flex items-center gap-1 min-h-[32px] px-2.5 rounded-lg text-xs font-medium text-slate-300 border border-white/10 hover:border-danger-500/40 hover:text-danger-400 transition-colors disabled:opacity-50"
+                    >
+                      Cancel run
+                    </button>
+                  </div>
                   <ul className="space-y-0.5 max-h-40 overflow-y-auto" aria-live="polite">
                     {deepTrace.map((t, i) => (
                       <li key={i} className={`text-2xs font-mono ${i === deepTrace.length - 1 ? 'text-teal-300' : 'text-slate-500'}`}>· {t}</li>
@@ -983,6 +1014,11 @@ export default function ForesightPage() {
                 </div>
               )}
               {deepError && <p className="text-red-400 text-xs mt-2">{deepError}</p>}
+              {deepCancelled && !deepRunning && (
+                <p className="text-slate-400 text-xs mt-2">
+                  Research cancelled after {deepTrace.length} step{deepTrace.length === 1 ? '' : 's'} — no report was written, and no further model calls were made.
+                </p>
+              )}
 
               {deep && (
                 <div className="mt-1">

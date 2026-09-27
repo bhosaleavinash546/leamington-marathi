@@ -4129,3 +4129,38 @@ reach the model after live search has returned evidence, which the test
 sandbox cannot do, so they are covered by code review of the same three
 lines rather than a stub run — said here so nobody reads the suite as
 proving them.
+
+## 85. A deep-research job is cancelled by DELETE, and stops at a step boundary
+
+The open item from DECISIONS 84. A deep run is a job — it outlives the
+request that started it and is polled — so it cannot take the
+response-close abort. It takes an explicit `DELETE /api/foresight/deep/:jobId`.
+
+Three parts, each with a reason:
+
+- **The job is marked cancelled at once**, before the loop has reached a
+  checkpoint, so the poll a UI makes next already shows it, with "cancel
+  requested by user" in the trace. The alternative — waiting for the run to
+  notice — would show "running" for up to a page-fetch after the user
+  clicked, which is the "did it work?" moment that produces a second click.
+- **The run stops at its next step boundary.** `deepResearch` takes a
+  `signal` and checks it at every progress report — scoping, each round's
+  search / read / extract / plan, patents, contradictions, the report. A
+  model call in flight is aborted through the client's own signal; a page
+  fetch or a search in flight is allowed to finish, because they are
+  bounded and cheap and the model calls are the cost. Between the last
+  checkpoint and the end a cancel does not stop the work, and the finished
+  report is kept with the job marked done — a completed report is worth
+  more than a tidy status.
+- **Finished jobs are not rewritten.** A cancel after done, error or
+  cancelled is a 409 carrying the real status. The controller registry is
+  per process; after a restart a DELETE on a job that was running still
+  marks it cancelled and says no run was found, since the restart had
+  already ended it.
+
+The Horizon page shows Cancel beside the running trace and, afterwards,
+"Research cancelled after N steps — no report was written, and no further
+model calls were made." Tested at both layers: the pure run (an aborted
+signal makes no further model call; an already-aborted one makes none) and
+the HTTP job against the stub (DELETE → cancelled, stub sees the abort, the
+poll agrees, 409 on repeat, 404 on unknown).

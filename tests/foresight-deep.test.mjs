@@ -187,6 +187,25 @@ describe('the research loop', () => {
     assert.equal(out.ledger[0].claimsContributed, 1);
   });
 
+  it('a cancelled signal stops the run at the next step boundary with no further model calls', async () => {
+    const ctl = new AbortController();
+    let calls = 0;
+    const deps = makeDeps({
+      messagesJson: async (...a) => { calls++; if (calls === 1) ctl.abort(new Error('cancelled by user')); return makeDeps().messagesJson(...a); },
+      signal: ctl.signal,
+    });
+    await assert.rejects(() => deepResearch('stator lamination', deps, { depth: 'quick' }), (e) => e.name === 'AbortError');
+    assert.equal(calls, 1, 'a model call was made after the cancel');
+  });
+
+  it('an already-cancelled signal makes no model call at all', async () => {
+    const ctl = new AbortController(); ctl.abort();
+    let calls = 0;
+    const deps = makeDeps({ messagesJson: async () => { calls++; return {}; }, signal: ctl.signal });
+    await assert.rejects(() => deepResearch('stator lamination', deps, { depth: 'quick' }), (e) => e.name === 'AbortError');
+    assert.equal(calls, 0);
+  });
+
   it('always declares the paywall limitation, whatever else succeeded', async () => {
     const out = await deepResearch('x subject', makeDeps(), { depth: 'quick' });
     assert.ok(out.limitations.some((l) => /SAE Mobilus|IEEE|ScienceDirect/.test(l)),

@@ -130,6 +130,13 @@ function snapshotCards(result) {
   }));
 }
 
+// Deep-research runs in flight in THIS process: job id → the controller that
+// cancels it. A job is designed to outlive the request that started it, so
+// it cannot take the response-close abort (DECISIONS 84); it takes an
+// explicit DELETE instead (DECISIONS 85). Lost on restart, which is fine —
+// a run cannot survive a restart either.
+const deepRuns = new Map();
+
 export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, performSearch, jobsApi, runAbort }) {
   initKnowledge(db);
   db.exec(`CREATE TABLE IF NOT EXISTS foresight_ledger (
@@ -308,6 +315,8 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     if (!jobsApi) return res.status(503).json({ error: 'Background jobs are unavailable in this deployment.' });
 
     const jobId = jobsApi.create(req.user.id, 'foresight-deep');
+    const ctl = new AbortController();
+    deepRuns.set(jobId, ctl);
     const trace = [];
     const push = (m) => {
       trace.push({ at: new Date().toISOString(), message: String(m).slice(0, 160) });
@@ -319,7 +328,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     // thrown into an unhandled rejection.
     (async () => {
       try {
-        const client = makeAnthropic(key, { userId: req.user?.id, route: '/api/foresight/deep' });
+        const client = makeAnthropic(key, { userId: req.user?.id, route: '/api/foresight/deep', signal: ctl.signal });
         const out = await deepResearch(subject, {
           performSearch,
           fetchImpl: globalThis.fetch,
@@ -327,15 +336,47 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
           client, messagesJson, model: SMALL_MODEL, sanitize,
           searchApiKey: typeof req.body?.searchApiKey === 'string' ? req.body.searchApiKey : (process.env.BRAVE_API_KEY || ''),
           onProgress: push,
+          signal: ctl.signal,
         }, { depth, now: REGISTER_VINTAGE });
         const candidates = deepFindingsToCandidates(out, { verifiedOn: new Date().toISOString().slice(0, 7) });
+        // A cancel that landed between the last checkpoint and the end did not
+        // stop the work; the finished report is kept and the job says done.
         jobsApi.update(jobId, { status: 'done', result: JSON.stringify({ ...out, candidates }) });
       } catch (e) {
-        jobsApi.update(jobId, { status: 'error', error: String(e?.message || e).slice(0, 400) });
+        if (ctl.signal.aborted) {
+          // Append to the trace the DELETE already wrote ("cancel requested by
+          // user"), rather than overwriting it from this closure's copy.
+          let tr = trace.slice(-40);
+          try { const cur = JSON.parse(jobsApi.get(jobId, req.user.id)?.progress || 'null'); if (Array.isArray(cur?.trace)) tr = cur.trace; } catch { /* keep ours */ }
+          tr.push({ at: new Date().toISOString(), message: 'stopped at the step boundary — nothing was written' });
+          jobsApi.update(jobId, { status: 'cancelled', error: '', progress: JSON.stringify({ subject, depth, trace: tr.slice(-40) }) });
+        } else {
+          jobsApi.update(jobId, { status: 'error', error: String(e?.message || e).slice(0, 400) });
+        }
+      } finally {
+        deepRuns.delete(jobId);
       }
     })();
 
     res.json({ jobId, depth, estimate: DEPTH_PRESETS[depth] });
+  });
+
+  // Cancel a run. Marks the job cancelled at once (so a poll sees it even
+  // before the loop reaches a checkpoint), aborts the model calls in flight,
+  // and says whether there was anything to stop. Finished jobs are not
+  // rewritten: a cancel after done is a 409 with the real status.
+  app.delete('/api/foresight/deep/:jobId', requireAuth, rateLimit(60, 60 * 60 * 1000), (req, res) => {
+    const job = jobsApi?.get(req.params.jobId, req.user.id);
+    if (!job) return res.status(404).json({ error: 'Unknown research job.' });
+    if (!['queued', 'running'].includes(job.status)) return res.status(409).json({ error: `Job already ${job.status}.`, status: job.status });
+    const ctl = deepRuns.get(job.id);
+    let progress = null;
+    try { progress = job.progress ? JSON.parse(job.progress) : null; } catch { progress = null; }
+    if (progress && Array.isArray(progress.trace)) progress.trace = [...progress.trace.slice(-39), { at: new Date().toISOString(), message: 'cancel requested by user' }];
+    jobsApi.update(job.id, { status: 'cancelled', error: '', ...(progress ? { progress: JSON.stringify(progress) } : {}) });
+    if (ctl) ctl.abort(new Error('cancelled by user'));
+    console.warn(`[Horizon deep] job ${job.id} cancelled by user${ctl ? '' : ' (no run in this process — a restart had already ended it)'}.`);
+    res.json({ status: 'cancelled', wasRunning: !!ctl });
   });
 
   app.get('/api/foresight/deep/:jobId', requireAuth, (req, res) => {
@@ -346,7 +387,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
       status: job.status,
       progress: parse(job.progress, null),
       result: job.status === 'done' ? parse(job.result, null) : null,
-      error: job.error || null,
+      error: job.error && job.error !== 'null' ? job.error : null,
     });
   });
 
