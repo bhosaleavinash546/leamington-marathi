@@ -49,7 +49,7 @@ export function ToastContainer() {
   if (typeof window === 'undefined') return null;
 
   return createPortal(
-    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-2 pointer-events-none" aria-live="polite" role="status">
+    <div className="fixed bottom-6 right-6 z-toast flex flex-col gap-2 pointer-events-none" aria-live="polite" role="status">
       {[...toastQueue].map(t => {
         const Icon = ICONS[t.type];
         return (

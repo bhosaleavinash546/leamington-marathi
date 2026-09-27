@@ -1,5 +1,6 @@
 import { AnalysisConfig, AnalysisValidation, CostReductionIdea, SearchSource } from '../types';
 import { getAuthToken } from './auth';
+import { putResult, getResult } from '../lib/results-store';
 
 export type ChatHistory = { role: 'user' | 'assistant'; content: string }[];
 
@@ -25,6 +26,8 @@ export interface AnalysisResponse {
   ideas: CostReductionIdea[];
   sources: SearchSource[];
   resultId: string;
+  /** true when resultId is a server project id; false when it is a local handle. */
+  onServer: boolean;
   /** Server pipeline summary (lens coverage, engine/arithmetic/depth tallies). */
   validation?: AnalysisValidation;
 }
@@ -54,24 +57,19 @@ export function saveRecentAnalysis(
   return resultId;
 }
 
-export function saveFullResult(id: string, result: unknown, systemName: string, subName: string): void {
-  try {
-    const stored = localStorage.getItem('brainspark_full_results');
-    const results: unknown[] = stored ? JSON.parse(stored) : [];
-    results.unshift({ id, systemName, subName, result, savedAt: new Date().toISOString() });
-    localStorage.setItem('brainspark_full_results', JSON.stringify(results.slice(0, 10)));
-  } catch {}
+/**
+ * Full results live in IndexedDB (src/lib/results-store.ts) — ten of them in
+ * one localStorage key used to sit against the 5 MB quota and the eleventh
+ * save failed silently. Fire-and-forget: the caller navigates on session
+ * storage, and a failed save only means "Open" on the dashboard later says
+ * the analysis is no longer on this device.
+ */
+export function saveFullResult(id: string, result: unknown, systemName: string, subName: string): Promise<boolean> {
+  return putResult({ id, systemName, subName, result, savedAt: new Date().toISOString() }).catch(() => false);
 }
 
-export function loadFullResult(id: string): unknown | null {
-  try {
-    const stored = localStorage.getItem('brainspark_full_results');
-    if (!stored) return null;
-    const results: Array<{ id: string; result: unknown }> = JSON.parse(stored);
-    return results.find(r => r.id === id)?.result ?? null;
-  } catch {
-    return null;
-  }
+export async function loadFullResult(id: string): Promise<unknown | null> {
+  try { return (await getResult(id))?.result ?? null; } catch { return null; }
 }
 
 export async function generateCostReductionIdeas(
@@ -153,7 +151,7 @@ export async function generateCostReductionIdeas(
         const serverProjectId = (data as unknown as { projectId?: string }).projectId;
         const validation = (data as unknown as { validation?: AnalysisValidation }).validation;
         const resultId = saveRecentAnalysis(systemName, subassemblyName, partName, ideas.length, serverProjectId || undefined);
-        return { ideas, sources, resultId, validation };
+        return { ideas, sources, resultId, onServer: !!serverProjectId, validation };
       }
       if (data.type === 'error') {
         throw new Error(data.message || 'Analysis failed');

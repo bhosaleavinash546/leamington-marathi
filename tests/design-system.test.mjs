@@ -146,12 +146,18 @@ test('every uppercase label carries tracking, from a set of two', () => {
   assert.deepEqual(bad, []);
 });
 
-test('fixed overlays use the stacking scale (z-nav / z-fab / z-popover / z-modal), not raw z-50', () => {
-  const shell = ['src/components/mobile/MobileNav.tsx', 'src/components/AiChatbot.tsx', 'src/components/OnboardingChecklist.tsx'];
-  for (const f of shell) {
+test('fixed overlays use the stacking scale (z-nav / z-fab / z-popover / z-modal / z-toast), not raw z-50 or z-[n]', () => {
+  // Was three shell files; the header itself carried z-50 and the toast
+  // z-[9999], which is how a "scale" becomes a suggestion (27 Sept review).
+  // The scale is for FIXED elements, which stack against each other across
+  // the whole page. A sticky bar or an absolute badge inside a panel stacks
+  // within its own context and may keep a local z-10.
+  const bad = [];
+  for (const f of files.filter(f => /\.tsx$/.test(f))) {
     const s = readFileSync(f, 'utf8');
-    assert.ok(!/\bz-50\b/.test(s), `${f} uses raw z-50`);
+    s.split('\n').forEach((line, i) => { if (/\bfixed\b/.test(line) && /\bz-\d+\b|z-\[\d+\]/.test(line)) bad.push(`${f}:${i + 1}: ${line.trim().slice(0, 80)}`); });
   }
+  assert.deepEqual(bad, [], 'a fixed element uses z-nav / z-fab / z-popover / z-modal / z-toast');
 });
 
 test('the motion system lives in src/lib/motion.ts and nothing imports the old dfm path', () => {

@@ -173,6 +173,7 @@
   --z-fab: 45;
   --z-popover: 50;
   --z-modal: 60;
+  --z-toast: 70;      /* a toast reads over a modal — it is the reply to what the modal did */
 
   /* Categorical palette — eight hues for DOMAIN colour (commodity groups,
      cost buckets, trend tiles). Chosen for even perceived lightness so any of

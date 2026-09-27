@@ -368,7 +368,7 @@ export default function AnalyzePage() {
       const sub = getSubassemblyById(systemId, subassemblyId)!;
       const part = partId ? selectedSub?.parts.find(p => p.id === partId) : undefined;
 
-      const { ideas, sources, resultId } = await generateCostReductionIdeas(
+      const { ideas, sources, resultId, onServer } = await generateCostReductionIdeas(
         config, system.name, sub.name, part?.name, enableSearch, searchApiKey || undefined, handleProgress,
         { signal: controller.signal }
       );
@@ -377,6 +377,7 @@ export default function AnalyzePage() {
       const programmeItems = ideas.filter(i => i.implementationDifficulty === 'Medium').length;
       const result: AnalysisResult = {
         id: resultId,
+        onServer,
         config: { ...config, apiKey: '' },  // strip API key before persistence
         ideas,
         sources,

@@ -212,6 +212,13 @@ export interface AnalysisConfig {
 
 export interface AnalysisResult {
   id?: string;
+  /**
+   * Whether `id` is a project the server holds. false when the run came
+   * back without a project id (the id is then a local handle), so the
+   * Results page does not ask the server for annotations, cross-pollination
+   * or a share link it cannot have — each of which was a 404 in the console.
+   */
+  onServer?: boolean;
   config: AnalysisConfig;
   ideas: CostReductionIdea[];
   sources: SearchSource[];

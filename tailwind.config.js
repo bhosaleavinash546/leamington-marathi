@@ -110,6 +110,7 @@ export default {
         fab: 'var(--z-fab)',
         popover: 'var(--z-popover)',
         modal: 'var(--z-modal)',
+        toast: 'var(--z-toast)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

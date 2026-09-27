@@ -374,7 +374,7 @@ export default function BusinessCaseModal({
   const { panelRef, dialogProps } = useModalA11y(onClose);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-modal flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <motion.div
         ref={panelRef}
         {...dialogProps}

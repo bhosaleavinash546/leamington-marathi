@@ -382,9 +382,14 @@ export default function DashboardPage() {
     } catch { toast('Could not load project — please try again', 'error'); }
   }
 
-  function openLocalAnalysis(a: RecentAnalysis) {
-    if (loadFullResult(a.id)) navigate('/results');
-    else toast('This analysis is no longer stored on this device.', 'error');
+  async function openLocalAnalysis(a: RecentAnalysis) {
+    const saved = await loadFullResult(a.id);
+    if (saved) {
+      sessionStorage.setItem('analysisResult', JSON.stringify(saved));
+      sessionStorage.setItem('analysisSystemName', a.systemName);
+      sessionStorage.setItem('analysisSubName', a.subassemblyName);
+      navigate('/results');
+    } else toast('This analysis is no longer stored on this device.', 'error');
   }
 
   function submitAsk(e: FormEvent) {

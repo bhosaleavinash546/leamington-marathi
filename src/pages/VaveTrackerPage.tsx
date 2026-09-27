@@ -106,7 +106,7 @@ function EditPanel({ action, onSave, onDelete, onClose }: EditPanelProps) {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 360, opacity: 0 }}
       transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-      className="fixed right-0 top-0 bottom-0 w-96 bg-navy-900 border-l border-white/10 z-40 flex flex-col shadow-2xl"
+      className="fixed right-0 top-0 bottom-0 w-96 bg-navy-900 border-l border-white/10 z-modal flex flex-col shadow-2xl"
     >
       <div className="flex items-center justify-between p-5 border-b border-white/8">
         <h3 className="text-white font-semibold text-sm">Edit VAVE Action</h3>
@@ -449,7 +449,7 @@ export default function VaveTrackerPage() {
         {selected && (
           <>
             <div
-              className="fixed inset-0 z-30 bg-black/30 backdrop-blur-sm"
+              className="fixed inset-0 z-modal bg-black/30 backdrop-blur-sm"
               onClick={() => setSelected(null)}
             />
             <EditPanel

@@ -4201,3 +4201,33 @@ After, same measurement: 861 nodes at first paint (1.3 s to the count,
 from 2.5 s), 1,093 after scrolling the whole library, 2 long tasks in the
 sweep, a filter change answered in 75 ms instead of 1,230. Console clean in
 both themes.
+
+## 87. Three small debts from the register, closed together
+
+**A result the server does not hold is not asked about.** The Results page
+fetched the project for annotations, then cross-pollination, for every
+result in session storage — including runs that came back without a
+project id (a local handle) and projects since deleted — so each visit
+logged two 404s. `AnalysisResult.onServer` now records whether the id is a
+server project; a run without one is not asked, and a 404 on the first ask
+marks the project missing so annotations stay local and Share refuses with
+a reason instead of failing. Cross-pollination is only requested once the
+project has answered.
+
+**Saved analyses live in IndexedDB.** Ten full results in one localStorage
+key sat against the 5 MB quota; the eleventh save failed silently and the
+dashboard's "Open" later said the analysis was gone. `src/lib/results-store.ts`
+keeps the newest 25 in an object store, migrates the old key once, and
+falls back to the localStorage path (through the helper that cannot throw)
+where IndexedDB is unavailable. The pure cap rule and the fallback path are
+tested; the IndexedDB path is exercised in the browser. Found alongside: the
+dashboard's "Open" navigated to Results without placing the result in
+session storage, so it only worked while the same tab still had it — fixed.
+
+**The stacking scale is a rule, not a suggestion.** The header carried a
+raw `z-50`, the toast `z-[9999]`, two modals and a drawer `z-40`/`z-30`,
+and the gate looked at three files. There is now a `z-toast` (70, over a
+modal — a toast is the reply to what the modal did), every FIXED element is
+on the scale, and the gate scans every `.tsx` for a fixed element with a
+raw z value. Sticky bars and absolute badges keep local values on purpose:
+they stack inside their own context, not against the page.

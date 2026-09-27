@@ -541,13 +541,14 @@ export default function Part360Page() {
       };
       const sysName = 'Prism';
       const subName = material;
-      const { ideas, sources, resultId, validation } = await generateCostReductionIdeas(
+      const { ideas, sources, resultId, onServer, validation } = await generateCostReductionIdeas(
         config, sysName, subName, partName || 'Part', false, undefined,
         (ev: ProgressEvent) => { if (ev.message) setGenLog(prev => [...prev.slice(-14), ev.message as string]); },
         { partEvidence: { blocks }, prismRunId: dossier.runId ?? undefined },
       );
       const result: AnalysisResult = {
         id: resultId,
+        onServer,
         config: { ...config, apiKey: '' },
         ideas,
         sources: sources ?? [],
@@ -734,13 +735,13 @@ export default function Part360Page() {
         additionalContext: `Prism ASSEMBLY review of "${asmName}" — engine-costed BOM total ${eurForModel(asmDossier.rollUp.totalEur)} across ${asmDossier.rollUp.partCount} part instances.${asmContext.trim() ? ` Assembly function as stated by the user: ${asmContext.trim().slice(0, 600)}` : ''}`,
         deepMode, apiKey,
       };
-      const { ideas, sources, resultId, validation } = await generateCostReductionIdeas(
+      const { ideas, sources, resultId, onServer, validation } = await generateCostReductionIdeas(
         config, 'Prism', asmName || 'Assembly', asmName || 'Assembly', false, undefined,
         (ev: ProgressEvent) => { if (ev.message) setAsmGenLog(prev => [...prev.slice(-14), ev.message as string]); },
         { partEvidence: { blocks } },
       );
       const result: AnalysisResult = {
-        id: resultId, config: { ...config, apiKey: '' }, ideas, sources: sources ?? [], validation,
+        id: resultId, onServer, config: { ...config, apiKey: '' }, ideas, sources: sources ?? [], validation,
         summary: {
           totalIdeas: ideas.length,
           quickWins: ideas.filter(i => i.implementationDifficulty === 'Low').length,

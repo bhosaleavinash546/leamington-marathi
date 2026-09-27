@@ -920,6 +920,10 @@ export default function ResultsPage() {
   useEffect(() => () => chatAbortRef.current?.abort(), []);
   const [crossPollinatedIdeas, setCrossPollinatedIdeas] = useState<CostReductionIdea[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  // The server no longer has this project (deleted, or a local-only run):
+  // annotations stay on this device and sharing is refused with a reason,
+  // instead of every action producing a 404 in the console.
+  const [projectMissing, setProjectMissing] = useState(false);
   const [bulkAdding, setBulkAdding] = useState<'marketplace' | 'pipeline' | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -932,17 +936,17 @@ export default function ResultsPage() {
         const params = new URLSearchParams(window.location.search);
         const savedId = params.get('id');
         if (savedId) {
-          const saved = loadFullResult(savedId);
-          if (saved) {
-            sessionStorage.setItem('analysisResult', JSON.stringify(saved));
-            navigate('/results', { replace: true });
-            return;
-          }
-          // Not on this device — it may still be a saved project on the server.
-          // The ⌘K search links here by project id, and before this the link
-          // fell through to the marketing home page.
-          const token = getAuthToken();
-          if (token) {
+          loadFullResult(savedId).then(saved => {
+            if (saved) {
+              sessionStorage.setItem('analysisResult', JSON.stringify(saved));
+              navigate('/results', { replace: true });
+              return;
+            }
+            // Not on this device — it may still be a saved project on the server.
+            // The ⌘K search links here by project id, and before this the link
+            // fell through to the marketing home page.
+            const token = getAuthToken();
+            if (!token) { navigate('/analyze'); return; }
             fetch(`/api/projects/${encodeURIComponent(savedId)}`, { headers: { Authorization: `Bearer ${token}` } })
               .then(r => (r.ok ? r.json() : null))
               .then((proj: (AnalysisResult & { systemName?: string; subassemblyName?: string }) | null) => {
@@ -953,8 +957,8 @@ export default function ResultsPage() {
                 navigate('/results', { replace: true });
               })
               .catch(() => setLoadError('Could not reach the server to open that analysis.'));
-            return;
-          }
+          });
+          return;
         }
         navigate('/analyze');
         return;
@@ -971,24 +975,24 @@ export default function ResultsPage() {
           if (localAnnotationsRaw) setAnnotations(JSON.parse(localAnnotationsRaw));
         } catch {}
         const authToken = getAuthToken();
-        if (authToken) {
+        // A run the server never held (onServer === false) is not asked for;
+        // one it has lost answers 404 once, after which nothing else is asked.
+        if (parsed.onServer === false) setProjectMissing(true);
+        if (authToken && parsed.onServer !== false) {
           // Only fall back to server annotations if local storage has none
           fetch(`/api/projects/${parsed.id}`, { headers: { Authorization: `Bearer ${authToken}` } })
-            .then(r => r.ok ? r.json() : null)
+            .then(r => { if (r.status === 404) { setProjectMissing(true); return null; } return r.ok ? r.json() : null; })
             .then(proj => {
-              if (!hasLocalAnnotations && proj?.annotations && Object.keys(proj.annotations).length > 0) {
+              if (!proj) return;
+              if (!hasLocalAnnotations && proj.annotations && Object.keys(proj.annotations).length > 0) {
                 setAnnotations(proj.annotations);
                 try { localStorage.setItem(`brainspark_annotations_${parsed.id}`, JSON.stringify(proj.annotations)); } catch {}
               }
+              // Cross-pollinated ideas from other projects — only for a project the server has.
+              return fetch(`/api/projects/${parsed.id}/cross-pollinate`, { method: 'POST', headers: { Authorization: `Bearer ${authToken}` } })
+                .then(r => r.ok ? r.json() : null)
+                .then(data => { if (data?.ideas?.length > 0) setCrossPollinatedIdeas(data.ideas.slice(0, 3)); });
             })
-            .catch(() => {});
-          // Fetch cross-pollinated ideas from other projects
-          fetch(`/api/projects/${parsed.id}/cross-pollinate`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${authToken}` },
-          })
-            .then(r => r.ok ? r.json() : null)
-            .then(data => { if (data?.ideas?.length > 0) setCrossPollinatedIdeas(data.ideas.slice(0, 3)); })
             .catch(() => {});
         }
       }
@@ -1104,7 +1108,7 @@ export default function ResultsPage() {
     if (result?.id) {
       try { localStorage.setItem(`brainspark_annotations_${result.id}`, JSON.stringify(updated)); } catch {}
       const authToken = getAuthToken();
-      if (authToken) {
+      if (authToken && !projectMissing) {
         fetch(`/api/projects/${result.id}/annotations`, {
           method: 'PATCH',
           headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
@@ -1315,6 +1319,7 @@ export default function ResultsPage() {
 
   async function handleShare() {
     if (!result?.id) return;
+    if (projectMissing) { toast('This analysis is not saved on the server, so it cannot be shared. Run it again while signed in to get a shareable copy.', 'error'); return; }
     const token = getAuthToken();
     if (!token) { toast('Sign in to create share links', 'error'); return; }
     try {
