@@ -4079,3 +4079,28 @@ model (Prism's assembly context, deep mode's contradiction note), which now
 say "engine reference figures in EUR". A design-system gate fails the build
 on any rendered `€{…}` outside that allowlist, so the badge cannot quietly
 go back to two currencies on one line.
+
+## 83. Every route that owns a model call takes the run-scoped abort
+
+DECISIONS 77 fixed the generation route. The review's register listed the
+rest: `/api/chat` streamed its reply to the end after the chat panel closed,
+and the Prism vision read (`/api/part360/quote-extract`, a long call over a
+PDF) and function-model draft ran on for a reader who had navigated away.
+
+The pattern is now one call, `runAbort(res, label)` in `server.mjs`, handed
+to route modules through `deps`. It returns an `AbortController` whose
+signal is passed to `makeAnthropic({ signal })` — so every `messages.create`
+that client makes without a signal of its own inherits it, including the
+forced-tool calls inside `messagesJson` — and to any streamed call's request
+options. A route checks `run.signal.aborted` in its catch and ends quietly:
+a cancelled run is not a provider error and is not reported as one.
+
+The chat panel on Results gets a Stop button in place of the spinner. The
+partial answer stays on screen with "— stopped." appended, because what has
+streamed is what was paid for. Leaving the page aborts an open reply too.
+
+Tested against the stub, which now holds a non-streamed reply for
+`FAKE_LLM_JSON_DELAY_MS` so a cancelled JSON call is observable: chat and
+draft-functions both register the hang-up, and an uninterrupted draft still
+completes. The rule for any new LLM route: take `runAbort` from deps, pass
+its signal to `makeAnthropic`, and add a case to `tests/analyze-cancel.test.mjs`.

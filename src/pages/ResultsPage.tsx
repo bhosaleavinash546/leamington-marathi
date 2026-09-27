@@ -913,6 +913,11 @@ export default function ResultsPage() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
+  // One controller per reply. Stop aborts the fetch; the server aborts its
+  // model call on the closed response, so the partial answer stays and the
+  // rest is not billed. Leaving the page stops it too.
+  const chatAbortRef = useRef<AbortController | null>(null);
+  useEffect(() => () => chatAbortRef.current?.abort(), []);
   const [crossPollinatedIdeas, setCrossPollinatedIdeas] = useState<CostReductionIdea[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkAdding, setBulkAdding] = useState<'marketplace' | 'pipeline' | null>(null);
@@ -1179,6 +1184,9 @@ export default function ResultsPage() {
     setChatMessages([...newHistory, { role: 'assistant', content: '', timestamp: new Date().toISOString() }]);
     setChatInput('');
     setChatLoading(true);
+    chatAbortRef.current?.abort();
+    const controller = new AbortController();
+    chatAbortRef.current = controller;
 
     try {
       await sendChatMessage(
@@ -1203,19 +1211,24 @@ export default function ResultsPage() {
         // answers waterfall/forensics questions from evidence, not memory.
         // Guarded on the run's own stamp — a later non-Prism analysis in the
         // same tab must not inherit a stale part's dossier.
-        (systemName === 'Prism' && sessionStorage.getItem('prismDossier')) || undefined
+        (systemName === 'Prism' && sessionStorage.getItem('prismDossier')) || undefined,
+        controller.signal
       );
     } catch (err) {
+      const stopped = err instanceof DOMException && err.name === 'AbortError';
       setChatMessages(prev => {
         const updated = [...prev];
         const last = updated[updated.length - 1];
         if (last?.role === 'assistant') {
-          updated[updated.length - 1] = { ...last, content: `Error: ${err instanceof Error ? err.message : 'Chat failed'}` };
+          updated[updated.length - 1] = stopped
+            ? { ...last, content: `${last.content}${last.content ? ' ' : ''}— stopped.` }
+            : { ...last, content: `Error: ${err instanceof Error ? err.message : 'Chat failed'}` };
         }
         return updated;
       });
     } finally {
       setChatLoading(false);
+      chatAbortRef.current = null;
     }
   };
 
@@ -1778,16 +1791,26 @@ export default function ResultsPage() {
                   disabled={chatLoading}
                   className="flex-1 bg-navy-800 border border-white/15 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-gold-500/40 text-sm disabled:opacity-60"
                 />
-                <button
-                  onClick={handleChat}
-                  disabled={!chatInput.trim() || chatLoading}
-                  className="w-10 h-10 flex-shrink-0 rounded-xl bg-gold-500/15 hover:bg-gold-500/25 disabled:opacity-40 disabled:cursor-not-allowed border border-gold-500/25 flex items-center justify-center transition-colors"
-                >
-                  {chatLoading
-                    ? <ButtonSpinner size={15} />
-                    : <Send size={15} className="text-gold-400" />
-                  }
-                </button>
+                {chatLoading ? (
+                  <button
+                    type="button"
+                    onClick={() => chatAbortRef.current?.abort()}
+                    aria-label="Stop the reply"
+                    title="Stop. The model call is aborted; only what has streamed is billed."
+                    className="w-10 h-10 flex-shrink-0 rounded-xl bg-white/5 hover:bg-danger-500/15 border border-white/15 hover:border-danger-500/40 flex items-center justify-center transition-colors"
+                  >
+                    <Square size={13} className="text-slate-300" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleChat}
+                    disabled={!chatInput.trim()}
+                    aria-label="Send"
+                    className="w-10 h-10 flex-shrink-0 rounded-xl bg-gold-500/15 hover:bg-gold-500/25 disabled:opacity-40 disabled:cursor-not-allowed border border-gold-500/25 flex items-center justify-center transition-colors"
+                  >
+                    <Send size={15} className="text-gold-400" />
+                  </button>
+                )}
               </div>
             </div>
           )}

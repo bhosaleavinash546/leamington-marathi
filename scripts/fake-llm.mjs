@@ -15,6 +15,7 @@ import http from 'node:http';
 
 const PORT = Number(process.env.FAKE_LLM_PORT || 19999);
 const PACE_MS = Number(process.env.FAKE_LLM_PACE_MS || 25000);   // stream duration, so progress is visible
+const JSON_DELAY_MS = Number(process.env.FAKE_LLM_JSON_DELAY_MS || 0);   // hold a non-streamed reply, so an abort mid-call is observable
 
 const ideas = [
   { id: 'stub-1-gate-driver-integration', title: 'Integrate gate-driver PCB onto the power-module substrate', costSavingTypes: ['complexity','process'], implementationDifficulty: 'Medium', systemLevel: 'Subassembly', confidenceLevel: 'estimated',
@@ -87,6 +88,9 @@ http.createServer(async (req, res) => {
   console.log(`[fake-llm] ${p.model} stream=${!!p.stream} tools=${(p.tools||[]).map(t=>t.name).join(',')||'-'} thinking=${p.thinking?.type||'off'} max_tokens=${p.max_tokens} -> ${tool ? 'tool_use:'+tool.name : 'text'} (${outTok} tok)`);
   const id = 'msg_stub_' + Date.now();
   if (!p.stream) {
+    if (JSON_DELAY_MS > 0) await sleep(JSON_DELAY_MS);
+    if (gone) return;
+    stats.completed++;
     res.writeHead(200, { 'content-type': 'application/json' });
     return res.end(JSON.stringify({ id, type: 'message', role: 'assistant', model: p.model, stop_sequence: null,
       content: tool ? [{ type: 'tool_use', id: 'toolu_stub', name: tool.name, input }] : [{ type: 'text', text: 'ok' }],
@@ -108,8 +112,13 @@ http.createServer(async (req, res) => {
     for (let i = 0; i < json.length && !gone; i += step) { write(res, 'content_block_delta', { type: 'content_block_delta', index: idx, delta: { type: 'input_json_delta', partial_json: json.slice(i, i + step) } }); await sleep(pace); }
     if (gone) return;
   } else {
+    // A plain-text reply (the chat) streams at the same pace as a tool reply,
+    // so a caller hanging up mid-answer is observable here too.
     write(res, 'content_block_start', { type: 'content_block_start', index: idx, content_block: { type: 'text', text: '' } });
-    write(res, 'content_block_delta', { type: 'content_block_delta', index: idx, delta: { type: 'text_delta', text: 'ok' } });
+    const words = ('SYNTHETIC TEST CONTENT. This is a stub reply streamed word by word so that the chat panel, its Stop button and the server-side abort can be exercised without a key. ' +
+      'It proves plumbing, never engineering judgement, and says so in its first three words. ').repeat(3).split(' ');
+    const pace = Math.max(20, (PACE_MS * 0.75) / words.length);
+    for (const w of words) { if (gone) return; write(res, 'content_block_delta', { type: 'content_block_delta', index: idx, delta: { type: 'text_delta', text: w + ' ' } }); await sleep(pace); }
   }
   write(res, 'content_block_stop', { type: 'content_block_stop', index: idx });
   write(res, 'message_delta', { type: 'message_delta', delta: { stop_reason: tool ? 'tool_use' : 'end_turn', stop_sequence: null }, usage: { output_tokens: outTok } });

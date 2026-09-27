@@ -175,7 +175,9 @@ export async function sendChatMessage(
   apiKey: string,
   onChunk: (text: string) => void,
   /** Prism: measured dossier text so the Q&A answers from engine evidence. */
-  dossierContext?: string
+  dossierContext?: string,
+  /** Stop. Closes the response; the server aborts the model call on that close. */
+  signal?: AbortSignal
 ): Promise<string> {
   const token = getAuthToken();
   const headers: Record<string, string> = {
@@ -187,6 +189,7 @@ export async function sendChatMessage(
   const response = await fetch('/api/chat', {
     method: 'POST',
     headers,
+    signal,
     body: JSON.stringify({ apiKey, ideas, config, systemName, subassemblyName, history, message, ...(dossierContext ? { dossierContext } : {}) }),
   });
 

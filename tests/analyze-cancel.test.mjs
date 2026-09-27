@@ -1,4 +1,5 @@
-// Cancel must stop the bill, not just the spinner.
+// Cancel must stop the bill, not just the spinner — on every route that owns
+// a model call: the generation, the chat, and the Prism vision/draft calls.
 //
 // Before this, a browser that closed the tab or hit Cancel mid-generation
 // left the upstream model call running for up to ten more minutes — billed,
@@ -37,7 +38,7 @@ before(async () => {
   dataDir = mkdtempSync(join(tmpdir(), 'bs-cancel-'));
   stub = spawn(process.execPath, ['scripts/fake-llm.mjs'], {
     cwd: ROOT, stdio: 'ignore',
-    env: { ...process.env, FAKE_LLM_PORT: String(STUB), FAKE_LLM_PACE_MS: '20000' },   // slow, so we can hang up mid-reply
+    env: { ...process.env, FAKE_LLM_PORT: String(STUB), FAKE_LLM_PACE_MS: '20000', FAKE_LLM_JSON_DELAY_MS: '6000' },   // slow, so we can hang up mid-reply
   });
   server = spawn(process.execPath, ['server.mjs'], {
     cwd: ROOT, stdio: 'ignore',
@@ -113,5 +114,63 @@ describe('cancelling /api/analyze', () => {
     assert.ok(Array.isArray(d.ideas) && d.ideas.length > 0, 'stub run returned no ideas');
     const stats = await (await fetch(`${STUB_BASE}/__stats`)).json();
     assert.ok(stats.completed >= 1);
+  });
+});
+
+async function stubStats() { return (await fetch(`${STUB_BASE}/__stats`)).json(); }
+async function waitForStub(pred, ms = 20000) {
+  const t0 = Date.now();
+  while (Date.now() - t0 < ms) { const st = await stubStats(); if (pred(st)) return st; await sleep(150); }
+  throw new Error('stub condition not met: ' + JSON.stringify(await stubStats()));
+}
+
+describe('the same abort on the chat and Prism routes', () => {
+  it('/api/chat: closing the SSE reply aborts the streamed model call', async () => {
+    const before = await stubStats();
+    const ctl = new AbortController();
+    const res = await fetch(`${BASE}/api/chat`, {
+      method: 'POST', signal: ctl.signal,
+      headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ apiKey: 'sk-ant-api03-STUB', ideas: [], config: { currency: 'GBP' }, systemName: 'S', subassemblyName: 'A', history: [], message: 'Why is idea 1 cheap?' }),
+    });
+    assert.equal(res.status, 200);
+    const reader = res.body.getReader();
+    await waitForStub(st => st.requests > before.requests);
+    await Promise.race([reader.read(), sleep(300)]);
+    ctl.abort();
+    const after = await waitForStub(st => st.aborted > before.aborted);
+    assert.equal(after.aborted, before.aborted + 1);
+  });
+
+  it('/api/part360/draft-functions: a closed JSON request aborts the pending model call', async () => {
+    const before = await stubStats();
+    const ctl = new AbortController();
+    const p = fetch(`${BASE}/api/part360/draft-functions`, {
+      method: 'POST', signal: ctl.signal,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ apiKey: 'sk-ant-api03-STUB', partName: 'Inverter busbar', context: 'laminated copper' }),
+    }).catch(() => null);
+    await waitForStub(st => st.requests > before.requests);   // the model call is open, held by the stub's delay
+    ctl.abort();
+    await p;
+    const after = await waitForStub(st => st.aborted > before.aborted);
+    assert.equal(after.aborted, before.aborted + 1);
+    assert.equal(after.completed, before.completed, 'the held reply must not have completed');
+  });
+
+  it('an uninterrupted draft still completes (the guard did not break the happy path)', async () => {
+    const before = await stubStats();
+    const r = await fetch(`${BASE}/api/part360/draft-functions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ apiKey: 'sk-ant-api03-STUB', partName: 'Inverter busbar', context: 'laminated copper' }),
+    });
+    // The stub answers a non-emit_ideas tool with an empty object, which the
+    // route rejects as a bad draft (502) — the point here is only that the
+    // call was allowed to COMPLETE, not aborted by the guard.
+    assert.ok([200, 502].includes(r.status), `unexpected status ${r.status}`);
+    const after = await stubStats();
+    assert.equal(after.completed, before.completed + 1);
+    assert.equal(after.aborted, before.aborted);
   });
 });

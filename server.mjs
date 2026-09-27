@@ -299,7 +299,27 @@ function makeAnthropic(apiKey, meta = {}) {
     return promise;   // still an APIPromise — .withResponse() intact
   };
   client._meta = meta;   // so createLongMessage can attribute its own metering row
+  // meta.signal: the run-scoped abort from runAbort(); rides into every call
+  // this client makes that did not bring its own signal (see create above).
+  if (meta.signal) client._abortSignal = meta.signal;
   return client;
+}
+
+// THE MONEY GUARD, as one call (DECISIONS 77, 83). A long model call is owned
+// by the response that will carry its result: when that response closes
+// before it has ended — tab closed, Cancel pressed, connection lost — the
+// reader is gone and every model call the run owns is aborted. Pass the
+// returned signal to makeAnthropic({ signal }) and to any streamed call's
+// request options; check `run.signal.aborted` in the catch to end quietly.
+function runAbort(res, label) {
+  const run = new AbortController();
+  const startedAt = Date.now();
+  res.on('close', () => {
+    if (res.writableEnded) return;
+    run.abort(new Error('client disconnected'));
+    console.warn(`[${label}] client disconnected after ${Math.round((Date.now() - startedAt) / 1000)}s — upstream model calls aborted.`);
+  });
+  return run;
 }
 
 // Mark a stable system prompt as cacheable (cache_control: ephemeral). Prompt
@@ -3318,13 +3338,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
   // another ten minutes — billed, and the result unreadable because this
   // response is the only channel it could return on. 'close' before 'end'
   // means the reader is gone; abort every model call this run owns.
-  const run = new AbortController();
-  const startedAt = Date.now();
-  res.on('close', () => {
-    if (res.writableEnded) return;
-    run.abort(new Error('client disconnected'));
-    console.warn(`[Analysis] client disconnected after ${Math.round((Date.now() - startedAt) / 1000)}s — upstream model calls aborted.`);
-  });
+  const run = runAbort(res, 'Analysis');
 
   function emit(data) {
     if (useSSE) res.write(`data: ${JSON.stringify(data)}\n\n`);
@@ -3352,8 +3366,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     }
   }
 
-  const client = makeAnthropic(config.apiKey, { userId: req.user?.id, route: '/api/analyze' });
-  client._abortSignal = run.signal;
+  const client = makeAnthropic(config.apiKey, { userId: req.user?.id, route: '/api/analyze', signal: run.signal });
   // Positive feedback loop: what this user approved/confirmed feeds generation
   // (prompt examples) AND ranking (visible tasteMatch boost in finishAnalysis).
   let tasteProfile = null;
@@ -3817,34 +3830,42 @@ RULES:
     res.flushHeaders();
   }
 
+  // A closed chat panel used to leave the reply streaming to its end — the
+  // loop below kept pulling tokens into a response nobody could read.
+  const run = runAbort(res, 'Chat');
   try {
-    const client = makeAnthropic(apiKey, { userId: req.user?.id, route: '/api/chat' });
+    const client = makeAnthropic(apiKey, { userId: req.user?.id, route: '/api/chat', signal: run.signal });
     const stream = await client.messages.create({
       model: 'claude-opus-4-8',
       max_tokens: 1500,
       system: systemPrompt,
       messages: [...safeHistory, { role: 'user', content: safeMsg }],
       stream: true,
-    });
+    }, { signal: run.signal });
 
     if (useSSE) {
       for await (const event of stream) {
+        if (run.signal.aborted) break;
         if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
           res.write(`data: ${JSON.stringify({ type: 'chunk', text: event.delta.text })}\n\n`);
         }
       }
+      if (run.signal.aborted) return;
       res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
       res.end();
     } else {
       let text = '';
       for await (const event of stream) {
+        if (run.signal.aborted) break;
         if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
           text += event.delta.text;
         }
       }
+      if (run.signal.aborted) return;
       res.json({ reply: text });
     }
   } catch (err) {
+    if (run.signal.aborted) { try { if (!res.writableEnded) res.end(); } catch { /* closed */ } return; }
     console.error('[Chat Error]', err.message);
     const safe = safeLlmError(err);
     if (useSSE) { res.write(`data: ${JSON.stringify({ type: 'error', message: safe })}\n\n`); res.end(); }
@@ -4057,7 +4078,7 @@ registerOrgRoutes(app, { db, requireAuth, rateLimit });
 registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
 // Part 360: quote forensics, entitlement waterfall and the evidence dossier —
 // the fusion layer over every engine, calibrated to the caller's quote corpus.
-registerPart360Routes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, sanitize, shouldCostApi, db, jobsApi });
+registerPart360Routes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, sanitize, shouldCostApi, db, jobsApi, runAbort });
 // Innovation methods (Value Engineering, DFA, Design-to-Cost, SCAMPER,
 // Morphological, Effects & Trends, Circularity) — structured idea generation.
 registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
