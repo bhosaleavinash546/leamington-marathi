@@ -4164,3 +4164,40 @@ model calls were made." Tested at both layers: the pure run (an aborted
 signal makes no further model call; an already-aborted one makes none) and
 the HTTP job against the stub (DELETE → cancelled, stub sees the abort, the
 poll agrees, 409 on repeat, 404 on unknown).
+
+## 86. The marketplace list is windowed, and heights are measured, not assumed
+
+The review's last performance item. The library holds 2,243 approved ideas.
+Rendering them made 2,984 DOM nodes on first paint behind a "Show more"
+button, and a reader who clicked through to the end had 96,955 nodes, a
+617,000 px page and 314 long tasks in one scroll sweep — measured on the
+production bundle with the stub, before this change.
+
+`src/hooks/useVirtualList.ts` renders only the rows within an overscan
+band of the viewport and puts two spacers where the rest would be, so the
+scroll height and the scrollbar are honest and every matching idea is
+reachable by scrolling — no button. The arithmetic (`src/lib/virtual-range.ts`:
+prefix sums, binary search for the row at a scroll position) is pure and
+tested on its own.
+
+Three choices worth recording:
+
+- **Heights are measured.** Cards differ in height and an expanded card is
+  taller. Each rendered row reports its border box through one shared
+  `ResizeObserver`; the cache is keyed by idea id so a re-sort keeps it; an
+  unmeasured row uses the estimate until it is seen. The row's gap is
+  padding, not margin, because a margin lies outside the measured box and
+  would have drifted the spacers by 16 px per row. No library was added: the
+  hook is 90 lines, and the maths is the part that needed a test.
+- **The entrance rise plays once per card per list.** A card that scrolls
+  back into view mounts again; replaying its fade would be motion that
+  marks nothing (motion.ts rule 1). A set of ids seen for the current
+  filter/sort signature decides; a new filter starts the count again.
+- **`content-visibility: auto` came off the cards.** With windowing it has
+  no work left to skip, and its intrinsic placeholder size would have been
+  reported to the observer as a real measurement for an overscan row.
+
+After, same measurement: 861 nodes at first paint (1.3 s to the count,
+from 2.5 s), 1,093 after scrolling the whole library, 2 long tasks in the
+sweep, a filter change answered in 75 ms instead of 1,230. Console clean in
+both themes.

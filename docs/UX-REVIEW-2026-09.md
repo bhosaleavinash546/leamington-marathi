@@ -340,3 +340,24 @@ DECISIONS 77–81. What moved, measured on the rebuilt bundle:
 What a 9 still needs: the marketplace virtualised, the form primitives
 adopted on the five compact table pages, and engine figures converted at
 the display boundary with their rate shown (DECISIONS 76).
+
+
+## 9. Marketplace virtualised — 27 September
+
+| Measure (2,243 ideas, stub, production bundle) | Before | After | Basis |
+|---|---|---|---|
+| DOM nodes at first paint | 2,984 (60 cards behind "Show more") | **861** (rows near the viewport) | MEASURED |
+| Time to "N ideas match" | 2,536 ms | **1,335 ms** | MEASURED |
+| DOM nodes after reaching the end of the library | 96,955 | **1,093** | MEASURED |
+| Long tasks during a full scroll sweep | 314 | **2** | MEASURED (PerformanceObserver longtask) |
+| Filter change ("busbar", 144 hits) | 1,230 ms | **75 ms** | MEASURED |
+| Scroll height | 617,185 px after 19 clicks | 617,760 px from the start, no clicks | MEASURED — every idea is in the scrollbar |
+| Console errors | 0 | 0 | MEASURED |
+
+| Dimension | 27 Sept (earlier) | 27 Sept (now) | What moved it |
+|---|---|---|---|
+| Performance feel | 6.5 | 8.5 | The largest list in the product renders in a window; the rest of the pages were already clean. |
+| **Overall** | **8.2** | **8.5** | |
+
+What a 9 still needs: the form primitives on the five compact table pages,
+and a keyboard model on the marketplace cards to match the results grid.

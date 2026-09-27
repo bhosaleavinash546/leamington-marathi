@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useVirtualList } from '../hooks/useVirtualList';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Store, Star, TrendingDown, Clock, ChevronDown, ChevronUp, CheckCircle,
@@ -231,10 +232,12 @@ export default function MarketplacePage() {
     return map;
   }, [ideas]);
 
-  // Sort + incremental rendering: 1,600 unvirtualised motion cards previously
-  // rendered at once with delay=i*0.03 — card #900 faded in after 27 seconds.
+  // Sort, then WINDOW: 1,600 unvirtualised motion cards once rendered at
+  // once (card #900 faded in after 27 s); a "Show more" button capped it at
+  // 60 and made the reader click through the library. The list is now
+  // virtualised (src/hooks/useVirtualList.ts): every matching idea is in the
+  // scroll height, only the rows near the viewport are in the DOM.
   const [sortBy, setSortBy] = useState<'featured' | 'saving' | 'votes' | 'newest'>('featured');
-  const [visibleCount, setVisibleCount] = useState(60);
 
   const parseSaving = (v: string) => {
     const m = /([\d.]+)\s*([MK]?)/i.exec(String(v || '').replace(/,/g, ''));
@@ -268,7 +271,14 @@ export default function MarketplacePage() {
     if (sortBy === 'votes') return (b.votes || 0) - (a.votes || 0) || b.stars - a.stars;
     return String(b.id).localeCompare(String(a.id));   // newest ≈ latest pack ids
   });
-  const visible = sorted.slice(0, visibleCount);
+  const ideaKey = useCallback((i: MarketplaceIdea) => i.id, []);
+  const { containerRef: listRef, range, measure, rows } = useVirtualList(sorted, ideaKey, { estimate: 260, overscan: 800 });
+  // The entrance rise plays the first time a card mounts for THIS list; a
+  // card that scrolls back into view arrives still, and a new filter/sort
+  // starts the count again. motion.ts rule 1: motion marks new information.
+  const listSig = `${sortBy}|${sorted.length}|${sorted[0]?.id ?? ''}|${sorted[sorted.length - 1]?.id ?? ''}`;
+  const seen = useRef<{ sig: string; ids: Set<string> }>({ sig: '', ids: new Set() });
+  if (seen.current.sig !== listSig) seen.current = { sig: listSig, ids: new Set() };
 
   // Counts for the powertrain / voltage chips (respecting the active commodity tab)
   const facetScope = ideas.filter(inCommodity);
@@ -736,7 +746,7 @@ export default function MarketplacePage() {
               </button>
               <label className="flex items-center gap-2 text-xs text-slate-400">
                 Sort
-                <select aria-label="Sort ideas" value={sortBy} onChange={e => { setSortBy(e.target.value as typeof sortBy); setVisibleCount(60); }}
+                <select aria-label="Sort ideas" value={sortBy} onChange={e => { setSortBy(e.target.value as typeof sortBy); window.scrollTo({ top: 0 }); }}
                   className="bg-navy-900 border border-white/10 rounded-lg px-2 py-1.5 text-slate-200 text-xs">
                   <option value="featured">Featured</option>
                   <option value="saving">Highest saving</option>
@@ -745,15 +755,21 @@ export default function MarketplacePage() {
                 </select>
               </label>
             </div>
-            {visible.map((idea, i) => {
+            <div ref={listRef}>
+            <div style={{ height: range.offsetTop }} aria-hidden="true" />
+            {rows.map((idea, i) => {
               const commodity = getCommodityForSystem(idea.system);
+              const fresh = !seen.current.ids.has(idea.id);
+              seen.current.ids.add(idea.id);
               return (
+                // The measured box: padding carries the row gap so it is
+                // inside the border box the observer reports.
+                <div key={idea.id} ref={measure(idea.id)} data-vkey={idea.id} className="pb-4">
                 <motion.div
-                  key={idea.id}
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={fresh ? { opacity: 0, y: 12 } : false}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: Math.min(i, 12) * 0.03 }}
-                  className="cv-auto bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-gold-500/25 transition-ui"
+                  transition={{ delay: fresh ? Math.min(i, 12) * 0.03 : 0 }}
+                  className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-gold-500/25 transition-ui"
                 >
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="min-w-0">
@@ -912,17 +928,11 @@ export default function MarketplacePage() {
                     </button>
                   </div>
                 </motion.div>
+                </div>
               );
             })}
-
-            {sorted.length > visibleCount && (
-              <button
-                onClick={() => setVisibleCount(c => c + 120)}
-                className="w-full py-3 rounded-2xl border border-white/10 bg-navy-900 text-slate-300 text-sm hover:border-gold-500/30 hover:text-gold-300 transition-colors"
-              >
-                Show more ({(sorted.length - visibleCount).toLocaleString()} remaining)
-              </button>
-            )}
+            <div style={{ height: range.offsetBottom }} aria-hidden="true" />
+            </div>
 
             {loadError && (
               <div className="text-center py-16 text-danger-400" role="alert">
