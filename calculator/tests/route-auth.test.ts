@@ -13,6 +13,8 @@ import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import jwt from 'jsonwebtoken';
+import Database from 'better-sqlite3';
+import { seedUser } from './helpers/seed-user.js';
 
 const ROOT = join(__dirname, '..');
 const SECRET = 'route-auth-secret-' + Math.random().toString(36).slice(2);
@@ -29,7 +31,9 @@ beforeAll(async () => {
   delete env.JWT_SECRET; delete env.PORT; delete env.TEAM_API_KEY; delete env.HOST;
   srv = spawn(join(ROOT, 'node_modules/.bin/tsx'), [join(ROOT, 'server/index.ts')], { cwd: dir, env, stdio: 'ignore' });
   for (let i = 0; i < 120; i++) {
-    try { if ((await fetch(`${BASE}/api/health`)).ok) return; } catch { /* starting */ }
+    try {
+      if ((await fetch(`${BASE}/api/health`)).ok) { for (const u of ['alice', 'bob', 'carol', 'dave']) seedUser(dir, u); return; }
+    } catch { /* starting */ }
     await new Promise(r => setTimeout(r, 250));
   }
   throw new Error('server did not start');
@@ -106,5 +110,44 @@ describe('a scenario belongs to the user who saved it', () => {
     await call('PUT', '/api/sync/library', alice, { library: { v: 1 }, updatedBy: 'someone-else' });
     const lib = await (await call('GET', '/api/sync/library', bob)).json() as { updatedBy: string };
     expect(lib.updatedBy).toBe('alice@test');
+  });
+});
+
+// M4: a signature alone used to be enough for seven days.
+describe('a session ends when the account does', () => {
+  const sql = (q: string, ...args: unknown[]) => {
+    const db = new Database(join(dir, 'should-cost.db'));
+    try { db.prepare(q).run(...args); } finally { db.close(); }
+  };
+
+  it('refuses a validly signed token for a user who never existed', async () => {
+    const r = await call('GET', '/api/quotes', tokenFor('nobody'));
+    expect(r.status).toBe(401);
+  });
+
+  it('refuses a deleted user at once, not after the token expires', async () => {
+    const t = tokenFor('carol');
+    expect((await call('GET', '/api/quotes', t)).status).toBe(200);
+    sql('DELETE FROM users WHERE id = ?', 'carol');
+    expect((await call('GET', '/api/quotes', t)).status).toBe(401);
+  });
+
+  it('takes the email from the account, not from the token', async () => {
+    const forged = jwt.sign({ userId: 'alice', email: 'ceo@elsewhere', emailVerified: true }, SECRET, { expiresIn: '5m' });
+    await call('PUT', '/api/sync/library', forged, { library: { v: 2 } });
+    const lib = await (await call('GET', '/api/sync/library', forged)).json() as { updatedBy: string };
+    expect(lib.updatedBy).toBe('alice@test');
+  });
+
+  it('"sign out everywhere" ends every session that user has, and only theirs', async () => {
+    // iat is in whole seconds: sign a token that is clearly older than the revocation.
+    const old = jwt.sign({ userId: 'dave', email: 'dave@test', emailVerified: true, iat: Math.floor(Date.now() / 1000) - 60 }, SECRET, { expiresIn: '5m' });
+    const other = tokenFor('bob');
+    expect((await call('POST', '/api/auth/signout-all', old)).status).toBe(200);
+    expect((await call('GET', '/api/quotes', old)).status).toBe(401);
+    expect((await call('GET', '/api/quotes', other)).status).toBe(200);
+    // Signing in again afterwards works: a new token is not revoked.
+    await new Promise(r => setTimeout(r, 1100));
+    expect((await call('GET', '/api/quotes', tokenFor('dave'))).status).toBe(200);
   });
 });

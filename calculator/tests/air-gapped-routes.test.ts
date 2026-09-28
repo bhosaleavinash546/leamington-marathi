@@ -16,6 +16,7 @@ import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import jwt from 'jsonwebtoken';
+import { seedUser } from './helpers/seed-user.js';
 
 const ROOT = join(__dirname, '..');
 const SECRET = 'air-gap-secret-' + Math.random().toString(36).slice(2);
@@ -33,7 +34,7 @@ beforeAll(async () => {
   delete env.JWT_SECRET; delete env.PORT; delete env.HOST; delete env.AIR_GAPPED; delete env.ANTHROPIC_API_KEY;
   srv = spawn(join(ROOT, 'node_modules/.bin/tsx'), [join(ROOT, 'server/index.ts')], { cwd: dir, env, stdio: 'ignore' });
   for (let i = 0; i < 120; i++) {
-    try { if ((await fetch(`${BASE}/api/health`)).ok) return; } catch { /* starting */ }
+    try { if ((await fetch(`${BASE}/api/health`)).ok) { seedUser(dir, 'u1'); return; } } catch { /* starting */ }
     await new Promise(r => setTimeout(r, 250));
   }
   throw new Error('server did not start');

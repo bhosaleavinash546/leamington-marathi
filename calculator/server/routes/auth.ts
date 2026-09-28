@@ -373,6 +373,10 @@ router.post('/reset-password', async (req: Request, res: Response): Promise<void
   db.prepare(
     `UPDATE users SET password_hash = ?, failed_attempts = 0, locked_until = NULL WHERE email = ?`,
   ).run(passwordHash, email.toLowerCase());
+  // A reset is what someone does when they think the password leaked, so every
+  // session signed in with the old one ends here.
+  const reset = db.prepare('SELECT id FROM users WHERE email = ?').get(email.toLowerCase()) as { id: string } | undefined;
+  if (reset) revokeSessions(reset.id);
 
   res.json({ message: 'Password reset successfully. You can now sign in.' });
 });
@@ -408,8 +412,15 @@ router.post('/resend-otp', otpLimiter, async (req: Request, res: Response): Prom
 
 // ─── GET /api/auth/me ─────────────────────────────────────────────────────────
 
-import { requireAuth } from '../middleware/auth-middleware.js';
+import { requireAuth, revokeSessions } from '../middleware/auth-middleware.js';
 import type { AuthenticatedRequest } from '../middleware/auth-middleware.js';
+
+// ─── POST /api/auth/signout-all ───────────────────────────────────────────────
+// Ends every session this user has open, on every device, including this one.
+router.post('/signout-all', requireAuth, (req: AuthenticatedRequest, res: Response): void => {
+  revokeSessions(req.user!.userId);
+  res.json({ message: 'Signed out everywhere.' });
+});
 
 router.get('/me', requireAuth, (req: AuthenticatedRequest, res: Response): void => {
   const user = db

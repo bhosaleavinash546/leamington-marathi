@@ -206,6 +206,9 @@ function ensureColumn(table: string, column: string, ddl: string): void {
   if (!cols.some(c => c.name === column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${ddl}`);
 }
 ensureColumn('users', 'role', "role TEXT NOT NULL DEFAULT 'user'");
+// Sessions issued before this instant are refused (epoch seconds; NULL = none
+// revoked). Set by a password reset and by "sign out everywhere".
+ensureColumn('users', 'sessions_valid_from', 'sessions_valid_from INTEGER');
 
 // ── Bootstrap admins from env (comma-separated emails) ─────────────────────────
 export const ADMIN_EMAILS = new Set(
