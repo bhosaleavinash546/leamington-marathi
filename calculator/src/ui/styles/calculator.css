@@ -7084,3 +7084,12 @@ html:not([data-theme="light"]) .chart-mode-btn.active { color: #04111f; }
 [data-theme="light"] { --amber: #b45309; }
 /* Light theme: plain demo tags, #2563eb on #dbe5fc was 4.09:1. */
 [data-theme="light"] .demo-tag:not(.demo-tag--ai-cad) { color: #1e40af; }
+
+/* ── Picker folds away once a commodity is chosen (M8) ────────────────────────
+   The collapsed state used to be a 52 px icon rail, but a more specific grid
+   rule kept two columns, so it showed clipped half-icons — and it duplicated
+   the commodity tabs across the top of the costing panel. Collapsed now means
+   gone: the form takes the width, the tabs switch commodity, › brings the list
+   back and New Costing reopens it in full. */
+body.cv-new-costing.sidebar-collapsed #commodity-picker-view { display: none !important; }
+body.cv-new-costing.sidebar-collapsed #costing-view { left: var(--cv-nav-offset) !important; }

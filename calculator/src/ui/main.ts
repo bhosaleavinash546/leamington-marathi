@@ -855,7 +855,7 @@ function showHome(): void {
   const errEl = document.getElementById('validation-errors');
   const warnEl = document.getElementById('validation-warnings');
   document.body.classList.remove('cv-new-costing');
-  document.body.classList.remove('sidebar-collapsed');
+  setPickerCollapsed(false);
   document.getElementById('news-view')?.style.setProperty('display', 'none');
   document.getElementById('negotiation-view')?.style.setProperty('display', 'none');
   if (homeEl) { homeEl.style.display = ''; homeEl.dataset.tab = 'home'; }
@@ -887,7 +887,7 @@ function showNegotiation(): void {
   setNavActive('negotiation-btn');
   document.getElementById('wizard-overlay')?.remove();
   document.body.classList.remove('cv-new-costing');
-  document.body.classList.remove('sidebar-collapsed');
+  setPickerCollapsed(false);
   document.getElementById('home-view')?.style.setProperty('display', 'none');
   document.getElementById('commodity-picker-view')?.style.setProperty('display', 'none');
   document.getElementById('news-view')?.style.setProperty('display', 'none');
@@ -908,7 +908,7 @@ function showViewer(): void {
   setNavActive('viewer-btn');
   document.getElementById('wizard-overlay')?.remove();
   document.body.classList.remove('cv-new-costing');
-  document.body.classList.remove('sidebar-collapsed');
+  setPickerCollapsed(false);
   document.getElementById('home-view')?.style.setProperty('display', 'none');
   document.getElementById('commodity-picker-view')?.style.setProperty('display', 'none');
   document.getElementById('news-view')?.style.setProperty('display', 'none');
@@ -953,7 +953,7 @@ function showCosting(commodity?: string): void {
   const costingEl = document.getElementById('costing-view');
   const backdrop = document.getElementById('picker-backdrop');
   document.body.classList.remove('cv-new-costing');
-  document.body.classList.remove('sidebar-collapsed');
+  setPickerCollapsed(false);
   document.getElementById('news-view')?.style.setProperty('display', 'none');
   document.getElementById('negotiation-view')?.style.setProperty('display', 'none');
   if (homeEl) homeEl.style.display = 'none';
@@ -1031,7 +1031,7 @@ function showWorkflowPanel(commodity: string): void {
 function closeWorkflowPanel(): void {
   // Return to full-screen picker (remove split-screen mode, hide costing)
   document.body.classList.remove('cv-new-costing');
-  document.body.classList.remove('sidebar-collapsed');
+  setPickerCollapsed(false);
   const sidebarBtn = document.getElementById('sidebar-toggle-btn');
   if (sidebarBtn) sidebarBtn.textContent = '‹';
   const costingEl = document.getElementById('costing-view');
@@ -12671,6 +12671,18 @@ function showPriceBasisNote(on: boolean): void {
   if (note) note.style.display = on ? '' : 'none';
 }
 
+/** Fold the commodity picker to its icon rail, or open it. One place for the
+ *  class, the toggle's arrow and its expanded state. */
+function setPickerCollapsed(collapsed: boolean): void {
+  document.body.classList.toggle('sidebar-collapsed', collapsed);
+  const btn = document.getElementById('sidebar-toggle-btn');
+  if (btn) {
+    btn.textContent = collapsed ? '›' : '‹';
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.setAttribute('aria-label', collapsed ? 'Show commodity list' : 'Hide commodity list');
+  }
+}
+
 // ─── Tooling amortisation defaults ────────────────────────────────────────────
 // Each form used to ship its own amortisation volume, anywhere from 2,000 to
 // 500,000, against a stated annual volume of 10,000. The tool's own audit
@@ -20214,6 +20226,10 @@ async function init(): Promise<void> {
   document.querySelectorAll('#commodity-picker-view .cpicker-tile[data-commodity]').forEach(tile => {
     tile.addEventListener('click', () => {
       showWorkflowPanel((tile as HTMLElement).dataset.commodity ?? 'machining');
+      // Once a commodity is chosen the picker folds to its icon rail. It used to
+      // stay open for the whole session, squeezed to ~250 px with its title on
+      // three lines. › expands it; New Costing reopens it in full.
+      if (document.body.classList.contains('cv-new-costing')) setPickerCollapsed(true);
     });
   });
 
@@ -20225,7 +20241,9 @@ async function init(): Promise<void> {
 
   // Escape key closes panel/modals when open
   document.addEventListener('keydown', e => {
-    if (e.key !== 'Escape') return;
+    // Already handled — a11y.ts closed an open dialog (e.g. Help) with this key.
+    // Without this, one Escape in Help also closed the costing underneath.
+    if (e.key !== 'Escape' || e.defaultPrevented) return;
     if (document.body.classList.contains('cv-new-costing')) {
       closeWorkflowPanel();
     } else if (document.getElementById('costing-view')?.classList.contains('wf-panel')) {
@@ -20378,9 +20396,7 @@ async function init(): Promise<void> {
 
   // Sidebar collapse toggle
   document.getElementById('sidebar-toggle-btn')?.addEventListener('click', () => {
-    const collapsed = document.body.classList.toggle('sidebar-collapsed');
-    const btn = document.getElementById('sidebar-toggle-btn');
-    if (btn) btn.textContent = collapsed ? '›' : '‹';
+    setPickerCollapsed(!document.body.classList.contains('sidebar-collapsed'));
   });
 
   // AI Autofill
