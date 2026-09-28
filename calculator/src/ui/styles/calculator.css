@@ -4865,16 +4865,20 @@ body.cv-new-costing.sidebar-collapsed .cpicker-tile-icon svg { width: 22px; heig
 
 /* ── 10. Spring upgrade: dashboard tiles, KPI cards, cards ─────────────────── */
 .dash-tile {
+  /* One !important for the whole list. It used to follow each item, which is
+     invalid CSS: browsers dropped the declaration and the spring never ran. */
   transition:
-    transform    var(--dur-hover) var(--ease-spring) !important,
-    box-shadow   var(--dur-hover) var(--ease-std)    !important,
-    border-color var(--dur-hover) var(--ease-std)    !important;
+    transform    var(--dur-hover) var(--ease-spring),
+    box-shadow   var(--dur-hover) var(--ease-std),
+    border-color var(--dur-hover) var(--ease-std) !important;
 }
 .dash-kpi-card {
+  /* One !important for the whole list. It used to follow each item, which is
+     invalid CSS: browsers dropped the declaration and the spring never ran. */
   transition:
-    transform    var(--dur-hover) var(--ease-spring) !important,
-    box-shadow   var(--dur-hover) var(--ease-std)    !important,
-    border-color var(--dur-hover) var(--ease-std)    !important;
+    transform    var(--dur-hover) var(--ease-spring),
+    box-shadow   var(--dur-hover) var(--ease-std),
+    border-color var(--dur-hover) var(--ease-std) !important;
 }
 .news-card {
   transition:
@@ -4909,6 +4913,8 @@ input, select, textarea {
   .new-costing-btn,
   .cpicker-title,
   .summary-card.total-card,
+  .dash-tile,
+  .dash-kpi-card,
   #news-view,
   #comm-view {
     animation: none !important;

@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22   # package.json engines: >=22 <23, and both images run 22
           cache: npm
           cache-dependency-path: calculator/package-lock.json
 
