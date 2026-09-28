@@ -13,3 +13,4 @@ __pycache__/
 
 # visual-regression diff output (baselines ARE committed)
 e2e/visual-diffs/
+e2e/full-failure.png

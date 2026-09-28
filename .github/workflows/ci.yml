@@ -47,6 +47,21 @@ jobs:
       - name: Headless smoke-launch
         run: npm run test:e2e
 
+      # Full browser run: the built app on the real server (air-gapped, own data
+      # folder, signed-in user) — every commodity on its defaults, Assembly,
+      # Excel and PDF exports, and an STL upload from file to cost. Any page
+      # error or browser dialog fails it.
+      - name: Full browser run
+        run: npm run test:e2e:full
+
+      - name: Upload full-run screenshot on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-full-failure
+          path: calculator/e2e/full-failure.png
+          if-no-files-found: ignore
+
       # Visual regression: screenshot key screens (auth, home, money-screen hero,
       # empty state) in dark + light and diff against committed baselines. Fails
       # on unintended layout/colour drift — the class of bug (e.g. a CSS-class
