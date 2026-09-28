@@ -20,11 +20,15 @@ case that overstates what exists is found out in the first question:
   * PCB photo to BOM is substantially built — a 2,374-line route, eleven
     supporting modules, sixteen test files, with BOM prices grounded against a
     catalogue before they are used.
-  * The models are Claude: Sonnet to extract, Opus where a board needs a closer
-    look, Haiku for the smaller steps.
   * AIR_GAPPED=1 is what makes Option 2 acceptable under today's policy. Option
     3 needs that switch off and an approved route to the model. That is the ask,
     and the Technical Scoping panel says so rather than burying it.
+  * The controls that make switching it on safe are already in the code, and the
+    sheet names them: one off-switch (AIR_GAPPED, server/utils/ai-client.ts);
+    every model call goes through createAnthropic(), which honours that switch
+    and ANTHROPIC_BASE_URL for a private endpoint; per-user limits on every AI
+    route (server/middleware/ai-limit.ts); and AI never sets a price.
+  * No model names on the sheet or in the notes (docs/decks/tool-facts.md).
 
 LANGUAGE. Plain, and nothing that sounds like a brochure. The assistant reads
 the input and never sets a price — that sentence is on the sheet because it is
@@ -38,6 +42,7 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.oxml.ns import qn
 from copy import deepcopy
 import subprocess, os
+from pptx_fixup import finalise   # declares the notes master so PowerPoint will open it
 from brand import rgb, hexcol   # calculator/src/brand/brand.json — shared with the app (I5)
 
 OUT = 'CostVision-Option-3-Business-Case.pptx'
@@ -151,7 +156,7 @@ spaced(r, 2.2)
 
 tf = textbox(0.62, 0.64, 11.0, 0.42)
 p = tf.paragraphs[0]
-r = p.add_run(); r.text = 'Drawings and PCB Photos \u2013 Automated Part Costing'
+r = p.add_run(); r.text = 'Option 3 \u2013 Switch AI On for Drawings and PCB Photos'
 r.font.size = Pt(17); r.font.color.rgb = INK; r.font.name = FONT
 spaced(r, 2.4)
 
@@ -186,8 +191,8 @@ r.font.size = Pt(10.5); r.font.bold = True; r.font.color.rgb = INK; r.font.name 
 box(6.88, 1.12, 2.98, 1.38, fill=GREEN, line=GREEN_ED)
 tf = panel_text(7.08, 1.24, 2.60, 1.10)
 heading(tf, 'Projected ROI', size=12.5, space_after=3)
-plain(tf, 'Cost: \u00a3???', size=11, colour=INK, bold=True, space_before=4)
-plain(tf, 'Return: \u00a3???', size=11, colour=INK, bold=True, space_before=2)
+plain(tf, 'Cost: \u00a3 to be confirmed', size=11, colour=INK, bold=True, space_before=4)
+plain(tf, 'Return: \u00a3 to be confirmed', size=11, colour=INK, bold=True, space_before=2)
 plain(tf, 'What is the return based on?', size=10, colour=INK, bold=True, space_before=4)
 plain(tf, 'The boards we turn away, and the weeks a specialist spends on each one.',
       size=8.5, space_before=1)
@@ -245,13 +250,35 @@ tf = panel_text(10.20, 3.80, 2.64, 3.26)
 plain(tf, 'Enabling AI on an existing system?', size=11, colour=INK, bold=True, space_before=0)
 plain(tf, '(YES)', size=11, colour=INK, bold=True, space_before=1)
 plain(tf, 'The reading is done inside CostVision. CAPPe is not changed.', size=9, space_before=2)
-plain(tf, 'Model used: Claude (Anthropic)', size=11, colour=INK, bold=True, space_before=13)
-plain(tf, 'Sonnet and Haiku to read, Opus where a board needs a closer look.', size=9, space_before=2)
-plain(tf, 'Technical implementation/support required?', size=11, colour=INK, bold=True, space_before=13)
+plain(tf, 'Safety controls already built?', size=11, colour=INK, bold=True, space_before=8)
 plain(tf, '(YES)', size=11, colour=INK, bold=True, space_before=1)
-plain(tf, 'It needs an approved route to the model. Option 2 runs with that route switched off. '
-          'This one cannot.', size=9, space_before=2)
+plain(tf, 'One off-switch, a private endpoint, per-user limits. AI never sets a price.',
+      size=9, space_before=2)
+plain(tf, 'Technical implementation/support required?', size=11, colour=INK, bold=True, space_before=8)
+plain(tf, '(YES)', size=11, colour=INK, bold=True, space_before=1)
+plain(tf, 'An approved route to the model. Option 2 runs with AI off; this cannot.',
+      size=9, space_before=2)
 
+
+
+# ── Speaker notes, slide 1 ───────────────────────────────────────────────────
+s.notes_slide.notes_text_frame.text = (
+    "This is Option 3, and it comes down to one question: do we switch the AI on?\n\n"
+    "The version JLR has today runs with AI switched off. That is Option 2. It costs a part from "
+    "the 3D model on rules alone, and it asks the engineer when it cannot tell.\n\n"
+    "The gap is boards and drawings. Costing a circuit board means listing every component and "
+    "pricing each one. We are told a medium board takes two to three weeks, and only a specialist "
+    "can do it. On machined parts, a lot of what matters is on the 2D drawing, and it is typed in "
+    "by hand.\n\n"
+    "Option 3 lets the tool read a board photo, or a drawing alongside the 3D model. That code is "
+    "already in the product. It is switched off, and it can be switched on by a setting.\n\n"
+    "The real question is safety, so here is what is already built. There is one off-switch. Every "
+    "AI call goes through one place, and that place can point at a private endpoint. Every AI "
+    "route has a per-user limit. And the AI never sets a price. It reads. The engine does the "
+    "arithmetic.\n\n"
+    "The cost and the return are blank on purpose. We have not measured them. That is what the "
+    "Proof of Value is for."
+)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Slide 2 — the detail, on the Proposal / Expected Benefits layout.
@@ -269,7 +296,7 @@ s = prs.slides.add_slide(prs.slide_layouts[6])
 
 tf = textbox(0.62, 0.52, 11.0, 0.42)
 p = tf.paragraphs[0]
-r = p.add_run(); r.text = 'Drawings and PCB Photos \u2013 The Proposal in Detail'
+r = p.add_run(); r.text = 'Option 3 \u2013 The Proposal in Detail'
 r.font.size = Pt(17); r.font.color.rgb = INK; r.font.name = FONT
 spaced(r, 2.4)
 
@@ -302,7 +329,8 @@ bullet(tf, 'Then the assembly: how many placements, how many are fine-pitch or B
 bullet(tf, 'Two to three weeks for a medium board, and only a specialist can do it.', size=10.5, space_before=6)
 
 subhead(tf, 'What we propose', space_before=14)
-bullet(tf, 'Extend the Proof of Value to cover 2D drawings and photographs of boards.', size=10.5,
+bullet(tf, 'Switch AI on by a setting, not a rebuild, and extend the Proof of Value to 2D '
+           'drawings and board photos.', size=10.5,
        space_before=7)
 bullet(tf, 'Upload a photo of the board. Say how many you are making and where it is built.',
        size=10.5, space_before=6)
@@ -335,5 +363,26 @@ bullet(tf, 'Boards can be costed early, while the design can still be changed ch
 bullet(tf, 'Cost engineers stay in charge. Every figure is theirs to check, correct and sign off, '
            'and the tool never sets a price itself.', size=11, space_before=22)
 
+# ── Speaker notes, slide 2 ───────────────────────────────────────────────────
+s.notes_slide.notes_text_frame.text = (
+    "This page is the detail. On the left is how a board is costed today, and what we propose "
+    "instead.\n\n"
+    "Today someone identifies every component, finds a price for each line, then estimates the bare "
+    "board and the assembly. It is slow, and it needs a specialist.\n\n"
+    "With AI on, you upload a photo of the board and say how many and where it is built. The tool "
+    "lists the parts it can see, prices each line from a catalogue, and works out the board and the "
+    "assembly. Prices it reads are checked against that catalogue before they are used. For a "
+    "machined part, the drawing is read next to the 3D model, for things the model cannot carry, "
+    "like tolerances and finish. If the AI disagrees with the measured geometry, the geometry "
+    "wins.\n\n"
+    "I am not claiming it is accurate yet. No estimate from this tool has been compared with a "
+    "price JLR actually paid. So the Proof of Value compares its output with cost estimates we "
+    "already have.\n\n"
+    "On the right are the benefits we expect. The main one is simple. A cost engineer can cost a "
+    "board, and the specialist checks the answer instead of building it. The engineer still signs "
+    "off every figure."
+)
+
 prs.save(OUT)
+finalise(OUT)
 print(OUT)

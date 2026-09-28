@@ -20,6 +20,15 @@ against the real server with AIR_GAPPED=1:
 
 The screenshot is the real Rate Library panel, not a mock-up.
 
+Re-checked against the code on 28 September 2026 (docs/decks/tool-facts.md):
+uploading ACTIVATES the company book (server/routes/rate-library.ts sets the
+source to 'company' on upload), so there is no separate "switch on" click —
+one click puts the built-in rates back. The JLR Rate Converter workbook
+(calculator/scripts/build-rate-converter-xlsx.ts) turns JLR's own card into
+the upload format with formulas only, no macros. Every rate book is kept by a
+fingerprint of its contents (GET /versions/:id), which is how a past costing
+is reproduced.
+
 Regenerate:  python3 build_rate_card_slide_pptx.py
 Output:      CostVision-Rate-Card-Upload.pptx
 """
@@ -124,10 +133,10 @@ FLOW_Y = Inches(2.16)
 FLOW_H = Inches(1.06)
 steps = [
     ('1', 'Sign in as admin', 'Only an admin sees the\nbuttons. Anyone else gets\nrefused by the server.'),
-    ('2', 'Download template', 'An Excel file with every\nrate the tool uses, filled\nwith the current values.'),
-    ('3', 'Put our rates in it', 'Material £/kg, labour £/hr,\nmachine build-ups, energy,\nFX, overhead.'),
+    ('2', 'Download template', 'An Excel file with every\nrate the tool uses, filled\nwith the built-in values.'),
+    ('3', 'Put our rates in it', 'Type them in, or paste\nJLR\'s card into the Rate\nConverter. No macros.'),
     ('4', 'Upload it', 'Checked as it loads. If a\ncolumn is wrong it is\nrejected, not half-loaded.'),
-    ('5', 'Switch it on', 'One click. The tool now\nreads our book. One more\nputs it back.'),
+    ('5', 'It goes live', 'The upload switches the\ntool to our rates. One\nclick puts it back.'),
 ]
 gap = Inches(0.16)
 bw = (Inches(12.44) - gap * (len(steps) - 1)) / len(steps)
@@ -193,19 +202,19 @@ for label, a, b, bold in rows:
     ry += Inches(0.28)
 
 text(slide, PX + Inches(0.18), ry + Inches(0.04), PW - Inches(0.36), Inches(0.42),
-     [[('Only the buckets a rate feeds moved. Packaging, logistics and tooling did '
-        'not — nothing in the sheet touches them.', 9.4, MUTED, False, True)]],
+     [[('Packaging, logistics and tooling did not move.',
+        9.4, MUTED, False, True)]],
      line_spacing=1.08)
 
 # ── Audit strip ──────────────────────────────────────────────────────────────
 AY = Inches(6.22)
 box(slide, PX, AY, PW, Inches(0.84), fill=PANEL2)
 text(slide, PX + Inches(0.18), AY + Inches(0.12), PW - Inches(0.36), Inches(0.22),
-     [[('Every costing records which book it used', 11.5, BLUE, True)]])
+     [[('Every rate book is kept, with its own ID', 11.5, BLUE, True)]])
 text(slide, PX + Inches(0.18), AY + Inches(0.38), PW - Inches(0.36), Inches(0.4),
-     [[('Each sheet gets an ID from its own contents — ours is 93d84eb6, the '
-        'built-in one 1398b5ef. A report months old can be traced back to the exact '
-        'rates behind it.', 9.4, BODY, False)]], line_spacing=1.08)
+     [[('Ours is 93d84eb6, built-in is 1398b5ef. Old books are kept, so a '
+        'past costing can be rerun on its rates.',
+        9.4, BODY, False)]], line_spacing=1.08)
 
 # ── Footnote under the screenshot ────────────────────────────────────────────
 FY = Inches(6.22)
@@ -215,46 +224,26 @@ text(slide, Inches(0.68), FY + Inches(0.12), Inches(7.2), Inches(0.22),
      [[('Who can do this, and what happens if nobody does', 11.5, AMBER, True)]])
 text(slide, Inches(0.68), FY + Inches(0.38), Inches(7.2), Inches(0.4),
      [[('Admins are named in the server settings, and the check is done on the server, '
-        'not in the browser. With no sheet uploaded the tool keeps using its own '
-        'rates and says so on every run.', 9.4, BODY, False)]], line_spacing=1.08)
+        'not in the browser. With no sheet uploaded the tool keeps its built-in '
+        'rates, and the panel shows which set is active.', 9.4, BODY, False)]], line_spacing=1.08)
 
 # ── Speaker notes ────────────────────────────────────────────────────────────
 slide.notes_slide.notes_text_frame.text = (
-    "This is the slide for the IT team, and the short version is that it is one Excel "
-    "file and two clicks. I will walk the five boxes along the top, and then show you "
-    "that it actually does what it says.\n\n"
-    "First, who. The buttons on that screen only appear for an admin, and more "
-    "importantly the check is done on the server, not in the browser — so hiding a "
-    "button is not the security. We tried it: an ordinary signed-in user calling the "
-    "upload directly gets refused, and the same call from an admin account goes "
-    "through. Admins are named in the server settings, so you decide who they are, and "
-    "the role is read fresh every time rather than being baked into the login token. "
-    "Take someone's admin off and it takes effect on their next click.\n\n"
-    "Second, the file. You press Download Excel template and you get a workbook with "
-    "every rate the tool uses, already filled in with what it currently has — so you "
-    "are editing a real sheet, not filling in a blank one. Material prices per kilo, "
-    "labour rates per hour, the machine build-ups, energy, exchange rates and the "
-    "overhead defaults. You put our numbers in the same columns and upload it. It is "
-    "checked as it loads — if a column is missing or a number is not a number, the "
-    "whole file is rejected rather than half-loaded, because half a rate book is worse "
-    "than none.\n\n"
-    "The upload we did loaded three hundred and twenty-eight materials, a hundred and "
-    "seventy-eight machines and forty-two labour grades. Then one click switches the "
-    "tool over to it, and one click puts it back.\n\n"
-    "Now the part I would want to see if I were you. The panel on the right is the same "
-    "bracket costed twice, with the same answers, changing nothing except which rate "
-    "book is switched on. Thirty-three pounds nineteen on the built-in rates, seventy "
-    "pounds sixty on ours. Material more than doubles, labour triples, machine time "
-    "goes up. And look at what did not move — packaging, logistics and tooling are "
-    "unchanged, because nothing in the sheet touches them. That is the tool reading our "
-    "file rather than a number being nudged somewhere.\n\n"
-    "Last thing, and it matters for audit. Each sheet gets an ID worked out from its own "
-    "contents, and every costing records which one it used. So a report from months ago "
-    "can be traced back to the exact rates behind it, and if someone asks why two "
-    "costings of the same part differ, the answer is in the record rather than in "
-    "somebody's memory.\n\n"
-    "If nobody ever uploads anything, nothing breaks — the tool keeps using its own "
-    "rates and says so on every run. It is never guessing about which numbers it is on."
+    "This slide is for IT. The short version: one Excel file, uploaded by an admin.\n\n"
+    "First, who. Only an admin sees these buttons, and the check is on the server, not in the "
+    "browser. We tried it. An ordinary user calling the upload directly is refused. Admins are "
+    "named in the server settings, so you decide who they are.\n\n"
+    "Second, the file. You download a template filled with the built-in rates, and put ours in. "
+    "Or, easier, you paste JLR's own rate card into the Rate Converter workbook. It maps JLR's "
+    "codes to the tool's, with plain formulas and no macros. The file is checked as it loads. If "
+    "anything is wrong, the whole file is rejected, not half-loaded. Uploading it switches the tool "
+    "to our rates, and one click puts the built-in rates back.\n\n"
+    "On the right is the same bracket, costed twice with the same answers. Only the rates changed. "
+    "Material, labour and machine time moved. Packaging, logistics and tooling did not, because "
+    "the sheet does not touch them.\n\n"
+    "Last, audit. Each rate book gets an ID from its contents, and old books are kept. So a past "
+    "costing can be rerun on the rates it used.\n\n"
+    "If nobody uploads anything, nothing breaks. The tool keeps its built-in rates."
 )
 
 OUT = 'CostVision-Rate-Card-Upload.pptx'
